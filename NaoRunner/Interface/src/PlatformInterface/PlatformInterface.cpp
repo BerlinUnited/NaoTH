@@ -61,9 +61,7 @@ void PlatformInterface::updateData()
 void PlatformInterface::registerCallbacks(Callable* motionCallback, Callable* cognitionCallback)
 {
   this->motionCallback = motionCallback;
-  std::cout << "Registered motion callback " << this->motionCallback << std::endl;
   this->cognitionCallback = cognitionCallback;
-  std::cout << "Registered motion callback " << this->motionCallback << std::endl;
 }
 
 #define REG_INPUT(P,T) \
