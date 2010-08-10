@@ -116,6 +116,12 @@
       </df>
     </df>
     <df name="WebotsSource" root="../Webots/WebotsSource">
+      <df name="Tools">
+        <df name="Communication" kind="SOURCE_LOGICAL_FOLDER">
+          <in>DummyBidirectionCommunicator.h</in>
+          <in>WoboCupGameControlData.h</in>
+        </df>
+      </df>
       <in>CommunicationCollectionImpl.cpp</in>
       <in>CommunicationCollectionImpl.h</in>
       <in>WebotsCommunicator.cpp</in>
@@ -153,6 +159,7 @@
           <ccTool>
             <incDir>
               <pElem>../Interface/include</pElem>
+              <pElem>/usr/local/webots/include</pElem>
             </incDir>
           </ccTool>
         </makeTool>

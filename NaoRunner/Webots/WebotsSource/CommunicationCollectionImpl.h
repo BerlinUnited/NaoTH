@@ -12,10 +12,8 @@
 #include "Tools/Communication/CommunicationCollection.h"
 #include "Tools/Communication/BidirectionalCommunicator.h"
 #include "Tools/Communication/DummyBidirectionCommunicator.h"
-#include "Tools/Communication/RoboCupGameControlData.h"
-#include "Tools/Communication/WoboCupGameControlData.h"
 
-#include "Debug/DebugCommunicator.h"
+//#include "Debug/DebugCommunicator.h"
 
 #include "WebotsCommunicator.h"
 #include <list>
@@ -29,7 +27,7 @@ public:
 
   virtual BidirectionalCommunicator& getGameControllerComm();
   virtual BidirectionalCommunicator& getTeamComm();
-  virtual DebugCommunicator& getDebugComm();
+  //virtual DebugCommunicator& getDebugComm();
 
   void receiveMessages();
 
@@ -37,7 +35,7 @@ private:
   WebotsCommunicator gameControllerComm;
   WebotsCommunicator teamComm;
 
-  DebugCommunicator debugComm;
+  //DebugCommunicator debugComm;
 
   WbDeviceTag receiveTag;
 };

@@ -5,12 +5,15 @@
  * Created on 4. März 2009, 23:42
  */
 
-#include "Debug/DebugCommunicator.h"
+//#include "Debug/DebugCommunicator.h"
 #include "CommunicationCollectionImpl.h"
 #include <string.h>
 
+#include "Tools/Communication/RoboCupGameControlData.h"
+#include "Tools/Communication/WoboCupGameControlData.h"
+
 WebotsCommunicationCollection::WebotsCommunicationCollection(unsigned short port)
-  : debugComm(port)
+ /* : debugComm(port) */
 {
   receiveTag = wb_robot_get_device("receiver");
   wb_receiver_enable(receiveTag, 500);
@@ -27,10 +30,10 @@ BidirectionalCommunicator& WebotsCommunicationCollection::getTeamComm()
   return teamComm;
 }
 
-DebugCommunicator& WebotsCommunicationCollection::getDebugComm()
-{
-  return debugComm;
-}  
+//DebugCommunicator& WebotsCommunicationCollection::getDebugComm()
+//{
+//  return debugComm;
+//}
 
 WebotsCommunicationCollection::~WebotsCommunicationCollection()
 {
