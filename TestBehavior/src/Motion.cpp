@@ -13,7 +13,6 @@
 
 Motion::Motion()
 {
-  Platform::getInstance().thePlatformInterface->registerMotionCallback(this);
 }
 
 void Motion::call()

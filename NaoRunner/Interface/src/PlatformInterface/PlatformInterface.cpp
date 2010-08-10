@@ -61,11 +61,13 @@ void PlatformInterface::updateData()
 void PlatformInterface::registerMotionCallback(Callable* callback)
 {
   motionCallback = callback;
+  std::cout << "Registered motion callback " << callback << std::endl;
 }
 
 void PlatformInterface::registerCognitionCallback(Callable* callback)
 {
   cognitionCallback = callback;
+  std::cout << "Registered cognition callback " << callback << std::endl;
 }
 
 

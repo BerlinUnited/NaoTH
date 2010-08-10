@@ -26,9 +26,7 @@ int main(int argc, char** argv)
 
   theWebotsController.init();
 
-  
   theWebotsController.main();
-
 
   return 0;
 }//end main
