@@ -15,7 +15,6 @@
           <in>ButtonData.h</in>
           <in>CameraInfo.h</in>
           <in>CameraSettings.h</in>
-          <in>ConfigPathInfo.h</in>
           <in>FSRData.h</in>
           <in>FrameInfo.h</in>
           <in>GyrometerData.h</in>
@@ -32,14 +31,10 @@
         <df name="Communication">
           <in>BidirectionalCommunicator.h</in>
           <in>CommunicationCollection.h</in>
-        </df>
-        <df name="Config">
-          <in>Config.h</in>
-          <in>ConfigFileParser.h</in>
-          <in>ConfigLoader.h</in>
-          <in>Scanner.h</in>
+          <in>RoboCupGameControlData.h</in>
         </df>
         <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+          <in>DestructureSentinel.h</in>
           <in>Printable.h</in>
           <in>Singleton.h</in>
         </df>
@@ -49,6 +44,7 @@
           <in>ParameterList.h</in>
         </df>
         <df name="ImageProcessing">
+          <in>ColorModelConversions.h</in>
           <in>ImagePrimitives.h</in>
         </df>
         <df name="Math">
@@ -95,12 +91,6 @@
         </df>
       </df>
       <df name="Tools">
-        <df name="Config">
-          <in>Config.cpp</in>
-          <in>ConfigFileParser.cpp</in>
-          <in>ConfigLoader.cpp</in>
-          <in>Scanner.cpp</in>
-        </df>
         <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
           <in>DestructureSentinel.h</in>
           <in>Printable.cpp</in>

@@ -1,10 +1,6 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/ConfigPathInfo.h"
+//#include "Representations/Infrastructure/ConfigPathInfo.h"
 #include "PlatformInterface/Platform.h"
-
-double InertialSensorData::offset[InertialSensorData::numOfInertialSensor];
-int InertialSensorData::calibrateNum = 0;
-string InertialSensorData::configFileName = "InertialSensorData.cfg";
 
 InertialSensorData::InertialSensorData()
 {
@@ -25,37 +21,12 @@ InertialSensorData::~InertialSensorData()
 
 void InertialSensorData::init()
 {
-  configFileName = Platform::getInstance().theConfigPathInfo.inertialsensor_parameter + "/" + Platform::getInstance().theHardwareIdentity + ".prm";
-  Config cfg = ConfigLoader::loadConfig(configFileName.c_str());
-  cfg.get("offset[X]", offset[X]);
-  cfg.get("offset[Y]", offset[Y]);
+//  configFileName = Platform::getInstance().theConfigPathInfo.inertialsensor_parameter + "/" + Platform::getInstance().theHardwareIdentity + ".prm";
+//  Config cfg = ConfigLoader::loadConfig(configFileName.c_str());
+//  cfg.get("offset[X]", offset[X]);
+//  cfg.get("offset[Y]", offset[Y]);
 }
 
-void InertialSensorData::calibrate()
-{
-    for(int i=0; i<numOfInertialSensor; i++){
-        offset[i] = (offset[i]*calibrateNum -data[i]) / (calibrateNum+1);
-    }
-    calibrateNum++;
-}
-
-void InertialSensorData::stopCalibrating()
-{
-  cout<< "[InertialSensorData] : save to configure file " << configFileName;
-  calibrateNum = 0;
-  Config cfg;
-  cfg.set("offset[X]",offset[X]);
-  cfg.set("offset[Y]",offset[Y]);
-  ofstream of(configFileName.c_str());
-  if (of)
-  {
-    of << cfg;
-    cout << " ok"<<endl;
-  } else
-  {
-    cout << " failed" << endl;
-  }
-}
 
 string InertialSensorData::getInertialSensorName(InertialSensorID angle)
 {

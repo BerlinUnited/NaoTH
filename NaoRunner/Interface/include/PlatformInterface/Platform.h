@@ -17,7 +17,7 @@
 #include "PlatformInterface.h"
 #include "Tools/DataStructures/Singleton.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/ConfigPathInfo.h"
+//#include "Representations/Infrastructure/ConfigPathInfo.h"
 #include "Tools/Communication/CommunicationCollection.h"
 
 class Platform : public Singleton<Platform>
@@ -33,7 +33,7 @@ private:
     _bodyNickName("Uninitialized"),
     _platformInterface(NULL),
     _commCollection(NULL),
-    theConfigPathInfo(_configPathInfo),
+    //theConfigPathInfo(_configPathInfo),
     theHardwareIdentity(_hardwareIdentity),
     theBodyID(_bodyID),
     theBodyNickName(_bodyNickName),
@@ -45,7 +45,7 @@ private:
   string _hardwareIdentity;
   string _bodyID;
   string _bodyNickName;
-  ConfigPathInfo _configPathInfo;
+  //ConfigPathInfo _configPathInfo;
   PlatformInterface* _platformInterface;
   CommunicationCollection* _commCollection;
 
@@ -92,18 +92,18 @@ public:
     _hardwareIdentity = _interface->getHardwareIdentity();
     _bodyID = _interface->getBodyID();
     _bodyNickName = _interface->getBodyNickName();
-    _configPathInfo.loadPathInfo("Config/"+_interface->getName()+"_init.cfg");
-    // init the camera info
-    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
-    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
+//    _configPathInfo.loadPathInfo("Config/"+_interface->getName()+"_init.cfg");
+//    // init the camera info
+//    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
+//    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
   }
 
-  const ConfigPathInfo& theConfigPathInfo;
+//  const ConfigPathInfo& theConfigPathInfo;
   const string& theHardwareIdentity; // the string to indentify different robots
   const string& theBodyID;
   const string& theBodyNickName;
   CameraInfoParameter theCameraInfo;
-  Config theMassConfig;
+//  Config theMassConfig;
 
   PlatformInterface* const & thePlatformInterface;
   CommunicationCollection* const & commCollection;

@@ -10,7 +10,6 @@
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"
-#include "Tools/Debug/ParameterList.h"
 
 class CameraInfo
 {
@@ -77,7 +76,7 @@ public:
 
 };
 
-class CameraInfoParameter : public CameraInfo, public ParameterList
+class CameraInfoParameter : public CameraInfo
 {
 private:
   struct CameraTransInfo
@@ -98,43 +97,18 @@ private:
   }
 
 public:
-  CameraInfoParameter():ParameterList("CameraInfo")
+  CameraInfoParameter()
   {
-    PARAMETER_REGISTER(resolutionWidth) =320;
-    PARAMETER_REGISTER(resolutionHeight) = 240;
-    PARAMETER_REGISTER(openingAngleDiagonal) = 58;
-    PARAMETER_REGISTER(cameraRollOffset) = 0;
-    PARAMETER_REGISTER(cameraTiltOffset) = 0;
-
-    PARAMETER_REGISTER(cameraTrans[Top].offset.x) = 53.9;
-    PARAMETER_REGISTER(cameraTrans[Top].offset.y) = 0;
-    PARAMETER_REGISTER(cameraTrans[Top].offset.z) = 67.9;
-    PARAMETER_REGISTER(cameraTrans[Top].rotationY) = 0;
-    PARAMETER_REGISTER(cameraTrans[Bottom].offset.x) = 48.8;
-    PARAMETER_REGISTER(cameraTrans[Bottom].offset.y) = 0;
-    PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 23.81;
-    PARAMETER_REGISTER(cameraTrans[Bottom].rotationY) = 40.0;
-
     setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
     setCameraTrans();
   }
 
   void init(const std::string& filename)
   {
-    setConfigFile(filename);
-    loadFromConfigFile();
     setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
     setCameraTrans();
   }//end init
   
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::stringstream &outstream){
-    ParameterList::executeDebugCommand(command, arguments, outstream);
-    setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
-    setCameraTrans();
-  }//end executeDebugCommand
-
   double openingAngleDiagonal;
 
   // offset to the neck joint

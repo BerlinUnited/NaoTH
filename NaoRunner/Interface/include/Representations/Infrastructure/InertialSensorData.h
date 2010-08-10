@@ -38,18 +38,12 @@ public:
   }
 
   void init();
-
-  void calibrate();
-  void stopCalibrating();
   
   static string getInertialSensorName(InertialSensorID angle);
 
   virtual void print(ostream& stream) const;
 
 private:
-  // member for calibration
-  static int calibrateNum;
-  static string configFileName;
 };
 
 

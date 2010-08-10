@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "Tools/Debug/ParameterList.h"
+//#include "Tools/Debug/ParameterList.h"
 
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -66,7 +66,7 @@ public:
   virtual ~CurrentCameraSettings() {};
 };
 
-class CameraSettingsRequest : public ParameterList,
+class CameraSettingsRequest : /* public ParameterList, */
   public CameraSettings, public PlatformInterchangeable
 {
 public:

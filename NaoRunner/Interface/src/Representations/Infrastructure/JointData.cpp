@@ -3,7 +3,7 @@
 
 #include "Representations/Infrastructure/JointData.h"
 #include "Tools/Math/Common.h"
-#include "Tools/Config/ConfigLoader.h"
+//#include "Tools/Config/ConfigLoader.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 double JointData::min[JointData::numOfJoint];
@@ -20,29 +20,29 @@ JointData::JointData()
 
 void JointData::init(const std::string& filename)
 {
-  Config cfg = ConfigLoader::loadConfig(filename.c_str());
-
-  for (int i = 0; i < JointData::numOfJoint; i++)
-  {
-    double maxDeg = 0;
-    string jointName = JointData::getJointName((JointData::JointID)i);
-    if (cfg.get(jointName + "Max", maxDeg))
-    {
-      max[i] = Math::fromDegrees(maxDeg);
-    } else
-    {
-      THROW("JointData: can not get " + jointName + " max angle")
-    }
-
-    double minDeg = 0;
-    if (cfg.get(jointName + "Min", minDeg))
-    {
-      min[i] = Math::fromDegrees(minDeg);
-    } else
-    {
-      THROW("JointData: can not get " + jointName + " min angle")
-    }
-  }
+//  Config cfg = ConfigLoader::loadConfig(filename.c_str());
+//
+//  for (int i = 0; i < JointData::numOfJoint; i++)
+//  {
+//    double maxDeg = 0;
+//    string jointName = JointData::getJointName((JointData::JointID)i);
+//    if (cfg.get(jointName + "Max", maxDeg))
+//    {
+//      max[i] = Math::fromDegrees(maxDeg);
+//    } else
+//    {
+//      THROW("JointData: can not get " + jointName + " max angle")
+//    }
+//
+//    double minDeg = 0;
+//    if (cfg.get(jointName + "Min", minDeg))
+//    {
+//      min[i] = Math::fromDegrees(minDeg);
+//    } else
+//    {
+//      THROW("JointData: can not get " + jointName + " min angle")
+//    }
+//  }
 }
 
 string JointData::getJointName(JointID joint)
