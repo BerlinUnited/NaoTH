@@ -1,2 +1,9 @@
 ./Projects/XabslEditor
 .dep.inc
+private
+./NaoRunner/Makefile
+./NaoRunner/Interface/Makefile
+dist
+obj
+Makefile-Default.mk
+Package-Default.bash
