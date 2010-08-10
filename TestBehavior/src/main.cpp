@@ -21,8 +21,7 @@ int main(int argc, char** argv)
   Cognition theCognition;
   Motion theMotion;
 
-  theWebotsController.registerCognitionCallback(&theCognition);
-  theWebotsController.registerMotionCallback(&theMotion);
+  theWebotsController.registerCallbacks(&theMotion, &theCognition);
 
   theWebotsController.init();
 

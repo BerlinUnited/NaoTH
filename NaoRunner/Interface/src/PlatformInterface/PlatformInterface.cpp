@@ -58,18 +58,11 @@ void PlatformInterface::updateData()
   
 }
 
-void PlatformInterface::registerMotionCallback(Callable* callback)
+void PlatformInterface::registerCallbacks(Callable* motionCallback, Callable* cognitionCallback)
 {
-  motionCallback = callback;
-  std::cout << "Registered motion callback " << callback << std::endl;
+  this->motionCallback = motionCallback;
+  this->cognitionCallback = cognitionCallback;
 }
-
-void PlatformInterface::registerCognitionCallback(Callable* callback)
-{
-  cognitionCallback = callback;
-  std::cout << "Registered cognition callback " << callback << std::endl;
-}
-
 
 #define REG_INPUT(P,T) \
   if (dynamic_cast<T*>(data)!=NULL) \

@@ -52,8 +52,13 @@ public:
 
   //////// register own main loop callbacks /////////
 
-  virtual void registerMotionCallback(Callable* callback);
-  virtual void registerCognitionCallback(Callable* callback);
+  /**
+   * Register callback objects for this platform interface that are regulary called
+   * in the sense-think-act cycle.
+   * @param motionCallback The callback object for the motion cycle or NULL if not active.
+   * @param cognitionCallback The callback object for the cognition cycle or NULL if not active.
+   */
+  virtual void registerCallbacks(Callable* motionCallback, Callable* cognitionCallback);
 
   /////////////////////// get ///////////////////////
   unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
