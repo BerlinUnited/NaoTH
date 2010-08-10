@@ -11,6 +11,7 @@
 #include "WebotsController.h"
 #include "CommunicationCollectionImpl.h"
 #include "PlatformInterface/Platform.h"
+#include "Tools/ImageProcessing/ColorModelConversions.h"
 
 int main() {
   WebotsController theWebotsController;
@@ -101,7 +102,7 @@ void WebotsController::init()
   // get player-info from webots
   std::string robotName(wb_robot_get_name());
 
-  if(robotName.substr(0,3) = "blue")
+  if(robotName.substr(0,3) == "blue")
     isBlue = true;
 
   if(isBlue)
