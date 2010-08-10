@@ -9,8 +9,11 @@
 
 #include <iostream>
 
+#include <PlatformInterface/Platform.h>
+
 Motion::Motion()
 {
+  Platform::getInstance().thePlatformInterface->registerMotionCallback(this);
 }
 
 void Motion::call()

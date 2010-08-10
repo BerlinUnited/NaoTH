@@ -7,10 +7,13 @@
 
 #include "Cognition.h"
 
+#include <PlatformInterface/Platform.h>
+
 #include <iostream>
 
 Cognition::Cognition()
 {
+  Platform::getInstance().thePlatformInterface->registerCognitionCallback(this);
 }
 
 void Cognition::call()

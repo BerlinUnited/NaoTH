@@ -10,7 +10,7 @@
 
 #include <PlatformInterface/Callable.h>
 
-class Motion
+class Motion : public Callable
 {
 public:
   Motion();

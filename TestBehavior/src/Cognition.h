@@ -8,7 +8,9 @@
 #ifndef COGNITION_H
 #define	COGNITION_H
 
-class Cognition
+#include <PlatformInterface/Callable.h>
+
+class Cognition : public Callable
 {
 public:
   Cognition();
