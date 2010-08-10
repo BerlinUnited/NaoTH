@@ -1,9 +1,9 @@
 NaoRunner:
   - Interface somehow implemented
-  - work on Webots controller started  
+  - work on Webots controller started, using the new callback mechanism  
 
 TestBehavior:
- - nothing done yet
+ - implemented a dummy controller to test the Webots part of NaoRunner
 
 ModuleFramework:
  - nothing done yet
