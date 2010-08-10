@@ -1,4 +1,4 @@
-#include "BatteryData.h"
+#include <Representations/Infrastructure/BatteryData.h>
 
 BatteryData::BatteryData():
   charge(0.0)

@@ -1,4 +1,4 @@
-#include "InertialSensorData.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
 #include "ConfigPathInfo.h"
 #include "PlatformInterface/Platform.h"
 #include "Messages/LiteStreams.h"

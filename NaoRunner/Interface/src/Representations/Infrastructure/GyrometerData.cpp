@@ -1,4 +1,4 @@
-#include "GyrometerData.h"
+#include <Representations/Infrastructure/GyrometerData.h>
 
 #include "Messages/LiteStreams.h"
 

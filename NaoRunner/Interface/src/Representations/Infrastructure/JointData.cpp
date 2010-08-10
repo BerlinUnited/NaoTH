@@ -1,7 +1,7 @@
 
 #include <iterator>
 
-#include "JointData.h"
+#include <Representations/Infrastructure/JointData.h>
 #include "Tools/Math/Common.h"
 #include "Tools/Config/ConfigLoader.h"
 #include "Messages/LiteStreams.h"

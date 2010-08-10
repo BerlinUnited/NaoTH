@@ -1,4 +1,4 @@
-#include "AccelerometerData.h"
+#include <Representations/Infrastructure/AccelerometerData.h>
 #include "Messages/LiteStreams.h"
 
 AccelerometerData::AccelerometerData()

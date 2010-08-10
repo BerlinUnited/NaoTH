@@ -1,5 +1,5 @@
 
-#include "Tools/ModuleFramework/Representation.h"
+#include <Representations/Infrastructure/Tools/ModuleFramework/Representation.h>
 
 #include "LEDData.h"
 

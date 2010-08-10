@@ -9,7 +9,7 @@
 #include <string>
 #include <google/protobuf/io/coded_stream.h>
 
-#include "Image.h"
+#include <Representations/Infrastructure/Image.h>
 #include "Messages/naothMessages.pb.h"
 #include "PlatformInterface/Platform.h"
 #include "Messages/LiteStreams.h"
