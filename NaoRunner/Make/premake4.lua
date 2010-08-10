@@ -6,4 +6,7 @@ solution "NaoRunner"
   platforms {"Native"}
   configurations {"Release","Debug"}
   
-  include "Interface/"
+  -- store the makefiles the Make/ directory
+  location "."
+  
+  include "../Interface/"

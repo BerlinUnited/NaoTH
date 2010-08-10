@@ -1,8 +1,8 @@
 ./Projects/XabslEditor
 .dep.inc
 private
-./NaoRunner/Makefile
-./NaoRunner/Interface/Makefile
+./NaoRunner/Make/Makefile
+./NaoRunner/Make/*.make
 dist
 obj
 Makefile-Default.mk

@@ -7,3 +7,4 @@ project "PlatformInterface"
   includedirs {"include/", "src/"}
   
   files {"src/**.cpp"}
+  

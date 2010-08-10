@@ -11,7 +11,8 @@
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>Interface/src</sourceRootElem>
+                <sourceRootElem>../Interface/src</sourceRootElem>
+                <sourceRootElem>../Interface/include</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>Default</confElem>

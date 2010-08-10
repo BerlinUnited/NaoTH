@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="69">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <df name="include" root="../Interface/include">
+      <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
+        <in>Platform.h</in>
+        <in>PlatformInterchangeable.h</in>
+        <in>PlatformInterface.h</in>
+      </df>
+      <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+          <in>AccelerometerData.h</in>
+          <in>BatteryData.h</in>
+          <in>BumperData.h</in>
+          <in>ButtonData.h</in>
+          <in>CameraSettings.h</in>
+          <in>FSRData.h</in>
+          <in>FrameInfo.h</in>
+          <in>GyrometerData.h</in>
+          <in>IRData.h</in>
+          <in>Image.h</in>
+          <in>InertialSensorData.h</in>
+          <in>JointData.h</in>
+          <in>LEDData.h</in>
+          <in>SoundData.h</in>
+          <in>UltraSoundData.h</in>
+        </df>
+      </df>
+    </df>
+    <df name="src" root="../Interface/src">
+      <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
+        <in>PlatformInterface.cpp</in>
+      </df>
+      <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+          <in>AccelerometerData.cpp</in>
+          <in>BatteryData.cpp</in>
+          <in>BumperData.cpp</in>
+          <in>ButtonData.cpp</in>
+          <in>CameraSettings.cpp</in>
+          <in>FSRData.cpp</in>
+          <in>GyrometerData.cpp</in>
+          <in>IRData.cpp</in>
+          <in>Image.cpp</in>
+          <in>InertialSensorData.cpp</in>
+          <in>JointData.cpp</in>
+          <in>LEDData.cpp</in>
+          <in>SoundData.cpp</in>
+          <in>UltraSoundData.cpp</in>
+        </df>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>NaoRunner-Makefile.mk</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../Interface/src</Elem>
+    <Elem>../Interface/include</Elem>
+  </sourceRootList>
+  <projectmakefile>NaoRunner-Makefile.mk</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean &amp;&amp; premake4 clean</cleanCommand>
+          <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>../Interface/include</pElem>
+            </incDir>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <packaging>
+        <packType>Tar</packType>
+        <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/NaoRunner.tar</output>
+        <packFileList>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+        </packFileList>
+      </packaging>
+    </conf>
+  </confs>
+</configurationDescriptor>
