@@ -15,6 +15,7 @@
 #endif // undef WIN32
 
 #include "PlatformInterface.h"
+#include "Tools/DataStructures/Singleton.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/ConfigPathInfo.h"
 #include "Tools/Communication/CommunicationCollection.h"

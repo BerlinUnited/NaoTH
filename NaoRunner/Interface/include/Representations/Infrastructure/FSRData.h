@@ -11,16 +11,13 @@
 
 #include <string>
 
-#include "Tools/ModuleFramework/Representation.h"
 #include "Tools/Math/Vector3.h"
-#include "Messages/naothMessages.pb.h"
-#include "Tools/DataStructures/Streamable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 using namespace std;
 
-class FSRData : public Streamable, public Printable, public PlatformInterchangeable
+class FSRData : public Printable, public PlatformInterchangeable
 {
 public:
   enum FSRID
@@ -51,12 +48,9 @@ public:
   ~FSRData();
   static string getFSRName(FSRID fsr);
 
-  virtual void toDataStream(ostream& stream) const;
-  virtual void fromDataStream(istream& stream);
   virtual void print(ostream& stream) const;
 };
 
-REPRESENTATION_INTERFACE(FSRData);
 
 #endif	/* _FSRDATA_H */
 

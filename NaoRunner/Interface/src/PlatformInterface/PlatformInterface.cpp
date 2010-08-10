@@ -2,7 +2,7 @@
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  */
 
-#include "PlatformInterface.h"
+#include "PlatformInterface/PlatformInterface.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Tools/NaoTime.h"

@@ -9,7 +9,6 @@
 #define	_SOUNDDATA_H
 
 #include <string>
-#include "Tools/ModuleFramework/Representation.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
 using namespace std;
@@ -32,6 +31,5 @@ public:
   ~SoundData();
 };
 
-REPRESENTATION_INTERFACE(SoundData);
 #endif	/* _SOUNDDATA_H */
 

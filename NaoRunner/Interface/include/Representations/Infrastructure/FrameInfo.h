@@ -7,17 +7,14 @@
 #ifndef __FrameInfo_h_
 #define __FrameInfo_h_
 
-#include "Tools/ModuleFramework/Representation.h"
+#include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
-
-#include "Messages/representations.pb.h"
-#include "Messages/LiteStreams.h"
 
 /**
 * @class FrameInfo
 * A class that contains information on the current frame.
 */
-class FrameInfo : public Printable, public PlatformInterchangeable, public Streamable
+class FrameInfo : public Printable, public PlatformInterchangeable
 {
 public:
   /**
@@ -53,33 +50,12 @@ public:
 //  float motion_fps; /** Frames per second of motion */
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << "frameNumber=" << frameNumber << endl;
     stream << "time=" << time << endl;
   }
 
-  virtual void fromDataStream(istream& stream)
-  {
-    naothmessages::FrameInfo f;
-    google::protobuf::io::IstreamInputStreamLite buf(&stream);
-    f.ParseFromZeroCopyStream(&buf);
-
-    time = f.time();
-    frameNumber = f.framenumber();
-  }
-
-  virtual void toDataStream(ostream& stream) const
-  {
-    naothmessages::FrameInfo f;
-    f.set_framenumber(frameNumber);
-    f.set_time(time);
-
-    google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-    f.SerializePartialToZeroCopyStream(&buf);
-  }
+  
 };
-
-REPRESENTATION_INTERFACE(FrameInfo);
-
 #endif //__FrameInfo_h_

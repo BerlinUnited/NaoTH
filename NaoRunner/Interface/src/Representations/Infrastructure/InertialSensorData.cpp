@@ -1,7 +1,6 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "ConfigPathInfo.h"
+#include "Representations/Infrastructure/ConfigPathInfo.h"
 #include "PlatformInterface/Platform.h"
-#include "Messages/LiteStreams.h"
 
 double InertialSensorData::offset[InertialSensorData::numOfInertialSensor];
 int InertialSensorData::calibrateNum = 0;
@@ -72,29 +71,6 @@ string InertialSensorData::getInertialSensorName(InertialSensorID angle)
   }
 }//end getInertialSensorName
 
-void InertialSensorData::toDataStream(ostream& stream) const
-{
-  naothmessages::DoubleVector msg;
-  for(size_t i=0; i<numOfInertialSensor; i++)
-  {
-    msg.add_v(data[i]);
-    msg.add_v(offset[i]);
-  }
-  google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-  msg.SerializeToZeroCopyStream(&buf);
-}
-
-void InertialSensorData::fromDataStream(istream& stream)
-{
-  naothmessages::DoubleVector msg;
-  google::protobuf::io::IstreamInputStreamLite buf(&stream);
-  msg.ParseFromZeroCopyStream(&buf);
-  for(int i=0; i<numOfInertialSensor; i++)
-  {
-    data[i] = msg.v(i*2);
-    offset[i] = msg.v(i*2+1);
-  }
-}
 
 void InertialSensorData::print(ostream& stream) const
 {

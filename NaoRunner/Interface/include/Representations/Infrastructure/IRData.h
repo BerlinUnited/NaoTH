@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "Tools/ModuleFramework/Representation.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
@@ -73,7 +72,5 @@ public:
   virtual void print(ostream& stream) const;
 };
 
-REPRESENTATION_INTERFACE(IRReceiveData);
-REPRESENTATION_INTERFACE(IRSendData);
 #endif	/* _IRDATA_H */
 

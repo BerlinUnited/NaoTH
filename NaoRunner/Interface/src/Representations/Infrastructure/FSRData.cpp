@@ -1,6 +1,5 @@
 #include "Representations/Infrastructure/FSRData.h"
 
-#include "Messages/LiteStreams.h"
 
 const Vector3<double> FSRData::offset[FSRData::numOfFSR] =
 {Vector3<double>(70.1,30 ,-46),
@@ -51,53 +50,6 @@ string FSRData::getFSRName(FSRID fsr)
       return string("Unknown FSR");
   }//end switch
 }//end getName
-
-void FSRData::toDataStream(ostream& stream) const
-{
-  naothmessages::FSRData msg;
-  for(size_t i=0; i<numOfFSR; i++)
-  {
-    msg.add_force(force[i]);
-    msg.add_data(data[i]);
-    msg.add_valid(valid[i]);
-  }
-
-  google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-  msg.SerializeToZeroCopyStream(&buf);
-}//end toDataStream
-
-void FSRData::fromDataStream(istream& stream)
-{
-  // get length of data
-  stream.seekg (0, ios::end);
-  int length = stream.tellg();
-  stream.seekg (0, ios::beg);
-
-  
-  google::protobuf::io::IstreamInputStreamLite buf(&stream);
-
-  if ( length == 144 )
-  {
-    naothmessages::DoubleVector msg;
-    msg.ParseFromZeroCopyStream(&buf);
-    for (int i = 0; i < numOfFSR; i++)
-    {
-      force[i] = msg.v(i*2);
-      data[i] = msg.v(i*2+1);
-    }
-  }
-  else
-  {
-    naothmessages::FSRData msg;
-    msg.ParseFromZeroCopyStream(&buf);
-    for (int i = 0; i < numOfFSR; i++)
-    {
-      force[i] = msg.force(i);
-      data[i] = msg.data(i);
-      valid[i] = msg.valid(i);
-    }
-  }
-}//end fromDataStream
 
 void FSRData::print(ostream& stream) const
 {

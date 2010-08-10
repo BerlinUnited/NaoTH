@@ -13,13 +13,10 @@
 
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector3.h"
-#include "Tools/ImageProcessing/ImageDrawings.h"
 
-#include "Tools/ModuleFramework/Representation.h"
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/ImageProcessing/ImagePrimitives.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
+#include "Tools/ImageProcessing/ImagePrimitives.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 
@@ -28,7 +25,7 @@
 /**
  * Platform independend definition of an image class
  */
-class Image: public DrawingCanvas, public Streamable, public Printable, public PlatformInterchangeable
+class Image: public Printable, public PlatformInterchangeable
 {
 
 public:
@@ -64,8 +61,6 @@ public:
   CameraInfo cameraInfo;
 
   virtual void print(ostream& stream) const;
-  virtual void toDataStream(ostream& stream) const;
-  virtual void fromDataStream(istream& stream);
   
 
   virtual void drawPoint(
@@ -151,6 +146,5 @@ private:
 
 };
 
-REPRESENTATION_INTERFACE(Image);
 
 #endif //__Image_h_

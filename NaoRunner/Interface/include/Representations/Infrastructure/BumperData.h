@@ -8,7 +8,6 @@
 #ifndef _BUMPERDATA_H
 #define	_BUMPERDATA_H
 
-#include "Tools/ModuleFramework/Representation.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
@@ -37,6 +36,5 @@ private:
 
 };
 
-REPRESENTATION_INTERFACE(BumperData);
 
 #endif	/* _BUMPERDATA_H */

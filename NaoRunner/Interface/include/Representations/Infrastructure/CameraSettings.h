@@ -13,7 +13,6 @@
 #include "Tools/Debug/ParameterList.h"
 
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/ModuleFramework/Representation.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
 using namespace std;
@@ -78,11 +77,6 @@ public:
   bool queryCameraSettings;
 
 };
-
-REPRESENTATION_INTERFACE(CurrentCameraSettings);
-REPRESENTATION_INTERFACE(CameraSettingsRequest);
-
-
 
 
 #endif	/* _CAMERASETTINGS_H */

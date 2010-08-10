@@ -4,7 +4,7 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Tools/Math/Common.h"
 #include "Tools/Config/ConfigLoader.h"
-#include "Messages/LiteStreams.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 double JointData::min[JointData::numOfJoint];
 double JointData::max[JointData::numOfJoint];
@@ -133,36 +133,7 @@ void JointData::mirror()
   JointData tmp = *this;
   mirrorFrom(tmp);
 }
-void JointData::fillMessage(naothmessages::JointData* message) const
-{
-  for(int i=0; i < JointData::numOfJoint; i++)
-  {
-    message->add_position(position[i]);
-    message->add_hardness(hardness[i]);
-    message->add_dp(dp[i]);
-    message->add_ddp(ddp[i]);
-  }
-}
 
-void JointData::flushMessage(const naothmessages::JointData& message)
-{
-  for(int i=0; i < message.position().size() && i < JointData::numOfJoint; i++)
-  {
-    position[i] = message.position(i);
-  }
-  for(int i=0; i < message.hardness().size() && i < JointData::numOfJoint; i++)
-  {
-    hardness[i] = message.hardness(i);
-  }
-  for(int i=0; i < message.dp().size() && i < JointData::numOfJoint; i++)
-  {
-    dp[i] = message.dp(i);
-  }
-  for(int i=0; i < message.ddp().size() && i < JointData::numOfJoint; i++)
-  {
-    ddp[i] = message.ddp(i);
-  }
-}
 
 void JointData::clamp(JointID id)
 {
@@ -199,42 +170,6 @@ SensorJointData::SensorJointData()
   }//end for
 }
 
-void SensorJointData::toDataStream(ostream& stream) const
-{
-  naothmessages::SensorJointData message;
-  JointData::fillMessage(message.mutable_jointdata());
-
-  for(int i=0; i < JointData::numOfJoint; i++)
-  {
-    message.add_electriccurrent(electricCurrent[i]);
-    message.add_temperature(temperature[i]);
-  }
-
-  google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-  message.SerializeToZeroCopyStream(&buf);
-
-}//end toDataStream
-
-void SensorJointData::fromDataStream(istream& stream)
-{
-  naothmessages::SensorJointData message;
-  google::protobuf::io::IstreamInputStreamLite buf(&stream);
-  message.ParseFromZeroCopyStream(&buf);
-
-  for (int i = 0; i < JointData::numOfJoint && i < message.electriccurrent_size(); i++)
-  {
-    electricCurrent[i] = message.electriccurrent(i);
-  }
-
-  for (int i = 0; i < JointData::numOfJoint && i < message.temperature_size(); i++)
-  {
-    temperature[i] = message.temperature(i);
-  }
-
-  JointData::flushMessage(message.jointdata());
-
-}//end fromDataStream
-
 void SensorJointData::print(ostream& stream) const
 {
   stream << "Joint [pos(deg), hardness, temperature,current]" << endl;
@@ -261,23 +196,6 @@ MotorJointData::MotorJointData()
     hardness[i] = 0.0;
   }//end for
 }
-
-void MotorJointData::toDataStream(ostream& stream) const
-{
-  naothmessages::SensorJointData message;
-  JointData::fillMessage(message.mutable_jointdata());
-  google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-  message.SerializePartialToZeroCopyStream(&buf);
-
-}//end toDataStream
-
-void MotorJointData::fromDataStream(istream& stream)
-{
-  naothmessages::SensorJointData message;
-  google::protobuf::io::IstreamInputStreamLite buf(&stream);
-  message.ParseFromZeroCopyStream(&buf);
-  JointData::flushMessage(message.jointdata());
-}//end fromDataStream
 
 MotorJointData::~MotorJointData()
 {

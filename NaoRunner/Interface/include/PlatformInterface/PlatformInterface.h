@@ -20,7 +20,6 @@
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Representations/Infrastructure/BatteryData.h"
-#include "Representations/Motion/HeadMotionRequest.h"
 #include "PlatformInterchangeable.h"
 
 /*  the platform interface responses for 4 kinds of functionalities:
