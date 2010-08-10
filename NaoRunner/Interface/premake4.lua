@@ -2,9 +2,10 @@ project "Interface"
   kind "StaticLib"
   language "C++"
   
-  targetdir "dist/"
+  targetname "naointerface"
   
   includedirs {"include/", "src/"}
+  
   
   files {"src/**.cpp"}
   
