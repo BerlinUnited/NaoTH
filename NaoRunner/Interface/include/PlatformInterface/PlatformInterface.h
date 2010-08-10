@@ -52,8 +52,7 @@ public:
 
   //////// register own main loop callbacks /////////
 
-  virtual void registerMotionCallback(Callable* callback);
-  virtual void registerCognitionCallback(Callable* callback);
+  virtual void registerCallbacks(Callable* motionCallback, Callable* cognitionCallback);
 
   /////////////////////// get ///////////////////////
   unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
