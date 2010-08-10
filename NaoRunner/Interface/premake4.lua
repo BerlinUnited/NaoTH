@@ -1,4 +1,4 @@
-project "PlatformInterface"
+project "Interface"
   kind "StaticLib"
   language "C++"
   
