@@ -13,6 +13,7 @@
             <sourceRootList>
                 <sourceRootElem>../Interface/src</sourceRootElem>
                 <sourceRootElem>../Interface/include</sourceRootElem>
+                <sourceRootElem>../Webots/WebotsSource</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>Default</confElem>

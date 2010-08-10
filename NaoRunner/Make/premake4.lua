@@ -10,4 +10,4 @@ solution "NaoRunner"
   location "."
   
   include "../Interface/"
-  include "../LogSimulator/"
+  include "../Webots/"

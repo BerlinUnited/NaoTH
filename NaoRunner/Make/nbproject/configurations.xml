@@ -13,7 +13,9 @@
           <in>BatteryData.h</in>
           <in>BumperData.h</in>
           <in>ButtonData.h</in>
+          <in>CameraInfo.h</in>
           <in>CameraSettings.h</in>
+          <in>ConfigPathInfo.h</in>
           <in>FSRData.h</in>
           <in>FrameInfo.h</in>
           <in>GyrometerData.h</in>
@@ -27,9 +29,47 @@
         </df>
       </df>
       <df name="Tools">
+        <df name="Communication">
+          <in>BidirectionalCommunicator.h</in>
+          <in>CommunicationCollection.h</in>
+        </df>
+        <df name="Config">
+          <in>Config.h</in>
+          <in>ConfigFileParser.h</in>
+          <in>ConfigLoader.h</in>
+          <in>Scanner.h</in>
+        </df>
         <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
           <in>Printable.h</in>
+          <in>Singleton.h</in>
         </df>
+        <df name="Debug">
+          <in>DebugCommandExecutor.h</in>
+          <in>NaoTHAssert.h</in>
+          <in>ParameterList.h</in>
+        </df>
+        <df name="ImageProcessing">
+          <in>ImagePrimitives.h</in>
+        </df>
+        <df name="Math">
+          <in>Common.h</in>
+          <in>ConvexHull.h</in>
+          <in>Line.h</in>
+          <in>MVTools.h</in>
+          <in>Matrix.h</in>
+          <in>Matrix2x2.h</in>
+          <in>Matrix_mxn.h</in>
+          <in>Matrix_nxn.h</in>
+          <in>PointList.h</in>
+          <in>Polygon.h</in>
+          <in>Pose2D.h</in>
+          <in>Pose3D.h</in>
+          <in>Vector2.h</in>
+          <in>Vector3.h</in>
+          <in>Vector_n.h</in>
+        </df>
+        <in>DataConversion.h</in>
+        <in>NaoTime.h</in>
       </df>
     </df>
     <df name="src" root="../Interface/src">
@@ -55,10 +95,33 @@
         </df>
       </df>
       <df name="Tools">
+        <df name="Config">
+          <in>Config.cpp</in>
+          <in>ConfigFileParser.cpp</in>
+          <in>ConfigLoader.cpp</in>
+          <in>Scanner.cpp</in>
+        </df>
         <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+          <in>DestructureSentinel.h</in>
           <in>Printable.cpp</in>
         </df>
+        <df name="Debug">
+          <in>ParameterList.cpp</in>
+        </df>
+        <df name="Math">
+          <in>MVTools.cpp</in>
+          <in>Matrix2x2.cpp</in>
+        </df>
+        <in>NaoTime.cpp</in>
       </df>
+    </df>
+    <df name="WebotsSource" root="../Webots/WebotsSource">
+      <in>CommunicationCollectionImpl.cpp</in>
+      <in>CommunicationCollectionImpl.h</in>
+      <in>WebotsCommunicator.cpp</in>
+      <in>WebotsCommunicator.h</in>
+      <in>WebotsController.cpp</in>
+      <in>WebotsController.h</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -71,6 +134,7 @@
   <sourceRootList>
     <Elem>../Interface/src</Elem>
     <Elem>../Interface/include</Elem>
+    <Elem>../Webots/WebotsSource</Elem>
   </sourceRootList>
   <projectmakefile>NaoRunner-Makefile.mk</projectmakefile>
   <confs>
