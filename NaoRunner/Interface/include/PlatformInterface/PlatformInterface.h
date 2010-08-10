@@ -21,6 +21,7 @@
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 #include "PlatformInterchangeable.h"
+#include "Callable.h"
 
 /*  the platform interface responses for 4 kinds of functionalities:
  * - get sensor data
@@ -49,6 +50,11 @@ public:
 
   virtual bool registerMotionOutput(const PlatformInterchangeable* data, const std::string& name);
 
+  //////// register own main loop callbacks /////////
+
+  virtual void registerMotionCallback(Callable* callback);
+  virtual void registerCognitionCallback(Callable* callback);
+
   /////////////////////// get ///////////////////////
   unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
 
@@ -60,8 +66,8 @@ public:
 
   const string& getName() const { return platformName; }
 
-  /////////////////////// run ///////////////////////
-  virtual void run();
+  //////////////////// update data /////////////////////
+  virtual void updateData();
 
 protected:
     /////////////////////// get ///////////////////////
@@ -144,6 +150,9 @@ protected:
 
     const MotorJointData* theMotorJointData;
   } theMotion;
+
+  Callable* motionCallback;
+  Callable* cognitionCallback;
   
 private:
   unsigned int lastUltraSoundSendTime;

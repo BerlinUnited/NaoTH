@@ -16,7 +16,7 @@ project "Webots"
   
   files{"WebotsSource/**.cpp"}
   
-  links {"Interface"}
+  links {"Interface", "Controller"}
   
   targetname "naowebots"
  
