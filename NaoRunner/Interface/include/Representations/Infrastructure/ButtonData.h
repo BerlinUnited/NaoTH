@@ -8,7 +8,6 @@
 #ifndef _BUTTONDATA_H
 #define	_BUTTONDATA_H
 
-#include "Tools/ModuleFramework/Representation.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
@@ -43,7 +42,6 @@ private:
 
 };
 
-REPRESENTATION_INTERFACE(ButtonData);
 
 #endif	/* _BUTTONDATA_H */
 

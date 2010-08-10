@@ -8,7 +8,6 @@
 #ifndef _LEDDATA_H
 #define	_LEDDATA_H
 
-#include "Tools/ModuleFramework/Representation.h"
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
@@ -86,8 +85,6 @@ public:
   static string getLEDName(MultiLEDID theMultiLEDID);
 
 };
-
-REPRESENTATION_INTERFACE(LEDData);
 
 #endif	/* _LEDDATA_H */
 

@@ -8,11 +8,12 @@
 #ifndef _ULTRASOUNDDATA_H
 #define	_ULTRASOUNDDATA_H
 
-#include "Tools/ModuleFramework/Representation.h"
+#include <ostream>
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
-class UltraSoundData : public PlatformInterchangeable
+
+class UltraSoundData : public PlatformInterchangeable, public Printable
 {
 public:
   enum UltraSoundID
@@ -36,20 +37,20 @@ public:
   unsigned int ultraSoundTimeStep;
 };
 
-class UltraSoundReceiveData: public UltraSoundData, public Printable
+class UltraSoundReceiveData: public UltraSoundData
 {
 public:
    UltraSoundReceiveData();
   virtual ~UltraSoundReceiveData();
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
   void init();
 
   double dataLeft[numOfIRSend];
   double dataRight[numOfIRSend];
 };
 
-class UltraSoundSendData: public UltraSoundData, public Printable
+class UltraSoundSendData: public UltraSoundData
 {
 public:
    UltraSoundSendData();
@@ -57,11 +58,9 @@ public:
 
   void setMode(unsigned int mode, UltraSoundReceiveData& receiver);
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 };
 
-REPRESENTATION_INTERFACE(UltraSoundReceiveData);
-REPRESENTATION_INTERFACE(UltraSoundSendData);
 
 #endif	/* _ULTRASOUNDDATA_H */
 

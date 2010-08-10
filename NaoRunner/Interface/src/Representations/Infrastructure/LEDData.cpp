@@ -1,7 +1,5 @@
 
-#include <Representations/Infrastructure/Tools/ModuleFramework/Representation.h>
-
-#include "LEDData.h"
+#include "Representations/Infrastructure/LEDData.h"
 
 LEDData::LEDData()
 {

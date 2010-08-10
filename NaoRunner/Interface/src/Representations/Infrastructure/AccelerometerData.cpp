@@ -1,5 +1,4 @@
-#include <Representations/Infrastructure/AccelerometerData.h>
-#include "Messages/LiteStreams.h"
+#include "Representations/Infrastructure/AccelerometerData.h"
 
 AccelerometerData::AccelerometerData()
 {
@@ -38,30 +37,6 @@ string AccelerometerData::getAccelerometerName(AccelerometerID acc)
   }//end switch
 }//end getAccelerometerName
 
-void AccelerometerData::toDataStream(ostream& stream) const
-{
-  naothmessages::DoubleVector msg;
-  for(size_t i=0; i<numOfAccelerometer; i++)
-  {
-    msg.add_v(data[i]);
-    msg.add_v(rawData[i]);
-  }
-  google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-  msg.SerializeToZeroCopyStream(&buf);
-}
-
-void AccelerometerData::fromDataStream(istream& stream)
-{
-  naothmessages::DoubleVector msg;
-
-  google::protobuf::io::IstreamInputStreamLite buf(&stream);
-  msg.ParseFromZeroCopyStream(&buf);
-  for(int i=0; i<numOfAccelerometer; i++)
-  {
-    data[i] = msg.v(i*2);
-    rawData[i] = msg.v(i*2+1);
-  }
-}
 
 void AccelerometerData::print(ostream& stream) const
 {

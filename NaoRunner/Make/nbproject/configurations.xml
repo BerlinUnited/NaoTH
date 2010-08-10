@@ -26,6 +26,11 @@
           <in>UltraSoundData.h</in>
         </df>
       </df>
+      <df name="Tools">
+        <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+          <in>Printable.h</in>
+        </df>
+      </df>
     </df>
     <df name="src" root="../Interface/src">
       <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
@@ -47,6 +52,11 @@
           <in>LEDData.cpp</in>
           <in>SoundData.cpp</in>
           <in>UltraSoundData.cpp</in>
+        </df>
+      </df>
+      <df name="Tools">
+        <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+          <in>Printable.cpp</in>
         </df>
       </df>
     </df>

@@ -1,0 +1,102 @@
+/**
+* @file PointList.h
+*
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* Implementation of class PointList
+*/
+
+#ifndef __PointList_H_
+#define __PointList_H_
+
+#include "Tools/Math/Vector2.h"
+
+template<int MAX_NUMBER_OF_POINTS>
+class PointList
+{
+  public:
+    PointList() : length(0)
+    {
+      for(int i=0; i < MAX_NUMBER_OF_POINTS; i++)
+      {
+        points[i].x = 0;
+        points[i].y = 0;
+      }
+    };
+
+    Vector2<int> points[MAX_NUMBER_OF_POINTS]; /**< The points. */
+    int length; /**< The actual number of points. */
+
+    void add(const Vector2<int>& point)
+    {
+      if(length < MAX_NUMBER_OF_POINTS)
+      {
+        points[length++] = point;
+      }//end if
+    }//end add
+
+    void clear()
+    {
+      length = 0;
+    }//end clear
+
+    //removes a point from the list (this destroys any given order in the list)
+    void remove(int index)
+    {
+      if(index<length && index>=0)
+      {
+        points[index]=points[length-1];
+        length--;
+      }
+    }//end remove
+
+    //concatenates another list with the given one
+    void merge(PointList other)
+    {
+      for(int n=0; n<other.length; n++)
+        add(other[n]);
+    }//end merge
+
+    //returns the point in the list closest to the reference point
+    const Vector2<int>& getClosestPoint(const Vector2<int>& reference) const
+    {
+      //if(length==0) return null;
+
+      double minDistance=((Vector2<double>)(points[0]-reference)).abs();
+      int closest = 0;
+
+      for(int i = 1; i < length; i++)
+      {
+        double tmpDist = ((Vector2<double>)(points[i]-reference)).abs();
+        if(tmpDist < minDistance)
+        {
+          minDistance = tmpDist;
+          closest = i;
+        }
+      }//end for
+
+      return points[closest];
+    }//end getClosestPoint
+
+
+    //returns the mean point
+    Vector2<int> getMean()
+    {
+      Vector2<double> mean;
+
+      for(int i = 0; i < length; i++)
+      {
+        mean += points[i];
+      }//end for
+      mean /= (double)length;
+
+      return mean;
+    }//end getMean
+
+
+    // TODO: check if the index i is out of range (i.e. i > length)
+    Vector2<int>& operator[] (int i) { return points[i]; }
+    const Vector2<int>& operator[] (int i) const { return points[i]; }
+};//end class pointList
+
+
+#endif // __PointList_H_

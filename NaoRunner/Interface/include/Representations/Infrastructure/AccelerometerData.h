@@ -9,16 +9,13 @@
 #define	_ACCELEROMETERDATA_H
 
 #include <string>
-#include "Tools/ModuleFramework/Representation.h"
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/Math/Vector3.h"
-#include "Messages/naothMessages.pb.h"
 
 using namespace std;
 
-class AccelerometerData : public Streamable, public Printable, public PlatformInterchangeable
+class AccelerometerData : public Printable, public PlatformInterchangeable
 {
 public:
   enum AccelerometerID
@@ -42,8 +39,6 @@ public:
   virtual void fromDataStream(istream& stream);
   virtual void print(ostream& stream) const;
 };
-
-REPRESENTATION_INTERFACE(AccelerometerData);
 
 #endif	/* _ACCELEROMETERDATA_H */
 

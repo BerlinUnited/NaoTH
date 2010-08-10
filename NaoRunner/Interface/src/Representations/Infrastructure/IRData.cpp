@@ -1,4 +1,4 @@
-#include <Representations/Infrastructure/IRData.h>
+#include "Representations/Infrastructure/IRData.h"
 
 IRSendData::IRSendData() : changed(false)
 {

@@ -1,4 +1,4 @@
-#include <Representations/Infrastructure/CameraSettings.h>
+#include "Representations/Infrastructure/CameraSettings.h"
 #include "PlatformInterface/Platform.h"
 
 CameraSettings::CameraSettings()
