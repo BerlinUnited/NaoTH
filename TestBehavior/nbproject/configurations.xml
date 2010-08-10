@@ -6,6 +6,7 @@
       <in>Cognition.h</in>
       <in>Motion.cpp</in>
       <in>Motion.h</in>
+      <in>main.cpp</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -30,7 +31,7 @@
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
-          <cleanCommand>${MAKE} -f Makefile clean &amp;&amp; premake4 clean</cleanCommand>
+          <cleanCommand>premake4 clean</cleanCommand>
           <executablePath></executablePath>
           <ccTool>
             <incDir>

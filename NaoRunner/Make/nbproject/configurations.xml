@@ -3,6 +3,7 @@
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <df name="include" root="../Interface/include">
       <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
+        <in>Callable.h</in>
         <in>Platform.h</in>
         <in>PlatformInterchangeable.h</in>
         <in>PlatformInterface.h</in>
@@ -41,7 +42,6 @@
         <df name="Debug">
           <in>DebugCommandExecutor.h</in>
           <in>NaoTHAssert.h</in>
-          <in>ParameterList.h</in>
         </df>
         <df name="ImageProcessing">
           <in>ColorModelConversions.h</in>
@@ -95,9 +95,6 @@
           <in>DestructureSentinel.h</in>
           <in>Printable.cpp</in>
         </df>
-        <df name="Debug">
-          <in>ParameterList.cpp</in>
-        </df>
         <df name="Math">
           <in>MVTools.cpp</in>
           <in>Matrix2x2.cpp</in>
@@ -144,7 +141,7 @@
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
-          <cleanCommand>${MAKE} -f Makefile clean &amp;&amp; premake4 clean</cleanCommand>
+          <cleanCommand>premake4 clean</cleanCommand>
           <executablePath></executablePath>
           <ccTool>
             <incDir>
