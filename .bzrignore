@@ -3,6 +3,8 @@
 private
 ./NaoRunner/Make/Makefile
 ./NaoRunner/Make/*.make
+TestBehavior/Makefile
+TestBehavior/*.make
 dist
 obj
 Makefile-Default.mk
