@@ -13,14 +13,6 @@
 #include "PlatformInterface/Platform.h"
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 
-int main() {
-  WebotsController theWebotsController;
-  theWebotsController.init();
-  theWebotsController.main();
-  return 0;
-}//end main
-
-
 WebotsController::WebotsController()
   :PlatformInterface("Webots", 40),
   key(0)

@@ -16,7 +16,7 @@ solution "TestBehavior"
   
   files {"src/**.cpp"}
   
-  includedirs {"src/", "../NaoRunner/Interface/include", "../NaoRunner/Webots/WebotsSource"}
+  includedirs {"src/", "../NaoRunner/Interface/include", "../NaoRunner/Webots/WebotsSource", webotsHome .. "/include/controller/c/"}
 
   libdirs {"../NaoRunner/Make/dist",  webotsHome .. "/lib/"}
   

@@ -13,7 +13,6 @@
 
 Cognition::Cognition()
 {
-  Platform::getInstance().thePlatformInterface->registerCognitionCallback(this);
 }
 
 void Cognition::call()
