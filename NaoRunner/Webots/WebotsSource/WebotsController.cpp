@@ -86,6 +86,7 @@ void WebotsController::get_Devices()
 
 void WebotsController::init()
 {
+  std::cout << "Init WebotsController" << std::endl;
 //  PlayerInfo::TeamColor teamColor = PlayerInfo::red;
   bool isBlue = false;
   unsigned char playerNumber = 0;
@@ -133,10 +134,18 @@ void WebotsController::init()
   {
     cognitionCallback->init();
   }
+  else
+  {
+    std::cerr << "could not initialize COGNITION callback because it was NULL" << std::endl;
+  }
 
   if(motionCallback != NULL)
   {
     motionCallback->init();
+  }
+  else
+  {
+    std::cerr << "could not initialize MOTION callback because it was NULL" << std::endl;
   }
 
 }

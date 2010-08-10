@@ -9,3 +9,4 @@ dist
 obj
 Makefile-Default.mk
 Package-Default.bash
+TestBehavior/WebotsTest
