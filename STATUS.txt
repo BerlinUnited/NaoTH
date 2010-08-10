@@ -1,0 +1,12 @@
+NaoRunner:
+  - Interface somehow implemented
+  - work on Webots controller started  
+
+TestBehavior:
+ - nothing done yet
+
+ModuleFramework:
+ - nothing done yet
+
+SoccerNaoTH:
+ - nothing done yet
