@@ -11,4 +11,8 @@ solution "TestBehavior"
   
   includedirs {"src/", "../NaoRunner/Interface/include", "../NaoRunner/Webots/WebotsSource"}
 
+  libdirs {"../NaoRunner/Make/dist"}
+  
+  links {"naointerface","naowebots"}
+
 
