@@ -34,7 +34,7 @@ public:
   static double offset[numOfInertialSensor];
 
   double get(InertialSensorID id) const {
-      return data[id] + offset[id];
+      return data[id]; // + offset[id];
   }
 
   void init();

@@ -51,11 +51,11 @@ void InertialSensorData::print(ostream& stream) const
     stream << getInertialSensorName((InertialSensorID) i) << " = " << get((InertialSensorID) i) << "\n";
   }
 
-  stream << "calibration offset:\n";
-  for (int i = 0; i < numOfInertialSensor; i++) 
-  {
-    stream << getInertialSensorName((InertialSensorID) i) << " = " << offset[i] << "\n";
-  }
+//  stream << "calibration offset:\n";
+//  for (int i = 0; i < numOfInertialSensor; i++)
+//  {
+//    stream << getInertialSensorName((InertialSensorID) i) << " = " << offset[i] << "\n";
+//  }
 
   stream << "raw data:\n";
   for (int i = 0; i < numOfInertialSensor; i++) 

@@ -35,8 +35,6 @@ public:
 
   static string getAccelerometerName(AccelerometerID acc);
 
-  virtual void toDataStream(ostream& stream) const;
-  virtual void fromDataStream(istream& stream);
   virtual void print(ostream& stream) const;
 };
 
