@@ -93,17 +93,18 @@ void WebotsController::get_Devices()
 
 void WebotsController::init()
 {
-  PlayerInfo::TeamColor teamColor = PlayerInfo::red;
+//  PlayerInfo::TeamColor teamColor = PlayerInfo::red;
+  bool isBlue = false;
   unsigned char playerNumber = 0;
 
 
   // get player-info from webots
   std::string robotName(wb_robot_get_name());
 
-  if(robotName.substr(0,3) != "red")
-    teamColor = PlayerInfo::blue;
+  if(robotName.substr(0,3) = "blue")
+    isBlue = true;
 
-  if(teamColor == PlayerInfo::blue)
+  if(isBlue)
   {
     if(robotName != "blue goal keeper")
     {
@@ -112,7 +113,7 @@ void WebotsController::init()
       playerNumber = n;
     }
   }
-  else if(teamColor == PlayerInfo::red)
+  else
   {
     if(robotName != "red goal keeper")
     {
@@ -124,18 +125,19 @@ void WebotsController::init()
 
   // calculate port
   unsigned short port = 5401;
-  if(teamColor == PlayerInfo::red)
-  {
-    port = 5400 + playerNumber;
-  }
-  else if(teamColor == PlayerInfo::blue)
+  if(isBlue)
   {
     port = 5500 + playerNumber;
   }
+  else
+  {
+    port = 5400 + playerNumber;
+  }
 
   Platform::getInstance().init(this, new WebotsCommunicationCollection(port));
-  Cognition::getInstance().init();
-  Motion::getInstance().init();
+
+//  Cognition::getInstance().init();
+//  Motion::getInstance().init();
 
 }
 
@@ -154,9 +156,9 @@ void WebotsController::main()
 
     ((WebotsCommunicationCollection&)(*Platform::getInstance().commCollection)).receiveMessages();
     
-    Cognition::getInstance().main();
-
-    Motion::getInstance().main();
+//    Cognition::getInstance().main();
+//
+//    Motion::getInstance().main();
   }//end while
 
   cout << "Run finished" << endl;
