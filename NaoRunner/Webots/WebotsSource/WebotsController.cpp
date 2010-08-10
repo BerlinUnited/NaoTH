@@ -10,7 +10,6 @@
 
 #include "WebotsController.h"
 #include "CommunicationCollectionImpl.h"
-#include "Motion/Motion.h"
 #include "PlatformInterface/Platform.h"
 
 int main() {
@@ -138,9 +137,6 @@ void WebotsController::init()
   Cognition::getInstance().init();
   Motion::getInstance().init();
 
-  thePlayerInfoInitializer.thePlayerInfo.teamColor = teamColor;
-  thePlayerInfoInitializer.thePlayerInfo.playerNumber = playerNumber+1;
-  thePlayerInfoInitializer.thePlayerInfo.teamNumber = teamColor == PlayerInfo::red ? 0 : 1;
 }
 
 void WebotsController::main()
@@ -483,22 +479,22 @@ void WebotsController::get(ButtonData& /*data*/)
   // not support yet
 }
 
-void WebotsController::get(GPSData& data)
-{
-//    const double *webots_gps = wb_gps_get_values(theWebotsController.gps);
-//    gps.translation.x = webots_gps[0] * 1000;
-//    gps.translation.y = webots_gps[2] * 1000;
-//    gps.translation.z = webots_gps[1] * 1000;
-
-    // the deprecated method, but it provides rotation matrix
-    const float *gpsmatrix = gps_get_matrix(gps);
-    Vector3<double>& pos = data.data.translation;
-    pos.x = -gpsmatrix[12] * 1000;
-    pos.y = gpsmatrix[14] * 1000;
-    pos.z = gpsmatrix[13] * 1000;
-    double angZ = atan2(gpsmatrix[2], -gpsmatrix[0]) - Math::pi_2;
-    data.data.rotation = RotationMatrix::getRotationZ(angZ);
-}
+//void WebotsController::get(GPSData& data)
+//{
+////    const double *webots_gps = wb_gps_get_values(theWebotsController.gps);
+////    gps.translation.x = webots_gps[0] * 1000;
+////    gps.translation.y = webots_gps[2] * 1000;
+////    gps.translation.z = webots_gps[1] * 1000;
+//
+//    // the deprecated method, but it provides rotation matrix
+//    const float *gpsmatrix = gps_get_matrix(gps);
+//    Vector3<double>& pos = data.data.translation;
+//    pos.x = -gpsmatrix[12] * 1000;
+//    pos.y = gpsmatrix[14] * 1000;
+//    pos.z = gpsmatrix[13] * 1000;
+//    double angZ = atan2(gpsmatrix[2], -gpsmatrix[0]) - Math::pi_2;
+//    data.data.rotation = RotationMatrix::getRotationZ(angZ);
+//}
 
 void WebotsController::get(CurrentCameraSettings& data)
 {
@@ -525,5 +521,5 @@ void WebotsController::get(CurrentCameraSettings& data)
 void WebotsController::getCognitionInput()
 {
   PlatformInterface::getCognitionInput();
-  get(theGPSDataProvider.theGPSData);
+  //get(theGPSDataProvider.theGPSData);
 }

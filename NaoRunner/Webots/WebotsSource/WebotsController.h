@@ -30,8 +30,7 @@ void gps_euler(const float *matrix, float *euler);
 ///////////////
 
 #include "PlatformInterface/PlatformInterface.h"
-#include "Representations/Infrastructure/GPSData.h"
-#include "Representations/Modeling/PlayerInfo.h"
+//#include "Representations/Infrastructure/GPSData.h"
 
 using namespace std;
 
@@ -114,7 +113,7 @@ protected:
     data.data = 0.0;
   };
 
-  void get(GPSData& data);
+  //void get(GPSData& data);
 
   /////////////////////// set ///////////////////////
   virtual void set(const CameraSettingsRequest& data);
@@ -136,8 +135,7 @@ private:
 
   void copyImage(Image& image, const unsigned char *original_image);
 
-  REPRESENTATION_PROVIDER(PlayerInfoInitializer, Cognition, PlayerInfo);
-  REPRESENTATION_PROVIDER(GPSDataProvider, Cognition, GPSData);
+//  REPRESENTATION_PROVIDER(GPSDataProvider, Cognition, GPSData);
 };
 
 #endif	/* _WEBOTSCONTROLLER_H */
