@@ -10,6 +10,8 @@
 PlatformInterface::PlatformInterface(const std::string& name, unsigned int basicTimeStep)
 :platformName(name),
   theBasicTimeStep(basicTimeStep),
+  motionCallback(NULL),
+  cognitionCallback(NULL),
   lastUltraSoundSendTime(0),
   lastUltraSoundReceiveTime(1)
 {
@@ -51,10 +53,21 @@ PlatformInterface::~PlatformInterface()
 
 }
 
-void PlatformInterface::run()
+void PlatformInterface::updateData()
 {
   
 }
+
+void PlatformInterface::registerMotionCallback(Callable* callback)
+{
+  motionCallback = callback;
+}
+
+void PlatformInterface::registerCognitionCallback(Callable* callback)
+{
+  cognitionCallback = callback;
+}
+
 
 #define REG_INPUT(P,T) \
   if (dynamic_cast<T*>(data)!=NULL) \

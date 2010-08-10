@@ -137,8 +137,15 @@ void WebotsController::init()
 
   Platform::getInstance().init(this, new WebotsCommunicationCollection(port));
 
-//  Cognition::getInstance().init();
-//  Motion::getInstance().init();
+  if(cognitionCallback != NULL)
+  {
+    cognitionCallback->init();
+  }
+
+  if(motionCallback != NULL)
+  {
+    motionCallback->init();
+  }
 
 }
 
@@ -156,10 +163,16 @@ void WebotsController::main()
     }
 
     ((WebotsCommunicationCollection&)(*Platform::getInstance().commCollection)).receiveMessages();
-    
-//    Cognition::getInstance().main();
-//
-//    Motion::getInstance().main();
+
+    if(cognitionCallback != NULL)
+    {
+      cognitionCallback->call();
+    }
+
+    if(motionCallback != NULL)
+    {
+      motionCallback->call();
+    }
   }//end while
 
   cout << "Run finished" << endl;
