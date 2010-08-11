@@ -6,7 +6,7 @@
  */
 
 
-#include <WebotsController.h>
+#include <naorunner/Webots/WebotsController.h>
 #include "Cognition.h"
 #include "Motion.h"
 

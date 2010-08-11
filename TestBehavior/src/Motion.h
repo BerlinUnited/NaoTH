@@ -8,7 +8,7 @@
 #ifndef MOTION_H
 #define	MOTION_H
 
-#include <PlatformInterface/Callable.h>
+#include <naorunner/PlatformInterface/Callable.h>
 
 class Motion : public Callable
 {

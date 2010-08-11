@@ -8,7 +8,7 @@
 #ifndef COGNITION_H
 #define	COGNITION_H
 
-#include <PlatformInterface/Callable.h>
+#include <naorunner/PlatformInterface/Callable.h>
 
 class Cognition : public Callable
 {
