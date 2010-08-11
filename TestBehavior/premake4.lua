@@ -21,5 +21,7 @@ solution "TestBehavior"
   libdirs {"../NaoRunner/Lib/",  webotsHome .. "/lib/"}
   
   links {"naowebots", "Controller"}
+  
+  targetname "nao_soccer_player_red"
 
 
