@@ -35,8 +35,7 @@
           <executablePath></executablePath>
           <ccTool>
             <incDir>
-              <pElem>../NaoRunner/Interface/include</pElem>
-              <pElem>../NaoRunner/Webots/WebotsSource</pElem>
+              <pElem>../NaoRunner/Include</pElem>
             </incDir>
           </ccTool>
         </makeTool>

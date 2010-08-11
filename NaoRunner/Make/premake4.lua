@@ -1,7 +1,7 @@
 solution "NaoRunner"
   kind "StaticLib"
   language "C++"
-  targetdir "dist/"
+  targetdir "../Lib/"
   
   platforms {"Native"}
   configurations {"Release","Debug"}
@@ -9,5 +9,5 @@ solution "NaoRunner"
   -- store the makefiles the Make/ directory
   location "."
   
-  include "../Interface/"
-  include "../Webots/"
+  dofile "Interface.lua"
+  dofile "Webots.lua"

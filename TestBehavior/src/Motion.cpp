@@ -9,7 +9,6 @@
 
 #include <iostream>
 
-#include <PlatformInterface/Platform.h>
 
 Motion::Motion()
 {

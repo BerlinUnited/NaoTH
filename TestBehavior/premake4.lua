@@ -16,10 +16,10 @@ solution "TestBehavior"
   
   files {"src/**.cpp"}
   
-  includedirs {"src/", "../NaoRunner/Interface/include", "../NaoRunner/Webots/WebotsSource", webotsHome .. "/include/controller/c/"}
+  includedirs {"src/", "../NaoRunner/Include/", webotsHome .. "/include/controller/c/"}
 
-  libdirs {"../NaoRunner/Make/dist",  webotsHome .. "/lib/"}
+  libdirs {"../NaoRunner/Lib/",  webotsHome .. "/lib/"}
   
-  links {"naointerface","naowebots", "Controller"}
+  links {"naowebots", "Controller"}
 
 

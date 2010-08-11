@@ -7,8 +7,6 @@
 
 #include "Cognition.h"
 
-#include <PlatformInterface/Platform.h>
-
 #include <iostream>
 
 Cognition::Cognition()
