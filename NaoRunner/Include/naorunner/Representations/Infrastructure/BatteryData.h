@@ -3,8 +3,8 @@
 #define	_BATTERY_DATA_H
 
 #include <string>
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/DataStructures/Printable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
 
 class BatteryData: public PlatformInterchangeable, public Printable
 {

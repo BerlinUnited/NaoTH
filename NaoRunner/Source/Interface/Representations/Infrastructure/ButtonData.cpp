@@ -5,7 +5,7 @@
  * Created on 6. März 2009, 10:40
  */
 
-#include "Representations/Infrastructure/ButtonData.h"
+#include "naorunner/Representations/Infrastructure/ButtonData.h"
 
 ButtonData::ButtonData() 
 {

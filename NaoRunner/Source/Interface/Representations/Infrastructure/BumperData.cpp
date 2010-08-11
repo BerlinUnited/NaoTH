@@ -5,7 +5,7 @@
  * Created on 15. März 2009, 00:11
  */
 
-#include "Representations/Infrastructure/BumperData.h"
+#include "naorunner/Representations/Infrastructure/BumperData.h"
 
 BumperData::BumperData() {
 }

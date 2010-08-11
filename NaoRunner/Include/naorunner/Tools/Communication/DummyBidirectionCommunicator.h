@@ -8,7 +8,7 @@
 #ifndef _DUMMYBIDIRECTIONALCOMMUNICATOR_H
 #define	_DUMMYBIDIRECTIONALCOMMUNICATOR_H
 
-#include "Tools/Communication/BidirectionalCommunicator.h"
+#include "naorunner/Tools/Communication/BidirectionalCommunicator.h"
 
 class DummyBidirectionalCommunicator : public BidirectionalCommunicator
 {

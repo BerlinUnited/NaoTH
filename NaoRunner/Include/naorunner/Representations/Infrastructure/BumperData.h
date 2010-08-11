@@ -8,8 +8,8 @@
 #ifndef _BUMPERDATA_H
 #define	_BUMPERDATA_H
 
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/DataStructures/Printable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
 
 using namespace std;
 

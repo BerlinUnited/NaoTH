@@ -8,8 +8,8 @@
 #include <iterator>
 #include <string>
 
-#include "Representations/Infrastructure/Image.h"
-#include "PlatformInterface/Platform.h"
+#include "naorunner/Representations/Infrastructure/Image.h"
+#include "naorunner/PlatformInterface/Platform.h"
 
 Image::Image()
   : yuv422(NULL)

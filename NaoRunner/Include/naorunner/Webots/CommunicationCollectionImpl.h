@@ -8,10 +8,10 @@
 #ifndef _COMMUNICATIONCOLLECTIONIMPL_H
 #define	_COMMUNICATIONCOLLECTIONIMPL_H
 
-#include "Tools/DataStructures/Singleton.h"
-#include "Tools/Communication/CommunicationCollection.h"
-#include "Tools/Communication/BidirectionalCommunicator.h"
-#include "Tools/Communication/DummyBidirectionCommunicator.h"
+#include "naorunner/Tools/DataStructures/Singleton.h"
+#include "naorunner/Tools/Communication/CommunicationCollection.h"
+#include "naorunner/Tools/Communication/BidirectionalCommunicator.h"
+#include "naorunner/Tools/Communication/DummyBidirectionCommunicator.h"
 
 //#include "Debug/DebugCommunicator.h"
 

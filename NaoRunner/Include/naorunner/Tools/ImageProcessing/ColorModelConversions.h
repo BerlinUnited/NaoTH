@@ -7,7 +7,7 @@
 #ifndef __ColorModelConversions_h_
 #define __ColorModelConversions_h_
 
-#include "Tools/Math/Common.h"
+#include "naorunner/Tools/Math/Common.h"
 
 /**
 * A class that defines static conversions between color models for single pixels.

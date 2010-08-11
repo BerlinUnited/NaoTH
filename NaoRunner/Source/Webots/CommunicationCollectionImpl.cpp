@@ -5,12 +5,12 @@
  * Created on 4. März 2009, 23:42
  */
 
-//#include "Debug/DebugCommunicator.h"
-#include "CommunicationCollectionImpl.h"
+//#include "naorunner/Debug/DebugCommunicator.h"
+#include "naorunner/Webots/CommunicationCollectionImpl.h"
 #include <string.h>
 
-#include "Tools/Communication/RoboCupGameControlData.h"
-#include "Tools/Communication/WoboCupGameControlData.h"
+#include "naorunner/Tools/Communication/RoboCupGameControlData.h"
+#include "naorunner/Tools/Communication/WoboCupGameControlData.h"
 
 WebotsCommunicationCollection::WebotsCommunicationCollection(unsigned short port)
  /* : debugComm(port) */

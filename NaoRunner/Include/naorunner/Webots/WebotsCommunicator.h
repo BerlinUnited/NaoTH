@@ -11,9 +11,9 @@
 #include <webots/receiver.h>
 #include <webots/emitter.h>
 #include <webots/robot.h>
-#include "Tools/Communication/BidirectionalCommunicator.h"
-#include "Tools/Communication/RoboCupGameControlData.h"
-#include "Tools/Communication/WoboCupGameControlData.h"
+#include "naorunner/Tools/Communication/BidirectionalCommunicator.h"
+#include "naorunner/Tools/Communication/RoboCupGameControlData.h"
+#include "naorunner/Tools/Communication/WoboCupGameControlData.h"
 #include <list>
 
 class WebotsCommunicator : public BidirectionalCommunicator

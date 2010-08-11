@@ -11,14 +11,14 @@
 #include <iostream>
 #include <string> // contains memcpy
 
-#include "Tools/Math/Common.h"
-#include "Tools/Math/Vector3.h"
+#include "naorunner/Tools/Math/Common.h"
+#include "naorunner/Tools/Math/Vector3.h"
 
-#include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/ImageProcessing/ImagePrimitives.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/ImageProcessing/ImagePrimitives.h"
 
-#include "Representations/Infrastructure/CameraInfo.h"
+#include "naorunner/Representations/Infrastructure/CameraInfo.h"
 
 #define SIZE_OF_YUV422_PIXEL 2
 

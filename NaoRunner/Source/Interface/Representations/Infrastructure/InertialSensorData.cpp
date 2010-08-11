@@ -1,6 +1,6 @@
-#include "Representations/Infrastructure/InertialSensorData.h"
-//#include "Representations/Infrastructure/ConfigPathInfo.h"
-#include "PlatformInterface/Platform.h"
+#include "naorunner/Representations/Infrastructure/InertialSensorData.h"
+//#include "naorunner/Representations/Infrastructure/ConfigPathInfo.h"
+#include "naorunner/PlatformInterface/Platform.h"
 
 InertialSensorData::InertialSensorData()
 {

@@ -9,8 +9,8 @@
 #define	_ULTRASOUNDDATA_H
 
 #include <ostream>
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/DataStructures/Printable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
 
 
 class UltraSoundData : public PlatformInterchangeable, public Printable

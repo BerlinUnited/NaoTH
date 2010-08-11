@@ -9,7 +9,7 @@
 #define	_SOUNDDATA_H
 
 #include <string>
-#include "PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
 
 using namespace std;
 

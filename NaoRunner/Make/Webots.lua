@@ -10,13 +10,13 @@ project "Webots"
     webotsHome = "<WEBOTS_HOME_not_set>";
   end
 
-  includedirs {"WebotsSource/", "../Interface/include", webotsHome .. "/include/controller/c/"}
+  includedirs {"../Include/", webotsHome .. "/include/controller/c/"}
   
   libdirs {webotsHome .. "/lib/"}
   
-  files{"WebotsSource/**.cpp"}
+  files{"../Source/Interface/**.cpp", "../Source/Webots/**.cpp",}
   
-  links {"Interface", "Controller"}
+  links {"Controller"}
   
   targetname "naowebots"
  

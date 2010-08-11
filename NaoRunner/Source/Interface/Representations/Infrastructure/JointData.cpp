@@ -1,10 +1,10 @@
 
 #include <iterator>
 
-#include "Representations/Infrastructure/JointData.h"
-#include "Tools/Math/Common.h"
-//#include "Tools/Config/ConfigLoader.h"
-#include "Tools/Debug/NaoTHAssert.h"
+#include "naorunner/Representations/Infrastructure/JointData.h"
+#include "naorunner/Tools/Math/Common.h"
+//#include "naorunner/Tools/Config/ConfigLoader.h"
+#include "naorunner/Tools/Debug/NaoTHAssert.h"
 
 double JointData::min[JointData::numOfJoint];
 double JointData::max[JointData::numOfJoint];

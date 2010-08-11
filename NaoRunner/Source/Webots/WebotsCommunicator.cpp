@@ -5,7 +5,7 @@
  * Created on 5. März 2009, 09:19
  */
 
-#include "WebotsCommunicator.h"
+#include "naorunner/Webots/WebotsCommunicator.h"
 #include <iostream>
 #include <sstream>
 #include <list>

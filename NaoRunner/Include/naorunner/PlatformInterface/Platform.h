@@ -15,10 +15,10 @@
 #endif // undef WIN32
 
 #include "PlatformInterface.h"
-#include "Tools/DataStructures/Singleton.h"
-#include "Representations/Infrastructure/CameraInfo.h"
+#include "naorunner/Tools/DataStructures/Singleton.h"
+#include "naorunner/Representations/Infrastructure/CameraInfo.h"
 //#include "Representations/Infrastructure/ConfigPathInfo.h"
-#include "Tools/Communication/CommunicationCollection.h"
+#include "naorunner/Tools/Communication/CommunicationCollection.h"
 
 class Platform : public Singleton<Platform>
 {

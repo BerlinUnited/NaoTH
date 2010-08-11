@@ -2,10 +2,10 @@
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  */
 
-#include "PlatformInterface/PlatformInterface.h"
-#include "Tools/Debug/NaoTHAssert.h"
-#include "Representations/Infrastructure/ButtonData.h"
-#include "Tools/NaoTime.h"
+#include "naorunner/PlatformInterface/PlatformInterface.h"
+#include "naorunner/Tools/Debug/NaoTHAssert.h"
+#include "naorunner/Representations/Infrastructure/ButtonData.h"
+#include "naorunner/Tools/NaoTime.h"
 
 PlatformInterface::PlatformInterface(const std::string& name, unsigned int basicTimeStep)
 :platformName(name),

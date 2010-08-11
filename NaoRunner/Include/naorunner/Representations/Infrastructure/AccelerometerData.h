@@ -9,9 +9,9 @@
 #define	_ACCELEROMETERDATA_H
 
 #include <string>
-#include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/Math/Vector3.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/Math/Vector3.h"
 
 using namespace std;
 

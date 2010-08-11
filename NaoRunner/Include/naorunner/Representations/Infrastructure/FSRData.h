@@ -11,9 +11,9 @@
 
 #include <string>
 
-#include "Tools/Math/Vector3.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/DataStructures/Printable.h"
+#include "naorunner/Tools/Math/Vector3.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
 
 using namespace std;
 

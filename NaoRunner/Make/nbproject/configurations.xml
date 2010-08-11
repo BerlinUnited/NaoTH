@@ -1,120 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
-    <df name="include" root="../Interface/include">
-      <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
-        <in>Callable.h</in>
-        <in>Platform.h</in>
-        <in>PlatformInterchangeable.h</in>
-        <in>PlatformInterface.h</in>
-      </df>
-      <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
-        <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
-          <in>AccelerometerData.h</in>
-          <in>BatteryData.h</in>
-          <in>BumperData.h</in>
-          <in>ButtonData.h</in>
-          <in>CameraInfo.h</in>
-          <in>CameraSettings.h</in>
-          <in>FSRData.h</in>
-          <in>FrameInfo.h</in>
-          <in>GyrometerData.h</in>
-          <in>IRData.h</in>
-          <in>Image.h</in>
-          <in>InertialSensorData.h</in>
-          <in>JointData.h</in>
-          <in>LEDData.h</in>
-          <in>SoundData.h</in>
-          <in>UltraSoundData.h</in>
+    <df name="Include" root="../Include">
+      <df name="naorunner" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="PlatformInterface">
+          <in>Callable.h</in>
+          <in>Platform.h</in>
+          <in>PlatformInterchangeable.h</in>
+          <in>PlatformInterface.h</in>
         </df>
-      </df>
-      <df name="Tools">
-        <df name="Communication">
-          <in>BidirectionalCommunicator.h</in>
-          <in>CommunicationCollection.h</in>
-          <in>RoboCupGameControlData.h</in>
+        <df name="Representations">
+          <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+            <in>AccelerometerData.h</in>
+            <in>BatteryData.h</in>
+            <in>BumperData.h</in>
+            <in>ButtonData.h</in>
+            <in>CameraInfo.h</in>
+            <in>CameraSettings.h</in>
+            <in>FSRData.h</in>
+            <in>FrameInfo.h</in>
+            <in>GyrometerData.h</in>
+            <in>IRData.h</in>
+            <in>Image.h</in>
+            <in>InertialSensorData.h</in>
+            <in>JointData.h</in>
+            <in>LEDData.h</in>
+            <in>SoundData.h</in>
+            <in>UltraSoundData.h</in>
+          </df>
         </df>
-        <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
-          <in>DestructureSentinel.h</in>
-          <in>Printable.h</in>
-          <in>Singleton.h</in>
+        <df name="Tools">
+          <df name="Communication" kind="SOURCE_LOGICAL_FOLDER">
+            <in>BidirectionalCommunicator.h</in>
+            <in>CommunicationCollection.h</in>
+            <in>DummyBidirectionCommunicator.h</in>
+            <in>RoboCupGameControlData.h</in>
+            <in>WoboCupGameControlData.h</in>
+          </df>
+          <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+            <in>DestructureSentinel.h</in>
+            <in>Printable.h</in>
+            <in>Singleton.h</in>
+          </df>
+          <df name="Debug" kind="SOURCE_LOGICAL_FOLDER">
+            <in>DebugCommandExecutor.h</in>
+            <in>NaoTHAssert.h</in>
+          </df>
+          <df name="ImageProcessing" kind="SOURCE_LOGICAL_FOLDER">
+            <in>ColorModelConversions.h</in>
+            <in>ImagePrimitives.h</in>
+          </df>
+          <df name="Math" kind="SOURCE_LOGICAL_FOLDER">
+            <in>Common.h</in>
+            <in>ConvexHull.h</in>
+            <in>Line.h</in>
+            <in>MVTools.h</in>
+            <in>Matrix.h</in>
+            <in>Matrix2x2.h</in>
+            <in>Matrix_mxn.h</in>
+            <in>Matrix_nxn.h</in>
+            <in>PointList.h</in>
+            <in>Polygon.h</in>
+            <in>Pose2D.h</in>
+            <in>Pose3D.h</in>
+            <in>Vector2.h</in>
+            <in>Vector3.h</in>
+            <in>Vector_n.h</in>
+          </df>
+          <in>DataConversion.h</in>
+          <in>NaoTime.h</in>
         </df>
-        <df name="Debug">
-          <in>DebugCommandExecutor.h</in>
-          <in>NaoTHAssert.h</in>
+        <df name="Webots">
+          <in>CommunicationCollectionImpl.h</in>
+          <in>WebotsCommunicator.h</in>
+          <in>WebotsController.h</in>
         </df>
-        <df name="ImageProcessing">
-          <in>ColorModelConversions.h</in>
-          <in>ImagePrimitives.h</in>
-        </df>
-        <df name="Math">
-          <in>Common.h</in>
-          <in>ConvexHull.h</in>
-          <in>Line.h</in>
-          <in>MVTools.h</in>
-          <in>Matrix.h</in>
-          <in>Matrix2x2.h</in>
-          <in>Matrix_mxn.h</in>
-          <in>Matrix_nxn.h</in>
-          <in>PointList.h</in>
-          <in>Polygon.h</in>
-          <in>Pose2D.h</in>
-          <in>Pose3D.h</in>
-          <in>Vector2.h</in>
-          <in>Vector3.h</in>
-          <in>Vector_n.h</in>
-        </df>
-        <in>DataConversion.h</in>
-        <in>NaoTime.h</in>
       </df>
     </df>
-    <df name="src" root="../Interface/src">
-      <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
-        <in>PlatformInterface.cpp</in>
-      </df>
-      <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
-        <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
-          <in>AccelerometerData.cpp</in>
-          <in>BatteryData.cpp</in>
-          <in>BumperData.cpp</in>
-          <in>ButtonData.cpp</in>
-          <in>CameraSettings.cpp</in>
-          <in>FSRData.cpp</in>
-          <in>GyrometerData.cpp</in>
-          <in>IRData.cpp</in>
-          <in>Image.cpp</in>
-          <in>InertialSensorData.cpp</in>
-          <in>JointData.cpp</in>
-          <in>LEDData.cpp</in>
-          <in>SoundData.cpp</in>
-          <in>UltraSoundData.cpp</in>
+    <df name="Source" root="../Source">
+      <df name="Interface" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
+          <in>PlatformInterface.cpp</in>
+        </df>
+        <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
+          <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+            <in>AccelerometerData.cpp</in>
+            <in>BatteryData.cpp</in>
+            <in>BumperData.cpp</in>
+            <in>ButtonData.cpp</in>
+            <in>CameraSettings.cpp</in>
+            <in>FSRData.cpp</in>
+            <in>GyrometerData.cpp</in>
+            <in>IRData.cpp</in>
+            <in>Image.cpp</in>
+            <in>InertialSensorData.cpp</in>
+            <in>JointData.cpp</in>
+            <in>LEDData.cpp</in>
+            <in>SoundData.cpp</in>
+            <in>UltraSoundData.cpp</in>
+          </df>
+        </df>
+        <df name="Tools" kind="SOURCE_LOGICAL_FOLDER">
+          <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+            <in>DestructureSentinel.h</in>
+            <in>Printable.cpp</in>
+          </df>
+          <df name="Math" kind="SOURCE_LOGICAL_FOLDER">
+            <in>MVTools.cpp</in>
+            <in>Matrix2x2.cpp</in>
+          </df>
+          <in>NaoTime.cpp</in>
         </df>
       </df>
-      <df name="Tools">
-        <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
-          <in>DestructureSentinel.h</in>
-          <in>Printable.cpp</in>
-        </df>
-        <df name="Math">
-          <in>MVTools.cpp</in>
-          <in>Matrix2x2.cpp</in>
-        </df>
-        <in>NaoTime.cpp</in>
+      <df name="Webots" kind="SOURCE_LOGICAL_FOLDER">
+        <in>CommunicationCollectionImpl.cpp</in>
+        <in>WebotsCommunicator.cpp</in>
+        <in>WebotsController.cpp</in>
       </df>
-    </df>
-    <df name="WebotsSource" root="../Webots/WebotsSource">
-      <df name="Tools">
-        <df name="Communication" kind="SOURCE_LOGICAL_FOLDER">
-          <in>DummyBidirectionCommunicator.h</in>
-          <in>WoboCupGameControlData.h</in>
-        </df>
-      </df>
-      <in>CommunicationCollectionImpl.cpp</in>
-      <in>CommunicationCollectionImpl.h</in>
-      <in>WebotsCommunicator.cpp</in>
-      <in>WebotsCommunicator.h</in>
-      <in>WebotsController.cpp</in>
-      <in>WebotsController.h</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -125,9 +127,8 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>../Interface/src</Elem>
-    <Elem>../Interface/include</Elem>
-    <Elem>../Webots/WebotsSource</Elem>
+    <Elem>../Include</Elem>
+    <Elem>../Source</Elem>
   </sourceRootList>
   <projectmakefile>NaoRunner-Makefile.mk</projectmakefile>
   <confs>
@@ -145,7 +146,7 @@
           <executablePath></executablePath>
           <ccTool>
             <incDir>
-              <pElem>../Interface/include</pElem>
+              <pElem>../Include</pElem>
               <pElem>/usr/local/webots/include</pElem>
             </incDir>
           </ccTool>

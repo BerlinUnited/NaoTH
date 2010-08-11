@@ -29,7 +29,7 @@ void gps_euler(const float *matrix, float *euler);
 #endif
 ///////////////
 
-#include "PlatformInterface/PlatformInterface.h"
+#include "naorunner/PlatformInterface/PlatformInterface.h"
 //#include "Representations/Infrastructure/GPSData.h"
 
 using namespace std;

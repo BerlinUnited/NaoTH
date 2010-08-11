@@ -8,8 +8,8 @@
 #ifndef _LEDDATA_H
 #define	_LEDDATA_H
 
-#include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
+#include "naorunner/Tools/DataStructures/Printable.h"
+#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
 
 class LEDData : public PlatformInterchangeable, public Printable
 {

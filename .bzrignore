@@ -1,3 +1,4 @@
+NaoRunner/Lib/*.a
 ./Projects/XabslEditor
 .dep.inc
 private
@@ -5,7 +6,6 @@ private
 ./NaoRunner/Make/*.make
 TestBehavior/Makefile
 TestBehavior/*.make
-dist
 obj
 Makefile-Default.mk
 Package-Default.bash

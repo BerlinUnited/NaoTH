@@ -5,7 +5,7 @@
 *
 * @author Oliver Welter
 */
-#include "Tools/NaoTime.h"
+#include "naorunner/Tools/NaoTime.h"
 
 unsigned long long NaoTime::getSystemTimeInMicroSeconds()
 {

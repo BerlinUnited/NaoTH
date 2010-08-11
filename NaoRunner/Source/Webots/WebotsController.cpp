@@ -8,10 +8,10 @@
 #include <cmath>
 
 
-#include "WebotsController.h"
-#include "CommunicationCollectionImpl.h"
-#include "PlatformInterface/Platform.h"
-#include "Tools/ImageProcessing/ColorModelConversions.h"
+#include "naorunner/Webots/WebotsController.h"
+#include "naorunner/Webots/CommunicationCollectionImpl.h"
+#include "naorunner/PlatformInterface/Platform.h"
+#include "naorunner/Tools/ImageProcessing/ColorModelConversions.h"
 
 WebotsController::WebotsController()
   :PlatformInterface("Webots", 40),
