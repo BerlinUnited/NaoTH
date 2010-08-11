@@ -12,7 +12,7 @@
 #include <naorunner/PlatformInterface/Platform.h>
 
 Motion::Motion()
-: countUp(false)
+: countUp(true),pos(0)
 {
 }
 
@@ -29,15 +29,19 @@ void Motion::call()
   std::cout << "Motion was called" << std::endl;
 
   theMotorJointData.hardness[naorunner::JointData::LShoulderRoll] = 0.9;
-  std::cout << "sensor pos=" << theSensorJointData.position[naorunner::JointData::LShoulderRoll] << std::endl;
-  theMotorJointData.position[naorunner::JointData::LShoulderRoll]
-   = countUp ? theSensorJointData.position[naorunner::JointData::LShoulderRoll] + 0.1 :
-     theSensorJointData.position[naorunner::JointData::LShoulderRoll] - 0.1;
-  // clip
-  if(fabs(theMotorJointData.position[naorunner::JointData::LShoulderRoll]) > 0.5)
+  theMotorJointData.hardness[naorunner::JointData::RShoulderRoll] = 0.9;
+
+  pos = countUp ? pos + 0.01 : pos - 0.01;
+  if(pos >= 0.9 || pos <= 0)
   {
     countUp = !countUp;
   }
+  theMotorJointData.position[naorunner::JointData::LShoulderRoll] = pos;
+  theMotorJointData.position[naorunner::JointData::RShoulderRoll] = -pos;
+
+  std::cout << "sensor pos=" << pos << std::endl;
+
+  naorunner::Platform::getInstance().thePlatformInterface->setMotionOutput();
 }
 
 Motion::~Motion()
