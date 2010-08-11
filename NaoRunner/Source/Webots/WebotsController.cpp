@@ -9,9 +9,10 @@
 
 
 #include "naorunner/Webots/WebotsController.h"
-#include "naorunner/Webots/CommunicationCollectionImpl.h"
 #include "naorunner/PlatformInterface/Platform.h"
 #include "naorunner/Tools/ImageProcessing/ColorModelConversions.h"
+
+using namespace naorunner;
 
 WebotsController::WebotsController()
   :PlatformInterface("Webots", 40),
@@ -128,7 +129,7 @@ void WebotsController::init()
     port = 5400 + playerNumber;
   }
 
-  Platform::getInstance().init(this, new WebotsCommunicationCollection(port));
+  Platform::getInstance().init(this);
 
   if(cognitionCallback != NULL)
   {
@@ -162,8 +163,6 @@ void WebotsController::main()
     {
       key-='0';
     }
-
-    ((WebotsCommunicationCollection&)(*Platform::getInstance().commCollection)).receiveMessages();
 
     if(cognitionCallback != NULL)
     {

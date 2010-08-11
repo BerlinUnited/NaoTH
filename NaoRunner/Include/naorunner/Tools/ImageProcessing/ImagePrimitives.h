@@ -4,32 +4,36 @@
 #ifndef __ImagePrimitives_h_
 #define __ImagePrimitives_h_
 
-union Pixel
+namespace naorunner
 {
-  struct
+
+  union Pixel
   {
-    /** Brightness */
-    unsigned char y;
-    /** U, also known as Cb */
-    unsigned char u;
-    /** V, also known as Cr */
-    unsigned char v;
+    struct
+    {
+      /** Brightness */
+      unsigned char y;
+      /** U, also known as Cb */
+      unsigned char u;
+      /** V, also known as Cr */
+      unsigned char v;
+    };
+
+    struct
+    {
+      unsigned char a;
+      unsigned char b;
+      unsigned char c;
+    };
+
+    unsigned char channels[3];
+
   };
 
-  struct
-  {
-    unsigned char a;
-    unsigned char b;
-    unsigned char c;
+  struct Point {
+    unsigned int x;
+    unsigned int y;
   };
-
-  unsigned char channels[3];
-
-};
-
-struct Point {
-	unsigned int x;
-	unsigned int y;
-};
+}
 
 #endif

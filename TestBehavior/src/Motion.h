@@ -10,7 +10,7 @@
 
 #include <naorunner/PlatformInterface/Callable.h>
 
-class Motion : public Callable
+class Motion : public naorunner::Callable
 {
 public:
   Motion();

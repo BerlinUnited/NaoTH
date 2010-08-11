@@ -8,14 +8,20 @@
 #ifndef CALLABLE_H
 #define	CALLABLE_H
 
-class Callable
+namespace naorunner
 {
-public:
 
-  virtual void init() {};
-  virtual void call() = 0;
+  class Callable
+  {
+  public:
 
-};
+    virtual void init()
+    {
+    };
+    virtual void call() = 0;
+
+  };
+}
 
 #endif	/* CALLABLE_H */
 

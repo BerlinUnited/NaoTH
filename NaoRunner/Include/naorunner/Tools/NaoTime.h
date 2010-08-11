@@ -17,16 +17,20 @@
   #include <ctime>
 #endif
 
-class NaoTime 
+namespace naorunner
 {
-  static unsigned long long getSystemTimeInMicroSeconds();
 
-public:
-  /*
-   * return the time sinse the start of the controller
-   */
-  static unsigned int getNaoTimeInMilliSeconds();
-};
+  class NaoTime
+  {
+    static unsigned long long getSystemTimeInMicroSeconds();
+
+  public:
+    /*
+     * return the time sinse the start of the controller
+     */
+    static unsigned int getNaoTimeInMilliSeconds();
+  };
+}
 
 #endif	/* _NAOTIME_H */
 

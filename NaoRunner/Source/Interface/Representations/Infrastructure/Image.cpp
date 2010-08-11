@@ -11,6 +11,8 @@
 #include "naorunner/Representations/Infrastructure/Image.h"
 #include "naorunner/PlatformInterface/Platform.h"
 
+using namespace naorunner;
+
 Image::Image()
   : yuv422(NULL)
 {

@@ -7,6 +7,8 @@
 
 #include "naorunner/Representations/Infrastructure/BumperData.h"
 
+using namespace naorunner;
+
 BumperData::BumperData() {
 }
 

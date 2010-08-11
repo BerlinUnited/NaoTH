@@ -8,26 +8,29 @@
 #ifndef _PLATFORMINTERCHANGEABLE_H
 #define	_PLATFORMINTERCHANGEABLE_H
 
-/**
- *  Empty interface marking objects as interchangeable in the PlatformInterface
- */
-class PlatformInterchangeable
+namespace naorunner
 {
 
-public:
-  
-  /** HACK: Dummy for dynamic cast */
-  virtual void dummyPlatformInterchangeable()
+  /**
+   *  Empty interface marking objects as interchangeable in the PlatformInterface
+   */
+  class PlatformInterchangeable
   {
-    
+
+  public:
+
+    /** HACK: Dummy for dynamic cast */
+    virtual void dummyPlatformInterchangeable()
+    {
+
+    };
+
+    virtual ~PlatformInterchangeable()
+    {
+
+    }
+
   };
-
-  virtual ~PlatformInterchangeable()
-  {
-    
-  }
-
-};
-
+}
 #endif	/* _PLATFORMINTERCHANGEABLE_H */
 

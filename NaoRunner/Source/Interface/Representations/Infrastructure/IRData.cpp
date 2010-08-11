@@ -1,5 +1,7 @@
 #include "naorunner/Representations/Infrastructure/IRData.h"
 
+using namespace naorunner;
+
 IRSendData::IRSendData() : changed(false)
 {
 

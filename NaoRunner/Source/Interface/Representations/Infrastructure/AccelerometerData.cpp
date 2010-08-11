@@ -1,5 +1,7 @@
 #include "naorunner/Representations/Infrastructure/AccelerometerData.h"
 
+using namespace naorunner;
+
 AccelerometerData::AccelerometerData()
 {
   for (int i = 0; i < numOfAccelerometer; i++)

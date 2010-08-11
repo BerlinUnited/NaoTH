@@ -12,55 +12,56 @@
 #include "naorunner/PlatformInterface/PlatformInterchangeable.h"
 #include "naorunner/Tools/DataStructures/Printable.h"
 
-
-class UltraSoundData : public PlatformInterchangeable, public Printable
+namespace naorunner
 {
-public:
-  enum UltraSoundID
+  class UltraSoundData : public PlatformInterchangeable, public Printable
   {
-    distance_1,
-    distance_2,
-    distance_3,
-    distance_4,
-    distance_5,
-    distance_6,
-    distance_7,
-    distance_8,
-    distance_9,
-    numOfIRSend
+  public:
+    enum UltraSoundID
+    {
+      distance_1,
+      distance_2,
+      distance_3,
+      distance_4,
+      distance_5,
+      distance_6,
+      distance_7,
+      distance_8,
+      distance_9,
+      numOfIRSend
+    };
+
+    UltraSoundData();
+    virtual ~UltraSoundData();
+
+    double data;
+    unsigned int ultraSoundTimeStep;
   };
-  
-  UltraSoundData();
-  virtual ~UltraSoundData();
 
-  double data;
-  unsigned int ultraSoundTimeStep;
-};
+  class UltraSoundReceiveData: public UltraSoundData
+  {
+  public:
+     UltraSoundReceiveData();
+    virtual ~UltraSoundReceiveData();
 
-class UltraSoundReceiveData: public UltraSoundData
-{
-public:
-   UltraSoundReceiveData();
-  virtual ~UltraSoundReceiveData();
+    virtual void print(std::ostream& stream) const;
+    void init();
 
-  virtual void print(std::ostream& stream) const;
-  void init();
+    double dataLeft[numOfIRSend];
+    double dataRight[numOfIRSend];
+  };
 
-  double dataLeft[numOfIRSend];
-  double dataRight[numOfIRSend];
-};
+  class UltraSoundSendData: public UltraSoundData
+  {
+  public:
+     UltraSoundSendData();
+    virtual ~UltraSoundSendData();
 
-class UltraSoundSendData: public UltraSoundData
-{
-public:
-   UltraSoundSendData();
-  virtual ~UltraSoundSendData();
+    void setMode(unsigned int mode, UltraSoundReceiveData& receiver);
 
-  void setMode(unsigned int mode, UltraSoundReceiveData& receiver);
-
-  virtual void print(std::ostream& stream) const;
-};
-
+    virtual void print(std::ostream& stream) const;
+  };
+}
 
 #endif	/* _ULTRASOUNDDATA_H */
 

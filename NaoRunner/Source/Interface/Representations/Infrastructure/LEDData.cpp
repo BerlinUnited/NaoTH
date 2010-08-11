@@ -1,6 +1,8 @@
 
 #include "naorunner/Representations/Infrastructure/LEDData.h"
 
+using namespace naorunner;
+
 LEDData::LEDData()
 {
   for(int i=0;i<numOfMonoLED;i++)

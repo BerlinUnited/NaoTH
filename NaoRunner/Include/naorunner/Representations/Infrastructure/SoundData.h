@@ -13,23 +13,27 @@
 
 using namespace std;
 
-class SoundData : public PlatformInterchangeable
+namespace naorunner
 {
-public:
-  enum SpeakerID
-  {
-    LeftSpeaker,
-    RightSpeaker,
-    numOfSpeaker
-  };
-  
-  bool mute;
-  int volume[numOfSpeaker];
-  string soundFile;
 
-  SoundData();
-  ~SoundData();
-};
+  class SoundData : public PlatformInterchangeable
+  {
+  public:
+    enum SpeakerID
+    {
+      LeftSpeaker,
+      RightSpeaker,
+      numOfSpeaker
+    };
+
+    bool mute;
+    int volume[numOfSpeaker];
+    string soundFile;
+
+    SoundData();
+    ~SoundData();
+  };
+}
 
 #endif	/* _SOUNDDATA_H */
 

@@ -14,29 +14,32 @@
 
 using namespace std;
 
-class GyrometerData : public PlatformInterchangeable, public Printable
+namespace naorunner
 {
-public:
-  enum GyrometerID
+
+  class GyrometerData : public PlatformInterchangeable, public Printable
   {
-    X,
-    Y,
-    numOfGyrometer
+  public:
+    enum GyrometerID
+    {
+      X,
+      Y,
+      numOfGyrometer
+    };
+
+    double data[numOfGyrometer];
+    double rawData[numOfGyrometer+1];
+    double rawZero[numOfGyrometer];
+
+    GyrometerData();
+    ~GyrometerData();
+
+    void calibrate();
+
+    static string getGyrometerName(GyrometerID gyro);
+
+    virtual void print(ostream& stream) const;
   };
-
-  double data[numOfGyrometer];
-  double rawData[numOfGyrometer+1];
-  double rawZero[numOfGyrometer];
-  
-  GyrometerData();
-  ~GyrometerData();
-
-  void calibrate();
-
-  static string getGyrometerName(GyrometerID gyro);
-
-  virtual void print(ostream& stream) const;
-};
-
+}
 #endif	/* _GYROMETERDATA_H */
 

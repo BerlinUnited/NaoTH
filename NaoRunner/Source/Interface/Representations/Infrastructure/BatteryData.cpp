@@ -1,5 +1,7 @@
 #include "naorunner/Representations/Infrastructure/BatteryData.h"
 
+using namespace naorunner;
+
 BatteryData::BatteryData():
   charge(0.0)
 {

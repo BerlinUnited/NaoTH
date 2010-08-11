@@ -15,87 +15,90 @@
 
 using namespace std;
 
-class JointData
+namespace naorunner
 {
-public:
-  enum JointID
+
+  class JointData
   {
-    HeadPitch,
-    HeadYaw,
-    RShoulderRoll,
-    LShoulderRoll,
-    RShoulderPitch,
-    LShoulderPitch,
-    RElbowRoll,
-    LElbowRoll,
-    RElbowYaw,
-    LElbowYaw,
-    RHipYawPitch,
-    LHipYawPitch,
-    RHipPitch,
-    LHipPitch,
-    RHipRoll,
-    LHipRoll,
-    RKneePitch,
-    LKneePitch,
-    RAnklePitch,
-    LAnklePitch,
-    RAnkleRoll,
-    LAnkleRoll,
-    numOfJoint,
+  public:
+    enum JointID
+    {
+      HeadPitch,
+      HeadYaw,
+      RShoulderRoll,
+      LShoulderRoll,
+      RShoulderPitch,
+      LShoulderPitch,
+      RElbowRoll,
+      LElbowRoll,
+      RElbowYaw,
+      LElbowYaw,
+      RHipYawPitch,
+      LHipYawPitch,
+      RHipPitch,
+      LHipPitch,
+      RHipRoll,
+      LHipRoll,
+      RKneePitch,
+      LKneePitch,
+      RAnklePitch,
+      LAnklePitch,
+      RAnkleRoll,
+      LAnkleRoll,
+      numOfJoint,
+    };
+    double position[numOfJoint];
+    double hardness[numOfJoint];
+    double dp[numOfJoint];
+    double ddp[numOfJoint];
+
+    static double min[numOfJoint];
+    static double max[numOfJoint];
+
+    JointData();
+
+    virtual ~JointData(){}
+
+    void init(const std::string& filename);
+
+    static string getJointName(JointID);
+    static JointID jointIDFromName(std::string name);
+
+    void mirror();
+
+    /* clamp joint data in min-max range */
+    void clamp(JointID id);
+    void clamp();
+
+    bool isInRange(JointID id, double ang) const;
+    bool isInRange(JointID id) const;
+
+  protected:
+    double mirrorData(JointID joint) const;
+    void mirrorFrom(const JointData& jointData);
   };
-  double position[numOfJoint];
-  double hardness[numOfJoint];
-  double dp[numOfJoint];
-  double ddp[numOfJoint];
 
-  static double min[numOfJoint];
-  static double max[numOfJoint];
+  class SensorJointData : public JointData, public Printable, public PlatformInterchangeable
+  {
+  public:
+    SensorJointData();
+    ~SensorJointData();
+    double temperature[numOfJoint];
+    double electricCurrent[numOfJoint];
 
-  JointData();
+    virtual void print(ostream& stream) const;
 
-  virtual ~JointData(){}
+  };
 
-  void init(const std::string& filename);
+  class MotorJointData : public JointData, public Printable, public PlatformInterchangeable
+  {
+  public:
+    MotorJointData();
+    ~MotorJointData();
 
-  static string getJointName(JointID);
-  static JointID jointIDFromName(std::string name);
-
-  void mirror();
-
-  /* clamp joint data in min-max range */
-  void clamp(JointID id);
-  void clamp();
-
-  bool isInRange(JointID id, double ang) const;
-  bool isInRange(JointID id) const;
-  
-protected:
-  double mirrorData(JointID joint) const;
-  void mirrorFrom(const JointData& jointData);
-};
-
-class SensorJointData : public JointData, public Printable, public PlatformInterchangeable
-{
-public:
-  SensorJointData();
-  ~SensorJointData();
-  double temperature[numOfJoint];
-  double electricCurrent[numOfJoint];
-
-  virtual void print(ostream& stream) const;
-
-};
-
-class MotorJointData : public JointData, public Printable, public PlatformInterchangeable
-{
-public:
-  MotorJointData();
-  ~MotorJointData();
-
-  virtual void print(ostream& stream) const;
-};
-
+    virtual void print(ostream& stream) const;
+  };
+}
 
 #endif	/* _JOINTDATA_H */
 

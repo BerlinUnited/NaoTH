@@ -7,6 +7,8 @@
 */
 #include "naorunner/Tools/NaoTime.h"
 
+using namespace naorunner;
+
 unsigned long long NaoTime::getSystemTimeInMicroSeconds()
 {
   #ifdef WIN32

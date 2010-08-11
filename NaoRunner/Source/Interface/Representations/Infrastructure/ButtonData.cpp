@@ -7,6 +7,8 @@
 
 #include "naorunner/Representations/Infrastructure/ButtonData.h"
 
+using namespace naorunner;
+
 ButtonData::ButtonData() 
 {
   for(int i=0; i < numOfButtons; i++)

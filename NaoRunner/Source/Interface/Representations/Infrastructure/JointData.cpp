@@ -6,6 +6,8 @@
 //#include "naorunner/Tools/Config/ConfigLoader.h"
 #include "naorunner/Tools/Debug/NaoTHAssert.h"
 
+using namespace naorunner;
+
 double JointData::min[JointData::numOfJoint];
 double JointData::max[JointData::numOfJoint];
 
