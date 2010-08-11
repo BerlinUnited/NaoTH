@@ -1,5 +1,7 @@
 #include "naorunner/Representations/Infrastructure/SoundData.h"
 
+using namespace naorunner;
+
 SoundData::SoundData():
   mute(false),
   soundFile("")

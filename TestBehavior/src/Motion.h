@@ -8,18 +8,24 @@
 #ifndef MOTION_H
 #define	MOTION_H
 
+#include <naorunner/Representations/Infrastructure/JointData.h>
 #include <naorunner/PlatformInterface/Callable.h>
 
-class Motion : public Callable
+class Motion : public naorunner::Callable
 {
 public:
   Motion();
   virtual ~Motion();
 
+  virtual void init();
+
   virtual void call();
 
 private:
 
+  bool countUp;
+  naorunner::SensorJointData theSensorJointData;
+  naorunner::MotorJointData theMotorJointData;
 };
 
 #endif	/* MOTION_H */

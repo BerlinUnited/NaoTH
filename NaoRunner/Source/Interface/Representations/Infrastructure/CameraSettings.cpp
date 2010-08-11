@@ -1,6 +1,8 @@
 #include "naorunner/Representations/Infrastructure/CameraSettings.h"
 #include "naorunner/PlatformInterface/Platform.h"
 
+using namespace naorunner;
+
 CameraSettings::CameraSettings()
 {
 

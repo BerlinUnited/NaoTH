@@ -15,28 +15,31 @@
 
 using namespace std;
 
-class AccelerometerData : public Printable, public PlatformInterchangeable
+namespace naorunner
 {
-public:
-  enum AccelerometerID
+
+  class AccelerometerData : public Printable, public PlatformInterchangeable
   {
-    X,
-    Y,
-    Z,
-    numOfAccelerometer
+  public:
+    enum AccelerometerID
+    {
+      X,
+      Y,
+      Z,
+      numOfAccelerometer
+    };
+    double data[numOfAccelerometer];
+    double rawData[numOfAccelerometer];
+
+    AccelerometerData();
+    ~AccelerometerData();
+
+    Vector3<double> getAcceleration() const;
+
+    static string getAccelerometerName(AccelerometerID acc);
+
+    virtual void print(ostream& stream) const;
   };
-  double data[numOfAccelerometer];
-  double rawData[numOfAccelerometer];
-
-  AccelerometerData();
-  ~AccelerometerData();
-
-  Vector3<double> getAcceleration() const;
-
-  static string getAccelerometerName(AccelerometerID acc);
-
-  virtual void print(ostream& stream) const;
-};
-
+}
 #endif	/* _ACCELEROMETERDATA_H */
 

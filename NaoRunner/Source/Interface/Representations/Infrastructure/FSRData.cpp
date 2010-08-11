@@ -1,5 +1,6 @@
 #include "naorunner/Representations/Infrastructure/FSRData.h"
 
+using namespace naorunner;
 
 const Vector3<double> FSRData::offset[FSRData::numOfFSR] =
 {Vector3<double>(70.1,30 ,-46),

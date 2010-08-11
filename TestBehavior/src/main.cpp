@@ -17,7 +17,7 @@ using namespace std;
  */
 int main(int argc, char** argv)
 {
-  WebotsController theWebotsController;
+  naorunner::WebotsController theWebotsController;
   Cognition theCognition;
   Motion theMotion;
 

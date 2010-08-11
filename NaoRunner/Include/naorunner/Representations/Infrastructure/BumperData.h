@@ -13,28 +13,30 @@
 
 using namespace std;
 
-class BumperData : public PlatformInterchangeable, public Printable
+namespace naorunner
 {
-public:
-  enum BumperID
+  class BumperData : public PlatformInterchangeable, public Printable
   {
-    LeftBumperLeft,
-    LeftBumperRight,
-    RightBumperLeft,
-    RightBumperRight,
-    numOfBumper
+  public:
+    enum BumperID
+    {
+      LeftBumperLeft,
+      LeftBumperRight,
+      RightBumperLeft,
+      RightBumperRight,
+      numOfBumper
+    };
+
+    bool data[numOfBumper];
+
+    BumperData();
+    virtual ~BumperData();
+    static string getBumperName(BumperID id);
+
+    virtual void print(ostream& stream) const;
+  private:
+
   };
-
-  bool data[numOfBumper];
-  
-  BumperData();
-  virtual ~BumperData();
-  static string getBumperName(BumperID id);
-  
-  virtual void print(ostream& stream) const;
-private:
-
-};
-
+}
 
 #endif	/* _BUMPERDATA_H */

@@ -32,7 +32,7 @@
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
-          <executablePath></executablePath>
+          <executablePath>nao_soccer_player_red</executablePath>
           <ccTool>
             <incDir>
               <pElem>../NaoRunner/Include</pElem>

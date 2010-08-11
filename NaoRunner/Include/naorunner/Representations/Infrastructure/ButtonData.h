@@ -11,37 +11,39 @@
 #include "naorunner/PlatformInterface/PlatformInterchangeable.h"
 #include "naorunner/Tools/DataStructures/Printable.h"
 
-class ButtonData : public PlatformInterchangeable, public Printable
+namespace naorunner
 {
-public:
-  ButtonData();
-  virtual ~ButtonData();
-
-  enum ButtonID
+  class ButtonData : public PlatformInterchangeable, public Printable
   {
-    Chest,
-    LeftFootLeft,
-    LeftFootRight,
-    RightFootLeft,
-    RightFootRight,
-    numOfButtons
+  public:
+    ButtonData();
+    virtual ~ButtonData();
+
+    enum ButtonID
+    {
+      Chest,
+      LeftFootLeft,
+      LeftFootRight,
+      RightFootLeft,
+      RightFootRight,
+      numOfButtons
+    };
+
+    static string getButtonName(ButtonID id);
+
+    /** Whether the button is pressed in this frame. */
+    bool isPressed[numOfButtons];
+    /** Overall number of contiguous pressing events */
+    int eventCounter[numOfButtons];
+    /** The number of frames the button was contiguous pressed. Should be 1 already
+     * in the first pressed frame. */
+    int numOfFramesPressed[numOfButtons];
+
+    virtual void print(ostream& stream) const;
+  private:
+
   };
-
-  static string getButtonName(ButtonID id);
-
-  /** Whether the button is pressed in this frame. */
-  bool isPressed[numOfButtons];
-  /** Overall number of contiguous pressing events */
-  int eventCounter[numOfButtons];
-  /** The number of frames the button was contiguous pressed. Should be 1 already
-   * in the first pressed frame. */
-  int numOfFramesPressed[numOfButtons];
-
-  virtual void print(ostream& stream) const;
-private:
-
-};
-
+}
 
 #endif	/* _BUTTONDATA_H */
 

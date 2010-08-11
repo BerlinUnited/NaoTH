@@ -30,20 +30,12 @@
           </df>
         </df>
         <df name="Tools">
-          <df name="Communication" kind="SOURCE_LOGICAL_FOLDER">
-            <in>BidirectionalCommunicator.h</in>
-            <in>CommunicationCollection.h</in>
-            <in>DummyBidirectionCommunicator.h</in>
-            <in>RoboCupGameControlData.h</in>
-            <in>WoboCupGameControlData.h</in>
-          </df>
           <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
             <in>DestructureSentinel.h</in>
             <in>Printable.h</in>
             <in>Singleton.h</in>
           </df>
           <df name="Debug" kind="SOURCE_LOGICAL_FOLDER">
-            <in>DebugCommandExecutor.h</in>
             <in>NaoTHAssert.h</in>
           </df>
           <df name="ImageProcessing" kind="SOURCE_LOGICAL_FOLDER">
@@ -71,8 +63,6 @@
           <in>NaoTime.h</in>
         </df>
         <df name="Webots">
-          <in>CommunicationCollectionImpl.h</in>
-          <in>WebotsCommunicator.h</in>
           <in>WebotsController.h</in>
         </df>
       </df>
@@ -113,8 +103,6 @@
         </df>
       </df>
       <df name="Webots" kind="SOURCE_LOGICAL_FOLDER">
-        <in>CommunicationCollectionImpl.cpp</in>
-        <in>WebotsCommunicator.cpp</in>
         <in>WebotsController.cpp</in>
       </df>
     </df>

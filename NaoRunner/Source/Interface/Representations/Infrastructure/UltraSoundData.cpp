@@ -1,5 +1,7 @@
 #include "naorunner/Representations/Infrastructure/UltraSoundData.h"
 
+using namespace naorunner;
+
 UltraSoundData::UltraSoundData()
 {
   data = 0.0;

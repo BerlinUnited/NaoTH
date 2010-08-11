@@ -1,5 +1,7 @@
 #include "naorunner/Representations/Infrastructure/GyrometerData.h"
 
+using namespace naorunner;
+
 GyrometerData::GyrometerData()
 {
   for(int i=0; i < numOfGyrometer; i++)

@@ -12,26 +12,30 @@
 
 using namespace std;
 
-class Printable
+namespace naorunner 
 {
-public:
 
-  Printable()
-  {}
-
-  /**
-   * This method must be overwritten bei a particular
-   * Printable in order to stream out some specific (visible) data
-   */
-  virtual void print(ostream& stream) const = 0;
-
-  virtual ~Printable()
+  class Printable
   {
-  }
+  public:
 
-  friend ostream& operator<<(ostream& stream, const Printable& representation);
+    Printable()
+    {}
 
-};
+    /**
+     * This method must be overwritten bei a particular
+     * Printable in order to stream out some specific (visible) data
+     */
+    virtual void print(ostream& stream) const = 0;
+
+    virtual ~Printable()
+    {
+    }
+
+    friend ostream& operator<<(ostream& stream, const Printable& representation);
+
+  };
+}
 
 #endif	/* _PRINTABLE_H */
 

@@ -2,6 +2,8 @@
 //#include "naorunner/Representations/Infrastructure/ConfigPathInfo.h"
 #include "naorunner/PlatformInterface/Platform.h"
 
+using namespace naorunner;
+
 InertialSensorData::InertialSensorData()
 {
   for (int i = 0; i < numOfInertialSensor; i++)

@@ -15,37 +15,40 @@
 
 using namespace std;
 
-class InertialSensorData : public Printable, public PlatformInterchangeable
+namespace naorunner
 {
-public:
- 
-  enum InertialSensorID
+
+  class InertialSensorData : public Printable, public PlatformInterchangeable
   {
-    X,
-    Y,
-    numOfInertialSensor
+  public:
+
+    enum InertialSensorID
+    {
+      X,
+      Y,
+      numOfInertialSensor
+    };
+
+    InertialSensorData();
+    ~InertialSensorData();
+
+    double data[numOfInertialSensor];
+    double lastData[numOfInertialSensor][4];
+    static double offset[numOfInertialSensor];
+
+    double get(InertialSensorID id) const {
+        return data[id]; // + offset[id];
+    }
+
+    void init();
+
+    static string getInertialSensorName(InertialSensorID angle);
+
+    virtual void print(ostream& stream) const;
+
+  private:
   };
-
-  InertialSensorData();
-  ~InertialSensorData();
-
-  double data[numOfInertialSensor];
-  double lastData[numOfInertialSensor][4];
-  static double offset[numOfInertialSensor];
-
-  double get(InertialSensorID id) const {
-      return data[id]; // + offset[id];
-  }
-
-  void init();
-  
-  static string getInertialSensorName(InertialSensorID angle);
-
-  virtual void print(ostream& stream) const;
-
-private:
-};
-
+}
 
 #endif	/* _INERTIALSENSORDATA_H */
 

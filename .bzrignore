@@ -9,4 +9,4 @@ TestBehavior/*.make
 obj
 Makefile-Default.mk
 Package-Default.bash
-TestBehavior/WebotsTest
+TestBehavior/nao_soccer_player_red

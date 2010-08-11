@@ -15,62 +15,64 @@
 
 using namespace std;
 
-class IRSendData : public PlatformInterchangeable
+namespace naorunner
 {
-private:
-public:
-  bool changed;
-  enum IRSendID
+  class IRSendData : public PlatformInterchangeable
   {
-    Beacon,
-    Byte1,
-    Byte2,
-    Byte3,
-    Byte4,
-    RCByte1,
-    RCByte2,
-    numOfIRSend
+  private:
+  public:
+    bool changed;
+    enum IRSendID
+    {
+      Beacon,
+      Byte1,
+      Byte2,
+      Byte3,
+      Byte4,
+      RCByte1,
+      RCByte2,
+      numOfIRSend
+    };
+
+    int data[numOfIRSend];
+
+    IRSendData();
+    ~IRSendData();
+
+    static string getIRSendName(IRSendID id);
   };
 
-  int data[numOfIRSend];
-
-  IRSendData();
-  ~IRSendData();
-
-  static string getIRSendName(IRSendID id);
-};
-
-class IRReceiveData : public PlatformInterchangeable, public Printable
-{
-private:
-public:
-  enum IRReceiveID
+  class IRReceiveData : public PlatformInterchangeable, public Printable
   {
-    RightBeacon,
-    RightByte1,
-    RightByte2,
-    RightByte3,
-    RightByte4,
-    RightRCByte1,
-    RightRCByte2,
-    LeftBeacon,
-    LeftByte1,
-    LeftByte2,
-    LeftByte3,
-    LeftByte4,
-    LeftRCByte1,
-    LeftRCByte2,
-    numOfIRReceive
+  private:
+  public:
+    enum IRReceiveID
+    {
+      RightBeacon,
+      RightByte1,
+      RightByte2,
+      RightByte3,
+      RightByte4,
+      RightRCByte1,
+      RightRCByte2,
+      LeftBeacon,
+      LeftByte1,
+      LeftByte2,
+      LeftByte3,
+      LeftByte4,
+      LeftRCByte1,
+      LeftRCByte2,
+      numOfIRReceive
+    };
+
+    int data[numOfIRReceive];
+    IRReceiveData();
+    ~IRReceiveData();
+
+    static string getIRReceiveName(IRReceiveID id);
+
+    virtual void print(ostream& stream) const;
   };
-
-  int data[numOfIRReceive];
-  IRReceiveData();
-  ~IRReceiveData();
-
-  static string getIRReceiveName(IRReceiveID id);
-
-  virtual void print(ostream& stream) const;
-};
-
+}
 #endif	/* _IRDATA_H */
 

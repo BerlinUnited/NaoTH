@@ -10,7 +10,7 @@
 
 #include <naorunner/PlatformInterface/Callable.h>
 
-class Cognition : public Callable
+class Cognition : public naorunner::Callable
 {
 public:
   Cognition();

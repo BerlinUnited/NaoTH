@@ -7,6 +7,8 @@
 #include "naorunner/Representations/Infrastructure/ButtonData.h"
 #include "naorunner/Tools/NaoTime.h"
 
+using namespace naorunner;
+
 PlatformInterface::PlatformInterface(const std::string& name, unsigned int basicTimeStep)
 :platformName(name),
   theBasicTimeStep(basicTimeStep),
