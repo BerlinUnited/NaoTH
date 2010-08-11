@@ -24,6 +24,7 @@ public:
 private:
 
   bool countUp;
+  double pos;
   naorunner::SensorJointData theSensorJointData;
   naorunner::MotorJointData theMotorJointData;
 };
