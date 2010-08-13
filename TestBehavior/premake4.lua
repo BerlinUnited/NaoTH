@@ -14,6 +14,10 @@ solution "TestBehavior"
   platforms {"Native"}
   configurations {"Debug", "Release"}
   
+  if os.is("windows") then
+	defines {"WIN32", "NOMINMAX"}
+  end
+  
   files {"src/**.cpp"}
   
   includedirs {"src/", "../NaoRunner/Include/", webotsHome .. "/include/controller/c/"}

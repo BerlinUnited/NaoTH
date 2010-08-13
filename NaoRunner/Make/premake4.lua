@@ -6,6 +6,10 @@ solution "NaoRunner"
   platforms {"Native"}
   configurations {"Release","Debug"}
   
+  if os.is("windows") then
+	defines {"WIN32", "NOMINMAX"}
+  end
+  
   -- store the makefiles the Make/ directory
   location "."
   
