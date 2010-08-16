@@ -13,12 +13,15 @@ solution "TestBehavior"
   
   platforms {"Native"}
   configurations {"Debug", "Release"}
+
   
+  -- additional defines for windows
   if os.is("windows") then
 	defines {"WIN32", "NOMINMAX"}
   end
   
-  files {"src/**.cpp"}
+  
+  files {"src/**.h","src/**.cpp"}
   
   includedirs {"src/", "../NaoRunner/Include/", webotsHome .. "/include/controller/c/"}
 
@@ -28,4 +31,9 @@ solution "TestBehavior"
   
   targetname "nao_soccer_player_red"
 
+  
+  -- debug configuration
+  configuration { "Debug" }
+    defines { "DEBUG" }
+    flags { "Symbols" }
 

@@ -53,7 +53,8 @@ namespace naorunner
 
     virtual void print(ostream& stream) const;
   };
-}
+
+}//end namespace naorunner
 
 #endif	/* _FSRDATA_H */
 
