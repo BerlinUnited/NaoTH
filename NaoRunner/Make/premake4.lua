@@ -1,7 +1,11 @@
+dofile "install.lua"
+
+-- description of the solution
+
 solution "NaoRunner"
   kind "StaticLib"
   language "C++"
-  targetdir "../Lib/"
+  targetdir "../dist/"
   
   platforms {"Native"}
   configurations {"Release","Debug"}

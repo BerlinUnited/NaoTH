@@ -10,3 +10,7 @@ obj
 Makefile-Default.mk
 Package-Default.bash
 TestBehavior/nao_soccer_player_red
+Extern/bin/*
+Extern/include/*
+Extern/lib/*
+dist
