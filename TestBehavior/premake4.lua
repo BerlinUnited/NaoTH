@@ -27,15 +27,15 @@ solution "TestBehavior"
 	  
 	  includedirs {
 		"src/", 
-		"../Extern/include/",
 		"../NaoRunner/Source/", 
+		"../Extern/include/",
 		webotsHome .. "/include/controller/c/", 
 		"../NaoRunner/Source",
 		"../NaoRunner/Lib/", 
 		"../NaoRunner/Lib/win32/include/", 
 		"../NaoRunner/Source/Interface/"}
 
-	  libdirs {"../Extern/lib/", "../NaoRunner/Lib/",  webotsHome .. "/lib/", "../NaoRunner/Lib/win32/lib/"}
+	  libdirs {"../NaoRunner/Lib/", "../Extern/lib/",  webotsHome .. "/lib/", "../NaoRunner/Lib/win32/lib/"}
 	  
 	  links {"naoth-simspark", "sfsexp", "pthread", "Controller"}
 	  
