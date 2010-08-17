@@ -4,9 +4,9 @@
  * @author <a href="mailto:krause@informatik.hu-berlin.de">Krause, Thomas</a>
  */
 
-#include "naorunner/PlatformInterface/PlatformInterface.h"
+#include "Interface/PlatformInterface/PlatformInterface.h"
 
-#include "naorunner/Tools/NaoTime.h"
+#include "Interface/Tools/NaoTime.h"
 
 using namespace naorunner;
 

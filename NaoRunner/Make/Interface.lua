@@ -4,7 +4,7 @@ project "Interface"
   
   targetname "naointerface"
   
-  includedirs {"../Include/"}
+  includedirs {"../Source/","../Source/Interface/"}
   
   files {"../Source/Interface/**.cpp"}
   

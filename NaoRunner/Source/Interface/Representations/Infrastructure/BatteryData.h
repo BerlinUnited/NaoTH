@@ -3,8 +3,8 @@
 #define	_BATTERY_DATA_H
 
 #include <string>
-#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
-#include "naorunner/Tools/DataStructures/Printable.h"
+#include "Interface/PlatformInterface/PlatformInterchangeable.h"
+#include "Interface/Tools/DataStructures/Printable.h"
 
 namespace naorunner
 {

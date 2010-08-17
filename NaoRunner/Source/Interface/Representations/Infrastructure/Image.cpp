@@ -8,8 +8,8 @@
 #include <iterator>
 #include <string>
 
-#include "naorunner/Representations/Infrastructure/Image.h"
-#include "naorunner/PlatformInterface/Platform.h"
+#include "Interface/Representations/Infrastructure/Image.h"
+#include "Interface/PlatformInterface/Platform.h"
 
 using namespace naorunner;
 

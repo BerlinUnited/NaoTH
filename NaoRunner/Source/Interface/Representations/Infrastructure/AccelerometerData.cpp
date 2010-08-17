@@ -1,4 +1,4 @@
-#include "naorunner/Representations/Infrastructure/AccelerometerData.h"
+#include "Interface/Representations/Infrastructure/AccelerometerData.h"
 
 using namespace naorunner;
 

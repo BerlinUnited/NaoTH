@@ -1,5 +1,5 @@
-#include "naorunner/Representations/Infrastructure/CameraSettings.h"
-#include "naorunner/PlatformInterface/Platform.h"
+#include "Interface/Representations/Infrastructure/CameraSettings.h"
+#include "Interface/PlatformInterface/Platform.h"
 
 using namespace naorunner;
 

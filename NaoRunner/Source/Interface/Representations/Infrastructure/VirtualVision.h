@@ -9,8 +9,8 @@
 #ifndef _VIRTUALVISION_H
 #define	_VIRTUALVISION_H
 
-#include "Tools/Math/Vector3.h"
-#include "Tools/DataStructures/Printable.h"
+#include "Interface/Tools/Math/Vector3.h"
+#include "Interface/Tools/DataStructures/Printable.h"
 
 #include <list>
 #include <map>

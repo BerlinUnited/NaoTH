@@ -8,8 +8,8 @@
 #ifndef _BUTTONDATA_H
 #define	_BUTTONDATA_H
 
-#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
-#include "naorunner/Tools/DataStructures/Printable.h"
+#include "Interface/PlatformInterface/PlatformInterchangeable.h"
+#include "Interface/Tools/DataStructures/Printable.h"
 
 namespace naorunner
 {

@@ -8,9 +8,9 @@
 #include <cmath>
 
 
-#include "naorunner/Webots/WebotsController.h"
-#include "naorunner/PlatformInterface/Platform.h"
-#include "naorunner/Tools/ImageProcessing/ColorModelConversions.h"
+#include "Webots/WebotsController.h"
+#include "Interface/PlatformInterface/Platform.h"
+#include "Interface/Tools/ImageProcessing/ColorModelConversions.h"
 
 using namespace naorunner;
 

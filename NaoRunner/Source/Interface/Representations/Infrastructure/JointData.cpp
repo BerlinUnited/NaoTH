@@ -1,10 +1,10 @@
 
 #include <iterator>
 
-#include "naorunner/Representations/Infrastructure/JointData.h"
-#include "naorunner/Tools/Math/Common.h"
-//#include "naorunner/Tools/Config/ConfigLoader.h"
-#include "naorunner/Tools/Debug/NaoTHAssert.h"
+#include "Interface/Representations/Infrastructure/JointData.h"
+#include "Interface/Tools/Math/Common.h"
+//#include "Interface/Tools/Config/ConfigLoader.h"
+#include "Interface/Tools/Debug/NaoTHAssert.h"
 
 using namespace naorunner;
 
