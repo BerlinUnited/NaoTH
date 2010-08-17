@@ -8,10 +8,10 @@
 #ifndef COGNITION_H
 #define	COGNITION_H
 
-#include <naorunner/PlatformInterface/Callable.h>
+#include <Interface/PlatformInterface/Callable.h>
 
-#include <naorunner/Representations/Infrastructure/JointData.h>
-#include <naorunner/Representations/Infrastructure/LEDData.h>
+#include <Interface/Representations/Infrastructure/JointData.h>
+#include <Interface/Representations/Infrastructure/LEDData.h>
 
 class Cognition : public naorunner::Callable
 {

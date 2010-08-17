@@ -8,7 +8,7 @@
 #include "Cognition.h"
 
 #include <iostream>
-#include <naorunner/PlatformInterface/PlatformInterface.h>
+#include <Interface/PlatformInterface/PlatformInterface.h>
 
 using namespace naorunner;
 
