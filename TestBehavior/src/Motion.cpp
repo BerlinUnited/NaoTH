@@ -11,17 +11,20 @@
 
 #include <naorunner/PlatformInterface/Platform.h>
 
+using namespace naorunner;
+
 Motion::Motion()
 : countUp(true),pos(0)
 {
 }
 
-void Motion::init()
+void Motion::init(PlatformInterface& platformInterface)
 {
-  std::cout << "Motion Initialize" << std::endl;
-  naorunner::Platform& pl = naorunner::Platform::getInstance();
-  pl.thePlatformInterface->registerMotionInput(&theSensorJointData, "SensorJointData");
-  pl.thePlatformInterface->registerMotionOutput(&theMotorJointData, "MotorJointData");
+  std::cout << "Motion register start" << std::endl;
+  platformInterface.registerMotionInput(theSensorJointData, "SensorJointData");
+
+  platformInterface.registerMotionOutput(theMotorJointData, "MotorJointData");
+  std::cout << "Motion register end" << std::endl;
 }
 
 void Motion::call()
@@ -40,9 +43,7 @@ void Motion::call()
   theMotorJointData.position[naorunner::JointData::RShoulderRoll] = -pos;
 
   std::cout << "sensor pos=" << pos << std::endl;
-
-  naorunner::Platform::getInstance().thePlatformInterface->setMotionOutput();
-}
+}//end call
 
 Motion::~Motion()
 {

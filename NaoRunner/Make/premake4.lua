@@ -10,8 +10,14 @@ solution "NaoRunner"
 	defines {"WIN32", "NOMINMAX"}
   end
   
+      -- debug configuration
+  configuration { "Debug" }
+    defines { "DEBUG" }
+    flags { "Symbols" }
+	
   -- store the makefiles the Make/ directory
   location "."
   
   dofile "Interface.lua"
   dofile "Webots.lua"
+  dofile "SimSpark.lua"
