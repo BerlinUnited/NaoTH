@@ -1,10 +1,5 @@
 -- install stuff
 
-function verbosecopy(from, to)
- print("Copy \"" .. from .. "\" to \"" .. to .. "\"")
- os.copyfile(from, to); 
-end -- verbosecopy
-
 function install()
 
   local prefix = "../../Extern"
@@ -15,24 +10,27 @@ function install()
   print("Installing NaoRunner to \"" .. prefix .. "\"")
   
   -- libs
-  verbosecopy("../dist/libnaointerface.a", prefix .. "/lib/libnaointerface.a");  
-  verbosecopy("../dist/libnaoth-simspark.a", prefix .. "/lib/libnaoth-simspark.a");
-  verbosecopy("../dist/libnaowebots.a", prefix .. "/lib/libnaowebots.a");
+  print("Copying the static library files")
+  os.copyfile("../dist/libnaointerface.a", prefix .. "/lib/libnaointerface.a");  
+  os.copyfile("../dist/libnaoth-simspark.a", prefix .. "/lib/libnaoth-simspark.a");
+  os.copyfile("../dist/libnaowebots.a", prefix .. "/lib/libnaowebots.a");
   
   -- header files - directories
+  print("Creating directory structure for header files")
   local headerdirs = os.matchdirs("../Source/**")
   for i,d in ipairs(headerdirs) do
     local noPrefix = string.sub(d,string.len("../Source/")+1)
     local newPath = prefix .. "/include/" .. noPrefix
-    print("Creating directory \"" .. newPath .. "\"")
+    
     os.mkdir(newPath)
   end
   
   -- header files - files
+  print("Copying the header files")
   local headerfiles = os.matchfiles("../Source/**.h");
   for i, f in ipairs(headerfiles) do
     local noPrefix = string.sub(f,string.len("../Source/")+1)
-    verbosecopy(f, prefix .. "/include/" .. noPrefix)  
+    os.copyfile(f, prefix .. "/include/" .. noPrefix)  
   end
     
 end --install
