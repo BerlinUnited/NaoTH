@@ -8,6 +8,11 @@ function install()
   end   
   
   print("Installing NaoRunner to \"" .. prefix .. "\"")
+
+  -- general target directory structure
+  print("Creating \"include\" and \"lib\" directories")
+  os.mkdir(prefix .. "/include")
+  os.mkdir(prefix .. "/lib")
   
   -- libs
   print("Copying the static library files")

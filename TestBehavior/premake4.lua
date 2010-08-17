@@ -27,6 +27,7 @@ solution "TestBehavior"
 	  
 	  includedirs {
 		"src/", 
+		"../Extern/include/",
 		"../NaoRunner/Source/", 
 		webotsHome .. "/include/controller/c/", 
 		"../NaoRunner/Source",
@@ -34,9 +35,9 @@ solution "TestBehavior"
 		"../NaoRunner/Lib/win32/include/", 
 		"../NaoRunner/Source/Interface/"}
 
-	  libdirs {"../NaoRunner/Lib/",  webotsHome .. "/lib/", "../NaoRunner/Lib/win32/lib/"}
+	  libdirs {"../Extern/lib/", "../NaoRunner/Lib/",  webotsHome .. "/lib/", "../NaoRunner/Lib/win32/lib/"}
 	  
-	  links {"naoth-simspark", "sfsexp", "pthread", "Controller", "ws2_32"}
+	  links {"naoth-simspark", "sfsexp", "pthread", "Controller"}
 	  
 	  targetname "nao_soccer_player_red"
 
