@@ -1,7 +1,38 @@
+-- install stuff
+
+function install()
+
+  local prefix = "../../Extern"
+  if(_OPTIONS["prefix"]) then
+    prefix = _OPTIONS["prefix"]
+  end   
+  
+  print("Installing NaoRunner to \"" .. prefix .. "\"")
+  
+  os.copyfile("../dist/libnaointerface.a", prefix .. "/lib/libnaointerface.a");  
+  os.copyfile("../dist/libnaoth-simspark.a", prefix .. "/lib/libnaoth-simspark.a");
+  os.copyfile("../dist/libnaowebots.a", prefix .. "/lib/libnaowebots.a");
+    
+end --install
+
+newoption {
+  trigger = "prefix",
+  value = "DIR",
+  description = "installation prefix (e.g. \"/usr/local/\"), if empty defaults to \"../Extern/\""
+}
+
+newaction {
+ trigger = "install",
+ description = "Install NaoRunner",
+ execute = install
+}
+
+-- description of the solution
+
 solution "NaoRunner"
   kind "StaticLib"
   language "C++"
-  targetdir "../Lib/"
+  targetdir "../dist/"
   
   platforms {"Native"}
   configurations {"Release","Debug"}
