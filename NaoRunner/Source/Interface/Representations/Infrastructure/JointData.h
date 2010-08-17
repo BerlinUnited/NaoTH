@@ -10,8 +10,8 @@
 
 #include <string>
 
-#include "naorunner/Tools/DataStructures/Printable.h"
-#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "Interface/Tools/DataStructures/Printable.h"
+#include "Interface/PlatformInterface/PlatformInterchangeable.h"
 
 using namespace std;
 

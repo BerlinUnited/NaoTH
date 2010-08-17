@@ -8,8 +8,8 @@
 #ifndef _CAMERAINFO_H
 #define	_CAMERAINFO_H
 
-#include "naorunner/Tools/Math/Pose3D.h"
-#include "naorunner/Tools/Math/Common.h"
+#include "Interface/Tools/Math/Pose3D.h"
+#include "Interface/Tools/Math/Common.h"
 
 namespace naorunner
 {

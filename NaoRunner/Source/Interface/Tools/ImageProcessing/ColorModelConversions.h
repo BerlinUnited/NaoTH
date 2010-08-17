@@ -7,7 +7,7 @@
 #ifndef __ColorModelConversions_h_
 #define __ColorModelConversions_h_
 
-#include "naorunner/Tools/Math/Common.h"
+#include "Interface/Tools/Math/Common.h"
 
 namespace naorunner
 {

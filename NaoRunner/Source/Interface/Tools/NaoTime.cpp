@@ -5,7 +5,7 @@
 *
 * @author Oliver Welter
 */
-#include "naorunner/Tools/NaoTime.h"
+#include "Interface/Tools/NaoTime.h"
 
 using namespace naorunner;
 

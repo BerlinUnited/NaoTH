@@ -1,4 +1,4 @@
-#include "naorunner/Representations/Infrastructure/FSRData.h"
+#include "Interface/Representations/Infrastructure/FSRData.h"
 
 using namespace naorunner;
 

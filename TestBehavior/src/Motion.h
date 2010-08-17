@@ -8,8 +8,8 @@
 #ifndef MOTION_H
 #define	MOTION_H
 
-#include <naorunner/Representations/Infrastructure/JointData.h>
-#include <naorunner/PlatformInterface/Callable.h>
+#include <Interface/Representations/Infrastructure/JointData.h>
+#include <Interface/PlatformInterface/Callable.h>
 
 class Motion : public naorunner::Callable
 {

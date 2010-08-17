@@ -27,13 +27,11 @@ solution "TestBehavior"
 	  
 	  includedirs {
 		"src/", 
-		"../NaoRunner/Include/", 
+		"../NaoRunner/Source/", 
 		webotsHome .. "/include/controller/c/", 
 		"../NaoRunner/Source",
-		"../NaoRunner/Include/", 
 		"../NaoRunner/Lib/", 
 		"../NaoRunner/Lib/win32/include/", 
-		"../NaoRunner/Include/naorunner/", 
 		"../NaoRunner/Source/Interface/"}
 
 	  libdirs {"../NaoRunner/Lib/",  webotsHome .. "/lib/", "../NaoRunner/Lib/win32/lib/"}

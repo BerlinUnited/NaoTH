@@ -1,4 +1,4 @@
-#include "naorunner/Tools/DataStructures/Printable.h"
+#include "Interface/Tools/DataStructures/Printable.h"
 
 using namespace naorunner;
 

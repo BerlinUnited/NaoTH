@@ -11,10 +11,9 @@ project "Webots"
   end
 
   includedirs {
-	"../Include/", 
+	"../Source/", 
 	webotsHome .. "/include/controller/c/",
 	"../Lib/win32/include/", 
-	"../Include/naorunner/", 
 	"../Source/Interface/"}
   
   libdirs {webotsHome .. "/lib/"}

@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#include <naorunner/PlatformInterface/Platform.h>
+#include <Interface/PlatformInterface/Platform.h>
 
 using namespace naorunner;
 

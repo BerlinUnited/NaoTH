@@ -7,8 +7,8 @@
 #ifndef __FrameInfo_h_
 #define __FrameInfo_h_
 
-#include "naorunner/Tools/DataStructures/Printable.h"
-#include "naorunner/PlatformInterface/PlatformInterchangeable.h"
+#include "Interface/Tools/DataStructures/Printable.h"
+#include "Interface/PlatformInterface/PlatformInterchangeable.h"
 
 namespace naorunner
 {

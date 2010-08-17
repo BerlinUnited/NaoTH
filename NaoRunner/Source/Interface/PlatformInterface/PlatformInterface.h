@@ -22,7 +22,7 @@
 #include "Representations/Infrastructure/BatteryData.h"
 
 #include "Callable.h"
-#include "naorunner/Tools/Debug/NaoTHAssert.h"
+#include "Interface/Tools/Debug/NaoTHAssert.h"
 
 #include <list>
 #include <string>

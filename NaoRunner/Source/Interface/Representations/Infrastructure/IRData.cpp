@@ -1,4 +1,4 @@
-#include "naorunner/Representations/Infrastructure/IRData.h"
+#include "Interface/Representations/Infrastructure/IRData.h"
 
 using namespace naorunner;
 

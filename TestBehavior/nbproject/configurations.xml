@@ -35,7 +35,7 @@
           <executablePath>nao_soccer_player_red</executablePath>
           <ccTool>
             <incDir>
-              <pElem>../NaoRunner/Include</pElem>
+              <pElem>../NaoRunner/Source</pElem>
             </incDir>
           </ccTool>
         </makeTool>

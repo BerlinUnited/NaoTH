@@ -1,4 +1,4 @@
-#include "naorunner/Representations/Infrastructure/BatteryData.h"
+#include "Interface/Representations/Infrastructure/BatteryData.h"
 
 using namespace naorunner;
 

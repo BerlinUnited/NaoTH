@@ -6,7 +6,7 @@
  */
 
 
-#include <naorunner/Webots/WebotsController.h>
+#include <Webots/WebotsController.h>
 #include <SimSpark/SimSparkController.h>
 #include "Cognition.h"
 #include "Motion.h"

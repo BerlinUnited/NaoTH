@@ -10,7 +10,7 @@
 #define __Matrix2x2_h__
 
 #include "Vector2.h"
-#include "naorunner/Tools/Debug/NaoTHAssert.h"
+#include "Interface/Tools/Debug/NaoTHAssert.h"
 
 /** This class represents a 2x2-matrix */
 template <class V> class Matrix2x2

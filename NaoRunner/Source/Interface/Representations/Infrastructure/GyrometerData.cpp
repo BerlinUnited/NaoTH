@@ -1,4 +1,4 @@
-#include "naorunner/Representations/Infrastructure/GyrometerData.h"
+#include "Interface/Representations/Infrastructure/GyrometerData.h"
 
 using namespace naorunner;
 

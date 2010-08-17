@@ -1,6 +1,6 @@
-#include "naorunner/Representations/Infrastructure/InertialSensorData.h"
-//#include "naorunner/Representations/Infrastructure/ConfigPathInfo.h"
-#include "naorunner/PlatformInterface/Platform.h"
+#include "Interface/Representations/Infrastructure/InertialSensorData.h"
+//#include "Interface/Representations/Infrastructure/ConfigPathInfo.h"
+#include "Interface/PlatformInterface/Platform.h"
 
 using namespace naorunner;
 

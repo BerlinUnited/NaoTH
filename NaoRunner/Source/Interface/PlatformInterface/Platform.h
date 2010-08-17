@@ -15,8 +15,8 @@
 #endif // undef WIN32
 
 #include "PlatformInterface.h"
-#include "naorunner/Tools/DataStructures/Singleton.h"
-#include "naorunner/Representations/Infrastructure/CameraInfo.h"
+#include "Interface/Tools/DataStructures/Singleton.h"
+#include "Interface/Representations/Infrastructure/CameraInfo.h"
 //#include "Representations/Infrastructure/ConfigPathInfo.h"
 
 namespace naorunner

@@ -10,10 +10,9 @@ project "SimSpark"
 	"../Source/Interface/**.h"}
 
   includedirs {
-	"../Include/", 
+	"../Source/", 
 	"../Lib/", 
 	"../Lib/win32/include/", 
-	"../Include/naorunner/", 
 	"../Source/Interface/"}
 
 

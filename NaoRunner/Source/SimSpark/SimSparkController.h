@@ -13,21 +13,21 @@
 #include <pthread.h>
 #include <map>
 
-#include "naorunner/Representations/Infrastructure/JointData.h"
-#include "naorunner/Representations/Infrastructure/AccelerometerData.h"
-#include "naorunner/Representations/Infrastructure/Image.h"
-#include "naorunner/Representations/Infrastructure/FrameInfo.h"
-#include "naorunner/Representations/Infrastructure/GyrometerData.h"
-#include "naorunner/Representations/Infrastructure/FSRData.h"
-#include "naorunner/Representations/Infrastructure/InertialSensorData.h"
-#include "naorunner/Representations/Infrastructure/BumperData.h"
-#include "naorunner/Representations/Infrastructure/IRData.h"
-#include "naorunner/Representations/Infrastructure/CameraSettings.h"
-#include "naorunner/Representations/Infrastructure/LEDData.h"
-#include "naorunner/Representations/Infrastructure/UltraSoundData.h"
-#include "naorunner/Representations/Infrastructure/SoundData.h"
-#include "naorunner/Representations/Infrastructure/ButtonData.h"
-#include "naorunner/Representations/Infrastructure/BatteryData.h"
+#include "Interface/Representations/Infrastructure/JointData.h"
+#include "Interface/Representations/Infrastructure/AccelerometerData.h"
+#include "Interface/Representations/Infrastructure/Image.h"
+#include "Interface/Representations/Infrastructure/FrameInfo.h"
+#include "Interface/Representations/Infrastructure/GyrometerData.h"
+#include "Interface/Representations/Infrastructure/FSRData.h"
+#include "Interface/Representations/Infrastructure/InertialSensorData.h"
+#include "Interface/Representations/Infrastructure/BumperData.h"
+#include "Interface/Representations/Infrastructure/IRData.h"
+#include "Interface/Representations/Infrastructure/CameraSettings.h"
+#include "Interface/Representations/Infrastructure/LEDData.h"
+#include "Interface/Representations/Infrastructure/UltraSoundData.h"
+#include "Interface/Representations/Infrastructure/SoundData.h"
+#include "Interface/Representations/Infrastructure/ButtonData.h"
+#include "Interface/Representations/Infrastructure/BatteryData.h"
 #include "Representations/Infrastructure/VirtualVision.h"
 
 /*
@@ -38,8 +38,8 @@
 //#include "SimSparkTeamCommunicator.h"
 #include "SimSparkGameInfo.h"
 
-#include "naorunner/PlatformInterface/Platform.h"
-#include "naorunner/PlatformInterface/PlatformInterface.h"
+#include "Interface/PlatformInterface/Platform.h"
+#include "Interface/PlatformInterface/PlatformInterface.h"
 
 #include "sfsexp/SexpParser.h"
 
