@@ -3,11 +3,7 @@ project "SimSpark"
   kind "StaticLib"
   language "C++"
         
-  files{ 
-	"../Source/SimSpark/**.cpp", 
-	"../Source/SimSpark/**.h",
-	"../Source/Interface/**.cpp",
-	"../Source/Interface/**.h"}
+  files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
 
   includedirs {
 	"../Source/", 
@@ -18,7 +14,7 @@ project "SimSpark"
 
   libdirs {"../Lib/"}
   
-  links {"sfsexp"}
+  links {"Interface", "sfsexp"}
 
   targetname "naoth-simspark"
 

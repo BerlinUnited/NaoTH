@@ -18,9 +18,9 @@ project "Webots"
   
   libdirs {webotsHome .. "/lib/"}
   
-  files{"../Source/Interface/**.cpp", "../Source/Webots/**.cpp",}
+  files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
   
-  links {"Controller"}
+  links {"Interface", "Controller"}
   
   targetname "naowebots"
  
