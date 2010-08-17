@@ -17,8 +17,7 @@ public:
   Motion();
   virtual ~Motion();
 
-  virtual void init();
-
+  virtual void init(naorunner::PlatformInterface& platformInterface);
   virtual void call();
 
 private:

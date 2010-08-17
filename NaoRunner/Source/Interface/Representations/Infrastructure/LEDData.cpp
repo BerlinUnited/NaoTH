@@ -1,6 +1,8 @@
 
 #include "naorunner/Representations/Infrastructure/LEDData.h"
 
+#include <string>
+
 using namespace naorunner;
 
 LEDData::LEDData()
@@ -33,11 +35,10 @@ void LEDData::print(ostream& stream) const
     << ": " << theMultiLED[i][RED] << " "
     << theMultiLED[i][GREEN] << " " << theMultiLED[i][BLUE] << std::endl;
   }
-}
+}//end print
 
 LEDData::~LEDData()
 {
-  
 }
 
 string LEDData::getLEDName(MonoLEDID led)
@@ -65,8 +66,8 @@ string LEDData::getLEDName(MonoLEDID led)
     case EarLeft288: return string("EarLeft288");
     case EarLeft324: return string("EarLeft324");
     default: return string("Unknown MonoLED");
-  }
-}
+  }//end switch
+}//end getLEDName
 
 string LEDData::getLEDName(MultiLEDID led)
 {

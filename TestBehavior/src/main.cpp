@@ -7,6 +7,7 @@
 
 
 #include <naorunner/Webots/WebotsController.h>
+#include <SimSpark/SimSparkController.h>
 #include "Cognition.h"
 #include "Motion.h"
 
@@ -17,15 +18,18 @@ using namespace std;
  */
 int main(int argc, char** argv)
 {
-  naorunner::WebotsController theWebotsController;
+  //naorunner::WebotsController theController;
+  SimSparkController theController;
+
   Cognition theCognition;
   Motion theMotion;
 
-  theWebotsController.registerCallbacks(&theMotion, &theCognition);
+  theController.registerCallbacks(&theMotion, &theCognition);
+  theController.init("NaoTH", 3, "localhost", 4100);
 
-  theWebotsController.init();
+  //theController.init();
 
-  theWebotsController.main();
+  theController.main();
 
   return 0;
 }//end main

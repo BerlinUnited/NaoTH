@@ -2,6 +2,7 @@
 
 using namespace naorunner;
 
+// TODO: make it config
 const Vector3<double> FSRData::offset[FSRData::numOfFSR] =
 {Vector3<double>(70.1,30 ,-46),
  Vector3<double>(70.1,-23,-46),
@@ -13,7 +14,7 @@ const Vector3<double> FSRData::offset[FSRData::numOfFSR] =
  Vector3<double>(-30.4,-30,-46)
 };
    
- FSRData::FSRData()
+FSRData::FSRData()
 {
   for(int i=0;i<numOfFSR;i++)
   {
@@ -31,24 +32,15 @@ string FSRData::getFSRName(FSRID fsr)
 {
   switch(fsr)
   {
-    case LFsrFL:
-      return string("LFsrFL");
-    case LFsrFR:
-      return string("LFsrFR");
-    case LFsrBL:
-      return string("LFsrBL");
-    case LFsrBR:
-      return string("LFsrBR");
-    case RFsrFL:
-      return string("RFsrFL");
-    case RFsrFR:
-      return string("RFsrFR");
-    case RFsrBL:
-      return string("RFsrBL");
-    case RFsrBR:
-      return string("RFsrBR");
-    default:
-      return string("Unknown FSR");
+    case LFsrFL: return string("LFsrFL");
+    case LFsrFR: return string("LFsrFR");
+    case LFsrBL: return string("LFsrBL");
+    case LFsrBR: return string("LFsrBR");
+    case RFsrFL: return string("RFsrFL");
+    case RFsrFR: return string("RFsrFR");
+    case RFsrBL: return string("RFsrBL");
+    case RFsrBR: return string("RFsrBR");
+    default: return string("Unknown FSR");
   }//end switch
 }//end getName
 
@@ -58,12 +50,12 @@ void FSRData::print(ostream& stream) const
   double sum = 0;
   for(int i = 0; i < numOfFSR; i++)
   {
-    stream << getFSRName((FSRID)i) << " : " << force[i] << " , "<<data[i];
-    if ( !valid[i] ) stream <<" INVALID!!";
-    stream<< "\n";
+    stream << getFSRName((FSRID)i) << " : " << force[i] << " , " << data[i];
+    if ( !valid[i] ) stream << " INVALID!!";
+    stream << "\n";
     sum += force[i];
   }//end for
-  stream<<"Sum: "<<sum<<endl;
+  stream << "Sum: " << sum << endl;
 }//end print
 
 double FSRData::forceLeft() const

@@ -83,7 +83,8 @@ namespace naorunner
     void init(PlatformInterface* _interface)
     {
       ASSERT(_interface!=NULL);
-      ASSERT(comm!=NULL);
+      // TODO: check the communication?
+      //ASSERT(comm!=NULL);
       _platformInterface = _interface;
 
       // set the the hardware identity according to platform

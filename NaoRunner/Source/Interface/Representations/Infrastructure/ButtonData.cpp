@@ -7,6 +7,8 @@
 
 #include "naorunner/Representations/Infrastructure/ButtonData.h"
 
+#include <string>
+
 using namespace naorunner;
 
 ButtonData::ButtonData() 
