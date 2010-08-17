@@ -15,12 +15,12 @@
 using namespace naorunner;
 
 WebotsController::WebotsController()
-  :PlatformInterface("Webots", 40),
+  :PlatformInterface("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
   key(0)
 {
   wb_robot_init();
 
-  theBasicTimeStep = (int)wb_robot_get_basic_time_step(); // simulation-step starts every 40ms
+  //theBasicTimeStep = (int)wb_robot_get_basic_time_step(); // simulation-step starts every 40ms
 
   get_Devices();
 
@@ -37,31 +37,31 @@ void WebotsController::get_Devices()
 {
   
   camera = wb_robot_get_device("camera");
-  wb_camera_enable(camera,theBasicTimeStep);
+  wb_camera_enable(camera,getBasicTimeStep());
 
   cameraSelect = wb_robot_get_device("CameraSelect");
-  wb_servo_enable_position(cameraSelect,theBasicTimeStep);
+  wb_servo_enable_position(cameraSelect,getBasicTimeStep());
 
   for(int i=0;i<FSRData::numOfFSR;i++)
   {
     fsr[(FSRData::FSRID) i] = wb_robot_get_device(FSRData::getFSRName((FSRData::FSRID) i).c_str());
-    wb_touch_sensor_enable(fsr[i],theBasicTimeStep);
+    wb_touch_sensor_enable(fsr[i],getBasicTimeStep());
   }//end for
 
   for(int i=0;i<JointData::numOfJoint;i++)
   {  
     joint[(JointData::JointID) i] = wb_robot_get_device(JointData::getJointName((JointData::JointID)i).c_str());
-    wb_servo_enable_position(joint[i], theBasicTimeStep);
+    wb_servo_enable_position(joint[i], getBasicTimeStep());
   }//end for
 
   accelerometer = wb_robot_get_device("accelerometer");
-  wb_accelerometer_enable(accelerometer, theBasicTimeStep);
+  wb_accelerometer_enable(accelerometer, getBasicTimeStep());
 
   gyrometer = wb_robot_get_device("gyro");
-  wb_gyro_enable(gyrometer, theBasicTimeStep);
+  wb_gyro_enable(gyrometer, getBasicTimeStep());
 
   gps = wb_robot_get_device("gps");
-  wb_gps_enable(gps, theBasicTimeStep);
+  wb_gps_enable(gps, getBasicTimeStep());
 
   leds[EarLeft] = wb_robot_get_device("Ears/Led/Left");
   leds[EarRight] = wb_robot_get_device("Ears/Led/Right");
@@ -78,10 +78,10 @@ void WebotsController::get_Devices()
   
   for(int i=0;i<BumperData::numOfBumper;i++)
   {
-    wb_touch_sensor_enable(bumper[i], theBasicTimeStep);
+    wb_touch_sensor_enable(bumper[i], getBasicTimeStep());
   }
 
-  wb_robot_keyboard_enable(theBasicTimeStep);
+  wb_robot_keyboard_enable(getBasicTimeStep());
 
 }//end get_Devices
 
@@ -130,32 +130,13 @@ void WebotsController::init()
   }
 
   Platform::getInstance().init(this);
-
-  if(cognitionCallback != NULL)
-  {
-    cognitionCallback->init();
-  }
-  else
-  {
-    std::cerr << "could not initialize COGNITION callback because it was NULL" << std::endl;
-  }
-
-  if(motionCallback != NULL)
-  {
-    motionCallback->init();
-  }
-  else
-  {
-    std::cerr << "could not initialize MOTION callback because it was NULL" << std::endl;
-  }
-
 }
 
 void WebotsController::main()
 {
   cout << "Run WebotsController" << endl;
 
-  while(wb_robot_step(theBasicTimeStep) != -1)
+  while(wb_robot_step(getBasicTimeStep()) != -1)
   {
     //cout << "Step WebotsController" << endl;
     key = wb_robot_keyboard_get_key();
@@ -164,15 +145,8 @@ void WebotsController::main()
       key-='0';
     }
 
-    if(cognitionCallback != NULL)
-    {
-      cognitionCallback->call();
-    }
-
-    if(motionCallback != NULL)
-    {
-      motionCallback->call();
-    }
+    callCognition();
+    callMotion();
   }//end while
 
   cout << "Run finished" << endl;
@@ -181,12 +155,12 @@ void WebotsController::main()
 void WebotsController::get(FrameInfo& data)
 {
   data.frameNumber++;
-  data.time += theBasicTimeStep;
+  data.time += getBasicTimeStep();
 }
 
 void WebotsController::get(SensorJointData& data)
 {
-  double dt = theBasicTimeStep / 1000.0;
+  double dt = getBasicTimeStep() / 1000.0;
   for (int i = 0; i < JointData::numOfJoint; i++) {
     double p = wb_servo_get_position(joint[i]);
     double dp = (p - data.position[i]) / dt;
@@ -375,7 +349,7 @@ void WebotsController::get(InertialSensorData& data)
 
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);
-  double time = theBasicTimeStep * 1e-3;
+  double time = getBasicTimeStep() * 1e-3;
   data.data[InertialSensorData::X] += (webots_gyrometer[0] * time);
   data.data[InertialSensorData::Y] += (webots_gyrometer[1] * time);
 

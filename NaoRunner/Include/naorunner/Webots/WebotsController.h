@@ -30,7 +30,23 @@ void gps_euler(const float *matrix, float *euler);
 ///////////////
 
 #include "naorunner/PlatformInterface/PlatformInterface.h"
-//#include "Representations/Infrastructure/GPSData.h"
+
+// Representations
+#include "naorunner/Representations/Infrastructure/JointData.h"
+#include "naorunner/Representations/Infrastructure/AccelerometerData.h"
+#include "naorunner/Representations/Infrastructure/Image.h"
+#include "naorunner/Representations/Infrastructure/FrameInfo.h"
+#include "naorunner/Representations/Infrastructure/GyrometerData.h"
+#include "naorunner/Representations/Infrastructure/FSRData.h"
+#include "naorunner/Representations/Infrastructure/InertialSensorData.h"
+#include "naorunner/Representations/Infrastructure/BumperData.h"
+#include "naorunner/Representations/Infrastructure/IRData.h"
+#include "naorunner/Representations/Infrastructure/CameraSettings.h"
+#include "naorunner/Representations/Infrastructure/LEDData.h"
+#include "naorunner/Representations/Infrastructure/UltraSoundData.h"
+#include "naorunner/Representations/Infrastructure/SoundData.h"
+#include "naorunner/Representations/Infrastructure/ButtonData.h"
+#include "naorunner/Representations/Infrastructure/BatteryData.h"
 
 using namespace std;
 
