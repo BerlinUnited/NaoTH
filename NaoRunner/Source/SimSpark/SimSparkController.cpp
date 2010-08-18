@@ -18,7 +18,7 @@
 using namespace std;
 
 SimSparkController::SimSparkController()
-: AbstractPlatform<SimSparkController>("SimSpark", 20)
+: PlatformInterface<SimSparkController>("SimSpark", 20)
 {
   // init the name -- id maps
   theJointSensorNameMap.clear();
@@ -207,7 +207,7 @@ void SimSparkController::multiThreadsMain()
 
 void SimSparkController::getMotionInput()
 {
-  PlatformInterface::getMotionInput();
+  PlatformInterface<SimSparkController>::getMotionInput();
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -219,7 +219,7 @@ void SimSparkController::getMotionInput()
 
 void SimSparkController::setMotionOutput()
 {
-  PlatformInterface::setMotionOutput();
+  PlatformInterface<SimSparkController>::setMotionOutput();
   say();
   autoBeam();
   jointControl();
@@ -233,7 +233,7 @@ void SimSparkController::getCognitionInput()
   {
     pthread_cond_wait(&theCognitionInputCond, &theCognitionInputMutex);
   }
-  PlatformInterface::getCognitionInput();
+  PlatformInterface<SimSparkController>::getCognitionInput();
   pthread_mutex_unlock(&theCognitionInputMutex);
 }
 

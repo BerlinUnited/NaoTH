@@ -6,46 +6,26 @@
 
 #include "Interface/PlatformInterface/PlatformInterface.h"
 
-#include "Interface/Tools/NaoTime.h"
-
 using namespace naorunner;
 
-PlatformInterface::PlatformInterface(const std::string& name, unsigned int basicTimeStep)
+PlatformDataInterface::PlatformDataInterface()
   :
-  PlatformBase(name, basicTimeStep)
-{
-  cout<<"NaoTH "<<getName()<<" starting..."<<endl;
-}
-
-PlatformInterface::~PlatformInterface()
+  motionCallback(NULL),
+  cognitionCallback(NULL)
 {
 }
-/*
-void PlatformInterface::registerCallbacks(Callable* motionCallback, Callable* cognitionCallback)
-{
-  if(motionCallback != NULL)
-  {
-    std::cerr << "register MOTION callback" << std::endl;
-    this->motionCallback = motionCallback;
-    this->motionCallback->init(*this);
-  }else
-  {
-    std::cerr << "could not register MOTION callback because it was NULL" << std::endl;
-  }
 
-  if(cognitionCallback != NULL)
-  {
-    std::cerr << "register COGNITION callback" << std::endl;
-    this->cognitionCallback = cognitionCallback;
-    this->cognitionCallback->init(*this);
-  }else
-  {
-    std::cerr << "could not register COGNITION callback because it was NULL" << std::endl;
-  }
-}//end registerCallbacks
-*/
-/*
-void PlatformInterface::callCognition()
+PlatformDataInterface::~PlatformDataInterface()
+{
+  cout<<"NaoTH clean..."<<endl;
+  delete_action_list(motionInput);
+  delete_action_list(motionOutput);
+  delete_action_list(cognitionInput);
+  delete_action_list(cognitionOutput);
+}
+
+
+void PlatformDataInterface::callCognition()
 {
   // TODO: assert?
   if(cognitionCallback != NULL)
@@ -55,19 +35,18 @@ void PlatformInterface::callCognition()
     setCognitionOutput();
   }
 }//end callCognition
-*/
-void PlatformInterface::getCognitionInput()
+
+void PlatformDataInterface::getCognitionInput()
 {
   execute(cognitionInput);
 }
 
-void PlatformInterface::setCognitionOutput()
+void PlatformDataInterface::setCognitionOutput()
 {
   execute(cognitionOutput);
 }
 
-/*
-void PlatformInterface::callMotion()
+void PlatformDataInterface::callMotion()
 {
   // TODO: assert?
   if(motionCallback != NULL)
@@ -77,13 +56,29 @@ void PlatformInterface::callMotion()
     setMotionOutput();
   }
 }//callMotion 
-*/
-void PlatformInterface::getMotionInput()
+
+void PlatformDataInterface::getMotionInput()
 {
   execute(motionInput);
 }
 
-void PlatformInterface::setMotionOutput()
+void PlatformDataInterface::setMotionOutput()
 {
   execute(motionOutput);
 }
+
+void PlatformDataInterface::delete_action_list(ActionList& actionList)
+{
+  for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); iter++)
+  {
+    delete (*iter);
+  }//end for
+}//end execute
+
+void PlatformDataInterface::execute(ActionList& actionList) const
+{
+  for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); iter++)
+  {
+    (*iter)->execute();
+  }//end for
+}//end execute

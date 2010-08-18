@@ -46,7 +46,7 @@ namespace naorunner
     string _bodyID;
     string _bodyNickName;
     //ConfigPathInfo _configPathInfo;
-    PlatformInterface* _platformInterface;
+    PlatformBase* _platformInterface;
 
   public:
     virtual ~Platform()
@@ -80,7 +80,7 @@ namespace naorunner
   #endif
     }
 
-    void init(PlatformInterface* _interface)
+    void init(PlatformBase* _interface)
     {
       ASSERT(_interface!=NULL);
       // TODO: check the communication?
@@ -104,7 +104,7 @@ namespace naorunner
     CameraInfoParameter theCameraInfo;
   //  Config theMassConfig;
 
-    PlatformInterface* const & thePlatformInterface;
+    PlatformBase* const & thePlatformInterface;
 
   };
 }

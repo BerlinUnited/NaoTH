@@ -15,7 +15,7 @@
 using namespace naorunner;
 
 WebotsController::WebotsController()
-  :AbstractPlatform<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
+  :PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
   key(0)
 {
   wb_robot_init();
@@ -510,6 +510,6 @@ void WebotsController::get(CurrentCameraSettings& data)
 
 void WebotsController::getCognitionInput()
 {
-  PlatformInterface::getCognitionInput();
+  PlatformInterface<WebotsController>::getCognitionInput();
   //get(theGPSDataProvider.theGPSData);
 }

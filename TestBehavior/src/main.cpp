@@ -20,14 +20,16 @@ int main(int argc, char** argv)
 {
   //naorunner::WebotsController theController;
   SimSparkController theController;
+  theController.init("NaoTH", 3, "localhost", 4100);
+  //theController.init();
+
 
   Cognition theCognition;
   Motion theMotion;
 
   theController.registerCallbacks(&theMotion, &theCognition);
 
-  theController.init("NaoTH", 3, "localhost", 4100);
-  //theController.init();
+
 
   theController.main();
 

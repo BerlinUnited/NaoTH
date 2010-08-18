@@ -1,25 +1,10 @@
 /**
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  */
 
 #ifndef _PLATFORMINTERFACE_H
 #define	_PLATFORMINTERFACE_H
-
-#include "Representations/Infrastructure/JointData.h"
-#include "Representations/Infrastructure/AccelerometerData.h"
-#include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/GyrometerData.h"
-#include "Representations/Infrastructure/FSRData.h"
-#include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/BumperData.h"
-#include "Representations/Infrastructure/IRData.h"
-#include "Representations/Infrastructure/CameraSettings.h"
-#include "Representations/Infrastructure/LEDData.h"
-#include "Representations/Infrastructure/UltraSoundData.h"
-#include "Representations/Infrastructure/SoundData.h"
-#include "Representations/Infrastructure/ButtonData.h"
-#include "Representations/Infrastructure/BatteryData.h"
 
 #include "Callable.h"
 #include "Interface/Tools/Debug/NaoTHAssert.h"
@@ -32,7 +17,11 @@ namespace naorunner
 {
   using namespace std;
 
-  // some interfaces
+  /*
+  * AbstractAction defines an interface for an action.
+  * It is used to wrap the call of a get/set method to read/write 
+  * a representation.
+  */
   struct AbstractAction
   {
     virtual void execute() = 0;
@@ -71,18 +60,66 @@ namespace naorunner
 
 
 
+  /* 
+   * 
+   */
+  class PlatformDataInterface
+  {
+  public:
+    virtual ~PlatformDataInterface();
+
+  protected:
+    PlatformDataInterface();
+
+  protected:
+    Callable* motionCallback;
+    Callable* cognitionCallback;
+
+    ActionList motionInput;
+    ActionList motionOutput;
+
+    ActionList cognitionInput;
+    ActionList cognitionOutput;
+
+  public:
+    inline virtual void callCognition();
+    inline virtual void getCognitionInput();
+    inline virtual void setCognitionOutput();
+
+    inline virtual void callMotion();
+    inline virtual void getMotionInput();
+    inline virtual void setMotionOutput();
+  
+  public:
+    inline void delete_action_list(ActionList& actionList);
+    inline void execute(ActionList& actionList) const;
+  };//end class PlatformDataInterface
+
+
+
   /*  the platform interface responses for 4 kinds of functionalities:
    * - get sensor data
    * - set action data
    * - initialize the cognition module and motion module
    * - main loop to call cognition and motion
    */
-  class PlatformInterface: public PlatformBase
+  template<class PlatformType>
+  class PlatformInterface: public PlatformBase, public PlatformDataInterface
   {
   public:
-    virtual ~PlatformInterface();
+    virtual ~PlatformInterface(){};
 
+  protected:
+    PlatformInterface(const std::string& name, unsigned int basicTimeStep)
+      : PlatformBase(name, basicTimeStep)
+    {
+      cout<<"NaoTH "<<getName()<<" starting..."<<endl;
+    }
 
+  //////////////////// GET/SET Actions /////////////////////
+  private:
+
+    // uncomment to have a runtime check of representation registration
     //template<class T> 
     //void get(T& data /* data */)
     //{
@@ -95,112 +132,46 @@ namespace naorunner
     //  THROW("try go set a not supported representation");
     //}
 
-  protected:
-    PlatformInterface(const std::string& name, unsigned int basicTimeStep);
-
-    //void callCognition();
-    virtual void getCognitionInput();
-    virtual void setCognitionOutput();
-
-    //void callMotion();
-    virtual void getMotionInput();
-    virtual void setMotionOutput();
-
-
-  protected:
-    ActionList motionInput;
-    ActionList motionOutput;
-
-    ActionList cognitionInput;
-    ActionList cognitionOutput;
-
-    inline void execute(ActionList& actionList) const
-    {
-      for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); iter++)
-      {
-        (*iter)->execute();
-      }//end for
-    }//end execute
-
-  };
-
-
-  template<class PlatformType>
-  class AbstractPlatform: public PlatformInterface
-  {
-  public:
-    AbstractPlatform(const std::string& name, unsigned int basicTimeStep)
-      : PlatformInterface(name, basicTimeStep),
-        motionCallback(NULL),
-        cognitionCallback(NULL)
-    {}
-
-    virtual ~AbstractPlatform(){};
-      //////////////////// GET/SET Actions /////////////////////
-  private:
-
     virtual PlatformType& getPlatform() = 0;
 
     template<class T>
     class RepresentationInputAction: public AbstractAction
     {
-      PlatformType& platformInterface;
+      PlatformType& platform;
       T& representation;
 
     public:
-      RepresentationInputAction(PlatformType& platformInterface, T& representation)
-        : platformInterface(platformInterface),
+      RepresentationInputAction(PlatformType& platform, T& representation)
+        : platform(platform),
           representation(representation)
       {}
 
       virtual void execute()
       {
-        platformInterface.get(representation);
+        platform.get(representation);
       }
     };//end RepresentationInputAction
 
     template<class T>
     class RepresentationOutputAction: public AbstractAction
     {
-      PlatformType& platformInterface;
+      PlatformType& platform;
       T& representation;
 
     public:
-      RepresentationOutputAction(PlatformType& platformInterface, T& representation)
-        : platformInterface(platformInterface),
+      RepresentationOutputAction(PlatformType& platform, T& representation)
+        : platform(platform),
           representation(representation)
       {}
 
       virtual void execute()
       {
-        platformInterface.set(representation);
+        platform.set(representation);
       }
     };//end RepresentationInputAction
 
+
   public:
-    void callMotion()
-    {
-      // TODO: assert?
-      if(motionCallback != NULL)
-      {
-        getMotionInput();
-        motionCallback->call();
-        setMotionOutput();
-      }
-    }//callMotion 
-
-
-    void callCognition()
-    {
-      // TODO: assert?
-      if(cognitionCallback != NULL)
-      {
-        getCognitionInput();
-        cognitionCallback->call();
-        setCognitionOutput();
-      }
-    }//end callCognition
-
     template<class T>
     void registerCognitionInput(T& data, const std::string& name)
     {
@@ -267,10 +238,7 @@ namespace naorunner
     }//end registerCallbacks
 
 
-    private:
-      Callable* motionCallback;
-      Callable* cognitionCallback;
-  };
+  };//end class PlatformInterface
 }
 
 #endif	/* _PLATFORMINTERFACE_H */

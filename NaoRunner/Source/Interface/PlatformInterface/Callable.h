@@ -10,7 +10,7 @@
 
 namespace naorunner
 {
-  class PlatformInterface;
+  //class PlatformInterface;
 
   class Callable
   {

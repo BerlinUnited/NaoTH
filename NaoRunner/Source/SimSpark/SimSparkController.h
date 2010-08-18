@@ -45,7 +45,7 @@
 
 using namespace naorunner;
 
-class SimSparkController : public AbstractPlatform<SimSparkController>
+class SimSparkController : public PlatformInterface<SimSparkController>
 {
 private:
   PrefixedSocketStream<TCPSocket> theSocket;
