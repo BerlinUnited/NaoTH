@@ -87,6 +87,8 @@ namespace naorunner
     WebotsController();
     virtual ~WebotsController();
 
+    virtual WebotsController& getPlatform(){return *this;}
+
     virtual string getHardwareIdentity() const { return "webots"; }
 
     virtual string getBodyID() { return "naoth-webots"; }

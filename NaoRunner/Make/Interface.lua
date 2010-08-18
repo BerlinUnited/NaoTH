@@ -6,5 +6,5 @@ project "Interface"
   
   includedirs {"../Source/","../Source/Interface/"}
   
-  files {"../Source/Interface/**.cpp"}
+  files {"../Source/Interface/**.cpp", "../Source/Interface/**.h"}
   
