@@ -15,11 +15,11 @@ namespace naorunner
   class Callable
   {
   public:
-
-    virtual void init(PlatformInterface& platformInterface)
+/*
+    virtual void init(PlatformInterface& platform)
     {
     }
-
+*/
     virtual void call() = 0;
 
   };

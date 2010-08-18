@@ -25,8 +25,8 @@ int main(int argc, char** argv)
   Motion theMotion;
 
   theController.registerCallbacks(&theMotion, &theCognition);
-  theController.init("NaoTH", 3, "localhost", 4100);
 
+  theController.init("NaoTH", 3, "localhost", 4100);
   //theController.init();
 
   theController.main();

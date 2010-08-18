@@ -12,19 +12,15 @@ using namespace naorunner;
 
 PlatformInterface::PlatformInterface(const std::string& name, unsigned int basicTimeStep)
   :
-  platformName(name),
-  theBasicTimeStep(basicTimeStep),
-
-  motionCallback(NULL),
-  cognitionCallback(NULL)
+  PlatformBase(name, basicTimeStep)
 {
-  cout<<"NaoTH "<<platformName<<" starting..."<<endl;
+  cout<<"NaoTH "<<getName()<<" starting..."<<endl;
 }
 
 PlatformInterface::~PlatformInterface()
 {
 }
-
+/*
 void PlatformInterface::registerCallbacks(Callable* motionCallback, Callable* cognitionCallback)
 {
   if(motionCallback != NULL)
@@ -47,8 +43,8 @@ void PlatformInterface::registerCallbacks(Callable* motionCallback, Callable* co
     std::cerr << "could not register COGNITION callback because it was NULL" << std::endl;
   }
 }//end registerCallbacks
-
-
+*/
+/*
 void PlatformInterface::callCognition()
 {
   // TODO: assert?
@@ -59,7 +55,7 @@ void PlatformInterface::callCognition()
     setCognitionOutput();
   }
 }//end callCognition
-
+*/
 void PlatformInterface::getCognitionInput()
 {
   execute(cognitionInput);
@@ -70,7 +66,7 @@ void PlatformInterface::setCognitionOutput()
   execute(cognitionOutput);
 }
 
-
+/*
 void PlatformInterface::callMotion()
 {
   // TODO: assert?
@@ -81,7 +77,7 @@ void PlatformInterface::callMotion()
     setMotionOutput();
   }
 }//callMotion 
-
+*/
 void PlatformInterface::getMotionInput()
 {
   execute(motionInput);

@@ -53,7 +53,7 @@ using namespace std;
 namespace naorunner
 {
 
-  class WebotsController : public PlatformInterface
+  class WebotsController : public AbstractPlatform<WebotsController>//PlatformInterface
   {
   public:
 

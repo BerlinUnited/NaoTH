@@ -16,15 +16,6 @@ Cognition::Cognition()
 {
 }
 
-void Cognition::init(PlatformInterface& platformInterface)
-{
-  std::cout << "Cognition register start" << std::endl;
-  platformInterface.registerCognitionInput(theSensorJointData, "SensorJointData");
-
-  platformInterface.registerCognitionOutput(theLEDData, "LEDData"); 
-  std::cout << "Cognition register end" << std::endl;
-}
-
 void Cognition::call()
 {
   std::cout << "Cognition was called" << std::endl;

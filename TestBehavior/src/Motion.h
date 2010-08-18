@@ -17,7 +17,16 @@ public:
   Motion();
   virtual ~Motion();
 
-  virtual void init(naorunner::PlatformInterface& platformInterface);
+  template<class PlatformType>
+  void init(PlatformType& platformInterface)
+  {
+    std::cout << "Motion register start" << std::endl;
+    platformInterface.registerMotionInput(theSensorJointData, "SensorJointData");
+
+    platformInterface.registerMotionOutput(theMotorJointData, "MotorJointData");
+    std::cout << "Motion register end" << std::endl;
+  }
+
   virtual void call();
 
 private:

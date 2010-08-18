@@ -45,7 +45,7 @@
 
 using namespace naorunner;
 
-class SimSparkController : public PlatformInterface
+class SimSparkController : public AbstractPlatform<SimSparkController>
 {
 private:
   PrefixedSocketStream<TCPSocket> theSocket;
@@ -68,6 +68,8 @@ private:
   double theStepTime; // the time of last step in seconds
 
   //SimSparkTeamCommunicator theTeamComm;
+
+  virtual SimSparkController& getPlatform(){return *this;}
 
 protected:
   bool isNewImage;
@@ -104,7 +106,7 @@ public:
   // the main loop in three threads
   void multiThreadsMain();
 
-protected:
+public:
   virtual void get(FrameInfo& data);
 
   virtual void get(SensorJointData& data);

@@ -19,7 +19,18 @@ public:
   Cognition();
   virtual ~Cognition();
 
-  virtual void init(naorunner::PlatformInterface& platformInterface);
+
+  template<class PlatformType>
+  void init(PlatformType& platformInterface)
+  {
+    std::cout << "Cognition register start" << std::endl;
+    platformInterface.registerCognitionInput(theSensorJointData, "SensorJointData");
+
+    platformInterface.registerCognitionOutput(theLEDData, "LEDData"); 
+    std::cout << "Cognition register end" << std::endl;
+  }
+
+
   virtual void call();
 
 private:

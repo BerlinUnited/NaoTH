@@ -18,15 +18,6 @@ Motion::Motion()
 {
 }
 
-void Motion::init(PlatformInterface& platformInterface)
-{
-  std::cout << "Motion register start" << std::endl;
-  platformInterface.registerMotionInput(theSensorJointData, "SensorJointData");
-
-  platformInterface.registerMotionOutput(theMotorJointData, "MotorJointData");
-  std::cout << "Motion register end" << std::endl;
-}
-
 void Motion::call()
 {
   std::cout << "Motion was called" << std::endl;

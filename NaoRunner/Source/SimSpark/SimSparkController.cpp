@@ -18,7 +18,7 @@
 using namespace std;
 
 SimSparkController::SimSparkController()
-: PlatformInterface("SimSpark", 20)
+: AbstractPlatform<SimSparkController>("SimSpark", 20)
 {
   // init the name -- id maps
   theJointSensorNameMap.clear();
