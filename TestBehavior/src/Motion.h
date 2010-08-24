@@ -8,6 +8,7 @@
 #ifndef MOTION_H
 #define	MOTION_H
 
+#include <iostream>
 #include <Interface/Representations/Infrastructure/JointData.h>
 #include <Interface/PlatformInterface/Callable.h>
 

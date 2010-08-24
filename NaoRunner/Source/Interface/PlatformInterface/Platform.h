@@ -14,6 +14,7 @@
 #include <net/if.h>
 #endif // undef WIN32
 
+#include <string.h>
 #include "PlatformInterface.h"
 #include "Interface/Tools/DataStructures/Singleton.h"
 #include "Interface/Representations/Infrastructure/CameraInfo.h"

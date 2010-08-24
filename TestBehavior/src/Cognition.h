@@ -8,6 +8,7 @@
 #ifndef COGNITION_H
 #define	COGNITION_H
 
+#include <iostream>
 #include <Interface/PlatformInterface/Callable.h>
 
 #include <Interface/Representations/Infrastructure/JointData.h>
