@@ -45,9 +45,9 @@ public:
   virtual void call();
 
 private:
-  void sense();
+  void percetion();
 
-  void think();
+  void decide();
 
 private:
   naorunner::SensorJointData theSensorJointData;
