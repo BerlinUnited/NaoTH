@@ -40,6 +40,8 @@ public:
     double time;
   };
 
+  std::list<KeyFrame> loadKeyFrames(const std::string& filename);
+
 private:
   int theTimeStep;
 
@@ -52,6 +54,8 @@ private:
   naorunner::SensorJointData theSensorJointData;
   naorunner::MotorJointData theMotorJointData;
 };
+
+std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf);
 
 #endif	/* MOTION_H */
 

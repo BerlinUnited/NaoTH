@@ -8,6 +8,7 @@
 #include "Motion.h"
 
 #include <iostream>
+#include <fstream>
 #include <Interface/PlatformInterface/Platform.h>
 
 using namespace std;
@@ -26,17 +27,8 @@ Motion::Motion():
 theTimeStep(20),
   theKeyFrameTime(0)
 {
-  KeyFrame open;
-  open.position[JointData::LShoulderRoll] = Math::fromDegrees(90);
-  open.position[JointData::RShoulderRoll] = Math::fromDegrees(-90);
-  open.time = 1000;
-
-  KeyFrame close;
-  close.time = 1000;
-
-  testKeyFrame.push_back(open);
-  testKeyFrame.push_back(close);
-
+  testKeyFrame = loadKeyFrames("keyframes/test.txt");
+  
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
     theMotorJointData.hardness[i] = 1.0;
@@ -55,7 +47,7 @@ void Motion::call()
   double t = theKeyFrameTime / frame.time;
   for(int i=0; i<JointData::numOfJoint; i++)
   {
-    theMotorJointData.position[i] = theLastKeyFrame.position[i] * (1-t) + frame.position[i] * t;
+    theMotorJointData.position[i] = Math::fromDegrees( theLastKeyFrame.position[i] * (1-t) + frame.position[i] * t );
   }
 
   theKeyFrameTime += theTimeStep;
@@ -72,3 +64,27 @@ Motion::~Motion()
 {
 }
 
+std::list<Motion::KeyFrame> Motion::loadKeyFrames(const std::string& filename)
+{
+  std::list<Motion::KeyFrame> keyFrameList;
+  ifstream ifile(filename.c_str());
+  while ( !ifile.eof() )
+  {
+    KeyFrame k;
+    ifile>>k;
+    if ( k.time > 0 ) keyFrameList.push_back(k);
+  }
+
+  return keyFrameList;
+}
+
+std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf)
+{
+  in >> kf.time;
+  for(int i=0; i<JointData::numOfJoint; i++)
+  {
+    in >> kf.position[i];
+  }
+  
+  return in;
+}
