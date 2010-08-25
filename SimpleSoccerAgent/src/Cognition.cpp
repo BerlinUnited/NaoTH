@@ -9,25 +9,49 @@
 
 #include <iostream>
 #include <Interface/PlatformInterface/PlatformInterface.h>
+#include <map>
 
+using namespace std;
 using namespace naorunner;
 
-Cognition::Cognition()
+Cognition::Cognition():
+isStandingUp(true)
 {
 }
 
 void Cognition::call()
 {
-  std::cout << "Cognition was called" << std::endl;
-  std::cout << naorunner::JointData::getJointName(naorunner::JointData::LShoulderRoll)
-    << theSensorJointData.position[naorunner::JointData::LShoulderRoll] << std::endl;
+  percetion();
 
-  static int idx = 0;
-  idx = (idx+1)%naorunner::LEDData::numOfMonoLED;
-  theLEDData.theMonoLED[idx] = 2.0 - theLEDData.theMonoLED[idx];
+  decide();
 }//end call
 
 Cognition::~Cognition()
 {
 }
 
+void Cognition::percetion()
+{
+  // update ball percept
+  std::map<std::string, Vector3<double> >::const_iterator ballData = theVirtualVision.data.find("B");
+  if (ballData != theVirtualVision.data.end())
+  {
+    theBall.wasSeen = true;
+    theBall.distance = ballData->second[0];
+  }
+  else
+  {
+    theBall.wasSeen = false;
+  }
+
+  // update if the robot is standing up
+  if ( abs(theInertialSensorData.data[InertialSensorData::X]) < Math::fromDegrees(45)
+    && abs(theInertialSensorData.data[InertialSensorData::Y]) < Math::fromDegrees(45) )
+    isStandingUp = true;
+  else
+    isStandingUp = false;
+}
+
+void Cognition::decide()
+{
+}

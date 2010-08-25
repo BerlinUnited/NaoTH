@@ -154,7 +154,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
 void SimSparkController::main()
 {
-  cout << "SImSpark Controller runs in signle thread" << endl;
+  cout << "SimSpark Controller runs in signle thread" << endl;
   while ( updateSensors() )
   {
     //Cognition::getInstance().main();
@@ -276,7 +276,7 @@ bool SimSparkController::updateSensors()
         ok = updateFSR(t->next); // force sensor
       } else if ("See" == name)
       {// See
-        //theVirtualVision.clear();
+        theVirtualVision.clear();
         ok = updateSee("", t->next);
         if ( ok ) isNewImage = true;
       } else if ("time" == name)
@@ -648,9 +648,18 @@ void SimSparkController::get(InertialSensorData& data)
     //data = theInertialSensorData;
 }
 
+void SimSparkController::get(VirtualVision& data)
+{
+  data = theVirtualVision;
+}
+
+void SimSparkController::get(SimSparkGameInfo& data)
+{
+  data = theGameInfo;
+}
+
 void SimSparkController::updateInertialSensor()
 {
-  /*
   // calculate inertial sensor data by gyrometer
   const double *gyrometer = theGyroData.data;
   static double oldGyroX = gyrometer[0];
@@ -675,14 +684,6 @@ void SimSparkController::updateInertialSensor()
     theInertialSensorData.data[InertialSensorData::X] = (1 - k) * theInertialSensorData.data[InertialSensorData::X] + k * x;
     theInertialSensorData.data[InertialSensorData::Y] = (1 - k) * theInertialSensorData.data[InertialSensorData::Y] + k * y;
   }
-
-//  PLOT("IMU.X", theIMU[0]);
-//  PLOT("IMU.Y",theIMU[1]);
-//  PLOT("IS.X", theInertialSensorData.data[InertialSensorData::X]);
-//  PLOT("IS.Y", theInertialSensorData.data[InertialSensorData::Y]);
-//  PLOT("Eis.X", Math::toDegrees((theIMU[0] - theInertialSensorData.data[InertialSensorData::X])));
-//  PLOT("Eis.Y", Math::toDegrees((theIMU[1] - theInertialSensorData.data[InertialSensorData::Y])));
-*/
 }
 
 void SimSparkController::get(BumperData& /*data*/)

@@ -20,7 +20,7 @@ Motion::Motion()
 
 void Motion::call()
 {
-  std::cout << "Motion was called" << std::endl;
+//  std::cout << "Motion was called" << std::endl;
 
   theMotorJointData.hardness[naorunner::JointData::LShoulderRoll] = 0.9;
   theMotorJointData.hardness[naorunner::JointData::RShoulderRoll] = 0.9;
@@ -33,7 +33,7 @@ void Motion::call()
   theMotorJointData.position[naorunner::JointData::LShoulderRoll] = pos;
   theMotorJointData.position[naorunner::JointData::RShoulderRoll] = -pos;
 
-  std::cout << "sensor pos=" << pos << std::endl;
+//  std::cout << "sensor pos=" << pos << std::endl;
 }//end call
 
 Motion::~Motion()

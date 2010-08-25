@@ -108,9 +108,6 @@
         <in>SimSparkController.h</in>
         <in>SimSparkGameInfo.cpp</in>
         <in>SimSparkGameInfo.h</in>
-        <in>SimSparkOfficialController.cpp</in>
-        <in>SimSparkOfficialController.h</in>
-        <in>main.cpp</in>
       </df>
       <df name="Webots" kind="SOURCE_LOGICAL_FOLDER">
         <in>WebotsController.cpp</in>

@@ -12,7 +12,12 @@
 #include <Interface/PlatformInterface/Callable.h>
 
 #include <Interface/Representations/Infrastructure/JointData.h>
-#include <Interface/Representations/Infrastructure/LEDData.h>
+#include <Interface/Representations/Infrastructure/VirtualVision.h>
+#include <Interface/Representations/Infrastructure/FrameInfo.h>
+#include <Interface/Representations/Infrastructure/InertialSensorData.h>
+#include <SimSpark/SimSparkGameInfo.h>
+
+#include "BallPercept.h"
 
 class Cognition : public naorunner::Callable
 {
@@ -25,9 +30,14 @@ public:
   void init(PlatformType& platformInterface)
   {
     std::cout << "Cognition register start" << std::endl;
-    platformInterface.registerCognitionInput(theSensorJointData, "SensorJointData");
+#define REGISTER_INPUT(R) platformInterface.registerCognitionInput(the##R, #R)
+    REGISTER_INPUT(SensorJointData);
+    REGISTER_INPUT(VirtualVision);
+    REGISTER_INPUT(SimSparkGameInfo);
+    REGISTER_INPUT(FrameInfo);
+    REGISTER_INPUT(InertialSensorData);
 
-    platformInterface.registerCognitionOutput(theLEDData, "LEDData"); 
+#undef REGISTER_INPUT
     std::cout << "Cognition register end" << std::endl;
   }
 
@@ -35,8 +45,19 @@ public:
   virtual void call();
 
 private:
+  void percetion();
+
+  void decide();
+
+private:
   naorunner::SensorJointData theSensorJointData;
-  naorunner::LEDData theLEDData;
+  naorunner::VirtualVision theVirtualVision;
+  naorunner::FrameInfo theFrameInfo;
+  naorunner::InertialSensorData theInertialSensorData;
+  SimSparkGameInfo theSimSparkGameInfo;
+
+  BallPercept theBall;
+  bool isStandingUp;
 };
 
 #endif	/* COGNITION_H */
