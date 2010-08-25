@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <Interface/PlatformInterface/PlatformInterface.h>
+#include <map>
 
 using namespace std;
 using namespace naorunner;
@@ -19,12 +20,31 @@ Cognition::Cognition()
 
 void Cognition::call()
 {
-  cout<<"Game Mode = "<<theSimSparkGameInfo.thePlayMode<<endl;
-//  std::cout << naorunner::JointData::getJointName(naorunner::JointData::LShoulderRoll)
-//    << theSensorJointData.position[naorunner::JointData::LShoulderRoll] << std::endl;
+  sense();
+
+  think();
 }//end call
 
 Cognition::~Cognition()
 {
 }
 
+void Cognition::sense()
+{
+  // update ball percept
+  std::map<std::string, Vector3<double> >::const_iterator ballData = theVirtualVision.data.find("B");
+  if (ballData != theVirtualVision.data.end())
+  {
+    theBall.wasSeen = true;
+    theBall.distance = ballData->second[0];
+  }
+  else
+  {
+    theBall.wasSeen = false;
+  }
+}
+
+void Cognition::think()
+{
+
+}

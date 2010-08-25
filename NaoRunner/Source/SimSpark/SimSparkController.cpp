@@ -276,7 +276,7 @@ bool SimSparkController::updateSensors()
         ok = updateFSR(t->next); // force sensor
       } else if ("See" == name)
       {// See
-        //theVirtualVision.clear();
+        theVirtualVision.clear();
         ok = updateSee("", t->next);
         if ( ok ) isNewImage = true;
       } else if ("time" == name)

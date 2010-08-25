@@ -13,7 +13,10 @@
 
 #include <Interface/Representations/Infrastructure/JointData.h>
 #include <Interface/Representations/Infrastructure/VirtualVision.h>
+#include <Interface/Representations/Infrastructure/FrameInfo.h>
 #include <SimSpark/SimSparkGameInfo.h>
+
+#include "BallPercept.h"
 
 class Cognition : public naorunner::Callable
 {
@@ -30,6 +33,7 @@ public:
     REGISTER_INPUT(SensorJointData);
     REGISTER_INPUT(VirtualVision);
     REGISTER_INPUT(SimSparkGameInfo);
+    REGISTER_INPUT(FrameInfo);
 
 #undef REGISTER_INPUT
     std::cout << "Cognition register end" << std::endl;
@@ -39,9 +43,17 @@ public:
   virtual void call();
 
 private:
+  void sense();
+
+  void think();
+
+private:
   naorunner::SensorJointData theSensorJointData;
   naorunner::VirtualVision theVirtualVision;
+  naorunner::FrameInfo theFrameInfo;
   SimSparkGameInfo theSimSparkGameInfo;
+
+  BallPercept theBall;
 };
 
 #endif	/* COGNITION_H */
