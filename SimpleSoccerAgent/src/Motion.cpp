@@ -8,32 +8,64 @@
 #include "Motion.h"
 
 #include <iostream>
-
 #include <Interface/PlatformInterface/Platform.h>
 
+using namespace std;
 using namespace naorunner;
 
-Motion::Motion()
-: countUp(true),pos(0)
+Motion::KeyFrame::KeyFrame()
 {
+  for (int i = 0; i < JointData::numOfJoint; i++)
+  {
+    position[i] = 0;
+  }
+  time = 0;
+}
+
+Motion::Motion():
+theTimeStep(20),
+  theKeyFrameTime(0)
+{
+  KeyFrame open;
+  open.position[JointData::LShoulderRoll] = Math::fromDegrees(90);
+  open.position[JointData::RShoulderRoll] = Math::fromDegrees(-90);
+  open.time = 1000;
+
+  KeyFrame close;
+  close.time = 1000;
+
+  testKeyFrame.push_back(open);
+  testKeyFrame.push_back(close);
+
+  for (int i = 0; i < JointData::numOfJoint; i++)
+  {
+    theMotorJointData.hardness[i] = 1.0;
+  }
 }
 
 void Motion::call()
 {
-//  std::cout << "Motion was called" << std::endl;
-
-  theMotorJointData.hardness[naorunner::JointData::LShoulderRoll] = 0.9;
-  theMotorJointData.hardness[naorunner::JointData::RShoulderRoll] = 0.9;
-
-  pos = countUp ? pos + 0.01 : pos - 0.01;
-  if(pos >= 0.9 || pos <= 0)
+  if ( activeKeyFrame.empty() )
   {
-    countUp = !countUp;
+    activeKeyFrame = testKeyFrame;
   }
-  theMotorJointData.position[naorunner::JointData::LShoulderRoll] = pos;
-  theMotorJointData.position[naorunner::JointData::RShoulderRoll] = -pos;
 
-//  std::cout << "sensor pos=" << pos << std::endl;
+  KeyFrame& frame = activeKeyFrame.front();
+
+  double t = theKeyFrameTime / frame.time;
+  for(int i=0; i<JointData::numOfJoint; i++)
+  {
+    theMotorJointData.position[i] = theLastKeyFrame.position[i] * (1-t) + frame.position[i] * t;
+  }
+
+  theKeyFrameTime += theTimeStep;
+  if (frame.time <= theKeyFrameTime)
+  {
+    theLastKeyFrame = frame;
+    theKeyFrameTime = 0;
+    activeKeyFrame.pop_front();
+  }
+
 }//end call
 
 Motion::~Motion()
