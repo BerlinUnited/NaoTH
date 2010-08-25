@@ -17,4 +17,4 @@ project "SimpleSoccerAgent"
 	  
 	  links {"naoth-simspark", "naointerface", "sfsexp", "pthread"}
 	  
-	  targetname "simple_soccer_agent"
+	  targetname "simple-soccer-agent"
