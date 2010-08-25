@@ -82,13 +82,13 @@ namespace naorunner
     ActionList cognitionOutput;
 
   public:
-    inline virtual void callCognition();
-    inline virtual void getCognitionInput();
-    inline virtual void setCognitionOutput();
+    virtual void callCognition();
+    virtual void getCognitionInput();
+    virtual void setCognitionOutput();
 
-    inline virtual void callMotion();
-    inline virtual void getMotionInput();
-    inline virtual void setMotionOutput();
+    virtual void callMotion();
+    virtual void getMotionInput();
+    virtual void setMotionOutput();
   
   public:
     inline void delete_action_list(ActionList& actionList);
