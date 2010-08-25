@@ -154,7 +154,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
 void SimSparkController::main()
 {
-  cout << "SImSpark Controller runs in signle thread" << endl;
+  cout << "SimSpark Controller runs in signle thread" << endl;
   while ( updateSensors() )
   {
     //Cognition::getInstance().main();
@@ -646,6 +646,16 @@ void SimSparkController::get(FSRData& data)
 void SimSparkController::get(InertialSensorData& data)
 {
     //data = theInertialSensorData;
+}
+
+void SimSparkController::get(VirtualVision& data)
+{
+  data = theVirtualVision;
+}
+
+void SimSparkController::get(SimSparkGameInfo& data)
+{
+  data = theGameInfo;
 }
 
 void SimSparkController::updateInertialSensor()

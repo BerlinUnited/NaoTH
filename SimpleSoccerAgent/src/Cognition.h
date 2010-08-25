@@ -12,7 +12,8 @@
 #include <Interface/PlatformInterface/Callable.h>
 
 #include <Interface/Representations/Infrastructure/JointData.h>
-#include <Interface/Representations/Infrastructure/LEDData.h>
+#include <Interface/Representations/Infrastructure/VirtualVision.h>
+#include <SimSpark/SimSparkGameInfo.h>
 
 class Cognition : public naorunner::Callable
 {
@@ -25,9 +26,12 @@ public:
   void init(PlatformType& platformInterface)
   {
     std::cout << "Cognition register start" << std::endl;
-    platformInterface.registerCognitionInput(theSensorJointData, "SensorJointData");
+#define REGISTER_INPUT(R) platformInterface.registerCognitionInput(the##R, #R)
+    REGISTER_INPUT(SensorJointData);
+    REGISTER_INPUT(VirtualVision);
+    REGISTER_INPUT(SimSparkGameInfo);
 
-    platformInterface.registerCognitionOutput(theLEDData, "LEDData"); 
+#undef REGISTER_INPUT
     std::cout << "Cognition register end" << std::endl;
   }
 
@@ -36,7 +40,8 @@ public:
 
 private:
   naorunner::SensorJointData theSensorJointData;
-  naorunner::LEDData theLEDData;
+  naorunner::VirtualVision theVirtualVision;
+  SimSparkGameInfo theSimSparkGameInfo;
 };
 
 #endif	/* COGNITION_H */
