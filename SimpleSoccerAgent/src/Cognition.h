@@ -14,6 +14,7 @@
 #include <Interface/Representations/Infrastructure/JointData.h>
 #include <Interface/Representations/Infrastructure/VirtualVision.h>
 #include <Interface/Representations/Infrastructure/FrameInfo.h>
+#include <Interface/Representations/Infrastructure/InertialSensorData.h>
 #include <SimSpark/SimSparkGameInfo.h>
 
 #include "BallPercept.h"
@@ -34,6 +35,7 @@ public:
     REGISTER_INPUT(VirtualVision);
     REGISTER_INPUT(SimSparkGameInfo);
     REGISTER_INPUT(FrameInfo);
+    REGISTER_INPUT(InertialSensorData);
 
 #undef REGISTER_INPUT
     std::cout << "Cognition register end" << std::endl;
@@ -51,9 +53,11 @@ private:
   naorunner::SensorJointData theSensorJointData;
   naorunner::VirtualVision theVirtualVision;
   naorunner::FrameInfo theFrameInfo;
+  naorunner::InertialSensorData theInertialSensorData;
   SimSparkGameInfo theSimSparkGameInfo;
 
   BallPercept theBall;
+  bool isStandingUp;
 };
 
 #endif	/* COGNITION_H */

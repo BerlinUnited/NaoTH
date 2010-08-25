@@ -71,7 +71,7 @@ protected:
   bool isNewImage;
   VirtualVision theVirtualVision;
   //REPRESENTATION_PROVIDER(VirtualVisionProvider, Cognition, VirtualVision);
-  //InertialSensorData theInertialSensorData;
+  InertialSensorData theInertialSensorData;
   SimSparkGameInfo theGameInfo;
   SensorJointData theSensorJointData;
   double theIMU[2];

@@ -14,7 +14,8 @@
 using namespace std;
 using namespace naorunner;
 
-Cognition::Cognition()
+Cognition::Cognition():
+isStandingUp(true)
 {
 }
 
@@ -42,9 +43,15 @@ void Cognition::sense()
   {
     theBall.wasSeen = false;
   }
+
+  // update if the robot is standing up
+  if ( abs(theInertialSensorData.data[InertialSensorData::X]) < Math::fromDegrees(45)
+    && abs(theInertialSensorData.data[InertialSensorData::Y]) < Math::fromDegrees(45) )
+    isStandingUp = true;
+  else
+    isStandingUp = false;
 }
 
 void Cognition::think()
 {
-
 }

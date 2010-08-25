@@ -660,7 +660,6 @@ void SimSparkController::get(SimSparkGameInfo& data)
 
 void SimSparkController::updateInertialSensor()
 {
-  /*
   // calculate inertial sensor data by gyrometer
   const double *gyrometer = theGyroData.data;
   static double oldGyroX = gyrometer[0];
@@ -685,14 +684,6 @@ void SimSparkController::updateInertialSensor()
     theInertialSensorData.data[InertialSensorData::X] = (1 - k) * theInertialSensorData.data[InertialSensorData::X] + k * x;
     theInertialSensorData.data[InertialSensorData::Y] = (1 - k) * theInertialSensorData.data[InertialSensorData::Y] + k * y;
   }
-
-//  PLOT("IMU.X", theIMU[0]);
-//  PLOT("IMU.Y",theIMU[1]);
-//  PLOT("IS.X", theInertialSensorData.data[InertialSensorData::X]);
-//  PLOT("IS.Y", theInertialSensorData.data[InertialSensorData::Y]);
-//  PLOT("Eis.X", Math::toDegrees((theIMU[0] - theInertialSensorData.data[InertialSensorData::X])));
-//  PLOT("Eis.Y", Math::toDegrees((theIMU[1] - theInertialSensorData.data[InertialSensorData::Y])));
-*/
 }
 
 void SimSparkController::get(BumperData& /*data*/)
