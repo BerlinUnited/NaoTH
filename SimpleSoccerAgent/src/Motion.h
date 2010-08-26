@@ -48,8 +48,6 @@ private:
   std::list<KeyFrame> testKeyFrame;
 
   std::list<KeyFrame> activeKeyFrame;
-  KeyFrame theLastKeyFrame;
-  int theKeyFrameTime;
 
   naorunner::SensorJointData theSensorJointData;
   naorunner::MotorJointData theMotorJointData;

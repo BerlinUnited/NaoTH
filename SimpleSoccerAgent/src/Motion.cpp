@@ -24,10 +24,9 @@ Motion::KeyFrame::KeyFrame()
 }
 
 Motion::Motion():
-theTimeStep(20),
-  theKeyFrameTime(0)
+theTimeStep(20)
 {
-  testKeyFrame = loadKeyFrames("keyframes/test.txt");
+  testKeyFrame = loadKeyFrames("keyframes/stand_up_from_front.txt");
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -44,17 +43,15 @@ void Motion::call()
 
   KeyFrame& frame = activeKeyFrame.front();
 
-  double t = theKeyFrameTime / frame.time;
+  double dt = theTimeStep/frame.time;
   for(int i=0; i<JointData::numOfJoint; i++)
   {
-    theMotorJointData.position[i] = Math::fromDegrees( theLastKeyFrame.position[i] * (1-t) + frame.position[i] * t );
+    theMotorJointData.position[i] = (1.0-dt)*theMotorJointData.position[i] + dt*frame.position[i];
   }
 
-  theKeyFrameTime += theTimeStep;
-  if (frame.time <= theKeyFrameTime)
+  frame.time -= theTimeStep;
+  if (frame.time <= theTimeStep)
   {
-    theLastKeyFrame = frame;
-    theKeyFrameTime = 0;
     activeKeyFrame.pop_front();
   }
 
@@ -84,6 +81,7 @@ std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf)
   for(int i=0; i<JointData::numOfJoint; i++)
   {
     in >> kf.position[i];
+    kf.position[i] = Math::fromDegrees(kf.position[i]);
   }
   
   return in;

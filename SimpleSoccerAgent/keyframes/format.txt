@@ -1,4 +1,4 @@
-Time HeadPitch HeadYaw RShoulderRoll LShoulderRoll RShoulderPitch LShoulderPitch RElbowRoll LElbowRoll RElbowYaw LElbowYaw RHipYawPitch LHipYawPitch RHipPitch LHipPitch RHipRoll LHipRoll RKneePitch LKneePitch RAnklePitch LAnklePitch RAnkleRoll LAnkleRoll
+Time HeadPitch HeadYaw RShoulderPitch LShoulderPitch RShoulderRoll LShoulderRoll RElbowRoll LElbowRoll RElbowYaw LElbowYaw RHipYawPitch LHipYawPitch RHipPitch LHipPitch RHipRoll LHipRoll RKneePitch LKneePitch RAnklePitch LAnklePitch RAnkleRoll LAnkleRoll
 
 for example:
 
