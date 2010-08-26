@@ -16,6 +16,16 @@
 class Motion : public naorunner::Callable
 {
 public:
+  enum Request
+  {
+    stand,
+    walk_forward,
+    turn_left,
+    stand_up_from_front,
+    stand_up_from_back,
+    numOfRequet
+  };
+
   Motion();
   virtual ~Motion();
 
@@ -42,10 +52,13 @@ public:
 
   std::list<KeyFrame> loadKeyFrames(const std::string& filename);
 
+  static void request(Request r);
+
 private:
   int theTimeStep;
 
-  std::list<KeyFrame> testKeyFrame;
+  static Request theRequest;
+  std::list<KeyFrame> theKeyFrame[numOfRequet];
 
   std::list<KeyFrame> activeKeyFrame;
 

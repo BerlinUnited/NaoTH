@@ -23,10 +23,17 @@ Motion::KeyFrame::KeyFrame()
   time = 0;
 }
 
+Motion::Request Motion::theRequest = Motion::stand;
+
 Motion::Motion():
 theTimeStep(20)
 {
-  testKeyFrame = loadKeyFrames("keyframes/turn_left.txt");
+  string dir = "keyframes/";
+  theKeyFrame[stand] = loadKeyFrames(dir+"stand.txt");
+  theKeyFrame[walk_forward] = loadKeyFrames(dir+"walk_forward.txt");
+  theKeyFrame[turn_left] = loadKeyFrames(dir+"turn_left.txt");
+  theKeyFrame[stand_up_from_front] = loadKeyFrames(dir+"stand_up_from_front.txt");
+  theKeyFrame[stand_up_from_back] = loadKeyFrames(dir+"stand_up_from_back.txt");
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -38,7 +45,7 @@ void Motion::call()
 {
   if ( activeKeyFrame.empty() )
   {
-    activeKeyFrame = testKeyFrame;
+    activeKeyFrame = theKeyFrame[theRequest];
   }
 
   KeyFrame& frame = activeKeyFrame.front();
@@ -85,4 +92,9 @@ std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf)
   }
   
   return in;
+}
+
+void Motion::request(Request r)
+{
+  theRequest = r;
 }
