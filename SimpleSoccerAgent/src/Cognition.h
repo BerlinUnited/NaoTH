@@ -1,8 +1,8 @@
-/* 
- * File:   Cognition.h
- * Author: thomas
+/**
+ * @file Cognition.h
  *
- * Created on 10. August 2010, 17:27
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ *
  */
 
 #ifndef COGNITION_H

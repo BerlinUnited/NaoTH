@@ -73,8 +73,8 @@ SimSparkController::SimSparkController()
   theCameraId = 0;
   theSenseTime = 0;
 
-  pthread_mutex_init(&theCognitionInputMutex, NULL);
-  pthread_cond_init(&theCognitionInputCond, NULL);
+//  pthread_mutex_init(&theCognitionInputMutex, NULL);
+//  pthread_cond_init(&theCognitionInputCond, NULL);
 
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
@@ -187,7 +187,7 @@ void* motionLoopWrap(void* c)
 {
   SimSparkController* ctr = static_cast<SimSparkController*> (c);
   ctr->motionLoop();
-  pthread_exit(NULL);
+//  pthread_exit(NULL);
   return NULL;
 }//end motionLoopWrap
 
@@ -198,9 +198,9 @@ void SimSparkController::multiThreadsMain()
   //Motion::getInstance().main();
   callMotion();
 
-  pthread_t motionThread;
-  int mt = pthread_create(&motionThread, NULL, motionLoopWrap, this);
-  ASSERT(mt == 0);
+//  pthread_t motionThread;
+//  int mt = pthread_create(&motionThread, NULL, motionLoopWrap, this);
+//  ASSERT(mt == 0);
 
   cognitionLoop();
 }//end multiThreadsMain
@@ -228,13 +228,13 @@ void SimSparkController::setMotionOutput()
 
 void SimSparkController::getCognitionInput()
 {
-  pthread_mutex_lock(&theCognitionInputMutex);
-  while (!isNewImage)
-  {
-    pthread_cond_wait(&theCognitionInputCond, &theCognitionInputMutex);
-  }
+//  pthread_mutex_lock(&theCognitionInputMutex);
+//  while (!isNewImage)
+//  {
+//    pthread_cond_wait(&theCognitionInputCond, &theCognitionInputMutex);
+//  }
   PlatformInterface<SimSparkController>::getCognitionInput();
-  pthread_mutex_unlock(&theCognitionInputMutex);
+//  pthread_mutex_unlock(&theCognitionInputMutex);
 }
 
 bool SimSparkController::updateSensors()
@@ -255,7 +255,7 @@ bool SimSparkController::updateSensors()
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
 
-  pthread_mutex_lock(&theCognitionInputMutex);
+//  pthread_mutex_lock(&theCognitionInputMutex);
 
   // clear FSR data, since if there is no FSR data, it means no toch
   for (int i = 0; i < FSRData::numOfFSR; i++)
@@ -303,10 +303,10 @@ bool SimSparkController::updateSensors()
 
   updateInertialSensor();
 
-  if ( isNewImage ){
-    pthread_cond_signal(&theCognitionInputCond);
-  }
-  pthread_mutex_unlock(&theCognitionInputMutex);
+//  if ( isNewImage ){
+//    pthread_cond_signal(&theCognitionInputCond);
+//  }
+//  pthread_mutex_unlock(&theCognitionInputMutex);
 
   destroy_sexp(sexp);
   destroy_continuation(pcont);
@@ -318,10 +318,10 @@ bool SimSparkController::updateImage(const std::string& msg)
 {
   if ("Image" == msg.substr(0, 5))
   {
-    pthread_mutex_lock(&theCognitionInputMutex);
+//    pthread_mutex_lock(&theCognitionInputMutex);
     theImageData = msg.substr(5);
     isNewImage = true;
-    pthread_mutex_unlock(&theCognitionInputMutex);
+//    pthread_mutex_unlock(&theCognitionInputMutex);
     return true;
   }
   return false;

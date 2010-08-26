@@ -15,6 +15,6 @@ project "SimpleSoccerAgent"
 
 	  libdirs {"../NaoRunner/dist/", "../NaoRunner/Lib/", "../Extern/lib/",  "../NaoRunner/Lib/win32/lib/"}
 	  
-	  links {"naoth-simspark", "naointerface", "sfsexp", "pthread"}
+	  links {"naoth-simspark", "naointerface", "sfsexp", "wsock32"}
 	  
 	  targetname "simple-soccer-agent"
