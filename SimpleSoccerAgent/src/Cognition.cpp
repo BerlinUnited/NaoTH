@@ -6,6 +6,7 @@
  */
 
 #include "Cognition.h"
+#include "Motion.h"
 
 #include <iostream>
 #include <Interface/PlatformInterface/PlatformInterface.h>
@@ -54,4 +55,19 @@ void Cognition::percetion()
 
 void Cognition::decide()
 {
+  if (!isStandingUp)
+  {
+    if (theInertialSensorData.data[InertialSensorData::Y] > 0)
+      Motion::request(Motion::stand_up_from_front);
+    else
+      Motion::request(Motion::stand_up_from_back);
+  }
+  else if ( theBall.wasSeen )
+  {
+    Motion::request(Motion::walk_forward);
+  }
+  else
+  {
+    Motion::request(Motion::turn_left);
+  }
 }
