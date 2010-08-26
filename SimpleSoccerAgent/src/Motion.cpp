@@ -26,7 +26,7 @@ Motion::KeyFrame::KeyFrame()
 Motion::Motion():
 theTimeStep(20)
 {
-  testKeyFrame = loadKeyFrames("keyframes/stand.txt");
+  testKeyFrame = loadKeyFrames("keyframes/walk_forward.txt");
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
