@@ -9,6 +9,7 @@
 #define	MOTION_H
 
 #include <iostream>
+#include <list>
 #include <Interface/Representations/Infrastructure/JointData.h>
 #include <Interface/PlatformInterface/Callable.h>
 
@@ -30,13 +31,29 @@ public:
 
   virtual void call();
 
-private:
+  class KeyFrame
+  {
+  public:
+    KeyFrame();
+    
+    double position[naorunner::JointData::numOfJoint];
+    double time;
+  };
 
-  bool countUp;
-  double pos;
+  std::list<KeyFrame> loadKeyFrames(const std::string& filename);
+
+private:
+  int theTimeStep;
+
+  std::list<KeyFrame> testKeyFrame;
+
+  std::list<KeyFrame> activeKeyFrame;
+
   naorunner::SensorJointData theSensorJointData;
   naorunner::MotorJointData theMotorJointData;
 };
+
+std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf);
 
 #endif	/* MOTION_H */
 
