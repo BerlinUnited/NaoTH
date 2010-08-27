@@ -1,4 +1,4 @@
-solution "TestBehavior" 
+solution "SimpleSoccerAgent" 
   platforms {"Native"}
   configurations {"Debug", "Release"}
   

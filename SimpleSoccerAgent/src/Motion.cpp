@@ -1,8 +1,8 @@
-/* 
- * File:   Motion.cpp
- * Author: thomas
- * 
- * Created on 10. August 2010, 17:27
+/**
+ * @file Motion.cpp
+ *
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ *
  */
 
 #include "Motion.h"

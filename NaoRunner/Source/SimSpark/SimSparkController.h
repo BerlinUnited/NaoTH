@@ -10,7 +10,7 @@
 #define	_SIMSPARKCONTROLLER_H
 
 
-#include <pthread.h>
+//#include <pthread.h>
 #include <map>
 
 #include "Interface/Representations/Infrastructure/JointData.h"
@@ -193,8 +193,8 @@ public:
 
 private:
   // members for threads
-  pthread_mutex_t  theCognitionInputMutex;
-  pthread_cond_t theCognitionInputCond;
+//  pthread_mutex_t  theCognitionInputMutex;
+//  pthread_cond_t theCognitionInputCond;
   double maxJointAbsSpeed;
 
   //REPRESENTATION_PROVIDER(PlayerInfoInitializer, Cognition, PlayerInfo);

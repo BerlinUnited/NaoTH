@@ -1,8 +1,8 @@
-/* 
- * File:   Motion.h
- * Author: thomas
+/**
+ * @file Motion.h
  *
- * Created on 10. August 2010, 17:27
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ *
  */
 
 #ifndef MOTION_H
