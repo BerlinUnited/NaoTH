@@ -75,7 +75,7 @@ protected:
   SimSparkGameInfo theGameInfo;
   SensorJointData theSensorJointData;
   double theIMU[2];
-  //Config startPoseCfg;
+  Vector3<double> startPose;
 
   list<MotorJointData> theMotorJointData;
   string theTeamName;
@@ -174,11 +174,13 @@ private:
 
   bool hear(const sexp_t* sexp);
 
-  void beam();
+  void beam(const Vector3<double>& p);
 
   void autoBeam();
 
   void jointControl();
+
+  void initPosition();
 
 public:
   void motionLoop();

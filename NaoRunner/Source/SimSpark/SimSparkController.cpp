@@ -8,6 +8,7 @@
 
 #include "SimSparkController.h"
 #include <iostream>
+#include <fstream>
 
 //#include "Tools/NaoInfo.h"
 
@@ -144,12 +145,29 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.thePlayerNum << endl;
 
-  //startPoseCfg = ConfigLoader::loadConfig("Config/start_pose.cfg");
-  beam();
-
+  initPosition();
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
   return true;
+}
+
+void SimSparkController::initPosition()
+{
+  ifstream ifile("init_position.txt");
+  std::map<int, Vector3<double> > positions;
+  while ( !ifile.eof() )
+  {
+    int num;
+    Vector3<double> p;
+    ifile>>num>>p.x>>p.y>>p.z;
+    positions[num] = p;
+  }
+
+  if ( positions.find( theGameInfo.thePlayerNum ) != positions.end() )
+  {
+    startPose =positions[theGameInfo.thePlayerNum];
+    beam(startPose);
+  }
 }
 
 void SimSparkController::main()
@@ -855,17 +873,9 @@ bool SimSparkController::hear(const sexp_t* sexp)
   return true;
 }
 
-void SimSparkController::beam()
+void SimSparkController::beam(const Vector3<double>& p)
 {
-  /*
-  stringstream ss;
-  ss << "Player" << theGameInfo.thePlayerNum;
-  double x=0, y=0, r=0;
-  if (startPoseCfg.get(ss.str() + ".Pose.x", x) && startPoseCfg.get(ss.str() + ".Pose.y", y) && startPoseCfg.get(ss.str() + ".Pose.rot", r))
-  {
-    theSocket << "(beam "<<x<<" "<<y<<" "<<r<<")" << send;
-  }
-  */
+    theSocket << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")" << send;
 }
 
 void SimSparkController::autoBeam()
