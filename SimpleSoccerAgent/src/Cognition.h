@@ -45,7 +45,7 @@ public:
   virtual void call();
 
 private:
-  void percetion();
+  void perception();
 
   void decide();
 

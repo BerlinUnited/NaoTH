@@ -22,7 +22,7 @@ isStandingUp(true)
 
 void Cognition::call()
 {
-  percetion();
+  perception();
 
   decide();
 }//end call
@@ -31,7 +31,7 @@ Cognition::~Cognition()
 {
 }
 
-void Cognition::percetion()
+void Cognition::perception()
 {
   // update ball percept
   std::map<std::string, Vector3<double> >::const_iterator ballData = theVirtualVision.data.find("B");
