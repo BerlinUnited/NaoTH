@@ -60,8 +60,9 @@ namespace naorunner
 
 
 
-  /* 
-   * 
+  /*
+   * Holds the lists of references to representations 
+   * which have to be exchanged between platform and motion/cognition
    */
   class PlatformDataInterface
   {

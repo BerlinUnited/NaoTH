@@ -79,7 +79,8 @@ namespace naorunner
   #else
       return "unknown mac address";
   #endif
-    }
+    }//end getMACaddress
+
 
     void init(PlatformBase* _interface)
     {
@@ -96,7 +97,7 @@ namespace naorunner
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
-    }
+    }//end init
 
   //  const ConfigPathInfo& theConfigPathInfo;
     const string& theHardwareIdentity; // the string to indentify different robots

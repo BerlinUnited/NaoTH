@@ -104,6 +104,7 @@ void WebotsController::init()
     if(robotName != "blue goal keeper")
     {
       int n = 1;
+      // TODO: don't use sscanf
       sscanf(robotName.c_str(), "blue player %d", &n);
       playerNumber = n;
     }
@@ -113,6 +114,7 @@ void WebotsController::init()
     if(robotName != "red goal keeper")
     {
       int n = 1;
+      // TODO: don't use sscanf
       sscanf(robotName.c_str(), "red player %d", &n);
       playerNumber = n;
     }
