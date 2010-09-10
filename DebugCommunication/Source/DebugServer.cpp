@@ -10,11 +10,15 @@
 DebugServer::DebugServer()
 : socket(NULL)
 {
-  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, NULL);
-  GInetAddress* inetAddress = g_inet_address_new_from_string("localhost");
+  GError *err = NULL;
+  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
+  GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
+  g_assert(err == NULL);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, 12345);
-  g_socket_bind(socket, socketAddress, true, NULL);
-  g_socket_listen(socket, NULL);
+  g_socket_bind(socket, socketAddress, true, &err);
+  g_assert(err == NULL);
+  g_socket_listen(socket, &err);
+  g_assert(err == NULL);
 }
 
 
