@@ -13,4 +13,5 @@ TestBehavior/nao_soccer_player_red
 Extern/bin/*
 Extern/include/*
 Extern/lib/*
+Extern/share/*
 dist

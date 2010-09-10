@@ -6,13 +6,12 @@ project "SimSpark"
   files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
 
   includedirs {
-	"../Source/", 
-	"../Lib/", 
-	"../Lib/win32/include/", 
-	"../Source/Interface/"}
+	"../Source/",   
+	"../Source/Interface/",
+	"../../Extern/include"}
 
 
-  libdirs {"../Lib/"}
+  libdirs {"../../Extern/lib/"}
   
   links {"Interface", "sfsexp"}
 
