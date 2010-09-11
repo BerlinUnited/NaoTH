@@ -6,6 +6,9 @@ private
 ./NaoRunner/Make/*.make
 TestBehavior/Makefile
 TestBehavior/*.make
+DebugCommunication/Make/*.make
+DebugCommunication/Make/Makefile
+DebugCommunication/Dist/
 obj
 Makefile-Default.mk
 Package-Default.bash
