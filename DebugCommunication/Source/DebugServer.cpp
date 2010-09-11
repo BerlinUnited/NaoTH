@@ -5,20 +5,55 @@
  * Created on 10. September 2010, 15:38
  */
 
+#include <string>
+
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
 : socket(NULL)
 {
   GError *err = NULL;
+ 
+  
+  g_message("Creating new socket object");
+
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-  g_assert(err == NULL);
+ 
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, 12345);
+
+  g_message("Binding socket to port %d", 12345);
   g_socket_bind(socket, socketAddress, true, &err);
   g_assert(err == NULL);
+
+  g_message("Listen");
   g_socket_listen(socket, &err);
   g_assert(err == NULL);
+
+  g_message("Set to unblocking mode");
+  g_socket_set_blocking(socket, false);
+
+  GSocket* activeConnection = NULL;
+  unsigned int counter = 0;
+  while(activeConnection == NULL && counter < 30)
+  {
+    g_message("Checking for client");
+    activeConnection = g_socket_accept(socket, NULL, NULL);
+   
+    counter++;
+    sleep(1);
+  }
+
+  if(activeConnection != NULL)
+  {
+    g_message("Hey, someone is connected!");
+    std::string msg = "Good morning, the DebugServer is not openend yet. Please be patient.\n";
+    g_socket_send(activeConnection, msg.c_str(), msg.size(), NULL, NULL);
+
+    g_socket_close(activeConnection, NULL);
+    g_object_unref(activeConnection);
+  }
+
 }
 
 

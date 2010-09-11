@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
-    <df name="Source" root="Source">
+    <df name="Source" root="../Source">
       <in>DebugServer.cpp</in>
       <in>DebugServer.h</in>
       <in>main.cpp</in>
@@ -10,14 +10,14 @@
                    displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>DebugCommunication-Makefile.mk</itemPath>
-      <itemPath>Makefile</itemPath>
+      <itemPath>../Make/Makefile</itemPath>
+      <itemPath>Netbeans-Makefile.mk</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>Source</Elem>
+    <Elem>../Source</Elem>
   </sourceRootList>
-  <projectmakefile>DebugCommunication-Makefile.mk</projectmakefile>
+  <projectmakefile>Netbeans-Makefile.mk</projectmakefile>
   <confs>
     <conf name="Default" type="0">
       <toolsSet>
@@ -27,20 +27,22 @@
       </toolsSet>
       <makefileType>
         <makeTool>
-          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommandWorkingDir>../Make</buildCommandWorkingDir>
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
-          <executablePath>testdebugcom</executablePath>
+          <executablePath>../Dist/testdebugcom</executablePath>
           <cTool>
             <incDir>
-              <pElem>../Extern/include</pElem>
+              <pElem>../../Extern/include</pElem>
+              <pElem>../../Extern/lib/glib-2.0/include</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
             </incDir>
           </cTool>
           <ccTool>
             <incDir>
-              <pElem>Source</pElem>
-              <pElem>../Extern/include</pElem>
-              <pElem>../Extern/include/glib-2.0</pElem>
+              <pElem>../../Extern/include</pElem>
+              <pElem>../../Extern/lib/glib-2.0/include</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
             </incDir>
           </ccTool>
         </makeTool>
