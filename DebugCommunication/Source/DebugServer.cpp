@@ -5,6 +5,8 @@
  * Created on 10. September 2010, 15:38
  */
 
+#include <string>
+
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
@@ -33,7 +35,10 @@ DebugServer::DebugServer()
   g_assert(err == NULL);
 
   g_message("Hey, someone is connected!");
-  
+  std::string msg = "Good morning, the DebugServer is not openend yet. Please be patient.\n";
+  g_socket_send(activeConnection, msg.c_str(), msg.size(), NULL, NULL);
+
+  g_socket_close(activeConnection, NULL);
 
 }
 
