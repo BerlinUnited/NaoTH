@@ -30,15 +30,29 @@ DebugServer::DebugServer()
   g_socket_listen(socket, &err);
   g_assert(err == NULL);
 
-  g_message("Try to accept");
-  GSocket* activeConnection = g_socket_accept(socket, NULL, &err);
-  g_assert(err == NULL);
+  g_message("Set to unblocking mode");
+  g_socket_set_blocking(socket, false);
 
-  g_message("Hey, someone is connected!");
-  std::string msg = "Good morning, the DebugServer is not openend yet. Please be patient.\n";
-  g_socket_send(activeConnection, msg.c_str(), msg.size(), NULL, NULL);
+  GSocket* activeConnection = NULL;
+  unsigned int counter = 0;
+  while(activeConnection == NULL && counter < 30)
+  {
+    g_message("Checking for client");
+    activeConnection = g_socket_accept(socket, NULL, NULL);
+   
+    counter++;
+    sleep(1);
+  }
 
-  g_socket_close(activeConnection, NULL);
+  if(activeConnection != NULL)
+  {
+    g_message("Hey, someone is connected!");
+    std::string msg = "Good morning, the DebugServer is not openend yet. Please be patient.\n";
+    g_socket_send(activeConnection, msg.c_str(), msg.size(), NULL, NULL);
+
+    g_socket_close(activeConnection, NULL);
+    g_object_unref(activeConnection);
+  }
 
 }
 
