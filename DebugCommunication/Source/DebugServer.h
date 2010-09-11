@@ -15,9 +15,17 @@ class DebugServer
 public:
   DebugServer();
   virtual ~DebugServer();
+
+
+  void handleIncoming();
 private:
 
+  GMainLoop *loop;
   GSocket* socket;
+  GSocketService* socketService;
+
+  void highLevelSocketTest();
+  void lowlevelSocketTest();
 
 };
 
