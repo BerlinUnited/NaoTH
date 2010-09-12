@@ -8,7 +8,7 @@
 #ifndef DEBUGSERVER_H
 #define	DEBUGSERVER_H
 
-#include <gio/gio.h>
+#include <glib.h>
 
 #include "DebugCommunicator.h"
 
@@ -18,12 +18,15 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
-
   void handleIncoming();
+
+  static void* thread_init_static(void* ref);
 private:
 
   DebugCommunicator comm;
+  GThread* thread;
 
+  void threadInit();
 };
 
 #endif	/* DEBUGSERVER_H */

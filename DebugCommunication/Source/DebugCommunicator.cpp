@@ -37,6 +37,7 @@ void DebugCommunicator::init()
     std::cout << "(DebugServer:port " << port << ") " << "is ready for incoming connections "
       << std::endl;
   }
+
 }//end init
 
 GError* DebugCommunicator::internalInit()
@@ -47,13 +48,15 @@ GError* DebugCommunicator::internalInit()
   if (err) return err;
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
-  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, 12345);
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
 
   g_socket_bind(serverSocket, socketAddress, true, &err);
   if (err) return err;
 
   g_socket_listen(serverSocket, &err);
   if (err) return err;
+
+  g_socket_set_blocking(serverSocket, true);
 
   return NULL;
 }
@@ -96,9 +99,6 @@ GError* DebugCommunicator::sendMessage(const std::string& data, int id)
   if (connection != NULL)
   {
     size_t dataSize = data.size();
-    // set temporarly to blocking mode, in order to be able
-    // to sent the whole message
-    g_socket_set_blocking(connection, true);
     // send id
     g_socket_send(connection, (gchar*) & id, 4, NULL, &err);
     if (err) return err;
@@ -108,8 +108,6 @@ GError* DebugCommunicator::sendMessage(const std::string& data, int id)
     // send data
     g_socket_send(connection, data.c_str(), data.size(), NULL, &err);
     if (err) return err;
-    g_socket_set_blocking(connection, false);
-
   }//end if
 
   return NULL;
@@ -128,17 +126,19 @@ void DebugCommunicator::sendBeacon()
 
 GError* DebugCommunicator::triggerConnect()
 {
-  GError* err;
+  GError* err = NULL;
 
   if (connection == NULL)
   {
     // try to accept a eventually pending connection request
     if (serverSocket != NULL)
     {
-      g_socket_set_blocking(serverSocket, false);
       connection = g_socket_accept(serverSocket, NULL, &err);
       if (err) return err;
       bufferValid = false;
+
+      g_socket_set_blocking(connection, true);
+
       if (connection != NULL)
       {
         GInetSocketAddress* remoteSocketAddr =
@@ -165,7 +165,6 @@ GError* DebugCommunicator::triggerReceive()
   GError* err = NULL;
   if (connection != NULL)
   {
-    g_socket_set_blocking(connection, false);
     if (!bufferValid)
     {
       // try to read ID
@@ -177,9 +176,6 @@ GError* DebugCommunicator::triggerReceive()
       if (bytesRead == 4)
       {
         lastID = *((int*) buff4);
-
-        // from now wait for input
-        g_socket_set_blocking(connection, true);
 
         // get size
         int s = 0;
@@ -205,8 +201,6 @@ GError* DebugCommunicator::triggerReceive()
           free(tmp);
 
         }
-
-        g_socket_set_blocking(connection, false);
       }//end if
     }//end if
   }//end if
