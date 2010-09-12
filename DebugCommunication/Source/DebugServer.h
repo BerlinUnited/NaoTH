@@ -10,6 +10,8 @@
 
 #include <gio/gio.h>
 
+#include "DebugCommunicator.h"
+
 class DebugServer
 {
 public:
@@ -20,12 +22,7 @@ public:
   void handleIncoming();
 private:
 
-  GMainLoop *loop;
-  GSocket* socket;
-  GSocketService* socketService;
-
-  void highLevelSocketTest();
-  void lowlevelSocketTest();
+  DebugCommunicator comm;
 
 };
 
