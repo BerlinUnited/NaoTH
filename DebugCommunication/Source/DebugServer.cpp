@@ -6,59 +6,49 @@
  */
 
 #include <string>
+#include <stdlib.h>
 
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
-: socket(NULL)
+: comm(5401)
 {
-  GError *err = NULL;
- 
-  
-  g_message("Creating new socket object");
 
-  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
-  GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
- 
-  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, 12345);
-
-  g_message("Binding socket to port %d", 12345);
-  g_socket_bind(socket, socketAddress, true, &err);
-  g_assert(err == NULL);
-
-  g_message("Listen");
-  g_socket_listen(socket, &err);
-  g_assert(err == NULL);
-
-  g_message("Set to unblocking mode");
-  g_socket_set_blocking(socket, false);
-
-  GSocket* activeConnection = NULL;
-  unsigned int counter = 0;
-  while(activeConnection == NULL && counter < 30)
+  if(g_thread_supported())
   {
-    g_message("Checking for client");
-    activeConnection = g_socket_accept(socket, NULL, NULL);
-   
-    counter++;
-    sleep(1);
+    GError* err = NULL;
+    g_message("Starting debug server as seperate thread");
+    thread = g_thread_create(thread_init_static, this, true, &err);
+
+    // just for testing..
+    g_thread_join(thread);
+
+  }
+  else
+  {
+    g_warning("No threading support: DebugServer not available");
   }
 
-  if(activeConnection != NULL)
-  {
-    g_message("Hey, someone is connected!");
-    std::string msg = "Good morning, the DebugServer is not openend yet. Please be patient.\n";
-    g_socket_send(activeConnection, msg.c_str(), msg.size(), NULL, NULL);
 
-    g_socket_close(activeConnection, NULL);
-    g_object_unref(activeConnection);
-  }
 
+}
+
+void DebugServer::threadInit()
+{
+  g_message("Welcome to our funny new thread");
+  comm.init();
+  comm.hasMessageInQueue();
+}
+
+void* DebugServer::thread_init_static(void* ref)
+{
+  ((DebugServer*) ref)->threadInit();
+  return NULL;
 }
 
 
 DebugServer::~DebugServer()
 {
-  g_object_unref(socket);
+
 }
 
