@@ -13,13 +13,13 @@
 #include <string>
 
 #include <iostream>
+#include <sstream>
 
 #include "DebugCommunicator.h"
 
 DebugCommunicator::DebugCommunicator(unsigned short port)
 : serverSocket(NULL),
 connection(NULL),
-bufferValid(false),
 port(port),
 fatalFail(false)
 {
@@ -61,29 +61,9 @@ GError* DebugCommunicator::internalInit()
   return NULL;
 }
 
-bool DebugCommunicator::hasMessageInQueue()
-{
-  triggerRead();
-
-  return (connection != NULL) && bufferValid;
-}//end hasMessageInQueue
-
-std::string DebugCommunicator::peekMessage()
-{
-  if (bufferValid)
-  {
-    bufferValid = false;
-    return buffer;
-  } else
-  {
-    bufferValid = false;
-    return std::string("");
-  }
-}//end peekMessage
-
 void DebugCommunicator::sendMessage(const std::string& data)
 {
-  GError* err = sendMessage(data, lastID);
+  GError* err = internalSendMessage(data);
   if (err)
   {
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in sendMessage) "
@@ -93,36 +73,19 @@ void DebugCommunicator::sendMessage(const std::string& data)
   }
 }//end sendMessage
 
-GError* DebugCommunicator::sendMessage(const std::string& data, int id)
+GError* DebugCommunicator::internalSendMessage(const std::string& data)
 {
   GError* err = NULL;
   if (connection != NULL)
   {
-    size_t dataSize = data.size();
-    // send id
-    g_socket_send(connection, (gchar*) & id, 4, NULL, &err);
-    if (err) return err;
-    // send size
-    g_socket_send(connection, (gchar*) dataSize, 4, NULL, &err);
-    if (err) return err;
-    // send data
     g_socket_send(connection, data.c_str(), data.size(), NULL, &err);
+    
     if (err) return err;
   }//end if
 
   return NULL;
 }//end sendMessage
 
-void DebugCommunicator::sendBeacon()
-{
-  if (connection != NULL)
-  {
-    // try to send 0 data in order to check wether we are still connected
-    std::string dummyData;
-    dummyData.resize(0, '\0');
-    sendMessage(dummyData, INT_MAX);
-  }
-}
 
 GError* DebugCommunicator::triggerConnect()
 {
@@ -135,7 +98,6 @@ GError* DebugCommunicator::triggerConnect()
     {
       connection = g_socket_accept(serverSocket, NULL, &err);
       if (err) return err;
-      bufferValid = false;
 
       g_socket_set_blocking(connection, true);
 
@@ -148,11 +110,11 @@ GError* DebugCommunicator::triggerConnect()
 
         GInetAddress* addr = g_inet_socket_address_get_address(remoteSocketAddr);
 
+        char* addrString = g_inet_address_to_string(addr);
         std::cout << "[DebugServer:port " << port << "] " << "connected to "
-          << g_inet_address_to_string(addr) << std::endl;
-
+          << addrString << std::endl;
+        g_free(addrString);
         g_object_unref(remoteSocketAddr);
-
 
       }
     }
@@ -160,81 +122,70 @@ GError* DebugCommunicator::triggerConnect()
   return NULL;
 }
 
-GError* DebugCommunicator::triggerReceive()
+std::string* DebugCommunicator::triggerReceive(GError** err)
 {
-  GError* err = NULL;
+  *err = NULL;
   if (connection != NULL)
   {
-    if (!bufferValid)
+
+    // read until \0 or \n character found
+    std::stringstream buf;
+    char c;
+    g_socket_set_blocking(connection, false); // only check if something is there
+    int bytesReceived = g_socket_receive(connection, &c, 1, NULL, NULL);
+    g_socket_set_blocking(connection,true); // read complete answer from now
+
+    if(bytesReceived < 1)
     {
-      // try to read ID
-      char buff4[4];
+      return NULL;
+    }
 
-      int bytesRead = g_socket_receive(connection, (gchar*) &buff4, 4, NULL, &err);
-      if (err) return err;
-      
-      if (bytesRead == 4)
+    while(*err == NULL && c != '\n')
+    {
+      if(c != '\r')
       {
-        lastID = *((int*) buff4);
+        buf << c;
+      }
+      g_socket_receive(connection, &c, 1, NULL, err);
+    }
 
-        // get size
-        int s = 0;
-        bytesRead = g_socket_receive(connection, (gchar*) &buff4, 4, NULL, &err);
-        if (err) return err;
-        
-        if (bytesRead == 4)
-        {
-          s = *((int*) buff4);
-          char* tmp = (char*) malloc(s);
-          // read data
-          int sumOfBytes = 0;
-          buffer.clear();
-          while (sumOfBytes < s)
-          {
-            bytesRead = g_socket_receive(connection, tmp, s - sumOfBytes, NULL, &err);
-            if (err) return err;
-            sumOfBytes += bytesRead;
-            buffer.append(tmp, bytesRead);
-          }
-          bufferValid = true;
+    if(*err) return NULL;
 
-          free(tmp);
+    std::string* result = new std::string(buf.str());
+    return result;
 
-        }
-      }//end if
-    }//end if
   }//end if
   return NULL;
 }
 
-void DebugCommunicator::triggerRead()
+std::string* DebugCommunicator::readMessage()
 {
   if (fatalFail)
   {
-    bufferValid = false;
-    return;
+    return NULL;
   }
 
   GError* err = triggerConnect();
   if (err)
   {
     fatalFail = true;
-    bufferValid = false;
     std::cerr << "[DebugServer:port " << port << "] " << "FATAL ERROR in triggerRead: "
       << err->message << std::endl;
     std::cerr << "will not try again to get connection" << std::endl;
 
-    return;
+    return NULL;
   }
 
-  err = triggerReceive();
+  std::string* result = triggerReceive(&err);
   if(err)
   {
-
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in triggerRead) "
       << err->message << std::endl;
     disconnect();
+    delete result;
+    return NULL;
   }
+  return result;
 }//end triggerRead
 
 void DebugCommunicator::disconnect()

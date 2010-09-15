@@ -18,15 +18,18 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
-  void handleIncoming();
+  void execute();
 
-  static void* thread_init_static(void* ref);
+  static void* dispatcher_static(void* ref);
 private:
 
   DebugCommunicator comm;
-  GThread* thread;
+  GThread* dispatcherThread;
 
-  void threadInit();
+  GAsyncQueue* commands;
+  GAsyncQueue* answers;
+
+  void dispatcher();
 };
 
 #endif	/* DEBUGSERVER_H */
