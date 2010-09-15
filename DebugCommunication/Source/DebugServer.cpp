@@ -49,6 +49,8 @@ void DebugServer::dispatcher()
     {
       g_async_queue_push(commands, msg);
     }
+    
+    g_thread_yield();
 
     while(g_async_queue_length(answers) > 0)
     {
@@ -60,6 +62,7 @@ void DebugServer::dispatcher()
       comm.sendMessage(answer, strlen(answer)+1);
 
       delete answer;
+      g_thread_yield();
     }
 
     g_thread_yield();
