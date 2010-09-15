@@ -20,7 +20,7 @@ int main(int argc, char** argv)
   g_type_init();
   g_thread_init(NULL);
 
-  DebugServer server;
+  DebugServer server(5401);
 
   while(true)
   {

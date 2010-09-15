@@ -10,15 +10,16 @@
 
 #include <glib.h>
 
+#include "DebugCommandExecutor.h"
 #include "DebugCommunicator.h"
 
 class DebugServer
 {
 public:
-  DebugServer();
+  DebugServer(unsigned int port);
   virtual ~DebugServer();
 
-  void execute();
+  virtual void execute();
 
   static void* dispatcher_static(void* ref);
 private:

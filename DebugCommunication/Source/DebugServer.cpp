@@ -13,25 +13,21 @@
 
 #include "DebugServer.h"
 
-DebugServer::DebugServer()
-: comm(5401)
+DebugServer::DebugServer(unsigned int port)
+: comm(port)
 {
-
   commands = g_async_queue_new();
   answers = g_async_queue_new();
 
-  if(g_thread_supported())
+  if (g_thread_supported())
   {
     GError* err = NULL;
     g_message("Starting debug server as seperate thread");
     dispatcherThread = g_thread_create(dispatcher_static, this, true, &err);
-
-  }
-  else
+  } else
   {
     g_warning("No threading support: DebugServer not available");
   }
-
 }
 
 void DebugServer::dispatcher()
@@ -42,24 +38,24 @@ void DebugServer::dispatcher()
   comm.init();
 
   g_message("Starting DebugServer dispatcher loop");
-  while(true)
+  while (true)
   {
     char* msg = comm.readMessage();
-    if(msg != NULL)
+    if (msg != NULL)
     {
       g_async_queue_push(commands, msg);
     }
-    
+
     g_thread_yield();
 
-    while(g_async_queue_length(answers) > 0)
+    while (g_async_queue_length(answers) > 0)
     {
       g_debug("there is something in the *answer* queue");
       char* answer = (char*) g_async_queue_pop(answers);
 
       g_debug("found %s in the *answer* queue", answer);
 
-      comm.sendMessage(answer, strlen(answer)+1);
+      comm.sendMessage(answer, strlen(answer) + 1);
 
       delete answer;
       g_thread_yield();
@@ -67,13 +63,13 @@ void DebugServer::dispatcher()
 
     g_thread_yield();
   }
-  
+
 }
 
 void DebugServer::execute()
 {
   g_debug("DebugServer::execute");
-  if(g_async_queue_length(commands) > 0)
+  if (g_async_queue_length(commands) > 0)
   {
     g_debug("there is something in the *commands* queue");
     char* cmdRaw = (char*) g_async_queue_pop(commands);
@@ -85,7 +81,7 @@ void DebugServer::execute()
     g_string_append(answer, cmdRaw);
     g_string_append(answer, "\n\0");
 
-    g_async_queue_push(answers, g_string_free(answer,false));
+    g_async_queue_push(answers, g_string_free(answer, false));
     g_debug("pushed new answer");
 
     delete cmdRaw;
@@ -97,7 +93,6 @@ void* DebugServer::dispatcher_static(void* ref)
   ((DebugServer*) ref)->dispatcher();
   return NULL;
 }
-
 
 DebugServer::~DebugServer()
 {
