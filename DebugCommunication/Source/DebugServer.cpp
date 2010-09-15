@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <string.h>
 
 #include "DebugServer.h"
 
@@ -43,7 +44,7 @@ void DebugServer::dispatcher()
   g_message("Starting DebugServer dispatcher loop");
   while(true)
   {
-    std::string* msg = comm.readMessage();
+    char* msg = comm.readMessage();
     if(msg != NULL)
     {
       g_async_queue_push(commands, msg);
@@ -52,11 +53,11 @@ void DebugServer::dispatcher()
     while(g_async_queue_length(answers) > 0)
     {
       g_debug("there is something in the *answer* queue");
-      std::string* answer = (std::string*) g_async_queue_pop(answers);
+      char* answer = (char*) g_async_queue_pop(answers);
 
-      g_debug("found %s in the *answer* queue", answer->c_str());
+      g_debug("found %s in the *answer* queue", answer);
 
-      comm.sendMessage(*answer);
+      comm.sendMessage(answer, strlen(answer)+1);
 
       delete answer;
     }
@@ -72,16 +73,16 @@ void DebugServer::execute()
   if(g_async_queue_length(commands) > 0)
   {
     g_debug("there is something in the *commands* queue");
-    std::string* cmdRaw = (std::string*) g_async_queue_pop(commands);
+    char* cmdRaw = (char*) g_async_queue_pop(commands);
 
-    g_debug("found %s in the *commands* queue", cmdRaw->c_str());
+    g_debug("found %s in the *commands* queue", cmdRaw);
 
-    std::string* answer = new std::string("");
-    answer->append("not implemented: ");
-    answer->append(*cmdRaw);
-    answer->append("\n");
+    GString* answer = g_string_new("");
+    g_string_append(answer, "not implemented: ");
+    g_string_append(answer, cmdRaw);
+    g_string_append(answer, "\n\0");
 
-    g_async_queue_push(answers, answer);
+    g_async_queue_push(answers, g_string_free(answer,false));
     g_debug("pushed new answer");
 
     delete cmdRaw;
