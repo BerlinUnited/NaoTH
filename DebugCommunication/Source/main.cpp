@@ -6,6 +6,7 @@
  */
 
 #include <cstdlib>
+#include <iostream>
 
 #include "DebugServer.h"
 
@@ -20,6 +21,12 @@ int main(int argc, char** argv)
   g_thread_init(NULL);
 
   DebugServer server;
+
+  while(true)
+  {
+    server.execute();
+    sleep(1);
+  }
 
   return 0;
 }
