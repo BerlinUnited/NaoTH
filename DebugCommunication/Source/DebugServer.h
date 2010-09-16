@@ -10,10 +10,12 @@
 
 #include <glib.h>
 
+#include <Interface/Tools/DataStructures/DestructureSentinel.h>
+
 #include "DebugCommandExecutor.h"
 #include "DebugCommunicator.h"
 
-class DebugServer : public DebugCommandExecutor
+class DebugServer : public DebugCommandExecutor, public DestructionListener<DebugCommandExecutor>
 {
 public:
   DebugServer(unsigned int port);
@@ -35,6 +37,8 @@ public:
   virtual void executeDebugCommand(const std::string& command,
     const std::map<std::string,std::string>& arguments,
     std::stringstream& out);
+
+  virtual void objectDestructed(DebugCommandExecutor* object);
 
   static void* dispatcher_static(void* ref);
 private:

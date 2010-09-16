@@ -212,6 +212,29 @@ bool DebugServer::registerCommand(std::string command, std::string description,
   return false;
 }
 
+void DebugServer::objectDestructed(DebugCommandExecutor* object)
+{
+  std::list<std::string> registeredKeys;
+
+  // search all registered keys of the object
+  std::map<std::string, DebugCommandExecutor*>::const_iterator iter;
+  for (iter = executorMap.begin(); iter != executorMap.end(); iter++) {
+    if ((*iter).second == object) {
+      registeredKeys.push_back((*iter).first);
+    }//end if
+  }//end for
+
+  // unregister all found commands
+  std::list<std::string>::const_iterator iter_key;
+  for (iter_key = registeredKeys.begin(); iter_key != registeredKeys.end(); iter_key++) {
+    executorMap.erase(*iter_key);
+
+    std::cout << "[DebugServer] " << "unregistering command "
+      << (*iter_key) << std::endl;
+  }//end for
+}
+
+
 void DebugServer::executeDebugCommand(const std::string& command, const std::map<std::string, std::string>& arguments,
   std::stringstream& out)
 {
@@ -224,8 +247,12 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
       std::map<std::string, std::string>::const_iterator iter = descriptionMap.begin();
       while (iter != descriptionMap.end())
       {
-        out << iter->first << ", ";
+        out << iter->first;
         iter++;
+        if(iter != descriptionMap.end())
+        {
+          out << ", ";
+        }
       }
     } else
     {
@@ -235,6 +262,7 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
         out << firstArg << "\n";
         out << "------------------\n";
         out << descriptionMap[firstArg];
+        out << "\n";
       } else
       {
         out << "Unknown command \"" << firstArg
