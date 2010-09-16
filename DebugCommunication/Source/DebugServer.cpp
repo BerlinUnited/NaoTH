@@ -69,7 +69,7 @@ void DebugServer::dispatcher()
 void DebugServer::execute()
 {
   g_debug("DebugServer::execute");
-  if (g_async_queue_length(commands) > 0)
+  while (g_async_queue_length(commands) > 0)
   {
     g_debug("there is something in the *commands* queue");
     char* cmdRaw = (char*) g_async_queue_pop(commands);
@@ -108,15 +108,14 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
     // iterate over the command parts and build up the arguments as map
     bool answerAsBase64 = false;
     // command name
-    if(argc > 0)
+    if (argc > 0)
     {
-      
-      if(g_str_has_prefix(argv[0], "+"))
+
+      if (g_str_has_prefix(argv[0], "+"))
       {
         answerAsBase64 = true;
-        commandName.assign(argv[0]+1);
-      }
-      else
+        commandName.assign(argv[0] + 1);
+      } else
       {
         answerAsBase64 = false;
         commandName.assign(argv[0]);
@@ -126,20 +125,19 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
     std::string lastKey;
     bool nextIsValue = false;
     bool valueIsBase64 = false;
-    for(int i=1; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
-      if(nextIsValue)
+      if (nextIsValue)
       {
-        if(lastKey != "")
+        if (lastKey != "")
         {
-          if(valueIsBase64)
+          if (valueIsBase64)
           {
             size_t len;
             char* decoded = (char*) g_base64_decode(argv[i], &len);
             arguments[lastKey].assign(decoded);
             g_free(decoded);
-          }
-          else
+          } else
           {
             arguments[lastKey].assign(argv[i]);
           }
@@ -147,52 +145,72 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
 
         lastKey.assign("");
         nextIsValue = false;
-      }
-      else
+      } else
       {
-        if(g_str_has_prefix(argv[i], "-"))
+        if (g_str_has_prefix(argv[i], "-"))
         {
           nextIsValue = true;
           valueIsBase64 = false;
 
-          lastKey.assign(argv[i]+1);
-        }
-        else if(g_str_has_prefix(argv[i], "+"))
+          lastKey.assign(argv[i] + 1);
+        } else if (g_str_has_prefix(argv[i], "+"))
         {
-          nextIsValue= true;
+          nextIsValue = true;
           valueIsBase64 = true;
 
-          lastKey.assign(argv[i]+1);
-        }
-        else
+          lastKey.assign(argv[i] + 1);
+        } else
         {
           nextIsValue = false;
           lastKey.assign(argv[i]);
         }
-        g_debug("found new key: %s", lastKey.c_str());
-
         arguments[lastKey] = "";
 
       }
     }
 
-    g_string_append(answer, "received command \"");
-    g_string_append(answer, commandName.c_str());
-    g_string_append(answer, "\", params[");
-    for(std::map<std::string,std::string>::iterator it = arguments.begin();
+    g_strfreev(argv);
+
+    handleCommand(commandName, arguments, answer, answerAsBase64);
+
+  }
+
+}
+
+void DebugServer::handleCommand(std::string command, std::map<std::string,
+  std::string> arguments, GString* answer, bool encodeBase64)
+{
+
+  std::stringstream answerFromHandler;
+  if(executorMap.find(command) != executorMap.end())
+  {
+    executorMap[command]->executeDebugCommand(command, arguments, answerFromHandler);
+  }
+  else
+  {
+    answerFromHandler << "received command \"" << command << "\", params[";
+    for (std::map<std::string, std::string>::iterator it = arguments.begin();
       it != arguments.end(); it++)
     {
-      g_string_append(answer, it->first.c_str());
-      g_string_append(answer, ":");
-      g_string_append(answer, it->second.c_str());
-      if(it != arguments.end())
+      answerFromHandler << it->first <<  ":" << it->second;
+      if (it != arguments.end())
       {
-        g_string_append(answer, "\n");
+        answerFromHandler <<  "; ";
       }
     }
-    g_string_append(answer,"]");
+    answerFromHandler << "]";
+  }
 
-    g_strfreev(argv);
+  if(encodeBase64)
+  {
+    char* encoded = g_base64_encode((guchar*) answerFromHandler.str().c_str(),
+      answerFromHandler.str().length());
+    g_string_append(answer, encoded);
+    g_free(encoded);
+  }
+  else
+  {
+    g_string_append(answer, answerFromHandler.str().c_str());
   }
 
 }

@@ -47,6 +47,9 @@ private:
 
   void dispatcher();
   void handleCommand(char* cmdRaw, GString* answer);
+  void handleCommand(std::string command, std::map<std::string,std::string> arguments,
+    GString* answer, bool encodeBase64);
+  
 };
 
 #endif	/* DEBUGSERVER_H */
