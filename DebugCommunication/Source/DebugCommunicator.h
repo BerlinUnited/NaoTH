@@ -18,8 +18,8 @@ public:
   virtual ~DebugCommunicator();
 
   void init();
-  void sendMessage(const std::string& data);
-  std::string* readMessage();
+  void sendMessage(char* data, size_t size);
+  char* readMessage();
 
 private:
   GSocket* serverSocket;
@@ -29,10 +29,10 @@ private:
 
   bool fatalFail;
 
-  GError* internalSendMessage(const std::string& data);
+  GError* internalSendMessage(char* data, size_t size);
   GError* internalInit();
   GError* triggerConnect();
-  std::string* triggerReceive(GError** err);
+  char* triggerReceive(GError** err);
   void disconnect();
 };
 

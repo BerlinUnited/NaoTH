@@ -9,28 +9,29 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <string.h>
 
 #include "DebugServer.h"
 
-DebugServer::DebugServer()
-: comm(5401)
+DebugServer::DebugServer(unsigned int port)
+: comm(port)
 {
-
   commands = g_async_queue_new();
   answers = g_async_queue_new();
 
-  if(g_thread_supported())
+  if (g_thread_supported())
   {
     GError* err = NULL;
     g_message("Starting debug server as seperate thread");
     dispatcherThread = g_thread_create(dispatcher_static, this, true, &err);
+
+    registerCommand("help", "list available commands or get the description of a specific command", this);
 
   }
   else
   {
     g_warning("No threading support: DebugServer not available");
   }
-
 }
 
 void DebugServer::dispatcher()
@@ -41,50 +42,206 @@ void DebugServer::dispatcher()
   comm.init();
 
   g_message("Starting DebugServer dispatcher loop");
-  while(true)
+  while (true)
   {
-    std::string* msg = comm.readMessage();
-    if(msg != NULL)
+    char* msg = comm.readMessage();
+    if (msg != NULL)
     {
       g_async_queue_push(commands, msg);
     }
 
-    while(g_async_queue_length(answers) > 0)
+    g_thread_yield();
+
+    while (g_async_queue_length(answers) > 0)
     {
-      g_debug("there is something in the *answer* queue");
-      std::string* answer = (std::string*) g_async_queue_pop(answers);
+      char* answer = (char*) g_async_queue_pop(answers);
 
-      g_debug("found %s in the *answer* queue", answer->c_str());
-
-      comm.sendMessage(*answer);
+      comm.sendMessage(answer, strlen(answer) + 1);
 
       delete answer;
+      g_thread_yield();
     }
 
     g_thread_yield();
   }
-  
+
 }
 
 void DebugServer::execute()
 {
-  g_debug("DebugServer::execute");
-  if(g_async_queue_length(commands) > 0)
+  while (g_async_queue_length(commands) > 0)
   {
-    g_debug("there is something in the *commands* queue");
-    std::string* cmdRaw = (std::string*) g_async_queue_pop(commands);
+    char* cmdRaw = (char*) g_async_queue_pop(commands);
 
-    g_debug("found %s in the *commands* queue", cmdRaw->c_str());
+    GString* answer = g_string_new("");
+    handleCommand(cmdRaw, answer);
 
-    std::string* answer = new std::string("");
-    answer->append("not implemented: ");
-    answer->append(*cmdRaw);
-    answer->append("\n");
+    g_string_append(answer, "\n\0");
 
-    g_async_queue_push(answers, answer);
-    g_debug("pushed new answer");
+    g_async_queue_push(answers, g_string_free(answer, false));
 
     delete cmdRaw;
+  }
+}
+
+void DebugServer::handleCommand(char* cmdRaw, GString* answer)
+{
+  // parse command
+  GError* parseError = NULL;
+  int argc;
+  char** argv;
+  g_shell_parse_argv(cmdRaw, &argc, &argv, &parseError);
+
+  if (parseError)
+  {
+    g_string_append(answer, "parsing error: ");
+    g_string_append(answer, parseError->message);
+  } else
+  {
+    std::map<std::string, std::string> arguments;
+    std::string commandName = "";
+    // iterate over the command parts and build up the arguments as map
+    bool answerAsBase64 = false;
+    // command name
+    if (argc > 0)
+    {
+
+      if (g_str_has_prefix(argv[0], "+"))
+      {
+        answerAsBase64 = true;
+        commandName.assign(argv[0] + 1);
+      } else
+      {
+        answerAsBase64 = false;
+        commandName.assign(argv[0]);
+      }
+    }
+    // argument names and if existings their values
+    std::string lastKey;
+    bool nextIsValue = false;
+    bool valueIsBase64 = false;
+    for (int i = 1; i < argc; i++)
+    {
+      if (nextIsValue)
+      {
+        if (lastKey != "")
+        {
+          if (valueIsBase64)
+          {
+            size_t len;
+            char* decoded = (char*) g_base64_decode(argv[i], &len);
+            arguments[lastKey].assign(decoded);
+            g_free(decoded);
+          } else
+          {
+            arguments[lastKey].assign(argv[i]);
+          }
+        }
+
+        lastKey.assign("");
+        nextIsValue = false;
+      } else
+      {
+        if (g_str_has_prefix(argv[i], "-"))
+        {
+          nextIsValue = true;
+          valueIsBase64 = false;
+
+          lastKey.assign(argv[i] + 1);
+        } else if (g_str_has_prefix(argv[i], "+"))
+        {
+          nextIsValue = true;
+          valueIsBase64 = true;
+
+          lastKey.assign(argv[i] + 1);
+        } else
+        {
+          nextIsValue = false;
+          lastKey.assign(argv[i]);
+        }
+        arguments[lastKey] = "";
+
+      }
+    }
+
+    g_strfreev(argv);
+
+    handleCommand(commandName, arguments, answer, answerAsBase64);
+
+  }
+
+}
+
+void DebugServer::handleCommand(std::string command, std::map<std::string,
+  std::string> arguments, GString* answer, bool encodeBase64)
+{
+
+  std::stringstream answerFromHandler;
+  if (executorMap.find(command) != executorMap.end())
+  {
+    executorMap[command]->executeDebugCommand(command, arguments, answerFromHandler);
+  } else
+  {
+    answerFromHandler << "Unknown command \"" << command
+      << "\", use \"help\" for a list of available commands";
+  }
+
+  if (encodeBase64)
+  {
+    char* encoded = g_base64_encode((guchar*) answerFromHandler.str().c_str(),
+      answerFromHandler.str().length());
+    g_string_append(answer, encoded);
+    g_free(encoded);
+  } else
+  {
+    g_string_append(answer, answerFromHandler.str().c_str());
+  }
+
+}
+
+bool DebugServer::registerCommand(std::string command, std::string description,
+  DebugCommandExecutor* executor)
+{
+  if (executorMap.find(command) == executorMap.end())
+  {
+    // new command
+    executorMap[command] = executor;
+    descriptionMap[command] = description;
+    return true;
+  }
+  return false;
+}
+
+void DebugServer::executeDebugCommand(const std::string& command, const std::map<std::string, std::string>& arguments,
+  std::stringstream& out)
+{
+  if(command == "help")
+  {
+    if (arguments.empty())
+    {
+      // list all available commands
+      out << "Available commands, use \"help <command>\" for a description:\n";
+      std::map<std::string, std::string>::const_iterator iter = descriptionMap.begin();
+      while (iter != descriptionMap.end())
+      {
+        out << iter->first << ", ";
+        iter++;
+      }
+    } else
+    {
+      std::string firstArg = arguments.begin()->first;
+      if (descriptionMap.find(firstArg) != descriptionMap.end())
+      {
+        out << firstArg << "\n";
+        out << "------------------\n";
+        out << descriptionMap[firstArg];
+      } else
+      {
+        out << "Unknown command \"" << firstArg
+          << "\", use \"help\" for a list of available commands";
+      }
+
+    }
   }
 }
 
@@ -93,7 +250,6 @@ void* DebugServer::dispatcher_static(void* ref)
   ((DebugServer*) ref)->dispatcher();
   return NULL;
 }
-
 
 DebugServer::~DebugServer()
 {

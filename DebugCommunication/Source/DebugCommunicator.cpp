@@ -61,9 +61,9 @@ GError* DebugCommunicator::internalInit()
   return NULL;
 }
 
-void DebugCommunicator::sendMessage(const std::string& data)
+void DebugCommunicator::sendMessage(char* data, size_t size)
 {
-  GError* err = internalSendMessage(data);
+  GError* err = internalSendMessage(data, size);
   if (err)
   {
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in sendMessage) "
@@ -73,12 +73,12 @@ void DebugCommunicator::sendMessage(const std::string& data)
   }
 }//end sendMessage
 
-GError* DebugCommunicator::internalSendMessage(const std::string& data)
+GError* DebugCommunicator::internalSendMessage(char* data, size_t size)
 {
   GError* err = NULL;
   if (connection != NULL)
   {
-    g_socket_send(connection, data.c_str(), data.size(), NULL, &err);
+    g_socket_send(connection, data, size, NULL, &err);
     
     if (err) return err;
   }//end if
@@ -93,7 +93,7 @@ GError* DebugCommunicator::triggerConnect()
 
   if (connection == NULL)
   {
-    // try to accept a eventually pending connection request
+    // try to accept an eventually pending connection request
     if (serverSocket != NULL)
     {
       connection = g_socket_accept(serverSocket, NULL, &err);
@@ -122,14 +122,14 @@ GError* DebugCommunicator::triggerConnect()
   return NULL;
 }
 
-std::string* DebugCommunicator::triggerReceive(GError** err)
+char* DebugCommunicator::triggerReceive(GError** err)
 {
   *err = NULL;
   if (connection != NULL)
   {
 
     // read until \0 or \n character found
-    std::stringstream buf;
+    GString* buffer = g_string_new("");
     char c;
     g_socket_set_blocking(connection, false); // only check if something is there
     int bytesReceived = g_socket_receive(connection, &c, 1, NULL, NULL);
@@ -137,6 +137,7 @@ std::string* DebugCommunicator::triggerReceive(GError** err)
 
     if(bytesReceived < 1)
     {
+      g_string_free(buffer, true);
       return NULL;
     }
 
@@ -144,21 +145,24 @@ std::string* DebugCommunicator::triggerReceive(GError** err)
     {
       if(c != '\r')
       {
-        buf << c;
+        g_string_append_c(buffer,c);
       }
       g_socket_receive(connection, &c, 1, NULL, err);
     }
 
-    if(*err) return NULL;
+    if(*err)
+    {
+      g_string_free(buffer,true);
+      return NULL;
+    }
 
-    std::string* result = new std::string(buf.str());
-    return result;
+    g_string_append_c(buffer,'\0');
+    return g_string_free(buffer, false);
 
   }//end if
   return NULL;
 }
-
-std::string* DebugCommunicator::readMessage()
+char* DebugCommunicator::readMessage()
 {
   if (fatalFail)
   {
@@ -176,7 +180,7 @@ std::string* DebugCommunicator::readMessage()
     return NULL;
   }
 
-  std::string* result = triggerReceive(&err);
+  char* result = triggerReceive(&err);
   if(err)
   {
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in triggerRead) "
