@@ -76,15 +76,135 @@ void DebugServer::execute()
 
     g_debug("found %s in the *commands* queue", cmdRaw);
 
+
     GString* answer = g_string_new("");
-    g_string_append(answer, "not implemented: ");
-    g_string_append(answer, cmdRaw);
+    handleCommand(cmdRaw, answer);
+
     g_string_append(answer, "\n\0");
 
     g_async_queue_push(answers, g_string_free(answer, false));
     g_debug("pushed new answer");
 
     delete cmdRaw;
+  }
+}
+
+void DebugServer::handleCommand(char* cmdRaw, GString* answer)
+{
+  // parse command
+  GError* parseError = NULL;
+  int argc;
+  char** argv;
+  g_shell_parse_argv(cmdRaw, &argc, &argv, &parseError);
+
+  if (parseError)
+  {
+    g_string_append(answer, "parsing error: ");
+    g_string_append(answer, parseError->message);
+  } else
+  {
+    std::map<std::string, std::string> arguments;
+    std::string commandName = "";
+    // iterate over the command parts and build up the arguments as map
+    bool answerAsBase64 = false;
+    // command name
+    if(argc > 0)
+    {
+      
+      if(g_str_has_prefix(argv[0], "+"))
+      {
+        answerAsBase64 = true;
+        commandName.assign(argv[0]+1);
+      }
+      else
+      {
+        answerAsBase64 = false;
+        commandName.assign(argv[0]);
+      }
+    }
+    // argument names and if existings their values
+    std::string lastKey;
+    bool nextIsValue = false;
+    bool valueIsBase64 = false;
+    for(int i=1; i < argc; i++)
+    {
+      if(nextIsValue)
+      {
+        if(lastKey != "")
+        {
+          if(valueIsBase64)
+          {
+            size_t len;
+            char* decoded = (char*) g_base64_decode(argv[i], &len);
+            arguments[lastKey].assign(decoded);
+            g_free(decoded);
+          }
+          else
+          {
+            arguments[lastKey].assign(argv[i]);
+          }
+        }
+
+        lastKey.assign("");
+        nextIsValue = false;
+      }
+      else
+      {
+        if(g_str_has_prefix(argv[i], "-"))
+        {
+          nextIsValue = true;
+          valueIsBase64 = false;
+
+          lastKey.assign(argv[i]+1);
+        }
+        else if(g_str_has_prefix(argv[i], "+"))
+        {
+          nextIsValue= true;
+          valueIsBase64 = true;
+
+          lastKey.assign(argv[i]+1);
+        }
+        else
+        {
+          nextIsValue = false;
+          lastKey.assign(argv[i]);
+        }
+        g_debug("found new key: %s", lastKey.c_str());
+
+        arguments[lastKey] = "";
+
+      }
+    }
+
+    g_string_append(answer, "received command \"");
+    g_string_append(answer, commandName.c_str());
+    g_string_append(answer, "\", params[");
+    for(std::map<std::string,std::string>::iterator it = arguments.begin();
+      it != arguments.end(); it++)
+    {
+      g_string_append(answer, it->first.c_str());
+      g_string_append(answer, ":");
+      g_string_append(answer, it->second.c_str());
+      if(it != arguments.end())
+      {
+        g_string_append(answer, "\n");
+      }
+    }
+    g_string_append(answer,"]");
+
+    g_strfreev(argv);
+  }
+
+}
+
+bool DebugServer::registerCommand(std::string command, std::string description,
+  DebugCommandExecutor* executor)
+{
+  if (executorMap.find(command) == executorMap.end())
+  {
+    // new command
+    executorMap[command] = executor;
+    descriptionMap[command] = description;
   }
 }
 
