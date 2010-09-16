@@ -18,7 +18,7 @@ public:
   virtual ~DebugCommunicator();
 
   void init();
-  void sendMessage(char* data, size_t size);
+  void sendMessage(const char* data, size_t size);
   char* readMessage();
 
 private:
@@ -29,7 +29,7 @@ private:
 
   bool fatalFail;
 
-  GError* internalSendMessage(char* data, size_t size);
+  GError* internalSendMessage(const char* data, size_t size);
   GError* internalInit();
   GError* triggerConnect();
   char* triggerReceive(GError** err);

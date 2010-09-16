@@ -18,7 +18,7 @@ class TestDebugCommandExecutor : public DebugCommandExecutor
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::stringstream &outstream)
   {
-    outstream << "Hey hoh, let's go!";
+    outstream << "pong\n";
   }
 };
 
@@ -31,9 +31,9 @@ int main(int argc, char** argv)
   g_thread_init(NULL);
 
   DebugServer server(5401);
-  TestDebugCommandExecutor test;
+  TestDebugCommandExecutor* test = new TestDebugCommandExecutor();
 
-  server.registerCommand("hey", "", &test);
+  server.registerCommand("ping", "Gives you a \"pong\"", test);
 
   while(true)
   {

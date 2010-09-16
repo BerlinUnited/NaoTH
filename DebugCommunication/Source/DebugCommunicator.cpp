@@ -61,7 +61,7 @@ GError* DebugCommunicator::internalInit()
   return NULL;
 }
 
-void DebugCommunicator::sendMessage(char* data, size_t size)
+void DebugCommunicator::sendMessage(const char* data, size_t size)
 {
   GError* err = internalSendMessage(data, size);
   if (err)
@@ -73,7 +73,7 @@ void DebugCommunicator::sendMessage(char* data, size_t size)
   }
 }//end sendMessage
 
-GError* DebugCommunicator::internalSendMessage(char* data, size_t size)
+GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 {
   GError* err = NULL;
   if (connection != NULL)
@@ -103,6 +103,7 @@ GError* DebugCommunicator::triggerConnect()
 
       if (connection != NULL)
       {
+
         GInetSocketAddress* remoteSocketAddr =
           G_INET_SOCKET_ADDRESS(g_socket_get_remote_address(connection, &err));
 
@@ -128,37 +129,44 @@ char* DebugCommunicator::triggerReceive(GError** err)
   if (connection != NULL)
   {
 
-    // read until \0 or \n character found
-    GString* buffer = g_string_new("");
-    char c;
-    g_socket_set_blocking(connection, false); // only check if something is there
-    int bytesReceived = g_socket_receive(connection, &c, 1, NULL, NULL);
-    g_socket_set_blocking(connection,true); // read complete answer from now
 
-    if(bytesReceived < 1)
+    // check if there is data available
+    GIOCondition condition = g_socket_condition_check(connection, G_IO_IN );
+    if(condition & G_IO_IN)
     {
-      g_string_free(buffer, true);
-      return NULL;
-    }
+      // read until \0 or \n character found
+      GString* buffer = g_string_new("");
+      char c;
 
-    while(*err == NULL && c != '\n')
-    {
-      if(c != '\r')
+      int bytesReceived = g_socket_receive(connection, &c, 1, NULL, NULL);
+
+      if(bytesReceived < 1)
       {
-        g_string_append_c(buffer,c);
+        g_string_free(buffer, true);
+        // if G_IO_IN was signalled but there was no data available this is a sign that
+        // the client was disconnected
+        disconnect();
+        return NULL;
       }
-      g_socket_receive(connection, &c, 1, NULL, err);
+
+      while(*err == NULL && c != '\n')
+      {
+        if(c != '\r')
+        {
+          g_string_append_c(buffer,c);
+        }
+        g_socket_receive(connection, &c, 1, NULL, err);
+      }
+
+      if(*err)
+      {
+        g_string_free(buffer,true);
+        return NULL;
+      }
+
+      g_string_append_c(buffer,'\0');
+      return g_string_free(buffer, false);
     }
-
-    if(*err)
-    {
-      g_string_free(buffer,true);
-      return NULL;
-    }
-
-    g_string_append_c(buffer,'\0');
-    return g_string_free(buffer, false);
-
   }//end if
   return NULL;
 }
