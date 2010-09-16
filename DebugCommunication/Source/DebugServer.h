@@ -13,7 +13,7 @@
 #include "DebugCommandExecutor.h"
 #include "DebugCommunicator.h"
 
-class DebugServer
+class DebugServer : public DebugCommandExecutor
 {
 public:
   DebugServer(unsigned int port);
@@ -31,6 +31,10 @@ public:
     DebugCommandExecutor* executor);
   
   virtual void execute();
+
+  virtual void executeDebugCommand(const std::string& command,
+    const std::map<std::string,std::string>& arguments,
+    std::stringstream& out);
 
   static void* dispatcher_static(void* ref);
 private:

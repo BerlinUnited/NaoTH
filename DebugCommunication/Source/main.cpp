@@ -12,6 +12,16 @@
 
 using namespace std;
 
+class TestDebugCommandExecutor : public DebugCommandExecutor
+{
+  virtual void executeDebugCommand(
+    const std::string& command, const std::map<std::string,std::string>& arguments,
+    std::stringstream &outstream)
+  {
+    outstream << "Hey hoh, let's go!";
+  }
+};
+
 /*
  * 
  */
@@ -21,6 +31,9 @@ int main(int argc, char** argv)
   g_thread_init(NULL);
 
   DebugServer server(5401);
+  TestDebugCommandExecutor test;
+
+  server.registerCommand("hey", "", &test);
 
   while(true)
   {
