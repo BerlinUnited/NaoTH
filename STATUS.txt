@@ -5,7 +5,13 @@ NaoRunner:
 TestBehavior:
  - implemented a dummy controller to test the Webots part of NaoRunner
 
-ModuleFramework:
+SimpleSoccerAgent:
+ - implemented a simple soccer agent for the SimSpark part of NaoRunner
+
+DebugCommunication:
+ - first working version
+
+ ModuleFramework:
  - nothing done yet
 
 SoccerNaoTH:

@@ -31,7 +31,7 @@ solution "DebugCommunication"
 
    libdirs {"../../Extern/lib/"}
 	  
-   links {"glib-2.0","gio-2.0"}
+   links {"glib-2.0","gio-2.0","gobject-2.0","gthread-2.0"}
 	  
 	 targetdir "../Dist" 
    targetname "testdebugcom"

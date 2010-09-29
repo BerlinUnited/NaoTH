@@ -8,3 +8,4 @@ project "Interface"
   
   files {"../Source/Interface/**.cpp", "../Source/Interface/**.h"}
   
+  postbuildcommands{"premake4 install"}
