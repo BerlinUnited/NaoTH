@@ -194,7 +194,7 @@ char* DebugCommunicator::readMessage()
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in triggerRead) "
       << err->message << std::endl;
     disconnect();
-    delete result;
+    g_free(result);
     return NULL;
   }
   return result;

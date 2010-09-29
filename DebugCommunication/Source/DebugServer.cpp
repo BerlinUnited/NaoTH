@@ -58,7 +58,7 @@ void DebugServer::dispatcher()
 
       comm.sendMessage(answer, strlen(answer) + 1);
 
-      delete answer;
+      g_free(answer);
       g_thread_yield();
     }
 
@@ -76,11 +76,11 @@ void DebugServer::execute()
     GString* answer = g_string_new("");
     handleCommand(cmdRaw, answer);
 
-    g_string_append(answer, "\n\0");
+    g_string_append(answer, "\r\n\0");
 
     g_async_queue_push(answers, g_string_free(answer, false));
 
-    delete cmdRaw;
+    g_free(cmdRaw);
   }
 }
 
