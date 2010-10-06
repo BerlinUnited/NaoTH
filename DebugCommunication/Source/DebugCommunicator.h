@@ -18,7 +18,7 @@ public:
   virtual ~DebugCommunicator();
 
   void init();
-  void sendMessage(const char* data, size_t size);
+  bool sendMessage(const char* data, size_t size);
   char* readMessage();
 
 private:

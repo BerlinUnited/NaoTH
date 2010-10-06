@@ -49,7 +49,16 @@ void DebugServer::mainReader()
   while (true)
   {
     char* msg = comm.readMessage();
-    if (msg != NULL)
+    if (msg == NULL)
+    {
+      // error occured, we should empty the command queue (the answer queue is cleared by the writer)
+      while(g_async_queue_length(commands) > 0)
+      {
+        char* tmp = (char*) g_async_queue_pop(commands);
+        g_free(tmp);
+      }
+    }
+    else
     {
       g_async_queue_push(commands, msg);
     }
@@ -70,7 +79,15 @@ void DebugServer::mainWriter()
     {
       char* answer = (char*) g_async_queue_pop(answers);
 
-      comm.sendMessage(answer, strlen(answer) + 1);
+      if(!comm.sendMessage(answer, strlen(answer) + 1))
+      {
+        // error, clear answer queue
+        while(g_async_queue_length(answers) > 0)
+        {
+          char* tmp = (char*) g_async_queue_pop(answers);
+          g_free(tmp);
+        }
+      }
 
       g_free(answer);
       g_thread_yield();

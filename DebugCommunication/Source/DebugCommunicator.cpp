@@ -56,12 +56,10 @@ GError* DebugCommunicator::internalInit()
   g_socket_listen(serverSocket, &err);
   if (err) return err;
 
-  g_socket_set_blocking(serverSocket, true);
-
   return NULL;
 }
 
-void DebugCommunicator::sendMessage(const char* data, size_t size)
+bool DebugCommunicator::sendMessage(const char* data, size_t size)
 {
   GError* err = internalSendMessage(data, size);
   if (err)
@@ -70,7 +68,9 @@ void DebugCommunicator::sendMessage(const char* data, size_t size)
       << err->message << std::endl;
 
     disconnect();
+    return false;
   }
+  return true;
 }//end sendMessage
 
 GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
@@ -98,8 +98,6 @@ GError* DebugCommunicator::triggerConnect()
     {
       connection = g_socket_accept(serverSocket, NULL, &err);
       if (err) return err;
-
-      g_socket_set_blocking(connection, true);
 
       if (connection != NULL)
       {
