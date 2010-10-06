@@ -55,13 +55,9 @@
               <in>Serial.h</in>
             </df>
             <in>ASCIIEncoder.h</in>
-            <in>AsyncGameControllerComm.cpp</in>
-            <in>AsyncGameControllerComm.h</in>
             <in>BidirectionalCommunicator.h</in>
             <in>CommunicationCollection.h</in>
             <in>DummyBidirectionCommunicator.h</in>
-            <in>PracticalSocket.cpp</in>
-            <in>PracticalSocket.h</in>
             <in>RoboCupGameControlData.h</in>
             <in>SocketStream.cpp</in>
             <in>SocketStream.h</in>
