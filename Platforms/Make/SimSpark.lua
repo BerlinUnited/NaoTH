@@ -1,14 +1,13 @@
 -- NaoTH controller for SimSpark
 project "SimSpark"
-  kind "StaticLib"
+    kind "StaticLib"
   language "C++"
         
   files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
 
   includedirs {
 	"../Source/",   
-	"../Source/Interface/",
-	"../../Extern/include",
+	"../../Extern/include/",
 	"../../Extern/include/glib-2.0/","../../Extern/lib/glib-2.0/include/"}
 
 

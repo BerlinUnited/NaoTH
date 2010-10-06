@@ -7,7 +7,7 @@ function install()
     prefix = _OPTIONS["prefix"]
   end   
   
-  print("Installing Platforms to \"" .. prefix .. "\"")
+  print("Installing NaoTH-Tools to \"" .. prefix .. "\"")
 
   -- general target directory structure
   print("Creating \"include\" and \"lib\" directories")
@@ -16,8 +16,7 @@ function install()
   
   -- libs
   print("Copying the static library files")
-  os.copyfile("../dist/libnaoth-simspark.a", prefix .. "/lib/libnaoth-simspark.a");
-  os.copyfile("../dist/libnaowebots.a", prefix .. "/lib/libnaowebots.a");
+  os.copyfile("../dist/libnaointerface.a", prefix .. "/lib/libnaointerface.a");
   
   -- header files - directories
   print("Creating directory structure for header files")

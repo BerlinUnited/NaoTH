@@ -2,7 +2,7 @@ dofile "install.lua"
 
 -- description of the solution
 
-solution "NaoPlatform"
+solution "NaoTH-Tools"
   kind "StaticLib"
   language "C++"
   targetdir "../dist/"
@@ -14,7 +14,7 @@ solution "NaoPlatform"
 	defines {"WIN32", "NOMINMAX"}
   end
   
-      -- debug configuration
+   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
     flags { "Symbols" }
@@ -24,5 +24,4 @@ solution "NaoPlatform"
   
   postbuildcommands{"premake4 install"}
   
-  dofile "Webots.lua"
-  dofile "SimSpark.lua"
+  dofile "Interface.lua"

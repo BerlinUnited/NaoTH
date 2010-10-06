@@ -9,7 +9,7 @@
 #ifndef SEXP_PARSER_H
 #define SEXP_PARSER_H
 
-#include "sexp.h"
+#include <sexp.h>
 #include <string>
 #include <cstring>
 

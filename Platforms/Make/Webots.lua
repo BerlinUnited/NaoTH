@@ -26,7 +26,7 @@ project "Webots"
     "../Source/", 
     webotsHome .. "/include/controller/c/",
     "../Lib/win32/include/", 
-    "../Source/Interface/"}
+    "../../Extern/include/"}
   
   libdirs {webotsHome .. "/lib/"}
   

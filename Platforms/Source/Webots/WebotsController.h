@@ -29,7 +29,7 @@ void gps_euler(const float *matrix, float *euler);
 #endif
 ///////////////
 
-#include "Interface/PlatformInterface/PlatformInterface.h"
+#include <Interface/PlatformInterface/PlatformInterface.h>
 
 // Representations
 #include "Interface/Representations/Infrastructure/JointData.h"
