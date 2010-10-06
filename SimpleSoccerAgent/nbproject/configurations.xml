@@ -36,7 +36,7 @@
           <executablePath>simple-soccer-agent</executablePath>
           <ccTool>
             <incDir>
-              <pElem>../NaoRunner/Source</pElem>
+              <pElem>../Extern/include</pElem>
             </incDir>
           </ccTool>
         </makeTool>

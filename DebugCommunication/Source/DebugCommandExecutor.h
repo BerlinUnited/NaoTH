@@ -12,7 +12,7 @@
 #include <map>
 #include <sstream>
 
-#include <Interface/Tools/DataStructures/DestructureSentinel.h>
+#include <Tools/DataStructures/DestructureSentinel.h>
 
 class DebugCommandExecutor : public DestructionSentinel<DebugCommandExecutor>
 {
