@@ -40,11 +40,13 @@ public:
 
   virtual void objectDestructed(DebugCommandExecutor* object);
 
-  static void* dispatcher_static(void* ref);
+  static void* reader_static(void* ref);
+  static void* writer_static(void* ref);
 private:
 
   DebugCommunicator comm;
-  GThread* dispatcherThread;
+  GThread* readerThread;
+  GThread* writerThread;
 
   GAsyncQueue* commands;
   GAsyncQueue* answers;
@@ -53,7 +55,8 @@ private:
   std::map<std::string, DebugCommandExecutor*> executorMap;
   std::map<std::string, std::string> descriptionMap;
 
-  void dispatcher();
+  void mainReader();
+  void mainWriter();
   void handleCommand(char* cmdRaw, GString* answer);
   void handleCommand(std::string command, std::map<std::string,std::string> arguments,
     GString* answer, bool encodeBase64);

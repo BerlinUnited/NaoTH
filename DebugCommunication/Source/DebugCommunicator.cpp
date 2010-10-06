@@ -56,12 +56,10 @@ GError* DebugCommunicator::internalInit()
   g_socket_listen(serverSocket, &err);
   if (err) return err;
 
-  g_socket_set_blocking(serverSocket, true);
-
   return NULL;
 }
 
-void DebugCommunicator::sendMessage(const char* data, size_t size)
+bool DebugCommunicator::sendMessage(const char* data, size_t size)
 {
   GError* err = internalSendMessage(data, size);
   if (err)
@@ -70,7 +68,9 @@ void DebugCommunicator::sendMessage(const char* data, size_t size)
       << err->message << std::endl;
 
     disconnect();
+    return false;
   }
+  return true;
 }//end sendMessage
 
 GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
@@ -98,8 +98,6 @@ GError* DebugCommunicator::triggerConnect()
     {
       connection = g_socket_accept(serverSocket, NULL, &err);
       if (err) return err;
-
-      g_socket_set_blocking(connection, true);
 
       if (connection != NULL)
       {
@@ -131,8 +129,8 @@ char* DebugCommunicator::triggerReceive(GError** err)
 
 
     // check if there is data available
-    GIOCondition condition = g_socket_condition_check(connection, G_IO_IN );
-    if(condition & G_IO_IN)
+    g_socket_condition_wait(connection, G_IO_IN, NULL, err);
+    if(*err == NULL)
     {
       // read until \0 or \n character found
       GString* buffer = g_string_new("");
@@ -166,6 +164,10 @@ char* DebugCommunicator::triggerReceive(GError** err)
 
       g_string_append_c(buffer,'\0');
       return g_string_free(buffer, false);
+    }
+    else
+    {
+      disconnect();
     }
   }//end if
   return NULL;

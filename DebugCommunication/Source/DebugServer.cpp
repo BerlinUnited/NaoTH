@@ -19,52 +19,75 @@ DebugServer::DebugServer(unsigned int port)
   commands = g_async_queue_new();
   answers = g_async_queue_new();
 
+  g_async_queue_ref(commands);
+  g_async_queue_ref(answers);
+
   if (g_thread_supported())
   {
+    comm.init();
+
     GError* err = NULL;
-    g_message("Starting debug server as seperate thread");
-    dispatcherThread = g_thread_create(dispatcher_static, this, true, &err);
+    g_message("Starting debug server as two seperate threads (reader and writer)");
+    readerThread = g_thread_create(reader_static, this, true, &err);
+    writerThread = g_thread_create(writer_static, this, true, &err);
 
     registerCommand("help", "list available commands or get the description of a specific command", this);
 
-  }
-  else
+  } else
   {
     g_warning("No threading support: DebugServer not available");
   }
 }
 
-void DebugServer::dispatcher()
+void DebugServer::mainReader()
 {
-  g_message("Dispatcher init");
+  g_message("Reader init");
   g_async_queue_ref(commands);
-  g_async_queue_ref(answers);
-  comm.init();
 
-  g_message("Starting DebugServer dispatcher loop");
+  g_message("Starting DebugServer reader loop");
   while (true)
   {
     char* msg = comm.readMessage();
-    if (msg != NULL)
+    if (msg == NULL)
+    {
+      // error occured, we should empty the command queue (the answer queue is cleared by the writer)
+      while (g_async_queue_length(commands) > 0)
+      {
+        char* tmp = (char*) g_async_queue_pop(commands);
+        g_free(tmp);
+      }
+    } else
     {
       g_async_queue_push(commands, msg);
     }
-
-    g_thread_yield();
-
-    while (g_async_queue_length(answers) > 0)
-    {
-      char* answer = (char*) g_async_queue_pop(answers);
-
-      comm.sendMessage(answer, strlen(answer) + 1);
-
-      g_free(answer);
-      g_thread_yield();
-    }
-
     g_thread_yield();
   }
+  g_async_queue_unref(commands);
+}
 
+void DebugServer::mainWriter()
+{
+  g_message("Writer init");
+  g_async_queue_ref(answers);
+
+  g_message("Starting DebugServer writer loop");
+  while (true)
+  {
+    char* answer = (char*) g_async_queue_pop(answers);
+
+    if (!comm.sendMessage(answer, strlen(answer) + 1))
+    {
+      // error, clear answer queue
+      while (g_async_queue_length(answers) > 0)
+      {
+        char* tmp = (char*) g_async_queue_pop(answers);
+        g_free(tmp);
+      }
+    }
+    g_free(answer);
+    g_thread_yield();
+  }
+  g_async_queue_unref(answers);
 }
 
 void DebugServer::execute()
@@ -218,15 +241,18 @@ void DebugServer::objectDestructed(DebugCommandExecutor* object)
 
   // search all registered keys of the object
   std::map<std::string, DebugCommandExecutor*>::const_iterator iter;
-  for (iter = executorMap.begin(); iter != executorMap.end(); iter++) {
-    if ((*iter).second == object) {
+  for (iter = executorMap.begin(); iter != executorMap.end(); iter++)
+  {
+    if ((*iter).second == object)
+    {
       registeredKeys.push_back((*iter).first);
     }//end if
   }//end for
 
   // unregister all found commands
   std::list<std::string>::const_iterator iter_key;
-  for (iter_key = registeredKeys.begin(); iter_key != registeredKeys.end(); iter_key++) {
+  for (iter_key = registeredKeys.begin(); iter_key != registeredKeys.end(); iter_key++)
+  {
     executorMap.erase(*iter_key);
 
     std::cout << "[DebugServer] " << "unregistering command "
@@ -234,11 +260,10 @@ void DebugServer::objectDestructed(DebugCommandExecutor* object)
   }//end for
 }
 
-
 void DebugServer::executeDebugCommand(const std::string& command, const std::map<std::string, std::string>& arguments,
   std::stringstream& out)
 {
-  if(command == "help")
+  if (command == "help")
   {
     if (arguments.empty())
     {
@@ -249,7 +274,7 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
       {
         out << iter->first;
         iter++;
-        if(iter != descriptionMap.end())
+        if (iter != descriptionMap.end())
         {
           out << ", ";
         }
@@ -273,15 +298,22 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
   }
 }
 
-void* DebugServer::dispatcher_static(void* ref)
+void* DebugServer::reader_static(void* ref)
 {
-  ((DebugServer*) ref)->dispatcher();
+  ((DebugServer*) ref)->mainReader();
+  return NULL;
+}
+
+void* DebugServer::writer_static(void* ref)
+{
+  ((DebugServer*) ref)->mainWriter();
   return NULL;
 }
 
 DebugServer::~DebugServer()
 {
-  g_free(dispatcherThread);
+  g_free(readerThread);
+  g_free(writerThread);
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
 }

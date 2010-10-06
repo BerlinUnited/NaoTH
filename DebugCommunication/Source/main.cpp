@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   while(true)
   {
     server.execute();
-    //sleep(1);
+    g_usleep(1000000);
   }
 
   return 0;
