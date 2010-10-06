@@ -1,5 +1,6 @@
 NaoTH-Tools:
-  - Interface somehow implemented
+  - Interface implemented
+
 Platforms:
   - Webots and SimSpark work
 
@@ -8,9 +9,6 @@ SimpleSoccerAgent:
 
 DebugCommunication:
  - works, but of course needs more testing in a real situation (as always)
-
- ModuleFramework:
- - nothing done yet here, look at the old repository
 
 SoccerNaoTH:
  - nothing done yet
