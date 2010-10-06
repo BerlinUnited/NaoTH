@@ -16,7 +16,7 @@ function install()
   
   -- libs
   print("Copying the static library files")
-  os.copyfile("../dist/libnaointerface.a", prefix .. "/lib/libnaointerface.a");
+  os.copyfile("../dist/libnaothtools.a", prefix .. "/lib/libnaothtools.a");
   
   -- header files - directories
   print("Creating directory structure for header files")
@@ -46,7 +46,7 @@ newoption {
 
 newaction {
  trigger = "install",
- description = "Install NaoRunner",
+ description = "Install NaoTH-Tools",
  execute = install
 }
 

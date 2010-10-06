@@ -9,10 +9,10 @@
 
 #include <iostream>
 #include <fstream>
-#include <Interface/PlatformInterface/Platform.h>
+#include <PlatformInterface/Platform.h>
 
 using namespace std;
-using namespace naorunner;
+using namespace naoth;
 
 Motion::KeyFrame::KeyFrame()
 {

@@ -9,10 +9,10 @@
 
 
 #include "Webots/WebotsController.h"
-#include "Interface/PlatformInterface/Platform.h"
-#include "Interface/Tools/ImageProcessing/ColorModelConversions.h"
+#include "PlatformInterface/Platform.h"
+#include "Tools/ImageProcessing/ColorModelConversions.h"
 
-using namespace naorunner;
+using namespace naoth;
 
 WebotsController::WebotsController()
   :PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),

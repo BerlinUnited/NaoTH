@@ -17,6 +17,6 @@ project "SimpleSoccerAgent"
 
 	  libdirs {"../NaoRunner/dist/", "../NaoRunner/Lib/", "../Extern/lib/",  "../NaoRunner/Lib/win32/lib/"}
 	  
-	  links {"naoth-simspark", "naointerface", "sfsexp", "glib-2.0","gio-2.0","gobject-2.0"}
+	  links {"naoth-simspark", "naothtools", "sfsexp", "glib-2.0","gio-2.0","gobject-2.0"}
 	  
 	  targetname "simple-soccer-agent"

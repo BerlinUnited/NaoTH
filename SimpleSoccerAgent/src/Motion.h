@@ -10,10 +10,10 @@
 
 #include <iostream>
 #include <list>
-#include <Interface/Representations/Infrastructure/JointData.h>
-#include <Interface/PlatformInterface/Callable.h>
+#include <Representations/Infrastructure/JointData.h>
+#include <PlatformInterface/Callable.h>
 
-class Motion : public naorunner::Callable
+class Motion : public naoth::Callable
 {
 public:
   enum Request
@@ -46,7 +46,7 @@ public:
   public:
     KeyFrame();
     
-    double position[naorunner::JointData::numOfJoint];
+    double position[naoth::JointData::numOfJoint];
     double time;
   };
 
@@ -62,8 +62,8 @@ private:
 
   std::list<KeyFrame> activeKeyFrame;
 
-  naorunner::SensorJointData theSensorJointData;
-  naorunner::MotorJointData theMotorJointData;
+  naoth::SensorJointData theSensorJointData;
+  naoth::MotorJointData theMotorJointData;
 };
 
 std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf);
