@@ -90,12 +90,9 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 {
   theTeamName = teamName;
   // connect to the simulator
-  try
+  if(!theSocket.connect(server, port))
   {
-    theSocket.connect(server, port);
-  } catch (SocketException& e)
-  {
-    cerr << e.what() << endl;
+    std::cerr << "SimSparkController could not connect" << std::endl;
     return false;
   }
 

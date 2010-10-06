@@ -8,7 +8,8 @@ project "SimSpark"
   includedirs {
 	"../Source/",   
 	"../Source/Interface/",
-	"../../Extern/include"}
+	"../../Extern/include",
+	"../../Extern/include/glib-2.0/","../../Extern/lib/glib-2.0/include/"}
 
 
   libdirs {"../../Extern/lib/"}
