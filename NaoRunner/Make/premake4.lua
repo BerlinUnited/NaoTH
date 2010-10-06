@@ -8,7 +8,7 @@ solution "NaoRunner"
   targetdir "../dist/"
   
   platforms {"Native"}
-  configurations {"Release","Debug"}
+  configurations {"Debug","Release"}
   
   if os.is("windows") then
 	defines {"WIN32", "NOMINMAX"}

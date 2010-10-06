@@ -129,7 +129,7 @@ void SocketStream::prefixedSend()
 
 bool SocketStream::isFixedLengthDataAvailable(unsigned int len)
 {
-  if(socket == NULL || g_socket_is_connected(socket))
+  if(socket == NULL || !g_socket_is_connected(socket))
   {
     return false;
   }

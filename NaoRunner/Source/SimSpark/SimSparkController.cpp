@@ -88,6 +88,7 @@ SimSparkController::~SimSparkController()
 
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port)
 {
+
   theTeamName = teamName;
   // connect to the simulator
   if(!theSocket.connect(server, port))
@@ -97,6 +98,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   }
 
   // send create command to simulator
+
   theSocket << "(scene rsg/agent/nao/nao.rsg)" << send;
   // wait the response
   updateSensors();
@@ -169,7 +171,7 @@ void SimSparkController::initPosition()
 
 void SimSparkController::main()
 {
-  cout << "SimSpark Controller runs in signle thread" << endl;
+  cout << "SimSpark Controller runs in single thread" << endl;
   while ( updateSensors() )
   {
     //Cognition::getInstance().main();
