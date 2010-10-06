@@ -10,7 +10,7 @@
 
 #include <glib.h>
 
-#include <Interface/Tools/DataStructures/DestructureSentinel.h>
+#include <Tools/DataStructures/DestructureSentinel.h>
 
 #include "DebugCommandExecutor.h"
 #include "DebugCommunicator.h"
