@@ -267,7 +267,8 @@ bool SimSparkController::updateSensors()
 //  cout << "Sensor data: " << msg << endl;
 
   pcont_t* pcont;
-  sexp_t* sexp;
+  sexp_t* sexp = NULL;
+
   char* c = const_cast<char*> (msg.c_str());
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
@@ -280,7 +281,7 @@ bool SimSparkController::updateSensors()
     theFSRData.data[i] = 0;
   }
 
-  do
+  while(sexp)
   {
     const sexp_t* t = sexp->list;
     if (SexpParser::isVal(t))
@@ -316,7 +317,7 @@ bool SimSparkController::updateSensors()
     }
     destroy_sexp(sexp);
     sexp = iparse_sexp(c, msg.size(), pcont);
-  } while (sexp);
+  }
 
   updateInertialSensor();
 

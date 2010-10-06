@@ -23,7 +23,6 @@ SocketStream::~SocketStream()
   if(socket != NULL)
   {
     g_socket_close(socket, NULL);
-    g_free(socket);
   }
   delete [] mRecvBuf;
 }
@@ -41,7 +40,7 @@ bool SocketStream::connect(const std::string& host, int port)
 
     if (err)
     {
-      g_error("Could not connect. Error message:\n%s", err->message);
+      g_warning("Could not connect. Error message:\n%s", err->message);
       g_error_free (err);
     }
     else
@@ -66,13 +65,13 @@ void SocketStream::send(const std::string& msg)
     g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err);
     if(err)
     {
-      g_error("Could not send message. Error message:\n%s", err->message);
+      g_warning("Could not send message. Error message:\n%s", err->message);
       g_error_free (err);
     }
   }
   else
   {
-    g_error("Can't send, not connected");
+    g_warning("Can't send, not connected");
   }
 }
 
@@ -91,7 +90,7 @@ int SocketStream::recv(std::string& msg)
   }
   else if(!g_socket_is_connected(socket))
   {
-    g_error("Can not receive, socket is not connected");
+    g_warning("Can not receive, socket is not connected");
     return -1;
   }
 
