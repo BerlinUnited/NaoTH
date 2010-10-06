@@ -5,6 +5,8 @@
  *
  */
 
+#include <glib.h>
+
 #include <SimSpark/SimSparkController.h>
 #include "Cognition.h"
 #include "Motion.h"
@@ -21,6 +23,8 @@ void printUsage(char* name)
 
 int main(int argc, char** argv)
 {
+  g_type_init();
+  
   string teamName = "NaoTH";
   unsigned int num = 0; // zero means get a number from server
   string server = "localhost";

@@ -44,7 +44,7 @@ using namespace naorunner;
 class SimSparkController : public PlatformInterface<SimSparkController>
 {
 private:
-  PrefixedSocketStream<TCPSocket> theSocket;
+  PrefixedSocketStream theSocket;
 
   // sensor data
   std::map<string, JointData::JointID> theJointSensorNameMap;

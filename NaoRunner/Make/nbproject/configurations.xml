@@ -63,6 +63,7 @@
             <in>PracticalSocket.cpp</in>
             <in>PracticalSocket.h</in>
             <in>RoboCupGameControlData.h</in>
+            <in>SocketStream.cpp</in>
             <in>SocketStream.h</in>
             <in>WoboCupGameControlData.h</in>
           </df>
@@ -102,6 +103,9 @@
           <in>NaoTime.cpp</in>
           <in>NaoTime.h</in>
         </df>
+      </df>
+      <df name="sfsexp">
+        <in>SexpParser.h</in>
       </df>
       <df name="SimSpark">
         <in>SimSparkController.cpp</in>
@@ -144,6 +148,9 @@
               <pElem>/usr/local/webots/include</pElem>
               <pElem>../Source</pElem>
               <pElem>../Source/Interface</pElem>
+              <pElem>../../Extern/include</pElem>
+              <pElem>../../Extern/lib/glib-2.0/include</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
             </incDir>
           </ccTool>
         </makeTool>
