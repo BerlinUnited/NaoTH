@@ -131,8 +131,8 @@ char* DebugCommunicator::triggerReceive(GError** err)
 
 
     // check if there is data available
-    GIOCondition condition = g_socket_condition_check(connection, G_IO_IN );
-    if(condition & G_IO_IN)
+    g_socket_condition_wait(connection, G_IO_IN, NULL, err);
+    if(*err == NULL)
     {
       // read until \0 or \n character found
       GString* buffer = g_string_new("");
@@ -166,6 +166,10 @@ char* DebugCommunicator::triggerReceive(GError** err)
 
       g_string_append_c(buffer,'\0');
       return g_string_free(buffer, false);
+    }
+    else
+    {
+      disconnect();
     }
   }//end if
   return NULL;

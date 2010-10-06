@@ -19,11 +19,17 @@ DebugServer::DebugServer(unsigned int port)
   commands = g_async_queue_new();
   answers = g_async_queue_new();
 
+  g_async_queue_ref(commands);
+  g_async_queue_ref(answers);
+
   if (g_thread_supported())
   {
+    comm.init();
+
     GError* err = NULL;
-    g_message("Starting debug server as seperate thread");
-    dispatcherThread = g_thread_create(dispatcher_static, this, true, &err);
+    g_message("Starting debug server as two seperate threads (reader and writer)");
+    readerThread = g_thread_create(reader_static, this, true, &err);
+    writerThread = g_thread_create(writer_static, this, true, &err);
 
     registerCommand("help", "list available commands or get the description of a specific command", this);
 
@@ -34,14 +40,12 @@ DebugServer::DebugServer(unsigned int port)
   }
 }
 
-void DebugServer::dispatcher()
+void DebugServer::mainReader()
 {
-  g_message("Dispatcher init");
+  g_message("Reader init");
   g_async_queue_ref(commands);
-  g_async_queue_ref(answers);
-  comm.init();
 
-  g_message("Starting DebugServer dispatcher loop");
+  g_message("Starting DebugServer reader loop");
   while (true)
   {
     char* msg = comm.readMessage();
@@ -49,9 +53,19 @@ void DebugServer::dispatcher()
     {
       g_async_queue_push(commands, msg);
     }
-
     g_thread_yield();
+  }
+  g_async_queue_unref(commands);
+}
 
+void DebugServer::mainWriter()
+{
+  g_message("Writer init");
+  g_async_queue_ref(answers);
+
+  g_message("Starting DebugServer writer loop");
+  while (true)
+  {
     while (g_async_queue_length(answers) > 0)
     {
       char* answer = (char*) g_async_queue_pop(answers);
@@ -64,7 +78,7 @@ void DebugServer::dispatcher()
 
     g_thread_yield();
   }
-
+  g_async_queue_unref(answers);
 }
 
 void DebugServer::execute()
@@ -273,15 +287,22 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
   }
 }
 
-void* DebugServer::dispatcher_static(void* ref)
+void* DebugServer::reader_static(void* ref)
 {
-  ((DebugServer*) ref)->dispatcher();
+  ((DebugServer*) ref)->mainReader();
+  return NULL;
+}
+
+void* DebugServer::writer_static(void* ref)
+{
+  ((DebugServer*) ref)->mainWriter();
   return NULL;
 }
 
 DebugServer::~DebugServer()
 {
-  g_free(dispatcherThread);
+  g_free(readerThread);
+  g_free(writerThread);
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
 }
