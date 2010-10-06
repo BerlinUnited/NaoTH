@@ -1,9 +1,10 @@
-NaoRunner/Lib/*.a
 ./Projects/XabslEditor
 .dep.inc
 private
-./NaoRunner/Make/Makefile
-./NaoRunner/Make/*.make
+./Platforms/Make/Makefile
+./Platforms/Make/*.make
+./NaoTH-Tools/Make/Makefile
+./NaoTH-Tools/Make/*.make
 TestBehavior/Makefile
 TestBehavior/*.make
 DebugCommunication/Make/*.make
@@ -17,4 +18,4 @@ Extern/bin/*
 Extern/include/*
 Extern/lib/*
 Extern/share/*
-dist
+dist/

@@ -1,18 +1,16 @@
-NaoRunner:
+NaoTH-Tools:
   - Interface somehow implemented
-  - work on Webots controller started, using the new callback mechanism  
-
-TestBehavior:
- - implemented a dummy controller to test the Webots part of NaoRunner
+Platforms:
+  - Webots and SimSpark work
 
 SimpleSoccerAgent:
  - implemented a simple soccer agent for the SimSpark part of NaoRunner
 
 DebugCommunication:
- - first working version
+ - works, but of course needs more testing in a real situation (as always)
 
  ModuleFramework:
- - nothing done yet
+ - nothing done yet here, look at the old repository
 
 SoccerNaoTH:
  - nothing done yet
