@@ -9,9 +9,9 @@
 #define	_SIMSPARK_GAME_INFO_H
 
 #include "sfsexp/SexpParser.h"
-#include <Interface/PlatformInterface/PlatformInterchangeable.h>
+#include <PlatformInterface/PlatformInterchangeable.h>
 
-class SimSparkGameInfo : public naorunner::PlatformInterchangeable
+class SimSparkGameInfo : public naoth::PlatformInterchangeable
 {
 public:
   SimSparkGameInfo();

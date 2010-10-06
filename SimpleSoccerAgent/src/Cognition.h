@@ -9,17 +9,17 @@
 #define	COGNITION_H
 
 #include <iostream>
-#include <Interface/PlatformInterface/Callable.h>
+#include <PlatformInterface/Callable.h>
 
-#include <Interface/Representations/Infrastructure/JointData.h>
-#include <Interface/Representations/Infrastructure/VirtualVision.h>
-#include <Interface/Representations/Infrastructure/FrameInfo.h>
-#include <Interface/Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/VirtualVision.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
 #include <SimSpark/SimSparkGameInfo.h>
 
 #include "BallPercept.h"
 
-class Cognition : public naorunner::Callable
+class Cognition : public naoth::Callable
 {
 public:
   Cognition();
@@ -50,10 +50,10 @@ private:
   void decide();
 
 private:
-  naorunner::SensorJointData theSensorJointData;
-  naorunner::VirtualVision theVirtualVision;
-  naorunner::FrameInfo theFrameInfo;
-  naorunner::InertialSensorData theInertialSensorData;
+  naoth::SensorJointData theSensorJointData;
+  naoth::VirtualVision theVirtualVision;
+  naoth::FrameInfo theFrameInfo;
+  naoth::InertialSensorData theInertialSensorData;
   SimSparkGameInfo theSimSparkGameInfo;
 
   BallPercept theBall;

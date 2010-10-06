@@ -13,33 +13,33 @@
 //#include <pthread.h>
 #include <map>
 
-#include <Interface/Representations/Infrastructure/JointData.h>
-#include <Interface/Representations/Infrastructure/AccelerometerData.h>
-#include <Interface/Representations/Infrastructure/Image.h>
-#include <Interface/Representations/Infrastructure/FrameInfo.h>
-#include <Interface/Representations/Infrastructure/GyrometerData.h>
-#include <Interface/Representations/Infrastructure/FSRData.h>
-#include <Interface/Representations/Infrastructure/InertialSensorData.h>
-#include <Interface/Representations/Infrastructure/BumperData.h>
-#include <Interface/Representations/Infrastructure/IRData.h>
-#include <Interface/Representations/Infrastructure/CameraSettings.h>
-#include <Interface/Representations/Infrastructure/LEDData.h>
-#include <Interface/Representations/Infrastructure/UltraSoundData.h>
-#include <Interface/Representations/Infrastructure/SoundData.h>
-#include <Interface/Representations/Infrastructure/ButtonData.h>
-#include <Interface/Representations/Infrastructure/BatteryData.h>
-#include <Interface/Representations/Infrastructure/VirtualVision.h>
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/Image.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/BumperData.h>
+#include <Representations/Infrastructure/IRData.h>
+#include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/LEDData.h>
+#include <Representations/Infrastructure/UltraSoundData.h>
+#include <Representations/Infrastructure/SoundData.h>
+#include <Representations/Infrastructure/ButtonData.h>
+#include <Representations/Infrastructure/BatteryData.h>
+#include <Representations/Infrastructure/VirtualVision.h>
 
 #include "Communication/SocketStream.h"
 //#include "SimSparkTeamCommunicator.h"
 #include "SimSparkGameInfo.h"
 
-#include "Interface/PlatformInterface/Platform.h"
-#include "Interface/PlatformInterface/PlatformInterface.h"
+#include "PlatformInterface/Platform.h"
+#include "PlatformInterface/PlatformInterface.h"
 
 #include "sfsexp/SexpParser.h"
 
-using namespace naorunner;
+using namespace naoth;
 
 class SimSparkController : public PlatformInterface<SimSparkController>
 {

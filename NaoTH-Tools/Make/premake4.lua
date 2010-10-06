@@ -24,4 +24,4 @@ solution "NaoTH-Tools"
   
   postbuildcommands{"premake4 install"}
   
-  dofile "Interface.lua"
+  dofile "NaoTHTools.lua"

@@ -9,11 +9,11 @@
 #include "Motion.h"
 
 #include <iostream>
-#include <Interface/PlatformInterface/PlatformInterface.h>
+#include <PlatformInterface/PlatformInterface.h>
 #include <map>
 
 using namespace std;
-using namespace naorunner;
+using namespace naoth;
 
 Cognition::Cognition():
 isStandingUp(true)
