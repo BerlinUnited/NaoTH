@@ -12,4 +12,7 @@ solution "SimpleSoccerAgent"
 	defines { "DEBUG" }
 	flags { "Symbols" }
 
+  dofile "../NaoTH-Tools/Make/NaoTHTools.lua"
+  dofile "../Platforms/Make/SimSpark.lua"
+
   dofile "SimSpark.lua"
