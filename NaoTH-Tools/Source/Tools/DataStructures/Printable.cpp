@@ -1,9 +1,10 @@
-#include "Tools/DataStructures/Printable.h"
+#include "Printable.h"
 
-using namespace naoth;
-
-ostream& operator<<(ostream& stream, const Printable& printable)
+namespace naoth
 {
-  printable.print(stream);
-  return stream;
+  ostream& operator<<(ostream& stream, const Printable& printable)
+  {
+    printable.print(stream);
+    return stream;
+  }
 }

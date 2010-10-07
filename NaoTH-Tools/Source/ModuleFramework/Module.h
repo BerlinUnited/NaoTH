@@ -126,7 +126,7 @@ public:
   
   // what is it used for?
   Module* operator->(){ return this; }
-  friend ostream& operator<<(ostream& stream, Module& module);
+  //friend ostream& operator<<(ostream& stream, Module& module);
 };
 
 /**
