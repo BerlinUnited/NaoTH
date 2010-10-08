@@ -1,3 +1,5 @@
+dofile "install.lua"
+
 project "NaoTH-Tools"
   kind "StaticLib"
   language "C++"

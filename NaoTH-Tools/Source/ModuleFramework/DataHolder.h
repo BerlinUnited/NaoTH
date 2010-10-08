@@ -10,6 +10,7 @@
 
 #include "Representation.h"
 #include "Tools/DataStructures/Printable.h"
+
 /**
  * Connects a arbitrary class with Representation
  */

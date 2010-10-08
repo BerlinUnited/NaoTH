@@ -1,5 +1,3 @@
-dofile "install.lua"
-
 -- description of the solution
 
 solution "NaoTH-Tools"
