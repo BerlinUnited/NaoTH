@@ -1,6 +1,5 @@
 package de.hu_berlin.informatik.ki.nao.server;
 
-import de.hu_berlin.informatik.ki.nao.messages.NaothMessages.Command;
 
 /**
  * Implemented by every class that wants to communicate with

@@ -204,17 +204,8 @@ public class ConnectUI extends javax.swing.JPanel
 
   private void btDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btDisconnectActionPerformed
     
-    try
-    {
-      messageServer.disconnect();
-    }
-    catch (IOException ex)
-    {
-      Logger.getLogger(ConnectUI.class.getName()).log(Level.SEVERE, null, ex);
-      JOptionPane.showMessageDialog(this, 
-        "Disconnecting failed: " + ex.getLocalizedMessage(), "ERROR",
-        JOptionPane.ERROR_MESSAGE);
-    }
+
+  messageServer.disconnect();
 
   }//GEN-LAST:event_btDisconnectActionPerformed
 
