@@ -13,11 +13,13 @@ import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *
  * @author  Heinrich Mellmann
  */
+@PluginImplementation
 public class HelpViewer extends JPanel
   implements CommandSender, ObjectListener<String[]>, Dialog
 {
