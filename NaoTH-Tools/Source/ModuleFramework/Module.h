@@ -10,40 +10,15 @@
 
 #include "BlackBoardInterface.h"
 
+#include "DataHolder.h"
+#include "Node.h"
+
 #include <string.h>
 #include <map>
 #include <list>
 
+
 using namespace std;
-
-
-template<class FROM_TYPE, class TO_TYPE>
-class Node
-{
-public:
-  std::list<FROM_TYPE*> from;
-  std::list<TO_TYPE*> to;
-
-  void registerFrom(FROM_TYPE& node)
-  {
-    from.push_back(&node);
-  }//end registerFrom
-
-  void registerTo(TO_TYPE& node)
-  {
-    to.push_back(&node);
-  }//end registerTo
-
-  void unregisterFrom(FROM_TYPE& node)
-  {
-    from.remove(&node);
-  }//end unregisterFrom
-
-  void unregisterTo(TO_TYPE& node)
-  {
-    to.remove(&node);
-  }//end unregisterFrom
-};
 
 
 class Representation;

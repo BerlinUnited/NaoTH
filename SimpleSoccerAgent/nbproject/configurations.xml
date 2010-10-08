@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
+    <df name="Source" root="../NaoTH-Tools/Source">
+      <df name="ModuleFramework" kind="SOURCE_LOGICAL_FOLDER">
+        <in>DataHolder.h</in>
+        <in>Node.h</in>
+      </df>
+      <df name="PlatformInterface" kind="SOURCE_LOGICAL_FOLDER">
+      </df>
+      <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+        </df>
+      </df>
+      <df name="Tools" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="Communication" kind="SOURCE_LOGICAL_FOLDER">
+          <df name="SerialPort" kind="SOURCE_LOGICAL_FOLDER">
+          </df>
+        </df>
+        <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+        </df>
+        <df name="Debug" kind="SOURCE_LOGICAL_FOLDER">
+        </df>
+        <df name="ImageProcessing" kind="SOURCE_LOGICAL_FOLDER">
+        </df>
+        <df name="Math" kind="SOURCE_LOGICAL_FOLDER">
+        </df>
+      </df>
+    </df>
     <df name="src" root="src">
       <in>BallPercept.h</in>
       <in>Cognition.cpp</in>
@@ -19,6 +45,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
+    <Elem>../NaoTH-Tools/Source</Elem>
   </sourceRootList>
   <projectmakefile>SimpleSoccerAgent-Makefile.mk</projectmakefile>
   <confs>
@@ -37,6 +64,8 @@
           <ccTool>
             <incDir>
               <pElem>../Extern/include</pElem>
+              <pElem>../NaoTH-Tools/Source</pElem>
+              <pElem>../Platforms/Source</pElem>
             </incDir>
           </ccTool>
         </makeTool>

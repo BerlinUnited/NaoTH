@@ -40,6 +40,7 @@
 #ifndef __BlackBoard_h_
 #define __BlackBoard_h_
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <typeinfo>

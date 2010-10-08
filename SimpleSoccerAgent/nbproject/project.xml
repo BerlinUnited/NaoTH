@@ -12,6 +12,7 @@
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>src</sourceRootElem>
+                <sourceRootElem>../NaoTH-Tools/Source</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>Default</confElem>
