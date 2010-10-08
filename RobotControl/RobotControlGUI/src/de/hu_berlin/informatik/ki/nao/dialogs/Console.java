@@ -17,6 +17,7 @@ import java.awt.event.KeyListener;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -26,8 +27,8 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author  thomas
  */
 @PluginImplementation
-public class Console extends Dialog implements CommandSender,
-  ObjectListener<String>
+public class Console extends JPanel implements CommandSender,
+  ObjectListener<String>, Dialog
 {
 
   Main parent;

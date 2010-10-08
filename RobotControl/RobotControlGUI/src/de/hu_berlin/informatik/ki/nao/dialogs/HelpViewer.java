@@ -18,8 +18,8 @@ import javax.swing.JPanel;
  *
  * @author  Heinrich Mellmann
  */
-public class HelpViewer extends Dialog
-  implements CommandSender, ObjectListener<String[]>
+public class HelpViewer extends JPanel
+  implements CommandSender, ObjectListener<String[]>, Dialog
 {
 
   private Main parent;
