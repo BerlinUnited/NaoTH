@@ -94,6 +94,10 @@ public class Command
    */
   public Command addArg(String name)
   {
+    if(arguments == null)
+    {
+      arguments = new HashMap<String, byte[]>();
+    }
     arguments.put(name, null);
     return this;
   }
