@@ -76,7 +76,25 @@ public class Command
    */
   public Command addArg(String name, String value)
   {
-    addArg(name, value.getBytes());
+    if(value == null)
+    {
+      addArg(name);
+    }
+    else
+    {
+      addArg(name, value.getBytes());
+    }
+    return this;
+  }
+
+  /**
+   * Adds an arguments with a name and no value
+   * @param name
+   * @return Will return itself.
+   */
+  public Command addArg(String name)
+  {
+    arguments.put(name, null);
     return this;
   }
 
