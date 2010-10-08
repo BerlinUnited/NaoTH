@@ -19,13 +19,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *
  * @author  thomas
  */
-public class Console extends javax.swing.JPanel implements CommandSender,
-  ObjectListener<String>, Dialog
+@PluginImplementation
+public class Console extends Dialog implements CommandSender,
+  ObjectListener<String>
 {
 
   Main parent;

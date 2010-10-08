@@ -24,8 +24,8 @@ import javax.swing.tree.TreePath;
  *
  * @author  Heinrich Mellmann
  */
-public class DebugRequestPanel extends javax.swing.JPanel
-  implements CommandSender, ObjectListener<String[]>, Dialog
+public class DebugRequestPanel extends Dialog
+  implements CommandSender, ObjectListener<String[]>
 {
 
   private Main parent;

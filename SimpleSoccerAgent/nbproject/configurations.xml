@@ -58,7 +58,7 @@
       <makefileType>
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
-          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
+          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} --print-directory -f Makefile</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
           <executablePath>simple-soccer-agent</executablePath>
           <ccTool>

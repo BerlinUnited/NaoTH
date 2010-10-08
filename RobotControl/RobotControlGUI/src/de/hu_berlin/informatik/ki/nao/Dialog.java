@@ -6,19 +6,22 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import javax.swing.JPanel;
+import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  * Interface for all dialogs
  * @author thomas
  */
-public interface Dialog 
+public abstract class Dialog extends javax.swing.JPanel implements Plugin
 {
+
   /** 
    * Inits the dialog
    * 
    * @param parent The application "parent"
    */
-  public void init(Main parent);
+  public abstract void init(Main parent);
   
   /**
    * Returns this as panel.<br><br>
@@ -26,11 +29,14 @@ public interface Dialog
    * Mostly this just should return <code>this</code>
    * @return
    */
-  public JPanel getPanel();
+  public JPanel getPanel()
+  {
+    return this;
+  }
 
   /**
    * This method is called when the dialog is closed.
    * Here the all the registered listener shold be unregistered.
    */
-  public void dispose();
+  public abstract void dispose();
 }
