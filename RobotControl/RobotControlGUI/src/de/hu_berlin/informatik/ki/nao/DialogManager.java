@@ -10,6 +10,7 @@ import java.util.Map;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
@@ -18,6 +19,9 @@ import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 @PluginImplementation
 public class DialogManager implements Plugin
 {
+
+  @InjectPlugin
+  public Main main;
 
   private Map<String, Dialog> dialogs;
 

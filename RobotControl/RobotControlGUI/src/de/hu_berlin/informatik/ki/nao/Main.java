@@ -5,7 +5,6 @@
  */
 package de.hu_berlin.informatik.ki.nao;
 
-import de.hu_berlin.informatik.ki.nao.dialogs.Console;
 import de.hu_berlin.informatik.ki.nao.dialogs.DebugRequestPanel;
 import de.hu_berlin.informatik.ki.nao.manager.GenericManager;
 import java.awt.BorderLayout;
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
@@ -35,7 +33,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -44,20 +41,20 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import net.xeoh.plugins.base.util.PluginManagerUtil;
-import net.xeoh.plugins.base.util.uri.ClassURI;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.state.PersistenceException;
@@ -71,37 +68,29 @@ import org.flexdock.view.actions.DefaultCloseAction;
  *
  * @author  thomas
  */
-public class Main extends javax.swing.JFrame implements IMessageServerParent
+@PluginImplementation
+public class Main extends javax.swing.JFrame implements IMessageServerParent, Plugin
 {
-  private PluginManager pluginManager;
-  private DialogManager dialogManager;
 
+  private DialogManager dialogManager;
+  
   // manager
   private MessageServer messageServer;
   private UnrequestedOutputManager unrequestedOutputManager;
-
   private HashMap<Command, GenericManager> mapOfGenericManager;
-  
   // dialogs
   private LinkedList<View> lastViews;
-  private HashMap<String, Integer> dialogCounter;
+  private Map<Dialog, View> dialog2View;
   private View drcView;
-  
   private ConnectionDialog connectionDialog;
-
   // there are always some special ones...
   private Dialog debugRequestCenter;
-
   // Propertes
   private File fConfig;
   private Properties config;
-
   private File layoutFile =
     new File(System.getProperty("user.home") + "/.RobotControlyLayout.xml");
-
- 
   private File mainDirectory;
-
   // show the connection dialog if not connected
   private boolean triggerConnect = true;
 
@@ -109,28 +98,17 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
   public Main()
   {
     initComponents();
-   
-    pluginManager = PluginManagerFactory.createPluginManager();
-    try
-    {
-      pluginManager.addPluginsFrom(new URI("classpath://*"));
-    }
-    catch (URISyntaxException ex)
-    {
-      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-    }
 
-    dialogManager = pluginManager.getPlugin(DialogManager.class);
-
-
+    
     CodeSource source = Main.class.getProtectionDomain().getCodeSource();
-    if(source != null)
+    if (source != null)
     {
       URL url = source.getLocation();
       try
       {
         mainDirectory = new File(url.toURI()).getParentFile().getParentFile();
-      } catch (URISyntaxException ex)
+      }
+      catch (URISyntaxException ex)
       {
         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         // fallback to working directory
@@ -151,42 +129,47 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
     connectionDialog = new ConnectionDialog(this, this);
 
-    setupDefaultLayout();
+    //setupDefaultLayout();
     configureDocking();
 
     showConnected(false);
 
 
     // HACK: implement MagagerChangedEvent concept
-    Thread t = new Thread(new Runnable() {
+    Thread t = new Thread(new Runnable()
+    {
+
       public void run()
       {
-        while(true)
+        while (true)
         {
-          String str = "Running Manager " +messageServer.getListeners().size();
+          String str = "Running Manager " + messageServer.getListeners().size();
 
           btManager.setText(str);
           try
           {
-              Thread.sleep(100);
-          }catch(InterruptedException e)
+            Thread.sleep(100);
+          }
+          catch (InterruptedException e)
           {
-              System.out.println(e);
+            System.out.println(e);
           }//end catch
         }//end while
       }//end run
     });
 
-    Thread t2 = new Thread(new Runnable() {
+    Thread t2 = new Thread(new Runnable()
+    {
+
       long oldRecivedSize = 0;
       long oldSentSize = 0;
 
       public void run()
       {
-        while(true)
+        while (true)
         {
-          double recivedKB = ((double)(messageServer.getReceivedBytes()-oldRecivedSize))/1024.0;
-          double sentKB = ((double)(messageServer.getSentBytes()-oldSentSize))/1024.0;
+          double recivedKB = ((double) (messageServer.getReceivedBytes() - oldRecivedSize)) / 1024.0;
+          double sentKB = ((double) (messageServer.getSentBytes() - oldSentSize)) / 1024.0;
 
           String recivedStr = String.format("Recived KB/s: %4.2f", recivedKB);
           String sentStr = String.format("Sent KB/s: %4.2f", sentKB);
@@ -198,20 +181,26 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
           try
           {
-              Thread.sleep(1000);
-          }catch(InterruptedException e)
+            Thread.sleep(1000);
+          }
+          catch (InterruptedException e)
           {
-              System.out.println(e);
+            System.out.println(e);
           }//end catch
         }//end while
       }//end run
     });
-    
+
     t.start();
     t2.start();
   }//end constructor Main
 
-
+  @PluginLoaded
+  public void dialogManagerLoaded(DialogManager manager)
+  {
+    this.dialogManager = manager;
+    setupDefaultLayout();
+  }
 
   private void setupDefaultLayout()
   {
@@ -220,6 +209,7 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
     this.getContentPane().add(port, BorderLayout.CENTER);
 
     lastViews = new LinkedList<View>();
+    dialog2View = new HashMap<Dialog, View>();
 
     // add debug request center
     debugRequestCenter = new DebugRequestPanel();
@@ -231,17 +221,16 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
     // help dialogs
     ShowHelpAction helpAction = new ShowHelpAction(this, debugRequestCenter.getClass().getSimpleName());
     attachHelpDialog(debugRequestCenter.getPanel(), helpAction);
-    attachHelpDialog(drcView,                       helpAction);
+    attachHelpDialog(drcView, helpAction);
 
     //drcView.addAction(DockingConstants.PIN_ACTION);
     port.dock((Dockable) drcView, Viewport.EAST_REGION);
-    
+
     // loading all dialogs
-    dialogCounter = new HashMap<String, Integer>();
 
     LinkedList<JMenuItem> dialogMenuEntries = new LinkedList<JMenuItem>();
 
-    for(final String caption : dialogManager.getDialogs().keySet())
+    for (final String caption : dialogManager.getDialogs().keySet())
     {
       final JMenuItem newItem = new JMenuItem(caption + " (0)");
 
@@ -258,13 +247,14 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
     Collections.sort(dialogMenuEntries, new Comparator<JMenuItem>()
     {
+
       public int compare(JMenuItem o1, JMenuItem o2)
       {
         return o1.getText().compareTo(o2.getText());
       }
     });
 
-    for(JMenuItem item : dialogMenuEntries)
+    for (JMenuItem item : dialogMenuEntries)
     {
       dialogsMenu.add(item);
     }
@@ -281,8 +271,6 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
 
   }//end setupDefaultLayout
-
-
 
   private void configureDocking()
   {
@@ -301,26 +289,24 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
       DockingManager.loadLayoutModel();
       DockingManager.restoreLayout(true);
     }
-    catch(IOException ex)
+    catch (IOException ex)
     {
       Helper.handleException(ex);
     }
-    catch(PersistenceException ex)
+    catch (PersistenceException ex)
     {
       Helper.handleException(ex);
     }
     DockingManager.setAutoPersist(true);
   }//end configureDocking
 
-
-
   /** 
    * Returns the configuration wich will be saved to a file if the application
-   is closed
+  is closed
    */
   public Properties getConfig()
   {
-    if(fConfig == null || config == null)
+    if (fConfig == null || config == null)
     {
       fConfig = new File(System.getProperty("user.home") + "/.robotcontrol");
       config = new Properties();
@@ -328,7 +314,7 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
       {
         config.load(new FileReader(fConfig));
       }
-      catch(IOException ex)
+      catch (IOException ex)
       {
         // ignore
       }
@@ -345,8 +331,8 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
   {
     disconnectMenuItem.setEnabled(isConnected);
     connectMenuItem.setEnabled(!isConnected);
-    
-    if(isConnected)
+
+    if (isConnected)
     {
       lblConnect.setText("Connected to " + messageServer.getAddress().toString());
     }
@@ -355,36 +341,26 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
       lblConnect.setText("Not connected");
     }
   }
-  
+
   private void loadDynamicDialog(
-          final Dialog dialog,
-          final String caption,
-          final JMenuItem menuItem)
+    final Dialog dialog,
+    final String caption,
+    final JMenuItem menuItem)
   {
-    if(dialog != null && caption != null && !caption.equals(""))
+    if (dialog != null && caption != null && !caption.equals(""))
     {
       try
       {
         final String className = dialog.getClass().getSimpleName();
-        // update counter
-        int oldVal = dialogCounter.containsKey(className) ?
-          dialogCounter.get(className) : 0;
-        oldVal++;
-        dialogCounter.put(className,new Integer(oldVal));
-        menuItem.setText(caption + " (" + oldVal + ")");
-        
+
         dialog.init(this);
 
         String tabCaption = caption;
-        if(oldVal > 1)
-        {
-          tabCaption = caption + " (" + oldVal + ")";
-        }
-        final View tmpView = createView(className + "_" + oldVal, tabCaption , dialog.getPanel());
+        final View tmpView = createView(className, tabCaption, dialog.getPanel());
 
         String region = Viewport.CENTER_REGION;
 
-        if(lastViews.size() == 0)
+        if (lastViews.isEmpty())
         {
           region = Viewport.WEST_REGION;
           drcView.dock((Dockable) tmpView, region, 0.83f);
@@ -395,10 +371,10 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
         }
 
         ShowHelpAction helpAction = new ShowHelpAction(this, dialog.getClass().getSimpleName());
-        attachHelpDialog(tmpView,           helpAction);
+        attachHelpDialog(tmpView, helpAction);
         attachHelpDialog(dialog.getPanel(), helpAction);
 
-        
+
         DefaultCloseAction closeAction = new DefaultCloseAction()
         {
 
@@ -406,27 +382,20 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
           public void actionPerformed(ActionEvent arg0)
           {
             super.actionPerformed(arg0);
+
             lastViews.remove(tmpView);
 
             dialog.dispose();
-                    
-            int oldVal2 = dialogCounter.containsKey(className) ? 
-            dialogCounter.get(className) : 1;
-            oldVal2--;
-            dialogCounter.put(className,new Integer(oldVal2));
-            menuItem.setText(caption + " (" + oldVal2 + ")");
           }
-
         };
         closeAction.putValue(Action.NAME, DockingConstants.CLOSE_ACTION);
         tmpView.addAction(closeAction);
         tmpView.addAction(DockingConstants.PIN_ACTION);
 
         lastViews.add(tmpView);
-        
-        
+
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
         // ups...
         Helper.handleException(ex);
@@ -442,7 +411,6 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
     return result;
   }
-
 
   private void attachHelpDialog(JComponent component, ShowHelpAction action)
   {
@@ -614,8 +582,10 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
   public GenericManager getGenericManager(Command command)
   {
-    if(mapOfGenericManager.get(command) == null)
+    if (mapOfGenericManager.get(command) == null)
+    {
       mapOfGenericManager.put(command, new GenericManager(messageServer, command));
+    }
     return mapOfGenericManager.get(command);
   }
 
@@ -630,15 +600,16 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
    */
   public boolean checkConnected()
   {
-    if(!isTriggerConnect())
+    if (!isTriggerConnect())
     {
       return true;
     }
-    
+
     if (Helper.checkConnected(messageServer))
     {
       return true;
-    } else
+    }
+    else
     {
       showConnectionDialog();
     }
@@ -650,7 +621,8 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
     try
     {
       messageServer.connect(host, port);
-    } catch (IOException ex)
+    }
+    catch (IOException ex)
     {
       Helper.handleException(ex);
     }
@@ -674,55 +646,17 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
   private void beforeClose()
   {
     // save configuration //
-  
-  // get all open dialogs
-  StringBuilder openDialogs = new StringBuilder("");
-  Set<String> set = dialogCounter.keySet();
- 
-  List<String> list = new LinkedList<String>();
-  for(String className : set)
-  {
-    int val = dialogCounter.get(className);
-    for(int i=0; i < val; i++)
-    {
-      list.add(className);
-    }
-  }
-  int i=0;
-  for(String d : list)
-  {
-    openDialogs.append(d);
-    i++;
-    if(i < list.size())
-    {
-      openDialogs.append(",");
-    }
-  }
-  getConfig().put("dialogs", openDialogs.toString());
+    // TODO
 
-  // save to file
-  try
-  {
-    getConfig().store(new FileWriter(fConfig), "");
-  }
-  catch(IOException ex)
-  {
-    Helper.handleException(ex);
-  }
+    messageServer.disconnect();
 
-  messageServer.disconnect();
 
-  if(pluginManager != null)
-  {
-    pluginManager.shutdown();
   }
-
-}
 
 private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
 
   beforeClose();
-  
+
 }//GEN-LAST:event_formWindowClosing
 
 private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
@@ -736,7 +670,7 @@ private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FI
 private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
 {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
 
-  if(layoutFile.exists() && layoutFile.isFile() && layoutFile.canWrite())
+  if (layoutFile.exists() && layoutFile.isFile() && layoutFile.canWrite())
   {
     layoutFile.delete();
     DockingManager.setAutoPersist(false);
@@ -750,10 +684,10 @@ private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN
   showConnectionDialog();
 }//GEN-LAST:event_connectMenuItemActionPerformed
 
-private void showConnectionDialog()
-{
+  private void showConnectionDialog()
+  {
     connectionDialog.setVisible(true);
-}
+  }
 
 private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_disconnectMenuItemActionPerformed
 {//GEN-HEADEREND:event_disconnectMenuItemActionPerformed
@@ -765,18 +699,18 @@ private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//
 private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btManagerActionPerformed
 
   String str = "Currently registeres Manager:\n\n";
-  for(int i = 0; i < messageServer.getListeners().size(); i++)
+  for (int i = 0; i < messageServer.getListeners().size(); i++)
   {
     str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
   }//end for
   str += "\n";
-  
+
   JOptionPane.showMessageDialog(this, str);
 }//GEN-LAST:event_btManagerActionPerformed
 
-
   class ShowHelpAction extends AbstractAction
   {
+
     private String title = null;
     private Frame parent = null;
     private String text = null;
@@ -787,9 +721,11 @@ private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
       this.title = title;
       this.parent = parent;
 
-      this.text = Helper.getResourceAsString("/de/hu_berlin/informatik/ki/nao/dialogs/"+title+".html");
-      if(this.text == null)
+      this.text = Helper.getResourceAsString("/de/hu_berlin/informatik/ki/nao/dialogs/" + title + ".html");
+      if (this.text == null)
+      {
         this.text = "For this dialog is no help avaliable.";
+      }
 
       this.dlg = new HelpDialog(parent, true, text);
       this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
@@ -799,33 +735,49 @@ private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
       this.dlg.setVisible(false);
     }//end ShowHelpAction
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e)
+    {
       // move only if the dialog is invisible
-      if(!this.dlg.isVisible())
+      if (!this.dlg.isVisible())
       {
         Point location = parent.getLocation();
         location.translate(100, 100);
         this.dlg.setLocation(location);
       }//end if
-      
+
       this.dlg.setVisible(true);
     }//end actionPerformed
   }//end class ShowHelpAction
 
-
   /**
    * @param args the command line arguments
    */
-  public static void main(String args[]) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() 
+  public static void main(String args[])
+  {
+    java.awt.EventQueue.invokeLater(new Runnable()
+    {
+
+      public void run()
       {
+
+        PluginManager pluginManager = PluginManagerFactory.createPluginManager();
+        try
+        {
+          pluginManager.addPluginsFrom(new URI("classpath://*"));
+        }
+        catch (URISyntaxException ex)
+        {
+          Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         Main m = new Main();
         m.setVisible(true);
+
+        pluginManager.shutdown();
       }
     });
+
   }
-  
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
   private javax.swing.JButton btManager;
@@ -844,23 +796,15 @@ private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
   private javax.swing.JPanel statusPanel;
   // End of variables declaration//GEN-END:variables
 
-  public void setTriggerConnect(boolean triggerConnect) {
+  public void setTriggerConnect(boolean triggerConnect)
+  {
     this.triggerConnect = triggerConnect;
   }
 
-  public boolean isTriggerConnect() {
+  public boolean isTriggerConnect()
+  {
     return triggerConnect;
   }
 
-  @Override
-  public void dispose()
-  {
-    if(pluginManager != null)
-    {
-      pluginManager.shutdown();
-    }
-  }
-
-
-  
 }//end Main
+
