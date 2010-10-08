@@ -2,8 +2,9 @@
 * @file BlackBoardInterface.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Declaration of class BlackBoardInterface
+* Implementation of class BlackBoardInterface
 * Implements an interface to access the blackboard
+*
 */
 
 #ifndef __BlackBoardInterface_h_
@@ -15,12 +16,12 @@
 
 class BlackBoardInterface
 {
-protected:
+private:
   // TODO: make it reference
   BlackBoard* theBlackBoard;
   bool blackBoardOwner;
 
-public:
+protected:
   BlackBoardInterface(BlackBoard* theBlackBoard) : theBlackBoard(theBlackBoard)
   {
     blackBoardOwner = false;

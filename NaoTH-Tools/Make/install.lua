@@ -16,7 +16,11 @@ function install()
   
   -- libs
   print("Copying the static library files")
-  os.copyfile("../dist/libnaothtools.a", prefix .. "/lib/libnaothtools.a");
+  if os.is("windows") then
+    os.copyfile("../dist/naothtools.lib", prefix .. "/lib/naothtools.lib");
+  else
+	os.copyfile("../dist/libnaothtools.a", prefix .. "/lib/libnaothtools.a");
+  end
   
   -- header files - directories
   print("Creating directory structure for header files")

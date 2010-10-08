@@ -1,5 +1,6 @@
 NaoTH-Tools:
   - Interface implemented
+  - module architecture implemented
 
 Platforms:
   - Webots and SimSpark work
