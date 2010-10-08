@@ -25,6 +25,17 @@ public class SimpleTester
     {
       server.connect("localhost", 5401);
       server.addCommandSender(new TestSender());
+      try
+      {
+        Thread.sleep(5000);
+
+        server.disconnect();
+
+      }
+      catch (InterruptedException ex)
+      {
+        Logger.getLogger(SimpleTester.class.getName()).log(Level.SEVERE, null, ex);
+      }
 
     }
     catch (IOException ex)
@@ -52,7 +63,7 @@ public class SimpleTester
 
     public void handleError(int code)
     {
-      throw new UnsupportedOperationException("Not supported yet.");
+      System.out.println("ok...");
     }
 
     public Command getCurrentCommand()

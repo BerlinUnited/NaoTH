@@ -162,19 +162,6 @@ public class MessageServer
     isActive = false;
     if (serverSocket != null && serverSocket.isConnected())
     {
-      try
-      {
-        // cleanup
-        ByteBuffer buffer = ByteBuffer.allocate(1);
-        while (serverSocket.read(buffer) > 0)
-        {
-          buffer.clear();
-        }
-      }
-      catch (IOException ex)
-      {
-        // ignore
-      }
       for (SingleExecEntry entry : callbackQueue)
       {
         if (entry.sender != null)
