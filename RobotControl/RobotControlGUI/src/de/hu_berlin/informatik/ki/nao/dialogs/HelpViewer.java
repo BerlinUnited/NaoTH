@@ -18,7 +18,7 @@ import javax.swing.JPanel;
  *
  * @author  Heinrich Mellmann
  */
-public class HelpViewer extends javax.swing.JPanel
+public class HelpViewer extends JPanel
   implements CommandSender, ObjectListener<String[]>, Dialog
 {
 

@@ -13,6 +13,7 @@ import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.util.Enumeration;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -24,7 +25,7 @@ import javax.swing.tree.TreePath;
  *
  * @author  Heinrich Mellmann
  */
-public class DebugRequestPanel extends javax.swing.JPanel
+public class DebugRequestPanel extends JPanel
   implements CommandSender, ObjectListener<String[]>, Dialog
 {
 

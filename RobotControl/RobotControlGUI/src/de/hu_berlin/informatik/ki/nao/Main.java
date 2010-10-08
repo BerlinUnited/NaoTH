@@ -5,6 +5,7 @@
  */
 package de.hu_berlin.informatik.ki.nao;
 
+import de.hu_berlin.informatik.ki.nao.dialogs.Console;
 import de.hu_berlin.informatik.ki.nao.dialogs.DebugRequestPanel;
 import de.hu_berlin.informatik.ki.nao.manager.GenericManager;
 import java.awt.BorderLayout;
@@ -35,6 +36,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
@@ -52,6 +54,10 @@ import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
+import net.xeoh.plugins.base.util.uri.ClassURI;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.state.PersistenceException;
@@ -67,6 +73,9 @@ import org.flexdock.view.actions.DefaultCloseAction;
  */
 public class Main extends javax.swing.JFrame implements IMessageServerParent
 {
+  private PluginManager pluginManager;
+  private DialogManager dialogManager;
+
   // manager
   private MessageServer messageServer;
   private UnrequestedOutputManager unrequestedOutputManager;
@@ -99,9 +108,21 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
   /** Creates new form Main */
   public Main()
   {
-
     initComponents();
-    
+   
+    pluginManager = PluginManagerFactory.createPluginManager();
+    try
+    {
+      pluginManager.addPluginsFrom(new URI("classpath://*"));
+    }
+    catch (URISyntaxException ex)
+    {
+      Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    dialogManager = pluginManager.getPlugin(DialogManager.class);
+
+
     CodeSource source = Main.class.getProtectionDomain().getCodeSource();
     if(source != null)
     {
@@ -217,63 +238,48 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
     
     // loading all dialogs
     dialogCounter = new HashMap<String, Integer>();
-    Map<String, JMenuItem> classNameToItem = new HashMap<String, JMenuItem>();
 
-    Properties propDialogs = new Properties();
-    try
+    LinkedList<JMenuItem> dialogMenuEntries = new LinkedList<JMenuItem>();
+
+    for(final String caption : dialogManager.getDialogs().keySet())
     {
-      ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      propDialogs.load(cl.getResourceAsStream("dialogs.properties"));
-      LinkedList<JMenuItem> dialogMenuEntries = new LinkedList<JMenuItem>();
+      final JMenuItem newItem = new JMenuItem(caption + " (0)");
 
-      for(Object o : propDialogs.keySet())
+      newItem.addActionListener(new ActionListener()
       {
-        final String className = (String) o;
-        final String caption = propDialogs.getProperty(className);
-        final JMenuItem newItem = new JMenuItem(caption + " (0)");
 
-
-        classNameToItem.put(className, newItem);
-
-        newItem.addActionListener(new ActionListener()
+        public void actionPerformed(ActionEvent e)
         {
-
-          public void actionPerformed(ActionEvent e)
-          {
-            loadDynamicDialog(className, caption, newItem);
-          }
-        });
-        dialogMenuEntries.add(newItem);
-      }
-
-      Collections.sort(dialogMenuEntries, new Comparator<JMenuItem>()
-      {
-        public int compare(JMenuItem o1, JMenuItem o2)
-        {
-          return o1.getText().compareTo(o2.getText());
+          loadDynamicDialog(dialogManager.getDialogs().get(caption), caption, newItem);
         }
       });
-
-      for(JMenuItem item : dialogMenuEntries)
-      {
-        dialogsMenu.add(item);
-      }
-
-      String openDialogsString = getConfig().getProperty("dialogs");
-      if(openDialogsString != null)
-      {
-        String[] splitted = openDialogsString.split(",");
-        for(String s : splitted)
-        {
-          loadDynamicDialog(s, propDialogs.getProperty(s), classNameToItem.get(s));
-        }
-      }
-
+      dialogMenuEntries.add(newItem);
     }
-    catch(IOException ex)
+
+    Collections.sort(dialogMenuEntries, new Comparator<JMenuItem>()
     {
-      Helper.handleException(ex);
+      public int compare(JMenuItem o1, JMenuItem o2)
+      {
+        return o1.getText().compareTo(o2.getText());
+      }
+    });
+
+    for(JMenuItem item : dialogMenuEntries)
+    {
+      dialogsMenu.add(item);
     }
+
+//      String openDialogsString = getConfig().getProperty("dialogs");
+//      if(openDialogsString != null)
+//      {
+//        String[] splitted = openDialogsString.split(",");
+//        for(String s : splitted)
+//        {
+//          loadDynamicDialog(s, propDialogs.getProperty(s), classNameToItem.get(s));
+//        }
+//      }
+
+
   }//end setupDefaultLayout
 
 
@@ -351,22 +357,22 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
   }
   
   private void loadDynamicDialog(
-          final String className,
+          final Dialog dialog,
           final String caption,
           final JMenuItem menuItem)
   {
-    if(caption != null && !caption.equals(""))
+    if(dialog != null && caption != null && !caption.equals(""))
     {
       try
       {
+        final String className = dialog.getClass().getSimpleName();
         // update counter
-        int oldVal = dialogCounter.containsKey(className) ? 
+        int oldVal = dialogCounter.containsKey(className) ?
           dialogCounter.get(className) : 0;
         oldVal++;
         dialogCounter.put(className,new Integer(oldVal));
         menuItem.setText(caption + " (" + oldVal + ")");
         
-        final Dialog dialog = (Dialog) Class.forName(className).newInstance();
         dialog.init(this);
 
         String tabCaption = caption;
@@ -706,6 +712,11 @@ public class Main extends javax.swing.JFrame implements IMessageServerParent
 
   messageServer.disconnect();
 
+  if(pluginManager != null)
+  {
+    pluginManager.shutdown();
+  }
+
 }
 
 private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -840,5 +851,16 @@ private void btManagerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
   public boolean isTriggerConnect() {
     return triggerConnect;
   }
+
+  @Override
+  public void dispose()
+  {
+    if(pluginManager != null)
+    {
+      pluginManager.shutdown();
+    }
+  }
+
+
   
 }//end Main

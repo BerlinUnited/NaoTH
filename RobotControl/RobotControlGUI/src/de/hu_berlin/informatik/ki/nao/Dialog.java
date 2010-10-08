@@ -6,13 +6,18 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import javax.swing.JPanel;
+import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.annotations.events.Init;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  * Interface for all dialogs
  * @author thomas
  */
-public interface Dialog 
+public interface Dialog extends  Plugin
 {
+
+
   /** 
    * Inits the dialog
    * 
@@ -30,7 +35,7 @@ public interface Dialog
 
   /**
    * This method is called when the dialog is closed.
-   * Here the all the registered listener shold be unregistered.
+   * Here the all the registered listener should be unregistered.
    */
   public void dispose();
 }

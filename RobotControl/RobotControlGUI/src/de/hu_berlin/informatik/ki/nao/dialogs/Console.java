@@ -17,14 +17,17 @@ import java.awt.event.KeyListener;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *
  * @author  thomas
  */
-public class Console extends javax.swing.JPanel implements CommandSender,
+@PluginImplementation
+public class Console extends JPanel implements CommandSender,
   ObjectListener<String>, Dialog
 {
 
