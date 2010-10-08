@@ -162,19 +162,6 @@ public class MessageServer
     isActive = false;
     if (serverSocket != null && serverSocket.isConnected())
     {
-      try
-      {
-        // cleanup
-        ByteBuffer buffer = ByteBuffer.allocate(1);
-        while (serverSocket.read(buffer) > 0)
-        {
-          buffer.clear();
-        }
-      }
-      catch (IOException ex)
-      {
-        // ignore
-      }
       for (SingleExecEntry entry : callbackQueue)
       {
         if (entry.sender != null)
@@ -257,7 +244,7 @@ public class MessageServer
    * @throws NotYetConnectedException is thrown if the server is not connected
    */
   public void executeSingleCommand(CommandSender commandSender, Command command)
-    throws NotYetConnectedException, InterruptedException
+    throws NotYetConnectedException
   {
     if (!isConnected())
     {
@@ -267,8 +254,14 @@ public class MessageServer
     SingleExecEntry e = new SingleExecEntry();
     e.command = command;
     e.sender = commandSender;
-
-    commandRequestQueue.put(e);
+    try
+    {
+      commandRequestQueue.put(e);
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+    }
 
 
   }//end executeSingleCommand
@@ -332,10 +325,18 @@ public class MessageServer
       {
         for(Map.Entry<String,byte[]> e : c.getArguments().entrySet())
         {
+          boolean hasArg = e.getValue() != null;
           buffer.append(" ");
-          buffer.append("+").append(e.getKey());
-          buffer.append(" ");
-          buffer.append(new String(Base64.encodeBase64(e.getValue())));
+          if(hasArg)
+          {
+            buffer.append("+");
+          }
+          buffer.append(e.getKey());
+          if(hasArg)
+          {
+            buffer.append(" ");
+            buffer.append(new String(Base64.encodeBase64(e.getValue())));
+          }
         }
       }
       buffer.append("\n");
