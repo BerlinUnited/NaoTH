@@ -143,6 +143,8 @@ public class MessageServer
       // wait
     }
 
+    serverSocket.configureBlocking(true);
+
     isActive = true;
 
     if (parent != null)
@@ -164,7 +166,6 @@ public class MessageServer
       {
         // cleanup
         ByteBuffer buffer = ByteBuffer.allocate(1);
-        serverSocket.configureBlocking(false);
         while (serverSocket.read(buffer) > 0)
         {
           buffer.clear();
@@ -290,7 +291,7 @@ public class MessageServer
           // reader answer
           serverSocket.read(b);
 
-          byte c = b.get();
+          byte c = b.get(0);
           if(c != 0)
           {
             valid = true;
@@ -327,12 +328,15 @@ public class MessageServer
 
       StringBuilder buffer = new StringBuilder();
       buffer.append("+").append(c.getName());
-      for(Map.Entry<String,byte[]> e : c.getArguments().entrySet())
+      if(c.getArguments() != null)
       {
-        buffer.append(" ");
-        buffer.append("+").append(e.getKey());
-        buffer.append(" ");
-        buffer.append(new String(Base64.encodeBase64(e.getValue())));
+        for(Map.Entry<String,byte[]> e : c.getArguments().entrySet())
+        {
+          buffer.append(" ");
+          buffer.append("+").append(e.getKey());
+          buffer.append(" ");
+          buffer.append(new String(Base64.encodeBase64(e.getValue())));
+        }
       }
       buffer.append("\n");
       ByteBuffer bytes = ByteBuffer.wrap(buffer.toString().getBytes());

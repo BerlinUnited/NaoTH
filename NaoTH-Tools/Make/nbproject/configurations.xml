@@ -2,6 +2,17 @@
 <configurationDescriptor version="69">
   <logicalFolder name="root" displayName="root" projectFiles="true">
     <df name="Source" root="../Source">
+      <df name="ModuleFramework">
+        <in>BlackBoard.h</in>
+        <in>BlackBoardInterface.h</in>
+        <in>DataHolder.h</in>
+        <in>Module.cpp</in>
+        <in>Module.h</in>
+        <in>ModuleClassWraper.h</in>
+        <in>ModuleManager.h</in>
+        <in>Node.h</in>
+        <in>Representation.h</in>
+      </df>
       <df name="PlatformInterface">
         <in>Callable.h</in>
         <in>Platform.h</in>

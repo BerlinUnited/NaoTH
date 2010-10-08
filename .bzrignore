@@ -20,3 +20,6 @@ Extern/lib/*
 Extern/share/*
 dist/
 build/
+SimpleSoccerAgent/Makefile
+SimpleSoccerAgent/simple-soccer-agent
+SimpleSoccerAgent/*.make
