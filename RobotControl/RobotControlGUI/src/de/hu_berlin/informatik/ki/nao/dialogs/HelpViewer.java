@@ -128,7 +128,7 @@ public class HelpViewer extends JPanel
   private void sendCommand(Command command)
   {
       commandToExecute = command;
-      this.messageServer.getServer().executeSingleCommand(this, command);
+      this.messageServer.getMessageServer().executeSingleCommand(this, command);
   }
   
   

@@ -14,5 +14,5 @@ import net.xeoh.plugins.base.Plugin;
  */
 public interface  MessageServerProvider extends Plugin
 {
-  public MessageServer getServer();
+  public MessageServer getMessageServer();
 }

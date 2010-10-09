@@ -22,6 +22,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -46,6 +47,7 @@ public class Console extends JPanel implements CommandSender,
     initComponents();
   }
 
+  @Init
   public void init()
   {
     if(parent == null)
@@ -121,7 +123,7 @@ public class Console extends JPanel implements CommandSender,
         
       }
       
-      msgServer.getServer().executeSingleCommand(this, parsedCommand);
+      msgServer.getMessageServer().executeSingleCommand(this, parsedCommand);
       cbInput.insertItemAt(cmd, 0);
       cbInput.setSelectedIndex(0);
     }

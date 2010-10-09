@@ -5,43 +5,62 @@
 
 package de.hu_berlin.informatik.ki.nao;
 
-import java.util.HashMap;
-import java.util.Map;
-import net.xeoh.plugins.base.Plugin;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.PluginLoaded;
-import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+import java.awt.Color;
+import java.util.LinkedList;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+import org.flexdock.docking.Dockable;
+import org.flexdock.docking.DockingPort;
+import org.flexdock.view.View;
+import org.flexdock.view.Viewport;
 
 /**
  *
  * @author thomas
  */
-@PluginImplementation
-public class DialogRegistry implements Plugin
+public class DialogRegistry
 {
 
-  @InjectPlugin
-  public RobotControlGUI main;
+  private JMenu menu;
+  private DockingPort dock;
+  private LinkedList<View> viewChronologicalOrder;
 
-  private Map<String, Dialog> dialogs;
-
-  public DialogRegistry()
+  public DialogRegistry(JMenu menu, DockingPort dock)
   {
-    dialogs = new HashMap<String, Dialog>();
+    this.viewChronologicalOrder = new LinkedList<View>();
+    this.menu = menu;
+    this.dock = dock;
   }
 
-  @PluginLoaded
   public void registerDialog(Dialog dialog)
   {
-    if(dialog != null)
+    String dialogName = dialog.getClass().getSimpleName();
+    View newView = createView(dialogName, dialogName, dialog.getPanel());
+    if(menu != null)
     {
-      dialogs.put(dialog.getClass().getSimpleName(), dialog);
+      JMenuItem newItem = new JMenuItem(dialogName);
+      menu.add(newItem);
     }
+    
+//    if(viewChronologicalOrder.isEmpty())
+//    {
+//      dock.dock((Dockable) newView, Viewport.EAST_REGION);
+//    }
+//    else
+//    {
+//      viewChronologicalOrder.getLast().dock(newView);
+//    }
   }
 
-  public Map<String, Dialog> getDialogs()
+  private View createView(String id, String text, JPanel panel)
   {
-    return dialogs;
+    final View result = new View(id, text);
+    panel.setBorder(new LineBorder(Color.GRAY, 1));
+    result.setContentPane(panel);
+
+    return result;
   }
 
 }

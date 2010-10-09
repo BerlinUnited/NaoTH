@@ -148,7 +148,7 @@ public abstract class AbstractManager<T> implements CommandSender, Plugin
     }
     else
     {
-      return serverProvider.getServer();
+      return serverProvider.getMessageServer();
     }
   }
 

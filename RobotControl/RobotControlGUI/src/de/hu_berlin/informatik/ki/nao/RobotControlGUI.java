@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * RobotControlGUI.java
  *
  * Created on 08.10.2010, 16:31:30
@@ -11,42 +6,68 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
+import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
+import javax.swing.JMenuItem;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
-import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.DockingPort;
-import org.flexdock.docking.defaults.DefaultDockingPort;
+import org.flexdock.view.Viewport;
 
 /**
  *
  * @author thomas
  */
 @PluginImplementation
-public class RobotControlGUI extends javax.swing.JFrame implements MessageServerProvider, Plugin
+public class RobotControlGUI extends javax.swing.JFrame implements MessageServerProvider,
+  IMessageServerParent, Plugin
 {
 
-  private DefaultDockingPort dock;
+  private Viewport dock;
   private MessageServer messageServer;
+
+  private DialogRegistry dialogRegistry;
+
+  // Propertes
+  private File fConfig;
+  private Properties config;
 
   /** Creates new form RobotControlGUI */
   public RobotControlGUI()
   {
     initComponents();
-    messageServer = new MessageServer();
-    dock = new DefaultDockingPort();
+    messageServer = new MessageServer(this);
+    dock = new Viewport();
 
-    this.getContentPane().add(dock);
+    dialogRegistry = new DialogRegistry(dialogsMenu, dock);
 
-    DockingManager.dock(new JButton("Test"), (DockingPort) dock);
+    // icon
+    Image icon = Toolkit.getDefaultToolkit().getImage(
+      this.getClass().getResource("res/RobotControlLogo128.png"));
+    setIconImage(icon);
 
+    this.getContentPane().add(dock, BorderLayout.CENTER);
+
+  }
+
+  @PluginLoaded
+  public void registerDialog(final Dialog dialog)
+  {
+
+    dialogRegistry.registerDialog(dialog);
   }
 
   public boolean checkConnected()
@@ -75,6 +96,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     aboutMenuItem = new javax.swing.JMenuItem();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setTitle("RobotControl for Nao");
 
     mainControlMenu.setMnemonic('R');
     mainControlMenu.setText("Main");
@@ -144,18 +166,8 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
     setJMenuBar(menuBar);
 
-    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-    getContentPane().setLayout(layout);
-    layout.setHorizontalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 400, Short.MAX_VALUE)
-    );
-    layout.setVerticalGroup(
-      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 271, Short.MAX_VALUE)
-    );
-
-    pack();
+    java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+    setBounds((screenSize.width-650)/2, (screenSize.height-514)/2, 650, 514);
   }// </editor-fold>//GEN-END:initComponents
 
     private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectMenuItemActionPerformed
@@ -178,7 +190,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     {//GEN-HEADEREND:event_aboutMenuItemActionPerformed
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
-  public MessageServer getServer()
+  public MessageServer getMessageServer()
   {
     return messageServer;
   }
@@ -197,15 +209,13 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
         try
         {
           pluginManager.addPluginsFrom(new URI("classpath://*"));
+
+          pluginManager.getPlugin(RobotControlGUI.class).setVisible(true);
         }
         catch (URISyntaxException ex)
         {
           Logger.getLogger(RobotControlGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        new RobotControlGUI().setVisible(true);
-
-        pluginManager.shutdown();
       }
     });
   }
@@ -221,4 +231,29 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JMenuItem resetLayoutMenuItem;
   // End of variables declaration//GEN-END:variables
+
+
+  public void showConnected(boolean isConnected)
+  {
+    // TODO
+  }
+
+  public Properties getConfig()
+  {
+    if (fConfig == null || config == null)
+    {
+      fConfig = new File(System.getProperty("user.home") + "/.robotcontrol");
+      config = new Properties();
+      try
+      {
+        config.load(new FileReader(fConfig));
+      }
+      catch (IOException ex)
+      {
+        // ignore
+      }
+    }//end if
+
+    return config;
+  }
 }
