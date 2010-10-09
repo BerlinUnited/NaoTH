@@ -70,7 +70,7 @@ public class DialogRegistry
     return result;
   }
 
-  private void dockDialog(Dialog dialog)
+  public void dockDialog(Dialog dialog)
   {
 
     String dialogName = dialog.getClass().getSimpleName();
@@ -103,5 +103,6 @@ public class DialogRegistry
       viewChronologicalOrder.addLast(newView);
     }
   }
+  
 
 }

@@ -15,19 +15,32 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import org.apache.commons.lang.StringUtils;
+import org.flexdock.docking.Dockable;
+import org.flexdock.docking.DockingManager;
+import org.flexdock.docking.drag.effects.EffectsManager;
+import org.flexdock.docking.drag.preview.GhostPreview;
+import org.flexdock.docking.state.PersistenceException;
+import org.flexdock.perspective.PerspectiveManager;
+import org.flexdock.perspective.persist.FilePersistenceHandler;
+import org.flexdock.perspective.persist.PersistenceHandler;
+import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.view.Viewport;
 
 /**
@@ -46,6 +59,8 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   private File fConfig;
   private Properties config;
   private ConnectionDialog connectionDialog;
+  private File layoutFile =
+    new File(System.getProperty("user.home") + "/.RobotControlyLayout.xml");
 
   /** Creates new form RobotControlGUI */
   public RobotControlGUI()
@@ -64,13 +79,26 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
     this.getContentPane().add(dock, BorderLayout.CENTER);
 
+    configureDocking();
   }
 
   @PluginLoaded
   public void registerDialog(final Dialog dialog)
   {
-
     dialogRegistry.registerDialog(dialog);
+    // load dialog if it was open in the last session
+    String openDialogsString = getConfig().getProperty("dialogs");
+    if(openDialogsString != null)
+    {
+      String[] splitted = openDialogsString.split(",");
+      for(String s : splitted)
+      {
+        if(s.trim().equals(dialog.getClass().getSimpleName()))
+        {
+          dialogRegistry.dockDialog(dialog);
+        }
+      }
+    }
   }
 
   public boolean checkConnected()
@@ -238,6 +266,14 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
+    
+      if(layoutFile.exists() && layoutFile.isFile() && layoutFile.canWrite())
+      {
+        layoutFile.delete();
+        DockingManager.setAutoPersist(false);
+        JOptionPane.showMessageDialog(null, "You need to restart RobotControl now.");
+      }//end if
+
     }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
@@ -356,5 +392,52 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   private void beforeClose()
   {
     messageServer.disconnect();
+
+    // remember open dialogs
+    Set<Dockable> dockables = dock.getDockables();
+    Set<String> dockablesAsstring = new HashSet<String>();
+    for(Dockable d : dockables)
+    {
+      dockablesAsstring.add(d.getPersistentId());
+    }
+    getConfig().put("dialogs", StringUtils.join(dockablesAsstring, ","));
+    // save configuration to file
+    try
+    {
+      getConfig().store(new FileWriter(fConfig), "");
+    }
+    catch (IOException ex)
+    {
+      Helper.handleException(ex);
+    }
   }
+
+  private void configureDocking()
+  {
+    DockingManager.setFloatingEnabled(true);
+    EffectsManager.setPreview(new GhostPreview());
+
+    PerspectiveManager.setRestoreFloatingOnLoad(true);
+    //PerspectiveManager mgr = PerspectiveManager.getInstance();
+    //System.out.println(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR);
+    PersistenceHandler persister =
+      new FilePersistenceHandler(layoutFile, XMLPersister.newDefaultInstance());
+    PerspectiveManager.setPersistenceHandler(persister);
+
+    try
+    {
+      DockingManager.loadLayoutModel();
+      DockingManager.restoreLayout(true);
+    }
+    catch(IOException ex)
+    {
+      Helper.handleException(ex);
+    }
+    catch(PersistenceException ex)
+    {
+      Helper.handleException(ex);
+    }
+    DockingManager.setAutoPersist(true);
+  }//end configureDocking
+
 }
