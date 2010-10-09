@@ -6,12 +6,15 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import org.flexdock.docking.Dockable;
+import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingPort;
 import org.flexdock.view.View;
 import org.flexdock.view.Viewport;
@@ -34,24 +37,24 @@ public class DialogRegistry
     this.dock = dock;
   }
 
-  public void registerDialog(Dialog dialog)
+  public void registerDialog(final Dialog dialog)
   {
     String dialogName = dialog.getClass().getSimpleName();
-    View newView = createView(dialogName, dialogName, dialog.getPanel());
+    
     if(menu != null)
     {
       JMenuItem newItem = new JMenuItem(dialogName);
+      newItem.addActionListener(new ActionListener()
+      {
+
+        public void actionPerformed(ActionEvent e)
+        {
+          dockDialog(dialog);
+        }
+      });
       menu.add(newItem);
     }
-    
-//    if(viewChronologicalOrder.isEmpty())
-//    {
-//      dock.dock((Dockable) newView, Viewport.EAST_REGION);
-//    }
-//    else
-//    {
-//      viewChronologicalOrder.getLast().dock(newView);
-//    }
+  
   }
 
   private View createView(String id, String text, JPanel panel)
@@ -60,7 +63,27 @@ public class DialogRegistry
     panel.setBorder(new LineBorder(Color.GRAY, 1));
     result.setContentPane(panel);
 
+    result.addAction(DockingConstants.CLOSE_ACTION);
+    result.addAction(DockingConstants.PIN_ACTION);
+
     return result;
+  }
+
+  private void dockDialog(Dialog dialog)
+  {
+    String dialogName = dialog.getClass().getSimpleName();
+    final View newView = createView(dialogName, dialogName, dialog.getPanel());
+
+    if(viewChronologicalOrder.isEmpty())
+    {
+      dock.dock((Dockable) newView, Viewport.EAST_REGION);
+    }
+    else
+    {
+      viewChronologicalOrder.getLast().dock(newView);
+    }
+
+    viewChronologicalOrder.addLast(newView);
   }
 
 }
