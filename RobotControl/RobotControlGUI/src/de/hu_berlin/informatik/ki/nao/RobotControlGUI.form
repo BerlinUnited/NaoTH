@@ -112,4 +112,78 @@
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="statusPanel">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="c0" green="c0" id="lightGray" palette="1" red="c0" type="palette"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[966, 25]"/>
+        </Property>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Last"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="btManager" min="-2" pref="121" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="lblRecivedBytesS" min="-2" pref="173" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="lblSentBytesS" min="-2" pref="164" max="-2" attributes="0"/>
+                  <EmptySpace pref="66" max="32767" attributes="0"/>
+                  <Component id="lblConnect" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                  <Component id="btManager" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="lblConnect" alignment="3" pref="23" max="32767" attributes="0"/>
+                  <Component id="lblRecivedBytesS" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lblSentBytesS" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="lblConnect">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Not connected"/>
+            <Property name="toolTipText" type="java.lang.String" value="Indicates if the RobotControl is connected to a Robot"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btManager">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Running Manager --"/>
+            <Property name="toolTipText" type="java.lang.String" value="Shows the number of currently registered Manager"/>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btManagerActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblRecivedBytesS">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Recived byte/s: "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lblSentBytesS">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Sent byte/s: "/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+  </SubComponents>
 </Form>

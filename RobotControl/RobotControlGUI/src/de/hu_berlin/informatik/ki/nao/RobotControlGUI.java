@@ -6,10 +6,12 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.awt.BorderLayout;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileReader;
@@ -20,6 +22,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -38,12 +41,11 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
   private Viewport dock;
   private MessageServer messageServer;
-
   private DialogRegistry dialogRegistry;
-
   // Propertes
   private File fConfig;
   private Properties config;
+  private ConnectionDialog connectionDialog;
 
   /** Creates new form RobotControlGUI */
   public RobotControlGUI()
@@ -52,6 +54,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     messageServer = new MessageServer(this);
     dock = new Viewport();
 
+    this.connectionDialog = new ConnectionDialog(this, this);
     dialogRegistry = new DialogRegistry(dialogsMenu, dock);
 
     // icon
@@ -84,6 +87,11 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    statusPanel = new javax.swing.JPanel();
+    lblConnect = new javax.swing.JLabel();
+    btManager = new javax.swing.JButton();
+    lblRecivedBytesS = new javax.swing.JLabel();
+    lblSentBytesS = new javax.swing.JLabel();
     menuBar = new javax.swing.JMenuBar();
     mainControlMenu = new javax.swing.JMenu();
     connectMenuItem = new javax.swing.JMenuItem();
@@ -97,6 +105,50 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("RobotControl for Nao");
+
+    statusPanel.setBackground(java.awt.Color.lightGray);
+    statusPanel.setPreferredSize(new java.awt.Dimension(966, 25));
+
+    lblConnect.setText("Not connected");
+    lblConnect.setToolTipText("Indicates if the RobotControl is connected to a Robot");
+
+    btManager.setText("Running Manager --");
+    btManager.setToolTipText("Shows the number of currently registered Manager");
+    btManager.setBorder(null);
+    btManager.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btManagerActionPerformed(evt);
+      }
+    });
+
+    lblRecivedBytesS.setText("Recived byte/s: ");
+
+    lblSentBytesS.setText("Sent byte/s: ");
+
+    javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
+    statusPanel.setLayout(statusPanelLayout);
+    statusPanelLayout.setHorizontalGroup(
+      statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(statusPanelLayout.createSequentialGroup()
+        .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(lblRecivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
+        .addComponent(lblConnect)
+        .addContainerGap())
+    );
+    statusPanelLayout.setVerticalGroup(
+      statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+        .addComponent(lblRecivedBytesS)
+        .addComponent(lblSentBytesS))
+    );
+
+    getContentPane().add(statusPanel, java.awt.BorderLayout.PAGE_END);
 
     mainControlMenu.setMnemonic('R');
     mainControlMenu.setText("Main");
@@ -172,10 +224,16 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
     private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectMenuItemActionPerformed
     {//GEN-HEADEREND:event_connectMenuItemActionPerformed
-}//GEN-LAST:event_connectMenuItemActionPerformed
+
+      connectionDialog.setVisible(true);
+
+    }//GEN-LAST:event_connectMenuItemActionPerformed
 
     private void disconnectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_disconnectMenuItemActionPerformed
     {//GEN-HEADEREND:event_disconnectMenuItemActionPerformed
+
+      messageServer.disconnect();
+
     }//GEN-LAST:event_disconnectMenuItemActionPerformed
 
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
@@ -184,11 +242,35 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
     {//GEN-HEADEREND:event_exitMenuItemActionPerformed
+
+      beforeClose();
+      System.exit(0);
+
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_aboutMenuItemActionPerformed
     {//GEN-HEADEREND:event_aboutMenuItemActionPerformed
+
+      AboutDialog dlg = new AboutDialog(this, true);
+      Point location = this.getLocation();
+      location.translate(100, 100);
+      dlg.setLocation(location);
+      dlg.setVisible(true);
+
     }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+    private void btManagerActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btManagerActionPerformed
+    {//GEN-HEADEREND:event_btManagerActionPerformed
+
+      String str = "Currently registeres Manager:\n\n";
+      for (int i = 0; i < messageServer.getListeners().size(); i++)
+      {
+        str += messageServer.getListeners().get(i).getClass().getSimpleName() + "\n";
+      }//end for
+      str += "\n";
+
+      JOptionPane.showMessageDialog(this, str);
+}//GEN-LAST:event_btManagerActionPerformed
 
   public MessageServer getMessageServer()
   {
@@ -221,21 +303,35 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   }
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
+  private javax.swing.JButton btManager;
   private javax.swing.JMenuItem connectMenuItem;
   private javax.swing.JMenu dialogsMenu;
   private javax.swing.JMenuItem disconnectMenuItem;
   private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenu helpMenu;
   private javax.swing.JSeparator jSeparator1;
+  private javax.swing.JLabel lblConnect;
+  private javax.swing.JLabel lblRecivedBytesS;
+  private javax.swing.JLabel lblSentBytesS;
   private javax.swing.JMenu mainControlMenu;
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JMenuItem resetLayoutMenuItem;
+  private javax.swing.JPanel statusPanel;
   // End of variables declaration//GEN-END:variables
-
 
   public void showConnected(boolean isConnected)
   {
-    // TODO
+    disconnectMenuItem.setEnabled(isConnected);
+    connectMenuItem.setEnabled(!isConnected);
+
+    if (isConnected)
+    {
+      lblConnect.setText("Connected to " + messageServer.getAddress().toString());
+    }
+    else
+    {
+      lblConnect.setText("Not connected");
+    }
   }
 
   public Properties getConfig()
@@ -255,5 +351,10 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     }//end if
 
     return config;
+  }
+
+  private void beforeClose()
+  {
+    messageServer.disconnect();
   }
 }
