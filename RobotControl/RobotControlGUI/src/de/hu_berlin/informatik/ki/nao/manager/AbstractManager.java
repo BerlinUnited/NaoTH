@@ -5,12 +5,15 @@
 
 package de.hu_berlin.informatik.ki.nao.manager;
 
+import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  * This is the basic class for every manager. It does a lot of work in order
@@ -21,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * 
  * @author thomas
  */
-public abstract class AbstractManager<T> implements CommandSender
+public abstract class AbstractManager<T> implements CommandSender, Plugin
 {
   /**
    * When using this lock you should have understood the meaning of the
@@ -48,12 +51,14 @@ public abstract class AbstractManager<T> implements CommandSender
   
   private LinkedList<ObjectListener<T>> listener = 
     new LinkedList<ObjectListener<T>>();
+
+
+  @InjectPlugin
+  public MessageServerProvider serverProvider;
+
   
-  private MessageServer server;
-  
-  public AbstractManager(MessageServer server)
+  public AbstractManager()
   {
-    this.server = server;
   }
   
   public void addListener(ObjectListener<T> l)
@@ -67,7 +72,7 @@ public abstract class AbstractManager<T> implements CommandSender
     LISTENER_LOCK.unlock();
     if(size == 1)
     {
-      server.addCommandSender(this);
+      getServer().addCommandSender(this);
     }
   }
 
@@ -79,7 +84,7 @@ public abstract class AbstractManager<T> implements CommandSender
     LISTENER_LOCK.unlock();
     if(size == 0)
     {
-      server.removeCommandSender(this);
+      getServer().removeCommandSender(this);
     }    
   }
 
@@ -134,5 +139,17 @@ public abstract class AbstractManager<T> implements CommandSender
    *                                            error handlers will be called.
    */
   public abstract T convertByteArrayToType(byte[] result) throws IllegalArgumentException;
+
+  public MessageServer getServer()
+  {
+    if(serverProvider == null)
+    {
+      return null;
+    }
+    else
+    {
+      return serverProvider.getServer();
+    }
+  }
 
 }

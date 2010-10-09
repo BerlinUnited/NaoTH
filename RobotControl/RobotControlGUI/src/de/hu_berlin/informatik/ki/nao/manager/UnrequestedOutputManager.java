@@ -6,19 +6,16 @@
 package de.hu_berlin.informatik.ki.nao.manager;
 
 import de.hu_berlin.informatik.ki.nao.server.Command;
-import de.hu_berlin.informatik.ki.nao.server.MessageServer;
+import net.xeoh.plugins.base.Plugin;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *
  * @author thomas
  */
-public class UnrequestedOutputManager extends AbstractManager<String>
+@PluginImplementation
+public class UnrequestedOutputManager extends AbstractManager<String> implements Plugin
 {
-  
-  public UnrequestedOutputManager(MessageServer server)
-  {
-    super(server);
-  }
 
   
   @Override

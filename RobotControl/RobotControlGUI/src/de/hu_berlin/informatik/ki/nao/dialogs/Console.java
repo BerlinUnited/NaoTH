@@ -6,7 +6,8 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
-import de.hu_berlin.informatik.ki.nao.Main;
+import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
+import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.manager.UnrequestedOutputManager;
 import de.hu_berlin.informatik.ki.nao.server.Command;
@@ -21,6 +22,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
@@ -31,9 +33,12 @@ public class Console extends JPanel implements CommandSender,
   ObjectListener<String>, Dialog
 {
 
-  Main parent;
-  MessageServer server;
-  UnrequestedOutputManager unrequestedOutputManager;
+  @InjectPlugin
+  public RobotControlGUI parent;
+  @InjectPlugin
+  public UnrequestedOutputManager unrequestedOutputManager;
+  @InjectPlugin
+  public MessageServerProvider msgServer;
 
   /** Creates new form Console */
   public Console()
@@ -41,16 +46,12 @@ public class Console extends JPanel implements CommandSender,
     initComponents();
   }
 
-  public void init(Main parent)
+  public void init()
   {
     if(parent == null)
     {
       throw (new IllegalArgumentException("\"parent\" was null"));
     }
-
-    this.parent = parent;
-    server = parent.getMessageServer();
-    unrequestedOutputManager = parent.getUnrequestedOutputManager();
 
     if(cbUnrequestedMessages.isSelected())
     {
@@ -120,7 +121,7 @@ public class Console extends JPanel implements CommandSender,
         
       }
       
-      server.executeSingleCommand(this, parsedCommand);
+      msgServer.getServer().executeSingleCommand(this, parsedCommand);
       cbInput.insertItemAt(cmd, 0);
       cbInput.setSelectedIndex(0);
     }

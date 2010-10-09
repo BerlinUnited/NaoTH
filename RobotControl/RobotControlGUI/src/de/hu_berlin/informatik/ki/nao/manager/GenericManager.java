@@ -4,7 +4,6 @@
 package de.hu_berlin.informatik.ki.nao.manager;
 
 import de.hu_berlin.informatik.ki.nao.server.Command;
-import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 
 /**
  *
@@ -15,9 +14,9 @@ public class GenericManager extends AbstractManager<byte[]>
 
   private final Command command;
 
-  public GenericManager(MessageServer server, Command command)
+  public GenericManager(Command command)
   {
-    super(server);
+    super();
     this.command = command;
   }
 

@@ -6,7 +6,8 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
-import de.hu_berlin.informatik.ki.nao.Main;
+import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
+import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
@@ -14,6 +15,7 @@ import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
@@ -24,9 +26,12 @@ public class HelpViewer extends JPanel
   implements CommandSender, ObjectListener<String[]>, Dialog
 {
 
-  private Main parent;
-  MessageServer messageServer;
-  Command commandToExecute;
+  @InjectPlugin
+  public RobotControlGUI parent;
+  @InjectPlugin
+  public MessageServerProvider messageServer;
+
+  private Command commandToExecute;
 
   /** Creates new form HelpViewer */
   public HelpViewer()
@@ -34,10 +39,8 @@ public class HelpViewer extends JPanel
     initComponents();
   }
 
-  public void init(Main parent)
+  public void init()
   {
-    this.parent = parent;
-    messageServer = parent.getMessageServer();
   }
 
   public JPanel getPanel()
@@ -125,7 +128,7 @@ public class HelpViewer extends JPanel
   private void sendCommand(Command command)
   {
       commandToExecute = command;
-      this.messageServer.executeSingleCommand(this, command);
+      this.messageServer.getServer().executeSingleCommand(this, command);
   }
   
   

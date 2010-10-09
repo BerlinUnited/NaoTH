@@ -17,15 +17,15 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 @PluginImplementation
-public class DialogManager implements Plugin
+public class DialogRegistry implements Plugin
 {
 
   @InjectPlugin
-  public Main main;
+  public RobotControlGUI main;
 
   private Map<String, Dialog> dialogs;
 
-  public DialogManager()
+  public DialogRegistry()
   {
     dialogs = new HashMap<String, Dialog>();
   }
