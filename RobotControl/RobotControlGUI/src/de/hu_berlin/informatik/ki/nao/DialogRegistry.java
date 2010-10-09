@@ -9,10 +9,12 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
+import java.util.Set;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
+import org.flexdock.dockbar.DockbarManager;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingPort;
@@ -71,19 +73,36 @@ public class DialogRegistry
 
   private void dockDialog(Dialog dialog)
   {
+
     String dialogName = dialog.getClass().getSimpleName();
-    final View newView = createView(dialogName, dialogName, dialog.getPanel());
 
-    if(viewChronologicalOrder.isEmpty())
+    // check if view already exists
+    Set<Dockable> dockables = dock.getDockables();
+    boolean isAlreadyDocked = false;
+    for(Dockable d : dockables)
     {
-      dock.dock((Dockable) newView, Viewport.EAST_REGION);
-    }
-    else
-    {
-      viewChronologicalOrder.getLast().dock(newView);
+      if(dialogName.equals(d.getPersistentId()))
+      {
+        isAlreadyDocked = true;
+        d.getDockingProperties().setActive(true);
+        break;
+      }
     }
 
-    viewChronologicalOrder.addLast(newView);
+    if(!isAlreadyDocked)
+    {
+      View newView = createView(dialogName, dialogName, dialog.getPanel());
+
+      if(viewChronologicalOrder.isEmpty())
+      {
+        dock.dock((Dockable) newView, Viewport.EAST_REGION);
+      }
+      else
+      {
+        viewChronologicalOrder.getLast().dock(newView);
+      }
+      viewChronologicalOrder.addLast(newView);
+    }
   }
 
 }
