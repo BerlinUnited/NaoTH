@@ -5,6 +5,9 @@
  */
 package de.hu_berlin.informatik.ki.nao;
 
+import com.jgoodies.looks.LookUtils;
+import com.jgoodies.looks.Options;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
@@ -25,6 +28,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -65,7 +70,17 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   /** Creates new form RobotControlGUI */
   public RobotControlGUI()
   {
+    try
+    {
+      // set Look and Feel before adding all the components
+      UIManager.setLookAndFeel(Options.getCrossPlatformLookAndFeelClassName());
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(RobotControlGUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
     initComponents();
+
     messageServer = new MessageServer(this);
     dock = new Viewport();
 
