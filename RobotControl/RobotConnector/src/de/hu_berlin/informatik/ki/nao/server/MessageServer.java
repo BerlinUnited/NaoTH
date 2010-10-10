@@ -283,7 +283,8 @@ public class MessageServer
           ByteBuffer b = ByteBuffer.allocate(1);
           // reader answer
           serverSocket.read(b);
-
+          receivedBytes++;
+          
           byte c = b.get(0);
           if(c != 0)
           {
