@@ -5,6 +5,10 @@
  */
 package de.hu_berlin.informatik.ki.nao;
 
+import com.jgoodies.looks.LookUtils;
+import com.jgoodies.looks.Options;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
+import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
@@ -25,6 +29,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -48,7 +54,8 @@ import org.flexdock.view.Viewport;
  * @author thomas
  */
 @PluginImplementation
-public class RobotControlGUI extends javax.swing.JFrame implements MessageServerProvider,
+public class RobotControlGUI extends javax.swing.JFrame 
+  implements MessageServerProvider, ByteRateUpdateHandler,
   IMessageServerParent, Plugin
 {
 
@@ -65,7 +72,17 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   /** Creates new form RobotControlGUI */
   public RobotControlGUI()
   {
+    try
+    {
+      // set Look and Feel before adding all the components
+      UIManager.setLookAndFeel(Options.getCrossPlatformLookAndFeelClassName());
+    }
+    catch (Exception ex)
+    {
+      Logger.getLogger(RobotControlGUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
     initComponents();
+
     messageServer = new MessageServer(this);
     dock = new Viewport();
 
@@ -118,7 +135,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     statusPanel = new javax.swing.JPanel();
     lblConnect = new javax.swing.JLabel();
     btManager = new javax.swing.JButton();
-    lblRecivedBytesS = new javax.swing.JLabel();
+    lblReceivedBytesS = new javax.swing.JLabel();
     lblSentBytesS = new javax.swing.JLabel();
     menuBar = new javax.swing.JMenuBar();
     mainControlMenu = new javax.swing.JMenu();
@@ -149,7 +166,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
       }
     });
 
-    lblRecivedBytesS.setText("Recived byte/s: ");
+    lblReceivedBytesS.setText("Recived byte/s: ");
 
     lblSentBytesS.setText("Sent byte/s: ");
 
@@ -160,10 +177,10 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
       .addGroup(statusPanelLayout.createSequentialGroup()
         .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(lblRecivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 390, Short.MAX_VALUE)
         .addComponent(lblConnect)
         .addContainerGap())
     );
@@ -172,7 +189,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
         .addComponent(btManager, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addComponent(lblConnect, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-        .addComponent(lblRecivedBytesS)
+        .addComponent(lblReceivedBytesS)
         .addComponent(lblSentBytesS))
     );
 
@@ -247,7 +264,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     setJMenuBar(menuBar);
 
     java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-    setBounds((screenSize.width-650)/2, (screenSize.height-514)/2, 650, 514);
+    setBounds((screenSize.width-974)/2, (screenSize.height-626)/2, 974, 626);
   }// </editor-fold>//GEN-END:initComponents
 
     private void connectMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_connectMenuItemActionPerformed
@@ -347,7 +364,7 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
   private javax.swing.JMenu helpMenu;
   private javax.swing.JSeparator jSeparator1;
   private javax.swing.JLabel lblConnect;
-  private javax.swing.JLabel lblRecivedBytesS;
+  private javax.swing.JLabel lblReceivedBytesS;
   private javax.swing.JLabel lblSentBytesS;
   private javax.swing.JMenu mainControlMenu;
   private javax.swing.JMenuBar menuBar;
@@ -439,5 +456,15 @@ public class RobotControlGUI extends javax.swing.JFrame implements MessageServer
     }
     DockingManager.setAutoPersist(true);
   }//end configureDocking
+
+  public void setReceiveByteRate(double rate)
+  {
+    lblReceivedBytesS.setText(String.format("Received KB/s: %4.2f", rate));
+  }
+
+  public void setSentByteRate(double rate)
+  {
+    lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));
+  }
 
 }
