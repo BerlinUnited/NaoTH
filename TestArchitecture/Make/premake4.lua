@@ -1,3 +1,5 @@
+dofile "../../LuaScripts/netbeans.lua"
+
 -- description of the solution
 
 solution "TestArchitecture"	  
@@ -15,6 +17,7 @@ solution "TestArchitecture"
 	
   -- store the makefiles the Make/ directory
   location "."
+  
   
   -- add projects
   dofile "TestArchitecture.lua"
