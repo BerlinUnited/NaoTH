@@ -204,7 +204,7 @@ RepresentationMap* StaticRegistry<T>::static_using_registry = new Representation
   protected: \
   const representationName& get##representationName() \
   { \
-    static const DataHolder<representationName>& representation = getBlackBoard().template getConstRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
+    static const DataHolder<representationName>& representation = getBlackBoard().getConstRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
     return *representation; \
   }
 
@@ -214,7 +214,7 @@ RepresentationMap* StaticRegistry<T>::static_using_registry = new Representation
   protected: \
   representationName& get##representationName() \
   { \
-    static DataHolder<representationName>& representation = getBlackBoard().template getRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
+    static DataHolder<representationName>& representation = getBlackBoard().getRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
     return *representation; \
   }
 
