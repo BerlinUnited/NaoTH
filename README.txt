@@ -6,8 +6,9 @@ yet.
 
 Directory layout description
 
-+ NaoRunner       : controller for the real Nao and different simulators
-+ ModuleFramework : a simple and powerful module framework
-+ TestBehavior    : some simple robot control using the NaoRunner
-+ SoccerNaoTH     : The NaoTH 2011 soccer controller (not published)
++ Platforms          : controller for the real Nao and different simulators
++ NaoTH-Tools        : common code like the platform interface or the module architecture
++ DebugCommunication : a simple and powerful debug communication framework based on glib
++ SimpleSoccerAgent  : some simple robot soccer agent using the NaoRunner
++ SoccerNaoTH        : The NaoTH 2011 soccer controller (not published)
 
