@@ -11,6 +11,11 @@
 #include <iostream>
 #include <list>
 #include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/GyrometerData.h>
 #include <PlatformInterface/Callable.h>
 
 class Motion : public naoth::Callable
@@ -33,7 +38,14 @@ public:
   void init(PlatformType& platformInterface)
   {
     std::cout << "Motion register start" << std::endl;
-    platformInterface.registerMotionInput(theSensorJointData, "SensorJointData");
+#define REGISTER_INPUT(R) platformInterface.registerMotionInput(the##R, #R)
+    REGISTER_INPUT(SensorJointData);
+    REGISTER_INPUT(FrameInfo);
+    REGISTER_INPUT(InertialSensorData);
+    REGISTER_INPUT(FSRData);
+    REGISTER_INPUT(AccelerometerData);
+    REGISTER_INPUT(GyrometerData);
+#undef REGISTER_INPUT
 
     platformInterface.registerMotionOutput(theMotorJointData, "MotorJointData");
     std::cout << "Motion register end" << std::endl;
@@ -64,6 +76,11 @@ private:
 
   naoth::SensorJointData theSensorJointData;
   naoth::MotorJointData theMotorJointData;
+  naoth::FrameInfo theFrameInfo;
+  naoth::InertialSensorData theInertialSensorData;
+  naoth::FSRData theFSRData;
+  naoth::AccelerometerData theAccelerometerData;
+  naoth::GyrometerData theGyrometerData;
 };
 
 std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf);

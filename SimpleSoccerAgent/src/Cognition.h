@@ -15,6 +15,9 @@
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/GyrometerData.h>
 #include <SimSpark/SimSparkGameInfo.h>
 
 #include "BallPercept.h"
@@ -36,6 +39,9 @@ public:
     REGISTER_INPUT(SimSparkGameInfo);
     REGISTER_INPUT(FrameInfo);
     REGISTER_INPUT(InertialSensorData);
+    REGISTER_INPUT(FSRData);
+    REGISTER_INPUT(AccelerometerData);
+    REGISTER_INPUT(GyrometerData);
 
 #undef REGISTER_INPUT
     std::cout << "Cognition register end" << std::endl;
@@ -54,6 +60,9 @@ private:
   naoth::VirtualVision theVirtualVision;
   naoth::FrameInfo theFrameInfo;
   naoth::InertialSensorData theInertialSensorData;
+  naoth::FSRData theFSRData;
+  naoth::AccelerometerData theAccelerometerData;
+  naoth::GyrometerData theGyrometerData;
   SimSparkGameInfo theSimSparkGameInfo;
 
   BallPercept theBall;
