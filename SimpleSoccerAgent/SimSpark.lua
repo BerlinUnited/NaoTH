@@ -12,7 +12,7 @@ project "SimpleSoccerAgent"
 		"../Extern/include/glib-2.0/",
 		"../Extern/lib/glib-2.0/include/"}
 
-	  libdirs {"../NaoRunner/dist/", "../NaoRunner/Lib/", "../Extern/lib/",  "../NaoRunner/Lib/win32/lib/"}
+	  libdirs {"../NaoTH-Tools/dist/", "../Platforms/dist/", "../Extern/lib/"}
 	  
 	  links {"SimSpark", "NaoTH-Tools", "sfsexp", "glib-2.0","gio-2.0","gobject-2.0"}
 	  
