@@ -8,12 +8,13 @@ project "SimSpark"
   includedirs {
 	"../Source/",   
 	"../../Extern/include/",
-	"../../Extern/include/glib-2.0/","../../Extern/lib/glib-2.0/include/"}
+	"../../Extern/include/glib-2.0/",
+	"../../Extern/lib/glib-2.0/include/"}
 
 
   libdirs {"../../Extern/lib/"}
   
-  links {"Interface", "sfsexp"}
+  links {"NaoTH-Tools", "sfsexp"}
 
   targetname "naoth-simspark"
 
