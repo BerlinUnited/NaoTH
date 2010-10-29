@@ -32,7 +32,7 @@ project "Webots"
   
   files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
   
-  links {"Interface", "Controller"}
+  links {"NaoTH-Tools", "Controller"}
   
   targetname "naowebots"
    

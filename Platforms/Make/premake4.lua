@@ -26,3 +26,4 @@ solution "NaoPlatform"
   
   dofile "Webots.lua"
   dofile "SimSpark.lua"
+  dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"
