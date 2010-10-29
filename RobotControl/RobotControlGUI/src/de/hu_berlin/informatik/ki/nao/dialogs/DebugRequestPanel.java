@@ -12,6 +12,7 @@ package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.CheckboxTreeCellRenderer;
+import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeCellEditor;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeNode;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultTreeModel;
@@ -72,6 +73,8 @@ public class DebugRequestPanel extends javax.swing.JPanel implements Dialog
     mainTree.setCellRenderer(new CheckboxTreeCellRenderer());
     mainTree.setModel(mainTreeModel);
     mainTree.setRootVisible(true);
+    mainTree.setEditable(true);
+    mainTree.setCellEditor(new SelectableTreeCellEditor());
   }
 
   @Override
