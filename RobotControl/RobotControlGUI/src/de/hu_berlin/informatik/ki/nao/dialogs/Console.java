@@ -48,7 +48,6 @@ public class Console extends JPanel implements CommandSender,
   }
 
   @Init
-  @Override
   public void init()
   {
     if(parent == null)
@@ -64,6 +63,7 @@ public class Console extends JPanel implements CommandSender,
     cbInput.getEditor().getEditorComponent().addKeyListener(new KeyListener()
     {
 
+      @Override
       public void keyTyped(KeyEvent e)
       {
       }
