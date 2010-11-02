@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.Set;
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -17,8 +18,11 @@ import javax.swing.border.LineBorder;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingPort;
+import org.flexdock.docking.event.DockingEvent;
+import org.flexdock.docking.event.DockingListener;
 import org.flexdock.view.View;
 import org.flexdock.view.Viewport;
+import org.flexdock.view.actions.DefaultCloseAction;
 
 /**
  *
@@ -48,6 +52,7 @@ public class DialogRegistry
       newItem.addActionListener(new ActionListener()
       {
 
+        @Override
         public void actionPerformed(ActionEvent e)
         {
           dockDialog(dialog);
@@ -58,13 +63,26 @@ public class DialogRegistry
   
   }
 
-  private View createView(String id, String text, JPanel panel)
+  private View createView(String id, String text, final Dialog dialog)
   {
     final View result = new View(id, text);
-    panel.setBorder(new LineBorder(Color.GRAY, 1));
-    result.setContentPane(panel);
+    dialog.getPanel().setBorder(new LineBorder(Color.GRAY, 1));
+    result.setContentPane(dialog.getPanel());
 
-    result.addAction(DockingConstants.CLOSE_ACTION);
+    DefaultCloseAction closeAction = new DefaultCloseAction()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        super.actionPerformed(e);
+        viewChronologicalOrder.remove(result);
+
+      }
+    };
+    closeAction.putValue(Action.NAME, DockingConstants.CLOSE_ACTION);
+
+    result.addAction(closeAction);
     result.addAction(DockingConstants.PIN_ACTION);
 
     return result;
@@ -90,7 +108,7 @@ public class DialogRegistry
 
     if(!isAlreadyDocked)
     {
-      View newView = createView(dialogName, dialogName, dialog.getPanel());
+      View newView = createView(dialogName, dialogName, dialog);
 
       if(viewChronologicalOrder.isEmpty())
       {
