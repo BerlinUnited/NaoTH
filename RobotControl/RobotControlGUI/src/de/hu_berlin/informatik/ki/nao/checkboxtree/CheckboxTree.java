@@ -29,11 +29,10 @@ public class CheckboxTree extends JTree
     this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     this.setCellRenderer(new CheckboxTreeCellRenderer());
     this.setModel(treeModel);
-    this.setRootVisible(true);
+    this.setRootVisible(false);
     this.setEditable(true);
     this.setCellEditor(new SelectableTreeCellEditor());
     this.setShowsRootHandles(true);
-
   }
 
   public SelectableTreeNode getRootNode()
@@ -75,6 +74,6 @@ public class CheckboxTree extends JTree
       current = matchingNode;
 
     }
-    
+    this.expandPath(new TreePath(rootNode));
   }
 }
