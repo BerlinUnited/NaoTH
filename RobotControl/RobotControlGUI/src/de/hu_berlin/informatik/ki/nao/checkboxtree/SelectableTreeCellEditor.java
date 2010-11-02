@@ -5,8 +5,11 @@
 
 package de.hu_berlin.informatik.ki.nao.checkboxtree;
 
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JTree;
@@ -16,38 +19,57 @@ import javax.swing.tree.TreeCellEditor;
  *
  * @author thomas
  */
-public class SelectableTreeCellEditor extends AbstractCellEditor implements TreeCellEditor
+public class SelectableTreeCellEditor extends AbstractCellEditor 
+  implements TreeCellEditor, ActionListener
 {
+
+  private SelectableTreeNode lastNode;
 
   @Override
   public Object getCellEditorValue()
   {
-    return new JCheckBox();
+    return lastNode;
   }
 
   @Override
   public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row)
   {
     JCheckBox cb = new JCheckBox();
+    cb.addActionListener(this);
+    
     cb.setBackground(tree.getBackground());
 
     if(value != null)
     {
       if( value instanceof SelectableTreeNode)
       {
-        SelectableTreeNode n = (SelectableTreeNode) value;
-        cb.setText(n.getText());
-        cb.setToolTipText(n.getTooltip());
-        cb.setSelected(n.isSelected());
+        lastNode = (SelectableTreeNode) value;
+        cb.setText(lastNode.getText());
+        cb.setToolTipText(lastNode.getTooltip());
+        cb.setSelected(lastNode.isSelected());
       }
       else
       {
+        lastNode = null;
         cb.setText(value.toString());
       }
     }
-
+    
     return cb;
-    //throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e)
+  {
+    if(e.getSource() instanceof JCheckBox)
+    {
+      JCheckBox cb = (JCheckBox) e.getSource();
+      if(lastNode != null)
+      {
+        lastNode.setSelected(cb.isSelected());
+      }
+      fireEditingStopped();
+    }
   }
 
 }

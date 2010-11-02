@@ -15,7 +15,9 @@ import de.hu_berlin.informatik.ki.nao.checkboxtree.CheckboxTreeCellRenderer;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeCellEditor;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeNode;
 import javax.swing.JPanel;
+import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 
@@ -27,6 +29,7 @@ import net.xeoh.plugins.base.annotations.events.Init;
 public class DebugRequestPanel extends javax.swing.JPanel implements Dialog
 {
 
+  private SelectableTreeNode rootNode;
   private DefaultTreeModel mainTreeModel;
 
   /** Creates new form DebugRequestPanel */
@@ -69,12 +72,18 @@ public class DebugRequestPanel extends javax.swing.JPanel implements Dialog
   @Init
   public void init()
   {
-    mainTreeModel = new DefaultTreeModel(new SelectableTreeNode("hello world", "test", true));
+    rootNode = new SelectableTreeNode("root", "", false);
+    rootNode.insert(new SelectableTreeNode("debug_request_1", "tooltip", true), 0);
+    rootNode.insert(new SelectableTreeNode("debug_request_2", "tooltip", false), 1);
+
+    mainTreeModel = new DefaultTreeModel(rootNode);
+    mainTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     mainTree.setCellRenderer(new CheckboxTreeCellRenderer());
     mainTree.setModel(mainTreeModel);
     mainTree.setRootVisible(true);
     mainTree.setEditable(true);
     mainTree.setCellEditor(new SelectableTreeCellEditor());
+
   }
 
   @Override
