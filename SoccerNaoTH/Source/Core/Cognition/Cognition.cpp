@@ -16,7 +16,7 @@ Cognition::Cognition()
 
 void Cognition::call()
 {
-  
+  cout << "Cognition run" << endl;
 }//end call
 
 Cognition::~Cognition()

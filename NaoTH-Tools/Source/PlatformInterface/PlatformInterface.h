@@ -119,20 +119,6 @@ namespace naoth
 
   //////////////////// GET/SET Actions /////////////////////
   private:
-
-    // uncomment to have a runtime check of representation registration
-    //template<class T> 
-    //void get(T& data /* data */)
-    //{
-    //  THROW("try go get a not supported representation");
-    //}
-
-    //template<class T>
-    //void set(const T& /* data */)
-    //{
-    //  THROW("try go set a not supported representation");
-    //}
-
     virtual PlatformType& getPlatform() = 0;
 
     template<class T>

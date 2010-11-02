@@ -1,4 +1,4 @@
-solution "SimpleSoccerAgent" 
+solution "NaoTHSoccer" 
   platforms {"Native"}
   configurations {"Debug", "Release"}
   targetdir "./dist/"
@@ -14,10 +14,18 @@ solution "SimpleSoccerAgent"
 	flags { "Symbols" }
 
 	
+  CORE_PATH = {
+	path.getabsolute("../Source/Core/Cognition/"), 
+	path.getabsolute("../Source/Core/Motion/") }
+	
+  CORE = "NaoTHSoccer"
+	
   -- base
   dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"
   
   -- platforms
   dofile "../../Platforms/Make/SimSpark.lua"
-
+  dofile "../../Platforms/Make/Webots.lua"
+  
+  -- the core
   dofile "SoccerNaoTH.lua"

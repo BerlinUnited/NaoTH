@@ -18,7 +18,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
-#include <SimSpark/SimSparkGameInfo.h>
+#include <Representations/Infrastructure/SimSparkGameInfo.h>
 
 #include "BallPercept.h"
 

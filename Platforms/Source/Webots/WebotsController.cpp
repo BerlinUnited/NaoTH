@@ -15,15 +15,12 @@
 using namespace naoth;
 
 WebotsController::WebotsController()
-  :PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
-  key(0)
+  : 
+    PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
+    key(0)
 {
-  wb_robot_init();
-
-  //theBasicTimeStep = (int)wb_robot_get_basic_time_step(); // simulation-step starts every 40ms
-
+  //wb_robot_init();
   get_Devices();
-
   cout << "Constructor finished" << endl;
 }
 

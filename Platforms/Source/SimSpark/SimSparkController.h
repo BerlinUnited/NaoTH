@@ -30,9 +30,11 @@
 #include <Representations/Infrastructure/BatteryData.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 
+#include <Representations/Infrastructure/SimSparkGameInfo.h>
+
+
 #include "Communication/SocketStream.h"
 //#include "SimSparkTeamCommunicator.h"
-#include "SimSparkGameInfo.h"
 
 #include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
@@ -159,6 +161,8 @@ private:
   bool updateGyro(const sexp_t* sexp);
 
   bool updateAccelerometer(const sexp_t* sexp);
+
+  bool updateGameInfo(const sexp_t* sexp);
 
   bool updateFSR(const sexp_t* sexp);
 

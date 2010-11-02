@@ -8,8 +8,8 @@
 #ifndef _SIMSPARK_GAME_INFO_H
 #define	_SIMSPARK_GAME_INFO_H
 
-#include "sfsexp/SexpParser.h"
 #include <PlatformInterface/PlatformInterchangeable.h>
+#include <string>
 
 class SimSparkGameInfo : public naoth::PlatformInterchangeable
 {
@@ -17,8 +17,6 @@ public:
   SimSparkGameInfo();
 
   ~SimSparkGameInfo();
-
-  bool update(const sexp_t* sexp);
 
   enum TeamIndex
   {

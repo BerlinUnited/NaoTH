@@ -7,9 +7,6 @@
 
 #include "Motion.h"
 
-using namespace std;
-using namespace naoth;
-
 
 Motion::Motion()
 {

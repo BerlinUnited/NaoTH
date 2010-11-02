@@ -8,9 +8,6 @@
 #ifndef MOTION_H
 #define	MOTION_H
 
-#include <iostream>
-#include <list>
-#include <Representations/Infrastructure/JointData.h>
 #include <PlatformInterface/Callable.h>
 
 class Motion : public naoth::Callable
