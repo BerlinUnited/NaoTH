@@ -105,6 +105,7 @@ namespace naoth
       setCameraTrans();
     }
 
+    // TODO: do we need the parameter filename?
     void init(const std::string& filename)
     {
       setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);

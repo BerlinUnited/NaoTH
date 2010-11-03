@@ -43,6 +43,9 @@ namespace naoth
     {
     }
 
+    // cannot be copied
+    Platform& operator=( const Platform& ) {}
+
     string _hardwareIdentity;
     string _bodyID;
     string _bodyNickName;
@@ -54,32 +57,36 @@ namespace naoth
     {
     }
 
-    // get Media Access Control address
-    static std::string getMACaddress(const std::string& name)
-    {
-      /* Mac & Windows dont have that define */
-  #ifdef SIOCGIFHWADDR
-      int s;
-      struct ifreq buffer;
-      s = socket(PF_INET, SOCK_DGRAM, 0);
-      memset(&buffer, 0x00, sizeof (buffer));
-      strcpy(buffer.ifr_name, name.c_str());
-      ioctl(s, SIOCGIFHWADDR, &buffer);
-      close(s);
-      char mac[18];
-      sprintf(mac, "%.2X_%.2X_%.2X_%.2X_%.2X_%.2X",
-        (unsigned char) buffer.ifr_hwaddr.sa_data[0],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[1],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[2],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[3],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[4],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[5]);
+/* Mac & Windows dont have that define */
+#ifdef SIOCGIFHWADDR
+  // get Media Access Control address
+  static std::string getMACaddress(const std::string& name)
+  {
+    int s;
+    struct ifreq buffer;
+    s = socket(PF_INET, SOCK_DGRAM, 0);
+    memset(&buffer, 0x00, sizeof (buffer));
+    strcpy(buffer.ifr_name, name.c_str());
+    ioctl(s, SIOCGIFHWADDR, &buffer);
+    close(s);
+    char mac[18];
+    sprintf(mac, "%.2X_%.2X_%.2X_%.2X_%.2X_%.2X",
+      (unsigned char) buffer.ifr_hwaddr.sa_data[0],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[1],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[2],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[3],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[4],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[5]);
 
-      return std::string(mac);
-  #else
-      return "unknown mac address";
-  #endif
-    }//end getMACaddress
+    return std::string(mac);
+  }//end getMACaddress
+#else
+  // do nothing...
+  static std::string getMACaddress(const std::string& /*name*/)
+  {
+    return "unknown mac address";
+  }//end getMACaddress
+#endif
 
 
     void init(PlatformBase* _interface)

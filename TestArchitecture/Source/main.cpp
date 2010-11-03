@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main( int argc, const char* argv[] )
+int main()
 {
   cout << "start test" << endl;
   TestModuleManager manager;

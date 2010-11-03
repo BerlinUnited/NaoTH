@@ -62,6 +62,9 @@ private:
   BlackBoard& theBlackBoard;
   ModuleInstance<V>* theInstance;
 
+  // cannot be copied
+  ModuleCreator& operator=( const ModuleCreator& ) {}
+
 public:
 
   ModuleCreator(BlackBoard& theBlackBoard)
