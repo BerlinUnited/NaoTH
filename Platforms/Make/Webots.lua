@@ -31,6 +31,7 @@ project "Webots"
   includedirs {
     "../Source/", 
 	CORE_PATH,
+	"../../NaoTH-Tools/Source/",
     webotsHome .. "/include/controller/c/",
     "../Lib/win32/include/", 
     "../../Extern/include/"}

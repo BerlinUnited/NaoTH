@@ -110,12 +110,25 @@ namespace naoth
   public:
     virtual ~PlatformInterface(){};
 
+    template<class T>
+    void get(T& data)
+    {
+      PlatformType::get(data);
+    }
+
+    template<class T>
+    void set(const T& data)
+    {
+      PlatformType::set(data);
+    }
+
   protected:
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)
       : PlatformBase(name, basicTimeStep)
     {
       cout<<"NaoTH "<<getName()<<" starting..."<<endl;
     }
+
 
   //////////////////// GET/SET Actions /////////////////////
   private:
@@ -160,33 +173,33 @@ namespace naoth
 
   public:
     template<class T>
-    void registerCognitionInput(T& data, const std::string& name)
+    void registerCognitionInput(T& data)
     {
-      cout << getName() << " register Cognition input: " << name << endl;
+      cout << getName() << " register Cognition input: " << typeid(T).name() << endl;
       AbstractAction* action = new RepresentationInputAction<T>(getPlatform(), data);
       cognitionInput.push_back(action);
     }//end registerCognitionInput
 
     template<class T>
-    void registerCognitionOutput(const T& data, const std::string& name)
+    void registerCognitionOutput(const T& data)
     {
-      cout << getName() << " register Cognition output: " << name;
+      cout << getName() << " register Cognition output: " << typeid(T).name() << endl;
       AbstractAction* action = new RepresentationOutputAction<const T>(getPlatform(), data);
       cognitionOutput.push_back(action);
     }//end registerCognitionOutput
 
     template<class T>
-    void registerMotionInput(T& data, const std::string& name)
+    void registerMotionInput(T& data)
     {
-      cout << getName() << " register Motion input: " << name << endl;
+      cout << getName() << " register Motion input: " << typeid(T).name() << endl;
       AbstractAction* action = new RepresentationInputAction<T>(getPlatform(), data);
       motionInput.push_back(action);
     }//end registerCognitionInput
 
     template<class T>
-    void registerMotionOutput(const T& data, const std::string& name)
+    void registerMotionOutput(const T& data)
     {
-      cout << getName() << " register Motion output: " << name;
+      cout << getName() << " register Motion output: " << typeid(T).name() << endl;
       AbstractAction* action = new RepresentationOutputAction<const T>(getPlatform(), data);
       motionOutput.push_back(action);
     }//end registerCognitionOutput

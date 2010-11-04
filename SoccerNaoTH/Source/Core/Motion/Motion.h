@@ -1,7 +1,7 @@
 /**
  * @file Motion.h
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  *
  */
 
@@ -9,6 +9,7 @@
 #define	MOTION_H
 
 #include <PlatformInterface/Callable.h>
+#include <PlatformInterface/PlatformInterface.h>
 
 class Motion : public naoth::Callable
 {
@@ -17,7 +18,7 @@ public:
   virtual ~Motion();
 
   template<class PlatformType>
-  void init(PlatformType& platformInterface)
+  void init(naoth::PlatformInterface<PlatformType>& platformInterface)
   {
     std::cout << "Motion register start" << std::endl;
 

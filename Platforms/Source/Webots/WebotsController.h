@@ -102,7 +102,7 @@ namespace naoth
 
     void main();
 
-  protected:
+  public:
     /////////////////////// get ///////////////////////
     virtual void get(AccelerometerData& data);
 

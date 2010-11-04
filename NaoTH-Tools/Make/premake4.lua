@@ -20,6 +20,6 @@ solution "NaoTH-Tools"
   -- store the makefiles the Make/ directory
   location "."
   
-  postbuildcommands{"premake4 install"}
+  --postbuildcommands{"premake4 install"}
   
   dofile "NaoTHTools.lua"

@@ -1,17 +1,24 @@
 /**
  * @file Cognition.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
- *
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * Implementation of the class Cognition
  */
 
 #include "Cognition.h"
 
+/////////////////////////////////////
+// Modules
+/////////////////////////////////////
+//Infrastructure
+#include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
+
 using namespace std;
-using namespace naoth;
 
 Cognition::Cognition()
 {
+
+  registerModule<LEDSetter>("LEDSetter");
 }
 
 void Cognition::call()
