@@ -28,4 +28,4 @@ solution "NaoTHSoccer"
   dofile "../../Platforms/Make/Webots.lua"
   
   -- the core
-  dofile "SoccerNaoTH.lua"
+  dofile "NaoTHSoccer.lua"
