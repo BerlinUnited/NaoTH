@@ -106,7 +106,14 @@ public:
 
   Module* getModule()
   {
+    ASSERT(isEnabled());
     return (Module*)theInstance;
+  }//end getModule
+
+  V* getModuleT()
+  {
+    ASSERT(isEnabled());
+    return (V*)theInstance;
   }//end getModule
 
   ~ModuleCreator()
