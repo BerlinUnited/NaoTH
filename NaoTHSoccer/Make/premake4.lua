@@ -22,6 +22,7 @@ solution "NaoTHSoccer"
 	
   -- base
   dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"
+  dofile "../../DebugCommunication/Make/DebugCommunication.lua"
   
   -- platforms
   dofile "../../Platforms/Make/SimSpark.lua"

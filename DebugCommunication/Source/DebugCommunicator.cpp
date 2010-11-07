@@ -67,6 +67,8 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in sendMessage) "
       << err->message << std::endl;
 
+    g_error_free(err);
+
     disconnect();
     return false;
   }
@@ -187,6 +189,8 @@ char* DebugCommunicator::readMessage()
       << err->message << std::endl;
     std::cerr << "will not try again to get connection" << std::endl;
 
+    g_error_free(err);
+
     return NULL;
   }
 
@@ -197,6 +201,7 @@ char* DebugCommunicator::readMessage()
       << err->message << std::endl;
     disconnect();
     g_free(result);
+    g_error_free(err);
     return NULL;
   }
   return result;
