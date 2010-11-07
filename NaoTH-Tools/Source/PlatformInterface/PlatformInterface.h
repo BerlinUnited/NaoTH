@@ -14,6 +14,8 @@
 #include <string>
 #include <iostream>
 
+#include <typeinfo>
+
 namespace naoth
 {
   using namespace std;

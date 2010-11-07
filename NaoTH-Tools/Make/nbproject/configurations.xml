@@ -48,6 +48,8 @@
           <in>JointData.h</in>
           <in>LEDData.cpp</in>
           <in>LEDData.h</in>
+          <in>SimSparkGameInfo.cpp</in>
+          <in>SimSparkGameInfo.h</in>
           <in>SoundData.cpp</in>
           <in>SoundData.h</in>
           <in>UltraSoundData.cpp</in>
