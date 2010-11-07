@@ -7,7 +7,9 @@ project "NaoTHSoccer"
   includedirs {
 	"../Source/",
 	"../../NaoTH-Tools/Source/",
-	"../../DebugCommunication/Source/"}
+	"../../DebugCommunication/Source/",
+	"../../Extern/include/glib-2.0/",
+	"../../Extern/lib/glib-2.0/include/"}
 
   libdirs {"../../Extern/lib/"}
   

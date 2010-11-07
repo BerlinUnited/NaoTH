@@ -10,6 +10,9 @@
 #include "Cognition.h"
 #include "Motion.h"
 
+#include <glib.h>
+#include <glib-object.h>
+
 using namespace std;
 
 void printUsage()
@@ -21,6 +24,8 @@ void printUsage()
 
 int main(int argc, char** argv)
 {
+  g_type_init();
+
   printUsage();
 
   wb_robot_init();
