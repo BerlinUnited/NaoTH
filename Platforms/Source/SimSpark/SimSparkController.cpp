@@ -21,6 +21,30 @@ using namespace std;
 SimSparkController::SimSparkController()
 : PlatformInterface<SimSparkController>("SimSpark", 20)
 {
+  // register input
+  registerInput<AccelerometerData>(*this);
+  registerInput<FrameInfo>(*this);
+  registerInput<SensorJointData>(*this);
+  registerInput<Image>(*this);
+  registerInput<FSRData>(*this);
+  registerInput<GyrometerData>(*this);
+  registerInput<InertialSensorData>(*this);
+  registerInput<BumperData>(*this);
+  registerInput<IRReceiveData>(*this);
+  registerInput<CurrentCameraSettings>(*this);
+  registerInput<ButtonData>(*this);
+  registerInput<BatteryData>(*this);
+  registerInput<UltraSoundReceiveData>(*this);
+
+  // register output
+  registerOutput<const CameraSettingsRequest>(*this);
+  registerOutput<const LEDData>(*this);
+  registerOutput<const IRSendData>(*this);
+  registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const SoundData>(*this);
+  registerOutput<const MotorJointData>(*this);
+
+
   // init the name -- id maps
   theJointSensorNameMap.clear();
   theJointSensorNameMap["hj1"] = JointData::HeadYaw;

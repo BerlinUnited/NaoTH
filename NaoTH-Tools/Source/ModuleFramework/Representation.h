@@ -23,10 +23,11 @@
 #include "Node.h"
 
 using namespace std;
+using namespace naoth;
 
 class Module;
 
-class Representation : public naoth::Printable
+class Representation : public Printable
 {
 
 private:
