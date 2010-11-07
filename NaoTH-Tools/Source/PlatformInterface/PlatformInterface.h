@@ -225,7 +225,7 @@ namespace naoth
   private:
     enum Action {INPUT, OUTPUT};
 
-    template<class T, int ACTION>
+    template<int ACTION, class T>
     class RepresentationAction: public AbstractAction
     {
       PlatformType& platform;
@@ -237,21 +237,40 @@ namespace naoth
           representation(representation)
       {}
 
-      virtual void execute(){ action<ACTION>(); }
-
-    private:
-      template<int N> void action(){}
-
-      template<> void action<INPUT>()
-      { 
-        platform.get(representation); 
-      }
-
-      template<> void action<OUTPUT>()
-      { 
-        platform.set(representation); 
-      }
+      virtual void execute(){ std::cerr << "scheisse" << endl; }
     };//end RepresentationAction
+
+
+    template<class T>
+    class RepresentationAction<INPUT,T>
+    {
+      PlatformType& platform;
+      T& representation;
+
+    public:
+      RepresentationAction(PlatformType& platform, T& representation)
+        : platform(platform),
+          representation(representation)
+      {}
+
+      virtual void execute(){ platform.get(representation); }
+    };//end RepresentationAction
+
+    template<class T>
+    class RepresentationAction<OUTPUT,T>
+    {
+      PlatformType& platform;
+      T& representation;
+
+    public:
+      RepresentationAction(PlatformType& platform, T& representation)
+        : platform(platform),
+          representation(representation)
+      {}
+
+      virtual void execute(){ platform.set(representation); }
+    };//end RepresentationAction
+
 
 
     template<class T, int ACTION>
@@ -266,7 +285,7 @@ namespace naoth
 
       virtual AbstractAction* createAction(T& data)
       {
-        return new RepresentationAction<T,ACTION>(platform, data);
+        return new RepresentationAction<ACTION,T>(platform, data);
       }
     };//end InputActionCreator
 
