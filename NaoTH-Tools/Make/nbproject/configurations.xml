@@ -33,6 +33,7 @@
           <in>CameraInfo.h</in>
           <in>CameraSettings.cpp</in>
           <in>CameraSettings.h</in>
+          <in>ConfigPathInfo.h</in>
           <in>FSRData.cpp</in>
           <in>FSRData.h</in>
           <in>FrameInfo.h</in>
@@ -139,6 +140,7 @@
             <incDir>
               <pElem>../Source</pElem>
               <pElem>../../Extern/include</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
             </incDir>
           </ccTool>
         </makeTool>
