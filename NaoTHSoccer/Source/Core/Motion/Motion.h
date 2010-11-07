@@ -17,16 +17,9 @@ public:
   Motion();
   virtual ~Motion();
 
-  template<class PlatformType>
-  void init(naoth::PlatformInterface<PlatformType>& platformInterface)
-  {
-    std::cout << "Motion register start" << std::endl;
-
-    std::cout << "Motion register end" << std::endl;
-  }//end init
-
   virtual void call();
 
+  void init(naoth::PlatformDataInterface& platformInterface);
 };
 
 #endif	/* MOTION_H */
