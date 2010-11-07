@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="69">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <df name="Source" root="../Source">
+      <df name="Core" kind="SOURCE_LOGICAL_FOLDER">
+        <df name="Cognition" kind="SOURCE_LOGICAL_FOLDER">
+          <df name="Modules" kind="SOURCE_LOGICAL_FOLDER">
+            <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+              <df name="IO" kind="SOURCE_LOGICAL_FOLDER">
+                <in>Actuator.cpp</in>
+                <in>Actuator.h</in>
+                <in>Sensor.cpp</in>
+                <in>Sensor.h</in>
+              </df>
+              <df name="LEDSetter" kind="SOURCE_LOGICAL_FOLDER">
+                <in>LEDSetter.cpp</in>
+                <in>LEDSetter.h</in>
+              </df>
+            </df>
+          </df>
+          <in>Cognition.cpp</in>
+          <in>Cognition.h</in>
+        </df>
+        <df name="Motion" kind="SOURCE_LOGICAL_FOLDER">
+          <in>Motion.cpp</in>
+          <in>Motion.h</in>
+        </df>
+        <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
+        </df>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Make-Makefile.mk</itemPath>
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../Source</Elem>
+  </sourceRootList>
+  <projectmakefile>Make-Makefile.mk</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>premake4 clean</cleanCommand>
+          <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>../Source</pElem>
+              <pElem>../../Platforms/Source</pElem>
+              <pElem>../../NaoTH-Tools/Source</pElem>
+            </incDir>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+    </conf>
+  </confs>
+</configurationDescriptor>

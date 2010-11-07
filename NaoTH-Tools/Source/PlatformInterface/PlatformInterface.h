@@ -14,6 +14,8 @@
 #include <string>
 #include <iostream>
 
+#include <typeinfo>
+
 namespace naoth
 {
   using namespace std;
@@ -285,7 +287,7 @@ namespace naoth
 
       virtual AbstractAction* createAction(T& data)
       {
-        return new RepresentationAction<ACTION,T>(platform, data);
+        return (AbstractAction*) new RepresentationAction<ACTION,T>(platform, data);
       }
     };//end InputActionCreator
 
