@@ -305,7 +305,7 @@ bool SimSparkController::updateSensors()
           cerr<<"warnning: the step is "<<theStepTime<<" s"<<endl;
       } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
       else if ("ACC" == name) ok = updateAccelerometer(t->next);
-      else if ("GS" == name) ok = theGameInfo.update(t->next); // game state
+      else if ("GS" == name) ok = updateGameInfo(t->next); // game state
       else if ("hear" == name)  ok = hear(t->next);// hear
       else if ("IMU" == name) ok = updateIMU(t->next); // interial sensor data
       else cerr << " Perception unknow name: " << string(t->val) << endl;
@@ -454,7 +454,67 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
   }
 
   return true;
-}
+}//end updateAccelerometer
+
+
+// Example message: "(GS (t 0.00) (pm BeforeKickOff))"
+bool SimSparkController::updateGameInfo(const sexp_t* sexp)
+{
+  bool ok = true;
+  string name;
+  while (sexp)
+  {
+    const sexp_t* t = sexp->list;
+    if (SexpParser::parseValue(t, name))
+    {
+      if ("t" == name) // time
+      {
+        if (!SexpParser::parseValue(t->next, theGameInfo.theGameTime))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get time value\n";
+        }
+      } else if ("pm" == name) // play mode
+      {
+        std::string pm;
+        if (!SexpParser::parseValue(t->next, pm))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get play mode value\n";
+        }
+        theGameInfo.thePlayMode = SimSparkGameInfo::getPlayModeByName(pm);
+      } else if ("unum" == name) // unum
+      {
+        if (!SexpParser::parseValue(t->next, theGameInfo.thePlayerNum))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get unum value\n";
+        }
+      } else if ("team" == name) // side
+      {
+        string team;
+        if (!SexpParser::parseValue(t->next, team))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get team index value\n";
+        }
+        theGameInfo.theTeamIndex = SimSparkGameInfo::getTeamIndexByName(team);
+      } else
+      {
+        ok = false;
+        cerr << "SimSparkGameInfo::update unknown name: " << name << '\n';
+      }
+    } else
+    {
+      ok = false;
+      cerr << "SimSparkGameInfo::update can not get the name!\n";
+    }
+    sexp = sexp->next;
+  }
+
+  return ok;
+}//end updateGameInfo
+
 
 bool SimSparkController::updateFSR(const sexp_t* sexp)
 {

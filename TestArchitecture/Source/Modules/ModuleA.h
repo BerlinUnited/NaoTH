@@ -15,7 +15,7 @@ BEGIN_DECLARE_MODULE(ModuleA)
 END_DECLARE_MODULE(ModuleA)
 
 
-class ModuleA: private ModuleABase, private ModuleManager
+class ModuleA: protected ModuleABase, private ModuleManager
 {
 public:
   ModuleA()

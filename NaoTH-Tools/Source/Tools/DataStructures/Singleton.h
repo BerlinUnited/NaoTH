@@ -51,10 +51,7 @@ namespace naoth
     {
       if(theInstance == NULL)
       {
-        if(storageType == _SINGLETON_USE_HEAP)
-          theInstance = createInstanceOnHeap();
-        else
-          theInstance = createInstanceOnStack();
+        theInstance = createInstance<storageType>();
       }//end if
 
       return *theInstance;
@@ -62,9 +59,17 @@ namespace naoth
 
   private:
 
+    template<int ST>
+    static V* createInstance()
+    {
+      // dummy/declaration
+      // TODO: assert?
+    }
+
     // creates an instance on the heap
     // (only the Watcher is created on the stack)
-    static V* createInstanceOnHeap()
+    template<>
+    static V* createInstance<_SINGLETON_USE_HEAP>()
     {
       static Watcher w; // create a watcher
       if( theInstance == NULL)
@@ -73,7 +78,8 @@ namespace naoth
     }//end createInstanceOnHeap
 
     // creates an instance on the stack
-    static V* createInstanceOnStack()
+    template<>
+    static V* createInstance<_SINGLETON_USE_STACK>()
     {
       static V theInstance; // create a watcher
       return &theInstance;

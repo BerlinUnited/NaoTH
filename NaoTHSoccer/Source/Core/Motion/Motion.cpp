@@ -1,14 +1,11 @@
 /**
  * @file Motion.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  *
  */
 
 #include "Motion.h"
-
-using namespace std;
-using namespace naoth;
 
 
 Motion::Motion()

@@ -9,6 +9,7 @@
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
+#include <map>
 #include <list>
 #include <string>
 #include <iostream>
@@ -94,7 +95,97 @@ namespace naoth
   public:
     inline void delete_action_list(ActionList& actionList);
     inline void execute(ActionList& actionList) const;
+
+
+    template<class T>
+    class ActionCreator
+    {
+    public:
+      virtual AbstractAction* createAction(T& data) = 0;
+    };//end ActionCreator
+
+
+
+
+    std::map<std::string,void*> registeredInputActions;
+    std::map<std::string,void*> registeredOutputActions;
+
+
+    template<class T>
+    ActionCreator<T>* getActionCreator(const std::map<std::string,void*>& registeredActions)
+    {
+      std::map<std::string,void*>::const_iterator iter = registeredActions.find(typeid(T).name());
+      if(iter == registeredActions.end())
+      {
+        return NULL;
+      }//end if
+
+      return static_cast<ActionCreator<T>*>(iter->second);
+    }//end getActionCreator
+
+
+
+    template<class T>
+    void registerCognitionInput(T& data)
+    {
+      ActionCreator<T>* creator = getActionCreator<T>(registeredInputActions);
+      if(creator != NULL)
+      {
+        cognitionInput.push_back(creator->createAction(data));
+        cout << /*getName() <<*/ " register Cognition input: " << typeid(T).name() << endl;
+      }else
+      {
+        cerr << /*getName() <<*/ " doesn't provide Cognition input" << typeid(T).name() << endl;
+      }
+    }//end registerCognitionInput
+
+
+    template<class T>
+    void registerCognitionOutput(const T& data)
+    {
+      ActionCreator<const T>* creator = getActionCreator<const T>(registeredOutputActions);
+      if(creator != NULL)
+      {
+        cognitionOutput.push_back(creator->createAction(data));
+        cout << /*getName() <<*/ " register Cognition output: " << typeid(T).name() << endl;
+      }else
+      {
+        cerr << /*getName() <<*/ " doesn't provide Cognition output" << typeid(T).name() << endl;
+      }
+    }//end registerCognitionOutput
+
+
+    template<class T>
+    void registerMotionInput(T& data)
+    {
+      ActionCreator<T>* creator = getActionCreator<T>(registeredInputActions);
+      if(creator != NULL)
+      {
+        motionInput.push_back(creator->createAction(data));
+        cout << /*getName() <<*/ " register Motion input: " << typeid(T).name() << endl;
+      }else
+      {
+        cerr << /*getName() <<*/ " doesn't provide Motion input" << typeid(T).name() << endl;
+      }
+    }//end registerMotionInput
+
+
+    template<class T>
+    void registerMotionOutput(const T& data)
+    {
+      ActionCreator<const T>* creator = getActionCreator<const T>(registeredOutputActions);
+      if(creator != NULL)
+      {
+        motionOutput.push_back(creator->createAction(data));
+        cout << /*getName() <<*/ " register Motion output: " << typeid(T).name() << endl;
+      }else
+      {
+        cerr << /*getName() <<*/ " doesn't provide Motion output" << typeid(T).name() << endl;
+      }
+    }//end registerMotionOutput
   };//end class PlatformDataInterface
+
+
 
 
 
@@ -110,6 +201,18 @@ namespace naoth
   public:
     virtual ~PlatformInterface(){};
 
+    template<class T>
+    void get(T& data)
+    {
+      PlatformType::get(data);
+    }
+
+    template<class T>
+    void set(const T& data)
+    {
+      PlatformType::set(data);
+    }
+
   protected:
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)
       : PlatformBase(name, basicTimeStep)
@@ -117,94 +220,74 @@ namespace naoth
       cout<<"NaoTH "<<getName()<<" starting..."<<endl;
     }
 
+
   //////////////////// GET/SET Actions /////////////////////
   private:
+    enum Action {INPUT, OUTPUT};
 
-    // uncomment to have a runtime check of representation registration
-    //template<class T> 
-    //void get(T& data /* data */)
-    //{
-    //  THROW("try go get a not supported representation");
-    //}
-
-    //template<class T>
-    //void set(const T& /* data */)
-    //{
-    //  THROW("try go set a not supported representation");
-    //}
-
-    virtual PlatformType& getPlatform() = 0;
-
-    template<class T>
-    class RepresentationInputAction: public AbstractAction
+    template<class T, int ACTION>
+    class RepresentationAction: public AbstractAction
     {
       PlatformType& platform;
       T& representation;
 
     public:
-      RepresentationInputAction(PlatformType& platform, T& representation)
+      RepresentationAction(PlatformType& platform, T& representation)
         : platform(platform),
           representation(representation)
       {}
 
-      virtual void execute()
-      {
-        platform.get(representation);
-      }
-    };//end RepresentationInputAction
+      virtual void execute(){ action<ACTION>(); }
 
-    template<class T>
-    class RepresentationOutputAction: public AbstractAction
+    private:
+      template<int N> void action(){}
+
+      template<> void action<INPUT>()
+      { 
+        platform.get(representation); 
+      }
+
+      template<> void action<OUTPUT>()
+      { 
+        platform.set(representation); 
+      }
+    };//end RepresentationAction
+
+
+    template<class T, int ACTION>
+    class ActionCreatorImp: public ActionCreator<T>
     {
       PlatformType& platform;
-      T& representation;
 
     public:
-      RepresentationOutputAction(PlatformType& platform, T& representation)
-        : platform(platform),
-          representation(representation)
+      ActionCreatorImp(PlatformType& platform)
+        : platform(platform)
       {}
 
-      virtual void execute()
+      virtual AbstractAction* createAction(T& data)
       {
-        platform.set(representation);
+        return new RepresentationAction<T,ACTION>(platform, data);
       }
-    };//end RepresentationInputAction
+    };//end InputActionCreator
+
+
+  protected:
+    template<class T>
+    void registerInput(PlatformType& platform)
+    {
+      cout << getName() << " register input: " << typeid(T).name() << endl;
+      registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,INPUT>(platform);
+    }//end registerInput
+
+    template<class T>
+    void registerOutput(PlatformType& platform)
+    {
+      cout << getName() << " register output: " << typeid(T).name() << endl;
+      registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,OUTPUT>(platform);
+    }//end registerOutput
 
 
   public:
-    template<class T>
-    void registerCognitionInput(T& data, const std::string& name)
-    {
-      cout << getName() << " register Cognition input: " << name << endl;
-      AbstractAction* action = new RepresentationInputAction<T>(getPlatform(), data);
-      cognitionInput.push_back(action);
-    }//end registerCognitionInput
-
-    template<class T>
-    void registerCognitionOutput(const T& data, const std::string& name)
-    {
-      cout << getName() << " register Cognition output: " << name;
-      AbstractAction* action = new RepresentationOutputAction<const T>(getPlatform(), data);
-      cognitionOutput.push_back(action);
-    }//end registerCognitionOutput
-
-    template<class T>
-    void registerMotionInput(T& data, const std::string& name)
-    {
-      cout << getName() << " register Motion input: " << name << endl;
-      AbstractAction* action = new RepresentationInputAction<T>(getPlatform(), data);
-      motionInput.push_back(action);
-    }//end registerCognitionInput
-
-    template<class T>
-    void registerMotionOutput(const T& data, const std::string& name)
-    {
-      cout << getName() << " register Motion output: " << name;
-      AbstractAction* action = new RepresentationOutputAction<const T>(getPlatform(), data);
-      motionOutput.push_back(action);
-    }//end registerCognitionOutput
-
 
     //////// register own main loop callbacks /////////
 

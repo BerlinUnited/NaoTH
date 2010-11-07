@@ -15,16 +15,36 @@
 using namespace naoth;
 
 WebotsController::WebotsController()
-  :PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
-  key(0)
+  : 
+    PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
+    key(0)
 {
-  wb_robot_init();
-
-  //theBasicTimeStep = (int)wb_robot_get_basic_time_step(); // simulation-step starts every 40ms
-
+  //wb_robot_init();
   get_Devices();
-
   cout << "Constructor finished" << endl;
+
+  // register input
+  registerInput<AccelerometerData>(*this);
+  registerInput<FrameInfo>(*this);
+  registerInput<SensorJointData>(*this);
+  registerInput<Image>(*this);
+  registerInput<FSRData>(*this);
+  registerInput<GyrometerData>(*this);
+  registerInput<InertialSensorData>(*this);
+  registerInput<BumperData>(*this);
+  registerInput<IRReceiveData>(*this);
+  registerInput<CurrentCameraSettings>(*this);
+  registerInput<ButtonData>(*this);
+  registerInput<BatteryData>(*this);
+  registerInput<UltraSoundReceiveData>(*this);
+
+  // register output
+  registerOutput<const CameraSettingsRequest>(*this);
+  registerOutput<const LEDData>(*this);
+  registerOutput<const IRSendData>(*this);
+  registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const SoundData>(*this);
+  registerOutput<const MotorJointData>(*this);
 }
 
 WebotsController::~WebotsController()

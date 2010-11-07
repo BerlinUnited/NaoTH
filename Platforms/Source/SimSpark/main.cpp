@@ -8,8 +8,9 @@
 #include <glib.h>
 
 #include <SimSpark/SimSparkController.h>
-#include "Core/Cognition/Cognition.h"
-#include "Core/Motion/Motion.h"
+
+#include "Cognition.h"
+#include "Motion.h"
 
 using namespace std;
 
@@ -65,7 +66,6 @@ int main(int argc, char** argv)
 
   Cognition theCognition;
   Motion theMotion;
-
   theController.registerCallbacks(&theMotion, &theCognition);
 
   theController.main();

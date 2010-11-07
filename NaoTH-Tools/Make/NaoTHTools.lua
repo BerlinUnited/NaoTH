@@ -14,4 +14,4 @@ project "NaoTH-Tools"
     "../Source/**.h"
   }
   
-  postbuildcommands{"premake4 install"}
+  --postbuildcommands{"premake4 install"}

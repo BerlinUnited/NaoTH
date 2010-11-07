@@ -58,8 +58,10 @@ public:
  */
 class Module: virtual public BlackBoardInterface
 {
+private:
+  std::string moduleName;
+
 protected:
-  const std::string moduleName;
 
   // pointers to the provided and required representations
   Node<Representation, Representation> node;

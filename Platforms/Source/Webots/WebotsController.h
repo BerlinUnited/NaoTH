@@ -102,33 +102,21 @@ namespace naoth
 
     void main();
 
-  protected:
+  public:
     /////////////////////// get ///////////////////////
-    virtual void get(AccelerometerData& data);
-
-    virtual void get(FrameInfo& data);
-
-    virtual void get(SensorJointData& data);
-
-    virtual void get(Image& data);
-
-    virtual void get(FSRData& data);
-
-    virtual void get(GyrometerData& data);
-
-    virtual void get(InertialSensorData& data);
-
-    virtual void get(BumperData& data);
-
-    virtual void get(IRReceiveData& data);
-
-    virtual void get(CurrentCameraSettings& data);
-
-    virtual void get(ButtonData& data);
-
-    virtual void get(BatteryData& data) { data.charge = 1.0; }
-
-    virtual void get(UltraSoundReceiveData& data)
+    void get(AccelerometerData& data);
+    void get(FrameInfo& data);
+    void get(SensorJointData& data);
+    void get(Image& data);
+    void get(FSRData& data);
+    void get(GyrometerData& data);
+    void get(InertialSensorData& data);
+    void get(BumperData& data);
+    void get(IRReceiveData& data);
+    void get(CurrentCameraSettings& data);
+    void get(ButtonData& data);
+    void get(BatteryData& data) { data.charge = 1.0; }
+    void get(UltraSoundReceiveData& data)
     {
       // TODO
       data.data = 0.0;
@@ -137,17 +125,12 @@ namespace naoth
     //void get(GPSData& data);
 
     /////////////////////// set ///////////////////////
-    virtual void set(const CameraSettingsRequest& data);
-
-    virtual void set(const LEDData& data);
-
-    virtual void set(const IRSendData& data);
-
-    virtual void set(const UltraSoundSendData& data);
-
-    virtual void set(const SoundData& data);
-
-    virtual void set(const MotorJointData& data);
+     void set(const CameraSettingsRequest& data);
+     void set(const LEDData& data);
+     void set(const IRSendData& data);
+     void set(const UltraSoundSendData& data);
+     void set(const SoundData& data);
+     void set(const MotorJointData& data);
 
   private:
     void get_Devices();

@@ -12,4 +12,4 @@ DebugCommunication:
  - works, but of course needs more testing in a real situation (as always)
 
 SoccerNaoTH:
- - nothing done yet
+ - basci structure finished

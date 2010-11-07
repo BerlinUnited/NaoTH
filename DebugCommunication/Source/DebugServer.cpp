@@ -220,7 +220,7 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
     g_string_append(answer, answerFromHandler.str().c_str());
   }
 
-}
+}//end handleCommand
 
 bool DebugServer::registerCommand(std::string command, std::string description,
   DebugCommandExecutor* executor)
@@ -230,10 +230,11 @@ bool DebugServer::registerCommand(std::string command, std::string description,
     // new command
     executorMap[command] = executor;
     descriptionMap[command] = description;
+    executor->registerDestructionListener(*this);
     return true;
   }
   return false;
-}
+}//end registerCommand
 
 void DebugServer::objectDestructed(DebugCommandExecutor* object)
 {
