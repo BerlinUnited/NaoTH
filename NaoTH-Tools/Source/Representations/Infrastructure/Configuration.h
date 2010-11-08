@@ -20,7 +20,7 @@ public:
   virtual ~Configuration();
 
   void loadFromDir(std::string dirlocation, std::string platformName, std::string macAddress);
-  void loadFile(std::string file);
+  void loadFile(std::string file, std::string groupName);
   void clear();
 
 private:

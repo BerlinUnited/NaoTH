@@ -8,6 +8,7 @@
 #include "Configuration.h"
 
 #include <iostream>
+#include <string.h>
 
 Configuration::Configuration()
 {
@@ -65,28 +66,65 @@ void Configuration::loadFromSingleDir(std::string dirlocation)
     const gchar* name; 
     while((name = g_dir_read_name(dir)) != NULL)
     {
-      std::string completeFileName = dirlocation + name;
-      if(g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
-        && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR)
-        && g_str_has_suffix(completeFileName.c_str(), ".cfg"))
+      if(g_str_has_suffix(name, ".cfg"))
       {
-        loadFile(completeFileName);
+        gchar* group = g_strndup(name, strlen(name)-strlen(".cfg"));
+        std::string completeFileName = dirlocation + name;
+        if(g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
+          && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
+        {
+          loadFile(completeFileName, std::string(group));
+        }
+        g_free(group);
       }
+
+      
     }
     g_dir_close(dir);
   }
 }
 
-void Configuration::loadFile(std::string file)
+void Configuration::loadFile(std::string file, std::string groupName)
 {
   GError* err = NULL;
-  g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, &err);
+
+  GKeyFile* tmpKeyFile = g_key_file_new();
+  g_key_file_load_from_file(tmpKeyFile, file.c_str(), G_KEY_FILE_NONE, &err);
   if(err != NULL)
   {
-    std::cerr << "could not load configuration file " << file << ": "
+    std::cerr << "ERROR " << file << ": "
       << err->message << std::endl;
     g_error_free(err);
   }
+  else
+  {
+    // syntactically correct, check if there is only one group with the same 
+    // name as the file
+    bool groupOK = true;
+    gsize length;
+    gchar** groups = g_key_file_get_groups(tmpKeyFile, &length);
+    for(int i=0; groupOK && i < length; i++)
+    {
+      if(g_strcmp0(groups[i], groupName.c_str()) != 0)
+      {
+        groupOK = false;
+        std::cerr << "ERROR " << file << ": config file contains illegal group \""
+          << groups[i] << "\"" << std::endl;
+        break;
+      }
+    }
+    g_strfreev(groups);
+
+    if(groupOK)
+    {
+      if(g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, NULL))
+      {
+        std::cout << "INFO loaded " << file << std::endl;
+      }
+    }
+  }
+
+  g_key_file_free(tmpKeyFile);
 }
 
 Configuration::~Configuration()
