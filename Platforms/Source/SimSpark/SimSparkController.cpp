@@ -326,7 +326,7 @@ bool SimSparkController::updateSensors()
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
         theStepTime = theSenseTime - lastSenseTime;
         if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() )
-          cerr<<"warnning: the step is "<<theStepTime<<" s"<<endl;
+          cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
       } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
       else if ("ACC" == name) ok = updateAccelerometer(t->next);
       else if ("GS" == name) ok = updateGameInfo(t->next); // game state

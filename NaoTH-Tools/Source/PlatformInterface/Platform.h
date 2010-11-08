@@ -18,7 +18,7 @@
 #include "PlatformInterface.h"
 #include "Tools/DataStructures/Singleton.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-//#include "Representations/Infrastructure/ConfigPathInfo.h"
+#include "Representations/Infrastructure/Configuration.h"
 
 namespace naoth
 {
@@ -49,7 +49,7 @@ namespace naoth
     string _hardwareIdentity;
     string _bodyID;
     string _bodyNickName;
-    //ConfigPathInfo _configPathInfo;
+    Configuration _configuration;
     PlatformBase* _platformInterface;
 
   public:
@@ -100,7 +100,8 @@ namespace naoth
       _hardwareIdentity = _interface->getHardwareIdentity();
       _bodyID = _interface->getBodyID();
       _bodyNickName = _interface->getBodyNickName();
-  //    _configPathInfo.loadPathInfo("Config/"+_interface->getName()+"_init.cfg");
+      _configuration.loadFromDir("Config/", _interface->getName(), _hardwareIdentity);
+      std::cout << "test configuration: " << _configuration.getString("test", "test") << std::endl;
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());

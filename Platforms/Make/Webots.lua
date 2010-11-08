@@ -34,13 +34,18 @@ project "Webots"
 	"../../NaoTH-Tools/Source/",
     webotsHome .. "/include/controller/c/",
     "../Lib/win32/include/", 
-    "../../Extern/include/"}
+    "../../Extern/include/",
+    "../../Extern/include/glib-2.0/",
+	  "../../Extern/lib/glib-2.0/include/"}
   
   libdirs {webotsHome .. "/lib/"}
   
   files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
   
-  links {CORE, "NaoTH-Tools", "Controller"}
+  links {CORE, "NaoTH-Tools", "Controller",
+  "glib-2.0",
+	"gio-2.0",
+	"gobject-2.0"}
   
   targetname "naowebots"
    

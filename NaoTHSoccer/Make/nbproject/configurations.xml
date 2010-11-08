@@ -54,11 +54,20 @@
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
           <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>../Source</pElem>
+              <pElem>../../Platforms/Source</pElem>
+              <pElem>../../NaoTH-Tools/Source</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
+            </incDir>
+          </cTool>
           <ccTool>
             <incDir>
               <pElem>../Source</pElem>
               <pElem>../../Platforms/Source</pElem>
               <pElem>../../NaoTH-Tools/Source</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
             </incDir>
           </ccTool>
         </makeTool>
