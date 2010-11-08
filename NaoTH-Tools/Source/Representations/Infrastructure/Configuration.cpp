@@ -70,11 +70,22 @@ void Configuration::loadFromSingleDir(std::string dirlocation)
         && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR)
         && g_str_has_suffix(completeFileName.c_str(), ".cfg"))
       {
-        g_debug("Configuration::loadFromSingleDir found config file %s", completeFileName.c_str());
+        loadFile(completeFileName);
       }
-      
     }
     g_dir_close(dir);
+  }
+}
+
+void Configuration::loadFile(std::string file)
+{
+  GError* err = NULL;
+  g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, &err);
+  if(err != NULL)
+  {
+    std::cerr << "could not load configuration file " << file << ": "
+      << err->message << std::endl;
+    g_error_free(err);
   }
 }
 
