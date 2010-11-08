@@ -21,9 +21,13 @@ public:
 
   void loadFromDir(std::string dirlocation, std::string platformName, std::string macAddress);
 
+  void clear();
+
 private:
 
   GKeyFile* keyFile;
+
+  void loadFromSingleDir(std::string dirlocation);
 
 };
 
