@@ -12,11 +12,12 @@
 
 Configuration::Configuration()
 {
+  keyFile = g_key_file_new();
 }
 
 Configuration::Configuration(const Configuration& orig)
 {
-  clear();
+  keyFile = g_key_file_new();
   
   gsize bufferLength;
   gchar* buffer = g_key_file_to_data(orig.keyFile, &bufferLength, NULL);
@@ -125,6 +126,23 @@ void Configuration::loadFile(std::string file, std::string groupName)
   }
 
   g_key_file_free(tmpKeyFile);
+}
+
+bool Configuration::hasKey(std::string group, std::string key)
+{
+  return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+std::string Configuration::getString(std::string group, std::string key)
+{
+  gchar* buf = g_key_file_get_string(keyFile, group.c_str(), key.c_str(), NULL);
+  if(buf != NULL)
+  {
+    std::string result(buf);
+    g_free(buf);
+    return result;
+  }
+  return "";
 }
 
 Configuration::~Configuration()

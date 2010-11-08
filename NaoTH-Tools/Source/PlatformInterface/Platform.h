@@ -101,6 +101,7 @@ namespace naoth
       _bodyID = _interface->getBodyID();
       _bodyNickName = _interface->getBodyNickName();
       _configuration.loadFromDir("Config/", _interface->getName(), _hardwareIdentity);
+      std::cout << "test configuration: " << _configuration.getString("test", "test") << std::endl;
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());

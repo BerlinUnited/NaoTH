@@ -23,6 +23,22 @@ public:
   void loadFile(std::string file, std::string groupName);
   void clear();
 
+  /**
+   * Returns true if the configuration has a key with this name and group
+   * @param group
+   * @param key
+   * @return
+   */
+  bool hasKey(std::string group, std::string key);
+
+  /**
+   * Get a string value from the configuration
+   * @param group
+   * @param key
+   * @return
+   */
+  std::string getString(std::string group, std::string key);
+
 private:
 
   GKeyFile* keyFile;
