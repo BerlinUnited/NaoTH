@@ -18,7 +18,7 @@ solution "NaoTHSoccer"
 	path.getabsolute("../Source/Core/Cognition/"), 
 	path.getabsolute("../Source/Core/Motion/") }
 	
-  CORE = "NaoTHSoccer"
+  CORE = {"NaoTHSoccer", "DebugCommunication"}
 		
   -- base
   dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"

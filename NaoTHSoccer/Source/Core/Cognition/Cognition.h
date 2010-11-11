@@ -26,6 +26,8 @@ public:
 
   void init(naoth::PlatformDataInterface& platformInterface);
 
+private:
+
 };
 
 #endif	/* COGNITION_H */

@@ -256,8 +256,7 @@ void DebugServer::objectDestructed(DebugCommandExecutor* object)
   {
     executorMap.erase(*iter_key);
 
-    std::cout << "[DebugServer] " << "unregistering command "
-      << (*iter_key) << std::endl;
+    g_debug("unregistering command %s", (*iter_key).c_str());
   }//end for
 }
 

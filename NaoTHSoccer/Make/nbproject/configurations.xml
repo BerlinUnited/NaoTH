@@ -6,6 +6,10 @@
         <df name="Cognition" kind="SOURCE_LOGICAL_FOLDER">
           <df name="Modules" kind="SOURCE_LOGICAL_FOLDER">
             <df name="Infrastructure" kind="SOURCE_LOGICAL_FOLDER">
+              <df name="Debug">
+                <in>Debug.cpp</in>
+                <in>Debug.h</in>
+              </df>
               <df name="IO" kind="SOURCE_LOGICAL_FOLDER">
                 <in>Actuator.cpp</in>
                 <in>Actuator.h</in>
@@ -68,6 +72,7 @@
               <pElem>../../Platforms/Source</pElem>
               <pElem>../../NaoTH-Tools/Source</pElem>
               <pElem>../../Extern/include/glib-2.0</pElem>
+              <pElem>../../DebugCommunication/Source</pElem>
             </incDir>
           </ccTool>
         </makeTool>
@@ -99,6 +104,7 @@
               <pElem>../../Platforms/Source</pElem>
               <pElem>../../NaoTH-Tools/Source</pElem>
               <pElem>../../Extern/include/glib-2.0</pElem>
+              <pElem>../../DebugCommunication/Source</pElem>
             </incDir>
           </ccTool>
         </makeTool>
@@ -130,6 +136,7 @@
               <pElem>../../Platforms/Source</pElem>
               <pElem>../../NaoTH-Tools/Source</pElem>
               <pElem>../../Extern/include/glib-2.0</pElem>
+              <pElem>../../DebugCommunication/Source</pElem>
             </incDir>
           </ccTool>
         </makeTool>
