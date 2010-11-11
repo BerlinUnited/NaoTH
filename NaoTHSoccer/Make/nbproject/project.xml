@@ -14,7 +14,9 @@
                 <sourceRootElem>../Source</sourceRootElem>
             </sourceRootList>
             <confList>
-                <confElem>Default</confElem>
+                <confElem>Solution</confElem>
+                <confElem>Webots</confElem>
+                <confElem>SimSpark</confElem>
             </confList>
         </data>
     </configuration>

@@ -42,7 +42,7 @@
   </sourceRootList>
   <projectmakefile>Make-Makefile.mk</projectmakefile>
   <confs>
-    <conf name="Default" type="0">
+    <conf name="Solution" type="0">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
         <compilerSet>GNU|GNU</compilerSet>
@@ -52,6 +52,68 @@
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>premake4 clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>../Source</pElem>
+              <pElem>../../Platforms/Source</pElem>
+              <pElem>../../NaoTH-Tools/Source</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
+            </incDir>
+          </cTool>
+          <ccTool>
+            <incDir>
+              <pElem>../Source</pElem>
+              <pElem>../../Platforms/Source</pElem>
+              <pElem>../../NaoTH-Tools/Source</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
+            </incDir>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+    </conf>
+    <conf name="Webots" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile Webots</buildCommand>
+          <cleanCommand>premake4 clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>../Source</pElem>
+              <pElem>../../Platforms/Source</pElem>
+              <pElem>../../NaoTH-Tools/Source</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
+            </incDir>
+          </cTool>
+          <ccTool>
+            <incDir>
+              <pElem>../Source</pElem>
+              <pElem>../../Platforms/Source</pElem>
+              <pElem>../../NaoTH-Tools/Source</pElem>
+              <pElem>../../Extern/include/glib-2.0</pElem>
+            </incDir>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+    </conf>
+    <conf name="SimSpark" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile SimSpark</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
           <executablePath></executablePath>
           <cTool>
