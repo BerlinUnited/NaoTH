@@ -118,7 +118,7 @@ void Configuration::loadFile(std::string file, std::string groupName)
     {
       if(g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, NULL))
       {
-        g_debug("loaded %s", file.c_str());
+        g_message("loaded %s", file.c_str());
       }
     }
   }
