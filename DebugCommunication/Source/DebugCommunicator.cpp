@@ -34,8 +34,7 @@ void DebugCommunicator::init()
     g_warning("(DebugServer) No communication available. Error message:\n%s", err->message);
   } else
   {
-    std::cout << "(DebugServer:port " << port << ") " << "is ready for incoming connections "
-      << std::endl;
+    g_debug("Port %d is ready for incoming connections ", port);
   }
 
 }//end init
@@ -64,8 +63,7 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
   GError* err = internalSendMessage(data, size);
   if (err)
   {
-    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in sendMessage) "
-      << err->message << std::endl;
+    g_error("(SocketException in sendMessage) %s", err->message);
 
     g_error_free(err);
 
@@ -112,8 +110,7 @@ GError* DebugCommunicator::triggerConnect()
         GInetAddress* addr = g_inet_socket_address_get_address(remoteSocketAddr);
 
         char* addrString = g_inet_address_to_string(addr);
-        std::cout << "[DebugServer:port " << port << "] " << "connected to "
-          << addrString << std::endl;
+        g_message("DebugServer port %d connected to %s", port, addrString);
         g_free(addrString);
         g_object_unref(remoteSocketAddr);
 
