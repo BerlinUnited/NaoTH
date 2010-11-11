@@ -35,7 +35,7 @@ namespace naoth
       _bodyID("Uninitialized"),
       _bodyNickName("Uninitialized"),
       _platformInterface(NULL),
-      //theConfigPathInfo(_configPathInfo),
+      theConfiguration(_configuration),
       theHardwareIdentity(_hardwareIdentity),
       theBodyID(_bodyID),
       theBodyNickName(_bodyNickName),
@@ -84,7 +84,7 @@ namespace naoth
   // do nothing...
   static std::string getMACaddress(const std::string& /*name*/)
   {
-    return "unknown mac address";
+    return "unknown_mac_address";
   }//end getMACaddress
 #endif
 
@@ -112,7 +112,7 @@ namespace naoth
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
     }//end init
 
-  //  const ConfigPathInfo& theConfigPathInfo;
+    const Configuration& theConfiguration;
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theBodyID;
     const string& theBodyNickName;
