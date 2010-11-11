@@ -149,9 +149,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   
   //Cognition::getInstance().init();
   //Motion::getInstance().init();
-
   Platform::getInstance().init(this);
-
 
 
   /*
@@ -178,7 +176,7 @@ void SimSparkController::initPosition()
 {
   ifstream ifile("init_position.txt");
   std::map<int, Vector3<double> > positions;
-  while ( !ifile.eof() )
+  while (!ifile.fail() && !ifile.eof() )
   {
     int num;
     Vector3<double> p;

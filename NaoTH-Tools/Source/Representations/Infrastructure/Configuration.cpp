@@ -145,6 +145,11 @@ std::string Configuration::getString(std::string group, std::string key)
   return "";
 }
 
+void Configuration::setString(std::string group, std::string key, std::string value)
+{
+  g_key_file_set_string(keyFile, group.c_str(), key.c_str(), value.c_str());
+}
+
 Configuration::~Configuration()
 {
   if(keyFile != NULL)

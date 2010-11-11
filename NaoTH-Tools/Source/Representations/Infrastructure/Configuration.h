@@ -39,6 +39,8 @@ public:
    */
   std::string getString(std::string group, std::string key);
 
+  void setString(std::string group, std::string key, std::string value);
+
 private:
 
   GKeyFile* keyFile;
