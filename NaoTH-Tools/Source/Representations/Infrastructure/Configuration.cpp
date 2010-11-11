@@ -93,8 +93,7 @@ void Configuration::loadFile(std::string file, std::string groupName)
   g_key_file_load_from_file(tmpKeyFile, file.c_str(), G_KEY_FILE_NONE, &err);
   if(err != NULL)
   {
-    std::cerr << "ERROR " << file << ": "
-      << err->message << std::endl;
+    g_error("%s: %s", file.c_str(), err->message);
     g_error_free(err);
   }
   else
@@ -109,8 +108,7 @@ void Configuration::loadFile(std::string file, std::string groupName)
       if(g_strcmp0(groups[i], groupName.c_str()) != 0)
       {
         groupOK = false;
-        std::cerr << "ERROR " << file << ": config file contains illegal group \""
-          << groups[i] << "\"" << std::endl;
+        g_error("%s: config file contains illegal group \"%s\"", file.c_str(), groups[i]);
         break;
       }
     }
@@ -120,7 +118,7 @@ void Configuration::loadFile(std::string file, std::string groupName)
     {
       if(g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, NULL))
       {
-        std::cout << "INFO loaded " << file << std::endl;
+        g_debug("loaded %s", file.c_str());
       }
     }
   }
