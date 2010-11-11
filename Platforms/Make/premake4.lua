@@ -1,5 +1,3 @@
-dofile "install.lua"
-
 -- description of the solution
 
 solution "NaoPlatform"
@@ -21,8 +19,6 @@ solution "NaoPlatform"
 	
   -- store the makefiles the Make/ directory
   location "."
-  
-  postbuildcommands{"premake4 install"}
   
   dofile "Webots.lua"
   dofile "SimSpark.lua"

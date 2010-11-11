@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=Make
 
 # Active Configuration
-DEFAULTCONF=Default
+DEFAULTCONF=Solution
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Default 
+ALLCONFS=Solution Webots SimSpark 
 
 
 # build

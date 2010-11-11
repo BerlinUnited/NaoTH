@@ -33,8 +33,4 @@ project "SimSpark"
 
   targetname "naoth-simspark"
 
-  -- postbuildcommands {
-    -- copy Config
-    -- os.getcopycmd(os.getcwd() .. "/../../Config/", os.getcwd() .. "/dist/", true)
-  -- }
-  -- END SimSpark
+-- END SimSpark
