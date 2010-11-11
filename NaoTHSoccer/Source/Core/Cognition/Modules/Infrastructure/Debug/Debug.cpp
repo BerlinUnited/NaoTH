@@ -21,7 +21,10 @@ void Debug::execute()
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
 {
-  
+  if(command == "ping")
+  {
+    outstream << "pong";
+  }
 }
 
 Debug::~Debug()
