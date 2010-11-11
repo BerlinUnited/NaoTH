@@ -30,10 +30,10 @@ Cognition::~Cognition()
 
 void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 {
-  std::cout << "test configuration: " << 
-    Platform::getInstance().theConfiguration.getString("test","test") << std::endl;
+  g_debug("test configuration: %s", 
+    Platform::getInstance().theConfiguration.getString("test","test").c_str());
 
-  std::cout << "Cognition register start" << std::endl;
+  g_message("Cognition register start");
   
   // input
   ModuleCreator<Sensor>* sensor = registerModule<Sensor>("Sensor");
@@ -45,7 +45,7 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   actuator->setEnabled(true);
   actuator->getModuleT()->init(platformInterface);
 
-  std::cout << "Cognition register end" << std::endl;
+  g_message("Cognition register end");
 }//end init
 
 

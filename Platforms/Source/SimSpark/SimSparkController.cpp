@@ -696,7 +696,7 @@ void SimSparkController::get(AccelerometerData& data)
 
 void SimSparkController::get(Image& data)
 {
-  ASSERT(isNewImage);
+  //ASSERT(isNewImage);
 
   const char* img = theImageData.data();
   data.setCameraInfo(Platform::getInstance().theCameraInfo);
