@@ -1,7 +1,7 @@
 solution "NaoTHSoccer" 
   platforms {"Native"}
   configurations {"Debug", "Release"}
-  targetdir "./dist/"
+  targetdir "../dist"
   
   -- additional defines for windows
   if os.is("windows") then
@@ -19,7 +19,7 @@ solution "NaoTHSoccer"
 	path.getabsolute("../Source/Core/Motion/") }
 	
   CORE = "NaoTHSoccer"
-	
+		
   -- base
   dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"
   dofile "../../DebugCommunication/Make/DebugCommunication.lua"

@@ -22,7 +22,7 @@ solution "NaoPlatform"
   -- store the makefiles the Make/ directory
   location "."
   
-  postbuildcommands{"premake4 install"}
+  --postbuildcommands{"premake4 install"}
   
   dofile "Webots.lua"
   dofile "SimSpark.lua"
