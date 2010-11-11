@@ -106,13 +106,13 @@ namespace naoth
         configDir = getenv("NAO_CONFIG");
       }
       _configuration.loadFromDir(configDir, _interface->getName(), _hardwareIdentity);
-      std::cout << "test configuration: " << _configuration.getString("test", "test") << std::endl;
+      
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
     }//end init
 
-    const Configuration& theConfiguration;
+    Configuration& theConfiguration;
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theBodyID;
     const string& theBodyNickName;

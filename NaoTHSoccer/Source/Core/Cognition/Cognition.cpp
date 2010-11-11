@@ -7,6 +7,8 @@
 
 #include "Cognition.h"
 
+#include <PlatformInterface/Platform.h>
+
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
@@ -28,6 +30,9 @@ Cognition::~Cognition()
 
 void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 {
+  std::cout << "test configuration: " << 
+    Platform::getInstance().theConfiguration.getString("test","test") << std::endl;
+
   std::cout << "Cognition register start" << std::endl;
   
   // input
