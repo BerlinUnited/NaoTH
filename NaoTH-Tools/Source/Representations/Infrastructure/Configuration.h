@@ -63,6 +63,16 @@ namespace naoth
 
     void setInt(std::string group, std::string key, int value);
 
+    /**
+     * Get a bool value from the configuration
+     * @param group
+     * @param key
+     * @return
+     */
+    bool getBool(std::string group, std::string key);
+
+    void setBool(std::string group, std::string key, bool value);
+
   private:
 
     GKeyFile* keyFile;

@@ -175,6 +175,16 @@ void Configuration::setDouble(std::string group, std::string key, double value)
   g_key_file_set_double(keyFile, group.c_str(), key.c_str(), value);
 }
 
+bool Configuration::getBool(std::string group, std::string key)
+{
+  return g_key_file_get_boolean(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+void Configuration::setBool(std::string group, std::string key, bool value)
+{
+  g_key_file_set_boolean(keyFile, group.c_str(), key.c_str(), value);
+}
+
 Configuration::~Configuration()
 {
   if (keyFile != NULL)

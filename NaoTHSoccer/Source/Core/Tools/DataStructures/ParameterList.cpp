@@ -93,12 +93,21 @@ void ParameterList::loadFromConfig()
     }
   }//end for
 
-  // double
+  // string
   for (std::map<std::string, std::string*>::const_iterator iter = stringParameterReferences.begin(); iter != stringParameterReferences.end(); iter++)
   {
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getString(parentClassName, iter->first);
+    }
+  }//end for
+
+  // bool
+  for (std::map<std::string, bool*>::const_iterator iter = boolParameterReferences.begin(); iter != boolParameterReferences.end(); iter++)
+  {
+    if (config.hasKey(parentClassName, iter->first))
+    {
+      *(iter->second) = config.getBool(parentClassName, iter->first);
     }
   }//end for
 
