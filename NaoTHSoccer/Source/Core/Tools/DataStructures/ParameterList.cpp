@@ -115,6 +115,32 @@ void ParameterList::loadFromConfig()
 
 void ParameterList::saveToConfig()
 {
+  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+
+  for(std::map<std::string, unsigned int*>::iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); iter++)
+  {
+    config.setInt(parentClassName, iter->first, *(iter->second));
+  }//end for
+
+  for(std::map<std::string, int*>::iterator iter = intParameterReferences.begin(); iter != intParameterReferences.end(); iter++)
+  {
+    config.setInt(parentClassName, iter->first, *(iter->second));
+  }//end for
+
+  for(std::map<std::string, double*>::iterator iter = doubleParameterReferences.begin(); iter != doubleParameterReferences.end(); iter++)
+  {
+    config.setDouble(parentClassName, iter->first, *(iter->second));
+  }//end for
+
+  for(std::map<std::string, std::string*>::iterator iter = stringParameterReferences.begin(); iter != stringParameterReferences.end(); iter++)
+  {
+    config.setString(parentClassName, iter->first, *(iter->second));
+  }//end for
+
+  for(std::map<std::string, bool*>::iterator iter = boolParameterReferences.begin(); iter != boolParameterReferences.end(); iter++)
+  {
+    config.setBool(parentClassName, iter->first, *(iter->second));
+  }//end for
 
 }
 
