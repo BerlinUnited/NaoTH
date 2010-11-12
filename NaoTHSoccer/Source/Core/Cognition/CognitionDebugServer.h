@@ -21,6 +21,8 @@ private:
 
 };
 
+#undef REGISTER_DEBUG_COMMAND
+
 #ifdef DEBUG
 /** register a command only in DEBUG mode */
 #define REGISTER_DEBUG_COMMAND(command, description, executor) \
