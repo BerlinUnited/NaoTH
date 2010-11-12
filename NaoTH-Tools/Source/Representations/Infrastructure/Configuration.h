@@ -44,6 +44,16 @@ namespace naoth
     void setString(std::string group, std::string key, std::string value);
 
     /**
+     * Get a double value from the configuration
+     * @param group
+     * @param key
+     * @return
+     */
+    double getDouble(std::string group, std::string key);
+
+    void setDouble(std::string group, std::string key, double value);
+
+    /**
      * Get an integer value from the configuration
      * @param group
      * @param key

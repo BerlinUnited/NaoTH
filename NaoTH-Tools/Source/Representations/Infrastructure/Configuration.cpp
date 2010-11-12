@@ -165,6 +165,16 @@ void Configuration::setInt(std::string group, std::string key, int value)
   g_key_file_set_integer(keyFile, group.c_str(), key.c_str(), value);
 }
 
+double Configuration::getDouble(std::string group, std::string key)
+{
+  return g_key_file_get_double(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+void Configuration::setDouble(std::string group, std::string key, double value)
+{
+  g_key_file_set_double(keyFile, group.c_str(), key.c_str(), value);
+}
+
 Configuration::~Configuration()
 {
   if (keyFile != NULL)
