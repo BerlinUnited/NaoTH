@@ -136,6 +136,7 @@ void Configuration::loadFile(std::string file, std::string groupName)
 
 std::list<std::string> Configuration::keys(std::string group)
 {
+
   std::list<std::string> result;
   gsize length = 0;
   gchar** keys = g_key_file_get_keys(keyFile, group.c_str(), &length, NULL);
@@ -203,6 +204,7 @@ double Configuration::getDouble(std::string group, std::string key)
 
 void Configuration::setDouble(std::string group, std::string key, double value)
 {
+
   g_key_file_set_double(keyFile, group.c_str(), key.c_str(), value);
 }
 

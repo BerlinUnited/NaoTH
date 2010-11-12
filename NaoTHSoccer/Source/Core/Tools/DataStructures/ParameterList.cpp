@@ -26,13 +26,17 @@ ParameterList::ParameterList(const std::string& parentClassName)
   REGISTER_DEBUG_COMMAND(std::string(parentClassName).append(":store"),
     "store the configure file according to the path", this);
 
+  
+}//end constructor ParameterList
+
+void ParameterList::initParams()
+{
   // first load values from configuration
   loadFromConfig();
   // now store them, this will create an entry for all parameters that are
   // unknown in the configuration
   saveToConfig();
-  
-}//end constructor ParameterList
+}
 
 unsigned int& ParameterList::registerParameter(const std::string& name, unsigned int& parameter)
 {
@@ -52,6 +56,7 @@ double& ParameterList::registerParameter(const std::string& name, double& parame
 {
   ASSERT(doubleParameterReferences.find(name) == doubleParameterReferences.end());
   doubleParameterReferences[name] = &parameter;
+
   return parameter;
 }//end registerParameter
 
