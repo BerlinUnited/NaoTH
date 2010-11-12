@@ -69,7 +69,6 @@ void ParameterList::loadFromConfig()
   // unsigned int
   for (std::map<std::string, unsigned int*>::const_iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); iter++)
   {
-    unsigned int tmp;
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getInt(parentClassName, iter->first);
@@ -79,7 +78,6 @@ void ParameterList::loadFromConfig()
   // int
   for (std::map<std::string, int*>::const_iterator iter = intParameterReferences.begin(); iter != intParameterReferences.end(); iter++)
   {
-    unsigned int tmp;
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getInt(parentClassName, iter->first);
@@ -89,12 +87,21 @@ void ParameterList::loadFromConfig()
   // double
   for (std::map<std::string, double*>::const_iterator iter = doubleParameterReferences.begin(); iter != doubleParameterReferences.end(); iter++)
   {
-    unsigned int tmp;
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getDouble(parentClassName, iter->first);
     }
   }//end for
+
+  // double
+  for (std::map<std::string, std::string*>::const_iterator iter = stringParameterReferences.begin(); iter != stringParameterReferences.end(); iter++)
+  {
+    if (config.hasKey(parentClassName, iter->first))
+    {
+      *(iter->second) = config.getString(parentClassName, iter->first);
+    }
+  }//end for
+
 }
 
 void ParameterList::saveToConfig()
