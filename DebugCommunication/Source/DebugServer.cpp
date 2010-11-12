@@ -13,8 +13,7 @@
 
 #include "DebugServer.h"
 
-DebugServer::DebugServer(unsigned int port)
-: comm(port)
+DebugServer::DebugServer()
 {
   commands = g_async_queue_new();
   answers = g_async_queue_new();
@@ -22,18 +21,23 @@ DebugServer::DebugServer(unsigned int port)
   g_async_queue_ref(commands);
   g_async_queue_ref(answers);
 
+
+}
+
+void DebugServer::start(unsigned int port)
+{
   if (g_thread_supported())
   {
-    comm.init();
+    comm.init(port);
 
     GError* err = NULL;
-    g_message("Starting debug server as two seperate threads (reader and writer)");
+    g_debug("Starting debug server as two seperate threads (reader and writer)");
     readerThread = g_thread_create(reader_static, this, true, &err);
     writerThread = g_thread_create(writer_static, this, true, &err);
 
     registerCommand("help", "list available commands or get the description of a specific command", this);
-
-  } else
+  }
+  else
   {
     g_warning("No threading support: DebugServer not available");
   }
@@ -41,10 +45,10 @@ DebugServer::DebugServer(unsigned int port)
 
 void DebugServer::mainReader()
 {
-  g_message("Reader init");
+  g_debug("Reader init");
   g_async_queue_ref(commands);
 
-  g_message("Starting DebugServer reader loop");
+  g_debug("Starting DebugServer reader loop");
   while (true)
   {
     char* msg = comm.readMessage();
@@ -67,10 +71,10 @@ void DebugServer::mainReader()
 
 void DebugServer::mainWriter()
 {
-  g_message("Writer init");
+  g_debug("Writer init");
   g_async_queue_ref(answers);
 
-  g_message("Starting DebugServer writer loop");
+  g_debug("Starting DebugServer writer loop");
   while (true)
   {
     char* answer = (char*) g_async_queue_pop(answers);
@@ -206,7 +210,7 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
   } else
   {
     answerFromHandler << "Unknown command \"" << command
-      << "\", use \"help\" for a list of available commands";
+      << "\", use \"help\" for a list of available commands" << std::endl;
   }
 
   if (encodeBase64)

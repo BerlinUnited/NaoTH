@@ -24,6 +24,8 @@
           </df>
           <in>Cognition.cpp</in>
           <in>Cognition.h</in>
+          <in>CognitionDebugServer.cpp</in>
+          <in>CognitionDebugServer.h</in>
         </df>
         <df name="Motion" kind="SOURCE_LOGICAL_FOLDER">
           <in>Motion.cpp</in>
@@ -74,6 +76,9 @@
               <pElem>../../Extern/include/glib-2.0</pElem>
               <pElem>../../DebugCommunication/Source</pElem>
             </incDir>
+            <preprocessorList>
+              <Elem>DEBUG</Elem>
+            </preprocessorList>
           </ccTool>
         </makeTool>
       </makefileType>
@@ -106,6 +111,9 @@
               <pElem>../../Extern/include/glib-2.0</pElem>
               <pElem>../../DebugCommunication/Source</pElem>
             </incDir>
+            <preprocessorList>
+              <Elem>DEBUG</Elem>
+            </preprocessorList>
           </ccTool>
         </makeTool>
       </makefileType>
@@ -138,6 +146,9 @@
               <pElem>../../Extern/include/glib-2.0</pElem>
               <pElem>../../DebugCommunication/Source</pElem>
             </incDir>
+            <preprocessorList>
+              <Elem>DEBUG</Elem>
+            </preprocessorList>
           </ccTool>
         </makeTool>
       </makefileType>

@@ -7,21 +7,27 @@
 
 #include "Debug.h"
 
+#include "Core/Cognition/CognitionDebugServer.h"
 
 Debug::Debug()
-: debugServer(5401)
 {
-  debugServer.registerCommand("ping",  "gives you a pong", this);
+  // TODO: use the player and team number for defining the port
+  CognitionDebugServer::getInstance().start(5401);
+
+  REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
 }
 
 void Debug::execute()
 {
-  debugServer.execute();
+  CognitionDebugServer::getInstance().execute();
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
 {
-  
+  if(command == "ping")
+  {
+    outstream << "pong";
+  }
 }
 
 Debug::~Debug()

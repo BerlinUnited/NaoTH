@@ -35,8 +35,6 @@ public:
 
 private:
 
-  DebugServer debugServer;
-
 };
 
 #endif	/* DEBUG_H */
