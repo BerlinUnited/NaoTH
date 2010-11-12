@@ -21,5 +21,13 @@ private:
 
 };
 
+#ifdef DEBUG
+/** register a command only in DEBUG mode */
+#define REGISTER_DEBUG_COMMAND(command, description, executor) \
+CognitionDebugServer::getInstance().registerCommand(command, description, executor);
+#else //DEBUG
+#define REGISTER_DEBUG_COMMAND(command, description, executor) {}
+#endif //DEBUG
+
 #endif	/* COGNITIONDEBUGSERVER_H */
 

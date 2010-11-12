@@ -11,10 +11,10 @@
 
 Debug::Debug()
 {
-  CognitionDebugServer& server = CognitionDebugServer::getInstance();
   // TODO: use the player and team number for defining the port
-  server.start(5401);
-  server.registerCommand("ping",  "gives you a pong", this);
+  CognitionDebugServer::getInstance().start(5401);
+
+  REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
 }
 
 void Debug::execute()
