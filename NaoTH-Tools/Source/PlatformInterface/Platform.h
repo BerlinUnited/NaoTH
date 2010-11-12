@@ -36,6 +36,7 @@ namespace naoth
       _bodyNickName("Uninitialized"),
       _platformInterface(NULL),
       theConfiguration(_configuration),
+      theConfigDirectory(_configDir),
       theHardwareIdentity(_hardwareIdentity),
       theBodyID(_bodyID),
       theBodyNickName(_bodyNickName),
@@ -50,6 +51,7 @@ namespace naoth
     string _bodyID;
     string _bodyNickName;
     Configuration _configuration;
+    string _configDir;
     PlatformBase* _platformInterface;
 
   public:
@@ -100,12 +102,12 @@ namespace naoth
       _hardwareIdentity = _interface->getHardwareIdentity();
       _bodyID = _interface->getBodyID();
       _bodyNickName = _interface->getBodyNickName();
-      std::string configDir = "Config/";
+      _configDir = "Config/";
       if(getenv("NAO_CONFIG") != NULL)
       {
-        configDir = getenv("NAO_CONFIG");
+        _configDir = getenv("NAO_CONFIG");
       }
-      _configuration.loadFromDir(configDir, _interface->getName(), _hardwareIdentity);
+      _configuration.loadFromDir(_configDir, _interface->getName(), _hardwareIdentity);
       
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
@@ -113,6 +115,7 @@ namespace naoth
     }//end init
 
     Configuration& theConfiguration;
+    const string& theConfigDirectory;
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theBodyID;
     const string& theBodyNickName;

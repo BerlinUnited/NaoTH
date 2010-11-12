@@ -9,6 +9,9 @@
 
 #include <iostream>
 #include <string.h>
+#include <list>
+
+using namespace naoth;
 
 Configuration::Configuration()
 {
@@ -106,9 +109,9 @@ void Configuration::loadFile(std::string file, std::string groupName)
     // syntactically correct, check if there is only one group with the same 
     // name as the file
     bool groupOK = true;
-    gsize length;
-    gchar** groups = g_key_file_get_groups(tmpKeyFile, &length);
-    for (int i = 0; groupOK && i < length; i++)
+    gsize numOfGroups;
+    gchar** groups = g_key_file_get_groups(tmpKeyFile, &numOfGroups);
+    for (int i = 0; groupOK && i < numOfGroups; i++)
     {
       if (g_strcmp0(groups[i], groupName.c_str()) != 0)
       {
@@ -117,18 +120,41 @@ void Configuration::loadFile(std::string file, std::string groupName)
         break;
       }
     }
+
+    if(groupOK && numOfGroups == 1)
+    {
+      // copy every single value to our configuration
+      gsize numOfKeys = 0;
+      gchar** keys = g_key_file_get_keys(tmpKeyFile, groups[0], &numOfKeys, NULL);
+      for(gsize i=0; i < numOfKeys; i++)
+      {
+        gchar* buffer = g_key_file_get_value(tmpKeyFile, groups[0], keys[i], NULL);
+        g_key_file_set_value(keyFile, groups[0], keys[i], buffer);
+        g_free(buffer);
+      }
+
+      g_message("loaded %s", file.c_str());
+    }
+
     g_strfreev(groups);
 
-    if (groupOK)
-    {
-      if (g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, NULL))
-      {
-        g_message("loaded %s", file.c_str());
-      }
-    }
   }
 
   g_key_file_free(tmpKeyFile);
+}
+
+std::list<std::string> Configuration::keys(std::string group)
+{
+
+  std::list<std::string> result;
+  gsize length = 0;
+  gchar** keys = g_key_file_get_keys(keyFile, group.c_str(), &length, NULL);
+  for(int i=0; i < length; i++)
+  {
+    result.push_back(std::string(keys[i]));
+  }
+  g_strfreev(keys);
+  return result;
 }
 
 bool Configuration::hasKey(std::string group, std::string key)
@@ -151,6 +177,54 @@ std::string Configuration::getString(std::string group, std::string key)
 void Configuration::setString(std::string group, std::string key, std::string value)
 {
   g_key_file_set_string(keyFile, group.c_str(), key.c_str(), value.c_str());
+}
+
+std::string Configuration::getRawValue(std::string group, std::string key)
+{
+  gchar* buf = g_key_file_get_value(keyFile, group.c_str(), key.c_str(), NULL);
+  if (buf != NULL)
+  {
+    std::string result(buf);
+    g_free(buf);
+    return result;
+  }
+  return "";
+}
+
+void Configuration::setRawValue(std::string group, std::string key, std::string value)
+{
+  g_key_file_set_value(keyFile, group.c_str(), key.c_str(), value.c_str());
+}
+
+int Configuration::getInt(std::string group, std::string key)
+{
+  return g_key_file_get_integer(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+void Configuration::setInt(std::string group, std::string key, int value)
+{
+  g_key_file_set_integer(keyFile, group.c_str(), key.c_str(), value);
+}
+
+double Configuration::getDouble(std::string group, std::string key)
+{
+  return g_key_file_get_double(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+void Configuration::setDouble(std::string group, std::string key, double value)
+{
+
+  g_key_file_set_double(keyFile, group.c_str(), key.c_str(), value);
+}
+
+bool Configuration::getBool(std::string group, std::string key)
+{
+  return g_key_file_get_boolean(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+void Configuration::setBool(std::string group, std::string key, bool value)
+{
+  g_key_file_set_boolean(keyFile, group.c_str(), key.c_str(), value);
 }
 
 Configuration::~Configuration()

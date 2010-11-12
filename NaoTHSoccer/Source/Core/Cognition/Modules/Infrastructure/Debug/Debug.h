@@ -13,11 +13,13 @@
 
 #include <DebugServer.h>
 
+#include "Core/Representations/FieldInfo.h"
 #include <Representations/Infrastructure/Image.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
+  REQUIRE(FieldInfo)
   REQUIRE(Image)
 END_DECLARE_MODULE(Debug)
 
