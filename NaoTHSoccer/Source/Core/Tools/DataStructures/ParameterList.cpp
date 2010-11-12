@@ -164,12 +164,19 @@ void ParameterList::executeDebugCommand(
 
   if (command == std::string(parentClassName).append(":set"))
   {
-    std::stringstream ss;
+    // save the old values
+    saveToConfig();
+
     for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); iter++)
     {
-      ss << iter->first << " = " << iter->second << ";\n";
+      // update global config
+      config.setRawValue(parentClassName, iter->first, iter->second);
     }
-    // TODO
+    // load from the changed config
+    loadFromConfig();
+
+    // always success
+    outstream<<"set " << parentClassName << " successfully"<< std::endl;
   }
   else if (command == std::string(parentClassName).append(":list"))
   {
@@ -183,5 +190,6 @@ void ParameterList::executeDebugCommand(
   else if (command == std::string(parentClassName).append(":store"))
   {
     // TODO
+    outstream << "not implemented yet" << std::endl;
   }
 }//end executeDebugCommand
