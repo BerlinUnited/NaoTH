@@ -2,6 +2,7 @@
  * @file ParameterList.h
  *
  * @author <a href="mailto:aschulz@informatik.hu-berlin.de">Alexander Schulz</a>
+ * @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
  * This class is intendes as superclass of all Representations holding parameters that can be changed
  * via the debug-console
  */
@@ -28,6 +29,9 @@ public:
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string, std::string>& arguments,
     std::stringstream &outstream);
+
+  virtual void loadFromConfig();
+  virtual void saveToConfig();
 
 private:
   std::string parentClassName;

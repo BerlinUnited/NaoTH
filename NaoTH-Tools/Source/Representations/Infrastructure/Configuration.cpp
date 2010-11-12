@@ -10,6 +10,8 @@
 #include <iostream>
 #include <string.h>
 
+using namespace naoth;
+
 Configuration::Configuration()
 {
   keyFile = g_key_file_new();
@@ -151,6 +153,16 @@ std::string Configuration::getString(std::string group, std::string key)
 void Configuration::setString(std::string group, std::string key, std::string value)
 {
   g_key_file_set_string(keyFile, group.c_str(), key.c_str(), value.c_str());
+}
+
+int Configuration::getInt(std::string group, std::string key)
+{
+  return g_key_file_get_integer(keyFile, group.c_str(), key.c_str(), NULL);
+}
+
+void Configuration::setInt(std::string group, std::string key, int value)
+{
+  g_key_file_set_integer(keyFile, group.c_str(), key.c_str(), value);
 }
 
 Configuration::~Configuration()
