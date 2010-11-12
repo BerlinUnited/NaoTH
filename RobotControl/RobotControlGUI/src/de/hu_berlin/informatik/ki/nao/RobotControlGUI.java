@@ -372,6 +372,7 @@ public class RobotControlGUI extends javax.swing.JFrame
   private javax.swing.JPanel statusPanel;
   // End of variables declaration//GEN-END:variables
 
+  @Override
   public void showConnected(boolean isConnected)
   {
     disconnectMenuItem.setEnabled(isConnected);

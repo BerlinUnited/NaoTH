@@ -180,7 +180,7 @@ void ParameterList::executeDebugCommand(
   }
   else if (command == std::string(parentClassName).append(":list"))
   {
-    std::list<std::string> keys = config.keys(parentClassName);
+    std::list<std::string> keys = config.getKeys(parentClassName);
     for(std::list<std::string>::const_iterator it = keys.begin(); it != keys.end(); it++)
     {
       std::string val = config.getRawValue(parentClassName, *it);
@@ -189,7 +189,7 @@ void ParameterList::executeDebugCommand(
   }
   else if (command == std::string(parentClassName).append(":store"))
   {
-    // TODO
-    outstream << "not implemented yet" << std::endl;
+    config.save(naoth::Platform::getInstance().theConfigDirectory);
+    outstream << "saved to " << naoth::Platform::getInstance().theConfigDirectory << std::endl;
   }
 }//end executeDebugCommand

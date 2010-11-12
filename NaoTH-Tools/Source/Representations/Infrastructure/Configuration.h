@@ -26,12 +26,22 @@ namespace naoth
     void loadFile(std::string file, std::string groupName);
     void clear();
 
+    void save(std::string dirlocation);
+    void saveFile(std::string file, std::string group);
+
+    /**
+     * Get all group names.
+     * @param group
+     * @return
+     */
+    std::list<std::string> getGroups();
+
     /**
      * Get all keys for a specific group.
      * @param group
      * @return
      */
-    std::list<std::string> keys(std::string group);
+    std::list<std::string> getKeys(std::string group);
 
     /**
      * Returns true if the configuration has a key with this name and group
