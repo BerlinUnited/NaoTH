@@ -30,7 +30,9 @@ int main(int argc, char** argv)
   g_type_init();
   g_thread_init(NULL);
 
-  DebugServer server(5401);
+  DebugServer server;
+  server.start(5401);
+  
   TestDebugCommandExecutor* test = new TestDebugCommandExecutor();
 
   server.registerCommand("ping", "Gives you a \"pong\"", test);

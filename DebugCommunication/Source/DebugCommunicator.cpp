@@ -17,16 +17,17 @@
 
 #include "DebugCommunicator.h"
 
-DebugCommunicator::DebugCommunicator(unsigned short port)
+DebugCommunicator::DebugCommunicator()
 : serverSocket(NULL),
 connection(NULL),
-port(port),
 fatalFail(false)
 {
 }
 
-void DebugCommunicator::init()
+void DebugCommunicator::init(unsigned short portNum)
 {
+  port = portNum;
+  
   GError* err = internalInit();
   if (err)
   {
