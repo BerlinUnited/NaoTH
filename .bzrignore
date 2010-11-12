@@ -6,6 +6,7 @@
 ./Projects/XabslEditor
 .dep.inc
 private/
+./NaoTHSoccer/Config/private/*
 ./Platforms/Make/Makefile
 ./Platforms/Make/*.make
 ./NaoTH-Tools/Make/Makefile

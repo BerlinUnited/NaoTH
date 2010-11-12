@@ -8,6 +8,7 @@
 #include "Configuration.h"
 
 #include <iostream>
+#include <fstream>
 #include <string.h>
 #include <list>
 
@@ -143,7 +144,75 @@ void Configuration::loadFile(std::string file, std::string groupName)
   g_key_file_free(tmpKeyFile);
 }
 
-std::list<std::string> Configuration::keys(std::string group)
+void Configuration::save(std::string dirlocation)
+{
+  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
+  {
+    dirlocation = dirlocation + "/";
+  }
+
+  std::list<std::string> groups = getGroups();
+  for(std::list<std::string>::const_iterator it=groups.begin(); it != groups.end(); it++)
+  {
+    saveFile(dirlocation + "private/" + *it + ".cfg", *it );
+  }
+}
+
+void Configuration::saveFile(std::string file, std::string group)
+{
+  GKeyFile* tmpKeyFile = g_key_file_new();
+  gsize numOfKeys = 0;
+  gchar** keys = g_key_file_get_keys(keyFile, group.c_str(), &numOfKeys, NULL);
+  for(gsize i=0; i < numOfKeys; i++)
+  {
+    GError* err = NULL;
+    gchar* buffer = g_key_file_get_value(keyFile, group.c_str(), keys[i], &err);
+    if(err != NULL)
+    {
+      g_warning("%s", err->message);
+    }
+    g_key_file_set_value(tmpKeyFile, group.c_str(), keys[i], buffer);
+    g_free(buffer);
+  }
+  GError* err = NULL;
+  gsize dataLength;
+  gchar* data = g_key_file_to_data(tmpKeyFile, &dataLength, &err);
+  if(err == NULL)
+  {
+    if(dataLength > 0)
+    {
+      std::ofstream outFile;
+      outFile.open(file.c_str(), std::ios::out);
+      outFile.write(data, dataLength);
+      outFile.close();
+      g_free(data);
+    }
+  }
+  else
+  {
+    g_error("could not save configuration file %s: %s", file.c_str(), err->message);
+    g_error_free(err);
+  }
+
+  g_key_file_free(tmpKeyFile);
+}
+
+std::list<std::string> Configuration::getGroups()
+{
+
+  std::list<std::string> result;
+  gsize length = 0;
+  gchar** groups = g_key_file_get_groups(keyFile, &length);
+  for(int i=0; i < length; i++)
+  {
+    result.push_back(std::string(groups[i]));
+  }
+  g_strfreev(groups);
+  return result;
+}
+
+
+std::list<std::string> Configuration::getKeys(std::string group)
 {
 
   std::list<std::string> result;
