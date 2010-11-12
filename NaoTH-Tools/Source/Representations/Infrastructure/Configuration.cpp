@@ -109,9 +109,9 @@ void Configuration::loadFile(std::string file, std::string groupName)
     // syntactically correct, check if there is only one group with the same 
     // name as the file
     bool groupOK = true;
-    gsize length;
-    gchar** groups = g_key_file_get_groups(tmpKeyFile, &length);
-    for (int i = 0; groupOK && i < length; i++)
+    gsize numOfGroups;
+    gchar** groups = g_key_file_get_groups(tmpKeyFile, &numOfGroups);
+    for (int i = 0; groupOK && i < numOfGroups; i++)
     {
       if (g_strcmp0(groups[i], groupName.c_str()) != 0)
       {
@@ -120,15 +120,24 @@ void Configuration::loadFile(std::string file, std::string groupName)
         break;
       }
     }
+
+    if(groupOK && numOfGroups == 1)
+    {
+      // copy every single value to our configuration
+      gsize numOfKeys = 0;
+      gchar** keys = g_key_file_get_keys(tmpKeyFile, groups[0], &numOfKeys, NULL);
+      for(gsize i=0; i < numOfKeys; i++)
+      {
+        gchar* buffer = g_key_file_get_value(tmpKeyFile, groups[0], keys[i], NULL);
+        g_key_file_set_value(keyFile, groups[0], keys[i], buffer);
+        g_free(buffer);
+      }
+
+      g_message("loaded %s", file.c_str());
+    }
+
     g_strfreev(groups);
 
-    if (groupOK)
-    {
-      if (g_key_file_load_from_file(keyFile, file.c_str(), G_KEY_FILE_KEEP_COMMENTS, NULL))
-      {
-        g_message("loaded %s", file.c_str());
-      }
-    }
   }
 
   g_key_file_free(tmpKeyFile);

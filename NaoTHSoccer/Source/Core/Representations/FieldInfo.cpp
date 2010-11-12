@@ -12,34 +12,34 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 {
   ballColor = ColorClasses::orange;
   
-  PARAMETER_REGISTER(ballRadius) = 32.5;
+  PARAMETER_REGISTER(ballRadius);
 
-  PARAMETER_REGISTER(xFieldLength) = 6725;
-  PARAMETER_REGISTER(yFieldLength) = 4725;
-  PARAMETER_REGISTER(xLength) = 6050;
-  PARAMETER_REGISTER(yLength) = 4050;
+  PARAMETER_REGISTER(xFieldLength);
+  PARAMETER_REGISTER(yFieldLength);
+  PARAMETER_REGISTER(xLength);
+  PARAMETER_REGISTER(yLength);
 
-  PARAMETER_REGISTER(xPosOpponentFieldBorder) = 3025;
-  PARAMETER_REGISTER(xPosOpponentGoal) = 3025;
-  PARAMETER_REGISTER(xPosOpponentGoalpost) = 2950;
-  PARAMETER_REGISTER(xPosOpponentGoalpostCenter) = 3000;
-  PARAMETER_REGISTER(xPosOpponentGroundline) = 3025;
-  PARAMETER_REGISTER(xPosOpponentSideCorner) = 2950;
-  PARAMETER_REGISTER(xPosOpponentPenaltyArea) = 2400;
+  PARAMETER_REGISTER(xPosOpponentFieldBorder);
+  PARAMETER_REGISTER(xPosOpponentGoal);
+  PARAMETER_REGISTER(xPosOpponentGoalpost);
+  PARAMETER_REGISTER(xPosOpponentGoalpostCenter);
+  PARAMETER_REGISTER(xPosOpponentGroundline);
+  PARAMETER_REGISTER(xPosOpponentSideCorner);
+  PARAMETER_REGISTER(xPosOpponentPenaltyArea);
 
-  PARAMETER_REGISTER(yPosLeftFieldBorder) = 2362;
-  PARAMETER_REGISTER(yPosLeftSideline) = 2025;
-  PARAMETER_REGISTER(yPosLeftGroundline) = 2025;
-  PARAMETER_REGISTER(yPosLeftPenaltyArea) = 1525;
-  PARAMETER_REGISTER(yPosLeftGoal) = 750;
-  PARAMETER_REGISTER(yPosLeftGoalpostCenter) = 700;
+  PARAMETER_REGISTER(yPosLeftFieldBorder);
+  PARAMETER_REGISTER(yPosLeftSideline);
+  PARAMETER_REGISTER(yPosLeftGroundline);
+  PARAMETER_REGISTER(yPosLeftPenaltyArea);
+  PARAMETER_REGISTER(yPosLeftGoal);
+  PARAMETER_REGISTER(yPosLeftGoalpostCenter);
 
-  PARAMETER_REGISTER(centerCircleRadius) = 600;
+  PARAMETER_REGISTER(centerCircleRadius);
 
-  PARAMETER_REGISTER(fieldLinesWidth) = 50;
-  PARAMETER_REGISTER(goalWidth) = 1400;
-  PARAMETER_REGISTER(goalHeight) = 800;
-  PARAMETER_REGISTER(goalpostRadius) = 50;
+  PARAMETER_REGISTER(fieldLinesWidth);
+  PARAMETER_REGISTER(goalWidth);
+  PARAMETER_REGISTER(goalHeight);
+  PARAMETER_REGISTER(goalpostRadius);
 
   initParams();
 
