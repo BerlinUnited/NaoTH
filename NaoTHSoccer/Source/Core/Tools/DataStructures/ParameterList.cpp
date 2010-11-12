@@ -25,6 +25,13 @@ ParameterList::ParameterList(const std::string& parentClassName)
 
   REGISTER_DEBUG_COMMAND(std::string(parentClassName).append(":store"),
     "store the configure file according to the path", this);
+
+  // first load values from configuration
+  loadFromConfig();
+  // now store them, this will create an entry for all parameters that are
+  // unknown in the configuration
+  saveToConfig();
+  
 }//end constructor ParameterList
 
 unsigned int& ParameterList::registerParameter(const std::string& name, unsigned int& parameter)
@@ -148,6 +155,8 @@ void ParameterList::executeDebugCommand(
   const std::string& command, const std::map<std::string, std::string>& arguments,
   std::stringstream &outstream)
 {
+  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+
   if (command == std::string(parentClassName).append(":set"))
   {
     std::stringstream ss;
@@ -156,10 +165,17 @@ void ParameterList::executeDebugCommand(
       ss << iter->first << " = " << iter->second << ";\n";
     }
     // TODO
-  } else if (command == std::string(parentClassName).append(":list"))
+  }
+  else if (command == std::string(parentClassName).append(":list"))
   {
-    // TODO
-  } else if (command == std::string(parentClassName).append(":store"))
+    std::list<std::string> keys = config.keys(parentClassName);
+    for(std::list<std::string>::const_iterator it = keys.begin(); it != keys.end(); it++)
+    {
+      std::string val = config.getRawValue(parentClassName, *it);
+      outstream << *it << "=" << val << std::endl;
+    }
+  }
+  else if (command == std::string(parentClassName).append(":store"))
   {
     // TODO
   }

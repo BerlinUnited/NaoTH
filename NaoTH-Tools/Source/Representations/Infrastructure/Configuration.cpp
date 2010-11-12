@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <list>
 
 using namespace naoth;
 
@@ -133,6 +134,19 @@ void Configuration::loadFile(std::string file, std::string groupName)
   g_key_file_free(tmpKeyFile);
 }
 
+std::list<std::string> Configuration::keys(std::string group)
+{
+  std::list<std::string> result;
+  gsize length = 0;
+  gchar** keys = g_key_file_get_keys(keyFile, group.c_str(), &length, NULL);
+  for(int i=0; i < length; i++)
+  {
+    result.push_back(std::string(keys[i]));
+  }
+  g_strfreev(keys);
+  return result;
+}
+
 bool Configuration::hasKey(std::string group, std::string key)
 {
   return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL);
@@ -153,6 +167,23 @@ std::string Configuration::getString(std::string group, std::string key)
 void Configuration::setString(std::string group, std::string key, std::string value)
 {
   g_key_file_set_string(keyFile, group.c_str(), key.c_str(), value.c_str());
+}
+
+std::string Configuration::getRawValue(std::string group, std::string key)
+{
+  gchar* buf = g_key_file_get_value(keyFile, group.c_str(), key.c_str(), NULL);
+  if (buf != NULL)
+  {
+    std::string result(buf);
+    g_free(buf);
+    return result;
+  }
+  return "";
+}
+
+void Configuration::setRawValue(std::string group, std::string key, std::string value)
+{
+  g_key_file_set_value(keyFile, group.c_str(), key.c_str(), value.c_str());
 }
 
 int Configuration::getInt(std::string group, std::string key)

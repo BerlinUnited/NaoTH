@@ -9,6 +9,7 @@
 #define	CONFIGURATION_H
 
 #include <string>
+#include <list>
 
 #include <glib.h>
 
@@ -24,6 +25,13 @@ namespace naoth
     void loadFromDir(std::string dirlocation, std::string platformName, std::string macAddress);
     void loadFile(std::string file, std::string groupName);
     void clear();
+
+    /**
+     * Get all keys for a specific group.
+     * @param group
+     * @return
+     */
+    std::list<std::string> keys(std::string group);
 
     /**
      * Returns true if the configuration has a key with this name and group
@@ -72,6 +80,16 @@ namespace naoth
     bool getBool(std::string group, std::string key);
 
     void setBool(std::string group, std::string key, bool value);
+
+    /**
+     * Get a raw and uninterpretated string from the configuration
+     * @param group
+     * @param key
+     * @return
+     */
+    std::string getRawValue(std::string group, std::string key);
+
+    void setRawValue(std::string group, std::string key, std::string value);
 
   private:
 
