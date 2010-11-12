@@ -11,10 +11,10 @@ import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
-import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -39,6 +39,7 @@ public class HelpViewer extends JPanel
     initComponents();
   }
 
+  @Init
   public void init()
   {
   }
