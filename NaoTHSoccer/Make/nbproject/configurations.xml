@@ -32,6 +32,19 @@
           <in>Motion.h</in>
         </df>
         <df name="Representations" kind="SOURCE_LOGICAL_FOLDER">
+          <in>FieldInfo.cpp</in>
+          <in>FieldInfo.h</in>
+        </df>
+        <df name="Tools">
+          <df name="DataStructures" kind="SOURCE_LOGICAL_FOLDER">
+            <in>ParameterList.cpp</in>
+            <in>ParameterList.h</in>
+          </df>
+          <df name="Debug" kind="SOURCE_LOGICAL_FOLDER">
+            <in>DebugDrawings.h</in>
+          </df>
+          <in>ColorClasses.h</in>
+          <in>LinesTable.h</in>
         </df>
       </df>
     </df>
