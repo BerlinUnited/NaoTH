@@ -20,6 +20,7 @@
 DebugCommunicator::DebugCommunicator()
 : serverSocket(NULL),
 connection(NULL),
+port(-1),
 fatalFail(false)
 {
 }
