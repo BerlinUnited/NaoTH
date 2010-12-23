@@ -63,10 +63,12 @@ public class Console extends JPanel implements CommandSender,
     cbInput.getEditor().getEditorComponent().addKeyListener(new KeyListener()
     {
 
+      @Override
       public void keyTyped(KeyEvent e)
       {
       }
 
+      @Override
       public void keyPressed(KeyEvent e)
       {
 
@@ -76,6 +78,7 @@ public class Console extends JPanel implements CommandSender,
         }
       }
 
+      @Override
       public void keyReleased(KeyEvent e)
       {
       }
@@ -83,6 +86,7 @@ public class Console extends JPanel implements CommandSender,
 
   }
 
+  @Override
   public JPanel getPanel()
   {
     return this;
@@ -245,6 +249,7 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea txtOutput;
     // End of variables declaration//GEN-END:variables
+  @Override
   public void handleResponse(byte[] result, Command originalCommand)
   {
     try
@@ -262,18 +267,21 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
   }
 
+  @Override
   public void handleError(int code)
   {
     txtOutput.append("ERROR: Robot returned error code " + code + "\n\n");
     txtOutput.setCaretPosition(txtOutput.getText().length() - 1);
   }
 
+  @Override
   public Command getCurrentCommand()
   {
     return new Command("ping");
   }
 
   // text //
+  @Override
   public void newObjectReceived(String object)
   {
     if(!"".equals(object))
@@ -283,6 +291,7 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     }
   }
 
+  @Override
   public void errorOccured(String cause)
   {
     cbUnrequestedMessages.setSelected(false);

@@ -18,8 +18,10 @@
 class DebugServer : public DebugCommandExecutor, public DestructionListener<DebugCommandExecutor>
 {
 public:
-  DebugServer(unsigned int port);
+  DebugServer();
   virtual ~DebugServer();
+
+  virtual void start(unsigned int port);
 
   /**
    * Register a command and a handler for this command.

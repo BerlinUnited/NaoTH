@@ -1,6 +1,6 @@
 -- NaoTH controller running in the Cyberbotics Webots simulator
 project "Webots"
-  kind "StaticLib"
+  kind "ConsoleApp"
   language "C++"
   
   
@@ -19,20 +19,33 @@ project "Webots"
   end
   ----------------------------------------------------------------
   
+  -- include core
+  if(CORE_PATH == nil or CORE == nil) then
+    print("WARNING: no path for the core is set")
+	CORE_PATH = "."
+	CORE = ""
+  end
   
   
   print("Generating files for webots")
   includedirs {
     "../Source/", 
+	CORE_PATH,
+	"../../NaoTH-Tools/Source/",
     webotsHome .. "/include/controller/c/",
     "../Lib/win32/include/", 
-    "../../Extern/include/"}
+    "../../Extern/include/",
+    "../../Extern/include/glib-2.0/",
+	  "../../Extern/lib/glib-2.0/include/"}
   
   libdirs {webotsHome .. "/lib/"}
   
   files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
   
-  links {"NaoTH-Tools", "Controller"}
+  links {CORE, "NaoTH-Tools", "Controller",
+  "glib-2.0",
+	"gio-2.0",
+	"gobject-2.0"}
   
   targetname "naowebots"
    

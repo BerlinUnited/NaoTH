@@ -21,6 +21,30 @@ using namespace std;
 SimSparkController::SimSparkController()
 : PlatformInterface<SimSparkController>("SimSpark", 20)
 {
+  // register input
+  registerInput<AccelerometerData>(*this);
+  registerInput<FrameInfo>(*this);
+  registerInput<SensorJointData>(*this);
+  registerInput<Image>(*this);
+  registerInput<FSRData>(*this);
+  registerInput<GyrometerData>(*this);
+  registerInput<InertialSensorData>(*this);
+  registerInput<BumperData>(*this);
+  registerInput<IRReceiveData>(*this);
+  registerInput<CurrentCameraSettings>(*this);
+  registerInput<ButtonData>(*this);
+  registerInput<BatteryData>(*this);
+  registerInput<UltraSoundReceiveData>(*this);
+
+  // register output
+  registerOutput<const CameraSettingsRequest>(*this);
+  registerOutput<const LEDData>(*this);
+  registerOutput<const IRSendData>(*this);
+  registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const SoundData>(*this);
+  registerOutput<const MotorJointData>(*this);
+
+
   // init the name -- id maps
   theJointSensorNameMap.clear();
   theJointSensorNameMap["hj1"] = JointData::HeadYaw;
@@ -125,9 +149,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   
   //Cognition::getInstance().init();
   //Motion::getInstance().init();
-
   Platform::getInstance().init(this);
-
 
 
   /*
@@ -154,7 +176,7 @@ void SimSparkController::initPosition()
 {
   ifstream ifile("init_position.txt");
   std::map<int, Vector3<double> > positions;
-  while ( !ifile.eof() )
+  while (!ifile.fail() && !ifile.eof() )
   {
     int num;
     Vector3<double> p;
@@ -302,10 +324,10 @@ bool SimSparkController::updateSensors()
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
         theStepTime = theSenseTime - lastSenseTime;
         if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() )
-          cerr<<"warnning: the step is "<<theStepTime<<" s"<<endl;
+          cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
       } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
       else if ("ACC" == name) ok = updateAccelerometer(t->next);
-      else if ("GS" == name) ok = theGameInfo.update(t->next); // game state
+      else if ("GS" == name) ok = updateGameInfo(t->next); // game state
       else if ("hear" == name)  ok = hear(t->next);// hear
       else if ("IMU" == name) ok = updateIMU(t->next); // interial sensor data
       else cerr << " Perception unknow name: " << string(t->val) << endl;
@@ -454,7 +476,67 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
   }
 
   return true;
-}
+}//end updateAccelerometer
+
+
+// Example message: "(GS (t 0.00) (pm BeforeKickOff))"
+bool SimSparkController::updateGameInfo(const sexp_t* sexp)
+{
+  bool ok = true;
+  string name;
+  while (sexp)
+  {
+    const sexp_t* t = sexp->list;
+    if (SexpParser::parseValue(t, name))
+    {
+      if ("t" == name) // time
+      {
+        if (!SexpParser::parseValue(t->next, theGameInfo.theGameTime))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get time value\n";
+        }
+      } else if ("pm" == name) // play mode
+      {
+        std::string pm;
+        if (!SexpParser::parseValue(t->next, pm))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get play mode value\n";
+        }
+        theGameInfo.thePlayMode = SimSparkGameInfo::getPlayModeByName(pm);
+      } else if ("unum" == name) // unum
+      {
+        if (!SexpParser::parseValue(t->next, theGameInfo.thePlayerNum))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get unum value\n";
+        }
+      } else if ("team" == name) // side
+      {
+        string team;
+        if (!SexpParser::parseValue(t->next, team))
+        {
+          ok = false;
+          cerr << "SimSparkGameInfo::update failed get team index value\n";
+        }
+        theGameInfo.theTeamIndex = SimSparkGameInfo::getTeamIndexByName(team);
+      } else
+      {
+        ok = false;
+        cerr << "SimSparkGameInfo::update unknown name: " << name << '\n';
+      }
+    } else
+    {
+      ok = false;
+      cerr << "SimSparkGameInfo::update can not get the name!\n";
+    }
+    sexp = sexp->next;
+  }
+
+  return ok;
+}//end updateGameInfo
+
 
 bool SimSparkController::updateFSR(const sexp_t* sexp)
 {
@@ -614,7 +696,7 @@ void SimSparkController::get(AccelerometerData& data)
 
 void SimSparkController::get(Image& data)
 {
-  ASSERT(isNewImage);
+  //ASSERT(isNewImage);
 
   const char* img = theImageData.data();
   data.setCameraInfo(Platform::getInstance().theCameraInfo);

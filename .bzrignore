@@ -1,6 +1,12 @@
+*.pdb
+*.idb
+*.ncb
+*.ilk
+*.suo
 ./Projects/XabslEditor
 .dep.inc
-private
+private/
+./NaoTHSoccer/Config/private/*
 ./Platforms/Make/Makefile
 ./Platforms/Make/*.make
 ./NaoTH-Tools/Make/Makefile
@@ -23,3 +29,6 @@ build/
 SimpleSoccerAgent/Makefile
 SimpleSoccerAgent/simple-soccer-agent
 SimpleSoccerAgent/*.make
+NaoTHSoccer/Make/*.mk
+NaoTHSoccer/Make/Makefile
+NaoTHSoccer/Make/*.make

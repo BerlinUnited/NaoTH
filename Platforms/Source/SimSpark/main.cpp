@@ -8,6 +8,7 @@
 #include <glib.h>
 
 #include <SimSpark/SimSparkController.h>
+
 #include "Cognition.h"
 #include "Motion.h"
 
@@ -65,7 +66,6 @@ int main(int argc, char** argv)
 
   Cognition theCognition;
   Motion theMotion;
-
   theController.registerCallbacks(&theMotion, &theCognition);
 
   theController.main();

@@ -18,7 +18,7 @@
 #include "PlatformInterface.h"
 #include "Tools/DataStructures/Singleton.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-//#include "Representations/Infrastructure/ConfigPathInfo.h"
+#include "Representations/Infrastructure/Configuration.h"
 
 namespace naoth
 {
@@ -35,7 +35,8 @@ namespace naoth
       _bodyID("Uninitialized"),
       _bodyNickName("Uninitialized"),
       _platformInterface(NULL),
-      //theConfigPathInfo(_configPathInfo),
+      theConfiguration(_configuration),
+      theConfigDirectory(_configDir),
       theHardwareIdentity(_hardwareIdentity),
       theBodyID(_bodyID),
       theBodyNickName(_bodyNickName),
@@ -43,10 +44,14 @@ namespace naoth
     {
     }
 
+    // cannot be copied
+    Platform& operator=( const Platform& ) {}
+
     string _hardwareIdentity;
     string _bodyID;
     string _bodyNickName;
-    //ConfigPathInfo _configPathInfo;
+    Configuration _configuration;
+    string _configDir;
     PlatformBase* _platformInterface;
 
   public:
@@ -54,32 +59,36 @@ namespace naoth
     {
     }
 
-    // get Media Access Control address
-    static std::string getMACaddress(const std::string& name)
-    {
-      /* Mac & Windows dont have that define */
-  #ifdef SIOCGIFHWADDR
-      int s;
-      struct ifreq buffer;
-      s = socket(PF_INET, SOCK_DGRAM, 0);
-      memset(&buffer, 0x00, sizeof (buffer));
-      strcpy(buffer.ifr_name, name.c_str());
-      ioctl(s, SIOCGIFHWADDR, &buffer);
-      close(s);
-      char mac[18];
-      sprintf(mac, "%.2X_%.2X_%.2X_%.2X_%.2X_%.2X",
-        (unsigned char) buffer.ifr_hwaddr.sa_data[0],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[1],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[2],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[3],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[4],
-        (unsigned char) buffer.ifr_hwaddr.sa_data[5]);
+/* Mac & Windows dont have that define */
+#ifdef SIOCGIFHWADDR
+  // get Media Access Control address
+  static std::string getMACaddress(const std::string& name)
+  {
+    int s;
+    struct ifreq buffer;
+    s = socket(PF_INET, SOCK_DGRAM, 0);
+    memset(&buffer, 0x00, sizeof (buffer));
+    strcpy(buffer.ifr_name, name.c_str());
+    ioctl(s, SIOCGIFHWADDR, &buffer);
+    close(s);
+    char mac[18];
+    sprintf(mac, "%.2X_%.2X_%.2X_%.2X_%.2X_%.2X",
+      (unsigned char) buffer.ifr_hwaddr.sa_data[0],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[1],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[2],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[3],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[4],
+      (unsigned char) buffer.ifr_hwaddr.sa_data[5]);
 
-      return std::string(mac);
-  #else
-      return "unknown mac address";
-  #endif
-    }//end getMACaddress
+    return std::string(mac);
+  }//end getMACaddress
+#else
+  // do nothing...
+  static std::string getMACaddress(const std::string& /*name*/)
+  {
+    return "unknown_mac_address";
+  }//end getMACaddress
+#endif
 
 
     void init(PlatformBase* _interface)
@@ -93,13 +102,20 @@ namespace naoth
       _hardwareIdentity = _interface->getHardwareIdentity();
       _bodyID = _interface->getBodyID();
       _bodyNickName = _interface->getBodyNickName();
-  //    _configPathInfo.loadPathInfo("Config/"+_interface->getName()+"_init.cfg");
+      _configDir = "Config/";
+      if(getenv("NAO_CONFIG") != NULL)
+      {
+        _configDir = getenv("NAO_CONFIG");
+      }
+      _configuration.loadFromDir(_configDir, _interface->getName(), _hardwareIdentity);
+      
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
     }//end init
 
-  //  const ConfigPathInfo& theConfigPathInfo;
+    Configuration& theConfiguration;
+    const string& theConfigDirectory;
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theBodyID;
     const string& theBodyNickName;

@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>SimpleSoccerAgent</name>
+            <name>NaoTHSoccer</name>
             <make-project-type>0</make-project-type>
             <c-extensions/>
             <cpp-extensions>cpp</cpp-extensions>
@@ -11,11 +11,12 @@
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>src</sourceRootElem>
-                <sourceRootElem>../NaoTH-Tools/Source</sourceRootElem>
+                <sourceRootElem>../Source</sourceRootElem>
             </sourceRootList>
             <confList>
-                <confElem>Default</confElem>
+                <confElem>Solution</confElem>
+                <confElem>Webots</confElem>
+                <confElem>SimSpark</confElem>
             </confList>
         </data>
     </configuration>

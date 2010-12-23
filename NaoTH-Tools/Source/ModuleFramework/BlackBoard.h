@@ -87,9 +87,7 @@ private:
 public:
   BlackBoard(){}
 
-  BlackBoard(BlackBoard& blackBoard)
-  {
-  }
+  BlackBoard(BlackBoard& /*blackBoard*/){}
 
   ~BlackBoard()
   {

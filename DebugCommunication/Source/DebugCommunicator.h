@@ -14,10 +14,10 @@
 class DebugCommunicator
 {
 public:
-  DebugCommunicator(unsigned short port);
+  DebugCommunicator();
   virtual ~DebugCommunicator();
 
-  void init();
+  void init(unsigned short port);
   bool sendMessage(const char* data, size_t size);
   char* readMessage();
 

@@ -51,10 +51,14 @@ namespace naoth
     {
       if(theInstance == NULL)
       {
-        if(storageType == _SINGLETON_USE_HEAP)
+        if(_SINGLETON_USE_HEAP == storageType)
+        {
           theInstance = createInstanceOnHeap();
+        }
         else
+        {
           theInstance = createInstanceOnStack();
+        }
       }//end if
 
       return *theInstance;

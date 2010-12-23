@@ -5,20 +5,13 @@
 #include <stdlib.h>
 #include <ctime>
 
-#ifdef WIN32 /* needed for _isnan */
-#include <float.h>
-#endif
 
 namespace Math {
 
     template <class T>
-    bool isNan(T f)
+    bool isNan(T x)
     {
-#ifdef WIN32
-        return _isnan(static_cast<double> (f)) != 0;
-#else
-        return isnan(f);
-#endif
+      return x != x;  
     }
 
     /**

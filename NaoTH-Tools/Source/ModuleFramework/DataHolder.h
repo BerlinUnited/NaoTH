@@ -11,6 +11,8 @@
 #include "Representation.h"
 #include "Tools/DataStructures/Printable.h"
 
+using namespace naoth;
+
 /**
  * Connects a arbitrary class with Representation
  */

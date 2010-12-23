@@ -8,26 +8,19 @@ solution "DebugCommunication"
 	defines { "DEBUG" }
 	flags { "Symbols" }
 
-  project "DebugCommunication"
-   	  kind "StaticLib"
-   	  language "C++"
-	 	  files {"../Source/**.h","../Source/**.cpp"}
-	  
-     includedirs {"../../Extern/include","../../Extern/include/glib-2.0/","../../Extern/lib/glib-2.0/include/"}
-
-   libdirs {"../../Extern/lib/"}
-	  
-   links {}
-	  
-	 targetdir "../../Extern/lib"
-   targetname "naothdebugcom"
+  dofile "DebugCommunication.lua"
    
   project "DebugCommunicationTest"
    	  kind "ConsoleApp"
    	  language "C++"
 	 	  files {"../Source/**.h","../Source/**.cpp"}
 	  
-     includedirs {"../../Extern/include","../../Extern/include/glib-2.0/","../../Extern/lib/glib-2.0/include/"}
+     includedirs {
+      "../../NaoTH-Tools/Source/",
+      "../../Extern/include",
+      "../../Extern/include/glib-2.0/",
+      "../../Extern/lib/glib-2.0/include/"
+     }
 
    libdirs {"../../Extern/lib/"}
 	  

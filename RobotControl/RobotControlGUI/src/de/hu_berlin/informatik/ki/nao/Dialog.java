@@ -14,13 +14,6 @@ import net.xeoh.plugins.base.Plugin;
  */
 public interface Dialog extends  Plugin
 {
-
-
-  /** 
-   * Inits the dialog
-   * 
-   */
-  public void init();
   
   /**
    * Returns this as panel.<br><br>
