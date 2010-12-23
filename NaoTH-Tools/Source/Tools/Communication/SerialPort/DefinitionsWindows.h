@@ -8,6 +8,10 @@
   #ifndef _DEFINITIONSWINDOWS_H
   #define	_DEFINITIONSWINDOWS_H
 
+  // this marker indicates that the serial definitions 
+  // are avaliable on this platform
+  #define SERIAL_IS_DEFINED
+
   #define SERIAL_NO_CANCELIO
   #define SERIAL_NO_OVERLAPPED
 

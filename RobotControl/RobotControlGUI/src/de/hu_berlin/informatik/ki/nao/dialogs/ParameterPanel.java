@@ -279,8 +279,9 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
   public void handleError(int code)
   {
     jToggleButtonRefresh.setSelected(false);
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
+    JOptionPane.showMessageDialog(this,
+              "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
+  }//end handleError
 
   public Command getCurrentCommand()
   {

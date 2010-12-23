@@ -8,6 +8,10 @@
   #ifndef _DEFINITIONSLINUX_H
   #define	_DEFINITIONSLINUX_H
 
+  // this marker indicates that the serial definitions 
+  // are avaliable on this platform
+  #define SERIAL_IS_DEFINED
+
   #define SERIAL_NO_OVERLAPPED
 
   #include <stdio.h>   /* Standard input/output definitions */

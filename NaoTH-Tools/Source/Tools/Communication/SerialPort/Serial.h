@@ -26,6 +26,11 @@
 #include "DefinitionsLinux.h"
 #endif
 
+// this marker checs if the serial definitions 
+// are avaliable on this platform
+// (there is no serial on mac)
+#ifdef SERIAL_IS_DEFINED
+
 #include <string>
 
 //////////////////////////////////////////////////////////////////////
@@ -286,5 +291,7 @@ protected:
     BOOL CancelCommIo (void);
   #endif
 };
+
+#endif // SERIAL_IS_DEFINED
 
 #endif	// __SERIAL_H
