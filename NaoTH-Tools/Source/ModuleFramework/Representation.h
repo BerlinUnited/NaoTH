@@ -89,6 +89,6 @@ public:
  * @param image The Representation object.
  * @return The stream.
  */ 
-ostream& operator<<(ostream& stream, const Representation& representation);
+//ostream& operator<<(ostream& stream, const Representation& representation);
 
 #endif //__Representation_h_

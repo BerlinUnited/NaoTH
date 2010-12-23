@@ -17,6 +17,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
+// this marker checs if the serial definitions 
+// are avaliable on this platform
+// (there is no serial on mac)
+#ifdef SERIAL_IS_DEFINED
+
 //////////////////////////////////////////////////////////////////////
 // Include the standard header files
 
@@ -1673,3 +1678,6 @@ bool CSerial::GetRLSD (void)
   #endif
   return false;
 }
+
+
+#endif // SERIAL_IS_DEFINED

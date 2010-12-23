@@ -10,13 +10,19 @@
 
 #include <iostream>
 #include <list>
+
+//
+#include <PlatformInterface/PlatformInterface.h>
+#include <PlatformInterface/Callable.h>
+
+//
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
-#include <PlatformInterface/Callable.h>
+
 
 class Motion : public naoth::Callable
 {
@@ -34,22 +40,24 @@ public:
   Motion();
   virtual ~Motion();
 
-  template<class PlatformType>
-  void init(PlatformType& platformInterface)
+  /** */
+  void init(naoth::PlatformDataInterface& platformInterface)
   {
     std::cout << "Motion register start" << std::endl;
-#define REGISTER_INPUT(R) platformInterface.registerMotionInput(the##R, #R)
-    REGISTER_INPUT(SensorJointData);
-    REGISTER_INPUT(FrameInfo);
-    REGISTER_INPUT(InertialSensorData);
-    REGISTER_INPUT(FSRData);
-    REGISTER_INPUT(AccelerometerData);
-    REGISTER_INPUT(GyrometerData);
-#undef REGISTER_INPUT
+    
+    //
+    platformInterface.registerCognitionInput(theSensorJointData);
+    platformInterface.registerCognitionInput(theFrameInfo);
+    platformInterface.registerCognitionInput(theInertialSensorData);
+    platformInterface.registerCognitionInput(theFSRData);
+    platformInterface.registerCognitionInput(theAccelerometerData);
+    platformInterface.registerCognitionInput(theGyrometerData);
 
-    platformInterface.registerMotionOutput(theMotorJointData, "MotorJointData");
+    //
+    platformInterface.registerMotionOutput(theMotorJointData);
+    
     std::cout << "Motion register end" << std::endl;
-  }
+  }//end init
 
   virtual void call();
 
@@ -74,6 +82,7 @@ private:
 
   std::list<KeyFrame> activeKeyFrame;
 
+  //
   naoth::SensorJointData theSensorJointData;
   naoth::MotorJointData theMotorJointData;
   naoth::FrameInfo theFrameInfo;

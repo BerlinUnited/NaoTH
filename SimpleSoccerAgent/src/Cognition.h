@@ -9,8 +9,12 @@
 #define	COGNITION_H
 
 #include <iostream>
-#include <PlatformInterface/Callable.h>
 
+//
+#include <PlatformInterface/Callable.h>
+#include <PlatformInterface/PlatformInterface.h>
+
+//
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -20,7 +24,9 @@
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/SimSparkGameInfo.h>
 
+//
 #include "BallPercept.h"
+
 
 class Cognition : public naoth::Callable
 {
@@ -29,9 +35,9 @@ public:
   virtual ~Cognition();
 
 
-  template<class PlatformType>
-  void init(PlatformType& platformInterface)
+  void init(naoth::PlatformDataInterface& platformInterface)
   {
+    /*
     std::cout << "Cognition register start" << std::endl;
 #define REGISTER_INPUT(R) platformInterface.registerCognitionInput(the##R, #R)
     REGISTER_INPUT(SensorJointData);
@@ -44,6 +50,17 @@ public:
     REGISTER_INPUT(GyrometerData);
 
 #undef REGISTER_INPUT
+    */
+
+    platformInterface.registerCognitionInput(theSensorJointData);
+    platformInterface.registerCognitionInput(theVirtualVision);
+    platformInterface.registerCognitionInput(theSimSparkGameInfo);
+    platformInterface.registerCognitionInput(theFrameInfo);
+    platformInterface.registerCognitionInput(theInertialSensorData);
+    platformInterface.registerCognitionInput(theFSRData);
+    platformInterface.registerCognitionInput(theAccelerometerData);
+    platformInterface.registerCognitionInput(theGyrometerData);
+
     std::cout << "Cognition register end" << std::endl;
   }
 
