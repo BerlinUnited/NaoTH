@@ -123,8 +123,6 @@
                    displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
-      <itemPath>SimpleSoccerAgent-Makefile.mk</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -141,7 +139,7 @@
       </toolsSet>
       <makefileType>
         <makeTool>
-          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommandWorkingDir>Make</buildCommandWorkingDir>
           <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
           <executablePath>simple-soccer-agent</executablePath>

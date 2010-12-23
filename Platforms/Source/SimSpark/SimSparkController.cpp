@@ -11,6 +11,7 @@
 #include <fstream>
 
 //#include "Tools/NaoInfo.h"
+#include <Tools/ImageProcessing/ColorModelConversions.h>
 
 //#include "CommunicationCollectionImpl.h"
 //#include "Tools/Debug/DebugRequest.h"
@@ -19,7 +20,11 @@
 using namespace std;
 
 SimSparkController::SimSparkController()
-: PlatformInterface<SimSparkController>("SimSpark", 20)
+: PlatformInterface<SimSparkController>("SimSpark", 20),
+  theImageData(NULL),
+  theImageSize(0),
+  isNewImage(false),
+  isNewVirtualVision(false)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -35,6 +40,7 @@ SimSparkController::SimSparkController()
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
+  registerInput<VirtualVision>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -108,6 +114,8 @@ SimSparkController::SimSparkController()
 
 SimSparkController::~SimSparkController()
 {
+  if (theImageData != NULL)
+    delete [] theImageData;
 }
 
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port)
@@ -282,10 +290,6 @@ bool SimSparkController::updateSensors()
   string msg;
   theSocket >> msg;
 
-  if ( updateImage(msg) ){
-    theSocket>>msg;
-  }
-
 //  cout << "Sensor data: " << msg << endl;
 
   pcont_t* pcont;
@@ -318,7 +322,7 @@ bool SimSparkController::updateSensors()
       {// See
         theVirtualVision.clear();
         ok = updateSee("", t->next);
-        if ( ok ) isNewImage = true;
+        if ( ok ) isNewVirtualVision = true;
       } else if ("time" == name)
       {
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
@@ -330,6 +334,11 @@ bool SimSparkController::updateSensors()
       else if ("GS" == name) ok = updateGameInfo(t->next); // game state
       else if ("hear" == name)  ok = hear(t->next);// hear
       else if ("IMU" == name) ok = updateIMU(t->next); // interial sensor data
+      else if ("IMG" == name)
+      {
+        ok = updateImage(t->next); // image from camera
+        if (ok) isNewImage = true;
+      }
       else cerr << " Perception unknow name: " << string(t->val) << endl;
       if (!ok)
       {
@@ -343,7 +352,7 @@ bool SimSparkController::updateSensors()
 
   updateInertialSensor();
 
-//  if ( isNewImage ){
+//  if ( isNewImage || isNewVirtualVision ){
 //    pthread_cond_signal(&theCognitionInputCond);
 //  }
 //  pthread_mutex_unlock(&theCognitionInputMutex);
@@ -354,16 +363,42 @@ bool SimSparkController::updateSensors()
   return true;
 }
 
-bool SimSparkController::updateImage(const std::string& msg)
+bool SimSparkController::updateImage(const sexp_t* sexp)
 {
-  if ("Image" == msg.substr(0, 5))
+  // size of image
+  int size[2];
+  if (!SexpParser::parseGivenArrayValue(sexp, "s", 2, size))
   {
-//    pthread_mutex_lock(&theCognitionInputMutex);
-    theImageData = msg.substr(5);
-    isNewImage = true;
-//    pthread_mutex_unlock(&theCognitionInputMutex);
-    return true;
+    cerr << "can not get the image size!\n";
+    return false;
   }
+
+  unsigned int len = size[0] * size[1]*3;
+
+  // check the buffer size
+  if (len != theImageSize || theImageData == NULL)
+  {
+    if (theImageData != NULL)
+      delete [] theImageData;
+
+    theImageSize = len;
+    theImageData = new char[theImageSize];
+  }
+
+  // decode the image
+  sexp = sexp->next;
+  if (SexpParser::isList(sexp))
+  {
+    const sexp_t* dsexp = sexp->list;
+    if (SexpParser::isVal(dsexp) && string(dsexp->val) == "d")
+    {
+      dsexp = dsexp->next;
+      int dl = theBase64Decoder.decode(dsexp->val, dsexp->val_used, theImageData);
+      ASSERT(dl == (int) theImageSize);
+      return true;
+    }
+  }
+  
   return false;
 }
 
@@ -696,37 +731,36 @@ void SimSparkController::get(AccelerometerData& data)
 
 void SimSparkController::get(Image& data)
 {
-  //ASSERT(isNewImage);
-
-  const char* img = theImageData.data();
-  data.setCameraInfo(Platform::getInstance().theCameraInfo);
-
-  unsigned int width = data.cameraInfo.resolutionWidth;
-  unsigned int height = data.cameraInfo.resolutionHeight;
-  unsigned int resolution = width*height;
-
-  ASSERT(resolution * 3 == theImageData.size());
-
-  for (unsigned int x = 0; x < width; x++)
+  if (isNewImage)
   {
-    for (unsigned int y = 0; y < height; y++)
-    {
-      int idx = (resolution - width * (y + 1) + x)*3;
-      Pixel p;
-      p.y = img[idx];
-      p.u = img[idx + 1];
-      p.v = img[idx + 2];
-/*
-      ColorModelConversions::fromRGBToYCbCr(
-        p.y, p.u, p.v,
-        p.y, p.u, p.v);
-*/
-      data.set(x,y,p);
-    }
-  }
+    data.setCameraInfo(Platform::getInstance().theCameraInfo);
 
-  //theVirtualVisionProvider.theVirtualVision = theVirtualVision;
-  isNewImage = false;
+    unsigned int width = data.cameraInfo.resolutionWidth;
+    unsigned int height = data.cameraInfo.resolutionHeight;
+    unsigned int resolution = width*height;
+
+    ASSERT(resolution * 3 == theImageSize);
+
+    for (unsigned int x = 0; x < width; x++)
+    {
+      for (unsigned int y = 0; y < height; y++)
+      {
+        int idx = (resolution - width * (y + 1) + x)*3;
+        Pixel p;
+        p.y = theImageData[idx];
+        p.u = theImageData[idx + 1];
+        p.v = theImageData[idx + 2];
+
+        naoth::ColorModelConversions::fromRGBToYCbCr(
+          p.y, p.u, p.v,
+          p.y, p.u, p.v);
+
+        data.set(x, y, p);
+      }
+    }
+
+    isNewImage = false;
+  }
 }
 
 void SimSparkController::get(GyrometerData& data)
@@ -750,7 +784,11 @@ void SimSparkController::get(InertialSensorData& data)
 
 void SimSparkController::get(VirtualVision& data)
 {
-  data = theVirtualVision;
+  if (isNewVirtualVision)
+  {
+    data = theVirtualVision;
+    isNewVirtualVision = false;
+  }
 }
 
 void SimSparkController::get(SimSparkGameInfo& data)

@@ -40,6 +40,7 @@
 #include "PlatformInterface/PlatformInterface.h"
 
 #include "sfsexp/SexpParser.h"
+#include "libb64/decode.h"
 
 using namespace naoth;
 
@@ -52,7 +53,12 @@ private:
   std::map<string, JointData::JointID> theJointSensorNameMap;
   map<JointData::JointID, string> theJointMotorNameMap;
 
-  std::string theImageData;
+  char* theImageData;
+  unsigned int theImageSize;
+  bool isNewImage;
+  bool isNewVirtualVision;
+  VirtualVision theVirtualVision;
+  base64::Decoder theBase64Decoder;
 
   SensorJointData theLastSensorJointData;
   GyrometerData theGyroData;
@@ -68,11 +74,7 @@ private:
   //SimSparkTeamCommunicator theTeamComm;
 
   virtual SimSparkController& getPlatform(){return *this;}
-
-protected:
-  bool isNewImage;
-  VirtualVision theVirtualVision;
-  //REPRESENTATION_PROVIDER(VirtualVisionProvider, Cognition, VirtualVision);
+  
   InertialSensorData theInertialSensorData;
   SimSparkGameInfo theGameInfo;
   SensorJointData theSensorJointData;
@@ -81,6 +83,7 @@ protected:
 
   list<MotorJointData> theMotorJointData;
   string theTeamName;
+  
 public:
   SimSparkController();
 
@@ -154,7 +157,7 @@ protected:
 private:
   bool updateSensors();
 
-  bool updateImage(const std::string& data);
+  bool updateImage(const sexp_t* sexp);
 
   bool updateHingeJoint(const sexp_t* sexp);
 

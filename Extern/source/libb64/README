@@ -1,0 +1,33 @@
+libb64: Base64 Encoding/Decoding Routines
+Modified for SimSpark (http://simspark.sourceforge.net)
+======================================
+
+Overview:
+--------
+libb64 is a library of ANSI C routines for fast encoding/decoding data into and
+from a base64-encoded format.
+Please visit http://libb64.sourceforge.net/ for more information.
+
+Why modify?
+----------------
+We use base64 to en/decode image data inside the program,
+so we use the library without stream.
+
+License:
+-------
+This work is released under into the Public Domain,
+and you can take it and do whatever you want with it.
+
+An example of this "license" is the Creative Commons Public Domain License, a
+copy of which can be found in the LICENSE file, and also online at
+http://creativecommons.org/licenses/publicdomain/
+
+Authors:
+--------
+This modified version: Xu Yuan xuyuan.cn@gmail.com http://airobot.org
+Original Version: Chris Venter	chris.venter@gmail.com	http://rocketpod.blogspot.com
+
+References:
+----------
+* Wikipedia article:
+	http://en.wikipedia.org/wiki/Base64
