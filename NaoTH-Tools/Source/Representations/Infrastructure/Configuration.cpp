@@ -112,7 +112,7 @@ void Configuration::loadFile(std::string file, std::string groupName)
     bool groupOK = true;
     gsize numOfGroups;
     gchar** groups = g_key_file_get_groups(tmpKeyFile, &numOfGroups);
-    for (int i = 0; groupOK && i < numOfGroups; i++)
+    for (gsize i = 0; groupOK && i < numOfGroups; i++)
     {
       if (g_strcmp0(groups[i], groupName.c_str()) != 0)
       {
@@ -203,7 +203,7 @@ std::list<std::string> Configuration::getGroups()
   std::list<std::string> result;
   gsize length = 0;
   gchar** groups = g_key_file_get_groups(keyFile, &length);
-  for(int i=0; i < length; i++)
+  for(gsize i=0; i < length; i++)
   {
     result.push_back(std::string(groups[i]));
   }
@@ -218,7 +218,7 @@ std::list<std::string> Configuration::getKeys(std::string group)
   std::list<std::string> result;
   gsize length = 0;
   gchar** keys = g_key_file_get_keys(keyFile, group.c_str(), &length, NULL);
-  for(int i=0; i < length; i++)
+  for(gsize i=0; i < length; i++)
   {
     result.push_back(std::string(keys[i]));
   }
@@ -228,7 +228,7 @@ std::list<std::string> Configuration::getKeys(std::string group)
 
 bool Configuration::hasKey(std::string group, std::string key)
 {
-  return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL);
+  return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL) > 0;
 }
 
 std::string Configuration::getString(std::string group, std::string key)
@@ -288,7 +288,7 @@ void Configuration::setDouble(std::string group, std::string key, double value)
 
 bool Configuration::getBool(std::string group, std::string key)
 {
-  return g_key_file_get_boolean(keyFile, group.c_str(), key.c_str(), NULL);
+  return g_key_file_get_boolean(keyFile, group.c_str(), key.c_str(), NULL) > 0;
 }
 
 void Configuration::setBool(std::string group, std::string key, bool value)

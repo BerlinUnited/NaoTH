@@ -137,7 +137,7 @@ namespace naoth
         cout << /*getName() <<*/ " register Cognition input: " << typeid(T).name() << endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Cognition input" << typeid(T).name() << endl;
+        cerr << /*getName() <<*/ " doesn't provide Cognition input: " << typeid(T).name() << endl;
       }
     }//end registerCognitionInput
 
@@ -152,7 +152,7 @@ namespace naoth
         cout << /*getName() <<*/ " register Cognition output: " << typeid(T).name() << endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Cognition output" << typeid(T).name() << endl;
+        cerr << /*getName() <<*/ " doesn't provide Cognition output: " << typeid(T).name() << endl;
       }
     }//end registerCognitionOutput
 
@@ -167,7 +167,7 @@ namespace naoth
         cout << /*getName() <<*/ " register Motion input: " << typeid(T).name() << endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Motion input" << typeid(T).name() << endl;
+        cerr << /*getName() <<*/ " doesn't provide Motion input: " << typeid(T).name() << endl;
       }
     }//end registerMotionInput
 
@@ -182,7 +182,7 @@ namespace naoth
         cout << /*getName() <<*/ " register Motion output: " << typeid(T).name() << endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Motion output" << typeid(T).name() << endl;
+        cerr << /*getName() <<*/ " doesn't provide Motion output: " << typeid(T).name() << endl;
       }
     }//end registerMotionOutput
   };//end class PlatformDataInterface
@@ -225,7 +225,9 @@ namespace naoth
 
   //////////////////// GET/SET Actions /////////////////////
   private:
-    enum Action {INPUT, OUTPUT};
+
+#define _NAOTH_INPUT_ACTION_ 7 
+#define _NAOTH_OUTPUT_ACTION_ 11
 
     template<int ACTION, class T>
     class RepresentationAction: public AbstractAction
@@ -237,14 +239,15 @@ namespace naoth
       RepresentationAction(PlatformType& platform, T& representation)
         : platform(platform),
           representation(representation)
-      {}
+      {
+      }
 
-      virtual void execute(){ std::cerr << "scheisse" << endl; }
+      virtual void execute(){ std::cerr << "no action " << ACTION << " for " << typeid(representation).name() << endl; }
     };//end RepresentationAction
 
 
     template<class T>
-    class RepresentationAction<INPUT,T>
+    class RepresentationAction<_NAOTH_INPUT_ACTION_,T>
     {
       PlatformType& platform;
       T& representation;
@@ -253,13 +256,14 @@ namespace naoth
       RepresentationAction(PlatformType& platform, T& representation)
         : platform(platform),
           representation(representation)
-      {}
+      {
+      }
 
       virtual void execute(){ platform.get(representation); }
     };//end RepresentationAction
 
     template<class T>
-    class RepresentationAction<OUTPUT,T>
+    class RepresentationAction<_NAOTH_OUTPUT_ACTION_,T>
     {
       PlatformType& platform;
       T& representation;
@@ -268,7 +272,8 @@ namespace naoth
       RepresentationAction(PlatformType& platform, T& representation)
         : platform(platform),
           representation(representation)
-      {}
+      {
+      }
 
       virtual void execute(){ platform.set(representation); }
     };//end RepresentationAction
@@ -297,14 +302,14 @@ namespace naoth
     void registerInput(PlatformType& platform)
     {
       cout << getName() << " register input: " << typeid(T).name() << endl;
-      registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,INPUT>(platform);
+      registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,_NAOTH_INPUT_ACTION_>(platform);
     }//end registerInput
 
     template<class T>
     void registerOutput(PlatformType& platform)
     {
       cout << getName() << " register output: " << typeid(T).name() << endl;
-      registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,OUTPUT>(platform);
+      registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,_NAOTH_OUTPUT_ACTION_>(platform);
     }//end registerOutput
 
 

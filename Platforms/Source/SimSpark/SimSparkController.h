@@ -157,6 +157,11 @@ protected:
 private:
   bool updateSensors();
 
+  int parseString(char* data, std::string& value);
+  int parseInt(char* data, int& value);
+  int paseImage(char* data);
+
+
   bool updateImage(const sexp_t* sexp);
 
   bool updateHingeJoint(const sexp_t* sexp);

@@ -9,9 +9,9 @@
 #include "SimSparkController.h"
 #include <iostream>
 #include <fstream>
-
 //#include "Tools/NaoInfo.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
+#include <Tools/DataConversion.h>
 
 //#include "CommunicationCollectionImpl.h"
 //#include "Tools/Debug/DebugRequest.h"
@@ -137,7 +137,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   // initialize the teamname and number
   theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << send;
   // wait the response
-  while (theGameInfo.thePlayerNum == 0)
+  //while (theGameInfo.thePlayerNum == 0)
   {
     updateSensors();
   }
@@ -323,6 +323,11 @@ bool SimSparkController::updateSensors()
         theVirtualVision.clear();
         ok = updateSee("", t->next);
         if ( ok ) isNewVirtualVision = true;
+        
+        //HACK: assume the image is behind of "See"
+        int offset = paseImage(pcont->lastPos);
+        pcont->lastPos = &(pcont->lastPos[offset]);
+        isNewImage = offset > 0;
       } else if ("time" == name)
       {
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
@@ -336,8 +341,10 @@ bool SimSparkController::updateSensors()
       else if ("IMU" == name) ok = updateIMU(t->next); // interial sensor data
       else if ("IMG" == name)
       {
-        ok = updateImage(t->next); // image from camera
-        if (ok) isNewImage = true;
+        // HACK: image parsing is very slow in Windows
+        // thus we parse the image separately (cf. the case "See")
+        //ok = updateImage(t->next); // image from camera
+        //if (ok) isNewImage = true;
       }
       else cerr << " Perception unknow name: " << string(t->val) << endl;
       if (!ok)
@@ -348,7 +355,7 @@ bool SimSparkController::updateSensors()
     }
     destroy_sexp(sexp);
     sexp = iparse_sexp(c, msg.size(), pcont);
-  }
+  }//end while
 
   updateInertialSensor();
 
@@ -361,7 +368,107 @@ bool SimSparkController::updateSensors()
   destroy_continuation(pcont);
 
   return true;
-}
+}//end updateSensors
+
+
+int SimSparkController::parseString(char* data, std::string& value)
+{
+  int c = 0;
+  std::stringstream ss;
+  while(data[c] != ' ' && data[c] != ')')
+  {
+    ss << data[c++];
+  }//end while
+
+  value = ss.str();
+
+  // eat ' '
+  if(data[c] == ' ') c++;
+
+  return c;
+}//end parseString
+
+
+int SimSparkController::parseInt(char* data, int& value)
+{
+  std::string tmp;
+  int c = parseString(data, tmp);
+  DataConversion::strTo(tmp, value);
+  return c;
+}//end parseString
+
+
+int SimSparkController::paseImage(char* data)
+{
+  //(IMG (s 320 240) (
+
+  int c = 0;
+
+  // check and eat (
+  if(data[c++] != '(') return 0;
+  
+  // get the name: IMG
+  std::string name;
+  c += parseString(&data[c], name);
+  if(name != "IMG") return 0;
+  
+  // s
+  if(data[c++] != '(') return 0;
+  std::string sizeName;
+  c += parseString(&data[c], sizeName);
+  if(sizeName != "s") return 0;
+
+
+  // size x
+  int x = 0;
+  c += parseInt(&data[c], x);
+  
+  // size y
+  int y = 0;
+  c += parseInt(&data[c], y);
+
+  if(data[c++] != ')') return 0;
+  if(data[c++] != ' ') return 0;
+  if(data[c++] != '(') return 0;
+
+  // d
+  std::string dataName;
+  c += parseString(&data[c], dataName);
+  if(dataName != "d") return 0;
+
+  // parse the image data
+  int image_start = c;
+
+  // image length
+  unsigned int len = x*y*3;
+
+  // HACK: the data is at least as long as the image
+  //c += len;
+
+  // read the image data
+  while(data[c++] != ')');
+  int image_length = c - image_start;
+
+  // check the buffer size
+  if (len != theImageSize || theImageData == NULL)
+  {
+    cout << "recreate image" << endl;
+    if (theImageData != NULL)
+      delete [] theImageData;
+
+    theImageSize = len;
+    theImageData = new char[theImageSize];
+  }//end if
+
+  int dl = theBase64Decoder.decode(&data[image_start], image_length, theImageData);
+  ASSERT(dl == (int) theImageSize);
+
+  // eat the last )
+  c++;
+
+  return c;
+}//end paseImage
+
 
 bool SimSparkController::updateImage(const sexp_t* sexp)
 {
@@ -378,15 +485,17 @@ bool SimSparkController::updateImage(const sexp_t* sexp)
   // check the buffer size
   if (len != theImageSize || theImageData == NULL)
   {
+    cout << "recreate image" << endl;
     if (theImageData != NULL)
       delete [] theImageData;
 
     theImageSize = len;
     theImageData = new char[theImageSize];
-  }
+  }//end if
 
   // decode the image
   sexp = sexp->next;
+
   if (SexpParser::isList(sexp))
   {
     const sexp_t* dsexp = sexp->list;
@@ -397,10 +506,10 @@ bool SimSparkController::updateImage(const sexp_t* sexp)
       ASSERT(dl == (int) theImageSize);
       return true;
     }
-  }
+  }//end if
   
   return false;
-}
+}//end updateImage
 
 bool SimSparkController::updateHingeJoint(const sexp_t* sexp)
 {
@@ -761,7 +870,7 @@ void SimSparkController::get(Image& data)
 
     isNewImage = false;
   }
-}
+}//end get
 
 void SimSparkController::get(GyrometerData& data)
 {
