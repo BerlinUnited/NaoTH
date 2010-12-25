@@ -96,8 +96,12 @@ void Cognition::detect_ball()
 
   if(num_of_orange > 0)
   {
+    // center of the orange blob
     Vector2<int> orange_center = orange_sum / num_of_orange;
     BlackBoard::getInstance().theBallPercept.wasSeen = true;
+  }else
+  {
+    BlackBoard::getInstance().theBallPercept.wasSeen = false;
   }
 }//end detect_ball
 

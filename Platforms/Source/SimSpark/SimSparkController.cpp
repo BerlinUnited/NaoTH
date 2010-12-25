@@ -443,12 +443,14 @@ int SimSparkController::paseImage(char* data)
   // image length
   unsigned int len = x*y*3;
 
-  // HACK: the data is at least as long as the image
-  //c += len;
-
-  // read the image data
-  while(data[c++] != ')');
-  int image_length = c - image_start;
+  // read the image data until the next ')'
+  //while(data[c++] != ')');
+  
+  // HACK: base64 encoded data is has 1/3 more chars
+  c += x*y*4;
+  if(data[c++] != ')') return 0; // check integrity
+  
+  int image_length = c - image_start - 1;
 
   // check the buffer size
   if (len != theImageSize || theImageData == NULL)
