@@ -19,6 +19,7 @@ namespace naoth
   {
   public:
     /** Converts an YCbCr pixel into an RGB pixel.
+     *  taken from http://msdn.microsoft.com/en-us/library/ms893078.aspx
      *  @param Y The Y channel of the source pixel.
      *  @param Cb The Cb channel of the source pixel.
      *  @param Cr The Cr channel of the source pixel.
@@ -33,10 +34,9 @@ namespace naoth
                                unsigned char& G,
                                unsigned char& B)
     {
-      using namespace Math;
-      int r = (int)(Y + 1.4021 * (Cb - 128)),
-          g = (int)(Y - 0.3456 * (Cr - 128) - 0.71448 * (Cb - 128)),
-          b = (int)(Y + 1.7710 * (Cr - 128));
+      int r = ( 298 * (Y - 16)                    + 409 * (Cr - 128) + 128) >> 8,
+          g = ( 298 * (Y - 16) - 100 * (Cb - 128) - 208 * (Cr - 128) + 128) >> 8,
+          b = ( 298 * (Y - 16) + 516 * (Cb - 128)                    + 128) >> 8;
       if(r < 0) r = 0; else if(r > 255) r = 255;
       if(g < 0) g = 0; else if(g > 255) g = 255;
       if(b < 0) b = 0; else if(b > 255) b = 255;
@@ -46,6 +46,7 @@ namespace naoth
     }
 
     /** Converts an RGB pixel into an YCbCr pixel.
+     *  taken from http://msdn.microsoft.com/en-us/library/ms893078.aspx
      *  @param R The R channel of the source pixel.
      *  @param G The G channel of the source pixel.
      *  @param B The B channel of the source pixel.
@@ -60,9 +61,9 @@ namespace naoth
                                unsigned char& Cb,
                                unsigned char& Cr)
     {
-      int y = (int)( 0.2990 * R + 0.5870 * G + 0.1140 * B),
-          cb = 127 + (int)(-0.1687 * R - 0.3313 * G + 0.5000 * B),
-          cr = 127 + (int)( 0.5000 * R - 0.4187 * G - 0.0813 * B);
+      int y  = ( (  66 * R + 129 * G +  25 * B + 128) >> 8) +  16,
+          cb = ( ( -38 * R -  74 * G + 112 * B + 128) >> 8) + 128,
+          cr = ( ( 112 * R -  94 * G -  18 * B + 128) >> 8) + 128;
       if(y < 0) y = 0; else if(y > 255) y = 255;
       if(cb < 0) cb = 0; else if(cb > 255) cb = 255;
       if(cr < 0) cr = 0; else if(cr > 255) cr = 255;
@@ -70,6 +71,7 @@ namespace naoth
       Cb = (unsigned char) cb;
       Cr = (unsigned char) cr;
     }
+
 
     /** Converts an YCbCr pixel into an HSI pixel.
      *  @param Y The Y channel of the source pixel.

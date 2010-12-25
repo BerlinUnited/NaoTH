@@ -23,19 +23,11 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 
+#include "BlackBoard.h"
 
 class Motion : public naoth::Callable
 {
 public:
-  enum Request
-  {
-    stand,
-    walk_forward,
-    turn_left,
-    stand_up_from_front,
-    stand_up_from_back,
-    numOfRequet
-  };
 
   Motion();
   virtual ~Motion();
@@ -46,12 +38,12 @@ public:
     std::cout << "Motion register start" << std::endl;
     
     //
-    platformInterface.registerCognitionInput(theSensorJointData);
-    platformInterface.registerCognitionInput(theFrameInfo);
-    platformInterface.registerCognitionInput(theInertialSensorData);
-    platformInterface.registerCognitionInput(theFSRData);
-    platformInterface.registerCognitionInput(theAccelerometerData);
-    platformInterface.registerCognitionInput(theGyrometerData);
+    platformInterface.registerMotionInput(theSensorJointData);
+    platformInterface.registerMotionInput(theFrameInfo);
+    platformInterface.registerMotionInput(theInertialSensorData);
+    platformInterface.registerMotionInput(theFSRData);
+    platformInterface.registerMotionInput(theAccelerometerData);
+    platformInterface.registerMotionInput(theGyrometerData);
 
     //
     platformInterface.registerMotionOutput(theMotorJointData);
@@ -72,13 +64,10 @@ public:
 
   std::list<KeyFrame> loadKeyFrames(const std::string& filename);
 
-  static void request(Request r);
-
 private:
   int theTimeStep;
 
-  static Request theRequest;
-  std::list<KeyFrame> theKeyFrame[numOfRequet];
+  std::list<KeyFrame> theKeyFrame[MotionRequest::numOfRequestID];
 
   std::list<KeyFrame> activeKeyFrame;
 

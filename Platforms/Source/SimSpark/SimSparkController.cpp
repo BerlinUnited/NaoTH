@@ -101,6 +101,7 @@ SimSparkController::SimSparkController()
   theJointMotorNameMap[JointData::RAnklePitch] = "rle5";
   theJointMotorNameMap[JointData::RAnkleRoll] = "rle6";
 
+
   theCameraId = 0;
   theSenseTime = 0;
 
@@ -888,7 +889,7 @@ void SimSparkController::get(FSRData& data)
 
 void SimSparkController::get(InertialSensorData& data)
 {
-    //data = theInertialSensorData;
+  data = theInertialSensorData;
 }
 
 void SimSparkController::get(VirtualVision& data)

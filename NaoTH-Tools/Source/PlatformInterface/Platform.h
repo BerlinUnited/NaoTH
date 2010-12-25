@@ -91,6 +91,7 @@ namespace naoth
 #endif
 
 
+
     void init(PlatformBase* _interface)
     {
       ASSERT(_interface!=NULL);
@@ -103,11 +104,13 @@ namespace naoth
       _bodyID = _interface->getBodyID();
       _bodyNickName = _interface->getBodyNickName();
       _configDir = "Config/";
+      /* todo:
       if(getenv("NAO_CONFIG") != NULL)
       {
         _configDir = getenv("NAO_CONFIG");
       }
       _configuration.loadFromDir(_configDir, _interface->getName(), _hardwareIdentity);
+      */
       
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");

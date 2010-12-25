@@ -23,17 +23,15 @@ Motion::KeyFrame::KeyFrame()
   time = 0;
 }
 
-Motion::Request Motion::theRequest = Motion::stand;
-
 Motion::Motion():
 theTimeStep(20)
 {
   string dir = "keyframes/";
-  theKeyFrame[stand] = loadKeyFrames(dir+"stand.txt");
-  theKeyFrame[walk_forward] = loadKeyFrames(dir+"walk_forward.txt");
-  theKeyFrame[turn_left] = loadKeyFrames(dir+"turn_left.txt");
-  theKeyFrame[stand_up_from_front] = loadKeyFrames(dir+"stand_up_from_front.txt");
-  theKeyFrame[stand_up_from_back] = loadKeyFrames(dir+"stand_up_from_back.txt");
+  theKeyFrame[MotionRequest::stand] = loadKeyFrames(dir+"stand.txt");
+  theKeyFrame[MotionRequest::walk_forward] = loadKeyFrames(dir+"walk_forward.txt");
+  theKeyFrame[MotionRequest::turn_left] = loadKeyFrames(dir+"turn_left.txt");
+  theKeyFrame[MotionRequest::stand_up_from_front] = loadKeyFrames(dir+"stand_up_from_front.txt");
+  theKeyFrame[MotionRequest::stand_up_from_back] = loadKeyFrames(dir+"stand_up_from_back.txt");
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -43,6 +41,7 @@ theTimeStep(20)
 
 void Motion::call()
 {
+  const MotionRequest::RequestID& theRequest = BlackBoard::getInstance().theMotionRequest.id;
   if ( activeKeyFrame.empty() )
   {
     activeKeyFrame = theKeyFrame[theRequest];
@@ -92,9 +91,4 @@ std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf)
   }
   
   return in;
-}
-
-void Motion::request(Request r)
-{
-  theRequest = r;
 }

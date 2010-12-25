@@ -7,6 +7,7 @@
 namespace naoth
 {
 
+  /** encapsulates different names to indicate the colorspace of the pixel */
   union Pixel
   {
     struct
@@ -21,13 +22,22 @@ namespace naoth
 
     struct
     {
+      /** red */
+      unsigned char r;
+      /** green */
+      unsigned char g;
+      /** blue */
+      unsigned char b;
+    };
+/*
+    struct
+    {
       unsigned char a;
       unsigned char b;
       unsigned char c;
     };
-
+*/
     unsigned char channels[3];
-
   };
 
   struct Point {

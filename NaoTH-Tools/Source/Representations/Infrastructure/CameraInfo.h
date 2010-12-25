@@ -21,6 +21,8 @@ namespace naoth
       :
       cameraID(Bottom)
     {
+      // set the default parameters for Nao
+      setParameter(320, 240, 54.7465);
     }
 
     enum CameraID
@@ -30,12 +32,20 @@ namespace naoth
       numOfCamera
     };
 
+    /**
+     * calculate the camera parameters from a given resolution and opening angle
+     * (opening angle is required in degrees)
+     */
     void setParameter(
       unsigned int resolutionWidth,
       unsigned int resolutionHeight,
       double openingAngleDiagonal
       )
     {
+      this->resolutionWidth = resolutionWidth;
+      this->resolutionHeight = resolutionHeight;
+
+      // convert to rad
       openingAngleDiagonal = Math::fromDegrees(openingAngleDiagonal);
 
       // calculate focal length
@@ -45,15 +55,15 @@ namespace naoth
       this->focalLength = halfDiagLength/tan(0.5*openingAngleDiagonal);
 
       // calculate opening angle
-      this->openingAngleHeight = 2.0*atan2((double)this->resolutionHeight,this->focalLength*2.0);
-      this->openingAngleWidth = 2.0*atan2((double)this->resolutionWidth,this->focalLength*2.0);
+      this->openingAngleHeight = 2.0*atan2((double)resolutionHeight,this->focalLength*2.0);
+      this->openingAngleWidth = 2.0*atan2((double)resolutionWidth,this->focalLength*2.0);
 
       // calculate optical senter
-      this->opticalCenterY = this->resolutionHeight/2;
-      this->opticalCenterX = this->resolutionWidth/2;
+      this->opticalCenterY = resolutionHeight/2;
+      this->opticalCenterX = resolutionWidth/2;
 
       // values needed by Image
-      this->size = this->resolutionHeight * this->resolutionWidth;
+      this->size = resolutionHeight * resolutionWidth;
 
     }//end setParameter
 

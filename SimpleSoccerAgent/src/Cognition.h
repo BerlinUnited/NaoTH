@@ -14,18 +14,23 @@
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
 
-//
+// sensors
 #include <Representations/Infrastructure/JointData.h>
-#include <Representations/Infrastructure/VirtualVision.h>
-#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+
+// vision
+#include <Representations/Infrastructure/VirtualVision.h>
+#include <Representations/Infrastructure/Image.h>
+
+// infrastructure
+#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/SimSparkGameInfo.h>
 
 //
-#include "BallPercept.h"
+#include "BlackBoard.h"
 
 
 class Cognition : public naoth::Callable
@@ -35,32 +40,21 @@ public:
   virtual ~Cognition();
 
 
+  /** register the data at the platform for the input*/
   void init(naoth::PlatformDataInterface& platformInterface)
   {
-    /*
-    std::cout << "Cognition register start" << std::endl;
-#define REGISTER_INPUT(R) platformInterface.registerCognitionInput(the##R, #R)
-    REGISTER_INPUT(SensorJointData);
-    REGISTER_INPUT(VirtualVision);
-    REGISTER_INPUT(SimSparkGameInfo);
-    REGISTER_INPUT(FrameInfo);
-    REGISTER_INPUT(InertialSensorData);
-    REGISTER_INPUT(FSRData);
-    REGISTER_INPUT(AccelerometerData);
-    REGISTER_INPUT(GyrometerData);
-
-#undef REGISTER_INPUT
-    */
-
+    //
     platformInterface.registerCognitionInput(theSensorJointData);
-    platformInterface.registerCognitionInput(theVirtualVision);
-    platformInterface.registerCognitionInput(theSimSparkGameInfo);
-    platformInterface.registerCognitionInput(theFrameInfo);
     platformInterface.registerCognitionInput(theInertialSensorData);
     platformInterface.registerCognitionInput(theFSRData);
     platformInterface.registerCognitionInput(theAccelerometerData);
     platformInterface.registerCognitionInput(theGyrometerData);
 
+    platformInterface.registerCognitionInput(theVirtualVision);
+    platformInterface.registerCognitionInput(theImage);
+
+    platformInterface.registerCognitionInput(theFrameInfo);
+    platformInterface.registerCognitionInput(theSimSparkGameInfo);
     std::cout << "Cognition register end" << std::endl;
   }
 
@@ -69,20 +63,25 @@ public:
 
 private:
   void perception();
+  void detect_ball();
 
   void decide();
 
 private:
+  // representations
   naoth::SensorJointData theSensorJointData;
-  naoth::VirtualVision theVirtualVision;
-  naoth::FrameInfo theFrameInfo;
   naoth::InertialSensorData theInertialSensorData;
   naoth::FSRData theFSRData;
   naoth::AccelerometerData theAccelerometerData;
   naoth::GyrometerData theGyrometerData;
+  
+  naoth::VirtualVision theVirtualVision;
+  naoth::Image theImage;
+
+  naoth::FrameInfo theFrameInfo;
   SimSparkGameInfo theSimSparkGameInfo;
 
-  BallPercept theBall;
+
   bool isStandingUp;
 };
 

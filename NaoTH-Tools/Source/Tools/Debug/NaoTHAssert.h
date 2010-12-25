@@ -4,7 +4,7 @@
  * This file contains macros for low level debugging.
  * (partly copied from GT07 GTAssert.h)
  *
- * @author Thomas R�fer (GT07)
+ * @author Thomas Röfer (GT07)
  * @author Heinrich Mellmann
  */
 

@@ -12,14 +12,17 @@ class BallPercept
 {
 public:
 
-  BallPercept() :
-  wasSeen(false),
+  BallPercept() 
+    :
+    wasSeen(false),
     distance(0)
   {
   }
 
+  /** */
   bool wasSeen;
 
+  /** */
   double distance;
 };
 
