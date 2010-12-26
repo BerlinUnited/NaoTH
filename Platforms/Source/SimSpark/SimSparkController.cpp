@@ -138,7 +138,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   // initialize the teamname and number
   theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << send;
   // wait the response
-  //while (theGameInfo.thePlayerNum == 0)
+  while (theGameInfo.thePlayerNum == 0)
   {
     updateSensors();
   }

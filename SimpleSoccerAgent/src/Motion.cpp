@@ -71,6 +71,12 @@ std::list<Motion::KeyFrame> Motion::loadKeyFrames(const std::string& filename)
 {
   std::list<Motion::KeyFrame> keyFrameList;
   ifstream ifile(filename.c_str());
+  if(!ifile.good()) 
+  {
+    cout << "ERROR: couldn't load the file " << filename << endl;
+    exit(-1);
+  }
+
   while ( !ifile.eof() )
   {
     KeyFrame k;

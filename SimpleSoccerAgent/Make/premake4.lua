@@ -1,6 +1,7 @@
 solution "SimpleSoccerAgent" 
   platforms {"Native"}
   configurations {"Debug", "Release"}
+  targetdir "../"
   
   -- additional defines for windows
   if os.is("windows") then
