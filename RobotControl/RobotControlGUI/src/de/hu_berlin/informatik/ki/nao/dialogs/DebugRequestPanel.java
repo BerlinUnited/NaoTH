@@ -11,22 +11,34 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.CheckboxTree;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeNode;
+import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.server.Command;
+import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import javax.swing.JPanel;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
  * @author thomas
  */
 @PluginImplementation
-public class DebugRequestPanel extends javax.swing.JPanel implements Dialog
+public class DebugRequestPanel extends javax.swing.JPanel 
+  implements CommandSender, Dialog
 {
+
+  @InjectPlugin
+  public RobotControlGUI parent;
+  @InjectPlugin
+  public MessageServerProvider msgServer;
 
   private CheckboxTree debugRequestTree;
 
@@ -60,6 +72,47 @@ public class DebugRequestPanel extends javax.swing.JPanel implements Dialog
     debugRequestTree.insertPath("debug/mypath/debug_request1");
 
     add(debugRequestTree, BorderLayout.CENTER);
+    debugRequestTree.addTreeSelectionListener(new TreeSelectionListener()
+    {
+
+      @Override
+      public void valueChanged(TreeSelectionEvent e)
+      {
+        SelectableTreeNode node = (SelectableTreeNode) e.getPath().getLastPathComponent();
+        sendCommand(e.getPath(), node.isSelected());
+      }
+    });
+  }
+
+  private void sendCommand(TreePath treePath, boolean enable)
+  {
+    Object[] path = treePath.getPath();
+    if (path.length < 2)
+    {
+      return;
+    }
+    String debugRequestName = path[1].toString();
+
+    for (int i = 2; i < path.length; i++)
+    {
+      debugRequestName += ":" + path[i];
+    }//end for
+
+    Command command = new Command();
+    command.setName(debugRequestName);
+    String arg = enable ? "on" : "off";
+    command.addArg(arg);
+
+    System.err.println(debugRequestName + " " + arg);
+    send(command);
+  }
+
+  private void send(Command command)
+  {
+    if (parent.checkConnected())
+    {
+      msgServer.getMessageServer().executeSingleCommand(this, command);
+    }
   }
 
   @Override
@@ -72,5 +125,22 @@ public class DebugRequestPanel extends javax.swing.JPanel implements Dialog
   public void dispose()
   {
     remove(debugRequestTree);
+  }
+
+  @Override
+  public void handleResponse(byte[] result, Command originalCommand)
+  {
+  }
+
+  @Override
+  public void handleError(int code)
+  {
+    // TODO: handle errors
+  }
+
+  @Override
+  public Command getCurrentCommand()
+  {
+    return new Command("ping");
   }
 }
