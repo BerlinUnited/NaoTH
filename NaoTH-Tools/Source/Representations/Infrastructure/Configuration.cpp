@@ -133,7 +133,8 @@ void Configuration::loadFile(std::string file, std::string groupName)
         g_key_file_set_value(keyFile, groups[0], keys[i], buffer);
         g_free(buffer);
       }
-
+      g_strfreev(keys);
+      
       g_message("loaded %s", file.c_str());
     }
 
