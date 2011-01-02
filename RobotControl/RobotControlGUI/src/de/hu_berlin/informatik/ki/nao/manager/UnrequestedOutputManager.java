@@ -23,9 +23,8 @@ public class UnrequestedOutputManager extends AbstractManager<String> implements
   {
     return new String(result);
   }
-
   
-  
+  @Override
   public Command getCurrentCommand()
   {
     return new Command("latest_output_messages");

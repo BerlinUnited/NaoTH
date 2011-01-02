@@ -12,6 +12,7 @@
 #define __NaoTHAssert_h_
 
 #include <assert.h>
+#include <iostream>
 
 #undef ASSERT
 #undef VERIFY

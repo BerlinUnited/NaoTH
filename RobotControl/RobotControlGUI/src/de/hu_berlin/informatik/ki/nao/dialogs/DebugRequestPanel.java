@@ -15,12 +15,15 @@ import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.CheckboxTree;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeNode;
 import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.manager.DebugRequestManager;
+import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
@@ -31,15 +34,16 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 @PluginImplementation
-public class DebugRequestPanel extends javax.swing.JPanel 
-  implements CommandSender, Dialog
+public class DebugRequestPanel extends javax.swing.JPanel
+  implements CommandSender, Dialog, ObjectListener<String[]>
 {
 
   @InjectPlugin
   public RobotControlGUI parent;
   @InjectPlugin
   public MessageServerProvider msgServer;
-
+  @InjectPlugin
+  public DebugRequestManager dbgRequestManager;
   private CheckboxTree debugRequestTree;
 
   /** Creates new form DebugRequestPanel */
@@ -57,9 +61,52 @@ public class DebugRequestPanel extends javax.swing.JPanel
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    toolbarMain = new javax.swing.JToolBar();
+    btRefresh = new javax.swing.JToggleButton();
+
     setLayout(new java.awt.BorderLayout());
+
+    toolbarMain.setRollover(true);
+
+    btRefresh.setText("Refresh");
+    btRefresh.setFocusable(false);
+    btRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    btRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    btRefresh.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        btRefreshActionPerformed(evt);
+      }
+    });
+    toolbarMain.add(btRefresh);
+
+    add(toolbarMain, java.awt.BorderLayout.PAGE_START);
   }// </editor-fold>//GEN-END:initComponents
+
+  private void btRefreshActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRefreshActionPerformed
+  {//GEN-HEADEREND:event_btRefreshActionPerformed
+    // TODO add your handling code here:
+
+    if (btRefresh.isSelected())
+    {
+      if (parent.checkConnected())
+      {
+        dbgRequestManager.addListener(this);
+        debugRequestTree.clear();
+      }
+      else
+      {
+        btRefresh.setSelected(false);
+      }
+    }
+    else
+    {
+      dbgRequestManager.removeListener(this);
+    }
+
+  }//GEN-LAST:event_btRefreshActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JToggleButton btRefresh;
+  private javax.swing.JToolBar toolbarMain;
   // End of variables declaration//GEN-END:variables
 
   @Init
@@ -142,5 +189,38 @@ public class DebugRequestPanel extends javax.swing.JPanel
   public Command getCurrentCommand()
   {
     return new Command("ping");
+  }
+
+  @Override
+  public void newObjectReceived(String[] object)
+  {
+    //extendedCheckboxTree.getCheckingModel().setCheckingMode(CheckingMode.SIMPLE);
+    for (String str : object)
+    {
+      String[] tokens = str.split("\\|");
+
+      String tooltip = "NO COMMENT";
+      if (tokens.length >= 3)
+      {
+        tooltip = tokens[2];
+
+      }
+      if (tokens.length >= 2)
+      {
+        boolean selected = tokens[1].equals("1");
+        debugRequestTree.insertPath(tokens[0], ':');
+        //extendedCheckboxTree.addPath(tokens[0], tooltip, selected);
+      }
+    }//end for
+    //extendedCheckboxTree.getCheckingModel().setCheckingMode(CheckingMode.PROPAGATE_PRESERVING_UNCHECK);
+
+    btRefresh.setSelected(false);
+    dbgRequestManager.removeListener(this);
+  }
+
+  @Override
+  public void errorOccured(String cause)
+  {
+    // TODO: handle error
   }
 }

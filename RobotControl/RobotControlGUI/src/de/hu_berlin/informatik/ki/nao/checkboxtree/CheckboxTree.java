@@ -76,4 +76,14 @@ public class CheckboxTree extends JTree
     }
     this.expandPath(new TreePath(rootNode));
   }
+
+  public void clear()
+  {
+    while(rootNode.getChildCount() > 0)
+    {
+      rootNode.remove(0);
+    }
+  }
+
+  
 }
