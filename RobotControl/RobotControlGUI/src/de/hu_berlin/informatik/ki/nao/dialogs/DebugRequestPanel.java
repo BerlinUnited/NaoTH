@@ -20,6 +20,9 @@ import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -84,8 +87,7 @@ public class DebugRequestPanel extends javax.swing.JPanel
 
   private void btRefreshActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRefreshActionPerformed
   {//GEN-HEADEREND:event_btRefreshActionPerformed
-    // TODO add your handling code here:
-
+    
     if (btRefresh.isSelected())
     {
       if (parent.checkConnected())
@@ -119,15 +121,21 @@ public class DebugRequestPanel extends javax.swing.JPanel
     debugRequestTree.insertPath("debug/mypath/debug_request1");
 
     add(debugRequestTree, BorderLayout.CENTER);
-    debugRequestTree.addTreeSelectionListener(new TreeSelectionListener()
+
+    debugRequestTree.addMouseListener(new MouseAdapter()
     {
 
       @Override
-      public void valueChanged(TreeSelectionEvent e)
+      public void mouseClicked(MouseEvent e)
       {
-        SelectableTreeNode node = (SelectableTreeNode) e.getPath().getLastPathComponent();
-        sendCommand(e.getPath(), node.isSelected());
+        TreePath path = debugRequestTree.getPathForLocation(e.getX(), e.getY());
+        if(path != null)
+        {
+          SelectableTreeNode node = (SelectableTreeNode) path.getLastPathComponent();
+          sendCommand(path, node.isSelected());
+        }
       }
+
     });
   }
 
@@ -177,12 +185,14 @@ public class DebugRequestPanel extends javax.swing.JPanel
   @Override
   public void handleResponse(byte[] result, Command originalCommand)
   {
+    System.out.println("handleResponse: " + new String(result));
   }
 
   @Override
   public void handleError(int code)
   {
     // TODO: handle errors
+    System.err.println("handleError: " + code);
   }
 
   @Override
@@ -209,6 +219,8 @@ public class DebugRequestPanel extends javax.swing.JPanel
       {
         boolean selected = tokens[1].equals("1");
         debugRequestTree.insertPath(tokens[0], ':');
+        SelectableTreeNode n = debugRequestTree.getNode(tokens[0], ':');
+        n.setSelected(selected);
         //extendedCheckboxTree.addPath(tokens[0], tooltip, selected);
       }
     }//end for

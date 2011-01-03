@@ -18,10 +18,13 @@
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 
+#include "Core/Tools/Debug/DebugRequest.h"
+
 using namespace std;
 
 Cognition::Cognition()
 {
+  DEBUG_REQUEST_REGISTER("test:test", "test debug request", false);
   registerModule<LEDSetter > ("LEDSetter");
   registerModule<Debug > ("Debug");
 
