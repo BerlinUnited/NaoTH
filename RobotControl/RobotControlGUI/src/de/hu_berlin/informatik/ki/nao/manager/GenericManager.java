@@ -4,7 +4,6 @@
 package de.hu_berlin.informatik.ki.nao.manager;
 
 import de.hu_berlin.informatik.ki.nao.server.Command;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *

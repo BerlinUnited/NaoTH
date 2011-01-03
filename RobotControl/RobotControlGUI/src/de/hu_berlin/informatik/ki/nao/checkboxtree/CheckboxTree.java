@@ -5,6 +5,8 @@
 package de.hu_berlin.informatik.ki.nao.checkboxtree;
 
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -68,6 +70,7 @@ public class CheckboxTree extends JTree
       {
         // add a new one
         matchingNode = new SelectableTreeNode(n, "", false);
+        matchingNode.setParent(current);
         model.insertNodeInto(matchingNode, current, current.getChildCount());
       }
 
@@ -76,4 +79,54 @@ public class CheckboxTree extends JTree
     }
     this.expandPath(new TreePath(rootNode));
   }
+  
+  public SelectableTreeNode getNode(String path)
+  {
+    return getNode(path, '/');
+  }
+
+  public SelectableTreeNode getNode(String path, char seperator)
+  {
+    String[] nodes = path.split("" + seperator);
+    SelectableTreeNode current = rootNode;
+    for(String n : nodes)
+    {
+      SelectableTreeNode matchingNode = null;
+      Enumeration<SelectableTreeNode> childEnum = current.children();
+      while(childEnum.hasMoreElements())
+      {
+        SelectableTreeNode child = childEnum.nextElement();
+
+        if(n.equals(child.getText()))
+        {
+          matchingNode = child;
+          break;
+        }
+      }
+
+      if(matchingNode == null)
+      {
+        return null;
+      }
+
+      current = matchingNode;
+    }
+    return current;
+  }
+
+  public void clear()
+  {
+    List<SelectableTreeNode> nodes = new LinkedList<SelectableTreeNode>();
+    Enumeration<SelectableTreeNode> enumChildren = rootNode.children();
+    while(enumChildren.hasMoreElements())
+    {
+      nodes.add(enumChildren.nextElement());
+    }
+    for(SelectableTreeNode n : nodes)
+    {
+      model.removeNodeFromParent(n);
+    }
+  }
+
+  
 }
