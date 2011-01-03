@@ -1,0 +1,7 @@
+package naothmessages;
+option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+
+message FrameInfo {
+  optional uint32 frameNumber = 1; 
+  optional uint32 time = 2;
+}

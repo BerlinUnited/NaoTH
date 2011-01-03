@@ -24,6 +24,8 @@ Extern/bin/*
 Extern/include/*
 Extern/lib/*
 Extern/share/*
+Extern/etc/*
+Extern/downloads/
 dist/
 build/
 SimpleSoccerAgent/Makefile
@@ -32,3 +34,6 @@ SimpleSoccerAgent/*.make
 NaoTHSoccer/Make/*.mk
 NaoTHSoccer/Make/Makefile
 NaoTHSoccer/Make/*.make
+*.tags
+*.session
+

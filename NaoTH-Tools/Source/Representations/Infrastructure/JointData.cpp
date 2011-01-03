@@ -5,6 +5,8 @@
 #include "Tools/Math/Common.h"
 //#include "Tools/Config/ConfigLoader.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Messages/JointData.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
@@ -211,3 +213,59 @@ void MotorJointData::print(ostream& stream) const
     stream << getJointName((JointData::JointID) i) << "[" << position[i] << ", " << hardness[i] << "]" << endl;
   }//end for
 }//end print
+
+void Serializer<SensorJointData>::serialize(const SensorJointData& representation, std::ostream& stream)
+{
+  naothmessages::SensorJointData message;
+  
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    message.mutable_jointdata()->add_position(representation.position[i]);
+    message.mutable_jointdata()->add_hardness(representation.hardness[i]);
+    message.mutable_jointdata()->add_dp(representation.dp[i]);
+    message.mutable_jointdata()->add_ddp(representation.ddp[i]);
+  }
+  
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    message.add_electriccurrent(representation.electricCurrent[i]);
+    message.add_temperature(representation.temperature[i]);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  message.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<SensorJointData>::deserialize(std::istream& stream, SensorJointData& representation)
+{
+  naothmessages::SensorJointData message;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  message.ParseFromZeroCopyStream(&buf);
+
+  for (int i = 0; i < JointData::numOfJoint && i < message.electriccurrent_size(); i++)
+  {
+    representation.electricCurrent[i] = message.electriccurrent(i);
+  }
+
+  for (int i = 0; i < JointData::numOfJoint && i < message.temperature_size(); i++)
+  {
+    representation.temperature[i] = message.temperature(i);
+  }
+
+  for(int i=0; i < message.jointdata().position().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.position[i] = message.jointdata().position(i);
+  }
+  for(int i=0; i < message.jointdata().hardness().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.hardness[i] = message.jointdata().hardness(i);
+  }
+  for(int i=0; i < message.jointdata().dp().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.dp[i] = message.jointdata().dp(i);
+  }
+  for(int i=0; i < message.jointdata().ddp().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.ddp[i] = message.jointdata().ddp(i);
+  }
+}

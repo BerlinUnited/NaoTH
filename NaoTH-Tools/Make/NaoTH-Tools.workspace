@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Workspace Name="NaoTH-Tools" Database="./NaoTH-Tools.tags">
+  <Project Name="NaoTH-Tools" Path="NaoTH-Tools.project" Active="Yes" />
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="NaoTH-Tools" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="NaoTH-Tools" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

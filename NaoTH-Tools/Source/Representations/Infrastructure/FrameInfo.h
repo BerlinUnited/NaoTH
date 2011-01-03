@@ -8,6 +8,7 @@
 #define __FrameInfo_h_
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
 namespace naoth
@@ -60,5 +61,13 @@ namespace naoth
 
 
   };
+  
+  template<>
+  class Serializer<FrameInfo>
+  {
+    virtual void serialize(const FrameInfo& representation, std::ostream& stream);
+    virtual void deserialize(std::istream& stream, FrameInfo& representation);
+  };
+  
 }
 #endif //__FrameInfo_h_

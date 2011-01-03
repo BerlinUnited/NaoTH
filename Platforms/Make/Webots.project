@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="Webots">
+  <VirtualDirectory Name="Source">
+    <VirtualDirectory Name="Webots">
+      <File Name="../Source/Webots/WebotsController.cpp"/>
+      <File Name="../Source/Webots/main.cpp"/>
+      <File Name="../Source/Webots/WebotsController.h"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Settings Type="Executable">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../NaoTHSoccer/dist/naowebots" IntermediateDirectory="obj/Debug/Webots" Command="./naowebots" CommandArguments="" WorkingDirectory="../../NaoTHSoccer/dist" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g">
+        <IncludePath Value="../Source"/>
+        <IncludePath Value="../../NaoTHSoccer/Source/Core/Cognition"/>
+        <IncludePath Value="../../NaoTHSoccer/Source/Core/Motion"/>
+        <IncludePath Value="../../NaoTH-Tools/Source"/>
+        <IncludePath Value="/usr/local/webots/include/controller/c"/>
+        <IncludePath Value="../Lib/win32/include"/>
+        <IncludePath Value="../../Extern/include"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+        <Preprocessor Value="DEBUG"/>
+      </Compiler>
+      <Linker Required="yes" Options="">
+        <LibraryPath Value="/usr/local/webots/lib" />
+        <LibraryPath Value="../../NaoTHSoccer/dist" />
+        <LibraryPath Value="../../Extern/lib" />
+        <Library Value="naoth-soccer" />
+        <Library Value="naothdebugcom" />
+        <Library Value="naothtools" />
+        <Library Value="Controller" />
+        <Library Value="glib-2.0" />
+        <Library Value="gio-2.0" />
+        <Library Value="gobject-2.0" />
+        <Library Value="protobuf" />
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../NaoTHSoccer/dist/naowebots" IntermediateDirectory="obj/Release/Webots" Command="./naowebots" CommandArguments="" WorkingDirectory="../../NaoTHSoccer/dist" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="">
+        <IncludePath Value="../Source"/>
+        <IncludePath Value="../../NaoTHSoccer/Source/Core/Cognition"/>
+        <IncludePath Value="../../NaoTHSoccer/Source/Core/Motion"/>
+        <IncludePath Value="../../NaoTH-Tools/Source"/>
+        <IncludePath Value="/usr/local/webots/include/controller/c"/>
+        <IncludePath Value="../Lib/win32/include"/>
+        <IncludePath Value="../../Extern/include"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+      </Compiler>
+      <Linker Required="yes" Options="-s">
+        <LibraryPath Value="/usr/local/webots/lib" />
+        <LibraryPath Value="../../NaoTHSoccer/dist" />
+        <LibraryPath Value="../../Extern/lib" />
+        <Library Value="naoth-soccer" />
+        <Library Value="naothdebugcom" />
+        <Library Value="naothtools" />
+        <Library Value="Controller" />
+        <Library Value="glib-2.0" />
+        <Library Value="gio-2.0" />
+        <Library Value="gobject-2.0" />
+        <Library Value="protobuf" />
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies name="Debug">
+    <Project Name="NaoTHSoccer"/>
+    <Project Name="DebugCommunication"/>
+    <Project Name="NaoTH-Tools"/>
+  </Dependencies>
+  <Dependencies name="Release">
+    <Project Name="NaoTHSoccer"/>
+    <Project Name="DebugCommunication"/>
+    <Project Name="NaoTH-Tools"/>
+  </Dependencies>
+</CodeLite_Project>

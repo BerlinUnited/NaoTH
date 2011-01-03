@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="DebugCommunication">
+  <VirtualDirectory Name="Source">
+    <File Name="../Source/DebugServer.h"/>
+    <File Name="../Source/DebugCommunicator.h"/>
+    <File Name="../Source/DebugCommandExecutor.h"/>
+    <File Name="../Source/DebugCommunicator.cpp"/>
+    <File Name="../Source/main.cpp"/>
+    <File Name="../Source/DebugServer.cpp"/>
+  </VirtualDirectory>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../Extern/lib/libnaothdebugcom.a" IntermediateDirectory="obj/Debug" Command="./libnaothdebugcom.a" CommandArguments="" WorkingDirectory="../../Extern/lib" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g">
+        <IncludePath Value="../../NaoTH-Tools/Source"/>
+        <IncludePath Value="../../Extern/include"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+        <Preprocessor Value="DEBUG"/>
+      </Compiler>
+      <Linker Required="yes" Options="">
+        <LibraryPath Value="../../Extern/lib" />
+        <LibraryPath Value="../../NaoTHSoccer/dist" />
+        <Library Value="naothtools" />
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../Extern/lib/libnaothdebugcom.a" IntermediateDirectory="obj/Release" Command="./libnaothdebugcom.a" CommandArguments="" WorkingDirectory="../../Extern/lib" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="">
+        <IncludePath Value="../../NaoTH-Tools/Source"/>
+        <IncludePath Value="../../Extern/include"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+      </Compiler>
+      <Linker Required="yes" Options="-s">
+        <LibraryPath Value="../../Extern/lib" />
+        <LibraryPath Value="../../NaoTHSoccer/dist" />
+        <Library Value="naothtools" />
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies name="Debug">
+    <Project Name="NaoTH-Tools"/>
+  </Dependencies>
+  <Dependencies name="Release">
+    <Project Name="NaoTH-Tools"/>
+  </Dependencies>
+</CodeLite_Project>

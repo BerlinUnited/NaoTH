@@ -1,0 +1,15 @@
+package naothmessages;
+option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+
+message JointData {    
+  repeated double position = 1;
+  repeated double hardness = 2;
+  repeated double dp = 3;
+  repeated double ddp = 4;
+}
+
+message SensorJointData {
+  required JointData jointData = 1;
+  repeated double temperature = 2;
+  repeated double electricCurrent = 3;
+}

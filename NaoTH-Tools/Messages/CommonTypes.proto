@@ -1,0 +1,21 @@
+package naothmessages;
+option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+
+// common types for NaoTH //
+
+message Pose3D {
+  required DoubleVector3 translation = 1;
+  repeated DoubleVector3 rotation = 2;
+}
+
+message DoubleVector {
+  repeated double v = 1;
+}
+
+message DoubleVector3 {
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+}
+
+

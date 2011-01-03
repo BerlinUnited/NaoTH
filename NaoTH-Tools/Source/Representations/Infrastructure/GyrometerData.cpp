@@ -1,5 +1,5 @@
 #include "Representations/Infrastructure/GyrometerData.h"
-#include <commontypes.pb.h>
+#include "Messages/CommonTypes.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
