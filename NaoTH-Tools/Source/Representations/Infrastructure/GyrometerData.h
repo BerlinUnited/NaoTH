@@ -12,6 +12,8 @@
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
+#include "Tools/DataStructures/Serializer.h"
+
 using namespace std;
 
 namespace naoth
@@ -40,6 +42,14 @@ namespace naoth
 
     virtual void print(ostream& stream) const;
   };
+  
+  template<>
+  class Serializer<GyrometerData> 
+  {
+    virtual void serialize(const GyrometerData& representation, std::ostream& stream);
+    virtual void deserialize(std::istream& stream, GyrometerData& representation);
+  };
+  
 }
 #endif	/* _GYROMETERDATA_H */
 

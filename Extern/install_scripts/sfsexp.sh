@@ -6,8 +6,7 @@ if [ "$EXTERN_DIR" == "" ]; then
   exit -1
 fi
 
-wget http://sourceforge.net/projects/sexpr/files/sexpr/1.2.1/sexpr_1.2.1.tar.gz
-tar xvzf sexpr_1.2.1.tar.gz
+tar xvzf ../downloads/sexpr_1.2.1.tar.gz
 cd sexpr_1.2.1/
 ./configure && make
 cp src/*.h $EXTERN_DIR/include/

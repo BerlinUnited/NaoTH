@@ -1,4 +1,6 @@
 #include "Representations/Infrastructure/GyrometerData.h"
+#include <commontypes.pb.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
@@ -44,3 +46,32 @@ void GyrometerData::print(ostream& stream) const
     stream << getGyrometerName((GyrometerID)i) << " = " << data[i]  << endl;
   }//end for
 }//end print
+
+void Serializer<GyrometerData>::serialize(const GyrometerData& representation, std::ostream& stream)
+{
+  naothmessages::DoubleVector msg;
+  for(size_t i=0; i< GyrometerData::numOfGyrometer; i++)
+  {
+    msg.add_v(representation.data[i]);
+    msg.add_v(representation.rawData[i]);
+  }
+  msg.add_v(representation.rawData[GyrometerData::numOfGyrometer]);
+
+  ::google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<GyrometerData>::deserialize(std::istream& stream, GyrometerData& representation)
+{
+  naothmessages::DoubleVector msg;
+
+  ::google::protobuf::io::IstreamInputStream buf(&stream);
+  msg.ParseFromZeroCopyStream(&buf);
+
+  for(int i=0; i<GyrometerData::numOfGyrometer; i++)
+  {
+    representation.data[i] = msg.v(i*2);
+    representation.rawData[i] = msg.v(i*2+1);
+  }
+  representation.rawData[GyrometerData::numOfGyrometer] = msg.v(msg.v_size()-1);  
+}

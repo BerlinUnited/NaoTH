@@ -2,6 +2,12 @@
 
 export EXTERN_DIR="$PWD"
 
+if [ ! -d downloads ]; then
+  echo ".::ERROR::. no downloaded files, please execute ./download.sh or download the necessary files by hand"
+  echo ".::ERROR::. will exit"
+  exit -1
+fi
+
 # create _tmp and step into it
 mkdir _tmp
 cd _tmp
@@ -16,5 +22,5 @@ echo "Installing glib library"
 cd ..
 rm -Rf _tmp 
 
-# complie and install source code
+# compile and install projects that are included as source code
 cd Make && premake4 gmake && make && premake4 install && cd ..
