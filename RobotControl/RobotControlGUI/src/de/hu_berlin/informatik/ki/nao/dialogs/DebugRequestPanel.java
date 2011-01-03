@@ -22,11 +22,7 @@ import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import javax.swing.JPanel;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
@@ -115,10 +111,6 @@ public class DebugRequestPanel extends javax.swing.JPanel
   public void init()
   {
     debugRequestTree = new CheckboxTree();
-
-    debugRequestTree.insertPath("trajectory/mypath/debug_request1");
-    debugRequestTree.insertPath("trajectory/mypath/debug_request2");
-    debugRequestTree.insertPath("debug/mypath/debug_request1");
 
     add(debugRequestTree, BorderLayout.CENTER);
 
