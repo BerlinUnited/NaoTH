@@ -132,7 +132,10 @@ public class DebugRequestPanel extends javax.swing.JPanel
         if(path != null)
         {
           SelectableTreeNode node = (SelectableTreeNode) path.getLastPathComponent();
-          sendCommand(path, node.isSelected());
+          if(node.isLeaf())
+          {
+            sendCommand(path, node.isSelected());
+          }
         }
       }
 
