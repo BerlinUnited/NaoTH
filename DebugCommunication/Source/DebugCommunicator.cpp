@@ -85,9 +85,16 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
     gsize pos = 0;
     while(pos < size -1)
     {
-      pos += g_socket_send(connection, data+pos, size-pos, NULL, &err);
+      if(err == NULL)
+      {
+        pos += g_socket_send(connection, data+pos, size-pos, NULL, &err);
+      }
     }
-    g_socket_send(connection, &zero, sizeof(char), NULL, &err);
+    
+    if(err == NULL)
+    {
+      g_socket_send(connection, &zero, sizeof(char), NULL, &err);
+    }
     
     if (err) return err;
   }//end if
