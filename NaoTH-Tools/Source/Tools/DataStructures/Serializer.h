@@ -1,6 +1,8 @@
 #ifndef SERIALIZER_H
 #define SERIALIZER_H
 
+#include <typeinfo>
+
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/DataStructures/Singleton.h"
 #include "Tools/DataStructures/Streamable.h"
@@ -21,10 +23,12 @@ namespace naoth
       static void serialize(const T& representation, std::ostream& stream)
       {
         // do nothing
+        //std::cout << "no serizalizer for " << typeid(T).name() << std::endl;
       }
       static void deserialize(const std::istream& stream, T& representation)
       {
         // do nothing
+        //std::cout << "no deserizalizer for " << typeid(T).name() << std::endl;
       }
   };
   

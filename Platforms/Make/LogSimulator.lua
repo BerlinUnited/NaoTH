@@ -5,13 +5,12 @@ project "LogSimulator"
    
   print("Generating files for logsimulator")
   includedirs {
-    "../Source/", 
+	"../Source/",
 	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
-  "../Lib/win32/include/", 
-  "../../Extern/include/",
-  "../../Extern/include/glib-2.0/",
-  "../../Extern/lib/glib-2.0/include/"}
+	"../../Extern/include/",
+	"../../Extern/include/glib-2.0/",
+	"../../Extern/lib/glib-2.0/include/"}
   
   files{"../Source/LogSimulator/**.cpp","../Source/LogSimulator/**.h"}
   

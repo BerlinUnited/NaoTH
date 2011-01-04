@@ -14,9 +14,11 @@ Debug::Debug() : cognitionLogger("log")
   // TODO: use the player and team number for defining the port
   CognitionDebugServer::getInstance().start(5401);
 
+  // default debug requests
+  REGISTER_DEBUG_COMMAND("image", "get the image of the robot", this);
   REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
-  GyrometerData test;
-  cognitionLogger.addRepresentation(&test, "GyrometerData");
+  
+  cognitionLogger.addRepresentation(&getGyrometerData(), "GyrometerData");
   cognitionLogger.addRepresentation(&(getFrameInfo()), "FrameInfo");
 }
 
@@ -27,7 +29,17 @@ void Debug::execute()
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
 {
-  if(command == "ping")
+  if (command == "image")
+  {
+    // add the drawings to the image
+    //DebugImageDrawings::getInstance().drawToImage((Image&) theImage);
+    
+    //STOPWATCH_START("sendImage");
+    Serializer<Image>::serialize(getImage(), outstream);
+    //STOPWATCH_STOP("sendImage");
+
+  }
+  else if(command == "ping")
   {
     outstream << "pong";
   }

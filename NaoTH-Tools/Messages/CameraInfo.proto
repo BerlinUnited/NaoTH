@@ -1,0 +1,29 @@
+package naothmessages;
+option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+option java_outer_classname = "CameraInfoMsg";
+
+
+message CameraInfo {
+  
+  enum CameraID {
+    top = 0;
+    bottom = 1;
+  }
+  
+  required int32 resolutionWidth = 1;
+  required int32 resolutionHeight = 2;
+  
+  optional CameraID cameraID = 4 [default=bottom];
+  
+  optional double focalLength = 5;
+  optional double openingAngleWidth = 6;
+  optional double openingAngleHeight = 7;
+  optional double opticalCenterX = 8;
+  optional double opticalCenterY = 9;
+
+  optional int64 size = 10;
+  optional int64 memorysize = 11;
+
+  optional double cameraRollOffset = 12;
+  optional double cameraTiltOffset = 13;
+}

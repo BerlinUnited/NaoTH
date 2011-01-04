@@ -12,7 +12,6 @@
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Streamable.h"
-
 #include "Tools/DataStructures/Serializer.h"
 
 using namespace std;

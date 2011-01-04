@@ -75,8 +75,9 @@ void protobuf_AddDesc_CameraMatrix_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\022CameraMatrix.proto\022\rnaothmessages\032\021Com"
     "monTypes.proto\"3\n\014CameraMatrix\022#\n\004pose\030\001"
-    " \002(\0132\025.naothmessages.Pose3DB)\n\'de.hu_ber"
-    "lin.informatik.ki.nao.messages", 150);
+    " \002(\0132\025.naothmessages.Pose3DB:\n\'de.hu_ber"
+    "lin.informatik.ki.nao.messagesB\017CameraMa"
+    "trixMsg", 167);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "CameraMatrix.proto", &protobuf_RegisterTypes);
   CameraMatrix::default_instance_ = new CameraMatrix();

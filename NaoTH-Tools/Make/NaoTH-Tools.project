@@ -116,11 +116,15 @@
       <File Name="../Source/ModuleFramework/Module.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="Messages">
+      <File Name="../Source/Messages/CameraInfo.pb.cc"/>
       <File Name="../Source/Messages/CommonTypes.pb.cc"/>
       <File Name="../Source/Messages/FrameInfo.pb.cc"/>
       <File Name="../Source/Messages/JointData.pb.cc"/>
       <File Name="../Source/Messages/CameraMatrix.pb.cc"/>
+      <File Name="../Source/Messages/Image.pb.cc"/>
       <File Name="../Source/Messages/FrameInfo.pb.h"/>
+      <File Name="../Source/Messages/CameraInfo.pb.h"/>
+      <File Name="../Source/Messages/Image.pb.h"/>
       <File Name="../Source/Messages/JointData.pb.h"/>
       <File Name="../Source/Messages/CameraMatrix.pb.h"/>
       <File Name="../Source/Messages/CommonTypes.pb.h"/>

@@ -65,7 +65,7 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
   GError* err = internalSendMessage(data, size);
   if (err)
   {
-    g_error("(SocketException in sendMessage) %s", err->message);
+    g_warning("(SocketException in sendMessage) %s", err->message);
 
     g_error_free(err);
 
@@ -77,14 +77,21 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
 
 GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 {
+  //g_debug("internalSendMessage begin");
+  char zero = '\0';
   GError* err = NULL;
   if (connection != NULL)
   {
-    g_socket_send(connection, data, size, NULL, &err);
+    gsize pos = 0;
+    while(pos < size -1)
+    {
+      pos += g_socket_send(connection, data+pos, size-pos, NULL, &err);
+    }
+    g_socket_send(connection, &zero, sizeof(char), NULL, &err);
     
     if (err) return err;
   }//end if
-
+  //g_debug("internalSendMessage end");
   return NULL;
 }//end sendMessage
 

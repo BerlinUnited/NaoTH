@@ -1,5 +1,6 @@
 package naothmessages;
 option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+option java_outer_classname = "CameraMatrixMsg";
 
 import "CommonTypes.proto";
 

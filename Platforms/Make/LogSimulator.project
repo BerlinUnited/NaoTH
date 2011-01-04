@@ -17,7 +17,6 @@
         <IncludePath Value="../../NaoTHSoccer/Source/Core/Cognition"/>
         <IncludePath Value="../../NaoTHSoccer/Source/Core/Motion"/>
         <IncludePath Value="../../NaoTH-Tools/Source"/>
-        <IncludePath Value="../Lib/win32/include"/>
         <IncludePath Value="../../Extern/include"/>
         <IncludePath Value="../../Extern/include/glib-2.0"/>
         <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
@@ -55,7 +54,6 @@
         <IncludePath Value="../../NaoTHSoccer/Source/Core/Cognition"/>
         <IncludePath Value="../../NaoTHSoccer/Source/Core/Motion"/>
         <IncludePath Value="../../NaoTH-Tools/Source"/>
-        <IncludePath Value="../Lib/win32/include"/>
         <IncludePath Value="../../Extern/include"/>
         <IncludePath Value="../../Extern/include/glib-2.0"/>
         <IncludePath Value="../../Extern/lib/glib-2.0/include"/>

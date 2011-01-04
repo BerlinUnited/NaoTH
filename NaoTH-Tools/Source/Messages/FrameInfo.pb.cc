@@ -75,8 +75,8 @@ void protobuf_AddDesc_FrameInfo_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\017FrameInfo.proto\022\rnaothmessages\".\n\tFram"
     "eInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001(\r"
-    "B)\n\'de.hu_berlin.informatik.ki.nao.messa"
-    "ges", 123);
+    "B7\n\'de.hu_berlin.informatik.ki.nao.messa"
+    "gesB\014FrameInfoMsg", 137);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "FrameInfo.proto", &protobuf_RegisterTypes);
   FrameInfo::default_instance_ = new FrameInfo();

@@ -36,31 +36,31 @@
 
 #define CYCLE_TIME 20
 
-namespace naoth
+using namespace naoth;
+
+class Simulator : public PlatformInterface<Simulator>
 {
-  class Simulator : public PlatformInterface<Simulator>
-  {
-  public:
-    Simulator(const char* filePath, bool compatibleMode, bool backendMode);
-    ~Simulator();
+public:
+  Simulator(const char* filePath, bool compatibleMode, bool backendMode);
+  ~Simulator();
 
-    virtual string getHardwareIdentity() const { return "logsimulator"; }
+  virtual string getHardwareIdentity() const { return "logsimulator"; }
 
-    virtual string getBodyID() { return "naoth-logsimulator"; }
+  virtual string getBodyID() { return "naoth-logsimulator"; }
 
-    virtual string getBodyNickName() {return "naoth"; }
+  virtual string getBodyNickName() {return "naoth"; }
 
-    void main();
-    void printHelp();
-    void printCurrentLineInfo();
+  void main();
+  void printHelp();
+  void printCurrentLineInfo();
 
-    void stepForward();
-    void stepBack();
-    void jumpToBegin();
-    void jumpToEnd();
-    void jumpTo(unsigned int position);
-    void play();
-    void loop();
+  void stepForward();
+  void stepBack();
+  void jumpToBegin();
+  void jumpToEnd();
+  void jumpTo(unsigned int position);
+  void play();
+  void loop();
 
 //    virtual void getCognitionInput();
 //    virtual void getMotionInput();
@@ -71,88 +71,88 @@ namespace naoth
 //    virtual bool registerCognitionOutput(const PlatformInterchangeable* data, const std::string& name);
 //    virtual bool registerMotionOutput(const PlatformInterchangeable* data, const std::string& name);
 
-    template<class T> void generalGet(T& data, std::string name);
+  template<class T> void generalGet(T& data, std::string name);
 
-    /////////////////////// get ///////////////////////
-    #define SIM_GET(rep) virtual void get(rep& data) {generalGet(data,#rep);}
-    virtual void get(unsigned int& /*timestamp*/){};
+  /////////////////////// get ///////////////////////
+  #define SIM_GET(rep) virtual void get(rep& data) {generalGet(data,#rep);}
+  virtual void get(unsigned int& /*timestamp*/){};
 
-    SIM_GET(FrameInfo);
-    SIM_GET(SensorJointData);
-    SIM_GET(AccelerometerData);
-    SIM_GET(Image);
-    SIM_GET(GyrometerData);
-    SIM_GET(FSRData);
-    SIM_GET(InertialSensorData);
-    SIM_GET(BumperData);
-    SIM_GET(IRReceiveData);
-    SIM_GET(CurrentCameraSettings);
-    SIM_GET(ButtonData);
-    SIM_GET(BatteryData);
-    SIM_GET(UltraSoundReceiveData);
+  SIM_GET(FrameInfo);
+  SIM_GET(SensorJointData);
+  SIM_GET(AccelerometerData);
+  SIM_GET(Image);
+  SIM_GET(GyrometerData);
+  SIM_GET(FSRData);
+  SIM_GET(InertialSensorData);
+  SIM_GET(BumperData);
+  SIM_GET(IRReceiveData);
+  SIM_GET(CurrentCameraSettings);
+  SIM_GET(ButtonData);
+  SIM_GET(BatteryData);
+  SIM_GET(UltraSoundReceiveData);
 
-    /////////////////////// set ///////////////////////
-    virtual void set(const MotorJointData& /*data*/){};
+  /////////////////////// set ///////////////////////
+  virtual void set(const MotorJointData& /*data*/){};
 
-    virtual void set(const CameraSettingsRequest& /*data*/){};
+  virtual void set(const CameraSettingsRequest& /*data*/){};
 
-    virtual void set(const LEDData& /*data*/){};
+  virtual void set(const LEDData& /*data*/){};
 
-    virtual void set(const IRSendData& /*data*/){};
+  virtual void set(const IRSendData& /*data*/){};
 
-    virtual void set(const UltraSoundSendData& /*data*/){};
+  virtual void set(const UltraSoundSendData& /*data*/){};
 
-    virtual void set(const SoundData& /*data*/){};
+  virtual void set(const SoundData& /*data*/){};
 
-    /////////////////////// init ///////////////////////
-    virtual void init();
-    
+  /////////////////////// init ///////////////////////
+  virtual void init();
+  
 
-  private:
-    bool noFrameInfo;
-    unsigned int startFrameTime;
+private:
+  bool noFrameInfo;
+  unsigned int startFrameTime;
 
-    std::ifstream logFile;
+  std::ifstream logFile;
 
-    std::list<unsigned int> frames;
-    std::set<std::string> includedRepresentations;
-    unsigned int maxFrame;
-    unsigned int minFrame;
+  std::list<unsigned int> frames;
+  std::set<std::string> includedRepresentations;
+  unsigned int maxFrame;
+  unsigned int minFrame;
 
-    std::map<std::string, std::string> representations;
+  std::map<std::string, std::string> representations;
 
-    list<unsigned int>::iterator currentFrame;
-    unsigned int lastFrameTime;
+  list<unsigned int>::iterator currentFrame;
+  unsigned int lastFrameTime;
 
-    std::map<unsigned int, streampos> frameNumber2PosStart;
-    std::map<unsigned int, streampos> frameNumber2PosEnd;
-    
-    char getInput();
+  std::map<unsigned int, streampos> frameNumber2PosStart;
+  std::map<unsigned int, streampos> frameNumber2PosEnd;
+  
+  char getInput();
 
-    /**
-     * reads in the frame which begins at the current frame position and executes
-     * the "processes"
-     */
-    void executeCurrentFrame();
+  /**
+   * reads in the frame which begins at the current frame position and executes
+   * the "processes"
+   */
+  void executeCurrentFrame();
 
-    /** 
-     * if the frame info is not available: create new one
-     * the time grows monotonously
-     */
-    void adjust_frame_time();
+  /** 
+   * if the frame info is not available: create new one
+   * the time grows monotonously
+   */
+  void adjust_frame_time();
 
-    bool compatibleExecute(const string& name, size_t dataSize);
+  bool compatibleExecute(const string& name, size_t dataSize);
 
-    /** Initially parses the file */
-    void parseFile();
+  /** Initially parses the file */
+  void parseFile();
 
-    /** If true, do some corrections to the logfiles to be more compatible to old ones */
-    bool compatibleMode;
+  /** If true, do some corrections to the logfiles to be more compatible to old ones */
+  bool compatibleMode;
 
-    // the flag for backend mode, which is used by LogfilePlayer of RobotControl
-    bool backendMode;
-  };
-}
+  // the flag for backend mode, which is used by LogfilePlayer of RobotControl
+  bool backendMode;
+};
+
 #endif	/* _SIMULATOR_H */
 
 

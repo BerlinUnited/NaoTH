@@ -6,6 +6,7 @@
  */
 
 #include <glib.h>
+#include <glib-object.h>
 
 #include <SimSpark/SimSparkController.h>
 

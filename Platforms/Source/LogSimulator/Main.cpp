@@ -6,6 +6,8 @@
  */
 
 #include <glib.h>
+#include <glib-object.h>
+
 
 #include "Cognition.h"
 #include "Motion.h"
@@ -20,7 +22,7 @@ using namespace std;
  */
 int main(int argc, char** argv)
 {
-  g_thread_init(NULL);
+  g_type_init();
   
   bool compatibleMode = false;
   bool backendMode = false;
@@ -67,7 +69,7 @@ int main(int argc, char** argv)
   Cognition theCognition;
   Motion theMotion;
   
-  naoth::Simulator sim(logpath, compatibleMode, backendMode);
+  Simulator sim(logpath, compatibleMode, backendMode);
   
   sim.registerCallbacks(&theMotion, &theCognition);
   

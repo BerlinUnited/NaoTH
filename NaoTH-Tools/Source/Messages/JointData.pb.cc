@@ -104,8 +104,8 @@ void protobuf_AddDesc_JointData_2eproto() {
     "\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017SensorJoin"
     "tData\022+\n\tjointData\030\001 \002(\0132\030.naothmessages"
     ".JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017elect"
-    "ricCurrent\030\003 \003(\001B)\n\'de.hu_berlin.informa"
-    "tik.ki.nao.messages", 259);
+    "ricCurrent\030\003 \003(\001B7\n\'de.hu_berlin.informa"
+    "tik.ki.nao.messagesB\014JointDataMsg", 273);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "JointData.proto", &protobuf_RegisterTypes);
   JointData::default_instance_ = new JointData();

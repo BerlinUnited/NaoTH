@@ -27,7 +27,7 @@ public class SimpleTester
       server.addCommandSender(new TestSender());
       try
       {
-        Thread.sleep(5000);
+        Thread.sleep(5000000);
 
         server.disconnect();
 
@@ -69,7 +69,7 @@ public class SimpleTester
     public Command getCurrentCommand()
     {
       Command c = new Command();
-      c.setName("ping");
+      c.setName("image");
       return c;
     }
     
