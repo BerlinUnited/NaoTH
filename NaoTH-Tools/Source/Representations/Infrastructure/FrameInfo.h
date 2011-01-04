@@ -9,6 +9,7 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/DataStructures/Streamable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
 namespace naoth
@@ -17,7 +18,7 @@ namespace naoth
   * @class FrameInfo
   * A class that contains information on the current frame.
   */
-  class FrameInfo : public Printable, public PlatformInterchangeable
+  class FrameInfo : public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
     /**
@@ -65,8 +66,9 @@ namespace naoth
   template<>
   class Serializer<FrameInfo>
   {
-    static void serialize(const FrameInfo& representation, std::ostream& stream);
-    static void deserialize(std::istream& stream, FrameInfo& representation);
+    public:
+      static void serialize(const FrameInfo& representation, std::ostream& stream);
+      static void deserialize(std::istream& stream, FrameInfo& representation);
   };
   
 }

@@ -85,13 +85,6 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
   }
 }
 
-template<class T>
-void Logger::addRepresentation(const T* representation, std::string name)
-{
-  streamables[name] = representation;
-  serializers[name] = &naoth::Serializer<T>::serialize;
-}
-
 void Logger::log(unsigned int frameNum)
 {
   if (!activated && !activatedOnce) return;

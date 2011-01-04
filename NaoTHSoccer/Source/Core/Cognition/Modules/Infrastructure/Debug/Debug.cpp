@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Debug.cpp
  * Author: thomas
- * 
+ *
  * Created on 11. November 2010, 18:32
  */
 
@@ -9,12 +9,15 @@
 
 #include "Core/Cognition/CognitionDebugServer.h"
 
-Debug::Debug()
+Debug::Debug() : cognitionLogger("log")
 {
   // TODO: use the player and team number for defining the port
   CognitionDebugServer::getInstance().start(5401);
 
   REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
+  GyrometerData test;
+  cognitionLogger.addRepresentation(&test, "GyrometerData");
+  cognitionLogger.addRepresentation(&(getFrameInfo()), "FrameInfo");
 }
 
 void Debug::execute()

@@ -26,6 +26,20 @@ Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode
 compatibleMode(compatibleMode),
   backendMode(backendMode)
 {
+  registerInput<AccelerometerData>(*this);
+  registerInput<FrameInfo>(*this);
+  registerInput<SensorJointData>(*this);
+  registerInput<Image>(*this);
+  registerInput<FSRData>(*this);
+  registerInput<GyrometerData>(*this);
+  registerInput<InertialSensorData>(*this);
+  registerInput<BumperData>(*this);
+  registerInput<IRReceiveData>(*this);
+  registerInput<CurrentCameraSettings>(*this);
+  registerInput<ButtonData>(*this);
+  registerInput<BatteryData>(*this);
+  registerInput<UltraSoundReceiveData>(*this); 
+  
   logFile.open(filePath, ios::in | ios::binary);
 
   if(logFile.fail())
@@ -38,16 +52,8 @@ compatibleMode(compatibleMode),
 }
 
 void Simulator::init()
-{
+{  
   
-//  logableCognitionRepresentations["FrameInfo"] = &(theFrameInfoStream.theFrameInfo);
-//  logableCognitionRepresentations["CameraMatrix"] = &(theCameraMatrixStream.theCameraMatrix);
-//  logableCognitionRepresentations["BehaviorStatus"] = &(theBehaviorStatusStream.theBehaviorStatus);
-//  logableCognitionRepresentations["MotionRequest"] = &(theMotionRequestStream.theMotionRequest);
-//  logableCognitionRepresentations["BallPercept"] = &(theBallPerceptStream.theBallPercept);
-//  logableCognitionRepresentations["GoalPercept"] = &(theGoalPerceptStream.theGoalPercept);
-//  logableCognitionRepresentations["LinePercept"] = &(theLinePerceptStream.theLinePercept);
-
 
   // print all representations included in the logfile
   std::cout << "-----------------------------------------" << std::endl;
@@ -309,13 +315,16 @@ void Simulator::jumpTo(unsigned int position)
 }
 
 void Simulator::executeCurrentFrame()
-{
+{  
+  //std::cout << "begin executeCurrentFrame" << std::endl;
   //unsigned int i = (*currentFrame);
   std::streampos start = frameNumber2PosStart[(*currentFrame)];
   std::streampos end = frameNumber2PosEnd[*currentFrame];
 
   logFile.clear();
   logFile.seekg(start);
+  
+  representations.clear();
 
   while(!logFile.fail() && logFile.tellg() < end)
   {
@@ -349,31 +358,10 @@ void Simulator::executeCurrentFrame()
       char* c = new char[dataSize];
       logFile.read(c, dataSize);
       s.write(c,dataSize);
-
-      // just use the default streaming operator
-      for (std::map<std::string, Streamable*>::iterator iter = logableCognitionRepresentations.begin();
-        iter != logableCognitionRepresentations.end(); ++iter)
-      {
-        if (name == iter->first || (name == "GryometerData" && iter->first == "GyrometerData"))
-        {
-          found = true;
-          stringstream ss(s.str());
-          // TODO
-          //iter->second->fromDataStream(ss);
-        }
-      }
-      for (std::map<std::string, Streamable*>::iterator iter = logableMotionRepresentations.begin();
-        iter != logableMotionRepresentations.end(); ++iter)
-      {
-        if (name == iter->first)
-        {
-          found = true;
-
-          stringstream ss(s.str());
-          // TODO
-          //iter->second->fromDataStream(ss);
-        }
-      }
+      
+      representations[name] = s.str();      
+      found = true; // we always read in/buffer the string data of all logged representations
+      
       delete[] c;
     }//end if
 
@@ -407,10 +395,17 @@ void Simulator::executeCurrentFrame()
         logFile.seekg(dataSize, ios_base::cur);
     }
   }
-  // execute
-
+  
   adjust_frame_time();
+  
+  // execute
+  callCognition();
+  callMotion();
+  
+  //std::cout << "end executeCurrentFrame" << std::endl;
+
   printCurrentLineInfo();
+
 }
 
 
@@ -432,10 +427,7 @@ void Simulator::adjust_frame_time()
   else
   {
     // read the actual frame info
-    // TODO
-//    stringstream ss;
-//    logableCognitionRepresentations["FrameInfo"]->toDataStream(ss);
-//    f.ParseFromString(ss.str());
+    f.ParseFromString(representations["FrameInfo"]);
     unsigned int frameTime = f.time();
 
     // adjust the frame time
@@ -457,10 +449,8 @@ void Simulator::adjust_frame_time()
   f.set_time(current_time);
 
   // write the result back
-  // TODO
-//  string result = f.SerializeAsString();
-//  stringstream ss(result);
-//  logableCognitionRepresentations["FrameInfo"]->fromDataStream(ss);
+  string result = f.SerializeAsString();
+  representations["FrameInfo"] = result;
 }//end adjust_frame_time
 
 
@@ -603,107 +593,23 @@ void Simulator::parseFile()
 }//end parseFile
 
 
+///// Getter/Setter /////
+
+template<class T>
+void Simulator::generalGet(T& data, std::string name)
+{
+  if(representations.find(name) != representations.end())
+  {
+    
+  //std::cout << "getting " << name << std::endl;
+    std::stringstream stream(representations[name]);
+    Serializer<T>::deserialize(stream, data);
+  }
+}
+
+
+///// end Getter/Setter /////
+
 Simulator::~Simulator()
 {
 }
-
-//void Simulator::getCognitionInput()
-//{
-//  // nothing to do
-//}
-//
-//void Simulator::getMotionInput()
-//{
-//  // nothing to do
-//}
-//
-//bool Simulator::registerCognitionInput(PlatformInterchangeable* data, const std::string& name)
-//{
-//  cout << platformName << " registering cognition input: " << name;
-//
-//  if ( logableCognitionRepresentations.find(name) != logableCognitionRepresentations.end() )
-//  {
-//    THROW(name + " is already registered!");
-//    return false;
-//  }
-//
-//  if(dynamic_cast<Streamable*>(data) != NULL)
-//  {
-//    logableCognitionRepresentations[name] = dynamic_cast<Streamable*>(data);
-//    cout << " ok";
-//  }
-//  else
-//  {
-//    cout << " N/A";
-//  }
-//  cout << endl;
-//
-//  if (compatibleMode)
-//  {
-//    PlatformInterface::registerCognitionInput(data, name);
-//  }
-//
-//  return true;
-//}
-//
-//bool Simulator::registerMotionInput(PlatformInterchangeable* data, const std::string& name)
-//{
-//  cout << platformName << " registering motion input: "<< name;
-//
-//  if (logableMotionRepresentations.find(name) != logableMotionRepresentations.end())
-//  {
-//    THROW(name + " is already registered!");
-//    return false;
-//  }
-//
-//  if(dynamic_cast<Streamable*>(data) != NULL)
-//  {
-//    logableMotionRepresentations[name] = dynamic_cast<Streamable*>(data);
-//    cout << " ok";
-//  }
-//  else
-//  {
-//    cout << " N/A";
-//  }
-//  cout << endl;
-//
-//  if (compatibleMode)
-//  {
-//    PlatformInterface::registerMotionInput(data, name);
-//  }
-//
-//  return true;
-//}
-//
-//void Simulator::setCognitionOutput()
-//{
-//  // nothing to do
-//}
-//
-//void Simulator::setMotionOutput()
-//{
-//  // nothing to do
-//}
-//
-//bool Simulator::registerCognitionOutput(const PlatformInterchangeable* /*data*/, const std::string& /*name*/)
-//{
-//  // nothing to do
-//  return true;
-//}
-//
-//bool Simulator::registerMotionOutput(const PlatformInterchangeable* data, const std::string& name)
-//{
-//  cout<<platformName<<" register motion input: "<< name <<endl;
-//
-//  if (logableMotionRepresentations.find(name) != logableMotionRepresentations.end())
-//  {
-//    THROW(name + " is already registered!");
-//    return false;
-//  }
-//
-//  if(dynamic_cast<const Streamable*>(data) != NULL)
-//  {
-//    logableMotionRepresentations[name] = const_cast<Streamable*>(dynamic_cast<const Streamable*>(data));
-//  }
-//  return true;
-//}

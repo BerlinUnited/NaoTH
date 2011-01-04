@@ -8,7 +8,10 @@ namespace naoth
 
 class Streamable
 {
+  public:
   
+  virtual void dummyStreamable() {};
+  virtual ~Streamable() {};
 };
 
 }

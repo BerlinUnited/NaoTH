@@ -5,6 +5,11 @@
  * Created on 27. November 2008, 17:20
  */
 
+#include <glib.h>
+
+#include "Cognition.h"
+#include "Motion.h"
+
 #include <cstring>
 #include "Simulator.h"
 
@@ -15,7 +20,8 @@ using namespace std;
  */
 int main(int argc, char** argv)
 {
-
+  g_thread_init(NULL);
+  
   bool compatibleMode = false;
   bool backendMode = false;
 
@@ -57,8 +63,14 @@ int main(int argc, char** argv)
 		cerr << "when using \"-c\" you are forcing a compatible mode" << endl;
 		return (EXIT_FAILURE);
 	}
-
+  
+  Cognition theCognition;
+  Motion theMotion;
+  
   naoth::Simulator sim(logpath, compatibleMode, backendMode);
+  
+  sim.registerCallbacks(&theMotion, &theCognition);
+  
   sim.main();
 
   return (EXIT_SUCCESS);

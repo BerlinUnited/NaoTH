@@ -26,7 +26,11 @@ public:
 
   /** add a representation then it can be logged,
    */
-  template<class T> void addRepresentation(const T* representation, std::string name);
+  template<class T> void addRepresentation(const T* representation, std::string name)
+  {
+    streamables[name] = representation;
+    serializers[name] = &naoth::StreamableSerializer::serialize;
+  }
 
   void log(unsigned int frameNum);
 

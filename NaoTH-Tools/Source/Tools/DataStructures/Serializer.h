@@ -27,6 +27,19 @@ namespace naoth
         // do nothing
       }
   };
+  
+  class StreamableSerializer
+  {
+    public:
+      static void serialize(const Streamable& representation, std::ostream& stream)
+      {
+        // do nothing
+      }
+      static void deserialize(const std::istream& stream, Streamable& representation)
+      {
+        // do nothing
+      }
+  };
 
 }
 

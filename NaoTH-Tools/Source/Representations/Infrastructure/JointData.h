@@ -103,6 +103,7 @@ namespace naoth
   template<>
   class Serializer<SensorJointData>
   {
+    public:
     static void serialize(const SensorJointData& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, SensorJointData& representation);
   };

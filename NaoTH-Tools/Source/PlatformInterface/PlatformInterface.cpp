@@ -26,7 +26,7 @@ PlatformDataInterface::~PlatformDataInterface()
 
 
 void PlatformDataInterface::callCognition()
-{
+{  
   // TODO: assert?
   if(cognitionCallback != NULL)
   {

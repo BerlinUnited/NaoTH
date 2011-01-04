@@ -71,35 +71,25 @@ namespace naoth
 //    virtual bool registerCognitionOutput(const PlatformInterchangeable* data, const std::string& name);
 //    virtual bool registerMotionOutput(const PlatformInterchangeable* data, const std::string& name);
 
-  public:
+    template<class T> void generalGet(T& data, std::string name);
+
     /////////////////////// get ///////////////////////
+    #define SIM_GET(rep) virtual void get(rep& data) {generalGet(data,#rep);}
     virtual void get(unsigned int& /*timestamp*/){};
 
-    virtual void get(FrameInfo& /*data*/){};
-
-    virtual void get(SensorJointData& /*data*/){};
-
-    virtual void get(AccelerometerData& /*data*/){};
-
-    virtual void get(Image& /*data*/){};
-
-    virtual void get(GyrometerData& /*data*/){};
-
-    virtual void get(FSRData& /*data*/){};
-
-    virtual void get(InertialSensorData& /*data*/){};
-
-    virtual void get(BumperData& /*data*/){};
-
-    virtual void get(IRReceiveData& /*data*/){};
-
-    virtual void get(CurrentCameraSettings& /*data*/){};
-
-    virtual void get(ButtonData& /*data*/){};
-
-    virtual void get(BatteryData& /*data*/){};
-
-    virtual void get(UltraSoundReceiveData& /*data*/) {};
+    SIM_GET(FrameInfo);
+    SIM_GET(SensorJointData);
+    SIM_GET(AccelerometerData);
+    SIM_GET(Image);
+    SIM_GET(GyrometerData);
+    SIM_GET(FSRData);
+    SIM_GET(InertialSensorData);
+    SIM_GET(BumperData);
+    SIM_GET(IRReceiveData);
+    SIM_GET(CurrentCameraSettings);
+    SIM_GET(ButtonData);
+    SIM_GET(BatteryData);
+    SIM_GET(UltraSoundReceiveData);
 
     /////////////////////// set ///////////////////////
     virtual void set(const MotorJointData& /*data*/){};
@@ -129,22 +119,13 @@ namespace naoth
     unsigned int maxFrame;
     unsigned int minFrame;
 
+    std::map<std::string, std::string> representations;
+
     list<unsigned int>::iterator currentFrame;
     unsigned int lastFrameTime;
 
     std::map<unsigned int, streampos> frameNumber2PosStart;
     std::map<unsigned int, streampos> frameNumber2PosEnd;
-    std::map<std::string, Streamable*> logableCognitionRepresentations;
-    std::map<std::string, Streamable*> logableMotionRepresentations;
-
-  //  REPRESENTATION_PROVIDER(PlayerInfoInitializer, Cognition, PlayerInfo);
-  //  REPRESENTATION_PROVIDER(FrameInfoStream, Cognition, FrameInfo);
-  //  REPRESENTATION_PROVIDER(CameraMatrixStream, Cognition, CameraMatrix);
-  //  REPRESENTATION_PROVIDER(BehaviorStatusStream, Cognition, BehaviorStatus);
-  //  REPRESENTATION_PROVIDER(MotionRequestStream, Cognition, MotionRequest);
-  //  REPRESENTATION_PROVIDER(BallPerceptStream, Cognition, BallPercept);
-  //  REPRESENTATION_PROVIDER(LinePerceptStream, Cognition, LinePercept);
-  //  REPRESENTATION_PROVIDER(GoalPerceptStream, Cognition, GoalPercept);
     
     char getInput();
 
