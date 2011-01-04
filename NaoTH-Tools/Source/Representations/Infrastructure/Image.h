@@ -15,6 +15,8 @@
 #include "Tools/Math/Vector3.h"
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Streamable.h"
+#include "Tools/DataStructures/Serializer.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/ImageProcessing/ImagePrimitives.h"
 
@@ -27,7 +29,7 @@ namespace naoth
   /**
    * Platform independend definition of an image class
    */
-  class Image: public Printable, public PlatformInterchangeable
+  class Image: public Printable, public PlatformInterchangeable, public Streamable
   {
 
   public:
@@ -146,6 +148,14 @@ namespace naoth
   private:
     bool selfCreatedImage;
 
+  };
+  
+  template<>
+  class Serializer<Image>
+  {
+    public:
+      static void serialize(const Image& representation, std::ostream& stream);
+      static void deserialize(std::istream& stream, Image& representation);
   };
 }
 

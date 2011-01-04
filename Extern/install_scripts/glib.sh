@@ -6,9 +6,8 @@ if [ "$EXTERN_DIR" == "" ]; then
   exit -1
 fi
 
-wget http://ftp.gnome.org/pub/gnome/sources/glib/2.24/glib-2.24.2.tar.gz
-tar xvzf glib-2.24.2.tar.gz
-cd glib-2.24.2/
+tar xvzf ../downloads/glib-2.26.0.tar.gz
+cd glib-2.26.0/
 ./configure --prefix=$EXTERN_DIR && make && make install
 cd ..
 

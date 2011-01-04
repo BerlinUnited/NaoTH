@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="NaoTH-Tools">
+  <VirtualDirectory Name="Source">
+    <VirtualDirectory Name="Representations">
+      <VirtualDirectory Name="Infrastructure">
+        <File Name="../Source/Representations/Infrastructure/VirtualVision.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/UltraSoundData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/ButtonData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/AccelerometerData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/LEDData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/Image.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/BatteryData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/GyrometerData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/CameraSettings.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/FSRData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/BumperData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/Configuration.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/SoundData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/JointData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/InertialSensorData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/IRData.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/SimSparkGameInfo.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/FrameInfo.cpp"/>
+        <File Name="../Source/Representations/Infrastructure/FSRData.h"/>
+        <File Name="../Source/Representations/Infrastructure/GyrometerData.h"/>
+        <File Name="../Source/Representations/Infrastructure/SimSparkGameInfo.h"/>
+        <File Name="../Source/Representations/Infrastructure/FrameInfo.h"/>
+        <File Name="../Source/Representations/Infrastructure/AccelerometerData.h"/>
+        <File Name="../Source/Representations/Infrastructure/CameraInfo.h"/>
+        <File Name="../Source/Representations/Infrastructure/UltraSoundData.h"/>
+        <File Name="../Source/Representations/Infrastructure/LEDData.h"/>
+        <File Name="../Source/Representations/Infrastructure/CameraSettings.h"/>
+        <File Name="../Source/Representations/Infrastructure/SoundData.h"/>
+        <File Name="../Source/Representations/Infrastructure/JointData.h"/>
+        <File Name="../Source/Representations/Infrastructure/Configuration.h"/>
+        <File Name="../Source/Representations/Infrastructure/Image.h"/>
+        <File Name="../Source/Representations/Infrastructure/IRData.h"/>
+        <File Name="../Source/Representations/Infrastructure/VirtualVision.h"/>
+        <File Name="../Source/Representations/Infrastructure/BumperData.h"/>
+        <File Name="../Source/Representations/Infrastructure/BatteryData.h"/>
+        <File Name="../Source/Representations/Infrastructure/ButtonData.h"/>
+        <File Name="../Source/Representations/Infrastructure/InertialSensorData.h"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="Tools">
+      <VirtualDirectory Name="Communication">
+        <VirtualDirectory Name="SerialPort">
+          <File Name="../Source/Tools/Communication/SerialPort/Serial.cpp"/>
+          <File Name="../Source/Tools/Communication/SerialPort/Serial.h"/>
+          <File Name="../Source/Tools/Communication/SerialPort/DefinitionsLinux.h"/>
+          <File Name="../Source/Tools/Communication/SerialPort/DefinitionsWindows.h"/>
+        </VirtualDirectory>
+        <File Name="../Source/Tools/Communication/WoboCupGameControlData.h"/>
+        <File Name="../Source/Tools/Communication/RoboCupGameControlData.h"/>
+        <File Name="../Source/Tools/Communication/DummyBidirectionCommunicator.h"/>
+        <File Name="../Source/Tools/Communication/BidirectionalCommunicator.h"/>
+        <File Name="../Source/Tools/Communication/CommunicationCollection.h"/>
+        <File Name="../Source/Tools/Communication/ASCIIEncoder.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="DataStructures">
+        <File Name="../Source/Tools/DataStructures/Printable.cpp"/>
+        <File Name="../Source/Tools/DataStructures/Serializer.cpp"/>
+        <File Name="../Source/Tools/DataStructures/Serializer.h"/>
+        <File Name="../Source/Tools/DataStructures/Singleton.h"/>
+        <File Name="../Source/Tools/DataStructures/Printable.h"/>
+        <File Name="../Source/Tools/DataStructures/Streamable.h"/>
+        <File Name="../Source/Tools/DataStructures/DestructureSentinel.h"/>
+        <File Name="../Source/Tools/DataStructures/RingBuffer.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Math">
+        <File Name="../Source/Tools/Math/Matrix2x2.cpp"/>
+        <File Name="../Source/Tools/Math/MVTools.cpp"/>
+        <File Name="../Source/Tools/Math/PointList.h"/>
+        <File Name="../Source/Tools/Math/Vector3.h"/>
+        <File Name="../Source/Tools/Math/Matrix_mxn.h"/>
+        <File Name="../Source/Tools/Math/MVTools.h"/>
+        <File Name="../Source/Tools/Math/Vector_n.h"/>
+        <File Name="../Source/Tools/Math/ConvexHull.h"/>
+        <File Name="../Source/Tools/Math/Polygon.h"/>
+        <File Name="../Source/Tools/Math/Matrix2x2.h"/>
+        <File Name="../Source/Tools/Math/Vector2.h"/>
+        <File Name="../Source/Tools/Math/Line.h"/>
+        <File Name="../Source/Tools/Math/Matrix.h"/>
+        <File Name="../Source/Tools/Math/Common.h"/>
+        <File Name="../Source/Tools/Math/Matrix_nxn.h"/>
+        <File Name="../Source/Tools/Math/Pose3D.h"/>
+        <File Name="../Source/Tools/Math/Pose2D.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="ImageProcessing">
+        <File Name="../Source/Tools/ImageProcessing/ColorModelConversions.h"/>
+        <File Name="../Source/Tools/ImageProcessing/ImagePrimitives.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Debug">
+        <File Name="../Source/Tools/Debug/NaoTHAssert.h"/>
+      </VirtualDirectory>
+      <File Name="../Source/Tools/NaoTime.cpp"/>
+      <File Name="../Source/Tools/DataConversion.h"/>
+      <File Name="../Source/Tools/NaoTime.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="PlatformInterface">
+      <File Name="../Source/PlatformInterface/PlatformInterface.cpp"/>
+      <File Name="../Source/PlatformInterface/PlatformInterface.h"/>
+      <File Name="../Source/PlatformInterface/Platform.h"/>
+      <File Name="../Source/PlatformInterface/Callable.h"/>
+      <File Name="../Source/PlatformInterface/PlatformInterchangeable.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="ModuleFramework">
+      <File Name="../Source/ModuleFramework/Module.cpp"/>
+      <File Name="../Source/ModuleFramework/DataHolder.h"/>
+      <File Name="../Source/ModuleFramework/Node.h"/>
+      <File Name="../Source/ModuleFramework/Representation.h"/>
+      <File Name="../Source/ModuleFramework/BlackBoardInterface.h"/>
+      <File Name="../Source/ModuleFramework/ModuleManager.h"/>
+      <File Name="../Source/ModuleFramework/ModuleClassWraper.h"/>
+      <File Name="../Source/ModuleFramework/BlackBoard.h"/>
+      <File Name="../Source/ModuleFramework/Module.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="Messages">
+      <File Name="../Source/Messages/CameraInfo.pb.cc"/>
+      <File Name="../Source/Messages/CommonTypes.pb.cc"/>
+      <File Name="../Source/Messages/FrameInfo.pb.cc"/>
+      <File Name="../Source/Messages/JointData.pb.cc"/>
+      <File Name="../Source/Messages/CameraMatrix.pb.cc"/>
+      <File Name="../Source/Messages/Image.pb.cc"/>
+      <File Name="../Source/Messages/FrameInfo.pb.h"/>
+      <File Name="../Source/Messages/CameraInfo.pb.h"/>
+      <File Name="../Source/Messages/Image.pb.h"/>
+      <File Name="../Source/Messages/JointData.pb.h"/>
+      <File Name="../Source/Messages/CameraMatrix.pb.h"/>
+      <File Name="../Source/Messages/CommonTypes.pb.h"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../NaoTHSoccer/dist/libnaothtools.a" IntermediateDirectory="obj/Debug" Command="./libnaothtools.a" CommandArguments="" WorkingDirectory="../../NaoTHSoccer/dist" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g">
+        <IncludePath Value="../Source"/>
+        <IncludePath Value="../Source/Interface"/>
+        <IncludePath Value="../../Extern/include"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+        <Preprocessor Value="DEBUG"/>
+      </Compiler>
+      <Linker Required="yes" Options="">
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../NaoTHSoccer/dist/libnaothtools.a" IntermediateDirectory="obj/Release" Command="./libnaothtools.a" CommandArguments="" WorkingDirectory="../../NaoTHSoccer/dist" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="">
+        <IncludePath Value="../Source"/>
+        <IncludePath Value="../Source/Interface"/>
+        <IncludePath Value="../../Extern/include"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+      </Compiler>
+      <Linker Required="yes" Options="-s">
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies name="Debug">
+  </Dependencies>
+  <Dependencies name="Release">
+  </Dependencies>
+</CodeLite_Project>

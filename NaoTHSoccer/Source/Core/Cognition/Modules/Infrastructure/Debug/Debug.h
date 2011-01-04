@@ -14,11 +14,17 @@
 #include <DebugServer.h>
 
 #include "Core/Representations/FieldInfo.h"
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
+
+#include "Core/Tools/Debug/Logger.h"
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Debug)
+  REQUIRE(GyrometerData)
+  REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(Image)
 END_DECLARE_MODULE(Debug)
@@ -36,7 +42,7 @@ public:
     std::stringstream &outstream);
 
 private:
-
+  Logger cognitionLogger;
 };
 
 #endif	/* DEBUG_H */

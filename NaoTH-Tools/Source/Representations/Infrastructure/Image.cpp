@@ -11,6 +11,9 @@
 #include "Representations/Infrastructure/Image.h"
 #include "PlatformInterface/Platform.h"
 
+#include "Messages/Image.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 using namespace naoth;
 
 Image::Image()
@@ -149,3 +152,84 @@ unsigned int Image::height()
   return cameraInfo.resolutionHeight;
 }//end height
 
+void Serializer<Image>::serialize(const Image& representation, std::ostream& stream)
+{
+  // the data has to be converted to a YUV (1 byte for each) array. no interlacing
+  naothmessages::Image img;
+
+  if((int)representation.cameraInfo.resolutionHeight != img.height())
+  {
+    img.set_height(representation.cameraInfo.resolutionHeight);
+  }
+  if((int)representation.cameraInfo.resolutionWidth != img.width())
+  {
+    img.set_width(representation.cameraInfo.resolutionWidth);
+  }
+
+  img.set_format(naothmessages::Image_Format_YUV422);
+  img.set_data(representation.yuv422, representation.cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  img.SerializePartialToZeroCopyStream(&buf);
+  //g_debug("size of message: %d", buf.ByteCount());
+}
+
+void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
+{
+  naothmessages::Image img;
+
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  img.ParseFromZeroCopyStream(&buf);
+
+  unsigned int width = img.width();
+  unsigned int height = img.height();
+
+  // YUV full
+  if(img.format() == naothmessages::Image_Format_YUV)
+  {
+    if(img.data().size() != 3 * width * height)
+    {
+      return;
+    }
+
+    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+
+    newCameraInfo.resolutionHeight = height;
+    newCameraInfo.resolutionWidth = width;
+    newCameraInfo.size = width * height;
+    representation.setCameraInfo(newCameraInfo);
+
+    const char* data = img.data().c_str();
+
+    for(unsigned int i=0; i < representation.getIndexSize(); i++)
+    {
+      unsigned int x = representation.getXOffsetFromIndex(i);
+      unsigned int y = representation.getYOffsetFromIndex(i);
+
+      Pixel p;
+
+      p.y = data[i * 3];
+      p.u = data[i * 3 + 1];
+      p.v = data[i * 3 + 2];
+
+      representation.set(x,y, p);
+    }
+  }
+  // "native" YUV422 data
+  else if(img.format() == naothmessages::Image_Format_YUV422)
+  {
+    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height)
+    {
+      return;
+    }
+
+    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+
+    newCameraInfo.resolutionHeight = height;
+    newCameraInfo.resolutionWidth = width;
+    newCameraInfo.size = width * height;
+    representation.setCameraInfo(newCameraInfo);
+
+    memcpy(representation.yuv422, img.data().c_str(), img.data().size());
+  }
+}

@@ -27,6 +27,7 @@ solution "NaoTHSoccer"
   -- platforms
   dofile "../../Platforms/Make/SimSpark.lua"
   dofile "../../Platforms/Make/Webots.lua"
+  dofile "../../Platforms/Make/LogSimulator.lua"
   
   -- the core
   dofile "NaoTHSoccer.lua"

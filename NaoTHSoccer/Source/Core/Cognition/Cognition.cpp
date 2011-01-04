@@ -27,6 +27,7 @@ Cognition::Cognition()
   DEBUG_REQUEST_REGISTER("test:test", "test debug request", false);
   registerModule<LEDSetter > ("LEDSetter");
   registerModule<Debug > ("Debug");
+  setModuleEnabled("Debug", true);
 
   // use the configuration in order to set whether a module is activated or not
   Configuration& config = Platform::getInstance().theConfiguration;
@@ -36,7 +37,7 @@ Cognition::Cognition()
     if(config.hasKey("modules", *name))
     {
       bool active = config.getBool("modules", *name);
-      setModuleEnabled(*name, active);
+      //setModuleEnabled(*name, active);
       if(active)
       {
         g_message("activating module %s", (*name).c_str());

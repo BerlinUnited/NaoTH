@@ -11,13 +11,15 @@
 #include <string>
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Streamable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 using namespace std;
 
 namespace naoth
 {
 
-  class GyrometerData : public PlatformInterchangeable, public Printable
+  class GyrometerData : public PlatformInterchangeable, public Printable, public Streamable
   {
   public:
     enum GyrometerID
@@ -40,6 +42,15 @@ namespace naoth
 
     virtual void print(ostream& stream) const;
   };
+  
+  template<>
+  class Serializer<GyrometerData>
+  {
+    public:
+      static void serialize(const GyrometerData& representation, std::ostream& stream);
+      static void deserialize(std::istream& stream, GyrometerData& representation);
+  };
+  
 }
 #endif	/* _GYROMETERDATA_H */
 

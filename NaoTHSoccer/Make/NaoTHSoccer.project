@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="NaoTHSoccer">
+  <VirtualDirectory Name="Source">
+    <VirtualDirectory Name="Core">
+      <VirtualDirectory Name="Representations">
+        <File Name="../Source/Core/Representations/FieldInfo.h"/>
+        <File Name="../Source/Core/Representations/FieldInfo.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Cognition">
+        <VirtualDirectory Name="Modules">
+          <VirtualDirectory Name="Infrastructure">
+            <VirtualDirectory Name="LEDSetter">
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/LEDSetter/LEDSetter.h"/>
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/LEDSetter/LEDSetter.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="IO">
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/IO/Actuator.h"/>
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/IO/Sensor.h"/>
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/IO/Sensor.cpp"/>
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/IO/Actuator.cpp"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="Debug">
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/Debug/Debug.h"/>
+              <File Name="../Source/Core/Cognition/Modules/Infrastructure/Debug/Debug.cpp"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <File Name="../Source/Core/Cognition/CognitionDebugServer.h"/>
+        <File Name="../Source/Core/Cognition/Cognition.h"/>
+        <File Name="../Source/Core/Cognition/Cognition.cpp"/>
+        <File Name="../Source/Core/Cognition/CognitionDebugServer.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Tools">
+        <VirtualDirectory Name="Logfile">
+          <File Name="../Source/Core/Tools/Logfile/LogfileEntry.h"/>
+          <File Name="../Source/Core/Tools/Logfile/LogfileManager.h"/>
+          <File Name="../Source/Core/Tools/Logfile/LogfileEntry.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="DataStructures">
+          <File Name="../Source/Core/Tools/DataStructures/ParameterList.h"/>
+          <File Name="../Source/Core/Tools/DataStructures/ParameterList.cpp"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="Debug">
+          <File Name="../Source/Core/Tools/Debug/DebugDrawings.h"/>
+          <File Name="../Source/Core/Tools/Debug/DebugRequest.h"/>
+          <File Name="../Source/Core/Tools/Debug/Logger.h"/>
+          <File Name="../Source/Core/Tools/Debug/Logger.cpp"/>
+          <File Name="../Source/Core/Tools/Debug/DebugRequest.cpp"/>
+        </VirtualDirectory>
+        <File Name="../Source/Core/Tools/LinesTable.h"/>
+        <File Name="../Source/Core/Tools/ColorClasses.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="Motion">
+        <File Name="../Source/Core/Motion/Motion.h"/>
+        <File Name="../Source/Core/Motion/Motion.cpp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../dist/libnaoth-soccer.a" IntermediateDirectory="obj/Debug" Command="./libnaoth-soccer.a" CommandArguments="" WorkingDirectory="../dist" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g">
+        <IncludePath Value="../Source"/>
+        <IncludePath Value="../../NaoTH-Tools/Source"/>
+        <IncludePath Value="../../DebugCommunication/Source"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+        <Preprocessor Value="DEBUG"/>
+      </Compiler>
+      <Linker Required="yes" Options="">
+        <LibraryPath Value="../../Extern/lib" />
+        <LibraryPath Value="../dist" />
+        <Library Value="naothtools" />
+        <Library Value="naothdebugcom" />
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../dist/libnaoth-soccer.a" IntermediateDirectory="obj/Release" Command="./libnaoth-soccer.a" CommandArguments="" WorkingDirectory="../dist" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="">
+        <IncludePath Value="../Source"/>
+        <IncludePath Value="../../NaoTH-Tools/Source"/>
+        <IncludePath Value="../../DebugCommunication/Source"/>
+        <IncludePath Value="../../Extern/include/glib-2.0"/>
+        <IncludePath Value="../../Extern/lib/glib-2.0/include"/>
+      </Compiler>
+      <Linker Required="yes" Options="-s">
+        <LibraryPath Value="../../Extern/lib" />
+        <LibraryPath Value="../dist" />
+        <Library Value="naothtools" />
+        <Library Value="naothdebugcom" />
+      </Linker>
+      <ResourceCompiler Required="no" Options=""/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies name="Debug">
+    <Project Name="NaoTH-Tools"/>
+    <Project Name="DebugCommunication"/>
+  </Dependencies>
+  <Dependencies name="Release">
+    <Project Name="NaoTH-Tools"/>
+    <Project Name="DebugCommunication"/>
+  </Dependencies>
+</CodeLite_Project>

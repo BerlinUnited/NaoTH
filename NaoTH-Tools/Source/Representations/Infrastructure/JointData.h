@@ -11,6 +11,7 @@
 #include <string>
 
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
 using namespace std;
@@ -97,6 +98,14 @@ namespace naoth
     ~MotorJointData();
 
     virtual void print(ostream& stream) const;
+  };
+  
+  template<>
+  class Serializer<SensorJointData>
+  {
+    public:
+    static void serialize(const SensorJointData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, SensorJointData& representation);
   };
 }
 

@@ -79,7 +79,7 @@ void DebugServer::mainWriter()
   {
     char* answer = (char*) g_async_queue_pop(answers);
 
-    if (!comm.sendMessage(answer, strlen(answer) + 1))
+    if (!comm.sendMessage(answer, strlen(answer)))
     {
       // error, clear answer queue
       while (g_async_queue_length(answers) > 0)
@@ -103,8 +103,7 @@ void DebugServer::execute()
     GString* answer = g_string_new("");
     handleCommand(cmdRaw, answer);
 
-    g_string_append(answer, "\r\n\0");
-
+    g_string_append(answer, "\r\n");
     g_async_queue_push(answers, g_string_free(answer, false));
 
     g_free(cmdRaw);
@@ -132,7 +131,6 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
     // command name
     if (argc > 0)
     {
-
       if (g_str_has_prefix(argv[0], "+"))
       {
         answerAsBase64 = true;
@@ -204,6 +202,7 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
 {
 
   std::stringstream answerFromHandler;
+  
   if (executorMap.find(command) != executorMap.end())
   {
     executorMap[command]->executeDebugCommand(command, arguments, answerFromHandler);
@@ -212,18 +211,23 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
     answerFromHandler << "Unknown command \"" << command
       << "\", use \"help\" for a list of available commands" << std::endl;
   }
+  
+  const std::string& str = answerFromHandler.str();
 
   if (encodeBase64)
   {
-    char* encoded = g_base64_encode((guchar*) answerFromHandler.str().c_str(),
-      answerFromHandler.str().length());
+    char* encoded = g_base64_encode((guchar*) str.c_str(),
+      str.length());
     g_string_append(answer, encoded);
+    //g_debug("encoding to base64, old size=%d and new size=%d, encoded raw length=%d", 
+    //  answerFromHandler.str().length(), answer->len, strlen(encoded));
     g_free(encoded);
   } else
   {
-    g_string_append(answer, answerFromHandler.str().c_str());
+    //g_debug("no base64 encoding");
+    g_string_append(answer, str.c_str());
   }
-
+  
 }//end handleCommand
 
 bool DebugServer::registerCommand(std::string command, std::string description,

@@ -10,7 +10,8 @@ project "NaoTH-Tools"
   "../../Extern/include/glib-2.0/","../../Extern/lib/glib-2.0/include/"}
   
   files {
-    "../Source/**.cpp", 
+    "../Source/**.cpp",
+    "../Source/**.cc", 
     "../Source/**.h"
   }
   
