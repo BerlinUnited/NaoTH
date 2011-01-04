@@ -290,10 +290,6 @@ public class MessageServer
           {
             valid = true;
           }
-          else
-          {
-            boolean test = true;
-          }
 
           sb.append((char) c);
         }
