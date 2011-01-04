@@ -65,8 +65,8 @@ namespace naoth
   template<>
   class Serializer<FrameInfo>
   {
-    virtual void serialize(const FrameInfo& representation, std::ostream& stream);
-    virtual void deserialize(std::istream& stream, FrameInfo& representation);
+    static void serialize(const FrameInfo& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, FrameInfo& representation);
   };
   
 }

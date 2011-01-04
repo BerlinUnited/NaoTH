@@ -44,10 +44,11 @@ namespace naoth
   };
   
   template<>
-  class Serializer<GyrometerData> 
+  class Serializer<GyrometerData>
   {
-    virtual void serialize(const GyrometerData& representation, std::ostream& stream);
-    virtual void deserialize(std::istream& stream, GyrometerData& representation);
+    public:
+      static void serialize(const GyrometerData& representation, std::ostream& stream);
+      static void deserialize(std::istream& stream, GyrometerData& representation);
   };
   
 }

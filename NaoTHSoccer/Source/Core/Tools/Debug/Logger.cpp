@@ -3,6 +3,8 @@
  */
 
 #include "Logger.h"
+#include <Tools/DataStructures/Serializer.h>
+#include <Representations/Infrastructure/GyrometerData.h>
 
 Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
 {
@@ -34,12 +36,12 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
     activated = false;
 
     // list all logable representations
-    for(std::map<std::string, const naoth::AbstractSerializer*>::const_iterator iter=serializers.begin(); iter!=serializers.end(); ++iter){
+    for(std::map<std::string, const naoth::Streamable*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter){
       outstream << iter->first <<" ";
     }
   }
   else if ("activate" == argName) {
-    for(std::map<string, const naoth::AbstractSerializer*>::const_iterator iter=serializers.begin(); iter!=serializers.end(); ++iter)
+    for(std::map<string, const naoth::Streamable*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter)
     {
       if ( argValue == iter->first)
       {
@@ -83,11 +85,11 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
   }
 }
 
-void Logger::addRepresentation(const naoth::AbstractSerializer* representationSerializer, 
-  const naoth::Streamable* representation, std::string name)
+template<class T>
+void Logger::addRepresentation(const T* representation, std::string name)
 {
-  serializers[name] = representationSerializer;
   streamables[name] = representation;
+  serializers[name] = &naoth::Serializer<T>::serialize;
 }
 
 void Logger::log(unsigned int frameNum)
@@ -95,18 +97,16 @@ void Logger::log(unsigned int frameNum)
   if (!activated && !activatedOnce) return;
 
   activatedOnce = false;
-
+  
   for (std::set<std::string>::const_iterator iter = activeRepresentations.begin();
     iter != activeRepresentations.end(); ++iter) 
   {
-    std::map<std::string, const naoth::AbstractSerializer*>::iterator itSerializer = serializers.find(*iter);
+    std::map<std::string, const naoth::Streamable*>::iterator itStreamables = streamables.find(*iter);
     
-    if(itSerializer != serializers.end() && streamables.find(*iter) != streamables.end())
-    {
-      const naoth::Streamable* s = streamables[*iter];
-      
-      std::stringstream& stream = logfileManager.log(frameNum, itSerializer->first);
-      itSerializer->second->serialize(*s, stream);
+    if(itStreamables != streamables.end() && serializers.find(*iter) != serializers.end())
+    { 
+      std::stringstream& stream = logfileManager.log(frameNum, itStreamables->first);
+      serializers[*iter](*(itStreamables->second), stream);
     }
     
   }

@@ -65,7 +65,7 @@ public:
 
   /**
    * Create a new log entry.
-   * After calling this use returned stringstram to transform the data.
+   * After calling this use returned stringstream to transform the data.
    *
    */
   stringstream& log(unsigned int frameNumber, string name)
