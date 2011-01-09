@@ -62,6 +62,8 @@ GError* DebugCommunicator::internalInit()
 
 bool DebugCommunicator::sendMessage(const char* data, size_t size)
 {
+  //g_debug("sending message with size %d:\n%s", (int) size, data);
+  
   GError* err = internalSendMessage(data, size);
   if (err)
   {
@@ -77,7 +79,6 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
 
 GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 {
-  //g_debug("internalSendMessage begin");
   char zero = '\0';
   GError* err = NULL;
   if (connection != NULL)
@@ -98,7 +99,6 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
     
     if (err) return err;
   }//end if
-  //g_debug("internalSendMessage end");
   return NULL;
 }//end sendMessage
 

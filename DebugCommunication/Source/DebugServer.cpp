@@ -102,8 +102,7 @@ void DebugServer::execute()
 
     GString* answer = g_string_new("");
     handleCommand(cmdRaw, answer);
-
-    g_string_append(answer, "\r\n");
+    
     g_async_queue_push(answers, g_string_free(answer, false));
 
     g_free(cmdRaw);

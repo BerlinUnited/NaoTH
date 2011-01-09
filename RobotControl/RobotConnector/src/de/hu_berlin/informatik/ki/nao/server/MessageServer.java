@@ -1,11 +1,10 @@
 package de.hu_berlin.informatik.ki.nao.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.net.Socket;
 import java.nio.channels.NotYetConnectedException;
-import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,12 @@ public class MessageServer
    */
   private final Lock LISTENER_LOCK = new ReentrantLock();
   public final static String STRING_ENCODING = "ISO-8859-15";
-  private SocketChannel serverSocket;
+  private InetSocketAddress address;
+  private Socket serverSocket;
   private Thread senderThread;
   private Thread receiverThread;
   private Thread periodicExecutionThread;
   private long updateIntervall = 60;
-  private InetSocketAddress address;
   private List<CommandSender> listeners;
   private BlockingQueue<SingleExecEntry> commandRequestQueue;
   private BlockingQueue<SingleExecEntry> callbackQueue;
@@ -136,20 +135,21 @@ public class MessageServer
     });
 
     address = new InetSocketAddress(host, port);
-
-    serverSocket = SocketChannel.open(address);
-    while (!serverSocket.finishConnect())
-    {
-      // wait
-    }
-
-    serverSocket.configureBlocking(true);
-
+    serverSocket = new Socket();
+    serverSocket.connect(address);
+    
     isActive = true;
 
     if (parent != null)
     {
       parent.showConnected(true);
+    }
+
+    // clean all old stuff in the pipe
+    while(!serverSocket.isClosed() && serverSocket.getInputStream().available() > 0)
+    {
+      serverSocket.getInputStream().read();
+      // nothing
     }
 
     periodicExecutionThread.start();
@@ -208,11 +208,17 @@ public class MessageServer
   public void addCommandSender(CommandSender commandSender)
   {
     LISTENER_LOCK.lock();
-    if (!listeners.contains(commandSender))
+    try
     {
-      listeners.add(commandSender);
+      if (!listeners.contains(commandSender))
+      {
+        listeners.add(commandSender);
+      }
     }
-    LISTENER_LOCK.unlock();
+    finally
+    {
+      LISTENER_LOCK.unlock();
+    }
   }//end addCommandSender
 
   /**
@@ -269,38 +275,28 @@ public class MessageServer
   // send-receive-periodicExecution //
   public void receiveLoop() throws InterruptedException
   {
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     while(isActive && serverSocket != null && serverSocket.isConnected())
     {
       try
       {
-        StringBuilder sb = new StringBuilder();
 
-        boolean valid = false;
-        do
+        // reader answer
+        byte[] buf = new byte[1024];
+        int received = serverSocket.getInputStream().read(buf);
+        receivedBytes += received;
+
+        for(int i=0; i < received; i++)
         {
-          valid = false;
-
-          ByteBuffer b = ByteBuffer.allocate(1);
-          // reader answer
-          serverSocket.read(b);
-          receivedBytes++;
-          
-          byte c = b.get(0);
-          if(c != 0)
+          if(buf[i] > 0)
           {
-            valid = true;
+            byteStream.write(buf[i]);
           }
-
-          sb.append((char) c);
-        }
-        while(valid);
-
-        SingleExecEntry entry = callbackQueue.take();
-        byte[] decoded = Base64.decodeBase64(sb.toString());
-
-        if(entry.sender != null)
-        {
-          entry.sender.handleResponse(decoded, entry.command);
+          else
+          {
+            decodeAndHandleMessage(byteStream.toByteArray());
+            byteStream = new ByteArrayOutputStream();
+          }
         }
       }
       catch (IOException ex)
@@ -310,6 +306,18 @@ public class MessageServer
       }
     }
   }
+
+  private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
+  {
+    SingleExecEntry entry = callbackQueue.take();
+    byte[] decoded = Base64.decodeBase64(bytes);
+
+    if(entry.sender != null)
+    {
+      entry.sender.handleResponse(decoded, entry.command);
+    }
+  }
+
 
   public void sendLoop() throws InterruptedException
   {
@@ -341,10 +349,11 @@ public class MessageServer
         }
       }
       buffer.append("\n");
-      ByteBuffer bytes = ByteBuffer.wrap(buffer.toString().getBytes());
       try
       {
-        sentBytes += serverSocket.write(bytes);
+        byte[] bytes = buffer.toString().getBytes();
+        serverSocket.getOutputStream().write(bytes);
+        sentBytes += bytes.length;
       }
       catch (IOException ex)
       {
@@ -427,13 +436,6 @@ public class MessageServer
     }  // end for each listenerF
   }//end sendPeriodicCommands
  
-  public ByteBuffer byteBufferFromInt(int value)
-  {
-    ByteBuffer b = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-    b.putInt(value);
-    return b;
-  }//end byteBufferFromInt
-
   private class SingleExecEntry
   {
 
