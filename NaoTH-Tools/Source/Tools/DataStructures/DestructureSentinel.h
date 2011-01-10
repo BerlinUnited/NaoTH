@@ -97,7 +97,10 @@ class DestructionSentinel
 
   void listenerDestructed(DestructionListener<T>* object)
   {
-    listOfDestructionListener.remove(object);
+    if(object != NULL)
+    {
+      listOfDestructionListener.remove(object);
+    }
   }//end listenerDestructed
 
 protected:

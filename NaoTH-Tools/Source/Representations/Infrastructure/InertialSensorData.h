@@ -12,13 +12,14 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 using namespace std;
 
 namespace naoth
 {
 
-  class InertialSensorData : public Printable, public PlatformInterchangeable
+  class InertialSensorData : public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
 
@@ -48,6 +49,15 @@ namespace naoth
 
   private:
   };
+  
+  template<>
+  class Serializer<InertialSensorData>
+  {
+    public:
+    static void serialize(const InertialSensorData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, InertialSensorData& representation);
+  };
+  
 }
 
 #endif	/* _INERTIALSENSORDATA_H */

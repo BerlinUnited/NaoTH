@@ -13,8 +13,7 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Messages/CommonTypes.pb.h"
-#include "Messages/JointData.pb.h"
-#include "Messages/CameraMatrix.pb.h"
+#include "Messages/Representations.pb.h"
 
 using namespace naoth;
 

@@ -32,20 +32,158 @@ void  protobuf_AddDesc_CommonTypes_2eproto();
 void protobuf_AssignDesc_CommonTypes_2eproto();
 void protobuf_ShutdownFile_CommonTypes_2eproto();
 
-class Pose3D;
-class DoubleVector;
+class FloatVector2;
+class DoubleVector2;
+class IntVector2;
+class Pose2D;
 class DoubleVector3;
+class DoubleVector;
+class Pose3D;
+class GoalPost;
+class LineSegment;
+class FieldLineSegment;
+class Intersection;
 
+enum GoalPost_PostType {
+  GoalPost_PostType_rightPost = 0,
+  GoalPost_PostType_leftPost = 1,
+  GoalPost_PostType_unknownPost = 2
+};
+bool GoalPost_PostType_IsValid(int value);
+const GoalPost_PostType GoalPost_PostType_PostType_MIN = GoalPost_PostType_rightPost;
+const GoalPost_PostType GoalPost_PostType_PostType_MAX = GoalPost_PostType_unknownPost;
+const int GoalPost_PostType_PostType_ARRAYSIZE = GoalPost_PostType_PostType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* GoalPost_PostType_descriptor();
+inline const ::std::string& GoalPost_PostType_Name(GoalPost_PostType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    GoalPost_PostType_descriptor(), value);
+}
+inline bool GoalPost_PostType_Parse(
+    const ::std::string& name, GoalPost_PostType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<GoalPost_PostType>(
+    GoalPost_PostType_descriptor(), name, value);
+}
+enum Intersection_IntersectionType {
+  Intersection_IntersectionType_unknown = 0,
+  Intersection_IntersectionType_T = 1,
+  Intersection_IntersectionType_L = 2,
+  Intersection_IntersectionType_C = 3,
+  Intersection_IntersectionType_none = 4,
+  Intersection_IntersectionType_X = 5
+};
+bool Intersection_IntersectionType_IsValid(int value);
+const Intersection_IntersectionType Intersection_IntersectionType_IntersectionType_MIN = Intersection_IntersectionType_unknown;
+const Intersection_IntersectionType Intersection_IntersectionType_IntersectionType_MAX = Intersection_IntersectionType_X;
+const int Intersection_IntersectionType_IntersectionType_ARRAYSIZE = Intersection_IntersectionType_IntersectionType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* Intersection_IntersectionType_descriptor();
+inline const ::std::string& Intersection_IntersectionType_Name(Intersection_IntersectionType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    Intersection_IntersectionType_descriptor(), value);
+}
+inline bool Intersection_IntersectionType_Parse(
+    const ::std::string& name, Intersection_IntersectionType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Intersection_IntersectionType>(
+    Intersection_IntersectionType_descriptor(), name, value);
+}
+enum Color {
+  none = 0,
+  orange = 1,
+  yellow = 2,
+  skyblue = 3,
+  white = 4,
+  red = 5,
+  blue = 6,
+  green = 7,
+  black = 8,
+  pink = 9,
+  gray = 10,
+  yellowOrange = 11
+};
+bool Color_IsValid(int value);
+const Color Color_MIN = none;
+const Color Color_MAX = yellowOrange;
+const int Color_ARRAYSIZE = Color_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* Color_descriptor();
+inline const ::std::string& Color_Name(Color value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    Color_descriptor(), value);
+}
+inline bool Color_Parse(
+    const ::std::string& name, Color* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Color>(
+    Color_descriptor(), name, value);
+}
+enum CameraID {
+  top = 0,
+  bottom = 1
+};
+bool CameraID_IsValid(int value);
+const CameraID CameraID_MIN = top;
+const CameraID CameraID_MAX = bottom;
+const int CameraID_ARRAYSIZE = CameraID_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* CameraID_descriptor();
+inline const ::std::string& CameraID_Name(CameraID value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    CameraID_descriptor(), value);
+}
+inline bool CameraID_Parse(
+    const ::std::string& name, CameraID* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<CameraID>(
+    CameraID_descriptor(), name, value);
+}
+enum JointID {
+  HeadPitch = 0,
+  HeadYaw = 1,
+  RShoulderRoll = 2,
+  LShoulderRoll = 3,
+  RShoulderPitch = 4,
+  LShoulderPitch = 5,
+  RElbowRoll = 6,
+  LElbowRoll = 7,
+  RElbowYaw = 8,
+  LElbowYaw = 9,
+  RHipYawPitch = 10,
+  LHipYawPitch = 11,
+  RHipPitch = 12,
+  LHipPitch = 13,
+  RHipRoll = 14,
+  LHipRoll = 15,
+  RKneePitch = 16,
+  LKneePitch = 17,
+  RAnklePitch = 18,
+  LAnklePitch = 19,
+  RAnkleRoll = 20,
+  LAnkleRoll = 21
+};
+bool JointID_IsValid(int value);
+const JointID JointID_MIN = HeadPitch;
+const JointID JointID_MAX = LAnkleRoll;
+const int JointID_ARRAYSIZE = JointID_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* JointID_descriptor();
+inline const ::std::string& JointID_Name(JointID value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    JointID_descriptor(), value);
+}
+inline bool JointID_Parse(
+    const ::std::string& name, JointID* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<JointID>(
+    JointID_descriptor(), name, value);
+}
 // ===================================================================
 
-class Pose3D : public ::google::protobuf::Message {
+class FloatVector2 : public ::google::protobuf::Message {
  public:
-  Pose3D();
-  virtual ~Pose3D();
+  FloatVector2();
+  virtual ~FloatVector2();
   
-  Pose3D(const Pose3D& from);
+  FloatVector2(const FloatVector2& from);
   
-  inline Pose3D& operator=(const Pose3D& from) {
+  inline FloatVector2& operator=(const FloatVector2& from) {
     CopyFrom(from);
     return *this;
   }
@@ -59,17 +197,17 @@ class Pose3D : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const Pose3D& default_instance();
+  static const FloatVector2& default_instance();
   
-  void Swap(Pose3D* other);
+  void Swap(FloatVector2* other);
   
   // implements Message ----------------------------------------------
   
-  Pose3D* New() const;
+  FloatVector2* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const Pose3D& from);
-  void MergeFrom(const Pose3D& from);
+  void CopyFrom(const FloatVector2& from);
+  void MergeFrom(const FloatVector2& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -92,32 +230,27 @@ class Pose3D : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required .naothmessages.DoubleVector3 translation = 1;
-  inline bool has_translation() const;
-  inline void clear_translation();
-  static const int kTranslationFieldNumber = 1;
-  inline const ::naothmessages::DoubleVector3& translation() const;
-  inline ::naothmessages::DoubleVector3* mutable_translation();
+  // required float x = 1;
+  inline bool has_x() const;
+  inline void clear_x();
+  static const int kXFieldNumber = 1;
+  inline float x() const;
+  inline void set_x(float value);
   
-  // repeated .naothmessages.DoubleVector3 rotation = 2;
-  inline int rotation_size() const;
-  inline void clear_rotation();
-  static const int kRotationFieldNumber = 2;
-  inline const ::naothmessages::DoubleVector3& rotation(int index) const;
-  inline ::naothmessages::DoubleVector3* mutable_rotation(int index);
-  inline ::naothmessages::DoubleVector3* add_rotation();
-  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >&
-      rotation() const;
-  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >*
-      mutable_rotation();
+  // required float y = 2;
+  inline bool has_y() const;
+  inline void clear_y();
+  static const int kYFieldNumber = 2;
+  inline float y() const;
+  inline void set_y(float value);
   
-  // @@protoc_insertion_point(class_scope:naothmessages.Pose3D)
+  // @@protoc_insertion_point(class_scope:naothmessages.FloatVector2)
  private:
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   mutable int _cached_size_;
   
-  ::naothmessages::DoubleVector3* translation_;
-  ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 > rotation_;
+  float x_;
+  float y_;
   friend void  protobuf_AddDesc_CommonTypes_2eproto();
   friend void protobuf_AssignDesc_CommonTypes_2eproto();
   friend void protobuf_ShutdownFile_CommonTypes_2eproto();
@@ -136,18 +269,18 @@ class Pose3D : public ::google::protobuf::Message {
   }
   
   void InitAsDefaultInstance();
-  static Pose3D* default_instance_;
+  static FloatVector2* default_instance_;
 };
 // -------------------------------------------------------------------
 
-class DoubleVector : public ::google::protobuf::Message {
+class DoubleVector2 : public ::google::protobuf::Message {
  public:
-  DoubleVector();
-  virtual ~DoubleVector();
+  DoubleVector2();
+  virtual ~DoubleVector2();
   
-  DoubleVector(const DoubleVector& from);
+  DoubleVector2(const DoubleVector2& from);
   
-  inline DoubleVector& operator=(const DoubleVector& from) {
+  inline DoubleVector2& operator=(const DoubleVector2& from) {
     CopyFrom(from);
     return *this;
   }
@@ -161,17 +294,17 @@ class DoubleVector : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const DoubleVector& default_instance();
+  static const DoubleVector2& default_instance();
   
-  void Swap(DoubleVector* other);
+  void Swap(DoubleVector2* other);
   
   // implements Message ----------------------------------------------
   
-  DoubleVector* New() const;
+  DoubleVector2* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const DoubleVector& from);
-  void MergeFrom(const DoubleVector& from);
+  void CopyFrom(const DoubleVector2& from);
+  void MergeFrom(const DoubleVector2& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -194,29 +327,32 @@ class DoubleVector : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // repeated double v = 1;
-  inline int v_size() const;
-  inline void clear_v();
-  static const int kVFieldNumber = 1;
-  inline double v(int index) const;
-  inline void set_v(int index, double value);
-  inline void add_v(double value);
-  inline const ::google::protobuf::RepeatedField< double >&
-      v() const;
-  inline ::google::protobuf::RepeatedField< double >*
-      mutable_v();
+  // required double x = 1;
+  inline bool has_x() const;
+  inline void clear_x();
+  static const int kXFieldNumber = 1;
+  inline double x() const;
+  inline void set_x(double value);
   
-  // @@protoc_insertion_point(class_scope:naothmessages.DoubleVector)
+  // required double y = 2;
+  inline bool has_y() const;
+  inline void clear_y();
+  static const int kYFieldNumber = 2;
+  inline double y() const;
+  inline void set_y(double value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.DoubleVector2)
  private:
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   mutable int _cached_size_;
   
-  ::google::protobuf::RepeatedField< double > v_;
+  double x_;
+  double y_;
   friend void  protobuf_AddDesc_CommonTypes_2eproto();
   friend void protobuf_AssignDesc_CommonTypes_2eproto();
   friend void protobuf_ShutdownFile_CommonTypes_2eproto();
   
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
   inline bool _has_bit(int index) const {
@@ -230,7 +366,201 @@ class DoubleVector : public ::google::protobuf::Message {
   }
   
   void InitAsDefaultInstance();
-  static DoubleVector* default_instance_;
+  static DoubleVector2* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class IntVector2 : public ::google::protobuf::Message {
+ public:
+  IntVector2();
+  virtual ~IntVector2();
+  
+  IntVector2(const IntVector2& from);
+  
+  inline IntVector2& operator=(const IntVector2& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const IntVector2& default_instance();
+  
+  void Swap(IntVector2* other);
+  
+  // implements Message ----------------------------------------------
+  
+  IntVector2* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const IntVector2& from);
+  void MergeFrom(const IntVector2& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required int32 x = 1;
+  inline bool has_x() const;
+  inline void clear_x();
+  static const int kXFieldNumber = 1;
+  inline ::google::protobuf::int32 x() const;
+  inline void set_x(::google::protobuf::int32 value);
+  
+  // required int32 y = 2;
+  inline bool has_y() const;
+  inline void clear_y();
+  static const int kYFieldNumber = 2;
+  inline ::google::protobuf::int32 y() const;
+  inline void set_y(::google::protobuf::int32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.IntVector2)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::google::protobuf::int32 x_;
+  ::google::protobuf::int32 y_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static IntVector2* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Pose2D : public ::google::protobuf::Message {
+ public:
+  Pose2D();
+  virtual ~Pose2D();
+  
+  Pose2D(const Pose2D& from);
+  
+  inline Pose2D& operator=(const Pose2D& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Pose2D& default_instance();
+  
+  void Swap(Pose2D* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Pose2D* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Pose2D& from);
+  void MergeFrom(const Pose2D& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.DoubleVector2 translation = 1;
+  inline bool has_translation() const;
+  inline void clear_translation();
+  static const int kTranslationFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& translation() const;
+  inline ::naothmessages::DoubleVector2* mutable_translation();
+  
+  // required double rotation = 2;
+  inline bool has_rotation() const;
+  inline void clear_rotation();
+  static const int kRotationFieldNumber = 2;
+  inline double rotation() const;
+  inline void set_rotation(double value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.Pose2D)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::naothmessages::DoubleVector2* translation_;
+  double rotation_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static Pose2D* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -337,82 +667,917 @@ class DoubleVector3 : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static DoubleVector3* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class DoubleVector : public ::google::protobuf::Message {
+ public:
+  DoubleVector();
+  virtual ~DoubleVector();
+  
+  DoubleVector(const DoubleVector& from);
+  
+  inline DoubleVector& operator=(const DoubleVector& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DoubleVector& default_instance();
+  
+  void Swap(DoubleVector* other);
+  
+  // implements Message ----------------------------------------------
+  
+  DoubleVector* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const DoubleVector& from);
+  void MergeFrom(const DoubleVector& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated double v = 1;
+  inline int v_size() const;
+  inline void clear_v();
+  static const int kVFieldNumber = 1;
+  inline double v(int index) const;
+  inline void set_v(int index, double value);
+  inline void add_v(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      v() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_v();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.DoubleVector)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::google::protobuf::RepeatedField< double > v_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static DoubleVector* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Pose3D : public ::google::protobuf::Message {
+ public:
+  Pose3D();
+  virtual ~Pose3D();
+  
+  Pose3D(const Pose3D& from);
+  
+  inline Pose3D& operator=(const Pose3D& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Pose3D& default_instance();
+  
+  void Swap(Pose3D* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Pose3D* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Pose3D& from);
+  void MergeFrom(const Pose3D& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.DoubleVector3 translation = 1;
+  inline bool has_translation() const;
+  inline void clear_translation();
+  static const int kTranslationFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector3& translation() const;
+  inline ::naothmessages::DoubleVector3* mutable_translation();
+  
+  // repeated .naothmessages.DoubleVector3 rotation = 2;
+  inline int rotation_size() const;
+  inline void clear_rotation();
+  static const int kRotationFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector3& rotation(int index) const;
+  inline ::naothmessages::DoubleVector3* mutable_rotation(int index);
+  inline ::naothmessages::DoubleVector3* add_rotation();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >&
+      rotation() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >*
+      mutable_rotation();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.Pose3D)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::naothmessages::DoubleVector3* translation_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 > rotation_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static Pose3D* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class GoalPost : public ::google::protobuf::Message {
+ public:
+  GoalPost();
+  virtual ~GoalPost();
+  
+  GoalPost(const GoalPost& from);
+  
+  inline GoalPost& operator=(const GoalPost& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const GoalPost& default_instance();
+  
+  void Swap(GoalPost* other);
+  
+  // implements Message ----------------------------------------------
+  
+  GoalPost* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const GoalPost& from);
+  void MergeFrom(const GoalPost& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef GoalPost_PostType PostType;
+  static const PostType rightPost = GoalPost_PostType_rightPost;
+  static const PostType leftPost = GoalPost_PostType_leftPost;
+  static const PostType unknownPost = GoalPost_PostType_unknownPost;
+  static inline bool PostType_IsValid(int value) {
+    return GoalPost_PostType_IsValid(value);
+  }
+  static const PostType PostType_MIN =
+    GoalPost_PostType_PostType_MIN;
+  static const PostType PostType_MAX =
+    GoalPost_PostType_PostType_MAX;
+  static const int PostType_ARRAYSIZE =
+    GoalPost_PostType_PostType_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  PostType_descriptor() {
+    return GoalPost_PostType_descriptor();
+  }
+  static inline const ::std::string& PostType_Name(PostType value) {
+    return GoalPost_PostType_Name(value);
+  }
+  static inline bool PostType_Parse(const ::std::string& name,
+      PostType* value) {
+    return GoalPost_PostType_Parse(name, value);
+  }
+  
+  // accessors -------------------------------------------------------
+  
+  // optional .naothmessages.IntVector2 basePoint = 1;
+  inline bool has_basepoint() const;
+  inline void clear_basepoint();
+  static const int kBasePointFieldNumber = 1;
+  inline const ::naothmessages::IntVector2& basepoint() const;
+  inline ::naothmessages::IntVector2* mutable_basepoint();
+  
+  // optional .naothmessages.DoubleVector2 position = 2;
+  inline bool has_position() const;
+  inline void clear_position();
+  static const int kPositionFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& position() const;
+  inline ::naothmessages::DoubleVector2* mutable_position();
+  
+  // optional .naothmessages.Color color = 3;
+  inline bool has_color() const;
+  inline void clear_color();
+  static const int kColorFieldNumber = 3;
+  inline naothmessages::Color color() const;
+  inline void set_color(naothmessages::Color value);
+  
+  // optional .naothmessages.GoalPost.PostType type = 4;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 4;
+  inline ::naothmessages::GoalPost_PostType type() const;
+  inline void set_type(::naothmessages::GoalPost_PostType value);
+  
+  // optional bool positionReliable = 5;
+  inline bool has_positionreliable() const;
+  inline void clear_positionreliable();
+  static const int kPositionReliableFieldNumber = 5;
+  inline bool positionreliable() const;
+  inline void set_positionreliable(bool value);
+  
+  // optional double seenHeight = 6;
+  inline bool has_seenheight() const;
+  inline void clear_seenheight();
+  static const int kSeenHeightFieldNumber = 6;
+  inline double seenheight() const;
+  inline void set_seenheight(double value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.GoalPost)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::naothmessages::IntVector2* basepoint_;
+  ::naothmessages::DoubleVector2* position_;
+  int color_;
+  int type_;
+  bool positionreliable_;
+  double seenheight_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static GoalPost* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class LineSegment : public ::google::protobuf::Message {
+ public:
+  LineSegment();
+  virtual ~LineSegment();
+  
+  LineSegment(const LineSegment& from);
+  
+  inline LineSegment& operator=(const LineSegment& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LineSegment& default_instance();
+  
+  void Swap(LineSegment* other);
+  
+  // implements Message ----------------------------------------------
+  
+  LineSegment* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const LineSegment& from);
+  void MergeFrom(const LineSegment& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.DoubleVector2 base = 1;
+  inline bool has_base() const;
+  inline void clear_base();
+  static const int kBaseFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& base() const;
+  inline ::naothmessages::DoubleVector2* mutable_base();
+  
+  // required .naothmessages.DoubleVector2 direction = 2;
+  inline bool has_direction() const;
+  inline void clear_direction();
+  static const int kDirectionFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& direction() const;
+  inline ::naothmessages::DoubleVector2* mutable_direction();
+  
+  // required double length = 3;
+  inline bool has_length() const;
+  inline void clear_length();
+  static const int kLengthFieldNumber = 3;
+  inline double length() const;
+  inline void set_length(double value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.LineSegment)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::naothmessages::DoubleVector2* base_;
+  ::naothmessages::DoubleVector2* direction_;
+  double length_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static LineSegment* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class FieldLineSegment : public ::google::protobuf::Message {
+ public:
+  FieldLineSegment();
+  virtual ~FieldLineSegment();
+  
+  FieldLineSegment(const FieldLineSegment& from);
+  
+  inline FieldLineSegment& operator=(const FieldLineSegment& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const FieldLineSegment& default_instance();
+  
+  void Swap(FieldLineSegment* other);
+  
+  // implements Message ----------------------------------------------
+  
+  FieldLineSegment* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const FieldLineSegment& from);
+  void MergeFrom(const FieldLineSegment& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional .naothmessages.LineSegment lineInImage = 1;
+  inline bool has_lineinimage() const;
+  inline void clear_lineinimage();
+  static const int kLineInImageFieldNumber = 1;
+  inline const ::naothmessages::LineSegment& lineinimage() const;
+  inline ::naothmessages::LineSegment* mutable_lineinimage();
+  
+  // optional .naothmessages.LineSegment lineOnField = 2;
+  inline bool has_lineonfield() const;
+  inline void clear_lineonfield();
+  static const int kLineOnFieldFieldNumber = 2;
+  inline const ::naothmessages::LineSegment& lineonfield() const;
+  inline ::naothmessages::LineSegment* mutable_lineonfield();
+  
+  // optional int32 beginExtendCount = 3;
+  inline bool has_beginextendcount() const;
+  inline void clear_beginextendcount();
+  static const int kBeginExtendCountFieldNumber = 3;
+  inline ::google::protobuf::int32 beginextendcount() const;
+  inline void set_beginextendcount(::google::protobuf::int32 value);
+  
+  // optional int32 endExtendCount = 4;
+  inline bool has_endextendcount() const;
+  inline void clear_endextendcount();
+  static const int kEndExtendCountFieldNumber = 4;
+  inline ::google::protobuf::int32 endextendcount() const;
+  inline void set_endextendcount(::google::protobuf::int32 value);
+  
+  // optional double thickness = 5;
+  inline bool has_thickness() const;
+  inline void clear_thickness();
+  static const int kThicknessFieldNumber = 5;
+  inline double thickness() const;
+  inline void set_thickness(double value);
+  
+  // optional double slope = 6;
+  inline bool has_slope() const;
+  inline void clear_slope();
+  static const int kSlopeFieldNumber = 6;
+  inline double slope() const;
+  inline void set_slope(double value);
+  
+  // optional double angle = 7;
+  inline bool has_angle() const;
+  inline void clear_angle();
+  static const int kAngleFieldNumber = 7;
+  inline double angle() const;
+  inline void set_angle(double value);
+  
+  // optional bool valid = 8;
+  inline bool has_valid() const;
+  inline void clear_valid();
+  static const int kValidFieldNumber = 8;
+  inline bool valid() const;
+  inline void set_valid(bool value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.FieldLineSegment)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::naothmessages::LineSegment* lineinimage_;
+  ::naothmessages::LineSegment* lineonfield_;
+  ::google::protobuf::int32 beginextendcount_;
+  ::google::protobuf::int32 endextendcount_;
+  double thickness_;
+  double slope_;
+  double angle_;
+  bool valid_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static FieldLineSegment* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Intersection : public ::google::protobuf::Message {
+ public:
+  Intersection();
+  virtual ~Intersection();
+  
+  Intersection(const Intersection& from);
+  
+  inline Intersection& operator=(const Intersection& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Intersection& default_instance();
+  
+  void Swap(Intersection* other);
+  
+  // implements Message ----------------------------------------------
+  
+  Intersection* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Intersection& from);
+  void MergeFrom(const Intersection& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef Intersection_IntersectionType IntersectionType;
+  static const IntersectionType unknown = Intersection_IntersectionType_unknown;
+  static const IntersectionType T = Intersection_IntersectionType_T;
+  static const IntersectionType L = Intersection_IntersectionType_L;
+  static const IntersectionType C = Intersection_IntersectionType_C;
+  static const IntersectionType none = Intersection_IntersectionType_none;
+  static const IntersectionType X = Intersection_IntersectionType_X;
+  static inline bool IntersectionType_IsValid(int value) {
+    return Intersection_IntersectionType_IsValid(value);
+  }
+  static const IntersectionType IntersectionType_MIN =
+    Intersection_IntersectionType_IntersectionType_MIN;
+  static const IntersectionType IntersectionType_MAX =
+    Intersection_IntersectionType_IntersectionType_MAX;
+  static const int IntersectionType_ARRAYSIZE =
+    Intersection_IntersectionType_IntersectionType_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  IntersectionType_descriptor() {
+    return Intersection_IntersectionType_descriptor();
+  }
+  static inline const ::std::string& IntersectionType_Name(IntersectionType value) {
+    return Intersection_IntersectionType_Name(value);
+  }
+  static inline bool IntersectionType_Parse(const ::std::string& name,
+      IntersectionType* value) {
+    return Intersection_IntersectionType_Parse(name, value);
+  }
+  
+  // accessors -------------------------------------------------------
+  
+  // optional .naothmessages.DoubleVector2 posInImage = 1;
+  inline bool has_posinimage() const;
+  inline void clear_posinimage();
+  static const int kPosInImageFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& posinimage() const;
+  inline ::naothmessages::DoubleVector2* mutable_posinimage();
+  
+  // optional .naothmessages.DoubleVector2 posOnField = 2;
+  inline bool has_posonfield() const;
+  inline void clear_posonfield();
+  static const int kPosOnFieldFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& posonfield() const;
+  inline ::naothmessages::DoubleVector2* mutable_posonfield();
+  
+  // optional .naothmessages.Intersection.IntersectionType type = 3;
+  inline bool has_type() const;
+  inline void clear_type();
+  static const int kTypeFieldNumber = 3;
+  inline ::naothmessages::Intersection_IntersectionType type() const;
+  inline void set_type(::naothmessages::Intersection_IntersectionType value);
+  
+  // optional uint32 segmentOneIndex = 6;
+  inline bool has_segmentoneindex() const;
+  inline void clear_segmentoneindex();
+  static const int kSegmentOneIndexFieldNumber = 6;
+  inline ::google::protobuf::uint32 segmentoneindex() const;
+  inline void set_segmentoneindex(::google::protobuf::uint32 value);
+  
+  // optional uint32 segmentTwoIndex = 7;
+  inline bool has_segmenttwoindex() const;
+  inline void clear_segmenttwoindex();
+  static const int kSegmentTwoIndexFieldNumber = 7;
+  inline ::google::protobuf::uint32 segmenttwoindex() const;
+  inline void set_segmenttwoindex(::google::protobuf::uint32 value);
+  
+  // optional double segmentOneDistance = 8;
+  inline bool has_segmentonedistance() const;
+  inline void clear_segmentonedistance();
+  static const int kSegmentOneDistanceFieldNumber = 8;
+  inline double segmentonedistance() const;
+  inline void set_segmentonedistance(double value);
+  
+  // optional double segmentTwoDistance = 9;
+  inline bool has_segmenttwodistance() const;
+  inline void clear_segmenttwodistance();
+  static const int kSegmentTwoDistanceFieldNumber = 9;
+  inline double segmenttwodistance() const;
+  inline void set_segmenttwodistance(double value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.Intersection)
+ private:
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  mutable int _cached_size_;
+  
+  ::naothmessages::DoubleVector2* posinimage_;
+  ::naothmessages::DoubleVector2* posonfield_;
+  int type_;
+  ::google::protobuf::uint32 segmentoneindex_;
+  ::google::protobuf::uint32 segmenttwoindex_;
+  double segmentonedistance_;
+  double segmenttwodistance_;
+  friend void  protobuf_AddDesc_CommonTypes_2eproto();
+  friend void protobuf_AssignDesc_CommonTypes_2eproto();
+  friend void protobuf_ShutdownFile_CommonTypes_2eproto();
+  
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+  
+  // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
+  inline bool _has_bit(int index) const {
+    return (_has_bits_[index / 32] & (1u << (index % 32))) != 0;
+  }
+  inline void _set_bit(int index) {
+    _has_bits_[index / 32] |= (1u << (index % 32));
+  }
+  inline void _clear_bit(int index) {
+    _has_bits_[index / 32] &= ~(1u << (index % 32));
+  }
+  
+  void InitAsDefaultInstance();
+  static Intersection* default_instance_;
+};
 // ===================================================================
 
 
 // ===================================================================
 
-// Pose3D
+// FloatVector2
 
-// required .naothmessages.DoubleVector3 translation = 1;
-inline bool Pose3D::has_translation() const {
+// required float x = 1;
+inline bool FloatVector2::has_x() const {
   return _has_bit(0);
 }
-inline void Pose3D::clear_translation() {
-  if (translation_ != NULL) translation_->::naothmessages::DoubleVector3::Clear();
+inline void FloatVector2::clear_x() {
+  x_ = 0;
   _clear_bit(0);
 }
-inline const ::naothmessages::DoubleVector3& Pose3D::translation() const {
-  return translation_ != NULL ? *translation_ : *default_instance_->translation_;
+inline float FloatVector2::x() const {
+  return x_;
 }
-inline ::naothmessages::DoubleVector3* Pose3D::mutable_translation() {
+inline void FloatVector2::set_x(float value) {
   _set_bit(0);
-  if (translation_ == NULL) translation_ = new ::naothmessages::DoubleVector3;
-  return translation_;
+  x_ = value;
 }
 
-// repeated .naothmessages.DoubleVector3 rotation = 2;
-inline int Pose3D::rotation_size() const {
-  return rotation_.size();
+// required float y = 2;
+inline bool FloatVector2::has_y() const {
+  return _has_bit(1);
 }
-inline void Pose3D::clear_rotation() {
-  rotation_.Clear();
+inline void FloatVector2::clear_y() {
+  y_ = 0;
+  _clear_bit(1);
 }
-inline const ::naothmessages::DoubleVector3& Pose3D::rotation(int index) const {
-  return rotation_.Get(index);
+inline float FloatVector2::y() const {
+  return y_;
 }
-inline ::naothmessages::DoubleVector3* Pose3D::mutable_rotation(int index) {
-  return rotation_.Mutable(index);
-}
-inline ::naothmessages::DoubleVector3* Pose3D::add_rotation() {
-  return rotation_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >&
-Pose3D::rotation() const {
-  return rotation_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >*
-Pose3D::mutable_rotation() {
-  return &rotation_;
+inline void FloatVector2::set_y(float value) {
+  _set_bit(1);
+  y_ = value;
 }
 
 // -------------------------------------------------------------------
 
-// DoubleVector
+// DoubleVector2
 
-// repeated double v = 1;
-inline int DoubleVector::v_size() const {
-  return v_.size();
+// required double x = 1;
+inline bool DoubleVector2::has_x() const {
+  return _has_bit(0);
 }
-inline void DoubleVector::clear_v() {
-  v_.Clear();
+inline void DoubleVector2::clear_x() {
+  x_ = 0;
+  _clear_bit(0);
 }
-inline double DoubleVector::v(int index) const {
-  return v_.Get(index);
+inline double DoubleVector2::x() const {
+  return x_;
 }
-inline void DoubleVector::set_v(int index, double value) {
-  v_.Set(index, value);
+inline void DoubleVector2::set_x(double value) {
+  _set_bit(0);
+  x_ = value;
 }
-inline void DoubleVector::add_v(double value) {
-  v_.Add(value);
+
+// required double y = 2;
+inline bool DoubleVector2::has_y() const {
+  return _has_bit(1);
 }
-inline const ::google::protobuf::RepeatedField< double >&
-DoubleVector::v() const {
-  return v_;
+inline void DoubleVector2::clear_y() {
+  y_ = 0;
+  _clear_bit(1);
 }
-inline ::google::protobuf::RepeatedField< double >*
-DoubleVector::mutable_v() {
-  return &v_;
+inline double DoubleVector2::y() const {
+  return y_;
+}
+inline void DoubleVector2::set_y(double value) {
+  _set_bit(1);
+  y_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// IntVector2
+
+// required int32 x = 1;
+inline bool IntVector2::has_x() const {
+  return _has_bit(0);
+}
+inline void IntVector2::clear_x() {
+  x_ = 0;
+  _clear_bit(0);
+}
+inline ::google::protobuf::int32 IntVector2::x() const {
+  return x_;
+}
+inline void IntVector2::set_x(::google::protobuf::int32 value) {
+  _set_bit(0);
+  x_ = value;
+}
+
+// required int32 y = 2;
+inline bool IntVector2::has_y() const {
+  return _has_bit(1);
+}
+inline void IntVector2::clear_y() {
+  y_ = 0;
+  _clear_bit(1);
+}
+inline ::google::protobuf::int32 IntVector2::y() const {
+  return y_;
+}
+inline void IntVector2::set_y(::google::protobuf::int32 value) {
+  _set_bit(1);
+  y_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// Pose2D
+
+// required .naothmessages.DoubleVector2 translation = 1;
+inline bool Pose2D::has_translation() const {
+  return _has_bit(0);
+}
+inline void Pose2D::clear_translation() {
+  if (translation_ != NULL) translation_->::naothmessages::DoubleVector2::Clear();
+  _clear_bit(0);
+}
+inline const ::naothmessages::DoubleVector2& Pose2D::translation() const {
+  return translation_ != NULL ? *translation_ : *default_instance_->translation_;
+}
+inline ::naothmessages::DoubleVector2* Pose2D::mutable_translation() {
+  _set_bit(0);
+  if (translation_ == NULL) translation_ = new ::naothmessages::DoubleVector2;
+  return translation_;
+}
+
+// required double rotation = 2;
+inline bool Pose2D::has_rotation() const {
+  return _has_bit(1);
+}
+inline void Pose2D::clear_rotation() {
+  rotation_ = 0;
+  _clear_bit(1);
+}
+inline double Pose2D::rotation() const {
+  return rotation_;
+}
+inline void Pose2D::set_rotation(double value) {
+  _set_bit(1);
+  rotation_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -467,6 +1632,492 @@ inline void DoubleVector3::set_z(double value) {
   z_ = value;
 }
 
+// -------------------------------------------------------------------
+
+// DoubleVector
+
+// repeated double v = 1;
+inline int DoubleVector::v_size() const {
+  return v_.size();
+}
+inline void DoubleVector::clear_v() {
+  v_.Clear();
+}
+inline double DoubleVector::v(int index) const {
+  return v_.Get(index);
+}
+inline void DoubleVector::set_v(int index, double value) {
+  v_.Set(index, value);
+}
+inline void DoubleVector::add_v(double value) {
+  v_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< double >&
+DoubleVector::v() const {
+  return v_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+DoubleVector::mutable_v() {
+  return &v_;
+}
+
+// -------------------------------------------------------------------
+
+// Pose3D
+
+// required .naothmessages.DoubleVector3 translation = 1;
+inline bool Pose3D::has_translation() const {
+  return _has_bit(0);
+}
+inline void Pose3D::clear_translation() {
+  if (translation_ != NULL) translation_->::naothmessages::DoubleVector3::Clear();
+  _clear_bit(0);
+}
+inline const ::naothmessages::DoubleVector3& Pose3D::translation() const {
+  return translation_ != NULL ? *translation_ : *default_instance_->translation_;
+}
+inline ::naothmessages::DoubleVector3* Pose3D::mutable_translation() {
+  _set_bit(0);
+  if (translation_ == NULL) translation_ = new ::naothmessages::DoubleVector3;
+  return translation_;
+}
+
+// repeated .naothmessages.DoubleVector3 rotation = 2;
+inline int Pose3D::rotation_size() const {
+  return rotation_.size();
+}
+inline void Pose3D::clear_rotation() {
+  rotation_.Clear();
+}
+inline const ::naothmessages::DoubleVector3& Pose3D::rotation(int index) const {
+  return rotation_.Get(index);
+}
+inline ::naothmessages::DoubleVector3* Pose3D::mutable_rotation(int index) {
+  return rotation_.Mutable(index);
+}
+inline ::naothmessages::DoubleVector3* Pose3D::add_rotation() {
+  return rotation_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >&
+Pose3D::rotation() const {
+  return rotation_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector3 >*
+Pose3D::mutable_rotation() {
+  return &rotation_;
+}
+
+// -------------------------------------------------------------------
+
+// GoalPost
+
+// optional .naothmessages.IntVector2 basePoint = 1;
+inline bool GoalPost::has_basepoint() const {
+  return _has_bit(0);
+}
+inline void GoalPost::clear_basepoint() {
+  if (basepoint_ != NULL) basepoint_->::naothmessages::IntVector2::Clear();
+  _clear_bit(0);
+}
+inline const ::naothmessages::IntVector2& GoalPost::basepoint() const {
+  return basepoint_ != NULL ? *basepoint_ : *default_instance_->basepoint_;
+}
+inline ::naothmessages::IntVector2* GoalPost::mutable_basepoint() {
+  _set_bit(0);
+  if (basepoint_ == NULL) basepoint_ = new ::naothmessages::IntVector2;
+  return basepoint_;
+}
+
+// optional .naothmessages.DoubleVector2 position = 2;
+inline bool GoalPost::has_position() const {
+  return _has_bit(1);
+}
+inline void GoalPost::clear_position() {
+  if (position_ != NULL) position_->::naothmessages::DoubleVector2::Clear();
+  _clear_bit(1);
+}
+inline const ::naothmessages::DoubleVector2& GoalPost::position() const {
+  return position_ != NULL ? *position_ : *default_instance_->position_;
+}
+inline ::naothmessages::DoubleVector2* GoalPost::mutable_position() {
+  _set_bit(1);
+  if (position_ == NULL) position_ = new ::naothmessages::DoubleVector2;
+  return position_;
+}
+
+// optional .naothmessages.Color color = 3;
+inline bool GoalPost::has_color() const {
+  return _has_bit(2);
+}
+inline void GoalPost::clear_color() {
+  color_ = 0;
+  _clear_bit(2);
+}
+inline naothmessages::Color GoalPost::color() const {
+  return static_cast< naothmessages::Color >(color_);
+}
+inline void GoalPost::set_color(naothmessages::Color value) {
+  GOOGLE_DCHECK(naothmessages::Color_IsValid(value));
+  _set_bit(2);
+  color_ = value;
+}
+
+// optional .naothmessages.GoalPost.PostType type = 4;
+inline bool GoalPost::has_type() const {
+  return _has_bit(3);
+}
+inline void GoalPost::clear_type() {
+  type_ = 0;
+  _clear_bit(3);
+}
+inline ::naothmessages::GoalPost_PostType GoalPost::type() const {
+  return static_cast< ::naothmessages::GoalPost_PostType >(type_);
+}
+inline void GoalPost::set_type(::naothmessages::GoalPost_PostType value) {
+  GOOGLE_DCHECK(::naothmessages::GoalPost_PostType_IsValid(value));
+  _set_bit(3);
+  type_ = value;
+}
+
+// optional bool positionReliable = 5;
+inline bool GoalPost::has_positionreliable() const {
+  return _has_bit(4);
+}
+inline void GoalPost::clear_positionreliable() {
+  positionreliable_ = false;
+  _clear_bit(4);
+}
+inline bool GoalPost::positionreliable() const {
+  return positionreliable_;
+}
+inline void GoalPost::set_positionreliable(bool value) {
+  _set_bit(4);
+  positionreliable_ = value;
+}
+
+// optional double seenHeight = 6;
+inline bool GoalPost::has_seenheight() const {
+  return _has_bit(5);
+}
+inline void GoalPost::clear_seenheight() {
+  seenheight_ = 0;
+  _clear_bit(5);
+}
+inline double GoalPost::seenheight() const {
+  return seenheight_;
+}
+inline void GoalPost::set_seenheight(double value) {
+  _set_bit(5);
+  seenheight_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// LineSegment
+
+// required .naothmessages.DoubleVector2 base = 1;
+inline bool LineSegment::has_base() const {
+  return _has_bit(0);
+}
+inline void LineSegment::clear_base() {
+  if (base_ != NULL) base_->::naothmessages::DoubleVector2::Clear();
+  _clear_bit(0);
+}
+inline const ::naothmessages::DoubleVector2& LineSegment::base() const {
+  return base_ != NULL ? *base_ : *default_instance_->base_;
+}
+inline ::naothmessages::DoubleVector2* LineSegment::mutable_base() {
+  _set_bit(0);
+  if (base_ == NULL) base_ = new ::naothmessages::DoubleVector2;
+  return base_;
+}
+
+// required .naothmessages.DoubleVector2 direction = 2;
+inline bool LineSegment::has_direction() const {
+  return _has_bit(1);
+}
+inline void LineSegment::clear_direction() {
+  if (direction_ != NULL) direction_->::naothmessages::DoubleVector2::Clear();
+  _clear_bit(1);
+}
+inline const ::naothmessages::DoubleVector2& LineSegment::direction() const {
+  return direction_ != NULL ? *direction_ : *default_instance_->direction_;
+}
+inline ::naothmessages::DoubleVector2* LineSegment::mutable_direction() {
+  _set_bit(1);
+  if (direction_ == NULL) direction_ = new ::naothmessages::DoubleVector2;
+  return direction_;
+}
+
+// required double length = 3;
+inline bool LineSegment::has_length() const {
+  return _has_bit(2);
+}
+inline void LineSegment::clear_length() {
+  length_ = 0;
+  _clear_bit(2);
+}
+inline double LineSegment::length() const {
+  return length_;
+}
+inline void LineSegment::set_length(double value) {
+  _set_bit(2);
+  length_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// FieldLineSegment
+
+// optional .naothmessages.LineSegment lineInImage = 1;
+inline bool FieldLineSegment::has_lineinimage() const {
+  return _has_bit(0);
+}
+inline void FieldLineSegment::clear_lineinimage() {
+  if (lineinimage_ != NULL) lineinimage_->::naothmessages::LineSegment::Clear();
+  _clear_bit(0);
+}
+inline const ::naothmessages::LineSegment& FieldLineSegment::lineinimage() const {
+  return lineinimage_ != NULL ? *lineinimage_ : *default_instance_->lineinimage_;
+}
+inline ::naothmessages::LineSegment* FieldLineSegment::mutable_lineinimage() {
+  _set_bit(0);
+  if (lineinimage_ == NULL) lineinimage_ = new ::naothmessages::LineSegment;
+  return lineinimage_;
+}
+
+// optional .naothmessages.LineSegment lineOnField = 2;
+inline bool FieldLineSegment::has_lineonfield() const {
+  return _has_bit(1);
+}
+inline void FieldLineSegment::clear_lineonfield() {
+  if (lineonfield_ != NULL) lineonfield_->::naothmessages::LineSegment::Clear();
+  _clear_bit(1);
+}
+inline const ::naothmessages::LineSegment& FieldLineSegment::lineonfield() const {
+  return lineonfield_ != NULL ? *lineonfield_ : *default_instance_->lineonfield_;
+}
+inline ::naothmessages::LineSegment* FieldLineSegment::mutable_lineonfield() {
+  _set_bit(1);
+  if (lineonfield_ == NULL) lineonfield_ = new ::naothmessages::LineSegment;
+  return lineonfield_;
+}
+
+// optional int32 beginExtendCount = 3;
+inline bool FieldLineSegment::has_beginextendcount() const {
+  return _has_bit(2);
+}
+inline void FieldLineSegment::clear_beginextendcount() {
+  beginextendcount_ = 0;
+  _clear_bit(2);
+}
+inline ::google::protobuf::int32 FieldLineSegment::beginextendcount() const {
+  return beginextendcount_;
+}
+inline void FieldLineSegment::set_beginextendcount(::google::protobuf::int32 value) {
+  _set_bit(2);
+  beginextendcount_ = value;
+}
+
+// optional int32 endExtendCount = 4;
+inline bool FieldLineSegment::has_endextendcount() const {
+  return _has_bit(3);
+}
+inline void FieldLineSegment::clear_endextendcount() {
+  endextendcount_ = 0;
+  _clear_bit(3);
+}
+inline ::google::protobuf::int32 FieldLineSegment::endextendcount() const {
+  return endextendcount_;
+}
+inline void FieldLineSegment::set_endextendcount(::google::protobuf::int32 value) {
+  _set_bit(3);
+  endextendcount_ = value;
+}
+
+// optional double thickness = 5;
+inline bool FieldLineSegment::has_thickness() const {
+  return _has_bit(4);
+}
+inline void FieldLineSegment::clear_thickness() {
+  thickness_ = 0;
+  _clear_bit(4);
+}
+inline double FieldLineSegment::thickness() const {
+  return thickness_;
+}
+inline void FieldLineSegment::set_thickness(double value) {
+  _set_bit(4);
+  thickness_ = value;
+}
+
+// optional double slope = 6;
+inline bool FieldLineSegment::has_slope() const {
+  return _has_bit(5);
+}
+inline void FieldLineSegment::clear_slope() {
+  slope_ = 0;
+  _clear_bit(5);
+}
+inline double FieldLineSegment::slope() const {
+  return slope_;
+}
+inline void FieldLineSegment::set_slope(double value) {
+  _set_bit(5);
+  slope_ = value;
+}
+
+// optional double angle = 7;
+inline bool FieldLineSegment::has_angle() const {
+  return _has_bit(6);
+}
+inline void FieldLineSegment::clear_angle() {
+  angle_ = 0;
+  _clear_bit(6);
+}
+inline double FieldLineSegment::angle() const {
+  return angle_;
+}
+inline void FieldLineSegment::set_angle(double value) {
+  _set_bit(6);
+  angle_ = value;
+}
+
+// optional bool valid = 8;
+inline bool FieldLineSegment::has_valid() const {
+  return _has_bit(7);
+}
+inline void FieldLineSegment::clear_valid() {
+  valid_ = false;
+  _clear_bit(7);
+}
+inline bool FieldLineSegment::valid() const {
+  return valid_;
+}
+inline void FieldLineSegment::set_valid(bool value) {
+  _set_bit(7);
+  valid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// Intersection
+
+// optional .naothmessages.DoubleVector2 posInImage = 1;
+inline bool Intersection::has_posinimage() const {
+  return _has_bit(0);
+}
+inline void Intersection::clear_posinimage() {
+  if (posinimage_ != NULL) posinimage_->::naothmessages::DoubleVector2::Clear();
+  _clear_bit(0);
+}
+inline const ::naothmessages::DoubleVector2& Intersection::posinimage() const {
+  return posinimage_ != NULL ? *posinimage_ : *default_instance_->posinimage_;
+}
+inline ::naothmessages::DoubleVector2* Intersection::mutable_posinimage() {
+  _set_bit(0);
+  if (posinimage_ == NULL) posinimage_ = new ::naothmessages::DoubleVector2;
+  return posinimage_;
+}
+
+// optional .naothmessages.DoubleVector2 posOnField = 2;
+inline bool Intersection::has_posonfield() const {
+  return _has_bit(1);
+}
+inline void Intersection::clear_posonfield() {
+  if (posonfield_ != NULL) posonfield_->::naothmessages::DoubleVector2::Clear();
+  _clear_bit(1);
+}
+inline const ::naothmessages::DoubleVector2& Intersection::posonfield() const {
+  return posonfield_ != NULL ? *posonfield_ : *default_instance_->posonfield_;
+}
+inline ::naothmessages::DoubleVector2* Intersection::mutable_posonfield() {
+  _set_bit(1);
+  if (posonfield_ == NULL) posonfield_ = new ::naothmessages::DoubleVector2;
+  return posonfield_;
+}
+
+// optional .naothmessages.Intersection.IntersectionType type = 3;
+inline bool Intersection::has_type() const {
+  return _has_bit(2);
+}
+inline void Intersection::clear_type() {
+  type_ = 0;
+  _clear_bit(2);
+}
+inline ::naothmessages::Intersection_IntersectionType Intersection::type() const {
+  return static_cast< ::naothmessages::Intersection_IntersectionType >(type_);
+}
+inline void Intersection::set_type(::naothmessages::Intersection_IntersectionType value) {
+  GOOGLE_DCHECK(::naothmessages::Intersection_IntersectionType_IsValid(value));
+  _set_bit(2);
+  type_ = value;
+}
+
+// optional uint32 segmentOneIndex = 6;
+inline bool Intersection::has_segmentoneindex() const {
+  return _has_bit(3);
+}
+inline void Intersection::clear_segmentoneindex() {
+  segmentoneindex_ = 0u;
+  _clear_bit(3);
+}
+inline ::google::protobuf::uint32 Intersection::segmentoneindex() const {
+  return segmentoneindex_;
+}
+inline void Intersection::set_segmentoneindex(::google::protobuf::uint32 value) {
+  _set_bit(3);
+  segmentoneindex_ = value;
+}
+
+// optional uint32 segmentTwoIndex = 7;
+inline bool Intersection::has_segmenttwoindex() const {
+  return _has_bit(4);
+}
+inline void Intersection::clear_segmenttwoindex() {
+  segmenttwoindex_ = 0u;
+  _clear_bit(4);
+}
+inline ::google::protobuf::uint32 Intersection::segmenttwoindex() const {
+  return segmenttwoindex_;
+}
+inline void Intersection::set_segmenttwoindex(::google::protobuf::uint32 value) {
+  _set_bit(4);
+  segmenttwoindex_ = value;
+}
+
+// optional double segmentOneDistance = 8;
+inline bool Intersection::has_segmentonedistance() const {
+  return _has_bit(5);
+}
+inline void Intersection::clear_segmentonedistance() {
+  segmentonedistance_ = 0;
+  _clear_bit(5);
+}
+inline double Intersection::segmentonedistance() const {
+  return segmentonedistance_;
+}
+inline void Intersection::set_segmentonedistance(double value) {
+  _set_bit(5);
+  segmentonedistance_ = value;
+}
+
+// optional double segmentTwoDistance = 9;
+inline bool Intersection::has_segmenttwodistance() const {
+  return _has_bit(6);
+}
+inline void Intersection::clear_segmenttwodistance() {
+  segmenttwodistance_ = 0;
+  _clear_bit(6);
+}
+inline double Intersection::segmenttwodistance() const {
+  return segmenttwodistance_;
+}
+inline void Intersection::set_segmenttwodistance(double value) {
+  _set_bit(6);
+  segmenttwodistance_ = value;
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -476,6 +2127,26 @@ inline void DoubleVector3::set_z(double value) {
 namespace google {
 namespace protobuf {
 
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::naothmessages::GoalPost_PostType>() {
+  return ::naothmessages::GoalPost_PostType_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::naothmessages::Intersection_IntersectionType>() {
+  return ::naothmessages::Intersection_IntersectionType_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< naothmessages::Color>() {
+  return naothmessages::Color_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< naothmessages::CameraID>() {
+  return naothmessages::CameraID_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< naothmessages::JointID>() {
+  return naothmessages::JointID_descriptor();
+}
 
 }  // namespace google
 }  // namespace protobuf

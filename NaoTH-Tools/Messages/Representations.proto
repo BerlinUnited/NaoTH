@@ -1,0 +1,108 @@
+package naothmessages;
+option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+
+import "CommonTypes.proto";
+
+// Representations //
+message Image {
+  
+  enum Format {
+    YUV = 0;
+    YUV422 = 1;
+  }
+  
+  required bytes data = 1;
+  optional int32 width = 2 [default=320];
+  optional int32 height = 3 [default=240];
+  
+  optional CameraInfo cameraInfo = 4;
+  
+  optional Format format = 5 [default=YUV];
+}
+
+message CameraInfo {
+  
+  required int32 resolutionWidth = 1;
+  required int32 resolutionHeight = 2;
+  
+  optional CameraID cameraID = 4 [default=bottom];
+  
+  optional double focalLength = 5;
+  optional double openingAngleWidth = 6;
+  optional double openingAngleHeight = 7;
+  optional double opticalCenterX = 8;
+  optional double opticalCenterY = 9;
+
+  optional int64 size = 10;
+  optional int64 memorysize = 11;
+
+  optional double cameraRollOffset = 12;
+  optional double cameraTiltOffset = 13;
+}
+
+message JointData {    
+  repeated double position = 1;
+  repeated double hardness = 2;
+  repeated double dp = 3;
+  repeated double ddp = 4;
+}
+
+message SensorJointData {
+  required JointData jointData = 1;
+  repeated double temperature = 2;
+  repeated double electricCurrent = 3;
+}
+
+message CameraMatrix {
+  required Pose3D pose = 1;
+}
+
+message FrameInfo {
+  optional uint32 frameNumber = 1; 
+  optional uint32 time = 2;
+}
+
+message BallPercept {
+  optional bool ballWasSeen = 1;
+  optional DoubleVector2 centerInImage = 2;
+  optional double radiusInImage = 3;  
+  optional Color ballColor = 4;
+  optional DoubleVector2 bearingBasedOffsetOnField = 5;
+  optional FrameInfo frameInfoWhenBallWasSeen = 6;
+}
+
+message GoalPercept {
+  optional double angleToSeenGoal = 1;
+  optional DoubleVector3 goalCentroid = 2;
+  optional int32 numberOfSeenPosts = 3;
+  repeated GoalPost post = 4;
+}
+
+message WalkRequest {
+  required uint32 coordinate = 1;
+  required bool stopWithStand = 2;
+  required bool stable = 3;
+  required Pose2D pose = 4;
+}
+
+message MotionRequest {
+  required uint32 id = 1;
+  required uint32 time = 2;
+  required bool forced = 3;
+  optional WalkRequest walkRequest = 4;
+}
+
+message LinePercept {
+  repeated FieldLineSegment lines = 1;
+  repeated Intersection intersections = 2;
+
+  optional DoubleVector2 middleCircleCenter = 3;
+}
+
+
+message FSRData {
+  repeated double force = 1;
+  repeated double data = 2;
+  repeated bool valid = 3;
+}
+

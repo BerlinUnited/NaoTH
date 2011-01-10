@@ -79,7 +79,7 @@ namespace naoth
     void mirrorFrom(const JointData& jointData);
   };
 
-  class SensorJointData : public JointData, public Printable, public PlatformInterchangeable
+  class SensorJointData : public JointData, public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
     SensorJointData();

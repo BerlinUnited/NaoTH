@@ -6,7 +6,7 @@ package de.hu_berlin.informatik.ki.nao.manager;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.hu_berlin.informatik.ki.nao.dataformats.JanusImage;
-import de.hu_berlin.informatik.ki.nao.messages.ImageMsg.Image;
+import de.hu_berlin.informatik.ki.nao.messages.Representations.Image;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;

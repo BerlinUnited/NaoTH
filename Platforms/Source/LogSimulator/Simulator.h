@@ -62,15 +62,6 @@ public:
   void play();
   void loop();
 
-//    virtual void getCognitionInput();
-//    virtual void getMotionInput();
-//    virtual bool registerCognitionInput(PlatformInterchangeable* data, const std::string& name);
-//    virtual bool registerMotionInput(PlatformInterchangeable* data, const std::string& name);
-//    virtual void setCognitionOutput();
-//    virtual void setMotionOutput();
-//    virtual bool registerCognitionOutput(const PlatformInterchangeable* data, const std::string& name);
-//    virtual bool registerMotionOutput(const PlatformInterchangeable* data, const std::string& name);
-
   template<class T> void generalGet(T& data, std::string name);
 
   /////////////////////// get ///////////////////////

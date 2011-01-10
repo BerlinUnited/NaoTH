@@ -86,14 +86,18 @@
         <File Name="../Source/Tools/Math/Pose3D.h"/>
         <File Name="../Source/Tools/Math/Pose2D.h"/>
       </VirtualDirectory>
-      <VirtualDirectory Name="ImageProcessing">
-        <File Name="../Source/Tools/ImageProcessing/ColorModelConversions.h"/>
-        <File Name="../Source/Tools/ImageProcessing/ImagePrimitives.h"/>
-      </VirtualDirectory>
       <VirtualDirectory Name="Debug">
+        <File Name="../Source/Tools/Debug/DebugImageDrawings.cpp"/>
+        <File Name="../Source/Tools/Debug/DebugImageDrawings.h"/>
         <File Name="../Source/Tools/Debug/NaoTHAssert.h"/>
       </VirtualDirectory>
+      <VirtualDirectory Name="ImageProcessing">
+        <File Name="../Source/Tools/ImageProcessing/ColorModelConversions.h"/>
+        <File Name="../Source/Tools/ImageProcessing/ImageDrawings.h"/>
+        <File Name="../Source/Tools/ImageProcessing/ImagePrimitives.h"/>
+      </VirtualDirectory>
       <File Name="../Source/Tools/NaoTime.cpp"/>
+      <File Name="../Source/Tools/ColorClasses.h"/>
       <File Name="../Source/Tools/DataConversion.h"/>
       <File Name="../Source/Tools/NaoTime.h"/>
     </VirtualDirectory>
@@ -116,17 +120,11 @@
       <File Name="../Source/ModuleFramework/Module.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="Messages">
-      <File Name="../Source/Messages/CameraInfo.pb.cc"/>
       <File Name="../Source/Messages/CommonTypes.pb.cc"/>
-      <File Name="../Source/Messages/FrameInfo.pb.cc"/>
-      <File Name="../Source/Messages/JointData.pb.cc"/>
-      <File Name="../Source/Messages/CameraMatrix.pb.cc"/>
-      <File Name="../Source/Messages/Image.pb.cc"/>
-      <File Name="../Source/Messages/FrameInfo.pb.h"/>
-      <File Name="../Source/Messages/CameraInfo.pb.h"/>
-      <File Name="../Source/Messages/Image.pb.h"/>
-      <File Name="../Source/Messages/JointData.pb.h"/>
-      <File Name="../Source/Messages/CameraMatrix.pb.h"/>
+      <File Name="../Source/Messages/Messages.pb.cc"/>
+      <File Name="../Source/Messages/Representations.pb.cc"/>
+      <File Name="../Source/Messages/Messages.pb.h"/>
+      <File Name="../Source/Messages/Representations.pb.h"/>
       <File Name="../Source/Messages/CommonTypes.pb.h"/>
     </VirtualDirectory>
   </VirtualDirectory>

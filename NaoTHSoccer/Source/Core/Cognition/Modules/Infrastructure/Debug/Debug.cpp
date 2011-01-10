@@ -8,6 +8,7 @@
 #include "Debug.h"
 
 #include "Core/Cognition/CognitionDebugServer.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 
 Debug::Debug() : cognitionLogger("log")
 {
@@ -18,7 +19,12 @@ Debug::Debug() : cognitionLogger("log")
   REGISTER_DEBUG_COMMAND("image", "get the image of the robot", this);
   REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
   
+  cognitionLogger.addRepresentation(&(getImage()), "Image");
+  cognitionLogger.addRepresentation(&(getSensorJointData()), "SensorJointData");
+  cognitionLogger.addRepresentation(&(getInertialSensorData()), "InertialSensorData");
+  cognitionLogger.addRepresentation(&(getAccelerometerData()), "AccelerometerData");
   cognitionLogger.addRepresentation(&getGyrometerData(), "GyrometerData");
+  cognitionLogger.addRepresentation(&(getFSRData()), "FSRData");
   cognitionLogger.addRepresentation(&(getFrameInfo()), "FrameInfo");
 }
 
@@ -32,7 +38,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   if (command == "image")
   {
     // add the drawings to the image
-    //DebugImageDrawings::getInstance().drawToImage((Image&) theImage);
+    DebugImageDrawings::getInstance().drawToImage((Image&) getImage());
     
     //STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);

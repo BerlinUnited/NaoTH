@@ -17,6 +17,10 @@
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/FSRData.h>
 
 #include "Core/Tools/Debug/Logger.h"
 
@@ -27,6 +31,11 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(Image)
+  REQUIRE(SensorJointData)
+  REQUIRE(InertialSensorData)
+  REQUIRE(AccelerometerData)
+  REQUIRE(FSRData)
+  
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, public DebugCommandExecutor

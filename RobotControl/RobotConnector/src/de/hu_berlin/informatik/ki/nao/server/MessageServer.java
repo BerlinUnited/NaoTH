@@ -275,14 +275,13 @@ public class MessageServer
   // send-receive-periodicExecution //
   public void receiveLoop() throws InterruptedException
   {
+    byte[] buf = new byte[64*1024];
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
     while(isActive && serverSocket != null && serverSocket.isConnected())
     {
       try
       {
-
         // reader answer
-        byte[] buf = new byte[1024];
         int received = serverSocket.getInputStream().read(buf);
         receivedBytes += received;
 

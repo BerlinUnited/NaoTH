@@ -1,8 +1,12 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
 //#include "Representations/Infrastructure/ConfigPathInfo.h"
 #include "PlatformInterface/Platform.h"
+#include "Messages/Representations.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+
+double InertialSensorData::offset[InertialSensorData::numOfInertialSensor];
 
 InertialSensorData::InertialSensorData()
 {
@@ -65,3 +69,28 @@ void InertialSensorData::print(ostream& stream) const
     stream << getInertialSensorName((InertialSensorID) i) << " = " << data[i] << "\n";
   }
 }//end print
+
+
+void Serializer<InertialSensorData>::serialize(const InertialSensorData& representation, std::ostream& stream)
+{
+  naothmessages::DoubleVector msg;
+  for(size_t i=0; i< InertialSensorData::numOfInertialSensor; i++)
+  {
+    msg.add_v(representation.data[i]);
+    msg.add_v(representation.offset[i]);
+  }
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<InertialSensorData>::deserialize(std::istream& stream, InertialSensorData& representation)
+{
+  naothmessages::DoubleVector msg;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  msg.ParseFromZeroCopyStream(&buf);
+  for(int i=0; i<InertialSensorData::numOfInertialSensor; i++)
+  {
+    representation.data[i] = msg.v(i*2);
+    representation.offset[i] = msg.v(i*2+1);
+  }
+}
