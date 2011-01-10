@@ -19,7 +19,7 @@ using namespace std;
 namespace naoth
 {
 
-  class AccelerometerData : public Printable, public PlatformInterchangeable
+  class AccelerometerData : public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
     enum AccelerometerID

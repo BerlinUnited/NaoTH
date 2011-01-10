@@ -19,6 +19,7 @@
 #include "Tools/DataStructures/Serializer.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/ImageProcessing/ImagePrimitives.h"
+#include "Tools/ImageProcessing/ImageDrawings.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 
@@ -29,7 +30,7 @@ namespace naoth
   /**
    * Platform independend definition of an image class
    */
-  class Image: public Printable, public PlatformInterchangeable, public Streamable
+  class Image: public Printable, public PlatformInterchangeable, public Streamable, public DrawingCanvas
   {
 
   public:

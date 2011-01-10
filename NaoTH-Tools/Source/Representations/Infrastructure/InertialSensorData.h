@@ -19,7 +19,7 @@ using namespace std;
 namespace naoth
 {
 
-  class InertialSensorData : public Printable, public PlatformInterchangeable
+  class InertialSensorData : public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
 

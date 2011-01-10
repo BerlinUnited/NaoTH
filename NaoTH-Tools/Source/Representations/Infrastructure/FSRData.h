@@ -21,7 +21,7 @@ using namespace std;
 namespace naoth
 {
 
-  class FSRData : public Printable, public PlatformInterchangeable
+  class FSRData : public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
     enum FSRID

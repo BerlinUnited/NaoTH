@@ -86,14 +86,18 @@
         <File Name="../Source/Tools/Math/Pose3D.h"/>
         <File Name="../Source/Tools/Math/Pose2D.h"/>
       </VirtualDirectory>
-      <VirtualDirectory Name="ImageProcessing">
-        <File Name="../Source/Tools/ImageProcessing/ColorModelConversions.h"/>
-        <File Name="../Source/Tools/ImageProcessing/ImagePrimitives.h"/>
-      </VirtualDirectory>
       <VirtualDirectory Name="Debug">
+        <File Name="../Source/Tools/Debug/DebugImageDrawings.cpp"/>
+        <File Name="../Source/Tools/Debug/DebugImageDrawings.h"/>
         <File Name="../Source/Tools/Debug/NaoTHAssert.h"/>
       </VirtualDirectory>
+      <VirtualDirectory Name="ImageProcessing">
+        <File Name="../Source/Tools/ImageProcessing/ColorModelConversions.h"/>
+        <File Name="../Source/Tools/ImageProcessing/ImageDrawings.h"/>
+        <File Name="../Source/Tools/ImageProcessing/ImagePrimitives.h"/>
+      </VirtualDirectory>
       <File Name="../Source/Tools/NaoTime.cpp"/>
+      <File Name="../Source/Tools/ColorClasses.h"/>
       <File Name="../Source/Tools/DataConversion.h"/>
       <File Name="../Source/Tools/NaoTime.h"/>
     </VirtualDirectory>
