@@ -1,4 +1,6 @@
-#include "Representations/Infrastructure/FSRData.h"
+#include "FSRData.h"
+#include "Messages/Representations.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
@@ -83,3 +85,50 @@ double FSRData::forceRight() const
   }//end for
   return f;
 }//end forceRight
+
+void Serializer<FSRData>::serialize(const FSRData& representation, std::ostream& stream)
+{
+  naothmessages::FSRData msg;
+  for(size_t i=0; i<FSRData::numOfFSR; i++)
+  {
+    msg.add_force(representation.force[i]);
+    msg.add_data(representation.data[i]);
+    msg.add_valid(representation.valid[i]);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representation)
+{
+  // get length of data
+  stream.seekg (0, ios::end);
+  int length = stream.tellg();
+  stream.seekg (0, ios::beg);
+
+  
+  google::protobuf::io::IstreamInputStream buf(&stream);
+
+  if ( length == 144 )
+  {
+    naothmessages::DoubleVector msg;
+    msg.ParseFromZeroCopyStream(&buf);
+    for (int i = 0; i < FSRData::numOfFSR; i++)
+    {
+      representation.force[i] = msg.v(i*2);
+      representation.data[i] = msg.v(i*2+1);
+    }
+  }
+  else
+  {
+    naothmessages::FSRData msg;
+    msg.ParseFromZeroCopyStream(&buf);
+    for (int i = 0; i < FSRData::numOfFSR; i++)
+    {
+      representation.force[i] = msg.force(i);
+      representation.data[i] = msg.data(i);
+      representation.valid[i] = msg.valid(i);
+    }
+  }
+}

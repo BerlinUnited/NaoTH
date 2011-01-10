@@ -12,6 +12,7 @@
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/Math/Vector3.h"
+#include "Tools/DataStructures/Serializer.h"
 
 using namespace std;
 
@@ -40,6 +41,15 @@ namespace naoth
 
     virtual void print(ostream& stream) const;
   };
+  
+  template<>
+  class Serializer<AccelerometerData>
+  {
+    public:
+    static void serialize(const AccelerometerData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, AccelerometerData& representation);
+  };
+  
 }
 #endif	/* _ACCELEROMETERDATA_H */
 

@@ -1,4 +1,6 @@
 #include "Representations/Infrastructure/AccelerometerData.h"
+#include "Messages/Representations.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
@@ -48,4 +50,29 @@ void AccelerometerData::print(ostream& stream) const
   }//end for
   stream << getAcceleration() <<endl;
 }//end print
+
+void Serializer<AccelerometerData>::serialize(const AccelerometerData& representation, std::ostream& stream)
+{
+  naothmessages::DoubleVector msg;
+  for(size_t i=0; i< AccelerometerData::numOfAccelerometer; i++)
+  {
+    msg.add_v(representation.data[i]);
+    msg.add_v(representation.rawData[i]);
+  }
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  msg.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<AccelerometerData>::deserialize(std::istream& stream, AccelerometerData& representation)
+{
+  naothmessages::DoubleVector msg;
+
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  msg.ParseFromZeroCopyStream(&buf);
+  for(int i=0; i<AccelerometerData::numOfAccelerometer; i++)
+  {
+    representation.data[i] = msg.v(i*2);
+    representation.rawData[i] = msg.v(i*2+1);
+  }
+}
 

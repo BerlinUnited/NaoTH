@@ -14,6 +14,7 @@
 #include "Tools/Math/Vector3.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 using namespace std;
 
@@ -53,6 +54,16 @@ namespace naoth
 
     virtual void print(ostream& stream) const;
   };
+  
+  template<>
+  class Serializer<FSRData>
+  {
+    public:
+    static void serialize(const FSRData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, FSRData& representation);
+  };
+  
+  
 
 }//end namespace naoth
 

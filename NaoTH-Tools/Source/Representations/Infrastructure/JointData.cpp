@@ -5,7 +5,7 @@
 #include "Tools/Math/Common.h"
 //#include "Tools/Config/ConfigLoader.h"
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Messages/JointData.pb.h"
+#include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;

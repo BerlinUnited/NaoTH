@@ -15,7 +15,7 @@
 #include "Simulator.h"
 #include "LegacyConverter.h"
 #include "Tools/NaoTime.h"
-#include <Messages/FrameInfo.pb.h>
+#include <Messages/Representations.pb.h>
 
 
 using namespace std;

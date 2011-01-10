@@ -22,13 +22,18 @@ namespace naoth
     public:
       static void serialize(const T& representation, std::ostream& stream)
       {
+        #ifdef DEBUG
+          std::cerr << "no serizalizer for " << typeid(T).name() << std::endl; 
+        #endif // DEBUG
         // do nothing
-        //std::cout << "no serizalizer for " << typeid(T).name() << std::endl;
+        
       }
       static void deserialize(const std::istream& stream, T& representation)
       {
+        #ifdef DEBUG
+          std::cerr << "no deserizalizer for " << typeid(T).name() << std::endl; 
+        #endif // DEBUG
         // do nothing
-        //std::cout << "no deserizalizer for " << typeid(T).name() << std::endl;
       }
   };
   
