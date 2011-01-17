@@ -1,3 +1,9 @@
+if os.is("windows") then
+  dofile "helper/naocrosscompile_windows.lua"
+ else
+  dofile "helper/naocrosscompile.lua"
+end
+
 -- description of the solution
 
 solution "NaoPlatform"

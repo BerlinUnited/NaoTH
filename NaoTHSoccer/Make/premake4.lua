@@ -1,3 +1,9 @@
+if os.is("windows") then
+  dofile "helper/naocrosscompile_windows.lua"
+ else
+  dofile "helper/naocrosscompile.lua"
+end
+
 solution "NaoTHSoccer" 
   platforms {"Native"}
   configurations {"Debug", "Release"}
@@ -25,9 +31,12 @@ solution "NaoTHSoccer"
   dofile "../../DebugCommunication/Make/DebugCommunication.lua"
   
   -- platforms
-  dofile "../../Platforms/Make/SimSpark.lua"
-  dofile "../../Platforms/Make/Webots.lua"
-  dofile "../../Platforms/Make/LogSimulator.lua"
-  
+  if(_OPTIONS["platform"] == "Nao") then
+  	dofile "../../Platforms/Make/DCM.lua"
+  else
+		dofile "../../Platforms/Make/SimSpark.lua"
+		dofile "../../Platforms/Make/Webots.lua"
+		dofile "../../Platforms/Make/LogSimulator.lua"
+  end
   -- the core
   dofile "NaoTHSoccer.lua"
