@@ -18,6 +18,7 @@ echo "Installing sfsexp library"
 echo "Installing glib library"
 . ../install_scripts/glib.sh
 
+. ../install_scripts/protobuf.sh
 # get out of the _tmp directory and delete it
 cd ..
 rm -Rf _tmp 

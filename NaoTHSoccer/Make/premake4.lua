@@ -31,3 +31,5 @@ solution "NaoTHSoccer"
   
   -- the core
   dofile "NaoTHSoccer.lua"
+
+  dofile "Tests.lua"
