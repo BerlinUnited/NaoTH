@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="NaoTHSoccer" Database="./NaoTHSoccer.tags">
-  <Project Name="NaoTH-Tools" Path="../../NaoTH-Tools/Make/NaoTH-Tools.project" Active="No"/>
-  <Project Name="DebugCommunication" Path="../../DebugCommunication/Make/DebugCommunication.project" Active="No"/>
-  <Project Name="SimSpark" Path="../../Platforms/Make/SimSpark.project" Active="No"/>
-  <Project Name="Webots" Path="../../Platforms/Make/Webots.project" Active="No"/>
-  <Project Name="LogSimulator" Path="../../Platforms/Make/LogSimulator.project" Active="Yes"/>
-  <Project Name="NaoTHSoccer" Path="NaoTHSoccer.project" Active="No"/>
+  <Project Name="NaoTH-Tools" Path="../../NaoTH-Tools/Make/NaoTH-Tools.project" Active="Yes" />
+  <Project Name="DebugCommunication" Path="../../DebugCommunication/Make/DebugCommunication.project" Active="No" />
+  <Project Name="SimSpark" Path="../../Platforms/Make/SimSpark.project" Active="No" />
+  <Project Name="Webots" Path="../../Platforms/Make/Webots.project" Active="No" />
+  <Project Name="LogSimulator" Path="../../Platforms/Make/LogSimulator.project" Active="No" />
+  <Project Name="Tests" Path="Tests.project" Active="No" />
+  <Project Name="NaoTHSoccer" Path="NaoTHSoccer.project" Active="No" />
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Project Name="NaoTH-Tools" ConfigName="Debug"/>
@@ -13,6 +14,7 @@
       <Project Name="SimSpark" ConfigName="Debug"/>
       <Project Name="Webots" ConfigName="Debug"/>
       <Project Name="LogSimulator" ConfigName="Debug"/>
+      <Project Name="Tests" ConfigName="Debug"/>
       <Project Name="NaoTHSoccer" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
@@ -21,6 +23,7 @@
       <Project Name="SimSpark" ConfigName="Release"/>
       <Project Name="Webots" ConfigName="Release"/>
       <Project Name="LogSimulator" ConfigName="Release"/>
+      <Project Name="Tests" ConfigName="Release"/>
       <Project Name="NaoTHSoccer" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>

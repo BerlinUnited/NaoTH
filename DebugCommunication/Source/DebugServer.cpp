@@ -153,7 +153,7 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
           if (valueIsBase64)
           {
             size_t len;
-            char* decoded = (char*) g_base64_decode(argv[i], &len);
+            char* decoded = (char*) g_base64_decode(argv[i], (gsize*) &len);
             arguments[lastKey].assign(decoded);
             g_free(decoded);
           } else

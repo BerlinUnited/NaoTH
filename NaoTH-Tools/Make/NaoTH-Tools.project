@@ -98,6 +98,7 @@
       </VirtualDirectory>
       <File Name="../Source/Tools/NaoTime.cpp"/>
       <File Name="../Source/Tools/ColorClasses.h"/>
+      <File Name="../Source/Tools/NaoInfo.h"/>
       <File Name="../Source/Tools/DataConversion.h"/>
       <File Name="../Source/Tools/NaoTime.h"/>
     </VirtualDirectory>

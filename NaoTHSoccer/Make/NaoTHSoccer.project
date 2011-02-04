@@ -58,7 +58,7 @@
   </VirtualDirectory>
   <Settings Type="Static Library">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
-      <General OutputFile="../dist/libnaoth-soccer.a" IntermediateDirectory="obj/Debug" Command="./libnaoth-soccer.a" CommandArguments="" WorkingDirectory="../dist" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="../dist/libnaoth-soccer.a" IntermediateDirectory="obj/Debug/NaoTHSoccer" Command="./libnaoth-soccer.a" CommandArguments="" WorkingDirectory="../dist" PauseExecWhenProcTerminates="yes"/>
       <Compiler Required="yes" Options="-g">
         <IncludePath Value="../Source"/>
         <IncludePath Value="../../NaoTH-Tools/Source"/>
@@ -88,7 +88,7 @@
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
-      <General OutputFile="../dist/libnaoth-soccer.a" IntermediateDirectory="obj/Release" Command="./libnaoth-soccer.a" CommandArguments="" WorkingDirectory="../dist" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="../dist/libnaoth-soccer.a" IntermediateDirectory="obj/Release/NaoTHSoccer" Command="./libnaoth-soccer.a" CommandArguments="" WorkingDirectory="../dist" PauseExecWhenProcTerminates="yes"/>
       <Compiler Required="yes" Options="">
         <IncludePath Value="../Source"/>
         <IncludePath Value="../../NaoTH-Tools/Source"/>
