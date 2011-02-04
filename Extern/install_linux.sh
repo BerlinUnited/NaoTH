@@ -18,6 +18,15 @@ echo "Installing sfsexp library"
 echo "Installing glib library"
 . ../install_scripts/glib.sh
 
+echo "Installing protobuf"
+. ../install_scripts/protobuf.sh
+
+echo "Installing Google Test"
+. ../install_scripts/gtest.sh
+
+echo "Installing Google Mock"
+. ../install_scripts/gmock.sh
+
 # get out of the _tmp directory and delete it
 cd ..
 rm -Rf _tmp 

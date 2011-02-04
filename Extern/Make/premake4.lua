@@ -10,5 +10,6 @@ solution "extern-source"
 
   -- include projects  
   dofile "libb64.lua"
-
+  dofile "gmock.lua"
+  dofile "gtest.lua"
   dofile "install.lua"

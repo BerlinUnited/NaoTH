@@ -36,7 +36,8 @@ solution "NaoTHSoccer"
   else
 		dofile "../../Platforms/Make/SimSpark.lua"
 		dofile "../../Platforms/Make/Webots.lua"
-		dofile "../../Platforms/Make/LogSimulator.lua"
+		dofile "../../Platforms/Make/LogSimulator.lua"		
+    dofile "Tests.lua"
   end
   -- the core
   dofile "NaoTHSoccer.lua"
