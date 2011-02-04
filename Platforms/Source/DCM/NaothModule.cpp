@@ -12,10 +12,6 @@ using namespace naoth;
 
 static NaothModule* theModule = NULL;
 
-static bool shouldSit=false;
-
-#define lbh_pi_2 1.5707963267948966f
-
 inline static void motion_wrapper_pre()
 {
   theModule->motionCallbackPre();

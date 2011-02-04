@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Workspace Name="NaoTHSoccer" Database="./NaoTHSoccer.tags">
-  <Project Name="NaoTH-Tools" Path="../../NaoTH-Tools/Make/NaoTH-Tools.project" Active="No"/>
+  <Project Name="NaoTH-Tools" Path="../../NaoTH-Tools/Make/NaoTH-Tools.project" Active="Yes"/>
   <Project Name="DebugCommunication" Path="../../DebugCommunication/Make/DebugCommunication.project" Active="No"/>
-  <Project Name="DCM" Path="../../Platforms/Make/DCM.project" Active="Yes"/>
+  <Project Name="DCM" Path="../../Platforms/Make/DCM.project" Active="No"/>
   <Project Name="NaoTHSoccer" Path="NaoTHSoccer.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
