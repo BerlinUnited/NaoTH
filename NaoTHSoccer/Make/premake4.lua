@@ -1,23 +1,25 @@
-if os.is("windows") then
-  dofile "helper/naocrosscompile_windows.lua"
- else
-  dofile "helper/naocrosscompile.lua"
-end
+dofile "helper/naocrosscompile.lua"
 
-solution "NaoTHSoccer" 
-  platforms {"Native"}
+
+solution "NaoTHSoccer"
+  platforms {"Native", "Nao"}
   configurations {"Debug", "Release"}
   targetdir "../dist"
-  
-  -- additional defines for windows
-  if os.is("windows") then
-	defines {"WIN32", "NOMINMAX"}
-  end
   
   -- debug configuration
   configuration { "Debug" }
 	defines { "DEBUG" }
 	flags { "Symbols" }
+	
+  configuration{"Native"}
+	includedirs {
+		"../../Extern/include/glib-2.0/",
+		"../../Extern/lib/glib-2.0/include/"}
+		
+	-- additional defines for windows
+	if os.is("windows") then
+		defines {"WIN32", "NOMINMAX"}
+	end
 
 	
   CORE_PATH = {
