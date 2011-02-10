@@ -1,5 +1,7 @@
--- description of the solution
+-- define the extern directory
+local extern_dir = "../../../Extern"
 
+-- description of the solution
 solution "NaoTH-Tools"
   kind "StaticLib"
   language "C++"
@@ -9,13 +11,14 @@ solution "NaoTH-Tools"
   configurations {"Debug","Release"}
   
   if os.is("windows") then
-	defines {"WIN32", "NOMINMAX"}
+    defines {"WIN32", "NOMINMAX"}
   end
   
   includedirs { 
-	"../../Extern/include",
-	"../../Extern/include/glib-2.0/",
-	"../../Extern/lib/glib-2.0/include/"}
+    extern_dir .. "/include",
+    extern_dir .. "/include/glib-2.0/",
+    extern_dir .. "/lib/glib-2.0/include/"
+  }
   
    -- debug configuration
   configuration { "Debug" }
@@ -24,7 +27,6 @@ solution "NaoTH-Tools"
 	
   -- store the makefiles the Make/ directory
   location "."
-  
-  --postbuildcommands{"premake4 install"}
-  
+
+  -- include the actual project
   dofile "NaoTHTools.lua"

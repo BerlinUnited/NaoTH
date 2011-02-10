@@ -3,13 +3,15 @@ project "DebugCommunication"
    	  language "C++"
 	 	  files {"../Source/**.h","../Source/**.cpp"}
 	  
-     includedirs {
-      "../../NaoTH-Tools/Source/"
-      }
+	-- define the extern directory
+	extern_dir = "../../../Extern"
+  
+	includedirs {
+		"../../NaoTH-Tools/Source/"
+	}
 
-   libdirs {"../../Extern/lib/"}
+   libdirs {extern_dir .. "/lib/"}
 	  
    links {"NaoTH-Tools"}
 	  
-	 targetdir "../../Extern/lib"
    targetname "naothdebugcom"

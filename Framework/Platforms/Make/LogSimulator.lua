@@ -1,3 +1,5 @@
+local extern_dir = "../../../Extern"
+
 -- NaoTH controller for the logfile based "simulator"
 project "LogSimulator"
   kind "ConsoleApp"
@@ -8,9 +10,9 @@ project "LogSimulator"
 	"../Source/",
 	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
-	"../../Extern/include/",
-	"../../Extern/include/glib-2.0/",
-	"../../Extern/lib/glib-2.0/include/"}
+	extern_dir .. "/include/",
+	extern_dir .. "/include/glib-2.0/",
+	extern_dir .. "/lib/glib-2.0/include/"}
   
   files{"../Source/LogSimulator/**.cpp","../Source/LogSimulator/**.h"}
   

@@ -54,4 +54,4 @@ project "DCM"
   targetname "naoth"
   
    
--- END Webots
+-- END DCM

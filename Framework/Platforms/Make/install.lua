@@ -2,7 +2,7 @@
 
 function install()
 
-  local prefix = "../../Extern"
+  local prefix = "../../../Extern"
   if(_OPTIONS["prefix"]) then
     prefix = _OPTIONS["prefix"]
   end   

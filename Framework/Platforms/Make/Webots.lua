@@ -1,3 +1,5 @@
+local extern_dir = "../../../Extern"
+
 -- NaoTH controller running in the Cyberbotics Webots simulator
 project "Webots"
   kind "ConsoleApp"
@@ -34,9 +36,9 @@ project "Webots"
 	"../../NaoTH-Tools/Source/",
     webotsHome .. "/include/controller/c/",
     "../Lib/win32/include/", 
-    "../../Extern/include/",
-    "../../Extern/include/glib-2.0/",
-	  "../../Extern/lib/glib-2.0/include/"}
+    extern_dir .. "/include/",
+    extern_dir .. "/include/glib-2.0/",
+	extern_dir .. "/lib/glib-2.0/include/"}
   
   libdirs {webotsHome .. "/lib/"}
   
