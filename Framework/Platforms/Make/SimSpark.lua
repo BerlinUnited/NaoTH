@@ -22,8 +22,6 @@ project "SimSpark"
 	extern_dir .. "/include/glib-2.0/",
 	extern_dir .. "/lib/glib-2.0/include/"}
 
-
-  libdirs {"../../Extern/lib/"}
   
   links {
     CORE,

@@ -16,7 +16,7 @@ project "Tests"
   includedirs {"../Tests/"} 
   -- , "../../Extern/source/gmock-1.4.0/include", "../../Extern/source/gtest-1.4.0/include"}
   
-  links {"gtest", "gmock"}
+  links {"gtest", "gmock", "pthread"}
   
   targetdir "../Tests"
   targetname "executeTests"
