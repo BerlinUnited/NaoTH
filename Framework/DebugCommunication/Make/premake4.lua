@@ -6,6 +6,7 @@ solution "DebugCommunication"
   configurations {"Debug", "Release"}
 
   includedirs {
+    "../../NaoTH-Tools/Source/",
     extern_dir .. "/include",
     extern_dir .. "/include/glib-2.0/",
     extern_dir .. "/lib/glib-2.0/include/"
@@ -31,7 +32,7 @@ solution "DebugCommunication"
 	  
     links {"glib-2.0","gio-2.0","gobject-2.0","gthread-2.0"}
 	  
-    targetdir "../Dist" 
+    targetdir "../dist" 
     targetname "testdebugcom"
 
 
