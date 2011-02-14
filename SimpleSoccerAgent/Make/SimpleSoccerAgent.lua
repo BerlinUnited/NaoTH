@@ -5,12 +5,9 @@ project "SimpleSoccerAgent"
 	  files {"../src/**.h","../src/**.cpp"}
 	  
 	  includedirs {
-		"../src/", 
-		"../../NaoTH-Tools/Source/",
-		"../../Extern/include/glib-2.0/",
-		"../../Extern/lib/glib-2.0/include/"}
-
-	  libdirs {"../../Extern/lib/"}
+		  "../src/", 
+		  "../../Framework/NaoTH-Tools/Source/"
+		}
 	  
 	  links {"NaoTH-Tools"}
 	  

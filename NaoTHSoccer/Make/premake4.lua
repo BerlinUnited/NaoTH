@@ -4,7 +4,7 @@ dofile "helper/naocrosscompile.lua"
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"Debug", "Release"}
-  targetdir "../dist"
+  
   
   -- debug configuration
   configuration { "Debug" }
@@ -19,7 +19,11 @@ solution "NaoTHSoccer"
     libdirs {
 		  "../../Extern/lib"
 		}
+		targetdir "../dist/Native"
 		
+  configuration {"Nao"}
+    targetdir "../dist/Nao"
+  
 	-- additional defines for windows
 	if os.is("windows") then
 		defines {"WIN32", "NOMINMAX"}
@@ -38,7 +42,7 @@ solution "NaoTHSoccer"
   
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then
-  	dofile "../../Platforms/Make/DCM.lua"
+  	dofile "../../Framework/Platforms/Make/DCM.lua"
   else
 		dofile "../../Framework/Platforms/Make/SimSpark.lua"
 		dofile "../../Framework/Platforms/Make/Webots.lua"
