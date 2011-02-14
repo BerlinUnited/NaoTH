@@ -1,23 +1,33 @@
-if os.is("windows") then
-  dofile "helper/naocrosscompile_windows.lua"
- else
-  dofile "helper/naocrosscompile.lua"
-end
+dofile "helper/naocrosscompile.lua"
 
-solution "NaoTHSoccer" 
-  platforms {"Native"}
+
+solution "NaoTHSoccer"
+  platforms {"Native", "Nao"}
   configurations {"Debug", "Release"}
-  targetdir "../dist"
   
-  -- additional defines for windows
-  if os.is("windows") then
-	defines {"WIN32", "NOMINMAX"}
-  end
   
   -- debug configuration
   configuration { "Debug" }
 	defines { "DEBUG" }
 	flags { "Symbols" }
+	
+  configuration{"Native"}
+	  includedirs {
+	    "../../Extern/include/",
+		  "../../Extern/include/glib-2.0/",
+		  "../../Extern/lib/glib-2.0/include/"}
+    libdirs {
+		  "../../Extern/lib"
+		}
+		targetdir "../dist/Native"
+		
+  configuration {"Nao"}
+    targetdir "../dist/Nao"
+  
+	-- additional defines for windows
+	if os.is("windows") then
+		defines {"WIN32", "NOMINMAX"}
+	end
 
 	
   CORE_PATH = {
@@ -27,16 +37,16 @@ solution "NaoTHSoccer"
   CORE = {"NaoTHSoccer", "DebugCommunication"}
 		
   -- base
-  dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"
-  dofile "../../DebugCommunication/Make/DebugCommunication.lua"
+  dofile "../../Framework/NaoTH-Tools/Make/NaoTHTools.lua"
+  dofile "../../Framework/DebugCommunication/Make/DebugCommunication.lua"
   
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then
-  	dofile "../../Platforms/Make/DCM.lua"
+  	dofile "../../Framework/Platforms/Make/DCM.lua"
   else
-		dofile "../../Platforms/Make/SimSpark.lua"
-		dofile "../../Platforms/Make/Webots.lua"
-		dofile "../../Platforms/Make/LogSimulator.lua"		
+		dofile "../../Framework/Platforms/Make/SimSpark.lua"
+		dofile "../../Framework/Platforms/Make/Webots.lua"
+		dofile "../../Framework/Platforms/Make/LogSimulator.lua"		
     dofile "Tests.lua"
   end
   -- the core

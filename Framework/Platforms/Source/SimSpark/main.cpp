@@ -70,6 +70,7 @@ int main(int argc, char** argv)
   theController.registerCallbacks(&theMotion, &theCognition);
 
   theController.main();
+  //theController.multiThreadsMain();
 
   return 0;
 }//end main

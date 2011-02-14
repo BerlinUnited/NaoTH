@@ -36,4 +36,4 @@ NaoTHSoccer/Make/Makefile
 NaoTHSoccer/Make/*.make
 *.tags
 *.session
-
+NaoTHSoccer/Tests/executeTests

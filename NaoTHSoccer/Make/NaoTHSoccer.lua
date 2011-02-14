@@ -6,14 +6,10 @@ project "NaoTHSoccer"
   
   includedirs {
 	"../Source/",
-	"../../NaoTH-Tools/Source/",
-	"../../DebugCommunication/Source/",
-	"../../Extern/include/glib-2.0/",
-	"../../Extern/lib/glib-2.0/include/"}
-
-  libdirs {"../../Extern/lib/"}
+	"../../Framework/NaoTH-Tools/Source/",
+	"../../Framework/DebugCommunication/Source/"}
   
-  links { "NaoTH-Tools", "DebugCommunication" }
+  links { "NaoTH-Tools", "DebugCommunication", "pthread" }
   
   targetname "naoth-soccer"
 

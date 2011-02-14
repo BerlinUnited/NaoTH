@@ -28,9 +28,11 @@ table.insert(premake.fields.platforms.allowed, "Nao")
 premake.gcc.platforms.Nao =
 {
   cppflags = "-MMD",
-  flags = "-m32 -march=geode -m3dnow --sysroot=" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/" .. " " ..
-          "-I" .. stageDir .. "/usr/include/" .. " -I" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/usr/include/" .. 
+  flags = "-m32 -march=geode -m3dnow --sysroot=" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/" ..
+          " -I" .. stageDir .. "/usr/include/" .. " -I" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/usr/include/" .. 
           " -I" .. crossDir .. "/i586-unknown-linux-gnu/include/c++/4.3.3/" .. 
+		  " -I" .. stageDir .. "/usr/include/glib-2.0/" ..
+		  " -I" .. stageDir .. "/usr/lib/glib-2.0/include/" ..
           " -L" .. stageDir .. "/usr/lib/" ..
           " -L" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/usr/lib/"
 }
