@@ -14,13 +14,14 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
+#include "Tools/DataStructures/ParameterList.h"
 
 using namespace std;
 
 namespace naoth
 {
 
-  class CameraSettings : public Printable
+  class CameraSettings : public Printable, public ParameterList
   {
     private:
     public:

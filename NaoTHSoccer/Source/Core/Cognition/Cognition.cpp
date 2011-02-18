@@ -17,6 +17,7 @@
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
+#include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 
 #include "Core/Tools/Debug/DebugRequest.h"
 
@@ -24,26 +25,7 @@ using namespace std;
 
 Cognition::Cognition()
 {
-  DEBUG_REQUEST_REGISTER("test:test", "test debug request", false);
-  registerModule<LEDSetter > ("LEDSetter");
-  registerModule<Debug > ("Debug");
-  setModuleEnabled("Debug", true);
-
-  // use the configuration in order to set whether a module is activated or not
-  Configuration& config = Platform::getInstance().theConfiguration;
-  for(list<string>::const_iterator name=getExecutionList().begin();
-    name != getExecutionList().end(); name++)
-  {
-    if(config.hasKey("modules", *name))
-    {
-      bool active = config.getBool("modules", *name);
-      //setModuleEnabled(*name, active);
-      if(active)
-      {
-        g_message("activating module %s", (*name).c_str());
-      }
-    }
-  }
+  
 }
 
 Cognition::~Cognition()
@@ -52,9 +34,6 @@ Cognition::~Cognition()
 
 void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 {
-  g_debug("test configuration: %s",
-    Platform::getInstance().theConfiguration.getString("test", "test").c_str());
-
   g_message("Cognition register start");
 
   // input
@@ -66,6 +45,26 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   ModuleCreator<Actuator>* actuator = registerModule<Actuator > ("Actuator");
   actuator->setEnabled(true);
   actuator->getModuleT()->init(platformInterface);
+
+  // register of the modules
+  registerModule<LEDSetter > ("LEDSetter");
+  registerModule<Debug > ("Debug");
+  registerModule<ParameterListDebugLoader> ("ParameterListDebugLoader");
+  // use the configuration in order to set whether a module is activated or not
+  Configuration& config = Platform::getInstance().theConfiguration;
+  for(list<string>::const_iterator name=getExecutionList().begin();
+    name != getExecutionList().end(); name++)
+  {
+    if(config.hasKey("modules", *name))
+    {    
+      bool active = config.getBool("modules", *name);
+      setModuleEnabled(*name, active);
+      if(active)
+      {
+        g_message("activating module %s", (*name).c_str());
+      }
+    }
+  }
 
   g_message("Cognition register end");
 }//end init

@@ -54,7 +54,6 @@ compatibleMode(compatibleMode),
 void Simulator::init()
 {  
   
-
   // print all representations included in the logfile
   std::cout << "-----------------------------------------" << std::endl;
   std::cout << "Representations contained in the logfile:" << std::endl;

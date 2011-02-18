@@ -12,9 +12,8 @@
 
 #include <map>
 #include <sstream>
-#include <DebugCommandExecutor.h>
 
-class ParameterList : public DebugCommandExecutor
+class ParameterList
 {
 public:
   ParameterList(const std::string& parentClassName);
@@ -25,11 +24,6 @@ public:
   int& registerParameter(const std::string& name, int& parameter);
   double& registerParameter(const std::string& name, double& parameter);
   std::string& registerParameter(const std::string& name, std::string& parameter);
-
-  
-  virtual void executeDebugCommand(
-    const std::string& command, const std::map<std::string, std::string>& arguments,
-    std::stringstream &outstream);
 
   virtual void loadFromConfig();
   virtual void saveToConfig();

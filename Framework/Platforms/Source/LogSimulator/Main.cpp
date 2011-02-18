@@ -9,6 +9,8 @@
 #include <glib-object.h>
 
 
+#include <PlatformInterface/Platform.h>
+
 #include "Cognition.h"
 #include "Motion.h"
 
@@ -70,6 +72,8 @@ int main(int argc, char** argv)
   Motion theMotion;
   
   Simulator sim(logpath, compatibleMode, backendMode);
+  
+  Platform::getInstance().init(&sim);
   
   sim.registerCallbacks(&theMotion, &theCognition);
   

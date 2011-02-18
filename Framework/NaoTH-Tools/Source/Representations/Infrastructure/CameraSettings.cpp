@@ -3,7 +3,7 @@
 
 using namespace naoth;
 
-CameraSettings::CameraSettings()
+CameraSettings::CameraSettings() : ParameterList("CameraSettings")
 {
 
   data[CameraSelection] = CameraInfo::Bottom;
@@ -11,7 +11,10 @@ CameraSettings::CameraSettings()
   for(int i=0;i<numOfCameraSetting;i++)
   {
     data[i] = 0;
+    registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
   }//end for
+  
+  initParams();
 }
 
 CameraSettings::~CameraSettings()
