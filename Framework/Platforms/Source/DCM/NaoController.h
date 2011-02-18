@@ -22,10 +22,12 @@ namespace naoth
 {
 class NaoController : public PlatformInterface<NaoController>, public Singleton<NaoController>
 {
-public:
-  NaoController();
-
+protected:
+  friend class Singleton<NaoController>;
+  NaoController();  
   virtual ~NaoController();
+  
+public:
 
   virtual string getHardwareIdentity() const;
 
@@ -41,7 +43,7 @@ public:
 
   virtual void close();
 
-protected:
+public:
   virtual void get(unsigned int& timestamp);
 
   virtual void get(FrameInfo& data);

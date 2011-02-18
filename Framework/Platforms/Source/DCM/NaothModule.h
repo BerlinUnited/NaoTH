@@ -8,6 +8,11 @@
 #ifndef _NAOTHMODULE_H
 #define	_NAOTHMODULE_H
 
+
+#include "Cognition.h"
+#include "Motion.h"
+
+
 #include "CognitionThread.h"
 #include "NaoController.h"
 
@@ -28,7 +33,9 @@ class NaothModule : public ALModule
 
     ALPtr<ALBroker> pBroker;
     CognitionThread *theCognitionThread;
-    NaoController *theNaoController;
+
+    Cognition* theCognition;
+    Motion* theMotion;
 
     unsigned int motionFrame;
   

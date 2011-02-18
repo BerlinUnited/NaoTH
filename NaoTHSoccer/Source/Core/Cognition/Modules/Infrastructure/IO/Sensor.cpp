@@ -20,7 +20,6 @@ void Sensor::init(naoth::PlatformDataInterface& platformInterface)
 {
   REG_INPUT(AccelerometerData);
   REG_INPUT(BatteryData);
-  REG_INPUT(BumperData);
   REG_INPUT(ButtonData);
   REG_INPUT(GyrometerData);
   REG_INPUT(IRReceiveData);

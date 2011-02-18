@@ -109,8 +109,9 @@ namespace naoth
       {
         _configDir = getenv("NAO_CONFIG");
       }
+       */
       _configuration.loadFromDir(_configDir, _interface->getName(), _hardwareIdentity);
-      */
+      
       
   //    // init the camera info
   //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");

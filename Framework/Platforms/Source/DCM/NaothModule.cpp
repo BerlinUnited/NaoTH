@@ -38,10 +38,10 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ):
 
 NaothModule::~NaothModule()
 {
-  if (NULL!=theNaoController)
-  {
-    delete theNaoController;
-  }
+  
+  delete theCognition;
+  delete theMotion;
+ 
 }
 
 bool NaothModule::innerTest() 
@@ -60,31 +60,39 @@ std::string NaothModule::version()
 
 
 void NaothModule::init()
-{
+{  
   //int cognition_interval = 60000;
   int cognition_interval =   40000;
 
   cout << "Init OutputThread" << endl;
   
   cout << "Initializing Controller" << endl;
-  theNaoController = new NaoController();
-  theNaoController->init(pBroker);
+  NaoController::getInstance().init(pBroker);
 
   getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
   getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
 
+  cout << "Creating Cognition and Motion" << endl;
+  theCognition = new Cognition();
+  theMotion = new Motion();
+  
+  cout << "Registering Cognition and Motion" << endl;
+  NaoController::getInstance().registerCallbacks(theMotion,theCognition);
+  
   cout << "Creating Cognition-Thread" << endl;
   theCognitionThread = new CognitionThread();
   theCognitionThread->setPeriod(cognition_interval);
-  theCognitionThread->setRealtime(SCHED_RR,1);
-  //theCognitionThread->setRealtime(SCHED_OTHER,0);
+  //theCognitionThread->setRealtime(SCHED_RR,1);
+  theCognitionThread->setRealtime(SCHED_OTHER,0);
   theCognitionThread->create();
+  
+  cout << "NaothModule:init finished!" << endl;
 }
 
 void NaothModule::motionCallbackPre()
 {
   
-  unsigned int timeStep = theNaoController->getBasicTimeStep();
+  unsigned int timeStep = NaoController::getInstance().getBasicTimeStep();
   ASSERT(timeStep == 10 || timeStep == 20);
 
   if(timeStep == 10 || motionFrame % 2 == 0)
@@ -98,7 +106,7 @@ void NaothModule::motionCallbackPre()
 void NaothModule::motionCallbackPost()
 {
 
-  unsigned int timeStep = theNaoController->getBasicTimeStep();
+  unsigned int timeStep = NaoController::getInstance().getBasicTimeStep();
   ASSERT(timeStep == 10 || timeStep == 20);
   
   if(timeStep == 10 || motionFrame % 2 == 0)
@@ -112,7 +120,9 @@ void NaothModule::motionCallbackPost()
 void NaothModule::exit( )
 {
   cout << "NaoTH is exiting ..."<<endl;
+  
   theCognitionThread->stop();
   theCognitionThread->join();
+  
   cout << "NaoTH exit is finished" << endl;
 }
