@@ -1,8 +1,8 @@
 /**
  * @file Image.h
- * 
+ *
  * Declaration of class Image
- */ 
+ */
 
 #ifndef __Image_h_
 #define __Image_h_
@@ -13,15 +13,16 @@
 
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector3.h"
-
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/Streamable.h"
-#include "Tools/DataStructures/Serializer.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-#include "Tools/ImageProcessing/ImagePrimitives.h"
 #include "Tools/ImageProcessing/ImageDrawings.h"
 
+#include "Tools/DataStructures/Streamable.h"
+#include "Tools/DataStructures/Serializer.h"
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/ImageProcessing/ImagePrimitives.h"
+#include "PlatformInterface/PlatformInterchangeable.h"
+
 #include "Representations/Infrastructure/CameraInfo.h"
+#include "Representations/Infrastructure/ShadingCorrection.h"
 
 #define SIZE_OF_YUV422_PIXEL 2
 
@@ -64,8 +65,18 @@ namespace naoth
     unsigned char* yuv422;
 
     CameraInfo cameraInfo;
+    ShadingCorrection shadingCorrection;
+
+    /** The time relative to the start of the programm when the image was recorded in ms */
+    unsigned int timestamp;
+    unsigned int currentBuffer;
+    unsigned int bufferCount;
+    unsigned int bufferFailedCount;
+
 
     virtual void print(ostream& stream) const;
+    virtual void toDataStream(ostream& stream) const;
+    virtual void fromDataStream(istream& stream);
 
 
     virtual void drawPoint(
@@ -81,21 +92,25 @@ namespace naoth
      */
     inline unsigned char getY(unsigned int x, unsigned int y) const
     {
-      return yuv422[2*(y*cameraInfo.resolutionWidth + x)];
+      return (yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
     }
 
     /**
-     * Get a pixel (it's color). This does a mapping to the YUV422 array
+     * Get a pixel (its color). This does a mapping to the YUV422 array
      * so please make sure not to call it more often than you need it.
      * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
      * seperatly.
      */
     inline Pixel get(unsigned int x, unsigned int y) const
     {
-      register unsigned int yOffset = 2*(y*cameraInfo.resolutionWidth + x);
+      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
-      p.y = yuv422[yOffset];
+      p.y = (yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
+      /* TODO: unify it to: ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+       p.u = yuv422[yOffset+1-((x & 1)<<1)];
+       p.v = yuv422[yOffset+3-((x & 1)<<1)];
+       */
       if((x & 1) == 0) // == (x % 2 == 0)
       {
         p.u = yuv422[yOffset+1];
@@ -111,7 +126,7 @@ namespace naoth
 
     inline void set(unsigned int x, unsigned int y, Pixel p)
     {
-      register unsigned int yOffset = 2*(y*cameraInfo.resolutionWidth + x);
+      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       yuv422[yOffset] = p.y;
 
@@ -147,17 +162,19 @@ namespace naoth
     }
 
   private:
+
     bool selfCreatedImage;
 
   };
-  
+
   template<>
   class Serializer<Image>
   {
-    public:
-      static void serialize(const Image& representation, std::ostream& stream);
-      static void deserialize(std::istream& stream, Image& representation);
+  public:
+    static void serialize(const Image& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, Image& representation);
   };
+
 }
 
 #endif //__Image_h_

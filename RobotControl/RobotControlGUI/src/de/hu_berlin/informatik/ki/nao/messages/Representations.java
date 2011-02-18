@@ -137,6 +137,13 @@ public final class Representations {
     public boolean hasFormat() { return hasFormat; }
     public de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format getFormat() { return format_; }
     
+    // optional uint32 timestamp = 6;
+    public static final int TIMESTAMP_FIELD_NUMBER = 6;
+    private boolean hasTimestamp;
+    private int timestamp_ = 0;
+    public boolean hasTimestamp() { return hasTimestamp; }
+    public int getTimestamp() { return timestamp_; }
+    
     private void initFields() {
       cameraInfo_ = de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
       format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
@@ -167,6 +174,9 @@ public final class Representations {
       if (hasFormat()) {
         output.writeEnum(5, getFormat().getNumber());
       }
+      if (hasTimestamp()) {
+        output.writeUInt32(6, getTimestamp());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -195,6 +205,10 @@ public final class Representations {
       if (hasFormat()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(5, getFormat().getNumber());
+      }
+      if (hasTimestamp()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, getTimestamp());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -369,6 +383,9 @@ public final class Representations {
         if (other.hasFormat()) {
           setFormat(other.getFormat());
         }
+        if (other.hasTimestamp()) {
+          setTimestamp(other.getTimestamp());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -423,6 +440,10 @@ public final class Representations {
               } else {
                 setFormat(value);
               }
+              break;
+            }
+            case 48: {
+              setTimestamp(input.readUInt32());
               break;
             }
           }
@@ -542,6 +563,24 @@ public final class Representations {
       public Builder clearFormat() {
         result.hasFormat = false;
         result.format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
+        return this;
+      }
+      
+      // optional uint32 timestamp = 6;
+      public boolean hasTimestamp() {
+        return result.hasTimestamp();
+      }
+      public int getTimestamp() {
+        return result.getTimestamp();
+      }
+      public Builder setTimestamp(int value) {
+        result.hasTimestamp = true;
+        result.timestamp_ = value;
+        return this;
+      }
+      public Builder clearTimestamp() {
+        result.hasTimestamp = false;
+        result.timestamp_ = 0;
         return this;
       }
       
@@ -5890,50 +5929,51 @@ public final class Representations {
   static {
     java.lang.String[] descriptorData = {
       "\n\025Representations.proto\022\rnaothmessages\032\021" +
-      "CommonTypes.proto\"\276\001\n\005Image\022\014\n\004data\030\001 \002(" +
+      "CommonTypes.proto\"\321\001\n\005Image\022\014\n\004data\030\001 \002(" +
       "\014\022\022\n\005width\030\002 \001(\005:\003320\022\023\n\006height\030\003 \001(\005:\0032" +
       "40\022-\n\ncameraInfo\030\004 \001(\0132\031.naothmessages.C" +
       "ameraInfo\0220\n\006format\030\005 \001(\0162\033.naothmessage" +
-      "s.Image.Format:\003YUV\"\035\n\006Format\022\007\n\003YUV\020\000\022\n" +
-      "\n\006YUV422\020\001\"\304\002\n\nCameraInfo\022\027\n\017resolutionW" +
-      "idth\030\001 \002(\005\022\030\n\020resolutionHeight\030\002 \002(\005\0221\n\010" +
-      "cameraID\030\004 \001(\0162\027.naothmessages.CameraID:" +
-      "\006bottom\022\023\n\013focalLength\030\005 \001(\001\022\031\n\021openingA",
-      "ngleWidth\030\006 \001(\001\022\032\n\022openingAngleHeight\030\007 " +
-      "\001(\001\022\026\n\016opticalCenterX\030\010 \001(\001\022\026\n\016opticalCe" +
-      "nterY\030\t \001(\001\022\014\n\004size\030\n \001(\003\022\022\n\nmemorysize\030" +
-      "\013 \001(\003\022\030\n\020cameraRollOffset\030\014 \001(\001\022\030\n\020camer" +
-      "aTiltOffset\030\r \001(\001\"H\n\tJointData\022\020\n\010positi" +
-      "on\030\001 \003(\001\022\020\n\010hardness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013" +
-      "\n\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+\n\tjointD" +
-      "ata\030\001 \002(\0132\030.naothmessages.JointData\022\023\n\013t" +
-      "emperature\030\002 \003(\001\022\027\n\017electricCurrent\030\003 \003(" +
-      "\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025.naothm",
-      "essages.Pose3D\".\n\tFrameInfo\022\023\n\013frameNumb" +
-      "er\030\001 \001(\r\022\014\n\004time\030\002 \001(\r\"\224\002\n\013BallPercept\022\023" +
-      "\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInImage\030\002 \001" +
-      "(\0132\034.naothmessages.DoubleVector2\022\025\n\rradi" +
-      "usInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024.nao" +
-      "thmessages.Color\022?\n\031bearingBasedOffsetOn" +
-      "Field\030\005 \001(\0132\034.naothmessages.DoubleVector" +
-      "2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001(\0132\030.na" +
-      "othmessages.FrameInfo\"\234\001\n\013GoalPercept\022\027\n" +
-      "\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCentroid\030\002",
-      " \001(\0132\034.naothmessages.DoubleVector3\022\031\n\021nu" +
-      "mberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027.na" +
-      "othmessages.GoalPost\"m\n\013WalkRequest\022\022\n\nc" +
-      "oordinate\030\001 \002(\r\022\025\n\rstopWithStand\030\002 \002(\010\022\016" +
-      "\n\006stable\030\003 \002(\010\022#\n\004pose\030\004 \002(\0132\025.naothmess" +
-      "ages.Pose2D\"j\n\rMotionRequest\022\n\n\002id\030\001 \002(\r" +
-      "\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRe" +
-      "quest\030\004 \001(\0132\032.naothmessages.WalkRequest\"" +
-      "\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothme" +
-      "ssages.FieldLineSegment\0222\n\rintersections",
-      "\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022m" +
-      "iddleCircleCenter\030\003 \001(\0132\034.naothmessages." +
-      "DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022" +
-      "\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010B)\n\'de.hu_be" +
-      "rlin.informatik.ki.nao.messages"
+      "s.Image.Format:\003YUV\022\021\n\ttimestamp\030\006 \001(\r\"\035" +
+      "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\304\002\n\nCamera" +
+      "Info\022\027\n\017resolutionWidth\030\001 \002(\005\022\030\n\020resolut" +
+      "ionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 \001(\0162\027.naot" +
+      "hmessages.CameraID:\006bottom\022\023\n\013focalLengt",
+      "h\030\005 \001(\001\022\031\n\021openingAngleWidth\030\006 \001(\001\022\032\n\022op" +
+      "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX" +
+      "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n" +
+      " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf" +
+      "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"H\n\t" +
+      "JointData\022\020\n\010position\030\001 \003(\001\022\020\n\010hardness\030" +
+      "\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Sensor" +
+      "JointData\022+\n\tjointData\030\001 \002(\0132\030.naothmess" +
+      "ages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017e" +
+      "lectricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n\004",
+      "pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFra" +
+      "meInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001(" +
+      "\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223" +
+      "\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.Do" +
+      "ubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tba" +
+      "llColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031b" +
+      "earingBasedOffsetOnField\030\005 \001(\0132\034.naothme" +
+      "ssages.DoubleVector2\022:\n\030frameInfoWhenBal" +
+      "lWasSeen\030\006 \001(\0132\030.naothmessages.FrameInfo" +
+      "\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001(",
+      "\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages." +
+      "DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(\005" +
+      "\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost\"" +
+      "m\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\025\n\rst" +
+      "opWithStand\030\002 \002(\010\022\016\n\006stable\030\003 \002(\010\022#\n\004pos" +
+      "e\030\004 \002(\0132\025.naothmessages.Pose2D\"j\n\rMotion" +
+      "Request\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006for" +
+      "ced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothme" +
+      "ssages.WalkRequest\"\253\001\n\013LinePercept\022.\n\005li" +
+      "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme",
+      "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage" +
+      "s.Intersection\0228\n\022middleCircleCenter\030\003 \001" +
+      "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD" +
+      "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali" +
+      "d\030\003 \003(\010B)\n\'de.hu_berlin.informatik.ki.na" +
+      "o.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5945,7 +5985,7 @@ public final class Representations {
           internal_static_naothmessages_Image_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_Image_descriptor,
-              new java.lang.String[] { "Data", "Width", "Height", "CameraInfo", "Format", },
+              new java.lang.String[] { "Data", "Width", "Height", "CameraInfo", "Format", "Timestamp", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.Image.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Builder.class);
           internal_static_naothmessages_CameraInfo_descriptor =

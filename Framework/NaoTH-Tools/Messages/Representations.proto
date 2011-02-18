@@ -18,7 +18,10 @@ message Image {
   optional CameraInfo cameraInfo = 4;
   
   optional Format format = 5 [default=YUV];
+  
+  optional uint32 timestamp = 6;
 }
+
 
 message CameraInfo {
   

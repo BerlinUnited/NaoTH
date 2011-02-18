@@ -38,9 +38,6 @@ struct buffer
   size_t length;
 };
 
-namespace naoth
-{
-
 /**
  * This is a CameraHandler that uses the V4L2 API directly. It will use the
  * Memory Map Streaming method for getting the images (which should be the
@@ -51,7 +48,10 @@ namespace naoth
  *
  * @author Thomas Krause
  *
- */ 
+ */
+ 
+namespace naoth
+{
 class V4lCameraHandler
 {
 public:
@@ -71,8 +71,10 @@ private:
   void initIDMapping();
   void fastCameraSelection(CameraInfo::CameraID camId);
   void openDevice();
+  void openIC2();
   void initDevice();
   void initMMap();
+  void initQueueBuffers();
   void startCapturing();
   int readFrame();
   void stopCapturing();
@@ -91,23 +93,27 @@ private:
 
   /** The camera file descriptor */
   int fd;
+  int i2cFd;
 
   /** Image buffers (v4l2) */
-  struct buffer * buffers;
+  struct buffer* buffers;
   /** Buffer number counter */
   unsigned int n_buffers ;
 
   struct v4l2_buffer currentBuf;
+  struct v4l2_buffer lastBuf;
 
   bool wasQueried;
+  bool isCapturing;
+
   int csConst[CameraSettings::numOfCameraSetting];
 
   CameraSettings currentSettings[CameraInfo::numOfCamera];
   CameraInfo::CameraID currentCamera;
 
+  unsigned int noBufferChangeCount;
 
 };
 
-} // end namespace naoth
 #endif	/* _V4LCAMERAHANDLER_H */
-
+}

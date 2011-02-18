@@ -7,15 +7,19 @@
 
 #include "V4lCameraHandler.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Debug/Stopwatch.h"
 #include "Representations/Infrastructure/Image.h"
 #include "PlatformInterface/Platform.h"
 
 #include <string.h>
 #include <iostream>
 
+using namespace naoth;
+
 extern "C"
 {
 #include "i2c-small.h"
+#include "Tools/NaoTime.h"
 }
 // define some non-standard constants
 #ifndef V4L2_CID_AUTOEXPOSURE
@@ -25,10 +29,8 @@ extern "C"
 #define V4L2_CID_CAM_INIT         (V4L2_CID_BASE+33)
 #endif
 
-using namespace naoth;
-
 V4lCameraHandler::V4lCameraHandler()
-: fd(-1), buffers(NULL), n_buffers(0), wasQueried(false)
+: fd(-1), buffers(NULL), n_buffers(0), wasQueried(false), isCapturing(false)
 {
 
 }
@@ -46,20 +48,23 @@ void V4lCameraHandler::init(std::string camDevice)
   cameraName = camDevice;
   
   // set to the default camera
-  fastCameraSelection(CameraInfo::Bottom);
+  //fastCameraSelection(CameraInfo::Bottom);
 
   // set our IDs
   initIDMapping();
 
+  // FIXME: the camera has to be selected here!
+  fastCameraSelection(CameraInfo::Bottom);
+  
   // open the device
   openDevice();
 
+  initDevice();
+
+  // FIXME: init the top camera
   // init device for both cameras
-  initDevice();
-  fastCameraSelection(CameraInfo::Top);
-  
-  initDevice();
-  fastCameraSelection(CameraInfo::Bottom);
+  //fastCameraSelection(CameraInfo::Top);
+  //initDevice();
   
   // allocate the internal camera buffers
   initMMap();
@@ -69,7 +74,6 @@ void V4lCameraHandler::init(std::string camDevice)
   // start capturing
   startCapturing();
   setFPS(30);
-  
 }
 
 void V4lCameraHandler::initIDMapping()
@@ -134,21 +138,25 @@ void V4lCameraHandler::setFPS(int fpsRate)
   currentSettings[currentCamera].data[CameraSettings::FPS] = fpsRate;
 }
 
-void V4lCameraHandler::get(Image& theImage)
-{
-  int resultCode = readFrame();
-  if (resultCode < 0)
-  {
-    std::cerr << "[V4L get] Could not get image, error code " << resultCode << std::endl;
-  } else
-  {
-    theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
-    //theImage.wrapImageDataYUV422((unsigned char*) buffers[resultCode].start, buffers[resultCode].length);
-    theImage.setCameraInfo(Platform::getInstance().theCameraInfo);
-    theImage.cameraInfo.cameraID = currentCamera;
-  }
-
-}
+//void V4lCameraHandler::get(Image& theImage)
+//{
+//  STOPWATCH_START("ImageRetrieve");
+//  int resultCode = readFrame();
+//  STOPWATCH_STOP("ImageRetrieve");
+//
+//  if (resultCode < 0)
+//  {
+//    std::cerr << "[V4L get] Could not get image, error code " << resultCode << std::endl;
+//  } else
+//  {
+//    theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
+//    //theImage.wrapImageDataYUV422((unsigned char*) buffers[resultCode].start, buffers[resultCode].length);
+//    theImage.setCameraInfo(Platform::getInstance().theCameraInfo);
+//    theImage.cameraInfo.cameraID = currentCamera;
+//    theImage.timestamp = (unsigned int) (((currentBuf.timestamp.tv_sec * 1000000 + currentBuf.timestamp.tv_usec) - NaoTime::startingTimeInMicroSeconds) / 1000 );
+//  }
+//
+//}
 
 void V4lCameraHandler::openDevice()
 {
@@ -214,6 +222,8 @@ void V4lCameraHandler::initDevice()
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   //  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB444;
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
+//  fmt.fmt.pix.field = V4L2_FIELD_ALTERNATE;
+//  fmt.fmt.pix.field = V4L2_FIELD_ANY;
   VERIFY(ioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
 
   /* Note VIDIOC_S_FMT may change width and height. */
@@ -293,24 +303,73 @@ void V4lCameraHandler::startCapturing()
 
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
 
+  isCapturing = true;
+  wasQueried = false;
+  noBufferChangeCount = 0;
+  lastBuf = currentBuf;
+
 }
 
 int V4lCameraHandler::readFrame()
 {
-
-  if (wasQueried)
+  if (wasQueried && lastBuf.index != currentBuf.index)
   {
-    VERIFY(-1 != ioctl(fd, VIDIOC_QBUF, &currentBuf));
+    VERIFY(-1 != ioctl(fd, VIDIOC_QBUF, &lastBuf));
+//    cout << "last: " << lastBuf.index << ", current: " << currentBuf.index << endl;
+    lastBuf = currentBuf;
+    noBufferChangeCount = 0;
+  }
+  else
+  {
+    noBufferChangeCount++;
   }
 
-  // blocking call, waits for a new to image available
-  VERIFY(ioctl(fd, VIDIOC_DQBUF, &currentBuf) >= 0);
+  int returnValue = ioctl(fd, VIDIOC_DQBUF, &currentBuf);
+  VERIFY(returnValue >= 0);
+
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
-
-  //process_image(buffers[buf.index].start);
-
   return currentBuf.index;
+}
+
+void V4lCameraHandler::get(Image& theImage)
+{
+  if(isCapturing)
+  {
+    //this is a HACK experimental
+    if(noBufferChangeCount > 20)
+    {
+      theImage.bufferFailedCount++;
+      noBufferChangeCount = 0;
+    }
+
+    STOPWATCH_START("ImageRetrieve");
+    int resultCode = readFrame();
+    STOPWATCH_STOP("ImageRetrieve");
+
+    if (resultCode < 0)
+    {
+      std::cerr << "[V4L get] Could not get image, error code " << resultCode << "/" << errno << std::endl;
+    }
+    else
+    {
+      theImage.setCameraInfo(Platform::getInstance().theCameraInfo);
+      if(currentBuf.bytesused != theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL)
+      {
+        cout << "info: " << (theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
+      }
+      else
+      {
+        theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
+
+        //theImage.wrapImageDataYUV422((unsigned char*) buffers[resultCode].start, buffers[resultCode].length);
+        theImage.cameraInfo.cameraID = currentCamera;
+        theImage.currentBuffer = currentBuf.index;
+        theImage.bufferCount = n_buffers;
+        theImage.timestamp = (unsigned int) (((currentBuf.timestamp.tv_sec * 1000000 + currentBuf.timestamp.tv_usec) - NaoTime::startingTimeInMicroSeconds) / 1000 );
+      }
+    }
+  }
 
 }
 
@@ -321,6 +380,8 @@ void V4lCameraHandler::stopCapturing()
   type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
   VERIFY(-1 != ioctl(fd, VIDIOC_STREAMOFF, &type));
+
+  isCapturing = false;
 }
 
 void V4lCameraHandler::uninitDevice()

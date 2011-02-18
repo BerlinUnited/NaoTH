@@ -183,6 +183,13 @@ class Image : public ::google::protobuf::Message {
   inline ::naothmessages::Image_Format format() const;
   inline void set_format(::naothmessages::Image_Format value);
   
+  // optional uint32 timestamp = 6;
+  inline bool has_timestamp() const;
+  inline void clear_timestamp();
+  static const int kTimestampFieldNumber = 6;
+  inline ::google::protobuf::uint32 timestamp() const;
+  inline void set_timestamp(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.Image)
  private:
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
@@ -194,11 +201,12 @@ class Image : public ::google::protobuf::Message {
   ::google::protobuf::int32 height_;
   ::naothmessages::CameraInfo* camerainfo_;
   int format_;
+  ::google::protobuf::uint32 timestamp_;
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
   friend void protobuf_ShutdownFile_Representations_2eproto();
   
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
   inline bool _has_bit(int index) const {
@@ -1646,6 +1654,22 @@ inline void Image::set_format(::naothmessages::Image_Format value) {
   GOOGLE_DCHECK(::naothmessages::Image_Format_IsValid(value));
   _set_bit(4);
   format_ = value;
+}
+
+// optional uint32 timestamp = 6;
+inline bool Image::has_timestamp() const {
+  return _has_bit(5);
+}
+inline void Image::clear_timestamp() {
+  timestamp_ = 0u;
+  _clear_bit(5);
+}
+inline ::google::protobuf::uint32 Image::timestamp() const {
+  return timestamp_;
+}
+inline void Image::set_timestamp(::google::protobuf::uint32 value) {
+  _set_bit(5);
+  timestamp_ = value;
 }
 
 // -------------------------------------------------------------------
