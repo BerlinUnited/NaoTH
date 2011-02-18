@@ -9,23 +9,12 @@
 #include <string>
 
 #include <PlatformInterface/Platform.h>
-#include "Core/Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/NaoTHAssert.h>
 #include "ParameterList.h"
 
 ParameterList::ParameterList(const std::string& parentClassName)
 {
   this->parentClassName = parentClassName;
-
-  REGISTER_DEBUG_COMMAND(std::string(parentClassName).append(":set"),
-    std::string("set the parameters for ").append(parentClassName), this);
-
-  REGISTER_DEBUG_COMMAND(std::string(parentClassName).append(":list"),
-    "get the list of available parameters", this);
-
-  REGISTER_DEBUG_COMMAND(std::string(parentClassName).append(":store"),
-    "store the configure file according to the path", this);
-
   
 }//end constructor ParameterList
 
@@ -155,41 +144,3 @@ void ParameterList::saveToConfig()
   }//end for
 
 }
-
-void ParameterList::executeDebugCommand(
-  const std::string& command, const std::map<std::string, std::string>& arguments,
-  std::stringstream &outstream)
-{
-  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
-
-  if (command == std::string(parentClassName).append(":set"))
-  {
-    // save the old values
-    saveToConfig();
-
-    for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); iter++)
-    {
-      // update global config
-      config.setRawValue(parentClassName, iter->first, iter->second);
-    }
-    // load from the changed config
-    loadFromConfig();
-
-    // always success
-    outstream<<"set " << parentClassName << " successfully"<< std::endl;
-  }
-  else if (command == std::string(parentClassName).append(":list"))
-  {
-    std::list<std::string> keys = config.getKeys(parentClassName);
-    for(std::list<std::string>::const_iterator it = keys.begin(); it != keys.end(); it++)
-    {
-      std::string val = config.getRawValue(parentClassName, *it);
-      outstream << *it << "=" << val << std::endl;
-    }
-  }
-  else if (command == std::string(parentClassName).append(":store"))
-  {
-    config.save(naoth::Platform::getInstance().theConfigDirectory);
-    outstream << "saved to " << naoth::Platform::getInstance().theConfigDirectory << std::endl;
-  }
-}//end executeDebugCommand

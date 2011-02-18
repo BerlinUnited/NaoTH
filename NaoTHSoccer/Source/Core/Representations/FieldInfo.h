@@ -12,10 +12,10 @@
 
 #include "Tools/Math/Vector2.h"
 #include "Core/Tools/LinesTable.h"
-#include "Core/Tools/DataStructures/ParameterList.h"
+#include <Tools/DataStructures/ParameterList.h>
 #include "Core/Tools/ColorClasses.h"
 
-class FieldInfo : ParameterList
+class FieldInfo : public ParameterList
 {
 private:
   void calculateValues();

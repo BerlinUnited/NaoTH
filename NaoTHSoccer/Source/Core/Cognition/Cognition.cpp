@@ -17,6 +17,7 @@
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
+#include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 
 #include "Core/Tools/Debug/DebugRequest.h"
 
@@ -48,14 +49,14 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   // register of the modules
   registerModule<LEDSetter > ("LEDSetter");
   registerModule<Debug > ("Debug");
-
+  registerModule<ParameterListDebugLoader> ("ParameterListDebugLoader");
   // use the configuration in order to set whether a module is activated or not
   Configuration& config = Platform::getInstance().theConfiguration;
   for(list<string>::const_iterator name=getExecutionList().begin();
     name != getExecutionList().end(); name++)
   {
     if(config.hasKey("modules", *name))
-    {
+    {    
       bool active = config.getBool("modules", *name);
       setModuleEnabled(*name, active);
       if(active)
