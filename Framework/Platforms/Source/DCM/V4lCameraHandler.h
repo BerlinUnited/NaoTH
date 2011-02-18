@@ -71,10 +71,8 @@ private:
   void initIDMapping();
   void fastCameraSelection(CameraInfo::CameraID camId);
   void openDevice();
-  void openIC2();
   void initDevice();
   void initMMap();
-  void initQueueBuffers();
   void startCapturing();
   int readFrame();
   void stopCapturing();
@@ -93,8 +91,7 @@ private:
 
   /** The camera file descriptor */
   int fd;
-  int i2cFd;
-
+  
   /** Image buffers (v4l2) */
   struct buffer* buffers;
   /** Buffer number counter */

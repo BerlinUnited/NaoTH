@@ -40,6 +40,9 @@ public class ByteRateCheck implements Plugin
       double receivedKB = ((double)(server.getReceivedBytes()-oldRecivedSize))/1024.0;
       double sentKB = ((double)(server.getSentBytes()-oldSentSize))/1024.0;
 
+      oldRecivedSize = server.getReceivedBytes();
+      oldSentSize = server.getSentBytes();
+
       updateHandler.setReceiveByteRate(receivedKB);
       updateHandler.setSentByteRate(sentKB);
     }
