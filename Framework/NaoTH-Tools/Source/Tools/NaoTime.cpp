@@ -5,9 +5,13 @@
 *
 * @author Oliver Welter
 */
-#include "Tools/NaoTime.h"
+#include "NaoTime.h"
+
+#include <iostream>
 
 using namespace naoth;
+
+const unsigned long long NaoTime::startingTimeInMicroSeconds = getSystemTimeInMicroSeconds();
 
 unsigned long long NaoTime::getSystemTimeInMicroSeconds()
 {
@@ -18,18 +22,20 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
     {
       double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
       return (unsigned long long) (inSeconds * 1000000.0);
+      
     }
   #else
   #ifdef NAO
-    struct timespec t;
-    clock_gettime(CLOCK_MONOTONIC ,&t);
-    return t.tv_sec * 1000000 + t.tv_nsec/1000;
+   struct timespec t;
+   clock_gettime(CLOCK_MONOTONIC ,&t);
+   return t.tv_sec * 1000000 + t.tv_nsec/1000;
   #else
-    struct timeval t;
-    if(gettimeofday(&t, NULL) == 0)
-    {
-      return t.tv_sec * 1000000 + t.tv_usec;
-    }
+   struct timeval t;
+   int returnval = gettimeofday(&t, NULL);
+   if(returnval == 0)
+   {
+     return t.tv_sec * 1000000 + t.tv_usec;
+   }
   #endif
   #endif
   return 0;
@@ -38,6 +44,5 @@ unsigned long long NaoTime::getSystemTimeInMicroSeconds()
 
 unsigned int NaoTime::getNaoTimeInMilliSeconds()
 {
-  static const unsigned long long startingTimeInMicroSeconds = getSystemTimeInMicroSeconds();
   return (unsigned int) ((getSystemTimeInMicroSeconds() - startingTimeInMicroSeconds) / 1000 );
 }//end getNaoTimeInMilliSeconds

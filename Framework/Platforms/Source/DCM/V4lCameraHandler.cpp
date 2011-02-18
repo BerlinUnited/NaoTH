@@ -7,7 +7,7 @@
 
 #include "V4lCameraHandler.h"
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/Debug/Stopwatch.h"
+//#include "Tools/Debug/Stopwatch.h"
 #include "Representations/Infrastructure/Image.h"
 #include "PlatformInterface/Platform.h"
 
@@ -343,9 +343,9 @@ void V4lCameraHandler::get(Image& theImage)
       noBufferChangeCount = 0;
     }
 
-    STOPWATCH_START("ImageRetrieve");
+    //STOPWATCH_START("ImageRetrieve");
     int resultCode = readFrame();
-    STOPWATCH_STOP("ImageRetrieve");
+    //STOPWATCH_STOP("ImageRetrieve");
 
     if (resultCode < 0)
     {
