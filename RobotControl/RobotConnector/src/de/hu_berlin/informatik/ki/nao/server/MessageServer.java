@@ -102,7 +102,7 @@ public class MessageServer
           isActive = false;
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
           disconnect();
-          
+
         }
       }
     });
@@ -137,7 +137,7 @@ public class MessageServer
     address = new InetSocketAddress(host, port);
     serverSocket = new Socket();
     serverSocket.connect(address);
-    
+
     isActive = true;
 
     if (parent != null)
@@ -146,7 +146,7 @@ public class MessageServer
     }
 
     // clean all old stuff in the pipe
-    while(!serverSocket.isClosed() && serverSocket.getInputStream().available() > 0)
+    while (!serverSocket.isClosed() && serverSocket.getInputStream().available() > 0)
     {
       serverSocket.getInputStream().read();
       // nothing
@@ -275,9 +275,9 @@ public class MessageServer
   // send-receive-periodicExecution //
   public void receiveLoop() throws InterruptedException
   {
-    byte[] buf = new byte[64*1024];
+    byte[] buf = new byte[64 * 1024];
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    while(isActive && serverSocket != null && serverSocket.isConnected())
+    while (isActive && serverSocket != null && serverSocket.isConnected())
     {
       try
       {
@@ -285,9 +285,9 @@ public class MessageServer
         int received = serverSocket.getInputStream().read(buf);
         receivedBytes += received;
 
-        for(int i=0; i < received; i++)
+        for (int i = 0; i < received; i++)
         {
-          if(buf[i] > 0)
+          if (buf[i] > 0)
           {
             byteStream.write(buf[i]);
           }
@@ -311,16 +311,15 @@ public class MessageServer
     SingleExecEntry entry = callbackQueue.take();
     byte[] decoded = Base64.decodeBase64(bytes);
 
-    if(entry.sender != null)
+    if (entry.sender != null)
     {
       entry.sender.handleResponse(decoded, entry.command);
     }
   }
 
-
   public void sendLoop() throws InterruptedException
   {
-    while(isActive && serverSocket != null && serverSocket.isConnected())
+    while (isActive && serverSocket != null && serverSocket.isConnected())
     {
       SingleExecEntry entry = commandRequestQueue.take();
       callbackQueue.put(entry);
@@ -329,18 +328,18 @@ public class MessageServer
 
       StringBuilder buffer = new StringBuilder();
       buffer.append("+").append(c.getName());
-      if(c.getArguments() != null)
+      if (c.getArguments() != null)
       {
-        for(Map.Entry<String,byte[]> e : c.getArguments().entrySet())
+        for (Map.Entry<String, byte[]> e : c.getArguments().entrySet())
         {
           boolean hasArg = e.getValue() != null;
           buffer.append(" ");
-          if(hasArg)
+          if (hasArg)
           {
             buffer.append("+");
           }
           buffer.append(e.getKey());
-          if(hasArg)
+          if (hasArg)
           {
             buffer.append(" ");
             buffer.append(new String(Base64.encodeBase64(e.getValue())));
@@ -370,10 +369,13 @@ public class MessageServer
       {
         try
         {
+
           long startTime = System.currentTimeMillis();
 
-          sendPeriodicCommands();
-
+          if (callbackQueue.size() == 0) // do not send if the robot is busy
+          {
+            sendPeriodicCommands();
+          }
           long stopTime = System.currentTimeMillis();
           long diff = updateIntervall - (stopTime - startTime);
           long wait = Math.max(0, diff);
@@ -402,7 +404,7 @@ public class MessageServer
     // periodic execution //
 
     // copy the listeners
-    
+
     LinkedList<CommandSender> copyListener = new LinkedList<CommandSender>();
     LISTENER_LOCK.lock();
     try
@@ -413,7 +415,7 @@ public class MessageServer
     {
       LISTENER_LOCK.unlock();
     }
-    
+
     // check each command sender and perform a request
     for (CommandSender sender : copyListener)
     {
@@ -434,7 +436,7 @@ public class MessageServer
       }
     }  // end for each listenerF
   }//end sendPeriodicCommands
- 
+
   private class SingleExecEntry
   {
 
