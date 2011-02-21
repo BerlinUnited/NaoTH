@@ -9,6 +9,8 @@
 
 #include <fstream>
 
+#include <glib.h>
+
 using namespace std;
 
 Stopwatch::Stopwatch() : stopwatches()
@@ -30,6 +32,7 @@ void Stopwatch::notifyStart(const std::string stopWatchName)
 
 void Stopwatch::notifyStart(StopwatchItem& stopwatchItem) 
 {
+  //g_debug("stopwatch START %s", stopwatchItem.name.c_str());
   stopwatchItem.isValid = false;
  
   #ifdef WIN32
@@ -91,6 +94,8 @@ void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
   // update the mean iteratively
   // c(n) = c(n-1) + (x_n - c(n-1))/n
   stopwatchItem.mean += (value - stopwatchItem.mean)/stopwatchItem.n;
+  //g_debug("stopwatch STOP %s", stopwatchItem.name.c_str());
+  stopwatchItem.lastValue = stopwatchItem.stop - stopwatchItem.start;
 
 }//end notifyStop
 

@@ -8,6 +8,7 @@
 #include "Cognition.h"
 
 #include <PlatformInterface/Platform.h>
+#include <Tools/Debug/Stopwatch.h>
 
 /////////////////////////////////////
 // Modules
@@ -21,6 +22,7 @@
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
 
 #include "Core/Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/Stopwatch.h>
 
 using namespace std;
 
@@ -76,7 +78,7 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 }//end init
 
 void Cognition::call()
-{
+{  
   // execute all modules
   list<string>::const_iterator iter;
   for (iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
@@ -85,7 +87,11 @@ void Cognition::call()
     AbstractModuleCreator* module = getModule(*iter);
     if (module != NULL && module->isEnabled())
     {
+      std::string name(*iter);
+      //g_debug("executing %s", name.c_str());
+      STOPWATCH_START(name);
       module->execute();
+      STOPWATCH_STOP(name);
     }//end if
   }//end for
 }//end call

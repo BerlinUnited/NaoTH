@@ -33,7 +33,8 @@ public:
     mean(0.0f),
     n(0.0f),
     min(10000.0f), // start with 10 s :)
-    max(0.0f)
+    max(0.0f),
+    lastValue(0)
   {}
   
   /** name of the stopwatch (the same as used as key in te map)*/
@@ -54,6 +55,9 @@ public:
   float min;
   /** the mean time */
   float max;
+  
+  /** The last valid value */
+  unsigned int lastValue;
 };
 
 class Stopwatch : public naoth::Singleton<Stopwatch>

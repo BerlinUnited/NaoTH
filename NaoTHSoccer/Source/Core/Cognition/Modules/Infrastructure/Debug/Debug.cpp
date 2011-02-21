@@ -9,6 +9,7 @@
 
 #include "Core/Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/Debug/Stopwatch.h>
 
 Debug::Debug() : cognitionLogger("log")
 {
@@ -30,7 +31,7 @@ Debug::Debug() : cognitionLogger("log")
 
 void Debug::execute()
 {
-  CognitionDebugServer::getInstance().execute();
+  CognitionDebugServer::getInstance().execute(); 
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
@@ -40,9 +41,9 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     // add the drawings to the image
     DebugImageDrawings::getInstance().drawToImage((Image&) getImage());
     
-    //STOPWATCH_START("sendImage");
+    STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);
-    //STOPWATCH_STOP("sendImage");
+    STOPWATCH_STOP("sendImage");
 
   }
   else if(command == "ping")

@@ -27,6 +27,7 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
 {
   if ("stopwatch" == command)
   {
+    //g_debug("sending stopwatches");
     std::map<std::string, StopwatchItem>& stopwatches = Stopwatch::getInstance().stopwatches;
     naothmessages::Stopwatches all;
     // collect all values
@@ -36,19 +37,15 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
       const std::string& name = it->first;
       const StopwatchItem& item = it->second;
 
-      if (item.isValid)
-      {
-        naothmessages::StopwatchItem* s = all.add_stopwatches();
-        s->set_name(name);
-        s->set_time(item.stop - item.start);
-      }
-
+      naothmessages::StopwatchItem* s = all.add_stopwatches();
+      s->set_name(name);
+      s->set_time(item.lastValue);
+     
       it++;
     }//end while
     
     google::protobuf::io::OstreamOutputStream buf(&outstream);
     all.SerializeToZeroCopyStream(&buf);
-    
   }
 }
 
