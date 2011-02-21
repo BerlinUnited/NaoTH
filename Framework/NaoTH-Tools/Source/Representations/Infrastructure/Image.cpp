@@ -8,34 +8,39 @@
 #include <iterator>
 #include <string>
 
-#include "Representations/Infrastructure/Image.h"
+#include "Image.h"
 #include "PlatformInterface/Platform.h"
-
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
 Image::Image()
-  : yuv422(NULL)
+  :
+  yuv422(NULL),
+  timestamp(0),
+  currentBuffer(0),
+  bufferCount(0),
+  bufferFailedCount(0),
+  selfCreatedImage(false)
 {
   cameraInfo = Platform::getInstance().theCameraInfo;
-  yuv422 = new unsigned char[cameraInfo.size*SIZE_OF_YUV422_PIXEL];
+  yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
 }
 
 //copy constructor
-
 Image::Image(const Image& orig) :
-cameraInfo(orig.cameraInfo)
+  DrawingCanvas(),
+  cameraInfo(orig.cameraInfo)
 {
   if(selfCreatedImage)
   {
     delete[] yuv422;
   }
-  yuv422 = new unsigned char[cameraInfo.size*SIZE_OF_YUV422_PIXEL];
-  
-  std::memcpy(yuv422, orig.yuv422, cameraInfo.size*SIZE_OF_YUV422_PIXEL);
+  yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
+
+  std::memcpy(yuv422, orig.yuv422, cameraInfo.size * SIZE_OF_YUV422_PIXEL);
   selfCreatedImage = true;
 }
 
@@ -46,8 +51,8 @@ Image& Image::operator=(const Image& orig)
   {
     delete[] yuv422;
   }
-  yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL*cameraInfo.size];
-  std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL*cameraInfo.size);
+  yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.size];
+  std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.size);
   selfCreatedImage = true;
 
   return *this;
@@ -76,32 +81,24 @@ void Image::setCameraInfo(const CameraInfo& ci)
 
 void Image::wrapImageDataYUV422(unsigned char* data, unsigned int size)
 {
-  if(size == cameraInfo.size*SIZE_OF_YUV422_PIXEL)
+  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  if(selfCreatedImage)
   {
-    if(selfCreatedImage)
-    {
-      delete[] yuv422;
-    }
+    delete[] yuv422;
+  }
 
-    yuv422 = data;
-    selfCreatedImage = false;
-  }
-  else
-  {
-    std::cerr << "[wrapImageDataYUV422] size was wrong, should be "
-      << (cameraInfo.size*SIZE_OF_YUV422_PIXEL)
-      << " but was " << size << std::endl;
-  }
+  yuv422 = data;
+  selfCreatedImage = false;
 }
 
 void Image::copyImageDataYUV422(unsigned char* data, unsigned int size)
 {
-  if(size == cameraInfo.size*SIZE_OF_YUV422_PIXEL)
+  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
   {
     if(!selfCreatedImage)
     {
       // throw the old pointer away, create a new buffer
-      yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL*cameraInfo.size];
+      yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.size];
     }
 
     // just overwrite the old image data
@@ -115,16 +112,107 @@ void Image::copyImageDataYUV422(unsigned char* data, unsigned int size)
 void Image::print(ostream& stream) const
 {
   stream << "ID: " << cameraInfo.cameraID <<'\n'
-          << "Focal Length: "<< cameraInfo.focalLength << '\n'
-          << "Roll Offset: "<< cameraInfo.cameraRollOffset << '\n'
-          << "Tilt Offset: "<< cameraInfo.cameraTiltOffset << '\n'
-          << "Size: " << cameraInfo.resolutionWidth << "x" << cameraInfo.resolutionHeight <<'\n'
-          << "Optical Center: " << cameraInfo.opticalCenterX << "," << cameraInfo.opticalCenterY <<'\n'
-          << "Opening Angle: " << cameraInfo.openingAngleWidth << "," << cameraInfo.openingAngleHeight;
+         << "Timestamp: " << timestamp << '\n'
+         << "Focal Length: "<< cameraInfo.focalLength << '\n'
+         << "Roll Offset: "<< cameraInfo.cameraRollOffset << '\n'
+         << "Tilt Offset: "<< cameraInfo.cameraTiltOffset << '\n'
+         << "Size: " << cameraInfo.resolutionWidth << "x" << cameraInfo.resolutionHeight <<'\n'
+         << "Optical Center: " << cameraInfo.opticalCenterX << "," << cameraInfo.opticalCenterY <<'\n'
+         << "Opening Angle: " << cameraInfo.openingAngleWidth << "," << cameraInfo.openingAngleHeight;
+  ;
 }//end print
 
 
+void Image::toDataStream(ostream& stream) const
+{
+  // the data has to be converted to a YUV (1 byte for each) array. no interlacing
+  naothmessages::Image img;
 
+  if((int)cameraInfo.resolutionHeight != img.height())
+  {
+    img.set_height(cameraInfo.resolutionHeight);
+  }
+  if((int)cameraInfo.resolutionWidth != img.width())
+  {
+    img.set_width(cameraInfo.resolutionWidth);
+  }
+
+  img.set_format(naothmessages::Image_Format_YUV422);
+  img.set_data(yuv422, cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  img.set_timestamp(timestamp);
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  img.SerializePartialToZeroCopyStream(&buf);
+
+}
+
+void Image::fromDataStream(istream& stream)
+{
+  naothmessages::Image img;
+
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  img.ParseFromZeroCopyStream(&buf);
+
+  unsigned int width = img.width();
+  unsigned int height = img.height();
+
+  if(img.has_timestamp())
+  {
+    timestamp = img.timestamp();
+  }
+
+  // YUV full
+  if(img.format() == naothmessages::Image_Format_YUV)
+  {
+    if(img.data().size() != 3 * width * height)
+    {
+      return;
+    }
+
+    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+
+    newCameraInfo.resolutionHeight = height;
+    newCameraInfo.resolutionWidth = width;
+    newCameraInfo.size = width * height;
+    setCameraInfo(newCameraInfo);
+    shadingCorrection.init(width, height, newCameraInfo.cameraID);
+
+    const char* data = img.data().c_str();
+
+    for(unsigned int i=0; i < getIndexSize(); i++)
+    {
+      unsigned int x = getXOffsetFromIndex(i);
+      unsigned int y = getYOffsetFromIndex(i);
+
+      Pixel p;
+
+      p.y = data[i * 3];
+      p.u = data[i * 3 + 1];
+      p.v = data[i * 3 + 2];
+
+      set(x,y, p);
+    }
+  }
+  // "native" YUV422 data
+  else if(img.format() == naothmessages::Image_Format_YUV422)
+  {
+    if(img.data().size() != SIZE_OF_YUV422_PIXEL * width * height)
+    {
+      return;
+    }
+
+    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+
+    newCameraInfo.resolutionHeight = height;
+    newCameraInfo.resolutionWidth = width;
+    newCameraInfo.size = width * height;
+    setCameraInfo(newCameraInfo);
+    shadingCorrection.init(width, height, newCameraInfo.cameraID);
+
+    memcpy(yuv422, img.data().c_str(), img.data().size());
+  }
+
+}//end fromDataStream
 
 void Image::drawPoint(
   unsigned int x,
@@ -141,7 +229,7 @@ void Image::drawPoint(
 
   set(x,y, p);
 }//end drawPoint
-                        
+
 unsigned int Image::width()
 {
   return cameraInfo.resolutionWidth;

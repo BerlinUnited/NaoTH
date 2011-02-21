@@ -62,12 +62,13 @@ void protobuf_AssignDesc_Representations_2eproto() {
       "Representations.proto");
   GOOGLE_CHECK(file != NULL);
   Image_descriptor_ = file->message_type(0);
-  static const int Image_offsets_[5] = {
+  static const int Image_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Image, data_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Image, width_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Image, height_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Image, camerainfo_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Image, format_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Image, timestamp_),
   };
   Image_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -357,50 +358,51 @@ void protobuf_AddDesc_Representations_2eproto() {
   ::naothmessages::protobuf_AddDesc_CommonTypes_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\025Representations.proto\022\rnaothmessages\032\021"
-    "CommonTypes.proto\"\276\001\n\005Image\022\014\n\004data\030\001 \002("
+    "CommonTypes.proto\"\321\001\n\005Image\022\014\n\004data\030\001 \002("
     "\014\022\022\n\005width\030\002 \001(\005:\003320\022\023\n\006height\030\003 \001(\005:\0032"
     "40\022-\n\ncameraInfo\030\004 \001(\0132\031.naothmessages.C"
     "ameraInfo\0220\n\006format\030\005 \001(\0162\033.naothmessage"
-    "s.Image.Format:\003YUV\"\035\n\006Format\022\007\n\003YUV\020\000\022\n"
-    "\n\006YUV422\020\001\"\304\002\n\nCameraInfo\022\027\n\017resolutionW"
-    "idth\030\001 \002(\005\022\030\n\020resolutionHeight\030\002 \002(\005\0221\n\010"
-    "cameraID\030\004 \001(\0162\027.naothmessages.CameraID:"
-    "\006bottom\022\023\n\013focalLength\030\005 \001(\001\022\031\n\021openingA"
-    "ngleWidth\030\006 \001(\001\022\032\n\022openingAngleHeight\030\007 "
-    "\001(\001\022\026\n\016opticalCenterX\030\010 \001(\001\022\026\n\016opticalCe"
-    "nterY\030\t \001(\001\022\014\n\004size\030\n \001(\003\022\022\n\nmemorysize\030"
-    "\013 \001(\003\022\030\n\020cameraRollOffset\030\014 \001(\001\022\030\n\020camer"
-    "aTiltOffset\030\r \001(\001\"H\n\tJointData\022\020\n\010positi"
-    "on\030\001 \003(\001\022\020\n\010hardness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013"
-    "\n\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+\n\tjointD"
-    "ata\030\001 \002(\0132\030.naothmessages.JointData\022\023\n\013t"
-    "emperature\030\002 \003(\001\022\027\n\017electricCurrent\030\003 \003("
-    "\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025.naothm"
-    "essages.Pose3D\".\n\tFrameInfo\022\023\n\013frameNumb"
-    "er\030\001 \001(\r\022\014\n\004time\030\002 \001(\r\"\224\002\n\013BallPercept\022\023"
-    "\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInImage\030\002 \001"
-    "(\0132\034.naothmessages.DoubleVector2\022\025\n\rradi"
-    "usInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024.nao"
-    "thmessages.Color\022?\n\031bearingBasedOffsetOn"
-    "Field\030\005 \001(\0132\034.naothmessages.DoubleVector"
-    "2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001(\0132\030.na"
-    "othmessages.FrameInfo\"\234\001\n\013GoalPercept\022\027\n"
-    "\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCentroid\030\002"
-    " \001(\0132\034.naothmessages.DoubleVector3\022\031\n\021nu"
-    "mberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027.na"
-    "othmessages.GoalPost\"m\n\013WalkRequest\022\022\n\nc"
-    "oordinate\030\001 \002(\r\022\025\n\rstopWithStand\030\002 \002(\010\022\016"
-    "\n\006stable\030\003 \002(\010\022#\n\004pose\030\004 \002(\0132\025.naothmess"
-    "ages.Pose2D\"j\n\rMotionRequest\022\n\n\002id\030\001 \002(\r"
-    "\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRe"
-    "quest\030\004 \001(\0132\032.naothmessages.WalkRequest\""
-    "\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothme"
-    "ssages.FieldLineSegment\0222\n\rintersections"
-    "\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022m"
-    "iddleCircleCenter\030\003 \001(\0132\034.naothmessages."
-    "DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022"
-    "\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010B)\n\'de.hu_be"
-    "rlin.informatik.ki.nao.messages", 1791);
+    "s.Image.Format:\003YUV\022\021\n\ttimestamp\030\006 \001(\r\"\035"
+    "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\304\002\n\nCamera"
+    "Info\022\027\n\017resolutionWidth\030\001 \002(\005\022\030\n\020resolut"
+    "ionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 \001(\0162\027.naot"
+    "hmessages.CameraID:\006bottom\022\023\n\013focalLengt"
+    "h\030\005 \001(\001\022\031\n\021openingAngleWidth\030\006 \001(\001\022\032\n\022op"
+    "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX"
+    "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n"
+    " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf"
+    "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"H\n\t"
+    "JointData\022\020\n\010position\030\001 \003(\001\022\020\n\010hardness\030"
+    "\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Sensor"
+    "JointData\022+\n\tjointData\030\001 \002(\0132\030.naothmess"
+    "ages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017e"
+    "lectricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n\004"
+    "pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFra"
+    "meInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001("
+    "\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223"
+    "\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.Do"
+    "ubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tba"
+    "llColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031b"
+    "earingBasedOffsetOnField\030\005 \001(\0132\034.naothme"
+    "ssages.DoubleVector2\022:\n\030frameInfoWhenBal"
+    "lWasSeen\030\006 \001(\0132\030.naothmessages.FrameInfo"
+    "\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001("
+    "\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages."
+    "DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(\005"
+    "\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost\""
+    "m\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\025\n\rst"
+    "opWithStand\030\002 \002(\010\022\016\n\006stable\030\003 \002(\010\022#\n\004pos"
+    "e\030\004 \002(\0132\025.naothmessages.Pose2D\"j\n\rMotion"
+    "Request\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006for"
+    "ced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothme"
+    "ssages.WalkRequest\"\253\001\n\013LinePercept\022.\n\005li"
+    "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme"
+    "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage"
+    "s.Intersection\0228\n\022middleCircleCenter\030\003 \001"
+    "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD"
+    "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali"
+    "d\030\003 \003(\010B)\n\'de.hu_berlin.informatik.ki.na"
+    "o.messages", 1810);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -468,6 +470,7 @@ const int Image::kWidthFieldNumber;
 const int Image::kHeightFieldNumber;
 const int Image::kCameraInfoFieldNumber;
 const int Image::kFormatFieldNumber;
+const int Image::kTimestampFieldNumber;
 #endif  // !_MSC_VER
 
 Image::Image()
@@ -492,6 +495,7 @@ void Image::SharedCtor() {
   height_ = 240;
   camerainfo_ = NULL;
   format_ = 0;
+  timestamp_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -541,6 +545,7 @@ void Image::Clear() {
       if (camerainfo_ != NULL) camerainfo_->::naothmessages::CameraInfo::Clear();
     }
     format_ = 0;
+    timestamp_ = 0u;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -628,6 +633,22 @@ bool Image::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(48)) goto parse_timestamp;
+        break;
+      }
+      
+      // optional uint32 timestamp = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_timestamp:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &timestamp_)));
+          _set_bit(5);
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -678,6 +699,11 @@ void Image::SerializeWithCachedSizes(
       5, this->format(), output);
   }
   
+  // optional uint32 timestamp = 6;
+  if (_has_bit(5)) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->timestamp(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -714,6 +740,11 @@ void Image::SerializeWithCachedSizes(
   if (_has_bit(4)) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       5, this->format(), target);
+  }
+  
+  // optional uint32 timestamp = 6;
+  if (_has_bit(5)) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->timestamp(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -761,6 +792,13 @@ int Image::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->format());
     }
     
+    // optional uint32 timestamp = 6;
+    if (has_timestamp()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->timestamp());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -803,6 +841,9 @@ void Image::MergeFrom(const Image& from) {
     if (from._has_bit(4)) {
       set_format(from.format());
     }
+    if (from._has_bit(5)) {
+      set_timestamp(from.timestamp());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -835,6 +876,7 @@ void Image::Swap(Image* other) {
     std::swap(height_, other->height_);
     std::swap(camerainfo_, other->camerainfo_);
     std::swap(format_, other->format_);
+    std::swap(timestamp_, other->timestamp_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

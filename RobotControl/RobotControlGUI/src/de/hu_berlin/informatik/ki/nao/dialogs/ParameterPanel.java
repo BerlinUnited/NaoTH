@@ -10,21 +10,10 @@ import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
 import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
-import de.hu_berlin.informatik.ki.nao.server.MessageServer;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.CodeSource;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
-import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -82,7 +71,7 @@ public class ParameterPanel extends javax.swing.JPanel
     jToolBar1.setRollover(true);
 
     cbParameterId.setEditable(true);
-    cbParameterId.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FieldInfo" }));
+    cbParameterId.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FieldInfo", "CameraSettings" }));
     cbParameterId.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         cbParameterIdActionPerformed(evt);

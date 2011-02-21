@@ -77,18 +77,19 @@ void DebugServer::mainWriter()
   g_debug("Starting DebugServer writer loop");
   while (true)
   {
-    char* answer = (char*) g_async_queue_pop(answers);
-
-    if (!comm.sendMessage(answer, strlen(answer)))
+    GString* answer = (GString*) g_async_queue_pop(answers);
+    //g_debug("popped answer from queue");
+    if (!comm.sendMessage(answer->str, answer->len))
     {
+      g_warning("could not send message");
       // error, clear answer queue
       while (g_async_queue_length(answers) > 0)
       {
-        char* tmp = (char*) g_async_queue_pop(answers);
-        g_free(tmp);
+        GString* tmp = (GString*) g_async_queue_pop(answers);
+        g_string_free(tmp, true);
       }
     }
-    g_free(answer);
+    g_string_free(answer, true);
     g_thread_yield();
   }
   g_async_queue_unref(answers);
@@ -103,7 +104,8 @@ void DebugServer::execute()
     GString* answer = g_string_new("");
     handleCommand(cmdRaw, answer);
     
-    g_async_queue_push(answers, g_string_free(answer, false));
+    //g_debug("pushed answer to queue");
+    g_async_queue_push(answers, answer);
 
     g_free(cmdRaw);
   }
@@ -210,6 +212,8 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
     answerFromHandler << "Unknown command \"" << command
       << "\", use \"help\" for a list of available commands" << std::endl;
   }
+  
+  //g_debug("called executor for %s", command.c_str());
   
   const std::string& str = answerFromHandler.str();
 

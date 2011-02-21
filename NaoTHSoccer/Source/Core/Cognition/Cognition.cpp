@@ -8,6 +8,7 @@
 #include "Cognition.h"
 
 #include <PlatformInterface/Platform.h>
+#include <Tools/Debug/Stopwatch.h>
 
 /////////////////////////////////////
 // Modules
@@ -18,8 +19,10 @@
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
+#include "Modules/Infrastructure/Debug/StopwatchSender.h"
 
 #include "Core/Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/Stopwatch.h>
 
 using namespace std;
 
@@ -46,10 +49,15 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   actuator->setEnabled(true);
   actuator->getModuleT()->init(platformInterface);
 
+  // BEGIN MODULES
   // register of the modules
   registerModule<LEDSetter > ("LEDSetter");
   registerModule<Debug > ("Debug");
   registerModule<ParameterListDebugLoader> ("ParameterListDebugLoader");
+  registerModule<StopwatchSender>("StopwatchSender");
+  
+  //END MODULES
+  
   // use the configuration in order to set whether a module is activated or not
   Configuration& config = Platform::getInstance().theConfiguration;
   for(list<string>::const_iterator name=getExecutionList().begin();
@@ -70,7 +78,7 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 }//end init
 
 void Cognition::call()
-{
+{  
   // execute all modules
   list<string>::const_iterator iter;
   for (iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
@@ -79,7 +87,11 @@ void Cognition::call()
     AbstractModuleCreator* module = getModule(*iter);
     if (module != NULL && module->isEnabled())
     {
+      std::string name(*iter);
+      //g_debug("executing %s", name.c_str());
+      STOPWATCH_START(name);
       module->execute();
+      STOPWATCH_STOP(name);
     }//end if
   }//end for
 }//end call

@@ -82,8 +82,8 @@ void NaothModule::init()
   cout << "Creating Cognition-Thread" << endl;
   theCognitionThread = new CognitionThread();
   theCognitionThread->setPeriod(cognition_interval);
-  //theCognitionThread->setRealtime(SCHED_RR,1);
-  theCognitionThread->setRealtime(SCHED_OTHER,0);
+  theCognitionThread->setRealtime(SCHED_RR,1);
+  //theCognitionThread->setRealtime(SCHED_OTHER,0);
   theCognitionThread->create();
   
   cout << "NaothModule:init finished!" << endl;
