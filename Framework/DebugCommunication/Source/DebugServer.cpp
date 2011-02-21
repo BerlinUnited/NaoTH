@@ -78,9 +78,10 @@ void DebugServer::mainWriter()
   while (true)
   {
     char* answer = (char*) g_async_queue_pop(answers);
-
-    if (!comm.sendMessage(answer, strlen(answer)))
+    //g_debug("popped answer from queue");
+    if (!comm.sendMessage(answer, strlen(answer)+1))
     {
+      g_warning("could not send message");
       // error, clear answer queue
       while (g_async_queue_length(answers) > 0)
       {
@@ -103,6 +104,7 @@ void DebugServer::execute()
     GString* answer = g_string_new("");
     handleCommand(cmdRaw, answer);
     
+    //g_debug("pushed answer to queue");
     g_async_queue_push(answers, g_string_free(answer, false));
 
     g_free(cmdRaw);
@@ -210,6 +212,8 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
     answerFromHandler << "Unknown command \"" << command
       << "\", use \"help\" for a list of available commands" << std::endl;
   }
+  
+  //g_debug("called executor for %s", command.c_str());
   
   const std::string& str = answerFromHandler.str();
 

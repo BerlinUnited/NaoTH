@@ -63,7 +63,6 @@ GError* DebugCommunicator::internalInit()
 bool DebugCommunicator::sendMessage(const char* data, size_t size)
 {
   //g_debug("sending message with size %d:\n%s", (int) size, data);
-  
   GError* err = internalSendMessage(data, size);
   if (err)
   {
@@ -86,7 +85,7 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
     gsize pos = 0;
     while(pos < size -1)
     {
-      if(err == NULL)
+      if(err == NULL && connection != NULL)
       {
         pos += g_socket_send(connection, data+pos, size-pos, NULL, &err);
       }
