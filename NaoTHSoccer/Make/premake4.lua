@@ -10,13 +10,17 @@ end
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
-  configurations {"Debug", "Release"}
+  configurations {"Debug", "OptDebug", "Release"}
   
   
   -- debug configuration
   configuration { "Debug" }
-  defines { "DEBUG" }
-  flags { "Symbols" }
+    defines { "DEBUG" }
+    flags { "Symbols" }
+  
+  configuration { "OptDebug" }
+    defines { "DEBUG" }
+    flags { "Optimize" }
   
   -- additional defines for windows
   if os.is("windows") then

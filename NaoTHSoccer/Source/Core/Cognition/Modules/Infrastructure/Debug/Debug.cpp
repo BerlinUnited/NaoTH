@@ -38,6 +38,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 {
   if (command == "image")
   {
+    //g_debug("sending image timestamp=%d, frame=%d", getImage().timestamp, getFrameInfo().frameNumber);
     // add the drawings to the image
     DebugImageDrawings::getInstance().drawToImage((Image&) getImage());
     
