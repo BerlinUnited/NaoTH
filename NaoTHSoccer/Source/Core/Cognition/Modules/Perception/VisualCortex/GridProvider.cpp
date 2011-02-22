@@ -14,9 +14,6 @@ GridProvider::GridProvider()
   DEBUG_REQUEST_REGISTER("ImageProcessor:show_grid", "show the image processing grid", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:show_classified_image", "draw the image represented by uniformGrid", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ColorTable:create_color_table","...", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ColorTable:create_color_table:extended","...", false);
-
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:enable_debug", "Enables the debug output for the histogram", false);
 }
 
@@ -51,13 +48,10 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   getColoredGrid().reset();
   getHistogram().init();
 
-//  unsigned int unknownColorCount = 0;
-//  unsigned int knownColorCount = 0;
   double grey = 0;
 
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
-    //Vector2<int> point = getColoredGrid().uniformGrid.pointsCoordinates[i];
     Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);
 
     Pixel pixel = getImage().get(point.x,point.y);
@@ -67,7 +61,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
     if(currentPixelColor == ColorClasses::none)
     {
-//      unknownColorCount++;
       getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;
     }
     if
@@ -79,14 +72,11 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
       currentPixelColor == ColorClasses::yellow
     )
     {
-//      knownColorCount++;
       getColoredGrid().percentOfKnownColors += getColoredGrid().singlePointRate;
     }
     getColoredGrid().setColor(i, currentPixelColor);
     getHistogram().increaseValue(getColoredGrid().uniformGrid, i, currentPixelColor);
   }//end for
-//  getColoredGrid().percentOfUnknownColors = ((double) unknownColorCount) / ( ((double) getColoredGrid().uniformGrid.width ) * ( ( double) getColoredGrid().uniformGrid.height) );
-//  getColoredGrid().percentOfKnownColors = ((double) knownColorCount) / ( ((double) getColoredGrid().uniformGrid.width ) * ( ( double) getColoredGrid().uniformGrid.height) );
 
   getColoredGrid().valid = false;
   if(getColoredGrid().percentOfUnknownColors < 85 && getColoredGrid().percentOfKnownColors > 20)
@@ -101,7 +91,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   DEBUG_REQUEST("ImageProcessor:show_grid",
     for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
     {
-      //Vector2<int> point = getColoredGrid().uniformGrid.pointsCoordinates[i];
       Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);
       POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
     }//end for

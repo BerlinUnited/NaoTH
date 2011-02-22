@@ -20,6 +20,7 @@
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
+#include "Modules/Perception/VisualCortex/GridProvider.h"
 
 #include "Core/Tools/Debug/DebugRequest.h"
 #include <Tools/Debug/Stopwatch.h>
@@ -51,7 +52,8 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 
   // BEGIN MODULES
   // register of the modules
-  registerModule<LEDSetter > ("LEDSetter");
+  registerModule<GridProvider>("GridProvider");  
+  registerModule<LEDSetter > ("LEDSetter");  
   registerModule<Debug > ("Debug");
   registerModule<ParameterListDebugLoader> ("ParameterListDebugLoader");
   registerModule<StopwatchSender>("StopwatchSender");
