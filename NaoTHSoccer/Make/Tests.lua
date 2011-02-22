@@ -13,7 +13,7 @@ project "Tests"
   end -- option == gcov     
   
  
-  files {"../Tests/**.cpp"}
+  files {"../Tests/**.cpp", "../Tests/**.h"}
 
   includedirs {
         "../Tests/",
