@@ -2,8 +2,6 @@ project "Tests"
   kind "ConsoleApp"
   language "C++"
   
-  
-  
   if _OPTIONS["gcov"] then
       -- If a project includes multiple calls to buildoptions the lists are 
       -- concatenated, in the order in which they appear in the script.
@@ -21,11 +19,14 @@ project "Tests"
         "../../Framework/NaoTH-Tools/Source/",
         "../../Framework/DebugCommunication/Source/"}
   
-  links {"NaoTH-Tools", "DebugCommunication", "gtest", "gmock", "pthread"}
+  links {"NaoTHSoccer", "NaoTH-Tools", "DebugCommunication", 
+    "glib-2.0","gio-2.0","gobject-2.0", "protobuf",
+    "gtest", "gmock", "pthread"
+  }
   
   targetdir "../dist/Native"
   targetname "executeTests"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../Extern/lib/") .. "\""}
-    postbuildcommands {"../dist/Native/executeTests"}
+    --postbuildcommands {"../dist/Native/executeTests"}
