@@ -42,20 +42,26 @@ TEST_F(GridProviderTest, ColorClassification)
   getColorTable64().setColorClass(ColorClasses::green, greenPixel.y, greenPixel.u,greenPixel.v);
   getColorTable64().setColorClass(ColorClasses::red, redPixel.y, redPixel.u,redPixel.v);
 
-  unsigned int numOfGridPoints =getColoredGrid().uniformGrid.numberOfGridPoints;
-  for(unsigned int i=0; i < numOfGridPoints/2; i++)
+  for(unsigned int x=0; x < 320; x++)
   {
-    Vector2<int> v = getColoredGrid().uniformGrid.getPoint(i);
-    getImage().set(v.x,v.y,greenPixel);
-  }
-  for(unsigned int i=numOfGridPoints/2; i < numOfGridPoints; i++)
-  {
-    Vector2<int> v = getColoredGrid().uniformGrid.getPoint(i);
-    getImage().set(v.x,v.y,redPixel);
+    for(unsigned int y=0; y < 240; y++)
+    {
+      // set first half of the image to green, the other one red
+      if(y < 120)
+      {
+        getImage().set(x,y,greenPixel);
+      }
+      else
+      {
+        getImage().set(x,y,redPixel);
+      }
+    }
   }
 
   gridProvider->execute();
-
+  
+  // check if the grid points correspond to this color classes
+  unsigned int numOfGridPoints =getColoredGrid().uniformGrid.numberOfGridPoints;
   for(unsigned int i=0; i < numOfGridPoints/2; i++)
   {
     ASSERT_EQ(ColorClasses::green, getColoredGrid().pointsColors[i]);
