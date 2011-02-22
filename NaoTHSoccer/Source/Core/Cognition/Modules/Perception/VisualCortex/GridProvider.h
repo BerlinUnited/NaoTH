@@ -27,7 +27,7 @@
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
-  PROVIDE(ColorTable64)
+  REQUIRE(ColorTable64)
 
   PROVIDE(ColoredGrid)
   PROVIDE(Histogram)
@@ -45,8 +45,6 @@ public:
 
   /** executes the module */
   void execute();
-
-  void createColorTable() const;
 
 private:
   void calculateColoredGrid();

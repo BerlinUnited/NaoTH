@@ -7,6 +7,7 @@
 
 #include "Debug.h"
 
+#include "Core/Tools/Debug/DebugRequest.h"
 #include "Core/Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/Stopwatch.h>
@@ -15,8 +16,10 @@ Debug::Debug() : cognitionLogger("log")
 {
   // TODO: use the player and team number for defining the port
   CognitionDebugServer::getInstance().start(5401);
-
-  // default debug requests
+    
+  DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
+  
+  
   REGISTER_DEBUG_COMMAND("image", "get the image of the robot", this);
   REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
   
@@ -32,6 +35,7 @@ Debug::Debug() : cognitionLogger("log")
 void Debug::execute()
 {
   CognitionDebugServer::getInstance().execute(); 
+  DEBUG_REQUEST("debug:request:test", std::cout << "hello debug request" << std::endl;);
 }
 
 void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
