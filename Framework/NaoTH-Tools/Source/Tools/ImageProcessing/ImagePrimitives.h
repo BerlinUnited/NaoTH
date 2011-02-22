@@ -29,14 +29,14 @@ namespace naoth
       /** blue */
       unsigned char b;
     };
-/*
+
     struct
     {
-      unsigned char a;
-      unsigned char b;
-      unsigned char c;
+      unsigned char c1;
+      unsigned char c2;
+      unsigned char c3;
     };
-*/
+
     unsigned char channels[3];
   };
 

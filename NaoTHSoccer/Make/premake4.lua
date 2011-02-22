@@ -1,4 +1,35 @@
 dofile "helper/naocrosscompile.lua"
+dofile "helper/extract_todos.lua"
+
+newaction {
+  trigger = "todo",
+  description = "extracts all todos",
+  execute = function()
+    
+    local result = {};
+    
+    extract_todos_files(os.matchfiles(".../Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../Source/**.h"), result);
+    
+    io.output("../TODO")
+    io.write("= TODO list =\n\n")
+    io.write("(automatically generated from source, please do not edit)\n\n")
+    io.write("|| '''Nr.''' || '''Status''' || '''Message''' || '''File''' ||\n")
+    
+    local i = 1
+    
+    for k,v in pairs(result) do
+      local message = string.gsub(v.message, "\n", "")
+      message = string.gsub(message, "\r", "")
+      
+      io.write("|| " .. i .. " || " .. v.kind .. " || " .. message .. " || [source:trunk/Projects/NaoController/Make/" ..  
+        v.file .. "#L" .. v.line .. " " .. path.getname(v.file) .. ":" .. v.line .. "] ||\n")
+      i = i +1
+    end
+    print("found " .. # result .. " issues")
+    
+  end
+}
 
 -- some local helper variables
 local isGCC = false; 
