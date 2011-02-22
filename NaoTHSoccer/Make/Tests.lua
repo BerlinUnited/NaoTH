@@ -28,4 +28,4 @@ project "Tests"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../Extern/lib/") .. "\""}
-    
+    postbuildcommands {"../dist/Native/executeTests"}
