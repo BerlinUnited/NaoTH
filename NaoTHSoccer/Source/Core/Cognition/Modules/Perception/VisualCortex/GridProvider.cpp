@@ -19,11 +19,10 @@ GridProvider::GridProvider()
 
 
 void GridProvider::execute()
-{
+{  
   // fill the grid
   calculateColoredGrid();
-
-
+  
   // make some debug
   DEBUG_REQUEST("ImageProcessor:Histogram:enable_debug",
     getHistogram().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
@@ -55,7 +54,6 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);
 
     Pixel pixel = getImage().get(point.x,point.y);
-
     grey += pixel.y;
 
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);

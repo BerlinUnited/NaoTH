@@ -25,14 +25,13 @@ protected:
   BlackBoardInterface(BlackBoard* theBlackBoard) : theBlackBoard(theBlackBoard)
   {
     blackBoardOwner = false;
-    std::cout << "BlackBoard inherited" << std::endl;
+    //std::cout << "BlackBoard inherited" << std::endl;
   }
 
   BlackBoardInterface()
   {
     theBlackBoard = new BlackBoard();
     blackBoardOwner = true;
-    std::cout << "BlackBoard created" << std::endl;
   }
 
   virtual ~BlackBoardInterface()

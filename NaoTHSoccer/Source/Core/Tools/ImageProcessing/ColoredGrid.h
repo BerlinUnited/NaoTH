@@ -170,7 +170,7 @@ public:
 */
 
   void setColor(unsigned int i, ColorClasses::Color color)
-  {
+  {      
     if(i < uniformGrid.numberOfGridPoints &&
        numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints)
     {

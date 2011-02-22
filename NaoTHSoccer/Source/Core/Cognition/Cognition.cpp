@@ -9,6 +9,7 @@
 
 #include <PlatformInterface/Platform.h>
 #include <Tools/Debug/Stopwatch.h>
+#include <Tools/Debug/DebugImageDrawings.h>
 
 /////////////////////////////////////
 // Modules
@@ -95,7 +96,11 @@ void Cognition::call()
       module->execute();
       STOPWATCH_STOP(name);
     }//end if
-  }//end for
+  }//end for all modules
+  
+  // HACK: reset all the debug stuff before executing the modules
+  DebugImageDrawings::getInstance().reset();
+  
 }//end call
 
 

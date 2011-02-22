@@ -13,7 +13,9 @@
 #include "Tools/Math/Vector2.h"
 #include "Core/Tools/LinesTable.h"
 #include <Tools/DataStructures/ParameterList.h>
-#include "Core/Tools/ColorClasses.h"
+#include <Tools/ColorClasses.h>
+
+using namespace naoth;
 
 class FieldInfo : public ParameterList
 {
