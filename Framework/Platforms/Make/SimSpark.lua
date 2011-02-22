@@ -35,4 +35,7 @@ project "SimSpark"
 
   targetname "naoth-simspark"
 
+  configuration {"linux"}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+
 -- END SimSpark

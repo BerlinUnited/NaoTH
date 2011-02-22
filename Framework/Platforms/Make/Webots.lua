@@ -51,5 +51,8 @@ project "Webots"
 	"protobuf"}
   
   targetname "naowebots"
+  
+  configuration {"linux"}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
    
 -- END Webots
