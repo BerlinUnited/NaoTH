@@ -50,7 +50,7 @@ private:
 
 #ifdef DEBUG
   /** Execute the code depending wether the request with this name is active */
-  #define DEBUG_REQUEST(name, code) { static const bool& _debug_request_is_active_ = DebugRequest::getInstance().getValueReference(name); if(_debug_request_is_active_){code}} ((void)0)
+  #define DEBUG_REQUEST(name, code) {static const bool& _debug_request_is_active_ = DebugRequest::getInstance().getValueReference(name); if(_debug_request_is_active_){code}} ((void)0)
   /** Register debug request. Will do nothing if already known. */
   #define DEBUG_REQUEST_REGISTER(name, description, isActiveByDefault) {DebugRequest::getInstance().registerRequest(name, description, isActiveByDefault);} ((void)0)
   /** Execute the code when the request changes from active to deactive */
