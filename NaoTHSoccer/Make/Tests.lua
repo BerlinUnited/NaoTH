@@ -13,8 +13,13 @@ project "Tests"
  
   files {"../Tests/**.cpp"}
 
-  includedirs {"../Tests/"} 
-  -- , "../../Extern/source/gmock-1.4.0/include", "../../Extern/source/gtest-1.4.0/include"}
+  includedirs {
+        "../Tests/",
+	"../Source/",
+        "../../Framework/NaoTH-Tools/Source/",
+        "../../Framework/DebugCommunication/Source/"}
+
+  links { "NaoTH-Tools", "DebugCommunication", "pthread" }
   
   links {"gtest", "gmock", "pthread"}
   
