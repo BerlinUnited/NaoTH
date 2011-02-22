@@ -24,5 +24,8 @@ project "LogSimulator"
 	}
 	
   targetname "logsimulator"
+  
+  configuration {"linux"}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 
   -- END LogSimulator
