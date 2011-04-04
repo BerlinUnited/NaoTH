@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import net.xeoh.plugins.base.PluginManager;
@@ -53,6 +54,9 @@ public class RobotControlImpl extends javax.swing.JFrame
   IMessageServerParent, RobotControl
 {
 
+  private final String configlocation = System.getProperty("user.home")
+    + "/.naoth/robotcontrol/";
+
   private Viewport dock;
   private MessageServer messageServer;
   private DialogRegistry dialogRegistry;
@@ -61,7 +65,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   private Properties config;
   private ConnectionDialog connectionDialog;
   private File layoutFile =
-    new File(System.getProperty("user.home") + "/.RobotControlyLayout.xml");
+    new File(configlocation + "layout.xml");
 
   /** Creates new form RobotControlGUI */
   public RobotControlImpl()
@@ -342,6 +346,8 @@ public class RobotControlImpl extends javax.swing.JFrame
         {
           pluginManager.addPluginsFrom(new URI("classpath://*"));
           pluginManager.addPluginsFrom(new File("plugins/").toURI());
+          pluginManager.addPluginsFrom(new File(System.getProperty("user.home")
+            + "/.naoth/robotcontrol/plugins/").toURI());
           pluginManager.getPlugin(RobotControl.class).setVisible(true);
         }
         catch (URISyntaxException ex)
@@ -390,7 +396,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     if (fConfig == null || config == null)
     {
-      fConfig = new File(System.getProperty("user.home") + "/.robotcontrol");
+      fConfig = new File(configlocation + "config");
       config = new Properties();
       try
       {
@@ -420,6 +426,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     // save configuration to file
     try
     {
+      new File(configlocation).mkdirs();
       getConfig().store(new FileWriter(fConfig), "");
     }
     catch (IOException ex)
