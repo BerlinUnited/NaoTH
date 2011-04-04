@@ -341,6 +341,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         try
         {
           pluginManager.addPluginsFrom(new URI("classpath://*"));
+          pluginManager.addPluginsFrom(new File("plugins/").toURI());
           pluginManager.getPlugin(RobotControl.class).setVisible(true);
         }
         catch (URISyntaxException ex)

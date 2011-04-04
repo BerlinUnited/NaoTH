@@ -32,7 +32,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 @PluginImplementation
-public class DebugRequestPanel extends javax.swing.JPanel
+public class SimpleDebugRequestPanel extends javax.swing.JPanel
   implements CommandSender, Dialog, ObjectListener<String[]>
 {
 
@@ -43,7 +43,7 @@ public class DebugRequestPanel extends javax.swing.JPanel
   private CheckboxTree debugRequestTree;
 
   /** Creates new form DebugRequestPanel */
-  public DebugRequestPanel()
+  public SimpleDebugRequestPanel()
   {
     initComponents();
   }
