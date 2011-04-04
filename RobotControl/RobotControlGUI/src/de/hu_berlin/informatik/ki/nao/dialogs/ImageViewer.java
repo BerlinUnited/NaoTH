@@ -2,7 +2,7 @@ package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
 import de.hu_berlin.informatik.ki.nao.ExtendedFileChooser;
-import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
+import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.dataformats.JanusImage;
 import de.hu_berlin.informatik.ki.nao.dialogs.drawings.Drawable;
 import de.hu_berlin.informatik.ki.nao.dialogs.drawings.DrawingCollection;
@@ -33,7 +33,7 @@ public class ImageViewer extends javax.swing.JPanel implements Dialog
 {
 
   @InjectPlugin
-  public RobotControlGUI parent;
+  public RobotControl parent;
   @InjectPlugin
   public ImageManager imageManager;
   @InjectPlugin

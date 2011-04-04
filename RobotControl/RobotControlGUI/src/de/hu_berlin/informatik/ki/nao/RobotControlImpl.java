@@ -5,11 +5,8 @@
  */
 package de.hu_berlin.informatik.ki.nao;
 
-import com.jgoodies.looks.LookUtils;
 import com.jgoodies.looks.Options;
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
@@ -30,11 +27,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import org.apache.commons.lang.StringUtils;
@@ -54,9 +48,9 @@ import org.flexdock.view.Viewport;
  * @author thomas
  */
 @PluginImplementation
-public class RobotControlGUI extends javax.swing.JFrame 
-  implements MessageServerProvider, ByteRateUpdateHandler,
-  IMessageServerParent, Plugin
+public class RobotControlImpl extends javax.swing.JFrame
+  implements ByteRateUpdateHandler,
+  IMessageServerParent, RobotControl
 {
 
   private Viewport dock;
@@ -70,7 +64,7 @@ public class RobotControlGUI extends javax.swing.JFrame
     new File(System.getProperty("user.home") + "/.RobotControlyLayout.xml");
 
   /** Creates new form RobotControlGUI */
-  public RobotControlGUI()
+  public RobotControlImpl()
   {
     try
     {
@@ -79,7 +73,7 @@ public class RobotControlGUI extends javax.swing.JFrame
     }
     catch (Exception ex)
     {
-      Logger.getLogger(RobotControlGUI.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
     }
     initComponents();
 
@@ -118,6 +112,7 @@ public class RobotControlGUI extends javax.swing.JFrame
     }
   }
 
+  @Override
   public boolean checkConnected()
   {
     return messageServer.isConnected();
@@ -180,7 +175,7 @@ public class RobotControlGUI extends javax.swing.JFrame
         .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 390, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 370, Short.MAX_VALUE)
         .addComponent(lblConnect)
         .addContainerGap())
     );
@@ -325,6 +320,7 @@ public class RobotControlGUI extends javax.swing.JFrame
       JOptionPane.showMessageDialog(this, str);
 }//GEN-LAST:event_btManagerActionPerformed
 
+  @Override
   public MessageServer getMessageServer()
   {
     return messageServer;
@@ -338,18 +334,18 @@ public class RobotControlGUI extends javax.swing.JFrame
     java.awt.EventQueue.invokeLater(new Runnable()
     {
 
+      @Override
       public void run()
       {
         PluginManager pluginManager = PluginManagerFactory.createPluginManager();
         try
         {
           pluginManager.addPluginsFrom(new URI("classpath://*"));
-
-          pluginManager.getPlugin(RobotControlGUI.class).setVisible(true);
+          pluginManager.getPlugin(RobotControl.class).setVisible(true);
         }
         catch (URISyntaxException ex)
         {
-          Logger.getLogger(RobotControlGUI.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
     });
@@ -388,6 +384,7 @@ public class RobotControlGUI extends javax.swing.JFrame
     }
   }
 
+  @Override
   public Properties getConfig()
   {
     if (fConfig == null || config == null)
@@ -458,11 +455,13 @@ public class RobotControlGUI extends javax.swing.JFrame
     DockingManager.setAutoPersist(true);
   }//end configureDocking
 
+  @Override
   public void setReceiveByteRate(double rate)
   {
     lblReceivedBytesS.setText(String.format("Received KB/s: %4.2f", rate));
   }
 
+  @Override
   public void setSentByteRate(double rate)
   {
     lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));

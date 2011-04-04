@@ -11,10 +11,9 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
-import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
+import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.CheckboxTree;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeNode;
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.manager.DebugRequestManager;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
@@ -38,9 +37,7 @@ public class DebugRequestPanel extends javax.swing.JPanel
 {
 
   @InjectPlugin
-  public RobotControlGUI parent;
-  @InjectPlugin
-  public MessageServerProvider msgServer;
+  public RobotControl parent;
   @InjectPlugin
   public DebugRequestManager dbgRequestManager;
   private CheckboxTree debugRequestTree;
@@ -161,7 +158,7 @@ public class DebugRequestPanel extends javax.swing.JPanel
   {
     if (parent.checkConnected())
     {
-      msgServer.getMessageServer().executeSingleCommand(this, command);
+      parent.getMessageServer().executeSingleCommand(this, command);
     }
   }
 

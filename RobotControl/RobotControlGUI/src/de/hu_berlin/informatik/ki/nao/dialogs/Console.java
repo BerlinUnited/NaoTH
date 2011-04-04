@@ -6,8 +6,7 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
-import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
@@ -33,9 +32,7 @@ public class Console extends JPanel implements CommandSender,
 {
 
   @InjectPlugin
-  public RobotControlGUI parent;
-  @InjectPlugin
-  public MessageServerProvider msgServer;
+  public RobotControl parent;
 
   /** Creates new form Console */
   public Console()
@@ -118,7 +115,7 @@ public class Console extends JPanel implements CommandSender,
         
       }
       
-      msgServer.getMessageServer().executeSingleCommand(this, parsedCommand);
+      parent.getMessageServer().executeSingleCommand(this, parsedCommand);
       cbInput.insertItemAt(cmd, 0);
       cbInput.setSelectedIndex(0);
     }
@@ -261,6 +258,7 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
   }
 
+  @Override
   public void dispose()
   {
   }//end dispose

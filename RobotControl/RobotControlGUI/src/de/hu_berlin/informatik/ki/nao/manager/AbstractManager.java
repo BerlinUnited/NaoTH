@@ -5,14 +5,12 @@
 
 package de.hu_berlin.informatik.ki.nao.manager;
 
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.server.Command;
-import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -24,7 +22,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * 
  * @author thomas
  */
-public abstract class AbstractManager<T> implements CommandSender, Plugin
+public abstract class AbstractManager<T> implements Manager<T>
 {
   /**
    * When using this lock you should have understood the meaning of the
@@ -52,15 +50,14 @@ public abstract class AbstractManager<T> implements CommandSender, Plugin
   private LinkedList<ObjectListener<T>> listener = 
     new LinkedList<ObjectListener<T>>();
 
-
   @InjectPlugin
-  public MessageServerProvider serverProvider;
+  public RobotControl robotControl;
 
-  
   public AbstractManager()
   {
   }
   
+  @Override
   public void addListener(ObjectListener<T> l)
   {
     LISTENER_LOCK.lock();
@@ -76,6 +73,7 @@ public abstract class AbstractManager<T> implements CommandSender, Plugin
     }
   }
 
+  @Override
   public void removeListener(ObjectListener<T> l)
   {
     LISTENER_LOCK.lock();
@@ -88,6 +86,7 @@ public abstract class AbstractManager<T> implements CommandSender, Plugin
     }    
   }
 
+  @Override
   public void handleResponse(byte[] result, Command originalCommand)
   {    
     // copy listeners
@@ -113,6 +112,7 @@ public abstract class AbstractManager<T> implements CommandSender, Plugin
     
   }
 
+  @Override
   public void handleError(int code)
   {
     // copy listeners
@@ -142,13 +142,13 @@ public abstract class AbstractManager<T> implements CommandSender, Plugin
 
   public MessageServer getServer()
   {
-    if(serverProvider == null)
+    if(robotControl == null)
     {
       return null;
     }
     else
     {
-      return serverProvider.getMessageServer();
+      return robotControl.getMessageServer();
     }
   }
 

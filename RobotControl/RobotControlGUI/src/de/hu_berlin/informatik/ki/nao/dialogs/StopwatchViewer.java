@@ -190,8 +190,12 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
   // default comperator compares the names :)
   Comparator<StopwatchEntry> comparator = new Comparator<StopwatchEntry>()
-  { public int compare(StopwatchEntry entryOne, StopwatchEntry entryTwo)
-    { return entryOne.name.compareTo(entryTwo.name); }
+  {
+    @Override
+    public int compare(StopwatchEntry entryOne, StopwatchEntry entryTwo)
+    { 
+      return entryOne.name.compareTo(entryTwo.name);
+    }
   };
   
   switch(this.cbSortMethod.getSelectedIndex())
@@ -200,6 +204,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     case 1:
       comparator = new Comparator<StopwatchEntry>()
       { 
+      @Override
         public int compare(StopwatchEntry e1, StopwatchEntry e2) 
         { return (int)(e2.getAverage() - e1.getAverage()); }
       };
@@ -207,6 +212,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     case 2: 
       comparator = new Comparator<StopwatchEntry>()
       { 
+      @Override
         public int compare(StopwatchEntry e1, StopwatchEntry e2) 
         { return e2.min - e1.min; }
       };
@@ -214,6 +220,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     case 3: 
       comparator = new Comparator<StopwatchEntry>()
       { 
+      @Override
         public int compare(StopwatchEntry e1, StopwatchEntry e2) 
         { return e2.max - e1.max; }
       };
@@ -247,6 +254,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   private javax.swing.JPanel panelStopwatches;
   private javax.swing.JFormattedTextField txtWarn;
   // End of variables declaration//GEN-END:variables
+  @Override
   public void newObjectReceived(HashMap<String, Integer> sw)
   {
     double warn = Double.MAX_VALUE;
@@ -321,6 +329,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   }//end updateStopwatchEntry
 
 
+  @Override
   public void errorOccured(String cause)
   {
     btShowStopwatch.setSelected(false);

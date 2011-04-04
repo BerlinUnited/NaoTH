@@ -6,8 +6,7 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
-import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
@@ -27,9 +26,7 @@ public class HelpViewer extends JPanel
 {
 
   @InjectPlugin
-  public RobotControlGUI parent;
-  @InjectPlugin
-  public MessageServerProvider messageServer;
+  public RobotControl parent;
 
   private Command commandToExecute;
 
@@ -44,6 +41,7 @@ public class HelpViewer extends JPanel
   {
   }
 
+  @Override
   public JPanel getPanel()
   {
     return this;
@@ -110,10 +108,12 @@ public class HelpViewer extends JPanel
       }
     }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
     
+  @Override
     public void errorOccured(String cause) {
         jToggleButtonRefresh.setSelected(false);
     }
 
+  @Override
     public void newObjectReceived(String[] object) {
 
         //this.contentPanel.removeAll();
@@ -129,10 +129,11 @@ public class HelpViewer extends JPanel
   private void sendCommand(Command command)
   {
       commandToExecute = command;
-      this.messageServer.getMessageServer().executeSingleCommand(this, command);
+      this.parent.getMessageServer().executeSingleCommand(this, command);
   }
   
   
+  @Override
   public void handleResponse(byte[] result, Command originalCommand)
   {
     if(originalCommand.getName().equals("help"))
@@ -160,6 +161,7 @@ public class HelpViewer extends JPanel
     }//end if
   }
 
+  @Override
   public void handleError(int code)
   {
     jToggleButtonRefresh.setSelected(false);
@@ -167,11 +169,13 @@ public class HelpViewer extends JPanel
               "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
   }
 
+  @Override
   public Command getCurrentCommand()
   {
     return commandToExecute;
   }
 
+  @Override
   public void dispose()
   {
     System.out.println("Dispose is not implemented for: " + this.getClass().getName());

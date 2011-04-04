@@ -5,13 +5,16 @@
 
 package de.hu_berlin.informatik.ki.nao.manager;
 
+import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import net.xeoh.plugins.base.Plugin;
 
 /**
  *
  * @author thomas
  */
-public interface DebugRequestManager extends Manager<String[]>
+public interface Manager<T> extends Plugin, CommandSender
 {
+  public void addListener(ObjectListener<T> l);
+  public void removeListener(ObjectListener<T> l);
 
 }

@@ -30,5 +30,6 @@ public class GenericManager extends AbstractManager<byte[]>
   {
     return this.command;
   }
+
 }//end class GenericManager
 

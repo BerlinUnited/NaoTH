@@ -6,7 +6,6 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import net.xeoh.plugins.base.Plugin;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -22,7 +21,7 @@ public class ByteRateCheck implements Plugin
 {
 
   @InjectPlugin
-  public MessageServerProvider messageServer;
+  public RobotControl robotControl;
   @InjectPlugin
   public ByteRateUpdateHandler updateHandler;
 
@@ -33,9 +32,9 @@ public class ByteRateCheck implements Plugin
   @Timer(period=1000)
   public void updateByteRateLabels()
   {
-    if(updateHandler != null && messageServer != null && messageServer.getMessageServer() != null)
+    if(updateHandler != null && robotControl != null && robotControl.getMessageServer() != null)
     {
-      MessageServer server = messageServer.getMessageServer();
+      MessageServer server = robotControl.getMessageServer();
 
       double receivedKB = ((double)(server.getReceivedBytes()-oldRecivedSize))/1024.0;
       double sentKB = ((double)(server.getSentBytes()-oldSentSize))/1024.0;

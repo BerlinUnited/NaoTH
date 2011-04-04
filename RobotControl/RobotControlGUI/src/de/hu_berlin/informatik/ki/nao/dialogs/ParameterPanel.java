@@ -6,8 +6,7 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.Dialog;
-import de.hu_berlin.informatik.ki.nao.RobotControlGUI;
-import de.hu_berlin.informatik.ki.nao.interfaces.MessageServerProvider;
+import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import javax.swing.JOptionPane;
@@ -26,9 +25,7 @@ public class ParameterPanel extends javax.swing.JPanel
 {
 
   @InjectPlugin
-  public RobotControlGUI parent;
-  @InjectPlugin
-  public MessageServerProvider messageServer;
+  public RobotControl parent;
 
   private Command commandToExecute;
   //private String defaultConfigureFilePath;
@@ -209,7 +206,7 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
   private void sendCommand(Command command)
   {
     commandToExecute = command;
-    messageServer.getMessageServer().executeSingleCommand(this, command);
+    parent.getMessageServer().executeSingleCommand(this, command);
   }
 
   public void handleResponse(byte[] result, Command originalCommand)
