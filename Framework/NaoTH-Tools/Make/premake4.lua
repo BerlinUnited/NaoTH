@@ -28,5 +28,6 @@ solution "NaoTH-Tools"
   -- store the makefiles the Make/ directory
   location "."
 
+  dofile "Tests.lua"
   -- include the actual project
   dofile "NaoTHTools.lua"
