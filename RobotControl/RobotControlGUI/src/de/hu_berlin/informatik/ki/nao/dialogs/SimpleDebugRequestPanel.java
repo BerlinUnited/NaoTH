@@ -10,7 +10,7 @@
  */
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
-import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.CheckboxTree;
 import de.hu_berlin.informatik.ki.nao.checkboxtree.SelectableTreeNode;
@@ -32,8 +32,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author thomas
  */
 @PluginImplementation
-public class SimpleDebugRequestPanel extends javax.swing.JPanel
-  implements CommandSender, Dialog, ObjectListener<String[]>
+public class SimpleDebugRequestPanel extends AbstractDialog
+  implements CommandSender, ObjectListener<String[]>
 {
 
   @InjectPlugin
@@ -227,4 +227,13 @@ public class SimpleDebugRequestPanel extends javax.swing.JPanel
   {
     // TODO: handle error
   }
+
+  @Override
+  public String getDisplayName()
+  {
+    return "Debug Requests (simple)";
+  }
+
+
+
 }

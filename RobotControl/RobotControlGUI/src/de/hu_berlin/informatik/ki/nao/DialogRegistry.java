@@ -13,13 +13,10 @@ import java.util.Set;
 import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingPort;
-import org.flexdock.docking.event.DockingEvent;
-import org.flexdock.docking.event.DockingListener;
 import org.flexdock.view.View;
 import org.flexdock.view.Viewport;
 import org.flexdock.view.actions.DefaultCloseAction;
@@ -44,7 +41,7 @@ public class DialogRegistry
 
   public void registerDialog(final Dialog dialog)
   {
-    String dialogName = dialog.getClass().getSimpleName();
+    String dialogName = dialog.getDisplayName();
     
     if(menu != null)
     {
@@ -91,7 +88,7 @@ public class DialogRegistry
   public void dockDialog(Dialog dialog)
   {
 
-    String dialogName = dialog.getClass().getSimpleName();
+    String dialogName = dialog.getDisplayName();
 
     // check if view already exists
     Set<Dockable> dockables = dock.getDockables();

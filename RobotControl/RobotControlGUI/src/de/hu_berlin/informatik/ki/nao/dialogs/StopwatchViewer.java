@@ -5,7 +5,7 @@
  */
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
-import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.manager.StopwatchManager;
 import java.awt.Color;
@@ -26,8 +26,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  thomas
  */
 @PluginImplementation
-public class StopwatchViewer extends javax.swing.JPanel
-  implements ObjectListener<HashMap<String, Integer>>, Dialog
+public class StopwatchViewer extends AbstractDialog
+  implements ObjectListener<HashMap<String, Integer>>
 {
 
   @InjectPlugin

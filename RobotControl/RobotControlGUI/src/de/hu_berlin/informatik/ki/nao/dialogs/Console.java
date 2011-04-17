@@ -5,6 +5,7 @@
  */
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
+import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.Dialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
@@ -27,8 +28,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  thomas
  */
 @PluginImplementation
-public class Console extends JPanel implements CommandSender,
-  ObjectListener<String>, Dialog
+public class Console extends AbstractDialog implements CommandSender,
+  ObjectListener<String>
 {
 
   @InjectPlugin
@@ -258,8 +259,4 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
   {
   }
 
-  @Override
-  public void dispose()
-  {
-  }//end dispose
 }

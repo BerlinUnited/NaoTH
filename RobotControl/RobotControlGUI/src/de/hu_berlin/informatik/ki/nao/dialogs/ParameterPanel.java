@@ -5,7 +5,7 @@
  */
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
-import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
@@ -20,8 +20,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  gxy
  */
 @PluginImplementation
-public class ParameterPanel extends javax.swing.JPanel
-  implements CommandSender, Dialog
+public class ParameterPanel extends AbstractDialog
+  implements CommandSender
 {
 
   @InjectPlugin

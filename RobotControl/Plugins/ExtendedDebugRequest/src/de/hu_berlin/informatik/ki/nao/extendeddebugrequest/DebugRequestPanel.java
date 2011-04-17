@@ -4,7 +4,7 @@
  * Created on 9. Mai 2008, 11:55
  */
 package de.hu_berlin.informatik.ki.nao.extendeddebugrequest;
-import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.dialogs.panels.NDTreeNode;
 import de.hu_berlin.informatik.ki.nao.manager.DebugRequestManager;
@@ -31,8 +31,8 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  Heinrich Mellmann
  */
 @PluginImplementation
-public class DebugRequestPanel extends javax.swing.JPanel
-  implements CommandSender, ObjectListener<String[]>, Dialog
+public class DebugRequestPanel extends AbstractDialog
+  implements CommandSender, ObjectListener<String[]>
 {
 
   @InjectPlugin
@@ -379,6 +379,14 @@ public class DebugRequestPanel extends javax.swing.JPanel
   {
     System.out.println("Dispose is not implemented for: " + this.getClass().getName());
   }//end dispose
+
+  @Override
+  public String getDisplayName()
+  {
+    return "Debug Requests (extended)";
+  }
+
+
     
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton btAdd;

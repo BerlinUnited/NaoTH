@@ -46,7 +46,7 @@ public class AboutDialog extends javax.swing.JDialog {
     jEditorPane1.setBorder(null);
     jEditorPane1.setContentType("text/html");
     jEditorPane1.setEditable(false);
-    jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  created by the <b>N</b>ao <b>T</b>eam <b>H</b>umboldt \n  <br><a href=\"http://www.naoteamhumbold.de/\">http://www.naoteamhumboldt.de</a> \n  <br><a href=\"http://www.ki.informatik.hu-berlin.de/\">http://www.ki.informatik.hu-berlin.de</a> \n  <br>&copy; 2008-2010\n</center>\n</html>");
+    jEditorPane1.setText("<html> \n<center>\n  <h3>RobotControl</h3> \n  created by the <b>N</b>ao <b>T</b>eam <b>H</b>umboldt \n  <br><a href=\"http://www.naoteamhumbold.de/\">http://www.naoteamhumboldt.de</a> \n  <br><a href=\"http://www.ki.informatik.hu-berlin.de/\">http://www.ki.informatik.hu-berlin.de</a> \n  <br>&copy; 2008-2011\n</center>\n</html>");
     jScrollPane1.setViewportView(jEditorPane1);
 
     jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hu_berlin/informatik/ki/nao/naos.png"))); // NOI18N
@@ -58,7 +58,7 @@ public class AboutDialog extends javax.swing.JDialog {
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(btOk, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
+          .addComponent(btOk, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -73,7 +73,7 @@ public class AboutDialog extends javax.swing.JDialog {
           .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(btOk, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+        .addComponent(btOk, javax.swing.GroupLayout.PREFERRED_SIZE, 23, Short.MAX_VALUE)
         .addContainerGap())
     );
 

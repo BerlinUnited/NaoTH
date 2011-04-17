@@ -24,6 +24,12 @@ public interface Dialog extends  Plugin
   public JPanel getPanel();
 
   /**
+   * Get the name that should be used e.g. for the menu entries.
+   * @return
+   */
+  public String getDisplayName();
+
+  /**
    * This method is called when the dialog is closed.
    * Here the all the registered listener should be unregistered.
    */

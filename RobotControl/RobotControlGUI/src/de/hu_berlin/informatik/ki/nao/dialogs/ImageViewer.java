@@ -1,5 +1,6 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
+import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.Dialog;
 import de.hu_berlin.informatik.ki.nao.ExtendedFileChooser;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
@@ -29,7 +30,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  thomas
  */
 @PluginImplementation
-public class ImageViewer extends javax.swing.JPanel implements Dialog
+public class ImageViewer extends AbstractDialog
 {
 
   @InjectPlugin
