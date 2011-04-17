@@ -5,6 +5,11 @@
  */
 package de.hu_berlin.informatik.ki.nao;
 
+import bibliothek.extension.gui.dock.theme.EclipseTheme;
+import bibliothek.gui.DockFrontend;
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.SplitDockStation;
+import bibliothek.util.xml.XElement;
 import com.jgoodies.looks.Options;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
@@ -14,13 +19,18 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -32,16 +42,6 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import org.apache.commons.lang.StringUtils;
-import org.flexdock.docking.Dockable;
-import org.flexdock.docking.DockingManager;
-import org.flexdock.docking.drag.effects.EffectsManager;
-import org.flexdock.docking.drag.preview.GhostPreview;
-import org.flexdock.docking.state.PersistenceException;
-import org.flexdock.perspective.PerspectiveManager;
-import org.flexdock.perspective.persist.FilePersistenceHandler;
-import org.flexdock.perspective.persist.PersistenceHandler;
-import org.flexdock.perspective.persist.xml.XMLPersister;
-import org.flexdock.view.Viewport;
 
 /**
  *
@@ -55,20 +55,21 @@ public class RobotControlImpl extends javax.swing.JFrame
 
   private final String configlocation = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
+  private File layoutFile =
+    new File(configlocation + "layout.xml");
 
-  private Viewport dock;
+  private DockFrontend frontend;
   private MessageServer messageServer;
   private DialogRegistry dialogRegistry;
   // Propertes
   private File fConfig;
   private Properties config;
   private ConnectionDialog connectionDialog;
-  private File layoutFile =
-    new File(configlocation + "layout.xml");
 
   /** Creates new form RobotControlGUI */
   public RobotControlImpl()
   {
+    
     try
     {
       // set Look and Feel before adding all the components
@@ -81,19 +82,24 @@ public class RobotControlImpl extends javax.swing.JFrame
     initComponents();
 
     messageServer = new MessageServer(this);
-    dock = new Viewport();
-
+    frontend = new DockFrontend(this);
+    frontend.getController().setTheme(new EclipseTheme());
+    SplitDockStation station = new SplitDockStation();
+    frontend.addRoot("split", station);
+    frontend.setShowHideAction(true);
+   
     this.connectionDialog = new ConnectionDialog(this, this);
-    dialogRegistry = new DialogRegistry(dialogsMenu, dock);
+    dialogRegistry = new DialogRegistry(dialogsMenu, frontend, station);
 
     // icon
     Image icon = Toolkit.getDefaultToolkit().getImage(
       this.getClass().getResource("res/RobotControlLogo128.png"));
     setIconImage(icon);
 
-    this.getContentPane().add(dock, BorderLayout.CENTER);
+    this.getContentPane().add(station, BorderLayout.CENTER);
 
-    configureDocking();
+
+    readLayoutFromFile();
   }
 
   @PluginLoaded
@@ -110,6 +116,8 @@ public class RobotControlImpl extends javax.swing.JFrame
         if(s.trim().equals(dialog.getClass().getSimpleName()))
         {
           dialogRegistry.dockDialog(dialog);
+          loadLayout();
+          break;
         }
       }
     }
@@ -140,7 +148,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     connectMenuItem = new javax.swing.JMenuItem();
     disconnectMenuItem = new javax.swing.JMenuItem();
     jSeparator1 = new javax.swing.JSeparator();
-    resetLayoutMenuItem = new javax.swing.JMenuItem();
     exitMenuItem = new javax.swing.JMenuItem();
     dialogsMenu = new javax.swing.JMenu();
     helpMenu = new javax.swing.JMenu();
@@ -178,7 +185,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         .addComponent(lblReceivedBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(lblSentBytesS, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 370, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 381, Short.MAX_VALUE)
         .addComponent(lblConnect)
         .addContainerGap())
     );
@@ -218,16 +225,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     });
     mainControlMenu.add(disconnectMenuItem);
     mainControlMenu.add(jSeparator1);
-
-    resetLayoutMenuItem.setMnemonic('l');
-    resetLayoutMenuItem.setText("Reset Layout");
-    resetLayoutMenuItem.setToolTipText("Resets all layout information and closes all dialogs");
-    resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        resetLayoutMenuItemActionPerformed(evt);
-      }
-    });
-    mainControlMenu.add(resetLayoutMenuItem);
 
     exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
     exitMenuItem.setMnemonic('e');
@@ -278,18 +275,6 @@ public class RobotControlImpl extends javax.swing.JFrame
       messageServer.disconnect();
 
     }//GEN-LAST:event_disconnectMenuItemActionPerformed
-
-    private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
-    {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
-    
-      if(layoutFile.exists() && layoutFile.isFile() && layoutFile.canWrite())
-      {
-        layoutFile.delete();
-        DockingManager.setAutoPersist(false);
-        JOptionPane.showMessageDialog(null, "You need to restart RobotControl now.");
-      }//end if
-
-    }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitMenuItemActionPerformed
     {//GEN-HEADEREND:event_exitMenuItemActionPerformed
@@ -370,7 +355,6 @@ public class RobotControlImpl extends javax.swing.JFrame
   private javax.swing.JLabel lblSentBytesS;
   private javax.swing.JMenu mainControlMenu;
   private javax.swing.JMenuBar menuBar;
-  private javax.swing.JMenuItem resetLayoutMenuItem;
   private javax.swing.JPanel statusPanel;
   // End of variables declaration//GEN-END:variables
 
@@ -415,11 +399,11 @@ public class RobotControlImpl extends javax.swing.JFrame
     messageServer.disconnect();
 
     // remember open dialogs
-    Set<Dockable> dockables = dock.getDockables();
+    List<Dockable> dockables =  frontend.listDockables();
     Set<String> dockablesAsstring = new HashSet<String>();
     for(Dockable d : dockables)
     {
-      dockablesAsstring.add(d.getPersistentId());
+      dockablesAsstring.add(d.getTitleText());
     }
     getConfig().put("dialogs", StringUtils.join(dockablesAsstring, ","));
     // save configuration to file
@@ -427,6 +411,11 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       new File(configlocation).mkdirs();
       getConfig().store(new FileWriter(fConfig), "");
+
+      // save layout
+      frontend.save("naoth-robotcontrol-default");
+      frontend.write(new DataOutputStream(new FileOutputStream(layoutFile)));
+
     }
     catch (IOException ex)
     {
@@ -434,32 +423,26 @@ public class RobotControlImpl extends javax.swing.JFrame
     }
   }
 
-  private void configureDocking()
+  private void readLayoutFromFile()
   {
-    DockingManager.setFloatingEnabled(true);
-    EffectsManager.setPreview(new GhostPreview());
-
-    PerspectiveManager.setRestoreFloatingOnLoad(true);
-    //PerspectiveManager mgr = PerspectiveManager.getInstance();
-    //System.out.println(FilePersistenceHandler.DEFAULT_PERSPECTIVE_DIR);
-    PersistenceHandler persister =
-      new FilePersistenceHandler(layoutFile, XMLPersister.newDefaultInstance());
-    PerspectiveManager.setPersistenceHandler(persister);
-
     try
     {
-      DockingManager.loadLayoutModel();
-      DockingManager.restoreLayout(true);
+      frontend.read(new DataInputStream(new FileInputStream(layoutFile)));
     }
-    catch(IOException ex)
+    catch (Exception ex)
     {
-      Helper.handleException(ex);
     }
-    catch(PersistenceException ex)
+  }
+  private void loadLayout()
+  {
+    try
+    { 
+      frontend.load("naoth-robotcontrol-default");
+    }
+    catch(Exception ex)
     {
-      Helper.handleException(ex);
+      // ignore
     }
-    DockingManager.setAutoPersist(true);
   }//end configureDocking
 
   @Override

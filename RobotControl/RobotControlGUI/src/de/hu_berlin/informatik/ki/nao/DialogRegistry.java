@@ -5,21 +5,14 @@
 
 package de.hu_berlin.informatik.ki.nao;
 
-import java.awt.Color;
+import bibliothek.gui.DockFrontend;
+import bibliothek.gui.DockStation;
+import bibliothek.gui.Dockable;
+import bibliothek.gui.dock.DefaultDockable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
-import java.util.Set;
-import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.border.LineBorder;
-import org.flexdock.docking.Dockable;
-import org.flexdock.docking.DockingConstants;
-import org.flexdock.docking.DockingPort;
-import org.flexdock.view.View;
-import org.flexdock.view.Viewport;
-import org.flexdock.view.actions.DefaultCloseAction;
 
 /**
  *
@@ -29,14 +22,14 @@ public class DialogRegistry
 {
 
   private JMenu menu;
-  private DockingPort dock;
-  private LinkedList<View> viewChronologicalOrder;
+  private DockStation station;
+  private DockFrontend frontend;
 
-  public DialogRegistry(JMenu menu, DockingPort dock)
+  public DialogRegistry(JMenu menu, DockFrontend frontend, DockStation station)
   {
-    this.viewChronologicalOrder = new LinkedList<View>();
     this.menu = menu;
-    this.dock = dock;
+    this.station = station;
+    this.frontend = frontend;
   }
 
   public void registerDialog(final Dialog dialog)
@@ -60,27 +53,12 @@ public class DialogRegistry
   
   }
 
-  private View createView(String id, String text, final Dialog dialog)
+  private Dockable createView(String text, final Dialog dialog)
   {
-    final View result = new View(id, text);
-    dialog.getPanel().setBorder(new LineBorder(Color.GRAY, 1));
-    result.setContentPane(dialog.getPanel());
+    DefaultDockable result = new DefaultDockable(dialog.getPanel(), text);
 
-    DefaultCloseAction closeAction = new DefaultCloseAction()
-    {
-
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        super.actionPerformed(e);
-        viewChronologicalOrder.remove(result);
-
-      }
-    };
-    closeAction.putValue(Action.NAME, DockingConstants.CLOSE_ACTION);
-
-    result.addAction(closeAction);
-    result.addAction(DockingConstants.PIN_ACTION);
+    frontend.addDockable(text, result);
+    frontend.setHideable(result, true);
 
     return result;
   }
@@ -91,31 +69,18 @@ public class DialogRegistry
     String dialogName = dialog.getDisplayName();
 
     // check if view already exists
-    Set<Dockable> dockables = dock.getDockables();
-    boolean isAlreadyDocked = false;
-    for(Dockable d : dockables)
+
+    Dockable existing = frontend.getDockable(dialogName);
+
+    if(existing == null)
     {
-      if(dialogName.equals(d.getPersistentId()))
-      {
-        isAlreadyDocked = true;
-        d.getDockingProperties().setActive(true);
-        break;
-      }
+      Dockable newDockable = createView(dialogName, dialog);
+      
+      station.drop(newDockable);
     }
-
-    if(!isAlreadyDocked)
+    else
     {
-      View newView = createView(dialogName, dialogName, dialog);
-
-      if(viewChronologicalOrder.isEmpty())
-      {
-        dock.dock((Dockable) newView, Viewport.EAST_REGION);
-      }
-      else
-      {
-        viewChronologicalOrder.getLast().dock(newView);
-      }
-      viewChronologicalOrder.addLast(newView);
+      // TODO: bring to front
     }
   }
   
