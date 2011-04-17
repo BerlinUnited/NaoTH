@@ -10,6 +10,7 @@ import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
@@ -72,7 +73,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     try
     {
       // set Look and Feel before adding all the components
-      UIManager.setLookAndFeel(new PlasticLookAndFeel());
+      UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
     }
     catch (Exception ex)
     {
