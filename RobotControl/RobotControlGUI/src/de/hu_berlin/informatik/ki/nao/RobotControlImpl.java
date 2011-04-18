@@ -64,6 +64,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   private File fConfig;
   private Properties config;
   private ConnectionDialog connectionDialog;
+  private boolean doNotSaveLayoutOnClose = false;
 
   /** Creates new form RobotControlGUI */
   public RobotControlImpl()
@@ -112,7 +113,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       String[] splitted = openDialogsString.split(",");
       for(String s : splitted)
       {
-        if(s.trim().equals(dialog.getClass().getSimpleName()))
+        if(s.trim().equals(dialog.getDisplayName()))
         {
           dialogRegistry.dockDialog(dialog);
           loadLayout();
@@ -146,6 +147,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     mainControlMenu = new javax.swing.JMenu();
     connectMenuItem = new javax.swing.JMenuItem();
     disconnectMenuItem = new javax.swing.JMenuItem();
+    resetLayoutMenuItem = new javax.swing.JMenuItem();
     jSeparator1 = new javax.swing.JSeparator();
     exitMenuItem = new javax.swing.JMenuItem();
     dialogsMenu = new javax.swing.JMenu();
@@ -154,6 +156,11 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("RobotControl for Nao");
+    addWindowListener(new java.awt.event.WindowAdapter() {
+      public void windowClosing(java.awt.event.WindowEvent evt) {
+        formWindowClosing(evt);
+      }
+    });
 
     statusPanel.setBackground(java.awt.Color.lightGray);
     statusPanel.setPreferredSize(new java.awt.Dimension(966, 25));
@@ -223,6 +230,15 @@ public class RobotControlImpl extends javax.swing.JFrame
       }
     });
     mainControlMenu.add(disconnectMenuItem);
+
+    resetLayoutMenuItem.setText("Reset layout");
+    resetLayoutMenuItem.setToolTipText("\"Resets all layout information");
+    resetLayoutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        resetLayoutMenuItemActionPerformed(evt);
+      }
+    });
+    mainControlMenu.add(resetLayoutMenuItem);
     mainControlMenu.add(jSeparator1);
 
     exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
@@ -307,6 +323,24 @@ public class RobotControlImpl extends javax.swing.JFrame
       JOptionPane.showMessageDialog(this, str);
 }//GEN-LAST:event_btManagerActionPerformed
 
+    private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
+    {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
+
+      doNotSaveLayoutOnClose = true;
+      if(layoutFile.exists() && layoutFile.isFile() && layoutFile.canWrite())
+      {
+        layoutFile.delete();
+        JOptionPane.showMessageDialog(null, "You need to restart RobotControl now.");
+      }//end if
+    }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
+    {//GEN-HEADEREND:event_formWindowClosing
+      
+      beforeClose();
+      
+    }//GEN-LAST:event_formWindowClosing
+
   @Override
   public MessageServer getMessageServer()
   {
@@ -354,6 +388,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   private javax.swing.JLabel lblSentBytesS;
   private javax.swing.JMenu mainControlMenu;
   private javax.swing.JMenuBar menuBar;
+  private javax.swing.JMenuItem resetLayoutMenuItem;
   private javax.swing.JPanel statusPanel;
   // End of variables declaration//GEN-END:variables
 
@@ -412,9 +447,11 @@ public class RobotControlImpl extends javax.swing.JFrame
       getConfig().store(new FileWriter(fConfig), "");
 
       // save layout
-      frontend.save("naoth-robotcontrol-default");
-      frontend.write(new DataOutputStream(new FileOutputStream(layoutFile)));
-
+      if(!doNotSaveLayoutOnClose)
+      {
+        frontend.save("naoth-robotcontrol-default");
+        frontend.write(new DataOutputStream(new FileOutputStream(layoutFile)));
+      }
     }
     catch (IOException ex)
     {
