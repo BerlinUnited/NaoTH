@@ -6,10 +6,16 @@
 package de.hu_berlin.informatik.ki.nao;
 
 import bibliothek.extension.gui.dock.theme.EclipseTheme;
+import bibliothek.extension.gui.dock.theme.FlatTheme;
+import bibliothek.extension.gui.dock.theme.SmoothTheme;
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
+import bibliothek.gui.dock.common.theme.CSmoothTheme;
+import bibliothek.gui.dock.frontend.MissingDockableStrategy;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
+import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
@@ -74,6 +80,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     {
       // set Look and Feel before adding all the components
       UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+      //UIManager.setLookAndFeel(new GTKLookAndFeel());
     }
     catch (Exception ex)
     {
@@ -87,7 +94,8 @@ public class RobotControlImpl extends javax.swing.JFrame
     SplitDockStation station = new SplitDockStation();
     frontend.addRoot("split", station);
     frontend.setShowHideAction(true);
-   
+    frontend.setMissingDockableStrategy(MissingDockableStrategy.DISCARD_ALL);
+    
     this.connectionDialog = new ConnectionDialog(this, this);
     dialogRegistry = new DialogRegistry(dialogsMenu, frontend, station);
 
@@ -332,6 +340,7 @@ public class RobotControlImpl extends javax.swing.JFrame
         layoutFile.delete();
         JOptionPane.showMessageDialog(null, "You need to restart RobotControl now.");
       }//end if
+      
     }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
@@ -421,7 +430,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       }
       catch (IOException ex)
       {
-        // ignore
+        ex.printStackTrace();
       }
     }//end if
 
@@ -477,7 +486,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     }
     catch(Exception ex)
     {
-      // ignore
+      //ex.printStackTrace();
     }
   }//end configureDocking
 

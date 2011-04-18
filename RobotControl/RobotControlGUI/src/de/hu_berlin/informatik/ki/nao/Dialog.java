@@ -34,4 +34,5 @@ public interface Dialog extends  Plugin
    * Here the all the registered listener should be unregistered.
    */
   public void dispose();
+
 }

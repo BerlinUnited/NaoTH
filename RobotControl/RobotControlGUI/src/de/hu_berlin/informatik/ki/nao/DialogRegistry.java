@@ -9,6 +9,7 @@ import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
+import bibliothek.gui.dock.frontend.MissingDockableStrategy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class DialogRegistry
     }
     else
     {
-      // TODO: bring to front
+      frontend.show(existing);
     }
   }
   
