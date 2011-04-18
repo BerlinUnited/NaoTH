@@ -92,6 +92,7 @@ public class DialogRegistry
     else
     {
       frontend.show(existing);
+      frontend.getController().setFocusedDockable(existing, true);
     }
   }
   
