@@ -70,11 +70,15 @@ protected:
    * if the module 'moduleName' doesn't exist
    * no action is done
    */
-  void setModuleEnabled(string moduleName, bool value)
+  void setModuleEnabled(string moduleName, bool value, bool recalculateExecutionList=false)
   {
     if(moduleExecutionMap.find(moduleName) != moduleExecutionMap.end())
     {
       moduleExecutionMap[moduleName]->setEnabled(value);
+      if(recalculateExecutionList)
+      {
+        calculateExecutionList();
+      }
     }
   }//end setModuleEnabled
 
