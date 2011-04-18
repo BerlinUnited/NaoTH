@@ -224,7 +224,7 @@ private:
   void internalAddModuleToExecutionList(string name, set<string>& availableRepresentations, map<string,string>& providerForRepresentation)
   {
     AbstractModuleCreator* am = getModule(name);
-    if(am != NULL && am->getModule() != NULL)
+    if(am != NULL && am->isEnabled() && am->getModule() != NULL)
     {
       Module* m = am->getModule();
       moduleExecutionList.push_back(name);
