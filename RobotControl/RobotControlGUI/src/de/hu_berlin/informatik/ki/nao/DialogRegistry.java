@@ -11,6 +11,9 @@ import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -24,12 +27,14 @@ public class DialogRegistry
   private JMenu menu;
   private DockStation station;
   private DockFrontend frontend;
+  private ArrayList<String> allDialogNames;
 
   public DialogRegistry(JMenu menu, DockFrontend frontend, DockStation station)
   {
     this.menu = menu;
     this.station = station;
     this.frontend = frontend;
+    this.allDialogNames = new ArrayList<String>();
   }
 
   public void registerDialog(final Dialog dialog)
@@ -38,17 +43,22 @@ public class DialogRegistry
     
     if(menu != null)
     {
-      JMenuItem newItem = new JMenuItem(dialogName);
-      newItem.addActionListener(new ActionListener()
+      int insertPoint = Collections.binarySearch(allDialogNames, dialogName);
+      if(insertPoint < 0)
       {
-
-        @Override
-        public void actionPerformed(ActionEvent e)
+        JMenuItem newItem = new JMenuItem(dialogName);
+        newItem.addActionListener(new ActionListener()
         {
-          dockDialog(dialog);
-        }
-      });
-      menu.add(newItem);
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            dockDialog(dialog);
+          }
+        });
+        menu.insert(newItem, -(insertPoint+1));
+        allDialogNames.add(-(insertPoint+1), dialogName);
+      }
     }
   
   }

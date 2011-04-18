@@ -9,7 +9,6 @@ import bibliothek.extension.gui.dock.theme.EclipseTheme;
 import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
@@ -56,7 +55,7 @@ public class RobotControlImpl extends javax.swing.JFrame
   private final String configlocation = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
   private File layoutFile =
-    new File(configlocation + "layout.xml");
+    new File(configlocation + "layout.dat");
 
   private DockFrontend frontend;
   private MessageServer messageServer;
@@ -101,7 +100,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     readLayoutFromFile();
   }
-
+  
   @PluginLoaded
   public void registerDialog(final Dialog dialog)
   {
