@@ -145,6 +145,8 @@ protected:
         {
           // add this module to the execution list
           moduleExecutionList.push_back(*it);
+          modulesTODO.erase(*it);
+          
           // add all provided representations of this module to our known set
           const list<Representation*> provided = m->getProvidedRepresentations(); 
           for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
@@ -153,9 +155,38 @@ protected:
           }
         }
         
-      }
-    }
+      } // for each module in modulesTODO
+    } // end while something changed
     
+    // print execution list
+    cout << "automatic module execution list" << endl;
+    cout << "-------------------------------" << endl;
+    for(list<string>::const_iterator itExec = moduleExecutionList.begin(); 
+      itExec != moduleExecutionList.end(); itExec++
+    )
+    {
+      cout << *itExec << endl;
+    }
+    cout << endl;
+    // deactivate inactive modules
+    for(set<string>::const_iterator itTODO = modulesTODO.begin(); itTODO != modulesTODO.end(); itTODO++)
+    { 
+      // output error
+      cerr << "WARNING: module \"" << *itTODO << "\" deactivated due to missing dependencies [";
+      
+      const list<Representation*> used = getModule(*itTODO)->getModule()->getUsedRepresentations(); 
+      for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
+      {
+        if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
+        {
+          cerr << *itUsed << " ";
+        }
+      }
+      cerr << "]" << endl;
+      
+      // deactivate
+      getModule(*itTODO)->setEnabled(false);
+    }
   }
 
 
