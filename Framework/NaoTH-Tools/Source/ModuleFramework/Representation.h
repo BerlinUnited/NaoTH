@@ -20,8 +20,6 @@
 #include "BlackBoard.h"
 #include "BlackBoardInterface.h"
 
-#include "Node.h"
-
 using namespace std;
 using namespace naoth;
 
@@ -35,7 +33,9 @@ private:
 
 protected:
   // pointers to the providing and requiring modules
-  Node<const Module, const Module> node;
+  list<const Module*> provided;
+  list<const Module*> used;
+  list<const Module*> required;
 
   Representation(const std::string name)
     : name(name)
@@ -51,26 +51,36 @@ public:
 
   void registerUsingModule(const Module& module)
   {
-    node.registerTo(module);
+    used.push_back(&module);
   }//end registerUsingModule
   
   void unregisterUsingModule(const Module& module)
   {
-    node.unregisterTo(module);
+    used.remove(&module);
   }//end unRegisterUsingModule
 
 
 
   void registerProvidingModule(const Module& module)
   {
-    node.registerFrom(module);
+    provided.push_back(&module);
   }//end registerProvidingModule
   
   void unregisterProvidingModule(const Module& module)
   {
-    node.unregisterFrom(module);
+    provided.remove(&module);
   }//end unregisterProvidingModule
 
+
+  void registerRequiringModule(const Module& module)
+  {
+    required.push_back(&module);
+  }//end registerRequiringModule
+
+  void unregisterRequiringModule(const Module& module)
+  {
+    required.remove(&module);
+  }//end unregisterRequiringModule
 
   /**
    * This method can be overwritten bei a particular

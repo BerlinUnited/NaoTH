@@ -106,18 +106,22 @@ protected:
   {
     moduleExecutionList.clear();
     
+    
     // init helper sets
     set<string> availableRepresentations;
     set<string> modulesTODO;
     for(map<string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
       it != moduleExecutionMap.end(); it++)
     {
-      // only include enabled modules
-      if(it->second->isEnabled())
+      // only include enabled modules, not actuator and sensor
+      if(it->second->isEnabled() && it->first != getSensorModuleName() && it->first != getActuatorModuleName())
       {
         modulesTODO.insert(it->first);
       }
     }
+    
+    // add default sensor module to the beginning
+    internalAddModuleToExecutionList(getSensorModuleName(), availableRepresentations);
     
     int oldRepresentationCount = -1;
       
@@ -133,7 +137,7 @@ protected:
         if(am != NULL && am->getModule() != NULL)
         {
           Module* m =  am->getModule();
-          const list<Representation*> used = m->getUsedRepresentations(); 
+          const list<Representation*> used = m->getRequiredRepresentations(); 
           bool somethingMissing = false;
           for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
           {
@@ -147,20 +151,17 @@ protected:
           if(!somethingMissing)
           {
             // add this module to the execution list
-            moduleExecutionList.push_back(*it);
+            internalAddModuleToExecutionList(*it, availableRepresentations);
             modulesTODO.erase(it++);
-            
-            // add all provided representations of this module to our known set
-            const list<Representation*> provided = m->getProvidedRepresentations(); 
-            for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
-            {
-              availableRepresentations.insert((*itProv)->getName());
-            }
           }
         } // if module not null   
         it++;
       } // for each module in modulesTODO
     } // end while something changed
+    
+    // add default actuator module to the end (even if it has unresolved dependencies)
+    internalAddModuleToExecutionList(getActuatorModuleName(), availableRepresentations);
+    
     
     // print execution list
     cout << "automatic module execution list" << endl;
@@ -179,7 +180,7 @@ protected:
       // output error
       cout << "WARNING: module \"" << *itTODO << "\" deactivated due to missing dependencies [";
       
-      const list<Representation*> used = getModule(*itTODO)->getModule()->getUsedRepresentations(); 
+      const list<Representation*> used = getModule(*itTODO)->getModule()->getRequiredRepresentations(); 
       for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
       {
         if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
@@ -193,7 +194,9 @@ protected:
       getModule(*itTODO)->setEnabled(false);
     }
   }
-
+  
+  virtual string getSensorModuleName() { return "Sensor";}
+  virtual string getActuatorModuleName() { return "Actuator";}
 
 private:
   template<class T>
@@ -211,6 +214,24 @@ private:
 
   /** list of names of modules in the order of registration */
   list<string> moduleExecutionList;
+  
+  void internalAddModuleToExecutionList(string name, set<string>& availableRepresentations)
+  {
+    AbstractModuleCreator* am = getModule(name);
+    if(am != NULL && am->getModule() != NULL)
+    {
+      Module* m = am->getModule();
+      moduleExecutionList.push_back(name);
+      
+      // add all provided representations of this module to our known set
+      const list<Representation*> provided = m->getProvidedRepresentations(); 
+      for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+      {
+        availableRepresentations.insert((*itProv)->getName());
+      }
+    }
+  } // end internalAddModuleToExecutionList
+  
 };
 
 #endif //__ModuleManager_h_
