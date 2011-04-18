@@ -106,8 +106,9 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     this.getContentPane().add(station, BorderLayout.CENTER);
 
-
     readLayoutFromFile();
+
+    disconnectMenuItem.setEnabled(false);
   }
   
   @PluginLoaded

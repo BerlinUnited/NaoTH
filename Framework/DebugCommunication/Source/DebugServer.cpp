@@ -287,7 +287,7 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
         iter++;
         if (iter != descriptionMap.end())
         {
-          out << ", ";
+          out << ": " << iter->second << "\n";
         }
       }
     } else
@@ -306,6 +306,7 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
       }
 
     }
+    out << "\n";
   }
 }
 
