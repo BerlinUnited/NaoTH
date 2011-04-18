@@ -8,9 +8,16 @@
 #ifndef __ModuleManager_h_
 #define __ModuleManager_h_
 
+#include <map>
+#include <set>
+#include <string>
+#include <list>
+
 #include "Module.h"
 #include "BlackBoard.h"
 #include "ModuleClassWraper.h"
+
+using namespace std;
 
 class ModuleManager: virtual public BlackBoardInterface
 {
@@ -63,11 +70,15 @@ protected:
    * if the module 'moduleName' doesn't exist
    * no action is done
    */
-  void setModuleEnabled(string moduleName, bool value)
+  void setModuleEnabled(string moduleName, bool value, bool recalculateExecutionList=false)
   {
     if(moduleExecutionMap.find(moduleName) != moduleExecutionMap.end())
     {
       moduleExecutionMap[moduleName]->setEnabled(value);
+      if(recalculateExecutionList)
+      {
+        calculateExecutionList();
+      }
     }
   }//end setModuleEnabled
 
@@ -91,7 +102,107 @@ protected:
   {
     return moduleExecutionList;
   }//end getExecutionList
-
+  
+  /**
+   * Calculate the execution list automatically from the dependencies
+   */
+  void calculateExecutionList()
+  {
+    moduleExecutionList.clear();
+    
+    
+    // init helper sets
+    set<string> availableRepresentations;
+    set<string> modulesTODO;
+    map<string,string> providerForRepresentation;
+    
+    for(map<string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
+      it != moduleExecutionMap.end(); it++)
+    {
+      // only include enabled modules, not actuator and sensor
+      if(it->second->isEnabled() && it->first != getSensorModuleName() && it->first != getActuatorModuleName())
+      {
+        modulesTODO.insert(it->first);
+      }
+    }
+    
+    // add default sensor module to the beginning
+    internalAddModuleToExecutionList(getSensorModuleName(), availableRepresentations, providerForRepresentation);
+    
+    int oldRepresentationCount = -1;
+      
+    while(oldRepresentationCount < (int) availableRepresentations.size() && modulesTODO.size() > 0)
+    { 
+      oldRepresentationCount = (int) availableRepresentations.size();
+      
+      // go trough all inactive modules and check if their required representations are available
+      set<string>::iterator it=modulesTODO.begin();
+      while(it != modulesTODO.end())
+      {
+        AbstractModuleCreator* am = getModule(*it);
+        if(am != NULL && am->getModule() != NULL)
+        {
+          Module* m =  am->getModule();
+          const list<Representation*> used = m->getRequiredRepresentations(); 
+          bool somethingMissing = false;
+          for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
+          {
+            if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
+            {
+              somethingMissing = true;
+              break;
+            }
+          }
+          
+          if(!somethingMissing)
+          {
+            // add this module to the execution list
+            internalAddModuleToExecutionList(*it, availableRepresentations, providerForRepresentation);
+            modulesTODO.erase(it++);
+          }
+        } // if module not null   
+        it++;
+      } // for each module in modulesTODO
+    } // end while something changed
+    
+    // add default actuator module to the end (even if it has unresolved dependencies)
+    internalAddModuleToExecutionList(getActuatorModuleName(), availableRepresentations, providerForRepresentation);
+    
+    
+    // print execution list
+    cout << "automatic module execution list" << endl;
+    cout << "-------------------------------" << endl;
+    for(list<string>::const_iterator itExec = moduleExecutionList.begin(); 
+      itExec != moduleExecutionList.end(); itExec++
+    )
+    {
+      cout << *itExec << endl;
+    }
+    cout << "-------------------------------" << endl;
+    cout << endl;
+    // deactivate inactive modules
+    for(set<string>::const_iterator itTODO = modulesTODO.begin(); itTODO != modulesTODO.end(); itTODO++)
+    { 
+      // output error
+      cout << "WARNING: module \"" << *itTODO << "\" deactivated due to missing dependencies [";
+      
+      const list<Representation*> used = getModule(*itTODO)->getModule()->getRequiredRepresentations(); 
+      for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
+      {
+        if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
+        {
+          cout << (*itUsed)->getName() << " ";
+        }
+      }
+      cout << "]" << endl;
+      
+      // deactivate
+      getModule(*itTODO)->setEnabled(false);
+    }
+  }
+  
+  virtual string getSensorModuleName() { return "Sensor";}
+  virtual string getActuatorModuleName() { return "Actuator";}
 
 private:
   template<class T>
@@ -109,6 +220,32 @@ private:
 
   /** list of names of modules in the order of registration */
   list<string> moduleExecutionList;
+  
+  void internalAddModuleToExecutionList(string name, set<string>& availableRepresentations, map<string,string>& providerForRepresentation)
+  {
+    AbstractModuleCreator* am = getModule(name);
+    if(am != NULL && am->isEnabled() && am->getModule() != NULL)
+    {
+      Module* m = am->getModule();
+      moduleExecutionList.push_back(name);
+      
+      // add all provided representations of this module to our known set
+      const list<Representation*> provided = m->getProvidedRepresentations(); 
+      for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+      {
+        string repName = (*itProv)->getName();
+        if(availableRepresentations.find(repName) != availableRepresentations.end())
+        {
+          cerr << "FATAL ERROR when calculating execution order: " << repName << " provided more than once "
+            << "(" << name << " and " << providerForRepresentation[repName] << ")" << endl;
+          ASSERT(false);
+        }
+        availableRepresentations.insert(repName);
+        providerForRepresentation[repName] = name;
+      }
+    }
+  } // end internalAddModuleToExecutionList
+  
 };
 
 #endif //__ModuleManager_h_

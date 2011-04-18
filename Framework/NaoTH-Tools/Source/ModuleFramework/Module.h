@@ -11,7 +11,6 @@
 #include "BlackBoardInterface.h"
 
 #include "DataHolder.h"
-#include "Node.h"
 
 #include <string.h>
 #include <map>
@@ -64,15 +63,16 @@ private:
 protected:
 
   // pointers to the provided and required representations
-  Node<Representation, Representation> node;
-
+  std::list<Representation*> provided;
+  std::list<Representation*> required;
+  std::list<Representation*> used;
 
   Module(std::string name): moduleName(name)
   {
     // std::cout << "Load " << getModuleName() << endl;
   }
 
-  Module(): moduleName("invalide module")
+  Module(): moduleName("invalid module")
   {
     // should never be here
   }
@@ -80,19 +80,26 @@ protected:
   // TODO: remove, make it tool methods
   void registerUsing(const RepresentationMap& list);
   void registerProviding(const RepresentationMap& list);
+  void registerRequiring(const RepresentationMap& list);
   void unregisterUsing(const RepresentationMap& list);
   void unregisterProviding(const RepresentationMap& list);
+  void unregisterRequiring(const RepresentationMap& list);
 
 public:
 
-  const list<Representation*>& getUsedRepresentations()
+  const list<Representation*>& getRequiredRepresentations()
   {
-    return node.from;
+    return required;
   }
 
   const list<Representation*>& getProvidedRepresentations()
   {
-    return node.to;
+    return provided;
+  }
+  
+  const list<Representation*>& getUsedRepresentations()
+  {
+    return used;
   }
 
   /** executes the module */
@@ -114,6 +121,7 @@ class StaticRegistry
 {
 protected:
   static RepresentationMap* static_providing_registry;
+  static RepresentationMap* static_requiring_registry;
   static RepresentationMap* static_using_registry;
 
   template<class TYPE_WHAT>
@@ -128,6 +136,22 @@ protected:
       if(static_using_registry->find(name) == static_using_registry->end())
       {
         (*static_using_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
+      }
+    }
+  };
+  
+  template<class TYPE_WHAT>
+  class StaticRequiringRegistrator
+  {
+  public:
+    StaticRequiringRegistrator()
+    {
+      // HACK: no variable names possible
+      std::string name = typeid(TYPE_WHAT).name();
+      // TODO: check the type
+      if(static_requiring_registry->find(name) == static_requiring_registry->end())
+      {
+        (*static_requiring_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
       }
     }
   };
@@ -153,7 +177,8 @@ template<class T>
 RepresentationMap* StaticRegistry<T>::static_providing_registry = new RepresentationMap();
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_using_registry = new RepresentationMap();
-
+template<class T>
+RepresentationMap* StaticRegistry<T>::static_requiring_registry = new RepresentationMap();
 
 /***************************************************************
  macros for creating a module
@@ -200,9 +225,19 @@ RepresentationMap* StaticRegistry<T>::static_using_registry = new Representation
 
 
 // static invoker (registers the static dependency to RepresentationB)
-#define REQUIRE(representationName) \
+#define USES(representationName) \
   private: \
   StaticUsingRegistrator<representationName> _the##representationName; \
+  protected: \
+  const representationName& get##representationName() \
+  { \
+    static const DataHolder<representationName>& representation = getBlackBoard().getConstRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
+    return *representation; \
+  }
+  
+#define REQUIRE(representationName) \
+  private: \
+  StaticRequiringRegistrator<representationName> _the##representationName; \
   protected: \
   const representationName& get##representationName() \
   { \
@@ -224,10 +259,12 @@ RepresentationMap* StaticRegistry<T>::static_using_registry = new Representation
 #define END_DECLARE_MODULE(moduleName) \
   public: \
     moduleName##Base(): Module(#moduleName){ \
+      registerRequiring(*static_requiring_registry); \
       registerUsing(*static_using_registry); \
       registerProviding(*static_providing_registry); \
     } \
     ~moduleName##Base(){ \
+      unregisterRequiring(*static_requiring_registry); \
       unregisterUsing(*static_using_registry); \
       unregisterProviding(*static_providing_registry); \
     } \
