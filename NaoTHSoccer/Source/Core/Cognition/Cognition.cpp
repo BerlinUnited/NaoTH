@@ -76,6 +76,9 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
       }
     }
   }
+  
+  // auto-generate the execution list
+  calculateExecutionList();
 
   g_message("Cognition register end");
 }//end init

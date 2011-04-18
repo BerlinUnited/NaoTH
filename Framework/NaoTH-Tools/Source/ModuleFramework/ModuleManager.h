@@ -120,41 +120,45 @@ protected:
     }
     
     int oldRepresentationCount = -1;
-    
-    while(oldRepresentationCount < availableRepresentations.size() && modulesTODO.size() > 0)
-    {
       
-      oldRepresentationCount = availableRepresentations.size();
+    while(oldRepresentationCount < (int) availableRepresentations.size() && modulesTODO.size() > 0)
+    { 
+      oldRepresentationCount = (int) availableRepresentations.size();
       
       // go trough all inactive modules and check if their required representations are available
-      for(set<string>::iterator it=modulesTODO.begin(); it != modulesTODO.end(); it++)
+      set<string>::iterator it=modulesTODO.begin();
+      while(it != modulesTODO.end())
       {
-        Module* m =  getModule(*it)->getModule();
-        const list<Representation*> used = m->getUsedRepresentations(); 
-        bool somethingMissing = false;
-        for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
+        AbstractModuleCreator* am = getModule(*it);
+        if(am != NULL && am->getModule() != NULL)
         {
-          if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
+          Module* m =  am->getModule();
+          const list<Representation*> used = m->getUsedRepresentations(); 
+          bool somethingMissing = false;
+          for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
           {
-            somethingMissing = true;
-            break;
+            if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
+            {
+              somethingMissing = true;
+              break;
+            }
           }
-        }
-        
-        if(!somethingMissing)
-        {
-          // add this module to the execution list
-          moduleExecutionList.push_back(*it);
-          modulesTODO.erase(*it);
           
-          // add all provided representations of this module to our known set
-          const list<Representation*> provided = m->getProvidedRepresentations(); 
-          for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+          if(!somethingMissing)
           {
-            availableRepresentations.insert((*itProv)->getName());
+            // add this module to the execution list
+            moduleExecutionList.push_back(*it);
+            modulesTODO.erase(it++);
+            
+            // add all provided representations of this module to our known set
+            const list<Representation*> provided = m->getProvidedRepresentations(); 
+            for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+            {
+              availableRepresentations.insert((*itProv)->getName());
+            }
           }
-        }
-        
+        } // if module not null   
+        it++;
       } // for each module in modulesTODO
     } // end while something changed
     
@@ -167,22 +171,23 @@ protected:
     {
       cout << *itExec << endl;
     }
+    cout << "-------------------------------" << endl;
     cout << endl;
     // deactivate inactive modules
     for(set<string>::const_iterator itTODO = modulesTODO.begin(); itTODO != modulesTODO.end(); itTODO++)
     { 
       // output error
-      cerr << "WARNING: module \"" << *itTODO << "\" deactivated due to missing dependencies [";
+      cout << "WARNING: module \"" << *itTODO << "\" deactivated due to missing dependencies [";
       
       const list<Representation*> used = getModule(*itTODO)->getModule()->getUsedRepresentations(); 
       for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
       {
         if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
         {
-          cerr << *itUsed << " ";
+          cout << (*itUsed)->getName() << " ";
         }
       }
-      cerr << "]" << endl;
+      cout << "]" << endl;
       
       // deactivate
       getModule(*itTODO)->setEnabled(false);
