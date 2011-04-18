@@ -8,9 +8,16 @@
 #ifndef __ModuleManager_h_
 #define __ModuleManager_h_
 
+#include <map>
+#include <set>
+#include <string>
+#include <list>
+
 #include "Module.h"
 #include "BlackBoard.h"
 #include "ModuleClassWraper.h"
+
+using namespace std;
 
 class ModuleManager: virtual public BlackBoardInterface
 {
@@ -91,6 +98,65 @@ protected:
   {
     return moduleExecutionList;
   }//end getExecutionList
+  
+  /**
+   * Calculate the execution list automatically from the dependencies
+   */
+  void calculateExecutionList()
+  {
+    moduleExecutionList.clear();
+    
+    // init helper sets
+    set<string> availableRepresentations;
+    set<string> modulesTODO;
+    for(map<string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
+      it != moduleExecutionMap.end(); it++)
+    {
+      // only include enabled modules
+      if(it->second->isEnabled())
+      {
+        modulesTODO.insert(it->first);
+      }
+    }
+    
+    int oldRepresentationCount = -1;
+    
+    while(oldRepresentationCount < availableRepresentations.size() && modulesTODO.size() > 0)
+    {
+      
+      oldRepresentationCount = availableRepresentations.size();
+      
+      // go trough all inactive modules and check if their required representations are available
+      for(set<string>::iterator it=modulesTODO.begin(); it != modulesTODO.end(); it++)
+      {
+        Module* m =  getModule(*it)->getModule();
+        const list<Representation*> used = m->getUsedRepresentations(); 
+        bool somethingMissing = false;
+        for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
+        {
+          if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
+          {
+            somethingMissing = true;
+            break;
+          }
+        }
+        
+        if(!somethingMissing)
+        {
+          // add this module to the execution list
+          moduleExecutionList.push_back(*it);
+          // add all provided representations of this module to our known set
+          const list<Representation*> provided = m->getProvidedRepresentations(); 
+          for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+          {
+            availableRepresentations.insert((*itProv)->getName());
+          }
+        }
+        
+      }
+    }
+    
+  }
 
 
 private:
