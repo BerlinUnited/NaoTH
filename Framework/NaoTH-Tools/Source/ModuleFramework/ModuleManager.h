@@ -114,6 +114,8 @@ protected:
     // init helper sets
     set<string> availableRepresentations;
     set<string> modulesTODO;
+    map<string,string> providerForRepresentation;
+    
     for(map<string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
       it != moduleExecutionMap.end(); it++)
     {
@@ -125,7 +127,7 @@ protected:
     }
     
     // add default sensor module to the beginning
-    internalAddModuleToExecutionList(getSensorModuleName(), availableRepresentations);
+    internalAddModuleToExecutionList(getSensorModuleName(), availableRepresentations, providerForRepresentation);
     
     int oldRepresentationCount = -1;
       
@@ -155,7 +157,7 @@ protected:
           if(!somethingMissing)
           {
             // add this module to the execution list
-            internalAddModuleToExecutionList(*it, availableRepresentations);
+            internalAddModuleToExecutionList(*it, availableRepresentations, providerForRepresentation);
             modulesTODO.erase(it++);
           }
         } // if module not null   
@@ -164,7 +166,7 @@ protected:
     } // end while something changed
     
     // add default actuator module to the end (even if it has unresolved dependencies)
-    internalAddModuleToExecutionList(getActuatorModuleName(), availableRepresentations);
+    internalAddModuleToExecutionList(getActuatorModuleName(), availableRepresentations, providerForRepresentation);
     
     
     // print execution list
@@ -219,7 +221,7 @@ private:
   /** list of names of modules in the order of registration */
   list<string> moduleExecutionList;
   
-  void internalAddModuleToExecutionList(string name, set<string>& availableRepresentations)
+  void internalAddModuleToExecutionList(string name, set<string>& availableRepresentations, map<string,string>& providerForRepresentation)
   {
     AbstractModuleCreator* am = getModule(name);
     if(am != NULL && am->getModule() != NULL)
@@ -231,7 +233,15 @@ private:
       const list<Representation*> provided = m->getProvidedRepresentations(); 
       for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
       {
-        availableRepresentations.insert((*itProv)->getName());
+        string repName = (*itProv)->getName();
+        if(availableRepresentations.find(repName) != availableRepresentations.end())
+        {
+          cerr << "FATAL ERROR when calculating execution order: " << repName << " provided more than once "
+            << "(" << name << " and " << providerForRepresentation[repName] << ")" << endl;
+          ASSERT(false);
+        }
+        availableRepresentations.insert(repName);
+        providerForRepresentation[repName] = name;
       }
     }
   } // end internalAddModuleToExecutionList
