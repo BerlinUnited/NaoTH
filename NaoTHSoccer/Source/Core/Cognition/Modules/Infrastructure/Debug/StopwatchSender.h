@@ -20,7 +20,7 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(StopwatchSender)
-  
+
 END_DECLARE_MODULE(StopwatchSender)
 
 class StopwatchSender : public StopwatchSenderBase, public DebugCommandExecutor

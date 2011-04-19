@@ -195,9 +195,6 @@ protected:
         }
       }
       cout << "]" << endl;
-      
-      // deactivate
-      getModule(*itTODO)->setEnabled(false);
     }
   }
   
@@ -226,22 +223,29 @@ private:
     AbstractModuleCreator* am = getModule(name);
     if(am != NULL && am->isEnabled() && am->getModule() != NULL)
     {
+      bool addModuleToList = true;
       Module* m = am->getModule();
-      moduleExecutionList.push_back(name);
       
       // add all provided representations of this module to our known set
       const list<Representation*> provided = m->getProvidedRepresentations(); 
       for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
       {
         string repName = (*itProv)->getName();
-        if(availableRepresentations.find(repName) != availableRepresentations.end())
-        {
-          cerr << "FATAL ERROR when calculating execution order: " << repName << " provided more than once "
-            << "(" << name << " and " << providerForRepresentation[repName] << ")" << endl;
-          ASSERT(false);
+        if(availableRepresentations.find(repName) == availableRepresentations.end())
+        { 
+          availableRepresentations.insert(repName);
+          providerForRepresentation[repName] = name;
         }
-        availableRepresentations.insert(repName);
-        providerForRepresentation[repName] = name;
+        else
+        {
+          cerr << "ERROR when calculating execution order: " << repName << " provided more than once "
+            << "(" << name << " and " << providerForRepresentation[repName] << ")" << endl;
+            addModuleToList = false;
+        }
+      } // end for all provided representations
+      if(addModuleToList)
+      {
+        moduleExecutionList.push_back(name);        
       }
     }
   } // end internalAddModuleToExecutionList

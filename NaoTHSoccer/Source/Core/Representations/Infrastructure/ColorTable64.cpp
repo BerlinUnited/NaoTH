@@ -48,3 +48,4 @@ bool ColorTable64::loadFromFile(std::string fileName)
 
   return true;
 }//end loadFromFile
+
