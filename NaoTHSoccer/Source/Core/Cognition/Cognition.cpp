@@ -63,6 +63,8 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   
   //END MODULES
   
+  moduleLoader.loadPackages("Packages/");
+  
   // use the configuration in order to set whether a module is activated or not
   naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
@@ -85,11 +87,6 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 
   g_message("Cognition register end");
 }//end init
-
-void Cognition::loadPackages()
-{
-  
-} // end loadPackages()
 
 void Cognition::call()
 {  

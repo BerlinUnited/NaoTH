@@ -78,8 +78,10 @@ solution "NaoTHSoccer"
   
   
   CORE_PATH = {
-  path.getabsolute("../Source/Core/Cognition/"), 
-  path.getabsolute("../Source/Core/Motion/") }
+    path.getabsolute("../Source/Core/Cognition/"), 
+    path.getabsolute("../Source/Core/Motion/"),
+    path.getabsolute("../Source/")  
+  }
   
   CORE = {"NaoTHSoccer", "DebugCommunication"}
     
