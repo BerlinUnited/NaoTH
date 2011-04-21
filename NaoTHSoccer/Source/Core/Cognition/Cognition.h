@@ -28,6 +28,8 @@ public:
 
 private:
 
+  void loadPackages();
+
 };
 
 #endif	/* COGNITION_H */

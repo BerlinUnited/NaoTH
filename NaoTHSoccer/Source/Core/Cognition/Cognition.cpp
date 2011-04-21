@@ -11,6 +11,8 @@
 #include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 
+#include <glib.h>
+
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
@@ -83,6 +85,11 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
 
   g_message("Cognition register end");
 }//end init
+
+void Cognition::loadPackages()
+{
+  
+} // end loadPackages()
 
 void Cognition::call()
 {  
