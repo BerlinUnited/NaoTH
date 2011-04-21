@@ -250,11 +250,5 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
       unregisterProviding(*static_providing_registry); \
     } \
   };
-  
-#define DUMMY_PROVIDER_MODULE(representationName) \
-  BEGIN_DECLARE_MODULE(representationName##DummyProvider) \
-    PROVIDE(representationName) \
-  END_DECLARE_MODULE(representationName##DummyProvider) \
-  class representationName##DummyProvider : public representationName##DummyProviderBase {};
- 
+   
 #endif //__Module_h_
