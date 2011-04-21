@@ -20,11 +20,11 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Actuator)
-  USES(CameraSettingsRequest)
-  USES(LEDData)
-  USES(IRSendData)
-  USES(UltraSoundSendData)
-  USES(SoundData)
+  USE(CameraSettingsRequest)
+  USE(LEDData)
+  USE(IRSendData)
+  USE(UltraSoundSendData)
+  USE(SoundData)
 END_DECLARE_MODULE(Actuator)
 
 class Actuator : public ActuatorBase

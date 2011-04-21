@@ -225,7 +225,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
 
 
 // static invoker (registers the static dependency to RepresentationB)
-#define USES(representationName) \
+#define USE(representationName) \
   private: \
   StaticUsingRegistrator<representationName> _the##representationName; \
   protected: \
