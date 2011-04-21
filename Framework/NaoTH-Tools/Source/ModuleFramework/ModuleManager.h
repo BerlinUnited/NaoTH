@@ -12,6 +12,8 @@
 #include <set>
 #include <string>
 #include <list>
+#include <vector>
+#include <limits>
 
 #include "Module.h"
 #include "BlackBoard.h"
@@ -108,66 +110,92 @@ protected:
    */
   void calculateExecutionList()
   {
-    moduleExecutionList.clear();
-    
-    
-    // init helper sets
-    set<string> availableRepresentations;
-    set<string> modulesTODO;
     map<string,string> providerForRepresentation;
+    map<string, list<string> > required;
+    map<string, list<string> > provided;
     
+    // first fill the map with providers and the module graph
     for(map<string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
       it != moduleExecutionMap.end(); it++)
     {
-      // only include enabled modules, not actuator and sensor
-      if(it->second->isEnabled() && it->first != getSensorModuleName() && it->first != getActuatorModuleName())
+      // only include enabled modules
+      if(it->second->isEnabled())
       {
-        modulesTODO.insert(it->first);
+        Module* m = it->second->getModule();
+        
+        for(std::list<Representation*>::const_iterator itProv = m->getProvidedRepresentations().begin();
+          itProv != m->getProvidedRepresentations().end(); itProv++)
+        {
+          std::string repName = (*itProv)->getName();
+          
+          if(providerForRepresentation.find(repName) == providerForRepresentation.end())
+          {
+            providerForRepresentation[repName] = it->first;
+            provided[it->first].push_back(repName);
+          }
+          else
+          {
+            std::cerr << "ERROR: " << repName << " provided by both " << providerForRepresentation[repName]
+              << " and " << it->first;
+          }
+        }
+        
+        for(std::list<Representation*>::const_iterator itReq = m->getRequiredRepresentations().begin();
+          itReq != m->getRequiredRepresentations().end(); itReq++)
+        {
+          std::string repName = (*itReq)->getName();
+          required[it->first].push_back(repName);
+        }
+        
+      } // if module enabled
+    }
+    
+    // solve this constraint problem
+    vector<string> oldExecutionList(moduleExecutionList.begin(), moduleExecutionList.end());
+    unsigned int oldErrors = countExecutionListErrors(oldExecutionList, required, provided, false);
+    unsigned int unsuccessfulAttempts = 0;
+    
+    const unsigned int maxAttempts = oldExecutionList.size()*10;
+    
+    // init to same seed to get "reliable" results
+    srand(100);
+    
+    while(oldErrors != 0 && unsuccessfulAttempts < maxAttempts)
+    {
+      vector<string> newExecutionList = oldExecutionList;
+      // switch randomly
+      int left = 0;
+      int right = 0;
+      
+      while(left == right)
+      {
+        left = rand() % newExecutionList.size();
+        right = rand() % newExecutionList.size();
+      }
+      
+      string buffer = newExecutionList[right];
+      newExecutionList[right] = newExecutionList[left];
+      newExecutionList[left] = buffer;
+      
+      unsigned int newErrors = countExecutionListErrors(newExecutionList, required, provided, false);
+      //cerr << "new error = " << newErrors << " | old = " << oldErrors << " | no success = " << unsuccessfulAttempts << endl;
+      if(newErrors < oldErrors)
+      {
+        oldErrors = newErrors;
+        oldExecutionList = newExecutionList;
+        unsuccessfulAttempts = 0;
+      }
+      else
+      {
+        unsuccessfulAttempts++;
       }
     }
     
-    // add default sensor module to the beginning
-    internalAddModuleToExecutionList(getSensorModuleName(), availableRepresentations, providerForRepresentation);
+    // reset random seed if another one is using it
+    srand(time(NULL));
     
-    int oldRepresentationCount = -1;
-      
-    while(oldRepresentationCount < (int) availableRepresentations.size() && modulesTODO.size() > 0)
-    { 
-      oldRepresentationCount = (int) availableRepresentations.size();
-      
-      // go trough all inactive modules and check if their required representations are available
-      set<string>::iterator it=modulesTODO.begin();
-      while(it != modulesTODO.end())
-      {
-        AbstractModuleCreator* am = getModule(*it);
-        if(am != NULL && am->getModule() != NULL)
-        {
-          Module* m =  am->getModule();
-          const list<Representation*> used = m->getRequiredRepresentations(); 
-          bool somethingMissing = false;
-          for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
-          {
-            if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
-            {
-              somethingMissing = true;
-              break;
-            }
-          }
-          
-          if(!somethingMissing)
-          {
-            // add this module to the execution list
-            internalAddModuleToExecutionList(*it, availableRepresentations, providerForRepresentation);
-            modulesTODO.erase(it++);
-          }
-        } // if module not null   
-        it++;
-      } // for each module in modulesTODO
-    } // end while something changed
-    
-    // add default actuator module to the end (even if it has unresolved dependencies)
-    internalAddModuleToExecutionList(getActuatorModuleName(), availableRepresentations, providerForRepresentation);
-    
+    moduleExecutionList.clear();
+    copy(oldExecutionList.begin(), oldExecutionList.end(), back_inserter(moduleExecutionList));
     
     // print execution list
     cout << "automatic module execution list" << endl;
@@ -180,22 +208,10 @@ protected:
     }
     cout << "-------------------------------" << endl;
     cout << endl;
-    // deactivate inactive modules
-    for(set<string>::const_iterator itTODO = modulesTODO.begin(); itTODO != modulesTODO.end(); itTODO++)
-    { 
-      // output error
-      cout << "WARNING: module \"" << *itTODO << "\" deactivated due to missing dependencies [";
-      
-      const list<Representation*> used = getModule(*itTODO)->getModule()->getRequiredRepresentations(); 
-      for(list<Representation*>::const_iterator itUsed=used.begin(); itUsed != used.end(); itUsed++)
-      {
-        if(availableRepresentations.find((*itUsed)->getName()) == availableRepresentations.end())
-        {
-          cout << (*itUsed)->getName() << " ";
-        }
-      }
-      cout << "]" << endl;
-    }
+    
+    // output missing dependencies
+    countExecutionListErrors(oldExecutionList, required, provided, true);
+    
   }
   
   virtual string getSensorModuleName() { return "Sensor";}
@@ -249,6 +265,40 @@ private:
       }
     }
   } // end internalAddModuleToExecutionList
+  
+  unsigned int countExecutionListErrors(const vector<string>& order, 
+    map<string, list<string> >& required, map<string, list<string> >& provided, bool outputError)
+  {
+    unsigned int errors = 0;
+    
+    set<string> availableRepresentations;
+    
+    for(vector<string>::const_iterator it = order.begin(); it != order.end(); it++)
+    {
+      string module = *it;
+      const list<string>& req = required[module];
+      const list<string>& prov = provided[module];
+      
+      for(list<string>::const_iterator itReq = req.begin(); itReq != req.end(); itReq++)
+      {
+        if(availableRepresentations.find(*itReq) == availableRepresentations.end())
+        {
+          errors++;
+          if(outputError)
+          {
+            cerr << "ERROR: no provider for " << *itReq << " in " << module << endl;
+          }
+        }
+      }
+      
+      for(list<string>::const_iterator itProv = prov.begin(); itProv != prov.end(); itProv++)
+      {
+        availableRepresentations.insert(*itProv);
+      }
+    }
+    
+    return errors;
+  }
   
 };
 

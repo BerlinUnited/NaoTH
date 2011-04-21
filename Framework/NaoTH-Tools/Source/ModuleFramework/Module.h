@@ -65,7 +65,6 @@ protected:
   // pointers to the provided and required representations
   std::list<Representation*> provided;
   std::list<Representation*> required;
-  std::list<Representation*> used;
 
   Module(std::string name): moduleName(name)
   {
@@ -78,10 +77,8 @@ protected:
   }
 
   // TODO: remove, make it tool methods
-  void registerUsing(const RepresentationMap& list);
   void registerProviding(const RepresentationMap& list);
   void registerRequiring(const RepresentationMap& list);
-  void unregisterUsing(const RepresentationMap& list);
   void unregisterProviding(const RepresentationMap& list);
   void unregisterRequiring(const RepresentationMap& list);
 
@@ -95,11 +92,6 @@ public:
   const list<Representation*>& getProvidedRepresentations()
   {
     return provided;
-  }
-  
-  const list<Representation*>& getUsedRepresentations()
-  {
-    return used;
   }
 
   /** executes the module */
@@ -225,15 +217,6 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
 
 
 // static invoker (registers the static dependency to RepresentationB)
-#define USE(representationName) \
-  private: \
-  StaticUsingRegistrator<representationName> _the##representationName; \
-  protected: \
-  const representationName& get##representationName() \
-  { \
-    static const DataHolder<representationName>& representation = getBlackBoard().getConstRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
-    return *representation; \
-  }
   
 #define REQUIRE(representationName) \
   private: \
@@ -260,12 +243,10 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   public: \
     moduleName##Base(): Module(#moduleName){ \
       registerRequiring(*static_requiring_registry); \
-      registerUsing(*static_using_registry); \
       registerProviding(*static_providing_registry); \
     } \
     ~moduleName##Base(){ \
       unregisterRequiring(*static_requiring_registry); \
-      unregisterUsing(*static_using_registry); \
       unregisterProviding(*static_providing_registry); \
     } \
   };

@@ -48,19 +48,6 @@ public:
   virtual ~Representation() {}
   const std::string& getName() const { return (*this).name; }
 
-
-  void registerUsingModule(const Module& module)
-  {
-    used.push_back(&module);
-  }//end registerUsingModule
-  
-  void unregisterUsingModule(const Module& module)
-  {
-    used.remove(&module);
-  }//end unRegisterUsingModule
-
-
-
   void registerProvidingModule(const Module& module)
   {
     provided.push_back(&module);
