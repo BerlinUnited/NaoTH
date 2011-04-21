@@ -62,7 +62,8 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   //END MODULES
   
   // use the configuration in order to set whether a module is activated or not
-  Configuration& config = Platform::getInstance().theConfiguration;
+  naoth::Configuration& config = Platform::getInstance().theConfiguration;
+  
   for(list<string>::const_iterator name=getExecutionList().begin();
     name != getExecutionList().end(); name++)
   {

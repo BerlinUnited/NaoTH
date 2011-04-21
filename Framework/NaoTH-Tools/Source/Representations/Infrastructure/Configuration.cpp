@@ -32,7 +32,7 @@ Configuration::Configuration(const Configuration& orig)
 
 }
 
-void Configuration::loadFromDir(std::string dirlocation, std::string platformName, std::string macAddress)
+void Configuration::loadFromDir(std::string dirlocation, std::string scheme, std::string macAddress)
 {
   if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
@@ -44,7 +44,7 @@ void Configuration::loadFromDir(std::string dirlocation, std::string platformNam
   if (g_file_test(dirlocation.c_str(), G_FILE_TEST_EXISTS) && g_file_test(dirlocation.c_str(), G_FILE_TEST_IS_DIR))
   {
     loadFromSingleDir(dirlocation + "general/");
-    loadFromSingleDir(dirlocation + "platforms/" + platformName + "/");
+    loadFromSingleDir(dirlocation + "scheme/" + scheme + "/");
     loadFromSingleDir(dirlocation + "robots/" + macAddress + "/");
     loadFromSingleDir(dirlocation + "private/");
   } else

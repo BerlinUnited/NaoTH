@@ -22,7 +22,7 @@ namespace naoth
     Configuration(const Configuration& orig);
     virtual ~Configuration();
 
-    void loadFromDir(std::string dirlocation, std::string platformName, std::string macAddress);
+    void loadFromDir(std::string dirlocation, std::string scheme, std::string macAddress);
     void loadFile(std::string file, std::string groupName);
     void clear();
 

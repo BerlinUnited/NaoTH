@@ -14,6 +14,10 @@
 #include <net/if.h>
 #endif // undef WIN32
 
+#include <string>
+#include <iostream>
+#include <fstream>
+
 #include <string.h>
 #include "PlatformInterface.h"
 #include "Tools/DataStructures/Singleton.h"
@@ -47,11 +51,11 @@ namespace naoth
     // cannot be copied
     Platform& operator=( const Platform& ) {}
 
-    string _hardwareIdentity;
-    string _bodyID;
-    string _bodyNickName;
+    std::string _hardwareIdentity;
+    std::string _bodyID;
+    std::string _bodyNickName;
     Configuration _configuration;
-    string _configDir;
+    std::string _configDir;
     PlatformBase* _platformInterface;
 
   public:
@@ -110,7 +114,14 @@ namespace naoth
         _configDir = getenv("NAO_CONFIG");
       }
        */
-      _configuration.loadFromDir(_configDir, _interface->getName(), _hardwareIdentity);
+      std::string scheme = _interface->getName(); // set to platform by default
+      std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
+      if(schemefile.is_open() && schemefile.good())
+      {
+        std::getline(schemefile, scheme);
+      }
+      
+      _configuration.loadFromDir(_configDir, scheme, _hardwareIdentity);
       
       
   //    // init the camera info
