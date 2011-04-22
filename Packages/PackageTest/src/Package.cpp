@@ -16,9 +16,9 @@ extern "C++"
 
 
 // register all modules here
-extern "C" G_MODULE_EXPORT void naoth_register_modules(gpointer* manager)
+extern "C" G_MODULE_EXPORT void naoth_register_modules(ModuleManager* manager)
 {
-  ((ModuleManager*) manager)->registerModule<PackageTest> ("PackageTest"); 
+  manager->registerModule<PackageTest> ("PackageTest"); 
 }
 
 
