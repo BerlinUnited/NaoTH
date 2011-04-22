@@ -14,21 +14,11 @@ extern "C++"
   #include <ModuleFramework/ModuleManager.h>
 }
 
-Test::Test()
+
+// register all modules here
+extern "C" G_MODULE_EXPORT void naoth_register_modules(gpointer* manager)
 {
-
+  ((ModuleManager*) manager)->registerModule<Test> ("Test"); 
 }
-
-void Test::execute()
-{ 
-  std::cout << "Hello Test" << std::endl << std::endl;
-
-}
-
-
-Test::~Test()
-{
-}
-
 
 
