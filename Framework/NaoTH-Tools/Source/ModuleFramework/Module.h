@@ -77,10 +77,54 @@ protected:
   }
 
   // TODO: remove, make it tool methods
-  void registerProviding(const RepresentationMap& list);
-  void registerRequiring(const RepresentationMap& list);
-  void unregisterProviding(const RepresentationMap& list);
-  void unregisterRequiring(const RepresentationMap& list);
+  void registerProviding(const RepresentationMap& list)
+  {
+    RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      provided.push_back(&representation);
+      representation.registerProvidingModule(*this);
+    }
+  }
+  
+  void registerRequiring(const RepresentationMap& list)
+  {
+    RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      required.push_back(&representation);
+      representation.registerRequiringModule(*this);
+    }
+  }
+  
+  void unregisterProviding(const RepresentationMap& list)
+  {
+    RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      provided.remove(&representation);
+      representation.unregisterProvidingModule(*this);
+    }
+  } 
+ 
+  void unregisterRequiring(const RepresentationMap& list)
+  {
+      RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      
+      required.remove(&representation);
+      representation.unregisterRequiringModule(*this);
+    }
+  }
 
 public:
 
