@@ -21,7 +21,15 @@ Test::Test()
 
 void Test::execute()
 { 
-  std::cout << "Hello Test" << std::endl << std::endl;
+  std::cout << "Hello Test, time is:" << std::endl << getFrameInfo().time << std::endl;
+
+  getColorTable64().setColorClass(ColorClasses::blue, 100, 100, 100);
+  
+  Pixel p;
+  p.y = 100;
+  p.u = 100;
+  p.v = 100;
+  std::cout << "new color table value:" << std::endl << getColorTable64().getColorClass(p) << std::endl;
 
 }
 

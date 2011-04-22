@@ -12,14 +12,8 @@ extern "C++"
 {
 #include <ModuleFramework/Module.h>
 
-#include "Core/Representations/FieldInfo.h"
-#include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Infrastructure/Image.h>
-#include <Representations/Infrastructure/JointData.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/AccelerometerData.h>
-#include <Representations/Infrastructure/FSRData.h>
+#include <Core/Representations/Infrastructure/ColorTable64.h>
 
 }
 
@@ -27,7 +21,7 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Test)
   REQUIRE(FrameInfo)
-  
+  PROVIDE(ColorTable64)
 END_DECLARE_MODULE(Test)
 
 class Test : public TestBase
