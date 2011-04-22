@@ -5,7 +5,10 @@ solution "TestPackage"
 
   targetdir "dist"
   includedirs {"../../Framework/NaoTH-Tools/Source/", 
-    "../../NaoTHSoccer/Source/", "../../Framework/DebugCommunication/Source/"}
+    "../../NaoTHSoccer/Source/", "../../Framework/DebugCommunication/Source/",
+    "../../Extern/include/glib-2.0",
+    "../../Extern/lib/glib-2.0/include"}
+  libdirs {"../../Extern/lib"}
 
   project "TestPackage"
     kind "SharedLib"

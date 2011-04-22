@@ -7,6 +7,13 @@
 
 #include "Test.h"
 
+#include <gmodule.h>
+
+extern "C++"
+{
+  #include <ModuleFramework/ModuleManager.h>
+}
+
 Test::Test()
 {
 
@@ -22,4 +29,10 @@ void Test::execute()
 Test::~Test()
 {
 }
+
+extern "C" G_MODULE_EXPORT void naoth_register_modules(gpointer* manager)
+{
+  ((ModuleManager*) manager)->registerModule<Test> ("Test"); 
+}
+
 
