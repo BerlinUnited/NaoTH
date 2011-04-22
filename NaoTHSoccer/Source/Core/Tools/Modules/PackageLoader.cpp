@@ -35,7 +35,7 @@ void PackageLoader::loadPackages(const std::string& directory, ModuleManager& ma
 
 void PackageLoader::loadSinglePackage(const std::string& fileName, ModuleManager& manager)
 {
-  GModule* package = g_module_open(fileName.c_str(), G_MODULE_BIND_MASK);
+  GModule* package = g_module_open(fileName.c_str(), G_MODULE_BIND_LAZY);
   if(package != NULL)
   {
     // declare a register function with a modulemanager as argument

@@ -114,23 +114,6 @@ class StaticRegistry
 protected:
   static RepresentationMap* static_providing_registry;
   static RepresentationMap* static_requiring_registry;
-  static RepresentationMap* static_using_registry;
-
-  template<class TYPE_WHAT>
-  class StaticUsingRegistrator
-  {
-  public:
-    StaticUsingRegistrator()
-    {
-      // HACK: no variable names possible
-      std::string name = typeid(TYPE_WHAT).name();
-      // TODO: check the type
-      if(static_using_registry->find(name) == static_using_registry->end())
-      {
-        (*static_using_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
-      }
-    }
-  };
   
   template<class TYPE_WHAT>
   class StaticRequiringRegistrator
@@ -167,8 +150,6 @@ protected:
 
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_providing_registry = new RepresentationMap();
-template<class T>
-RepresentationMap* StaticRegistry<T>::static_using_registry = new RepresentationMap();
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_requiring_registry = new RepresentationMap();
 
