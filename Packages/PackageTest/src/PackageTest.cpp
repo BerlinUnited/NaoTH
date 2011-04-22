@@ -5,7 +5,7 @@
  * Created on 11. November 2010, 18:32
  */
 
-#include "Test.h"
+#include "PackageTest.h"
 
 #include <gmodule.h>
 
@@ -14,12 +14,12 @@ extern "C++"
   #include <ModuleFramework/ModuleManager.h>
 }
 
-Test::Test()
+PackageTest::PackageTest()
 {
 
 }
 
-void Test::execute()
+void PackageTest::execute()
 { 
   std::cout << "Hello Test, time is:" << std::endl << getFrameInfo().time << std::endl;
 
@@ -34,7 +34,7 @@ void Test::execute()
 }
 
 
-Test::~Test()
+PackageTest::~PackageTest()
 {
 }
 

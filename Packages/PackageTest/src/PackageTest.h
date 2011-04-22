@@ -1,12 +1,12 @@
 /* 
- * File:   Test.h
+ * File:   PackageTest.h
  * Author: thomas
  *
  * Created on 11. November 2010, 18:32
  */
 
-#ifndef TEST_H
-#define	TEST_H
+#ifndef PACKAGE_TEST_H
+#define	PACKAGE_TEST_H
 
 extern "C++"
 {
@@ -19,21 +19,21 @@ extern "C++"
 
 using namespace naoth;
 
-BEGIN_DECLARE_MODULE(Test)
+BEGIN_DECLARE_MODULE(PackageTest)
   REQUIRE(FrameInfo)
   PROVIDE(ColorTable64)
-END_DECLARE_MODULE(Test)
+END_DECLARE_MODULE(PackageTest)
 
-class Test : public TestBase
+class PackageTest : public PackageTestBase
 {
 public:
-  Test();
-  virtual ~Test();
+  PackageTest();
+  virtual ~PackageTest();
 
   virtual void execute();
 
 private:
 };
 
-#endif	/* TEST_H */
+#endif	/* PACKAGE_TEST_H */
 
