@@ -77,10 +77,54 @@ protected:
   }
 
   // TODO: remove, make it tool methods
-  void registerProviding(const RepresentationMap& list);
-  void registerRequiring(const RepresentationMap& list);
-  void unregisterProviding(const RepresentationMap& list);
-  void unregisterRequiring(const RepresentationMap& list);
+  void registerProviding(const RepresentationMap& list)
+  {
+    RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      provided.push_back(&representation);
+      representation.registerProvidingModule(*this);
+    }
+  }
+  
+  void registerRequiring(const RepresentationMap& list)
+  {
+    RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      required.push_back(&representation);
+      representation.registerRequiringModule(*this);
+    }
+  }
+  
+  void unregisterProviding(const RepresentationMap& list)
+  {
+    RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      provided.remove(&representation);
+      representation.unregisterProvidingModule(*this);
+    }
+  } 
+ 
+  void unregisterRequiring(const RepresentationMap& list)
+  {
+      RepresentationMap::const_iterator iter = list.begin();
+    for(;iter != list.end(); iter++)
+    {
+      // init the actual dependency to te black board
+      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
+      
+      required.remove(&representation);
+      representation.unregisterRequiringModule(*this);
+    }
+  }
 
 public:
 
@@ -114,23 +158,6 @@ class StaticRegistry
 protected:
   static RepresentationMap* static_providing_registry;
   static RepresentationMap* static_requiring_registry;
-  static RepresentationMap* static_using_registry;
-
-  template<class TYPE_WHAT>
-  class StaticUsingRegistrator
-  {
-  public:
-    StaticUsingRegistrator()
-    {
-      // HACK: no variable names possible
-      std::string name = typeid(TYPE_WHAT).name();
-      // TODO: check the type
-      if(static_using_registry->find(name) == static_using_registry->end())
-      {
-        (*static_using_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
-      }
-    }
-  };
   
   template<class TYPE_WHAT>
   class StaticRequiringRegistrator
@@ -167,8 +194,6 @@ protected:
 
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_providing_registry = new RepresentationMap();
-template<class T>
-RepresentationMap* StaticRegistry<T>::static_using_registry = new RepresentationMap();
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_requiring_registry = new RepresentationMap();
 

@@ -11,6 +11,8 @@
 #include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 
+#include <glib.h>
+
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
@@ -61,20 +63,23 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   
   //END MODULES
   
+  packageLoader.loadPackages("Packages/", *this);
+  
   // use the configuration in order to set whether a module is activated or not
   naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
   for(list<string>::const_iterator name=getExecutionList().begin();
     name != getExecutionList().end(); name++)
   {
+    bool active = false;
     if(config.hasKey("modules", *name))
     {    
-      bool active = config.getBool("modules", *name);
-      setModuleEnabled(*name, active);
-      if(active)
-      {
-        g_message("activating module %s", (*name).c_str());
-      }
+      active = config.getBool("modules", *name);      
+    }
+    setModuleEnabled(*name, active);
+    if(active)
+    {
+      g_message("activating module %s", (*name).c_str());
     }
   }
   

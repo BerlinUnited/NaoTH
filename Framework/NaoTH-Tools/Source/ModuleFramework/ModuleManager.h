@@ -33,8 +33,6 @@ public:
     }//end for
   }//end destructor
 
-protected:
-
   /**
    * register a module
    * registration of different instances of the same class 
@@ -66,6 +64,7 @@ protected:
     return typedModule;
   }//end registerModule
 
+protected:
 
   /**
    * enables or disables the module 'moduleName'
