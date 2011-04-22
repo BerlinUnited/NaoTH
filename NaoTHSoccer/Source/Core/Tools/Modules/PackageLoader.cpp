@@ -1,13 +1,15 @@
-#include "ModuleLoader.h"
+#include "PackageLoader.h"
+
+#include <list>
 
 #include <PlatformInterface/Platform.h>
 #include <Representations/Infrastructure/Configuration.h>
 
-ModuleLoader::ModuleLoader()
+PackageLoader::PackageLoader()
 {
 }
 
-void ModuleLoader::loadPackages(const std::string& directory)
+void PackageLoader::loadPackages(const std::string& directory)
 {
   std::string packageLocation = directory;
   GDir* packageDir = g_dir_open(packageLocation.c_str(), 0, NULL);
@@ -31,17 +33,16 @@ void ModuleLoader::loadPackages(const std::string& directory)
   }
 }
 
-void ModuleLoader::loadSinglePackage(const std::string& fileName)
+void PackageLoader::loadSinglePackage(const std::string& fileName)
 {
-  GModule* module = g_module_open(fileName.c_str(), G_MODULE_BIND_MASK);
-  if(module != NULL)
+  GModule* package = g_module_open(fileName.c_str(), G_MODULE_BIND_MASK);
+  if(package != NULL)
   {
-    // get all modules of config and try to load it
-    naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+    // TODO: call package register function
   }
 }
 
-ModuleLoader::~ModuleLoader()
+PackageLoader::~PackageLoader()
 {
   for(unsigned int i=0; i < modules.size(); i++)
   {

@@ -7,12 +7,12 @@
 #include <glib.h>
 #include <gmodule.h>
 
-class ModuleLoader
+class PackageLoader
 {
 
 public:
-  ModuleLoader();
-  virtual ~ModuleLoader();
+  PackageLoader();
+  virtual ~PackageLoader();
 
   void loadPackages(const std::string& directory);
 private:
