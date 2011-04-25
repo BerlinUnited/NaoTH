@@ -50,7 +50,12 @@ project "Webots"
 	"gobject-2.0",
 	"protobuf"}
   
-  targetname "naowebots"
+  targetname "nao_team_0"
+  targetdir "../nao_robocup/controllers/nao_team_0/"
+  
+  postbuildcommands {
+    "premake4 webots_copy"
+  }
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}

@@ -31,18 +31,19 @@ newaction {
   end
 }
 
--- some local helper variables
-local isGCC = false; 
--- check if using gcc as compiler
-if premake.action.current().valid_tools ~= nil and premake.action.current().valid_tools.cc[1] == "gcc" then
-  isGCC = true
-end
-
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"Debug", "OptDebug", "Release"}
   
+  CORE_PATH = {
+    path.getabsolute("../Source/Core/Cognition/"), 
+    path.getabsolute("../Source/Core/Motion/"),
+    path.getabsolute("../Source/")  
+  }
+  
+  CORE = {"NaoTHSoccer", "DebugCommunication"}
+
   
   -- debug configuration
   configuration { "Debug" }
@@ -52,17 +53,7 @@ solution "NaoTHSoccer"
   configuration { "OptDebug" }
     defines { "DEBUG" }
     flags { "Optimize" }
-  
-  -- additional defines for windows
-  if os.is("windows") then
-    defines {"WIN32", "NOMINMAX"}
-  end
-    
-  if isGCC then    
-    print "ADDING FPIC"
-    buildoptions {"-fPIC"}
-  end
-  
+      
   configuration{"Native"}
     includedirs {
       "../../Extern/include/",
@@ -76,15 +67,13 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     targetdir "../dist/Nao"
   
-  
-  CORE_PATH = {
-    path.getabsolute("../Source/Core/Cognition/"), 
-    path.getabsolute("../Source/Core/Motion/"),
-    path.getabsolute("../Source/")  
-  }
-  
-  CORE = {"NaoTHSoccer", "DebugCommunication"}
+  -- additional defines for windows
+  configuration {"windows"}
+    defines {"WIN32", "NOMINMAX"}
     
+  configuration {"linux"}
+    buildoptions {"-fPIC"}
+      
   -- base
   dofile "../../Framework/NaoTH-Tools/Make/NaoTHTools.lua"
   dofile "../../Framework/DebugCommunication/Make/DebugCommunication.lua"
