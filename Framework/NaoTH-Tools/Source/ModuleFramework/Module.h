@@ -47,6 +47,11 @@ private:
 public:
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
+    return get(blackBoard);
+  }
+
+  virtual DataHolder<T>& get(BlackBoard& blackBoard)
+  {
     return blackBoard.template getRepresentation<DataHolder<T> >(getName());
   }
 };
@@ -162,6 +167,9 @@ protected:
   template<class TYPE_WHAT>
   class StaticRequiringRegistrator
   {
+  private:
+    TypedRegistrationInterface<TYPE_WHAT>* data;
+
   public:
     StaticRequiringRegistrator()
     {
@@ -172,12 +180,22 @@ protected:
       {
         (*static_requiring_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
       }
+      // HACK
+      data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_requiring_registry)[name];
+    }
+
+    const TYPE_WHAT& get(BlackBoard& blackBoard)
+    {
+      return *(data->get(blackBoard));
     }
   };
 
   template<class TYPE_WHAT>
   class StaticProvidingRegistrator
   {
+  private:
+    TypedRegistrationInterface<TYPE_WHAT>* data;
+
   public:
     StaticProvidingRegistrator()
     {
@@ -188,6 +206,13 @@ protected:
       {
         (*static_providing_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
       }
+      // HACK
+      data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_providing_registry)[name];
+    }
+
+    TYPE_WHAT& get(BlackBoard& blackBoard)
+    {
+      return *(data->get(blackBoard));
     }
   };
 };
@@ -245,23 +270,33 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   
 #define REQUIRE(representationName) \
   private: \
-  StaticRequiringRegistrator<representationName> _the##representationName; \
+  StaticRequiringRegistrator<representationName> the##representationName; \
   protected: \
   const representationName& get##representationName() \
   { \
+    static const representationName& representation = the##representationName.get(getBlackBoard()); \
+    return representation; \
+  }
+  /*
     static const DataHolder<representationName>& representation = getBlackBoard().getConstRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
     return *representation; \
   }
+*/
 
 #define PROVIDE(representationName) \
   private: \
-  StaticProvidingRegistrator<representationName> _the##representationName; \
+  StaticProvidingRegistrator<representationName> the##representationName; \
   protected: \
   representationName& get##representationName() \
   { \
+    static representationName& representation = the##representationName.get(getBlackBoard()); \
+    return representation; \
+  }
+/*
     static DataHolder<representationName>& representation = getBlackBoard().getRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
     return *representation; \
   }
+  */
 
 
 #define END_DECLARE_MODULE(moduleName) \
@@ -270,7 +305,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
       registerRequiring(*static_requiring_registry); \
       registerProviding(*static_providing_registry); \
     } \
-    ~moduleName##Base(){ \
+    virtual ~moduleName##Base(){ \
       unregisterRequiring(*static_requiring_registry); \
       unregisterProviding(*static_providing_registry); \
     } \

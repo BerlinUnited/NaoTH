@@ -8,8 +8,6 @@
 #ifndef __ModuleCreator_h__
 #define __ModuleCreator_h__
 
-#include <stdlib.h>
-#include <iostream>
 #include "BlackBoardInterface.h"
 
 class Module;
@@ -36,7 +34,7 @@ public:
  * We assume, that the class V already inherites from BlackBoardInterface.
  * Thereby 'virtual' inheritence is esential.
  * 
- * (in fact, what we doing is to extend the default constructor of the class V
+ * (in fact, what we are doing is to extend the default constructor of the class V
  *  by providing a pointer to a blackboard instance, i.e., we call another 
  *  constructor of the BlackBoardInterface)
  */
@@ -68,10 +66,17 @@ private:
 public:
 
   ModuleCreator(BlackBoard& theBlackBoard)
-    : theBlackBoard(theBlackBoard),
+    : 
+      theBlackBoard(theBlackBoard),
       theInstance(NULL)
   {
   }
+
+  virtual ~ModuleCreator()
+  {
+      delete theInstance;
+  }
+
 
   bool isEnabled()
   {
@@ -107,21 +112,14 @@ public:
   Module* getModule()
   {
     ASSERT(isEnabled());
-    return (Module*)theInstance;
+    // todo: check, the class V is not necessary a module
+    return (Module*)(theInstance);
   }//end getModule
 
   V* getModuleT()
   {
     ASSERT(isEnabled());
-    return (V*)theInstance;
+    return static_cast<V*>(theInstance);
   }//end getModule
-
-  ~ModuleCreator()
-  {
-    if(theInstance != NULL)
-    {
-      delete theInstance;
-    }
-  }
 };
 #endif //__ModuleCreator_h__

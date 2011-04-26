@@ -17,17 +17,21 @@
 class BlackBoardInterface
 {
 private:
-  // TODO: make it reference
+  /** */
   BlackBoard* theBlackBoard;
+
+  /** indicates whether this object has its own blackboard*/
   bool blackBoardOwner;
 
 protected:
+  /** inherits the blackboard */
   BlackBoardInterface(BlackBoard* theBlackBoard) : theBlackBoard(theBlackBoard)
   {
     blackBoardOwner = false;
     //std::cout << "BlackBoard inherited" << std::endl;
   }
 
+  /** create its own blackboard */
   BlackBoardInterface()
   {
     theBlackBoard = new BlackBoard();

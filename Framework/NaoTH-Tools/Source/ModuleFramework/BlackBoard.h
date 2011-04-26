@@ -79,6 +79,7 @@ private:
     virtual const std::string getTypeName() const { return typeid(T).name(); }
   };
 
+  /** */
   typedef std::map<std::string, BlackBoardData*> BlackBoardRegistry;
 
   /** holds the pointers to  */
@@ -86,26 +87,24 @@ private:
 
 public:
   BlackBoard(){}
-
   BlackBoard(BlackBoard& /*blackBoard*/){}
 
-  ~BlackBoard()
+  virtual ~BlackBoard()
   {
     // delete the registry
-    BlackBoardRegistry::iterator iter;
-    for(iter = registry.begin(); iter != registry.end(); iter++)
+    for(BlackBoardRegistry::iterator iter = registry.begin(); iter != registry.end(); iter++)
     {
       delete iter->second;
     }
   }
 
   /**
-   *  getRepresentation returns a reference to a representation stored 
+   *  returns a reference to a representation stored 
    *  on the blackboard. A new instance is created if the required 
    *  representation is not existing.
    */
   template<class T>
-  T& getRepresentation(std::string name)
+  T& getRepresentation(const std::string& name)
   {
     // search for the representation
     BlackBoardRegistry::iterator iter = registry.find(name);
@@ -120,15 +119,16 @@ public:
 
 
     // retrive the representation and try to cast
-    BlackBoardData* data = registry.find(name)->second;
+    BlackBoardData* data = iter->second;
     BlackBoardDataHolder<T>* typedData = dynamic_cast<BlackBoardDataHolder<T>*>(data);
   
     // couldn't cast the type
     if(typedData == NULL)
     {
-      std::cerr << "Representation type mismatch: " << name << " is registered as "
-                << data->getTypeName() << ", but "
-                << typeid(T).name() << " requested." << std::endl;
+      // TODO: throw
+      std::cerr << "Representation type mismatch: " 
+                << name << " is registered as " << data->getTypeName() 
+                << ", but " << typeid(T).name() << " is requested." << std::endl;
       assert(false);
     }//end if
 
@@ -141,7 +141,7 @@ public:
    *  it returns a const reference to a representation
    */
   template<class T>
-  const T& getConstRepresentation(std::string name)
+  const T& getConstRepresentation(const std::string& name)
   {
     // getRepresentation checks the type, thus no further check necessary
     return static_cast<const T&>(getRepresentation<T>(name));

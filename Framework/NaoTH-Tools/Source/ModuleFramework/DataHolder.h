@@ -31,8 +31,9 @@ public:
   T& operator*(){ return data; }
   const T& operator*() const{ return data; }
 
-  // wrap the print, fromDataStream and toDataStream of the data member
-
+  /** 
+   * wrap the print, fromDataStream and toDataStream of the data member 
+   */
   virtual void print(ostream& stream) const
   {
     const T* asPointer =&data;

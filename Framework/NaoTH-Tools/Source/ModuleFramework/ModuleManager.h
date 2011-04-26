@@ -14,10 +14,11 @@
 #include <list>
 #include <vector>
 #include <limits>
+#include <ctime>
 
 #include "Module.h"
 #include "BlackBoard.h"
-#include "ModuleClassWraper.h"
+#include "ModuleCreator.h"
 
 using namespace std;
 
@@ -191,7 +192,7 @@ protected:
     }
     
     // reset random seed if another one is using it
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     
     moduleExecutionList.clear();
     copy(oldExecutionList.begin(), oldExecutionList.end(), back_inserter(moduleExecutionList));
