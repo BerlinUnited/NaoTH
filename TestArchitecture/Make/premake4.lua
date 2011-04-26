@@ -1,4 +1,4 @@
-dofile "../../LuaScripts/netbeans.lua"
+--dofile "../../LuaScripts/netbeans.lua"
 
 -- description of the solution
 
@@ -9,6 +9,12 @@ solution "TestArchitecture"
   if os.is("windows") then
 	defines {"WIN32", "NOMINMAX"}
   end
+
+  includedirs {
+     "../../Extern/include/",
+     "../../Extern/include/glib-2.0/",
+     "../../Extern/lib/glib-2.0/include/"
+  }
   
    -- debug configuration
   configuration { "Debug" }
@@ -21,4 +27,4 @@ solution "TestArchitecture"
   
   -- add projects
   dofile "TestArchitecture.lua"
-  dofile "../../NaoTH-Tools/Make/NaoTHTools.lua"
+  dofile "../../Framework/NaoTH-Tools/Make/NaoTHTools.lua"

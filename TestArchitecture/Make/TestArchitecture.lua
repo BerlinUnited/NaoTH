@@ -6,12 +6,8 @@ project "TestArchitecture"
 
   includedirs {
 	"../Source/",
-	"../../NaoTH-Tools/Source/",  
-	"../../Extern/include/",
-	"../../Extern/include/glib-2.0/",
-	"../../Extern/lib/glib-2.0/include/"}
-
-
+	"../../Framework/NaoTH-Tools/Source/",  
+  }
   libdirs {"../../Extern/lib/"}
   
   links {"NaoTH-Tools"}

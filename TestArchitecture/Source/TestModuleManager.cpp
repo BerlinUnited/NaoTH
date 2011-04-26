@@ -31,8 +31,8 @@ void TestModuleManager::main()
     {
       cout << "-- begin --" << endl;
 
-      list<Representation*>::const_iterator repr_iter = module->getModule()->getUsedRepresentations().begin();
-      for(;repr_iter != module->getModule()->getUsedRepresentations().end(); repr_iter++)
+      list<Representation*>::const_iterator repr_iter = module->getModule()->getRequiredRepresentations().begin();
+      for(;repr_iter != module->getModule()->getRequiredRepresentations().end(); repr_iter++)
       {
         cout << "use " << (*repr_iter)->getName() << endl;
       }//end for
