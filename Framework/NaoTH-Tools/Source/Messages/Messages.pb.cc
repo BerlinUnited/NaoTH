@@ -17,15 +17,6 @@ namespace naothmessages {
 
 namespace {
 
-const ::google::protobuf::Descriptor* CMDArg_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  CMDArg_reflection_ = NULL;
-const ::google::protobuf::Descriptor* Command_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  Command_reflection_ = NULL;
-const ::google::protobuf::Descriptor* CommandList_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  CommandList_reflection_ = NULL;
 const ::google::protobuf::Descriptor* PlayerModel_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PlayerModel_reflection_ = NULL;
@@ -87,55 +78,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
     ::google::protobuf::DescriptorPool::generated_pool()->FindFileByName(
       "Messages.proto");
   GOOGLE_CHECK(file != NULL);
-  CMDArg_descriptor_ = file->message_type(0);
-  static const int CMDArg_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMDArg, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMDArg, value_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMDArg, value_bytes_),
-  };
-  CMDArg_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      CMDArg_descriptor_,
-      CMDArg::default_instance_,
-      CMDArg_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMDArg, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMDArg, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(CMDArg));
-  Command_descriptor_ = file->message_type(1);
-  static const int Command_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, args_),
-  };
-  Command_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      Command_descriptor_,
-      Command::default_instance_,
-      Command_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(Command));
-  CommandList_descriptor_ = file->message_type(2);
-  static const int CommandList_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CommandList, cmd_),
-  };
-  CommandList_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      CommandList_descriptor_,
-      CommandList::default_instance_,
-      CommandList_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CommandList, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CommandList, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(CommandList));
-  PlayerModel_descriptor_ = file->message_type(3);
+  PlayerModel_descriptor_ = file->message_type(0);
   static const int PlayerModel_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlayerModel, number_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlayerModel, poseonfield_),
@@ -151,7 +94,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PlayerModel));
-  TeamCommMessage_descriptor_ = file->message_type(4);
+  TeamCommMessage_descriptor_ = file->message_type(1);
   static const int TeamCommMessage_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, playernumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, teamnumber_),
@@ -173,7 +116,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(TeamCommMessage));
-  StopwatchItem_descriptor_ = file->message_type(5);
+  StopwatchItem_descriptor_ = file->message_type(2);
   static const int StopwatchItem_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StopwatchItem, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StopwatchItem, time_),
@@ -189,7 +132,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StopwatchItem));
-  Stopwatches_descriptor_ = file->message_type(6);
+  Stopwatches_descriptor_ = file->message_type(3);
   static const int Stopwatches_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Stopwatches, stopwatches_),
   };
@@ -204,7 +147,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Stopwatches));
-  PlotItem_descriptor_ = file->message_type(7);
+  PlotItem_descriptor_ = file->message_type(4);
   static const int PlotItem_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlotItem, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlotItem, name_),
@@ -225,7 +168,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PlotItem));
   PlotItem_PlotType_descriptor_ = PlotItem_descriptor_->enum_type(0);
-  Plots_descriptor_ = file->message_type(8);
+  Plots_descriptor_ = file->message_type(5);
   static const int Plots_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Plots, plots_),
   };
@@ -240,7 +183,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Plots));
-  XABSLParameter_descriptor_ = file->message_type(9);
+  XABSLParameter_descriptor_ = file->message_type(6);
   static const int XABSLParameter_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, type_),
@@ -260,7 +203,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLParameter));
   XABSLParameter_ParamType_descriptor_ = XABSLParameter_descriptor_->enum_type(0);
-  XABSLAction_descriptor_ = file->message_type(10);
+  XABSLAction_descriptor_ = file->message_type(7);
   static const int XABSLAction_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLAction, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLAction, name_),
@@ -285,7 +228,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLAction));
   XABSLAction_ActionType_descriptor_ = XABSLAction_descriptor_->enum_type(0);
-  BehaviorStatus_descriptor_ = file->message_type(11);
+  BehaviorStatus_descriptor_ = file->message_type(8);
   static const int BehaviorStatus_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, agent_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, activerootactions_),
@@ -304,7 +247,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BehaviorStatus));
-  Module_descriptor_ = file->message_type(12);
+  Module_descriptor_ = file->message_type(9);
   static const int Module_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Module, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Module, usedrepresentations_),
@@ -322,7 +265,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Module));
-  ModuleList_descriptor_ = file->message_type(13);
+  ModuleList_descriptor_ = file->message_type(10);
   static const int ModuleList_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ModuleList, modules_),
   };
@@ -337,7 +280,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ModuleList));
-  FeatureKeyPoint_descriptor_ = file->message_type(14);
+  FeatureKeyPoint_descriptor_ = file->message_type(11);
   static const int FeatureKeyPoint_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureKeyPoint, pt_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureKeyPoint, size_),
@@ -357,7 +300,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureKeyPoint));
-  FeatureDetectionResult_descriptor_ = file->message_type(15);
+  FeatureDetectionResult_descriptor_ = file->message_type(12);
   static const int FeatureDetectionResult_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureDetectionResult, grayscaleimage_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureDetectionResult, keypoints_),
@@ -376,7 +319,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureDetectionResult));
-  SingleDescriptor_descriptor_ = file->message_type(16);
+  SingleDescriptor_descriptor_ = file->message_type(13);
   static const int SingleDescriptor_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SingleDescriptor, d_),
   };
@@ -391,7 +334,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SingleDescriptor));
-  FeatureClass_descriptor_ = file->message_type(17);
+  FeatureClass_descriptor_ = file->message_type(14);
   static const int FeatureClass_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureClass, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureClass, samples_),
@@ -408,7 +351,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureClass));
-  FeatureTable_descriptor_ = file->message_type(18);
+  FeatureTable_descriptor_ = file->message_type(15);
   static const int FeatureTable_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureTable, classes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureTable, numberoffeatureelements_),
@@ -436,12 +379,6 @@ inline void protobuf_AssignDescriptorsOnce() {
 
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    CMDArg_descriptor_, &CMDArg::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    Command_descriptor_, &Command::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    CommandList_descriptor_, &CommandList::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PlayerModel_descriptor_, &PlayerModel::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -479,12 +416,6 @@ void protobuf_RegisterTypes(const ::std::string&) {
 }  // namespace
 
 void protobuf_ShutdownFile_Messages_2eproto() {
-  delete CMDArg::default_instance_;
-  delete CMDArg_reflection_;
-  delete Command::default_instance_;
-  delete Command_reflection_;
-  delete CommandList::default_instance_;
-  delete CommandList_reflection_;
   delete PlayerModel::default_instance_;
   delete PlayerModel_reflection_;
   delete TeamCommMessage::default_instance_;
@@ -528,77 +459,69 @@ void protobuf_AddDesc_Messages_2eproto() {
   ::naothmessages::protobuf_AddDesc_CommonTypes_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\016Messages.proto\022\rnaothmessages\032\021CommonT"
-    "ypes.proto\":\n\006CMDArg\022\014\n\004name\030\001 \002(\t\022\r\n\005va"
-    "lue\030\002 \001(\t\022\023\n\013value_bytes\030\003 \001(\014\"<\n\007Comman"
-    "d\022\014\n\004name\030\001 \002(\t\022#\n\004args\030\002 \003(\0132\025.naothmes"
-    "sages.CMDArg\"2\n\013CommandList\022#\n\003cmd\030\001 \003(\013"
-    "2\026.naothmessages.Command\"I\n\013PlayerModel\022"
-    "\016\n\006number\030\001 \002(\005\022*\n\013poseOnField\030\002 \001(\0132\025.n"
-    "aothmessages.Pose2D\"\242\002\n\017TeamCommMessage\022"
-    "\024\n\014playerNumber\030\001 \002(\005\022\022\n\nteamNumber\030\002 \002("
-    "\005\022\031\n\nwasStriker\030\003 \001(\010:\005false\022\032\n\013isPenali"
-    "zed\030\004 \001(\010:\005false\022\034\n\024timeSinceBallWasSeen"
-    "\030\005 \001(\001\0222\n\014ballPosition\030\006 \001(\0132\034.naothmess"
-    "ages.DoubleVector2\022.\n\017positionOnField\030\007 "
-    "\001(\0132\025.naothmessages.Pose2D\022,\n\010opponent\030\010"
-    " \001(\0132\032.naothmessages.PlayerModel\"+\n\rStop"
-    "watchItem\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n"
-    "\013Stopwatches\0221\n\013stopwatches\030\001 \003(\0132\034.naot"
-    "hmessages.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004"
-    "type\030\001 \002(\0162 .naothmessages.PlotItem.Plot"
-    "Type\022\014\n\004name\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004"
-    " \001(\001\022\t\n\001y\030\005 \001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010Plo"
-    "tType\022\013\n\007Default\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin"
-    "2D\020\003\"/\n\005Plots\022&\n\005plots\030\001 \003(\0132\027.naothmess"
-    "ages.PlotItem\"\341\001\n\016XABSLParameter\022\025\n\004name"
-    "\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.naothmes"
-    "sages.XABSLParameter.ParamType:\007Unknown\022"
-    "\024\n\014decimalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010"
-    "\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Deci"
-    "mal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020"
-    "\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001(\0162%.naothm"
-    "essages.XABSLAction.ActionType:\007Unknown\022"
-    "\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecutio"
-    "n\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstate"
-    "Time\030\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naothme"
-    "ssages.XABSLParameter\0224\n\020activeSubAction"
-    "s\030\007 \003(\0132\032.naothmessages.XABSLAction\022\024\n\014d"
-    "ecimalValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\t"
-    "enumValue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option"
-    "\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023DecimalOutputSy"
-    "mbol\020\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumO"
-    "utputSymbol\020\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorS"
-    "tatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootAction"
-    "s\030\002 \003(\0132\032.naothmessages.XABSLAction\0223\n\014i"
-    "nputSymbols\030\003 \003(\0132\035.naothmessages.XABSLP"
-    "arameter\0224\n\routputSymbols\030\004 \003(\0132\035.naothm"
-    "essages.XABSLParameter\022\023\n\013frameNumber\030\005 "
-    "\001(\r\"k\n\006Module\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepre"
-    "sentations\030\002 \003(\t\022\037\n\027providedRepresentati"
-    "ons\030\003 \003(\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModu"
-    "leList\022&\n\007modules\030\001 \003(\0132\025.naothmessages."
-    "Module\"\213\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033"
-    ".naothmessages.FloatVector2\022\014\n\004size\030\002 \002("
-    "\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006oc"
-    "tave\030\005 \002(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026Feature"
-    "DetectionResult\022\026\n\016grayScaleImage\030\001 \002(\014\022"
-    "1\n\tkeyPoints\030\002 \003(\0132\036.naothmessages.Featu"
-    "reKeyPoint\0224\n\013descriptors\030\003 \003(\0132\037.naothm"
-    "essages.SingleDescriptor\022\031\n\021namesForKeyP"
-    "oints\030\004 \003(\t\022#\n\027numberOfFeatureElements\030\005"
-    " \001(\005:\00264\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\""
-    "d\n\014FeatureClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples"
-    "\030\002 \003(\0132\037.naothmessages.SingleDescriptor\022"
-    "\024\n\014objectHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n"
-    "\007classes\030\001 \003(\0132\033.naothmessages.FeatureCl"
-    "ass\022#\n\027numberOfFeatureElements\030\002 \001(\005:\00264"
-    "B)\n\'de.hu_berlin.informatik.ki.nao.messa"
-    "ges", 2643);
+    "ypes.proto\"I\n\013PlayerModel\022\016\n\006number\030\001 \002("
+    "\005\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages.P"
+    "ose2D\"\242\002\n\017TeamCommMessage\022\024\n\014playerNumbe"
+    "r\030\001 \002(\005\022\022\n\nteamNumber\030\002 \002(\005\022\031\n\nwasStrike"
+    "r\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005fal"
+    "se\022\034\n\024timeSinceBallWasSeen\030\005 \001(\001\0222\n\014ball"
+    "Position\030\006 \001(\0132\034.naothmessages.DoubleVec"
+    "tor2\022.\n\017positionOnField\030\007 \001(\0132\025.naothmes"
+    "sages.Pose2D\022,\n\010opponent\030\010 \001(\0132\032.naothme"
+    "ssages.PlayerModel\"+\n\rStopwatchItem\022\014\n\004n"
+    "ame\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stopwatches\0221"
+    "\n\013stopwatches\030\001 \003(\0132\034.naothmessages.Stop"
+    "watchItem\"\262\001\n\010PlotItem\022.\n\004type\030\001 \002(\0162 .n"
+    "aothmessages.PlotItem.PlotType\022\014\n\004name\030\002"
+    " \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001y\030\005 \001("
+    "\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType\022\013\n\007Defau"
+    "lt\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"/\n\005Plots\022"
+    "&\n\005plots\030\001 \003(\0132\027.naothmessages.PlotItem\""
+    "\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007unknow"
+    "n\022>\n\004type\030\002 \001(\0162\'.naothmessages.XABSLPar"
+    "ameter.ParamType:\007Unknown\022\024\n\014decimalValu"
+    "e\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenumValue\030"
+    "\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n\007Boole"
+    "an\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XABSLAct"
+    "ion\022<\n\004type\030\001 \001(\0162%.naothmessages.XABSLA"
+    "ction.ActionType:\007Unknown\022\025\n\004name\030\002 \001(\t:"
+    "\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:\0010\022\023\n\013"
+    "activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001(\003\0221\n\n"
+    "parameters\030\006 \003(\0132\035.naothmessages.XABSLPa"
+    "rameter\0224\n\020activeSubActions\030\007 \003(\0132\032.naot"
+    "hmessages.XABSLAction\022\024\n\014decimalValue\030\010 "
+    "\001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValue\030\n \001("
+    "\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBasicBeh"
+    "avior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027\n\023Bool"
+    "eanOutputSymbol\020\003\022\024\n\020EnumOutputSymbol\020\004\022"
+    "\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus\022\r\n\005agent"
+    "\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132\032.naot"
+    "hmessages.XABSLAction\0223\n\014inputSymbols\030\003 "
+    "\003(\0132\035.naothmessages.XABSLParameter\0224\n\rou"
+    "tputSymbols\030\004 \003(\0132\035.naothmessages.XABSLP"
+    "arameter\022\023\n\013frameNumber\030\005 \001(\r\"k\n\006Module\022"
+    "\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002 \003"
+    "(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n\006a"
+    "ctive\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007modu"
+    "les\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017Fea"
+    "tureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessages"
+    ".FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002"
+    "(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010"
+    "class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionResul"
+    "t\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints\030\002"
+    " \003(\0132\036.naothmessages.FeatureKeyPoint\0224\n\013"
+    "descriptors\030\003 \003(\0132\037.naothmessages.Single"
+    "Descriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#\n"
+    "\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020Si"
+    "ngleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClas"
+    "s\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naoth"
+    "messages.SingleDescriptor\022\024\n\014objectHeigh"
+    "t\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003(\013"
+    "2\033.naothmessages.FeatureClass\022#\n\027numberO"
+    "fFeatureElements\030\002 \001(\005:\00264B)\n\'de.hu_berl"
+    "in.informatik.ki.nao.messages", 2469);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
-  CMDArg::default_instance_ = new CMDArg();
-  Command::default_instance_ = new Command();
-  CommandList::default_instance_ = new CommandList();
   PlayerModel::default_instance_ = new PlayerModel();
   TeamCommMessage::default_instance_ = new TeamCommMessage();
   StopwatchItem::default_instance_ = new StopwatchItem();
@@ -615,9 +538,6 @@ void protobuf_AddDesc_Messages_2eproto() {
   SingleDescriptor::default_instance_ = new SingleDescriptor();
   FeatureClass::default_instance_ = new FeatureClass();
   FeatureTable::default_instance_ = new FeatureTable();
-  CMDArg::default_instance_->InitAsDefaultInstance();
-  Command::default_instance_->InitAsDefaultInstance();
-  CommandList::default_instance_->InitAsDefaultInstance();
   PlayerModel::default_instance_->InitAsDefaultInstance();
   TeamCommMessage::default_instance_->InitAsDefaultInstance();
   StopwatchItem::default_instance_->InitAsDefaultInstance();
@@ -643,809 +563,6 @@ struct StaticDescriptorInitializer_Messages_2eproto {
     protobuf_AddDesc_Messages_2eproto();
   }
 } static_descriptor_initializer_Messages_2eproto_;
-
-
-// ===================================================================
-
-#ifndef _MSC_VER
-const int CMDArg::kNameFieldNumber;
-const int CMDArg::kValueFieldNumber;
-const int CMDArg::kValueBytesFieldNumber;
-#endif  // !_MSC_VER
-
-CMDArg::CMDArg()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void CMDArg::InitAsDefaultInstance() {
-}
-
-CMDArg::CMDArg(const CMDArg& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void CMDArg::SharedCtor() {
-  _cached_size_ = 0;
-  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  value_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  value_bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-CMDArg::~CMDArg() {
-  SharedDtor();
-}
-
-void CMDArg::SharedDtor() {
-  if (name_ != &::google::protobuf::internal::kEmptyString) {
-    delete name_;
-  }
-  if (value_ != &::google::protobuf::internal::kEmptyString) {
-    delete value_;
-  }
-  if (value_bytes_ != &::google::protobuf::internal::kEmptyString) {
-    delete value_bytes_;
-  }
-  if (this != default_instance_) {
-  }
-}
-
-void CMDArg::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* CMDArg::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return CMDArg_descriptor_;
-}
-
-const CMDArg& CMDArg::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
-}
-
-CMDArg* CMDArg::default_instance_ = NULL;
-
-CMDArg* CMDArg::New() const {
-  return new CMDArg;
-}
-
-void CMDArg::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (has_name()) {
-      if (name_ != &::google::protobuf::internal::kEmptyString) {
-        name_->clear();
-      }
-    }
-    if (has_value()) {
-      if (value_ != &::google::protobuf::internal::kEmptyString) {
-        value_->clear();
-      }
-    }
-    if (has_value_bytes()) {
-      if (value_bytes_ != &::google::protobuf::internal::kEmptyString) {
-        value_bytes_->clear();
-      }
-    }
-  }
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool CMDArg::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required string name = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_name()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->name().data(), this->name().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_value;
-        break;
-      }
-      
-      // optional string value = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_value:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_value()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->value().data(), this->value().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(26)) goto parse_value_bytes;
-        break;
-      }
-      
-      // optional bytes value_bytes = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_value_bytes:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
-                input, this->mutable_value_bytes()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void CMDArg::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // required string name = 1;
-  if (has_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->name().data(), this->name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      1, this->name(), output);
-  }
-  
-  // optional string value = 2;
-  if (has_value()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->value().data(), this->value().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->value(), output);
-  }
-  
-  // optional bytes value_bytes = 3;
-  if (has_value_bytes()) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytes(
-      3, this->value_bytes(), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* CMDArg::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // required string name = 1;
-  if (has_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->name().data(), this->name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->name(), target);
-  }
-  
-  // optional string value = 2;
-  if (has_value()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->value().data(), this->value().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->value(), target);
-  }
-  
-  // optional bytes value_bytes = 3;
-  if (has_value_bytes()) {
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        3, this->value_bytes(), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int CMDArg::ByteSize() const {
-  int total_size = 0;
-  
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required string name = 1;
-    if (has_name()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->name());
-    }
-    
-    // optional string value = 2;
-    if (has_value()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->value());
-    }
-    
-    // optional bytes value_bytes = 3;
-    if (has_value_bytes()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::BytesSize(
-          this->value_bytes());
-    }
-    
-  }
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void CMDArg::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const CMDArg* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const CMDArg*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void CMDArg::MergeFrom(const CMDArg& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_name()) {
-      set_name(from.name());
-    }
-    if (from.has_value()) {
-      set_value(from.value());
-    }
-    if (from.has_value_bytes()) {
-      set_value_bytes(from.value_bytes());
-    }
-  }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void CMDArg::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void CMDArg::CopyFrom(const CMDArg& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool CMDArg::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
-  
-  return true;
-}
-
-void CMDArg::Swap(CMDArg* other) {
-  if (other != this) {
-    std::swap(name_, other->name_);
-    std::swap(value_, other->value_);
-    std::swap(value_bytes_, other->value_bytes_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata CMDArg::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = CMDArg_descriptor_;
-  metadata.reflection = CMDArg_reflection_;
-  return metadata;
-}
-
-
-// ===================================================================
-
-#ifndef _MSC_VER
-const int Command::kNameFieldNumber;
-const int Command::kArgsFieldNumber;
-#endif  // !_MSC_VER
-
-Command::Command()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void Command::InitAsDefaultInstance() {
-}
-
-Command::Command(const Command& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void Command::SharedCtor() {
-  _cached_size_ = 0;
-  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-Command::~Command() {
-  SharedDtor();
-}
-
-void Command::SharedDtor() {
-  if (name_ != &::google::protobuf::internal::kEmptyString) {
-    delete name_;
-  }
-  if (this != default_instance_) {
-  }
-}
-
-void Command::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* Command::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return Command_descriptor_;
-}
-
-const Command& Command::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
-}
-
-Command* Command::default_instance_ = NULL;
-
-Command* Command::New() const {
-  return new Command;
-}
-
-void Command::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (has_name()) {
-      if (name_ != &::google::protobuf::internal::kEmptyString) {
-        name_->clear();
-      }
-    }
-  }
-  args_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool Command::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required string name = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_name()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->name().data(), this->name().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_args;
-        break;
-      }
-      
-      // repeated .naothmessages.CMDArg args = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_args:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_args()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_args;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void Command::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // required string name = 1;
-  if (has_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->name().data(), this->name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      1, this->name(), output);
-  }
-  
-  // repeated .naothmessages.CMDArg args = 2;
-  for (int i = 0; i < this->args_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->args(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* Command::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // required string name = 1;
-  if (has_name()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->name().data(), this->name().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->name(), target);
-  }
-  
-  // repeated .naothmessages.CMDArg args = 2;
-  for (int i = 0; i < this->args_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        2, this->args(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int Command::ByteSize() const {
-  int total_size = 0;
-  
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required string name = 1;
-    if (has_name()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->name());
-    }
-    
-  }
-  // repeated .naothmessages.CMDArg args = 2;
-  total_size += 1 * this->args_size();
-  for (int i = 0; i < this->args_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->args(i));
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void Command::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const Command* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Command*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void Command::MergeFrom(const Command& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  args_.MergeFrom(from.args_);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_name()) {
-      set_name(from.name());
-    }
-  }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void Command::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void Command::CopyFrom(const Command& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool Command::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
-  
-  for (int i = 0; i < args_size(); i++) {
-    if (!this->args(i).IsInitialized()) return false;
-  }
-  return true;
-}
-
-void Command::Swap(Command* other) {
-  if (other != this) {
-    std::swap(name_, other->name_);
-    args_.Swap(&other->args_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata Command::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Command_descriptor_;
-  metadata.reflection = Command_reflection_;
-  return metadata;
-}
-
-
-// ===================================================================
-
-#ifndef _MSC_VER
-const int CommandList::kCmdFieldNumber;
-#endif  // !_MSC_VER
-
-CommandList::CommandList()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void CommandList::InitAsDefaultInstance() {
-}
-
-CommandList::CommandList(const CommandList& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void CommandList::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-CommandList::~CommandList() {
-  SharedDtor();
-}
-
-void CommandList::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void CommandList::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* CommandList::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return CommandList_descriptor_;
-}
-
-const CommandList& CommandList::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
-}
-
-CommandList* CommandList::default_instance_ = NULL;
-
-CommandList* CommandList::New() const {
-  return new CommandList;
-}
-
-void CommandList::Clear() {
-  cmd_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool CommandList::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .naothmessages.Command cmd = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_cmd:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_cmd()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(10)) goto parse_cmd;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void CommandList::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .naothmessages.Command cmd = 1;
-  for (int i = 0; i < this->cmd_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->cmd(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* CommandList::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated .naothmessages.Command cmd = 1;
-  for (int i = 0; i < this->cmd_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        1, this->cmd(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int CommandList::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated .naothmessages.Command cmd = 1;
-  total_size += 1 * this->cmd_size();
-  for (int i = 0; i < this->cmd_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->cmd(i));
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void CommandList::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const CommandList* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const CommandList*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void CommandList::MergeFrom(const CommandList& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  cmd_.MergeFrom(from.cmd_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void CommandList::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void CommandList::CopyFrom(const CommandList& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool CommandList::IsInitialized() const {
-  
-  for (int i = 0; i < cmd_size(); i++) {
-    if (!this->cmd(i).IsInitialized()) return false;
-  }
-  return true;
-}
-
-void CommandList::Swap(CommandList* other) {
-  if (other != this) {
-    cmd_.Swap(&other->cmd_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata CommandList::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = CommandList_descriptor_;
-  metadata.reflection = CommandList_reflection_;
-  return metadata;
-}
 
 
 // ===================================================================
