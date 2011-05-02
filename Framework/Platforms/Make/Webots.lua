@@ -16,7 +16,7 @@ project "Webots"
   
   -- check if the directory can be opened by lua and warn if not
   if not os.isdir(webotsHome) then
-    print("WARN: Enviroment variale WEBOTS_HOME was not set or unable to access directory (" .. msg .. ")!")
+    print("WARN: Enviroment variale WEBOTS_HOME was not set or unable to access directory (" .. webotsHome .. ")!")
 	print("(PROBABLY) no compilation for Webots possible.\n")
   end
   ----------------------------------------------------------------
