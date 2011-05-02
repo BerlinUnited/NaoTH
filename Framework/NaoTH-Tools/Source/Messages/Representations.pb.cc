@@ -2,6 +2,9 @@
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
 #include "Representations.pb.h"
+
+#include <algorithm>
+
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
@@ -382,7 +385,7 @@ void protobuf_AddDesc_Representations_2eproto() {
     "\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223"
     "\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.Do"
     "ubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tba"
-    "llColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031b"
+    "llColor\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031b"
     "earingBasedOffsetOnField\030\005 \001(\0132\034.naothme"
     "ssages.DoubleVector2\022:\n\030frameInfoWhenBal"
     "lWasSeen\030\006 \001(\0132\030.naothmessages.FrameInfo"
@@ -463,7 +466,6 @@ const Image_Format Image::Format_MIN;
 const Image_Format Image::Format_MAX;
 const int Image::Format_ARRAYSIZE;
 #endif  // _MSC_VER
-const ::std::string Image::_default_data_;
 #ifndef _MSC_VER
 const int Image::kDataFieldNumber;
 const int Image::kWidthFieldNumber;
@@ -490,7 +492,7 @@ Image::Image(const Image& from)
 
 void Image::SharedCtor() {
   _cached_size_ = 0;
-  data_ = const_cast< ::std::string*>(&_default_data_);
+  data_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   width_ = 320;
   height_ = 240;
   camerainfo_ = NULL;
@@ -504,7 +506,7 @@ Image::~Image() {
 }
 
 void Image::SharedDtor() {
-  if (data_ != &_default_data_) {
+  if (data_ != &::google::protobuf::internal::kEmptyString) {
     delete data_;
   }
   if (this != default_instance_) {
@@ -534,14 +536,14 @@ Image* Image::New() const {
 
 void Image::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
-      if (data_ != &_default_data_) {
+    if (has_data()) {
+      if (data_ != &::google::protobuf::internal::kEmptyString) {
         data_->clear();
       }
     }
     width_ = 320;
     height_ = 240;
-    if (_has_bit(3)) {
+    if (has_camerainfo()) {
       if (camerainfo_ != NULL) camerainfo_->::naothmessages::CameraInfo::Clear();
     }
     format_ = 0;
@@ -578,7 +580,7 @@ bool Image::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &width_)));
-          _set_bit(1);
+          set_has_width();
         } else {
           goto handle_uninterpreted;
         }
@@ -594,7 +596,7 @@ bool Image::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &height_)));
-          _set_bit(2);
+          set_has_height();
         } else {
           goto handle_uninterpreted;
         }
@@ -645,7 +647,7 @@ bool Image::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &timestamp_)));
-          _set_bit(5);
+          set_has_timestamp();
         } else {
           goto handle_uninterpreted;
         }
@@ -672,35 +674,35 @@ bool Image::MergePartialFromCodedStream(
 void Image::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required bytes data = 1;
-  if (_has_bit(0)) {
+  if (has_data()) {
     ::google::protobuf::internal::WireFormatLite::WriteBytes(
       1, this->data(), output);
   }
   
   // optional int32 width = 2 [default = 320];
-  if (_has_bit(1)) {
+  if (has_width()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->width(), output);
   }
   
   // optional int32 height = 3 [default = 240];
-  if (_has_bit(2)) {
+  if (has_height()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->height(), output);
   }
   
   // optional .naothmessages.CameraInfo cameraInfo = 4;
-  if (_has_bit(3)) {
+  if (has_camerainfo()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       4, this->camerainfo(), output);
   }
   
   // optional .naothmessages.Image.Format format = 5 [default = YUV];
-  if (_has_bit(4)) {
+  if (has_format()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       5, this->format(), output);
   }
   
   // optional uint32 timestamp = 6;
-  if (_has_bit(5)) {
+  if (has_timestamp()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->timestamp(), output);
   }
   
@@ -713,37 +715,37 @@ void Image::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Image::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required bytes data = 1;
-  if (_has_bit(0)) {
+  if (has_data()) {
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         1, this->data(), target);
   }
   
   // optional int32 width = 2 [default = 320];
-  if (_has_bit(1)) {
+  if (has_width()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->width(), target);
   }
   
   // optional int32 height = 3 [default = 240];
-  if (_has_bit(2)) {
+  if (has_height()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->height(), target);
   }
   
   // optional .naothmessages.CameraInfo cameraInfo = 4;
-  if (_has_bit(3)) {
+  if (has_camerainfo()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->camerainfo(), target);
   }
   
   // optional .naothmessages.Image.Format format = 5 [default = YUV];
-  if (_has_bit(4)) {
+  if (has_format()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       5, this->format(), target);
   }
   
   // optional uint32 timestamp = 6;
-  if (_has_bit(5)) {
+  if (has_timestamp()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->timestamp(), target);
   }
   
@@ -826,22 +828,22 @@ void Image::MergeFrom(const ::google::protobuf::Message& from) {
 void Image::MergeFrom(const Image& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_data()) {
       set_data(from.data());
     }
-    if (from._has_bit(1)) {
+    if (from.has_width()) {
       set_width(from.width());
     }
-    if (from._has_bit(2)) {
+    if (from.has_height()) {
       set_height(from.height());
     }
-    if (from._has_bit(3)) {
+    if (from.has_camerainfo()) {
       mutable_camerainfo()->::naothmessages::CameraInfo::MergeFrom(from.camerainfo());
     }
-    if (from._has_bit(4)) {
+    if (from.has_format()) {
       set_format(from.format());
     }
-    if (from._has_bit(5)) {
+    if (from.has_timestamp()) {
       set_timestamp(from.timestamp());
     }
   }
@@ -1003,7 +1005,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &resolutionwidth_)));
-          _set_bit(0);
+          set_has_resolutionwidth();
         } else {
           goto handle_uninterpreted;
         }
@@ -1019,7 +1021,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &resolutionheight_)));
-          _set_bit(1);
+          set_has_resolutionheight();
         } else {
           goto handle_uninterpreted;
         }
@@ -1056,7 +1058,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &focallength_)));
-          _set_bit(3);
+          set_has_focallength();
         } else {
           goto handle_uninterpreted;
         }
@@ -1072,7 +1074,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &openinganglewidth_)));
-          _set_bit(4);
+          set_has_openinganglewidth();
         } else {
           goto handle_uninterpreted;
         }
@@ -1088,7 +1090,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &openingangleheight_)));
-          _set_bit(5);
+          set_has_openingangleheight();
         } else {
           goto handle_uninterpreted;
         }
@@ -1104,7 +1106,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &opticalcenterx_)));
-          _set_bit(6);
+          set_has_opticalcenterx();
         } else {
           goto handle_uninterpreted;
         }
@@ -1120,7 +1122,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &opticalcentery_)));
-          _set_bit(7);
+          set_has_opticalcentery();
         } else {
           goto handle_uninterpreted;
         }
@@ -1136,7 +1138,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &size_)));
-          _set_bit(8);
+          set_has_size();
         } else {
           goto handle_uninterpreted;
         }
@@ -1152,7 +1154,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &memorysize_)));
-          _set_bit(9);
+          set_has_memorysize();
         } else {
           goto handle_uninterpreted;
         }
@@ -1168,7 +1170,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &camerarolloffset_)));
-          _set_bit(10);
+          set_has_camerarolloffset();
         } else {
           goto handle_uninterpreted;
         }
@@ -1184,7 +1186,7 @@ bool CameraInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &cameratiltoffset_)));
-          _set_bit(11);
+          set_has_cameratiltoffset();
         } else {
           goto handle_uninterpreted;
         }
@@ -1211,63 +1213,63 @@ bool CameraInfo::MergePartialFromCodedStream(
 void CameraInfo::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required int32 resolutionWidth = 1;
-  if (_has_bit(0)) {
+  if (has_resolutionwidth()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->resolutionwidth(), output);
   }
   
   // required int32 resolutionHeight = 2;
-  if (_has_bit(1)) {
+  if (has_resolutionheight()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->resolutionheight(), output);
   }
   
   // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
-  if (_has_bit(2)) {
+  if (has_cameraid()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       4, this->cameraid(), output);
   }
   
   // optional double focalLength = 5;
-  if (_has_bit(3)) {
+  if (has_focallength()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->focallength(), output);
   }
   
   // optional double openingAngleWidth = 6;
-  if (_has_bit(4)) {
+  if (has_openinganglewidth()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->openinganglewidth(), output);
   }
   
   // optional double openingAngleHeight = 7;
-  if (_has_bit(5)) {
+  if (has_openingangleheight()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->openingangleheight(), output);
   }
   
   // optional double opticalCenterX = 8;
-  if (_has_bit(6)) {
+  if (has_opticalcenterx()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(8, this->opticalcenterx(), output);
   }
   
   // optional double opticalCenterY = 9;
-  if (_has_bit(7)) {
+  if (has_opticalcentery()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(9, this->opticalcentery(), output);
   }
   
   // optional int64 size = 10;
-  if (_has_bit(8)) {
+  if (has_size()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(10, this->size(), output);
   }
   
   // optional int64 memorysize = 11;
-  if (_has_bit(9)) {
+  if (has_memorysize()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(11, this->memorysize(), output);
   }
   
   // optional double cameraRollOffset = 12;
-  if (_has_bit(10)) {
+  if (has_camerarolloffset()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(12, this->camerarolloffset(), output);
   }
   
   // optional double cameraTiltOffset = 13;
-  if (_has_bit(11)) {
+  if (has_cameratiltoffset()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(13, this->cameratiltoffset(), output);
   }
   
@@ -1280,63 +1282,63 @@ void CameraInfo::SerializeWithCachedSizes(
 ::google::protobuf::uint8* CameraInfo::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required int32 resolutionWidth = 1;
-  if (_has_bit(0)) {
+  if (has_resolutionwidth()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->resolutionwidth(), target);
   }
   
   // required int32 resolutionHeight = 2;
-  if (_has_bit(1)) {
+  if (has_resolutionheight()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->resolutionheight(), target);
   }
   
   // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
-  if (_has_bit(2)) {
+  if (has_cameraid()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       4, this->cameraid(), target);
   }
   
   // optional double focalLength = 5;
-  if (_has_bit(3)) {
+  if (has_focallength()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->focallength(), target);
   }
   
   // optional double openingAngleWidth = 6;
-  if (_has_bit(4)) {
+  if (has_openinganglewidth()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->openinganglewidth(), target);
   }
   
   // optional double openingAngleHeight = 7;
-  if (_has_bit(5)) {
+  if (has_openingangleheight()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->openingangleheight(), target);
   }
   
   // optional double opticalCenterX = 8;
-  if (_has_bit(6)) {
+  if (has_opticalcenterx()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(8, this->opticalcenterx(), target);
   }
   
   // optional double opticalCenterY = 9;
-  if (_has_bit(7)) {
+  if (has_opticalcentery()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(9, this->opticalcentery(), target);
   }
   
   // optional int64 size = 10;
-  if (_has_bit(8)) {
+  if (has_size()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(10, this->size(), target);
   }
   
   // optional int64 memorysize = 11;
-  if (_has_bit(9)) {
+  if (has_memorysize()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(11, this->memorysize(), target);
   }
   
   // optional double cameraRollOffset = 12;
-  if (_has_bit(10)) {
+  if (has_camerarolloffset()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(12, this->camerarolloffset(), target);
   }
   
   // optional double cameraTiltOffset = 13;
-  if (_has_bit(11)) {
+  if (has_cameratiltoffset()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(13, this->cameratiltoffset(), target);
   }
   
@@ -1449,42 +1451,42 @@ void CameraInfo::MergeFrom(const ::google::protobuf::Message& from) {
 void CameraInfo::MergeFrom(const CameraInfo& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_resolutionwidth()) {
       set_resolutionwidth(from.resolutionwidth());
     }
-    if (from._has_bit(1)) {
+    if (from.has_resolutionheight()) {
       set_resolutionheight(from.resolutionheight());
     }
-    if (from._has_bit(2)) {
+    if (from.has_cameraid()) {
       set_cameraid(from.cameraid());
     }
-    if (from._has_bit(3)) {
+    if (from.has_focallength()) {
       set_focallength(from.focallength());
     }
-    if (from._has_bit(4)) {
+    if (from.has_openinganglewidth()) {
       set_openinganglewidth(from.openinganglewidth());
     }
-    if (from._has_bit(5)) {
+    if (from.has_openingangleheight()) {
       set_openingangleheight(from.openingangleheight());
     }
-    if (from._has_bit(6)) {
+    if (from.has_opticalcenterx()) {
       set_opticalcenterx(from.opticalcenterx());
     }
-    if (from._has_bit(7)) {
+    if (from.has_opticalcentery()) {
       set_opticalcentery(from.opticalcentery());
     }
   }
   if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    if (from._has_bit(8)) {
+    if (from.has_size()) {
       set_size(from.size());
     }
-    if (from._has_bit(9)) {
+    if (from.has_memorysize()) {
       set_memorysize(from.memorysize());
     }
-    if (from._has_bit(10)) {
+    if (from.has_camerarolloffset()) {
       set_camerarolloffset(from.camerarolloffset());
     }
-    if (from._has_bit(11)) {
+    if (from.has_cameratiltoffset()) {
       set_cameratiltoffset(from.cameratiltoffset());
     }
   }
@@ -1941,7 +1943,7 @@ SensorJointData* SensorJointData::New() const {
 
 void SensorJointData::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_jointdata()) {
       if (jointdata_ != NULL) jointdata_->::naothmessages::JointData::Clear();
     }
   }
@@ -2033,7 +2035,7 @@ bool SensorJointData::MergePartialFromCodedStream(
 void SensorJointData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required .naothmessages.JointData jointData = 1;
-  if (_has_bit(0)) {
+  if (has_jointdata()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->jointdata(), output);
   }
@@ -2059,7 +2061,7 @@ void SensorJointData::SerializeWithCachedSizes(
 ::google::protobuf::uint8* SensorJointData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required .naothmessages.JointData jointData = 1;
-  if (_has_bit(0)) {
+  if (has_jointdata()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->jointdata(), target);
@@ -2138,7 +2140,7 @@ void SensorJointData::MergeFrom(const SensorJointData& from) {
   temperature_.MergeFrom(from.temperature_);
   electriccurrent_.MergeFrom(from.electriccurrent_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_jointdata()) {
       mutable_jointdata()->::naothmessages::JointData::MergeFrom(from.jointdata());
     }
   }
@@ -2242,7 +2244,7 @@ CameraMatrix* CameraMatrix::New() const {
 
 void CameraMatrix::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_pose()) {
       if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
     }
   }
@@ -2288,7 +2290,7 @@ bool CameraMatrix::MergePartialFromCodedStream(
 void CameraMatrix::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required .naothmessages.Pose3D pose = 1;
-  if (_has_bit(0)) {
+  if (has_pose()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->pose(), output);
   }
@@ -2302,7 +2304,7 @@ void CameraMatrix::SerializeWithCachedSizes(
 ::google::protobuf::uint8* CameraMatrix::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required .naothmessages.Pose3D pose = 1;
-  if (_has_bit(0)) {
+  if (has_pose()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->pose(), target);
@@ -2353,7 +2355,7 @@ void CameraMatrix::MergeFrom(const ::google::protobuf::Message& from) {
 void CameraMatrix::MergeFrom(const CameraMatrix& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_pose()) {
       mutable_pose()->::naothmessages::Pose3D::MergeFrom(from.pose());
     }
   }
@@ -2478,7 +2480,7 @@ bool FrameInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &framenumber_)));
-          _set_bit(0);
+          set_has_framenumber();
         } else {
           goto handle_uninterpreted;
         }
@@ -2494,7 +2496,7 @@ bool FrameInfo::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &time_)));
-          _set_bit(1);
+          set_has_time();
         } else {
           goto handle_uninterpreted;
         }
@@ -2521,12 +2523,12 @@ bool FrameInfo::MergePartialFromCodedStream(
 void FrameInfo::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional uint32 frameNumber = 1;
-  if (_has_bit(0)) {
+  if (has_framenumber()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->framenumber(), output);
   }
   
   // optional uint32 time = 2;
-  if (_has_bit(1)) {
+  if (has_time()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->time(), output);
   }
   
@@ -2539,12 +2541,12 @@ void FrameInfo::SerializeWithCachedSizes(
 ::google::protobuf::uint8* FrameInfo::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional uint32 frameNumber = 1;
-  if (_has_bit(0)) {
+  if (has_framenumber()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->framenumber(), target);
   }
   
   // optional uint32 time = 2;
-  if (_has_bit(1)) {
+  if (has_time()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->time(), target);
   }
   
@@ -2600,10 +2602,10 @@ void FrameInfo::MergeFrom(const ::google::protobuf::Message& from) {
 void FrameInfo::MergeFrom(const FrameInfo& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_framenumber()) {
       set_framenumber(from.framenumber());
     }
-    if (from._has_bit(1)) {
+    if (from.has_time()) {
       set_time(from.time());
     }
   }
@@ -2720,15 +2722,15 @@ BallPercept* BallPercept::New() const {
 void BallPercept::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     ballwasseen_ = false;
-    if (_has_bit(1)) {
+    if (has_centerinimage()) {
       if (centerinimage_ != NULL) centerinimage_->::naothmessages::DoubleVector2::Clear();
     }
     radiusinimage_ = 0;
     ballcolor_ = 0;
-    if (_has_bit(4)) {
+    if (has_bearingbasedoffsetonfield()) {
       if (bearingbasedoffsetonfield_ != NULL) bearingbasedoffsetonfield_->::naothmessages::DoubleVector2::Clear();
     }
-    if (_has_bit(5)) {
+    if (has_frameinfowhenballwasseen()) {
       if (frameinfowhenballwasseen_ != NULL) frameinfowhenballwasseen_->::naothmessages::FrameInfo::Clear();
     }
   }
@@ -2749,7 +2751,7 @@ bool BallPercept::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &ballwasseen_)));
-          _set_bit(0);
+          set_has_ballwasseen();
         } else {
           goto handle_uninterpreted;
         }
@@ -2779,7 +2781,7 @@ bool BallPercept::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &radiusinimage_)));
-          _set_bit(2);
+          set_has_radiusinimage();
         } else {
           goto handle_uninterpreted;
         }
@@ -2855,35 +2857,35 @@ bool BallPercept::MergePartialFromCodedStream(
 void BallPercept::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional bool ballWasSeen = 1;
-  if (_has_bit(0)) {
+  if (has_ballwasseen()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->ballwasseen(), output);
   }
   
   // optional .naothmessages.DoubleVector2 centerInImage = 2;
-  if (_has_bit(1)) {
+  if (has_centerinimage()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->centerinimage(), output);
   }
   
   // optional double radiusInImage = 3;
-  if (_has_bit(2)) {
+  if (has_radiusinimage()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->radiusinimage(), output);
   }
   
   // optional .naothmessages.Color ballColor = 4;
-  if (_has_bit(3)) {
+  if (has_ballcolor()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       4, this->ballcolor(), output);
   }
   
   // optional .naothmessages.DoubleVector2 bearingBasedOffsetOnField = 5;
-  if (_has_bit(4)) {
+  if (has_bearingbasedoffsetonfield()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       5, this->bearingbasedoffsetonfield(), output);
   }
   
   // optional .naothmessages.FrameInfo frameInfoWhenBallWasSeen = 6;
-  if (_has_bit(5)) {
+  if (has_frameinfowhenballwasseen()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       6, this->frameinfowhenballwasseen(), output);
   }
@@ -2897,37 +2899,37 @@ void BallPercept::SerializeWithCachedSizes(
 ::google::protobuf::uint8* BallPercept::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional bool ballWasSeen = 1;
-  if (_has_bit(0)) {
+  if (has_ballwasseen()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->ballwasseen(), target);
   }
   
   // optional .naothmessages.DoubleVector2 centerInImage = 2;
-  if (_has_bit(1)) {
+  if (has_centerinimage()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->centerinimage(), target);
   }
   
   // optional double radiusInImage = 3;
-  if (_has_bit(2)) {
+  if (has_radiusinimage()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->radiusinimage(), target);
   }
   
   // optional .naothmessages.Color ballColor = 4;
-  if (_has_bit(3)) {
+  if (has_ballcolor()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       4, this->ballcolor(), target);
   }
   
   // optional .naothmessages.DoubleVector2 bearingBasedOffsetOnField = 5;
-  if (_has_bit(4)) {
+  if (has_bearingbasedoffsetonfield()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         5, this->bearingbasedoffsetonfield(), target);
   }
   
   // optional .naothmessages.FrameInfo frameInfoWhenBallWasSeen = 6;
-  if (_has_bit(5)) {
+  if (has_frameinfowhenballwasseen()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         6, this->frameinfowhenballwasseen(), target);
@@ -3008,22 +3010,22 @@ void BallPercept::MergeFrom(const ::google::protobuf::Message& from) {
 void BallPercept::MergeFrom(const BallPercept& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_ballwasseen()) {
       set_ballwasseen(from.ballwasseen());
     }
-    if (from._has_bit(1)) {
+    if (from.has_centerinimage()) {
       mutable_centerinimage()->::naothmessages::DoubleVector2::MergeFrom(from.centerinimage());
     }
-    if (from._has_bit(2)) {
+    if (from.has_radiusinimage()) {
       set_radiusinimage(from.radiusinimage());
     }
-    if (from._has_bit(3)) {
+    if (from.has_ballcolor()) {
       set_ballcolor(from.ballcolor());
     }
-    if (from._has_bit(4)) {
+    if (from.has_bearingbasedoffsetonfield()) {
       mutable_bearingbasedoffsetonfield()->::naothmessages::DoubleVector2::MergeFrom(from.bearingbasedoffsetonfield());
     }
-    if (from._has_bit(5)) {
+    if (from.has_frameinfowhenballwasseen()) {
       mutable_frameinfowhenballwasseen()->::naothmessages::FrameInfo::MergeFrom(from.frameinfowhenballwasseen());
     }
   }
@@ -3141,7 +3143,7 @@ GoalPercept* GoalPercept::New() const {
 void GoalPercept::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     angletoseengoal_ = 0;
-    if (_has_bit(1)) {
+    if (has_goalcentroid()) {
       if (goalcentroid_ != NULL) goalcentroid_->::naothmessages::DoubleVector3::Clear();
     }
     numberofseenposts_ = 0;
@@ -3164,7 +3166,7 @@ bool GoalPercept::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &angletoseengoal_)));
-          _set_bit(0);
+          set_has_angletoseengoal();
         } else {
           goto handle_uninterpreted;
         }
@@ -3194,7 +3196,7 @@ bool GoalPercept::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &numberofseenposts_)));
-          _set_bit(2);
+          set_has_numberofseenposts();
         } else {
           goto handle_uninterpreted;
         }
@@ -3236,18 +3238,18 @@ bool GoalPercept::MergePartialFromCodedStream(
 void GoalPercept::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional double angleToSeenGoal = 1;
-  if (_has_bit(0)) {
+  if (has_angletoseengoal()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->angletoseengoal(), output);
   }
   
   // optional .naothmessages.DoubleVector3 goalCentroid = 2;
-  if (_has_bit(1)) {
+  if (has_goalcentroid()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->goalcentroid(), output);
   }
   
   // optional int32 numberOfSeenPosts = 3;
-  if (_has_bit(2)) {
+  if (has_numberofseenposts()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->numberofseenposts(), output);
   }
   
@@ -3266,19 +3268,19 @@ void GoalPercept::SerializeWithCachedSizes(
 ::google::protobuf::uint8* GoalPercept::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional double angleToSeenGoal = 1;
-  if (_has_bit(0)) {
+  if (has_angletoseengoal()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->angletoseengoal(), target);
   }
   
   // optional .naothmessages.DoubleVector3 goalCentroid = 2;
-  if (_has_bit(1)) {
+  if (has_goalcentroid()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->goalcentroid(), target);
   }
   
   // optional int32 numberOfSeenPosts = 3;
-  if (_has_bit(2)) {
+  if (has_numberofseenposts()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->numberofseenposts(), target);
   }
   
@@ -3355,13 +3357,13 @@ void GoalPercept::MergeFrom(const GoalPercept& from) {
   GOOGLE_CHECK_NE(&from, this);
   post_.MergeFrom(from.post_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_angletoseengoal()) {
       set_angletoseengoal(from.angletoseengoal());
     }
-    if (from._has_bit(1)) {
+    if (from.has_goalcentroid()) {
       mutable_goalcentroid()->::naothmessages::DoubleVector3::MergeFrom(from.goalcentroid());
     }
-    if (from._has_bit(2)) {
+    if (from.has_numberofseenposts()) {
       set_numberofseenposts(from.numberofseenposts());
     }
   }
@@ -3480,7 +3482,7 @@ void WalkRequest::Clear() {
     coordinate_ = 0u;
     stopwithstand_ = false;
     stable_ = false;
-    if (_has_bit(3)) {
+    if (has_pose()) {
       if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
     }
   }
@@ -3501,7 +3503,7 @@ bool WalkRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &coordinate_)));
-          _set_bit(0);
+          set_has_coordinate();
         } else {
           goto handle_uninterpreted;
         }
@@ -3517,7 +3519,7 @@ bool WalkRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &stopwithstand_)));
-          _set_bit(1);
+          set_has_stopwithstand();
         } else {
           goto handle_uninterpreted;
         }
@@ -3533,7 +3535,7 @@ bool WalkRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &stable_)));
-          _set_bit(2);
+          set_has_stable();
         } else {
           goto handle_uninterpreted;
         }
@@ -3574,22 +3576,22 @@ bool WalkRequest::MergePartialFromCodedStream(
 void WalkRequest::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required uint32 coordinate = 1;
-  if (_has_bit(0)) {
+  if (has_coordinate()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->coordinate(), output);
   }
   
   // required bool stopWithStand = 2;
-  if (_has_bit(1)) {
+  if (has_stopwithstand()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->stopwithstand(), output);
   }
   
   // required bool stable = 3;
-  if (_has_bit(2)) {
+  if (has_stable()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->stable(), output);
   }
   
   // required .naothmessages.Pose2D pose = 4;
-  if (_has_bit(3)) {
+  if (has_pose()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       4, this->pose(), output);
   }
@@ -3603,22 +3605,22 @@ void WalkRequest::SerializeWithCachedSizes(
 ::google::protobuf::uint8* WalkRequest::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required uint32 coordinate = 1;
-  if (_has_bit(0)) {
+  if (has_coordinate()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->coordinate(), target);
   }
   
   // required bool stopWithStand = 2;
-  if (_has_bit(1)) {
+  if (has_stopwithstand()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->stopwithstand(), target);
   }
   
   // required bool stable = 3;
-  if (_has_bit(2)) {
+  if (has_stable()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->stable(), target);
   }
   
   // required .naothmessages.Pose2D pose = 4;
-  if (_has_bit(3)) {
+  if (has_pose()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->pose(), target);
@@ -3686,16 +3688,16 @@ void WalkRequest::MergeFrom(const ::google::protobuf::Message& from) {
 void WalkRequest::MergeFrom(const WalkRequest& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_coordinate()) {
       set_coordinate(from.coordinate());
     }
-    if (from._has_bit(1)) {
+    if (from.has_stopwithstand()) {
       set_stopwithstand(from.stopwithstand());
     }
-    if (from._has_bit(2)) {
+    if (from.has_stable()) {
       set_stable(from.stable());
     }
-    if (from._has_bit(3)) {
+    if (from.has_pose()) {
       mutable_pose()->::naothmessages::Pose2D::MergeFrom(from.pose());
     }
   }
@@ -3812,7 +3814,7 @@ void MotionRequest::Clear() {
     id_ = 0u;
     time_ = 0u;
     forced_ = false;
-    if (_has_bit(3)) {
+    if (has_walkrequest()) {
       if (walkrequest_ != NULL) walkrequest_->::naothmessages::WalkRequest::Clear();
     }
   }
@@ -3833,7 +3835,7 @@ bool MotionRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &id_)));
-          _set_bit(0);
+          set_has_id();
         } else {
           goto handle_uninterpreted;
         }
@@ -3849,7 +3851,7 @@ bool MotionRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &time_)));
-          _set_bit(1);
+          set_has_time();
         } else {
           goto handle_uninterpreted;
         }
@@ -3865,7 +3867,7 @@ bool MotionRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &forced_)));
-          _set_bit(2);
+          set_has_forced();
         } else {
           goto handle_uninterpreted;
         }
@@ -3906,22 +3908,22 @@ bool MotionRequest::MergePartialFromCodedStream(
 void MotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required uint32 id = 1;
-  if (_has_bit(0)) {
+  if (has_id()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->id(), output);
   }
   
   // required uint32 time = 2;
-  if (_has_bit(1)) {
+  if (has_time()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->time(), output);
   }
   
   // required bool forced = 3;
-  if (_has_bit(2)) {
+  if (has_forced()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->forced(), output);
   }
   
   // optional .naothmessages.WalkRequest walkRequest = 4;
-  if (_has_bit(3)) {
+  if (has_walkrequest()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       4, this->walkrequest(), output);
   }
@@ -3935,22 +3937,22 @@ void MotionRequest::SerializeWithCachedSizes(
 ::google::protobuf::uint8* MotionRequest::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required uint32 id = 1;
-  if (_has_bit(0)) {
+  if (has_id()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->id(), target);
   }
   
   // required uint32 time = 2;
-  if (_has_bit(1)) {
+  if (has_time()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->time(), target);
   }
   
   // required bool forced = 3;
-  if (_has_bit(2)) {
+  if (has_forced()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->forced(), target);
   }
   
   // optional .naothmessages.WalkRequest walkRequest = 4;
-  if (_has_bit(3)) {
+  if (has_walkrequest()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->walkrequest(), target);
@@ -4020,16 +4022,16 @@ void MotionRequest::MergeFrom(const ::google::protobuf::Message& from) {
 void MotionRequest::MergeFrom(const MotionRequest& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_id()) {
       set_id(from.id());
     }
-    if (from._has_bit(1)) {
+    if (from.has_time()) {
       set_time(from.time());
     }
-    if (from._has_bit(2)) {
+    if (from.has_forced()) {
       set_forced(from.forced());
     }
-    if (from._has_bit(3)) {
+    if (from.has_walkrequest()) {
       mutable_walkrequest()->::naothmessages::WalkRequest::MergeFrom(from.walkrequest());
     }
   }
@@ -4139,7 +4141,7 @@ LinePercept* LinePercept::New() const {
 
 void LinePercept::Clear() {
   if (_has_bits_[2 / 32] & (0xffu << (2 % 32))) {
-    if (_has_bit(2)) {
+    if (has_middlecirclecenter()) {
       if (middlecirclecenter_ != NULL) middlecirclecenter_->::naothmessages::DoubleVector2::Clear();
     }
   }
@@ -4230,7 +4232,7 @@ void LinePercept::SerializeWithCachedSizes(
   }
   
   // optional .naothmessages.DoubleVector2 middleCircleCenter = 3;
-  if (_has_bit(2)) {
+  if (has_middlecirclecenter()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       3, this->middlecirclecenter(), output);
   }
@@ -4258,7 +4260,7 @@ void LinePercept::SerializeWithCachedSizes(
   }
   
   // optional .naothmessages.DoubleVector2 middleCircleCenter = 3;
-  if (_has_bit(2)) {
+  if (has_middlecirclecenter()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         3, this->middlecirclecenter(), target);
@@ -4327,7 +4329,7 @@ void LinePercept::MergeFrom(const LinePercept& from) {
   lines_.MergeFrom(from.lines_);
   intersections_.MergeFrom(from.intersections_);
   if (from._has_bits_[2 / 32] & (0xffu << (2 % 32))) {
-    if (from._has_bit(2)) {
+    if (from.has_middlecirclecenter()) {
       mutable_middlecirclecenter()->::naothmessages::DoubleVector2::MergeFrom(from.middlecirclecenter());
     }
   }

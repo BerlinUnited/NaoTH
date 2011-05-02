@@ -8,11 +8,40 @@ public final class Representations {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface ImageOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required bytes data = 1;
+    boolean hasData();
+    com.google.protobuf.ByteString getData();
+    
+    // optional int32 width = 2 [default = 320];
+    boolean hasWidth();
+    int getWidth();
+    
+    // optional int32 height = 3 [default = 240];
+    boolean hasHeight();
+    int getHeight();
+    
+    // optional .naothmessages.CameraInfo cameraInfo = 4;
+    boolean hasCameraInfo();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo getCameraInfo();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder getCameraInfoOrBuilder();
+    
+    // optional .naothmessages.Image.Format format = 5 [default = YUV];
+    boolean hasFormat();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format getFormat();
+    
+    // optional uint32 timestamp = 6;
+    boolean hasTimestamp();
+    int getTimestamp();
+  }
   public static final class Image extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements ImageOrBuilder {
     // Use Image.newBuilder() to construct.
-    private Image() {
-      initFields();
+    private Image(Builder builder) {
+      super(builder);
     }
     private Image(boolean noInit) {}
     
@@ -41,6 +70,9 @@ public final class Representations {
       YUV422(1, 1),
       ;
       
+      public static final int YUV_VALUE = 0;
+      public static final int YUV422_VALUE = 1;
+      
       
       public final int getNumber() { return value; }
       
@@ -60,8 +92,8 @@ public final class Representations {
           internalValueMap =
             new com.google.protobuf.Internal.EnumLiteMap<Format>() {
               public Format findValueByNumber(int number) {
-                return Format.valueOf(number)
-      ;        }
+                return Format.valueOf(number);
+              }
             };
       
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
@@ -80,6 +112,7 @@ public final class Representations {
       private static final Format[] VALUES = {
         YUV, YUV422, 
       };
+      
       public static Format valueOf(
           com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
         if (desc.getType() != getDescriptor()) {
@@ -88,94 +121,129 @@ public final class Representations {
         }
         return VALUES[desc.getIndex()];
       }
+      
       private final int index;
       private final int value;
+      
       private Format(int index, int value) {
         this.index = index;
         this.value = value;
       }
       
-      static {
-        de.hu_berlin.informatik.ki.nao.messages.Representations.getDescriptor();
-      }
-      
       // @@protoc_insertion_point(enum_scope:naothmessages.Image.Format)
     }
     
+    private int bitField0_;
     // required bytes data = 1;
     public static final int DATA_FIELD_NUMBER = 1;
-    private boolean hasData;
-    private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
-    public boolean hasData() { return hasData; }
-    public com.google.protobuf.ByteString getData() { return data_; }
+    private com.google.protobuf.ByteString data_;
+    public boolean hasData() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
     
     // optional int32 width = 2 [default = 320];
     public static final int WIDTH_FIELD_NUMBER = 2;
-    private boolean hasWidth;
-    private int width_ = 320;
-    public boolean hasWidth() { return hasWidth; }
-    public int getWidth() { return width_; }
+    private int width_;
+    public boolean hasWidth() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getWidth() {
+      return width_;
+    }
     
     // optional int32 height = 3 [default = 240];
     public static final int HEIGHT_FIELD_NUMBER = 3;
-    private boolean hasHeight;
-    private int height_ = 240;
-    public boolean hasHeight() { return hasHeight; }
-    public int getHeight() { return height_; }
+    private int height_;
+    public boolean hasHeight() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getHeight() {
+      return height_;
+    }
     
     // optional .naothmessages.CameraInfo cameraInfo = 4;
     public static final int CAMERAINFO_FIELD_NUMBER = 4;
-    private boolean hasCameraInfo;
     private de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo cameraInfo_;
-    public boolean hasCameraInfo() { return hasCameraInfo; }
-    public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo getCameraInfo() { return cameraInfo_; }
+    public boolean hasCameraInfo() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo getCameraInfo() {
+      return cameraInfo_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder getCameraInfoOrBuilder() {
+      return cameraInfo_;
+    }
     
     // optional .naothmessages.Image.Format format = 5 [default = YUV];
     public static final int FORMAT_FIELD_NUMBER = 5;
-    private boolean hasFormat;
     private de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format format_;
-    public boolean hasFormat() { return hasFormat; }
-    public de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format getFormat() { return format_; }
+    public boolean hasFormat() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format getFormat() {
+      return format_;
+    }
     
     // optional uint32 timestamp = 6;
     public static final int TIMESTAMP_FIELD_NUMBER = 6;
-    private boolean hasTimestamp;
-    private int timestamp_ = 0;
-    public boolean hasTimestamp() { return hasTimestamp; }
-    public int getTimestamp() { return timestamp_; }
+    private int timestamp_;
+    public boolean hasTimestamp() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public int getTimestamp() {
+      return timestamp_;
+    }
     
     private void initFields() {
+      data_ = com.google.protobuf.ByteString.EMPTY;
+      width_ = 320;
+      height_ = 240;
       cameraInfo_ = de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
       format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
+      timestamp_ = 0;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasData) return false;
-      if (hasCameraInfo()) {
-        if (!getCameraInfo().isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasData()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
+      if (hasCameraInfo()) {
+        if (!getCameraInfo().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasData()) {
-        output.writeBytes(1, getData());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, data_);
       }
-      if (hasWidth()) {
-        output.writeInt32(2, getWidth());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, width_);
       }
-      if (hasHeight()) {
-        output.writeInt32(3, getHeight());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, height_);
       }
-      if (hasCameraInfo()) {
-        output.writeMessage(4, getCameraInfo());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(4, cameraInfo_);
       }
-      if (hasFormat()) {
-        output.writeEnum(5, getFormat().getNumber());
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeEnum(5, format_.getNumber());
       }
-      if (hasTimestamp()) {
-        output.writeUInt32(6, getTimestamp());
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeUInt32(6, timestamp_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -186,33 +254,40 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasData()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getData());
+          .computeBytesSize(1, data_);
       }
-      if (hasWidth()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, getWidth());
+          .computeInt32Size(2, width_);
       }
-      if (hasHeight()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, getHeight());
+          .computeInt32Size(3, height_);
       }
-      if (hasCameraInfo()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getCameraInfo());
+          .computeMessageSize(4, cameraInfo_);
       }
-      if (hasFormat()) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(5, getFormat().getNumber());
+          .computeEnumSize(5, format_.getNumber());
       }
-      if (hasTimestamp()) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(6, getTimestamp());
+          .computeUInt32Size(6, timestamp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.Image parseFrom(
@@ -289,34 +364,66 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.Image result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.Image.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.Image();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.ImageOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_Image_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.Image internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_Image_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.Image.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getCameraInfoFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        data_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        width_ = 320;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        height_ = 240;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (cameraInfoBuilder_ == null) {
+          cameraInfo_ = de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
+        } else {
+          cameraInfoBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.Image();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        timestamp_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -328,33 +435,59 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.Image.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.Image build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.Image result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.Image buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.Image result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.Image buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.Image result = new de.hu_berlin.informatik.ki.nao.messages.Representations.Image(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.Image returnMe = result;
-        result = null;
-        return returnMe;
+        result.data_ = data_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.width_ = width_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.height_ = height_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        if (cameraInfoBuilder_ == null) {
+          result.cameraInfo_ = cameraInfo_;
+        } else {
+          result.cameraInfo_ = cameraInfoBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.format_ = format_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.timestamp_ = timestamp_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -390,6 +523,20 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasData()) {
+          
+          return false;
+        }
+        if (hasCameraInfo()) {
+          if (!getCameraInfo().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -402,25 +549,30 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 10: {
-              setData(input.readBytes());
+              bitField0_ |= 0x00000001;
+              data_ = input.readBytes();
               break;
             }
             case 16: {
-              setWidth(input.readInt32());
+              bitField0_ |= 0x00000002;
+              width_ = input.readInt32();
               break;
             }
             case 24: {
-              setHeight(input.readInt32());
+              bitField0_ |= 0x00000004;
+              height_ = input.readInt32();
               break;
             }
             case 34: {
@@ -438,149 +590,220 @@ public final class Representations {
               if (value == null) {
                 unknownFields.mergeVarintField(5, rawValue);
               } else {
-                setFormat(value);
+                bitField0_ |= 0x00000010;
+                format_ = value;
               }
               break;
             }
             case 48: {
-              setTimestamp(input.readUInt32());
+              bitField0_ |= 0x00000020;
+              timestamp_ = input.readUInt32();
               break;
             }
           }
         }
       }
       
+      private int bitField0_;
       
       // required bytes data = 1;
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       public boolean hasData() {
-        return result.hasData();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public com.google.protobuf.ByteString getData() {
-        return result.getData();
+        return data_;
       }
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  result.hasData = true;
-        result.data_ = value;
+  bitField0_ |= 0x00000001;
+        data_ = value;
+        onChanged();
         return this;
       }
       public Builder clearData() {
-        result.hasData = false;
-        result.data_ = getDefaultInstance().getData();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        data_ = getDefaultInstance().getData();
+        onChanged();
         return this;
       }
       
       // optional int32 width = 2 [default = 320];
+      private int width_ = 320;
       public boolean hasWidth() {
-        return result.hasWidth();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public int getWidth() {
-        return result.getWidth();
+        return width_;
       }
       public Builder setWidth(int value) {
-        result.hasWidth = true;
-        result.width_ = value;
+        bitField0_ |= 0x00000002;
+        width_ = value;
+        onChanged();
         return this;
       }
       public Builder clearWidth() {
-        result.hasWidth = false;
-        result.width_ = 320;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        width_ = 320;
+        onChanged();
         return this;
       }
       
       // optional int32 height = 3 [default = 240];
+      private int height_ = 240;
       public boolean hasHeight() {
-        return result.hasHeight();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public int getHeight() {
-        return result.getHeight();
+        return height_;
       }
       public Builder setHeight(int value) {
-        result.hasHeight = true;
-        result.height_ = value;
+        bitField0_ |= 0x00000004;
+        height_ = value;
+        onChanged();
         return this;
       }
       public Builder clearHeight() {
-        result.hasHeight = false;
-        result.height_ = 240;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        height_ = 240;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.CameraInfo cameraInfo = 4;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo cameraInfo_ = de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo, de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder> cameraInfoBuilder_;
       public boolean hasCameraInfo() {
-        return result.hasCameraInfo();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo getCameraInfo() {
-        return result.getCameraInfo();
+        if (cameraInfoBuilder_ == null) {
+          return cameraInfo_;
+        } else {
+          return cameraInfoBuilder_.getMessage();
+        }
       }
       public Builder setCameraInfo(de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (cameraInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          cameraInfo_ = value;
+          onChanged();
+        } else {
+          cameraInfoBuilder_.setMessage(value);
         }
-        result.hasCameraInfo = true;
-        result.cameraInfo_ = value;
+        bitField0_ |= 0x00000008;
         return this;
       }
-      public Builder setCameraInfo(de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.Builder builderForValue) {
-        result.hasCameraInfo = true;
-        result.cameraInfo_ = builderForValue.build();
+      public Builder setCameraInfo(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.Builder builderForValue) {
+        if (cameraInfoBuilder_ == null) {
+          cameraInfo_ = builderForValue.build();
+          onChanged();
+        } else {
+          cameraInfoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder mergeCameraInfo(de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo value) {
-        if (result.hasCameraInfo() &&
-            result.cameraInfo_ != de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance()) {
-          result.cameraInfo_ =
-            de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.newBuilder(result.cameraInfo_).mergeFrom(value).buildPartial();
+        if (cameraInfoBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              cameraInfo_ != de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance()) {
+            cameraInfo_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.newBuilder(cameraInfo_).mergeFrom(value).buildPartial();
+          } else {
+            cameraInfo_ = value;
+          }
+          onChanged();
         } else {
-          result.cameraInfo_ = value;
+          cameraInfoBuilder_.mergeFrom(value);
         }
-        result.hasCameraInfo = true;
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder clearCameraInfo() {
-        result.hasCameraInfo = false;
-        result.cameraInfo_ = de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
+        if (cameraInfoBuilder_ == null) {
+          cameraInfo_ = de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
+          onChanged();
+        } else {
+          cameraInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.Builder getCameraInfoBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getCameraInfoFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder getCameraInfoOrBuilder() {
+        if (cameraInfoBuilder_ != null) {
+          return cameraInfoBuilder_.getMessageOrBuilder();
+        } else {
+          return cameraInfo_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo, de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder> 
+          getCameraInfoFieldBuilder() {
+        if (cameraInfoBuilder_ == null) {
+          cameraInfoBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo, de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder>(
+                  cameraInfo_,
+                  getParentForChildren(),
+                  isClean());
+          cameraInfo_ = null;
+        }
+        return cameraInfoBuilder_;
       }
       
       // optional .naothmessages.Image.Format format = 5 [default = YUV];
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
       public boolean hasFormat() {
-        return result.hasFormat();
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format getFormat() {
-        return result.getFormat();
+        return format_;
       }
       public Builder setFormat(de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        result.hasFormat = true;
-        result.format_ = value;
+        bitField0_ |= 0x00000010;
+        format_ = value;
+        onChanged();
         return this;
       }
       public Builder clearFormat() {
-        result.hasFormat = false;
-        result.format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        format_ = de.hu_berlin.informatik.ki.nao.messages.Representations.Image.Format.YUV;
+        onChanged();
         return this;
       }
       
       // optional uint32 timestamp = 6;
+      private int timestamp_ ;
       public boolean hasTimestamp() {
-        return result.hasTimestamp();
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       public int getTimestamp() {
-        return result.getTimestamp();
+        return timestamp_;
       }
       public Builder setTimestamp(int value) {
-        result.hasTimestamp = true;
-        result.timestamp_ = value;
+        bitField0_ |= 0x00000020;
+        timestamp_ = value;
+        onChanged();
         return this;
       }
       public Builder clearTimestamp() {
-        result.hasTimestamp = false;
-        result.timestamp_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        timestamp_ = 0;
+        onChanged();
         return this;
       }
       
@@ -589,18 +812,69 @@ public final class Representations {
     
     static {
       defaultInstance = new Image(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.Image)
   }
   
+  public interface CameraInfoOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required int32 resolutionWidth = 1;
+    boolean hasResolutionWidth();
+    int getResolutionWidth();
+    
+    // required int32 resolutionHeight = 2;
+    boolean hasResolutionHeight();
+    int getResolutionHeight();
+    
+    // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
+    boolean hasCameraID();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID getCameraID();
+    
+    // optional double focalLength = 5;
+    boolean hasFocalLength();
+    double getFocalLength();
+    
+    // optional double openingAngleWidth = 6;
+    boolean hasOpeningAngleWidth();
+    double getOpeningAngleWidth();
+    
+    // optional double openingAngleHeight = 7;
+    boolean hasOpeningAngleHeight();
+    double getOpeningAngleHeight();
+    
+    // optional double opticalCenterX = 8;
+    boolean hasOpticalCenterX();
+    double getOpticalCenterX();
+    
+    // optional double opticalCenterY = 9;
+    boolean hasOpticalCenterY();
+    double getOpticalCenterY();
+    
+    // optional int64 size = 10;
+    boolean hasSize();
+    long getSize();
+    
+    // optional int64 memorysize = 11;
+    boolean hasMemorysize();
+    long getMemorysize();
+    
+    // optional double cameraRollOffset = 12;
+    boolean hasCameraRollOffset();
+    double getCameraRollOffset();
+    
+    // optional double cameraTiltOffset = 13;
+    boolean hasCameraTiltOffset();
+    double getCameraTiltOffset();
+  }
   public static final class CameraInfo extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements CameraInfoOrBuilder {
     // Use CameraInfo.newBuilder() to construct.
-    private CameraInfo() {
-      initFields();
+    private CameraInfo(Builder builder) {
+      super(builder);
     }
     private CameraInfo(boolean noInit) {}
     
@@ -623,137 +897,196 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CameraInfo_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required int32 resolutionWidth = 1;
     public static final int RESOLUTIONWIDTH_FIELD_NUMBER = 1;
-    private boolean hasResolutionWidth;
-    private int resolutionWidth_ = 0;
-    public boolean hasResolutionWidth() { return hasResolutionWidth; }
-    public int getResolutionWidth() { return resolutionWidth_; }
+    private int resolutionWidth_;
+    public boolean hasResolutionWidth() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getResolutionWidth() {
+      return resolutionWidth_;
+    }
     
     // required int32 resolutionHeight = 2;
     public static final int RESOLUTIONHEIGHT_FIELD_NUMBER = 2;
-    private boolean hasResolutionHeight;
-    private int resolutionHeight_ = 0;
-    public boolean hasResolutionHeight() { return hasResolutionHeight; }
-    public int getResolutionHeight() { return resolutionHeight_; }
+    private int resolutionHeight_;
+    public boolean hasResolutionHeight() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getResolutionHeight() {
+      return resolutionHeight_;
+    }
     
     // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
     public static final int CAMERAID_FIELD_NUMBER = 4;
-    private boolean hasCameraID;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID cameraID_;
-    public boolean hasCameraID() { return hasCameraID; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID getCameraID() { return cameraID_; }
+    public boolean hasCameraID() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID getCameraID() {
+      return cameraID_;
+    }
     
     // optional double focalLength = 5;
     public static final int FOCALLENGTH_FIELD_NUMBER = 5;
-    private boolean hasFocalLength;
-    private double focalLength_ = 0D;
-    public boolean hasFocalLength() { return hasFocalLength; }
-    public double getFocalLength() { return focalLength_; }
+    private double focalLength_;
+    public boolean hasFocalLength() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public double getFocalLength() {
+      return focalLength_;
+    }
     
     // optional double openingAngleWidth = 6;
     public static final int OPENINGANGLEWIDTH_FIELD_NUMBER = 6;
-    private boolean hasOpeningAngleWidth;
-    private double openingAngleWidth_ = 0D;
-    public boolean hasOpeningAngleWidth() { return hasOpeningAngleWidth; }
-    public double getOpeningAngleWidth() { return openingAngleWidth_; }
+    private double openingAngleWidth_;
+    public boolean hasOpeningAngleWidth() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public double getOpeningAngleWidth() {
+      return openingAngleWidth_;
+    }
     
     // optional double openingAngleHeight = 7;
     public static final int OPENINGANGLEHEIGHT_FIELD_NUMBER = 7;
-    private boolean hasOpeningAngleHeight;
-    private double openingAngleHeight_ = 0D;
-    public boolean hasOpeningAngleHeight() { return hasOpeningAngleHeight; }
-    public double getOpeningAngleHeight() { return openingAngleHeight_; }
+    private double openingAngleHeight_;
+    public boolean hasOpeningAngleHeight() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public double getOpeningAngleHeight() {
+      return openingAngleHeight_;
+    }
     
     // optional double opticalCenterX = 8;
     public static final int OPTICALCENTERX_FIELD_NUMBER = 8;
-    private boolean hasOpticalCenterX;
-    private double opticalCenterX_ = 0D;
-    public boolean hasOpticalCenterX() { return hasOpticalCenterX; }
-    public double getOpticalCenterX() { return opticalCenterX_; }
+    private double opticalCenterX_;
+    public boolean hasOpticalCenterX() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public double getOpticalCenterX() {
+      return opticalCenterX_;
+    }
     
     // optional double opticalCenterY = 9;
     public static final int OPTICALCENTERY_FIELD_NUMBER = 9;
-    private boolean hasOpticalCenterY;
-    private double opticalCenterY_ = 0D;
-    public boolean hasOpticalCenterY() { return hasOpticalCenterY; }
-    public double getOpticalCenterY() { return opticalCenterY_; }
+    private double opticalCenterY_;
+    public boolean hasOpticalCenterY() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public double getOpticalCenterY() {
+      return opticalCenterY_;
+    }
     
     // optional int64 size = 10;
     public static final int SIZE_FIELD_NUMBER = 10;
-    private boolean hasSize;
-    private long size_ = 0L;
-    public boolean hasSize() { return hasSize; }
-    public long getSize() { return size_; }
+    private long size_;
+    public boolean hasSize() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public long getSize() {
+      return size_;
+    }
     
     // optional int64 memorysize = 11;
     public static final int MEMORYSIZE_FIELD_NUMBER = 11;
-    private boolean hasMemorysize;
-    private long memorysize_ = 0L;
-    public boolean hasMemorysize() { return hasMemorysize; }
-    public long getMemorysize() { return memorysize_; }
+    private long memorysize_;
+    public boolean hasMemorysize() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public long getMemorysize() {
+      return memorysize_;
+    }
     
     // optional double cameraRollOffset = 12;
     public static final int CAMERAROLLOFFSET_FIELD_NUMBER = 12;
-    private boolean hasCameraRollOffset;
-    private double cameraRollOffset_ = 0D;
-    public boolean hasCameraRollOffset() { return hasCameraRollOffset; }
-    public double getCameraRollOffset() { return cameraRollOffset_; }
+    private double cameraRollOffset_;
+    public boolean hasCameraRollOffset() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public double getCameraRollOffset() {
+      return cameraRollOffset_;
+    }
     
     // optional double cameraTiltOffset = 13;
     public static final int CAMERATILTOFFSET_FIELD_NUMBER = 13;
-    private boolean hasCameraTiltOffset;
-    private double cameraTiltOffset_ = 0D;
-    public boolean hasCameraTiltOffset() { return hasCameraTiltOffset; }
-    public double getCameraTiltOffset() { return cameraTiltOffset_; }
+    private double cameraTiltOffset_;
+    public boolean hasCameraTiltOffset() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    public double getCameraTiltOffset() {
+      return cameraTiltOffset_;
+    }
     
     private void initFields() {
+      resolutionWidth_ = 0;
+      resolutionHeight_ = 0;
       cameraID_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID.bottom;
+      focalLength_ = 0D;
+      openingAngleWidth_ = 0D;
+      openingAngleHeight_ = 0D;
+      opticalCenterX_ = 0D;
+      opticalCenterY_ = 0D;
+      size_ = 0L;
+      memorysize_ = 0L;
+      cameraRollOffset_ = 0D;
+      cameraTiltOffset_ = 0D;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasResolutionWidth) return false;
-      if (!hasResolutionHeight) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasResolutionWidth()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasResolutionHeight()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasResolutionWidth()) {
-        output.writeInt32(1, getResolutionWidth());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, resolutionWidth_);
       }
-      if (hasResolutionHeight()) {
-        output.writeInt32(2, getResolutionHeight());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, resolutionHeight_);
       }
-      if (hasCameraID()) {
-        output.writeEnum(4, getCameraID().getNumber());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeEnum(4, cameraID_.getNumber());
       }
-      if (hasFocalLength()) {
-        output.writeDouble(5, getFocalLength());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeDouble(5, focalLength_);
       }
-      if (hasOpeningAngleWidth()) {
-        output.writeDouble(6, getOpeningAngleWidth());
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeDouble(6, openingAngleWidth_);
       }
-      if (hasOpeningAngleHeight()) {
-        output.writeDouble(7, getOpeningAngleHeight());
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeDouble(7, openingAngleHeight_);
       }
-      if (hasOpticalCenterX()) {
-        output.writeDouble(8, getOpticalCenterX());
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeDouble(8, opticalCenterX_);
       }
-      if (hasOpticalCenterY()) {
-        output.writeDouble(9, getOpticalCenterY());
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeDouble(9, opticalCenterY_);
       }
-      if (hasSize()) {
-        output.writeInt64(10, getSize());
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeInt64(10, size_);
       }
-      if (hasMemorysize()) {
-        output.writeInt64(11, getMemorysize());
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeInt64(11, memorysize_);
       }
-      if (hasCameraRollOffset()) {
-        output.writeDouble(12, getCameraRollOffset());
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeDouble(12, cameraRollOffset_);
       }
-      if (hasCameraTiltOffset()) {
-        output.writeDouble(13, getCameraTiltOffset());
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+        output.writeDouble(13, cameraTiltOffset_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -764,57 +1097,64 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasResolutionWidth()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, getResolutionWidth());
+          .computeInt32Size(1, resolutionWidth_);
       }
-      if (hasResolutionHeight()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, getResolutionHeight());
+          .computeInt32Size(2, resolutionHeight_);
       }
-      if (hasCameraID()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(4, getCameraID().getNumber());
+          .computeEnumSize(4, cameraID_.getNumber());
       }
-      if (hasFocalLength()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(5, getFocalLength());
+          .computeDoubleSize(5, focalLength_);
       }
-      if (hasOpeningAngleWidth()) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(6, getOpeningAngleWidth());
+          .computeDoubleSize(6, openingAngleWidth_);
       }
-      if (hasOpeningAngleHeight()) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(7, getOpeningAngleHeight());
+          .computeDoubleSize(7, openingAngleHeight_);
       }
-      if (hasOpticalCenterX()) {
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(8, getOpticalCenterX());
+          .computeDoubleSize(8, opticalCenterX_);
       }
-      if (hasOpticalCenterY()) {
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(9, getOpticalCenterY());
+          .computeDoubleSize(9, opticalCenterY_);
       }
-      if (hasSize()) {
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(10, getSize());
+          .computeInt64Size(10, size_);
       }
-      if (hasMemorysize()) {
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(11, getMemorysize());
+          .computeInt64Size(11, memorysize_);
       }
-      if (hasCameraRollOffset()) {
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(12, getCameraRollOffset());
+          .computeDoubleSize(12, cameraRollOffset_);
       }
-      if (hasCameraTiltOffset()) {
+      if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(13, getCameraTiltOffset());
+          .computeDoubleSize(13, cameraTiltOffset_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo parseFrom(
@@ -891,34 +1231,73 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CameraInfo_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CameraInfo_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
-        }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo();
+        super.clear();
+        resolutionWidth_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        resolutionHeight_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        cameraID_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID.bottom;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        focalLength_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        openingAngleWidth_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        openingAngleHeight_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        opticalCenterX_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        opticalCenterY_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        size_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        memorysize_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        cameraRollOffset_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000400);
+        cameraTiltOffset_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -930,33 +1309,79 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo returnMe = result;
-        result = null;
-        return returnMe;
+        result.resolutionWidth_ = resolutionWidth_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.resolutionHeight_ = resolutionHeight_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.cameraID_ = cameraID_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.focalLength_ = focalLength_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.openingAngleWidth_ = openingAngleWidth_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.openingAngleHeight_ = openingAngleHeight_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.opticalCenterX_ = opticalCenterX_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.opticalCenterY_ = opticalCenterY_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.size_ = size_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.memorysize_ = memorysize_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.cameraRollOffset_ = cameraRollOffset_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
+        result.cameraTiltOffset_ = cameraTiltOffset_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1010,6 +1435,18 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasResolutionWidth()) {
+          
+          return false;
+        }
+        if (!hasResolutionHeight()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1022,21 +1459,25 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 8: {
-              setResolutionWidth(input.readInt32());
+              bitField0_ |= 0x00000001;
+              resolutionWidth_ = input.readInt32();
               break;
             }
             case 16: {
-              setResolutionHeight(input.readInt32());
+              bitField0_ |= 0x00000002;
+              resolutionHeight_ = input.readInt32();
               break;
             }
             case 32: {
@@ -1045,267 +1486,314 @@ public final class Representations {
               if (value == null) {
                 unknownFields.mergeVarintField(4, rawValue);
               } else {
-                setCameraID(value);
+                bitField0_ |= 0x00000004;
+                cameraID_ = value;
               }
               break;
             }
             case 41: {
-              setFocalLength(input.readDouble());
+              bitField0_ |= 0x00000008;
+              focalLength_ = input.readDouble();
               break;
             }
             case 49: {
-              setOpeningAngleWidth(input.readDouble());
+              bitField0_ |= 0x00000010;
+              openingAngleWidth_ = input.readDouble();
               break;
             }
             case 57: {
-              setOpeningAngleHeight(input.readDouble());
+              bitField0_ |= 0x00000020;
+              openingAngleHeight_ = input.readDouble();
               break;
             }
             case 65: {
-              setOpticalCenterX(input.readDouble());
+              bitField0_ |= 0x00000040;
+              opticalCenterX_ = input.readDouble();
               break;
             }
             case 73: {
-              setOpticalCenterY(input.readDouble());
+              bitField0_ |= 0x00000080;
+              opticalCenterY_ = input.readDouble();
               break;
             }
             case 80: {
-              setSize(input.readInt64());
+              bitField0_ |= 0x00000100;
+              size_ = input.readInt64();
               break;
             }
             case 88: {
-              setMemorysize(input.readInt64());
+              bitField0_ |= 0x00000200;
+              memorysize_ = input.readInt64();
               break;
             }
             case 97: {
-              setCameraRollOffset(input.readDouble());
+              bitField0_ |= 0x00000400;
+              cameraRollOffset_ = input.readDouble();
               break;
             }
             case 105: {
-              setCameraTiltOffset(input.readDouble());
+              bitField0_ |= 0x00000800;
+              cameraTiltOffset_ = input.readDouble();
               break;
             }
           }
         }
       }
       
+      private int bitField0_;
       
       // required int32 resolutionWidth = 1;
+      private int resolutionWidth_ ;
       public boolean hasResolutionWidth() {
-        return result.hasResolutionWidth();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public int getResolutionWidth() {
-        return result.getResolutionWidth();
+        return resolutionWidth_;
       }
       public Builder setResolutionWidth(int value) {
-        result.hasResolutionWidth = true;
-        result.resolutionWidth_ = value;
+        bitField0_ |= 0x00000001;
+        resolutionWidth_ = value;
+        onChanged();
         return this;
       }
       public Builder clearResolutionWidth() {
-        result.hasResolutionWidth = false;
-        result.resolutionWidth_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        resolutionWidth_ = 0;
+        onChanged();
         return this;
       }
       
       // required int32 resolutionHeight = 2;
+      private int resolutionHeight_ ;
       public boolean hasResolutionHeight() {
-        return result.hasResolutionHeight();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public int getResolutionHeight() {
-        return result.getResolutionHeight();
+        return resolutionHeight_;
       }
       public Builder setResolutionHeight(int value) {
-        result.hasResolutionHeight = true;
-        result.resolutionHeight_ = value;
+        bitField0_ |= 0x00000002;
+        resolutionHeight_ = value;
+        onChanged();
         return this;
       }
       public Builder clearResolutionHeight() {
-        result.hasResolutionHeight = false;
-        result.resolutionHeight_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        resolutionHeight_ = 0;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.CameraID cameraID = 4 [default = bottom];
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID cameraID_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID.bottom;
       public boolean hasCameraID() {
-        return result.hasCameraID();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID getCameraID() {
-        return result.getCameraID();
+        return cameraID_;
       }
       public Builder setCameraID(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        result.hasCameraID = true;
-        result.cameraID_ = value;
+        bitField0_ |= 0x00000004;
+        cameraID_ = value;
+        onChanged();
         return this;
       }
       public Builder clearCameraID() {
-        result.hasCameraID = false;
-        result.cameraID_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID.bottom;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        cameraID_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.CameraID.bottom;
+        onChanged();
         return this;
       }
       
       // optional double focalLength = 5;
+      private double focalLength_ ;
       public boolean hasFocalLength() {
-        return result.hasFocalLength();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public double getFocalLength() {
-        return result.getFocalLength();
+        return focalLength_;
       }
       public Builder setFocalLength(double value) {
-        result.hasFocalLength = true;
-        result.focalLength_ = value;
+        bitField0_ |= 0x00000008;
+        focalLength_ = value;
+        onChanged();
         return this;
       }
       public Builder clearFocalLength() {
-        result.hasFocalLength = false;
-        result.focalLength_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        focalLength_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional double openingAngleWidth = 6;
+      private double openingAngleWidth_ ;
       public boolean hasOpeningAngleWidth() {
-        return result.hasOpeningAngleWidth();
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       public double getOpeningAngleWidth() {
-        return result.getOpeningAngleWidth();
+        return openingAngleWidth_;
       }
       public Builder setOpeningAngleWidth(double value) {
-        result.hasOpeningAngleWidth = true;
-        result.openingAngleWidth_ = value;
+        bitField0_ |= 0x00000010;
+        openingAngleWidth_ = value;
+        onChanged();
         return this;
       }
       public Builder clearOpeningAngleWidth() {
-        result.hasOpeningAngleWidth = false;
-        result.openingAngleWidth_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        openingAngleWidth_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional double openingAngleHeight = 7;
+      private double openingAngleHeight_ ;
       public boolean hasOpeningAngleHeight() {
-        return result.hasOpeningAngleHeight();
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       public double getOpeningAngleHeight() {
-        return result.getOpeningAngleHeight();
+        return openingAngleHeight_;
       }
       public Builder setOpeningAngleHeight(double value) {
-        result.hasOpeningAngleHeight = true;
-        result.openingAngleHeight_ = value;
+        bitField0_ |= 0x00000020;
+        openingAngleHeight_ = value;
+        onChanged();
         return this;
       }
       public Builder clearOpeningAngleHeight() {
-        result.hasOpeningAngleHeight = false;
-        result.openingAngleHeight_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        openingAngleHeight_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional double opticalCenterX = 8;
+      private double opticalCenterX_ ;
       public boolean hasOpticalCenterX() {
-        return result.hasOpticalCenterX();
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       public double getOpticalCenterX() {
-        return result.getOpticalCenterX();
+        return opticalCenterX_;
       }
       public Builder setOpticalCenterX(double value) {
-        result.hasOpticalCenterX = true;
-        result.opticalCenterX_ = value;
+        bitField0_ |= 0x00000040;
+        opticalCenterX_ = value;
+        onChanged();
         return this;
       }
       public Builder clearOpticalCenterX() {
-        result.hasOpticalCenterX = false;
-        result.opticalCenterX_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        opticalCenterX_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional double opticalCenterY = 9;
+      private double opticalCenterY_ ;
       public boolean hasOpticalCenterY() {
-        return result.hasOpticalCenterY();
+        return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       public double getOpticalCenterY() {
-        return result.getOpticalCenterY();
+        return opticalCenterY_;
       }
       public Builder setOpticalCenterY(double value) {
-        result.hasOpticalCenterY = true;
-        result.opticalCenterY_ = value;
+        bitField0_ |= 0x00000080;
+        opticalCenterY_ = value;
+        onChanged();
         return this;
       }
       public Builder clearOpticalCenterY() {
-        result.hasOpticalCenterY = false;
-        result.opticalCenterY_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        opticalCenterY_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional int64 size = 10;
+      private long size_ ;
       public boolean hasSize() {
-        return result.hasSize();
+        return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       public long getSize() {
-        return result.getSize();
+        return size_;
       }
       public Builder setSize(long value) {
-        result.hasSize = true;
-        result.size_ = value;
+        bitField0_ |= 0x00000100;
+        size_ = value;
+        onChanged();
         return this;
       }
       public Builder clearSize() {
-        result.hasSize = false;
-        result.size_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000100);
+        size_ = 0L;
+        onChanged();
         return this;
       }
       
       // optional int64 memorysize = 11;
+      private long memorysize_ ;
       public boolean hasMemorysize() {
-        return result.hasMemorysize();
+        return ((bitField0_ & 0x00000200) == 0x00000200);
       }
       public long getMemorysize() {
-        return result.getMemorysize();
+        return memorysize_;
       }
       public Builder setMemorysize(long value) {
-        result.hasMemorysize = true;
-        result.memorysize_ = value;
+        bitField0_ |= 0x00000200;
+        memorysize_ = value;
+        onChanged();
         return this;
       }
       public Builder clearMemorysize() {
-        result.hasMemorysize = false;
-        result.memorysize_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        memorysize_ = 0L;
+        onChanged();
         return this;
       }
       
       // optional double cameraRollOffset = 12;
+      private double cameraRollOffset_ ;
       public boolean hasCameraRollOffset() {
-        return result.hasCameraRollOffset();
+        return ((bitField0_ & 0x00000400) == 0x00000400);
       }
       public double getCameraRollOffset() {
-        return result.getCameraRollOffset();
+        return cameraRollOffset_;
       }
       public Builder setCameraRollOffset(double value) {
-        result.hasCameraRollOffset = true;
-        result.cameraRollOffset_ = value;
+        bitField0_ |= 0x00000400;
+        cameraRollOffset_ = value;
+        onChanged();
         return this;
       }
       public Builder clearCameraRollOffset() {
-        result.hasCameraRollOffset = false;
-        result.cameraRollOffset_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000400);
+        cameraRollOffset_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional double cameraTiltOffset = 13;
+      private double cameraTiltOffset_ ;
       public boolean hasCameraTiltOffset() {
-        return result.hasCameraTiltOffset();
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       public double getCameraTiltOffset() {
-        return result.getCameraTiltOffset();
+        return cameraTiltOffset_;
       }
       public Builder setCameraTiltOffset(double value) {
-        result.hasCameraTiltOffset = true;
-        result.cameraTiltOffset_ = value;
+        bitField0_ |= 0x00000800;
+        cameraTiltOffset_ = value;
+        onChanged();
         return this;
       }
       public Builder clearCameraTiltOffset() {
-        result.hasCameraTiltOffset = false;
-        result.cameraTiltOffset_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000800);
+        cameraTiltOffset_ = 0D;
+        onChanged();
         return this;
       }
       
@@ -1314,18 +1802,41 @@ public final class Representations {
     
     static {
       defaultInstance = new CameraInfo(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.CameraInfo)
   }
   
+  public interface JointDataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated double position = 1;
+    java.util.List<java.lang.Double> getPositionList();
+    int getPositionCount();
+    double getPosition(int index);
+    
+    // repeated double hardness = 2;
+    java.util.List<java.lang.Double> getHardnessList();
+    int getHardnessCount();
+    double getHardness(int index);
+    
+    // repeated double dp = 3;
+    java.util.List<java.lang.Double> getDpList();
+    int getDpCount();
+    double getDp(int index);
+    
+    // repeated double ddp = 4;
+    java.util.List<java.lang.Double> getDdpList();
+    int getDdpCount();
+    double getDdp(int index);
+  }
   public static final class JointData extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements JointDataOrBuilder {
     // Use JointData.newBuilder() to construct.
-    private JointData() {
-      initFields();
+    private JointData(Builder builder) {
+      super(builder);
     }
     private JointData(boolean noInit) {}
     
@@ -1350,72 +1861,89 @@ public final class Representations {
     
     // repeated double position = 1;
     public static final int POSITION_FIELD_NUMBER = 1;
-    private java.util.List<java.lang.Double> position_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getPositionList() {
+    private java.util.List<java.lang.Double> position_;
+    public java.util.List<java.lang.Double>
+        getPositionList() {
       return position_;
     }
-    public int getPositionCount() { return position_.size(); }
+    public int getPositionCount() {
+      return position_.size();
+    }
     public double getPosition(int index) {
       return position_.get(index);
     }
     
     // repeated double hardness = 2;
     public static final int HARDNESS_FIELD_NUMBER = 2;
-    private java.util.List<java.lang.Double> hardness_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getHardnessList() {
+    private java.util.List<java.lang.Double> hardness_;
+    public java.util.List<java.lang.Double>
+        getHardnessList() {
       return hardness_;
     }
-    public int getHardnessCount() { return hardness_.size(); }
+    public int getHardnessCount() {
+      return hardness_.size();
+    }
     public double getHardness(int index) {
       return hardness_.get(index);
     }
     
     // repeated double dp = 3;
     public static final int DP_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.Double> dp_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getDpList() {
+    private java.util.List<java.lang.Double> dp_;
+    public java.util.List<java.lang.Double>
+        getDpList() {
       return dp_;
     }
-    public int getDpCount() { return dp_.size(); }
+    public int getDpCount() {
+      return dp_.size();
+    }
     public double getDp(int index) {
       return dp_.get(index);
     }
     
     // repeated double ddp = 4;
     public static final int DDP_FIELD_NUMBER = 4;
-    private java.util.List<java.lang.Double> ddp_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getDdpList() {
+    private java.util.List<java.lang.Double> ddp_;
+    public java.util.List<java.lang.Double>
+        getDdpList() {
       return ddp_;
     }
-    public int getDdpCount() { return ddp_.size(); }
+    public int getDdpCount() {
+      return ddp_.size();
+    }
     public double getDdp(int index) {
       return ddp_.get(index);
     }
     
     private void initFields() {
+      position_ = java.util.Collections.emptyList();;
+      hardness_ = java.util.Collections.emptyList();;
+      dp_ = java.util.Collections.emptyList();;
+      ddp_ = java.util.Collections.emptyList();;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (double element : getPositionList()) {
-        output.writeDouble(1, element);
+      for (int i = 0; i < position_.size(); i++) {
+        output.writeDouble(1, position_.get(i));
       }
-      for (double element : getHardnessList()) {
-        output.writeDouble(2, element);
+      for (int i = 0; i < hardness_.size(); i++) {
+        output.writeDouble(2, hardness_.get(i));
       }
-      for (double element : getDpList()) {
-        output.writeDouble(3, element);
+      for (int i = 0; i < dp_.size(); i++) {
+        output.writeDouble(3, dp_.get(i));
       }
-      for (double element : getDdpList()) {
-        output.writeDouble(4, element);
+      for (int i = 0; i < ddp_.size(); i++) {
+        output.writeDouble(4, ddp_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1453,6 +1981,13 @@ public final class Representations {
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.JointData parseFrom(
@@ -1529,34 +2064,57 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.JointData result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.JointData();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_JointData_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.JointData internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_JointData_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
-        }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.JointData();
+        super.clear();
+        position_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        hardness_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        dp_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        ddp_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -1568,49 +2126,49 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.JointData build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.JointData result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.JointData buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.JointData result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.JointData buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.JointData result = new de.hu_berlin.informatik.ki.nao.messages.Representations.JointData(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          position_ = java.util.Collections.unmodifiableList(position_);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
-        if (result.position_ != java.util.Collections.EMPTY_LIST) {
-          result.position_ =
-            java.util.Collections.unmodifiableList(result.position_);
+        result.position_ = position_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          hardness_ = java.util.Collections.unmodifiableList(hardness_);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
-        if (result.hardness_ != java.util.Collections.EMPTY_LIST) {
-          result.hardness_ =
-            java.util.Collections.unmodifiableList(result.hardness_);
+        result.hardness_ = hardness_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          dp_ = java.util.Collections.unmodifiableList(dp_);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
-        if (result.dp_ != java.util.Collections.EMPTY_LIST) {
-          result.dp_ =
-            java.util.Collections.unmodifiableList(result.dp_);
+        result.dp_ = dp_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          ddp_ = java.util.Collections.unmodifiableList(ddp_);
+          bitField0_ = (bitField0_ & ~0x00000008);
         }
-        if (result.ddp_ != java.util.Collections.EMPTY_LIST) {
-          result.ddp_ =
-            java.util.Collections.unmodifiableList(result.ddp_);
-        }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.JointData returnMe = result;
-        result = null;
-        return returnMe;
+        result.ddp_ = ddp_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1625,31 +2183,51 @@ public final class Representations {
       public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.JointData other) {
         if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance()) return this;
         if (!other.position_.isEmpty()) {
-          if (result.position_.isEmpty()) {
-            result.position_ = new java.util.ArrayList<java.lang.Double>();
+          if (position_.isEmpty()) {
+            position_ = other.position_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensurePositionIsMutable();
+            position_.addAll(other.position_);
           }
-          result.position_.addAll(other.position_);
+          onChanged();
         }
         if (!other.hardness_.isEmpty()) {
-          if (result.hardness_.isEmpty()) {
-            result.hardness_ = new java.util.ArrayList<java.lang.Double>();
+          if (hardness_.isEmpty()) {
+            hardness_ = other.hardness_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureHardnessIsMutable();
+            hardness_.addAll(other.hardness_);
           }
-          result.hardness_.addAll(other.hardness_);
+          onChanged();
         }
         if (!other.dp_.isEmpty()) {
-          if (result.dp_.isEmpty()) {
-            result.dp_ = new java.util.ArrayList<java.lang.Double>();
+          if (dp_.isEmpty()) {
+            dp_ = other.dp_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureDpIsMutable();
+            dp_.addAll(other.dp_);
           }
-          result.dp_.addAll(other.dp_);
+          onChanged();
         }
         if (!other.ddp_.isEmpty()) {
-          if (result.ddp_.isEmpty()) {
-            result.ddp_ = new java.util.ArrayList<java.lang.Double>();
+          if (ddp_.isEmpty()) {
+            ddp_ = other.ddp_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureDdpIsMutable();
+            ddp_.addAll(other.ddp_);
           }
-          result.ddp_.addAll(other.ddp_);
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        return true;
       }
       
       public Builder mergeFrom(
@@ -1664,17 +2242,20 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 9: {
-              addPosition(input.readDouble());
+              ensurePositionIsMutable();
+              position_.add(input.readDouble());
               break;
             }
             case 10: {
@@ -1687,7 +2268,8 @@ public final class Representations {
               break;
             }
             case 17: {
-              addHardness(input.readDouble());
+              ensureHardnessIsMutable();
+              hardness_.add(input.readDouble());
               break;
             }
             case 18: {
@@ -1700,7 +2282,8 @@ public final class Representations {
               break;
             }
             case 25: {
-              addDp(input.readDouble());
+              ensureDpIsMutable();
+              dp_.add(input.readDouble());
               break;
             }
             case 26: {
@@ -1713,7 +2296,8 @@ public final class Representations {
               break;
             }
             case 33: {
-              addDdp(input.readDouble());
+              ensureDdpIsMutable();
+              ddp_.add(input.readDouble());
               break;
             }
             case 34: {
@@ -1729,140 +2313,185 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // repeated double position = 1;
-      public java.util.List<java.lang.Double> getPositionList() {
-        return java.util.Collections.unmodifiableList(result.position_);
+      private java.util.List<java.lang.Double> position_ = java.util.Collections.emptyList();;
+      private void ensurePositionIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          position_ = new java.util.ArrayList<java.lang.Double>(position_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getPositionList() {
+        return java.util.Collections.unmodifiableList(position_);
       }
       public int getPositionCount() {
-        return result.getPositionCount();
+        return position_.size();
       }
       public double getPosition(int index) {
-        return result.getPosition(index);
+        return position_.get(index);
       }
-      public Builder setPosition(int index, double value) {
-        result.position_.set(index, value);
+      public Builder setPosition(
+          int index, double value) {
+        ensurePositionIsMutable();
+        position_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addPosition(double value) {
-        if (result.position_.isEmpty()) {
-          result.position_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.position_.add(value);
+        ensurePositionIsMutable();
+        position_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllPosition(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.position_.isEmpty()) {
-          result.position_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.position_);
+        ensurePositionIsMutable();
+        super.addAll(values, position_);
+        onChanged();
         return this;
       }
       public Builder clearPosition() {
-        result.position_ = java.util.Collections.emptyList();
+        position_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
         return this;
       }
       
       // repeated double hardness = 2;
-      public java.util.List<java.lang.Double> getHardnessList() {
-        return java.util.Collections.unmodifiableList(result.hardness_);
+      private java.util.List<java.lang.Double> hardness_ = java.util.Collections.emptyList();;
+      private void ensureHardnessIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          hardness_ = new java.util.ArrayList<java.lang.Double>(hardness_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getHardnessList() {
+        return java.util.Collections.unmodifiableList(hardness_);
       }
       public int getHardnessCount() {
-        return result.getHardnessCount();
+        return hardness_.size();
       }
       public double getHardness(int index) {
-        return result.getHardness(index);
+        return hardness_.get(index);
       }
-      public Builder setHardness(int index, double value) {
-        result.hardness_.set(index, value);
+      public Builder setHardness(
+          int index, double value) {
+        ensureHardnessIsMutable();
+        hardness_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addHardness(double value) {
-        if (result.hardness_.isEmpty()) {
-          result.hardness_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.hardness_.add(value);
+        ensureHardnessIsMutable();
+        hardness_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllHardness(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.hardness_.isEmpty()) {
-          result.hardness_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.hardness_);
+        ensureHardnessIsMutable();
+        super.addAll(values, hardness_);
+        onChanged();
         return this;
       }
       public Builder clearHardness() {
-        result.hardness_ = java.util.Collections.emptyList();
+        hardness_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
         return this;
       }
       
       // repeated double dp = 3;
-      public java.util.List<java.lang.Double> getDpList() {
-        return java.util.Collections.unmodifiableList(result.dp_);
+      private java.util.List<java.lang.Double> dp_ = java.util.Collections.emptyList();;
+      private void ensureDpIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          dp_ = new java.util.ArrayList<java.lang.Double>(dp_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getDpList() {
+        return java.util.Collections.unmodifiableList(dp_);
       }
       public int getDpCount() {
-        return result.getDpCount();
+        return dp_.size();
       }
       public double getDp(int index) {
-        return result.getDp(index);
+        return dp_.get(index);
       }
-      public Builder setDp(int index, double value) {
-        result.dp_.set(index, value);
+      public Builder setDp(
+          int index, double value) {
+        ensureDpIsMutable();
+        dp_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addDp(double value) {
-        if (result.dp_.isEmpty()) {
-          result.dp_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.dp_.add(value);
+        ensureDpIsMutable();
+        dp_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllDp(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.dp_.isEmpty()) {
-          result.dp_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.dp_);
+        ensureDpIsMutable();
+        super.addAll(values, dp_);
+        onChanged();
         return this;
       }
       public Builder clearDp() {
-        result.dp_ = java.util.Collections.emptyList();
+        dp_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
         return this;
       }
       
       // repeated double ddp = 4;
-      public java.util.List<java.lang.Double> getDdpList() {
-        return java.util.Collections.unmodifiableList(result.ddp_);
+      private java.util.List<java.lang.Double> ddp_ = java.util.Collections.emptyList();;
+      private void ensureDdpIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          ddp_ = new java.util.ArrayList<java.lang.Double>(ddp_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getDdpList() {
+        return java.util.Collections.unmodifiableList(ddp_);
       }
       public int getDdpCount() {
-        return result.getDdpCount();
+        return ddp_.size();
       }
       public double getDdp(int index) {
-        return result.getDdp(index);
+        return ddp_.get(index);
       }
-      public Builder setDdp(int index, double value) {
-        result.ddp_.set(index, value);
+      public Builder setDdp(
+          int index, double value) {
+        ensureDdpIsMutable();
+        ddp_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addDdp(double value) {
-        if (result.ddp_.isEmpty()) {
-          result.ddp_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.ddp_.add(value);
+        ensureDdpIsMutable();
+        ddp_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllDdp(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.ddp_.isEmpty()) {
-          result.ddp_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.ddp_);
+        ensureDdpIsMutable();
+        super.addAll(values, ddp_);
+        onChanged();
         return this;
       }
       public Builder clearDdp() {
-        result.ddp_ = java.util.Collections.emptyList();
+        ddp_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
         return this;
       }
       
@@ -1871,18 +2500,36 @@ public final class Representations {
     
     static {
       defaultInstance = new JointData(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.JointData)
   }
   
+  public interface SensorJointDataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .naothmessages.JointData jointData = 1;
+    boolean hasJointData();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.JointData getJointData();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder getJointDataOrBuilder();
+    
+    // repeated double temperature = 2;
+    java.util.List<java.lang.Double> getTemperatureList();
+    int getTemperatureCount();
+    double getTemperature(int index);
+    
+    // repeated double electricCurrent = 3;
+    java.util.List<java.lang.Double> getElectricCurrentList();
+    int getElectricCurrentCount();
+    double getElectricCurrent(int index);
+  }
   public static final class SensorJointData extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements SensorJointDataOrBuilder {
     // Use SensorJointData.newBuilder() to construct.
-    private SensorJointData() {
-      initFields();
+    private SensorJointData(Builder builder) {
+      super(builder);
     }
     private SensorJointData(boolean noInit) {}
     
@@ -1905,56 +2552,77 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_SensorJointData_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required .naothmessages.JointData jointData = 1;
     public static final int JOINTDATA_FIELD_NUMBER = 1;
-    private boolean hasJointData;
     private de.hu_berlin.informatik.ki.nao.messages.Representations.JointData jointData_;
-    public boolean hasJointData() { return hasJointData; }
-    public de.hu_berlin.informatik.ki.nao.messages.Representations.JointData getJointData() { return jointData_; }
+    public boolean hasJointData() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.JointData getJointData() {
+      return jointData_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder getJointDataOrBuilder() {
+      return jointData_;
+    }
     
     // repeated double temperature = 2;
     public static final int TEMPERATURE_FIELD_NUMBER = 2;
-    private java.util.List<java.lang.Double> temperature_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getTemperatureList() {
+    private java.util.List<java.lang.Double> temperature_;
+    public java.util.List<java.lang.Double>
+        getTemperatureList() {
       return temperature_;
     }
-    public int getTemperatureCount() { return temperature_.size(); }
+    public int getTemperatureCount() {
+      return temperature_.size();
+    }
     public double getTemperature(int index) {
       return temperature_.get(index);
     }
     
     // repeated double electricCurrent = 3;
     public static final int ELECTRICCURRENT_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.Double> electricCurrent_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getElectricCurrentList() {
+    private java.util.List<java.lang.Double> electricCurrent_;
+    public java.util.List<java.lang.Double>
+        getElectricCurrentList() {
       return electricCurrent_;
     }
-    public int getElectricCurrentCount() { return electricCurrent_.size(); }
+    public int getElectricCurrentCount() {
+      return electricCurrent_.size();
+    }
     public double getElectricCurrent(int index) {
       return electricCurrent_.get(index);
     }
     
     private void initFields() {
       jointData_ = de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance();
+      temperature_ = java.util.Collections.emptyList();;
+      electricCurrent_ = java.util.Collections.emptyList();;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasJointData) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasJointData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasJointData()) {
-        output.writeMessage(1, getJointData());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, jointData_);
       }
-      for (double element : getTemperatureList()) {
-        output.writeDouble(2, element);
+      for (int i = 0; i < temperature_.size(); i++) {
+        output.writeDouble(2, temperature_.get(i));
       }
-      for (double element : getElectricCurrentList()) {
-        output.writeDouble(3, element);
+      for (int i = 0; i < electricCurrent_.size(); i++) {
+        output.writeDouble(3, electricCurrent_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1965,9 +2633,9 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasJointData()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getJointData());
+          .computeMessageSize(1, jointData_);
       }
       {
         int dataSize = 0;
@@ -1984,6 +2652,13 @@ public final class Representations {
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData parseFrom(
@@ -2060,34 +2735,60 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_SensorJointData_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_SensorJointData_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getJointDataFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        if (jointDataBuilder_ == null) {
+          jointData_ = de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance();
+        } else {
+          jointDataBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        temperature_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        electricCurrent_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -2099,41 +2800,49 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData result = new de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        if (result.temperature_ != java.util.Collections.EMPTY_LIST) {
-          result.temperature_ =
-            java.util.Collections.unmodifiableList(result.temperature_);
+        if (jointDataBuilder_ == null) {
+          result.jointData_ = jointData_;
+        } else {
+          result.jointData_ = jointDataBuilder_.build();
         }
-        if (result.electricCurrent_ != java.util.Collections.EMPTY_LIST) {
-          result.electricCurrent_ =
-            java.util.Collections.unmodifiableList(result.electricCurrent_);
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          temperature_ = java.util.Collections.unmodifiableList(temperature_);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData returnMe = result;
-        result = null;
-        return returnMe;
+        result.temperature_ = temperature_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          electricCurrent_ = java.util.Collections.unmodifiableList(electricCurrent_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.electricCurrent_ = electricCurrent_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2151,19 +2860,35 @@ public final class Representations {
           mergeJointData(other.getJointData());
         }
         if (!other.temperature_.isEmpty()) {
-          if (result.temperature_.isEmpty()) {
-            result.temperature_ = new java.util.ArrayList<java.lang.Double>();
+          if (temperature_.isEmpty()) {
+            temperature_ = other.temperature_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureTemperatureIsMutable();
+            temperature_.addAll(other.temperature_);
           }
-          result.temperature_.addAll(other.temperature_);
+          onChanged();
         }
         if (!other.electricCurrent_.isEmpty()) {
-          if (result.electricCurrent_.isEmpty()) {
-            result.electricCurrent_ = new java.util.ArrayList<java.lang.Double>();
+          if (electricCurrent_.isEmpty()) {
+            electricCurrent_ = other.electricCurrent_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureElectricCurrentIsMutable();
+            electricCurrent_.addAll(other.electricCurrent_);
           }
-          result.electricCurrent_.addAll(other.electricCurrent_);
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasJointData()) {
+          
+          return false;
+        }
+        return true;
       }
       
       public Builder mergeFrom(
@@ -2178,11 +2903,13 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
@@ -2197,7 +2924,8 @@ public final class Representations {
               break;
             }
             case 17: {
-              addTemperature(input.readDouble());
+              ensureTemperatureIsMutable();
+              temperature_.add(input.readDouble());
               break;
             }
             case 18: {
@@ -2210,7 +2938,8 @@ public final class Representations {
               break;
             }
             case 25: {
-              addElectricCurrent(input.readDouble());
+              ensureElectricCurrentIsMutable();
+              electricCurrent_.add(input.readDouble());
               break;
             }
             case 26: {
@@ -2226,109 +2955,185 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // required .naothmessages.JointData jointData = 1;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.JointData jointData_ = de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.JointData, de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder> jointDataBuilder_;
       public boolean hasJointData() {
-        return result.hasJointData();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.JointData getJointData() {
-        return result.getJointData();
+        if (jointDataBuilder_ == null) {
+          return jointData_;
+        } else {
+          return jointDataBuilder_.getMessage();
+        }
       }
       public Builder setJointData(de.hu_berlin.informatik.ki.nao.messages.Representations.JointData value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (jointDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          jointData_ = value;
+          onChanged();
+        } else {
+          jointDataBuilder_.setMessage(value);
         }
-        result.hasJointData = true;
-        result.jointData_ = value;
+        bitField0_ |= 0x00000001;
         return this;
       }
-      public Builder setJointData(de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder builderForValue) {
-        result.hasJointData = true;
-        result.jointData_ = builderForValue.build();
+      public Builder setJointData(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder builderForValue) {
+        if (jointDataBuilder_ == null) {
+          jointData_ = builderForValue.build();
+          onChanged();
+        } else {
+          jointDataBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       public Builder mergeJointData(de.hu_berlin.informatik.ki.nao.messages.Representations.JointData value) {
-        if (result.hasJointData() &&
-            result.jointData_ != de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance()) {
-          result.jointData_ =
-            de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.newBuilder(result.jointData_).mergeFrom(value).buildPartial();
+        if (jointDataBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              jointData_ != de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance()) {
+            jointData_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.newBuilder(jointData_).mergeFrom(value).buildPartial();
+          } else {
+            jointData_ = value;
+          }
+          onChanged();
         } else {
-          result.jointData_ = value;
+          jointDataBuilder_.mergeFrom(value);
         }
-        result.hasJointData = true;
+        bitField0_ |= 0x00000001;
         return this;
       }
       public Builder clearJointData() {
-        result.hasJointData = false;
-        result.jointData_ = de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance();
+        if (jointDataBuilder_ == null) {
+          jointData_ = de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.getDefaultInstance();
+          onChanged();
+        } else {
+          jointDataBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder getJointDataBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getJointDataFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder getJointDataOrBuilder() {
+        if (jointDataBuilder_ != null) {
+          return jointDataBuilder_.getMessageOrBuilder();
+        } else {
+          return jointData_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.JointData, de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder> 
+          getJointDataFieldBuilder() {
+        if (jointDataBuilder_ == null) {
+          jointDataBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.JointData, de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.JointDataOrBuilder>(
+                  jointData_,
+                  getParentForChildren(),
+                  isClean());
+          jointData_ = null;
+        }
+        return jointDataBuilder_;
       }
       
       // repeated double temperature = 2;
-      public java.util.List<java.lang.Double> getTemperatureList() {
-        return java.util.Collections.unmodifiableList(result.temperature_);
+      private java.util.List<java.lang.Double> temperature_ = java.util.Collections.emptyList();;
+      private void ensureTemperatureIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          temperature_ = new java.util.ArrayList<java.lang.Double>(temperature_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getTemperatureList() {
+        return java.util.Collections.unmodifiableList(temperature_);
       }
       public int getTemperatureCount() {
-        return result.getTemperatureCount();
+        return temperature_.size();
       }
       public double getTemperature(int index) {
-        return result.getTemperature(index);
+        return temperature_.get(index);
       }
-      public Builder setTemperature(int index, double value) {
-        result.temperature_.set(index, value);
+      public Builder setTemperature(
+          int index, double value) {
+        ensureTemperatureIsMutable();
+        temperature_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addTemperature(double value) {
-        if (result.temperature_.isEmpty()) {
-          result.temperature_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.temperature_.add(value);
+        ensureTemperatureIsMutable();
+        temperature_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllTemperature(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.temperature_.isEmpty()) {
-          result.temperature_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.temperature_);
+        ensureTemperatureIsMutable();
+        super.addAll(values, temperature_);
+        onChanged();
         return this;
       }
       public Builder clearTemperature() {
-        result.temperature_ = java.util.Collections.emptyList();
+        temperature_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
         return this;
       }
       
       // repeated double electricCurrent = 3;
-      public java.util.List<java.lang.Double> getElectricCurrentList() {
-        return java.util.Collections.unmodifiableList(result.electricCurrent_);
+      private java.util.List<java.lang.Double> electricCurrent_ = java.util.Collections.emptyList();;
+      private void ensureElectricCurrentIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          electricCurrent_ = new java.util.ArrayList<java.lang.Double>(electricCurrent_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getElectricCurrentList() {
+        return java.util.Collections.unmodifiableList(electricCurrent_);
       }
       public int getElectricCurrentCount() {
-        return result.getElectricCurrentCount();
+        return electricCurrent_.size();
       }
       public double getElectricCurrent(int index) {
-        return result.getElectricCurrent(index);
+        return electricCurrent_.get(index);
       }
-      public Builder setElectricCurrent(int index, double value) {
-        result.electricCurrent_.set(index, value);
+      public Builder setElectricCurrent(
+          int index, double value) {
+        ensureElectricCurrentIsMutable();
+        electricCurrent_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addElectricCurrent(double value) {
-        if (result.electricCurrent_.isEmpty()) {
-          result.electricCurrent_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.electricCurrent_.add(value);
+        ensureElectricCurrentIsMutable();
+        electricCurrent_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllElectricCurrent(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.electricCurrent_.isEmpty()) {
-          result.electricCurrent_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.electricCurrent_);
+        ensureElectricCurrentIsMutable();
+        super.addAll(values, electricCurrent_);
+        onChanged();
         return this;
       }
       public Builder clearElectricCurrent() {
-        result.electricCurrent_ = java.util.Collections.emptyList();
+        electricCurrent_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
         return this;
       }
       
@@ -2337,18 +3142,26 @@ public final class Representations {
     
     static {
       defaultInstance = new SensorJointData(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.SensorJointData)
   }
   
+  public interface CameraMatrixOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .naothmessages.Pose3D pose = 1;
+    boolean hasPose();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D getPose();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder();
+  }
   public static final class CameraMatrix extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements CameraMatrixOrBuilder {
     // Use CameraMatrix.newBuilder() to construct.
-    private CameraMatrix() {
-      initFields();
+    private CameraMatrix(Builder builder) {
+      super(builder);
     }
     private CameraMatrix(boolean noInit) {}
     
@@ -2371,27 +3184,45 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CameraMatrix_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required .naothmessages.Pose3D pose = 1;
     public static final int POSE_FIELD_NUMBER = 1;
-    private boolean hasPose;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D pose_;
-    public boolean hasPose() { return hasPose; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D getPose() { return pose_; }
+    public boolean hasPose() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D getPose() {
+      return pose_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+      return pose_;
+    }
     
     private void initFields() {
       pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasPose) return false;
-      if (!getPose().isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasPose()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getPose().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasPose()) {
-        output.writeMessage(1, getPose());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, pose_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2402,13 +3233,20 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasPose()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getPose());
+          .computeMessageSize(1, pose_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix parseFrom(
@@ -2485,34 +3323,56 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrixOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CameraMatrix_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CameraMatrix_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getPoseFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        if (poseBuilder_ == null) {
+          pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance();
+        } else {
+          poseBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix();
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -2524,33 +3384,39 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix returnMe = result;
-        result = null;
-        return returnMe;
+        if (poseBuilder_ == null) {
+          result.pose_ = pose_;
+        } else {
+          result.pose_ = poseBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2571,6 +3437,18 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasPose()) {
+          
+          return false;
+        }
+        if (!getPose().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2583,11 +3461,13 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
@@ -2605,42 +3485,96 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // required .naothmessages.Pose3D pose = 1;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3DOrBuilder> poseBuilder_;
       public boolean hasPose() {
-        return result.hasPose();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D getPose() {
-        return result.getPose();
+        if (poseBuilder_ == null) {
+          return pose_;
+        } else {
+          return poseBuilder_.getMessage();
+        }
       }
       public Builder setPose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (poseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pose_ = value;
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(value);
         }
-        result.hasPose = true;
-        result.pose_ = value;
+        bitField0_ |= 0x00000001;
         return this;
       }
-      public Builder setPose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.Builder builderForValue) {
-        result.hasPose = true;
-        result.pose_ = builderForValue.build();
+      public Builder setPose(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (poseBuilder_ == null) {
+          pose_ = builderForValue.build();
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
         return this;
       }
       public Builder mergePose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D value) {
-        if (result.hasPose() &&
-            result.pose_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance()) {
-          result.pose_ =
-            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.newBuilder(result.pose_).mergeFrom(value).buildPartial();
+        if (poseBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              pose_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance()) {
+            pose_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.newBuilder(pose_).mergeFrom(value).buildPartial();
+          } else {
+            pose_ = value;
+          }
+          onChanged();
         } else {
-          result.pose_ = value;
+          poseBuilder_.mergeFrom(value);
         }
-        result.hasPose = true;
+        bitField0_ |= 0x00000001;
         return this;
       }
       public Builder clearPose() {
-        result.hasPose = false;
-        result.pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance();
+        if (poseBuilder_ == null) {
+          pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.getDefaultInstance();
+          onChanged();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.Builder getPoseBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getPoseFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder() {
+        if (poseBuilder_ != null) {
+          return poseBuilder_.getMessageOrBuilder();
+        } else {
+          return pose_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3DOrBuilder> 
+          getPoseFieldBuilder() {
+        if (poseBuilder_ == null) {
+          poseBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3DOrBuilder>(
+                  pose_,
+                  getParentForChildren(),
+                  isClean());
+          pose_ = null;
+        }
+        return poseBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.CameraMatrix)
@@ -2648,18 +3582,29 @@ public final class Representations {
     
     static {
       defaultInstance = new CameraMatrix(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.CameraMatrix)
   }
   
+  public interface FrameInfoOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional uint32 frameNumber = 1;
+    boolean hasFrameNumber();
+    int getFrameNumber();
+    
+    // optional uint32 time = 2;
+    boolean hasTime();
+    int getTime();
+  }
   public static final class FrameInfo extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements FrameInfoOrBuilder {
     // Use FrameInfo.newBuilder() to construct.
-    private FrameInfo() {
-      initFields();
+    private FrameInfo(Builder builder) {
+      super(builder);
     }
     private FrameInfo(boolean noInit) {}
     
@@ -2682,34 +3627,48 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_FrameInfo_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // optional uint32 frameNumber = 1;
     public static final int FRAMENUMBER_FIELD_NUMBER = 1;
-    private boolean hasFrameNumber;
-    private int frameNumber_ = 0;
-    public boolean hasFrameNumber() { return hasFrameNumber; }
-    public int getFrameNumber() { return frameNumber_; }
+    private int frameNumber_;
+    public boolean hasFrameNumber() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getFrameNumber() {
+      return frameNumber_;
+    }
     
     // optional uint32 time = 2;
     public static final int TIME_FIELD_NUMBER = 2;
-    private boolean hasTime;
-    private int time_ = 0;
-    public boolean hasTime() { return hasTime; }
-    public int getTime() { return time_; }
+    private int time_;
+    public boolean hasTime() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getTime() {
+      return time_;
+    }
     
     private void initFields() {
+      frameNumber_ = 0;
+      time_ = 0;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasFrameNumber()) {
-        output.writeUInt32(1, getFrameNumber());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, frameNumber_);
       }
-      if (hasTime()) {
-        output.writeUInt32(2, getTime());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, time_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2720,17 +3679,24 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasFrameNumber()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, getFrameNumber());
+          .computeUInt32Size(1, frameNumber_);
       }
-      if (hasTime()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(2, getTime());
+          .computeUInt32Size(2, time_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo parseFrom(
@@ -2807,34 +3773,53 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_FrameInfo_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_FrameInfo_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
-        }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo();
+        super.clear();
+        frameNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        time_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -2846,33 +3831,39 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo result = new de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo returnMe = result;
-        result = null;
-        return returnMe;
+        result.frameNumber_ = frameNumber_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.time_ = time_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2896,6 +3887,10 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2908,61 +3903,72 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 8: {
-              setFrameNumber(input.readUInt32());
+              bitField0_ |= 0x00000001;
+              frameNumber_ = input.readUInt32();
               break;
             }
             case 16: {
-              setTime(input.readUInt32());
+              bitField0_ |= 0x00000002;
+              time_ = input.readUInt32();
               break;
             }
           }
         }
       }
       
+      private int bitField0_;
       
       // optional uint32 frameNumber = 1;
+      private int frameNumber_ ;
       public boolean hasFrameNumber() {
-        return result.hasFrameNumber();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public int getFrameNumber() {
-        return result.getFrameNumber();
+        return frameNumber_;
       }
       public Builder setFrameNumber(int value) {
-        result.hasFrameNumber = true;
-        result.frameNumber_ = value;
+        bitField0_ |= 0x00000001;
+        frameNumber_ = value;
+        onChanged();
         return this;
       }
       public Builder clearFrameNumber() {
-        result.hasFrameNumber = false;
-        result.frameNumber_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        frameNumber_ = 0;
+        onChanged();
         return this;
       }
       
       // optional uint32 time = 2;
+      private int time_ ;
       public boolean hasTime() {
-        return result.hasTime();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public int getTime() {
-        return result.getTime();
+        return time_;
       }
       public Builder setTime(int value) {
-        result.hasTime = true;
-        result.time_ = value;
+        bitField0_ |= 0x00000002;
+        time_ = value;
+        onChanged();
         return this;
       }
       public Builder clearTime() {
-        result.hasTime = false;
-        result.time_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        time_ = 0;
+        onChanged();
         return this;
       }
       
@@ -2971,18 +3977,48 @@ public final class Representations {
     
     static {
       defaultInstance = new FrameInfo(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.FrameInfo)
   }
   
+  public interface BallPerceptOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional bool ballWasSeen = 1;
+    boolean hasBallWasSeen();
+    boolean getBallWasSeen();
+    
+    // optional .naothmessages.DoubleVector2 centerInImage = 2;
+    boolean hasCenterInImage();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getCenterInImage();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getCenterInImageOrBuilder();
+    
+    // optional double radiusInImage = 3;
+    boolean hasRadiusInImage();
+    double getRadiusInImage();
+    
+    // optional .naothmessages.Color ballColor = 4;
+    boolean hasBallColor();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color getBallColor();
+    
+    // optional .naothmessages.DoubleVector2 bearingBasedOffsetOnField = 5;
+    boolean hasBearingBasedOffsetOnField();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getBearingBasedOffsetOnField();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getBearingBasedOffsetOnFieldOrBuilder();
+    
+    // optional .naothmessages.FrameInfo frameInfoWhenBallWasSeen = 6;
+    boolean hasFrameInfoWhenBallWasSeen();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo getFrameInfoWhenBallWasSeen();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder getFrameInfoWhenBallWasSeenOrBuilder();
+  }
   public static final class BallPercept extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements BallPerceptOrBuilder {
     // Use BallPercept.newBuilder() to construct.
-    private BallPercept() {
-      initFields();
+    private BallPercept(Builder builder) {
+      super(builder);
     }
     private BallPercept(boolean noInit) {}
     
@@ -3005,84 +4041,125 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_BallPercept_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // optional bool ballWasSeen = 1;
     public static final int BALLWASSEEN_FIELD_NUMBER = 1;
-    private boolean hasBallWasSeen;
-    private boolean ballWasSeen_ = false;
-    public boolean hasBallWasSeen() { return hasBallWasSeen; }
-    public boolean getBallWasSeen() { return ballWasSeen_; }
+    private boolean ballWasSeen_;
+    public boolean hasBallWasSeen() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public boolean getBallWasSeen() {
+      return ballWasSeen_;
+    }
     
     // optional .naothmessages.DoubleVector2 centerInImage = 2;
     public static final int CENTERINIMAGE_FIELD_NUMBER = 2;
-    private boolean hasCenterInImage;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 centerInImage_;
-    public boolean hasCenterInImage() { return hasCenterInImage; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getCenterInImage() { return centerInImage_; }
+    public boolean hasCenterInImage() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getCenterInImage() {
+      return centerInImage_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getCenterInImageOrBuilder() {
+      return centerInImage_;
+    }
     
     // optional double radiusInImage = 3;
     public static final int RADIUSINIMAGE_FIELD_NUMBER = 3;
-    private boolean hasRadiusInImage;
-    private double radiusInImage_ = 0D;
-    public boolean hasRadiusInImage() { return hasRadiusInImage; }
-    public double getRadiusInImage() { return radiusInImage_; }
+    private double radiusInImage_;
+    public boolean hasRadiusInImage() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public double getRadiusInImage() {
+      return radiusInImage_;
+    }
     
     // optional .naothmessages.Color ballColor = 4;
     public static final int BALLCOLOR_FIELD_NUMBER = 4;
-    private boolean hasBallColor;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color ballColor_;
-    public boolean hasBallColor() { return hasBallColor; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color getBallColor() { return ballColor_; }
+    public boolean hasBallColor() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color getBallColor() {
+      return ballColor_;
+    }
     
     // optional .naothmessages.DoubleVector2 bearingBasedOffsetOnField = 5;
     public static final int BEARINGBASEDOFFSETONFIELD_FIELD_NUMBER = 5;
-    private boolean hasBearingBasedOffsetOnField;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 bearingBasedOffsetOnField_;
-    public boolean hasBearingBasedOffsetOnField() { return hasBearingBasedOffsetOnField; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getBearingBasedOffsetOnField() { return bearingBasedOffsetOnField_; }
+    public boolean hasBearingBasedOffsetOnField() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getBearingBasedOffsetOnField() {
+      return bearingBasedOffsetOnField_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getBearingBasedOffsetOnFieldOrBuilder() {
+      return bearingBasedOffsetOnField_;
+    }
     
     // optional .naothmessages.FrameInfo frameInfoWhenBallWasSeen = 6;
     public static final int FRAMEINFOWHENBALLWASSEEN_FIELD_NUMBER = 6;
-    private boolean hasFrameInfoWhenBallWasSeen;
     private de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo frameInfoWhenBallWasSeen_;
-    public boolean hasFrameInfoWhenBallWasSeen() { return hasFrameInfoWhenBallWasSeen; }
-    public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo getFrameInfoWhenBallWasSeen() { return frameInfoWhenBallWasSeen_; }
+    public boolean hasFrameInfoWhenBallWasSeen() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo getFrameInfoWhenBallWasSeen() {
+      return frameInfoWhenBallWasSeen_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder getFrameInfoWhenBallWasSeenOrBuilder() {
+      return frameInfoWhenBallWasSeen_;
+    }
     
     private void initFields() {
+      ballWasSeen_ = false;
       centerInImage_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      radiusInImage_ = 0D;
       ballColor_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color.none;
       bearingBasedOffsetOnField_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
       frameInfoWhenBallWasSeen_ = de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
       if (hasCenterInImage()) {
-        if (!getCenterInImage().isInitialized()) return false;
+        if (!getCenterInImage().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       if (hasBearingBasedOffsetOnField()) {
-        if (!getBearingBasedOffsetOnField().isInitialized()) return false;
+        if (!getBearingBasedOffsetOnField().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasBallWasSeen()) {
-        output.writeBool(1, getBallWasSeen());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBool(1, ballWasSeen_);
       }
-      if (hasCenterInImage()) {
-        output.writeMessage(2, getCenterInImage());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, centerInImage_);
       }
-      if (hasRadiusInImage()) {
-        output.writeDouble(3, getRadiusInImage());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeDouble(3, radiusInImage_);
       }
-      if (hasBallColor()) {
-        output.writeEnum(4, getBallColor().getNumber());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeEnum(4, ballColor_.getNumber());
       }
-      if (hasBearingBasedOffsetOnField()) {
-        output.writeMessage(5, getBearingBasedOffsetOnField());
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, bearingBasedOffsetOnField_);
       }
-      if (hasFrameInfoWhenBallWasSeen()) {
-        output.writeMessage(6, getFrameInfoWhenBallWasSeen());
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(6, frameInfoWhenBallWasSeen_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3093,33 +4170,40 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasBallWasSeen()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(1, getBallWasSeen());
+          .computeBoolSize(1, ballWasSeen_);
       }
-      if (hasCenterInImage()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getCenterInImage());
+          .computeMessageSize(2, centerInImage_);
       }
-      if (hasRadiusInImage()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(3, getRadiusInImage());
+          .computeDoubleSize(3, radiusInImage_);
       }
-      if (hasBallColor()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(4, getBallColor().getNumber());
+          .computeEnumSize(4, ballColor_.getNumber());
       }
-      if (hasBearingBasedOffsetOnField()) {
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, getBearingBasedOffsetOnField());
+          .computeMessageSize(5, bearingBasedOffsetOnField_);
       }
-      if (hasFrameInfoWhenBallWasSeen()) {
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, getFrameInfoWhenBallWasSeen());
+          .computeMessageSize(6, frameInfoWhenBallWasSeen_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept parseFrom(
@@ -3196,34 +4280,76 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.BallPerceptOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_BallPercept_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_BallPercept_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getCenterInImageFieldBuilder();
+          getBearingBasedOffsetOnFieldFieldBuilder();
+          getFrameInfoWhenBallWasSeenFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        ballWasSeen_ = false;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (centerInImageBuilder_ == null) {
+          centerInImage_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          centerInImageBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        radiusInImage_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        ballColor_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color.none;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          bearingBasedOffsetOnField_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          bearingBasedOffsetOnFieldBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          frameInfoWhenBallWasSeen_ = de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance();
+        } else {
+          frameInfoWhenBallWasSeenBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -3235,33 +4361,67 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept result = new de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept returnMe = result;
-        result = null;
-        return returnMe;
+        result.ballWasSeen_ = ballWasSeen_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (centerInImageBuilder_ == null) {
+          result.centerInImage_ = centerInImage_;
+        } else {
+          result.centerInImage_ = centerInImageBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.radiusInImage_ = radiusInImage_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.ballColor_ = ballColor_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          result.bearingBasedOffsetOnField_ = bearingBasedOffsetOnField_;
+        } else {
+          result.bearingBasedOffsetOnField_ = bearingBasedOffsetOnFieldBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          result.frameInfoWhenBallWasSeen_ = frameInfoWhenBallWasSeen_;
+        } else {
+          result.frameInfoWhenBallWasSeen_ = frameInfoWhenBallWasSeenBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3297,6 +4457,22 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (hasCenterInImage()) {
+          if (!getCenterInImage().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasBearingBasedOffsetOnField()) {
+          if (!getBearingBasedOffsetOnField().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3309,17 +4485,20 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 8: {
-              setBallWasSeen(input.readBool());
+              bitField0_ |= 0x00000001;
+              ballWasSeen_ = input.readBool();
               break;
             }
             case 18: {
@@ -3332,7 +4511,8 @@ public final class Representations {
               break;
             }
             case 25: {
-              setRadiusInImage(input.readDouble());
+              bitField0_ |= 0x00000004;
+              radiusInImage_ = input.readDouble();
               break;
             }
             case 32: {
@@ -3341,7 +4521,8 @@ public final class Representations {
               if (value == null) {
                 unknownFields.mergeVarintField(4, rawValue);
               } else {
-                setBallColor(value);
+                bitField0_ |= 0x00000008;
+                ballColor_ = value;
               }
               break;
             }
@@ -3367,173 +4548,342 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // optional bool ballWasSeen = 1;
+      private boolean ballWasSeen_ ;
       public boolean hasBallWasSeen() {
-        return result.hasBallWasSeen();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public boolean getBallWasSeen() {
-        return result.getBallWasSeen();
+        return ballWasSeen_;
       }
       public Builder setBallWasSeen(boolean value) {
-        result.hasBallWasSeen = true;
-        result.ballWasSeen_ = value;
+        bitField0_ |= 0x00000001;
+        ballWasSeen_ = value;
+        onChanged();
         return this;
       }
       public Builder clearBallWasSeen() {
-        result.hasBallWasSeen = false;
-        result.ballWasSeen_ = false;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        ballWasSeen_ = false;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.DoubleVector2 centerInImage = 2;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 centerInImage_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> centerInImageBuilder_;
       public boolean hasCenterInImage() {
-        return result.hasCenterInImage();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getCenterInImage() {
-        return result.getCenterInImage();
+        if (centerInImageBuilder_ == null) {
+          return centerInImage_;
+        } else {
+          return centerInImageBuilder_.getMessage();
+        }
       }
       public Builder setCenterInImage(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (centerInImageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          centerInImage_ = value;
+          onChanged();
+        } else {
+          centerInImageBuilder_.setMessage(value);
         }
-        result.hasCenterInImage = true;
-        result.centerInImage_ = value;
+        bitField0_ |= 0x00000002;
         return this;
       }
-      public Builder setCenterInImage(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
-        result.hasCenterInImage = true;
-        result.centerInImage_ = builderForValue.build();
+      public Builder setCenterInImage(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (centerInImageBuilder_ == null) {
+          centerInImage_ = builderForValue.build();
+          onChanged();
+        } else {
+          centerInImageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder mergeCenterInImage(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
-        if (result.hasCenterInImage() &&
-            result.centerInImage_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
-          result.centerInImage_ =
-            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(result.centerInImage_).mergeFrom(value).buildPartial();
+        if (centerInImageBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              centerInImage_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            centerInImage_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(centerInImage_).mergeFrom(value).buildPartial();
+          } else {
+            centerInImage_ = value;
+          }
+          onChanged();
         } else {
-          result.centerInImage_ = value;
+          centerInImageBuilder_.mergeFrom(value);
         }
-        result.hasCenterInImage = true;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder clearCenterInImage() {
-        result.hasCenterInImage = false;
-        result.centerInImage_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        if (centerInImageBuilder_ == null) {
+          centerInImage_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          centerInImageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder getCenterInImageBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getCenterInImageFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getCenterInImageOrBuilder() {
+        if (centerInImageBuilder_ != null) {
+          return centerInImageBuilder_.getMessageOrBuilder();
+        } else {
+          return centerInImage_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getCenterInImageFieldBuilder() {
+        if (centerInImageBuilder_ == null) {
+          centerInImageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  centerInImage_,
+                  getParentForChildren(),
+                  isClean());
+          centerInImage_ = null;
+        }
+        return centerInImageBuilder_;
       }
       
       // optional double radiusInImage = 3;
+      private double radiusInImage_ ;
       public boolean hasRadiusInImage() {
-        return result.hasRadiusInImage();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public double getRadiusInImage() {
-        return result.getRadiusInImage();
+        return radiusInImage_;
       }
       public Builder setRadiusInImage(double value) {
-        result.hasRadiusInImage = true;
-        result.radiusInImage_ = value;
+        bitField0_ |= 0x00000004;
+        radiusInImage_ = value;
+        onChanged();
         return this;
       }
       public Builder clearRadiusInImage() {
-        result.hasRadiusInImage = false;
-        result.radiusInImage_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        radiusInImage_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.Color ballColor = 4;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color ballColor_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color.none;
       public boolean hasBallColor() {
-        return result.hasBallColor();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color getBallColor() {
-        return result.getBallColor();
+        return ballColor_;
       }
       public Builder setBallColor(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        result.hasBallColor = true;
-        result.ballColor_ = value;
+        bitField0_ |= 0x00000008;
+        ballColor_ = value;
+        onChanged();
         return this;
       }
       public Builder clearBallColor() {
-        result.hasBallColor = false;
-        result.ballColor_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color.none;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        ballColor_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Color.none;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.DoubleVector2 bearingBasedOffsetOnField = 5;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 bearingBasedOffsetOnField_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> bearingBasedOffsetOnFieldBuilder_;
       public boolean hasBearingBasedOffsetOnField() {
-        return result.hasBearingBasedOffsetOnField();
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getBearingBasedOffsetOnField() {
-        return result.getBearingBasedOffsetOnField();
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          return bearingBasedOffsetOnField_;
+        } else {
+          return bearingBasedOffsetOnFieldBuilder_.getMessage();
+        }
       }
       public Builder setBearingBasedOffsetOnField(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          bearingBasedOffsetOnField_ = value;
+          onChanged();
+        } else {
+          bearingBasedOffsetOnFieldBuilder_.setMessage(value);
         }
-        result.hasBearingBasedOffsetOnField = true;
-        result.bearingBasedOffsetOnField_ = value;
+        bitField0_ |= 0x00000010;
         return this;
       }
-      public Builder setBearingBasedOffsetOnField(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
-        result.hasBearingBasedOffsetOnField = true;
-        result.bearingBasedOffsetOnField_ = builderForValue.build();
+      public Builder setBearingBasedOffsetOnField(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          bearingBasedOffsetOnField_ = builderForValue.build();
+          onChanged();
+        } else {
+          bearingBasedOffsetOnFieldBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
         return this;
       }
       public Builder mergeBearingBasedOffsetOnField(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
-        if (result.hasBearingBasedOffsetOnField() &&
-            result.bearingBasedOffsetOnField_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
-          result.bearingBasedOffsetOnField_ =
-            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(result.bearingBasedOffsetOnField_).mergeFrom(value).buildPartial();
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              bearingBasedOffsetOnField_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            bearingBasedOffsetOnField_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(bearingBasedOffsetOnField_).mergeFrom(value).buildPartial();
+          } else {
+            bearingBasedOffsetOnField_ = value;
+          }
+          onChanged();
         } else {
-          result.bearingBasedOffsetOnField_ = value;
+          bearingBasedOffsetOnFieldBuilder_.mergeFrom(value);
         }
-        result.hasBearingBasedOffsetOnField = true;
+        bitField0_ |= 0x00000010;
         return this;
       }
       public Builder clearBearingBasedOffsetOnField() {
-        result.hasBearingBasedOffsetOnField = false;
-        result.bearingBasedOffsetOnField_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          bearingBasedOffsetOnField_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          bearingBasedOffsetOnFieldBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder getBearingBasedOffsetOnFieldBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getBearingBasedOffsetOnFieldFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getBearingBasedOffsetOnFieldOrBuilder() {
+        if (bearingBasedOffsetOnFieldBuilder_ != null) {
+          return bearingBasedOffsetOnFieldBuilder_.getMessageOrBuilder();
+        } else {
+          return bearingBasedOffsetOnField_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getBearingBasedOffsetOnFieldFieldBuilder() {
+        if (bearingBasedOffsetOnFieldBuilder_ == null) {
+          bearingBasedOffsetOnFieldBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  bearingBasedOffsetOnField_,
+                  getParentForChildren(),
+                  isClean());
+          bearingBasedOffsetOnField_ = null;
+        }
+        return bearingBasedOffsetOnFieldBuilder_;
       }
       
       // optional .naothmessages.FrameInfo frameInfoWhenBallWasSeen = 6;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo frameInfoWhenBallWasSeen_ = de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo, de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder> frameInfoWhenBallWasSeenBuilder_;
       public boolean hasFrameInfoWhenBallWasSeen() {
-        return result.hasFrameInfoWhenBallWasSeen();
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo getFrameInfoWhenBallWasSeen() {
-        return result.getFrameInfoWhenBallWasSeen();
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          return frameInfoWhenBallWasSeen_;
+        } else {
+          return frameInfoWhenBallWasSeenBuilder_.getMessage();
+        }
       }
       public Builder setFrameInfoWhenBallWasSeen(de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          frameInfoWhenBallWasSeen_ = value;
+          onChanged();
+        } else {
+          frameInfoWhenBallWasSeenBuilder_.setMessage(value);
         }
-        result.hasFrameInfoWhenBallWasSeen = true;
-        result.frameInfoWhenBallWasSeen_ = value;
+        bitField0_ |= 0x00000020;
         return this;
       }
-      public Builder setFrameInfoWhenBallWasSeen(de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder builderForValue) {
-        result.hasFrameInfoWhenBallWasSeen = true;
-        result.frameInfoWhenBallWasSeen_ = builderForValue.build();
+      public Builder setFrameInfoWhenBallWasSeen(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder builderForValue) {
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          frameInfoWhenBallWasSeen_ = builderForValue.build();
+          onChanged();
+        } else {
+          frameInfoWhenBallWasSeenBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000020;
         return this;
       }
       public Builder mergeFrameInfoWhenBallWasSeen(de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo value) {
-        if (result.hasFrameInfoWhenBallWasSeen() &&
-            result.frameInfoWhenBallWasSeen_ != de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance()) {
-          result.frameInfoWhenBallWasSeen_ =
-            de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.newBuilder(result.frameInfoWhenBallWasSeen_).mergeFrom(value).buildPartial();
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+              frameInfoWhenBallWasSeen_ != de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance()) {
+            frameInfoWhenBallWasSeen_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.newBuilder(frameInfoWhenBallWasSeen_).mergeFrom(value).buildPartial();
+          } else {
+            frameInfoWhenBallWasSeen_ = value;
+          }
+          onChanged();
         } else {
-          result.frameInfoWhenBallWasSeen_ = value;
+          frameInfoWhenBallWasSeenBuilder_.mergeFrom(value);
         }
-        result.hasFrameInfoWhenBallWasSeen = true;
+        bitField0_ |= 0x00000020;
         return this;
       }
       public Builder clearFrameInfoWhenBallWasSeen() {
-        result.hasFrameInfoWhenBallWasSeen = false;
-        result.frameInfoWhenBallWasSeen_ = de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance();
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          frameInfoWhenBallWasSeen_ = de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.getDefaultInstance();
+          onChanged();
+        } else {
+          frameInfoWhenBallWasSeenBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder getFrameInfoWhenBallWasSeenBuilder() {
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return getFrameInfoWhenBallWasSeenFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder getFrameInfoWhenBallWasSeenOrBuilder() {
+        if (frameInfoWhenBallWasSeenBuilder_ != null) {
+          return frameInfoWhenBallWasSeenBuilder_.getMessageOrBuilder();
+        } else {
+          return frameInfoWhenBallWasSeen_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo, de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder> 
+          getFrameInfoWhenBallWasSeenFieldBuilder() {
+        if (frameInfoWhenBallWasSeenBuilder_ == null) {
+          frameInfoWhenBallWasSeenBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo, de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfoOrBuilder>(
+                  frameInfoWhenBallWasSeen_,
+                  getParentForChildren(),
+                  isClean());
+          frameInfoWhenBallWasSeen_ = null;
+        }
+        return frameInfoWhenBallWasSeenBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.BallPercept)
@@ -3541,18 +4891,44 @@ public final class Representations {
     
     static {
       defaultInstance = new BallPercept(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.BallPercept)
   }
   
+  public interface GoalPerceptOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional double angleToSeenGoal = 1;
+    boolean hasAngleToSeenGoal();
+    double getAngleToSeenGoal();
+    
+    // optional .naothmessages.DoubleVector3 goalCentroid = 2;
+    boolean hasGoalCentroid();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getGoalCentroid();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder getGoalCentroidOrBuilder();
+    
+    // optional int32 numberOfSeenPosts = 3;
+    boolean hasNumberOfSeenPosts();
+    int getNumberOfSeenPosts();
+    
+    // repeated .naothmessages.GoalPost post = 4;
+    java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> 
+        getPostList();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost getPost(int index);
+    int getPostCount();
+    java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder> 
+        getPostOrBuilderList();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder getPostOrBuilder(
+        int index);
+  }
   public static final class GoalPercept extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements GoalPerceptOrBuilder {
     // Use GoalPercept.newBuilder() to construct.
-    private GoalPercept() {
-      initFields();
+    private GoalPercept(Builder builder) {
+      super(builder);
     }
     private GoalPercept(boolean noInit) {}
     
@@ -3575,66 +4951,102 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_GoalPercept_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // optional double angleToSeenGoal = 1;
     public static final int ANGLETOSEENGOAL_FIELD_NUMBER = 1;
-    private boolean hasAngleToSeenGoal;
-    private double angleToSeenGoal_ = 0D;
-    public boolean hasAngleToSeenGoal() { return hasAngleToSeenGoal; }
-    public double getAngleToSeenGoal() { return angleToSeenGoal_; }
+    private double angleToSeenGoal_;
+    public boolean hasAngleToSeenGoal() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public double getAngleToSeenGoal() {
+      return angleToSeenGoal_;
+    }
     
     // optional .naothmessages.DoubleVector3 goalCentroid = 2;
     public static final int GOALCENTROID_FIELD_NUMBER = 2;
-    private boolean hasGoalCentroid;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 goalCentroid_;
-    public boolean hasGoalCentroid() { return hasGoalCentroid; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getGoalCentroid() { return goalCentroid_; }
+    public boolean hasGoalCentroid() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getGoalCentroid() {
+      return goalCentroid_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder getGoalCentroidOrBuilder() {
+      return goalCentroid_;
+    }
     
     // optional int32 numberOfSeenPosts = 3;
     public static final int NUMBEROFSEENPOSTS_FIELD_NUMBER = 3;
-    private boolean hasNumberOfSeenPosts;
-    private int numberOfSeenPosts_ = 0;
-    public boolean hasNumberOfSeenPosts() { return hasNumberOfSeenPosts; }
-    public int getNumberOfSeenPosts() { return numberOfSeenPosts_; }
+    private int numberOfSeenPosts_;
+    public boolean hasNumberOfSeenPosts() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getNumberOfSeenPosts() {
+      return numberOfSeenPosts_;
+    }
     
     // repeated .naothmessages.GoalPost post = 4;
     public static final int POST_FIELD_NUMBER = 4;
-    private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> post_ =
-      java.util.Collections.emptyList();
+    private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> post_;
     public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> getPostList() {
       return post_;
     }
-    public int getPostCount() { return post_.size(); }
+    public java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder> 
+        getPostOrBuilderList() {
+      return post_;
+    }
+    public int getPostCount() {
+      return post_.size();
+    }
     public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost getPost(int index) {
+      return post_.get(index);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder getPostOrBuilder(
+        int index) {
       return post_.get(index);
     }
     
     private void initFields() {
+      angleToSeenGoal_ = 0D;
       goalCentroid_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      numberOfSeenPosts_ = 0;
+      post_ = java.util.Collections.emptyList();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
       if (hasGoalCentroid()) {
-        if (!getGoalCentroid().isInitialized()) return false;
+        if (!getGoalCentroid().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost element : getPostList()) {
-        if (!element.isInitialized()) return false;
+      for (int i = 0; i < getPostCount(); i++) {
+        if (!getPost(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasAngleToSeenGoal()) {
-        output.writeDouble(1, getAngleToSeenGoal());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeDouble(1, angleToSeenGoal_);
       }
-      if (hasGoalCentroid()) {
-        output.writeMessage(2, getGoalCentroid());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, goalCentroid_);
       }
-      if (hasNumberOfSeenPosts()) {
-        output.writeInt32(3, getNumberOfSeenPosts());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, numberOfSeenPosts_);
       }
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost element : getPostList()) {
-        output.writeMessage(4, element);
+      for (int i = 0; i < post_.size(); i++) {
+        output.writeMessage(4, post_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -3645,25 +5057,32 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasAngleToSeenGoal()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(1, getAngleToSeenGoal());
+          .computeDoubleSize(1, angleToSeenGoal_);
       }
-      if (hasGoalCentroid()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getGoalCentroid());
+          .computeMessageSize(2, goalCentroid_);
       }
-      if (hasNumberOfSeenPosts()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, getNumberOfSeenPosts());
+          .computeInt32Size(3, numberOfSeenPosts_);
       }
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost element : getPostList()) {
+      for (int i = 0; i < post_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, element);
+          .computeMessageSize(4, post_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept parseFrom(
@@ -3740,34 +5159,67 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPerceptOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_GoalPercept_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_GoalPercept_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getGoalCentroidFieldBuilder();
+          getPostFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        angleToSeenGoal_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (goalCentroidBuilder_ == null) {
+          goalCentroid_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+        } else {
+          goalCentroidBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        numberOfSeenPosts_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (postBuilder_ == null) {
+          post_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          postBuilder_.clear();
+        }
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -3779,37 +5231,56 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept result = new de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        if (result.post_ != java.util.Collections.EMPTY_LIST) {
-          result.post_ =
-            java.util.Collections.unmodifiableList(result.post_);
+        result.angleToSeenGoal_ = angleToSeenGoal_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept returnMe = result;
-        result = null;
-        return returnMe;
+        if (goalCentroidBuilder_ == null) {
+          result.goalCentroid_ = goalCentroid_;
+        } else {
+          result.goalCentroid_ = goalCentroidBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.numberOfSeenPosts_ = numberOfSeenPosts_;
+        if (postBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            post_ = java.util.Collections.unmodifiableList(post_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.post_ = post_;
+        } else {
+          result.post_ = postBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3832,14 +5303,50 @@ public final class Representations {
         if (other.hasNumberOfSeenPosts()) {
           setNumberOfSeenPosts(other.getNumberOfSeenPosts());
         }
-        if (!other.post_.isEmpty()) {
-          if (result.post_.isEmpty()) {
-            result.post_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost>();
+        if (postBuilder_ == null) {
+          if (!other.post_.isEmpty()) {
+            if (post_.isEmpty()) {
+              post_ = other.post_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensurePostIsMutable();
+              post_.addAll(other.post_);
+            }
+            onChanged();
           }
-          result.post_.addAll(other.post_);
+        } else {
+          if (!other.post_.isEmpty()) {
+            if (postBuilder_.isEmpty()) {
+              postBuilder_.dispose();
+              postBuilder_ = null;
+              post_ = other.post_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              postBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getPostFieldBuilder() : null;
+            } else {
+              postBuilder_.addAllMessages(other.post_);
+            }
+          }
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (hasGoalCentroid()) {
+          if (!getGoalCentroid().isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getPostCount(); i++) {
+          if (!getPost(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
       }
       
       public Builder mergeFrom(
@@ -3854,17 +5361,20 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 9: {
-              setAngleToSeenGoal(input.readDouble());
+              bitField0_ |= 0x00000001;
+              angleToSeenGoal_ = input.readDouble();
               break;
             }
             case 18: {
@@ -3877,7 +5387,8 @@ public final class Representations {
               break;
             }
             case 24: {
-              setNumberOfSeenPosts(input.readInt32());
+              bitField0_ |= 0x00000004;
+              numberOfSeenPosts_ = input.readInt32();
               break;
             }
             case 34: {
@@ -3890,129 +5401,324 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // optional double angleToSeenGoal = 1;
+      private double angleToSeenGoal_ ;
       public boolean hasAngleToSeenGoal() {
-        return result.hasAngleToSeenGoal();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public double getAngleToSeenGoal() {
-        return result.getAngleToSeenGoal();
+        return angleToSeenGoal_;
       }
       public Builder setAngleToSeenGoal(double value) {
-        result.hasAngleToSeenGoal = true;
-        result.angleToSeenGoal_ = value;
+        bitField0_ |= 0x00000001;
+        angleToSeenGoal_ = value;
+        onChanged();
         return this;
       }
       public Builder clearAngleToSeenGoal() {
-        result.hasAngleToSeenGoal = false;
-        result.angleToSeenGoal_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        angleToSeenGoal_ = 0D;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.DoubleVector3 goalCentroid = 2;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 goalCentroid_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder> goalCentroidBuilder_;
       public boolean hasGoalCentroid() {
-        return result.hasGoalCentroid();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getGoalCentroid() {
-        return result.getGoalCentroid();
+        if (goalCentroidBuilder_ == null) {
+          return goalCentroid_;
+        } else {
+          return goalCentroidBuilder_.getMessage();
+        }
       }
       public Builder setGoalCentroid(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (goalCentroidBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          goalCentroid_ = value;
+          onChanged();
+        } else {
+          goalCentroidBuilder_.setMessage(value);
         }
-        result.hasGoalCentroid = true;
-        result.goalCentroid_ = value;
+        bitField0_ |= 0x00000002;
         return this;
       }
-      public Builder setGoalCentroid(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
-        result.hasGoalCentroid = true;
-        result.goalCentroid_ = builderForValue.build();
+      public Builder setGoalCentroid(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (goalCentroidBuilder_ == null) {
+          goalCentroid_ = builderForValue.build();
+          onChanged();
+        } else {
+          goalCentroidBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder mergeGoalCentroid(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 value) {
-        if (result.hasGoalCentroid() &&
-            result.goalCentroid_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
-          result.goalCentroid_ =
-            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.newBuilder(result.goalCentroid_).mergeFrom(value).buildPartial();
+        if (goalCentroidBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              goalCentroid_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            goalCentroid_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.newBuilder(goalCentroid_).mergeFrom(value).buildPartial();
+          } else {
+            goalCentroid_ = value;
+          }
+          onChanged();
         } else {
-          result.goalCentroid_ = value;
+          goalCentroidBuilder_.mergeFrom(value);
         }
-        result.hasGoalCentroid = true;
+        bitField0_ |= 0x00000002;
         return this;
       }
       public Builder clearGoalCentroid() {
-        result.hasGoalCentroid = false;
-        result.goalCentroid_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+        if (goalCentroidBuilder_ == null) {
+          goalCentroid_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+          onChanged();
+        } else {
+          goalCentroidBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder getGoalCentroidBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getGoalCentroidFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder getGoalCentroidOrBuilder() {
+        if (goalCentroidBuilder_ != null) {
+          return goalCentroidBuilder_.getMessageOrBuilder();
+        } else {
+          return goalCentroid_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getGoalCentroidFieldBuilder() {
+        if (goalCentroidBuilder_ == null) {
+          goalCentroidBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  goalCentroid_,
+                  getParentForChildren(),
+                  isClean());
+          goalCentroid_ = null;
+        }
+        return goalCentroidBuilder_;
       }
       
       // optional int32 numberOfSeenPosts = 3;
+      private int numberOfSeenPosts_ ;
       public boolean hasNumberOfSeenPosts() {
-        return result.hasNumberOfSeenPosts();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public int getNumberOfSeenPosts() {
-        return result.getNumberOfSeenPosts();
+        return numberOfSeenPosts_;
       }
       public Builder setNumberOfSeenPosts(int value) {
-        result.hasNumberOfSeenPosts = true;
-        result.numberOfSeenPosts_ = value;
+        bitField0_ |= 0x00000004;
+        numberOfSeenPosts_ = value;
+        onChanged();
         return this;
       }
       public Builder clearNumberOfSeenPosts() {
-        result.hasNumberOfSeenPosts = false;
-        result.numberOfSeenPosts_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        numberOfSeenPosts_ = 0;
+        onChanged();
         return this;
       }
       
       // repeated .naothmessages.GoalPost post = 4;
+      private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> post_ =
+        java.util.Collections.emptyList();
+      private void ensurePostIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          post_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost>(post_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder> postBuilder_;
+      
       public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> getPostList() {
-        return java.util.Collections.unmodifiableList(result.post_);
+        if (postBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(post_);
+        } else {
+          return postBuilder_.getMessageList();
+        }
       }
       public int getPostCount() {
-        return result.getPostCount();
+        if (postBuilder_ == null) {
+          return post_.size();
+        } else {
+          return postBuilder_.getCount();
+        }
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost getPost(int index) {
-        return result.getPost(index);
-      }
-      public Builder setPost(int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (postBuilder_ == null) {
+          return post_.get(index);
+        } else {
+          return postBuilder_.getMessage(index);
         }
-        result.post_.set(index, value);
+      }
+      public Builder setPost(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost value) {
+        if (postBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePostIsMutable();
+          post_.set(index, value);
+          onChanged();
+        } else {
+          postBuilder_.setMessage(index, value);
+        }
         return this;
       }
-      public Builder setPost(int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder builderForValue) {
-        result.post_.set(index, builderForValue.build());
+      public Builder setPost(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder builderForValue) {
+        if (postBuilder_ == null) {
+          ensurePostIsMutable();
+          post_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          postBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addPost(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (postBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePostIsMutable();
+          post_.add(value);
+          onChanged();
+        } else {
+          postBuilder_.addMessage(value);
         }
-        if (result.post_.isEmpty()) {
-          result.post_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost>();
-        }
-        result.post_.add(value);
         return this;
       }
-      public Builder addPost(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder builderForValue) {
-        if (result.post_.isEmpty()) {
-          result.post_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost>();
+      public Builder addPost(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost value) {
+        if (postBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePostIsMutable();
+          post_.add(index, value);
+          onChanged();
+        } else {
+          postBuilder_.addMessage(index, value);
         }
-        result.post_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addPost(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder builderForValue) {
+        if (postBuilder_ == null) {
+          ensurePostIsMutable();
+          post_.add(builderForValue.build());
+          onChanged();
+        } else {
+          postBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addPost(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder builderForValue) {
+        if (postBuilder_ == null) {
+          ensurePostIsMutable();
+          post_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          postBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAllPost(
           java.lang.Iterable<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost> values) {
-        if (result.post_.isEmpty()) {
-          result.post_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost>();
+        if (postBuilder_ == null) {
+          ensurePostIsMutable();
+          super.addAll(values, post_);
+          onChanged();
+        } else {
+          postBuilder_.addAllMessages(values);
         }
-        super.addAll(values, result.post_);
         return this;
       }
       public Builder clearPost() {
-        result.post_ = java.util.Collections.emptyList();
+        if (postBuilder_ == null) {
+          post_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          postBuilder_.clear();
+        }
         return this;
+      }
+      public Builder removePost(int index) {
+        if (postBuilder_ == null) {
+          ensurePostIsMutable();
+          post_.remove(index);
+          onChanged();
+        } else {
+          postBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder getPostBuilder(
+          int index) {
+        return getPostFieldBuilder().getBuilder(index);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder getPostOrBuilder(
+          int index) {
+        if (postBuilder_ == null) {
+          return post_.get(index);  } else {
+          return postBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder> 
+           getPostOrBuilderList() {
+        if (postBuilder_ != null) {
+          return postBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(post_);
+        }
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder addPostBuilder() {
+        return getPostFieldBuilder().addBuilder(
+            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.getDefaultInstance());
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder addPostBuilder(
+          int index) {
+        return getPostFieldBuilder().addBuilder(
+            index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.getDefaultInstance());
+      }
+      public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder> 
+           getPostBuilderList() {
+        return getPostFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder> 
+          getPostFieldBuilder() {
+        if (postBuilder_ == null) {
+          postBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPostOrBuilder>(
+                  post_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          post_ = null;
+        }
+        return postBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.GoalPercept)
@@ -4020,18 +5726,38 @@ public final class Representations {
     
     static {
       defaultInstance = new GoalPercept(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.GoalPercept)
   }
   
+  public interface WalkRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required uint32 coordinate = 1;
+    boolean hasCoordinate();
+    int getCoordinate();
+    
+    // required bool stopWithStand = 2;
+    boolean hasStopWithStand();
+    boolean getStopWithStand();
+    
+    // required bool stable = 3;
+    boolean hasStable();
+    boolean getStable();
+    
+    // required .naothmessages.Pose2D pose = 4;
+    boolean hasPose();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder();
+  }
   public static final class WalkRequest extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements WalkRequestOrBuilder {
     // Use WalkRequest.newBuilder() to construct.
-    private WalkRequest() {
-      initFields();
+    private WalkRequest(Builder builder) {
+      super(builder);
     }
     private WalkRequest(boolean noInit) {}
     
@@ -4054,60 +5780,99 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_WalkRequest_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required uint32 coordinate = 1;
     public static final int COORDINATE_FIELD_NUMBER = 1;
-    private boolean hasCoordinate;
-    private int coordinate_ = 0;
-    public boolean hasCoordinate() { return hasCoordinate; }
-    public int getCoordinate() { return coordinate_; }
+    private int coordinate_;
+    public boolean hasCoordinate() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getCoordinate() {
+      return coordinate_;
+    }
     
     // required bool stopWithStand = 2;
     public static final int STOPWITHSTAND_FIELD_NUMBER = 2;
-    private boolean hasStopWithStand;
-    private boolean stopWithStand_ = false;
-    public boolean hasStopWithStand() { return hasStopWithStand; }
-    public boolean getStopWithStand() { return stopWithStand_; }
+    private boolean stopWithStand_;
+    public boolean hasStopWithStand() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public boolean getStopWithStand() {
+      return stopWithStand_;
+    }
     
     // required bool stable = 3;
     public static final int STABLE_FIELD_NUMBER = 3;
-    private boolean hasStable;
-    private boolean stable_ = false;
-    public boolean hasStable() { return hasStable; }
-    public boolean getStable() { return stable_; }
+    private boolean stable_;
+    public boolean hasStable() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public boolean getStable() {
+      return stable_;
+    }
     
     // required .naothmessages.Pose2D pose = 4;
     public static final int POSE_FIELD_NUMBER = 4;
-    private boolean hasPose;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D pose_;
-    public boolean hasPose() { return hasPose; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose() { return pose_; }
+    public boolean hasPose() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose() {
+      return pose_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+      return pose_;
+    }
     
     private void initFields() {
+      coordinate_ = 0;
+      stopWithStand_ = false;
+      stable_ = false;
       pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasCoordinate) return false;
-      if (!hasStopWithStand) return false;
-      if (!hasStable) return false;
-      if (!hasPose) return false;
-      if (!getPose().isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasCoordinate()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasStopWithStand()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasStable()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPose()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getPose().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasCoordinate()) {
-        output.writeUInt32(1, getCoordinate());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, coordinate_);
       }
-      if (hasStopWithStand()) {
-        output.writeBool(2, getStopWithStand());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, stopWithStand_);
       }
-      if (hasStable()) {
-        output.writeBool(3, getStable());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, stable_);
       }
-      if (hasPose()) {
-        output.writeMessage(4, getPose());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(4, pose_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4118,25 +5883,32 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasCoordinate()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, getCoordinate());
+          .computeUInt32Size(1, coordinate_);
       }
-      if (hasStopWithStand()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(2, getStopWithStand());
+          .computeBoolSize(2, stopWithStand_);
       }
-      if (hasStable()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, getStable());
+          .computeBoolSize(3, stable_);
       }
-      if (hasPose()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getPose());
+          .computeMessageSize(4, pose_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest parseFrom(
@@ -4213,34 +5985,62 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_WalkRequest_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_WalkRequest_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getPoseFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        coordinate_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        stopWithStand_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        stable_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (poseBuilder_ == null) {
+          pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+        } else {
+          poseBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest();
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -4252,33 +6052,51 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest result = new de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest returnMe = result;
-        result = null;
-        return returnMe;
+        result.coordinate_ = coordinate_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.stopWithStand_ = stopWithStand_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.stable_ = stable_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        if (poseBuilder_ == null) {
+          result.pose_ = pose_;
+        } else {
+          result.pose_ = poseBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4308,6 +6126,30 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasCoordinate()) {
+          
+          return false;
+        }
+        if (!hasStopWithStand()) {
+          
+          return false;
+        }
+        if (!hasStable()) {
+          
+          return false;
+        }
+        if (!hasPose()) {
+          
+          return false;
+        }
+        if (!getPose().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4320,25 +6162,30 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 8: {
-              setCoordinate(input.readUInt32());
+              bitField0_ |= 0x00000001;
+              coordinate_ = input.readUInt32();
               break;
             }
             case 16: {
-              setStopWithStand(input.readBool());
+              bitField0_ |= 0x00000002;
+              stopWithStand_ = input.readBool();
               break;
             }
             case 24: {
-              setStable(input.readBool());
+              bitField0_ |= 0x00000004;
+              stable_ = input.readBool();
               break;
             }
             case 34: {
@@ -4354,96 +6201,159 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // required uint32 coordinate = 1;
+      private int coordinate_ ;
       public boolean hasCoordinate() {
-        return result.hasCoordinate();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public int getCoordinate() {
-        return result.getCoordinate();
+        return coordinate_;
       }
       public Builder setCoordinate(int value) {
-        result.hasCoordinate = true;
-        result.coordinate_ = value;
+        bitField0_ |= 0x00000001;
+        coordinate_ = value;
+        onChanged();
         return this;
       }
       public Builder clearCoordinate() {
-        result.hasCoordinate = false;
-        result.coordinate_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        coordinate_ = 0;
+        onChanged();
         return this;
       }
       
       // required bool stopWithStand = 2;
+      private boolean stopWithStand_ ;
       public boolean hasStopWithStand() {
-        return result.hasStopWithStand();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public boolean getStopWithStand() {
-        return result.getStopWithStand();
+        return stopWithStand_;
       }
       public Builder setStopWithStand(boolean value) {
-        result.hasStopWithStand = true;
-        result.stopWithStand_ = value;
+        bitField0_ |= 0x00000002;
+        stopWithStand_ = value;
+        onChanged();
         return this;
       }
       public Builder clearStopWithStand() {
-        result.hasStopWithStand = false;
-        result.stopWithStand_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        stopWithStand_ = false;
+        onChanged();
         return this;
       }
       
       // required bool stable = 3;
+      private boolean stable_ ;
       public boolean hasStable() {
-        return result.hasStable();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public boolean getStable() {
-        return result.getStable();
+        return stable_;
       }
       public Builder setStable(boolean value) {
-        result.hasStable = true;
-        result.stable_ = value;
+        bitField0_ |= 0x00000004;
+        stable_ = value;
+        onChanged();
         return this;
       }
       public Builder clearStable() {
-        result.hasStable = false;
-        result.stable_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        stable_ = false;
+        onChanged();
         return this;
       }
       
       // required .naothmessages.Pose2D pose = 4;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> poseBuilder_;
       public boolean hasPose() {
-        return result.hasPose();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose() {
-        return result.getPose();
+        if (poseBuilder_ == null) {
+          return pose_;
+        } else {
+          return poseBuilder_.getMessage();
+        }
       }
       public Builder setPose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (poseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pose_ = value;
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(value);
         }
-        result.hasPose = true;
-        result.pose_ = value;
+        bitField0_ |= 0x00000008;
         return this;
       }
-      public Builder setPose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder builderForValue) {
-        result.hasPose = true;
-        result.pose_ = builderForValue.build();
+      public Builder setPose(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder builderForValue) {
+        if (poseBuilder_ == null) {
+          pose_ = builderForValue.build();
+          onChanged();
+        } else {
+          poseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder mergePose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
-        if (result.hasPose() &&
-            result.pose_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
-          result.pose_ =
-            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(result.pose_).mergeFrom(value).buildPartial();
+        if (poseBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              pose_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+            pose_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(pose_).mergeFrom(value).buildPartial();
+          } else {
+            pose_ = value;
+          }
+          onChanged();
         } else {
-          result.pose_ = value;
+          poseBuilder_.mergeFrom(value);
         }
-        result.hasPose = true;
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder clearPose() {
-        result.hasPose = false;
-        result.pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+        if (poseBuilder_ == null) {
+          pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+          onChanged();
+        } else {
+          poseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder getPoseBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getPoseFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder() {
+        if (poseBuilder_ != null) {
+          return poseBuilder_.getMessageOrBuilder();
+        } else {
+          return pose_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> 
+          getPoseFieldBuilder() {
+        if (poseBuilder_ == null) {
+          poseBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder>(
+                  pose_,
+                  getParentForChildren(),
+                  isClean());
+          pose_ = null;
+        }
+        return poseBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.WalkRequest)
@@ -4451,18 +6361,38 @@ public final class Representations {
     
     static {
       defaultInstance = new WalkRequest(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.WalkRequest)
   }
   
+  public interface MotionRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required uint32 id = 1;
+    boolean hasId();
+    int getId();
+    
+    // required uint32 time = 2;
+    boolean hasTime();
+    int getTime();
+    
+    // required bool forced = 3;
+    boolean hasForced();
+    boolean getForced();
+    
+    // optional .naothmessages.WalkRequest walkRequest = 4;
+    boolean hasWalkRequest();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest getWalkRequest();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder getWalkRequestOrBuilder();
+  }
   public static final class MotionRequest extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements MotionRequestOrBuilder {
     // Use MotionRequest.newBuilder() to construct.
-    private MotionRequest() {
-      initFields();
+    private MotionRequest(Builder builder) {
+      super(builder);
     }
     private MotionRequest(boolean noInit) {}
     
@@ -4485,61 +6415,97 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_MotionRequest_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required uint32 id = 1;
     public static final int ID_FIELD_NUMBER = 1;
-    private boolean hasId;
-    private int id_ = 0;
-    public boolean hasId() { return hasId; }
-    public int getId() { return id_; }
+    private int id_;
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getId() {
+      return id_;
+    }
     
     // required uint32 time = 2;
     public static final int TIME_FIELD_NUMBER = 2;
-    private boolean hasTime;
-    private int time_ = 0;
-    public boolean hasTime() { return hasTime; }
-    public int getTime() { return time_; }
+    private int time_;
+    public boolean hasTime() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getTime() {
+      return time_;
+    }
     
     // required bool forced = 3;
     public static final int FORCED_FIELD_NUMBER = 3;
-    private boolean hasForced;
-    private boolean forced_ = false;
-    public boolean hasForced() { return hasForced; }
-    public boolean getForced() { return forced_; }
+    private boolean forced_;
+    public boolean hasForced() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public boolean getForced() {
+      return forced_;
+    }
     
     // optional .naothmessages.WalkRequest walkRequest = 4;
     public static final int WALKREQUEST_FIELD_NUMBER = 4;
-    private boolean hasWalkRequest;
     private de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest walkRequest_;
-    public boolean hasWalkRequest() { return hasWalkRequest; }
-    public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest getWalkRequest() { return walkRequest_; }
+    public boolean hasWalkRequest() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest getWalkRequest() {
+      return walkRequest_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder getWalkRequestOrBuilder() {
+      return walkRequest_;
+    }
     
     private void initFields() {
+      id_ = 0;
+      time_ = 0;
+      forced_ = false;
       walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasId) return false;
-      if (!hasTime) return false;
-      if (!hasForced) return false;
-      if (hasWalkRequest()) {
-        if (!getWalkRequest().isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
+      if (!hasTime()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasForced()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasWalkRequest()) {
+        if (!getWalkRequest().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasId()) {
-        output.writeUInt32(1, getId());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, id_);
       }
-      if (hasTime()) {
-        output.writeUInt32(2, getTime());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, time_);
       }
-      if (hasForced()) {
-        output.writeBool(3, getForced());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, forced_);
       }
-      if (hasWalkRequest()) {
-        output.writeMessage(4, getWalkRequest());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(4, walkRequest_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4550,25 +6516,32 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      if (hasId()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, getId());
+          .computeUInt32Size(1, id_);
       }
-      if (hasTime()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(2, getTime());
+          .computeUInt32Size(2, time_);
       }
-      if (hasForced()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, getForced());
+          .computeBoolSize(3, forced_);
       }
-      if (hasWalkRequest()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getWalkRequest());
+          .computeMessageSize(4, walkRequest_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest parseFrom(
@@ -4645,34 +6618,62 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_MotionRequest_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_MotionRequest_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getWalkRequestFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        id_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        time_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        forced_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (walkRequestBuilder_ == null) {
+          walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
+        } else {
+          walkRequestBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest();
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -4684,33 +6685,51 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest result = new de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest returnMe = result;
-        result = null;
-        return returnMe;
+        result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.time_ = time_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.forced_ = forced_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        if (walkRequestBuilder_ == null) {
+          result.walkRequest_ = walkRequest_;
+        } else {
+          result.walkRequest_ = walkRequestBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4740,6 +6759,28 @@ public final class Representations {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        if (!hasTime()) {
+          
+          return false;
+        }
+        if (!hasForced()) {
+          
+          return false;
+        }
+        if (hasWalkRequest()) {
+          if (!getWalkRequest().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4752,25 +6793,30 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 8: {
-              setId(input.readUInt32());
+              bitField0_ |= 0x00000001;
+              id_ = input.readUInt32();
               break;
             }
             case 16: {
-              setTime(input.readUInt32());
+              bitField0_ |= 0x00000002;
+              time_ = input.readUInt32();
               break;
             }
             case 24: {
-              setForced(input.readBool());
+              bitField0_ |= 0x00000004;
+              forced_ = input.readBool();
               break;
             }
             case 34: {
@@ -4786,96 +6832,159 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // required uint32 id = 1;
+      private int id_ ;
       public boolean hasId() {
-        return result.hasId();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public int getId() {
-        return result.getId();
+        return id_;
       }
       public Builder setId(int value) {
-        result.hasId = true;
-        result.id_ = value;
+        bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
         return this;
       }
       public Builder clearId() {
-        result.hasId = false;
-        result.id_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = 0;
+        onChanged();
         return this;
       }
       
       // required uint32 time = 2;
+      private int time_ ;
       public boolean hasTime() {
-        return result.hasTime();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public int getTime() {
-        return result.getTime();
+        return time_;
       }
       public Builder setTime(int value) {
-        result.hasTime = true;
-        result.time_ = value;
+        bitField0_ |= 0x00000002;
+        time_ = value;
+        onChanged();
         return this;
       }
       public Builder clearTime() {
-        result.hasTime = false;
-        result.time_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        time_ = 0;
+        onChanged();
         return this;
       }
       
       // required bool forced = 3;
+      private boolean forced_ ;
       public boolean hasForced() {
-        return result.hasForced();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public boolean getForced() {
-        return result.getForced();
+        return forced_;
       }
       public Builder setForced(boolean value) {
-        result.hasForced = true;
-        result.forced_ = value;
+        bitField0_ |= 0x00000004;
+        forced_ = value;
+        onChanged();
         return this;
       }
       public Builder clearForced() {
-        result.hasForced = false;
-        result.forced_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        forced_ = false;
+        onChanged();
         return this;
       }
       
       // optional .naothmessages.WalkRequest walkRequest = 4;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder> walkRequestBuilder_;
       public boolean hasWalkRequest() {
-        return result.hasWalkRequest();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest getWalkRequest() {
-        return result.getWalkRequest();
+        if (walkRequestBuilder_ == null) {
+          return walkRequest_;
+        } else {
+          return walkRequestBuilder_.getMessage();
+        }
       }
       public Builder setWalkRequest(de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (walkRequestBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          walkRequest_ = value;
+          onChanged();
+        } else {
+          walkRequestBuilder_.setMessage(value);
         }
-        result.hasWalkRequest = true;
-        result.walkRequest_ = value;
+        bitField0_ |= 0x00000008;
         return this;
       }
-      public Builder setWalkRequest(de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder builderForValue) {
-        result.hasWalkRequest = true;
-        result.walkRequest_ = builderForValue.build();
+      public Builder setWalkRequest(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder builderForValue) {
+        if (walkRequestBuilder_ == null) {
+          walkRequest_ = builderForValue.build();
+          onChanged();
+        } else {
+          walkRequestBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder mergeWalkRequest(de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest value) {
-        if (result.hasWalkRequest() &&
-            result.walkRequest_ != de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance()) {
-          result.walkRequest_ =
-            de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.newBuilder(result.walkRequest_).mergeFrom(value).buildPartial();
+        if (walkRequestBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              walkRequest_ != de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance()) {
+            walkRequest_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.newBuilder(walkRequest_).mergeFrom(value).buildPartial();
+          } else {
+            walkRequest_ = value;
+          }
+          onChanged();
         } else {
-          result.walkRequest_ = value;
+          walkRequestBuilder_.mergeFrom(value);
         }
-        result.hasWalkRequest = true;
+        bitField0_ |= 0x00000008;
         return this;
       }
       public Builder clearWalkRequest() {
-        result.hasWalkRequest = false;
-        result.walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
+        if (walkRequestBuilder_ == null) {
+          walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
+          onChanged();
+        } else {
+          walkRequestBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder getWalkRequestBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getWalkRequestFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder getWalkRequestOrBuilder() {
+        if (walkRequestBuilder_ != null) {
+          return walkRequestBuilder_.getMessageOrBuilder();
+        } else {
+          return walkRequest_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder> 
+          getWalkRequestFieldBuilder() {
+        if (walkRequestBuilder_ == null) {
+          walkRequestBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder>(
+                  walkRequest_,
+                  getParentForChildren(),
+                  isClean());
+          walkRequest_ = null;
+        }
+        return walkRequestBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.MotionRequest)
@@ -4883,18 +6992,46 @@ public final class Representations {
     
     static {
       defaultInstance = new MotionRequest(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
   }
   
+  public interface LinePerceptOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated .naothmessages.FieldLineSegment lines = 1;
+    java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> 
+        getLinesList();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment getLines(int index);
+    int getLinesCount();
+    java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder> 
+        getLinesOrBuilderList();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder getLinesOrBuilder(
+        int index);
+    
+    // repeated .naothmessages.Intersection intersections = 2;
+    java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> 
+        getIntersectionsList();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection getIntersections(int index);
+    int getIntersectionsCount();
+    java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder> 
+        getIntersectionsOrBuilderList();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder getIntersectionsOrBuilder(
+        int index);
+    
+    // optional .naothmessages.DoubleVector2 middleCircleCenter = 3;
+    boolean hasMiddleCircleCenter();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getMiddleCircleCenter();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getMiddleCircleCenterOrBuilder();
+  }
   public static final class LinePercept extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements LinePerceptOrBuilder {
     // Use LinePercept.newBuilder() to construct.
-    private LinePercept() {
-      initFields();
+    private LinePercept(Builder builder) {
+      super(builder);
     }
     private LinePercept(boolean noInit) {}
     
@@ -4917,64 +7054,105 @@ public final class Representations {
       return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_LinePercept_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // repeated .naothmessages.FieldLineSegment lines = 1;
     public static final int LINES_FIELD_NUMBER = 1;
-    private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> lines_ =
-      java.util.Collections.emptyList();
+    private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> lines_;
     public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> getLinesList() {
       return lines_;
     }
-    public int getLinesCount() { return lines_.size(); }
+    public java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder> 
+        getLinesOrBuilderList() {
+      return lines_;
+    }
+    public int getLinesCount() {
+      return lines_.size();
+    }
     public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment getLines(int index) {
+      return lines_.get(index);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder getLinesOrBuilder(
+        int index) {
       return lines_.get(index);
     }
     
     // repeated .naothmessages.Intersection intersections = 2;
     public static final int INTERSECTIONS_FIELD_NUMBER = 2;
-    private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> intersections_ =
-      java.util.Collections.emptyList();
+    private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> intersections_;
     public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> getIntersectionsList() {
       return intersections_;
     }
-    public int getIntersectionsCount() { return intersections_.size(); }
+    public java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder> 
+        getIntersectionsOrBuilderList() {
+      return intersections_;
+    }
+    public int getIntersectionsCount() {
+      return intersections_.size();
+    }
     public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection getIntersections(int index) {
+      return intersections_.get(index);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder getIntersectionsOrBuilder(
+        int index) {
       return intersections_.get(index);
     }
     
     // optional .naothmessages.DoubleVector2 middleCircleCenter = 3;
     public static final int MIDDLECIRCLECENTER_FIELD_NUMBER = 3;
-    private boolean hasMiddleCircleCenter;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 middleCircleCenter_;
-    public boolean hasMiddleCircleCenter() { return hasMiddleCircleCenter; }
-    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getMiddleCircleCenter() { return middleCircleCenter_; }
+    public boolean hasMiddleCircleCenter() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getMiddleCircleCenter() {
+      return middleCircleCenter_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getMiddleCircleCenterOrBuilder() {
+      return middleCircleCenter_;
+    }
     
     private void initFields() {
+      lines_ = java.util.Collections.emptyList();
+      intersections_ = java.util.Collections.emptyList();
       middleCircleCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment element : getLinesList()) {
-        if (!element.isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      for (int i = 0; i < getLinesCount(); i++) {
+        if (!getLines(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection element : getIntersectionsList()) {
-        if (!element.isInitialized()) return false;
+      for (int i = 0; i < getIntersectionsCount(); i++) {
+        if (!getIntersections(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       if (hasMiddleCircleCenter()) {
-        if (!getMiddleCircleCenter().isInitialized()) return false;
+        if (!getMiddleCircleCenter().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment element : getLinesList()) {
-        output.writeMessage(1, element);
+      for (int i = 0; i < lines_.size(); i++) {
+        output.writeMessage(1, lines_.get(i));
       }
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection element : getIntersectionsList()) {
-        output.writeMessage(2, element);
+      for (int i = 0; i < intersections_.size(); i++) {
+        output.writeMessage(2, intersections_.get(i));
       }
-      if (hasMiddleCircleCenter()) {
-        output.writeMessage(3, getMiddleCircleCenter());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(3, middleCircleCenter_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4985,21 +7163,28 @@ public final class Representations {
       if (size != -1) return size;
     
       size = 0;
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment element : getLinesList()) {
+      for (int i = 0; i < lines_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, element);
+          .computeMessageSize(1, lines_.get(i));
       }
-      for (de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection element : getIntersectionsList()) {
+      for (int i = 0; i < intersections_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, element);
+          .computeMessageSize(2, intersections_.get(i));
       }
-      if (hasMiddleCircleCenter()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getMiddleCircleCenter());
+          .computeMessageSize(3, middleCircleCenter_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept parseFrom(
@@ -5076,34 +7261,70 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.LinePerceptOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_LinePercept_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_LinePercept_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getLinesFieldBuilder();
+          getIntersectionsFieldBuilder();
+          getMiddleCircleCenterFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        if (linesBuilder_ == null) {
+          lines_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          linesBuilder_.clear();
         }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept();
+        if (intersectionsBuilder_ == null) {
+          intersections_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          intersectionsBuilder_.clear();
+        }
+        if (middleCircleCenterBuilder_ == null) {
+          middleCircleCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          middleCircleCenterBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -5115,41 +7336,57 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept result = new de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (linesBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            lines_ = java.util.Collections.unmodifiableList(lines_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.lines_ = lines_;
+        } else {
+          result.lines_ = linesBuilder_.build();
         }
-        if (result.lines_ != java.util.Collections.EMPTY_LIST) {
-          result.lines_ =
-            java.util.Collections.unmodifiableList(result.lines_);
+        if (intersectionsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            intersections_ = java.util.Collections.unmodifiableList(intersections_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.intersections_ = intersections_;
+        } else {
+          result.intersections_ = intersectionsBuilder_.build();
         }
-        if (result.intersections_ != java.util.Collections.EMPTY_LIST) {
-          result.intersections_ =
-            java.util.Collections.unmodifiableList(result.intersections_);
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000001;
         }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept returnMe = result;
-        result = null;
-        return returnMe;
+        if (middleCircleCenterBuilder_ == null) {
+          result.middleCircleCenter_ = middleCircleCenter_;
+        } else {
+          result.middleCircleCenter_ = middleCircleCenterBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5163,23 +7400,85 @@ public final class Representations {
       
       public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept other) {
         if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.getDefaultInstance()) return this;
-        if (!other.lines_.isEmpty()) {
-          if (result.lines_.isEmpty()) {
-            result.lines_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment>();
+        if (linesBuilder_ == null) {
+          if (!other.lines_.isEmpty()) {
+            if (lines_.isEmpty()) {
+              lines_ = other.lines_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureLinesIsMutable();
+              lines_.addAll(other.lines_);
+            }
+            onChanged();
           }
-          result.lines_.addAll(other.lines_);
+        } else {
+          if (!other.lines_.isEmpty()) {
+            if (linesBuilder_.isEmpty()) {
+              linesBuilder_.dispose();
+              linesBuilder_ = null;
+              lines_ = other.lines_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              linesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getLinesFieldBuilder() : null;
+            } else {
+              linesBuilder_.addAllMessages(other.lines_);
+            }
+          }
         }
-        if (!other.intersections_.isEmpty()) {
-          if (result.intersections_.isEmpty()) {
-            result.intersections_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection>();
+        if (intersectionsBuilder_ == null) {
+          if (!other.intersections_.isEmpty()) {
+            if (intersections_.isEmpty()) {
+              intersections_ = other.intersections_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureIntersectionsIsMutable();
+              intersections_.addAll(other.intersections_);
+            }
+            onChanged();
           }
-          result.intersections_.addAll(other.intersections_);
+        } else {
+          if (!other.intersections_.isEmpty()) {
+            if (intersectionsBuilder_.isEmpty()) {
+              intersectionsBuilder_.dispose();
+              intersectionsBuilder_ = null;
+              intersections_ = other.intersections_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              intersectionsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getIntersectionsFieldBuilder() : null;
+            } else {
+              intersectionsBuilder_.addAllMessages(other.intersections_);
+            }
+          }
         }
         if (other.hasMiddleCircleCenter()) {
           mergeMiddleCircleCenter(other.getMiddleCircleCenter());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        for (int i = 0; i < getLinesCount(); i++) {
+          if (!getLines(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getIntersectionsCount(); i++) {
+          if (!getIntersections(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasMiddleCircleCenter()) {
+          if (!getMiddleCircleCenter().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
       }
       
       public Builder mergeFrom(
@@ -5194,11 +7493,13 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
@@ -5228,144 +7529,468 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // repeated .naothmessages.FieldLineSegment lines = 1;
+      private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> lines_ =
+        java.util.Collections.emptyList();
+      private void ensureLinesIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          lines_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment>(lines_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder> linesBuilder_;
+      
       public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> getLinesList() {
-        return java.util.Collections.unmodifiableList(result.lines_);
+        if (linesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(lines_);
+        } else {
+          return linesBuilder_.getMessageList();
+        }
       }
       public int getLinesCount() {
-        return result.getLinesCount();
+        if (linesBuilder_ == null) {
+          return lines_.size();
+        } else {
+          return linesBuilder_.getCount();
+        }
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment getLines(int index) {
-        return result.getLines(index);
-      }
-      public Builder setLines(int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (linesBuilder_ == null) {
+          return lines_.get(index);
+        } else {
+          return linesBuilder_.getMessage(index);
         }
-        result.lines_.set(index, value);
+      }
+      public Builder setLines(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment value) {
+        if (linesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureLinesIsMutable();
+          lines_.set(index, value);
+          onChanged();
+        } else {
+          linesBuilder_.setMessage(index, value);
+        }
         return this;
       }
-      public Builder setLines(int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder builderForValue) {
-        result.lines_.set(index, builderForValue.build());
+      public Builder setLines(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder builderForValue) {
+        if (linesBuilder_ == null) {
+          ensureLinesIsMutable();
+          lines_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          linesBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addLines(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (linesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureLinesIsMutable();
+          lines_.add(value);
+          onChanged();
+        } else {
+          linesBuilder_.addMessage(value);
         }
-        if (result.lines_.isEmpty()) {
-          result.lines_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment>();
-        }
-        result.lines_.add(value);
         return this;
       }
-      public Builder addLines(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder builderForValue) {
-        if (result.lines_.isEmpty()) {
-          result.lines_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment>();
+      public Builder addLines(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment value) {
+        if (linesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureLinesIsMutable();
+          lines_.add(index, value);
+          onChanged();
+        } else {
+          linesBuilder_.addMessage(index, value);
         }
-        result.lines_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addLines(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder builderForValue) {
+        if (linesBuilder_ == null) {
+          ensureLinesIsMutable();
+          lines_.add(builderForValue.build());
+          onChanged();
+        } else {
+          linesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addLines(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder builderForValue) {
+        if (linesBuilder_ == null) {
+          ensureLinesIsMutable();
+          lines_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          linesBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAllLines(
           java.lang.Iterable<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment> values) {
-        if (result.lines_.isEmpty()) {
-          result.lines_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment>();
+        if (linesBuilder_ == null) {
+          ensureLinesIsMutable();
+          super.addAll(values, lines_);
+          onChanged();
+        } else {
+          linesBuilder_.addAllMessages(values);
         }
-        super.addAll(values, result.lines_);
         return this;
       }
       public Builder clearLines() {
-        result.lines_ = java.util.Collections.emptyList();
+        if (linesBuilder_ == null) {
+          lines_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          linesBuilder_.clear();
+        }
         return this;
+      }
+      public Builder removeLines(int index) {
+        if (linesBuilder_ == null) {
+          ensureLinesIsMutable();
+          lines_.remove(index);
+          onChanged();
+        } else {
+          linesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder getLinesBuilder(
+          int index) {
+        return getLinesFieldBuilder().getBuilder(index);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder getLinesOrBuilder(
+          int index) {
+        if (linesBuilder_ == null) {
+          return lines_.get(index);  } else {
+          return linesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder> 
+           getLinesOrBuilderList() {
+        if (linesBuilder_ != null) {
+          return linesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(lines_);
+        }
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder addLinesBuilder() {
+        return getLinesFieldBuilder().addBuilder(
+            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.getDefaultInstance());
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder addLinesBuilder(
+          int index) {
+        return getLinesFieldBuilder().addBuilder(
+            index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.getDefaultInstance());
+      }
+      public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder> 
+           getLinesBuilderList() {
+        return getLinesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder> 
+          getLinesFieldBuilder() {
+        if (linesBuilder_ == null) {
+          linesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegmentOrBuilder>(
+                  lines_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          lines_ = null;
+        }
+        return linesBuilder_;
       }
       
       // repeated .naothmessages.Intersection intersections = 2;
+      private java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> intersections_ =
+        java.util.Collections.emptyList();
+      private void ensureIntersectionsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          intersections_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection>(intersections_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder> intersectionsBuilder_;
+      
       public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> getIntersectionsList() {
-        return java.util.Collections.unmodifiableList(result.intersections_);
+        if (intersectionsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(intersections_);
+        } else {
+          return intersectionsBuilder_.getMessageList();
+        }
       }
       public int getIntersectionsCount() {
-        return result.getIntersectionsCount();
+        if (intersectionsBuilder_ == null) {
+          return intersections_.size();
+        } else {
+          return intersectionsBuilder_.getCount();
+        }
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection getIntersections(int index) {
-        return result.getIntersections(index);
-      }
-      public Builder setIntersections(int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (intersectionsBuilder_ == null) {
+          return intersections_.get(index);
+        } else {
+          return intersectionsBuilder_.getMessage(index);
         }
-        result.intersections_.set(index, value);
+      }
+      public Builder setIntersections(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection value) {
+        if (intersectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureIntersectionsIsMutable();
+          intersections_.set(index, value);
+          onChanged();
+        } else {
+          intersectionsBuilder_.setMessage(index, value);
+        }
         return this;
       }
-      public Builder setIntersections(int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder builderForValue) {
-        result.intersections_.set(index, builderForValue.build());
+      public Builder setIntersections(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder builderForValue) {
+        if (intersectionsBuilder_ == null) {
+          ensureIntersectionsIsMutable();
+          intersections_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          intersectionsBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addIntersections(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (intersectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureIntersectionsIsMutable();
+          intersections_.add(value);
+          onChanged();
+        } else {
+          intersectionsBuilder_.addMessage(value);
         }
-        if (result.intersections_.isEmpty()) {
-          result.intersections_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection>();
-        }
-        result.intersections_.add(value);
         return this;
       }
-      public Builder addIntersections(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder builderForValue) {
-        if (result.intersections_.isEmpty()) {
-          result.intersections_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection>();
+      public Builder addIntersections(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection value) {
+        if (intersectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureIntersectionsIsMutable();
+          intersections_.add(index, value);
+          onChanged();
+        } else {
+          intersectionsBuilder_.addMessage(index, value);
         }
-        result.intersections_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addIntersections(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder builderForValue) {
+        if (intersectionsBuilder_ == null) {
+          ensureIntersectionsIsMutable();
+          intersections_.add(builderForValue.build());
+          onChanged();
+        } else {
+          intersectionsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addIntersections(
+          int index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder builderForValue) {
+        if (intersectionsBuilder_ == null) {
+          ensureIntersectionsIsMutable();
+          intersections_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          intersectionsBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAllIntersections(
           java.lang.Iterable<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection> values) {
-        if (result.intersections_.isEmpty()) {
-          result.intersections_ = new java.util.ArrayList<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection>();
+        if (intersectionsBuilder_ == null) {
+          ensureIntersectionsIsMutable();
+          super.addAll(values, intersections_);
+          onChanged();
+        } else {
+          intersectionsBuilder_.addAllMessages(values);
         }
-        super.addAll(values, result.intersections_);
         return this;
       }
       public Builder clearIntersections() {
-        result.intersections_ = java.util.Collections.emptyList();
+        if (intersectionsBuilder_ == null) {
+          intersections_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          intersectionsBuilder_.clear();
+        }
         return this;
+      }
+      public Builder removeIntersections(int index) {
+        if (intersectionsBuilder_ == null) {
+          ensureIntersectionsIsMutable();
+          intersections_.remove(index);
+          onChanged();
+        } else {
+          intersectionsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder getIntersectionsBuilder(
+          int index) {
+        return getIntersectionsFieldBuilder().getBuilder(index);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder getIntersectionsOrBuilder(
+          int index) {
+        if (intersectionsBuilder_ == null) {
+          return intersections_.get(index);  } else {
+          return intersectionsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder> 
+           getIntersectionsOrBuilderList() {
+        if (intersectionsBuilder_ != null) {
+          return intersectionsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(intersections_);
+        }
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder addIntersectionsBuilder() {
+        return getIntersectionsFieldBuilder().addBuilder(
+            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.getDefaultInstance());
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder addIntersectionsBuilder(
+          int index) {
+        return getIntersectionsFieldBuilder().addBuilder(
+            index, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.getDefaultInstance());
+      }
+      public java.util.List<de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder> 
+           getIntersectionsBuilderList() {
+        return getIntersectionsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder> 
+          getIntersectionsFieldBuilder() {
+        if (intersectionsBuilder_ == null) {
+          intersectionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntersectionOrBuilder>(
+                  intersections_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          intersections_ = null;
+        }
+        return intersectionsBuilder_;
       }
       
       // optional .naothmessages.DoubleVector2 middleCircleCenter = 3;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 middleCircleCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> middleCircleCenterBuilder_;
       public boolean hasMiddleCircleCenter() {
-        return result.hasMiddleCircleCenter();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getMiddleCircleCenter() {
-        return result.getMiddleCircleCenter();
+        if (middleCircleCenterBuilder_ == null) {
+          return middleCircleCenter_;
+        } else {
+          return middleCircleCenterBuilder_.getMessage();
+        }
       }
       public Builder setMiddleCircleCenter(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (middleCircleCenterBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          middleCircleCenter_ = value;
+          onChanged();
+        } else {
+          middleCircleCenterBuilder_.setMessage(value);
         }
-        result.hasMiddleCircleCenter = true;
-        result.middleCircleCenter_ = value;
+        bitField0_ |= 0x00000004;
         return this;
       }
-      public Builder setMiddleCircleCenter(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
-        result.hasMiddleCircleCenter = true;
-        result.middleCircleCenter_ = builderForValue.build();
+      public Builder setMiddleCircleCenter(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (middleCircleCenterBuilder_ == null) {
+          middleCircleCenter_ = builderForValue.build();
+          onChanged();
+        } else {
+          middleCircleCenterBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder mergeMiddleCircleCenter(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
-        if (result.hasMiddleCircleCenter() &&
-            result.middleCircleCenter_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
-          result.middleCircleCenter_ =
-            de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(result.middleCircleCenter_).mergeFrom(value).buildPartial();
+        if (middleCircleCenterBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              middleCircleCenter_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            middleCircleCenter_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(middleCircleCenter_).mergeFrom(value).buildPartial();
+          } else {
+            middleCircleCenter_ = value;
+          }
+          onChanged();
         } else {
-          result.middleCircleCenter_ = value;
+          middleCircleCenterBuilder_.mergeFrom(value);
         }
-        result.hasMiddleCircleCenter = true;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder clearMiddleCircleCenter() {
-        result.hasMiddleCircleCenter = false;
-        result.middleCircleCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        if (middleCircleCenterBuilder_ == null) {
+          middleCircleCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          middleCircleCenterBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder getMiddleCircleCenterBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getMiddleCircleCenterFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getMiddleCircleCenterOrBuilder() {
+        if (middleCircleCenterBuilder_ != null) {
+          return middleCircleCenterBuilder_.getMessageOrBuilder();
+        } else {
+          return middleCircleCenter_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getMiddleCircleCenterFieldBuilder() {
+        if (middleCircleCenterBuilder_ == null) {
+          middleCircleCenterBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  middleCircleCenter_,
+                  getParentForChildren(),
+                  isClean());
+          middleCircleCenter_ = null;
+        }
+        return middleCircleCenterBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.LinePercept)
@@ -5373,18 +7998,36 @@ public final class Representations {
     
     static {
       defaultInstance = new LinePercept(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.LinePercept)
   }
   
+  public interface FSRDataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // repeated double force = 1;
+    java.util.List<java.lang.Double> getForceList();
+    int getForceCount();
+    double getForce(int index);
+    
+    // repeated double data = 2;
+    java.util.List<java.lang.Double> getDataList();
+    int getDataCount();
+    double getData(int index);
+    
+    // repeated bool valid = 3;
+    java.util.List<java.lang.Boolean> getValidList();
+    int getValidCount();
+    boolean getValid(int index);
+  }
   public static final class FSRData extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements FSRDataOrBuilder {
     // Use FSRData.newBuilder() to construct.
-    private FSRData() {
-      initFields();
+    private FSRData(Builder builder) {
+      super(builder);
     }
     private FSRData(boolean noInit) {}
     
@@ -5409,57 +8052,71 @@ public final class Representations {
     
     // repeated double force = 1;
     public static final int FORCE_FIELD_NUMBER = 1;
-    private java.util.List<java.lang.Double> force_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getForceList() {
+    private java.util.List<java.lang.Double> force_;
+    public java.util.List<java.lang.Double>
+        getForceList() {
       return force_;
     }
-    public int getForceCount() { return force_.size(); }
+    public int getForceCount() {
+      return force_.size();
+    }
     public double getForce(int index) {
       return force_.get(index);
     }
     
     // repeated double data = 2;
     public static final int DATA_FIELD_NUMBER = 2;
-    private java.util.List<java.lang.Double> data_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Double> getDataList() {
+    private java.util.List<java.lang.Double> data_;
+    public java.util.List<java.lang.Double>
+        getDataList() {
       return data_;
     }
-    public int getDataCount() { return data_.size(); }
+    public int getDataCount() {
+      return data_.size();
+    }
     public double getData(int index) {
       return data_.get(index);
     }
     
     // repeated bool valid = 3;
     public static final int VALID_FIELD_NUMBER = 3;
-    private java.util.List<java.lang.Boolean> valid_ =
-      java.util.Collections.emptyList();
-    public java.util.List<java.lang.Boolean> getValidList() {
+    private java.util.List<java.lang.Boolean> valid_;
+    public java.util.List<java.lang.Boolean>
+        getValidList() {
       return valid_;
     }
-    public int getValidCount() { return valid_.size(); }
+    public int getValidCount() {
+      return valid_.size();
+    }
     public boolean getValid(int index) {
       return valid_.get(index);
     }
     
     private void initFields() {
+      force_ = java.util.Collections.emptyList();;
+      data_ = java.util.Collections.emptyList();;
+      valid_ = java.util.Collections.emptyList();;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (double element : getForceList()) {
-        output.writeDouble(1, element);
+      for (int i = 0; i < force_.size(); i++) {
+        output.writeDouble(1, force_.get(i));
       }
-      for (double element : getDataList()) {
-        output.writeDouble(2, element);
+      for (int i = 0; i < data_.size(); i++) {
+        output.writeDouble(2, data_.get(i));
       }
-      for (boolean element : getValidList()) {
-        output.writeBool(3, element);
+      for (int i = 0; i < valid_.size(); i++) {
+        output.writeBool(3, valid_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -5491,6 +8148,13 @@ public final class Representations {
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData parseFrom(
@@ -5567,34 +8231,55 @@ public final class Representations {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData result;
-      
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.FSRDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_FSRData_descriptor;
       }
       
-      protected de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_FSRData_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
-        }
-        result = new de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData();
+        super.clear();
+        force_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        data_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        valid_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -5606,45 +8291,44 @@ public final class Representations {
         return de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData build() {
-        if (result != null && !isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData result = new de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          force_ = java.util.Collections.unmodifiableList(force_);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
-        if (result.force_ != java.util.Collections.EMPTY_LIST) {
-          result.force_ =
-            java.util.Collections.unmodifiableList(result.force_);
+        result.force_ = force_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          data_ = java.util.Collections.unmodifiableList(data_);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
-        if (result.data_ != java.util.Collections.EMPTY_LIST) {
-          result.data_ =
-            java.util.Collections.unmodifiableList(result.data_);
+        result.data_ = data_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          valid_ = java.util.Collections.unmodifiableList(valid_);
+          bitField0_ = (bitField0_ & ~0x00000004);
         }
-        if (result.valid_ != java.util.Collections.EMPTY_LIST) {
-          result.valid_ =
-            java.util.Collections.unmodifiableList(result.valid_);
-        }
-        de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData returnMe = result;
-        result = null;
-        return returnMe;
+        result.valid_ = valid_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5659,25 +8343,41 @@ public final class Representations {
       public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData other) {
         if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.getDefaultInstance()) return this;
         if (!other.force_.isEmpty()) {
-          if (result.force_.isEmpty()) {
-            result.force_ = new java.util.ArrayList<java.lang.Double>();
+          if (force_.isEmpty()) {
+            force_ = other.force_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureForceIsMutable();
+            force_.addAll(other.force_);
           }
-          result.force_.addAll(other.force_);
+          onChanged();
         }
         if (!other.data_.isEmpty()) {
-          if (result.data_.isEmpty()) {
-            result.data_ = new java.util.ArrayList<java.lang.Double>();
+          if (data_.isEmpty()) {
+            data_ = other.data_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureDataIsMutable();
+            data_.addAll(other.data_);
           }
-          result.data_.addAll(other.data_);
+          onChanged();
         }
         if (!other.valid_.isEmpty()) {
-          if (result.valid_.isEmpty()) {
-            result.valid_ = new java.util.ArrayList<java.lang.Boolean>();
+          if (valid_.isEmpty()) {
+            valid_ = other.valid_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureValidIsMutable();
+            valid_.addAll(other.valid_);
           }
-          result.valid_.addAll(other.valid_);
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        return true;
       }
       
       public Builder mergeFrom(
@@ -5692,17 +8392,20 @@ public final class Representations {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 9: {
-              addForce(input.readDouble());
+              ensureForceIsMutable();
+              force_.add(input.readDouble());
               break;
             }
             case 10: {
@@ -5715,7 +8418,8 @@ public final class Representations {
               break;
             }
             case 17: {
-              addData(input.readDouble());
+              ensureDataIsMutable();
+              data_.add(input.readDouble());
               break;
             }
             case 18: {
@@ -5728,7 +8432,8 @@ public final class Representations {
               break;
             }
             case 24: {
-              addValid(input.readBool());
+              ensureValidIsMutable();
+              valid_.add(input.readBool());
               break;
             }
             case 26: {
@@ -5744,106 +8449,140 @@ public final class Representations {
         }
       }
       
+      private int bitField0_;
       
       // repeated double force = 1;
-      public java.util.List<java.lang.Double> getForceList() {
-        return java.util.Collections.unmodifiableList(result.force_);
+      private java.util.List<java.lang.Double> force_ = java.util.Collections.emptyList();;
+      private void ensureForceIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          force_ = new java.util.ArrayList<java.lang.Double>(force_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getForceList() {
+        return java.util.Collections.unmodifiableList(force_);
       }
       public int getForceCount() {
-        return result.getForceCount();
+        return force_.size();
       }
       public double getForce(int index) {
-        return result.getForce(index);
+        return force_.get(index);
       }
-      public Builder setForce(int index, double value) {
-        result.force_.set(index, value);
+      public Builder setForce(
+          int index, double value) {
+        ensureForceIsMutable();
+        force_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addForce(double value) {
-        if (result.force_.isEmpty()) {
-          result.force_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.force_.add(value);
+        ensureForceIsMutable();
+        force_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllForce(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.force_.isEmpty()) {
-          result.force_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.force_);
+        ensureForceIsMutable();
+        super.addAll(values, force_);
+        onChanged();
         return this;
       }
       public Builder clearForce() {
-        result.force_ = java.util.Collections.emptyList();
+        force_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
         return this;
       }
       
       // repeated double data = 2;
-      public java.util.List<java.lang.Double> getDataList() {
-        return java.util.Collections.unmodifiableList(result.data_);
+      private java.util.List<java.lang.Double> data_ = java.util.Collections.emptyList();;
+      private void ensureDataIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          data_ = new java.util.ArrayList<java.lang.Double>(data_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getDataList() {
+        return java.util.Collections.unmodifiableList(data_);
       }
       public int getDataCount() {
-        return result.getDataCount();
+        return data_.size();
       }
       public double getData(int index) {
-        return result.getData(index);
+        return data_.get(index);
       }
-      public Builder setData(int index, double value) {
-        result.data_.set(index, value);
+      public Builder setData(
+          int index, double value) {
+        ensureDataIsMutable();
+        data_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addData(double value) {
-        if (result.data_.isEmpty()) {
-          result.data_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        result.data_.add(value);
+        ensureDataIsMutable();
+        data_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllData(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        if (result.data_.isEmpty()) {
-          result.data_ = new java.util.ArrayList<java.lang.Double>();
-        }
-        super.addAll(values, result.data_);
+        ensureDataIsMutable();
+        super.addAll(values, data_);
+        onChanged();
         return this;
       }
       public Builder clearData() {
-        result.data_ = java.util.Collections.emptyList();
+        data_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
         return this;
       }
       
       // repeated bool valid = 3;
-      public java.util.List<java.lang.Boolean> getValidList() {
-        return java.util.Collections.unmodifiableList(result.valid_);
+      private java.util.List<java.lang.Boolean> valid_ = java.util.Collections.emptyList();;
+      private void ensureValidIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          valid_ = new java.util.ArrayList<java.lang.Boolean>(valid_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      public java.util.List<java.lang.Boolean>
+          getValidList() {
+        return java.util.Collections.unmodifiableList(valid_);
       }
       public int getValidCount() {
-        return result.getValidCount();
+        return valid_.size();
       }
       public boolean getValid(int index) {
-        return result.getValid(index);
+        return valid_.get(index);
       }
-      public Builder setValid(int index, boolean value) {
-        result.valid_.set(index, value);
+      public Builder setValid(
+          int index, boolean value) {
+        ensureValidIsMutable();
+        valid_.set(index, value);
+        onChanged();
         return this;
       }
       public Builder addValid(boolean value) {
-        if (result.valid_.isEmpty()) {
-          result.valid_ = new java.util.ArrayList<java.lang.Boolean>();
-        }
-        result.valid_.add(value);
+        ensureValidIsMutable();
+        valid_.add(value);
+        onChanged();
         return this;
       }
       public Builder addAllValid(
           java.lang.Iterable<? extends java.lang.Boolean> values) {
-        if (result.valid_.isEmpty()) {
-          result.valid_ = new java.util.ArrayList<java.lang.Boolean>();
-        }
-        super.addAll(values, result.valid_);
+        ensureValidIsMutable();
+        super.addAll(values, valid_);
+        onChanged();
         return this;
       }
       public Builder clearValid() {
-        result.valid_ = java.util.Collections.emptyList();
+        valid_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
         return this;
       }
       
@@ -5852,7 +8591,6 @@ public final class Representations {
     
     static {
       defaultInstance = new FSRData(true);
-      de.hu_berlin.informatik.ki.nao.messages.Representations.internalForceInit();
       defaultInstance.initFields();
     }
     
@@ -6085,8 +8823,6 @@ public final class Representations {
           de.hu_berlin.informatik.ki.nao.messages.CommonTypes.getDescriptor(),
         }, assigner);
   }
-  
-  public static void internalForceInit() {}
   
   // @@protoc_insertion_point(outer_class_scope)
 }

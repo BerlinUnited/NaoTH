@@ -2,6 +2,9 @@
 
 #define INTERNAL_SUPPRESS_PROTOBUF_FIELD_DEPRECATION
 #include "CommonTypes.pb.h"
+
+#include <algorithm>
+
 #include <google/protobuf/stubs/once.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/wire_format_lite_inl.h>
@@ -566,7 +569,7 @@ bool FloatVector2::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &x_)));
-          _set_bit(0);
+          set_has_x();
         } else {
           goto handle_uninterpreted;
         }
@@ -582,7 +585,7 @@ bool FloatVector2::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &y_)));
-          _set_bit(1);
+          set_has_y();
         } else {
           goto handle_uninterpreted;
         }
@@ -609,12 +612,12 @@ bool FloatVector2::MergePartialFromCodedStream(
 void FloatVector2::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required float x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->x(), output);
   }
   
   // required float y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->y(), output);
   }
   
@@ -627,12 +630,12 @@ void FloatVector2::SerializeWithCachedSizes(
 ::google::protobuf::uint8* FloatVector2::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required float x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->x(), target);
   }
   
   // required float y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->y(), target);
   }
   
@@ -684,10 +687,10 @@ void FloatVector2::MergeFrom(const ::google::protobuf::Message& from) {
 void FloatVector2::MergeFrom(const FloatVector2& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_x()) {
       set_x(from.x());
     }
-    if (from._has_bit(1)) {
+    if (from.has_y()) {
       set_y(from.y());
     }
   }
@@ -810,7 +813,7 @@ bool DoubleVector2::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &x_)));
-          _set_bit(0);
+          set_has_x();
         } else {
           goto handle_uninterpreted;
         }
@@ -826,7 +829,7 @@ bool DoubleVector2::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &y_)));
-          _set_bit(1);
+          set_has_y();
         } else {
           goto handle_uninterpreted;
         }
@@ -853,12 +856,12 @@ bool DoubleVector2::MergePartialFromCodedStream(
 void DoubleVector2::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required double x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->x(), output);
   }
   
   // required double y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->y(), output);
   }
   
@@ -871,12 +874,12 @@ void DoubleVector2::SerializeWithCachedSizes(
 ::google::protobuf::uint8* DoubleVector2::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required double x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->x(), target);
   }
   
   // required double y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->y(), target);
   }
   
@@ -928,10 +931,10 @@ void DoubleVector2::MergeFrom(const ::google::protobuf::Message& from) {
 void DoubleVector2::MergeFrom(const DoubleVector2& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_x()) {
       set_x(from.x());
     }
-    if (from._has_bit(1)) {
+    if (from.has_y()) {
       set_y(from.y());
     }
   }
@@ -1054,7 +1057,7 @@ bool IntVector2::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &x_)));
-          _set_bit(0);
+          set_has_x();
         } else {
           goto handle_uninterpreted;
         }
@@ -1070,7 +1073,7 @@ bool IntVector2::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &y_)));
-          _set_bit(1);
+          set_has_y();
         } else {
           goto handle_uninterpreted;
         }
@@ -1097,12 +1100,12 @@ bool IntVector2::MergePartialFromCodedStream(
 void IntVector2::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required int32 x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->x(), output);
   }
   
   // required int32 y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->y(), output);
   }
   
@@ -1115,12 +1118,12 @@ void IntVector2::SerializeWithCachedSizes(
 ::google::protobuf::uint8* IntVector2::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required int32 x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->x(), target);
   }
   
   // required int32 y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->y(), target);
   }
   
@@ -1176,10 +1179,10 @@ void IntVector2::MergeFrom(const ::google::protobuf::Message& from) {
 void IntVector2::MergeFrom(const IntVector2& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_x()) {
       set_x(from.x());
     }
-    if (from._has_bit(1)) {
+    if (from.has_y()) {
       set_y(from.y());
     }
   }
@@ -1284,7 +1287,7 @@ Pose2D* Pose2D::New() const {
 
 void Pose2D::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_translation()) {
       if (translation_ != NULL) translation_->::naothmessages::DoubleVector2::Clear();
     }
     rotation_ = 0;
@@ -1320,7 +1323,7 @@ bool Pose2D::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &rotation_)));
-          _set_bit(1);
+          set_has_rotation();
         } else {
           goto handle_uninterpreted;
         }
@@ -1347,13 +1350,13 @@ bool Pose2D::MergePartialFromCodedStream(
 void Pose2D::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required .naothmessages.DoubleVector2 translation = 1;
-  if (_has_bit(0)) {
+  if (has_translation()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->translation(), output);
   }
   
   // required double rotation = 2;
-  if (_has_bit(1)) {
+  if (has_rotation()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->rotation(), output);
   }
   
@@ -1366,14 +1369,14 @@ void Pose2D::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Pose2D::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required .naothmessages.DoubleVector2 translation = 1;
-  if (_has_bit(0)) {
+  if (has_translation()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->translation(), target);
   }
   
   // required double rotation = 2;
-  if (_has_bit(1)) {
+  if (has_rotation()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->rotation(), target);
   }
   
@@ -1427,10 +1430,10 @@ void Pose2D::MergeFrom(const ::google::protobuf::Message& from) {
 void Pose2D::MergeFrom(const Pose2D& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_translation()) {
       mutable_translation()->::naothmessages::DoubleVector2::MergeFrom(from.translation());
     }
-    if (from._has_bit(1)) {
+    if (from.has_rotation()) {
       set_rotation(from.rotation());
     }
   }
@@ -1559,7 +1562,7 @@ bool DoubleVector3::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &x_)));
-          _set_bit(0);
+          set_has_x();
         } else {
           goto handle_uninterpreted;
         }
@@ -1575,7 +1578,7 @@ bool DoubleVector3::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &y_)));
-          _set_bit(1);
+          set_has_y();
         } else {
           goto handle_uninterpreted;
         }
@@ -1591,7 +1594,7 @@ bool DoubleVector3::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &z_)));
-          _set_bit(2);
+          set_has_z();
         } else {
           goto handle_uninterpreted;
         }
@@ -1618,17 +1621,17 @@ bool DoubleVector3::MergePartialFromCodedStream(
 void DoubleVector3::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required double x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->x(), output);
   }
   
   // required double y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->y(), output);
   }
   
   // required double z = 3;
-  if (_has_bit(2)) {
+  if (has_z()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->z(), output);
   }
   
@@ -1641,17 +1644,17 @@ void DoubleVector3::SerializeWithCachedSizes(
 ::google::protobuf::uint8* DoubleVector3::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required double x = 1;
-  if (_has_bit(0)) {
+  if (has_x()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->x(), target);
   }
   
   // required double y = 2;
-  if (_has_bit(1)) {
+  if (has_y()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->y(), target);
   }
   
   // required double z = 3;
-  if (_has_bit(2)) {
+  if (has_z()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->z(), target);
   }
   
@@ -1708,13 +1711,13 @@ void DoubleVector3::MergeFrom(const ::google::protobuf::Message& from) {
 void DoubleVector3::MergeFrom(const DoubleVector3& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_x()) {
       set_x(from.x());
     }
-    if (from._has_bit(1)) {
+    if (from.has_y()) {
       set_y(from.y());
     }
-    if (from._has_bit(2)) {
+    if (from.has_z()) {
       set_z(from.z());
     }
   }
@@ -2026,7 +2029,7 @@ Pose3D* Pose3D::New() const {
 
 void Pose3D::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_translation()) {
       if (translation_ != NULL) translation_->::naothmessages::DoubleVector3::Clear();
     }
   }
@@ -2088,7 +2091,7 @@ bool Pose3D::MergePartialFromCodedStream(
 void Pose3D::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required .naothmessages.DoubleVector3 translation = 1;
-  if (_has_bit(0)) {
+  if (has_translation()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->translation(), output);
   }
@@ -2108,7 +2111,7 @@ void Pose3D::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Pose3D::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required .naothmessages.DoubleVector3 translation = 1;
-  if (_has_bit(0)) {
+  if (has_translation()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->translation(), target);
@@ -2175,7 +2178,7 @@ void Pose3D::MergeFrom(const Pose3D& from) {
   GOOGLE_CHECK_NE(&from, this);
   rotation_.MergeFrom(from.rotation_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_translation()) {
       mutable_translation()->::naothmessages::DoubleVector3::MergeFrom(from.translation());
     }
   }
@@ -2319,10 +2322,10 @@ GoalPost* GoalPost::New() const {
 
 void GoalPost::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_basepoint()) {
       if (basepoint_ != NULL) basepoint_->::naothmessages::IntVector2::Clear();
     }
-    if (_has_bit(1)) {
+    if (has_position()) {
       if (position_ != NULL) position_->::naothmessages::DoubleVector2::Clear();
     }
     color_ = 0;
@@ -2417,7 +2420,7 @@ bool GoalPost::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &positionreliable_)));
-          _set_bit(4);
+          set_has_positionreliable();
         } else {
           goto handle_uninterpreted;
         }
@@ -2433,7 +2436,7 @@ bool GoalPost::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &seenheight_)));
-          _set_bit(5);
+          set_has_seenheight();
         } else {
           goto handle_uninterpreted;
         }
@@ -2460,36 +2463,36 @@ bool GoalPost::MergePartialFromCodedStream(
 void GoalPost::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional .naothmessages.IntVector2 basePoint = 1;
-  if (_has_bit(0)) {
+  if (has_basepoint()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->basepoint(), output);
   }
   
   // optional .naothmessages.DoubleVector2 position = 2;
-  if (_has_bit(1)) {
+  if (has_position()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->position(), output);
   }
   
   // optional .naothmessages.Color color = 3;
-  if (_has_bit(2)) {
+  if (has_color()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->color(), output);
   }
   
   // optional .naothmessages.GoalPost.PostType type = 4;
-  if (_has_bit(3)) {
+  if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       4, this->type(), output);
   }
   
   // optional bool positionReliable = 5;
-  if (_has_bit(4)) {
+  if (has_positionreliable()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->positionreliable(), output);
   }
   
   // optional double seenHeight = 6;
-  if (_has_bit(5)) {
+  if (has_seenheight()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->seenheight(), output);
   }
   
@@ -2502,38 +2505,38 @@ void GoalPost::SerializeWithCachedSizes(
 ::google::protobuf::uint8* GoalPost::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional .naothmessages.IntVector2 basePoint = 1;
-  if (_has_bit(0)) {
+  if (has_basepoint()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->basepoint(), target);
   }
   
   // optional .naothmessages.DoubleVector2 position = 2;
-  if (_has_bit(1)) {
+  if (has_position()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->position(), target);
   }
   
   // optional .naothmessages.Color color = 3;
-  if (_has_bit(2)) {
+  if (has_color()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->color(), target);
   }
   
   // optional .naothmessages.GoalPost.PostType type = 4;
-  if (_has_bit(3)) {
+  if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       4, this->type(), target);
   }
   
   // optional bool positionReliable = 5;
-  if (_has_bit(4)) {
+  if (has_positionreliable()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->positionreliable(), target);
   }
   
   // optional double seenHeight = 6;
-  if (_has_bit(5)) {
+  if (has_seenheight()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->seenheight(), target);
   }
   
@@ -2611,22 +2614,22 @@ void GoalPost::MergeFrom(const ::google::protobuf::Message& from) {
 void GoalPost::MergeFrom(const GoalPost& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_basepoint()) {
       mutable_basepoint()->::naothmessages::IntVector2::MergeFrom(from.basepoint());
     }
-    if (from._has_bit(1)) {
+    if (from.has_position()) {
       mutable_position()->::naothmessages::DoubleVector2::MergeFrom(from.position());
     }
-    if (from._has_bit(2)) {
+    if (from.has_color()) {
       set_color(from.color());
     }
-    if (from._has_bit(3)) {
+    if (from.has_type()) {
       set_type(from.type());
     }
-    if (from._has_bit(4)) {
+    if (from.has_positionreliable()) {
       set_positionreliable(from.positionreliable());
     }
-    if (from._has_bit(5)) {
+    if (from.has_seenheight()) {
       set_seenheight(from.seenheight());
     }
   }
@@ -2744,10 +2747,10 @@ LineSegment* LineSegment::New() const {
 
 void LineSegment::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_base()) {
       if (base_ != NULL) base_->::naothmessages::DoubleVector2::Clear();
     }
-    if (_has_bit(1)) {
+    if (has_direction()) {
       if (direction_ != NULL) direction_->::naothmessages::DoubleVector2::Clear();
     }
     length_ = 0;
@@ -2797,7 +2800,7 @@ bool LineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &length_)));
-          _set_bit(2);
+          set_has_length();
         } else {
           goto handle_uninterpreted;
         }
@@ -2824,19 +2827,19 @@ bool LineSegment::MergePartialFromCodedStream(
 void LineSegment::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required .naothmessages.DoubleVector2 base = 1;
-  if (_has_bit(0)) {
+  if (has_base()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->base(), output);
   }
   
   // required .naothmessages.DoubleVector2 direction = 2;
-  if (_has_bit(1)) {
+  if (has_direction()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->direction(), output);
   }
   
   // required double length = 3;
-  if (_has_bit(2)) {
+  if (has_length()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(3, this->length(), output);
   }
   
@@ -2849,21 +2852,21 @@ void LineSegment::SerializeWithCachedSizes(
 ::google::protobuf::uint8* LineSegment::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required .naothmessages.DoubleVector2 base = 1;
-  if (_has_bit(0)) {
+  if (has_base()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->base(), target);
   }
   
   // required .naothmessages.DoubleVector2 direction = 2;
-  if (_has_bit(1)) {
+  if (has_direction()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->direction(), target);
   }
   
   // required double length = 3;
-  if (_has_bit(2)) {
+  if (has_length()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(3, this->length(), target);
   }
   
@@ -2924,13 +2927,13 @@ void LineSegment::MergeFrom(const ::google::protobuf::Message& from) {
 void LineSegment::MergeFrom(const LineSegment& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_base()) {
       mutable_base()->::naothmessages::DoubleVector2::MergeFrom(from.base());
     }
-    if (from._has_bit(1)) {
+    if (from.has_direction()) {
       mutable_direction()->::naothmessages::DoubleVector2::MergeFrom(from.direction());
     }
-    if (from._has_bit(2)) {
+    if (from.has_length()) {
       set_length(from.length());
     }
   }
@@ -3056,10 +3059,10 @@ FieldLineSegment* FieldLineSegment::New() const {
 
 void FieldLineSegment::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_lineinimage()) {
       if (lineinimage_ != NULL) lineinimage_->::naothmessages::LineSegment::Clear();
     }
-    if (_has_bit(1)) {
+    if (has_lineonfield()) {
       if (lineonfield_ != NULL) lineonfield_->::naothmessages::LineSegment::Clear();
     }
     beginextendcount_ = 0;
@@ -3114,7 +3117,7 @@ bool FieldLineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &beginextendcount_)));
-          _set_bit(2);
+          set_has_beginextendcount();
         } else {
           goto handle_uninterpreted;
         }
@@ -3130,7 +3133,7 @@ bool FieldLineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &endextendcount_)));
-          _set_bit(3);
+          set_has_endextendcount();
         } else {
           goto handle_uninterpreted;
         }
@@ -3146,7 +3149,7 @@ bool FieldLineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &thickness_)));
-          _set_bit(4);
+          set_has_thickness();
         } else {
           goto handle_uninterpreted;
         }
@@ -3162,7 +3165,7 @@ bool FieldLineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &slope_)));
-          _set_bit(5);
+          set_has_slope();
         } else {
           goto handle_uninterpreted;
         }
@@ -3178,7 +3181,7 @@ bool FieldLineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &angle_)));
-          _set_bit(6);
+          set_has_angle();
         } else {
           goto handle_uninterpreted;
         }
@@ -3194,7 +3197,7 @@ bool FieldLineSegment::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &valid_)));
-          _set_bit(7);
+          set_has_valid();
         } else {
           goto handle_uninterpreted;
         }
@@ -3221,44 +3224,44 @@ bool FieldLineSegment::MergePartialFromCodedStream(
 void FieldLineSegment::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional .naothmessages.LineSegment lineInImage = 1;
-  if (_has_bit(0)) {
+  if (has_lineinimage()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->lineinimage(), output);
   }
   
   // optional .naothmessages.LineSegment lineOnField = 2;
-  if (_has_bit(1)) {
+  if (has_lineonfield()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->lineonfield(), output);
   }
   
   // optional int32 beginExtendCount = 3;
-  if (_has_bit(2)) {
+  if (has_beginextendcount()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->beginextendcount(), output);
   }
   
   // optional int32 endExtendCount = 4;
-  if (_has_bit(3)) {
+  if (has_endextendcount()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->endextendcount(), output);
   }
   
   // optional double thickness = 5;
-  if (_has_bit(4)) {
+  if (has_thickness()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->thickness(), output);
   }
   
   // optional double slope = 6;
-  if (_has_bit(5)) {
+  if (has_slope()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->slope(), output);
   }
   
   // optional double angle = 7;
-  if (_has_bit(6)) {
+  if (has_angle()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->angle(), output);
   }
   
   // optional bool valid = 8;
-  if (_has_bit(7)) {
+  if (has_valid()) {
     ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->valid(), output);
   }
   
@@ -3271,46 +3274,46 @@ void FieldLineSegment::SerializeWithCachedSizes(
 ::google::protobuf::uint8* FieldLineSegment::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional .naothmessages.LineSegment lineInImage = 1;
-  if (_has_bit(0)) {
+  if (has_lineinimage()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->lineinimage(), target);
   }
   
   // optional .naothmessages.LineSegment lineOnField = 2;
-  if (_has_bit(1)) {
+  if (has_lineonfield()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->lineonfield(), target);
   }
   
   // optional int32 beginExtendCount = 3;
-  if (_has_bit(2)) {
+  if (has_beginextendcount()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->beginextendcount(), target);
   }
   
   // optional int32 endExtendCount = 4;
-  if (_has_bit(3)) {
+  if (has_endextendcount()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->endextendcount(), target);
   }
   
   // optional double thickness = 5;
-  if (_has_bit(4)) {
+  if (has_thickness()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->thickness(), target);
   }
   
   // optional double slope = 6;
-  if (_has_bit(5)) {
+  if (has_slope()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->slope(), target);
   }
   
   // optional double angle = 7;
-  if (_has_bit(6)) {
+  if (has_angle()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->angle(), target);
   }
   
   // optional bool valid = 8;
-  if (_has_bit(7)) {
+  if (has_valid()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->valid(), target);
   }
   
@@ -3400,28 +3403,28 @@ void FieldLineSegment::MergeFrom(const ::google::protobuf::Message& from) {
 void FieldLineSegment::MergeFrom(const FieldLineSegment& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_lineinimage()) {
       mutable_lineinimage()->::naothmessages::LineSegment::MergeFrom(from.lineinimage());
     }
-    if (from._has_bit(1)) {
+    if (from.has_lineonfield()) {
       mutable_lineonfield()->::naothmessages::LineSegment::MergeFrom(from.lineonfield());
     }
-    if (from._has_bit(2)) {
+    if (from.has_beginextendcount()) {
       set_beginextendcount(from.beginextendcount());
     }
-    if (from._has_bit(3)) {
+    if (from.has_endextendcount()) {
       set_endextendcount(from.endextendcount());
     }
-    if (from._has_bit(4)) {
+    if (from.has_thickness()) {
       set_thickness(from.thickness());
     }
-    if (from._has_bit(5)) {
+    if (from.has_slope()) {
       set_slope(from.slope());
     }
-    if (from._has_bit(6)) {
+    if (from.has_angle()) {
       set_angle(from.angle());
     }
-    if (from._has_bit(7)) {
+    if (from.has_valid()) {
       set_valid(from.valid());
     }
   }
@@ -3578,10 +3581,10 @@ Intersection* Intersection::New() const {
 
 void Intersection::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (_has_bit(0)) {
+    if (has_posinimage()) {
       if (posinimage_ != NULL) posinimage_->::naothmessages::DoubleVector2::Clear();
     }
-    if (_has_bit(1)) {
+    if (has_posonfield()) {
       if (posonfield_ != NULL) posonfield_->::naothmessages::DoubleVector2::Clear();
     }
     type_ = 0;
@@ -3656,7 +3659,7 @@ bool Intersection::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &segmentoneindex_)));
-          _set_bit(3);
+          set_has_segmentoneindex();
         } else {
           goto handle_uninterpreted;
         }
@@ -3672,7 +3675,7 @@ bool Intersection::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &segmenttwoindex_)));
-          _set_bit(4);
+          set_has_segmenttwoindex();
         } else {
           goto handle_uninterpreted;
         }
@@ -3688,7 +3691,7 @@ bool Intersection::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &segmentonedistance_)));
-          _set_bit(5);
+          set_has_segmentonedistance();
         } else {
           goto handle_uninterpreted;
         }
@@ -3704,7 +3707,7 @@ bool Intersection::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &segmenttwodistance_)));
-          _set_bit(6);
+          set_has_segmenttwodistance();
         } else {
           goto handle_uninterpreted;
         }
@@ -3731,40 +3734,40 @@ bool Intersection::MergePartialFromCodedStream(
 void Intersection::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // optional .naothmessages.DoubleVector2 posInImage = 1;
-  if (_has_bit(0)) {
+  if (has_posinimage()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->posinimage(), output);
   }
   
   // optional .naothmessages.DoubleVector2 posOnField = 2;
-  if (_has_bit(1)) {
+  if (has_posonfield()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->posonfield(), output);
   }
   
   // optional .naothmessages.Intersection.IntersectionType type = 3;
-  if (_has_bit(2)) {
+  if (has_type()) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       3, this->type(), output);
   }
   
   // optional uint32 segmentOneIndex = 6;
-  if (_has_bit(3)) {
+  if (has_segmentoneindex()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(6, this->segmentoneindex(), output);
   }
   
   // optional uint32 segmentTwoIndex = 7;
-  if (_has_bit(4)) {
+  if (has_segmenttwoindex()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(7, this->segmenttwoindex(), output);
   }
   
   // optional double segmentOneDistance = 8;
-  if (_has_bit(5)) {
+  if (has_segmentonedistance()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(8, this->segmentonedistance(), output);
   }
   
   // optional double segmentTwoDistance = 9;
-  if (_has_bit(6)) {
+  if (has_segmenttwodistance()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(9, this->segmenttwodistance(), output);
   }
   
@@ -3777,42 +3780,42 @@ void Intersection::SerializeWithCachedSizes(
 ::google::protobuf::uint8* Intersection::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // optional .naothmessages.DoubleVector2 posInImage = 1;
-  if (_has_bit(0)) {
+  if (has_posinimage()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->posinimage(), target);
   }
   
   // optional .naothmessages.DoubleVector2 posOnField = 2;
-  if (_has_bit(1)) {
+  if (has_posonfield()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         2, this->posonfield(), target);
   }
   
   // optional .naothmessages.Intersection.IntersectionType type = 3;
-  if (_has_bit(2)) {
+  if (has_type()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       3, this->type(), target);
   }
   
   // optional uint32 segmentOneIndex = 6;
-  if (_has_bit(3)) {
+  if (has_segmentoneindex()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(6, this->segmentoneindex(), target);
   }
   
   // optional uint32 segmentTwoIndex = 7;
-  if (_has_bit(4)) {
+  if (has_segmenttwoindex()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(7, this->segmenttwoindex(), target);
   }
   
   // optional double segmentOneDistance = 8;
-  if (_has_bit(5)) {
+  if (has_segmentonedistance()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(8, this->segmentonedistance(), target);
   }
   
   // optional double segmentTwoDistance = 9;
-  if (_has_bit(6)) {
+  if (has_segmenttwodistance()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(9, this->segmenttwodistance(), target);
   }
   
@@ -3898,25 +3901,25 @@ void Intersection::MergeFrom(const ::google::protobuf::Message& from) {
 void Intersection::MergeFrom(const Intersection& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from._has_bit(0)) {
+    if (from.has_posinimage()) {
       mutable_posinimage()->::naothmessages::DoubleVector2::MergeFrom(from.posinimage());
     }
-    if (from._has_bit(1)) {
+    if (from.has_posonfield()) {
       mutable_posonfield()->::naothmessages::DoubleVector2::MergeFrom(from.posonfield());
     }
-    if (from._has_bit(2)) {
+    if (from.has_type()) {
       set_type(from.type());
     }
-    if (from._has_bit(3)) {
+    if (from.has_segmentoneindex()) {
       set_segmentoneindex(from.segmentoneindex());
     }
-    if (from._has_bit(4)) {
+    if (from.has_segmenttwoindex()) {
       set_segmenttwoindex(from.segmenttwoindex());
     }
-    if (from._has_bit(5)) {
+    if (from.has_segmentonedistance()) {
       set_segmentonedistance(from.segmentonedistance());
     }
-    if (from._has_bit(6)) {
+    if (from.has_segmenttwodistance()) {
       set_segmenttwodistance(from.segmenttwodistance());
     }
   }
