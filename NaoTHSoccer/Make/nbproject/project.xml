@@ -4,19 +4,21 @@
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
             <name>NaoTHSoccer</name>
-            <make-project-type>0</make-project-type>
             <c-extensions/>
-            <cpp-extensions>cpp</cpp-extensions>
+            <cpp-extensions>cc,cpp</cpp-extensions>
             <header-extensions>h</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>../Source</sourceRootElem>
+                <sourceRootElem>../../Framework/NaoTH-Commons/Source</sourceRootElem>
+                <sourceRootElem>../../Framework/Platforms/Source</sourceRootElem>
             </sourceRootList>
             <confList>
-                <confElem>Solution</confElem>
-                <confElem>Webots</confElem>
-                <confElem>SimSpark</confElem>
+                <confElem>
+                    <name>All</name>
+                    <type>0</type>
+                </confElem>
             </confList>
         </data>
     </configuration>

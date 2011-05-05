@@ -6,7 +6,9 @@ if [ "$EXTERN_DIR" == "" ]; then
   exit -1
 fi
 
-unzip ../downloads/gtest-1.5.0.zip
-cd gtest-1.5.0/
-./configure --prefix=$EXTERN_DIR && make && make install
-cd ..
+if [ ! -d gtest-1.5.0 ]; then
+  unzip ../downloads/gtest-1.5.0.zip
+  cd gtest-1.5.0/
+  ./configure --prefix=$EXTERN_DIR && make && make install
+  cd ..
+fi

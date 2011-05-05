@@ -8,9 +8,9 @@ if [ ! -d downloads ]; then
   exit -1
 fi
 
-# create _tmp and step into it
-mkdir _tmp
-cd _tmp
+# create extracted dir and step into it
+mkdir -p extracted
+cd extracted
 
 echo "Installing sfsexp library"
 . ../install_scripts/sfsexp.sh
@@ -27,9 +27,8 @@ echo "Installing Google Test"
 echo "Installing Google Mock"
 . ../install_scripts/gmock.sh
 
-# get out of the _tmp directory and delete it
+# get out of the extracted directory
 cd ..
-rm -Rf _tmp 
 
 # compile and install projects that are included as source code
 cd Make && premake4 gmake && make && premake4 install && cd ..

@@ -17,8 +17,8 @@ DebugCommunication/Make/*.make
 DebugCommunication/Make/Makefile
 DebugCommunication/Dist/
 obj
-Makefile-Default.mk
-Package-Default.bash
+Makefile-All.mk
+Package-All.bash
 TestBehavior/nao_soccer_player_red
 Extern/bin/*
 Extern/include/*
@@ -26,6 +26,7 @@ Extern/lib/*
 Extern/share/*
 Extern/etc/*
 Extern/downloads/
+Extern/extracted/
 dist/
 build/
 SimpleSoccerAgent/Makefile
