@@ -85,11 +85,11 @@ public:
 
     Color(const char* color)
     {
-      (*this)[red]   = 16*hexCharToInt(color[0]) + hexCharToInt(color[1]);
-      (*this)[green] = 16*hexCharToInt(color[2]) + hexCharToInt(color[3]);
-      (*this)[blue]  = 16*hexCharToInt(color[4]) + hexCharToInt(color[5]);
+      (*this)[red]   = static_cast<double>(16*hexCharToInt(color[0]) + hexCharToInt(color[1]))/255.0;
+      (*this)[green] = static_cast<double>(16*hexCharToInt(color[2]) + hexCharToInt(color[3]))/255.0;
+      (*this)[blue]  = static_cast<double>(16*hexCharToInt(color[4]) + hexCharToInt(color[5]))/255.0;
       if(strlen(color) == 8)
-        (*this)[alpha] = 16*hexCharToInt(color[6]) + hexCharToInt(color[7]);
+        (*this)[alpha] = static_cast<double>(16*hexCharToInt(color[6]) + hexCharToInt(color[7]))/255.0;
     }
 
     /**
@@ -231,9 +231,12 @@ ostream& operator<<(ostream& stream, const DebugDrawings::Color& color);
 #define IMAGE_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnImage" << endl
 #define FIELD_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnField" << endl
 #define PEN(color, width) DebugDrawings::getInstance().out() << "Pen:" << color << ":" << width << endl
+#define ROTATION(angle) DebugDrawings::getInstance().out() << "Rotation:" << angle << endl
+#define TRANSLATION(x,y) DebugDrawings::getInstance().out() << "Translation:" << x << ":" << y << endl
 
 #define CIRCLE(x,y,radius) DebugDrawings::getInstance().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  endl
 #define OVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  endl
+#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  endl
 #define ARROW(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  endl
 #define LINE(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  endl
 #define BOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  endl
@@ -241,6 +244,12 @@ ostream& operator<<(ostream& stream, const DebugDrawings::Color& color);
 #define FILLOVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  endl
 #define TEXT_DRAWING(x,y,text) DebugDrawings::getInstance().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  endl
 
+
+#define PARTICLE(x,y,r,l) \
+  LINE(x,y,x + l*cos(r),y + l*sin(r)); \
+  CIRCLE(x,y,0.1*l)
+
+#define BINARY_PLOT(name,value) DebugDrawings::getInstance().out() << "BinaryPlotData:" << name << ":" << value << endl
 #define ROBOT(x,y,rotation) DebugDrawings::getInstance().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  endl
 
 
@@ -249,15 +258,20 @@ ostream& operator<<(ostream& stream, const DebugDrawings::Color& color);
 #define IMAGE_DRAWING_CONTEXT ((void)0)
 #define FIELD_DRAWING_CONTEXT ((void)0)
 #define PEN(color, width) ((void)0)
+#define ROTATION(angle) ((void)0)
+#define TRANSLATION(x,y) ((void)0)
 
 #define CIRCLE(x,y,radius) ((void)0)
 #define OVAL(x,y,radiusX,radiusY) ((void)0)
+#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) ((void)0)
 #define ARROW(x0,y0,x1,y1) ((void)0)
 #define LINE(x0,y0,x1,y1) ((void)0)
 #define BOX(x0,y0,x1,y1) ((void)0)
 #define FILLBOX(x0,y0,x1,y1) ((void)0)
 #define FILLOVAL(x,y,radiusX,radiusY) ((void)0)
 #define TEXT_DRAWING(x,y,text) ((void)0)
+
+#define PARTICLE(x,y,r,l) ((void)0)
 
 #define ROBOT(x,y,rotation) ((void)0)
 #endif //DEBUG

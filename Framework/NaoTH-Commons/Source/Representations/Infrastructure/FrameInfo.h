@@ -56,8 +56,10 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const
     {
-      stream << "frameNumber=" << frameNumber << endl;
-      stream << "time=" << time << endl;
+      stream << "frameNumber = " << frameNumber << endl;
+      stream << "time(ms) = " << time << endl;
+      stream << "time(s) = " << getTimeInSeconds() << endl;
+      stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << endl;
     }
 
 

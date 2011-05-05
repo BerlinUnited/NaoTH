@@ -4,13 +4,21 @@ using namespace naoth;
 
 IRSendData::IRSendData() : changed(false)
 {
-
+  reset();
 }
 
 IRSendData::~IRSendData()
 {
 
 }
+
+void IRSendData::reset()
+{
+  for(int i = 0; i < numOfIRSend; i++)
+  {
+    data[i] = 0;
+  }//end for
+}//end reset
 
 string IRSendData::getIRSendName(IRSendID id)
 {
@@ -30,13 +38,21 @@ string IRSendData::getIRSendName(IRSendID id)
 
 IRReceiveData::IRReceiveData()
 {
-
+  reset();
 }
 
 IRReceiveData::~IRReceiveData()
 {
   
 }
+
+void IRReceiveData::reset()
+{
+  for(int i = 0; i < numOfIRReceive; i++)
+  {
+    data[i] = 0;
+  }//end for
+}//end reset
   
 string IRReceiveData::getIRReceiveName(IRReceiveID id)
 {

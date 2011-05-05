@@ -16,13 +16,16 @@
 using namespace naoth;
 
 Image::Image()
-  :
-  yuv422(NULL),
-  timestamp(0),
-  currentBuffer(0),
-  bufferCount(0),
-  bufferFailedCount(0),
-  selfCreatedImage(false)
+:
+yuv422(NULL),
+timestamp(0),
+currentBuffer(0),
+bufferCount(0),
+bufferFailedCount(0),
+wrongBufferSizeCount(0),
+meanBrightness(0.0),
+possibleImageStuck(false),
+selfCreatedImage(false)
 {
   cameraInfo = Platform::getInstance().theCameraInfo;
   yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
@@ -31,15 +34,15 @@ Image::Image()
 
 //copy constructor
 Image::Image(const Image& orig) :
-  DrawingCanvas(),
-  cameraInfo(orig.cameraInfo)
+DrawingCanvas(),
+cameraInfo(orig.cameraInfo)
 {
   if(selfCreatedImage)
   {
     delete[] yuv422;
   }
   yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
-
+  
   std::memcpy(yuv422, orig.yuv422, cameraInfo.size * SIZE_OF_YUV422_PIXEL);
   selfCreatedImage = true;
 }
@@ -79,9 +82,10 @@ void Image::setCameraInfo(const CameraInfo& ci)
   cameraInfo = ci;
 }
 
-void Image::wrapImageDataYUV422(unsigned char* data, unsigned int size)
+void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
 {
-  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+//  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  ASSERT(size >= cameraInfo.size * SIZE_OF_YUV422_PIXEL);
   if(selfCreatedImage)
   {
     delete[] yuv422;
@@ -91,9 +95,10 @@ void Image::wrapImageDataYUV422(unsigned char* data, unsigned int size)
   selfCreatedImage = false;
 }
 
-void Image::copyImageDataYUV422(unsigned char* data, unsigned int size)
+void Image::copyImageDataYUV422(unsigned char* data, const unsigned int& size)
 {
-  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
+//  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
+  if(size >= cameraInfo.size * SIZE_OF_YUV422_PIXEL)
   {
     if(!selfCreatedImage)
     {
@@ -111,15 +116,13 @@ void Image::copyImageDataYUV422(unsigned char* data, unsigned int size)
 
 void Image::print(ostream& stream) const
 {
-  stream << "ID: " << cameraInfo.cameraID <<'\n'
-         << "Timestamp: " << timestamp << '\n'
-         << "Focal Length: "<< cameraInfo.focalLength << '\n'
-         << "Roll Offset: "<< cameraInfo.cameraRollOffset << '\n'
-         << "Tilt Offset: "<< cameraInfo.cameraTiltOffset << '\n'
-         << "Size: " << cameraInfo.resolutionWidth << "x" << cameraInfo.resolutionHeight <<'\n'
-         << "Optical Center: " << cameraInfo.opticalCenterX << "," << cameraInfo.opticalCenterY <<'\n'
-         << "Opening Angle: " << cameraInfo.openingAngleWidth << "," << cameraInfo.openingAngleHeight;
-  ;
+  stream  << "Timestamp: " << timestamp << endl
+          << "Image Buffer: "<< currentBuffer << " / " << bufferCount << endl
+          << "Buffer Switching Fail Count: "<< bufferFailedCount << endl
+          << "Wrong Buffer Size Count: "<< wrongBufferSizeCount << endl
+          << "Image stucked" << ((possibleImageStuck) ? "true"  : "false") << endl
+          << "Camera Info: "<< cameraInfo << endl
+          ;
 }//end print
 
 
@@ -211,25 +214,21 @@ void Image::fromDataStream(istream& stream)
 
     memcpy(yuv422, img.data().c_str(), img.data().size());
   }
-
+  
 }//end fromDataStream
 
-void Image::drawPoint(
-  unsigned int x,
-  unsigned int y,
-  unsigned char a,
-  unsigned char b,
-  unsigned char c)
+void Image::drawPoint
+(
+  const unsigned int& x,
+  const unsigned int& y,
+  const unsigned char& a,
+  const unsigned char& b,
+  const unsigned char& c
+)
 {
-  Pixel p;
-
-  p.y = a;
-  p.u = b;
-  p.v = c;
-
-  set(x,y, p);
+  set(x,y, a, b, c);
 }//end drawPoint
-
+                        
 unsigned int Image::width()
 {
   return cameraInfo.resolutionWidth;
