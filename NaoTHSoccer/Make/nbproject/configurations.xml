@@ -289,6 +289,16 @@
           <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>../../Framework/Platforms/Source</pElem>
+              <pElem>../../Framework/NaoTH-Commons/Source</pElem>
+              <pElem>../Source</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>DEBUG</Elem>
+            </preprocessorList>
+          </ccTool>
         </makeTool>
       </makefileType>
       <item path="../Source/Core/Cognition/Cognition.cpp"

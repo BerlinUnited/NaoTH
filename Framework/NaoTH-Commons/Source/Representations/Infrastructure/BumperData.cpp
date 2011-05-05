@@ -17,6 +17,14 @@ BumperData::BumperData() {
 BumperData::~BumperData() {
 }
 
+void BumperData::reset()
+{
+  for(int i = 0; i < numOfBumper; i++)
+  {
+    data[i] = false;
+  }//end for
+}//end reset
+
 string BumperData::getBumperName(BumperID id)
 {
   switch(id)
