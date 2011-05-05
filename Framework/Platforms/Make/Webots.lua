@@ -1,24 +1,32 @@
 local extern_dir = "../../../Extern"
 
+local hasWebots = true
+
+ ---------------------- WEBOTS_HOME -----------------------------
+local webotsHome = os.getenv("WEBOTS_HOME")
+
+-- default value for linux
+if webotsHome == nil and not os.is("windows") then
+  webotsHome = "/usr/local/webots";
+end
+
+-- check if the directory can be opened by lua and warn if not
+if not os.isdir(webotsHome) then
+  print("WARN: Enviroment variale WEBOTS_HOME was not set or unable to access directory (" .. webotsHome .. ")!")
+  print("no compilation for Webots possible.\n")
+  hasWebots = false
+end
+ ----------------------------------------------------------------
+ 
+
+if hasWebots then
+
 -- NaoTH controller running in the Cyberbotics Webots simulator
 project "Webots"
   kind "ConsoleApp"
   language "C++"
   
   
-  ---------------------- WEBOTS_HOME -----------------------------
-  local webotsHome = os.getenv("WEBOTS_HOME")
-
-  -- default value for linux
-  if webotsHome == nil and not os.is("windows") then
-	  webotsHome = "/usr/local/webots";
-  end
-  
-  -- check if the directory can be opened by lua and warn if not
-  if not os.isdir(webotsHome) then
-    print("WARN: Enviroment variale WEBOTS_HOME was not set or unable to access directory (" .. webotsHome .. ")!")
-	  print("no compilation for Webots possible.\n")
-  else
   
     -- include core
     if(CORE_PATH == nil or CORE == nil) then
@@ -58,7 +66,6 @@ project "Webots"
     
     configuration {"linux"}
       linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
-  end -- if WEBOTS_HOME set
-  ----------------------------------------------------------------
-     
+  
+end -- hasWebots 
 -- END Webots
