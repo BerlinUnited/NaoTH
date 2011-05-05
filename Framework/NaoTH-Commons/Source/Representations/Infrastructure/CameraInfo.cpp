@@ -128,8 +128,23 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.SerializeToZeroCopyStream(&buf);
 }
 
-void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& representation)
+void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
 {
-
+  naothmessages::CameraInfo msg;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  msg.ParseFromZeroCopyStream(&buf);
+  
+  r.resolutionWidth = msg.resolutionwidth();
+  r.resolutionHeight = msg.resolutionheight();
+  r.cameraID = (CameraInfo::CameraID) msg.cameraid();
+  r.focalLength = msg.focallength();
+  r.openingAngleWidth = msg.openinganglewidth();
+  r.openingAngleHeight = msg.openingangleheight();
+  r.opticalCenterX = msg.opticalcenterx();
+  r.opticalCenterY = msg.opticalcentery();
+  r.size = msg.size();
+  r.cameraRollOffset = msg.camerarolloffset();
+  r.cameraTiltOffset = msg.cameratiltoffset();
+  
 }
 
