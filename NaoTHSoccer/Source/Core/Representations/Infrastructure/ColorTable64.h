@@ -47,7 +47,7 @@ public:
   * @param b the b value of the pixel
   * @return the color class
   */
-  ColorClasses::Color getColorClass(const unsigned char channel1, const unsigned char channel2, const unsigned char channel3) const
+  ColorClasses::Color getColorClass(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
   {
     return get(channel1, channel2, channel3);
   }
@@ -59,10 +59,10 @@ public:
   */
   ColorClasses::Color getColorClass(const Pixel& p) const
   {
-    return get(p.c1, p.c2, p.c3);
+    return get(p.a, p.b, p.c);
   }
  
-  void setColorClass(const ColorClasses::Color color, const unsigned char channel1, const unsigned char channel2, const unsigned char channel3)
+  void setColorClass(const ColorClasses::Color& color, const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3)
   {
     set( static_cast<unsigned char>(color), channel1, channel2, channel3);
   }
@@ -88,14 +88,14 @@ private:
 
   char colorClasses[colorTableLength];
 
-  inline void set(const char color, const unsigned char channel1, const unsigned char channel2, const unsigned char channel3)
+  inline void set(const char& color, const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3)
   {
     unsigned int idx = ((channel1 & div4) << 10) + ((channel2 & div4) << 4) + (channel3 >> 2);
     ASSERT(idx < colorTableLength);
     colorClasses[idx] = color;
   }//end set
 
-  inline ColorClasses::Color get(const unsigned char channel1, const unsigned char channel2, const unsigned char channel3) const
+  inline ColorClasses::Color get(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
   {
     unsigned int idx = ((channel1 & div4) << 10) + ((channel2 & div4) << 4) + (channel3 >> 2);
     ASSERT(idx < colorTableLength);

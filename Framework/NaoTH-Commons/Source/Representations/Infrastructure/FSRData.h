@@ -42,11 +42,14 @@ namespace naoth
     bool valid[numOfFSR]; // if the sensor data is valid
     static const Vector3<double> offset[numOfFSR];
 
-    /* total force on left foot */
+    /** total force on left foot */
     double forceLeft() const;
 
-    /* total force on right foot */
+    /** total force on right foot */
     double forceRight() const;
+    
+    /** Returns the force value of the given sensor or -1 if its value is invalid. */
+    double forceOf(FSRID fsrId) const;
 
     FSRData();
     ~FSRData();
