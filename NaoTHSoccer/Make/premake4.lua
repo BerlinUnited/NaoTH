@@ -88,6 +88,7 @@ solution "NaoTHSoccer"
     dofile "../../Framework/Platforms/Make/Webots.lua"
     dofile "../../Framework/Platforms/Make/LogSimulator.lua"    
     dofile "Tests.lua"
+    dofile "../../Framework/NaoTH-Commons/Make/Tests.lua"
   end
   -- the core
   dofile "NaoTHSoccer.lua"

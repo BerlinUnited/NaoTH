@@ -1,7 +1,3 @@
--- define the extern directory 
--- TODO Cant we use the var from premake4.lua here, maybe another keyword?
-local extern_dir = "../../../Extern"
-
 project "NaoTH-Commons-Tests"
   kind "ConsoleApp"
   language "C++"
@@ -18,19 +14,16 @@ project "NaoTH-Commons-Tests"
   files {"../Tests/**.cpp", "../Tests/**.h"}
 
   includedirs {
-        "../Tests/",
-        "../Source/",
-    extern_dir .. "/include",
-    extern_dir .. "/include/glib-2.0/",
-    extern_dir .. "/lib/glib-2.0/include/"
+    "../Tests/",
+    "../Source/"
   }
   
-  links {"NaoTH-Tools", "glib-2.0","gio-2.0","gobject-2.0", "protobuf",
+  links {"NaoTH-Commons", "glib-2.0","gio-2.0","gobject-2.0", "protobuf",
     "gtest", "gmock", "pthread"
   }
     
-  targetdir "../dist/Native"
-  targetname "executeTests"
-
-  linkoptions {"-Wl"}
+  targetname "testCommons"
+  
+  configuration {"linux"}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 

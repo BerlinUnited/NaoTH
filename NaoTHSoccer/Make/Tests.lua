@@ -1,4 +1,4 @@
-project "Tests"
+project "NaoTHSoccer-Tests"
   kind "ConsoleApp"
   language "C++"
   
@@ -24,8 +24,7 @@ project "Tests"
     "gtest", "gmock", "pthread"
   }
   
-  targetdir "../dist/Native"
-  targetname "executeTests"
+  targetname "testNaoTHSoccer"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../Extern/lib/") .. "\""}
