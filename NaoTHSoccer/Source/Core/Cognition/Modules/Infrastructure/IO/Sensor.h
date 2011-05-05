@@ -23,6 +23,12 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/UltraSoundData.h>
+#include <Representations/Infrastructure/SoundData.h>
+
+#include "Core/Representations/Infrastructure/SerialSensorData.h"
+#include "Core/Representations/Motion/MotionStatus.h"
+#include "Core/Representations/Motion/OdometryData.h"
+
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
@@ -30,20 +36,23 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Sensor)
-  PROVIDE(AccelerometerData)
-  PROVIDE(BatteryData)
-  PROVIDE(BumperData)
-  PROVIDE(ButtonData)
-  PROVIDE(GyrometerData)
-  PROVIDE(IRReceiveData)
-  PROVIDE(Image)
-  PROVIDE(InertialSensorData)
-  PROVIDE(FSRData)
-  PROVIDE(SensorJointData)
-  PROVIDE(UltraSoundReceiveData)
-  
   PROVIDE(FrameInfo)
+  PROVIDE(SerialSensorData)
+  PROVIDE(Image)
+  PROVIDE(FSRData)
+  PROVIDE(AccelerometerData)
+  PROVIDE(GyrometerData)
+  PROVIDE(InertialSensorData)
+  PROVIDE(SensorJointData)
+  PROVIDE(BumperData)
+  PROVIDE(IRReceiveData)
+  PROVIDE(MotionStatus)
+  PROVIDE(OdometryData)
   PROVIDE(CurrentCameraSettings)
+  PROVIDE(ButtonData)
+  PROVIDE(BatteryData)
+  PROVIDE(UltraSoundReceiveData)
+  PROVIDE(SoundCaptureData)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase

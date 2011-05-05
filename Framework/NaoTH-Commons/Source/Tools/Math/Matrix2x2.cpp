@@ -5,7 +5,7 @@
  * @author <a href=mailto:Kai_Engel@gmx.de>Kai Engel</a>
  */
 
-#include "Tools/Math/Matrix2x2.h"
+#include "Matrix2x2.h"
 
 /*template <class V> In& operator>>(In& stream, Matrix2x2<V>& matrix2x2)
 {

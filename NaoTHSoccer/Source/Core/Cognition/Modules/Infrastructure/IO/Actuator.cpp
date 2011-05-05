@@ -22,7 +22,7 @@ void Actuator::init(naoth::PlatformDataInterface& platformInterface)
   REG_OUTPUT(LEDData);
   REG_OUTPUT(IRSendData);
   REG_OUTPUT(UltraSoundSendData);
-  REG_OUTPUT(SoundData);
+  REG_OUTPUT(SoundPlayData);
 }//end init
 
 void Actuator::execute()

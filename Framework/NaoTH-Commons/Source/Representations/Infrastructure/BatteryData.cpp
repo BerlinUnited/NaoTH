@@ -1,4 +1,4 @@
-#include "Representations/Infrastructure/BatteryData.h"
+#include "BatteryData.h"
 
 using namespace naoth;
 
@@ -15,3 +15,4 @@ void BatteryData::print(ostream& stream) const
 BatteryData::~BatteryData()
 { 
 }
+

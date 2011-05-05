@@ -18,11 +18,11 @@ class DrawingCanvas
 {
 public:
   virtual void drawPoint(
-    unsigned int x, 
-    unsigned int y,
-    unsigned char a,
-    unsigned char b,
-    unsigned char c) = 0;
+    const unsigned int& x, 
+    const unsigned int& y,
+    const unsigned char& a,
+    const unsigned char& b,
+    const unsigned char& c) = 0;
 
   virtual ~DrawingCanvas(){}
 

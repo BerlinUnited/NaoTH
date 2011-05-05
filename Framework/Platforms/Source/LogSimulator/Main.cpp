@@ -10,6 +10,7 @@
 
 
 #include <PlatformInterface/Platform.h>
+#include <Tools/Debug/Stopwatch.h>
 
 #include "Cognition.h"
 #include "Motion.h"
@@ -78,6 +79,8 @@ int main(int argc, char** argv)
   sim.registerCallbacks(&theMotion, &theCognition);
   
   sim.main();
+  
+  Stopwatch::getInstance().dump();
 
   return (EXIT_SUCCESS);
 }//end main

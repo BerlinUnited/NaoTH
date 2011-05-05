@@ -21,7 +21,7 @@ namespace naoth
   {
   private:
   public:
-    bool changed;
+
     enum IRSendID
     {
       Beacon,
@@ -34,11 +34,13 @@ namespace naoth
       numOfIRSend
     };
 
+    bool changed;
     int data[numOfIRSend];
 
     IRSendData();
     ~IRSendData();
 
+    void reset();
     static string getIRSendName(IRSendID id);
   };
 
@@ -69,6 +71,7 @@ namespace naoth
     IRReceiveData();
     ~IRReceiveData();
 
+    void reset();
     static string getIRReceiveName(IRReceiveID id);
 
     virtual void print(ostream& stream) const;

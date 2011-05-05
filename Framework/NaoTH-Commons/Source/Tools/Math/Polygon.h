@@ -10,6 +10,7 @@
 
 #include "Tools/Math/PointList.h"
 #include "Tools/DataStructures/Area.h"
+#include "Tools/ImageProcessing/Moments2.h"
 
 namespace Math {
 
@@ -22,7 +23,7 @@ class Polygon: public PointList<MAX_NUMBER_OF_POINTS>, public Area<int>
 
     using PointList<MAX_NUMBER_OF_POINTS>::length;
     using PointList<MAX_NUMBER_OF_POINTS>::points;
-
+    Moments2<1>  moments;
     using PointList<MAX_NUMBER_OF_POINTS>::add;
     using PointList<MAX_NUMBER_OF_POINTS>::clear;
     using PointList<MAX_NUMBER_OF_POINTS>::getClosestPoint;
@@ -39,10 +40,15 @@ class Polygon: public PointList<MAX_NUMBER_OF_POINTS>, public Area<int>
       if(length > 2)
       {
         double area = 0;
+
+        //    [ points[n].x                  points[n].y                ]
+        // A =[                                                         ]
+        //    [ points[(n + 1) % length].x   points[(n + 1) % length].y ]
+        // area += det(A)
         for(int n = 0; n < length; n++)
           area += (points[n].y + points[(n + 1) % length].y) * (points[n].x - points[(n + 1) % length].x);
 
-        return fabs(area) / 2;
+        return fabs(area) / 2.0;
       }
       else
         return -1;

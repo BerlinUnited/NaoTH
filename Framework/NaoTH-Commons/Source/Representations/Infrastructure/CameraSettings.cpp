@@ -63,11 +63,6 @@ CameraSettingsRequest::CameraSettingsRequest()
     Platform::getInstance().theConfigPathInfo.camera_parameter+"/camera_setting.prm"),*/
   queryCameraSettings(false)
 {
-//  for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
-//  {
-//    registerParameter(getCameraSettingsName((CameraSettings::CameraSettingID) i), data[i]);
-//  }
-//  loadFromConfigFile();
 }
 
 CurrentCameraSettings::CurrentCameraSettings()

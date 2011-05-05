@@ -49,7 +49,6 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);
     STOPWATCH_STOP("sendImage");
-
   }
   else if(command == "ping")
   {

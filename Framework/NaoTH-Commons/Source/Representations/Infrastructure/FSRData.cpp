@@ -132,3 +132,12 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
     }
   }
 }
+
+double FSRData::forceOf(FSRID fsrId) const {
+  if (valid[fsrId])// check if the sensor is valid
+  {
+    return force[fsrId];
+  }
+  return -1;
+}//end forceRight
+

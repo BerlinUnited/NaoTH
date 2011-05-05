@@ -31,6 +31,9 @@ namespace naoth
 
     BumperData();
     virtual ~BumperData();
+
+    void reset();
+
     static string getBumperName(BumperID id);
 
     virtual void print(ostream& stream) const;

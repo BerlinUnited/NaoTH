@@ -10,20 +10,45 @@
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"
+#include "Tools/DataStructures/ParameterList.h"
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
-  class CameraInfo
+
+  class CameraInfo: public Printable
   {
   public:
-
+    
     CameraInfo()
-      :
-      cameraID(Bottom)
-    {
-      // set the default parameters for Nao
-      setParameter(320, 240, 54.7465);
-    }
+    :
+    resolutionWidth(320),
+    resolutionHeight(240),
+    focalLength(0.0),
+    openingAngleWidth(0.0),
+    openingAngleHeight(0.0),
+    opticalCenterX(0.0),
+    opticalCenterY(0.0),
+    pixelSize(0.0),
+    focus(0.0),
+    xp(0.0),
+    yp(0.0),
+    k1(0.0),
+    k2(0.0),
+    k3(0.0),
+    p1(0.0),
+    p2(0.0),
+    b1(0.0),
+    b2(0.0),
+    size(0),
+    cameraID(Bottom),
+    cameraRollOffset(0.0),
+    cameraTiltOffset(0.0)
+    {}
+
+    ~CameraInfo()
+    {}
 
     enum CameraID
     {
@@ -32,50 +57,32 @@ namespace naoth
       numOfCamera
     };
 
-    /**
-     * calculate the camera parameters from a given resolution and opening angle
-     * (opening angle is required in degrees)
-     */
-    void setParameter(
-      unsigned int resolutionWidth,
-      unsigned int resolutionHeight,
-      double openingAngleDiagonal
-      )
-    {
-      this->resolutionWidth = resolutionWidth;
-      this->resolutionHeight = resolutionHeight;
-
-      // convert to rad
-      openingAngleDiagonal = Math::fromDegrees(openingAngleDiagonal);
-
-      // calculate focal length
-      double d2 = resolutionWidth*resolutionWidth+resolutionHeight*resolutionHeight;
-      double halfDiagLength = 0.5*sqrt(d2);
-
-      this->focalLength = halfDiagLength/tan(0.5*openingAngleDiagonal);
-
-      // calculate opening angle
-      this->openingAngleHeight = 2.0*atan2((double)resolutionHeight,this->focalLength*2.0);
-      this->openingAngleWidth = 2.0*atan2((double)resolutionWidth,this->focalLength*2.0);
-
-      // calculate optical senter
-      this->opticalCenterY = resolutionHeight/2;
-      this->opticalCenterX = resolutionWidth/2;
-
-      // values needed by Image
-      this->size = resolutionHeight * resolutionWidth;
-
-    }//end setParameter
-
-    //double pixelSize;
     unsigned int resolutionWidth;
     unsigned int resolutionHeight;
-
+    
     double focalLength;
     double openingAngleWidth;
     double openingAngleHeight;
     double opticalCenterX;
     double opticalCenterY;
+
+    //size of an Pixel on the chip
+    double pixelSize;
+    //measured focus
+    double focus;
+    //moved middle point
+    double xp;
+    double yp;
+    //radial symmetric distortion parameters
+    double k1;
+    double k2;
+    double k3;
+    //radial asymmetric and tangential distortion parameters
+    double p1;
+    double p2;
+    //affinity and ... distortion parameters
+    double b1;
+    double b2;
 
     unsigned long size;
 
@@ -85,10 +92,13 @@ namespace naoth
     double cameraRollOffset;
     double cameraTiltOffset;
 
+    void setParameter(unsigned int resolutionWidth, unsigned int resolutionHeight, double openingAngleDiagonal);
 
+    virtual void print(ostream& stream) const;
   };
 
-  class CameraInfoParameter : public CameraInfo
+
+  class CameraInfoParameter : public CameraInfo, public ParameterList
   {
   private:
     struct CameraTransInfo
@@ -99,34 +109,29 @@ namespace naoth
 
     CameraTransInfo cameraTrans[numOfCamera];
 
-    void setCameraTrans()
-    {
-      for(int i=0; i<numOfCamera; i++)
-      {
-        transformation[i].translation = cameraTrans[i].offset;
-        transformation[i].rotation = RotationMatrix::getRotationY(Math::fromDegrees(cameraTrans[i].rotationY));
-      }
-    }
+    void setCameraTrans();
 
   public:
-    CameraInfoParameter()
-    {
-      setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
-      setCameraTrans();
-    }
+    CameraInfoParameter();
 
-    // TODO: do we need the parameter filename?
-    void init(const std::string& filename)
-    {
-      setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
-      setCameraTrans();
-    }//end init
-
+    void init();
+    
     double openingAngleDiagonal;
 
     // offset to the neck joint
     Pose3D transformation[numOfCamera];
+
+
   };
+  
+  template<>
+  class Serializer<CameraInfo>
+  {
+    public:
+    static void serialize(const CameraInfo& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraInfo& representation);
+  };
+  
 }
 
 #endif	/* _CAMERAINFO_H */

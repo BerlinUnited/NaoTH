@@ -237,6 +237,13 @@ std::ostream& operator <<(std::ostream& ost, const Vector3<DATATYPE>& v)
     return ost;
 }
 
+template <typename DATATYPE>
+std::istream& operator >>(std::istream& ist, Vector3<DATATYPE>& v)
+{
+    ist >> v.x >> v.y >> v.z;
+    return ist;
+}
+
 /**
  * convert the polar to the Descartes
  *
