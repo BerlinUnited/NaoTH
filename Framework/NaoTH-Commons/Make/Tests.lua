@@ -2,7 +2,7 @@
 -- TODO Cant we use the var from premake4.lua here, maybe another keyword?
 local extern_dir = "../../../Extern"
 
-project "NaoTH-Tools-Tests"
+project "NaoTH-Commons-Tests"
   kind "ConsoleApp"
   language "C++"
 

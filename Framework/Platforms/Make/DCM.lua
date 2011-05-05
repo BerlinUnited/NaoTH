@@ -39,7 +39,7 @@ project "DCM"
 	}
 
     links {CORE, 
-			"NaoTH-Tools",
+			"NaoTH-Commons",
 			"almemoryfastaccess", 
 			"alcommon",
 			"gthread-2.0", 

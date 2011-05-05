@@ -9,7 +9,7 @@
 #define	COGNITIONDEBUGSERVER_H
 
 #include <Tools/DataStructures/Singleton.h>
-#include <DebugServer.h>
+#include <DebugCommunication/DebugServer.h>
 
 class CognitionDebugServer : public DebugServer, public naoth::Singleton<CognitionDebugServer>
 {

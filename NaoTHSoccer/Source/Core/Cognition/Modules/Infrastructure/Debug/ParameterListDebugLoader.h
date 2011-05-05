@@ -10,9 +10,9 @@
 #include <map>
 
 #include <ModuleFramework/Module.h>
-#include <DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandExecutor.h>
 
-#include <DebugServer.h>
+#include <DebugCommunication/DebugServer.h>
 
 #include <Representations/Infrastructure/CameraSettings.h>
 #include "Core/Representations/FieldInfo.h"

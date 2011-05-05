@@ -42,9 +42,12 @@ solution "NaoTHSoccer"
     path.getabsolute("../Source/")  
   }
   
-  CORE = {"NaoTHSoccer", "DebugCommunication"}
+  CORE = {"NaoTHSoccer"}
 
-  
+  -- for all configurations
+  includedirs {
+	  "../../Framework/NaoTH-Commons/Source/"
+  }
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
@@ -75,8 +78,7 @@ solution "NaoTHSoccer"
     buildoptions {"-fPIC"}
       
   -- base
-  dofile "../../Framework/NaoTH-Tools/Make/NaoTHTools.lua"
-  dofile "../../Framework/DebugCommunication/Make/DebugCommunication.lua"
+  dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
   
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then

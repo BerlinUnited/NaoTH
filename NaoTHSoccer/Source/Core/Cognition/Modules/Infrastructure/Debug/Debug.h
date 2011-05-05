@@ -9,9 +9,9 @@
 #define	DEBUG_H
 
 #include <ModuleFramework/Module.h>
-#include <DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandExecutor.h>
 
-#include <DebugServer.h>
+#include <DebugCommunication/DebugServer.h>
 
 #include "Core/Representations/FieldInfo.h"
 #include <Representations/Infrastructure/GyrometerData.h>

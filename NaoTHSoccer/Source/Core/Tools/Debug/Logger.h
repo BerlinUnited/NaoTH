@@ -11,7 +11,7 @@
 #include <Tools/DataStructures/Serializer.h>
 #include <Tools/DataStructures/Streamable.h>
 
-#include "DebugCommandExecutor.h"
+#include <DebugCommunication/DebugCommandExecutor.h>
 #include "Core/Tools/Logfile/LogfileManager.h"
 
 class Logger : public DebugCommandExecutor

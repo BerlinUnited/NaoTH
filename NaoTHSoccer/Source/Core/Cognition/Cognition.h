@@ -14,7 +14,7 @@
 #include <PlatformInterface/PlatformInterface.h>
 
 #include <ModuleFramework/ModuleManager.h>
-#include <Core/Tools/Modules/PackageLoader.h>
+#include <Core/Tools/Packages/PackageLoader.h>
 
 class Cognition : public naoth::Callable, public ModuleManager
 {

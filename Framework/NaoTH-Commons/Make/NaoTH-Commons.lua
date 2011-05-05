@@ -1,4 +1,4 @@
-project "NaoTH-Tools"
+project "NaoTH-Commons"
   kind "StaticLib"
   language "C++"
   

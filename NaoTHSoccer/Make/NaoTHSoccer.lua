@@ -5,11 +5,10 @@ project "NaoTHSoccer"
   files {"../Source/**.h","../Source/**.cpp"}
   
   includedirs {
-	"../Source/",
-	"../../Framework/NaoTH-Tools/Source/",
-	"../../Framework/DebugCommunication/Source/"}
+	  "../Source/"
+	}
   
-  links { "NaoTH-Tools", "DebugCommunication", "pthread" }
+  links { "NaoTH-Commons", "pthread" }
   
   targetname "naoth-soccer"
 
