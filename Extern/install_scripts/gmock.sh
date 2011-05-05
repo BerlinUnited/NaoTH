@@ -6,7 +6,7 @@ if [ "$EXTERN_DIR" == "" ]; then
   exit -1
 fi
 
-if [ ! -d gmock-1.5.0]; then
+if [ ! -d gmock-1.5.0 ]; then
 
   unzip ../downloads/gmock-1.5.0.zip
   cd gmock-1.5.0/
