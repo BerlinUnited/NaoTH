@@ -17,14 +17,22 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 
+#include "Core/Representations/Motion/HeadMotionRequest.h"
+#include "Core/Representations/Motion/MotionStatus.h"
+#include "Core/Representations/Motion/MotionRequest/MotionRequest.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Actuator)
+  REQUIRE(HeadMotionRequest)
   REQUIRE(CameraSettingsRequest)
   REQUIRE(LEDData)
   REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
-  REQUIRE(SoundData)
+  REQUIRE(SoundPlayData)
+  REQUIRE(MotionStatus)
+
+  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Actuator)
 
 class Actuator : public ActuatorBase

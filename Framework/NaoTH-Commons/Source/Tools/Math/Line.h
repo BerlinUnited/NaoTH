@@ -182,7 +182,7 @@ public:
     double t = segmentTwo.Line::intersection(segmentOne);
     
     double angleDiff = fabs(Math::normalize(segmentOne.getDirection().angle() - segmentTwo.getDirection().angle()));
-    angleDiff = min(angleDiff, Math::pi - angleDiff);
+    angleDiff = std::min(angleDiff, Math::pi - angleDiff);
 
     if(segmentOne.getLength() < s || 
        s < 0 || 
