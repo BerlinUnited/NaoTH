@@ -19,21 +19,23 @@ using namespace std;
 namespace naoth
 {
 
-  class JointData
-  {
+class JointData
+{
   public:
     enum JointID
     {
       HeadPitch,
       HeadYaw,
-      RShoulderPitch,
-      LShoulderPitch,
+
       RShoulderRoll,
       LShoulderRoll,
-      RElbowYaw,
-      LElbowYaw,
+      RShoulderPitch,
+      LShoulderPitch,
       RElbowRoll,
       LElbowRoll,
+      RElbowYaw,
+      LElbowYaw,
+
       RHipYawPitch,
       LHipYawPitch,
       RHipPitch,
@@ -46,7 +48,7 @@ namespace naoth
       LAnklePitch,
       RAnkleRoll,
       LAnkleRoll,
-      numOfJoint,
+      numOfJoint, //error value
     };
     double position[numOfJoint];
     double hardness[numOfJoint];
@@ -73,13 +75,19 @@ namespace naoth
 
     bool isInRange(JointID id, double ang) const;
     bool isInRange(JointID id) const;
+    
+    void updateSpeed(const JointData& lastData, double dt);
+
+    void updateAcceleration(const JointData& lastData, double dt);
+
+    bool isLegStiffnessOn() const;
 
   protected:
     double mirrorData(JointID joint) const;
     void mirrorFrom(const JointData& jointData);
   };
 
-  class SensorJointData : public JointData, public Printable, public PlatformInterchangeable, public Streamable
+  class SensorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
   {
   public:
     SensorJointData();
@@ -91,7 +99,7 @@ namespace naoth
 
   };
 
-  class MotorJointData : public JointData, public Printable, public PlatformInterchangeable
+  class MotorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
   {
   public:
     MotorJointData();

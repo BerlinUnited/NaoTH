@@ -3,7 +3,7 @@
 
 #include "Representations/Infrastructure/JointData.h"
 #include "Tools/Math/Common.h"
-//#include "Tools/Config/ConfigLoader.h"
+#include "PlatformInterface/Platform.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -24,29 +24,30 @@ JointData::JointData()
 
 void JointData::init(const std::string& filename)
 {
-//  Config cfg = ConfigLoader::loadConfig(filename.c_str());
-//
-//  for (int i = 0; i < JointData::numOfJoint; i++)
-//  {
-//    double maxDeg = 0;
-//    string jointName = JointData::getJointName((JointData::JointID)i);
-//    if (cfg.get(jointName + "Max", maxDeg))
-//    {
-//      max[i] = Math::fromDegrees(maxDeg);
-//    } else
-//    {
-//      THROW("JointData: can not get " + jointName + " max angle")
-//    }
-//
-//    double minDeg = 0;
-//    if (cfg.get(jointName + "Min", minDeg))
-//    {
-//      min[i] = Math::fromDegrees(minDeg);
-//    } else
-//    {
-//      THROW("JointData: can not get " + jointName + " min angle")
-//    }
-//  }
+  Configuration& cfg = Platform::getInstance().theConfiguration;
+  for (int i = 0; i < JointData::numOfJoint; i++)
+  {
+    double maxDeg = 0;
+    string jointName = JointData::getJointName((JointData::JointID)i);
+    if (cfg.hasKey("joints", jointName + "Max"))
+    {
+      maxDeg = cfg.getDouble("joints", jointName + "Max");
+      max[i] = Math::fromDegrees(maxDeg);
+    } else
+    {
+      THROW("JointData: can not get " + jointName + " max angle")
+    }
+
+    double minDeg = 0;
+    if (cfg.hasKey("joints", jointName + "Min"))
+    {
+      minDeg = cfg.getDouble("joints", jointName + "Min");
+      min[i] = Math::fromDegrees(minDeg);
+    } else
+    {
+      THROW("JointData: can not get " + jointName + " min angle")
+    }
+  }
 }
 
 string JointData::getJointName(JointID joint)
@@ -138,7 +139,6 @@ void JointData::mirror()
   mirrorFrom(tmp);
 }
 
-
 void JointData::clamp(JointID id)
 {
   position[id] = Math::clamp(position[id], min[id], max[id]);
@@ -154,13 +154,41 @@ void JointData::clamp()
 
 bool JointData::isInRange(JointData::JointID id, double ang) const
 {
-    const static double b = Math::fromDegrees(3);
-    return ang <= (max[id] + b) && ang >= (min[id]-b);
+    return ang <= max[id] && ang >= min[id];
 }
 
 bool JointData::isInRange(JointData::JointID id) const
 {
     return isInRange(id, position[id]);
+}
+
+void JointData::updateSpeed(const JointData& lastData, double dt)
+{
+  const double* lastPose = lastData.position;
+  double idt = 1 / dt;
+  for ( int i=0; i<JointData::numOfJoint; i++)
+  {
+    dp[i] = (position[i] - lastPose[i]) * idt;
+  }
+}
+
+void JointData::updateAcceleration(const JointData& lastData, double dt)
+{
+  const double* lastSpeed = lastData.dp;
+  double idt = 1 / dt;
+  for (int i = 0; i < JointData::numOfJoint; i++)
+  {
+    ddp[i] = (dp[i] - lastSpeed[i]) * idt;
+  }
+}
+
+bool JointData::isLegStiffnessOn() const
+{
+  for ( int i=JointData::RHipYawPitch; i<JointData::numOfJoint; i++)
+  {
+    if ( hardness[i] < 0 ) return false;
+  }
+  return true;
 }
 
 SensorJointData::SensorJointData()
@@ -173,6 +201,7 @@ SensorJointData::SensorJointData()
     temperature[i] = 0.0;
   }//end for
 }
+
 
 void SensorJointData::print(ostream& stream) const
 {
@@ -200,6 +229,7 @@ MotorJointData::MotorJointData()
     hardness[i] = 0.0;
   }//end for
 }
+
 
 MotorJointData::~MotorJointData()
 {
