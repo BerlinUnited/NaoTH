@@ -119,7 +119,7 @@ protected:
      */
   Pose3T local(const Pose3T& other) const
   {
-    return invert()  * other;
+    return invert() * other;
   }
   
   /** Calculates the inverse transformation from the current pose

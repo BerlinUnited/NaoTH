@@ -10,6 +10,7 @@
 #ifndef __Matrix_h__
 #define __Matrix_h__
 
+#include <limits>
 #include "Vector3.h"
 #include "Matrix2x2.h"
 #include "Common.h"
@@ -341,6 +342,13 @@ std::ostream& operator <<(std::ostream& ost, const Matrix3x3<DATATYPE>& v)
     return ost;
 }
 
+template <typename DATATYPE>
+std::istream& operator >>(std::istream& ist, Matrix3x3<DATATYPE>& v)
+{
+    ist >> v.c[0] >> v.c[1] >> v.c[2];
+    return ist;
+}
+
 /**
  * Representation for 3x3 RotationMatrices
  */
@@ -510,9 +518,9 @@ public:
 
   void toCompactString(std::ostream& ost) const
   {
-      ost << this->c[0].x <<' '<<this->c[0].y<<' '
-          <<this->c[1].x<<' '<<this->c[1].y<<' '
-          <<this->c[2].x<<' '<<this->c[2].y;
+      ost << this->c[0].x <<' '<<this->c[0].y <<' '
+          << this->c[1].x <<' '<<this->c[1].y <<' '
+          << this->c[2].x <<' '<<this->c[2].y;
   }
 
   /**
@@ -567,6 +575,20 @@ public:
       Vector3<DATATYPE > (a.y, -a.x, 0));
     RotationMatrixT A2 = A*A;
     return Rodrigues(A, A2, q);
+  }
+
+  static RotationMatrixT interpolate(const RotationMatrixT& R0, const RotationMatrixT& Rf, DATATYPE t)
+  {
+    RotationMatrixT diff = R0.invert() * Rf;
+    Vector3<DATATYPE> w = diff.toQuaternion();
+    DATATYPE aerr = w.abs();
+
+    if (aerr > std::numeric_limits<DATATYPE>::epsilon()) {
+      w /= aerr;
+      return R0 * RotationMatrixT::fromQuaternion(w, aerr * t);
+    } else {
+      return Rf;
+    }
   }
 };
 

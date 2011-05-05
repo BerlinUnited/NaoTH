@@ -7,6 +7,8 @@
 using namespace naoth;
 
 double InertialSensorData::offset[InertialSensorData::numOfInertialSensor];
+int InertialSensorData::calibrateNum = 0;
+string InertialSensorData::configGroup = "inertialsensor";
 
 InertialSensorData::InertialSensorData()
 {
@@ -27,12 +29,30 @@ InertialSensorData::~InertialSensorData()
 
 void InertialSensorData::init()
 {
-//  configFileName = Platform::getInstance().theConfigPathInfo.inertialsensor_parameter + "/" + Platform::getInstance().theHardwareIdentity + ".prm";
-//  Config cfg = ConfigLoader::loadConfig(configFileName.c_str());
-//  cfg.get("offset[X]", offset[X]);
-//  cfg.get("offset[Y]", offset[Y]);
+  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+  offset[X] = config.getDouble(configGroup, "offset[X]");
+  offset[Y] = config.getDouble(configGroup, "offset[Y]");
 }
 
+void InertialSensorData::calibrate()
+{
+    for(int i=0; i<numOfInertialSensor; i++){
+        offset[i] = (offset[i]*calibrateNum -data[i]) / (calibrateNum+1);
+    }
+    calibrateNum++;
+}
+
+void InertialSensorData::stopCalibrating()
+{
+  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+  
+  cout<< "[InertialSensorData] : save to configure configuration group " << configGroup;
+  calibrateNum = 0;
+  
+  config.setDouble(configGroup, "offset[X]", offset[X]);
+  config.setDouble(configGroup, "offset[Y]", offset[Y]);
+  config.save(naoth::Platform::getInstance().theConfigDirectory);
+}
 
 string InertialSensorData::getInertialSensorName(InertialSensorID angle)
 {
@@ -48,7 +68,6 @@ string InertialSensorData::getInertialSensorName(InertialSensorID angle)
   }
 }//end getInertialSensorName
 
-
 void InertialSensorData::print(ostream& stream) const
 {
   stream << "values:\n";
@@ -57,11 +76,11 @@ void InertialSensorData::print(ostream& stream) const
     stream << getInertialSensorName((InertialSensorID) i) << " = " << get((InertialSensorID) i) << "\n";
   }
 
-//  stream << "calibration offset:\n";
-//  for (int i = 0; i < numOfInertialSensor; i++)
-//  {
-//    stream << getInertialSensorName((InertialSensorID) i) << " = " << offset[i] << "\n";
-//  }
+  stream << "calibration offset:\n";
+  for (int i = 0; i < numOfInertialSensor; i++) 
+  {
+    stream << getInertialSensorName((InertialSensorID) i) << " = " << offset[i] << "\n";
+  }
 
   stream << "raw data:\n";
   for (int i = 0; i < numOfInertialSensor; i++) 
@@ -69,7 +88,6 @@ void InertialSensorData::print(ostream& stream) const
     stream << getInertialSensorName((InertialSensorID) i) << " = " << data[i] << "\n";
   }
 }//end print
-
 
 void Serializer<InertialSensorData>::serialize(const InertialSensorData& representation, std::ostream& stream)
 {

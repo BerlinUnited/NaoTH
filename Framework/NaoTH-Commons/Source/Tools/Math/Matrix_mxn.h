@@ -110,8 +110,10 @@ namespace Math
       */
       ~Matrix_mxn()
       {
-        delete [] content;
-//        content.clear();
+        if(content != NULL)
+        {
+          delete [] content;
+        }
       }
 
       //----------------------------------------------------------------------------
@@ -123,17 +125,15 @@ namespace Math
       */
       Matrix_mxn<T>& operator=(const Matrix_mxn<T>& matrix)
       {
-        if(matrix.n == n && matrix.m == m)
+        assert(matrix.n == n && matrix.m == m);
+        for (unsigned int i = 0; i < m; ++i)
         {
-          for (unsigned int i = 0; i < m; ++i)
+          for (unsigned int j = 0; j < n; ++j)
           {
-            for (unsigned int j = 0; j < n; ++j)
-            {
-              content[i][j] = matrix.content[i][j];
-            }
+            content[i][j] = matrix.content[i][j];
           }
         }
-        return *this;
+        return  *this;
       }
 
       //----------------------------------------------------------------------------
@@ -146,7 +146,28 @@ namespace Math
       */
       vector<T>& operator[](unsigned int i)
       {
+        assert(m > 0 && n> 0);
         return content[i];
+      }
+
+      //----------------------------------------------------------------------------
+      /**
+      * cell access operator
+      * @param i Index of row vector to access (first row vector has index 0)
+      * @return Reference to row vector
+      *
+      * Complexity: 1
+      */
+      T& operator()(unsigned int i, unsigned int j)
+      {
+        assert(m > 0 && n> 0);
+        return content[i][j];
+      }
+
+      T& operator()(unsigned int i, unsigned int j) const
+      {
+        assert(m > 0 && n> 0);
+        return content[i][j];
       }
 
       //----------------------------------------------------------------------------
@@ -158,14 +179,12 @@ namespace Math
       */
       Matrix_mxn<T>& operator+=(const Matrix_mxn<T>& matrix)
       {
-        if(m == matrix.m && n == matrix.n)
+        assert(m == matrix.m && n == matrix.n);
+        for (unsigned int i = 0; i < m; ++i)
         {
-          for (unsigned int i = 0; i < m; ++i)
+          for (unsigned int j = 0; j < n; ++j)
           {
-            for (unsigned int j = 0; j < n; ++j)
-            {
-              content[i][j] += matrix.content[i][j];
-            }
+            content[i][j] += matrix.content[i][j];
           }
         }
         return *this;
@@ -180,15 +199,13 @@ namespace Math
       */
       Matrix_mxn<T> operator+(const Matrix_mxn<T>& matrix)
       {
+        assert(m == matrix.m && n == matrix.n);
         Matrix_mxn<T> M(matrix);
-        if(m == matrix.m && n == matrix.n)
+        for (unsigned int i = 0; i < m; ++i)
         {
-          for (unsigned int i = 0; i < m; ++i)
+          for (unsigned int j = 0; j < n; ++j)
           {
-            for (unsigned int j = 0; j < n; ++j)
-            {
-              M[i][j] = content[i][j] + matrix.content[i][j];
-            }
+            M[i][j] = content[i][j] + matrix.content[i][j];
           }
         }
         return M;
@@ -203,14 +220,12 @@ namespace Math
       */
       Matrix_mxn<T>& operator-=(const Matrix_mxn<T>& matrix)
       {
-        if(m == matrix.m && n == matrix.n)
+        assert(m == matrix.m && n == matrix.n);
+        for (unsigned int i = 0; i < m; ++i)
         {
-          for (unsigned int i = 0; i < m; ++i)
+          for (unsigned int j = 0; j < n; ++j)
           {
-            for (unsigned int j = 0; j < n; ++j)
-            {
-              content[i][j] -= matrix.content[i][j];
-            }
+            content[i][j] -= matrix.content[i][j];
           }
         }
         return *this;
@@ -226,15 +241,13 @@ namespace Math
       */
       Matrix_mxn<T> operator-(const Matrix_mxn<T>& matrix)
       {
+        assert(m == matrix.m && n == matrix.n);
         Matrix_mxn<T> M(matrix);
-        if(m == matrix.m && n == matrix.n)
+        for (unsigned int i = 0; i < m; ++i)
         {
-          for (unsigned int i = 0; i < m; ++i)
+          for (unsigned int j = 0; j < n; ++j)
           {
-            for (unsigned int j = 0; j < n; ++j)
-            {
-              M[i][j] = content[i][j] - matrix.content[i][j];
-            }
+            M[i][j] = content[i][j] - matrix.content[i][j];
           }
         }
         return M;
@@ -243,7 +256,7 @@ namespace Math
       //----------------------------------------------------------------------------
       /**
       * Operator *=
-      * @param m Matrix this matrix is to multiplied with
+      * @param s Scalar to multiply
       *
       * Complexity: n*m
       */
@@ -282,26 +295,24 @@ namespace Math
       //----------------------------------------------------------------------------
       /**
       * Operator *
-      * @param s Scalar to multiply
+      * @param matrix Matrix this matrix is to multiplied with
       *
       * Complexity: n*m
       */
       Matrix_mxn<T> operator*(const Matrix_mxn<T>& matrix)
       {
+        assert(matrix.m == n);
         Matrix_mxn<T> M(m, matrix.n);
-        if(matrix.m == n)
+        for (unsigned int i = 0; i < m; ++i)
         {
-          for (unsigned int i = 0; i < m; ++i)
+          for (unsigned int j = 0; j < matrix.n; ++j)
           {
-            for (unsigned int j = 0; j < matrix.n; ++j)
+             T value = 0;
+            for (unsigned int k = 0; k < n; k++)
             {
-               T value = 0;
-              for (unsigned int k = 0; k < n; k++)
-              {
-                value += content[i][k] * matrix.content[k][j];
-              }
-              M[i][j] = value;
+              value += content[i][k] * matrix.content[k][j];
             }
+            M[i][j] = value;
           }
         }
         return M;
@@ -355,6 +366,7 @@ namespace Math
 
       Matrix_mxn<T> subMatrix(unsigned int ii,unsigned int jj)
       {
+        assert(m > 0 && n > 0);
         Matrix_mxn<T> M(m - 1, n - 1);
         for (unsigned int i = 0; i < m; i++)
         {
@@ -413,247 +425,285 @@ namespace Math
             return d;
           }
         }
-          else
-          {
-            return 0;
-          }
+        else
+        {
+          return 0;
+        }
       }
-
 
       T adjoint(unsigned int ii, unsigned int jj)
       {
           Matrix_mxn<T> M = subMatrix(ii, jj);
           T d = M.det();
           /*(-1)^(i+j) i,j of natural numbers without 0*/
-          return pow(-1.0, static_cast<double>(ii + jj + 2)) * d;
+          return pow(static_cast<T>(-1), static_cast<T>(ii + jj + 2)) * d;
       }
 
       Matrix_mxn<T> invert()
       {
-          Matrix_mxn<T> M(n, m);
-          if (n == m)
+        assert(n == m);
+        Matrix_mxn<T> M(n, m);
+        T d = 0;
+        if (n == 2)
+        {
+          T d = content[0][0] * content[1][1] - content[0][1] * content[1][0];
+          if(d != 0)
           {
-              T d = 0;
-              if (n == 2)
-              {
-                  T d = content[0][0] * content[1][1] - content[0][1] * content[1][0];
-                  if(d != 0)
-                  {
-                    T scalar = 1 / ( d );
-                    M[0][0] = scalar * content[1][1];
-                    M[0][1] = -scalar * content[0][1];
-                    M[1][0] = -scalar * content[1][0];
-                    M[1][1] = scalar * content[0][0];
-                  }
-              }
-              else
-              {
-                  d = det();
-                  if (d != 0)
-                  {
-                      for (unsigned int i = 0; i < n; i++)
-                      {
-                          for (unsigned int j = 0; j < m; j++)
-                          {
-                              M[j][i] = adjoint(i, j) / d;
-                          }
-                      }
-                  }
-              }
+            T scalar = 1 / ( d );
+            M[0][0] = scalar * content[1][1];
+            M[0][1] = -scalar * content[0][1];
+            M[1][0] = -scalar * content[1][0];
+            M[1][1] = scalar * content[0][0];
           }
-          return M;
+        }
+        else
+        {
+          d = det();
+          assert(d != 0);
+          for (unsigned int i = 0; i < n; i++)
+          {
+            for (unsigned int j = 0; j < m; j++)
+            {
+              M[j][i] = adjoint(i, j) / d;
+            }
+          }
+        }
+        return M;
       }
 
       void print()
       {
-        if(m >= 0 && n >= 0)
+        cout << "Matrix (" << m << "x" << n << ")" << endl;
+        for (unsigned int i = 0; i < m; i++)
         {
-          cout << "Matrix (" << m << "x" << n << ")" << endl;
-          for (unsigned int i = 0; i < m; i++)
+          for (unsigned int j = 0; j < n; j++)
           {
-              for (unsigned int j = 0; j < n; j++)
-              {
-                  cout << "\t" << content[i][j];
-              }
-              cout << "\n";
+            cout << "\t" << content[i][j];
           }
           cout << "\n";
-          cout << " Det = " << det();
-          cout << "\n";
         }
+        cout << "\n";
+        cout << " Det = " << det();
+        cout << "\n";
       }
 
-//  //  //----------------------------------------------------------------------------
-//  //  /**
-//  //  * Solves the system A*x=b where A is the actual matrix
-//  //  * @param b Vector b
-//  //  * @return Solution x
-//  //  *
-//  //  * Complexity: n^3
-//  //  *
-//  //  */
-//  //  Vector_n<T, N> solve(Vector_n<T, N> b) const
-//  //  {
-//  //    // create copy of actual matrix
-//  //    Matrix_mxn<T, N> m(*this);
-//  //
-//  //    // initialize ranking vector
-//  //    Vector_n<int, N> ranking;
-//  //    unsigned int i;
-//  //    for (i = 0; i < N; ++i)
-//  //      ranking[i] = i;
-//  //
-//  //    T z = T();
-//  //    int c;
-//  //    int r;
-//  //    for (c = 0; c < (int)N-1; ++c)
-//  //    {
-//  //      // find row containing highest value
-//  //      int maxRow = c;
-//  //      T maxValue = m[ranking[maxRow]][c];
-//  //      if (maxValue < z)
-//  //        maxValue = -maxValue;
-//  //      for (r = c+1; r < (int)N; ++r)
-//  //      {
-//  //        T value = m[ranking[r]][c];
-//  //        if (value < z)
-//  //          value = -value;
-//  //        if (value > maxValue)
-//  //        {
-//  //          maxRow = r;
-//  //          maxValue = value;
-//  //        }
-//  //      }
-//  //
-//  //      // if maximum value zero --> matrix is singular
-//  //      if (MVTools::isNearZero(maxValue))
-//  //      {
-//  //        if (MVTools::isNearNegZero(maxValue))
-//  //          throw MVException(MVException::DivByNegZero);
-//  //        else
-//  //          throw MVException(MVException::DivByPosZero);
-//  //      }
-//  //      /*
-//  //      if (maxValue == z)
-//  //      return Vector_n<T, N>();
-//  //      */
-//  //
-//  //      // swap rows in ranking
-//  //      int temp = ranking[c];
-//  //      ranking[c] = ranking[maxRow];
-//  //      ranking[maxRow] = temp;
-//  //
-//  //      // process all following rows
-//  //      for (r = c+1; r < (int)N; ++r)
-//  //      {
-//  //        // calc factor for subtracting
-//  //        T factor = m[ranking[r]][c] / m[ranking[c]][c];
-//  //        if (MVTools::isNearInf(factor))
-//  //        {
-//  //          if (MVTools::isNearPosInf(factor))
-//  //            throw MVException(MVException::PosInfValue);
-//  //          else
-//  //            throw MVException(MVException::NegInfValue);
-//  //        }
-//  //
-//  //        T sub;
-//  //        sub = factor*b[ranking[c]];
-//  //        if (MVTools::isNearInf(sub))
-//  //        {
-//  //          if (MVTools::isNearPosInf(sub))
-//  //            throw MVException(MVException::PosInfValue);
-//  //          else
-//  //            throw MVException(MVException::NegInfValue);
-//  //        }
-//  //
-//  //        // change vector b
-//  //        b[ranking[r]] -= sub;
-//  //
-//  //        // change matrix
-//  //        m[ranking[r]][c] = T();
-//  //        for (int c2 = c+1; c2 < (int)N; ++c2)
-//  //        {
-//  //          sub = factor*m[ranking[c]][c2];
-//  //          if (MVTools::isNearInf(sub))
-//  //          {
-//  //            if (MVTools::isNearPosInf(sub))
-//  //              throw MVException(MVException::PosInfValue);
-//  //            else
-//  //              throw MVException(MVException::NegInfValue);
-//  //          }
-//  //          m[ranking[r]][c2] -= sub;
-//  //        }
-//  //      }
-//  //    }
-//  //
-//  //    // if last entry of matrix zero --> matrix is singular
-//  //    if (MVTools::isNearZero(m[ranking[N-1]][N-1]))
-//  //    {
-//  //      if (MVTools::isNearNegZero(m[ranking[N-1]][N-1]))
-//  //        throw MVException(MVException::DivByNegZero);
-//  //      else
-//  //        throw MVException(MVException::DivByPosZero);
-//  //    }
-//  //    /*
-//  //    if (m[ranking[N-1]][N-1] == z)
-//  //    return Vector_n<T, N>();
-//  //    */
-//  //
-//  //    // matrix has triangle form
-//  //    // calculate solutions
-//  //    b[ranking[N-1]] /= m[ranking[N-1]][N-1];
-//  //    for (r = N-2; r >= 0; --r)
-//  //    {
-//  //      T sum = T();
-//  //      for (c = r+1; c < (int)N; ++c)
-//  //        sum += m[ranking[r]][c] * b[ranking[c]];
-//  //      if (MVTools::isNearInf(sum))
-//  //      {
-//  //        if (MVTools::isNearPosInf(sum))
-//  //          throw MVException(MVException::PosInfValue);
-//  //        else
-//  //          throw MVException(MVException::NegInfValue);
-//  //      }
-//  //
-//  //      if (MVTools::isNearZero(m[ranking[r]][r]))
-//  //      {
-//  //        if (MVTools::isNearNegZero(m[ranking[r]][r]))
-//  //          throw MVException(MVException::DivByNegZero);
-//  //        else
-//  //          throw MVException(MVException::DivByPosZero);
-//  //      }
-//  //      b[ranking[r]] = (b[ranking[r]] - sum) / m[ranking[r]][r];
-//  //
-//  //      if (MVTools::isNearInf(b[ranking[r]]))
-//  //      {
-//  //        if (MVTools::isNearPosInf(b[ranking[r]]))
-//  //          throw MVException(MVException::PosInfValue);
-//  //        else
-//  //          throw MVException(MVException::NegInfValue);
-//  //      }
-//  //    }
-//  //
-//  //    // create vector with correct order
-//  //    Vector_n<T, N> x;
-//  //    for (r = 0; r < (int)N; ++r)
-//  //      x[r] = b[ranking[r]];
-//  //
-//  //    return x;
-//  //  }
-//
-//  //  //----------------------------------------------------------------------------
-//  //  /**
-//  //  * Returns the identity matrix with same dimensions like this matrix
-//  //  * @return nxn identity matrix
-//  //  */
-//  //  static Matrix_mxn<T, N> identity()
-//  //  {
-//  //    Matrix_mxn<T, N> res;
-//  //    for (unsigned int i = 0; i < N; ++i)
-//  //      res[i][i] = (T)1;
-//  //    return res;
-//  //  }
-//
+    //----------------------------------------------------------------------------
+    /**
+    * Solves the system A*x=b where A is the actual matrix
+    * @param b Vector b
+    * @return Solution x
+    *
+    * Complexity: n^3
+    *
+    */
+    Matrix_mxn<T> solve(Matrix_mxn<T> b) const
+    {
+      assert(m == n && n > 1 && b.n == 1);
+      // create copy of actual matrix
+      Matrix_mxn<T> matrix(*this);
+  
+      // initialize ranking vector
+      Matrix_mxn<int> ranking(1, n);
+      unsigned int i;
+      for (i = 0; i < n; i++)
+      {
+        ranking[0][i] = i;
+      }
+      T z = T();
+      unsigned int c;
+      int r;
+      for (c = 0; c < n - 1; c++)
+      {
+        // find row containing highest value
+        int maxRow = c;
+        T maxValue = matrix[ranking[0][maxRow]][c];
+        if (maxValue < z)
+        {
+          maxValue = -maxValue;
+        }
+        for (r = c + 1; r < ((int) n); ++r)
+        {
+          T value = matrix[ranking[0][r]][c];
+          if (value < z)
+          {
+            value = -value;
+          }
+          if (value > maxValue)
+          {
+            maxRow = r;
+            maxValue = value;
+          }
+        }
+  
+        // if maximum value zero --> matrix is singular
+        if (MVTools::isNearZero(maxValue))
+        {
+          if (MVTools::isNearNegZero(maxValue))
+          {
+            throw MVException(MVException::DivByNegZero);
+          }
+          else
+          {
+            throw MVException(MVException::DivByPosZero);
+          }
+        }
+        /*
+        if (maxValue == z)
+        return Vector_n<T, N>();
+        */
+  
+        // swap rows in ranking
+        int temp = ranking[0][c];
+        ranking[0][c] = ranking[0][maxRow];
+        ranking[0][maxRow] = temp;
+  
+        // process all following rows
+        for (r = c + 1; r < ((int) n); r++)
+        {
+          // calc factor for subtracting
+          T factor = matrix[ranking[0][r]][c] / matrix[ranking[0][c]][c];
+          if (MVTools::isNearInf(factor))
+          {
+            if (MVTools::isNearPosInf(factor))
+            {
+              throw MVException(MVException::PosInfValue);
+            }
+            else
+            {
+              throw MVException(MVException::NegInfValue);
+            }
+          }
+  
+          T sub;
+          sub = factor * b[ranking[0][c]][0];
+          if (MVTools::isNearInf(sub))
+          {
+            if (MVTools::isNearPosInf(sub))
+            {
+              throw MVException(MVException::PosInfValue);
+            }
+            else
+            {
+              throw MVException(MVException::NegInfValue);
+            }
+          }
+  
+          // change vector b
+          b[ranking[0][r]][0] -= sub;
+  
+          // change matrix
+          matrix[ranking[0][r]][c] = T();
+          for (unsigned int c2 = c + 1; c2 < n; c2++)
+          {
+            sub = factor * matrix[ranking[0][c]][c2];
+            if (MVTools::isNearInf(sub))
+            {
+              if (MVTools::isNearPosInf(sub))
+              {
+                throw MVException(MVException::PosInfValue);
+              }
+              else
+              {
+                throw MVException(MVException::NegInfValue);
+              }
+            }
+            matrix[ranking[0][r]][c2] -= sub;
+          }
+        }
+      }
+  
+      // if last entry of matrix zero --> matrix is singular
+      if (MVTools::isNearZero(matrix[ranking[0][n - 1]][n - 1]))
+      {
+        if (MVTools::isNearNegZero(matrix[ranking[0][n - 1]][n - 1]))
+        {
+          throw MVException(MVException::DivByNegZero);
+        }
+        else
+        {
+          throw MVException(MVException::DivByPosZero);
+        }
+      }
+      /*
+      if (matrix[ranking[0][n - 1]][n - 1] == z)
+      {
+        return Vector_n<T, N>();
+      }
+      */
+  
+      // matrix has triangle form
+      // calculate solutions
+      b[ranking[0][n - 1]][0] /= matrix[ranking[0][n - 1]][n - 1];
+      for (r = n - 2; r >= 0; r--)
+      {
+        T sum = T();
+        for (c = r + 1; c < n; c++)
+        {
+          sum += matrix[ranking[0][r]][c] * b[ranking[0][c]][0];
+        }
+        if (MVTools::isNearInf(sum))
+        {
+          if (MVTools::isNearPosInf(sum))
+          {
+            throw MVException(MVException::PosInfValue);
+          }
+          else
+          {
+            throw MVException(MVException::NegInfValue);
+          }
+        }
+  
+        if (MVTools::isNearZero(matrix[ranking[0][r]][r]))
+        {
+          if (MVTools::isNearNegZero(matrix[ranking[0][r]][r]))
+          {
+            throw MVException(MVException::DivByNegZero);
+          }
+          else
+          {
+            throw MVException(MVException::DivByPosZero);
+          }
+        }
+        b[ranking[0][r]][0] = (b[ranking[0][r]][0] - sum) / matrix[ranking[0][r]][r];
+  
+        if (MVTools::isNearInf(b[ranking[0][r]][0]))
+        {
+          if (MVTools::isNearPosInf(b[ranking[0][r]][0]))
+          {
+            throw MVException(MVException::PosInfValue);
+          }
+          else
+          {
+            throw MVException(MVException::NegInfValue);
+          }
+        }
+      }
+  
+      // create vector with correct order
+      Matrix_mxn<T> x(n, 1);
+      for (r = 0; r < ((int) n); r++)
+      {
+        x[r][0] = b[ranking[0][r]][0];
+      }
+      return x;
+    }
+
+    //----------------------------------------------------------------------------
+    /**
+    * Returns the identity matrix with same dimensions like this matrix
+    * @return nxn identity matrix
+    */
+    Matrix_mxn<T> identity()
+    {
+      assert(m == n);
+      Matrix_mxn<T> res(m, n);
+      for (unsigned int i = 0; i < n; i++)
+      {
+        res[i][i] = (T) 1;
+      }
+      return res;
+    }
+
   };
 
 

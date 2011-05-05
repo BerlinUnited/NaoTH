@@ -102,8 +102,13 @@ public:
     return 0.0 <= t && t <= length;
   }//end intersect
 
+  double project(const Vector2<double>& p) const
+  {
+    // projection of the point to the line
+    return direction*p - direction*base;
+  }//end project
 
-  const Vector2<double> projection(const Vector2<double>& p) const
+  Vector2<double> projection(const Vector2<double>& p) const
   {
     // projection of the point to the line
     double t = direction*p - direction*base;
@@ -177,6 +182,7 @@ public:
     double t = segmentTwo.Line::intersection(segmentOne);
     
     double angleDiff = fabs(Math::normalize(segmentOne.getDirection().angle() - segmentTwo.getDirection().angle()));
+    angleDiff = min(angleDiff, Math::pi - angleDiff);
 
     if(segmentOne.getLength() < s || 
        s < 0 || 
@@ -185,6 +191,8 @@ public:
        angleDiff < Math::pi_2 - 0.85 || 
        angleDiff > Math::pi_2 + 0.85 ) // 0.85 = 5deg
       type = none;
+    else if(angleDiff > 0.85 * 2.0 && angleDiff < Math::pi_2 - 0.85 * 2.0 )
+      type = C;
     else if(0 < s && s < segmentOne.getLength() && 0 < t && t < segmentTwo.getLength())
       type = X;
     else if((0 < s && s < segmentOne.getLength()) || (0 < t && t < segmentTwo.getLength()))

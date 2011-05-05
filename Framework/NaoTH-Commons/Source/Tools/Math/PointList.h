@@ -9,6 +9,7 @@
 #define __PointList_H_
 
 #include "Tools/Math/Vector2.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 template<int MAX_NUMBER_OF_POINTS>
 class PointList
@@ -50,7 +51,7 @@ class PointList
     }//end remove
 
     //concatenates another list with the given one
-    void merge(PointList other)
+    void merge(const PointList& other)
     {
       for(int n=0; n<other.length; n++)
         add(other[n]);
@@ -79,7 +80,7 @@ class PointList
 
 
     //returns the mean point
-    Vector2<int> getMean()
+    Vector2<double> getMean() const
     {
       Vector2<double> mean;
 
@@ -92,10 +93,8 @@ class PointList
       return mean;
     }//end getMean
 
-
-    // TODO: check if the index i is out of range (i.e. i > length)
-    Vector2<int>& operator[] (int i) { return points[i]; }
-    const Vector2<int>& operator[] (int i) const { return points[i]; }
+    Vector2<int>& operator[] (int i) { ASSERT(i>=0&&i<MAX_NUMBER_OF_POINTS); return points[i]; }
+    const Vector2<int>& operator[] (int i) const { ASSERT(i>=0&&i<MAX_NUMBER_OF_POINTS); return points[i]; }
 };//end class pointList
 
 
