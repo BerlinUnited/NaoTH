@@ -25,7 +25,7 @@ project "SimSpark"
   
   links {
     CORE,
-	"NaoTH-Tools", 
+	"NaoTH-Commons", 
 	"sfsexp",
   "b64",
 	"glib-2.0",

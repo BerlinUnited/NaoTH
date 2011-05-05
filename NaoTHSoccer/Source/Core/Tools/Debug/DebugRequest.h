@@ -12,7 +12,7 @@
 #include <map>
 
 #include "Tools/DataStructures/Singleton.h"
-#include <DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandExecutor.h>
 
 class DebugRequest : public naoth::Singleton<DebugRequest>, public DebugCommandExecutor
 {

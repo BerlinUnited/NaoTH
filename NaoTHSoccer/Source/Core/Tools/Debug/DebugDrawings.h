@@ -15,7 +15,7 @@
 #include "Tools/DataStructures/Singleton.h"
 #include "Tools/Math/Vector_n.h"
 #include "Tools/Math/Common.h"
-#include <DebugCommandExecutor.h>
+#include <DebugCommunication/DebugCommandExecutor.h>
 
 using namespace std;
 using namespace naoth;

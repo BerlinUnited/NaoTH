@@ -5,10 +5,9 @@ project "SimpleSoccerAgent"
 	  files {"../src/**.h","../src/**.cpp"}
 	  
 	  includedirs {
-		  "../src/", 
-		  "../../Framework/NaoTH-Tools/Source/"
+		  "../src/"
 		}
 	  
-	  links {"NaoTH-Tools"}
+	  links {"NaoTH-Commons"}
 	  
 	  targetname "simple-soccer-agent"

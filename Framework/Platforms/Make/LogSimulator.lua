@@ -16,7 +16,7 @@ project "LogSimulator"
   
   files{"../Source/LogSimulator/**.cpp","../Source/LogSimulator/**.h"}
   
-  links {CORE, "NaoTH-Tools",
+  links {CORE, "NaoTH-Commons",
     "glib-2.0",
 	  "gio-2.0",
 	  "gobject-2.0",

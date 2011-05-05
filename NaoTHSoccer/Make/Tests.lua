@@ -1,4 +1,4 @@
-project "Tests"
+project "NaoTHSoccer-Tests"
   kind "ConsoleApp"
   language "C++"
   
@@ -14,18 +14,17 @@ project "Tests"
   files {"../Tests/**.cpp", "../Tests/**.h"}
 
   includedirs {
-        "../Tests/",
-	"../Source/",
-        "../../Framework/NaoTH-Tools/Source/",
-        "../../Framework/DebugCommunication/Source/"}
-  
-  links {"NaoTHSoccer", "NaoTH-Tools", "DebugCommunication", 
+    "../Tests/",
+    "../Source/",
+    "../../Framework/NaoTH-Commons/Source/"
+  }
+
+  links {"NaoTHSoccer", "NaoTH-Commons", 
     "glib-2.0","gio-2.0","gobject-2.0", "protobuf",
     "gtest", "gmock", "pthread"
   }
   
-  targetdir "../dist/Native"
-  targetname "executeTests"
+  targetname "testNaoTHSoccer"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../Extern/lib/") .. "\""}
