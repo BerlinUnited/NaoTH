@@ -6,8 +6,13 @@ local hasWebots = true
 local webotsHome = os.getenv("WEBOTS_HOME")
 
 -- default value for linux
-if webotsHome == nil and not os.is("windows") then
-  webotsHome = "/usr/local/webots";
+if webotsHome == nil then
+  if os.is("windows") then
+    -- TODO: check this path on real Webots installations
+    webotsHome = "C:\Program Files\Webots"
+  else
+    webotsHome = "/usr/local/webots"
+  end
 end
 
 -- check if the directory can be opened by lua and warn if not
