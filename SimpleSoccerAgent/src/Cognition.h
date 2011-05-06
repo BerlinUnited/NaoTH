@@ -40,30 +40,32 @@ public:
   virtual ~Cognition();
 
 
-  /** register the data at the platform for the input*/
+  /** register the data at the platform for the input */
   void init(naoth::PlatformDataInterface& platformInterface)
   {
-    //
     platformInterface.registerCognitionInput(theSensorJointData);
     platformInterface.registerCognitionInput(theInertialSensorData);
     platformInterface.registerCognitionInput(theFSRData);
     platformInterface.registerCognitionInput(theAccelerometerData);
     platformInterface.registerCognitionInput(theGyrometerData);
 
+    // virtual vision for the simulation 3D
     platformInterface.registerCognitionInput(theVirtualVision);
+    // image for the SPL
     platformInterface.registerCognitionInput(theImage);
 
     platformInterface.registerCognitionInput(theFrameInfo);
     platformInterface.registerCognitionInput(theSimSparkGameInfo);
     std::cout << "Cognition register end" << std::endl;
-  }
+  }//end init
 
 
   virtual void call();
 
 private:
   void perception();
-  void detect_ball();
+  void detect_ball_in_image();
+  void detect_ball_in_virtual_vision();
 
   void decide();
 
@@ -82,7 +84,7 @@ private:
   SimSparkGameInfo theSimSparkGameInfo;
 
 
-  bool isStandingUp;
+  bool robotIsUpright;
 };
 
 #endif	/* COGNITION_H */

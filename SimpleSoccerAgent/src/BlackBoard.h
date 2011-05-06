@@ -14,15 +14,7 @@
 
 class BlackBoard
 {
-
 public:
-  /** gives access to the instance of the blackboard */
-  static BlackBoard& getInstance()
-  {
-    static BlackBoard instance;
-    return instance;
-  }
-
   /** Representations */
   BallPercept theBallPercept;
   MotionRequest theMotionRequest;
@@ -32,9 +24,17 @@ private:
   /** this constructor cann only be called from inside */
   BlackBoard(){}
 
-  /** the ONLY instance of the blackboard */
-  static BlackBoard instance;
+public:
+  virtual ~BlackBoard(){}
 
+  /** gives access to the instance of the blackboard */
+  static BlackBoard& getInstance()
+  {
+    /** the ONLY instance of the blackboard */
+    static BlackBoard instance;
+    return instance;
+  }
+ 
 };
 
 #endif	/* BlackBoard_H */

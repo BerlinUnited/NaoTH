@@ -3,6 +3,10 @@ solution "SimpleSoccerAgent"
   configurations {"Debug", "Release"}
   targetdir "../"
   
+  -- extern
+  EXTERN_PATH = "../../Extern"
+  -- framework
+  FRAMEWORK_PATH = "../../Framework"
   
   
   -- additional defines for windows
@@ -10,12 +14,15 @@ solution "SimpleSoccerAgent"
 	defines {"WIN32", "NOMINMAX"}
   end
   
+  libdirs {
+	EXTERN_PATH .. "/lib/"
+  }
   
-  libdirs {"../../Extern/lib/"}
   includedirs {
-    "../../Extern/include/glib-2.0/",
-		"../../Extern/lib/glib-2.0/include/",
-		  "../../Framework/NaoTH-Commons/Source/"
+    EXTERN_PATH .. "/include/",
+    EXTERN_PATH .. "/include/glib-2.0/",
+	EXTERN_PATH .. "/lib/glib-2.0/include/",
+	FRAMEWORK_PATH .. "/NaoTH-Commons/Source/"
   }
   
   -- debug configuration
@@ -27,6 +34,6 @@ solution "SimpleSoccerAgent"
   CORE_PATH = path.getabsolute("../src/")
   CORE = "SimpleSoccerAgent"
   
-  dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
+  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
+  dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
   dofile "SimpleSoccerAgent.lua"
-  dofile "../../Framework/Platforms/Make/SimSpark.lua"

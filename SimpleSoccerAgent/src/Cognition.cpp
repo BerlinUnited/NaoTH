@@ -15,54 +15,59 @@ using namespace naoth;
 
 Cognition::Cognition()
   :
-  isStandingUp(true)
+  robotIsUpright(true)
 {
 }
-
-void Cognition::call()
-{
-  //
-  perception();
-
-  //
-  decide();
-}//end call
 
 Cognition::~Cognition()
 {
 }
 
+
+void Cognition::call()
+{
+  // perceive the ball etc.
+  perception();
+
+  // make a decision what to do next
+  decide();
+}//end call
+
+
 void Cognition::perception()
 {
-
   // try to update the ball percept by virtual vision
-  /*
-  std::map<std::string, Vector3<double> >::const_iterator ballData = theVirtualVision.data.find("B");
-  if (false && ballData != theVirtualVision.data.end())
-  {
-    BlackBoard::getInstance().theBallPercept.wasSeen = true;
-    BlackBoard::getInstance().theBallPercept.distance = ballData->second[0];
-  }
+  detect_ball_in_virtual_vision();
+
+  // look for the ball in the image 
+  // ( needed for SPL and in the future for Simulation 3D)
+  //detect_ball_in_image();
+  
+
+  // update if the robot is upright or lying on the ground
+  if ( fabs(theInertialSensorData.data[InertialSensorData::X]) < Math::fromDegrees(45) &&
+       fabs(theInertialSensorData.data[InertialSensorData::Y]) < Math::fromDegrees(45) )
+    robotIsUpright = true;
   else
-  {  
-    BlackBoard::getInstance().theBallPercept.wasSeen = false;
-  }
-  */
-
-  // look for the ball in the image (needed for SPL)
-  detect_ball();
-
-
-  // update if the robot is standing up
-  if ( abs(theInertialSensorData.data[InertialSensorData::X]) < Math::fromDegrees(45)
-    && abs(theInertialSensorData.data[InertialSensorData::Y]) < Math::fromDegrees(45) )
-    isStandingUp = true;
-  else
-    isStandingUp = false;
+    robotIsUpright = false;
 }//end perception
 
 
-void Cognition::detect_ball()
+void Cognition::detect_ball_in_virtual_vision()
+{
+  std::map<std::string, Vector3<double> >::const_iterator ballData = theVirtualVision.data.find("B");
+  if (ballData != theVirtualVision.data.end())
+  {
+    BlackBoard::getInstance().theBallPercept.wasSeen = true;
+    BlackBoard::getInstance().theBallPercept.distance = ballData->second[0];
+  }else
+  {
+    BlackBoard::getInstance().theBallPercept.wasSeen = false;
+  }
+}//end detect_ball_in_virtual_vision
+
+
+void Cognition::detect_ball_in_image()
 {
   Vector2<int> orange_sum;
   int num_of_orange = 0;
@@ -108,7 +113,7 @@ void Cognition::detect_ball()
 
 void Cognition::decide()
 {
-  if (!isStandingUp)
+  if (!robotIsUpright)
   {
     if (theInertialSensorData.data[InertialSensorData::Y] > 0)
       BlackBoard::getInstance().theMotionRequest.id = MotionRequest::stand_up_from_front;
