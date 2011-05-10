@@ -17,6 +17,10 @@ public class FillOval extends Oval
       super(args);
   }
 
+  public FillOval(int x, int y, int radiusX, int radiusY) {
+    super(x, y, radiusX, radiusY);
+  }
+
   @Override
   public void draw(Graphics2D g2d)
   {

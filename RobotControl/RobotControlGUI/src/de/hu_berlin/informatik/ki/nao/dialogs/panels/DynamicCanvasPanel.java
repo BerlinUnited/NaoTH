@@ -8,6 +8,7 @@ package de.hu_berlin.informatik.ki.nao.dialogs.panels;
 import de.hu_berlin.informatik.ki.nao.dialogs.drawings.Drawable;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -187,6 +188,15 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
 
   // </editor-fold>
   // <editor-fold defaultstate="collapsed" desc="Getter and Setter">
+  
+  public Point.Double canvasCoordinatesToInternal(Point.Double p)
+  {
+    Point.Double result = new Point.Double();
+    result.x = (p.x - offsetX)/scale;
+    result.y = (p.y - offsetY)/scale;
+    return result;
+  }
+
   public void setOffsetX(double offsetX)
   {
     this.offsetX = offsetX;

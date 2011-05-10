@@ -10,8 +10,11 @@ import java.awt.Graphics2D;
 public class FieldDrawing implements Drawable
 {
 
-  private Color leftGoalColor = Color.yellow;
+  private Color leftGoalColor = new Color(0.9f, 0.9f, 0f, 1f);
   private Color rightGoalColor = Color.blue;
+  private Color fieldColor = new Color(0f, 0.8f, 0f, 0.5f);
+  private Color lineColor = Color.white;
+
   private boolean simsparkFieldSize = false;
 
   public void draw(Graphics2D g2d)
@@ -29,11 +32,11 @@ public class FieldDrawing implements Drawable
   private void drawSPLField(Graphics2D g2d)
   {
     // draw gree pane
-    g2d.setColor(new Color(0f, 1f, 0f, 0.5f));
+    g2d.setColor(fieldColor);
     g2d.fillRect(-3700, -2700, 7400, 5400);
 
     // draw lines
-    g2d.setColor(Color.white);
+    g2d.setColor(lineColor);
     g2d.setStroke(new BasicStroke(50f)); // line width 50mm
 
     g2d.drawLine(-3025, -2025, 3025, -2025); // bottom side line
@@ -65,23 +68,29 @@ public class FieldDrawing implements Drawable
     g2d.drawLine(-3425, -700, -3025, -700);
     g2d.drawLine(-3425, 700, -3025, 700);
     g2d.drawLine(-3425, -700, -3425, 700);
+    // goal post
+    g2d.fillOval(-3075, 650, 100, 100);
+    g2d.fillOval(-3075, -750, 100, 100);
 
     // draw right goal
     g2d.setColor(rightGoalColor);
     g2d.drawLine(3425, -700, 3025, -700);
     g2d.drawLine(3425, 700, 3025, 700);
     g2d.drawLine(3425, -700, 3425, 700);
+    // goal post
+    g2d.fillOval(2975, 650, 100, 100);
+    g2d.fillOval(2975, -750, 100, 100);
 
   }//end draw
 
   private void drawSimsparkField(Graphics2D g2d)
   {
     // draw gree pane
-    g2d.setColor(new Color(0f, 1f, 0f, 0.5f));
+    g2d.setColor(fieldColor);
     g2d.fillRect(-9500, -6500, 19000, 13000);
 
     // draw lines
-    g2d.setColor(Color.white);
+    g2d.setColor(lineColor);
     g2d.setStroke(new BasicStroke(50f)); // line width 50mm
 
     g2d.drawLine(-9000, -6000, 9000, -6000); // bottom side line

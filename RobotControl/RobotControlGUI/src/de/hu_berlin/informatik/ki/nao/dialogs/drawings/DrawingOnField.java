@@ -1,13 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 
 package de.hu_berlin.informatik.ki.nao.dialogs.drawings;
 
 /**
  *
- * @author admin
+ * @author Heinrich Mellmann
  */
 public class DrawingOnField extends DrawingCollection
 {

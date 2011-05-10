@@ -24,6 +24,12 @@ public class Text implements Drawable
     this.text = args[3];
   }
 
+  public Text(int x, int y, String text) {
+    this.x = x;
+    this.y = y;
+    this.text = text;
+  }
+
   public void draw(Graphics2D g2d)
   {
     g2d.scale(10, 10);

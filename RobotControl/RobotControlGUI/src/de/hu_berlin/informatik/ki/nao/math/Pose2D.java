@@ -17,7 +17,11 @@ public class Pose2D implements Serializable
 {
     public final Vector2D translation;
     public final double rotation;
-    
+
+    public Pose2D() {
+      this(new Vector2D(), 0.0);
+    }
+
     /** Creates a new instance of Pose2D */
     public Pose2D(double x, double y, double rotation) 
     {

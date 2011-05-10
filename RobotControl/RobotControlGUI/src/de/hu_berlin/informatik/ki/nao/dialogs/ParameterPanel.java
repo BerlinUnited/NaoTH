@@ -9,6 +9,8 @@ import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -34,6 +36,20 @@ public class ParameterPanel extends AbstractDialog
   public ParameterPanel()
   {
     initComponents();
+	
+	jTextArea.addKeyListener(new KeyAdapter()
+    {
+
+      @Override
+      public void keyPressed(KeyEvent e)
+      {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_ENTER)
+        {
+          sendParameters();
+        }
+      }
+    });
   }
 
   @Init
@@ -137,6 +153,11 @@ private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt)
 }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
 
 private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendActionPerformed
+  sendParameters();
+}//GEN-LAST:event_jButtonSendActionPerformed
+
+private void sendParameters()
+{
   if (parent.checkConnected())
   {
     Command cmd = new Command(this.cbParameterId.getSelectedItem().toString() + ":set");
@@ -167,7 +188,7 @@ private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
   {
     jToggleButtonRefresh.setSelected(false);
   }
-}//GEN-LAST:event_jButtonSendActionPerformed
+}
 
 private void jButtonStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStoreActionPerformed
   if (parent.checkConnected())

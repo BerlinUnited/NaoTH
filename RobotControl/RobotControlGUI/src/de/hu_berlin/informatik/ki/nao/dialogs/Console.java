@@ -15,6 +15,8 @@ import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -34,6 +36,8 @@ public class Console extends AbstractDialog implements CommandSender,
 
   @InjectPlugin
   public RobotControl parent;
+
+  Map<String, String> commandMap = new HashMap<String, String>();
 
   /** Creates new form Console */
   public Console()
@@ -70,10 +74,67 @@ public class Console extends AbstractDialog implements CommandSender,
       @Override
       public void keyReleased(KeyEvent e)
       {
-      }
+        if(e.getKeyCode() == KeyEvent.VK_SPACE)
+        {
+          JTextField t = (JTextField) cbInput.getEditor().getEditorComponent();
+          String str = t.getText();
+          str = str.substring(0,str.length()-1);
+          if(str.indexOf(' ') == -1)
+          {
+            String lastPossibleCommand = null;
+            int smalestCommonIdx = 0;
+            int foundCommands = 0;
+            for(String command: commandMap.keySet())
+            {
+              if(command.startsWith(str))
+              {
+                if(lastPossibleCommand != null)
+                {
+                  txtOutput.append(lastPossibleCommand + "\n");
+                  txtOutput.setCaretPosition(txtOutput.getText().length() - 1);
+                  smalestCommonIdx = Math.min(smalestCommonIdx, iterativeCompare(command, lastPossibleCommand));
+                }
+                else
+                {
+                  smalestCommonIdx = command.length();
+                }
+                
+                lastPossibleCommand = command;
+                foundCommands++;
+              }//end if
+            }//end for
+
+            if(foundCommands == 1)
+              t.setText(lastPossibleCommand + " ");
+            else if(foundCommands > 0)
+            {
+              txtOutput.append(lastPossibleCommand + "\n\n");
+              txtOutput.setCaretPosition(txtOutput.getText().length() - 1);
+              //t.setText(str.trim());
+              t.setText(lastPossibleCommand.substring(0, smalestCommonIdx));
+            }
+          }//end if
+        }//end else
+      }//end keyReleased
     });
 
   }
+
+  /**
+   * returns the smalest index, where the string one and two are different
+   * @param one
+   * @param two
+   * @return
+   */
+  static int iterativeCompare(String one, String two)
+  {
+    int i = 0;
+    for(; i < Math.min(one.length(),two.length()); i++)
+    {
+      if(one.charAt(i) != two.charAt(i)) break;
+    }//end for
+    return i;
+  }//end iterativeCompare
 
   @Override
   public JPanel getPanel()
@@ -219,6 +280,25 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     {
       String string = new String(result, MessageServer.STRING_ENCODING);
       txtOutput.append(originalCommand.getName() + ":\n" + string + "\n\n");
+
+      // remember the help
+      if( originalCommand.getName().equals("help") &&
+         (originalCommand.getArguments() == null || originalCommand.getArguments().size() == 0))
+      {
+        commandMap.clear();
+        String[] commands = string.split("\n");
+        for(String str: commands)
+        {
+          int idx = str.indexOf(": ");
+          if(idx > 0)
+          {
+            String cmdName = str.substring(0, idx);
+            String cmdHelp = str.substring(idx + 2);
+
+            commandMap.put(cmdName, cmdHelp);
+          }
+        }//end for
+      }
     }
     catch(UnsupportedEncodingException ex)
     {
@@ -227,8 +307,8 @@ private void jButtonCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
         MessageServer.STRING_ENCODING + "\n\n");
     }
     txtOutput.setCaretPosition(txtOutput.getText().length() - 1);
+  }//end handleResponse
 
-  }
 
   @Override
   public void handleError(int code)

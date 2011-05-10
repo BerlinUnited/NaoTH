@@ -279,6 +279,7 @@ public class ImageViewer extends AbstractDialog
     else
     {
       debugDrawingManager.removeListener(this.drawingsListener);
+	  this.imageCanvas.getDrawingList().clear();
     }
   }//GEN-LAST:event_btReceiveDrawingsActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -462,6 +463,7 @@ public class ImageViewer extends AbstractDialog
     @Override
     public boolean accept(File file)
     {
+	  if(file.isDirectory()) return true;
       String filename = file.getName();
       return filename.toLowerCase().endsWith("." + this.fileExtension);
     }

@@ -26,31 +26,35 @@ public class ColorTable
       createFromCharArray(copy.getCharArray());
     }
 
+    // set a color cube
     public void setColor(char x, char y, char z, Colors.ColorClass newColorClass, int size)
     {
-        for(int i = x - size; i <= x + size; i++)
-            for(int j = y - size; j <= y + size; j++)
-                for(int k = z - size; k <= z + size; k++)
-                    if(i >= 0 && j >= 0 && k >= 0)
-                        setColor((char)i, (char)j, (char)k, newColorClass);
+        for(int i = Math.max(x - size,0); i <= Math.min(x + size, 63); i++)
+            for(int j = Math.max(y - size,0); j <= Math.min(y + size, 63); j++)
+                for(int k = Math.max(z - size,0); k <= Math.min(z + size, 63); k++)
+                  setColor((char)i, (char)j, (char)k, newColorClass);
     }//end setColor
 
+    // check the size outside
     public void setColor(char x, char y, char z, Colors.ColorClass newColorClass)
     {
       if(x < 64 && y < 64 && z < 64)
       {
-        colorClasses[x][y][z] = (char) newColorClass.ordinal(); 
+        colorClasses[x][y][z] = (char) newColorClass.ordinal();
       }
     }//end setColor
 
+    
+    // get the array only once to save time
+    private Colors.ColorClass[] colorClassValues = Colors.ColorClass.values();
     public Colors.ColorClass getColor(char x, char y, char z)
     {
       if(x < 64 && y < 64 && z < 64)
       {
         char val = colorClasses[x][y][z];
-        if(val >= 0 && val < Colors.ColorClass.values().length)
+        if(val >= 0 && val < colorClassValues.length)
         {
-          return Colors.ColorClass.values()[colorClasses[x][y][z]];
+          return colorClassValues[colorClasses[x][y][z]];
         }
         else
         {

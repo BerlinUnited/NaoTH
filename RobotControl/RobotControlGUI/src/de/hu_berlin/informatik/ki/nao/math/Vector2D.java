@@ -17,6 +17,10 @@ public class Vector2D implements Serializable
 {
     public final double x;
     public final double y;
+
+    public Vector2D() {
+      this(0.0,0.0);
+    }
     
     /** Creates a new instance of Vector2D */
     public Vector2D(double x, double y) 
