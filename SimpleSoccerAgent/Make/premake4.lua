@@ -5,8 +5,8 @@ solution "SimpleSoccerAgent"
   
   
   naoth_path = {
-	extern = "../../Extern", 
-	framework = "../../Framework"
+	extern = path.getabsolute("../../Extern"), 
+	framework = path.getabsolute("../../Framework")
 	}
 	
   -- additional defines for windows

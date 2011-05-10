@@ -10,9 +10,9 @@
 #include "Tools/Math/Pose3D.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-#include "pthread.h"
+//#include "pthread.h"
 
-#include <pthread.h>
+//#include <pthread.h>
 
 using namespace naoth;
 
@@ -67,7 +67,7 @@ private:
 
   int activeCount;
 
-  pthread_mutex_t theMutex;
+  //pthread_mutex_t theMutex;
 };
 
 #ifdef DEBUG

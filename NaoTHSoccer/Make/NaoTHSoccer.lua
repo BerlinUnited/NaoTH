@@ -8,7 +8,7 @@ project "NaoTHSoccer"
 	  "../Source/"
 	}
   
-  links { "NaoTH-Commons", "pthread" }
+  links { "NaoTH-Commons" }
   
   targetname "naoth-soccer"
 
