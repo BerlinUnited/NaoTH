@@ -17,7 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-// this marker checs if the serial definitions 
+// this marker checks if the serial definitions 
 // are avaliable on this platform
 // (there is no serial on mac)
 #ifdef SERIAL_IS_DEFINED
@@ -480,47 +480,30 @@ LONG CSerial::Setup (EBaudrate eBaudrate, EDataBits eDataBits, EParity eParity, 
         break;
     }
 
+    //RAW input
+    dcb.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+    //RAW output
+    dcb.c_oflag &= ~OPOST;
 
-
-//    dcb.c_cflag &= ~CRTSCTS;               /* Disable hardware flow control */
-
-
-
-//
-////    //RAW input
-//    options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-////    //RAW output
-//    options.c_oflag &= ~OPOST;
-////
-////    //Software Flow Control
-//////    options.c_iflag |= (IXON | IXOFF | IXANY);
-//    options.c_iflag &= ~(IXON | IXOFF | IXANY);
-//
-//    options.c_cc[VINTR]    = 0;     /* Ctrl-c */
-//    options.c_cc[VQUIT]    = 0;     /* Ctrl-\ */
-//    options.c_cc[VERASE]   = 0;     /* del */
-//    options.c_cc[VKILL]    = 0;     /* @ */
-//    options.c_cc[VEOF]     = 0;     /* Ctrl-d */
-//    options.c_cc[VTIME]    = 0;     /* inter-character timer unused */
-//    options.c_cc[VMIN]     = 0;     /* blocking read until 1 character arrives */
-//    options.c_cc[VSWTC]    = 0;     /* '\0' */
-//    options.c_cc[VSTART]   = 0;     /* Ctrl-q */
-//    options.c_cc[VSTOP]    = 0;     /* Ctrl-s */
-//    options.c_cc[VSUSP]    = 0;     /* Ctrl-z */
-//    options.c_cc[VEOL]     = 0;     /* '\0' */
-//    options.c_cc[VREPRINT] = 0;     /* Ctrl-r */
-//    options.c_cc[VDISCARD] = 0;     /* Ctrl-u */
-//    options.c_cc[VWERASE]  = 0;     /* Ctrl-w */
-//    options.c_cc[VLNEXT]   = 0;     /* Ctrl-v */
-//    options.c_cc[VEOL2]    = 0;     /* '\0' */
-////
-                                       /* Get the current options for the port */
-
-                                       /* Enable the receiver and set local mode */
-                                     /* Enable data to be processed as raw input */
-//    options.c_lflag &= ~(ICANON | ECHO | ISIG);
-
-
+    //Control characters
+    dcb.c_cc[VINTR]    = 0;     /* Ctrl-c */
+    dcb.c_cc[VQUIT]    = 0;     /* Ctrl-\ */
+    dcb.c_cc[VERASE]   = 0;     /* del */
+    dcb.c_cc[VKILL]    = 0;     /* @ */
+    dcb.c_cc[VEOF]     = 0;     /* Ctrl-d */
+    dcb.c_cc[VTIME]    = 0;     /* inter-character timer unused */
+    dcb.c_cc[VMIN]     = 0;     /* blocking read until 1 character arrives */
+    dcb.c_cc[VSWTC]    = 0;     /* '\0' */
+    dcb.c_cc[VSTART]   = 0;     /* Ctrl-q */
+    dcb.c_cc[VSTOP]    = 0;     /* Ctrl-s */
+    dcb.c_cc[VSUSP]    = 0;     /* Ctrl-z */
+    dcb.c_cc[VEOL]     = 0;     /* '\0' */
+    dcb.c_cc[VREPRINT] = 0;     /* Ctrl-r */
+    dcb.c_cc[VDISCARD] = 0;     /* Ctrl-u */
+    dcb.c_cc[VWERASE]  = 0;     /* Ctrl-w */
+    dcb.c_cc[VLNEXT]   = 0;     /* Ctrl-v */
+    dcb.c_cc[VEOL2]    = 0;     /* '\0' */
+    
     /*
      * Set the new options for the port...
      */
@@ -1678,6 +1661,5 @@ bool CSerial::GetRLSD (void)
   #endif
   return false;
 }
-
 
 #endif // SERIAL_IS_DEFINED

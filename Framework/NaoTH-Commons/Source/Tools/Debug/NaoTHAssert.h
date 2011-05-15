@@ -12,7 +12,7 @@
 #define __NaoTHAssert_h_
 
 #include <assert.h>
-#include <iostream>
+#include "Trace.h"
 
 #undef ASSERT
 #undef VERIFY
@@ -25,7 +25,8 @@
  * ASSERT does not evaluate cond if DEBUG is not defined.
  * @param cond The condition to be checked.
  */
-#define ASSERT(cond) { assert(cond); }
+// TODO: make it better
+#define ASSERT(cond) { if(!(cond)){ GT_TRACE(#cond); Trace::getInstance().dump(); assert(cond); } }
 
 /**
  * VERIFY prints a message if cond is false and DEBUG is defined.
@@ -38,7 +39,7 @@
  * Throw a error message and then exit
  * @param msg The debug message
  */
-#define THROW(msg) { std::cerr<<msg<<std::endl; assert(false); }
+#define THROW(msg) { std::cerr<<msg<<std::endl; ASSERT(false); }
 
 #else //DEBUG
 /* ((void)0) - that's a do-nothing statement */

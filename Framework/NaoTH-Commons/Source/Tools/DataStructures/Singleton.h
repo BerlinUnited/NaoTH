@@ -35,72 +35,65 @@
 #define _SINGLETON_USE_STACK 0
 #define _SINGLETON_USE_HEAP 1
 
-namespace naoth 
+template<class V, typename ReturnType=V, int storageType=_SINGLETON_USE_STACK>
+class Singleton
 {
+protected:
+  static V* theInstance;
+  Singleton(){}
 
-  template<class V, typename ReturnType=V, int storageType=_SINGLETON_USE_STACK>
-  class Singleton
+public:
+  virtual ~Singleton(){}
+
+  static ReturnType& getInstance()
   {
-  protected:
-    static V* theInstance;
-    Singleton(){}
-
-  public:
-
-    static ReturnType& getInstance()
+    if(theInstance == NULL)
     {
-      if(theInstance == NULL)
-      {
-        if(_SINGLETON_USE_HEAP == storageType)
-        {
-          theInstance = createInstanceOnHeap();
-        }
-        else
-        {
-          theInstance = createInstanceOnStack();
-        }
-      }//end if
+      if(storageType == _SINGLETON_USE_HEAP)
+        theInstance = createInstanceOnHeap();
+      else
+        theInstance = createInstanceOnStack();
+    }//end if
 
-      return *theInstance;
-    }//end getInstance
+    return *theInstance;
+  }//end getInstance
 
-  private:
+private:
 
-    // creates an instance on the heap
-    // (only the Watcher is created on the stack)
-    static V* createInstanceOnHeap()
-    {
-      static Watcher w; // create a watcher
-      if( theInstance == NULL)
-        theInstance = new V();
-      return theInstance;
-    }//end createInstanceOnHeap
+  // creates an instance on the heap
+  // (only the Watcher is created on the stack)
+  static V* createInstanceOnHeap()
+  {
+    static Watcher w; // create a watcher
+    if( theInstance == NULL)
+      theInstance = new V();
+    return theInstance;
+  }//end createInstanceOnHeap
 
-    // creates an instance on the stack
-    static V* createInstanceOnStack()
-    {
-      static V theInstance; // create a watcher
-      return &theInstance;
-    }//end createInstanceOnStack
+  // creates an instance on the stack
+  static V* createInstanceOnStack()
+  {
+    static V theInstance; // create a watcher
+    return &theInstance;
+  }//end createInstanceOnStack
 
-    Singleton( const Singleton& ){};
+  Singleton( const Singleton& ){};
 
-    static void deleteInstance()
-    {
-      if( Singleton::theInstance != 0 )
-          delete Singleton::theInstance;
-    }//end deleteInstance
+  static void deleteInstance()
+  {
+    if( Singleton::theInstance != 0 )
+        delete Singleton::theInstance;
+  }//end deleteInstance
 
-    class Watcher {
-      public: ~Watcher() {
-        Singleton::deleteInstance();
-      }
-    };
-    friend class Watcher;
+  class Watcher {
+    public: ~Watcher() {
+      Singleton::deleteInstance();
+    }
   };
+  friend class Watcher;
+};
 
-  template <class V, typename ReturnType, int storageType>
-  V* Singleton<V,ReturnType,storageType>::theInstance = NULL;
-}
+template <class V, typename ReturnType, int storageType>
+V* Singleton<V,ReturnType,storageType>::theInstance = NULL;
 
 #endif //__Singleton_h__

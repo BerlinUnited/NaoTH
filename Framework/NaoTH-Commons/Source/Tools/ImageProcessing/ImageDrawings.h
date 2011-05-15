@@ -3,6 +3,9 @@
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Implementation of class ImageDrawings
+*
+* TODO: how to use
+* ...
 */
 #ifndef __ImageDrawings_H_
 #define __ImageDrawings_H_
@@ -13,16 +16,18 @@
 
 namespace naoth
 {
-  
+
 class DrawingCanvas
 {
 public:
-  virtual void drawPoint(
-    const unsigned int& x, 
+  virtual void drawPoint
+  (
+    const unsigned int& x,
     const unsigned int& y,
     const unsigned char& a,
     const unsigned char& b,
-    const unsigned char& c) = 0;
+    const unsigned char& c
+  ) = 0;
 
   virtual ~DrawingCanvas(){}
 
@@ -42,12 +47,14 @@ public:
    * @param radius Radius of the Circle to draw
    * @param color Color of the Circle
   */
-  void static drawCircleToImage(
+  void static drawCircleToImage
+  (
     DrawingCanvas& image, 
-    ColorClasses::Color color, 
-    unsigned int startX, 
-    unsigned int startY, 
-    unsigned int radius)
+    const ColorClasses::Color& color,
+    const unsigned int& startX,
+    const unsigned int& startY,
+    const unsigned int& radius
+  )
   {
     int xC = 0; 
     int yC = radius; 
@@ -88,13 +95,15 @@ public:
   /*
   * Draws a axis parallel rectangle from x1, y1 to x2, y2 with a given color
   */
-  void static drawRectToImage(
+  void static drawRectToImage
+  (
     DrawingCanvas& image, 
-    ColorClasses::Color color, 
-    unsigned int startX, 
-    unsigned int startY, 
-    unsigned int endX, 
-    unsigned int endY )
+    const ColorClasses::Color& color,
+    const unsigned int& startX,
+    const unsigned int& startY,
+    const unsigned int& endX,
+    const unsigned int& endY
+  )
   {
 	  unsigned int xstart, ystart, xend, yend;
 
@@ -152,13 +161,15 @@ public:
   /*
   * Draws a line from x1, y1 to x2, y2 with a given color
   */
-  void static drawLineToImage(
+  void static drawLineToImage
+  (
     DrawingCanvas& image, 
-    ColorClasses::Color color, 
-    unsigned int startX, 
-    unsigned int startY, 
-    unsigned int endX, 
-    unsigned int endY )
+    const ColorClasses::Color& color,
+    const unsigned int& startX,
+    const unsigned int& startY,
+    const unsigned int& endX,
+    const unsigned int& endY
+  )
   {
 	  int xstart, ystart, xend, yend;
 
@@ -257,25 +268,38 @@ public:
   /*
    * Colors point x,y with the given Color
    */
-  void static drawPointToImage(
+  void static drawPointToImage
+  (
     DrawingCanvas& image, 
-    ColorClasses::Color color, 
-    unsigned int x, 
-    unsigned int y)
+    const ColorClasses::Color& color,
+    const unsigned int& x,
+    const unsigned int& y
+  )
   { 
-    if ((x < image.width()) && 
-        (y < image.height()))
+    if (x < image.width() && y < image.height())
     {
-      unsigned char a;
-      unsigned char b;
-      unsigned char c;
-
       unsigned char yy;
       unsigned char cb;
       unsigned char cr;
 
-      ColorClasses::colorClassToRGB(color, a, b, c);
-      ColorModelConversions::fromRGBToYCbCr(a,b,c,yy,cb,cr);
+      ColorClasses::colorClassToYCbCr(color, yy, cb, cr);
+      image.drawPoint(x,y,yy,cb,cr);
+    }//end if
+  }//end drawPointToImage
+
+  /*
+   * Colors point x,y with the given color (yy,cb,cr)
+   */
+  inline static void drawPointToImage(
+    DrawingCanvas& image, 
+    const unsigned int& x, 
+    const unsigned int& y,
+    const unsigned char& yy,
+    const unsigned char& cb,
+    const unsigned char& cr)
+  { 
+    if (x < image.width() && y < image.height())
+    {
       image.drawPoint(x,y,yy,cb,cr);
     }//end if
   }//end drawPointToImage
@@ -299,8 +323,6 @@ public:
   }//end drawCoordinateSystemToImage
 
 };//end class ImageDrawings
-
-}
-
+}//end namespace naoth
 #endif // __ImageDrawings_H_
 

@@ -7,9 +7,10 @@
 
 #include "Stopwatch.h"
 
-#include <fstream>
-
 #include <glib.h>
+
+#include <sstream>
+#include "Tools/SynchronizedFileWriter.h"
 
 using namespace std;
 
@@ -24,11 +25,18 @@ Stopwatch::~Stopwatch()
 }
 
 
-void Stopwatch::notifyStart(const std::string stopWatchName)
+void Stopwatch::notifyStart(const std::string& stopWatchName)
 {
   stopwatches[stopWatchName].name = stopWatchName;
   notifyStart(stopwatches.find(stopWatchName)->second);
 }//end notifyStart
+
+
+void Stopwatch::notifyStop(const std::string& stopWatchName)
+{
+  notifyStop(stopwatches[stopWatchName]);
+}//end notifyStop
+
 
 void Stopwatch::notifyStart(StopwatchItem& stopwatchItem) 
 {
@@ -56,11 +64,6 @@ void Stopwatch::notifyStart(StopwatchItem& stopwatchItem)
   #endif // WIN32
 }//end notifyStart
 
-
-void Stopwatch::notifyStop(const std::string stopWatchName)
-{
-  notifyStop(stopwatches[stopWatchName]);
-}//end notifyStop
 
 void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
 {
@@ -101,7 +104,7 @@ void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
 
 
 
-StopwatchItem& Stopwatch::getStopwatchReference(const std::string stopWatchName)
+StopwatchItem& Stopwatch::getStopwatchReference(const std::string& stopWatchName)
 {
   // add value if not existing
   StopwatchItem& stopwatchItem = stopwatches[stopWatchName];
@@ -113,7 +116,7 @@ StopwatchItem& Stopwatch::getStopwatchReference(const std::string stopWatchName)
 
 void Stopwatch::dump()
 {
-  ofstream outputFileStream ( "Config/naoth_stopwatch.dump" , ofstream::out );
+  stringstream outputStream;
   
   std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
   while (it != stopwatches.end())
@@ -123,12 +126,13 @@ void Stopwatch::dump()
 
     if (item.isValid) 
     {
-      outputFileStream << item.name <<
+      outputStream << item.name <<
         ';' << item.min << ';' << item.mean << ';' << item.max << ';' << endl;
     }
 
     it++;
   }//end while
 
-  outputFileStream.close();
+  // write to file
+  SynchronizedFileWriter::saveStreamToFile(outputStream, string("Config/stopwatch.dump"));
 }//end dump

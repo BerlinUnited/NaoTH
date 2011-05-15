@@ -124,6 +124,14 @@ template <class V, int maxSize> class RingBuffer
       return buffer[i > current ? n + current - i : current - i];
     }
 
+    /**
+    * clears the buffer
+    */
+    void clear()
+    { 
+      numberOfEntries = 0; 
+    }
+
     int getNumberOfEntries() const
     {
       return numberOfEntries;

@@ -22,7 +22,7 @@ namespace DataConversion
   }//end strto
 
   template<typename T>
-  std::string toStr(T value)
+  std::string toStr(const T& value)
   {
     std::stringstream ss;
     ss << std::boolalpha << value;

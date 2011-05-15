@@ -71,21 +71,21 @@ public:
   
   //@Depricated and shouldn't be used
   //since access using this method is very slow
-  void notifyStart(const std::string stopWatchName);
+  void notifyStart(const std::string& stopWatchName);
+
+  //@Depricated and shouldn't be used
+  //since access using this method is very slow
+  void notifyStop(const std::string& stopWatchName);
 
   /** */
   void notifyStart(StopwatchItem& stopwatchItem);
   
   /** */
-  void notifyStop(const std::string stopWatchName);
-
-  //@Depricated and shouldn't be used
-  //since access using this method is very slow
   void notifyStop(StopwatchItem& stopwatchItem);
 
 
   /** */
-  StopwatchItem& getStopwatchReference(const std::string stopWatchName);
+  StopwatchItem& getStopwatchReference(const std::string& stopWatchName);
 
   /** */
   void dump();
