@@ -11,11 +11,12 @@
 
 using namespace naoth;
 
-BumperData::BumperData() {
+BumperData::BumperData() 
+{
+  reset();
 }
 
-BumperData::~BumperData() {
-}
+BumperData::~BumperData() {}
 
 void BumperData::reset()
 {

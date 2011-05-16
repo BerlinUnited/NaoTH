@@ -3,18 +3,14 @@
 
 using namespace naoth;
 
-CameraSettings::CameraSettings() : ParameterList("CameraSettings")
+CameraSettings::CameraSettings()
 {
-
   data[CameraSelection] = CameraInfo::Bottom;
   
   for(int i=0;i<numOfCameraSetting;i++)
   {
     data[i] = 0;
-    registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
   }//end for
-  
-  initParams();
 }
 
 CameraSettings::~CameraSettings()
@@ -59,10 +55,16 @@ void CameraSettings::print(ostream& stream) const
 
 
 CameraSettingsRequest::CameraSettingsRequest()
-: /*ParameterList("CameraSettingsRequest",
-    Platform::getInstance().theConfigPathInfo.camera_parameter+"/camera_setting.prm"),*/
+: ParameterList("CameraSettingsRequest"),
+    /*Platform::getInstance().theConfigPathInfo.camera_parameter+"/camera_setting.prm"),*/
   queryCameraSettings(false)
 {
+  for(int i=0;i<numOfCameraSetting;i++)
+  {
+    registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
+  }//end for
+  
+  initParams();
 }
 
 CurrentCameraSettings::CurrentCameraSettings()

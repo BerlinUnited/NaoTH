@@ -19,7 +19,7 @@ using namespace std;
 namespace naoth
 {
 
-  class CameraSettings : public Printable, public ParameterList
+  class CameraSettings : public Printable
   {
     private:
     public:
@@ -66,7 +66,7 @@ namespace naoth
     virtual ~CurrentCameraSettings() {};
   };
 
-  class CameraSettingsRequest : /* public ParameterList, */
+  class CameraSettingsRequest : public ParameterList,
     public CameraSettings, public PlatformInterchangeable
   {
   public:
