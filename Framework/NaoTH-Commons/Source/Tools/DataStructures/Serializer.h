@@ -7,8 +7,7 @@
 #include "Tools/DataStructures/Singleton.h"
 #include "Tools/DataStructures/Streamable.h"
 
-#include <ostream>
-#include <istream>
+#include <iostream>
 
 namespace naoth
 {  
