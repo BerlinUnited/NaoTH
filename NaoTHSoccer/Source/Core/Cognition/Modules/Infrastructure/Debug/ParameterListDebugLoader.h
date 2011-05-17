@@ -20,7 +20,7 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(ParameterListDebugLoader)
-  PROVIDE(CameraSettings)  
+  PROVIDE(CameraSettingsRequest)  
   PROVIDE(FieldInfo)
 END_DECLARE_MODULE(ParameterListDebugLoader)
 

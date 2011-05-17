@@ -18,10 +18,10 @@
 
 using namespace std;
 
-class Trace : public Singleton<Trace>
+class Trace : public naoth::Singleton<Trace>
 {
 protected:
-  friend class Singleton<Trace>;
+  friend class naoth::Singleton<Trace>;
   Trace(){}
   ~Trace(){}
 

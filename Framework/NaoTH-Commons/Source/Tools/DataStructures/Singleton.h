@@ -35,6 +35,9 @@
 #define _SINGLETON_USE_STACK 0
 #define _SINGLETON_USE_HEAP 1
 
+namespace naoth 
+{
+
 template<class V, typename ReturnType=V, int storageType=_SINGLETON_USE_STACK>
 class Singleton
 {
@@ -95,5 +98,7 @@ private:
 
 template <class V, typename ReturnType, int storageType>
 V* Singleton<V,ReturnType,storageType>::theInstance = NULL;
+
+}//end namespace naoth
 
 #endif //__Singleton_h__
