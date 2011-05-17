@@ -132,7 +132,7 @@ public:
 
   void get(BatteryData& data) {data.charge = 1.0;}
 
-  void get(UltraSoundReceiveData& data) { data.data = 0.0; };
+  void get(UltraSoundReceiveData& data);
 
   void get(VirtualVision& data);
 

@@ -119,7 +119,6 @@ namespace naoth
     void get(UltraSoundReceiveData& data)
     {
       // TODO
-      data.data = 0.0;
     };
 
     //void get(GPSData& data);

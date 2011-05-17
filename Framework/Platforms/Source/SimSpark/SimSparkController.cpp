@@ -1018,6 +1018,16 @@ void SimSparkController::set(const CameraSettingsRequest& data)
   }
 }
 
+void SimSparkController::get(UltraSoundReceiveData& data)
+{
+  data.rawdata = 0.0;
+  for (unsigned int i = 0; i < UltraSoundReceiveData::numOfIRSend; i++)
+  {
+    data.dataLeft[i] = 0.0;
+    data.dataRight[i] = 0.0;
+  }
+}
+
 void SimSparkController::get(CurrentCameraSettings& data)
 {
   data.data[CameraSettings::CameraSelection] = theCameraId;
