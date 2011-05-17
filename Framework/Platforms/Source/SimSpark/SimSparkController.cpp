@@ -34,20 +34,12 @@ SimSparkController::SimSparkController()
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<BumperData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
-  registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
-  registerInput<UltraSoundReceiveData>(*this);
   registerInput<VirtualVision>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
-  registerOutput<const LEDData>(*this);
-  registerOutput<const IRSendData>(*this);
-  registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const SoundData>(*this);
   registerOutput<const MotorJointData>(*this);
 
 
@@ -936,21 +928,6 @@ void SimSparkController::updateInertialSensor()
   }
 }
 
-void SimSparkController::get(BumperData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::get(IRReceiveData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::get(ButtonData& /*data*/)
-{
-  // unsupport yet
-}
-
 void SimSparkController::set(const MotorJointData& data)
 {
   theMotorJointData.push_back(data);
@@ -1018,39 +995,9 @@ void SimSparkController::set(const CameraSettingsRequest& data)
   }
 }
 
-void SimSparkController::get(UltraSoundReceiveData& data)
-{
-  data.rawdata = 0.0;
-  for (unsigned int i = 0; i < UltraSoundReceiveData::numOfIRSend; i++)
-  {
-    data.dataLeft[i] = 0.0;
-    data.dataRight[i] = 0.0;
-  }
-}
-
 void SimSparkController::get(CurrentCameraSettings& data)
 {
   data.data[CameraSettings::CameraSelection] = theCameraId;
-}
-
-void SimSparkController::set(const LEDData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::set(const IRSendData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::set(const UltraSoundSendData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::set(const SoundData& /*data*/)
-{
-  // unsupport yet
 }
 
 void SimSparkController::say()
