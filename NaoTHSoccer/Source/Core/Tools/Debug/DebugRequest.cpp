@@ -5,9 +5,11 @@
 // Created on 19. März 2008, 21:52
 //
 
+#include "DebugRequest.h"
+
 #include "Core/Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/NaoTHAssert.h>
-#include "DebugRequest.h"
+#include <iostream>
 
 DebugRequest::DebugRequest() : requestMap()
 {
