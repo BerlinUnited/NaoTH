@@ -40,3 +40,13 @@ NaoTHSoccer/Make/*.make
 NaoTHSoccer/Tests/executeTests
 nao_robocup
 NaoTHSoccer/TODO
+Extern/Make/Makefile
+Extern/Make/b64.make
+Extern/Make/gmock.make
+Extern/Make/gtest.makeFramework/NaoTH-Commons/Make/NaoTH-Commons-Tests.make
+Framework/NaoTH-Commons/Make/NaoTH-Commons.make
+Framework/Platforms/Make/LogSimulator.make
+Framework/Platforms/Make/SimSpark.make
+Framework/Platforms/Make/Webots.make
+Extern/Make/gtest.make
+Framework/NaoTH-Commons/Make/NaoTH-Commons-Tests.make
