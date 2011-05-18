@@ -16,20 +16,22 @@ Motion::~Motion()
 {
 }
 
+#define REG_INPUT(R) \
+  platformInterface.registerMotionInput(get##R())
+
+#define REG_OUTPUT(R) \
+  platformInterface.registerMotionOutput(get##R())
 
 void Motion::init(naoth::PlatformDataInterface& platformInterface)
 {
-  std::cout << "Motion register start" << std::endl;
-  /*
-  REGISTER_INPUT(SensorJointData);
-  REGISTER_INPUT(FrameInfo);
-  REGISTER_INPUT(InertialSensorData);
-  REGISTER_INPUT(FSRData);
-  REGISTER_INPUT(AccelerometerData);
-  REGISTER_INPUT(GyrometerData);
-  */
-
-  std::cout << "Motion register end" << std::endl;
+  g_message("Motion register begin");
+  REG_INPUT(SensorJointData);
+  REG_INPUT(FrameInfo);
+  REG_INPUT(InertialSensorData);
+  REG_INPUT(FSRData);
+  REG_INPUT(AccelerometerData);
+  REG_INPUT(GyrometerData);
+  g_message("Motion register end");
 }//end init
 
 

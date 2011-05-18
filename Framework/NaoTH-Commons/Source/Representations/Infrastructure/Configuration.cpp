@@ -32,7 +32,7 @@ Configuration::Configuration(const Configuration& orig)
 
 }
 
-void Configuration::loadFromDir(std::string dirlocation, std::string scheme, std::string macAddress)
+void Configuration::loadFromDir(std::string dirlocation, std::string scheme, std::string id)
 {
   if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
@@ -45,7 +45,7 @@ void Configuration::loadFromDir(std::string dirlocation, std::string scheme, std
   {
     loadFromSingleDir(dirlocation + "general/");
     loadFromSingleDir(dirlocation + "scheme/" + scheme + "/");
-    loadFromSingleDir(dirlocation + "robots/" + macAddress + "/");
+    loadFromSingleDir(dirlocation + "robots/" + id + "/");
     loadFromSingleDir(dirlocation + "private/");
   } else
   {
@@ -198,7 +198,7 @@ void Configuration::saveFile(std::string file, std::string group)
   g_key_file_free(tmpKeyFile);
 }
 
-std::list<std::string> Configuration::getGroups()
+std::list<std::string> Configuration::getGroups() const
 {
 
   std::list<std::string> result;
@@ -213,7 +213,7 @@ std::list<std::string> Configuration::getGroups()
 }
 
 
-std::list<std::string> Configuration::getKeys(std::string group)
+std::list<std::string> Configuration::getKeys(std::string group) const
 {
 
   std::list<std::string> result;
@@ -227,12 +227,12 @@ std::list<std::string> Configuration::getKeys(std::string group)
   return result;
 }
 
-bool Configuration::hasKey(std::string group, std::string key)
+bool Configuration::hasKey(std::string group, std::string key) const
 {
   return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL) > 0;
 }
 
-std::string Configuration::getString(std::string group, std::string key)
+std::string Configuration::getString(std::string group, std::string key) const
 {
   gchar* buf = g_key_file_get_string(keyFile, group.c_str(), key.c_str(), NULL);
   if (buf != NULL)
@@ -249,7 +249,7 @@ void Configuration::setString(std::string group, std::string key, std::string va
   g_key_file_set_string(keyFile, group.c_str(), key.c_str(), value.c_str());
 }
 
-std::string Configuration::getRawValue(std::string group, std::string key)
+std::string Configuration::getRawValue(std::string group, std::string key) const
 {
   gchar* buf = g_key_file_get_value(keyFile, group.c_str(), key.c_str(), NULL);
   if (buf != NULL)
@@ -266,7 +266,7 @@ void Configuration::setRawValue(std::string group, std::string key, std::string 
   g_key_file_set_value(keyFile, group.c_str(), key.c_str(), value.c_str());
 }
 
-int Configuration::getInt(std::string group, std::string key)
+int Configuration::getInt(std::string group, std::string key) const
 {
   return g_key_file_get_integer(keyFile, group.c_str(), key.c_str(), NULL);
 }
@@ -276,7 +276,7 @@ void Configuration::setInt(std::string group, std::string key, int value)
   g_key_file_set_integer(keyFile, group.c_str(), key.c_str(), value);
 }
 
-double Configuration::getDouble(std::string group, std::string key)
+double Configuration::getDouble(std::string group, std::string key) const
 {
   return g_key_file_get_double(keyFile, group.c_str(), key.c_str(), NULL);
 }
@@ -287,7 +287,7 @@ void Configuration::setDouble(std::string group, std::string key, double value)
   g_key_file_set_double(keyFile, group.c_str(), key.c_str(), value);
 }
 
-bool Configuration::getBool(std::string group, std::string key)
+bool Configuration::getBool(std::string group, std::string key) const
 {
   return g_key_file_get_boolean(keyFile, group.c_str(), key.c_str(), NULL) > 0;
 }

@@ -129,7 +129,7 @@ namespace naoth
   //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
     }//end init
 
-    Configuration& theConfiguration;
+    const Configuration& theConfiguration;
     const string& theConfigDirectory;
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theBodyID;

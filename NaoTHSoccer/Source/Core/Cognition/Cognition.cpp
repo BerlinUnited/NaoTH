@@ -66,7 +66,7 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   packageLoader.loadPackages("Packages/", *this);
   
   // use the configuration in order to set whether a module is activated or not
-  naoth::Configuration& config = Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
   for(list<string>::const_iterator name=getExecutionList().begin();
     name != getExecutionList().end(); name++)

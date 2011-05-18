@@ -81,6 +81,17 @@ message GoalPercept {
   repeated GoalPost post = 4;
 }
 
+message HeadMotionRequest {
+  required uint32 id = 1;
+  required uint32 cameraID = 2;
+  optional DoubleVector2 targetJointPosition = 3;
+  optional DoubleVector2 targetPointInImage = 4;
+  optional DoubleVector3 targetPointInTheWorld = 5;
+  optional DoubleVector3 searchCenter = 6;
+  optional DoubleVector3 searchSize = 7;
+  optional bool searchDirection = 8;
+}
+
 message WalkRequest {
   required uint32 coordinate = 1;
   required bool stopWithStand = 2;

@@ -24,7 +24,7 @@ JointData::JointData()
 
 void JointData::init(const std::string& filename)
 {
-  Configuration& cfg = Platform::getInstance().theConfiguration;
+  const Configuration& cfg = Platform::getInstance().theConfiguration;
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
     double maxDeg = 0;
