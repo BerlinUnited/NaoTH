@@ -33,6 +33,10 @@ protected:
   
   void postProcess();
   
+  void selectMotion();
+  
+  void changeMotion(AbstractMotion* m);
+  
 private:
   MotionBlackBoard& theBlackBoard;
 

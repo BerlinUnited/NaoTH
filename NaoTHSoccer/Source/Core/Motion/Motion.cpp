@@ -69,15 +69,9 @@ void Motion::call()
   theHeadMotionEngine.execute();
 
   // motion engine execute
-  //selectMotion();
-  //ASSERT(NULL!=currentlyExecutedMotion);
-  //currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
-
-  // HACK: execute the grasping motion
-  //if(theBlackBoard.theMotionRequest.id != MotionRequestID::init)
-  //{
-  //  theInverseKinematicsMotionFactory.theIKArmGrasping.execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
-  //}
+  selectMotion();
+  ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
+  theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   // TODO
   //STOPWATCH_STOP("MotionExecute");
   
@@ -137,3 +131,58 @@ void Motion::postProcess()
   //MotionDebug::getInstance().execute();
 #endif
 }
+
+void Motion::selectMotion()
+{
+  // test if the current MotionStatus allready arrived in cognition
+  if ( theBlackBoard.theMotionStatus.time > theBlackBoard.theMotionRequest.time )
+    return;
+
+  if (theBlackBoard.theMotionStatus.currentMotion == theBlackBoard.theMotionRequest.id
+    && !theBlackBoard.currentlyExecutedMotion->isRunning())
+  {
+    changeMotion(&theEmptyMotion);
+  }
+
+  if (theBlackBoard.theMotionStatus.currentMotion != theBlackBoard.theMotionRequest.id
+    &&
+    (!theBlackBoard.currentlyExecutedMotion->isRunning() || theBlackBoard.theMotionRequest.forced))
+  {
+    AbstractMotion* newMotion = NULL;
+    //newMotion = theInitialMotionFactory.createMotion(theBlackBoard.theMotionRequest);
+
+/*
+    if (newMotion == NULL)
+      newMotion = theInverseKinematicsMotionFactory.createMotion(theBlackBoard.theMotionRequest);
+
+    if (newMotion == NULL)
+      newMotion = theParallelKinematicMotionFactory.createMotion(theBlackBoard.theMotionRequest);
+
+    if(newMotion == NULL)
+      newMotion = theNeuralMotionFactory.createMotion(theBlackBoard.theMotionRequest);
+
+    if (newMotion == NULL)
+      newMotion = theKeyFrameMotionEngine.createMotion(theBlackBoard.theMotionRequest);
+
+    if (newMotion == NULL)
+      newMotion = theDebugMotionEngine.createMotion(theBlackBoard.theMotionRequest);
+*/
+    if (NULL != newMotion)
+    {
+      changeMotion(newMotion);
+    } else
+    {
+      changeMotion(&theEmptyMotion);
+      cerr << "Warning: Request " << getMotionNameById(theBlackBoard.theMotionRequest.id)
+        << " cannot be executed!" << endl;
+    }
+  }
+}//end selectMotion
+
+void Motion::changeMotion(AbstractMotion* m)
+{
+  theBlackBoard.currentlyExecutedMotion = m;
+  theBlackBoard.theMotionStatus.lastMotion = theBlackBoard.theMotionStatus.currentMotion;
+  theBlackBoard.theMotionStatus.currentMotion = theBlackBoard.currentlyExecutedMotion->getId();
+  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.time;
+}//end changeMotion
