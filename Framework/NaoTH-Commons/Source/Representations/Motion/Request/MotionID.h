@@ -143,17 +143,6 @@ namespace naoth
     return "unkown";
   }///end getName
 
-  /** return the motion id reprented by the name */
-  static MotionID getMotionIdByName(const std::string& name)
-  {
-    for(int i = 0; i < numOfMotion; i++)
-    {
-      if(name == getMotionNameById((MotionID)i)) return (MotionID)i;
-    }//end for
-    
-    return numOfMotion;
-  }//end motionIDFromName
-  
   } // namespace motion
 } // namespace naoth
 

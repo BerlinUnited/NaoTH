@@ -49,7 +49,7 @@ namespace naoth
     }
 
     // cannot be copied
-    Platform& operator=( const Platform& ) {}
+    Platform& operator=( const Platform& ) { return *this; }
 
     std::string _hardwareIdentity;
     std::string _bodyID;
