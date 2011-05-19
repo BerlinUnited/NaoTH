@@ -89,7 +89,6 @@ void Motion::processSensorData()
   // check all joint stiffness
   theBlackBoard.theSensorJointData.checkStiffness();
   
-
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     theBlackBoard.theAccelerometerData,
     theBlackBoard.theInertialSensorData,
@@ -97,7 +96,6 @@ void Motion::processSensorData()
     theBlackBoard.theFSRPos,
     theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
 
-  cout<<"---------------"<<endl;
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
   
   CameraMatrixCalculator::calculateCameraMatrix(
@@ -110,10 +108,8 @@ void Motion::processSensorData()
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRData);
     
-    cout<<theBlackBoard.theOdometryData<<endl;
-/*
   Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
-  theBlackBoard.theKinematicChainModel.updateCoM();*/
+  theBlackBoard.theKinematicChainModel.updateCoM();
 }//end processSensorData
 
 void Motion::postProcess()
