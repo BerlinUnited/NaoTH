@@ -14,6 +14,7 @@
 #include "MotionBlackBoard.h"
 #include "AbstractMotion.h"
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
+#include "MorphologyProcessor/OdometryCalculator.h"
 
 class Motion : public naoth::Callable
 {
@@ -37,6 +38,7 @@ private:
   EmptyMotion theEmptyMotion;
   
   SupportPolygonGenerator theSupportPolygonGenerator;
+  OdometryCalculator theOdometryCalculator;
 };
 
 #endif	/* MOTION_H */

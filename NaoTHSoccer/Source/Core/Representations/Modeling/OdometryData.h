@@ -9,8 +9,8 @@
 #ifndef __OdometryData_h_
 #define __OdometryData_h_
 
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/Math/Pose2D.h"
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/Math/Pose2D.h>
 
 /**
 * OdometryData
@@ -18,7 +18,7 @@
 * @attention Only use differences of OdometryData at different times.
 * Position in mm
 */
-class OdometryData : public Pose2D, public Printable
+class OdometryData : public Pose2D, public naoth::Printable
 {
 public:
   OdometryData() {};

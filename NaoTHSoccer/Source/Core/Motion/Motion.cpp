@@ -105,13 +105,13 @@ void Motion::processSensorData()
     theBlackBoard.theHeadMotionRequest.cameraID,
     theBlackBoard.theKinematicChain);
     
-    cout<<theBlackBoard.theCameraMatrix<<endl;
-/*
   theOdometryCalculator.calculateOdometry(
     theBlackBoard.theOdometryData,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRData);
-
+    
+    cout<<theBlackBoard.theOdometryData<<endl;
+/*
   Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
   theBlackBoard.theKinematicChainModel.updateCoM();*/
 }//end processSensorData
