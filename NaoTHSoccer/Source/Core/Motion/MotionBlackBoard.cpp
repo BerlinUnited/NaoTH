@@ -17,10 +17,10 @@ MotionBlackBoard::MotionBlackBoard()
 
 void MotionBlackBoard::init()
 {
-  theSensorJointData.init(Platform::getInstance().theConfigPathInfo.joint_info.c_str());
-  theKinematicChain.init(theSensorJointData, Platform::getInstance().theMassConfig);
-  theKinematicChainModel.init(theMotorJointData, Platform::getInstance().theMassConfig);
-  theInertialSensorData.init();
+  // theSensorJointData.init(Platform::getInstance().theConfigPathInfo.joint_info.c_str());
+  // theKinematicChain.init(theSensorJointData, Platform::getInstance().theMassConfig);
+  // theKinematicChainModel.init(theMotorJointData, Platform::getInstance().theMassConfig);
+  // theInertialSensorData.init();
 }
 
 MotionBlackBoard::~MotionBlackBoard()

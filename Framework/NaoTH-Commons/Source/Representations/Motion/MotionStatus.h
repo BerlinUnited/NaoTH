@@ -10,7 +10,6 @@
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
-#include "Tools/ModuleFramework/Representation.h"
 #include "Tools/DataStructures/Printable.h"
 #include "MotionRequest/MotionRequestID.h"
 #include "HeadMotionRequest.h"
@@ -45,7 +44,7 @@ public:
   unsigned int time;
   MotionRequestID::MotionID lastMotion;
   MotionRequestID::MotionID currentMotion;
-  HeadMotionRequestID::HeadMotionID headMotionRequest;
+  HeadMotionRequest::HeadMotionID headMotionRequest;
   PlannedMotion plannedMotion;
 
   virtual void print(ostream& stream) const
@@ -55,7 +54,5 @@ public:
     stream << "currentMotion = " << MotionRequestID::getName(currentMotion) << '\n';
   }//end print
 };
-
-REPRESENTATION_INTERFACE(MotionStatus);
 
 #endif // __MotionStatus_h_

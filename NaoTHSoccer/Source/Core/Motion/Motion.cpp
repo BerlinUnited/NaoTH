@@ -6,7 +6,7 @@
  */
 
 #include "Motion.h"
-
+#include <glib.h>
 
 Motion::Motion()
 {
@@ -16,21 +16,23 @@ Motion::~Motion()
 {
 }
 
-#define REG_INPUT(R) \
-  platformInterface.registerMotionInput(get##R())
-
-#define REG_OUTPUT(R) \
-  platformInterface.registerMotionOutput(get##R())
-
 void Motion::init(naoth::PlatformDataInterface& platformInterface)
 {
   g_message("Motion register begin");
+#define REG_INPUT(R)                                                    \
+  platformInterface.registerMotionInput(theBlackBoard.the##R)
+  
   REG_INPUT(SensorJointData);
   REG_INPUT(FrameInfo);
   REG_INPUT(InertialSensorData);
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
+  
+#define REG_OUTPUT(R)                                                   \
+  platformInterface.registerMotionOutput(theBlackBoard.the##R)
+
+  REG_OUTPUT(MotorJointData);
   g_message("Motion register end");
 }//end init
 

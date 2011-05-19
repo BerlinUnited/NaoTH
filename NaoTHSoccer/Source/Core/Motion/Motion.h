@@ -10,6 +10,7 @@
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
+#include "MotionBlackBoard.h"
 
 class Motion : public naoth::Callable
 {
@@ -20,6 +21,9 @@ public:
   virtual void call();
 
   void init(naoth::PlatformDataInterface& platformInterface);
+
+private:
+  MotionBlackBoard theBlackBoard;
 };
 
 #endif	/* MOTION_H */

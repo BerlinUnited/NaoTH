@@ -26,7 +26,7 @@ namespace naoth
 /**
  * This describes the MotionRequest
  */
-class MotionRequest : public Printable, public Streamable {
+class MotionRequest : public Printable {
 public:
 
   /** constructor */
@@ -91,10 +91,6 @@ public:
         break;
     }//end switch
   }//end print
-
-  virtual void toDataStream(ostream& stream) const;
-
-  virtual void fromDataStream(istream& stream);
 };
 
 

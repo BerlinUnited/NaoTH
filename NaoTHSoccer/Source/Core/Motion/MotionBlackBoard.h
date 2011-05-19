@@ -32,14 +32,15 @@
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/ReachibilityGrid.h"
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/IKMotionParameters.h"
 
-class MotionBlackBoard : public Singleton<MotionBlackBoard>
+class MotionBlackBoard// : public Singleton<MotionBlackBoard>
 {
-private:
-  friend class Singleton<MotionBlackBoard>;
+// private:
+  // friend class Singleton<MotionBlackBoard>;
 
-  MotionBlackBoard();
 
 public:
+  MotionBlackBoard();
+
   void init();
 
   ~MotionBlackBoard();
@@ -48,7 +49,7 @@ public:
   KinematicChain theKinematicChain; // data based on sensors
   KinematicChain theKinematicChainModel; // data based on joint command (motor joint data)
   SupportPolygon theSupportPolygon;
-  InertialMeasurement theInertialMeasurement;
+  // InertialMeasurement theInertialMeasurement;
 
   Vector3<double> theFSRPos[FSRData::numOfFSR];
   FrameInfo theFrameInfo;
@@ -66,9 +67,9 @@ public:
   MotorJointData theMotorJointData;
   MotorJointData theLastMotorJointData;
   SensorJointData theSensorJointData;
-  SerialSensorData theSerialSensorData;
-  SerialSensorDataRequest theSerialSensorDataRequest;
-  BumperData theBumperData;
+  // SerialSensorData theSerialSensorData;
+  // SerialSensorDataRequest theSerialSensorDataRequest;
+  // BumperData theBumperData;
   CameraMatrix theCameraMatrix;
   MotionStatus theMotionStatus;
   OdometryData theOdometryData;

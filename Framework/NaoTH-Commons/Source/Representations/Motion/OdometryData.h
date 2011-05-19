@@ -9,7 +9,6 @@
 #ifndef __OdometryData_h_
 #define __OdometryData_h_
 
-#include "Tools/ModuleFramework/Representation.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Pose2D.h"
 
@@ -32,7 +31,5 @@ public:
     stream << "rotation = " << rotation << endl;
   }//end print
 };
-
-REPRESENTATION_INTERFACE(OdometryData);
 
 #endif //__OdometryData_h_
