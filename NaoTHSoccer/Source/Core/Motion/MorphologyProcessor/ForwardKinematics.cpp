@@ -94,6 +94,8 @@ void ForwardKinematics::calculateKinematicChainAll(
 
   adjustKinematicChain(theLinks, theFSRPos, theChestHeight);
   calcCoMs(theLinks);
+  
+  theKinematicChain.updateCoM();
 }//end update
 
 

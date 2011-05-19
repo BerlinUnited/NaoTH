@@ -92,12 +92,10 @@ void Motion::processSensorData()
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRPos,
     theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
-    
-    cout<<"---------------"<<endl;
+
+  cout<<"---------------"<<endl;
     theBlackBoard.theKinematicChain.print(cout);
-/*
-  theBlackBoard.theKinematicChain.updateCoM();
-  theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
+  /*  theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
 
   CameraMatrixCalculator::calculateCameraMatrix(
     theBlackBoard.theCameraMatrix,
