@@ -55,7 +55,7 @@ void Motion::call()
 {
   // TODO
   //STOPWATCH_START("MotionExecute");
-
+  
   // process sensor data
   processSensorData();
   
@@ -64,9 +64,9 @@ void Motion::call()
     theBlackBoard.theHeadMotionRequest,
     theBlackBoard.theMotionRequest
   );
-  
+
   // execute head motion firstly
-  //theHeadMotionEngine.execute();
+  theHeadMotionEngine.execute();
 
   // motion engine execute
   //selectMotion();
