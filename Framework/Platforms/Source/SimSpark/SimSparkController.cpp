@@ -811,6 +811,7 @@ void SimSparkController::get(FrameInfo& data)
 {
   data.time = static_cast<unsigned int>(theSenseTime * 1000.0);
   data.frameNumber++;
+  data.basicTimeStep = getBasicTimeStep();
 }
 
 void SimSparkController::get(SensorJointData& data)

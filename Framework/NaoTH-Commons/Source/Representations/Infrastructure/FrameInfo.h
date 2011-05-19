@@ -47,12 +47,8 @@ namespace naoth
 
     unsigned int time; /**< The time stamp of the data processed in the current frame in us (miliseconds). */
     unsigned int frameNumber; /**< The number of the frame. */
-
-  //  unsigned int motionFrameNumber; /**< The number of the frame. */
-  //
-  //  float cognition_fps; /** Frames per second of cognition */
-  //  float motion_fps; /** Frames per second of motion */
-
+    
+    unsigned int basicTimeStep; /**< The time of each step which depends on platforms */
 
     virtual void print(std::ostream& stream) const
     {
@@ -60,6 +56,7 @@ namespace naoth
       stream << "time(ms) = " << time << endl;
       stream << "time(s) = " << getTimeInSeconds() << endl;
       stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << endl;
+      stream << "basic time step = "<< basicTimeStep << endl;
     }
 
 

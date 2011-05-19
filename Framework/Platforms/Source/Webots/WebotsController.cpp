@@ -178,6 +178,7 @@ void WebotsController::get(FrameInfo& data)
 {
   data.frameNumber++;
   data.time += getBasicTimeStep();
+  data.basicTimeStep = getBasicTimeStep();
 }
 
 void WebotsController::get(SensorJointData& data)

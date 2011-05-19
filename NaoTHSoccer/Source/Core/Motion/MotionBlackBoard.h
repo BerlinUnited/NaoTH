@@ -54,9 +54,8 @@ public:
 
   Vector3<double> theFSRPos[FSRData::numOfFSR];
   FrameInfo theFrameInfo;
-  unsigned int lastTimeStamp;
-  unsigned int basicTimeStep;
-  double basicTimeStepInS;
+  //unsigned int lastTimeStamp;
+
 //  ReachibilityGrid reachibilityGrid;
 //  IKMotionParameters theIKMotionParameters;
 

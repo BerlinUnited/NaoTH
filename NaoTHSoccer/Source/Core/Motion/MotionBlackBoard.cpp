@@ -11,10 +11,6 @@ using namespace naoth;
 using namespace motion;
 
 MotionBlackBoard::MotionBlackBoard()
- : 
-  lastTimeStamp(0),
-  basicTimeStep(0),
-  basicTimeStepInS(((double)basicTimeStep)/1000.0)
 {
 }
 
