@@ -487,17 +487,17 @@ class JointData : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< double >*
       mutable_position();
   
-  // repeated double hardness = 2;
-  inline int hardness_size() const;
-  inline void clear_hardness();
-  static const int kHardnessFieldNumber = 2;
-  inline double hardness(int index) const;
-  inline void set_hardness(int index, double value);
-  inline void add_hardness(double value);
+  // repeated double stiffness = 2;
+  inline int stiffness_size() const;
+  inline void clear_stiffness();
+  static const int kStiffnessFieldNumber = 2;
+  inline double stiffness(int index) const;
+  inline void set_stiffness(int index, double value);
+  inline void add_stiffness(double value);
   inline const ::google::protobuf::RepeatedField< double >&
-      hardness() const;
+      stiffness() const;
   inline ::google::protobuf::RepeatedField< double >*
-      mutable_hardness();
+      mutable_stiffness();
   
   // repeated double dp = 3;
   inline int dp_size() const;
@@ -529,7 +529,7 @@ class JointData : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::RepeatedField< double > position_;
-  ::google::protobuf::RepeatedField< double > hardness_;
+  ::google::protobuf::RepeatedField< double > stiffness_;
   ::google::protobuf::RepeatedField< double > dp_;
   ::google::protobuf::RepeatedField< double > ddp_;
   
@@ -2162,29 +2162,29 @@ JointData::mutable_position() {
   return &position_;
 }
 
-// repeated double hardness = 2;
-inline int JointData::hardness_size() const {
-  return hardness_.size();
+// repeated double stiffness = 2;
+inline int JointData::stiffness_size() const {
+  return stiffness_.size();
 }
-inline void JointData::clear_hardness() {
-  hardness_.Clear();
+inline void JointData::clear_stiffness() {
+  stiffness_.Clear();
 }
-inline double JointData::hardness(int index) const {
-  return hardness_.Get(index);
+inline double JointData::stiffness(int index) const {
+  return stiffness_.Get(index);
 }
-inline void JointData::set_hardness(int index, double value) {
-  hardness_.Set(index, value);
+inline void JointData::set_stiffness(int index, double value) {
+  stiffness_.Set(index, value);
 }
-inline void JointData::add_hardness(double value) {
-  hardness_.Add(value);
+inline void JointData::add_stiffness(double value) {
+  stiffness_.Add(value);
 }
 inline const ::google::protobuf::RepeatedField< double >&
-JointData::hardness() const {
-  return hardness_;
+JointData::stiffness() const {
+  return stiffness_;
 }
 inline ::google::protobuf::RepeatedField< double >*
-JointData::mutable_hardness() {
-  return &hardness_;
+JointData::mutable_stiffness() {
+  return &stiffness_;
 }
 
 // repeated double dp = 3;

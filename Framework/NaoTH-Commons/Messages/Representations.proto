@@ -45,7 +45,7 @@ message CameraInfo {
 
 message JointData {    
   repeated double position = 1;
-  repeated double hardness = 2;
+  repeated double stiffness = 2;
   repeated double dp = 3;
   repeated double ddp = 4;
 }

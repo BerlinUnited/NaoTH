@@ -1816,10 +1816,10 @@ public final class Representations {
     int getPositionCount();
     double getPosition(int index);
     
-    // repeated double hardness = 2;
-    java.util.List<java.lang.Double> getHardnessList();
-    int getHardnessCount();
-    double getHardness(int index);
+    // repeated double stiffness = 2;
+    java.util.List<java.lang.Double> getStiffnessList();
+    int getStiffnessCount();
+    double getStiffness(int index);
     
     // repeated double dp = 3;
     java.util.List<java.lang.Double> getDpList();
@@ -1873,18 +1873,18 @@ public final class Representations {
       return position_.get(index);
     }
     
-    // repeated double hardness = 2;
-    public static final int HARDNESS_FIELD_NUMBER = 2;
-    private java.util.List<java.lang.Double> hardness_;
+    // repeated double stiffness = 2;
+    public static final int STIFFNESS_FIELD_NUMBER = 2;
+    private java.util.List<java.lang.Double> stiffness_;
     public java.util.List<java.lang.Double>
-        getHardnessList() {
-      return hardness_;
+        getStiffnessList() {
+      return stiffness_;
     }
-    public int getHardnessCount() {
-      return hardness_.size();
+    public int getStiffnessCount() {
+      return stiffness_.size();
     }
-    public double getHardness(int index) {
-      return hardness_.get(index);
+    public double getStiffness(int index) {
+      return stiffness_.get(index);
     }
     
     // repeated double dp = 3;
@@ -1917,7 +1917,7 @@ public final class Representations {
     
     private void initFields() {
       position_ = java.util.Collections.emptyList();;
-      hardness_ = java.util.Collections.emptyList();;
+      stiffness_ = java.util.Collections.emptyList();;
       dp_ = java.util.Collections.emptyList();;
       ddp_ = java.util.Collections.emptyList();;
     }
@@ -1936,8 +1936,8 @@ public final class Representations {
       for (int i = 0; i < position_.size(); i++) {
         output.writeDouble(1, position_.get(i));
       }
-      for (int i = 0; i < hardness_.size(); i++) {
-        output.writeDouble(2, hardness_.get(i));
+      for (int i = 0; i < stiffness_.size(); i++) {
+        output.writeDouble(2, stiffness_.get(i));
       }
       for (int i = 0; i < dp_.size(); i++) {
         output.writeDouble(3, dp_.get(i));
@@ -1962,9 +1962,9 @@ public final class Representations {
       }
       {
         int dataSize = 0;
-        dataSize = 8 * getHardnessList().size();
+        dataSize = 8 * getStiffnessList().size();
         size += dataSize;
-        size += 1 * getHardnessList().size();
+        size += 1 * getStiffnessList().size();
       }
       {
         int dataSize = 0;
@@ -2104,7 +2104,7 @@ public final class Representations {
         super.clear();
         position_ = java.util.Collections.emptyList();;
         bitField0_ = (bitField0_ & ~0x00000001);
-        hardness_ = java.util.Collections.emptyList();;
+        stiffness_ = java.util.Collections.emptyList();;
         bitField0_ = (bitField0_ & ~0x00000002);
         dp_ = java.util.Collections.emptyList();;
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -2153,10 +2153,10 @@ public final class Representations {
         }
         result.position_ = position_;
         if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          hardness_ = java.util.Collections.unmodifiableList(hardness_);
+          stiffness_ = java.util.Collections.unmodifiableList(stiffness_);
           bitField0_ = (bitField0_ & ~0x00000002);
         }
-        result.hardness_ = hardness_;
+        result.stiffness_ = stiffness_;
         if (((bitField0_ & 0x00000004) == 0x00000004)) {
           dp_ = java.util.Collections.unmodifiableList(dp_);
           bitField0_ = (bitField0_ & ~0x00000004);
@@ -2192,13 +2192,13 @@ public final class Representations {
           }
           onChanged();
         }
-        if (!other.hardness_.isEmpty()) {
-          if (hardness_.isEmpty()) {
-            hardness_ = other.hardness_;
+        if (!other.stiffness_.isEmpty()) {
+          if (stiffness_.isEmpty()) {
+            stiffness_ = other.stiffness_;
             bitField0_ = (bitField0_ & ~0x00000002);
           } else {
-            ensureHardnessIsMutable();
-            hardness_.addAll(other.hardness_);
+            ensureStiffnessIsMutable();
+            stiffness_.addAll(other.stiffness_);
           }
           onChanged();
         }
@@ -2268,15 +2268,15 @@ public final class Representations {
               break;
             }
             case 17: {
-              ensureHardnessIsMutable();
-              hardness_.add(input.readDouble());
+              ensureStiffnessIsMutable();
+              stiffness_.add(input.readDouble());
               break;
             }
             case 18: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               while (input.getBytesUntilLimit() > 0) {
-                addHardness(input.readDouble());
+                addStiffness(input.readDouble());
               }
               input.popLimit(limit);
               break;
@@ -2360,46 +2360,46 @@ public final class Representations {
         return this;
       }
       
-      // repeated double hardness = 2;
-      private java.util.List<java.lang.Double> hardness_ = java.util.Collections.emptyList();;
-      private void ensureHardnessIsMutable() {
+      // repeated double stiffness = 2;
+      private java.util.List<java.lang.Double> stiffness_ = java.util.Collections.emptyList();;
+      private void ensureStiffnessIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          hardness_ = new java.util.ArrayList<java.lang.Double>(hardness_);
+          stiffness_ = new java.util.ArrayList<java.lang.Double>(stiffness_);
           bitField0_ |= 0x00000002;
          }
       }
       public java.util.List<java.lang.Double>
-          getHardnessList() {
-        return java.util.Collections.unmodifiableList(hardness_);
+          getStiffnessList() {
+        return java.util.Collections.unmodifiableList(stiffness_);
       }
-      public int getHardnessCount() {
-        return hardness_.size();
+      public int getStiffnessCount() {
+        return stiffness_.size();
       }
-      public double getHardness(int index) {
-        return hardness_.get(index);
+      public double getStiffness(int index) {
+        return stiffness_.get(index);
       }
-      public Builder setHardness(
+      public Builder setStiffness(
           int index, double value) {
-        ensureHardnessIsMutable();
-        hardness_.set(index, value);
+        ensureStiffnessIsMutable();
+        stiffness_.set(index, value);
         onChanged();
         return this;
       }
-      public Builder addHardness(double value) {
-        ensureHardnessIsMutable();
-        hardness_.add(value);
+      public Builder addStiffness(double value) {
+        ensureStiffnessIsMutable();
+        stiffness_.add(value);
         onChanged();
         return this;
       }
-      public Builder addAllHardness(
+      public Builder addAllStiffness(
           java.lang.Iterable<? extends java.lang.Double> values) {
-        ensureHardnessIsMutable();
-        super.addAll(values, hardness_);
+        ensureStiffnessIsMutable();
+        super.addAll(values, stiffness_);
         onChanged();
         return this;
       }
-      public Builder clearHardness() {
-        hardness_ = java.util.Collections.emptyList();;
+      public Builder clearStiffness() {
+        stiffness_ = java.util.Collections.emptyList();;
         bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
@@ -9928,47 +9928,47 @@ public final class Representations {
       "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX" +
       "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n" +
       " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf" +
-      "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"H\n\t" +
-      "JointData\022\020\n\010position\030\001 \003(\001\022\020\n\010hardness\030" +
-      "\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Sensor" +
-      "JointData\022+\n\tjointData\030\001 \002(\0132\030.naothmess" +
-      "ages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017e" +
-      "lectricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n\004",
-      "pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFra" +
-      "meInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001(" +
-      "\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223" +
-      "\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.Do" +
-      "ubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tba" +
-      "llColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031b" +
-      "earingBasedOffsetOnField\030\005 \001(\0132\034.naothme" +
-      "ssages.DoubleVector2\022:\n\030frameInfoWhenBal" +
-      "lWasSeen\030\006 \001(\0132\030.naothmessages.FrameInfo" +
-      "\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001(",
-      "\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages." +
-      "DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(\005" +
-      "\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost\"" +
-      "\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cam" +
-      "eraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(\013" +
-      "2\034.naothmessages.DoubleVector2\0228\n\022target" +
-      "PointInImage\030\004 \001(\0132\034.naothmessages.Doubl" +
-      "eVector2\022;\n\025targetPointInTheWorld\030\005 \001(\0132" +
-      "\034.naothmessages.DoubleVector3\0222\n\014searchC" +
-      "enter\030\006 \001(\0132\034.naothmessages.DoubleVector",
-      "3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.Do" +
-      "ubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"m\n\013" +
-      "WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\025\n\rstopW" +
-      "ithStand\030\002 \002(\010\022\016\n\006stable\030\003 \002(\010\022#\n\004pose\030\004" +
-      " \002(\0132\025.naothmessages.Pose2D\"j\n\rMotionReq" +
-      "uest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced" +
-      "\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessa" +
-      "ges.WalkRequest\"\253\001\n\013LinePercept\022.\n\005lines" +
-      "\030\001 \003(\0132\037.naothmessages.FieldLineSegment\022" +
-      "2\n\rintersections\030\002 \003(\0132\033.naothmessages.I",
-      "ntersection\0228\n\022middleCircleCenter\030\003 \001(\0132" +
-      "\034.naothmessages.DoubleVector2\"5\n\007FSRData" +
-      "\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003" +
-      " \003(\010B)\n\'de.hu_berlin.informatik.ki.nao.m" +
-      "essages"
+      "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"I\n\t" +
+      "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness" +
+      "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso" +
+      "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
+      "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
+      "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n",
+      "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr" +
+      "ameInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001" +
+      "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022" +
+      "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D" +
+      "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb" +
+      "allColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031" +
+      "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm" +
+      "essages.DoubleVector2\022:\n\030frameInfoWhenBa" +
+      "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf" +
+      "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001",
+      "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages" +
+      ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(" +
+      "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost" +
+      "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
+      "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(" +
+      "\0132\034.naothmessages.DoubleVector2\0228\n\022targe" +
+      "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub" +
+      "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013" +
+      "2\034.naothmessages.DoubleVector3\0222\n\014search" +
+      "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto",
+      "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D" +
+      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"m\n" +
+      "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\025\n\rstop" +
+      "WithStand\030\002 \002(\010\022\016\n\006stable\030\003 \002(\010\022#\n\004pose\030" +
+      "\004 \002(\0132\025.naothmessages.Pose2D\"j\n\rMotionRe" +
+      "quest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006force" +
+      "d\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmess" +
+      "ages.WalkRequest\"\253\001\n\013LinePercept\022.\n\005line" +
+      "s\030\001 \003(\0132\037.naothmessages.FieldLineSegment" +
+      "\0222\n\rintersections\030\002 \003(\0132\033.naothmessages.",
+      "Intersection\0228\n\022middleCircleCenter\030\003 \001(\013" +
+      "2\034.naothmessages.DoubleVector2\"5\n\007FSRDat" +
+      "a\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030" +
+      "\003 \003(\010B)\n\'de.hu_berlin.informatik.ki.nao." +
+      "messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -9996,7 +9996,7 @@ public final class Representations {
           internal_static_naothmessages_JointData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_JointData_descriptor,
-              new java.lang.String[] { "Position", "Hardness", "Dp", "Ddp", },
+              new java.lang.String[] { "Position", "Stiffness", "Dp", "Ddp", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.Builder.class);
           internal_static_naothmessages_SensorJointData_descriptor =

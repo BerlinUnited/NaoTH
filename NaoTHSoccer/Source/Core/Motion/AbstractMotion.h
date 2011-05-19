@@ -42,8 +42,8 @@ public:
   bool isFinished() const { return finished; }
 
 protected:
-  /** set the hardness with max changes */
-  bool setHardness(double* hardness, double delta);
+  /** set the stiffness with max changes */
+  bool setStiffness(double* hardness, double delta);
 };
 
 class EmptyMotion: public AbstractMotion

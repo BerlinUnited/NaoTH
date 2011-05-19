@@ -51,7 +51,7 @@ class JointData
       numOfJoint, //error value
     };
     double position[numOfJoint];
-    double hardness[numOfJoint];
+    double stiffness[numOfJoint];
     double dp[numOfJoint];
     double ddp[numOfJoint];
 
@@ -81,6 +81,8 @@ class JointData
     void updateAcceleration(const JointData& lastData, double dt);
 
     bool isLegStiffnessOn() const;
+    
+    void checkStiffness() const;
 
   protected:
     double mirrorData(JointID joint) const;

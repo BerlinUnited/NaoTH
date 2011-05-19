@@ -23,7 +23,16 @@ public:
   virtual void call();
 
   void init(naoth::PlatformDataInterface& platformInterface);
-
+  
+protected:
+  void sensorUpdate();
+  
+  void motionExecute();
+  
+  void processSensorData();
+  
+  void postProcess();
+  
 private:
   MotionBlackBoard& theBlackBoard;
 

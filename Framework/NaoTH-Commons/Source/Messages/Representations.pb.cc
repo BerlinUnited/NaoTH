@@ -117,7 +117,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
   JointData_descriptor_ = file->message_type(2);
   static const int JointData_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JointData, position_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JointData, hardness_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JointData, stiffness_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JointData, dp_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(JointData, ddp_),
   };
@@ -403,47 +403,47 @@ void protobuf_AddDesc_Representations_2eproto() {
     "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX"
     "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n"
     " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf"
-    "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"H\n\t"
-    "JointData\022\020\n\010position\030\001 \003(\001\022\020\n\010hardness\030"
-    "\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Sensor"
-    "JointData\022+\n\tjointData\030\001 \002(\0132\030.naothmess"
-    "ages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017e"
-    "lectricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n\004"
-    "pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFra"
-    "meInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001("
-    "\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223"
-    "\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.Do"
-    "ubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tba"
-    "llColor\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031b"
-    "earingBasedOffsetOnField\030\005 \001(\0132\034.naothme"
-    "ssages.DoubleVector2\022:\n\030frameInfoWhenBal"
-    "lWasSeen\030\006 \001(\0132\030.naothmessages.FrameInfo"
-    "\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001("
-    "\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages."
-    "DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(\005"
-    "\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost\""
-    "\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cam"
-    "eraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(\013"
-    "2\034.naothmessages.DoubleVector2\0228\n\022target"
-    "PointInImage\030\004 \001(\0132\034.naothmessages.Doubl"
-    "eVector2\022;\n\025targetPointInTheWorld\030\005 \001(\0132"
-    "\034.naothmessages.DoubleVector3\0222\n\014searchC"
-    "enter\030\006 \001(\0132\034.naothmessages.DoubleVector"
-    "3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.Do"
-    "ubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"m\n\013"
-    "WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\025\n\rstopW"
-    "ithStand\030\002 \002(\010\022\016\n\006stable\030\003 \002(\010\022#\n\004pose\030\004"
-    " \002(\0132\025.naothmessages.Pose2D\"j\n\rMotionReq"
-    "uest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced"
-    "\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessa"
-    "ges.WalkRequest\"\253\001\n\013LinePercept\022.\n\005lines"
-    "\030\001 \003(\0132\037.naothmessages.FieldLineSegment\022"
-    "2\n\rintersections\030\002 \003(\0132\033.naothmessages.I"
-    "ntersection\0228\n\022middleCircleCenter\030\003 \001(\0132"
-    "\034.naothmessages.DoubleVector2\"5\n\007FSRData"
-    "\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003"
-    " \003(\010B)\n\'de.hu_berlin.informatik.ki.nao.m"
-    "essages", 2167);
+    "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"I\n\t"
+    "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness"
+    "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso"
+    "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
+    "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
+    "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n"
+    "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr"
+    "ameInfo\022\023\n\013frameNumber\030\001 \001(\r\022\014\n\004time\030\002 \001"
+    "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022"
+    "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D"
+    "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb"
+    "allColor\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031"
+    "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm"
+    "essages.DoubleVector2\022:\n\030frameInfoWhenBa"
+    "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf"
+    "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001"
+    "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages"
+    ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001("
+    "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost"
+    "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca"
+    "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001("
+    "\0132\034.naothmessages.DoubleVector2\0228\n\022targe"
+    "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub"
+    "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013"
+    "2\034.naothmessages.DoubleVector3\0222\n\014search"
+    "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto"
+    "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
+    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"m\n"
+    "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\025\n\rstop"
+    "WithStand\030\002 \002(\010\022\016\n\006stable\030\003 \002(\010\022#\n\004pose\030"
+    "\004 \002(\0132\025.naothmessages.Pose2D\"j\n\rMotionRe"
+    "quest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006force"
+    "d\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmess"
+    "ages.WalkRequest\"\253\001\n\013LinePercept\022.\n\005line"
+    "s\030\001 \003(\0132\037.naothmessages.FieldLineSegment"
+    "\0222\n\rintersections\030\002 \003(\0132\033.naothmessages."
+    "Intersection\0228\n\022middleCircleCenter\030\003 \001(\013"
+    "2\034.naothmessages.DoubleVector2\"5\n\007FSRDat"
+    "a\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030"
+    "\003 \003(\010B)\n\'de.hu_berlin.informatik.ki.nao."
+    "messages", 2168);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -1584,7 +1584,7 @@ void CameraInfo::Swap(CameraInfo* other) {
 
 #ifndef _MSC_VER
 const int JointData::kPositionFieldNumber;
-const int JointData::kHardnessFieldNumber;
+const int JointData::kStiffnessFieldNumber;
 const int JointData::kDpFieldNumber;
 const int JointData::kDdpFieldNumber;
 #endif  // !_MSC_VER
@@ -1639,7 +1639,7 @@ JointData* JointData::New() const {
 
 void JointData::Clear() {
   position_.Clear();
-  hardness_.Clear();
+  stiffness_.Clear();
   dp_.Clear();
   ddp_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1670,28 +1670,28 @@ bool JointData::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(9)) goto parse_position;
-        if (input->ExpectTag(17)) goto parse_hardness;
+        if (input->ExpectTag(17)) goto parse_stiffness;
         break;
       }
       
-      // repeated double hardness = 2;
+      // repeated double stiffness = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
-         parse_hardness:
+         parse_stiffness:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 1, 17, input, this->mutable_hardness())));
+                 1, 17, input, this->mutable_stiffness())));
         } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
                    == ::google::protobuf::internal::WireFormatLite::
                       WIRETYPE_LENGTH_DELIMITED) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
-                 input, this->mutable_hardness())));
+                 input, this->mutable_stiffness())));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(17)) goto parse_hardness;
+        if (input->ExpectTag(17)) goto parse_stiffness;
         if (input->ExpectTag(25)) goto parse_dp;
         break;
       }
@@ -1764,10 +1764,10 @@ void JointData::SerializeWithCachedSizes(
       1, this->position(i), output);
   }
   
-  // repeated double hardness = 2;
-  for (int i = 0; i < this->hardness_size(); i++) {
+  // repeated double stiffness = 2;
+  for (int i = 0; i < this->stiffness_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(
-      2, this->hardness(i), output);
+      2, this->stiffness(i), output);
   }
   
   // repeated double dp = 3;
@@ -1796,10 +1796,10 @@ void JointData::SerializeWithCachedSizes(
       WriteDoubleToArray(1, this->position(i), target);
   }
   
-  // repeated double hardness = 2;
-  for (int i = 0; i < this->hardness_size(); i++) {
+  // repeated double stiffness = 2;
+  for (int i = 0; i < this->stiffness_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteDoubleToArray(2, this->hardness(i), target);
+      WriteDoubleToArray(2, this->stiffness(i), target);
   }
   
   // repeated double dp = 3;
@@ -1831,11 +1831,11 @@ int JointData::ByteSize() const {
     total_size += 1 * this->position_size() + data_size;
   }
   
-  // repeated double hardness = 2;
+  // repeated double stiffness = 2;
   {
     int data_size = 0;
-    data_size = 8 * this->hardness_size();
-    total_size += 1 * this->hardness_size() + data_size;
+    data_size = 8 * this->stiffness_size();
+    total_size += 1 * this->stiffness_size() + data_size;
   }
   
   // repeated double dp = 3;
@@ -1878,7 +1878,7 @@ void JointData::MergeFrom(const ::google::protobuf::Message& from) {
 void JointData::MergeFrom(const JointData& from) {
   GOOGLE_CHECK_NE(&from, this);
   position_.MergeFrom(from.position_);
-  hardness_.MergeFrom(from.hardness_);
+  stiffness_.MergeFrom(from.stiffness_);
   dp_.MergeFrom(from.dp_);
   ddp_.MergeFrom(from.ddp_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -1904,7 +1904,7 @@ bool JointData::IsInitialized() const {
 void JointData::Swap(JointData* other) {
   if (other != this) {
     position_.Swap(&other->position_);
-    hardness_.Swap(&other->hardness_);
+    stiffness_.Swap(&other->stiffness_);
     dp_.Swap(&other->dp_);
     ddp_.Swap(&other->ddp_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

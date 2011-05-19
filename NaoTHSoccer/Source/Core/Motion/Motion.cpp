@@ -22,6 +22,7 @@ Motion::~Motion()
 void Motion::init(naoth::PlatformDataInterface& platformInterface)
 {
   theBlackBoard.init();
+  theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
   
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
@@ -43,12 +44,84 @@ void Motion::init(naoth::PlatformDataInterface& platformInterface)
   //theInverseKinematicsMotionFactory.init();
   //theKeyFrameMotionEngine.init();
   //theDebugMotionEngine.init();
-
-  theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
 }//end init
 
 
 void Motion::call()
 {
-  
+  sensorUpdate();
+  motionExecute();
 }//end call
+
+void Motion::sensorUpdate()
+{
+}//end sensorUpdate
+
+void Motion::motionExecute()
+{
+  // TODO
+  //STOPWATCH_START("MotionExecute");
+
+  // process sensor data
+  processSensorData();
+  
+  // get orders from cognition
+  //SwapSpace::getInstance().theCognitionCache.pull(
+  //  theBlackBoard.theHeadMotionRequest,
+  //  theBlackBoard.theMotionRequest
+  //);
+  
+  // execute head motion firstly
+  //theHeadMotionEngine.execute();
+
+  // motion engine execute
+  //selectMotion();
+  //ASSERT(NULL!=currentlyExecutedMotion);
+  //currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
+
+  // HACK: execute the grasping motion
+  //if(theBlackBoard.theMotionRequest.id != MotionRequestID::init)
+  //{
+  //  theInverseKinematicsMotionFactory.theIKArmGrasping.execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
+  //}
+  // TODO
+  //STOPWATCH_STOP("MotionExecute");
+  
+  postProcess();
+}//end motionExecute
+
+void Motion::processSensorData()
+{
+  // check all joint stiffness
+  theBlackBoard.theSensorJointData.checkStiffness();
+
+  /*
+  Kinematics::ForwardKinematics::calculateKinematicChainAll(
+    theBlackBoard.theAccelerometerData,
+    theBlackBoard.theInertialSensorData,
+    theBlackBoard.theKinematicChain,
+    theBlackBoard.theFSRPos,
+    theBlackBoard.basicTimeStepInS);
+
+  theBlackBoard.theKinematicChain.updateCoM();
+  theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
+
+  CameraMatrixCalculator::calculateCameraMatrix(
+    theBlackBoard.theCameraMatrix,
+    theBlackBoard.theHeadMotionRequest.cameraID,
+    theBlackBoard.theKinematicChain);
+
+  theOdometryCalculator.calculateOdometry(
+    theBlackBoard.theOdometryData,
+    theBlackBoard.theKinematicChain,
+    theBlackBoard.theFSRData);
+
+  Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
+  theBlackBoard.theKinematicChainModel.updateCoM();
+   */
+}//end processSensorData
+
+void Motion::postProcess()
+{
+  
+}
