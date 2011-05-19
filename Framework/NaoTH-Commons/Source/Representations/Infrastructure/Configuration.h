@@ -51,6 +51,12 @@ namespace naoth
      */
     bool hasKey(std::string group, std::string key) const;
 
+  /**
+   * Returns true if the configuration has a group with this name
+   * @param group
+   */
+  bool hasGroup(std::string group) const;
+
     /**
      * Get a string value from the configuration
      * @param group

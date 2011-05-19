@@ -13,6 +13,7 @@
 #include <PlatformInterface/PlatformInterface.h>
 #include "MotionBlackBoard.h"
 #include "AbstractMotion.h"
+#include "MorphologyProcessor/SupportPolygonGenerator.h"
 
 class Motion : public naoth::Callable
 {
@@ -34,6 +35,8 @@ private:
   MotionBlackBoard& theBlackBoard;
 
   EmptyMotion theEmptyMotion;
+  
+  SupportPolygonGenerator theSupportPolygonGenerator;
 };
 
 #endif	/* MOTION_H */

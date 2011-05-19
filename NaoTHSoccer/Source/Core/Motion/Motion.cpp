@@ -13,6 +13,9 @@
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {
+  theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
+    theBlackBoard.theFSRPos,
+    theBlackBoard.theKinematicChain.theLinks);
 }
 
 Motion::~Motion()
@@ -94,9 +97,10 @@ void Motion::processSensorData()
     theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
 
   cout<<"---------------"<<endl;
-    theBlackBoard.theKinematicChain.print(cout);
-  /*  theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
-
+  theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
+  cout<<theBlackBoard.theSupportPolygon.forceCenter<<" "<<theBlackBoard.theSupportPolygon.mode<<endl;
+  
+/*
   CameraMatrixCalculator::calculateCameraMatrix(
     theBlackBoard.theCameraMatrix,
     theBlackBoard.theHeadMotionRequest.cameraID,

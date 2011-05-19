@@ -232,6 +232,11 @@ bool Configuration::hasKey(std::string group, std::string key) const
   return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL) > 0;
 }
 
+bool Configuration::hasGroup(std::string group) const
+{
+  return g_key_file_has_group(keyFile, group.c_str()) > 0;
+}
+
 std::string Configuration::getString(std::string group, std::string key) const
 {
   gchar* buf = g_key_file_get_string(keyFile, group.c_str(), key.c_str(), NULL);
