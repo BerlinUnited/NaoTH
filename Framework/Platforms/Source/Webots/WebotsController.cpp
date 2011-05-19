@@ -412,7 +412,7 @@ void WebotsController::get(IRReceiveData& data)
 
 void WebotsController::set(const MotorJointData& data)
 {
-  const double* stiffness = data.hardness;
+  const double* stiffness = data.stiffness;
   const double* jointData = data.position;
   for (int i = 0; i < JointData::numOfJoint; i++) {
     if (stiffness[i] > 0) {

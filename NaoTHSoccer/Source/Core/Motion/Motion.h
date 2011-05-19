@@ -25,9 +25,6 @@ public:
   void init(naoth::PlatformDataInterface& platformInterface);
   
 protected:
-  void sensorUpdate();
-  
-  void motionExecute();
   
   void processSensorData();
   

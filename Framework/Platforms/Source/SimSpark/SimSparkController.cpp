@@ -251,7 +251,7 @@ void SimSparkController::getMotionInput()
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theSensorJointData.hardness[i] = theLastSensorJointData.hardness[i];
+    theSensorJointData.stiffness[i] = theLastSensorJointData.stiffness[i];
   }
   theLastSensorJointData = theSensorJointData;
 
@@ -948,12 +948,12 @@ void SimSparkController::jointControl()
     // normalize the joint angle
     double target = data.position[i];
     double ang = theLastSensorJointData.position[i];// + theLastSensorJointData.dp[i] * theStepTime;
-    double v = (target - ang) * d * data.hardness[i];
+    double v = (target - ang) * d * data.stiffness[i];
     v = Math::clamp(v, -maxJointAbsSpeed, maxJointAbsSpeed);
     ang += (v * theStepTime);
     target = data2.position[i];
-    double v2 = (target - ang) * d * data2.hardness[i];
-    theLastSensorJointData.hardness[i] = data2.hardness[i];
+    double v2 = (target - ang) * d * data2.stiffness[i];
+    theLastSensorJointData.stiffness[i] = data2.stiffness[i];
     v2 = Math::clamp(v2, -maxJointAbsSpeed, maxJointAbsSpeed);
 
     // due to the different coordination

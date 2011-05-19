@@ -49,16 +49,6 @@ void Motion::init(naoth::PlatformDataInterface& platformInterface)
 
 void Motion::call()
 {
-  sensorUpdate();
-  motionExecute();
-}//end call
-
-void Motion::sensorUpdate()
-{
-}//end sensorUpdate
-
-void Motion::motionExecute()
-{
   // TODO
   //STOPWATCH_START("MotionExecute");
 
@@ -88,7 +78,7 @@ void Motion::motionExecute()
   //STOPWATCH_STOP("MotionExecute");
   
   postProcess();
-}//end motionExecute
+}//end call
 
 void Motion::processSensorData()
 {
