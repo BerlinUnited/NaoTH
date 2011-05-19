@@ -38,12 +38,14 @@ namespace naoth
     int getTimeSince(unsigned timeStamp) const {return int(time - timeStamp);}
 
     /**
-    * The method returns the corrent time in seconds
-    * current frame time.
-    * @param timeStamp A time stamp, usually in the past.
-    * @return The number of ms passed since the given time stamp.
+    * The method returns the corrent time in seconds current frame time.
     */
-    double getTimeInSeconds() const {return static_cast<double>(time)/1000.0 ;}
+    double getTimeInSeconds() const {return static_cast<double>(time)/1000.0; }
+    
+    /**
+     * The method returns the basic time step in seconds
+     */
+    double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
 
     unsigned int time; /**< The time stamp of the data processed in the current frame in us (miliseconds). */
     unsigned int frameNumber; /**< The number of the frame. */

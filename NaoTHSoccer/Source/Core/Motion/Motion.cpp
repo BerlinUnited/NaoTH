@@ -1,12 +1,14 @@
 /**
  * @file Motion.cpp
  *
-  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  *
  */
 
 #include "Motion.h"
 #include <glib.h>
+
+#include "MorphologyProcessor/ForwardKinematics.h"
 
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
@@ -83,15 +85,17 @@ void Motion::processSensorData()
   // check all joint stiffness
   theBlackBoard.theSensorJointData.checkStiffness();
   
-  cout<<"todo ..."<<endl;
-/*
+
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     theBlackBoard.theAccelerometerData,
     theBlackBoard.theInertialSensorData,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRPos,
-    theBlackBoard.basicTimeStepInS);
-
+    theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
+    
+    cout<<"---------------"<<endl;
+    theBlackBoard.theKinematicChain.print(cout);
+/*
   theBlackBoard.theKinematicChain.updateCoM();
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
 
