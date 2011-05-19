@@ -12,7 +12,7 @@
 #include <Tools/DataStructures/Streamable.h>
 
 #include <DebugCommunication/DebugCommandExecutor.h>
-#include "Core/Tools/Logfile/LogfileManager.h"
+#include "Tools/Logfile/LogfileManager.h"
 
 class Logger : public DebugCommandExecutor
 {
@@ -22,7 +22,7 @@ public:
 
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string, std::string>& arguments,
-    std::stringstream &outstream);
+    std::ostream &outstream);
 
   /** add a representation then it can be logged,
    */
@@ -38,7 +38,7 @@ public:
   const string& getDescription() const { return description;}
 
 protected:
-  void handleCommand(const std::string& argName, const std::string& argValue, std::stringstream& outstream);
+  void handleCommand(const std::string& argName, const std::string& argValue, std::ostream& outstream);
   
 private:
 

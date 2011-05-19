@@ -8,8 +8,8 @@
 #ifndef _DebugImageDrawings_H
 #define	_DebugImageDrawings_H
 
-#include "Tools/DataStructures/Singleton.h"
-#include "Tools/ImageProcessing/ImageDrawings.h"
+#include <Tools/DataStructures/Singleton.h>
+#include <Tools/ImageProcessing/ImageDrawings.h>
 
 
 namespace naoth

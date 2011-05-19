@@ -7,8 +7,8 @@
 #include "Tools/Math/Pose3D.h"
 
 #include "DebugDrawings3D.h"
-#include "Core/Cognition/Modules/Infrastructure/Debug/Debug.h"
-#include "Core/Cognition/CognitionDebugServer.h"
+#include "Cognition/Modules/Infrastructure/Debug/Debug.h"
+#include "Cognition/CognitionDebugServer.h"
 
 DebugDrawings3D::DebugDrawings3D()
 {
@@ -26,7 +26,7 @@ DebugDrawings3D::~DebugDrawings3D()
 
 void DebugDrawings3D::executeDebugCommand(
   const std::string& command, const std::map<std::string, std::string>& /*arguments*/,
-  std::stringstream &outstream)
+  std::ostream &outstream)
 {
   if ("debug_3d" == command) {
 

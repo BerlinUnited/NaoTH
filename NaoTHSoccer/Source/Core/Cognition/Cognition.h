@@ -12,9 +12,9 @@
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
-
 #include <ModuleFramework/ModuleManager.h>
-#include <Core/Tools/Packages/PackageLoader.h>
+
+#include "Tools/Packages/PackageLoader.h"
 
 class Cognition : public naoth::Callable, public ModuleManager
 {

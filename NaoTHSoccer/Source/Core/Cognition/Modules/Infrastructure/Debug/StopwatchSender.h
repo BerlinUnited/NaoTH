@@ -15,7 +15,7 @@
 #include <DebugCommunication/DebugServer.h>
 
 #include <Representations/Infrastructure/CameraSettings.h>
-#include "Core/Representations/FieldInfo.h"
+//#include "Representations/Infrastructure/FieldInfo.h"
 
 using namespace naoth;
 
@@ -33,7 +33,7 @@ public:
 
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::stringstream &outstream);
+    std::ostream &outstream);
 
 private:
   std::map<std::string, ParameterList*> paramlists;

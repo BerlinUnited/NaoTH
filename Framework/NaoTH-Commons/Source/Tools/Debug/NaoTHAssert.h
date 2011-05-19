@@ -12,6 +12,7 @@
 #define __NaoTHAssert_h_
 
 #include <assert.h>
+#include <iostream>
 #include "Trace.h"
 
 #undef ASSERT

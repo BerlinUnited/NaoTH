@@ -1,8 +1,8 @@
 #ifndef __Grid_H_
 #define __Grid_H_
 
-#include "Tools/Math/Vector2.h"
-#include "Tools/Debug/NaoTHAssert.h"
+#include <Tools/Math/Vector2.h>
+#include <Tools/Debug/NaoTHAssert.h>
 
 /**
  * class Grid
@@ -46,7 +46,7 @@ public:
     return numberOfGridPoints-1;
   }//end addPoint
 
-  const Vector2<int>& getPoint(unsigned int i) const
+  const Vector2<int>& getPoint(const unsigned int& i) const
   {
     ASSERT(i < maxNumberOfPoints);
     return pointsCoordinates[i];

@@ -25,9 +25,9 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 
-#include "Core/Representations/Infrastructure/SerialSensorData.h"
-#include "Core/Representations/Motion/MotionStatus.h"
-#include "Core/Representations/Motion/OdometryData.h"
+#include "Representations/Infrastructure/SerialSensorData.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Motion/OdometryData.h"
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>

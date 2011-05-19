@@ -1,13 +1,14 @@
 #ifndef __ColoredGrid_H_
 #define __ColoredGrid_H_
 
-#include <vector>
-
-#include "Tools/Math/Vector2.h"
-#include "Tools/ColorClasses.h"
-
-#include "Core/Tools/ImageProcessing/Grid/UniformGrid.h"
+#include <Tools/Math/Vector2.h>
+#include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/Printable.h>
+
+#include "Grid/UniformGrid.h"
+
+// TODO: remove it
+using namespace naoth;
 
 /**
  * Class ColoredGrid
@@ -42,12 +43,12 @@
 
  *                                   
  */
-class ColoredGrid: public Printable
+class ColoredGrid: public naoth::Printable
 {
 public:
 
-  ColoredGrid(unsigned int width=60, unsigned int height=40)
-  : uniformGrid(width, height)
+  ColoredGrid(unsigned int imageWidth=320, unsigned int imageHeight=240, unsigned int width=60, unsigned int height=40)
+    : uniformGrid(imageWidth, imageHeight, width, height)
   {
     pointsColors.resize(uniformGrid.maxNumberOfPoints);
 
@@ -94,25 +95,25 @@ public:
   unsigned int numberOfColorPoints[ColorClasses::numOfColors];
   double colorPointsRate[ColorClasses::numOfColors];
 
-  const Vector2<int>& getColorPoint(int pointIndex) const
+  const Vector2<int>& getColorPoint(const int& pointIndex) const
   {
     return uniformGrid.getGridCoordinates(pointIndex);
     //return uniformGrid.gridCoordinates[pointIndex];
   }
 
-  const Vector2<int>& getColorPoint(ColorClasses::Color color, int index) const
+  const Vector2<int>& getColorPoint(const ColorClasses::Color& color, const int& index) const
   {
     return uniformGrid.getGridCoordinates(colorPointsIndex[color][index]);
     //return uniformGrid.gridCoordinates[colorPointsIndex[color][index]];
   }
 
-  const Vector2<int>& getImagePoint(ColorClasses::Color color, int index) const
+  const Vector2<int>& getImagePoint(const ColorClasses::Color& color, const int& index) const
   {
     return uniformGrid.getPoint(colorPointsIndex[color][index]);
     //return uniformGrid.pointsCoordinates[colorPointsIndex[color][index]];
   }
 
-  const Vector2<int>& getImagePoint(int pointIndex) const
+  const Vector2<int>& getImagePoint(const int& pointIndex) const
   {
     return uniformGrid.getPoint(pointIndex);
     //return uniformGrid.pointsCoordinates[pointIndex];
@@ -127,7 +128,7 @@ public:
     return uniformGrid.getScaledImageIndex(point.x, point.y);
   }
 
-  int getScaledImageIndex(int x, int y) const
+  int getScaledImageIndex(const int& x, const int& y) const
   {
     ASSERT(x >= 0);
     ASSERT(y >= 0);
@@ -169,10 +170,9 @@ public:
   }//end addPoint
 */
 
-  void setColor(unsigned int i, ColorClasses::Color color)
-  {      
-    if(i < uniformGrid.numberOfGridPoints &&
-       numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints)
+  void setColor(const unsigned int& i, const ColorClasses::Color& color)
+  {
+    if(i < uniformGrid.numberOfGridPoints && numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints)
     {
       pointsColors[i] = color;
       colorPointsRate[color] += singlePointRate;
@@ -224,7 +224,6 @@ public:
   }//end print
 
 };//end class ColoredGrid
-
 
 #endif // __COLOREDGRID_H__
 

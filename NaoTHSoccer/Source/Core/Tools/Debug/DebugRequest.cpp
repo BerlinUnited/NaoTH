@@ -7,9 +7,11 @@
 
 #include "DebugRequest.h"
 
-#include "Core/Cognition/CognitionDebugServer.h"
+#include "Cognition/CognitionDebugServer.h"
+
 #include <Tools/Debug/NaoTHAssert.h>
-#include <iostream>
+
+
 
 DebugRequest::DebugRequest() : requestMap()
 {
@@ -22,7 +24,7 @@ DebugRequest::~DebugRequest(){}
 
 void DebugRequest::executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::stringstream &outstream)
+    std::ostream &outstream)
 {
   // search in the map if we know this command/request
   if(requestMap.find(command) != requestMap.end())
@@ -46,15 +48,14 @@ void DebugRequest::executeDebugCommand(
     
     while(iter != requestMap.end())
     {
-      outstream << iter->first << "|" << iter->second << "|" << descriptionMap[iter->first] << std::endl;
+      outstream << iter->first << "|" << iter->second << "|" << descriptionMap[iter->first] << endl;
       iter++;
     }
   }
 }//end executeDebugCommand
 
 
-void DebugRequest::registerRequest(const std::string name, const std::string description, 
-  bool defaultValue = false)
+void DebugRequest::registerRequest(const std::string& name, const std::string& description, bool defaultValue = false)
 {
   // only add if not known already
   if(requestMap.find(name) == requestMap.end())
@@ -74,13 +75,13 @@ void DebugRequest::registerRequest(const std::string name, const std::string des
 }//end registerRequest
 
 
-bool DebugRequest::isActive(const std::string name) const
+bool DebugRequest::isActive(const std::string& name) const
 {
   std::map<std::string, bool>::const_iterator iter = requestMap.find(name);
   return iter != requestMap.end() && iter->second;
 }//end isActive
 
-const bool& DebugRequest::getValueReference(const std::string name) const
+const bool& DebugRequest::getValueReference(const std::string& name) const
 {
   std::map<std::string, bool>::const_iterator iter = requestMap.find(name);
   if(iter == requestMap.end())

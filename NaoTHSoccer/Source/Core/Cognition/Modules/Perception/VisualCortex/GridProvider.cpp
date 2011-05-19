@@ -7,7 +7,7 @@
 
 #include "GridProvider.h"
 
-#include "Core/Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugRequest.h"
 
 GridProvider::GridProvider()
 {

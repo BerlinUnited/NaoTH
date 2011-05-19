@@ -51,6 +51,12 @@ protected:
     ASSERT(theBlackBoard != NULL);
     return *theBlackBoard;
   }
+
+  const BlackBoard& getBlackBoard() const
+  {
+    ASSERT(theBlackBoard != NULL);
+    return *theBlackBoard;
+  }
 };
 
 #endif //__BlackBoardInterface_h_

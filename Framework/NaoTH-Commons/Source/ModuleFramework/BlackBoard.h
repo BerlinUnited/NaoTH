@@ -100,6 +100,46 @@ public:
 
   /**
    *  returns a reference to a representation stored 
+   *  on the blackboard. Asserttion is thrown if no 
+   *  according representation is avaliable.
+   */
+  template<class T>
+  const T& getRepresentation(const std::string& name) const
+  {
+    // search for the representation
+    BlackBoardRegistry::const_iterator iter = registry.find(name);
+
+    // create Representation, if necessary
+    if(iter == registry.end())
+    {
+      // TODO: throw
+      std::cerr << "Representation not existing: " 
+                << name << " of type " << typeid(T).name() 
+                << "is not registred and cannot be created." << std::endl;
+      ASSERT(false);
+    }//end if
+
+
+    // retrive the representation and try to cast
+    BlackBoardData* data = iter->second;
+    BlackBoardDataHolder<T>* typedData = dynamic_cast<BlackBoardDataHolder<T>*>(data);
+  
+    // couldn't cast the type
+    if(typedData == NULL)
+    {
+      // TODO: throw
+      std::cerr << "Representation type mismatch: " 
+                << name << " is registered as " << data->getTypeName() 
+                << ", but " << typeid(T).name() << " is requested." << std::endl;
+      ASSERT(false);
+    }//end if
+
+    return **typedData;
+  }//end getRepresentation
+
+
+  /**
+   *  returns a reference to a representation stored 
    *  on the blackboard. A new instance is created if the required 
    *  representation is not existing.
    */
@@ -135,17 +175,6 @@ public:
     return **typedData;
   }//end getRepresentation
 
-
-  /**
-   *  getConstRepresentation wraps getRepresentation:
-   *  it returns a const reference to a representation
-   */
-  template<class T>
-  const T& getConstRepresentation(const std::string& name)
-  {
-    // getRepresentation checks the type, thus no further check necessary
-    return static_cast<const T&>(getRepresentation<T>(name));
-  }//end getConstRepresentation
 };
 
 #endif //__BlackBoard_h_
