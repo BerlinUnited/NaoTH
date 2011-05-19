@@ -32,15 +32,16 @@
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/ReachibilityGrid.h"
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/IKMotionParameters.h"
 
+class AbstractMotion;
 
-class MotionBlackBoard// : public Singleton<MotionBlackBoard>
+class MotionBlackBoard : public Singleton<MotionBlackBoard>
 {
-// private:
-  // friend class Singleton<MotionBlackBoard>;
+private:
+  friend class Singleton<MotionBlackBoard>;
 
+  MotionBlackBoard();
 
 public:
-  MotionBlackBoard();
 
   void init();
 
@@ -77,6 +78,8 @@ public:
   // data copied from cognition
   naoth::motion::HeadMotionRequest theHeadMotionRequest;
   naoth::motion::MotionRequest theMotionRequest;
+  
+  AbstractMotion* currentlyExecutedMotion;
 };
 
 #endif	/* _MOTIONBLACKBOARD_H */

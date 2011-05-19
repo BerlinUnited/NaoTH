@@ -11,7 +11,7 @@
 using namespace naoth;
 using namespace motion;
 
-Motion::Motion()
+Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {
 }
 
@@ -39,6 +39,12 @@ void Motion::init(naoth::PlatformDataInterface& platformInterface)
 
   REG_OUTPUT(MotorJointData);
   g_message("Motion register end");
+  
+  //theInverseKinematicsMotionFactory.init();
+  //theKeyFrameMotionEngine.init();
+  //theDebugMotionEngine.init();
+
+  theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
 }//end init
 
 
