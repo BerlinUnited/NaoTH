@@ -9,6 +9,7 @@
 #include <glib.h>
 
 #include "MorphologyProcessor/ForwardKinematics.h"
+#include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
@@ -98,14 +99,14 @@ void Motion::processSensorData()
 
   cout<<"---------------"<<endl;
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
-  cout<<theBlackBoard.theSupportPolygon.forceCenter<<" "<<theBlackBoard.theSupportPolygon.mode<<endl;
   
-/*
   CameraMatrixCalculator::calculateCameraMatrix(
     theBlackBoard.theCameraMatrix,
     theBlackBoard.theHeadMotionRequest.cameraID,
     theBlackBoard.theKinematicChain);
-
+    
+    cout<<theBlackBoard.theCameraMatrix<<endl;
+/*
   theOdometryCalculator.calculateOdometry(
     theBlackBoard.theOdometryData,
     theBlackBoard.theKinematicChain,
