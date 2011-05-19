@@ -62,7 +62,7 @@ class JointData
 
     virtual ~JointData(){}
 
-    void init(const std::string& filename);
+    void init();
 
     static string getJointName(JointID);
     static JointID jointIDFromName(std::string name);

@@ -15,7 +15,6 @@
 ParameterList::ParameterList(const std::string& parentClassName)
 {
   this->parentClassName = parentClassName;
-  
 }//end constructor ParameterList
 
 void ParameterList::initParams()

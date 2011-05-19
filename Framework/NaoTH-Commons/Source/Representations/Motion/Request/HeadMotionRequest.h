@@ -18,7 +18,7 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 
 namespace naoth {
-
+namespace motion {
 /**
  * @class HeadMotionRequest
  * This describes the HeadMotionRequest
@@ -90,6 +90,6 @@ public:
     static void deserialize(std::istream& stream, HeadMotionRequest& representation);
   };*/
 };
-
+} // namespace motion
 }// namespace naoth
 #endif // __HeadMotionRequest_h_

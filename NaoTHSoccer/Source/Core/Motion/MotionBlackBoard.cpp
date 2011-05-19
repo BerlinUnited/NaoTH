@@ -7,6 +7,9 @@
 
 #include "MotionBlackBoard.h"
 
+using namespace naoth;
+using namespace motion;
+
 MotionBlackBoard::MotionBlackBoard()
  : 
   lastTimeStamp(0),
@@ -17,10 +20,10 @@ MotionBlackBoard::MotionBlackBoard()
 
 void MotionBlackBoard::init()
 {
-  // theSensorJointData.init(Platform::getInstance().theConfigPathInfo.joint_info.c_str());
-  // theKinematicChain.init(theSensorJointData, Platform::getInstance().theMassConfig);
-  // theKinematicChainModel.init(theMotorJointData, Platform::getInstance().theMassConfig);
-  // theInertialSensorData.init();
+  theSensorJointData.init();
+  theKinematicChain.init(theSensorJointData);
+  theKinematicChainModel.init(theMotorJointData);
+  theInertialSensorData.init();
 }
 
 MotionBlackBoard::~MotionBlackBoard()

@@ -43,7 +43,6 @@ void InertialSensorData::calibrate()
 
 void InertialSensorData::stopCalibrating()
 {
-  /*
   naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
   
   cout<< "[InertialSensorData] : save to configure configuration group " << configGroup;
@@ -51,7 +50,7 @@ void InertialSensorData::stopCalibrating()
   
   config.setDouble(configGroup, "offset[X]", offset[X]);
   config.setDouble(configGroup, "offset[Y]", offset[Y]);
-  config.save(naoth::Platform::getInstance().theConfigDirectory);*/
+  config.save(naoth::Platform::getInstance().theConfigDirectory);
 }
 
 string InertialSensorData::getInertialSensorName(InertialSensorID angle)

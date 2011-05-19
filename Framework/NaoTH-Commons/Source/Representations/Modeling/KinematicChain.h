@@ -47,7 +47,7 @@ public:
   };
 
 private:
-  void initMassesInfo(const Configuration& cfg);
+  void initMassesInfo();
 
   void initJointsInfo(JointData& jointData);
 
@@ -67,7 +67,7 @@ public:
   static string getLinkName(LinkID link);
 
   string test(const Kinematics::Link& node) const;
-  void init(JointData& jointData, const Configuration& cfg);
+  void init(JointData& jointData);
 
   void updateCoM();
   Vector2<double> calculateZMP() const;

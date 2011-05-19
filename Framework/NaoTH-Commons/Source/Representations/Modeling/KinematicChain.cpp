@@ -7,6 +7,7 @@
 
 #include "KinematicChain.h"
 #include "Tools/NaoInfo.h"
+#include <PlatformInterface/Platform.h>
 
 using namespace naoth;
 
@@ -97,8 +98,9 @@ void KinematicChain::buildLinkChains()
 //  }
 }
 
-void KinematicChain::initMassesInfo(const Configuration& cfg)
+void KinematicChain::initMassesInfo()
 {
+  const Configuration& cfg = Platform::getInstance().theConfiguration;
   string gn = "mass";
   for( int i = 0; i<numOfLinks; i++)
   {
@@ -260,10 +262,10 @@ void KinematicChain::initLinksInfo()
   theLinks[Hip].setLink(0, 0, -NaoInfo::HipOffsetZ);
 }
 
-void KinematicChain::init(JointData& jointData, const Configuration& cfg)
+void KinematicChain::init(JointData& jointData)
 {
   initJointsInfo(jointData);
-  initMassesInfo(cfg);
+  initMassesInfo();
   initLinksInfo();
   buildLinkChains();
 }

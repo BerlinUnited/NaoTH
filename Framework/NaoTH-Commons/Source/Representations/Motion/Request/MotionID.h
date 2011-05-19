@@ -2,25 +2,19 @@
 * @file MotionRequestID.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Definition of the class MotionRequestID
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* Definition of the class MotionID
 */
 
-#ifndef __MotionRequestID_h_
-#define __MotionRequestID_h_
+#ifndef __MotionID_h_
+#define __MotionID_h_
 
 #include <string>
 
-/**
-* This describes the MotionRequestID
-*/
-class MotionRequestID
+namespace naoth
 {
-public:
-
-   /** constructor */
-  MotionRequestID(){}
-  ~MotionRequestID(){}
-
+  namespace motion
+  {
   /** ids for all motion types */
   enum MotionID {
     
@@ -83,21 +77,9 @@ public:
 
     numOfMotion //error value
   };
-  
-  /** return the motion id reprented by the name */
-  static MotionID getId(const std::string& name)
-  {
-    for(int i = 0; i < numOfMotion; i++)
-    {
-      if(name == getName((MotionID)i)) return (MotionID)i;
-    }//end for
-    
-    return numOfMotion;
-  }//end motionIDFromName
-
 
   /** return a string reprenting the id */
-  static std::string getName(MotionID id)
+  static std::string getMotionNameById(MotionID id)
   {
     switch(id)
     {
@@ -160,7 +142,20 @@ public:
 
     return "unkown";
   }///end getName
-};
+
+  /** return the motion id reprented by the name */
+  static MotionID getMotionIdByName(const std::string& name)
+  {
+    for(int i = 0; i < numOfMotion; i++)
+    {
+      if(name == getMotionNameById((MotionID)i)) return (MotionID)i;
+    }//end for
+    
+    return numOfMotion;
+  }//end motionIDFromName
+  
+  } // namespace motion
+} // namespace naoth
 
 #endif // __MotionRequestID_h_
 

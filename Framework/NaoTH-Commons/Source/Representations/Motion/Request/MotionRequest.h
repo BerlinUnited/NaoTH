@@ -16,13 +16,14 @@
 #include <string>
 
 
-#include "MotionRequestID.h"
+#include "MotionID.h"
 #include "KickRequest.h"
 #include "WalkRequest.h"
 
 namespace naoth
 {
-
+  namespace motion
+  {
 /**
  * This describes the MotionRequest
  */
@@ -32,7 +33,7 @@ public:
   /** constructor */
   MotionRequest() :
   time(0),
-  id(MotionRequestID::init),
+  id(init),
   forced(false),
   receive_ssd(true),
   standHeight(-1),
@@ -47,7 +48,7 @@ public:
   unsigned int time;
 
   /** id of the motion to be executed */
-  MotionRequestID::MotionID id;
+  MotionID id;
 
   // force the motion be executed immediately
   bool forced;
@@ -73,18 +74,18 @@ public:
 
   void reset() {
     forced = false;
-    id = MotionRequestID::empty;
+    id = empty;
     standHeight = -1;
   }//end reset
 
   virtual void print(ostream& stream) const {
     stream << "time = " << time << '\n';
-    stream << "MotionID = " << MotionRequestID::getName(id) << endl;
+    stream << "MotionID = " << getMotionNameById(id) << endl;
     switch (id) {
-      case MotionRequestID::walk:
+      case walk:
         walkRequest.print(stream);
         break;
-      case MotionRequestID::kick:
+      case kick:
         kickRequest.print(stream);
         break;
       default:
@@ -93,7 +94,7 @@ public:
   }//end print
 };
 
-
+  } // namespace motion
 } // namespace naoth
 
 #endif // __MotionRequest_h_

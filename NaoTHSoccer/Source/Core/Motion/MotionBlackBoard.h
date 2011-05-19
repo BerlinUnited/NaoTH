@@ -21,8 +21,8 @@
 #include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Perception/CameraMatrix.h>
 
-#include <Representations/Motion/HeadMotionRequest.h>
-#include <Representations/Motion/MotionRequest/MotionRequest.h>
+#include <Representations/Motion/Request/HeadMotionRequest.h>
+#include <Representations/Motion/Request/MotionRequest.h>
 #include <Representations/Motion/MotionStatus.h>
 #include <Representations/Motion/OdometryData.h>
 
@@ -31,6 +31,7 @@
 
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/ReachibilityGrid.h"
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/IKMotionParameters.h"
+
 
 class MotionBlackBoard// : public Singleton<MotionBlackBoard>
 {
@@ -71,14 +72,13 @@ public:
   // SerialSensorDataRequest theSerialSensorDataRequest;
   // BumperData theBumperData;
   CameraMatrix theCameraMatrix;
-  MotionStatus theMotionStatus;
+  naoth::motion::MotionStatus theMotionStatus;
   OdometryData theOdometryData;
 
   // data copied from cognition
-  HeadMotionRequest theHeadMotionRequest;
-  MotionRequest theMotionRequest;
+  naoth::motion::HeadMotionRequest theHeadMotionRequest;
+  naoth::motion::MotionRequest theMotionRequest;
 };
-
 
 #endif	/* _MOTIONBLACKBOARD_H */
 

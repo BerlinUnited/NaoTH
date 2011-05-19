@@ -8,6 +8,9 @@
 #include "Motion.h"
 #include <glib.h>
 
+using namespace naoth;
+using namespace motion;
+
 Motion::Motion()
 {
 }
@@ -18,6 +21,8 @@ Motion::~Motion()
 
 void Motion::init(naoth::PlatformDataInterface& platformInterface)
 {
+  theBlackBoard.init();
+  
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
   platformInterface.registerMotionInput(theBlackBoard.the##R)

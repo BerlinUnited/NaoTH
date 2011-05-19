@@ -22,7 +22,7 @@ JointData::JointData()
   }
 }
 
-void JointData::init(const std::string& filename)
+void JointData::init()
 {
   const Configuration& cfg = Platform::getInstance().theConfiguration;
   for (int i = 0; i < JointData::numOfJoint; i++)

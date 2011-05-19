@@ -11,10 +11,15 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
-#include "MotionRequest/MotionRequestID.h"
-#include "HeadMotionRequest.h"
+#include "Request/MotionID.h"
+#include "Request/HeadMotionRequest.h"
 
 #include <string>
+
+namespace naoth
+{
+  namespace motion
+  {
 
 /**
 * This describes the MotionStatus
@@ -34,25 +39,27 @@ public:
   MotionStatus()
   :
   time(0),
-  lastMotion(MotionRequestID::numOfMotion),
-  currentMotion(MotionRequestID::numOfMotion)
+  lastMotion(numOfMotion),
+  currentMotion(numOfMotion)
   {
   }
 
   ~MotionStatus(){}
 
   unsigned int time;
-  MotionRequestID::MotionID lastMotion;
-  MotionRequestID::MotionID currentMotion;
+  MotionID lastMotion;
+  MotionID currentMotion;
   HeadMotionRequest::HeadMotionID headMotionRequest;
   PlannedMotion plannedMotion;
 
   virtual void print(ostream& stream) const
   {
     stream << "time = " << time << '\n';
-    stream << "lastMotion = " << MotionRequestID::getName(lastMotion) << '\n';
-    stream << "currentMotion = " << MotionRequestID::getName(currentMotion) << '\n';
+    stream << "lastMotion = " << getMotionNameById(lastMotion) << '\n';
+    stream << "currentMotion = " << getMotionNameById(currentMotion) << '\n';
   }//end print
 };
 
+  } // namespace motion
+} // namespace naoth
 #endif // __MotionStatus_h_
