@@ -66,7 +66,7 @@ public:
   InertialSensorData theInertialSensorData;
   FSRData theFSRData;
   MotorJointData theMotorJointData;
-  //MotorJointData theLastMotorJointData;
+  MotorJointData theLastMotorJointData;
   SensorJointData theSensorJointData;
   // SerialSensorData theSerialSensorData;
   // SerialSensorDataRequest theSerialSensorDataRequest;

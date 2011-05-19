@@ -1,7 +1,7 @@
 /**
  * @file Motion.cpp
  *
-  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  *
  */
 
@@ -10,7 +10,7 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-
+#include "Core/Tools/SwapSpace/SwapSpace.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {
@@ -60,10 +60,10 @@ void Motion::call()
   processSensorData();
   
   // get orders from cognition
-  //SwapSpace::getInstance().theCognitionCache.pull(
-  //  theBlackBoard.theHeadMotionRequest,
-  //  theBlackBoard.theMotionRequest
-  //);
+  SwapSpace::getInstance().theCognitionCache.pull(
+    theBlackBoard.theHeadMotionRequest,
+    theBlackBoard.theMotionRequest
+  );
   
   // execute head motion firstly
   //theHeadMotionEngine.execute();
@@ -110,9 +110,30 @@ void Motion::processSensorData()
     
   Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
   theBlackBoard.theKinematicChainModel.updateCoM();
+  
+  theBlackBoard.theLastMotorJointData = theBlackBoard.theMotorJointData;
 }//end processSensorData
 
 void Motion::postProcess()
 {
-  
+  MotorJointData& mjd = theBlackBoard.theMotorJointData;
+  double basicStepInS = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+
+#ifdef DEBUG
+  mjd.checkStiffness();
+#endif
+
+  mjd.clamp();
+  mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
+  mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
+
+  SwapSpace::getInstance().theMotionCache.push(
+    theBlackBoard.theMotionStatus,
+    theBlackBoard.theOdometryData
+    );
+
+#ifdef DEBUG
+//TODO
+  //MotionDebug::getInstance().execute();
+#endif
 }

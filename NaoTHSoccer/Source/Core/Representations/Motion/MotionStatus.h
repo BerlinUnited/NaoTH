@@ -20,7 +20,7 @@
 /**
 * This describes the MotionStatus
 */
-class MotionStatus : public Printable
+class MotionStatus : public naoth::Printable
 {
 public:
 
