@@ -7,8 +7,6 @@
 
 #include "MotionBlackBoard.h"
 
-using namespace naoth;
-using namespace motion;
 
 MotionBlackBoard::MotionBlackBoard()
 {

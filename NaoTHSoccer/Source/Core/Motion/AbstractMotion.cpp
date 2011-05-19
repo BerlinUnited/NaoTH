@@ -6,8 +6,6 @@
 
 #include "AbstractMotion.h"
 
-using namespace naoth;
-using namespace motion;
 
 AbstractMotion::AbstractMotion(MotionID id)
 : currentState(stopped),

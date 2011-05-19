@@ -20,14 +20,10 @@
 #include "KickRequest.h"
 #include "WalkRequest.h"
 
-namespace naoth
-{
-  namespace motion
-  {
 /**
  * This describes the MotionRequest
  */
-class MotionRequest : public Printable {
+class MotionRequest : public naoth::Printable {
 public:
 
   /** constructor */
@@ -35,9 +31,7 @@ public:
   time(0),
   id(init),
   forced(false),
-  receive_ssd(true),
-  standHeight(-1),
-  enableForcedJointDataHardness(false)
+  standHeight(-1)
   {
     reset();
   }
@@ -53,24 +47,12 @@ public:
   // force the motion be executed immediately
   bool forced;
 
-  /** enable receive the serial sensor data */
-  bool receive_ssd;
-
   KickRequest kickRequest;
   WalkRequest walkRequest;
 
   // hich of the hip when "stand" is requested
   // if the value is < 0, then the default value is used 
   double standHeight;
-
-  /** */
-  struct TargetPose {
-    Pose3D lFoot, rFoot, chest;
-    int time;
-  } targetPose;
-
-  JointData forcedJointData;
-  bool enableForcedJointDataHardness;
 
   void reset() {
     forced = false;
@@ -93,9 +75,6 @@ public:
     }//end switch
   }//end print
 };
-
-  } // namespace motion
-} // namespace naoth
 
 #endif // __MotionRequest_h_
 

@@ -17,13 +17,11 @@
 #include "Tools/Math/Vector3.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 
-namespace naoth {
-namespace motion {
 /**
  * @class HeadMotionRequest
  * This describes the HeadMotionRequest
  */
-class HeadMotionRequest : public PlatformInterchangeable, public Printable
+class HeadMotionRequest : public naoth::PlatformInterchangeable, public naoth::Printable
 {
 public:
   
@@ -46,7 +44,7 @@ public:
   HeadMotionRequest()
   :
   id(hold),
-  cameraID(CameraInfo::Bottom),
+  cameraID(naoth::CameraInfo::Bottom),
   searchCenter(0, 0, 0),
   searchSize(90, 45, 0),
   searchDirection(true)
@@ -60,7 +58,7 @@ public:
   /** id of the motion to be executed */
   HeadMotionID id;
 
-  CameraInfo::CameraID cameraID;
+  naoth::CameraInfo::CameraID cameraID;
 
   // describes the target angle-position: x=yaw, y=pitch 
   Vector2<double> targetJointPosition;
@@ -90,6 +88,5 @@ public:
     static void deserialize(std::istream& stream, HeadMotionRequest& representation);
   };*/
 };
-} // namespace motion
-}// namespace naoth
+
 #endif // __HeadMotionRequest_h_

@@ -11,12 +11,10 @@
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
 
-namespace naoth
-{
 /**
 * This describes the WalkRequest
 */
-class WalkRequest : public Pose2D, public Printable
+class WalkRequest : public Pose2D, public naoth::Printable
 {
 public:
 
@@ -69,6 +67,5 @@ public:
   
 };
 
-} // namespace naoth
 #endif // __WalkRequest_h_
 

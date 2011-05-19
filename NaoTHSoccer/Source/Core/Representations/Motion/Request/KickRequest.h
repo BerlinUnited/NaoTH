@@ -10,12 +10,10 @@
 
 #include "Tools/DataStructures/Printable.h"
 
-namespace naoth
-{
 /**
 * This describes the KickRequest
 */
-class KickRequest : public Printable
+class KickRequest : public naoth::Printable
 {
 public:
   /** constructor */
@@ -60,6 +58,4 @@ public:
   }//end print
 };
 
-
-} // namespace naoth
 #endif // __MotionRequest_h_

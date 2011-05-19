@@ -23,21 +23,21 @@ protected:
   State currentState;
   MotorJointData& theMotorJointData;
   const MotionBlackBoard& theBlackBoard;
-  naoth::motion::MotionID theId;
+  MotionID theId;
   bool finished;
 
 public:
 
-  AbstractMotion(naoth::motion::MotionID id);
+  AbstractMotion(MotionID id);
 
   virtual ~AbstractMotion(){};
 
   virtual void init(){}
-  virtual void execute(const naoth::motion::MotionRequest& motionRequest, naoth::motion::MotionStatus& moitonStatus) = 0;
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& moitonStatus) = 0;
 
   bool isRunning() const {return currentState == running; }
 
-  naoth::motion::MotionID getId() const { return theId; }
+  MotionID getId() const { return theId; }
 
   bool isFinished() const { return finished; }
 
@@ -49,13 +49,13 @@ protected:
 class EmptyMotion: public AbstractMotion
 {
 public:
-  EmptyMotion():AbstractMotion(naoth::motion::empty) {};
+  EmptyMotion():AbstractMotion(empty) {};
 
   virtual ~EmptyMotion(){}
 
-  virtual void execute(const naoth::motion::MotionRequest& motionRequest, naoth::motion::MotionStatus& /*moitonStatus*/)
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*moitonStatus*/)
   {
-    if(motionRequest.id != naoth::motion::empty)
+    if(motionRequest.id != empty)
       currentState = stopped;
     else
       currentState = running;

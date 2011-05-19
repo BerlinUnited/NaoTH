@@ -2,6 +2,7 @@
 * @file MotionStatus.h
 *
 * @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * Definition of the class MotionStatus
 */
 
@@ -11,8 +12,8 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
-#include "MotionRequest/MotionRequestID.h"
-#include "HeadMotionRequest.h"
+#include "Request/MotionID.h"
+#include "Request/HeadMotionRequest.h"
 
 #include <string>
 
@@ -34,26 +35,25 @@ public:
   MotionStatus()
   :
   time(0),
-  lastMotion(MotionRequestID::numOfMotion),
-  currentMotion(MotionRequestID::numOfMotion)
+  lastMotion(numOfMotion),
+  currentMotion(numOfMotion)
   {
   }
 
   ~MotionStatus(){}
 
   unsigned int time;
-  MotionRequestID::MotionID lastMotion;
-  MotionRequestID::MotionID currentMotion;
-  HeadMotionRequestID::HeadMotionID headMotionRequest;
+  MotionID lastMotion;
+  MotionID currentMotion;
+  HeadMotionRequest::HeadMotionID headMotionRequest;
   PlannedMotion plannedMotion;
 
   virtual void print(ostream& stream) const
   {
     stream << "time = " << time << '\n';
-    stream << "lastMotion = " << MotionRequestID::getName(lastMotion) << '\n';
-    stream << "currentMotion = " << MotionRequestID::getName(currentMotion) << '\n';
+    stream << "lastMotion = " << getMotionNameById(lastMotion) << '\n';
+    stream << "currentMotion = " << getMotionNameById(currentMotion) << '\n';
   }//end print
 };
-
 
 #endif // __MotionStatus_h_

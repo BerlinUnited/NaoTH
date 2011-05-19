@@ -21,13 +21,13 @@
 #include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Perception/CameraMatrix.h>
 
-#include <Representations/Motion/Request/HeadMotionRequest.h>
-#include <Representations/Motion/Request/MotionRequest.h>
-#include <Representations/Motion/MotionStatus.h>
-#include <Representations/Motion/OdometryData.h>
+#include "Core/Representations/Motion/Request/HeadMotionRequest.h"
+#include "Core/Representations/Motion/Request/MotionRequest.h"
+#include "Core/Representations/Motion/MotionStatus.h"
 
-#include <Representations/Modeling/KinematicChain.h>
-#include <Representations/Modeling/SupportPolygon.h>
+#include "Core/Representations/Modeling/OdometryData.h"
+#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Core/Representations/Modeling/SupportPolygon.h"
 
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/ReachibilityGrid.h"
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/IKMotionParameters.h"
@@ -72,12 +72,12 @@ public:
   // SerialSensorDataRequest theSerialSensorDataRequest;
   // BumperData theBumperData;
   CameraMatrix theCameraMatrix;
-  naoth::motion::MotionStatus theMotionStatus;
+  MotionStatus theMotionStatus;
   OdometryData theOdometryData;
 
   // data copied from cognition
-  naoth::motion::HeadMotionRequest theHeadMotionRequest;
-  naoth::motion::MotionRequest theMotionRequest;
+  HeadMotionRequest theHeadMotionRequest;
+  MotionRequest theMotionRequest;
   
   AbstractMotion* currentlyExecutedMotion;
 };

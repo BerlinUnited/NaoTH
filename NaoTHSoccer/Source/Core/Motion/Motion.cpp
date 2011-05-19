@@ -8,8 +8,6 @@
 #include "Motion.h"
 #include <glib.h>
 
-using namespace naoth;
-using namespace motion;
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {
@@ -84,8 +82,9 @@ void Motion::processSensorData()
 {
   // check all joint stiffness
   theBlackBoard.theSensorJointData.checkStiffness();
-
-  /*
+  
+  cout<<"todo ..."<<endl;
+/*
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     theBlackBoard.theAccelerometerData,
     theBlackBoard.theInertialSensorData,
@@ -107,8 +106,7 @@ void Motion::processSensorData()
     theBlackBoard.theFSRData);
 
   Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
-  theBlackBoard.theKinematicChainModel.updateCoM();
-   */
+  theBlackBoard.theKinematicChainModel.updateCoM();*/
 }//end processSensorData
 
 void Motion::postProcess()

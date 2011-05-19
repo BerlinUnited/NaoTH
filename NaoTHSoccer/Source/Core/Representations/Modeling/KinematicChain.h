@@ -12,9 +12,7 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Configuration.h"
 
-namespace naoth
-{
-class KinematicChain : public Printable
+class KinematicChain : public naoth::Printable
 {
 public:
   enum LinkID
@@ -49,7 +47,7 @@ public:
 private:
   void initMassesInfo();
 
-  void initJointsInfo(JointData& jointData);
+  void initJointsInfo(naoth::JointData& jointData);
 
   void initLinksInfo();
 
@@ -67,7 +65,7 @@ public:
   static string getLinkName(LinkID link);
 
   string test(const Kinematics::Link& node) const;
-  void init(JointData& jointData);
+  void init(naoth::JointData& jointData);
 
   void updateCoM();
   Vector2<double> calculateZMP() const;
@@ -78,7 +76,6 @@ private:
     double sumMass;
 };
 
-} // namespace naoth
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);
 
 #endif	/* _KINEMATICCHAIN_H */
