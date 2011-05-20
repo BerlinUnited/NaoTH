@@ -23,12 +23,12 @@ protected:
   State currentState;
   MotorJointData& theMotorJointData;
   const MotionBlackBoard& theBlackBoard;
-  MotionID theId;
+  motion::MotionID theId;
   bool finished;
 
 public:
 
-  AbstractMotion(MotionID id);
+  AbstractMotion(motion::MotionID id);
 
   virtual ~AbstractMotion(){};
 
@@ -37,7 +37,7 @@ public:
 
   bool isRunning() const {return currentState == running; }
 
-  MotionID getId() const { return theId; }
+  motion::MotionID getId() const { return theId; }
 
   bool isFinished() const { return finished; }
 
@@ -49,13 +49,13 @@ protected:
 class EmptyMotion: public AbstractMotion
 {
 public:
-  EmptyMotion():AbstractMotion(empty) {};
+  EmptyMotion():AbstractMotion(motion::EMPTY) {};
 
   virtual ~EmptyMotion(){}
 
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*moitonStatus*/)
   {
-    if(motionRequest.id != empty)
+    if(motionRequest.id != getId())
       currentState = stopped;
     else
       currentState = running;

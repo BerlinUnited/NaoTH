@@ -29,7 +29,7 @@ public:
   /** constructor */
   MotionRequest() :
   time(0),
-  id(init),
+  id(motion::INIT),
   forced(false),
   standHeight(-1)
   {
@@ -42,7 +42,7 @@ public:
   unsigned int time;
 
   /** id of the motion to be executed */
-  MotionID id;
+  motion::MotionID id;
 
   // force the motion be executed immediately
   bool forced;
@@ -56,18 +56,18 @@ public:
 
   void reset() {
     forced = false;
-    id = empty;
+    id = motion::EMPTY;
     standHeight = -1;
   }//end reset
 
   virtual void print(ostream& stream) const {
     stream << "time = " << time << '\n';
-    stream << "MotionID = " << getMotionNameById(id) << endl;
+    stream << "MotionID = " << motion::getName(id) << endl;
     switch (id) {
-      case walk:
+      case motion::WALK:
         walkRequest.print(stream);
         break;
-      case kick:
+      case motion::KICK:
         kickRequest.print(stream);
         break;
       default:

@@ -7,7 +7,7 @@
 #include "AbstractMotion.h"
 
 
-AbstractMotion::AbstractMotion(MotionID id)
+AbstractMotion::AbstractMotion(motion::MotionID id)
 : currentState(stopped),
   theMotorJointData(MotionBlackBoard::getInstance().theMotorJointData),
   theBlackBoard(MotionBlackBoard::getInstance()),

@@ -11,38 +11,29 @@
 
 #include <string>
 
+namespace motion
+{
+
   /** ids for all motion types */
   enum MotionID {
     
-    empty,
-    init,
-    dead,
+    EMPTY,
+    INIT,
+    DEAD,
     
     /* inverse kinematic */
-    stand,
-    sit_stable,
-    walk,
-    kick,
-    grasp,
-    check_reactivity,
-    dance,
-
+    STAND,
+    
+    WALK,
+    KICK,
+    DANCE,
+    //SIT_STABLE,
     /* motion net */
-    stand_up_from_front,
-    stand_up_from_back,
-    block_left,
-    block_right,
-    block_middle,
-    evolution_motion, //motionrequest for evolution (Martin)
-    //pre_grasping,
-
-    /* debug */
-    goto_pose_directly,
-    force_joints,
-    test,
-    play_editor_motionnet,
-    knead_mode,
-    reachability_grid_experiment,
+    /*STAND_UP_FROM_FRONT,
+    STAND_UP_FROM_BACK,
+    BLOCK_LEFT,
+    BLOCK_RIGHT,
+    BLOCK_MIDDLE,
 
     goalie_get_down,
     goalie_sit,
@@ -59,35 +50,25 @@
     goalie_dive_right_test,
 
     fall_left,
-    fall_right,
+    fall_right,*/
 
-    // test of the parallel_kinematic :)
-    parallel_dance,
-    parallel_stepper,
-    sensor_stepper,
-
-    // neural motions
-    neural_walk,
-
-    kick_right,
-
-    numOfMotion //error value
+    NUM_OF_MOTION //error value
   };
 
   /** return a string reprenting the id */
-  static std::string getMotionNameById(MotionID id)
+  static std::string getName(MotionID id)
   {
     switch(id)
     {
-      case empty: return "empty";
-      case init: return "init";
-      case dead: return "dead";
-      case stand: return "stand";
+      case EMPTY: return "empty";
+      case INIT: return "init";
+      case DEAD: return "dead";
+      case STAND: return "stand";
 
-      case walk: return "walk";
-      case kick: return "kick";
-      case dance: return "dance";
-      case check_reactivity: return "check_reactivity";
+      case WALK: return "walk";
+      case KICK: return "kick";
+      case DANCE: return "dance";
+      /*case check_reactivity: return "check_reactivity";
 
 //      case pre_grasping:    return "pre_grasping";
       case grasp: return "grasping";
@@ -131,14 +112,13 @@
 
       case neural_walk: return "neural_walk";
 
-      case kick_right: return "kick_right";
-
-      case numOfMotion: return "numOfMotion";
+      case kick_right: return "kick_right";*/
+      case NUM_OF_MOTION: return "num_of_motion";
     }///end switch
 
     return "unkown";
   }///end getName
-
+} // namespace motion
 
 #endif // __MotionRequestID_h_
 

@@ -35,24 +35,24 @@ public:
   MotionStatus()
   :
   time(0),
-  lastMotion(numOfMotion),
-  currentMotion(numOfMotion)
+  lastMotion(motion::NUM_OF_MOTION),
+  currentMotion(motion::NUM_OF_MOTION)
   {
   }
 
   ~MotionStatus(){}
 
   unsigned int time;
-  MotionID lastMotion;
-  MotionID currentMotion;
+  motion::MotionID lastMotion;
+  motion::MotionID currentMotion;
   HeadMotionRequest::HeadMotionID headMotionRequest;
   PlannedMotion plannedMotion;
 
   virtual void print(ostream& stream) const
   {
     stream << "time = " << time << '\n';
-    stream << "lastMotion = " << getMotionNameById(lastMotion) << '\n';
-    stream << "currentMotion = " << getMotionNameById(currentMotion) << '\n';
+    stream << "lastMotion = " << motion::getName(lastMotion) << '\n';
+    stream << "currentMotion = " << motion::getName(currentMotion) << '\n';
   }//end print
 };
 

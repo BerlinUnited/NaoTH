@@ -11,12 +11,15 @@
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Core/Tools/SwapSpace/SwapSpace.h"
+#include "MotionEngine/InitialMotionEngine/InitialMotionFactory.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
     theBlackBoard.theKinematicChain.theLinks);
+    
+  theMotionFactories.push_back(new InitialMotionFactory());
 }
 
 Motion::~Motion()
@@ -68,6 +71,7 @@ void Motion::call()
   // execute head motion firstly
   theHeadMotionEngine.execute();
 
+  theBlackBoard.theMotionRequest.id = motion::INIT;
   // motion engine execute
   selectMotion();
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
@@ -125,7 +129,7 @@ void Motion::postProcess()
     theBlackBoard.theMotionStatus,
     theBlackBoard.theOdometryData
     );
-
+    
 #ifdef DEBUG
 //TODO
   //MotionDebug::getInstance().execute();
@@ -149,7 +153,11 @@ void Motion::selectMotion()
     (!theBlackBoard.currentlyExecutedMotion->isRunning() || theBlackBoard.theMotionRequest.forced))
   {
     AbstractMotion* newMotion = NULL;
-    //newMotion = theInitialMotionFactory.createMotion(theBlackBoard.theMotionRequest);
+    for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin(); 
+          NULL==newMotion && iter!=theMotionFactories.end(); ++iter)
+    {
+      newMotion = (*iter)->createMotion(theBlackBoard.theMotionRequest);
+    }
 
 /*
     if (newMotion == NULL)
@@ -173,7 +181,7 @@ void Motion::selectMotion()
     } else
     {
       changeMotion(&theEmptyMotion);
-      cerr << "Warning: Request " << getMotionNameById(theBlackBoard.theMotionRequest.id)
+      cerr << "Warning: Request " << motion::getName(theBlackBoard.theMotionRequest.id)
         << " cannot be executed!" << endl;
     }
   }

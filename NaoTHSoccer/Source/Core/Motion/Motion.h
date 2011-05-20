@@ -16,6 +16,7 @@
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 #include "MotionEngine/HeadMotionEngine/HeadMotionEngine.h"
+#include "MotionEngine/MotionFactory.h"
 
 class Motion : public naoth::Callable
 {
@@ -46,6 +47,7 @@ private:
   OdometryCalculator theOdometryCalculator;
   
   HeadMotionEngine theHeadMotionEngine;
+  std::list<MotionFactory*> theMotionFactories;
 };
 
 #endif	/* MOTION_H */
