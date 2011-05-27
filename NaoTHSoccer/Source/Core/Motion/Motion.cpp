@@ -12,6 +12,7 @@
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Core/Tools/SwapSpace/SwapSpace.h"
 #include "MotionEngine/InitialMotionEngine/InitialMotionFactory.h"
+#include "MotionEngine/KeyFrameMotionEngine/KeyFrameMotionEngine.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {
@@ -20,10 +21,17 @@ Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
     theBlackBoard.theKinematicChain.theLinks);
     
   theMotionFactories.push_back(new InitialMotionFactory());
+  theMotionFactories.push_back(new KeyFrameMotionEngine());
 }
 
 Motion::~Motion()
 {
+  for (std::list<MotionFactory*>::iterator iter = theMotionFactories.begin();
+    iter != theMotionFactories.end(); ++iter)
+  {
+    delete *iter;
+  }
+  theMotionFactories.clear();
 }
 
 void Motion::init(naoth::PlatformDataInterface& platformInterface)
@@ -48,9 +56,6 @@ void Motion::init(naoth::PlatformDataInterface& platformInterface)
   REG_OUTPUT(MotorJointData);
   g_message("Motion register end");
   
-  //theInverseKinematicsMotionFactory.init();
-  //theKeyFrameMotionEngine.init();
-  //theDebugMotionEngine.init();
 }//end init
 
 
@@ -71,7 +76,7 @@ void Motion::call()
   // execute head motion firstly
   theHeadMotionEngine.execute();
 
-  theBlackBoard.theMotionRequest.id = motion::INIT;
+  theBlackBoard.theMotionRequest.id = motion::STAND_UP_FROM_FRONT;
   // motion engine execute
   selectMotion();
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);

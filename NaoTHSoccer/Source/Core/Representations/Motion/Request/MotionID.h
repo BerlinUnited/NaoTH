@@ -29,9 +29,9 @@ namespace motion
     DANCE,
     //SIT_STABLE,
     /* motion net */
-    /*STAND_UP_FROM_FRONT,
+    STAND_UP_FROM_FRONT,
     STAND_UP_FROM_BACK,
-    BLOCK_LEFT,
+    /*BLOCK_LEFT,
     BLOCK_RIGHT,
     BLOCK_MIDDLE,
 
@@ -68,13 +68,15 @@ namespace motion
       case WALK: return "walk";
       case KICK: return "kick";
       case DANCE: return "dance";
+      
+      case STAND_UP_FROM_FRONT: return "stand_up_from_front";
+      case STAND_UP_FROM_BACK: return "stand_up_from_back";
       /*case check_reactivity: return "check_reactivity";
 
 //      case pre_grasping:    return "pre_grasping";
       case grasp: return "grasping";
 
-      case stand_up_from_front: return "stand_up_from_front";
-      case stand_up_from_back: return "stand_up_from_back";
+      
       case block_left: return "block_left";
       case block_right: return "block_right";
       case block_middle: return "block_middle";

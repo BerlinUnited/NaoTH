@@ -44,6 +44,7 @@ namespace naoth
       theHardwareIdentity(_hardwareIdentity),
       theBodyID(_bodyID),
       theBodyNickName(_bodyNickName),
+      theScheme(_scheme),
       thePlatformInterface(_platformInterface)
     {
     }
@@ -56,6 +57,7 @@ namespace naoth
     std::string _bodyNickName;
     Configuration _configuration;
     std::string _configDir;
+    std::string _scheme;
     PlatformBase* _platformInterface;
 
   public:
@@ -114,14 +116,14 @@ namespace naoth
         _configDir = getenv("NAO_CONFIG");
       }
        */
-      std::string scheme = _interface->getName(); // set to platform by default
+      _scheme = _interface->getName(); // set to platform by default
       std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
       if(schemefile.is_open() && schemefile.good())
       {
-        std::getline(schemefile, scheme);
+        std::getline(schemefile, _scheme);
       }
       
-      _configuration.loadFromDir(_configDir, scheme, _hardwareIdentity);
+      _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity);
       
       
   //    // init the camera info
@@ -134,6 +136,7 @@ namespace naoth
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theBodyID;
     const string& theBodyNickName;
+    const string& theScheme;
     CameraInfoParameter theCameraInfo;
   //  Config theMassConfig;
 
