@@ -76,12 +76,12 @@ void Motion::call()
   );*/
     // FAKE Motion Request:
   theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  if ( theBlackBoard.theMotionStatus.currentMotion != motion::STAND )
+  if ( theBlackBoard.theMotionStatus.currentMotion == motion::EMPTY )
     theBlackBoard.theMotionRequest.id = motion::INIT;
-  if ( theBlackBoard.theMotionStatus.currentMotion == motion::INIT )
-  {
+  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::INIT )
     theBlackBoard.theMotionRequest.id = motion::STAND;
-  }
+  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::STAND )
+    theBlackBoard.theMotionRequest.id = motion::DANCE;
 
   // execute head motion firstly
   theHeadMotionEngine.execute();

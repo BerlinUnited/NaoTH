@@ -8,8 +8,9 @@
 
 #include "InverseKinematicsMotionFactory.h"
 
-//#include "Motions/Dance.h"
 #include "Motions/StandMotion.h"
+#include "Motions/Dance.h"
+
 /*
 #include "Motions/IKWalkMotion.h"
 #include "Motions/IKKickMotion.h"
@@ -49,7 +50,7 @@ AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest
   switch(motionRequest.id)
   {
     case motion::STAND: currentMotion = new StandMotion(); break;
-    //case MotionRequestID::dance: currentMotion = new DanceMotion(engine); break;    
+    case motion::DANCE: currentMotion = new DanceMotion(); break;    
     /*
     case MotionRequestID::walk: currentMotion = new IKWalkMotion(engine); break;
     case MotionRequestID::kick: currentMotion = new IKDynamicKickMotion_new(engine); break;

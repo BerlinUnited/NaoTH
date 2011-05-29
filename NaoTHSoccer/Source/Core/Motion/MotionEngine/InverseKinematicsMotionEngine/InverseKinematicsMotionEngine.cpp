@@ -24,11 +24,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   result.lFoot = p.lFoot;
   result.rFoot = p.rFoot;
   result.hip = p.com;
-  return result;
+  result.localInHip();
   
-  // transform all data in left foot local coordiantes 
-  result.localInLeftFoot();
-  Vector3<double> refCoM = result.hip.translation;
+  // transform all data in left foot local coordiantes
+  Vector3<double> refCoM = p.lFoot.invert() * p.com.translation;
   
   // copy head joint and arm joint from sensor
   const double *sj = theBlackBoard.theSensorJointData.position;
@@ -42,6 +41,8 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   
   // set the support foot as orginal
   Kinematics::Link* obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
+  obsFoot->R = RotationMatrix();
+  obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
 
   double bestError = std::numeric_limits<double>::max();
   int i = 0;
@@ -56,10 +57,9 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   for (; i < max_iter; i++)
   {
     solveHipFeetIK(result);
-    // TODO: FK two hands and head!
+    Kinematics::ForwardKinematics::updateKinematicChainFrom(obsFoot);
     theInverseKinematics.theKinematicChain.updateCoM();
     Vector3<double> obsCoM = theInverseKinematics.theKinematicChain.CoM;
-    obsCoM = obsFoot->M.invert() * obsCoM;
 
     Vector3<double> e = (refCoM - obsCoM);
 
