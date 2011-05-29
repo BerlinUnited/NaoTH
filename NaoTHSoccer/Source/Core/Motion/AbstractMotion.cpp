@@ -8,10 +8,10 @@
 
 
 AbstractMotion::AbstractMotion(motion::MotionID id)
-: currentState(stopped),
+: theId(id),
+  currentState(stopped),
   theMotorJointData(MotionBlackBoard::getInstance().theMotorJointData),
   theBlackBoard(MotionBlackBoard::getInstance()),
-  theId(id),
   finished(false)
 {
   init();

@@ -13,6 +13,9 @@
 
 class AbstractMotion
 {
+private:
+  motion::MotionID theId;
+  
 protected:
   enum State
   {
@@ -23,7 +26,7 @@ protected:
   State currentState;
   MotorJointData& theMotorJointData;
   const MotionBlackBoard& theBlackBoard;
-  motion::MotionID theId;
+  
   bool finished;
 
 public:

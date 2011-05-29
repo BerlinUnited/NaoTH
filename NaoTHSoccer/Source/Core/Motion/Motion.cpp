@@ -12,6 +12,7 @@
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Core/Tools/SwapSpace/SwapSpace.h"
 #include "MotionEngine/InitialMotionEngine/InitialMotionFactory.h"
+#include "MotionEngine/InverseKinematicsMotionEngine/InverseKinematicsMotionFactory.h"
 #include "MotionEngine/KeyFrameMotionEngine/KeyFrameMotionEngine.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
@@ -21,6 +22,7 @@ Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
     theBlackBoard.theKinematicChain.theLinks);
     
   theMotionFactories.push_back(new InitialMotionFactory());
+  theMotionFactories.push_back(new InverseKinematicsMotionFactory());
   theMotionFactories.push_back(new KeyFrameMotionEngine());
 }
 
@@ -76,7 +78,7 @@ void Motion::call()
   // execute head motion firstly
   theHeadMotionEngine.execute();
 
-  theBlackBoard.theMotionRequest.id = motion::STAND_UP_FROM_FRONT;
+  theBlackBoard.theMotionRequest.id = motion::STAND;
   // motion engine execute
   selectMotion();
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
