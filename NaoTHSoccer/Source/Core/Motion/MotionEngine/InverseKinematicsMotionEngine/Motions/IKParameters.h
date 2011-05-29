@@ -11,6 +11,9 @@
 class IKParameters
 {
 public:
+  double hipOffsetX;
+  double footOffsetY;
+  
   struct {
     double speed;
   } stand;
@@ -18,9 +21,6 @@ public:
   struct {
     double comHeight;
   } walk;
-
-  double hipOffsetX;
-  double footOffsetY;
   
   IKParameters();
 };

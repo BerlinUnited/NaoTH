@@ -417,7 +417,7 @@ void WebotsController::set(const MotorJointData& data)
   const double* stiffness = data.stiffness;
   const double* jointData = data.position;
   for (int i = 0; i < JointData::numOfJoint; i++) {
-    if (true || stiffness[i] > 0) {
+    if (stiffness[i] > 0) {
       wb_servo_set_position(joint[i], jointData[i]);
       currentStiffness[i] = stiffness[i];
     }

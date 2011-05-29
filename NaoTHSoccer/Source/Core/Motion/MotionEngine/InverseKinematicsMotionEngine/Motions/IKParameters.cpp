@@ -10,5 +10,9 @@
 
 IKParameters::IKParameters()
 {
-  walk.comHeight = 260;
+  hipOffsetX = 0;
+  footOffsetY = 0;
+  
+  stand.speed = 0.04;
+  walk.comHeight = 230;
 }

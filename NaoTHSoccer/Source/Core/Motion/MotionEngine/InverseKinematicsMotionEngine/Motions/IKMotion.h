@@ -21,6 +21,10 @@ private:
   
   InverseKinematic::CoMFeetPose getCoMFeetPoseFromKinematicChain(const KinematicChain& kc) const;
   
+  Pose3D getLeftFootFromKinematicChain(const KinematicChain& kc) const;
+  
+  Pose3D getRightFootFromKinematicChain(const KinematicChain& kc) const;
+  
   Pose3D interpolate(const Pose3D& sp, const Pose3D& tp, double t) const;
 protected:
   //InverseKinematicsMotionEngine::Trajectory<InverseKinematicsMotionEngine>& trajectory;

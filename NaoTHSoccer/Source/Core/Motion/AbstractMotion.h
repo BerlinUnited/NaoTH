@@ -41,6 +41,8 @@ public:
   bool isRunning() const {return currentState == running; }
 
   motion::MotionID getId() const { return theId; }
+  
+  std::string getName() const { return motion::getName(theId); } 
 
   bool isFinished() const { return finished; }
 

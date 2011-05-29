@@ -42,6 +42,20 @@ CoMFeetPose IKMotion::interpolate(const CoMFeetPose& sp, const CoMFeetPose& tp, 
   return p;
 }
 
+Pose3D IKMotion::getLeftFootFromKinematicChain(const KinematicChain& kc) const
+{
+  Pose3D p = kc.theLinks[KinematicChain::LFoot].M;
+  p.translate(0, 0, -NaoInfo::FootHeight);
+  return p;
+}
+
+Pose3D IKMotion::getRightFootFromKinematicChain(const KinematicChain& kc) const
+{
+  Pose3D p = kc.theLinks[KinematicChain::RFoot].M;
+  p.translate(0, 0, -NaoInfo::FootHeight);
+  return p;
+}
+
 CoMFeetPose IKMotion::getStandPose(double comHeight) const
 {
   CoMFeetPose p;
@@ -49,32 +63,25 @@ CoMFeetPose IKMotion::getStandPose(double comHeight) const
   double footY = NaoInfo::HipOffsetY + theParameters.footOffsetY;
   p.lFoot.translation = Vector3<double>(0, footY, 0);
   p.rFoot.translation = Vector3<double>(0, -footY, 0);
-
   return p;
 }//end getStandPose
 
 HipFeetPose IKMotion::getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const
 {
   HipFeetPose p;
-
-  const Kinematics::Link* link = kc.theLinks;
-  // copy current pose
-  p.hip = link[KinematicChain::Hip].M;
-  p.lFoot = link[KinematicChain::LFoot].M;
-  p.rFoot = link[KinematicChain::RFoot].M;
+  p.hip = kc.theLinks[KinematicChain::Hip].M;
+  p.lFoot = getLeftFootFromKinematicChain(kc);
+  p.rFoot = getRightFootFromKinematicChain(kc);
   return p;
 }
 
 CoMFeetPose IKMotion::getCoMFeetPoseFromKinematicChain(const KinematicChain& kc) const
 {
   CoMFeetPose p;
-
-  const Kinematics::Link* link = kc.theLinks;
-  // copy current pose
-  p.com.rotation = link[KinematicChain::Hip].R;
+  p.com.rotation = kc.theLinks[KinematicChain::Hip].R;
   p.com.translation = kc.CoM;
-  p.lFoot = link[KinematicChain::LFoot].M;
-  p.rFoot = link[KinematicChain::RFoot].M;
+  p.lFoot = getLeftFootFromKinematicChain(kc);
+  p.rFoot = getRightFootFromKinematicChain(kc);
   return p;
 }
 
