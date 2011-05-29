@@ -11,7 +11,6 @@
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-#include <DebugCommunication/DebugServer.h>
 
 #include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/GyrometerData.h>
