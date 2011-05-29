@@ -61,6 +61,7 @@ private:
   {
   public:
     virtual const std::string getTypeName() const = 0;
+    virtual const std::string getName() const = 0;
   };
 
   /**
@@ -73,10 +74,16 @@ private:
   {
   private:
     T instance;
+    std::string name;
 
   public:
+    BlackBoardDataHolder(const std::string& name): name(name), instance(name)
+    {
+    }
+
     T& operator*(){ return instance; }
     virtual const std::string getTypeName() const { return typeid(T).name(); }
+    virtual const std::string getName() const { return name; };
   };
 
   /** */
@@ -152,7 +159,7 @@ public:
     // create Representation, if necessary
     if(iter == registry.end())
     {
-      BlackBoardDataHolder<T>* typedData = new BlackBoardDataHolder<T>();
+      BlackBoardDataHolder<T>* typedData = new BlackBoardDataHolder<T>(name);
       registry[name] = typedData;
       return **typedData;
     }//end if

@@ -46,7 +46,7 @@ protected:
 
 public:
   virtual ~Representation() {}
-  const std::string& getName() const { return (*this).name; }
+  const std::string& getName() const { return name; }
 
   void registerProvidingModule(const Module& module)
   {

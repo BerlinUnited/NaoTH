@@ -65,6 +65,11 @@ public:
     return typedModule;
   }//end registerModule
 
+  const list<string>& getExecutionList() const
+  {
+    return moduleExecutionList;
+  }//end getExecutionList
+
 protected:
 
   /**
@@ -87,7 +92,7 @@ protected:
   /**
    *
    */
-  AbstractModuleCreator* getModule(string name)
+  AbstractModuleCreator* getModule(const string& name)
   {
     map<string, AbstractModuleCreator* >::iterator iter = moduleExecutionMap.find(name);
     if(iter != moduleExecutionMap.end())
