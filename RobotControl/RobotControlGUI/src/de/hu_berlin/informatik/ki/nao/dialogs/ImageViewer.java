@@ -1,7 +1,6 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.AbstractDialog;
-import de.hu_berlin.informatik.ki.nao.Dialog;
 import de.hu_berlin.informatik.ki.nao.ExtendedFileChooser;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.dataformats.JanusImage;
@@ -439,6 +438,8 @@ public class ImageViewer extends AbstractDialog
     @Override
     public void newObjectReceived(JanusImage object)
     {
+      if(object == null) return;
+      
       imageCanvas.setImage(object.getRgb());
       imageCanvas.repaint();
 
