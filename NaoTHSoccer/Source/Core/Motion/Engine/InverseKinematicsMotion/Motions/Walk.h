@@ -19,6 +19,10 @@ private:
   
   bool waitLanding();
   
+  InverseKinematic::CoMFeetPose genCoMFeetTrajectory(const MotionRequest& motionRequest);
+  
+  InverseKinematic::ZMPFeetPose genZMPFeetTrajectory(const MotionRequest& motionRequest);
+  
 private:
   const IKParameters::Walk& theWalkParameters;
   

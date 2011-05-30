@@ -7,6 +7,8 @@
 
 #include "Walk.h"
 
+using namespace InverseKinematic;
+
 Walk::Walk()
 :IKMotion(motion::WALK),
 theWalkParameters(theParameters.walk),
@@ -21,6 +23,15 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   if ( FSRProtection() ) return;
   
   if ( waitLanding() ) return;
+  
+  theCoMFeetPose = genCoMFeetTrajectory(motionRequest);
+  
+  HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
+  
+  theEngine.solveHipFeetIK(c);
+  theEngine.copyLegJoints(theMotorJointData.position);
+
+  currentState = running;
 }
 
 bool Walk::FSRProtection()
@@ -71,4 +82,17 @@ bool Walk::waitLanding()
     theWaitLandingCount = 0;
     return false;
   }
+}
+
+CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
+{
+  ZMPFeetPose zmp = genZMPFeetTrajectory(motionRequest);
+  CoMFeetPose result = theEngine.controlZMP(zmp);
+  return result;
+}
+
+ZMPFeetPose Walk::genZMPFeetTrajectory(const MotionRequest& motionRequest)
+{
+  ZMPFeetPose result;
+  return result;
 }
