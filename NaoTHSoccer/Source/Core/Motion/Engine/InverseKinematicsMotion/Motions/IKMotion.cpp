@@ -12,7 +12,8 @@ using namespace InverseKinematic;
 
 IKMotion::IKMotion(motion::MotionID id)
 : AbstractMotion(id),
-theEngine(InverseKinematicsMotionEngine::getInstance())
+theEngine(InverseKinematicsMotionEngine::getInstance()),
+theParameters(theEngine.getParameters())
 {
 }
 

@@ -14,12 +14,13 @@ public:
   double hipOffsetX;
   double footOffsetY;
   
-  struct {
+  struct Stand {
     double speed;
   } stand;
 
-  struct {
+  struct Walk {
     double comHeight;
+    bool enableFSRProtection;
   } walk;
   
   IKParameters();

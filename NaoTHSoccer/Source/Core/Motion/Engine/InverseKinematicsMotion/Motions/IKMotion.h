@@ -21,9 +21,11 @@ protected:
   InverseKinematic::CoMFeetPose getStandPose(double comHeight) const;
 
 protected:
-  IKParameters theParameters;
 
   InverseKinematicsMotionEngine& theEngine;
+  
+  const IKParameters& theParameters;
+  
 public:
 
   IKMotion(motion::MotionID id);

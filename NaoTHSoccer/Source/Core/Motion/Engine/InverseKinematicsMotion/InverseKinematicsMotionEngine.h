@@ -11,6 +11,7 @@
 #include "Motion/MotionBlackBoard.h"
 #include "Motions/IKPose.h"
 #include "PreviewController.h"
+#include "Motions/IKParameters.h"
 
 class InverseKinematicsMotionEngine: public Singleton<InverseKinematicsMotionEngine>
 {
@@ -68,10 +69,14 @@ public:
   
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
+  const IKParameters& getParameters() const { return theParameters; }
+  
 private:
   void startControlZMP(const InverseKinematic::ZMPFeetPose& target);
 
   const MotionBlackBoard& theBlackBoard;
+  
+  IKParameters theParameters;
 
   Kinematics::InverseKinematics theInverseKinematics;
   

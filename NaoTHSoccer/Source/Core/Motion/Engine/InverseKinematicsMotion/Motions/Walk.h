@@ -13,4 +13,10 @@ public:
   Walk();
   
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus);
+  
+private:
+  bool FSRProtection();
+  
+private:
+  const IKParameters::Walk& theWalkParameters;
 };
