@@ -38,7 +38,7 @@ public:
       height = motionRequest.standHeight;
       double comHeight = (motionRequest.standHeight < 0.0) ? theParameters.walk.comHeight : motionRequest.standHeight;
       targetPose = getStandPose(comHeight);
-      startPose = getCurrentCoMFeetPose();
+      startPose = theEngine.getCurrentCoMFeetPose();
       targetPose.localInCoM();
       startPose.localInCoM();
 
@@ -63,7 +63,7 @@ public:
 
     time += theBlackBoard.theFrameInfo.basicTimeStep;
     double k = min(time / totalTime, 1.0);
-    CoMFeetPose p = interpolate(startPose, targetPose, k);
+    CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
     HipFeetPose c = theEngine.controlCenterOfMass(p);
 
     // use stablization when at least one foot is on the ground

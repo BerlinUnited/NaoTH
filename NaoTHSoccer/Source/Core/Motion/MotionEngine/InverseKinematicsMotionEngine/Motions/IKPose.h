@@ -13,52 +13,73 @@
 
 namespace InverseKinematic
 {
-  template<typename T>
-  void localPose(T& p0, T& p1, T& p2)
+  class Pose
   {
-    p1 = p0.local(p1);
-    p2 = p0.local(p2);
-    p0 = T();
-  }
+  protected:
+    void localPose(Pose3D& p0, Pose3D& p1, Pose3D& p2)
+    {
+      p1 = p0.local(p1);
+      p2 = p0.local(p2);
+      p0 = Pose3D();
+    }
+    
+  public:
+    Pose3D lFoot, rFoot;
+    
+    virtual Pose3D& body() = 0;
+    virtual const Pose3D& body() const = 0;
+    
+    void localInLeftFoot()
+    {
+      localPose(lFoot, rFoot, body());
+    }
+
+    void localInRightFoot()
+    {
+      localPose(rFoot, lFoot, body());
+    }
+  };
   
-  struct HipFeetPose
+  class HipFeetPose: public Pose
   {
-      Pose3D lFoot, rFoot, hip;
+  public:
+      Pose3D hip;
+      
+      virtual Pose3D& body() { return hip; }
+      virtual const Pose3D& body() const { return hip; }
 
       void localInHip()
       {
         localPose(hip, lFoot, rFoot);
       }
-
-      void localInLeftFoot()
-      {
-        localPose(lFoot, rFoot, hip);
-      }
-
-      void localInRightFoot()
-      {
-        localPose(rFoot, lFoot, hip);
-      }
   };
 
-  struct CoMFeetPose
+  class CoMFeetPose: public Pose
   {
-      Pose3D lFoot, rFoot, com;
+  public:
+    Pose3D com;
+    
+    virtual Pose3D& body() { return com; }
+    virtual const Pose3D& body() const { return com; }
       
-      void localInCoM()
-      {
-        localPose(com, lFoot, rFoot);
-      }
-
-      void localInLeftFoot()
-      {
-        localPose(lFoot, rFoot, com);
-      }
-
-      void localInRightFoot()
-      {
-        localPose(rFoot, lFoot, com);
-      }
+    void localInCoM()
+    {
+      localPose(com, lFoot, rFoot);
+    }
+  };
+  
+  class ZMPFeetPose: public Pose
+  {
+  public:
+    Pose3D zmp;
+    
+    virtual Pose3D& body() { return zmp; }
+    virtual const Pose3D& body() const { return zmp; }
+      
+    void localInZMP()
+    {
+      localPose(zmp, lFoot, rFoot);
+    }
   };
 }
 

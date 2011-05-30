@@ -18,6 +18,94 @@ InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
   
 }
 
+Pose3D InverseKinematicsMotionEngine::getLeftFootFromKinematicChain(const KinematicChain& kc) const
+{
+  Pose3D p = kc.theLinks[KinematicChain::LFoot].M;
+  p.translate(0, 0, -NaoInfo::FootHeight);
+  return p;
+}
+
+Pose3D InverseKinematicsMotionEngine::getRightFootFromKinematicChain(const KinematicChain& kc) const
+{
+  Pose3D p = kc.theLinks[KinematicChain::RFoot].M;
+  p.translate(0, 0, -NaoInfo::FootHeight);
+  return p;
+}
+
+
+HipFeetPose InverseKinematicsMotionEngine::getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const
+{
+  HipFeetPose p;
+  p.hip = kc.theLinks[KinematicChain::Hip].M;
+  p.lFoot = getLeftFootFromKinematicChain(kc);
+  p.rFoot = getRightFootFromKinematicChain(kc);
+  return p;
+}
+
+CoMFeetPose InverseKinematicsMotionEngine::getCoMFeetPoseFromKinematicChain(const KinematicChain& kc) const
+{
+  CoMFeetPose p;
+  p.com.rotation = kc.theLinks[KinematicChain::Hip].R;
+  p.com.translation = kc.CoM;
+  p.lFoot = getLeftFootFromKinematicChain(kc);
+  p.rFoot = getRightFootFromKinematicChain(kc);
+  return p;
+}
+
+HipFeetPose InverseKinematicsMotionEngine::getHipFeetPoseBasedOnSensor() const
+{
+  return getHipFeetPoseFromKinematicChain(theBlackBoard.theKinematicChain);
+}
+
+CoMFeetPose InverseKinematicsMotionEngine::getCoMFeetPoseBasedOnSensor() const
+{
+  return getCoMFeetPoseFromKinematicChain(theBlackBoard.theKinematicChain);
+}
+
+HipFeetPose InverseKinematicsMotionEngine::getHipFeetPoseBasedOnModel() const
+{
+  return getHipFeetPoseFromKinematicChain(theBlackBoard.theKinematicChainModel);
+}
+
+CoMFeetPose InverseKinematicsMotionEngine::getCoMFeetPoseBasedOnModel() const
+{
+  return getCoMFeetPoseFromKinematicChain(theBlackBoard.theKinematicChainModel);
+}
+
+HipFeetPose InverseKinematicsMotionEngine::getCurrentHipFeetPose() const
+{
+  if (theBlackBoard.theSensorJointData.isLegStiffnessOn())
+  {
+    return getHipFeetPoseBasedOnModel();
+  }
+
+  return getHipFeetPoseBasedOnSensor();
+}
+
+CoMFeetPose InverseKinematicsMotionEngine::getCurrentCoMFeetPose() const
+{
+  if (theBlackBoard.theSensorJointData.isLegStiffnessOn())
+  {
+    return getCoMFeetPoseBasedOnModel();
+  }
+
+  return getCoMFeetPoseBasedOnSensor();
+}
+
+Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D& tp, double t) const
+{
+  ASSERT(0 <= t);
+  ASSERT(t <= 1);
+
+  Vector3<double> perr = tp.translation - sp.translation;
+  
+  Pose3D p;
+  p.translation = sp.translation + perr * t;
+  p.rotation = RotationMatrix::interpolate(sp.rotation, tp.rotation, t);
+
+  return p;
+}//end interpolate
+
 HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p)
 {
   HipFeetPose result;
@@ -127,4 +215,71 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   double hipYawPitch = (position[JointData::LHipYawPitch] + position[JointData::RHipYawPitch]) * 0.5;
   position[JointData::LHipYawPitch] = hipYawPitch;
   position[JointData::RHipYawPitch] = hipYawPitch;
+}
+
+void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
+{
+  // TODO: fill with current ZMP, use COM at the moment
+  CoMFeetPose startCoMPose = getCurrentCoMFeetPose();
+  thePreviewControlCoM = Vector2<double>(startCoMPose.com.translation.x,startCoMPose.com.translation.y);
+  thePreviewControldCoM = Vector2<double>(0,0);
+  thePreviewControlddCoM = Vector2<double>(0,0);
+  thePreviewController.init(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+  
+  unsigned int previewSteps = thePreviewController.previewSteps();
+  theZMPFeetPoseBuffer.clear();
+  thePreviewController.clear();
+  
+  ZMPFeetPose startZMPPose;
+  startZMPPose.zmp = startCoMPose.com;
+  startZMPPose.lFoot = startCoMPose.lFoot;
+  startZMPPose.rFoot = startCoMPose.rFoot;
+  for (unsigned int i = 0; i < previewSteps-1; i++)
+  {
+    double t = static_cast<double>(i) / previewSteps;
+    ZMPFeetPose p = interpolate(startZMPPose, target, t);
+    thePreviewController.push(Vector2<double>(p.zmp.translation.x, p.zmp.translation.y));
+    theZMPFeetPoseBuffer.push_back(p);
+  }
+}
+
+CoMFeetPose InverseKinematicsMotionEngine::controlZMP(const ZMPFeetPose& p)
+{
+  theZMPFeetPoseBuffer.push_back(p);
+
+  Vector2<double> zmp(p.zmp.translation.x, p.zmp.translation.y);
+  thePreviewController.setHeight(p.zmp.translation.z);
+  
+  if ( !thePreviewController.ready() )
+  {
+    startControlZMP(p);
+  }
+  
+  thePreviewController.control(zmp, thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+  
+  const ZMPFeetPose& bP = theZMPFeetPoseBuffer.front();
+  CoMFeetPose result;
+  result.com = bP.zmp;
+  result.lFoot = bP.lFoot;
+  result.rFoot = bP.rFoot;
+  theZMPFeetPoseBuffer.pop_front();
+  result.com.translation.x = thePreviewControlCoM.x;
+  result.com.translation.y = thePreviewControlCoM.y;
+  return result;
+}
+
+bool InverseKinematicsMotionEngine::stopControlZMP(const ZMPFeetPose& p, CoMFeetPose& result)
+{
+  result = controlZMP(p);
+  
+  // if ZMP == CoM
+  Vector2<double> diff = Vector2<double>(result.com.translation.x-p.zmp.translation.x, result.com.translation.y-p.zmp.translation.y);
+  bool stopped = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
+  
+  if ( stopped )
+  {
+    thePreviewController.clear();
+  }
+  
+  return stopped;
 }

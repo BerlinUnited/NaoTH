@@ -80,7 +80,7 @@ public:
   {
     if (currentState == stopped) {
       // create the initial pose of the robot
-      p = getCurrentCoMFeetPose();
+      p = theEngine.getCurrentCoMFeetPose();
       p.localInCoM();
     }
 

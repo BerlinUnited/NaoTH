@@ -16,34 +16,9 @@
 
 class IKMotion: public AbstractMotion 
 {
-private:
-  InverseKinematic::HipFeetPose getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const;
-  
-  InverseKinematic::CoMFeetPose getCoMFeetPoseFromKinematicChain(const KinematicChain& kc) const;
-  
-  Pose3D getLeftFootFromKinematicChain(const KinematicChain& kc) const;
-  
-  Pose3D getRightFootFromKinematicChain(const KinematicChain& kc) const;
-  
-  Pose3D interpolate(const Pose3D& sp, const Pose3D& tp, double t) const;
 protected:
-  //InverseKinematicsMotionEngine::Trajectory<InverseKinematicsMotionEngine>& trajectory;
-
-  InverseKinematic::CoMFeetPose interpolate(const InverseKinematic::CoMFeetPose& sp, const InverseKinematic::CoMFeetPose& tp, double t) const;
 
   InverseKinematic::CoMFeetPose getStandPose(double comHeight) const;
-
-  InverseKinematic::HipFeetPose getHipFeetPoseBasedOnSensor() const;
-  
-  InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnSensor() const;
-
-  InverseKinematic::HipFeetPose getHipFeetPoseBasedOnModel() const;
-
-  InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnModel() const;
-
-  InverseKinematic::HipFeetPose getCurrentHipFeetPose() const;
-
-  InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
 
 protected:
   IKParameters theParameters;
