@@ -16,7 +16,7 @@
 
 
 #include "Core/Representations/Motion/Request/MotionRequest.h"
-#include "Core/Motion/MotionEngine/MotionFactory.h"
+#include "Core/Motion/Engine/MotionFactory.h"
 
 #include <stdio.h>
 #include <string.h>

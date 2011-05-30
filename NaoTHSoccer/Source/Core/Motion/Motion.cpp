@@ -11,9 +11,9 @@
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Core/Tools/SwapSpace/SwapSpace.h"
-#include "MotionEngine/InitialMotionEngine/InitialMotionFactory.h"
-#include "MotionEngine/InverseKinematicsMotionEngine/InverseKinematicsMotionFactory.h"
-#include "MotionEngine/KeyFrameMotionEngine/KeyFrameMotionEngine.h"
+#include "Engine/InitialMotion/InitialMotionFactory.h"
+#include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
+#include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
 {

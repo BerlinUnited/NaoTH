@@ -8,7 +8,7 @@
 #ifndef _INITIALMOTIONFACTORY_H
 #define	_INITIALMOTIONFACTORY_H
 
-#include "Core/Motion/MotionEngine/MotionFactory.h"
+#include "Core/Motion/Engine/MotionFactory.h"
 
 class InitialMotionFactory: public MotionFactory
 {

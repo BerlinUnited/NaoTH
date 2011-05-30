@@ -15,8 +15,8 @@
 #include "AbstractMotion.h"
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
-#include "MotionEngine/HeadMotionEngine/HeadMotionEngine.h"
-#include "MotionEngine/MotionFactory.h"
+#include "Engine/HeadMotion/HeadMotionEngine.h"
+#include "Engine/MotionFactory.h"
 
 class Motion : public naoth::Callable
 {

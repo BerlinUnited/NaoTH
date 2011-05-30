@@ -12,7 +12,7 @@
 #include "Core/Motion/AbstractMotion.h"
 #include "IKPose.h"
 #include "IKParameters.h"
-#include "Core/Motion/MotionEngine/InverseKinematicsMotionEngine/InverseKinematicsMotionEngine.h"
+#include "Core/Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 class IKMotion: public AbstractMotion 
 {
