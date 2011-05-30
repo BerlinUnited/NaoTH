@@ -16,8 +16,6 @@
 
 #include "IKMotion.h"
 
-using namespace InverseKinematic;
-
 class StandMotion : public IKMotion
 {
 public:
@@ -63,8 +61,8 @@ public:
 
     time += theBlackBoard.theFrameInfo.basicTimeStep;
     double k = min(time / totalTime, 1.0);
-    CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
-    HipFeetPose c = theEngine.controlCenterOfMass(p);
+    InverseKinematic::CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
+    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
 
     // use stablization when at least one foot is on the ground
     if (theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE) {

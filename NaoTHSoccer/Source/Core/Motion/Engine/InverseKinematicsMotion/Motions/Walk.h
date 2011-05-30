@@ -17,6 +17,13 @@ public:
 private:
   bool FSRProtection();
   
+  bool waitLanding();
+  
 private:
   const IKParameters::Walk& theWalkParameters;
+  
+  InverseKinematic::CoMFeetPose theCoMFeetPose;
+  
+  int theWaitLandingCount;
+  int theUnsupportedCount;
 };
