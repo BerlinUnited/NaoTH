@@ -34,20 +34,12 @@ SimSparkController::SimSparkController()
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<BumperData>(*this);
-  registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
-  registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
-  registerInput<UltraSoundReceiveData>(*this);
   registerInput<VirtualVision>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
-  registerOutput<const LEDData>(*this);
-  registerOutput<const IRSendData>(*this);
-  registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const SoundData>(*this);
   registerOutput<const MotorJointData>(*this);
 
 
@@ -259,7 +251,7 @@ void SimSparkController::getMotionInput()
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theSensorJointData.hardness[i] = theLastSensorJointData.hardness[i];
+    theSensorJointData.stiffness[i] = theLastSensorJointData.stiffness[i];
   }
   theLastSensorJointData = theSensorJointData;
 
@@ -819,6 +811,7 @@ void SimSparkController::get(FrameInfo& data)
 {
   data.time = static_cast<unsigned int>(theSenseTime * 1000.0);
   data.frameNumber++;
+  data.basicTimeStep = getBasicTimeStep();
 }
 
 void SimSparkController::get(SensorJointData& data)
@@ -936,21 +929,6 @@ void SimSparkController::updateInertialSensor()
   }
 }
 
-void SimSparkController::get(BumperData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::get(IRReceiveData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::get(ButtonData& /*data*/)
-{
-  // unsupport yet
-}
-
 void SimSparkController::set(const MotorJointData& data)
 {
   theMotorJointData.push_back(data);
@@ -970,12 +948,12 @@ void SimSparkController::jointControl()
     // normalize the joint angle
     double target = data.position[i];
     double ang = theLastSensorJointData.position[i];// + theLastSensorJointData.dp[i] * theStepTime;
-    double v = (target - ang) * d * data.hardness[i];
+    double v = (target - ang) * d * data.stiffness[i];
     v = Math::clamp(v, -maxJointAbsSpeed, maxJointAbsSpeed);
     ang += (v * theStepTime);
     target = data2.position[i];
-    double v2 = (target - ang) * d * data2.hardness[i];
-    theLastSensorJointData.hardness[i] = data2.hardness[i];
+    double v2 = (target - ang) * d * data2.stiffness[i];
+    theLastSensorJointData.stiffness[i] = data2.stiffness[i];
     v2 = Math::clamp(v2, -maxJointAbsSpeed, maxJointAbsSpeed);
 
     // due to the different coordination
@@ -1018,39 +996,9 @@ void SimSparkController::set(const CameraSettingsRequest& data)
   }
 }
 
-void SimSparkController::get(UltraSoundReceiveData& data)
-{
-  data.rawdata = 0.0;
-  for (unsigned int i = 0; i < UltraSoundReceiveData::numOfIRSend; i++)
-  {
-    data.dataLeft[i] = 0.0;
-    data.dataRight[i] = 0.0;
-  }
-}
-
 void SimSparkController::get(CurrentCameraSettings& data)
 {
   data.data[CameraSettings::CameraSelection] = theCameraId;
-}
-
-void SimSparkController::set(const LEDData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::set(const IRSendData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::set(const UltraSoundSendData& /*data*/)
-{
-  // unsupport yet
-}
-
-void SimSparkController::set(const SoundData& /*data*/)
-{
-  // unsupport yet
 }
 
 void SimSparkController::say()

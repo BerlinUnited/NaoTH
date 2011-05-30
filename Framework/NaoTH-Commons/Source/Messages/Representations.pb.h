@@ -41,6 +41,7 @@ class CameraMatrix;
 class FrameInfo;
 class BallPercept;
 class GoalPercept;
+class HeadMotionRequest;
 class WalkRequest;
 class MotionRequest;
 class LinePercept;
@@ -486,17 +487,17 @@ class JointData : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< double >*
       mutable_position();
   
-  // repeated double hardness = 2;
-  inline int hardness_size() const;
-  inline void clear_hardness();
-  static const int kHardnessFieldNumber = 2;
-  inline double hardness(int index) const;
-  inline void set_hardness(int index, double value);
-  inline void add_hardness(double value);
+  // repeated double stiffness = 2;
+  inline int stiffness_size() const;
+  inline void clear_stiffness();
+  static const int kStiffnessFieldNumber = 2;
+  inline double stiffness(int index) const;
+  inline void set_stiffness(int index, double value);
+  inline void add_stiffness(double value);
   inline const ::google::protobuf::RepeatedField< double >&
-      hardness() const;
+      stiffness() const;
   inline ::google::protobuf::RepeatedField< double >*
-      mutable_hardness();
+      mutable_stiffness();
   
   // repeated double dp = 3;
   inline int dp_size() const;
@@ -528,7 +529,7 @@ class JointData : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::RepeatedField< double > position_;
-  ::google::protobuf::RepeatedField< double > hardness_;
+  ::google::protobuf::RepeatedField< double > stiffness_;
   ::google::protobuf::RepeatedField< double > dp_;
   ::google::protobuf::RepeatedField< double > ddp_;
   
@@ -790,19 +791,26 @@ class FrameInfo : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional uint32 frameNumber = 1;
+  // required uint32 frameNumber = 1;
   inline bool has_framenumber() const;
   inline void clear_framenumber();
   static const int kFrameNumberFieldNumber = 1;
   inline ::google::protobuf::uint32 framenumber() const;
   inline void set_framenumber(::google::protobuf::uint32 value);
   
-  // optional uint32 time = 2;
+  // required uint32 time = 2;
   inline bool has_time() const;
   inline void clear_time();
   static const int kTimeFieldNumber = 2;
   inline ::google::protobuf::uint32 time() const;
   inline void set_time(::google::protobuf::uint32 value);
+  
+  // required uint32 basicTimeStep = 3;
+  inline bool has_basictimestep() const;
+  inline void clear_basictimestep();
+  static const int kBasicTimeStepFieldNumber = 3;
+  inline ::google::protobuf::uint32 basictimestep() const;
+  inline void set_basictimestep(::google::protobuf::uint32 value);
   
   // @@protoc_insertion_point(class_scope:naothmessages.FrameInfo)
  private:
@@ -810,14 +818,17 @@ class FrameInfo : public ::google::protobuf::Message {
   inline void clear_has_framenumber();
   inline void set_has_time();
   inline void clear_has_time();
+  inline void set_has_basictimestep();
+  inline void clear_has_basictimestep();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 framenumber_;
   ::google::protobuf::uint32 time_;
+  ::google::protobuf::uint32 basictimestep_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1076,6 +1087,163 @@ class GoalPercept : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static GoalPercept* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class HeadMotionRequest : public ::google::protobuf::Message {
+ public:
+  HeadMotionRequest();
+  virtual ~HeadMotionRequest();
+  
+  HeadMotionRequest(const HeadMotionRequest& from);
+  
+  inline HeadMotionRequest& operator=(const HeadMotionRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const HeadMotionRequest& default_instance();
+  
+  void Swap(HeadMotionRequest* other);
+  
+  // implements Message ----------------------------------------------
+  
+  HeadMotionRequest* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const HeadMotionRequest& from);
+  void MergeFrom(const HeadMotionRequest& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required uint32 id = 1;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 1;
+  inline ::google::protobuf::uint32 id() const;
+  inline void set_id(::google::protobuf::uint32 value);
+  
+  // required uint32 cameraID = 2;
+  inline bool has_cameraid() const;
+  inline void clear_cameraid();
+  static const int kCameraIDFieldNumber = 2;
+  inline ::google::protobuf::uint32 cameraid() const;
+  inline void set_cameraid(::google::protobuf::uint32 value);
+  
+  // optional .naothmessages.DoubleVector2 targetJointPosition = 3;
+  inline bool has_targetjointposition() const;
+  inline void clear_targetjointposition();
+  static const int kTargetJointPositionFieldNumber = 3;
+  inline const ::naothmessages::DoubleVector2& targetjointposition() const;
+  inline ::naothmessages::DoubleVector2* mutable_targetjointposition();
+  inline ::naothmessages::DoubleVector2* release_targetjointposition();
+  
+  // optional .naothmessages.DoubleVector2 targetPointInImage = 4;
+  inline bool has_targetpointinimage() const;
+  inline void clear_targetpointinimage();
+  static const int kTargetPointInImageFieldNumber = 4;
+  inline const ::naothmessages::DoubleVector2& targetpointinimage() const;
+  inline ::naothmessages::DoubleVector2* mutable_targetpointinimage();
+  inline ::naothmessages::DoubleVector2* release_targetpointinimage();
+  
+  // optional .naothmessages.DoubleVector3 targetPointInTheWorld = 5;
+  inline bool has_targetpointintheworld() const;
+  inline void clear_targetpointintheworld();
+  static const int kTargetPointInTheWorldFieldNumber = 5;
+  inline const ::naothmessages::DoubleVector3& targetpointintheworld() const;
+  inline ::naothmessages::DoubleVector3* mutable_targetpointintheworld();
+  inline ::naothmessages::DoubleVector3* release_targetpointintheworld();
+  
+  // optional .naothmessages.DoubleVector3 searchCenter = 6;
+  inline bool has_searchcenter() const;
+  inline void clear_searchcenter();
+  static const int kSearchCenterFieldNumber = 6;
+  inline const ::naothmessages::DoubleVector3& searchcenter() const;
+  inline ::naothmessages::DoubleVector3* mutable_searchcenter();
+  inline ::naothmessages::DoubleVector3* release_searchcenter();
+  
+  // optional .naothmessages.DoubleVector3 searchSize = 7;
+  inline bool has_searchsize() const;
+  inline void clear_searchsize();
+  static const int kSearchSizeFieldNumber = 7;
+  inline const ::naothmessages::DoubleVector3& searchsize() const;
+  inline ::naothmessages::DoubleVector3* mutable_searchsize();
+  inline ::naothmessages::DoubleVector3* release_searchsize();
+  
+  // optional bool searchDirection = 8;
+  inline bool has_searchdirection() const;
+  inline void clear_searchdirection();
+  static const int kSearchDirectionFieldNumber = 8;
+  inline bool searchdirection() const;
+  inline void set_searchdirection(bool value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.HeadMotionRequest)
+ private:
+  inline void set_has_id();
+  inline void clear_has_id();
+  inline void set_has_cameraid();
+  inline void clear_has_cameraid();
+  inline void set_has_targetjointposition();
+  inline void clear_has_targetjointposition();
+  inline void set_has_targetpointinimage();
+  inline void clear_has_targetpointinimage();
+  inline void set_has_targetpointintheworld();
+  inline void clear_has_targetpointintheworld();
+  inline void set_has_searchcenter();
+  inline void clear_has_searchcenter();
+  inline void set_has_searchsize();
+  inline void clear_has_searchsize();
+  inline void set_has_searchdirection();
+  inline void clear_has_searchdirection();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 id_;
+  ::google::protobuf::uint32 cameraid_;
+  ::naothmessages::DoubleVector2* targetjointposition_;
+  ::naothmessages::DoubleVector2* targetpointinimage_;
+  ::naothmessages::DoubleVector3* targetpointintheworld_;
+  ::naothmessages::DoubleVector3* searchcenter_;
+  ::naothmessages::DoubleVector3* searchsize_;
+  bool searchdirection_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static HeadMotionRequest* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -2004,29 +2172,29 @@ JointData::mutable_position() {
   return &position_;
 }
 
-// repeated double hardness = 2;
-inline int JointData::hardness_size() const {
-  return hardness_.size();
+// repeated double stiffness = 2;
+inline int JointData::stiffness_size() const {
+  return stiffness_.size();
 }
-inline void JointData::clear_hardness() {
-  hardness_.Clear();
+inline void JointData::clear_stiffness() {
+  stiffness_.Clear();
 }
-inline double JointData::hardness(int index) const {
-  return hardness_.Get(index);
+inline double JointData::stiffness(int index) const {
+  return stiffness_.Get(index);
 }
-inline void JointData::set_hardness(int index, double value) {
-  hardness_.Set(index, value);
+inline void JointData::set_stiffness(int index, double value) {
+  stiffness_.Set(index, value);
 }
-inline void JointData::add_hardness(double value) {
-  hardness_.Add(value);
+inline void JointData::add_stiffness(double value) {
+  stiffness_.Add(value);
 }
 inline const ::google::protobuf::RepeatedField< double >&
-JointData::hardness() const {
-  return hardness_;
+JointData::stiffness() const {
+  return stiffness_;
 }
 inline ::google::protobuf::RepeatedField< double >*
-JointData::mutable_hardness() {
-  return &hardness_;
+JointData::mutable_stiffness() {
+  return &stiffness_;
 }
 
 // repeated double dp = 3;
@@ -2199,7 +2367,7 @@ inline ::naothmessages::Pose3D* CameraMatrix::release_pose() {
 
 // FrameInfo
 
-// optional uint32 frameNumber = 1;
+// required uint32 frameNumber = 1;
 inline bool FrameInfo::has_framenumber() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -2221,7 +2389,7 @@ inline void FrameInfo::set_framenumber(::google::protobuf::uint32 value) {
   framenumber_ = value;
 }
 
-// optional uint32 time = 2;
+// required uint32 time = 2;
 inline bool FrameInfo::has_time() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2241,6 +2409,28 @@ inline ::google::protobuf::uint32 FrameInfo::time() const {
 inline void FrameInfo::set_time(::google::protobuf::uint32 value) {
   set_has_time();
   time_ = value;
+}
+
+// required uint32 basicTimeStep = 3;
+inline bool FrameInfo::has_basictimestep() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void FrameInfo::set_has_basictimestep() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void FrameInfo::clear_has_basictimestep() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void FrameInfo::clear_basictimestep() {
+  basictimestep_ = 0u;
+  clear_has_basictimestep();
+}
+inline ::google::protobuf::uint32 FrameInfo::basictimestep() const {
+  return basictimestep_;
+}
+inline void FrameInfo::set_basictimestep(::google::protobuf::uint32 value) {
+  set_has_basictimestep();
+  basictimestep_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -2501,6 +2691,221 @@ GoalPercept::post() const {
 inline ::google::protobuf::RepeatedPtrField< ::naothmessages::GoalPost >*
 GoalPercept::mutable_post() {
   return &post_;
+}
+
+// -------------------------------------------------------------------
+
+// HeadMotionRequest
+
+// required uint32 id = 1;
+inline bool HeadMotionRequest::has_id() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void HeadMotionRequest::set_has_id() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void HeadMotionRequest::clear_has_id() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void HeadMotionRequest::clear_id() {
+  id_ = 0u;
+  clear_has_id();
+}
+inline ::google::protobuf::uint32 HeadMotionRequest::id() const {
+  return id_;
+}
+inline void HeadMotionRequest::set_id(::google::protobuf::uint32 value) {
+  set_has_id();
+  id_ = value;
+}
+
+// required uint32 cameraID = 2;
+inline bool HeadMotionRequest::has_cameraid() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void HeadMotionRequest::set_has_cameraid() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void HeadMotionRequest::clear_has_cameraid() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void HeadMotionRequest::clear_cameraid() {
+  cameraid_ = 0u;
+  clear_has_cameraid();
+}
+inline ::google::protobuf::uint32 HeadMotionRequest::cameraid() const {
+  return cameraid_;
+}
+inline void HeadMotionRequest::set_cameraid(::google::protobuf::uint32 value) {
+  set_has_cameraid();
+  cameraid_ = value;
+}
+
+// optional .naothmessages.DoubleVector2 targetJointPosition = 3;
+inline bool HeadMotionRequest::has_targetjointposition() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void HeadMotionRequest::set_has_targetjointposition() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void HeadMotionRequest::clear_has_targetjointposition() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void HeadMotionRequest::clear_targetjointposition() {
+  if (targetjointposition_ != NULL) targetjointposition_->::naothmessages::DoubleVector2::Clear();
+  clear_has_targetjointposition();
+}
+inline const ::naothmessages::DoubleVector2& HeadMotionRequest::targetjointposition() const {
+  return targetjointposition_ != NULL ? *targetjointposition_ : *default_instance_->targetjointposition_;
+}
+inline ::naothmessages::DoubleVector2* HeadMotionRequest::mutable_targetjointposition() {
+  set_has_targetjointposition();
+  if (targetjointposition_ == NULL) targetjointposition_ = new ::naothmessages::DoubleVector2;
+  return targetjointposition_;
+}
+inline ::naothmessages::DoubleVector2* HeadMotionRequest::release_targetjointposition() {
+  clear_has_targetjointposition();
+  ::naothmessages::DoubleVector2* temp = targetjointposition_;
+  targetjointposition_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector2 targetPointInImage = 4;
+inline bool HeadMotionRequest::has_targetpointinimage() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void HeadMotionRequest::set_has_targetpointinimage() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void HeadMotionRequest::clear_has_targetpointinimage() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void HeadMotionRequest::clear_targetpointinimage() {
+  if (targetpointinimage_ != NULL) targetpointinimage_->::naothmessages::DoubleVector2::Clear();
+  clear_has_targetpointinimage();
+}
+inline const ::naothmessages::DoubleVector2& HeadMotionRequest::targetpointinimage() const {
+  return targetpointinimage_ != NULL ? *targetpointinimage_ : *default_instance_->targetpointinimage_;
+}
+inline ::naothmessages::DoubleVector2* HeadMotionRequest::mutable_targetpointinimage() {
+  set_has_targetpointinimage();
+  if (targetpointinimage_ == NULL) targetpointinimage_ = new ::naothmessages::DoubleVector2;
+  return targetpointinimage_;
+}
+inline ::naothmessages::DoubleVector2* HeadMotionRequest::release_targetpointinimage() {
+  clear_has_targetpointinimage();
+  ::naothmessages::DoubleVector2* temp = targetpointinimage_;
+  targetpointinimage_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector3 targetPointInTheWorld = 5;
+inline bool HeadMotionRequest::has_targetpointintheworld() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void HeadMotionRequest::set_has_targetpointintheworld() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void HeadMotionRequest::clear_has_targetpointintheworld() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void HeadMotionRequest::clear_targetpointintheworld() {
+  if (targetpointintheworld_ != NULL) targetpointintheworld_->::naothmessages::DoubleVector3::Clear();
+  clear_has_targetpointintheworld();
+}
+inline const ::naothmessages::DoubleVector3& HeadMotionRequest::targetpointintheworld() const {
+  return targetpointintheworld_ != NULL ? *targetpointintheworld_ : *default_instance_->targetpointintheworld_;
+}
+inline ::naothmessages::DoubleVector3* HeadMotionRequest::mutable_targetpointintheworld() {
+  set_has_targetpointintheworld();
+  if (targetpointintheworld_ == NULL) targetpointintheworld_ = new ::naothmessages::DoubleVector3;
+  return targetpointintheworld_;
+}
+inline ::naothmessages::DoubleVector3* HeadMotionRequest::release_targetpointintheworld() {
+  clear_has_targetpointintheworld();
+  ::naothmessages::DoubleVector3* temp = targetpointintheworld_;
+  targetpointintheworld_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector3 searchCenter = 6;
+inline bool HeadMotionRequest::has_searchcenter() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void HeadMotionRequest::set_has_searchcenter() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void HeadMotionRequest::clear_has_searchcenter() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void HeadMotionRequest::clear_searchcenter() {
+  if (searchcenter_ != NULL) searchcenter_->::naothmessages::DoubleVector3::Clear();
+  clear_has_searchcenter();
+}
+inline const ::naothmessages::DoubleVector3& HeadMotionRequest::searchcenter() const {
+  return searchcenter_ != NULL ? *searchcenter_ : *default_instance_->searchcenter_;
+}
+inline ::naothmessages::DoubleVector3* HeadMotionRequest::mutable_searchcenter() {
+  set_has_searchcenter();
+  if (searchcenter_ == NULL) searchcenter_ = new ::naothmessages::DoubleVector3;
+  return searchcenter_;
+}
+inline ::naothmessages::DoubleVector3* HeadMotionRequest::release_searchcenter() {
+  clear_has_searchcenter();
+  ::naothmessages::DoubleVector3* temp = searchcenter_;
+  searchcenter_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector3 searchSize = 7;
+inline bool HeadMotionRequest::has_searchsize() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void HeadMotionRequest::set_has_searchsize() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void HeadMotionRequest::clear_has_searchsize() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void HeadMotionRequest::clear_searchsize() {
+  if (searchsize_ != NULL) searchsize_->::naothmessages::DoubleVector3::Clear();
+  clear_has_searchsize();
+}
+inline const ::naothmessages::DoubleVector3& HeadMotionRequest::searchsize() const {
+  return searchsize_ != NULL ? *searchsize_ : *default_instance_->searchsize_;
+}
+inline ::naothmessages::DoubleVector3* HeadMotionRequest::mutable_searchsize() {
+  set_has_searchsize();
+  if (searchsize_ == NULL) searchsize_ = new ::naothmessages::DoubleVector3;
+  return searchsize_;
+}
+inline ::naothmessages::DoubleVector3* HeadMotionRequest::release_searchsize() {
+  clear_has_searchsize();
+  ::naothmessages::DoubleVector3* temp = searchsize_;
+  searchsize_ = NULL;
+  return temp;
+}
+
+// optional bool searchDirection = 8;
+inline bool HeadMotionRequest::has_searchdirection() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void HeadMotionRequest::set_has_searchdirection() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void HeadMotionRequest::clear_has_searchdirection() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void HeadMotionRequest::clear_searchdirection() {
+  searchdirection_ = false;
+  clear_has_searchdirection();
+}
+inline bool HeadMotionRequest::searchdirection() const {
+  return searchdirection_;
+}
+inline void HeadMotionRequest::set_searchdirection(bool value) {
+  set_has_searchdirection();
+  searchdirection_ = value;
 }
 
 // -------------------------------------------------------------------

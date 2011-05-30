@@ -2,6 +2,7 @@
 * @file MotionStatus.h
 *
 * @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * Definition of the class MotionStatus
 */
 
@@ -11,15 +12,15 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
-#include "MotionRequest/MotionRequestID.h"
-#include "HeadMotionRequest.h"
+#include "Request/MotionID.h"
+#include "Request/HeadMotionRequest.h"
 
 #include <string>
 
 /**
 * This describes the MotionStatus
 */
-class MotionStatus : public Printable
+class MotionStatus : public naoth::Printable
 {
 public:
 
@@ -34,26 +35,25 @@ public:
   MotionStatus()
   :
   time(0),
-  lastMotion(MotionRequestID::numOfMotion),
-  currentMotion(MotionRequestID::numOfMotion)
+  lastMotion(motion::NUM_OF_MOTION),
+  currentMotion(motion::NUM_OF_MOTION)
   {
   }
 
   ~MotionStatus(){}
 
   unsigned int time;
-  MotionRequestID::MotionID lastMotion;
-  MotionRequestID::MotionID currentMotion;
-  HeadMotionRequestID::HeadMotionID headMotionRequest;
+  motion::MotionID lastMotion;
+  motion::MotionID currentMotion;
+  HeadMotionRequest::HeadMotionID headMotionRequest;
   PlannedMotion plannedMotion;
 
   virtual void print(ostream& stream) const
   {
     stream << "time = " << time << '\n';
-    stream << "lastMotion = " << MotionRequestID::getName(lastMotion) << '\n';
-    stream << "currentMotion = " << MotionRequestID::getName(currentMotion) << '\n';
+    stream << "lastMotion = " << motion::getName(lastMotion) << '\n';
+    stream << "currentMotion = " << motion::getName(currentMotion) << '\n';
   }//end print
 };
-
 
 #endif // __MotionStatus_h_

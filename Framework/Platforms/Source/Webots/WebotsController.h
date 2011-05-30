@@ -137,6 +137,8 @@ namespace naoth
     void getInertialSensorData(double* data);
 
     void copyImage(Image& image, const unsigned char *original_image);
+    
+    double currentStiffness[JointData::numOfJoint];
 
   //  REPRESENTATION_PROVIDER(GPSDataProvider, Cognition, GPSData);
   };

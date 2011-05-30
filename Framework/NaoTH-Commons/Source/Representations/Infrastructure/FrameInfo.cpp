@@ -10,6 +10,7 @@ void Serializer<FrameInfo>::serialize(const FrameInfo& representation, std::ostr
   naothmessages::FrameInfo f;
   f.set_framenumber(representation.frameNumber);
   f.set_time(representation.time);
+  f.set_basictimestep(representation.basicTimeStep);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   f.SerializePartialToZeroCopyStream(&buf);
@@ -23,5 +24,6 @@ void Serializer<FrameInfo>::deserialize(std::istream& stream, FrameInfo& represe
 
   representation.time = f.time();
   representation.frameNumber = f.framenumber();
+  representation.basicTimeStep = f.basictimestep();
 }
 

@@ -1,0 +1,87 @@
+/**
+ * @file InverseKinematicsMotionEngine.h
+ *
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * Declaration of class Inverse Kinematics Motion Engine
+ */
+
+#ifndef _INVERSE_KINEMATCS_MOTION_ENGINE_
+#define _INVERSE_KINEMATCS_MOTION_ENGINE_
+
+#include "Motion/MotionBlackBoard.h"
+#include "Motions/IKPose.h"
+#include "PreviewController.h"
+
+class InverseKinematicsMotionEngine: public Singleton<InverseKinematicsMotionEngine>
+{
+private:
+  friend class Singleton<InverseKinematicsMotionEngine>;
+  
+  InverseKinematicsMotionEngine();
+  
+  InverseKinematic::HipFeetPose getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const;
+  
+  InverseKinematic::CoMFeetPose getCoMFeetPoseFromKinematicChain(const KinematicChain& kc) const;
+  
+  Pose3D getLeftFootFromKinematicChain(const KinematicChain& kc) const;
+  
+  Pose3D getRightFootFromKinematicChain(const KinematicChain& kc) const;
+  
+  Pose3D interpolate(const Pose3D& sp, const Pose3D& tp, double t) const;
+public:
+
+  virtual ~InverseKinematicsMotionEngine()
+  {
+  }
+  
+  InverseKinematic::HipFeetPose getHipFeetPoseBasedOnSensor() const;
+  
+  InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnSensor() const;
+
+  InverseKinematic::HipFeetPose getHipFeetPoseBasedOnModel() const;
+
+  InverseKinematic::CoMFeetPose getCoMFeetPoseBasedOnModel() const;
+
+  InverseKinematic::HipFeetPose getCurrentHipFeetPose() const;
+
+  InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
+  
+  template<typename T>
+  T interpolate(const T& sp, const T& tp, double t) const 
+  {
+    T p;
+    p.body() = interpolate(sp.body(), tp.body(), t);
+    p.lFoot = interpolate(sp.lFoot, tp.lFoot, t);
+    p.rFoot = interpolate(sp.rFoot, tp.rFoot, t);
+    return p;
+  }
+
+  InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p);
+  
+  InverseKinematic::CoMFeetPose controlZMP(const InverseKinematic::ZMPFeetPose& p);
+  
+  bool stopControlZMP(const InverseKinematic::ZMPFeetPose& p, InverseKinematic::CoMFeetPose& result);
+  
+  void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
+  
+  void rotationStabilize(Pose3D& hip) const;
+  
+  void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
+  
+private:
+  void startControlZMP(const InverseKinematic::ZMPFeetPose& target);
+
+  const MotionBlackBoard& theBlackBoard;
+
+  Kinematics::InverseKinematics theInverseKinematics;
+  
+  Vector3<double> theCoMControlResult;
+  
+  PreviewController thePreviewController;
+  std::list<InverseKinematic::ZMPFeetPose> theZMPFeetPoseBuffer;
+  Vector2<double> thePreviewControlCoM;
+  Vector2<double> thePreviewControldCoM;
+  Vector2<double> thePreviewControlddCoM;
+};
+
+#endif // _INVERSE_KINEMATCS_MOTION_ENGINE_

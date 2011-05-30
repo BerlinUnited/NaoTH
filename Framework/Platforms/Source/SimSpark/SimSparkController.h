@@ -122,17 +122,9 @@ public:
 
   void get(InertialSensorData& data);
 
-  void get(BumperData& data);
-
-  void get(IRReceiveData& data);
-
   void get(CurrentCameraSettings& data);
 
-  void get(ButtonData& data);
-
   void get(BatteryData& data) {data.charge = 1.0;}
-
-  void get(UltraSoundReceiveData& data);
 
   void get(VirtualVision& data);
 
@@ -142,14 +134,6 @@ public:
   void set(const MotorJointData& data);
 
   void set(const CameraSettingsRequest& data);
-
-  void set(const LEDData& data);
-
-  void set(const IRSendData& data);
-
-  void set(const UltraSoundSendData& data);
-
-  void set(const SoundData& data);
 
 protected:
   virtual void updateInertialSensor();

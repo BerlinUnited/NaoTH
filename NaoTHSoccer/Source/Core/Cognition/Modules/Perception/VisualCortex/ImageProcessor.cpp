@@ -13,7 +13,7 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/StopWatch.h"
+#include "Tools/Debug/Stopwatch.h"
 
 //#include "Tools/Debug/DebugBufferedOutput.h"
 

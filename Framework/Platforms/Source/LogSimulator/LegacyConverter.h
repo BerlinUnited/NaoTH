@@ -37,7 +37,7 @@ public:
       // only the newer one logged the hardness
       for (int i = 0; i < JointData::numOfJoint; i++)
       {
-        result.mutable_jointdata()->add_hardness(hardness[i]);
+        result.mutable_jointdata()->add_stiffness(hardness[i]);
       }
     } // check if this is an even older logfile using float
     else if ((JointData::numOfJoint * sizeof (float)) == size)

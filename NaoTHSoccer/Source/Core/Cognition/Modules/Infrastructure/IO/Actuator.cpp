@@ -3,6 +3,7 @@
  */
 
 #include "Actuator.h"
+#include "Tools/SwapSpace/SwapSpace.h"
 
 Actuator::Actuator()
 {
@@ -27,21 +28,13 @@ void Actuator::init(naoth::PlatformDataInterface& platformInterface)
 
 void Actuator::execute()
 {  
-  /*
-  STOPWATCH_STOP("Cognition-Main");
+  //STOPWATCH_STOP("Cognition-Main");
 
-  STOPWATCH_START("Cognition-SetData");
-  // data to robot
-  thePlatformInterface->setCognitionOutput();
-  STOPWATCH_STOP("Cognition-SetData");
-
-  STOPWATCH_START("Cognition-PushSwap");
+  //STOPWATCH_START("Cognition-PushSwap");
   // data to motion
-  theMotionRequest.time = theMotionStatus.time;
   SwapSpace::getInstance().theCognitionCache.push(
-    theHeadMotionRequest,
-    theMotionRequest
+    getHeadMotionRequest(),
+    getMotionRequest()
     );
-  STOPWATCH_STOP("Cognition-PushSwap");
-  */
+  //STOPWATCH_STOP("Cognition-PushSwap");
 }//end execute

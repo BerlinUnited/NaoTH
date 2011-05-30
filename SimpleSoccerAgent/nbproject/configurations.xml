@@ -30,7 +30,7 @@
       <makefileType>
         <makeTool>
           <buildCommandWorkingDir>Make</buildCommandWorkingDir>
-          <buildCommand>premake4 gmake &amp;&amp; ${MAKE} -f Makefile</buildCommand>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>premake4 clean</cleanCommand>
           <executablePath>simple-soccer-agent</executablePath>
           <ccTool>
