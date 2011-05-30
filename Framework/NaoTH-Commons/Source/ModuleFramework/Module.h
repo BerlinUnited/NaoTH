@@ -54,6 +54,11 @@ public:
   {
     return blackBoard.template getRepresentation<DataHolder<T> >(getName());
   }
+
+  virtual const DataHolder<T>& get(const BlackBoard& blackBoard) const
+  {
+    return blackBoard.template getRepresentation<DataHolder<T> >(getName());
+  }
 };
 
 
@@ -184,7 +189,7 @@ protected:
       data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_requiring_registry)[name];
     }
 
-    const TYPE_WHAT& get(BlackBoard& blackBoard)
+    const TYPE_WHAT& get(const BlackBoard& blackBoard) const
     {
       return *(data->get(blackBoard));
     }
@@ -272,7 +277,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   private: \
   StaticRequiringRegistrator<representationName> the##representationName; \
   protected: \
-  const representationName& get##representationName() \
+  const representationName& get##representationName() const \
   { \
     static const representationName& representation = the##representationName.get(getBlackBoard()); \
     return representation; \

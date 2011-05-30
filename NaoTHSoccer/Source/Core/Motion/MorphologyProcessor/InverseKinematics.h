@@ -12,7 +12,7 @@
 #include "Tools/Math/Matrix_nxn.h"
 #include "Tools/Math/Pose3D.h"
 
-#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 namespace Kinematics {
 

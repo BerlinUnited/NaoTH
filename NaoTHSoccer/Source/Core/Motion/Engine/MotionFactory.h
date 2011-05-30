@@ -9,7 +9,7 @@
 #ifndef __MotionFactory_h_
 #define __MotionFactory_h_
 
-#include "Core/Motion/AbstractMotion.h"
+#include "Motion/AbstractMotion.h"
 
 class MotionFactory
 {

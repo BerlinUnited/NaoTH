@@ -8,7 +8,7 @@
 #ifndef __IK_POSE_H_
 #define __IK_POSE_H_
 #include "Tools/Math/Pose3D.h"
-#include "Core/Motion/MorphologyProcessor/InverseKinematics.h"
+#include "Motion/MorphologyProcessor/InverseKinematics.h"
 #include "Tools/NaoInfo.h"
 
 namespace InverseKinematic

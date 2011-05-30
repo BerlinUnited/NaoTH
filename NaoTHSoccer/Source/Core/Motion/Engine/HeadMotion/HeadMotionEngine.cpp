@@ -26,8 +26,8 @@
 //#include "Tools/Debug/DebugRequest.h"
 //#include "Tools/Debug/DebugModify.h"
 
-#include "Core/Representations/Motion/Request/HeadMotionRequest.h"
-#include "Core/Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
 
 
 HeadMotionEngine::HeadMotionEngine()

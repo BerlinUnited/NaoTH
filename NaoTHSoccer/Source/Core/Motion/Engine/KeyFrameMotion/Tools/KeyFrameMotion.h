@@ -10,7 +10,7 @@
 
 #include "MotionNet.h"
 #include "Tools/Math/Common.h"
-#include "Core/Motion/AbstractMotion.h"
+#include "Motion/AbstractMotion.h"
 #include "Tools/DataStructures/Printable.h"
 
 class KeyFrameMotion: public AbstractMotion, public Printable

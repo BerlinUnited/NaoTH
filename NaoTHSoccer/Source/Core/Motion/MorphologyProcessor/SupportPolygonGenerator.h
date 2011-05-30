@@ -9,8 +9,8 @@
 #define	_SUPPORTPOLYGONGENERATOR_H
 
 #include <Representations/Infrastructure/FSRData.h>
-#include "Core/Representations/Modeling/SupportPolygon.h"
-#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/SupportPolygon.h"
+#include "Representations/Modeling/KinematicChain.h"
 #include "FootTouchDetector.h"
 
 class SupportPolygonGenerator//: public DebugCommandExecutor

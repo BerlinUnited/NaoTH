@@ -11,17 +11,17 @@
 #include <ModuleFramework/Module.h>
 
 // Debug
-#include "Core/Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugRequest.h"
 //#include "Tools/Debug/DebugImageDrawings.h"
 #include <Tools/Debug/Stopwatch.h>
 
 //Tools
-#include "Core/Tools/ImageProcessing/ColoredGrid.h"
-#include "Core/Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/ColoredGrid.h"
+#include "Tools/ImageProcessing/Histogram.h"
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
-#include "Core/Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Infrastructure/ColorTable64.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 

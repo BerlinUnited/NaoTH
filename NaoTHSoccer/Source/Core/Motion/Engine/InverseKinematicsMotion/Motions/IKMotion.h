@@ -9,10 +9,10 @@
 #ifndef __IKMotion_h_
 #define __IKMotion_h_
 
-#include "Core/Motion/AbstractMotion.h"
+#include "Motion/AbstractMotion.h"
 #include "IKPose.h"
 #include "IKParameters.h"
-#include "Core/Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
+#include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 class IKMotion: public AbstractMotion 
 {

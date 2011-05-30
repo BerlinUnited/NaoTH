@@ -8,7 +8,7 @@
 #ifndef _DEADMOTION_H
 #define	_DEADMOTION_H
 
-#include "Core/Motion/AbstractMotion.h"
+#include "Motion/AbstractMotion.h"
 
 class DeadMotion : public AbstractMotion
 {

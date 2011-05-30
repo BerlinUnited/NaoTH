@@ -12,7 +12,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include <PlatformInterface/Platform.h>
-#include "Core/Motion/MotionBlackBoard.h"
+#include "Motion/MotionBlackBoard.h"
 
 class HeadMotionEngine
 {

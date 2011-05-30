@@ -8,8 +8,7 @@
 #ifndef _INITIALMOTION_H
 #define	_INITIALMOTION_H
 
-#include "Core/Motion/AbstractMotion.h"
-#include <set>
+#include "Motion/AbstractMotion.h"
 
 class InitialMotion : public AbstractMotion
 {

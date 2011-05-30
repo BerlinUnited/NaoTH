@@ -11,7 +11,7 @@
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/CameraInfo.h>
 
-#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 class CameraMatrixCalculator
 {

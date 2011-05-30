@@ -17,9 +17,9 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 
-#include "Core/Representations/Motion/Request/HeadMotionRequest.h"
-#include "Core/Representations/Motion/MotionStatus.h"
-#include "Core/Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Motion/Request/MotionRequest.h"
 
 using namespace naoth;
 

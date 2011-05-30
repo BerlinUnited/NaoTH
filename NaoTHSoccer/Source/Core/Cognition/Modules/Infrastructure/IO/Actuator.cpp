@@ -3,7 +3,7 @@
  */
 
 #include "Actuator.h"
-#include "Core/Tools/SwapSpace/SwapSpace.h"
+#include "Tools/SwapSpace/SwapSpace.h"
 
 Actuator::Actuator()
 {

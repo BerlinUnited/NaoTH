@@ -8,7 +8,7 @@
 #ifndef _INVERSE_KINEMATCS_MOTION_ENGINE_
 #define _INVERSE_KINEMATCS_MOTION_ENGINE_
 
-#include "Core/Motion/MotionBlackBoard.h"
+#include "Motion/MotionBlackBoard.h"
 #include "Motions/IKPose.h"
 #include "PreviewController.h"
 

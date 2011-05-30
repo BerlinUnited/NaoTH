@@ -6,7 +6,7 @@
  */
 
 #include "Histogram.h"
-#include "Core/Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugRequest.h"
 
 Histogram::Histogram()
 {

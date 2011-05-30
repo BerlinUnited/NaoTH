@@ -10,22 +10,28 @@
 #ifndef __FieldInfo_h_
 #define __FieldInfo_h_
 
-#include "Tools/Math/Vector2.h"
-#include "Core/Tools/LinesTable.h"
-#include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Math/Vector2.h>
 #include <Tools/ColorClasses.h>
+#include <Tools/DataStructures/ParameterList.h>
 
-using namespace naoth;
+#include "Tools/LinesTable.h"
+
+
 
 class FieldInfo : public ParameterList
 {
 private:
   void calculateValues();
 
+  /** */
   void createLinesTable();
+
+  /** */
+  void calculateCrossings();
 
 public:
   FieldInfo();
+
 
   //colors
   ColorClasses::Color ballColor;
@@ -35,7 +41,7 @@ public:
   //////////////// basic values from configuration ////////////////
   double ballRadius;
 
-  // size of the whole field 
+  // size of the whole field (including the green area outside the lines) 
   double xFieldLength;
   double yFieldLength;
 
@@ -43,23 +49,10 @@ public:
   double xLength;
   double yLength;
 
-  double xPosOpponentFieldBorder;
-  double xPosOpponentGoal;
-  double xPosOpponentGoalpost;
-  double xPosOpponentGoalpostCenter;
-  double xPosOpponentGroundline;
-  double xPosOpponentSideCorner;
   double xPosOpponentPenaltyArea;
-
-  double yPosLeftFieldBorder;
-  double yPosLeftSideline;
-  double yPosLeftGroundline;
   double yPosLeftPenaltyArea;
-  double yPosLeftGoal;
-  double yPosLeftGoalpostCenter;
-
+  
   double centerCircleRadius;
-
   double fieldLinesWidth;
   double goalWidth;
   double goalHeight;
@@ -67,23 +60,62 @@ public:
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;
-  double xPosOwnPenaltyArea;
-  double xPosOwnSideCorner;
-  double xPosOwnGroundline;
-  double xPosOwnGoalpostCenter;
-  double xPosOwnGoalpost;
+
   double xPosOwnGoal;
-  double xPosOwnFieldBorder;
-
-  double yPosCenterGoal;
-  double yPosRightGoalpostCenter;
-  double yPosRightGoal;
-  double yPosRightPenaltyArea;
-  double yPosRightGroundline;
+  double xPosOpponentGoal;
+  double xPosOwnGroundline;
+  double xPosOpponentGroundline;
+  double xPosOwnPenaltyArea;
+  
+  double yPosLeftSideline;
   double yPosRightSideline;
-  double yPosRightFieldBorder;
+  double yPosRightPenaltyArea;
 
-  //Corner crossings
+  double yPosRightGoalpost;
+  double yPosLeftGoalpost;
+
+
+  enum LineCrossingsId
+  {
+    // L crossings
+    opponentCornerLeft,
+    opponentCornerRight,
+    ownCornerLeft,
+    ownCornerRight,
+
+    opponentPenaltyCornerLeft,
+    opponentPenaltyCornerRight,
+    ownPenaltyCornerLeft,
+    ownPenaltyCornerRight,
+
+    // T crossings
+    opponentGoalTCrossingLeft,
+    opponentGoalTCrossingRight,
+    ownGoalTCrossingLeft,
+    ownGoalTCrossingRight,
+    centerTCrossingLeft,
+    centerTCrossingRight,
+
+    // X crossings
+    crossingCenterCircleLeft,
+    crossingCenterCircleRight,
+
+    numberLineCrossingsId
+  };
+
+  class Crossing
+  {
+  public:
+    Crossing() : id(numberLineCrossingsId) {}
+    LineCrossingsId id;
+    //Type type; // TODO: L, T, X
+    Vector2<double> position;
+  };
+
+  Crossing crossings[numberLineCrossingsId];
+
+  /*
+  // L crossings
   Vector2<double> opponentCornerLeft;
   Vector2<double> opponentCornerRight;
   Vector2<double> ownCornerLeft;
@@ -94,7 +126,7 @@ public:
   Vector2<double> ownPenaltyCornerLeft;
   Vector2<double> ownPenaltyCornerRight;
 
-  //T crossings
+  // T crossings
   Vector2<double> opponentGoalTCrossingLeft;
   Vector2<double> opponentGoalTCrossingRight;
   Vector2<double> ownGoalTCrossingLeft;
@@ -102,9 +134,10 @@ public:
   Vector2<double> centerTCrossingLeft;
   Vector2<double> centerTCrossingRight;
 
-  //Crossing
+  // X Crossings
   Vector2<double> crossingCenterCircleLeft;
   Vector2<double> crossingCenterCircleRight;
+  */
 
   // goal post positions
   Vector2<double> opponentGoalPostLeft;
@@ -115,7 +148,9 @@ public:
   Vector2<double> ownGoalPostRight;
   Vector2<double> ownGoalCenter;
 
+  /** */
   LinesTable fieldLinesTable;
 };
+
 
 #endif //__FieldInfo_h_

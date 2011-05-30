@@ -8,7 +8,7 @@
 #ifndef _FOOTTOUCHDETECTOR_H
 #define	_FOOTTOUCHDETECTOR_H
 
-#include "Core/Tools/LinearClassifier.h"
+#include "Tools/LinearClassifier.h"
 #include <Representations/Infrastructure/FSRData.h>
 
 class FootTouchDetector 

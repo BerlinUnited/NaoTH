@@ -7,8 +7,8 @@
 
 #include "Debug.h"
 
-#include "Core/Tools/Debug/DebugRequest.h"
-#include "Core/Cognition/CognitionDebugServer.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/Stopwatch.h>
 
@@ -38,7 +38,7 @@ void Debug::execute()
   DEBUG_REQUEST("debug:request:test", std::cout << "hello debug request" << std::endl;);
 }
 
-void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
+void Debug::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
 {
   if (command == "image")
   {

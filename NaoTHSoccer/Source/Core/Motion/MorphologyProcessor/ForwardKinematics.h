@@ -8,15 +8,13 @@
 #ifndef _FORWARDKINEMATICS_H
 #define	_FORWARDKINEMATICS_H
 
-#include <cmath>
-
 #include <Tools/Math/Matrix.h>
 #include <Tools/Math/Vector3.h>
 
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 
-#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 
 

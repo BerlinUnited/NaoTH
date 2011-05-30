@@ -8,7 +8,7 @@
 
 
 #include "InverseKinematicsMotionEngine.h"
-#include "Core/Motion/MorphologyProcessor/ForwardKinematics.h"
+#include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 using namespace InverseKinematic;
 

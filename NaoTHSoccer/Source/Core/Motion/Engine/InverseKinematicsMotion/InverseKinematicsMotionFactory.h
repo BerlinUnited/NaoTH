@@ -10,8 +10,8 @@
 #define _InverseKinematicsMotionFactory_h_
 
 
-#include "Core/Motion/Engine/MotionFactory.h"
-#include "Core/Representations/Motion/Request/MotionRequest.h"
+#include "Motion/Engine/MotionFactory.h"
+#include "Representations/Motion/Request/MotionRequest.h"
 
 class InverseKinematicsMotionFactory : public MotionFactory
 {

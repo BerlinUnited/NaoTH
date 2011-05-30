@@ -11,8 +11,8 @@
 #include <Tools/Math/Pose3D.h>
 #include <Representations/Infrastructure/FSRData.h>
 
-#include "Core/Representations/Modeling/OdometryData.h"
-#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/OdometryData.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 
 class OdometryCalculator

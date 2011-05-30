@@ -4,10 +4,12 @@
  *
  */
 #include "ParameterListDebugLoader.h"
+
 #include <Representations/Infrastructure/Configuration.h>
 #include <PlatformInterface/Platform.h>
-#include "Core/Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/DebugImageDrawings.h>
+
+#include "Cognition/CognitionDebugServer.h"
 
 ParameterListDebugLoader::ParameterListDebugLoader()
 {
@@ -35,7 +37,7 @@ void ParameterListDebugLoader::execute()
 
 }
 
-void ParameterListDebugLoader::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
+void ParameterListDebugLoader::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
 {
   naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 

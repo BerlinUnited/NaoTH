@@ -12,13 +12,13 @@
 #include <Tools/DataStructures/Singleton.h>
 
 // cognition -> motion
-#include "Core/Representations/Motion/Request/HeadMotionRequest.h"
-#include "Core/Representations/Motion/Request/MotionRequest.h"
-#include "Core/Representations/Motion/MotionStatus.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 
 // motion -> cognition
 #include <Representations/Perception/CameraMatrix.h>
-#include "Core/Representations/Modeling/OdometryData.h"
+#include "Representations/Modeling/OdometryData.h"
 
 class SwapSpace : public Singleton<SwapSpace> {
 private:

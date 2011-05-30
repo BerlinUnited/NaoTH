@@ -12,76 +12,130 @@
 #include <limits>
 #include <vector>
 
-#include "Core/Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Math/Line.h"
 
 class LinesTable
 {
+public:
+   
+  // HACK: it could be done with int but then we don't have a special type
+  enum LinesTableType
+  {
+    long_lines    =  1,
+    short_lines   =  2,
+    along_lines   =  4,
+    across_lines  =  8,
+    circle_lines  = 16,
+    numberOfLinesTableType = 5, 
+    all_lines     =  long_lines | short_lines | along_lines | across_lines | circle_lines
+  };
+
+  class NamedPoint
+  {
+  public:
+    NamedPoint() : id(-1) {}
+    Vector2<double> position;
+    int id;
+  };
+
 private:
 
   static const int ySize = 20;
   static const int xSize = 30;
+
+  // the size of a grid cell is (2*xWidth) x (2*yWidth)
   double yWidth;
   double xWidth;
 
-  Vector2<double> closestPoints[xSize][ySize];
+  int line_type[numberOfLinesTableType];
+  static const int numberOfTables;
+  /**
+    long_lines & along_lines
+    long_lines & across_lines
+    short_lines & along_lines
+    short_lines & across_lines
+    circle_lines
+  */
 
-  Vector2<double> closestCornerPoints[xSize][ySize];
-  Vector2<double> closestTCrossings[xSize][ySize];
+  /** table of the line points */
+  NamedPoint closestPoints[xSize][ySize][numberOfLinesTableType];
 
-  enum
-  {
-    maxNumberOfEntries = 106 /**< The maximum number of lines in the table. */
-  };
+  /** table of all corner points */
+  NamedPoint closestCornerPoints[xSize][ySize];
+
+  /** table of the crossings (without L-Corners) */
+  NamedPoint closestTCrossings[xSize][ySize];
+
+  /** list of lines */
+  std::vector<Math::LineSegment> lines;
+
+  /** list of intersections between the lines */
+  std::vector<Math::Intersection> intersections;
 
 public:
 
-  Math::LineSegment lines[maxNumberOfEntries];
-  std::vector<Math::Intersection> intersections;
+  // HACK: remove it
+  double circle_radius;
+  double penalty_area_width;
 
-  int numberOfEntries; /**< The number of corners in the table. */
-
-  LinesTable() :
-  numberOfEntries(0)
+  LinesTable()
   {
+    circle_radius = 600.0;
+    penalty_area_width = 600.0;
+
+    line_type[0] = long_lines | along_lines;
+    line_type[1] = long_lines | across_lines;
+    line_type[2] = short_lines | along_lines;
+    line_type[3] = short_lines | across_lines; // actualy, there are currently no such lines except on the circle 
+    line_type[4] = circle_lines;
   }
 
   ~LinesTable()
   {
   }
 
-  void push(const Vector2<double>& begin, const Vector2<double>& end)
+  void addLine(const Vector2<double>& begin, const Vector2<double>& end)
   {
-    //ASSERT(numberOfEntries < maxNumberOfEntries);
-    if (numberOfEntries < maxNumberOfEntries)
-    {
-      lines[numberOfEntries++] = Math::LineSegment(begin, end);
-    }
-  }//end push
+    lines.push_back(Math::LineSegment(begin, end));
+  }//end addLine
 
+  /** some getter */
+  const std::vector<Math::LineSegment>& getLines() const { return lines; }
+  const std::vector<Math::Intersection>& getIntersections() const { return intersections; }
+  const Math::LineSegment& operator[] (unsigned idx) const { return lines[idx]; }
 
-  const Math::LineSegment& operator[] (unsigned idx) const
-  {
-    return lines[idx];
-  }
-
-
+  /** calculate the nearest line among all lines*/
   Math::LineSegment getNearestLine(const Pose2D& pose) const
   {
-    return getNearestLine(pose.translation);
+    return lines[getNearestLine(pose.translation, all_lines)];
   }//end getNearestLine
 
 
-  const Math::LineSegment& getNearestLine(const Vector2<double>& point) const
+  /**
+   type - list of constraints of the request
+   */
+  int getNearestLine(const Vector2<double>& point, int type = all_lines) const
   {
-    ASSERT(numberOfEntries > 0);
+    ASSERT(lines.size() > 0);
 
     double minDistance = std::numeric_limits<double>::infinity();
-    int minIdx = 0;
+    int minIdx = -1;
 
-    for (int i = 0; i < numberOfEntries; i++)
+    for (unsigned int i = 0; i < lines.size(); i++)
     {
+      Vector2<double> direction = lines[i].getDirection();
+      direction.normalize();
+
+      // determine the type of line
+      int length_type    = (lines[i].getLength() > penalty_area_width + 100)? long_lines  :short_lines;
+      int direction_type = (fabs(direction.x) > fabs(direction.y))          ? along_lines :across_lines;
+      int line_type      = (lines[i].getBase().abs() < circle_radius + 100) ? circle_lines:(length_type|direction_type);
+
+      if((type & line_type) != line_type)
+        continue;
+
       // calculate the distance :)
       double dist = lines[i].minDistance(point);
 
@@ -92,10 +146,10 @@ public:
       }
     }//end for
 
-    return lines[minIdx];
+    return minIdx;
   }//end getNearestLine
 
-  const Math::Intersection& getNearestIntersection(const Vector2<double>& point) const
+  int getNearestIntersection(const Vector2<double>& point) const
   {
     ASSERT(intersections.size() > 0);
 
@@ -114,10 +168,10 @@ public:
       }
     }//end for
 
-    return intersections[minIdx];
+    return minIdx;
   }//end getNearestIntersection
 
-  const Math::Intersection& getNearestTCrossing(const Vector2<double>& point) const
+  int getNearestTCrossing(const Vector2<double>& point) const
   {
     ASSERT(intersections.size() > 0);
 
@@ -141,14 +195,15 @@ public:
       }
     }//end for
 
-    return intersections[minIdx];
+    return minIdx;
   }//end getNearestTCrossing
+
 
   void findIntersections()
   {
-    for (int i = 0; i < numberOfEntries; i++)
+    for (unsigned int i = 0; i < lines.size(); i++)
     {
-      for (int j = i + 1; j < numberOfEntries; j++)
+      for (unsigned int j = i + 1; j < lines.size(); j++)
       {
         Math::Intersection intersection(lines[i], lines[j]);
         if (intersection.type != Math::Intersection::none)
@@ -166,7 +221,7 @@ public:
   {
     FIELD_DRAWING_CONTEXT;
     PEN("0000FF", 20);
-    for (int i = 0; i < numberOfEntries; i++)
+    for (unsigned int i = 0; i < lines.size(); i++)
     {
       LINE(lines[i].begin().x, lines[i].begin().y,
         lines[i].end().x, lines[i].end().y);
@@ -196,10 +251,10 @@ public:
 
 
 
-  void create_colosetPoinsTable(double fieldWidth, double fieldLength)
+  void create_closestPoinsTable(double fieldWidth, double fieldLength)
   {
-    yWidth = 0.5*fieldLength/(double)ySize;
-    xWidth = 0.5*fieldWidth/(double)xSize;
+    yWidth = 0.5*fieldLength/(double)(ySize-1);
+    xWidth = 0.5*fieldWidth/(double)(xSize-1);
 
     for (int x = 0; x < xSize; x++)
     {
@@ -207,88 +262,115 @@ public:
       {
         Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
 
-        const Math::LineSegment& line = getNearestLine(point);
-        closestPoints[x][y] = line.projection(point);
+        for(int i = 0; i < numberOfLinesTableType; i++)
+        {
+          const int idx = getNearestLine(point, line_type[i]);
+          closestPoints[x][y][i].id = idx;
+          if(idx != -1)
+            closestPoints[x][y][i].position = lines[idx].projection(point);
+          else
+            closestPoints[x][y][i].position = point;
+        }
       }//end for
     }//end for
-  }//end create_colosetPoinsTable
+  }//end create_closestPoinsTable
 
 
-  void create_colosetCornerPoinsTable(double fieldWidth, double fieldLength)
+  void create_closestCornerPoinsTable(double fieldWidth, double fieldLength)
   {
-    yWidth = 0.5*fieldLength/(double)ySize;
-    xWidth = 0.5*fieldWidth/(double)xSize;
+    yWidth = 0.5*fieldLength/(double)(ySize-1);
+    xWidth = 0.5*fieldWidth/(double)(xSize-1);
 
     for (int x = 0; x < xSize; x++)
     {
       for (int y = 0; y < ySize; y++)
       {
         Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-        const Math::Intersection& corner = getNearestIntersection(point);
-        const Math::Intersection& xort = getNearestTCrossing(point);
-        closestCornerPoints[x][y] = corner.pos;
-        closestTCrossings[x][y] = xort.pos;
+
+        const int idx_corner = getNearestIntersection(point);
+        closestCornerPoints[x][y].position = intersections[idx_corner].pos;
+        closestCornerPoints[x][y].id = idx_corner;
+
+        const int idx_xort = getNearestTCrossing(point);
+        closestTCrossings[x][y].position = intersections[idx_xort].pos;
+        closestTCrossings[x][y].id = idx_xort;
       }//end for
     }//end for
-  }//end create_colosetCornerPoinsTable
+  }//end create_closestCornerPoinsTable
 
 
-  Vector2<double> get_closest_corner_point(const Vector2<double>& p) const
+  const NamedPoint& get_closest_corner_point(const Vector2<double>& p) const
   {
     // allready prepared for rounding, i.e. +0.5
-    double x = (p.x/xWidth + xSize)*0.5;
-    double y = (p.y/yWidth + ySize)*0.5;
+    int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
+    int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
     
-    if(x > 0 && x < xSize && y > 0 && y < ySize )
-      return closestCornerPoints[(int)x][(int)y];
-    else
-      // TODO: make it better (point outside the field)
-      return Vector2<double>(10000,10000);
+    //ASSERT(x >= 0 && x < xSize && y >= 0 && y < ySize );
+    return closestCornerPoints[x][y];
   }//end get_closest_point
 
 
-  Vector2<double> get_closest_tcrossing_point(const Vector2<double>& p) const
+  const NamedPoint& get_closest_tcrossing_point(const Vector2<double>& p) const
   {
-    // allready prepared for rounding, i.e. +0.5
-    double x = (p.x/xWidth + xSize)*0.5;
-    double y = (p.y/yWidth + ySize)*0.5;
-
-    if(x > 0 && x < xSize && y > 0 && y < ySize )
-      return closestTCrossings[(int)x][(int)y];
-    else
-      // TODO: make it better (point outside the field)
-      return Vector2<double>(10000,10000);
+    int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
+    int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
+    
+    //ASSERT(x >= 0 && x < xSize && y >= 0 && y < ySize );
+    return closestTCrossings[x][y];
   }//end get_closest_tcrossing_point
 
-  Vector2<double> get_closest_point(const Vector2<double>& p) const
+  NamedPoint get_closest_point(const Vector2<double>& p, int type = all_lines) const
   {
     // allready prepared for rounding, i.e. +0.5
-    double x = (p.x/xWidth + xSize)*0.5;
-    double y = (p.y/yWidth + ySize)*0.5;
+    int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
+    int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
     
-    if(x > 0 && x < xSize && y > 0 && y < ySize )
-      return closestPoints[(int)x][(int)y];
-    else
-      // TODO: make it better (point outside the field)
-      return Vector2<double>(10000,10000);
+    //ASSERT(x >= 0 && x < xSize && y >= 0 && y < ySize );
+
+    double minDist = std::numeric_limits<double>::infinity();
+    NamedPoint closestPoint;
+
+    for(int i = 0; i < numberOfLinesTableType; i++)
+    {
+      if((type & line_type[i]) == line_type[i] && closestPoints[x][y][i].id != -1)
+      {
+        double dist = (closestPoints[x][y][i].position - p).abs();
+        if(dist < minDist)
+        {
+          closestPoint = closestPoints[x][y][i];
+          minDist = dist;
+        }
+      }
+    }//end for
+   
+    return closestPoint;
   }//end get_closest_point
 
 
-  void draw_closest_points() const
+  void draw_closest_points(int type) const
   {
     FIELD_DRAWING_CONTEXT;
-    DebugDrawings::Color white(1.0,1.0,1.0);
-    DebugDrawings::Color black(0.0,0.0,0.0);
+    DebugDrawings::Color white(1.0,1.0,1.0,0.0); // transparent
+    DebugDrawings::Color black(0.0,0.0,0.0,1.0);
 
     for (int x = 0; x < xSize; x++)
     {
       for (int y = 0; y < ySize; y++)
       {
         Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-        double d = (point - closestPoints[x][y]).abs();
-        double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
-        DebugDrawings::Color color = white*t + black*(1-t);
-        PEN(color, 20);
+        NamedPoint np = get_closest_point(point, type);
+        
+        if(np.id != -1)
+        {
+          double d = (np.position - point).abs();
+          double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
+          DebugDrawings::Color color = white*t + black*(1-t);
+          PEN(color, 20);
+        }else
+        {
+          // noclosest line
+          PEN(white, 20);
+        }
         FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
       }//end for
     }//end for
@@ -299,15 +381,36 @@ public:
   void draw_closest_corner_points() const
   {
     FIELD_DRAWING_CONTEXT;
-    DebugDrawings::Color white(1.0,1.0,1.0);
-    DebugDrawings::Color black(0.0,0.0,0.0);
+    DebugDrawings::Color white(1.0,1.0,1.0,0.0); // transparent
+    DebugDrawings::Color black(0.0,0.0,0.0,1.0);
 
     for (int x = 0; x < xSize; x++)
     {
       for (int y = 0; y < ySize; y++)
       {
         Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
-        double d = (point - closestCornerPoints[x][y]).abs();
+        double d = (point - get_closest_corner_point(point).position).abs();
+        double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
+        DebugDrawings::Color color = white*t + black*(1-t);
+        PEN(color, 20);
+        FILLBOX(point.x - xWidth, point.y - yWidth, point.x+xWidth, point.y+yWidth);
+      }//end for
+    }//end for
+  }//end draw_closest_points
+
+
+  void draw_closest_tcrossing_points() const
+  {
+    FIELD_DRAWING_CONTEXT;
+    DebugDrawings::Color white(1.0,1.0,1.0,0.0); // transparent
+    DebugDrawings::Color black(0.0,0.0,0.0,1.0);
+
+    for (int x = 0; x < xSize; x++)
+    {
+      for (int y = 0; y < ySize; y++)
+      {
+        Vector2<double> point(xWidth*(2*x-xSize+1), yWidth*(2*y-ySize+1));
+        double d = (point - get_closest_tcrossing_point(point).position).abs();
         double t = Math::clamp(d/(yWidth*ySize),0.0,1.0);
         DebugDrawings::Color color = white*t + black*(1-t);
         PEN(color, 20);

@@ -21,13 +21,13 @@
 #include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Perception/CameraMatrix.h>
 
-#include "Core/Representations/Motion/Request/HeadMotionRequest.h"
-#include "Core/Representations/Motion/Request/MotionRequest.h"
-#include "Core/Representations/Motion/MotionStatus.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 
-#include "Core/Representations/Modeling/OdometryData.h"
-#include "Core/Representations/Modeling/KinematicChain.h"
-#include "Core/Representations/Modeling/SupportPolygon.h"
+#include "Representations/Modeling/OdometryData.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/SupportPolygon.h"
 
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/ReachibilityGrid.h"
 //#include "MotionEngine/InverseKinematicsMotionEngine/Tools/IKMotionParameters.h"

@@ -19,7 +19,7 @@ Logger::~Logger()
 
 void Logger::executeDebugCommand(
   const std::string& command, const std::map<std::string, std::string>& arguments,
-  std::stringstream &outstream)
+  std::ostream &outstream)
 {
   if (command != this->command) return;
   for(std::map<std::string, std::string>::const_iterator iter=arguments.begin(); iter!=arguments.end(); ++iter)
@@ -28,7 +28,7 @@ void Logger::executeDebugCommand(
   }
 }
 
-void Logger::handleCommand(const std::string& argName, const std::string& argValue, std::stringstream& outstream)
+void Logger::handleCommand(const std::string& argName, const std::string& argValue, std::ostream& outstream)
 {
   if ("open" == argName) {
     logfileManager.openFile(argValue.c_str());

@@ -1,50 +1,53 @@
 #ifndef __UniformGrid_H_
 #define __UniformGrid_H_
 
-#include "Tools/Math/Vector2.h"
-#include "PlatformInterface/Platform.h"
+#include <vector>
+#include <Tools/Math/Vector2.h>
 
 #include "Grid.h"
-
-#include <Representations/Infrastructure/CameraInfo.h>
-
-using namespace naoth;
+//#include <Representations/Infrastructure/CameraInfo.h>
 
 class UniformGrid: public Grid
 {
 public:
-	UniformGrid(unsigned int width, unsigned int height)
+	UniformGrid(unsigned int imageWidth, unsigned int imageHeight, unsigned int gridWidth, unsigned int gridHeight)
     : 
-    Grid(width*height), 
-    width(width), 
-    height(height)
+    Grid(gridWidth*gridHeight),
+    width(gridWidth),
+    height(gridHeight),
+    scaledImageIndex(gridWidth * gridHeight),
+    gridCoordinates(gridWidth * gridHeight)
   {
-    scaledImageIndex = new int[width * height];
-    gridCoordinates = new Vector2<int>[width * height];
+    //scaledImageIndex = new int[gridWidth * gridHeight];
+    //gridCoordinates = new Vector2<int>[gridWidth * gridHeight];
 
-    CameraInfo& cameraInfo = Platform::getInstance().theCameraInfo;
-    createUniformGrid(cameraInfo.resolutionWidth, cameraInfo.resolutionHeight, width, height);
+    //CameraInfo& cameraInfo = Platform::getInstance().theCameraInfo;
+    createUniformGrid(imageWidth, imageHeight, width, height);
   }
 
-  virtual ~UniformGrid()
-  {
-    delete[] scaledImageIndex;
-    delete[] gridCoordinates;
-  }
+  virtual ~UniformGrid(){}
 
+  // dimensions of the grid
 	const unsigned int width;
 	const unsigned int height;
 
 
-  void addPoint(Vector2<int> point, int gridX, int gridY)
+  inline void addPoint(const Vector2<int>& point, unsigned int gridX, unsigned int gridY)
   {
-    ASSERT(numberOfGridPoints < maxNumberOfPoints);
-    int idx = Grid::addPoint(point);
-    getScaledImageIndex(gridX,gridY) = idx;
-    gridCoordinates[idx] = Vector2<int>(gridX, gridY);
-  }//end
+    int idx = Grid::addPoint(point); // ensures 0 <= idx < width*height
 
-  int& getScaledImageIndex(unsigned int x, unsigned int y) const
+    //getScaledImageIndex(gridX,gridY) = idx;
+
+    // TODO: find a better solution for it
+    ASSERT(gridX < width && gridY < height);
+    scaledImageIndex[gridY * width + gridX] = idx;
+
+    gridCoordinates[idx].x = gridX;
+    gridCoordinates[idx].y = gridY;
+  }//end addPoint
+
+
+  int getScaledImageIndex(unsigned int x, unsigned int y) const
   {
     ASSERT(x < width && y < height);
     return scaledImageIndex[y * width + x];
@@ -85,8 +88,8 @@ public:
 
 private:
   
-  int* scaledImageIndex;
-  Vector2<int>* gridCoordinates;
+  std::vector<int> scaledImageIndex;
+  std::vector<Vector2<int> > gridCoordinates;
 
 };//end class UniformGrid
 

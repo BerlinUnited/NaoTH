@@ -9,7 +9,7 @@
 #include <Tools/Math/Pose2D.h>
 
 
-#include "Core/Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/KinematicChain.h"
 #include "OdometryCalculator.h"
 
 using namespace naoth;

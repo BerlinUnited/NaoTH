@@ -3,7 +3,7 @@
  */
 
 #include "Sensor.h"
-#include "Core/Tools/SwapSpace/SwapSpace.h"
+#include "Tools/SwapSpace/SwapSpace.h"
 
 Sensor::Sensor()
 {

@@ -10,7 +10,7 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-#include "Core/Tools/SwapSpace/SwapSpace.h"
+#include "Tools/SwapSpace/SwapSpace.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
