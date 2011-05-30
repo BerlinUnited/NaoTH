@@ -81,8 +81,8 @@ private:
   class BlackBoardDataHolder: public BlackBoardData
   {
   private:
-    T instance;
     std::string name;
+    T instance;
 
   protected:
     //virtual void* getDataPtr() const { return static_cast<void*>(&instance); }
