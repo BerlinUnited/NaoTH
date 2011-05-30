@@ -16,10 +16,6 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/DataStructures/Printable.h"
 
-//#include "Module.h"
-#include "BlackBoard.h"
-#include "BlackBoardInterface.h"
-
 using namespace std;
 using namespace naoth;
 

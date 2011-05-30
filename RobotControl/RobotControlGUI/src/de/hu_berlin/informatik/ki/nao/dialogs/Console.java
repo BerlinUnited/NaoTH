@@ -6,7 +6,6 @@
 package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import de.hu_berlin.informatik.ki.nao.AbstractDialog;
-import de.hu_berlin.informatik.ki.nao.Dialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;

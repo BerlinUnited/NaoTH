@@ -18,7 +18,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author thomas
  */
 @PluginImplementation
-public class ImageManagerImpl extends AbstractManager<JanusImage>
+public class ImageManagerImpl extends AbstractManagerPlugin<JanusImage>
   implements ImageManager
 {
 
@@ -87,6 +87,9 @@ public class ImageManagerImpl extends AbstractManager<JanusImage>
     catch(InvalidProtocolBufferException ex)
     {
       Logger.getLogger(ImageManagerImpl.class.getName()).log(Level.SEVERE, "could not parse stream", ex);
+    }catch(Exception ex)
+    {
+      Logger.getLogger(ImageManagerImpl.class.getName()).log(Level.SEVERE, "could not parse the image", ex);
     }
 
     return janusImage;

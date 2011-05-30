@@ -4,6 +4,7 @@
 package de.hu_berlin.informatik.ki.nao.manager;
 
 import de.hu_berlin.informatik.ki.nao.server.Command;
+import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 
 /**
  *
@@ -13,11 +14,13 @@ public class GenericManager extends AbstractManager<byte[]>
 {
 
   private final Command command;
+  private final MessageServer messageServer;
 
-  public GenericManager(Command command)
+  public GenericManager(MessageServer messageServer, Command command)
   {
     super();
     this.command = command;
+    this.messageServer = messageServer;
   }
 
   @Override
@@ -32,5 +35,10 @@ public class GenericManager extends AbstractManager<byte[]>
     return this.command;
   }
 
+  @Override
+  public MessageServer getServer()
+  {
+    return this.messageServer;
+  }
 }//end class GenericManager
 

@@ -10,6 +10,7 @@ import de.hu_berlin.informatik.ki.nao.dataformats.ModuleConfiguration;
  *
  * @author Heinrich Mellmann
  */
-public interface ModuleConfigurationManager extends Manager<ModuleConfiguration>{
+public interface ModuleConfigurationManager extends Manager<ModuleConfiguration>
+{
 
 }

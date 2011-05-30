@@ -8,13 +8,20 @@
 #include "Cognition.h"
 
 #include <PlatformInterface/Platform.h>
+
 #include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/Debug/Stopwatch.h>
+#include "Tools/Debug/DebugRequest.h"
+
+
+// list the modules and representations on the blackboard
+#include "CognitionDebugServer.h"
+#include "Messages/Messages.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 
 #include <glib.h>
-
-#include "Tools/Debug/DebugRequest.h"
-#include <Tools/Debug/Stopwatch.h>
 
 /////////////////////////////////////
 // Modules
@@ -37,7 +44,17 @@ using namespace std;
 
 Cognition::Cognition()
 {
-  
+  REGISTER_DEBUG_COMMAND("modules:list",
+    "return the list of registered modules with provided and required representations", this);
+  REGISTER_DEBUG_COMMAND("modules:set",
+    "enables or diables the execution of a module. usage: modules:set [moduleName=on|off]+", this);
+  REGISTER_DEBUG_COMMAND("modules:store",
+    "store te corrent module configuration to the config file listed in the scheme", this);
+
+
+  REGISTER_DEBUG_COMMAND("representation:list", "Stream out the list of all registered representations", this);
+  REGISTER_DEBUG_COMMAND("representation:get", "Stream out all the representations listet", this);
+  REGISTER_DEBUG_COMMAND("representation:getbinary", "Stream out serialized represenation", this);
 }
 
 Cognition::~Cognition()
@@ -73,7 +90,7 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   packageLoader.loadPackages("Packages/", *this);
   
   // use the configuration in order to set whether a module is activated or not
-  naoth::Configuration& config = Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
   for(list<string>::const_iterator name=getExecutionList().begin();
     name != getExecutionList().end(); name++)
@@ -108,9 +125,9 @@ void Cognition::call()
     {
       std::string name(*iter);
       //g_debug("executing %s", name.c_str());
-      STOPWATCH_START(name);
+      STOPWATCH_START_GENERIC(name);
       module->execute();
-      STOPWATCH_STOP(name);
+      STOPWATCH_START_GENERIC(name);
     }//end if
   }//end for all modules
   
@@ -120,4 +137,128 @@ void Cognition::call()
 }//end call
 
 
+
+void Cognition::executeDebugCommand(const std::string& command, 
+                                    const std::map<std::string,std::string>& arguments, 
+                                    std::ostream& outstream)
+{
+  if (command == "modules:list")
+  {
+    naothmessages::ModuleList msg;
+    
+    list<string>::const_iterator iterModule;
+    for (iterModule = getExecutionList().begin(); iterModule != getExecutionList().end(); ++iterModule)
+    {
+      naothmessages::Module* m = msg.add_modules();
+
+      // get the module holder
+      AbstractModuleCreator* moduleCreator = getModule(*iterModule);
+      ASSERT(moduleCreator != NULL); // shold never happen
+
+      // module name
+      m->set_name(*iterModule);
+      m->set_active(moduleCreator->isEnabled());
+      
+      if(moduleCreator->isEnabled())
+      {
+        Module* module = moduleCreator->getModule();
+        ASSERT(module != NULL); // shold never happen
+
+
+        std::list<Representation*>::const_iterator iterRep;
+        for (iterRep = module->getRequiredRepresentations().begin();
+          iterRep != module->getRequiredRepresentations().end(); iterRep++)
+        {
+          m->add_usedrepresentations((**iterRep).getName());
+        }
+
+        for (iterRep = module->getProvidedRepresentations().begin();
+          iterRep != module->getProvidedRepresentations().end(); iterRep++)
+        {
+          m->add_providedrepresentations((**iterRep).getName());
+        }
+      }//end if
+    }//end for iterModule
+
+    google::protobuf::io::OstreamOutputStream buf(&outstream);
+    msg.SerializeToZeroCopyStream(&buf);
+  }
+  else if( command == "modules:store" )
+  {
+    /*
+    // write the modules to a config
+    Config cfg;
+
+    list<string>::iterator iterMod;
+    for (iterMod = Cognition::getInstance().moduleExecutionList.begin();
+      iterMod != Cognition::getInstance().moduleExecutionList.end(); ++iterMod)
+    {
+      ModuleClassWraperBase* moduleWrapper = 
+        Cognition::getInstance().moduleExecutionMap.find(*iterMod)->second;
+
+      cfg.set(*iterMod, moduleWrapper->isEnabled());
+    }//end for
+
+    // write the config to file
+    const std::string& filename = Platform::getInstance().theConfigPathInfo.modules;
+    std::stringstream sstream;
+    sstream << cfg;
+
+    if (SynchronizedFileWriter::saveStreamToFile(sstream, filename)) {
+      outstream << "SUCCESS: saved to " << filename << endl;
+    } else {
+      outstream << "ERROR: save to configure file "<< filename << " failed" << endl;
+    }
+    */
+  }
+  else if (command == "modules:set")
+  {
+    std::map<std::string, std::string>::const_iterator iter;
+    for (iter = arguments.begin(); iter != arguments.end(); ++iter)
+    {
+      AbstractModuleCreator* moduleCreator = getModule(iter->first);
+      if (moduleCreator != NULL)
+      {
+        if ((iter->second).compare("on") == 0)
+        {
+          moduleCreator->setEnabled(true);
+          outstream << "set " << (iter->first) << " on" << endl;
+        }
+        else if ((iter->second).compare("off") == 0)
+        {
+          moduleCreator->setEnabled(false);
+          outstream << "set " << (iter->first) << " off" << endl;
+        }
+        else
+        {
+          outstream << "unknown value " << (iter->second) << endl;
+        }
+      }
+      else
+      {
+        outstream << "unknown module " << (iter->first) << endl;
+      }
+    }//end for
+  }
+  else if (command == "representation:list")
+  {
+    printRepresentationList(outstream);
+  }
+  else if (command == "representation:get")
+  {
+    std::map<std::string, std::string>::const_iterator iter;
+    for (iter = arguments.begin(); iter != arguments.end(); ++iter)
+    {
+      printRepresentation(outstream, iter->first, false);
+    }//end for
+  }
+  else if (command == "representation:getbinary")
+  {
+    std::map<std::string, std::string>::const_iterator iter;
+    for (iter = arguments.begin(); iter != arguments.end(); ++iter)
+    {
+      printRepresentation(outstream, iter->first, true);
+    }
+  }
+}//end executeDebugCommand
 

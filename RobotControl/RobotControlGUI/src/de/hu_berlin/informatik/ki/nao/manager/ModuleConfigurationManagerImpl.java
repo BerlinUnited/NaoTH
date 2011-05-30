@@ -11,12 +11,14 @@ import de.hu_berlin.informatik.ki.nao.messages.Messages.Module;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 /**
  *
  * @author Heinrich Mellmann
  */
-public class ModuleConfigurationManagerImpl extends AbstractManager<ModuleConfiguration>
+@PluginImplementation
+public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<ModuleConfiguration>
         implements ModuleConfigurationManager
 {
 

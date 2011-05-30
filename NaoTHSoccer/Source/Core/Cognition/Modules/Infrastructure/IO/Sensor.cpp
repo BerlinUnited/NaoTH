@@ -3,6 +3,7 @@
  */
 
 #include "Sensor.h"
+#include "Tools/SwapSpace/SwapSpace.h"
 
 Sensor::Sensor()
 {
@@ -36,22 +37,16 @@ void Sensor::init(naoth::PlatformDataInterface& platformInterface)
 
 void Sensor::execute()
 {
-  /*
-  unsigned int lastTime = theFrameInfo.time;
-  // data from robot
-  STOPWATCH_START("Cognition-GetData");
-  thePlatformInterface->getCognitionInput();
-  STOPWATCH_STOP("Cognition-GetData");
+  //unsigned int lastTime = theFrameInfo.time;
 
   // data from motion
-  STOPWATCH_START("Cognition-PullSwap");
+  //STOPWATCH_START("Cognition-PullSwap");
   SwapSpace::getInstance().theMotionCache.pull(
-    theMotionStatus,
-    theOdometryData);
-  STOPWATCH_STOP("Cognition-PullSwap");
+    getMotionStatus(),
+    getOdometryData());
+  //STOPWATCH_STOP("Cognition-PullSwap");
   
-  PLOT("Cognition-Time", theFrameInfo.getTimeSince(lastTime));
-  STOPWATCH_START("Cognition-Main");
-  */
+  //PLOT("Cognition-Time", theFrameInfo.getTimeSince(lastTime));
+  //STOPWATCH_START("Cognition-Main");
 }//end execute
 

@@ -84,6 +84,7 @@ void NaoController::get(FrameInfo& data)
 {
   data.time = NaoTime::getNaoTimeInMilliSeconds();
   data.frameNumber++;
+  data.basicTimeStep = getBasicTimeStep();
 }
 
 void NaoController::get(SensorJointData& data)

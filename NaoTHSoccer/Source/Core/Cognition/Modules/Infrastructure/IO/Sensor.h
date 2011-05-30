@@ -27,7 +27,7 @@
 
 #include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
-#include "Representations/Motion/OdometryData.h"
+#include "Representations/Modeling/OdometryData.h"
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>

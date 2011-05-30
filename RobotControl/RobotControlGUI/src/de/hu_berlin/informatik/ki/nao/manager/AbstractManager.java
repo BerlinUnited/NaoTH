@@ -5,13 +5,11 @@
 
 package de.hu_berlin.informatik.ki.nao.manager;
 
-import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  * This is the basic class for every manager. It does a lot of work in order
@@ -49,9 +47,6 @@ public abstract class AbstractManager<T> implements Manager<T>
   
   private LinkedList<ObjectListener<T>> listener = 
     new LinkedList<ObjectListener<T>>();
-
-  @InjectPlugin
-  public RobotControl robotControl;
 
   public AbstractManager()
   {
@@ -140,16 +135,10 @@ public abstract class AbstractManager<T> implements Manager<T>
    */
   public abstract T convertByteArrayToType(byte[] result) throws IllegalArgumentException;
 
-  public MessageServer getServer()
-  {
-    if(robotControl == null)
-    {
-      return null;
-    }
-    else
-    {
-      return robotControl.getMessageServer();
-    }
-  }
+  /**
+   * 
+   * @return the message server
+   */
+  public abstract MessageServer getServer();
 
-}
+}//end class AbstractManager

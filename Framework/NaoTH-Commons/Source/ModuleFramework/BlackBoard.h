@@ -46,14 +46,15 @@
 #include <typeinfo>
 
 #include "Tools/Debug/NaoTHAssert.h"
-
+#include "Representation.h"
 
 /**
  *
  */
 class BlackBoard
 {
-private:
+public:
+
   /**
    * abstract class to be stored at the BlackBoard
    */
@@ -62,8 +63,15 @@ private:
   public:
     virtual const std::string getTypeName() const = 0;
     virtual const std::string getName() const = 0;
-  };
+    virtual const Representation& getRepresentation() const = 0;
+  };//end class BlackBoardData
 
+
+  /** */
+  typedef std::map<std::string, BlackBoardData*> Registry;
+
+
+private:
   /**
    * class BlackBoardDataHolder holds a data of type T as a member.
    * It requires the class T to be NOT abstract and to have a 
@@ -76,21 +84,27 @@ private:
     T instance;
     std::string name;
 
+  protected:
+    //virtual void* getDataPtr() const { return static_cast<void*>(&instance); }
+
   public:
-    BlackBoardDataHolder(const std::string& name): name(name), instance(name)
+    BlackBoardDataHolder(const std::string& name)
+      : name(name), 
+        instance(name)
     {
     }
 
     T& operator*(){ return instance; }
+
     virtual const std::string getTypeName() const { return typeid(T).name(); }
-    virtual const std::string getName() const { return name; };
+    virtual const std::string getName() const { return name; }
+    virtual const Representation& getRepresentation() const { return instance; }
   };
 
-  /** */
-  typedef std::map<std::string, BlackBoardData*> BlackBoardRegistry;
+
 
   /** holds the pointers to  */
-  BlackBoardRegistry registry;
+  Registry registry;
 
 public:
   BlackBoard(){}
@@ -99,10 +113,18 @@ public:
   virtual ~BlackBoard()
   {
     // delete the registry
-    for(BlackBoardRegistry::iterator iter = registry.begin(); iter != registry.end(); iter++)
+    for(Registry::iterator iter = registry.begin(); iter != registry.end(); iter++)
     {
       delete iter->second;
     }
+  }
+
+  /**
+   *
+   */
+  const Registry& getRegistry() const
+  {
+    return registry;
   }
 
   /**
@@ -114,7 +136,7 @@ public:
   const T& getRepresentation(const std::string& name) const
   {
     // search for the representation
-    BlackBoardRegistry::const_iterator iter = registry.find(name);
+    Registry::const_iterator iter = registry.find(name);
 
     // create Representation, if necessary
     if(iter == registry.end())
@@ -154,7 +176,7 @@ public:
   T& getRepresentation(const std::string& name)
   {
     // search for the representation
-    BlackBoardRegistry::iterator iter = registry.find(name);
+    Registry::iterator iter = registry.find(name);
 
     // create Representation, if necessary
     if(iter == registry.end())

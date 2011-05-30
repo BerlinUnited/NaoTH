@@ -8,7 +8,7 @@
 #include <cmath>
 
 
-#include "Webots/WebotsController.h"
+#include "WebotsController.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 
@@ -19,7 +19,7 @@ WebotsController::WebotsController()
     PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
     key(0)
 {
-  //wb_robot_init();
+  wb_robot_init();
   get_Devices();
   cout << "Constructor finished" << endl;
 
@@ -178,6 +178,7 @@ void WebotsController::get(FrameInfo& data)
 {
   data.frameNumber++;
   data.time += getBasicTimeStep();
+  data.basicTimeStep = getBasicTimeStep();
 }
 
 void WebotsController::get(SensorJointData& data)
@@ -189,6 +190,8 @@ void WebotsController::get(SensorJointData& data)
     data.ddp[i] = (dp - data.dp[i]) / dt;
     data.dp[i] = dp;
     data.position[i] = p;
+    
+    data.stiffness[i] = currentStiffness[i];
   }//end for
 }
 
@@ -411,11 +414,12 @@ void WebotsController::get(IRReceiveData& data)
 
 void WebotsController::set(const MotorJointData& data)
 {
-  const double* stiffness = data.hardness;
+  const double* stiffness = data.stiffness;
   const double* jointData = data.position;
   for (int i = 0; i < JointData::numOfJoint; i++) {
     if (stiffness[i] > 0) {
       wb_servo_set_position(joint[i], jointData[i]);
+      currentStiffness[i] = stiffness[i];
     }
   }//end for
 }

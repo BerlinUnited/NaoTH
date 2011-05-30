@@ -19,12 +19,13 @@ JointData::JointData()
     position[i] = 0;
     dp[i] = 0;
     ddp[i] = 0;
+    stiffness[i] = 0.0;
   }
 }
 
-void JointData::init(const std::string& filename)
+void JointData::init()
 {
-  Configuration& cfg = Platform::getInstance().theConfiguration;
+  const Configuration& cfg = Platform::getInstance().theConfiguration;
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
     double maxDeg = 0;
@@ -186,17 +187,27 @@ bool JointData::isLegStiffnessOn() const
 {
   for ( int i=JointData::RHipYawPitch; i<JointData::numOfJoint; i++)
   {
-    if ( hardness[i] < 0 ) return false;
+    if ( stiffness[i] < 0 ) return false;
   }
   return true;
+}
+
+void JointData::checkStiffness() const
+{
+  for(int i=0; i<JointData::numOfJoint; i++)
+  {
+    double v = stiffness[i];
+    if ( v > 1 || v < -1 )
+    {
+      THROW("Get ILLEGAL Stiffness: "<<getJointName(JointData::JointID(i))<<" = "<<v);
+    }
+  }
 }
 
 SensorJointData::SensorJointData()
 {
   for (int i = 0; i < numOfJoint; i++)
   {
-    position[i] = 0.0;
-    hardness[i] = 0.0;
     electricCurrent[i] = 0.0;
     temperature[i] = 0.0;
   }//end for
@@ -210,7 +221,7 @@ void SensorJointData::print(ostream& stream) const
   for (int i = 0; i < numOfJoint; i++) 
   {
     stream.precision(4);
-    stream << getJointName((JointData::JointID) i) << "\t[" << fixed << Math::toDegrees(position[i]) << ", " << hardness[i] << ", ";
+    stream << getJointName((JointData::JointID) i) << "\t[" << fixed << Math::toDegrees(position[i]) << ", " << stiffness[i] << ", ";
     stream.precision(0);
     stream << temperature[i] << ", ";
     stream.precision(3);
@@ -224,10 +235,6 @@ SensorJointData::~SensorJointData()
 
 MotorJointData::MotorJointData()
 {
-  for (int i = 0; i < numOfJoint; i++) {
-    position[i] = 0.0;
-    hardness[i] = 0.0;
-  }//end for
 }
 
 
@@ -240,7 +247,7 @@ void MotorJointData::print(ostream& stream) const
   stream << "Joint [pos, hardness]" << endl;
   stream << "------------------------" << endl;
   for (int i = 0; i < numOfJoint; i++) {
-    stream << getJointName((JointData::JointID) i) << "[" << position[i] << ", " << hardness[i] << "]" << endl;
+    stream << getJointName((JointData::JointID) i) << "[" << position[i] << ", " << stiffness[i] << "]" << endl;
   }//end for
 }//end print
 
@@ -251,7 +258,7 @@ void Serializer<SensorJointData>::serialize(const SensorJointData& representatio
   for(int i=0; i < JointData::numOfJoint; i++)
   {
     message.mutable_jointdata()->add_position(representation.position[i]);
-    message.mutable_jointdata()->add_hardness(representation.hardness[i]);
+    message.mutable_jointdata()->add_stiffness(representation.stiffness[i]);
     message.mutable_jointdata()->add_dp(representation.dp[i]);
     message.mutable_jointdata()->add_ddp(representation.ddp[i]);
   }
@@ -286,9 +293,9 @@ void Serializer<SensorJointData>::deserialize(std::istream& stream, SensorJointD
   {
     representation.position[i] = message.jointdata().position(i);
   }
-  for(int i=0; i < message.jointdata().hardness().size() && i < JointData::numOfJoint; i++)
+  for(int i=0; i < message.jointdata().stiffness().size() && i < JointData::numOfJoint; i++)
   {
-    representation.hardness[i] = message.jointdata().hardness(i);
+    representation.stiffness[i] = message.jointdata().stiffness(i);
   }
   for(int i=0; i < message.jointdata().dp().size() && i < JointData::numOfJoint; i++)
   {

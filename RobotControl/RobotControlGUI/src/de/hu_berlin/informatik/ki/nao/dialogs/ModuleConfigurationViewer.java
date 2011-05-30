@@ -13,6 +13,7 @@ import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.dataformats.ModuleConfiguration;
 import de.hu_berlin.informatik.ki.nao.dataformats.ModuleConfiguration.Node;
+import de.hu_berlin.informatik.ki.nao.manager.GenericManagerFactory;
 import de.hu_berlin.informatik.ki.nao.manager.ModuleConfigurationManager;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
@@ -43,6 +44,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
   public RobotControl parent;
   @InjectPlugin
   public ModuleConfigurationManager moduleConfigurationManager;
+  @InjectPlugin
+  public GenericManagerFactory genericManagerFactory;
   
   //private VisualizationViewer<Node, Edge> vv;
 
@@ -418,45 +421,36 @@ public class ModuleConfigurationViewer extends AbstractDialog
     @Override
     public void actionPerformed(java.awt.event.ActionEvent evt)
     {
-        /*
       if(currentCommand != null)
       {
-        parent.getGenericManager(currentCommand).removeListener(this);
+        genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
 
-      currentCommand = Command.newBuilder()
-        .setName("modules:set")
-        .addArgs(
-          CMDArg.newBuilder()
-          .setName(checkBox.getText())
-          .setValue(checkBox.isSelected() ? "on" : "off")
-          ).build();
-      
-      parent.getGenericManager(currentCommand).addListener(this);
-         * */
+      currentCommand = new Command("modules:set");
+      currentCommand.addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off");
+
+      genericManagerFactory.getManager(currentCommand).addListener(this);
     }//end actionPerformed
 
     @Override
     public void errorOccured(String cause)
     {
-        /*
       if(currentCommand != null)
-        parent.getGenericManager(currentCommand).removeListener(this);
+        genericManagerFactory.getManager(currentCommand).removeListener(this);
       currentCommand = null;
-      System.err.println(cause);*/
-    }
+      System.err.println(cause);
+    }//end errorOccured
 
     @Override
-    public void newObjectReceived(byte[] object) {
-      /*
-       String str = new String(object);
+    public void newObjectReceived(byte[] object)
+    {
+      String str = new String(object);
       String[] res = str.split("( |\n|\r|\t)+");
       this.checkBox.setSelected(res.length > 2 && res[2].equals("on"));
       if(currentCommand != null)
-        parent.getGenericManager(currentCommand).removeListener(this);
+        genericManagerFactory.getManager(currentCommand).removeListener(this);
       currentCommand = null;
-       * */
-    }
+    }//end newObjectReceived
   }//end ModuleCheckBoxListener
 
 

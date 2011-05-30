@@ -32,7 +32,7 @@ namespace naoth
     {
     }
 
-    friend ostream& operator<<(ostream& stream, const Printable& representation);
+    friend ostream& operator<<(ostream& stream, const Printable& printable);
 
   };
 }

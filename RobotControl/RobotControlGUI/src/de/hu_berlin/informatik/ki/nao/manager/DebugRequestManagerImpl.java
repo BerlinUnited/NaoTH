@@ -11,7 +11,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author Heinrich Mellmann
  */
 @PluginImplementation
-public class DebugRequestManagerImpl extends AbstractManager<String[]>
+public class DebugRequestManagerImpl extends AbstractManagerPlugin<String[]>
   implements DebugRequestManager
 {
 
@@ -25,7 +25,7 @@ public class DebugRequestManagerImpl extends AbstractManager<String[]>
   @Override
   public Command getCurrentCommand()
   {
-    return new Command("list_debug_request");
+    return new Command("debug_request:list");
   }
 }//end class DebugRequestManager
 

@@ -20,9 +20,8 @@ DebugServer::DebugServer()
 
   g_async_queue_ref(commands);
   g_async_queue_ref(answers);
+}//end DebugServer
 
-
-}
 
 void DebugServer::start(unsigned int port)
 {
@@ -41,7 +40,8 @@ void DebugServer::start(unsigned int port)
   {
     g_warning("No threading support: DebugServer not available");
   }
-}
+}//end start
+
 
 void DebugServer::mainReader()
 {
@@ -65,9 +65,11 @@ void DebugServer::mainReader()
       g_async_queue_push(commands, msg);
     }
     g_thread_yield();
-  }
+  }//end while
+
   g_async_queue_unref(commands);
-}
+}//end mainReader
+
 
 void DebugServer::mainWriter()
 {
@@ -91,9 +93,11 @@ void DebugServer::mainWriter()
     }
     g_string_free(answer, true);
     g_thread_yield();
-  }
+  }//end while
+
   g_async_queue_unref(answers);
-}
+}//end mainWriter
+
 
 void DebugServer::execute()
 {
@@ -108,8 +112,9 @@ void DebugServer::execute()
     g_async_queue_push(answers, answer);
 
     g_free(cmdRaw);
-  }
-}
+  }//end while
+}//end execute
+
 
 void DebugServer::handleCommand(char* cmdRaw, GString* answer)
 {
@@ -193,10 +198,9 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
     g_strfreev(argv);
 
     handleCommand(commandName, arguments, answer, answerAsBase64);
-
   }
+}//end handleCommand
 
-}
 
 void DebugServer::handleCommand(std::string command, std::map<std::string,
   std::string> arguments, GString* answer, bool encodeBase64)
@@ -217,10 +221,9 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
   
   const std::string& str = answerFromHandler.str();
 
-  if (encodeBase64)
+  if (encodeBase64 && str.length() > 0)
   {
-    char* encoded = g_base64_encode((guchar*) str.c_str(),
-      str.length());
+    char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
     g_string_append(answer, encoded);
     //g_debug("encoding to base64, old size=%d and new size=%d, encoded raw length=%d", 
     //  answerFromHandler.str().length(), answer->len, strlen(encoded));
@@ -232,6 +235,7 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
   }
   
 }//end handleCommand
+
 
 bool DebugServer::registerCommand(std::string command, std::string description,
   DebugCommandExecutor* executor)
@@ -246,6 +250,7 @@ bool DebugServer::registerCommand(std::string command, std::string description,
   }
   return false;
 }//end registerCommand
+
 
 void DebugServer::objectDestructed(DebugCommandExecutor* object)
 {

@@ -15,7 +15,6 @@
 ParameterList::ParameterList(const std::string& parentClassName)
 {
   this->parentClassName = parentClassName;
-  
 }//end constructor ParameterList
 
 void ParameterList::initParams()
@@ -65,7 +64,7 @@ bool& ParameterList::registerParameter(const std::string& name, bool& parameter)
 
 void ParameterList::loadFromConfig()
 {
-  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 
   // unsigned int
   for (std::map<std::string, unsigned int*>::const_iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); iter++)
@@ -116,6 +115,7 @@ void ParameterList::loadFromConfig()
 
 void ParameterList::saveToConfig()
 {
+  /*
   naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 
   for(std::map<std::string, unsigned int*>::iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); iter++)
@@ -142,5 +142,5 @@ void ParameterList::saveToConfig()
   {
     config.setBool(parentClassName, iter->first, *(iter->second));
   }//end for
-
+*/
 }

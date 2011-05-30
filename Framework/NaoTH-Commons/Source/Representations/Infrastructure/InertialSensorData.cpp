@@ -28,7 +28,7 @@ InertialSensorData::~InertialSensorData()
 
 void InertialSensorData::init()
 {
-  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+  const naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
   offset[X] = config.getDouble(configGroup, "offset[X]");
   offset[Y] = config.getDouble(configGroup, "offset[Y]");
 }

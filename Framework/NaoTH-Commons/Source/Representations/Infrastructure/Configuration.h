@@ -22,7 +22,7 @@ namespace naoth
     Configuration(const Configuration& orig);
     virtual ~Configuration();
 
-    void loadFromDir(std::string dirlocation, std::string scheme, std::string macAddress);
+    void loadFromDir(std::string dirlocation, std::string scheme, std::string id);
     void loadFile(std::string file, std::string groupName);
     void clear();
 
@@ -34,14 +34,14 @@ namespace naoth
      * @param group
      * @return
      */
-    std::list<std::string> getGroups();
+    std::list<std::string> getGroups() const;
 
     /**
      * Get all keys for a specific group.
      * @param group
      * @return
      */
-    std::list<std::string> getKeys(std::string group);
+    std::list<std::string> getKeys(std::string group) const;
 
     /**
      * Returns true if the configuration has a key with this name and group
@@ -49,7 +49,13 @@ namespace naoth
      * @param key
      * @return
      */
-    bool hasKey(std::string group, std::string key);
+    bool hasKey(std::string group, std::string key) const;
+
+  /**
+   * Returns true if the configuration has a group with this name
+   * @param group
+   */
+  bool hasGroup(std::string group) const;
 
     /**
      * Get a string value from the configuration
@@ -57,7 +63,7 @@ namespace naoth
      * @param key
      * @return
      */
-    std::string getString(std::string group, std::string key);
+    std::string getString(std::string group, std::string key) const;
 
     void setString(std::string group, std::string key, std::string value);
 
@@ -67,7 +73,7 @@ namespace naoth
      * @param key
      * @return
      */
-    double getDouble(std::string group, std::string key);
+    double getDouble(std::string group, std::string key) const;
 
     void setDouble(std::string group, std::string key, double value);
 
@@ -77,7 +83,7 @@ namespace naoth
      * @param key
      * @return
      */
-    int getInt(std::string group, std::string key);
+    int getInt(std::string group, std::string key) const;
 
     void setInt(std::string group, std::string key, int value);
 
@@ -87,7 +93,7 @@ namespace naoth
      * @param key
      * @return
      */
-    bool getBool(std::string group, std::string key);
+    bool getBool(std::string group, std::string key) const;
 
     void setBool(std::string group, std::string key, bool value);
 
@@ -97,7 +103,7 @@ namespace naoth
      * @param key
      * @return
      */
-    std::string getRawValue(std::string group, std::string key);
+    std::string getRawValue(std::string group, std::string key) const;
 
     void setRawValue(std::string group, std::string key, std::string value);
 

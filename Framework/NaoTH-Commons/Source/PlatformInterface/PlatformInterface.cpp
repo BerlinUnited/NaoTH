@@ -73,6 +73,7 @@ void PlatformDataInterface::delete_action_list(ActionList& actionList)
   {
     delete (*iter);
   }//end for
+  actionList.clear();
 }//end execute
 
 void PlatformDataInterface::execute(ActionList& actionList) const

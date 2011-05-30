@@ -45,7 +45,7 @@ message CameraInfo {
 
 message JointData {    
   repeated double position = 1;
-  repeated double hardness = 2;
+  repeated double stiffness = 2;
   repeated double dp = 3;
   repeated double ddp = 4;
 }
@@ -61,8 +61,9 @@ message CameraMatrix {
 }
 
 message FrameInfo {
-  optional uint32 frameNumber = 1; 
-  optional uint32 time = 2;
+  required uint32 frameNumber = 1; 
+  required uint32 time = 2;
+  required uint32 basicTimeStep = 3;
 }
 
 message BallPercept {
@@ -79,6 +80,17 @@ message GoalPercept {
   optional DoubleVector3 goalCentroid = 2;
   optional int32 numberOfSeenPosts = 3;
   repeated GoalPost post = 4;
+}
+
+message HeadMotionRequest {
+  required uint32 id = 1;
+  required uint32 cameraID = 2;
+  optional DoubleVector2 targetJointPosition = 3;
+  optional DoubleVector2 targetPointInImage = 4;
+  optional DoubleVector3 targetPointInTheWorld = 5;
+  optional DoubleVector3 searchCenter = 6;
+  optional DoubleVector3 searchSize = 7;
+  optional bool searchDirection = 8;
 }
 
 message WalkRequest {
