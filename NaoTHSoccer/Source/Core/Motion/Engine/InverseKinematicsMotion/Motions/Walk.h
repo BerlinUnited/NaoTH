@@ -27,6 +27,10 @@ private:
   
   bool canStop() const;
   
+  InverseKinematic::ZMPFeetPose startToWalk(const WalkRequest& req);
+  
+  bool chooseStartingFoot(const InverseKinematic::ZMPFeetPose& p, const WalkRequest& req) const;
+  
 private:
   const IKParameters::Walk& theWalkParameters;
   
@@ -37,4 +41,7 @@ private:
   int theUnsupportedCount;
   
   bool isStopping;
+  
+  // parameters of walk
+  double theBodyPitchOffset;
 };

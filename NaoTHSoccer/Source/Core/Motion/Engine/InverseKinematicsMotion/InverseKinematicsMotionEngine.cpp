@@ -92,6 +92,22 @@ CoMFeetPose InverseKinematicsMotionEngine::getCurrentCoMFeetPose() const
   return getCoMFeetPoseBasedOnSensor();
 }
 
+ZMPFeetPose InverseKinematicsMotionEngine::getPlannedZMPFeetPose() const
+{
+  if ( thePreviewController.ready() )
+  {
+    return theZMPFeetPoseBuffer.back();
+  }
+  
+  // TODO: calculate ZMP according to sensor, return CoM as ZMP at the moment
+  ZMPFeetPose result;
+  CoMFeetPose com = getCurrentCoMFeetPose();
+  result.zmp = com.com;
+  result.lFoot = com.lFoot;
+  result.rFoot = com.rFoot;
+  return result;
+}
+
 Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D& tp, double t) const
 {
   ASSERT(0 <= t);

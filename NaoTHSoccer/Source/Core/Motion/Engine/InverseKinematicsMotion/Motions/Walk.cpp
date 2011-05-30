@@ -122,12 +122,16 @@ CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
 
 ZMPFeetPose Walk::walk(const WalkRequest& req)
 {
+  ZMPFeetPose result;
+  if ( currentState == stopped )
+  {
+    result = startToWalk(req);
+  }
+  
   currentState = running;
   isStopping = false;
-    //stoppingStepFinished = false;
+  //stoppingStepFinished = false;
     //stoppingStepCount = 0;
-  
-  ZMPFeetPose result;
   return result;
 }
 
@@ -135,4 +139,37 @@ ZMPFeetPose Walk::stopWalking()
 {
   ZMPFeetPose result;
   return result;
+}
+
+ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
+{
+  // reset some variables
+  theWaitLandingCount = 0;
+  
+  ZMPFeetPose startingZMPFeetPose;
+  startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
+  
+  bool startWithLeftFoot = chooseStartingFoot(startingZMPFeetPose, req);
+  
+  double zmpX = theParameters.hipOffsetX;
+  double h = theWalkParameters.comHeight;
+  
+  if ( startWithLeftFoot )
+  {
+    startingZMPFeetPose.localInRightFoot();
+    startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
+  }
+  else
+  {
+    startingZMPFeetPose.localInLeftFoot();
+    startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
+  }
+  
+  startingZMPFeetPose.zmp.rotation.rotateY(theBodyPitchOffset);
+  return startingZMPFeetPose;
+}
+
+bool Walk::chooseStartingFoot(const ZMPFeetPose& p, const WalkRequest& req) const
+{
+  return true;
 }

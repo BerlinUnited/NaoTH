@@ -47,6 +47,8 @@ public:
 
   InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
   
+  InverseKinematic::ZMPFeetPose getPlannedZMPFeetPose() const;
+  
   template<typename T>
   T interpolate(const T& sp, const T& tp, double t) const 
   {
@@ -80,7 +82,7 @@ private:
 
   Kinematics::InverseKinematics theInverseKinematics;
   
-  Vector3<double> theCoMControlResult;
+  Vector3<double> theCoMControlResult; // save CoM control result to be reused
   
   PreviewController thePreviewController;
   std::list<InverseKinematic::ZMPFeetPose> theZMPFeetPoseBuffer;
