@@ -30,7 +30,7 @@ public:
   
   virtual ~IKMotion();
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/) = 0;
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus) = 0;
 
 };
 
