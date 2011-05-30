@@ -13,7 +13,8 @@ Walk::Walk()
 :IKMotion(motion::WALK),
 theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
-theUnsupportedCount(0)
+theUnsupportedCount(0),
+isStopping(false)
 {
   
 }
@@ -30,8 +31,6 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
-
-  currentState = running;
 }
 
 bool Walk::FSRProtection()
@@ -84,14 +83,55 @@ bool Walk::waitLanding()
   }
 }
 
+bool Walk::canStop() const
+{
+  if (isStopping)
+    return true;
+    
+  // wait until full step finished
+  //cycle > numberOfSamples
+  return false;
+}
+
 CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
 {
-  ZMPFeetPose zmp = genZMPFeetTrajectory(motionRequest);
-  CoMFeetPose result = theEngine.controlZMP(zmp);
+  WalkRequest walkRequest = motionRequest.walkRequest;
+  ASSERT(!Math::isNan(walkRequest.translation.x));
+  ASSERT(!Math::isNan(walkRequest.translation.y));
+  ASSERT(!Math::isNan(walkRequest.rotation));
+  
+  if (motionRequest.id == getId() || !canStop() )
+  {
+    theZMPFeetPose = walk(walkRequest);
+  }
+  else
+  {
+    if (walkRequest.stopWithStand) // should end with typical stand
+    {
+      theZMPFeetPose = stopWalking();
+    }
+    else
+    {
+      currentState = stopped;
+    }
+  }
+  
+  CoMFeetPose result = theEngine.controlZMP(theZMPFeetPose);
   return result;
 }
 
-ZMPFeetPose Walk::genZMPFeetTrajectory(const MotionRequest& motionRequest)
+ZMPFeetPose Walk::walk(const WalkRequest& req)
+{
+  currentState = running;
+  isStopping = false;
+    //stoppingStepFinished = false;
+    //stoppingStepCount = 0;
+  
+  ZMPFeetPose result;
+  return result;
+}
+
+ZMPFeetPose Walk::stopWalking()
 {
   ZMPFeetPose result;
   return result;
