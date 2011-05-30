@@ -1,4 +1,4 @@
-#include "Core/Cognition/Modules/Infrastructure/LEDSetter/LEDSetter.h"
+#include "Cognition/Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include <gtest/gtest.h>
 
 /*class LEDSetterTest : public Testing::test {

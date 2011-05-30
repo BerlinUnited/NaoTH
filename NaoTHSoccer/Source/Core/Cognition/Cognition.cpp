@@ -13,20 +13,25 @@
 
 #include <glib.h>
 
+#include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/Stopwatch.h>
+
 /////////////////////////////////////
 // Modules
 /////////////////////////////////////
-//Infrastructure
+
+// Infrastructure
 #include "Modules/Infrastructure/IO/Sensor.h"
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
-#include "Modules/Perception/VisualCortex/GridProvider.h"
 
-#include "Core/Tools/Debug/DebugRequest.h"
-#include <Tools/Debug/Stopwatch.h>
+// Perception
+#include "Modules/Perception/VisualCortex/GridProvider.h"
+#include "Modules/Perception/VisualCortex/ImageProcessor.h"
+
 
 using namespace std;
 
@@ -56,11 +61,13 @@ void Cognition::init(naoth::PlatformDataInterface& platformInterface)
   // BEGIN MODULES
   // register of the modules
   registerModule<GridProvider>("GridProvider");  
-  registerModule<LEDSetter > ("LEDSetter");  
-  registerModule<Debug > ("Debug");
+  registerModule<LEDSetter> ("LEDSetter");  
+  registerModule<Debug> ("Debug");
   registerModule<ParameterListDebugLoader> ("ParameterListDebugLoader");
   registerModule<StopwatchSender>("StopwatchSender");
   
+  registerModule<GridProvider>("GridProvider");
+  registerModule<ImageProcessor>("ImageProcessor");
   //END MODULES
   
   packageLoader.loadPackages("Packages/", *this);

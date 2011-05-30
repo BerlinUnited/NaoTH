@@ -13,7 +13,7 @@
 
 #include <DebugCommunication/DebugServer.h>
 
-#include "Core/Representations/FieldInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/Image.h>
@@ -22,7 +22,7 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 
-#include "Core/Tools/Debug/Logger.h"
+#include "Tools/Debug/Logger.h"
 
 using namespace naoth;
 
@@ -48,7 +48,7 @@ public:
 
   virtual void executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
-    std::stringstream &outstream);
+    std::ostream &outstream);
 
 private:
   Logger cognitionLogger;

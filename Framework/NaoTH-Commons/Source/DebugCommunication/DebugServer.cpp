@@ -6,10 +6,10 @@
  */
 
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <iostream>
-#include <string.h>
+#include <sstream>
 
 #include "DebugServer.h"
 
@@ -272,7 +272,7 @@ void DebugServer::objectDestructed(DebugCommandExecutor* object)
 }
 
 void DebugServer::executeDebugCommand(const std::string& command, const std::map<std::string, std::string>& arguments,
-  std::stringstream& out)
+  std::ostream& out)
 {
   if (command == "help")
   {

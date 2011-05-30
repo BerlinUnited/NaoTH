@@ -1,7 +1,7 @@
 #include <ModuleFramework/Module.h>
 #include "ModuleFramework/ModuleManager.h"
 #include <Representations/Infrastructure/Image.h>
-#include "Core/Cognition/Modules/Perception/VisualCortex/GridProvider.h"
+#include "Cognition/Modules/Perception/VisualCortex/GridProvider.h"
 #include <gtest/gtest.h>
 
 using namespace naoth;

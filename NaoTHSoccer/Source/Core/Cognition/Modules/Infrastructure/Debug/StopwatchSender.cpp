@@ -5,7 +5,7 @@
  */
 #include "StopwatchSender.h"
 
-#include "Core/Cognition/CognitionDebugServer.h"
+#include "Cognition/CognitionDebugServer.h"
 #include <Tools/Debug/Stopwatch.h>
 #include "Messages/Messages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -23,7 +23,7 @@ void StopwatchSender::execute()
   
 }
 
-void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::stringstream& outstream)
+void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
 {
   if ("stopwatch" == command)
   {

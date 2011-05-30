@@ -21,7 +21,7 @@
 //Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "Core/Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Infrastructure/ColorTable64.h"
 
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/DataStructures/Printable.h"
