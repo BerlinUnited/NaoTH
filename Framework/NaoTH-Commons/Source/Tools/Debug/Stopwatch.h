@@ -99,9 +99,16 @@ public:
 //#ifdef DEBUG
 #define STOPWATCH_START(name) { static StopwatchItem& _debug_stopwatch_item_ = Stopwatch::getInstance().getStopwatchReference(name); Stopwatch::getInstance().notifyStart(_debug_stopwatch_item_); }
 #define STOPWATCH_STOP(name) { static StopwatchItem& _debug_stopwatch_item_ = Stopwatch::getInstance().getStopwatchReference(name); Stopwatch::getInstance().notifyStop(_debug_stopwatch_item_); }
+
+// this is slow and should be used for loops (only if necessary)
+#define STOPWATCH_START_GENERIC(name) Stopwatch::getInstance().notifyStart(name);
+#define STOPWATCH_STOP_GENERIC(name) Stopwatch::getInstance().notifyStop(name);
+
 //#else
 //#define STOPWATCH_START(name) /* */
 //#define STOPWATCH_STOP(name) /* */
+//#define STOPWATCH_START_GENERIC(name) /* */
+//#define STOPWATCH_STOP_GENERIC(name) /* */
 //#endif // DEBUG
 
 #endif	/* _STOPWATCH_H */

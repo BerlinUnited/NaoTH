@@ -19,7 +19,7 @@ void printUsage()
 {
   cout << "NaoTH Webots controller" << endl;
   cout << "-------------------------" << endl;
-  cout << "http://www.naoteamhumboldt.de" << endl << endl;
+  cout << "http://www.naoth.de" << endl << endl;
 }//end printUsage
 
 int main(int argc, char** argv)

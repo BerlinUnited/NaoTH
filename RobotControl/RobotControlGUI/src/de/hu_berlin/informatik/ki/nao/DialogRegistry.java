@@ -9,12 +9,15 @@ import bibliothek.gui.DockFrontend;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.DefaultDockable;
-import bibliothek.gui.dock.frontend.MissingDockableStrategy;
+import bibliothek.gui.dock.action.DefaultDockActionSource;
+import bibliothek.gui.dock.action.LocationHint;
+import bibliothek.gui.dock.action.actions.SimpleButtonAction;
+import bibliothek.gui.dock.station.stack.StackDockProperty;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -71,6 +74,10 @@ public class DialogRegistry
     frontend.addDockable(text, result);
     frontend.setHideable(result, true);
 
+    DefaultDockActionSource actions = new DefaultDockActionSource( new LocationHint( LocationHint.DOCKABLE, LocationHint.LEFT ));
+    actions.add(new ExampleAction());
+    result.setActionOffers(actions);
+
     return result;
   }
 
@@ -87,14 +94,30 @@ public class DialogRegistry
     {
       Dockable newDockable = createView(dialogName, dialog);
       
-      station.drop(newDockable);
+      station.drop(newDockable, StackDockProperty.FRONT);
     }
     else
     {
       frontend.show(existing);
       frontend.getController().setFocusedDockable(existing, true);
     }
+  }//dock Dialog
+
+  public class ExampleAction extends SimpleButtonAction
+  {
+    public ExampleAction()
+    {
+      setText("Run...");
+      //setIcon(new ImageIcon());
+      setTooltip("show ");
+    }
+
+    @Override
+    public void action(Dockable dockable)
+    {
+      System.out.println("kabum");
+    }
   }
   
 
-}
+}//end class DialogRegistry

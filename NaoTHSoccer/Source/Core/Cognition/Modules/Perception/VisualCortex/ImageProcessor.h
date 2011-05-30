@@ -11,6 +11,7 @@
 // infrastructure
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
+#include <ModuleFramework/ModuleManager.h>
 
 //local Tools
 #include "Tools/ImageProcessing/BlobFinder.h"
@@ -44,7 +45,7 @@ BEGIN_DECLARE_MODULE(ImageProcessor)
   PROVIDE(BallPercept)
 END_DECLARE_MODULE(ImageProcessor)
 
-class ImageProcessor: private ImageProcessorBase
+class ImageProcessor: private ImageProcessorBase, private ModuleManager
 {
 public:
   ImageProcessor();
@@ -53,7 +54,7 @@ public:
   virtual void execute();
 
 private:
-  
+  ModuleCreator<BallDetector>* theBallDetector;
 };//end class ImageProcessor
 
 #endif // __ImageProcessor_H_

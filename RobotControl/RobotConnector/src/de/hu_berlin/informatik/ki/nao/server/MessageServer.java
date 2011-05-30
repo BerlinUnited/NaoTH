@@ -74,10 +74,10 @@ public class MessageServer
     this.receivedBytes = 0;
     this.sentBytes = 0;
 
-    listeners = new LinkedList<CommandSender>();
+    this.listeners = new LinkedList<CommandSender>();
 
-    commandRequestQueue = new LinkedBlockingQueue<SingleExecEntry>();
-    callbackQueue = new LinkedBlockingQueue<SingleExecEntry>();
+    this.commandRequestQueue = new LinkedBlockingQueue<SingleExecEntry>();
+    this.callbackQueue = new LinkedBlockingQueue<SingleExecEntry>();
   }
 
   public void connect(String host, int port) throws IOException
@@ -99,17 +99,14 @@ public class MessageServer
         }
         catch (InterruptedException ex)
         {
-          isActive = false;
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
           disconnect();
-
         }
       }
     });
 
     receiverThread = new Thread(new Runnable()
     {
-
       public void run()
       {
         try
@@ -118,16 +115,18 @@ public class MessageServer
         }
         catch (InterruptedException ex)
         {
-          isActive = false;
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
-          disconnect();
         }
+        catch (Exception ex)
+        {
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "general exception occured...", ex);
+        }
+        disconnect();
       }
     });
 
     periodicExecutionThread = new Thread(new Runnable()
     {
-
       public void run()
       {
         periodicExecution();
@@ -136,7 +135,7 @@ public class MessageServer
 
     address = new InetSocketAddress(host, port);
     serverSocket = new Socket();
-    serverSocket.connect(address);
+    serverSocket.connect(address, 1000);
 
     isActive = true;
 
@@ -160,6 +159,7 @@ public class MessageServer
   public void disconnect()
   {
     isActive = false;
+    
     if (serverSocket != null && serverSocket.isConnected())
     {
       for (SingleExecEntry entry : callbackQueue)
@@ -273,49 +273,52 @@ public class MessageServer
   }//end executeSingleCommand
 
   // send-receive-periodicExecution //
-  public void receiveLoop() throws InterruptedException
+  public void receiveLoop() throws InterruptedException, IOException
   {
     byte[] buf = new byte[64 * 1024];
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
     while (isActive && serverSocket != null && serverSocket.isConnected())
     {
+      // reader answer
+      int received = serverSocket.getInputStream().read(buf);
+      receivedBytes += received;
+
+      for (int i = 0; i < received; i++)
+      {
+        // look for the end of the message
+        if (buf[i] > 0)
+        {
+          byteStream.write(buf[i]);
+        }
+        else
+        {
+          decodeAndHandleMessage(byteStream.toByteArray());
+          byteStream = new ByteArrayOutputStream();
+        }
+      }//end for
+
       try
       {
-        // reader answer
-        int received = serverSocket.getInputStream().read(buf);
-        receivedBytes += received;
-
-        for (int i = 0; i < received; i++)
-        {
-          if (buf[i] > 0)
-          {
-            byteStream.write(buf[i]);
-          }
-          else
-          {
-            decodeAndHandleMessage(byteStream.toByteArray());
-            byteStream = new ByteArrayOutputStream();
-          }
-        }
+        Thread.sleep(1);
       }
-      catch (IOException ex)
+      catch(InterruptedException ex)
       {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
-        disconnect();
+
       }
-    }
-  }
+    }//end while
+  }//end receiveLoop
 
   private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
   {
     SingleExecEntry entry = callbackQueue.take();
     byte[] decoded = Base64.decodeBase64(bytes);
 
-    if (entry.sender != null)
+    if (entry != null && entry.sender != null)
     {
       entry.sender.handleResponse(decoded, entry.command);
     }
-  }
+  }//end decodeAndHandleMessage
 
   public void sendLoop() throws InterruptedException
   {
@@ -458,5 +461,29 @@ public class MessageServer
   {
     return sentBytes;
   }//end getSentBytes
+
+
+  
+  public class CommandSenderWithByteCount implements CommandSender
+  {
+    CommandSender commandSender;
+    
+    public CommandSenderWithByteCount(CommandSender commandSender)
+    {
+      this.commandSender = commandSender;
+    }
+
+    public Command getCurrentCommand() {
+      return this.commandSender.getCurrentCommand();
+    }
+
+    public void handleError(int code) {
+      this.commandSender.handleError(code);
+    }
+
+    public void handleResponse(byte[] result, Command originalCommand) {
+      this.commandSender.handleResponse(result, originalCommand);
+    }
+  }//end class CommandSenderWithByteCount
 }//end class MessageServer
 

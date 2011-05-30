@@ -5,8 +5,6 @@
 
 package de.hu_berlin.informatik.ki.nao.manager;
 
-import net.xeoh.plugins.base.Plugin;
-
 /**
  *
  * @author thomas

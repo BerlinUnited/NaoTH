@@ -15,7 +15,7 @@
 
 DebugRequest::DebugRequest() : requestMap()
 {
-  REGISTER_DEBUG_COMMAND("list_debug_request", 
+  REGISTER_DEBUG_COMMAND("debug_request:list", 
     "return the debug request which where collected in the internal buffer", this);
 }
 
@@ -26,8 +26,18 @@ void DebugRequest::executeDebugCommand(
     const std::string& command, const std::map<std::string,std::string>& arguments,
     std::ostream &outstream)
 {
+  if(command == "debug_request:list")
+  {
+    std::map<std::string, bool>::const_iterator iter = requestMap.begin();
+    
+    while(iter != requestMap.end())
+    {
+      outstream << iter->first << "|" << iter->second << "|" << descriptionMap[iter->first] << endl;
+      iter++;
+    }
+  }
   // search in the map if we know this command/request
-  if(requestMap.find(command) != requestMap.end())
+  else if(requestMap.find(command) != requestMap.end())
   {
     // enable or disable depending on the command
     if(arguments.find("off") != arguments.end())
@@ -41,16 +51,6 @@ void DebugRequest::executeDebugCommand(
     
     // print result
     outstream << command << (requestMap[command] ? " is on" : " is off");
-  }
-  else if(command == "list_debug_request")
-  {
-    std::map<std::string, bool>::const_iterator iter = requestMap.begin();
-    
-    while(iter != requestMap.end())
-    {
-      outstream << iter->first << "|" << iter->second << "|" << descriptionMap[iter->first] << endl;
-      iter++;
-    }
   }
 }//end executeDebugCommand
 

@@ -14,7 +14,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author thomas
  */
 @PluginImplementation
-public class StopwatchManagerImpl extends AbstractManager<HashMap<String, Integer>>
+public class StopwatchManagerImpl extends AbstractManagerPlugin<HashMap<String, Integer>>
   implements StopwatchManager
 {
   
@@ -48,4 +48,4 @@ public class StopwatchManagerImpl extends AbstractManager<HashMap<String, Intege
     return new Command("stopwatch");
   }
 
-}
+}//end class StopwatchManagerImpl

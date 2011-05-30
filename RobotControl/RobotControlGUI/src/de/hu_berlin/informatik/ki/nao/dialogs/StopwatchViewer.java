@@ -65,7 +65,6 @@ public class StopwatchViewer extends AbstractDialog
   private void initComponents() {
 
     jScrollPane1 = new javax.swing.JScrollPane();
-    panelStopwatches = new javax.swing.JPanel();
     jToolBar1 = new javax.swing.JToolBar();
     btShowStopwatch = new javax.swing.JToggleButton();
     btReset = new javax.swing.JButton();
@@ -130,7 +129,7 @@ public class StopwatchViewer extends AbstractDialog
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
+      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jLabel1)
@@ -138,10 +137,10 @@ public class StopwatchViewer extends AbstractDialog
         .addComponent(txtWarn, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(3, 3, 3)
         .addComponent(jLabel2)
-        .addContainerGap(327, Short.MAX_VALUE))
+        .addContainerGap(357, Short.MAX_VALUE))
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -251,7 +250,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
   private javax.swing.JLabel jLabel2;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JToolBar jToolBar1;
-  private javax.swing.JPanel panelStopwatches;
+  private final javax.swing.JPanel panelStopwatches = new javax.swing.JPanel();
   private javax.swing.JFormattedTextField txtWarn;
   // End of variables declaration//GEN-END:variables
   @Override

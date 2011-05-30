@@ -19,7 +19,7 @@ WebotsController::WebotsController()
     PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
     key(0)
 {
-  //wb_robot_init();
+  wb_robot_init();
   get_Devices();
   cout << "Constructor finished" << endl;
 

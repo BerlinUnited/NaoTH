@@ -18,7 +18,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author Heinrich Mellmann
  */
 @PluginImplementation
-public class ModuleConfigurationManagerImpl extends AbstractManager<ModuleConfiguration>
+public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<ModuleConfiguration>
         implements ModuleConfigurationManager
 {
 

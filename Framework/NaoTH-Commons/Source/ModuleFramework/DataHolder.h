@@ -25,6 +25,7 @@ private:
   T data;
 
 public:
+  DataHolder(const std::string& name) : Representation(name){}
   DataHolder() : Representation(typeid(T).name()){}
   virtual ~DataHolder(){}
 

@@ -42,9 +42,16 @@ template<class T>
 class TypedRegistrationInterface: public RegistrationInterface
 {
 private:
-  const std::string getName() const { return typeid(T).name(); }
+  const std::string getName() const { return name; }
+  std::string name;
 
 public:
+
+  TypedRegistrationInterface(const std::string& name)
+    : name(name)
+  {
+  }
+
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
     return get(blackBoard);
@@ -176,14 +183,14 @@ protected:
     TypedRegistrationInterface<TYPE_WHAT>* data;
 
   public:
-    StaticRequiringRegistrator()
+    StaticRequiringRegistrator(){}
+
+    StaticRequiringRegistrator(const std::string& name)
     {
-      // HACK: no variable names possible
-      std::string name = typeid(TYPE_WHAT).name();
       // TODO: check the type
       if(static_requiring_registry->find(name) == static_requiring_registry->end())
       {
-        (*static_requiring_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
+        (*static_requiring_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
       }
       // HACK
       data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_requiring_registry)[name];
@@ -202,14 +209,14 @@ protected:
     TypedRegistrationInterface<TYPE_WHAT>* data;
 
   public:
-    StaticProvidingRegistrator()
+    StaticProvidingRegistrator(){}
+
+    StaticProvidingRegistrator(const std::string& name)
     {
-      // HACK: no variable names possible
-      std::string name = typeid(TYPE_WHAT).name();
       // TODO: check the type
       if(static_providing_registry->find(name) == static_providing_registry->end())
       {
-        (*static_providing_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>();
+        (*static_providing_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
       }
       // HACK
       data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_providing_registry)[name];
@@ -268,14 +275,17 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
 #define BEGIN_DECLARE_MODULE(moduleName) \
   class moduleName##Base: \
     protected Module, private StaticRegistry<moduleName##Base> \
-  { 
+  {
 
 
 // static invoker (registers the static dependency to RepresentationB)
   
 #define REQUIRE(representationName) \
   private: \
-  StaticRequiringRegistrator<representationName> the##representationName; \
+  class representationName##StaticRequiringRegistrator : public StaticRequiringRegistrator<representationName>\
+  { \
+  public: representationName##StaticRequiringRegistrator() : StaticRequiringRegistrator<representationName>(#representationName){} \
+  }the##representationName; \
   protected: \
   const representationName& get##representationName() const \
   { \
@@ -290,7 +300,10 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
 
 #define PROVIDE(representationName) \
   private: \
-  StaticProvidingRegistrator<representationName> the##representationName; \
+  class representationName##StaticRequiringRegistrator : public StaticProvidingRegistrator<representationName>\
+  { \
+  public: representationName##StaticRequiringRegistrator() : StaticProvidingRegistrator<representationName>(#representationName){} \
+  }the##representationName; \
   protected: \
   representationName& get##representationName() \
   { \

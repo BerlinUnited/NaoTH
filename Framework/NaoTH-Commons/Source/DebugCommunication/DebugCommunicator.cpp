@@ -76,6 +76,7 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
   return true;
 }//end sendMessage
 
+
 GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 {
   char zero = '\0';
@@ -83,13 +84,14 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   if (connection != NULL)
   {
     gsize pos = 0;
-    while(pos < size -1)
+    // FIXME: we get a really eval case if size == 0
+    while(pos < size-1)
     {
       if(err == NULL && connection != NULL)
       {
         pos += g_socket_send(connection, data+pos, size-pos, NULL, &err);
       }
-    }
+    }//end while
     
     if(err == NULL)
     {

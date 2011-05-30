@@ -16,7 +16,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
  * @author Heinrich Mellmann
  */
 @PluginImplementation
-public class DebugDrawingManagerImpl extends AbstractManager<DrawingsContainer>
+public class DebugDrawingManagerImpl extends AbstractManagerPlugin<DrawingsContainer>
   implements DebugDrawingManager
 {
 
