@@ -7,6 +7,7 @@
 
 #include "Walk.h"
 #include "Walk/FootStepPlanner.h"
+#include "Walk/ZMPPlanner.h"
 
 using namespace InverseKinematic;
 
@@ -141,25 +142,8 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
     
     // iterpolate
     // TODO
-    double zmpX = theParameters.hipOffsetX;
-    double h = theWalkParameters.comHeight;
-    result.feet = currentFootStep.begin();
-    result.zmp.translation = Vector3<double>(zmpX, 0, h);
-    
-    switch ( currentFootStep.liftingFoot() )
-    {
-      case FootStep::LEFT:
-      {
-        result.zmp.translation.y = result.feet.left.translation.y;
-        break;
-      }
-      case FootStep::RIGHT:
-      {
-        result.zmp.translation.y = result.feet.right.translation.y;
-        break;
-      }
-    }
-    
+    result.feet = currentFootStep.end();
+    result.zmp = ZMPPlanner::simplest(currentFootStep, result.feet, theWalkParameters.comHeight);
   }
   
   currentState = running;
@@ -180,7 +164,6 @@ ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
 {
   // reset some variables
   currentCycle = 0;
-  //theWaitLandingCount = 0;
   
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
