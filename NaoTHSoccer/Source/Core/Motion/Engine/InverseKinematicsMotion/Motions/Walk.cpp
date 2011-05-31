@@ -6,6 +6,7 @@
 */
 
 #include "Walk.h"
+#include "Walk/FootStep.h"
 
 using namespace InverseKinematic;
 
