@@ -17,8 +17,9 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const Pose2D& step,
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(const FeetPose& pose, const Pose2D& step, double feetSepWidth)
+FootStep FootStepPlanner::firstStep(FeetPose pose, const Pose2D& step, double feetSepWidth)
 {
+  pose.localInRightFoot();
   FootStep newStep(pose, FootStep::LEFT );
   // TODO: move foot
   return newStep;

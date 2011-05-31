@@ -18,6 +18,8 @@ public:
     LEFT = 1,
     RIGHT = -LEFT
   };
+  
+  FootStep(){}
 
   FootStep(const InverseKinematic::FeetPose& feet, Foot liftingFoot):
   theLiftingFoot(liftingFoot)

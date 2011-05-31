@@ -15,9 +15,10 @@ Walk::Walk()
 theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
 theUnsupportedCount(0),
-isStopping(false)
+isStopping(false),
+currentCycle(0)
 {
-  
+  updateParameters();
 }
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
@@ -130,14 +131,42 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   }
   else
   {
+    if ( currentCycle >= numberOfCyclePerFootStep )
+    {
+      // new foot step
+      updateParameters();
+      currentFootStep = FootStepPlanner::nextStep(currentFootStep, req, theFeetSepWidth);
+      currentCycle = 0;
+    }
+    
+    // iterpolate
     // TODO
-    result = theZMPFeetPose;
+    double zmpX = theParameters.hipOffsetX;
+    double h = theWalkParameters.comHeight;
+    result.feet = currentFootStep.begin();
+    result.zmp.translation = Vector3<double>(zmpX, 0, h);
+    
+    switch ( currentFootStep.liftingFoot() )
+    {
+      case FootStep::LEFT:
+      {
+        result.zmp.translation.y = result.feet.left.translation.y;
+        break;
+      }
+      case FootStep::RIGHT:
+      {
+        result.zmp.translation.y = result.feet.right.translation.y;
+        break;
+      }
+    }
+    
   }
   
   currentState = running;
   isStopping = false;
   //stoppingStepFinished = false;
     //stoppingStepCount = 0;
+  currentCycle++;
   return result;
 }
 
@@ -150,17 +179,19 @@ ZMPFeetPose Walk::stopWalking()
 ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
 {
   // reset some variables
+  currentCycle = 0;
   //theWaitLandingCount = 0;
   
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
   
-  FootStep step = firstStep(startingZMPFeetPose, req);
+  currentFootStep = firstStep(startingZMPFeetPose, req);
   
   double zmpX = theParameters.hipOffsetX;
   double h = theWalkParameters.comHeight;
   
-  switch ( step.liftingFoot() )
+  // move ZMP to support foot
+  switch ( currentFootStep.liftingFoot() )
   {
     case FootStep::LEFT:
     {
@@ -189,6 +220,7 @@ FootStep Walk::firstStep(const ZMPFeetPose& p, const WalkRequest& req) const
 
 void Walk::updateParameters()
 {
+  numberOfCyclePerFootStep = 10; // TODO
   theBodyPitchOffset = 0; //TODO
   theFeetSepWidth = NaoInfo::HipOffsetY; //TODO
 }

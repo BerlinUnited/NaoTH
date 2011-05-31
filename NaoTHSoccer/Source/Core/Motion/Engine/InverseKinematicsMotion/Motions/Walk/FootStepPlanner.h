@@ -16,7 +16,7 @@ public:
   // the typical walk step
   static FootStep nextStep(const FootStep& lastStep, const Pose2D& step, double feetSepWidth);
   
-  static FootStep firstStep(const InverseKinematic::FeetPose& pose, const Pose2D& step, double feetSepWidth);
+  static FootStep firstStep(InverseKinematic::FeetPose pose, const Pose2D& step, double feetSepWidth);
 };
 
 #endif // _FOOT_STEP_PLANNER_H

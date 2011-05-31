@@ -17,6 +17,18 @@ namespace InverseKinematic
   {    
   public:
     Pose3D left, right;
+    
+    void localInLeftFoot()
+    {
+      right = left.local(right);
+      left = Pose3D();
+    }
+
+    void localInRightFoot()
+    {
+      left = right.local(left);
+      right = Pose3D();
+    }
   };
   
   class BodyFeetPose

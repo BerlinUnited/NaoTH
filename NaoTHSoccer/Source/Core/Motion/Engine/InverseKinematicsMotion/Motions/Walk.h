@@ -48,7 +48,11 @@ private:
   
   bool isStopping;
   
+  int currentCycle;
+  FootStep currentFootStep;
+  
   // parameters of walk
+  int numberOfCyclePerFootStep;
   double theBodyPitchOffset;
   double theFeetSepWidth;
 };
