@@ -54,8 +54,8 @@ public:
   {
     T p;
     p.body() = interpolate(sp.body(), tp.body(), t);
-    p.lFoot = interpolate(sp.lFoot, tp.lFoot, t);
-    p.rFoot = interpolate(sp.rFoot, tp.rFoot, t);
+    p.feet.left = interpolate(sp.feet.left, tp.feet.left, t);
+    p.feet.right = interpolate(sp.feet.right, tp.feet.right, t);
     return p;
   }
 

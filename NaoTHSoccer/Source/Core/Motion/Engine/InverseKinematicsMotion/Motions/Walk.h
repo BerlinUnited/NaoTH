@@ -5,6 +5,9 @@
 *
 */
 
+#ifndef _IK_MOTION_H_
+#define _IK_MOTION_H_
+
 #include "IKMotion.h"
 
 class Walk: public IKMotion
@@ -45,3 +48,5 @@ private:
   // parameters of walk
   double theBodyPitchOffset;
 };
+
+#endif // _IK_MOTION_H_

@@ -41,8 +41,8 @@ public:
       startPose.localInCoM();
 
       double speed = theParameters.stand.speed;
-      double distLeft = (targetPose.lFoot.translation - startPose.lFoot.translation).abs();
-      double distRight = (targetPose.rFoot.translation - startPose.rFoot.translation).abs();
+      double distLeft = (targetPose.feet.left.translation - startPose.feet.left.translation).abs();
+      double distRight = (targetPose.feet.right.translation - startPose.feet.right.translation).abs();
       double distMax = (distLeft > distRight) ? distLeft : distRight;
       totalTime = distMax / speed;
       time = 0;

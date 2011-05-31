@@ -50,8 +50,8 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  bool raiseLeftFoot = theCoMFeetPose.lFoot.translation.z > 0;
-  bool raiseRightFoot = theCoMFeetPose.rFoot.translation.z > 0;
+  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0;
+  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0;
   
   // don't raise two feet
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
@@ -148,17 +148,11 @@ ZMPFeetPose Walk::stopWalking()
 
 ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
 {
-  cout<<"startToWalk"<<endl;
   // reset some variables
   //theWaitLandingCount = 0;
   
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
-  
-  cout<<startingZMPFeetPose.zmp<<"\n-------------\n"
-  <<startingZMPFeetPose.lFoot<<"\n-------------\n"
-  <<startingZMPFeetPose.rFoot<<"\n-------------\n"
-      <<endl;
   
   bool startWithLeftFoot = chooseStartingFoot(startingZMPFeetPose, req);
   
