@@ -127,6 +127,11 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   {
     result = startToWalk(req);
   }
+  else
+  {
+    // TODO
+    result = theZMPFeetPose;
+  }
   
   currentState = running;
   isStopping = false;
@@ -143,11 +148,17 @@ ZMPFeetPose Walk::stopWalking()
 
 ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
 {
+  cout<<"startToWalk"<<endl;
   // reset some variables
-  theWaitLandingCount = 0;
+  //theWaitLandingCount = 0;
   
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
+  
+  cout<<startingZMPFeetPose.zmp<<"\n-------------\n"
+  <<startingZMPFeetPose.lFoot<<"\n-------------\n"
+  <<startingZMPFeetPose.rFoot<<"\n-------------\n"
+      <<endl;
   
   bool startWithLeftFoot = chooseStartingFoot(startingZMPFeetPose, req);
   

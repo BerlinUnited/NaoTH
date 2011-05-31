@@ -33,7 +33,6 @@ public:
   forced(false),
   standHeight(-1)
   {
-    reset();
   }
 
   ~MotionRequest() {

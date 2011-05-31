@@ -264,7 +264,7 @@ CoMFeetPose InverseKinematicsMotionEngine::controlZMP(const ZMPFeetPose& p)
   theZMPFeetPoseBuffer.push_back(p);
 
   Vector2<double> zmp(p.zmp.translation.x, p.zmp.translation.y);
-  thePreviewController.setHeight(p.zmp.translation.z);
+  thePreviewController.setParameters(theBlackBoard.theFrameInfo.basicTimeStep, p.zmp.translation.z);
   
   if ( !thePreviewController.ready() )
   {

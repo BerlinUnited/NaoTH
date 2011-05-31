@@ -36,10 +36,8 @@ InverseKinematicsMotionFactory::~InverseKinematicsMotionFactory()
     delete currentMotion;
 }
 
-
 AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-
   // FIXME: the old motion shouldn't be deleted!!! 
   if(currentMotion != NULL)
   {

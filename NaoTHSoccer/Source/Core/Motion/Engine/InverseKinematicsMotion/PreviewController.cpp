@@ -13,13 +13,17 @@
 #include "PreviewController.h"
 
 PreviewController::PreviewController()
-:parameters(NULL)
+:parameters(NULL),
+theHeight(0)
 {
 }
 
-void PreviewController::setHeight(double height)
+void PreviewController::setParameters(unsigned int stepTime, double height)
 {
   unsigned int newHeight = Math::round(height);
+  ASSERT(newHeight>=200);
+  ASSERT(newHeight<=300);
+  ASSERT(stepTime==10||stepTime==20||stepTime==40);
   
   if ( theHeight != newHeight )
   {
@@ -27,7 +31,7 @@ void PreviewController::setHeight(double height)
     if ( loadedParameters.find(theHeight) == loadedParameters.end() )
     {
       stringstream ss;
-      ss << "Config/general/previewController/" << theHeight << ".prm";
+      ss << "Config/general/previewController/"<<stepTime<<"/"<< theHeight << ".prm";
       cout<<"PreviewController load "<<ss.str()<<endl;
     
       ifstream ifs(ss.str().c_str());
@@ -55,6 +59,9 @@ void PreviewController::update(const std::list<double>& ref, Vector3<double>&x, 
 
 bool PreviewController::ready() const
 {
+  if (parameters == NULL)
+    return false;
+    
   size_t size = previewSteps() - 1;
   return refZMPx.size() >= size && refZMPy.size() >= size;
 }
