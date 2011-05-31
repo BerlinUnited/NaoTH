@@ -6,7 +6,7 @@
 */
 
 #include "Walk.h"
-#include "Walk/FootStep.h"
+#include "Walk/FootStepPlanner.h"
 
 using namespace InverseKinematic;
 
@@ -155,27 +155,40 @@ ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
   
-  bool startWithLeftFoot = chooseStartingFoot(startingZMPFeetPose, req);
+  FootStep step = firstStep(startingZMPFeetPose, req);
   
   double zmpX = theParameters.hipOffsetX;
   double h = theWalkParameters.comHeight;
   
-  if ( startWithLeftFoot )
+  switch ( step.liftingFoot() )
   {
-    startingZMPFeetPose.localInRightFoot();
-    startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
-  }
-  else
-  {
-    startingZMPFeetPose.localInLeftFoot();
-    startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
+    case FootStep::LEFT:
+    {
+      startingZMPFeetPose.localInRightFoot();
+      startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
+      break;
+    }
+    case FootStep::RIGHT:
+    {
+      startingZMPFeetPose.localInLeftFoot();
+      startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
+      break;
+    }
   }
   
   startingZMPFeetPose.zmp.rotation.rotateY(theBodyPitchOffset);
   return startingZMPFeetPose;
 }
 
-bool Walk::chooseStartingFoot(const ZMPFeetPose& p, const WalkRequest& req) const
+FootStep Walk::firstStep(const ZMPFeetPose& p, const WalkRequest& req) const
 {
-  return true;
+  //TODO: consider current ZMP
+  FootStep step = FootStepPlanner::firstStep(p.feet, req, theFeetSepWidth);
+  return step;
+}
+
+void Walk::updateParameters()
+{
+  theBodyPitchOffset = 0; //TODO
+  theFeetSepWidth = NaoInfo::HipOffsetY; //TODO
 }

@@ -9,6 +9,7 @@
 #define _IK_MOTION_H_
 
 #include "IKMotion.h"
+#include "Walk/FootStep.h"
 
 class Walk: public IKMotion
 {
@@ -32,7 +33,9 @@ private:
   
   InverseKinematic::ZMPFeetPose startToWalk(const WalkRequest& req);
   
-  bool chooseStartingFoot(const InverseKinematic::ZMPFeetPose& p, const WalkRequest& req) const;
+  FootStep firstStep(const InverseKinematic::ZMPFeetPose& p, const WalkRequest& req) const;
+  
+  void updateParameters();
   
 private:
   const IKParameters::Walk& theWalkParameters;
@@ -47,6 +50,7 @@ private:
   
   // parameters of walk
   double theBodyPitchOffset;
+  double theFeetSepWidth;
 };
 
 #endif // _IK_MOTION_H_

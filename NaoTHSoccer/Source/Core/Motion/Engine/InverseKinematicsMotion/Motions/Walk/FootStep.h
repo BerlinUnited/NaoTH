@@ -9,33 +9,32 @@
 #define	_FOOTSTEP_H
 
 #include <Tools/Math/Pose2D.h>
-
+#include "../IKPose.h"
 
 class FootStep
 {
 public:
   enum Foot {
-    LEFT,
-    RIGHT
+    LEFT = 1,
+    RIGHT = -LEFT
   };
 
-  FootStep(const InverseKinematic::FeetPose& feet, Foot liftingFoot, const Pose2D& step):
+  FootStep(const InverseKinematic::FeetPose& feet, Foot liftingFoot):
   theLiftingFoot(liftingFoot)
   {
-    //TODO: add step
     switch(theLiftingFoot)
     {
       case LEFT:
       {
         theFootBegin = feet.left;
-        theFootEnd = feet.left;// TODO
+        theFootEnd = feet.left;
         theSupFoot = feet.right;
         break;
       }
       case RIGHT:
       {
         theFootBegin = feet.right;
-        theFootEnd = feet.right;// TODO
+        theFootEnd = feet.right;
         theSupFoot = feet.left;
       }
     }
@@ -102,6 +101,8 @@ public:
     TRANSLATION(-footEnd.translation.x, -footEnd.translation.y);
   }//end draw
    */
+   
+   Foot liftingFoot() const { return theLiftingFoot; }
    
 private:
    Foot theLiftingFoot;
