@@ -125,10 +125,10 @@ CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
 
 ZMPFeetPose Walk::walk(const WalkRequest& req)
 {
-  ZMPFeetPose result;
   if ( currentState == stopped )
   {
-    result = startToWalk(req);
+    currentFootStep = firstStep(req);
+    currentCycle = 0;
   }
   else
   {
@@ -139,12 +139,13 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
       currentFootStep = FootStepPlanner::nextStep(currentFootStep, req, theFeetSepWidth);
       currentCycle = 0;
     }
-    
-    // iterpolate
-    // TODO
-    result.feet = currentFootStep.end();
-    result.zmp = ZMPPlanner::simplest(currentFootStep, result.feet, theWalkParameters.comHeight);
   }
+  
+  // generate ZMP and Feet trajectory
+  ZMPFeetPose result;
+  result.feet = currentFootStep.end();
+  result.zmp = ZMPPlanner::simplest(currentFootStep, result.feet, theWalkParameters.comHeight);
+  result.zmp.rotation.rotateY(theBodyPitchOffset);
   
   currentState = running;
   isStopping = false;
@@ -160,44 +161,13 @@ ZMPFeetPose Walk::stopWalking()
   return result;
 }
 
-ZMPFeetPose Walk::startToWalk(const WalkRequest& req)
+FootStep Walk::firstStep(const WalkRequest& req) const
 {
-  // reset some variables
-  currentCycle = 0;
-  
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
   
-  currentFootStep = firstStep(startingZMPFeetPose, req);
-  
-  double zmpX = theParameters.hipOffsetX;
-  double h = theWalkParameters.comHeight;
-  
-  // move ZMP to support foot
-  switch ( currentFootStep.liftingFoot() )
-  {
-    case FootStep::LEFT:
-    {
-      startingZMPFeetPose.localInRightFoot();
-      startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
-      break;
-    }
-    case FootStep::RIGHT:
-    {
-      startingZMPFeetPose.localInLeftFoot();
-      startingZMPFeetPose.zmp.translation = Vector3<double>(zmpX, 0, h);
-      break;
-    }
-  }
-  
-  startingZMPFeetPose.zmp.rotation.rotateY(theBodyPitchOffset);
-  return startingZMPFeetPose;
-}
-
-FootStep Walk::firstStep(const ZMPFeetPose& p, const WalkRequest& req) const
-{
   //TODO: consider current ZMP
-  FootStep step = FootStepPlanner::firstStep(p.feet, req, theFeetSepWidth);
+  FootStep step = FootStepPlanner::firstStep(startingZMPFeetPose.feet, req, theFeetSepWidth);
   return step;
 }
 

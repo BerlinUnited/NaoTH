@@ -15,8 +15,6 @@ class ZMPPlanner
 public:
   /**
    * @brief just set the ZMP on support foot
-   * @param 
-   * @return Pose3D of ZMP
    */
   static Pose3D simplest(const FootStep& step, const InverseKinematic::FeetPose& feet, double height);
 };

@@ -31,9 +31,7 @@ private:
   
   bool canStop() const;
   
-  InverseKinematic::ZMPFeetPose startToWalk(const WalkRequest& req);
-  
-  FootStep firstStep(const InverseKinematic::ZMPFeetPose& p, const WalkRequest& req) const;
+  FootStep firstStep(const WalkRequest& req) const;
   
   void updateParameters();
   
