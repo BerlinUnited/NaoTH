@@ -128,8 +128,17 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   result.hip = p.com;
   result.localInHip();
   
-  // transform all data in left foot local coordiantes
-  Vector3<double> refCoM = p.feet.left.invert() * p.com.translation;
+  /* normally it should not affect the algorithm,
+   * but when IK can not be solved, it affects the result, i.e. support foot is prefered.
+   */
+  bool leftFootSupport = (result.feet.left.translation.abs2() < result.feet.right.translation.abs2());
+  
+  // transform all data in support foot local coordiantes
+  Vector3<double> refCoM;
+  if ( leftFootSupport )
+    refCoM = p.feet.left.invert() * p.com.translation;
+  else
+    refCoM = p.feet.right.invert() * p.com.translation;
   
   // copy head joint and arm joint from sensor
   const double *sj = theBlackBoard.theSensorJointData.position;
@@ -142,7 +151,12 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   result.hip.translation = theCoMControlResult; // reuse results from last calculation
   
   // set the support foot as orginal
-  Kinematics::Link* obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
+  Kinematics::Link* obsFoot;
+  if ( leftFootSupport )
+    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
+  else
+    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::RFoot]);
+    
   obsFoot->R = RotationMatrix();
   obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
 
@@ -163,7 +177,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
     theInverseKinematics.theKinematicChain.updateCoM();
     Vector3<double> obsCoM = theInverseKinematics.theKinematicChain.CoM;
 
-    Vector3<double> e = (refCoM - obsCoM);
+    Vector3<double> e = refCoM - obsCoM;
 
     double error = e.x * e.x + e.y * e.y + e.z * e.z;
 
@@ -195,7 +209,12 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 
     result.hip.translation += u;
   }//end for
-
+  
+  if ( bestError > 1 )
+  {
+    cerr<<"Warning: can not control CoM @ "<<bestError<<endl;
+  }
+  
   return result;
 }
 
