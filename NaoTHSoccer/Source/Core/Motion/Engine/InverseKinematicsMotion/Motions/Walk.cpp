@@ -8,6 +8,7 @@
 #include "Walk.h"
 #include "Walk/FootStepPlanner.h"
 #include "Walk/ZMPPlanner.h"
+#include "Walk/FootTrajectoryGenerator.h"
 
 using namespace InverseKinematic;
 
@@ -143,7 +144,25 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   
   // generate ZMP and Feet trajectory
   ZMPFeetPose result;
-  result.feet = currentFootStep.end();
+  Pose3D liftFoot = FootTrajectorGenerator::genTrajectory(currentFootStep.footBegin(), currentFootStep.footEnd(),
+                    currentCycle, samplesDoubleSupport, samplesSingleSupport,
+                    stepHeight, footPitchOffset, footYawOffset, footRollOffset, curveFactor);
+  switch(currentFootStep.liftingFoot())
+  {
+    case FootStep::LEFT:
+    {
+      result.feet.left = liftFoot;
+      result.feet.right = currentFootStep.supFoot();
+      break;
+    }
+    case FootStep::RIGHT:
+    {
+      result.feet.left = currentFootStep.supFoot();
+      result.feet.right = liftFoot;
+      break;
+    }
+  }
+  
   result.zmp = ZMPPlanner::simplest(currentFootStep, result.feet, theWalkParameters.comHeight);
   result.zmp.rotation.rotateY(theBodyPitchOffset);
   
@@ -173,7 +192,15 @@ FootStep Walk::firstStep(const WalkRequest& req) const
 
 void Walk::updateParameters()
 {
-  numberOfCyclePerFootStep = 10; // TODO
+  
   theBodyPitchOffset = 0; //TODO
   theFeetSepWidth = NaoInfo::HipOffsetY; //TODO
+  samplesDoubleSupport = 2;
+  samplesSingleSupport = 8;
+  numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
+  stepHeight = 12;
+  footPitchOffset = 0;
+  footYawOffset = 0;
+  footRollOffset = 0;
+  curveFactor = 7;
 }

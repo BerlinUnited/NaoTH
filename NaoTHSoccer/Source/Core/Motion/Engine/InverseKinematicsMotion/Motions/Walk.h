@@ -53,6 +53,13 @@ private:
   int numberOfCyclePerFootStep;
   double theBodyPitchOffset;
   double theFeetSepWidth;
+  double samplesDoubleSupport;
+  double samplesSingleSupport;
+  double stepHeight;
+  double footPitchOffset;
+  double footYawOffset;
+  double footRollOffset;
+  double curveFactor;
 };
 
 #endif // _IK_MOTION_H_

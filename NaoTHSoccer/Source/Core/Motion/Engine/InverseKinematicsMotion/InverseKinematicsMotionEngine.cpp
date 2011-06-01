@@ -244,7 +244,7 @@ void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
   theZMPFeetPoseBuffer.clear();
   thePreviewController.clear();
   
-  ZMPFeetPose startZMPPose;
+  ZMPFeetPose startZMPPose; // get start ZMP
   startZMPPose.zmp = startCoMPose.com;
   startZMPPose.feet = startCoMPose.feet;
   for (unsigned int i = 0; i < previewSteps-1; i++)

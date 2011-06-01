@@ -106,6 +106,10 @@ public:
    
    Foot liftingFoot() const { return theLiftingFoot; }
    
+   const Pose3D& footBegin() const { return theFootBegin; }
+   const Pose3D& footEnd() const { return theFootEnd; }
+   const Pose3D& supFoot() const { return theSupFoot; }
+   
 private:
    Foot theLiftingFoot;
    Pose3D theFootBegin, theFootEnd, theSupFoot;
