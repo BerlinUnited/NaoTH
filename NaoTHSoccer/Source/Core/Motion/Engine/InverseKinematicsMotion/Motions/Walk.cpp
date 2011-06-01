@@ -163,6 +163,16 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   }
   
   result.zmp = ZMPPlanner::simplest(currentFootStep, theWalkParameters.comHeight);
+  
+  // body rotation
+  double rAng = result.feet.left.rotation.getZAngle();
+  double lAng = result.feet.right.rotation.getZAngle();
+  double hipRotation = Math::calculateMeanAngle(rAng, lAng);
+  if (abs(Math::normalizeAngle(hipRotation - lAng)) > Math::pi_2)
+  {
+    hipRotation = Math::normalizeAngle(hipRotation + Math::pi);
+  }
+  result.zmp.rotation = RotationMatrix::getRotationZ(hipRotation);
   result.zmp.rotation.rotateY(theBodyPitchOffset);
   
   currentState = running;
