@@ -16,7 +16,7 @@ public:
   /**
    * @brief just set the ZMP on support foot
    */
-  static Pose3D simplest(const FootStep& step, const InverseKinematic::FeetPose& feet, double height);
+  static Pose3D simplest(const FootStep& step, double height);
 };
 
 #endif // _FOOT_STEP_PLANNER_H

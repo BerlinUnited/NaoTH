@@ -6,7 +6,6 @@
 */
 
 #include "Walk.h"
-#include "Walk/FootStepPlanner.h"
 #include "Walk/ZMPPlanner.h"
 #include "Walk/FootTrajectoryGenerator.h"
 
@@ -137,7 +136,7 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
     {
       // new foot step
       updateParameters();
-      currentFootStep = FootStepPlanner::nextStep(currentFootStep, req, theFeetSepWidth);
+      currentFootStep = theFootStepPlanner.nextStep(currentFootStep, req);
       currentCycle = 0;
     }
   }
@@ -163,7 +162,7 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
     }
   }
   
-  result.zmp = ZMPPlanner::simplest(currentFootStep, result.feet, theWalkParameters.comHeight);
+  result.zmp = ZMPPlanner::simplest(currentFootStep, theWalkParameters.comHeight);
   result.zmp.rotation.rotateY(theBodyPitchOffset);
   
   currentState = running;
@@ -186,21 +185,20 @@ FootStep Walk::firstStep(const WalkRequest& req) const
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
   
   //TODO: consider current ZMP
-  FootStep step = FootStepPlanner::firstStep(startingZMPFeetPose.feet, req, theFeetSepWidth);
+  FootStep step = theFootStepPlanner.firstStep(startingZMPFeetPose.feet, req, theFeetSepWidth);
   return step;
 }
 
 void Walk::updateParameters()
 {
-  
   theBodyPitchOffset = 0; //TODO
   theFeetSepWidth = NaoInfo::HipOffsetY; //TODO
-  samplesDoubleSupport = 2;
-  samplesSingleSupport = 8;
+  samplesDoubleSupport = 4;
+  samplesSingleSupport = 20;
   numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
-  stepHeight = 12;
+  stepHeight = 20;
   footPitchOffset = 0;
   footYawOffset = 0;
   footRollOffset = 0;
-  curveFactor = 7;
+  curveFactor = 10;
 }

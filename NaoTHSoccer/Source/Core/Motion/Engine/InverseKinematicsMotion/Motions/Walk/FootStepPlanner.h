@@ -13,10 +13,24 @@
 class FootStepPlanner
 {
 public:
-  // the typical walk step
-  static FootStep nextStep(const FootStep& lastStep, const Pose2D& step, double feetSepWidth);
+  FootStepPlanner();
   
-  static FootStep firstStep(InverseKinematic::FeetPose pose, const Pose2D& step, double feetSepWidth);
+  // the typical walk step
+  FootStep nextStep(const FootStep& lastStep, Pose2D step) const;
+  
+  FootStep firstStep(InverseKinematic::FeetPose pose, const Pose2D& step, double feetSepWidth) const;
+  
+  void restrictStepSize(Pose2D& step, const FootStep& lastStep) const;
+  
+  void addStep(FootStep& footStep, const Pose2D& step) const;
+  
+private:
+  double theMaxTurnInner;
+  double theMaxStepTurn;
+  double theMaxStepLength;
+  double theMaxStepLengthBack;
+  double theMaxStepWidth;
+  double theFootOffsetY;
 };
 
 #endif // _FOOT_STEP_PLANNER_H

@@ -9,23 +9,10 @@
 
 using namespace InverseKinematic;
 
-Pose3D ZMPPlanner::simplest(const FootStep& step, const FeetPose& feet, double height)
+Pose3D ZMPPlanner::simplest(const FootStep& step, double height)
 {
   Pose3D zmp;
-  zmp.translation = Vector3<double>(0, 0, height);
-    
-  switch ( step.liftingFoot() )
-  {
-    case FootStep::LEFT:
-    {
-      zmp.translation.y = feet.right.translation.y;
-      break;
-    }
-    case FootStep::RIGHT:
-    {
-      zmp.translation.y = feet.left.translation.y;
-      break;
-    }
-  }
+  const Pose3D& supFoot = step.supFoot();
+  zmp.translation = Vector3<double>(supFoot.translation.x, supFoot.translation.y, height);
   return zmp;
 }

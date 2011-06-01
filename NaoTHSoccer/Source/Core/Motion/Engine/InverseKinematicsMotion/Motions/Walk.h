@@ -10,6 +10,7 @@
 
 #include "IKMotion.h"
 #include "Walk/FootStep.h"
+#include "Walk/FootStepPlanner.h"
 
 class Walk: public IKMotion
 {
@@ -48,6 +49,8 @@ private:
   
   int currentCycle;
   FootStep currentFootStep;
+  
+  FootStepPlanner theFootStepPlanner;
   
   // parameters of walk
   int numberOfCyclePerFootStep;

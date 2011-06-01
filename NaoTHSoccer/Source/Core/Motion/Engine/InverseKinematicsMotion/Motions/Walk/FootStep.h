@@ -108,6 +108,7 @@ public:
    
    const Pose3D& footBegin() const { return theFootBegin; }
    const Pose3D& footEnd() const { return theFootEnd; }
+   Pose3D& footEnd() { return theFootEnd; }
    const Pose3D& supFoot() const { return theSupFoot; }
    
 private:
