@@ -18,6 +18,10 @@ FootStepPlanner::FootStepPlanner()
   theMaxStepLengthBack = 50;
   theMaxStepWidth = 40;
   theFootOffsetY = NaoInfo::HipOffsetY;
+  
+  theMaxChangeTurn = theMaxStepLength * 0.5;
+  theMaxChangeX = theMaxStepWidth * 0.5;
+  theMaxChangeY = theMaxStepTurn * 0.5;
 }
 
 void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
@@ -45,15 +49,13 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
   }//end switch
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step) const
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
 {
   ASSERT(step.rotation <= Math::pi);
   ASSERT(step.rotation > -Math::pi);
   
   restrictStepSize(step, lastStep);
-  
-  //TODO
-  //restrictStepChange
+  restrictStepChange(step, theLastStepSize);
   
   //TODO
   //adapt step size
@@ -61,16 +63,21 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step) const
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, static_cast<FootStep::Foot>(-lastStep.liftingFoot()) );
   addStep(newStep, step);
+  theLastStepSize = step;
   
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(FeetPose pose, Pose2D step, double feetSepWidth) const
+FootStep FootStepPlanner::firstStep(FeetPose pose, Pose2D step, double feetSepWidth)
 {
   pose.localInRightFoot();
   FootStep newStep(pose, FootStep::LEFT );
   FootStep zeroStep(pose, FootStep::RIGHT );
+  
   restrictStepSize(step, zeroStep);
+  restrictStepChange(step, theLastStepSize);
+  theLastStepSize = step;
+  
   addStep(newStep, step);
   return newStep;
 }
@@ -140,4 +147,20 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) c
   {
     step.translation *= cos( step.rotation/theMaxStepTurn * Math::pi / 2);
   }
-}//end restrictStepSize
+}
+
+void FootStepPlanner::restrictStepChange(Pose2D& step, const Pose2D& lastStep) const
+{
+  Pose2D change;
+  change.translation = step.translation - lastStep.translation;
+  change.rotation = Math::normalizeAngle(step.rotation - lastStep.rotation);
+  double maxX = theMaxChangeX;
+  double maxY = theMaxChangeY;
+  double maxT = theMaxChangeTurn;
+
+  change.translation.x = Math::clamp(change.translation.x, -maxX, maxX);
+  change.translation.y = Math::clamp(change.translation.y, -maxY, maxY);
+  change.rotation = Math::clamp(change.rotation, -maxT, maxT);
+  step.translation = lastStep.translation + change.translation;
+  step.rotation = Math::normalizeAngle(lastStep.rotation + change.rotation);
+}

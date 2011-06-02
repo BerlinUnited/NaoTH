@@ -189,7 +189,7 @@ ZMPFeetPose Walk::stopWalking()
   return result;
 }
 
-FootStep Walk::firstStep(const WalkRequest& req) const
+FootStep Walk::firstStep(const WalkRequest& req)
 {
   ZMPFeetPose startingZMPFeetPose;
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();

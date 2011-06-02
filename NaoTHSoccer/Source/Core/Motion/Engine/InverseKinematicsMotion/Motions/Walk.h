@@ -32,7 +32,7 @@ private:
   
   bool canStop() const;
   
-  FootStep firstStep(const WalkRequest& req) const;
+  FootStep firstStep(const WalkRequest& req);
   
   void updateParameters();
   

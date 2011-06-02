@@ -83,9 +83,9 @@ void Motion::call()
   else if ( theBlackBoard.theMotionStatus.currentMotion == motion::STAND )
   {
     theBlackBoard.theMotionRequest.id = motion::WALK;//motion::DANCE;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.x = -50;
+    theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
     //theBlackBoard.theMotionRequest.walkRequest.translation.y = 50;
-    theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
+    //theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
   }
 
   // execute head motion firstly
