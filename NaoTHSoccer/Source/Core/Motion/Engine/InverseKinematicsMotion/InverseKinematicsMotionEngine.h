@@ -11,6 +11,7 @@
 #include "Motion/MotionBlackBoard.h"
 #include "Motions/IKPose.h"
 #include "PreviewController.h"
+#include "Motions/IKParameters.h"
 
 class InverseKinematicsMotionEngine: public Singleton<InverseKinematicsMotionEngine>
 {
@@ -46,13 +47,15 @@ public:
 
   InverseKinematic::CoMFeetPose getCurrentCoMFeetPose() const;
   
+  InverseKinematic::ZMPFeetPose getPlannedZMPFeetPose() const;
+  
   template<typename T>
   T interpolate(const T& sp, const T& tp, double t) const 
   {
     T p;
     p.body() = interpolate(sp.body(), tp.body(), t);
-    p.lFoot = interpolate(sp.lFoot, tp.lFoot, t);
-    p.rFoot = interpolate(sp.rFoot, tp.rFoot, t);
+    p.feet.left = interpolate(sp.feet.left, tp.feet.left, t);
+    p.feet.right = interpolate(sp.feet.right, tp.feet.right, t);
     return p;
   }
 
@@ -68,14 +71,18 @@ public:
   
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
+  const IKParameters& getParameters() const { return theParameters; }
+  
 private:
   void startControlZMP(const InverseKinematic::ZMPFeetPose& target);
 
   const MotionBlackBoard& theBlackBoard;
+  
+  IKParameters theParameters;
 
   Kinematics::InverseKinematics theInverseKinematics;
   
-  Vector3<double> theCoMControlResult;
+  Vector3<double> theCoMControlResult; // save CoM control result to be reused
   
   PreviewController thePreviewController;
   std::list<InverseKinematic::ZMPFeetPose> theZMPFeetPoseBuffer;

@@ -85,7 +85,7 @@ public:
     }
 
     calculateTrajectory(motionRequest);
-    HipFeetPose c = theEngine.controlCenterOfMass(p);
+    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
   }
@@ -94,7 +94,7 @@ private:
   double radius; // current radius of the circle in mm
   double speed; // current speed of the motion in degreees
   double t; // current time
-  CoMFeetPose p; // the basic pose
+  InverseKinematic::CoMFeetPose p; // the basic pose
 };
 
 #endif	/* DANCE_H */

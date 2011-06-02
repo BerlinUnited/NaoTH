@@ -10,9 +10,9 @@
 
 #include "Motions/StandMotion.h"
 #include "Motions/Dance.h"
+#include "Motions/Walk.h"
 
 /*
-#include "Motions/IKWalkMotion.h"
 #include "Motions/IKKickMotion.h"
 #include "Motions/IKDynamicKickMotion.h"
 #include "Motions/IKDynamicKickMotion_new.h"
@@ -36,10 +36,8 @@ InverseKinematicsMotionFactory::~InverseKinematicsMotionFactory()
     delete currentMotion;
 }
 
-
 AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-
   // FIXME: the old motion shouldn't be deleted!!! 
   if(currentMotion != NULL)
   {
@@ -50,9 +48,9 @@ AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest
   switch(motionRequest.id)
   {
     case motion::STAND: currentMotion = new StandMotion(); break;
-    case motion::DANCE: currentMotion = new DanceMotion(); break;    
+    case motion::DANCE: currentMotion = new DanceMotion(); break;
+    case motion::WALK: currentMotion = new Walk(); break;
     /*
-    case MotionRequestID::walk: currentMotion = new IKWalkMotion(engine); break;
     case MotionRequestID::kick: currentMotion = new IKDynamicKickMotion_new(engine); break;
     case MotionRequestID::grasp: currentMotion = new IKGrasping(engine); break;
         case MotionRequestID::check_reactivity: currentMotion = new CheckMotion(engine); break;*/

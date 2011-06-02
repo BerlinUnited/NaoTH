@@ -132,7 +132,7 @@ namespace Math {
 
   /** 
    * This method normalizes an angle. This means that the resulting
-   * angle lies between -180 and 180 degrees.
+   * angle lies between (-180, 180] degrees.
    * @param[in] angle the angle which must be normalized
    * @return the result of normalizing the given angle
    * TODO: this function takes a lot of time when the angle is very big (say angle=1e+61)
@@ -141,7 +141,7 @@ namespace Math {
   inline TYPE normalizeAngle(TYPE angle)
   {
       while (angle > pi) angle -= pi2;
-      while (angle < -pi) angle += pi2;
+      while (angle <= -pi) angle += pi2;
 
       return ( angle);
   }//end normalizeAngle

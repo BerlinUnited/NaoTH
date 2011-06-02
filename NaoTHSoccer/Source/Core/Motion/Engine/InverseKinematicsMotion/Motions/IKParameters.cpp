@@ -14,5 +14,7 @@ IKParameters::IKParameters()
   footOffsetY = 0;
   
   stand.speed = 0.04;
+  
   walk.comHeight = 260;
+  walk.enableFSRProtection = true;
 }

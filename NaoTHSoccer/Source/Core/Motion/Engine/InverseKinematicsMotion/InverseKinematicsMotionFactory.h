@@ -24,8 +24,6 @@ public:
 
 private:
 
-  //InverseKinematicsMotionEngine engine;
-
   AbstractMotion* currentMotion;
 };
 

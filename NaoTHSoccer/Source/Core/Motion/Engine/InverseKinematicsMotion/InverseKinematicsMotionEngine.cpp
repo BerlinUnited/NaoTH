@@ -37,8 +37,8 @@ HipFeetPose InverseKinematicsMotionEngine::getHipFeetPoseFromKinematicChain(cons
 {
   HipFeetPose p;
   p.hip = kc.theLinks[KinematicChain::Hip].M;
-  p.lFoot = getLeftFootFromKinematicChain(kc);
-  p.rFoot = getRightFootFromKinematicChain(kc);
+  p.feet.left = getLeftFootFromKinematicChain(kc);
+  p.feet.right = getRightFootFromKinematicChain(kc);
   return p;
 }
 
@@ -47,8 +47,8 @@ CoMFeetPose InverseKinematicsMotionEngine::getCoMFeetPoseFromKinematicChain(cons
   CoMFeetPose p;
   p.com.rotation = kc.theLinks[KinematicChain::Hip].R;
   p.com.translation = kc.CoM;
-  p.lFoot = getLeftFootFromKinematicChain(kc);
-  p.rFoot = getRightFootFromKinematicChain(kc);
+  p.feet.left = getLeftFootFromKinematicChain(kc);
+  p.feet.right = getRightFootFromKinematicChain(kc);
   return p;
 }
 
@@ -92,6 +92,21 @@ CoMFeetPose InverseKinematicsMotionEngine::getCurrentCoMFeetPose() const
   return getCoMFeetPoseBasedOnSensor();
 }
 
+ZMPFeetPose InverseKinematicsMotionEngine::getPlannedZMPFeetPose() const
+{
+  if ( thePreviewController.ready() )
+  {
+    return theZMPFeetPoseBuffer.back();
+  }
+  
+  // TODO: calculate ZMP according to sensor, return CoM as ZMP at the moment
+  ZMPFeetPose result;
+  CoMFeetPose com = getCurrentCoMFeetPose();
+  result.zmp = com.com;
+  result.feet = com.feet;
+  return result;
+}
+
 Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D& tp, double t) const
 {
   ASSERT(0 <= t);
@@ -109,13 +124,21 @@ Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D
 HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p)
 {
   HipFeetPose result;
-  result.lFoot = p.lFoot;
-  result.rFoot = p.rFoot;
+  result.feet = p.feet;
   result.hip = p.com;
   result.localInHip();
   
-  // transform all data in left foot local coordiantes
-  Vector3<double> refCoM = p.lFoot.invert() * p.com.translation;
+  /* normally it should not affect the algorithm,
+   * but when IK can not be solved, it affects the result, i.e. support foot is prefered.
+   */
+  bool leftFootSupport = (result.feet.left.translation.abs2() < result.feet.right.translation.abs2());
+  
+  // transform all data in support foot local coordiantes
+  Vector3<double> refCoM;
+  if ( leftFootSupport )
+    refCoM = p.feet.left.invert() * p.com.translation;
+  else
+    refCoM = p.feet.right.invert() * p.com.translation;
   
   // copy head joint and arm joint from sensor
   const double *sj = theBlackBoard.theSensorJointData.position;
@@ -128,7 +151,12 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   result.hip.translation = theCoMControlResult; // reuse results from last calculation
   
   // set the support foot as orginal
-  Kinematics::Link* obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
+  Kinematics::Link* obsFoot;
+  if ( leftFootSupport )
+    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
+  else
+    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::RFoot]);
+    
   obsFoot->R = RotationMatrix();
   obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
 
@@ -149,7 +177,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
     theInverseKinematics.theKinematicChain.updateCoM();
     Vector3<double> obsCoM = theInverseKinematics.theKinematicChain.CoM;
 
-    Vector3<double> e = (refCoM - obsCoM);
+    Vector3<double> e = refCoM - obsCoM;
 
     double error = e.x * e.x + e.y * e.y + e.z * e.z;
 
@@ -181,7 +209,12 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 
     result.hip.translation += u;
   }//end for
-
+  
+  if ( bestError > 1 )
+  {
+    cerr<<"Warning: can not control CoM @ "<<bestError<<endl;
+  }
+  
   return result;
 }
 
@@ -196,7 +229,7 @@ void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFe
   chest.translate(0, 0, NaoInfo::HipOffsetZ);
   const Vector3<double> footOffset(0,0,-NaoInfo::FootHeight);
   
-  double err = theInverseKinematics.gotoLegs(chest, p.lFoot, p.rFoot, footOffset, footOffset);
+  double err = theInverseKinematics.gotoLegs(chest, p.feet.left, p.feet.right, footOffset, footOffset);
 
   if (abs(err) > Math::fromDegrees(1))
   {
@@ -230,10 +263,9 @@ void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
   theZMPFeetPoseBuffer.clear();
   thePreviewController.clear();
   
-  ZMPFeetPose startZMPPose;
+  ZMPFeetPose startZMPPose; // get start ZMP
   startZMPPose.zmp = startCoMPose.com;
-  startZMPPose.lFoot = startCoMPose.lFoot;
-  startZMPPose.rFoot = startCoMPose.rFoot;
+  startZMPPose.feet = startCoMPose.feet;
   for (unsigned int i = 0; i < previewSteps-1; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
@@ -248,7 +280,7 @@ CoMFeetPose InverseKinematicsMotionEngine::controlZMP(const ZMPFeetPose& p)
   theZMPFeetPoseBuffer.push_back(p);
 
   Vector2<double> zmp(p.zmp.translation.x, p.zmp.translation.y);
-  thePreviewController.setHeight(p.zmp.translation.z);
+  thePreviewController.setParameters(theBlackBoard.theFrameInfo.basicTimeStep, p.zmp.translation.z);
   
   if ( !thePreviewController.ready() )
   {
@@ -260,8 +292,7 @@ CoMFeetPose InverseKinematicsMotionEngine::controlZMP(const ZMPFeetPose& p)
   const ZMPFeetPose& bP = theZMPFeetPoseBuffer.front();
   CoMFeetPose result;
   result.com = bP.zmp;
-  result.lFoot = bP.lFoot;
-  result.rFoot = bP.rFoot;
+  result.feet = bP.feet;
   theZMPFeetPoseBuffer.pop_front();
   result.com.translation.x = thePreviewControlCoM.x;
   result.com.translation.y = thePreviewControlCoM.y;

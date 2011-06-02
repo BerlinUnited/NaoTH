@@ -20,16 +20,20 @@ public:
 
     enum SupportMode
     {
-        LEFT,
-        RIGHT,
-        DOUBLE_LEFT,
-        DOUBLE_RIGHT,
-        DOUBLE,
-        NONE,
+        LEFT = 1,
+        RIGHT = 2,
+        DOUBLE_LEFT = 4,
+        DOUBLE_RIGHT = 8,
+        DOUBLE = 16,
+        NONE = 0,
     };
 
   SupportPolygon();
   ~SupportPolygon();
+  
+  bool isLeftFootSupportable() const;
+  
+  bool isRightFootSupportable() const;
 
   std::vector<Vector2<double> > vertex;
   SupportMode mode;

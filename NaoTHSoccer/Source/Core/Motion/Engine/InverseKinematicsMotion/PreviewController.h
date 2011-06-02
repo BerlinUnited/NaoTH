@@ -29,7 +29,7 @@ public:
 
   PreviewController();
 
-  void setHeight(double height);
+  void setParameters(unsigned int stepTime, double height);
 
   void control(const Vector2<double>& zmp, Vector2<double>& com, Vector2<double>& dcom, Vector2<double>& ddcom);
 

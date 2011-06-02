@@ -12,7 +12,8 @@ using namespace InverseKinematic;
 
 IKMotion::IKMotion(motion::MotionID id)
 : AbstractMotion(id),
-theEngine(InverseKinematicsMotionEngine::getInstance())
+theEngine(InverseKinematicsMotionEngine::getInstance()),
+theParameters(theEngine.getParameters())
 {
 }
 
@@ -24,7 +25,7 @@ CoMFeetPose IKMotion::getStandPose(double comHeight) const
   CoMFeetPose p;
   p.com.translation = Vector3<double>(theParameters.hipOffsetX, 0, comHeight);
   double footY = NaoInfo::HipOffsetY + theParameters.footOffsetY;
-  p.lFoot.translation = Vector3<double>(0, footY, 0);
-  p.rFoot.translation = Vector3<double>(0, -footY, 0);
+  p.feet.left.translation = Vector3<double>(0, footY, 0);
+  p.feet.right.translation = Vector3<double>(0, -footY, 0);
   return p;
 }//end getStandPose

@@ -222,7 +222,7 @@ double InverseKinematics::gotoTargetCCD(const list<Link*>& linkList, const Pose3
 
 
 
-void InverseKinematics::calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target)
+double InverseKinematics::calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target)
 {
   const Link& pelvis = theKinematicChain.theLinks[leftLeg?KinematicChain::LPelvis:KinematicChain::RPelvis];
 
@@ -236,9 +236,11 @@ void InverseKinematics::calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Pose
   
   const double maxlen = NaoInfo::ThighLength + NaoInfo::TibiaLength;
   double kneeAng = 0;
+  double error = 0;
   if (C >= maxlen )
   {
-//    cerr << "InverseKinematics can not reach this pose! length=" << C << endl;
+    //cerr << "InverseKinematics can not reach this pose! length=" << C << endl;
+    error = C - maxlen;
     C = maxlen;
     r.normalize(C);
     target.translation = pelvis.b - target.rotation * r;
@@ -258,13 +260,15 @@ void InverseKinematics::calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Pose
   theJointData.position[anklePitch] = -(atan2(r.x, (Math::sgn(r.z) * sqrt(Math::sqr(r.y) + Math::sqr(r.z)))) + alpha);
 
   theJointData.position[ankleRoll] = atan2(r.y, r.z);
+  
+  return 0;//error;
 }//end calculateLowerLegJointsAnalyticaly
 
 
-void InverseKinematics::calculateNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target)
+double InverseKinematics::calculateNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target)
 {
   // calculate the last three joints
-  calculateLowerNaoLegJointsAnalyticaly(leftLeg, target);
+  double error = calculateLowerNaoLegJointsAnalyticaly(leftLeg, target);
 
   JointData::JointID hipYawPitch = leftLeg ? JointData::LHipYawPitch : JointData::RHipYawPitch;
   JointData::JointID hipRoll     = leftLeg ? JointData::LHipRoll     : JointData::RHipRoll;
@@ -285,11 +289,9 @@ void InverseKinematics::calculateNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& t
   theJointData.position[hipRoll]     = asin(HipO2Thigh[1][2]) - rotX;
   theJointData.position[hipYawPitch] = atan2(-HipO2Thigh[1][0] , HipO2Thigh[1][1] ) * (leftLeg?-1.0:1.0);
   theJointData.position[hipPitch]    = atan2(-HipO2Thigh[0][2] , HipO2Thigh[2][2] );
+  
+  return error;
 }//end calculateNaoLegJointsAnalyticaly
-
-
-
-
 
 double InverseKinematics::gotoLeg(bool leftLeg, Pose3D& target, const Vector3<double>& offset, Mask mask)
 {
@@ -306,11 +308,11 @@ double InverseKinematics::gotoLeg(bool leftLeg, Pose3D& target, const Vector3<do
 double InverseKinematics::gotoLegAnalytical(bool leftLeg, Pose3D& target, const Vector3<double>& offset)
 {
   target.translation -= target.rotation*offset;
-  calculateNaoLegJointsAnalyticaly(leftLeg, target);
+  double error = calculateNaoLegJointsAnalyticaly(leftLeg, target);
   target.translation += target.rotation*offset;
 
   //TODO: calculate error for the position?
-  return 0;
+  return error;
 }//end gotoLeg
 
 

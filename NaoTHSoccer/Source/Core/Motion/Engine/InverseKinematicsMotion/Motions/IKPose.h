@@ -13,7 +13,25 @@
 
 namespace InverseKinematic
 {
-  class Pose
+  class FeetPose
+  {    
+  public:
+    Pose3D left, right;
+    
+    void localInLeftFoot()
+    {
+      right = left.local(right);
+      left = Pose3D();
+    }
+
+    void localInRightFoot()
+    {
+      left = right.local(left);
+      right = Pose3D();
+    }
+  };
+  
+  class BodyFeetPose
   {
   protected:
     void localPose(Pose3D& p0, Pose3D& p1, Pose3D& p2)
@@ -23,24 +41,29 @@ namespace InverseKinematic
       p0 = Pose3D();
     }
     
+    void localInBody()
+    {
+      localPose(body(), feet.left, feet.right);
+    }
+    
   public:
-    Pose3D lFoot, rFoot;
+    FeetPose feet;
     
     virtual Pose3D& body() = 0;
     virtual const Pose3D& body() const = 0;
     
     void localInLeftFoot()
     {
-      localPose(lFoot, rFoot, body());
+      localPose(feet.left, feet.right, body());
     }
 
     void localInRightFoot()
     {
-      localPose(rFoot, lFoot, body());
+      localPose(feet.right, feet.left, body());
     }
   };
   
-  class HipFeetPose: public Pose
+  class HipFeetPose: public BodyFeetPose
   {
   public:
       Pose3D hip;
@@ -50,11 +73,11 @@ namespace InverseKinematic
 
       void localInHip()
       {
-        localPose(hip, lFoot, rFoot);
+        localInBody();
       }
   };
 
-  class CoMFeetPose: public Pose
+  class CoMFeetPose: public BodyFeetPose
   {
   public:
     Pose3D com;
@@ -64,11 +87,11 @@ namespace InverseKinematic
       
     void localInCoM()
     {
-      localPose(com, lFoot, rFoot);
+      localInBody();
     }
   };
   
-  class ZMPFeetPose: public Pose
+  class ZMPFeetPose: public BodyFeetPose
   {
   public:
     Pose3D zmp;
@@ -78,7 +101,7 @@ namespace InverseKinematic
       
     void localInZMP()
     {
-      localPose(zmp, lFoot, rFoot);
+      localInBody();
     }
   };
 }

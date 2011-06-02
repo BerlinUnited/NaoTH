@@ -131,20 +131,19 @@ private:
   * @note the target will be modified when it can not be reached
   * the result is stored to theJointData
   */
-  void calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target);
+  double calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target);
 
   /* 
   * solve IK analyticaly for 6 joints of the Nao's Leg
   * @note the target will be modified when it can not be reached
   * the result is stored to theJointData
   */
-  void calculateNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target);
+  double calculateNaoLegJointsAnalyticaly(bool leftLeg, Pose3D& target);
 
 
 
 public:
 
-  // FIXME: in the following methods the target is changed => make it const?!
   //@return error
   double gotoLeg(bool leftLeg, Pose3D& target, const Vector3<double>& offset, Mask mask = MASK_ALL);
 

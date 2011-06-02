@@ -14,12 +14,17 @@ public:
   double hipOffsetX;
   double footOffsetY;
   
-  struct {
+  struct Stand {
     double speed;
   } stand;
 
-  struct {
+  struct Walk {
     double comHeight;
+    
+    bool enableFSRProtection;
+    
+    int maxUnsupportedCount;
+    int maxWaitLandingCount; // <0 means wait for ever until landing
   } walk;
   
   IKParameters();
