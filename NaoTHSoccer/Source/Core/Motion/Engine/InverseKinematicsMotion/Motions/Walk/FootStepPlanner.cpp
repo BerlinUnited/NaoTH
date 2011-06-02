@@ -50,7 +50,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step) const
   ASSERT(step.rotation <= Math::pi);
   ASSERT(step.rotation > -Math::pi);
   
-  //restrictStepSize(step, lastStep);
+  restrictStepSize(step, lastStep);
   
   //TODO
   //restrictStepChange
@@ -65,10 +65,12 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step) const
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(FeetPose pose, const Pose2D& step, double feetSepWidth) const
+FootStep FootStepPlanner::firstStep(FeetPose pose, Pose2D step, double feetSepWidth) const
 {
   pose.localInRightFoot();
   FootStep newStep(pose, FootStep::LEFT );
+  FootStep zeroStep(pose, FootStep::RIGHT );
+  restrictStepSize(step, zeroStep);
   addStep(newStep, step);
   return newStep;
 }
@@ -76,14 +78,14 @@ FootStep FootStepPlanner::firstStep(FeetPose pose, const Pose2D& step, double fe
 void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) const
 {
   double maxTurn = theMaxStepTurn;
-  /*
+  
   double maxLen = sqrt(theMaxStepLength * theMaxStepLength + theMaxStepWidth * theMaxStepWidth);
   
   if (maxLen > 1)
   {
-    maxTurn = theMaxStepTurn * (1 - Math::clamp(lastStep.step.translation.abs() / maxLen, 0.5,1.0));
+    double lastStepLen = (lastStep.footEnd().translation - lastStep.footBegin().translation).abs();
+    maxTurn = theMaxStepTurn * (1 - Math::clamp(lastStepLen / maxLen, 0.5, 1.0));
   }
-   */
 
   // limit the rotation
   step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);

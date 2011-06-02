@@ -18,7 +18,7 @@ public:
   // the typical walk step
   FootStep nextStep(const FootStep& lastStep, Pose2D step) const;
   
-  FootStep firstStep(InverseKinematic::FeetPose pose, const Pose2D& step, double feetSepWidth) const;
+  FootStep firstStep(InverseKinematic::FeetPose pose, Pose2D step, double feetSepWidth) const;
   
   void restrictStepSize(Pose2D& step, const FootStep& lastStep) const;
   

@@ -204,7 +204,7 @@ void Walk::updateParameters()
   theBodyPitchOffset = 0; //TODO
   theFeetSepWidth = NaoInfo::HipOffsetY; //TODO
   samplesDoubleSupport = 4;
-  samplesSingleSupport = 20;
+  samplesSingleSupport = 10;
   numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
   stepHeight = 20;
   footPitchOffset = 0;
