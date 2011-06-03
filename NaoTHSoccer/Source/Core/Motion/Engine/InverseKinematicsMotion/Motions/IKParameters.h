@@ -8,7 +8,9 @@
 #ifndef __IK__PARAMETERS_H_
 #define __IK__PARAMETERS_H_
 
-class IKParameters
+#include <Tools/DataStructures/ParameterList.h>
+
+class IKParameters : public ParameterList
 {
 public:
   double hipOffsetX;
@@ -20,6 +22,20 @@ public:
 
   struct Walk {
     double comHeight;
+    double bodyPitchOffset;
+    
+    double singleSupportTime;
+    double doubleSupportTime;
+    
+    double stepHeight;
+    double curveFactor;
+    
+    double maxTurnInner;
+    double maxStepTurn;
+    double maxStepLength;
+    double maxStepLengthBack;
+    double maxStepWidth;
+    double maxStepChange; // (0 - 1]
     
     bool enableFSRProtection;
     

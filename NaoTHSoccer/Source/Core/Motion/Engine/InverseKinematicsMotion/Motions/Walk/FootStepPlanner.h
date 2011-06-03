@@ -9,15 +9,18 @@
 #define	_FOOT_STEP_PLANNER_H
 
 #include "FootStep.h"
+#include "../IKParameters.h"
 
 class FootStepPlanner
 {
 public:
   FootStepPlanner();
   
+  void updateParameters(const IKParameters& parameters);
+  
   FootStep nextStep(const FootStep& lastStep, Pose2D step);
   
-  FootStep firstStep(InverseKinematic::FeetPose pose, Pose2D step, double feetSepWidth);
+  FootStep firstStep(InverseKinematic::FeetPose pose, Pose2D step);
   
 private:
   void restrictStepSize(Pose2D& step, const FootStep& lastStep) const;
