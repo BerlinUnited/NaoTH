@@ -127,7 +127,7 @@ void SoundControl::deinit()
   snd_pcm_close(playback_handle);
 }
 
-void SoundControl::setSoundData(const SoundData& theSoundData)
+void SoundControl::setSoundData(const SoundPlayData& theSoundData)
 {
   //create new thread for playing filename
   if((theSoundData.soundFile != "") && (!is_running))
@@ -144,11 +144,11 @@ void SoundControl::setSoundData(const SoundData& theSoundData)
     }
   }
 
-  for(int i=0;i<SoundData::numOfSpeaker;i++)
+  for(int i=0;i<SoundPlayData::numOfSpeaker;i++)
   {
     if(theSoundData.volume[i] != theSoundDataCopy.volume[i])
     {
-      change_volume((SoundData::SpeakerID) i,theSoundData.volume[i]);
+      change_volume((SoundPlayData::SpeakerID) i,theSoundData.volume[i]);
     }
   }
 
@@ -157,7 +157,7 @@ void SoundControl::setSoundData(const SoundData& theSoundData)
     change_mute(theSoundData.mute);
   }
 
-  theSoundDataCopy = SoundData(theSoundData);
+  theSoundDataCopy = SoundPlayData(theSoundData);
 }
 
 /* Don't use directly, it will be called by play_thread_handler
@@ -276,7 +276,7 @@ void SoundControl::play()
   is_running=false;
 }
 
-void SoundControl::change_volume(const SoundData::SpeakerID /*id*/,const int /*volume*/)
+void SoundControl::change_volume(const SoundPlayData::SpeakerID /*id*/,const int /*volume*/)
 {
   //if((err = snd_mixer_selem_set_playback_volume(,,volume))<0)
   //{

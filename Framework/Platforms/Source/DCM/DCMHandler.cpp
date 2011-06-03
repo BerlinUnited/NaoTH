@@ -207,7 +207,7 @@ void DCMHandler::initMotorJoint()
 void DCMHandler::setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData)
 {
   unsigned int timestamp = al_dcmproxy->getTime(time_delay);
-  sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->hardness[jointID],timestamp);
+  sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->stiffness[jointID],timestamp);
   sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],timestamp);
 }
 
@@ -220,12 +220,12 @@ void DCMHandler::setAllMotorData(const MotorJointData& theMotorJointData)
   //MotorJoints
   for(int i=0;i<JointData::RHipYawPitch;i++)
   {
-    allMotorHardnessCommands[5][i][0] = theMotorJointData.hardness[i];
+    allMotorHardnessCommands[5][i][0] = theMotorJointData.stiffness[i];
     allMotorPositionCommands[5][i][0] = theMotorJointData.position[i];
   }
   for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
   {
-    allMotorHardnessCommands[5][i-1][0] = theMotorJointData.hardness[i];
+    allMotorHardnessCommands[5][i-1][0] = theMotorJointData.stiffness[i];
     allMotorPositionCommands[5][i-1][0] = theMotorJointData.position[i];
   }
 
@@ -580,7 +580,7 @@ void DCMHandler::initUltraSoundSend()
 void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
 {
   usSendCommands[4][0] = al_dcmproxy->getTime(time_delay);
-  usSendCommands[5][0][0] = data.data;
+  usSendCommands[5][0][0] = static_cast<double>(data.mode);
 
   try
   {
@@ -698,18 +698,18 @@ void DCMHandler::get(SensorJointData& data) const
       data.electricCurrent[i] = currentAllSensorsValue[currentIndex++];
       data.temperature[i] = currentAllSensorsValue[currentIndex++];
       data.position[i] = currentAllSensorsValue[currentIndex++];
-      data.hardness[i] = currentAllSensorsValue[currentIndex++];
+      data.stiffness[i] = currentAllSensorsValue[currentIndex++];
     }
     for (int i = JointData::RHipYawPitch + 1; i < JointData::numOfJoint; i++) {
       data.electricCurrent[i] = currentAllSensorsValue[currentIndex++];
       data.temperature[i] = currentAllSensorsValue[currentIndex++];
       data.position[i] = currentAllSensorsValue[currentIndex++];
-      data.hardness[i] = currentAllSensorsValue[currentIndex++];
+      data.stiffness[i] = currentAllSensorsValue[currentIndex++];
     }
     data.electricCurrent[JointData::RHipYawPitch] = data.electricCurrent[JointData::LHipYawPitch];
     data.temperature[JointData::RHipYawPitch] = data.temperature[JointData::LHipYawPitch];
     data.position[JointData::RHipYawPitch] = data.position[JointData::LHipYawPitch];
-    data.hardness[JointData::RHipYawPitch] = data.hardness[JointData::LHipYawPitch];
+    data.stiffness[JointData::RHipYawPitch] = data.stiffness[JointData::LHipYawPitch];
   }  catch (ALError e) {
     std::cerr << "Failed to get Information from: " << e.toString() << endl;
   }
@@ -821,7 +821,7 @@ void DCMHandler::get(UltraSoundReceiveData& data) const
     unsigned int currentIndex = theUltraSoundReceiveDataIndex;
     if(data.ultraSoundTimeStep != 100) //Hack:is only 100 if mode 4 or 12 etc were the third bit is set
     {
-      data.data = currentAllSensorsValue[currentIndex++];
+      data.rawdata = currentAllSensorsValue[currentIndex++];
       currentIndex += UltraSoundData::numOfIRSend * 2;
     }
     else

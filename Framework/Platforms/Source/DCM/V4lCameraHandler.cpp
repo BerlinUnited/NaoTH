@@ -366,7 +366,10 @@ void V4lCameraHandler::get(Image& theImage)
         theImage.cameraInfo.cameraID = currentCamera;
         theImage.currentBuffer = currentBuf.index;
         theImage.bufferCount = n_buffers;
-        theImage.timestamp = (unsigned int) (((currentBuf.timestamp.tv_sec * 1000000 + currentBuf.timestamp.tv_usec) - NaoTime::startingTimeInMicroSeconds) / 1000 );
+        theImage.timestamp = 
+          (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand + 
+                            ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) - 
+                          NaoTime::startingTimeInMilliSeconds);
       }
     }
   }

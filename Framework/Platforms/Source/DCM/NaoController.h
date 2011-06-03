@@ -81,7 +81,7 @@ public:
 
   virtual void set(const UltraSoundSendData& data);
 
-  virtual void set(const SoundData& data);
+  virtual void set(const SoundPlayData& data);
 
 private:
   DCMHandler theDCMHandler;
