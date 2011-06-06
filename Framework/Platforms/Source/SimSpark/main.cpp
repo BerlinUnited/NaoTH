@@ -69,8 +69,8 @@ int main(int argc, char** argv)
   Motion theMotion;
   theController.registerCallbacks(&theMotion, &theCognition);
 
-  theController.main();
-  //theController.multiThreadsMain();
+  //theController.main();
+  theController.multiThreadsMain();
 
   return 0;
 }//end main

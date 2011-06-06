@@ -1,7 +1,7 @@
 /**
  * @file SimSparkController.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * @breief Interface for the SimSpark simulator
  *
  */
@@ -97,8 +97,10 @@ SimSparkController::SimSparkController()
   theCameraId = 0;
   theSenseTime = 0;
 
-//  pthread_mutex_init(&theCognitionInputMutex, NULL);
-//  pthread_cond_init(&theCognitionInputCond, NULL);
+  if (!g_thread_supported())
+    g_thread_init(NULL);
+  theCognitionInputMutex = g_mutex_new();
+  theCognitionInputCond = g_cond_new();
 
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
@@ -107,6 +109,9 @@ SimSparkController::SimSparkController()
 
 SimSparkController::~SimSparkController()
 {
+  g_mutex_free(theCognitionInputMutex);
+  g_cond_free(theCognitionInputCond);
+  
   if (theImageData != NULL)
     delete [] theImageData;
 }
@@ -148,8 +153,6 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   //Platform::getInstance().init(this, new SimSparkCommunicationCollection(debugPort,theGameInfo, theTeamComm));
   
-  //Cognition::getInstance().init();
-  //Motion::getInstance().init();
   Platform::getInstance().init(this);
 
 
@@ -206,7 +209,6 @@ void SimSparkController::motionLoop()
 {
   while ( updateSensors() )
   {    
-    //Motion::getInstance().main();
     callMotion();
   }
 }//end motionLoop
@@ -215,7 +217,6 @@ void SimSparkController::cognitionLoop()
 {
   while (true)
   {
-    //Cognition::getInstance().main();
     callCognition();
   }
 }//end cognitionLoop
@@ -225,7 +226,6 @@ void* motionLoopWrap(void* c)
 {
   SimSparkController* ctr = static_cast<SimSparkController*> (c);
   ctr->motionLoop();
-//  pthread_exit(NULL);
   return NULL;
 }//end motionLoopWrap
 
@@ -233,12 +233,10 @@ void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  //Motion::getInstance().main();
   callMotion();
 
-//  pthread_t motionThread;
-//  int mt = pthread_create(&motionThread, NULL, motionLoopWrap, this);
-//  ASSERT(mt == 0);
+  GThread* motionThread = g_thread_create(motionLoopWrap, this, true, NULL);
+  ASSERT(motionThread != NULL);
 
   cognitionLoop();
 }//end multiThreadsMain
@@ -252,7 +250,6 @@ void SimSparkController::getMotionInput()
     theSensorJointData.stiffness[i] = theLastSensorJointData.stiffness[i];
   }
   theLastSensorJointData = theSensorJointData;
-
 }
 
 void SimSparkController::setMotionOutput()
@@ -266,13 +263,13 @@ void SimSparkController::setMotionOutput()
 
 void SimSparkController::getCognitionInput()
 {
-//  pthread_mutex_lock(&theCognitionInputMutex);
-//  while (!isNewImage)
-//  {
-//    pthread_cond_wait(&theCognitionInputCond, &theCognitionInputMutex);
-//  }
+  g_mutex_lock(theCognitionInputMutex);
+  while (!isNewImage)
+  {
+    g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
+  }
   PlatformInterface<SimSparkController>::getCognitionInput();
-//  pthread_mutex_unlock(&theCognitionInputMutex);
+  g_mutex_unlock(theCognitionInputMutex);
 }
 
 bool SimSparkController::updateSensors()
@@ -290,7 +287,7 @@ bool SimSparkController::updateSensors()
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
 
-//  pthread_mutex_lock(&theCognitionInputMutex);
+  g_mutex_lock(theCognitionInputMutex);
 
   // clear FSR data, since if there is no FSR data, it means no toch
   for (int i = 0; i < FSRData::numOfFSR; i++)
@@ -350,10 +347,10 @@ bool SimSparkController::updateSensors()
 
   updateInertialSensor();
 
-//  if ( isNewImage || isNewVirtualVision ){
-//    pthread_cond_signal(&theCognitionInputCond);
-//  }
-//  pthread_mutex_unlock(&theCognitionInputMutex);
+  if ( isNewImage || isNewVirtualVision ){
+    g_cond_signal(theCognitionInputCond);
+  }
+  g_mutex_unlock(theCognitionInputMutex);
 
   destroy_sexp(sexp);
   destroy_continuation(pcont);
