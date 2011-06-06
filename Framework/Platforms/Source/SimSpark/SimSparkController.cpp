@@ -116,10 +116,10 @@ SimSparkController::~SimSparkController()
     delete [] theImageData;
 }
 
-bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port)
+bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
-
   theTeamName = teamName;
+  theSync = sync?"(syn)":"";
   // connect to the simulator
   if(!theSocket.connect(server, port))
   {
@@ -129,15 +129,16 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   // send create command to simulator
 
-  theSocket << "(scene rsg/agent/nao/nao.rsg)" << send;
+  theSocket << "(scene rsg/agent/nao/nao.rsg)" << theSync << send;
   // wait the response
   updateSensors();
   // initialize the teamname and number
-  theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << send;
+  theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << theSync << send;
   // wait the response
   while (theGameInfo.thePlayerNum == 0)
   {
     updateSensors();
+    theSocket << theSync << send;
   }
   // we should get the team index and player number now
 
@@ -258,7 +259,7 @@ void SimSparkController::setMotionOutput()
   say();
   autoBeam();
   jointControl();
-  theSocket << send;
+  theSocket << theSync <<send;
 }
 
 void SimSparkController::getCognitionInput()
@@ -289,7 +290,7 @@ bool SimSparkController::updateSensors()
 
   g_mutex_lock(theCognitionInputMutex);
 
-  // clear FSR data, since if there is no FSR data, it means no toch
+  // clear FSR data, since if there is no FSR data, it means no touch
   for (int i = 0; i < FSRData::numOfFSR; i++)
   {
     theFSRData.data[i] = 0;
@@ -1060,7 +1061,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
 
 void SimSparkController::beam(const Vector3<double>& p)
 {
-    theSocket << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")" << send;
+    theSocket << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")" << theSync << send;
 }
 
 void SimSparkController::autoBeam()

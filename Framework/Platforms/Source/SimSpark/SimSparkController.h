@@ -83,6 +83,7 @@ private:
 
   list<MotorJointData> theMotorJointData;
   string theTeamName;
+  string theSync;
   
 public:
   SimSparkController();
@@ -99,7 +100,7 @@ public:
   virtual string getBodyNickName() {return theTeamName; }
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port);
+  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   // the main loop in single thread
   void main();
