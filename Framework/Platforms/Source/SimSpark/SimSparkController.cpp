@@ -197,8 +197,6 @@ void SimSparkController::main()
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( updateSensors() )
   {
-    //Cognition::getInstance().main();
-    //Motion::getInstance().main();
     callCognition();
     callMotion();
   }//end while
@@ -283,7 +281,7 @@ bool SimSparkController::updateSensors()
   string msg;
   theSocket >> msg;
 
-//  cout << "Sensor data: " << msg << endl;
+  //cout << "Sensor data: " << msg << endl;
 
   pcont_t* pcont;
   sexp_t* sexp = NULL;

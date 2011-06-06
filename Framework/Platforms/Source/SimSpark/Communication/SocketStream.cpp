@@ -1,5 +1,5 @@
 #include "SocketStream.h"
-
+#include <cassert>
 #include <glib.h>
 
 SocketStream::SocketStream()
@@ -85,11 +85,13 @@ void SocketStream::send(const std::string& msg)
     {
       g_warning("Could not send message. Error message:\n%s", err->message);
       g_error_free (err);
+      assert(false);
     }
   }
   else
   {
     g_warning("Can't send, not connected");
+    assert(false);
   }
 }
 
