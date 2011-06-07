@@ -20,7 +20,11 @@ Trace::Line::Line(const char* f, int l, const std::string msg)
   msg(msg)
 {
   ASSERT(strlen(f) < MAX_FILE_NAME_LENGHT);
+#ifdef WIN32
+  strcpy_s(file, f);
+#else
   strcpy(file, f);
+#endif
 }
 
 void Trace::setCurrentLine(const char* file, int line, const std::string& msg) 

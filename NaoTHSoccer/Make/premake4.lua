@@ -51,11 +51,11 @@ solution "NaoTHSoccer"
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
-    flags { "Symbols", "ExtraWarnings", "FatalWarnings" }
+    flags { "Symbols", "FatalWarnings" }
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "ExtraWarnings", "FatalWarnings" }
+    flags { "Optimize", "FatalWarnings" }
       
   configuration{"Native"}
     includedirs {
@@ -73,6 +73,8 @@ solution "NaoTHSoccer"
   -- additional defines for windows
   configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
+	buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
+	              "/wd4996"} -- disable warning: "...deprecated..."
     
   configuration {"linux"}
     buildoptions {"-fPIC"}

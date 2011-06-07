@@ -21,7 +21,7 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
-  virtual void start(unsigned int port);
+  virtual void start(unsigned short port);
 
   /**
    * Register a command and a handler for this command.

@@ -8,6 +8,7 @@
 #ifndef _SWAPSPACE_H
 #define	_SWAPSPACE_H
 
+#include <glib.h>
 #include <vector>
 #include <Tools/DataStructures/Singleton.h>
 
@@ -40,7 +41,7 @@ public:
         void push(const HeadMotionRequest& hmr, const MotionRequest& mr);
 
     private:
-        pthread_mutex_t theMutex;
+        GMutex* theMutex;
 
         bool updated;
         HeadMotionRequest theHeadMotionRequest;
@@ -60,7 +61,7 @@ public:
         void push(const MotionStatus& ms, const OdometryData& od);
 
     private:
-        pthread_mutex_t theMutex;
+        GMutex* theMutex;
 
         MotionStatus theMotionStatus;
         OdometryData theOdometryData;

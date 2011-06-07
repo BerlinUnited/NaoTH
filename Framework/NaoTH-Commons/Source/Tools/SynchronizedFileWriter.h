@@ -18,7 +18,12 @@ public:
 
   static inline bool saveStringToFile(const std::string& content, const std::string& filename)
   {
-    FILE* file = fopen(filename.c_str(), "wb");
+    FILE* file = NULL;
+#ifdef WIN32
+    fopen_s(&file, filename.c_str(), "wb");
+#else
+    FILE*  = fopen(filename.c_str(), "wb");
+#endif
     if (file != NULL) 
     {
       fwrite(content.c_str(), 1, content.length(), file);

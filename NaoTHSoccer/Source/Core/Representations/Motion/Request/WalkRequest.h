@@ -10,6 +10,7 @@
 
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
+#include <string>
 
 /**
 * This describes the WalkRequest

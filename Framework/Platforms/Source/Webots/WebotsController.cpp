@@ -125,7 +125,11 @@ void WebotsController::init()
     {
       int n = 1;
       // TODO: don't use sscanf
+#ifdef WIN32
+      sscanf_s(robotName.c_str(), "blue player %d", &n);
+#else
       sscanf(robotName.c_str(), "blue player %d", &n);
+#endif
       playerNumber = n;
     }
   }
@@ -135,7 +139,11 @@ void WebotsController::init()
     {
       int n = 1;
       // TODO: don't use sscanf
+#ifdef WIN32
+      sscanf_s(robotName.c_str(), "red player %d", &n);
+#else
       sscanf(robotName.c_str(), "red player %d", &n);
+#endif
       playerNumber = n;
     }
   }

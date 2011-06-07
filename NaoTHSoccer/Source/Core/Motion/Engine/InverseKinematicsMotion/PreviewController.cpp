@@ -20,7 +20,7 @@ theHeight(0)
 
 void PreviewController::setParameters(unsigned int stepTime, double height)
 {
-  unsigned int newHeight = Math::round(height);
+  unsigned int newHeight = (unsigned int)Math::round(height);
   ASSERT(newHeight>=200);
   ASSERT(newHeight<=300);
   ASSERT(stepTime==10||stepTime==20||stepTime==40);

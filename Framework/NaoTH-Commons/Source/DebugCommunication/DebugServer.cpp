@@ -23,7 +23,7 @@ DebugServer::DebugServer()
 }//end DebugServer
 
 
-void DebugServer::start(unsigned int port)
+void DebugServer::start(unsigned short port)
 {
   if (g_thread_supported())
   {
