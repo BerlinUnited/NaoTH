@@ -22,7 +22,7 @@ public:
 #ifdef WIN32
     fopen_s(&file, filename.c_str(), "wb");
 #else
-    FILE*  = fopen(filename.c_str(), "wb");
+    file = fopen(filename.c_str(), "wb");
 #endif
     if (file != NULL) 
     {
