@@ -60,24 +60,26 @@ std::string NaothModule::version()
 
 
 void NaothModule::init()
-{  
+{
+  if (!g_thread_supported())
+    g_thread_init(NULL);
+  
   //int cognition_interval = 60000;
   int cognition_interval =   40000;
-
-  cout << "Init OutputThread" << endl;
   
   cout << "Initializing Controller" << endl;
   NaoController::getInstance().init(pBroker);
 
-  getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
-  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
-
+  
   cout << "Creating Cognition and Motion" << endl;
   theCognition = new Cognition();
   theMotion = new Motion();
   
   cout << "Registering Cognition and Motion" << endl;
   NaoController::getInstance().registerCallbacks(theMotion,theCognition);
+  
+  getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
+  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "Creating Cognition-Thread" << endl;
   theCognitionThread = new CognitionThread();
