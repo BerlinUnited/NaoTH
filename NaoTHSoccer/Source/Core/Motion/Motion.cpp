@@ -70,12 +70,12 @@ void Motion::call()
   processSensorData();
   
   // get orders from cognition
-  /*SwapSpace::getInstance().theCognitionCache.pull(
+  SwapSpace::getInstance().theCognitionCache.pull(
     theBlackBoard.theHeadMotionRequest,
     theBlackBoard.theMotionRequest
-  );*/
+  );
     // FAKE Motion Request:
-  theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
+  /*theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
   if ( theBlackBoard.theMotionStatus.currentMotion == motion::EMPTY )
     theBlackBoard.theMotionRequest.id = motion::INIT;
   else if ( theBlackBoard.theMotionStatus.currentMotion == motion::INIT )
@@ -86,7 +86,7 @@ void Motion::call()
     //theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
     //theBlackBoard.theMotionRequest.walkRequest.translation.y = 50;
     //theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
-  }
+  }*/
 
   // execute head motion firstly
   theHeadMotionEngine.execute();
@@ -215,3 +215,13 @@ void Motion::changeMotion(AbstractMotion* m)
   theBlackBoard.theMotionStatus.currentMotion = theBlackBoard.currentlyExecutedMotion->getId();
   theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.time;
 }//end changeMotion
+
+bool Motion::exit()
+{
+  theBlackBoard.theMotionRequest.id = motion::INIT;
+  theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
+  
+  return (theBlackBoard.currentlyExecutedMotion != NULL)
+    && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::INIT)
+    && ( theBlackBoard.currentlyExecutedMotion->isFinished() );
+}//end exit

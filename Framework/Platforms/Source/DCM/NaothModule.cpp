@@ -14,12 +14,14 @@ static NaothModule* theModule = NULL;
 
 inline static void motion_wrapper_pre()
 {
-  theModule->motionCallbackPre();
+  if (theModule != NULL)
+    theModule->motionCallbackPre();
 }
 
 inline static void motion_wrapper_post()
 {
-  theModule->motionCallbackPost();
+  if (theModule != NULL)
+    theModule->motionCallbackPost();
 }
 
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ): 
@@ -37,6 +39,7 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ):
 
 NaothModule::~NaothModule()
 {
+  theModule = NULL;
   delete theCognition;
   delete theMotion;
   delete theCognitionThread;
@@ -104,12 +107,18 @@ void NaothModule::motionCallbackPost()
   // TODO: get stuff into internal buffers
 }
 
-void NaothModule::exit( )
+void NaothModule::exit()
 {
   cout << "NaoTH is exiting ..."<<endl;
   
   theCognitionThread->stop();
   theCognitionThread->join();
+  
+  // stop motion
+  while ( !theMotion->exit() )
+  {
+    usleep(100000);
+  }
   
   cout << "NaoTH exit is finished" << endl;
 }

@@ -28,6 +28,8 @@ public:
 
   void init(naoth::PlatformDataInterface& platformInterface);
   
+  bool exit();
+  
 protected:
   
   void processSensorData();
