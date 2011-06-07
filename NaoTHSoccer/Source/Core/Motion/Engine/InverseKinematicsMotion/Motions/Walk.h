@@ -52,17 +52,11 @@ private:
   
   FootStepPlanner theFootStepPlanner;
   
-  // parameters of walk
+  // calcualted parameters of walk
+  double bodyPitchOffset;
+  int samplesDoubleSupport;
+  int samplesSingleSupport;
   int numberOfCyclePerFootStep;
-  double theBodyPitchOffset;
-  double theFeetSepWidth;
-  double samplesDoubleSupport;
-  double samplesSingleSupport;
-  double stepHeight;
-  double footPitchOffset;
-  double footYawOffset;
-  double footRollOffset;
-  double curveFactor;
 };
 
 #endif // _IK_MOTION_H_

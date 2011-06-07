@@ -127,6 +127,7 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
 {
   if ( currentState == stopped )
   {
+    updateParameters();
     currentFootStep = firstStep(req);
     currentCycle = 0;
   }
@@ -143,9 +144,11 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   
   // generate ZMP and Feet trajectory
   ZMPFeetPose result;
-  Pose3D liftFoot = FootTrajectorGenerator::genTrajectory(currentFootStep.footBegin(), currentFootStep.footEnd(),
+  Pose3D liftFoot = FootTrajectorGenerator::genTrajectory(currentFootStep.footBegin(),
+                    currentFootStep.footEnd(),
                     currentCycle, samplesDoubleSupport, samplesSingleSupport,
-                    stepHeight, footPitchOffset, footYawOffset, footRollOffset, curveFactor);
+                    theWalkParameters.stepHeight, 0, 0, 0,
+                    theWalkParameters.curveFactor);
   switch(currentFootStep.liftingFoot())
   {
     case FootStep::LEFT:
@@ -173,7 +176,7 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
     hipRotation = Math::normalizeAngle(hipRotation + Math::pi);
   }
   result.zmp.rotation = RotationMatrix::getRotationZ(hipRotation);
-  result.zmp.rotation.rotateY(theBodyPitchOffset);
+  result.zmp.rotation.rotateY(bodyPitchOffset);
   
   currentState = running;
   isStopping = false;
@@ -195,20 +198,18 @@ FootStep Walk::firstStep(const WalkRequest& req)
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
   
   //TODO: consider current ZMP
-  FootStep step = theFootStepPlanner.firstStep(startingZMPFeetPose.feet, req, theFeetSepWidth);
+  FootStep step = theFootStepPlanner.firstStep(startingZMPFeetPose.feet, req);
   return step;
 }
 
 void Walk::updateParameters()
 {
-  theBodyPitchOffset = 0; //TODO
-  theFeetSepWidth = NaoInfo::HipOffsetY; //TODO
-  samplesDoubleSupport = 4;
-  samplesSingleSupport = 10;
+  const unsigned int basicTimeStep = theBlackBoard.theFrameInfo.basicTimeStep;
+  
+  bodyPitchOffset = Math::fromDegrees(theWalkParameters.bodyPitchOffset);
+  samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
+  samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
   numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
-  stepHeight = 20;
-  footPitchOffset = 0;
-  footYawOffset = 0;
-  footRollOffset = 0;
-  curveFactor = 10;
+  
+  theFootStepPlanner.updateParameters(theParameters);
 }

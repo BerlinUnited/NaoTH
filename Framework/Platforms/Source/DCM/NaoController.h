@@ -39,9 +39,7 @@ public:
   void init(ALPtr<ALBroker> pB);
 
   /////////////////////// run ///////////////////////
-  virtual void run();
-
-  virtual void close();
+  void updateSensorData();
 
 public:
   virtual void get(unsigned int& timestamp);
@@ -81,7 +79,7 @@ public:
 
   virtual void set(const UltraSoundSendData& data);
 
-  virtual void set(const SoundData& data);
+  virtual void set(const SoundPlayData& data);
 
 private:
   DCMHandler theDCMHandler;

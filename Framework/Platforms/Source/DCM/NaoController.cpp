@@ -34,7 +34,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const SoundData>(*this);
+  registerOutput<const SoundPlayData>(*this);
   registerOutput<const MotorJointData>(*this);
 }
 
@@ -168,18 +168,14 @@ void NaoController::set(const UltraSoundSendData& data)
   theDCMHandler.setUltraSoundSend(data);
 }
 
-void NaoController::set(const SoundData& data)
+void NaoController::set(const SoundPlayData& data)
 {
   theSoundHandler->setSoundData(data);
 }
 
-void NaoController::run()
+void NaoController::updateSensorData()
 {
 //  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
   theDCMHandler.getData();
 }
 
-void NaoController::close()
-{
-//  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
-}

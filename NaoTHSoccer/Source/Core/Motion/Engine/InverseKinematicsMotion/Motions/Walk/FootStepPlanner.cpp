@@ -12,16 +12,21 @@ using namespace InverseKinematic;
 
 FootStepPlanner::FootStepPlanner()
 {
-  theMaxTurnInner = Math::fromDegrees(10);
-  theMaxStepTurn = Math::fromDegrees(30);;
-  theMaxStepLength = 50;
-  theMaxStepLengthBack = 50;
-  theMaxStepWidth = 40;
-  theFootOffsetY = NaoInfo::HipOffsetY;
+}
+
+void FootStepPlanner::updateParameters(const IKParameters& parameters)
+{
+  theMaxTurnInner = Math::fromDegrees(parameters.walk.maxTurnInner);
+  theMaxStepTurn = Math::fromDegrees(parameters.walk.maxStepTurn);
+  theMaxStepLength = parameters.walk.maxStepLength;
+  theMaxStepLengthBack = parameters.walk.maxStepLengthBack;
+  theMaxStepWidth = parameters.walk.maxStepWidth;
   
-  theMaxChangeTurn = theMaxStepLength * 0.5;
-  theMaxChangeX = theMaxStepWidth * 0.5;
-  theMaxChangeY = theMaxStepTurn * 0.5;
+  theFootOffsetY = NaoInfo::HipOffsetY + parameters.footOffsetY;
+  
+  theMaxChangeTurn = theMaxStepTurn * parameters.walk.maxStepChange;
+  theMaxChangeX = theMaxStepLength * parameters.walk.maxStepChange;
+  theMaxChangeY = theMaxStepWidth * parameters.walk.maxStepChange;
 }
 
 void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
@@ -68,7 +73,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(FeetPose pose, Pose2D step, double feetSepWidth)
+FootStep FootStepPlanner::firstStep(FeetPose pose, Pose2D step)
 {
   pose.localInRightFoot();
   FootStep newStep(pose, FootStep::LEFT );

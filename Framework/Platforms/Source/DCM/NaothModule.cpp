@@ -14,18 +14,19 @@ static NaothModule* theModule = NULL;
 
 inline static void motion_wrapper_pre()
 {
-  theModule->motionCallbackPre();
+  if (theModule != NULL)
+    theModule->motionCallbackPre();
 }
 
 inline static void motion_wrapper_post()
 {
-  theModule->motionCallbackPost();
+  if (theModule != NULL)
+    theModule->motionCallbackPost();
 }
 
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ): 
   ALModule(pB, pName ),
-  pBroker(pB),
-  motionFrame(0)
+  pBroker(pB)
 {
   theModule = this;
   
@@ -38,10 +39,10 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ):
 
 NaothModule::~NaothModule()
 {
-  
+  theModule = NULL;
   delete theCognition;
   delete theMotion;
- 
+  delete theCognitionThread;
 }
 
 bool NaothModule::innerTest() 
@@ -60,24 +61,26 @@ std::string NaothModule::version()
 
 
 void NaothModule::init()
-{  
+{
+  if (!g_thread_supported())
+    g_thread_init(NULL);
+  
   //int cognition_interval = 60000;
   int cognition_interval =   40000;
-
-  cout << "Init OutputThread" << endl;
   
   cout << "Initializing Controller" << endl;
   NaoController::getInstance().init(pBroker);
 
-  getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
-  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
-
+  
   cout << "Creating Cognition and Motion" << endl;
   theCognition = new Cognition();
   theMotion = new Motion();
   
   cout << "Registering Cognition and Motion" << endl;
   NaoController::getInstance().registerCallbacks(theMotion,theCognition);
+  
+  getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
+  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "Creating Cognition-Thread" << endl;
   theCognitionThread = new CognitionThread();
@@ -91,38 +94,31 @@ void NaothModule::init()
 
 void NaothModule::motionCallbackPre()
 {
-  
-  unsigned int timeStep = NaoController::getInstance().getBasicTimeStep();
-  ASSERT(timeStep == 10 || timeStep == 20);
-
-  if(timeStep == 10 || motionFrame % 2 == 0)
-  {
     // we are at the moment shortly before the DCM commands are send to the
     // USB bus, so put the motion execute stuff here
     NaoController::getInstance().callMotion();
-  }
 }
 
 void NaothModule::motionCallbackPost()
 {
-
-  unsigned int timeStep = NaoController::getInstance().getBasicTimeStep();
-  ASSERT(timeStep == 10 || timeStep == 20);
+  NaoController::getInstance().updateSensorData(); // read sensor data from DCM
   
-  if(timeStep == 10 || motionFrame % 2 == 0)
-  {
-    // right behind the sensor update from the DCM
-    // TODO: get stuff into internal buffers
-  }
-  motionFrame++;
+  // right behind the sensor update from the DCM
+  // TODO: get stuff into internal buffers
 }
 
-void NaothModule::exit( )
+void NaothModule::exit()
 {
   cout << "NaoTH is exiting ..."<<endl;
   
   theCognitionThread->stop();
   theCognitionThread->join();
+  
+  // stop motion
+  while ( !theMotion->exit() )
+  {
+    usleep(100000);
+  }
   
   cout << "NaoTH exit is finished" << endl;
 }

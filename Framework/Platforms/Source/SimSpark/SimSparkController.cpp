@@ -1,7 +1,7 @@
 /**
  * @file SimSparkController.cpp
  *
- * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * @breief Interface for the SimSpark simulator
  *
  */
@@ -97,8 +97,10 @@ SimSparkController::SimSparkController()
   theCameraId = 0;
   theSenseTime = 0;
 
-//  pthread_mutex_init(&theCognitionInputMutex, NULL);
-//  pthread_cond_init(&theCognitionInputCond, NULL);
+  if (!g_thread_supported())
+    g_thread_init(NULL);
+  theCognitionInputMutex = g_mutex_new();
+  theCognitionInputCond = g_cond_new();
 
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
@@ -107,14 +109,17 @@ SimSparkController::SimSparkController()
 
 SimSparkController::~SimSparkController()
 {
+  g_mutex_free(theCognitionInputMutex);
+  g_cond_free(theCognitionInputCond);
+  
   if (theImageData != NULL)
     delete [] theImageData;
 }
 
-bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port)
+bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
-
   theTeamName = teamName;
+  theSync = sync?"(syn)":"";
   // connect to the simulator
   if(!theSocket.connect(server, port))
   {
@@ -124,15 +129,16 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   // send create command to simulator
 
-  theSocket << "(scene rsg/agent/nao/nao.rsg)" << send;
+  theSocket << "(scene rsg/agent/nao/nao.rsg)" << theSync << send;
   // wait the response
   updateSensors();
   // initialize the teamname and number
-  theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << send;
+  theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << theSync << send;
   // wait the response
   while (theGameInfo.thePlayerNum == 0)
   {
     updateSensors();
+    theSocket << theSync << send;
   }
   // we should get the team index and player number now
 
@@ -148,8 +154,6 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   //Platform::getInstance().init(this, new SimSparkCommunicationCollection(debugPort,theGameInfo, theTeamComm));
   
-  //Cognition::getInstance().init();
-  //Motion::getInstance().init();
   Platform::getInstance().init(this);
 
 
@@ -197,8 +201,6 @@ void SimSparkController::main()
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( updateSensors() )
   {
-    //Cognition::getInstance().main();
-    //Motion::getInstance().main();
     callCognition();
     callMotion();
   }//end while
@@ -208,7 +210,6 @@ void SimSparkController::motionLoop()
 {
   while ( updateSensors() )
   {    
-    //Motion::getInstance().main();
     callMotion();
   }
 }//end motionLoop
@@ -217,7 +218,6 @@ void SimSparkController::cognitionLoop()
 {
   while (true)
   {
-    //Cognition::getInstance().main();
     callCognition();
   }
 }//end cognitionLoop
@@ -227,7 +227,6 @@ void* motionLoopWrap(void* c)
 {
   SimSparkController* ctr = static_cast<SimSparkController*> (c);
   ctr->motionLoop();
-//  pthread_exit(NULL);
   return NULL;
 }//end motionLoopWrap
 
@@ -235,12 +234,10 @@ void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  //Motion::getInstance().main();
   callMotion();
 
-//  pthread_t motionThread;
-//  int mt = pthread_create(&motionThread, NULL, motionLoopWrap, this);
-//  ASSERT(mt == 0);
+  GThread* motionThread = g_thread_create(motionLoopWrap, this, true, NULL);
+  ASSERT(motionThread != NULL);
 
   cognitionLoop();
 }//end multiThreadsMain
@@ -254,7 +251,6 @@ void SimSparkController::getMotionInput()
     theSensorJointData.stiffness[i] = theLastSensorJointData.stiffness[i];
   }
   theLastSensorJointData = theSensorJointData;
-
 }
 
 void SimSparkController::setMotionOutput()
@@ -263,18 +259,18 @@ void SimSparkController::setMotionOutput()
   say();
   autoBeam();
   jointControl();
-  theSocket << send;
+  theSocket << theSync <<send;
 }
 
 void SimSparkController::getCognitionInput()
 {
-//  pthread_mutex_lock(&theCognitionInputMutex);
-//  while (!isNewImage)
-//  {
-//    pthread_cond_wait(&theCognitionInputCond, &theCognitionInputMutex);
-//  }
+  g_mutex_lock(theCognitionInputMutex);
+  while (!isNewImage)
+  {
+    g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
+  }
   PlatformInterface<SimSparkController>::getCognitionInput();
-//  pthread_mutex_unlock(&theCognitionInputMutex);
+  g_mutex_unlock(theCognitionInputMutex);
 }
 
 bool SimSparkController::updateSensors()
@@ -283,7 +279,7 @@ bool SimSparkController::updateSensors()
   string msg;
   theSocket >> msg;
 
-//  cout << "Sensor data: " << msg << endl;
+  //cout << "Sensor data: " << msg << endl;
 
   pcont_t* pcont;
   sexp_t* sexp = NULL;
@@ -292,9 +288,9 @@ bool SimSparkController::updateSensors()
   pcont = init_continuation(c);
   sexp = iparse_sexp(c, msg.size(), pcont);
 
-//  pthread_mutex_lock(&theCognitionInputMutex);
+  g_mutex_lock(theCognitionInputMutex);
 
-  // clear FSR data, since if there is no FSR data, it means no toch
+  // clear FSR data, since if there is no FSR data, it means no touch
   for (int i = 0; i < FSRData::numOfFSR; i++)
   {
     theFSRData.data[i] = 0;
@@ -352,10 +348,10 @@ bool SimSparkController::updateSensors()
 
   updateInertialSensor();
 
-//  if ( isNewImage || isNewVirtualVision ){
-//    pthread_cond_signal(&theCognitionInputCond);
-//  }
-//  pthread_mutex_unlock(&theCognitionInputMutex);
+  if ( isNewImage || isNewVirtualVision ){
+    g_cond_signal(theCognitionInputCond);
+  }
+  g_mutex_unlock(theCognitionInputMutex);
 
   destroy_sexp(sexp);
   destroy_continuation(pcont);
@@ -1065,7 +1061,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
 
 void SimSparkController::beam(const Vector3<double>& p)
 {
-    theSocket << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")" << send;
+    theSocket << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")" << theSync << send;
 }
 
 void SimSparkController::autoBeam()

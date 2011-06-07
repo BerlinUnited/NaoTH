@@ -9,12 +9,26 @@
 
 
 IKParameters::IKParameters()
+:ParameterList("IKParameters")
 {
-  hipOffsetX = 0;
-  footOffsetY = 0;
+  PARAMETER_REGISTER(hipOffsetX) = 0;
+  PARAMETER_REGISTER(footOffsetY) = 0;
   
-  stand.speed = 0.04;
+  PARAMETER_REGISTER(stand.speed) = 0.04;
   
-  walk.comHeight = 260;
-  walk.enableFSRProtection = true;
+  PARAMETER_REGISTER(walk.comHeight) = 260;
+  PARAMETER_REGISTER(walk.bodyPitchOffset) = 0;
+  PARAMETER_REGISTER(walk.singleSupportTime) = 420;
+  PARAMETER_REGISTER(walk.doubleSupportTime) = 80;
+  PARAMETER_REGISTER(walk.stepHeight) = 20;
+  PARAMETER_REGISTER(walk.curveFactor) = 10;
+  PARAMETER_REGISTER(walk.maxTurnInner) = 10;
+  PARAMETER_REGISTER(walk.maxStepTurn) = 30;
+  PARAMETER_REGISTER(walk.maxStepLength) = 50;
+  PARAMETER_REGISTER(walk.maxStepLengthBack) = 50;
+  PARAMETER_REGISTER(walk.maxStepWidth) = 50;
+  PARAMETER_REGISTER(walk.maxStepChange) = 0.5;
+  PARAMETER_REGISTER(walk.enableFSRProtection) = true;
+  
+  loadFromConfig();
 }

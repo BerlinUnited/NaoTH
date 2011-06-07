@@ -51,7 +51,7 @@ class SoundControl
 public:
   SoundControl();
   ~SoundControl();
-  void setSoundData(const SoundData& theSoundData);
+  void setSoundData(const SoundPlayData& theSoundData);
   void play();
 
 private:
@@ -61,14 +61,14 @@ private:
   snd_pcm_hw_params_t *hw_params;
   WaveHeader header;
   snd_pcm_uframes_t periodSize;
-  SoundData theSoundDataCopy;
+  SoundPlayData theSoundDataCopy;
   pthread_t playThreadID;
   char *filename;
   bool is_running;
 
   int init();
   void deinit();
-  void change_volume(const SoundData::SpeakerID id,const int volume);
+  void change_volume(const SoundPlayData::SpeakerID id,const int volume);
   void change_mute(const bool mute);
 
 };
