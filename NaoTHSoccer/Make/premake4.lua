@@ -58,15 +58,16 @@ solution "NaoTHSoccer"
     flags { "Optimize", "ExtraWarnings", "FatalWarnings" }
       
   configuration{"Native"}
+    includedirs {
+      "../../Extern/include/",
+      "../../Extern/include/glib-2.0/",
+      "../../Extern/lib/glib-2.0/include/"}
     libdirs {
-       "../../Extern/lib"
+      "../../Extern/lib"
     }
     targetdir "../dist/Native"
     
   configuration {"Nao"}
-    libdirs {
-       "../../Extern/lib/Nao"
-    }
     targetdir "../dist/Nao"
   
   -- additional defines for windows
@@ -75,15 +76,7 @@ solution "NaoTHSoccer"
     
   configuration {"linux"}
     buildoptions {"-fPIC"}
-  
-  -- includes
-  includedirs {
-       "../../Extern/include/",
-       "../../Extern/include/glib-2.0/",
-       "../../Extern/lib/glib-2.0/include/"}
-  -- libs
-  
-
+      
   -- base
   dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
   
