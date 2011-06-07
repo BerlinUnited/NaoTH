@@ -173,13 +173,9 @@ void NaoController::set(const SoundPlayData& data)
   theSoundHandler->setSoundData(data);
 }
 
-void NaoController::run()
+void NaoController::updateSensorData()
 {
 //  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
   theDCMHandler.getData();
 }
 
-void NaoController::close()
-{
-//  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
-}

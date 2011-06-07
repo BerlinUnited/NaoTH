@@ -36,8 +36,6 @@ class NaothModule : public ALModule
 
     Cognition* theCognition;
     Motion* theMotion;
-
-    unsigned int motionFrame;
   
   public:
     

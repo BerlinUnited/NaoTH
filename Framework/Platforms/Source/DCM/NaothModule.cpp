@@ -24,8 +24,7 @@ inline static void motion_wrapper_post()
 
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ): 
   ALModule(pB, pName ),
-  pBroker(pB),
-  motionFrame(0)
+  pBroker(pB)
 {
   theModule = this;
   
@@ -38,10 +37,9 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ):
 
 NaothModule::~NaothModule()
 {
-  
   delete theCognition;
   delete theMotion;
- 
+  delete theCognitionThread;
 }
 
 bool NaothModule::innerTest() 
@@ -93,30 +91,17 @@ void NaothModule::init()
 
 void NaothModule::motionCallbackPre()
 {
-  
-  unsigned int timeStep = NaoController::getInstance().getBasicTimeStep();
-  ASSERT(timeStep == 10 || timeStep == 20);
-
-  if(timeStep == 10 || motionFrame % 2 == 0)
-  {
     // we are at the moment shortly before the DCM commands are send to the
     // USB bus, so put the motion execute stuff here
     NaoController::getInstance().callMotion();
-  }
 }
 
 void NaothModule::motionCallbackPost()
 {
-
-  unsigned int timeStep = NaoController::getInstance().getBasicTimeStep();
-  ASSERT(timeStep == 10 || timeStep == 20);
+  NaoController::getInstance().updateSensorData(); // read sensor data from DCM
   
-  if(timeStep == 10 || motionFrame % 2 == 0)
-  {
-    // right behind the sensor update from the DCM
-    // TODO: get stuff into internal buffers
-  }
-  motionFrame++;
+  // right behind the sensor update from the DCM
+  // TODO: get stuff into internal buffers
 }
 
 void NaothModule::exit( )

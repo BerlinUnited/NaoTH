@@ -82,8 +82,8 @@ void Motion::call()
     theBlackBoard.theMotionRequest.id = motion::STAND;
   else if ( theBlackBoard.theMotionStatus.currentMotion == motion::STAND )
   {
-    theBlackBoard.theMotionRequest.id = motion::WALK;//motion::DANCE;
-    theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
+    theBlackBoard.theMotionRequest.id = motion::DANCE;//motion::WALK;
+    //theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
     //theBlackBoard.theMotionRequest.walkRequest.translation.y = 50;
     //theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
   }
