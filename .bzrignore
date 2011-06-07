@@ -3,6 +3,8 @@
 *.ncb
 *.ilk
 *.suo
+*.vcproj
+*.sln
 ./Projects/XabslEditor
 .dep.inc
 private/
@@ -72,3 +74,7 @@ Framework/Platforms/Make/LogSimulator.mkFramework/Platforms/Make/SimSpark.mk
 Framework/Platforms/Make/Webots.mk
 Framework/Platforms/Make/LogSimulator.mk
 Framework/Platforms/Make/SimSpark.mk
+
+RobotControl/RobotControlGUI/plugins/
+build-impl.xml
+genfiles.properties
