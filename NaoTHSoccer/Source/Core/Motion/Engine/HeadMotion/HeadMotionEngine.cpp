@@ -355,11 +355,11 @@ void HeadMotionEngine::search()
 
   if ( trajectoryHeadMove(points) )
   {
-    theMotionStatus.headMotionRequest = HeadMotionRequest::numOfHeadMotion;
+    theMotionStatus.headMotion = HeadMotionRequest::numOfHeadMotion;
   }
   else
   {
-    theMotionStatus.headMotionRequest = HeadMotionRequest::search;
+    theMotionStatus.headMotion = HeadMotionRequest::search;
   }
 }//end search
 
