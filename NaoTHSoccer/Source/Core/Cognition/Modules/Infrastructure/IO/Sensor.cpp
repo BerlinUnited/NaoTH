@@ -5,13 +5,17 @@
 #include "Sensor.h"
 
 Sensor::Sensor():
-theMotionStatusMsgQueue(NULL),
-theOdometryDataMsgQueue(NULL)
+theMotionStatusReader(NULL),
+theOdometryDataReader(NULL)
 {
 }
 
 Sensor::~Sensor()
 {
+  if (theMotionStatusReader != NULL)
+    delete theMotionStatusReader;
+  if (theOdometryDataReader != NULL)
+    delete theOdometryDataReader;
 }
 
 
@@ -34,33 +38,33 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(FrameInfo);
   REG_INPUT(CurrentCameraSettings);
   
-  theMotionStatusMsgQueue = platformInterface.getMessageQueue("MotionStatus");
-  theOdometryDataMsgQueue = platformInterface.getMessageQueue("OdometryData");
+  theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
+  theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
 }//end init
 
 
 void Sensor::execute()
 {
   // data from motion
-  if ( !theMotionStatusMsgQueue->empty() )
+  if ( !theMotionStatusReader->empty() )
   {
-    string msg = theMotionStatusMsgQueue->read();
+    string msg = theMotionStatusReader->read();
     // drop old message, TODO: use them!
-    while ( !theMotionStatusMsgQueue->empty() )
+    while ( !theMotionStatusReader->empty() )
     {
-      msg = theMotionStatusMsgQueue->read();
+      msg = theMotionStatusReader->read();
     }
     stringstream ss(msg);
     Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
   }
   
-  if ( !theOdometryDataMsgQueue->empty() )
+  if ( !theOdometryDataReader->empty() )
   {
-    string msg = theOdometryDataMsgQueue->read();
+    string msg = theOdometryDataReader->read();
     // drop old message, TODO: use them!
-    while ( !theOdometryDataMsgQueue->empty() )
+    while ( !theOdometryDataReader->empty() )
     {
-      msg = theOdometryDataMsgQueue->read();
+      msg = theOdometryDataReader->read();
     }
     stringstream ss(msg);
     Serializer<OdometryData>::deserialize(ss, getOdometryData());

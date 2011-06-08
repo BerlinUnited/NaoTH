@@ -15,10 +15,10 @@
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
-theMotionStatusMsgQueue(NULL),
-theOdometryDataMsgQueue(NULL),
-theHeadMotionRequestMsgQueue(NULL),
-theMotionRequestMsgQueue(NULL)
+theMotionStatusWriter(NULL),
+theOdometryDataWriter(NULL),
+theHeadMotionRequestReader(NULL),
+theMotionRequestReader(NULL)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -37,6 +37,15 @@ Motion::~Motion()
     delete *iter;
   }
   theMotionFactories.clear();
+  
+  if (theMotionStatusWriter != NULL)
+    delete theMotionStatusWriter;
+  if (theOdometryDataWriter != NULL)
+    delete theOdometryDataWriter;
+  if (theHeadMotionRequestReader != NULL)
+    delete theHeadMotionRequestReader;
+  if (theMotionRequestReader != NULL)
+    delete theMotionRequestReader;
 }
 
 void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
@@ -61,11 +70,11 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(MotorJointData);
   g_message("Motion register end");
   
-  theMotionStatusMsgQueue = platformInterface.getMessageQueue("MotionStatus");
-  theOdometryDataMsgQueue = platformInterface.getMessageQueue("OdometryData");
+  theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
+  theOdometryDataWriter = new MessageWriter(platformInterface.getMessageQueue("OdometryData"));
   
-  theHeadMotionRequestMsgQueue = platformInterface.getMessageQueue("HeadMotionRequest");
-  theMotionRequestMsgQueue = platformInterface.getMessageQueue("MotionRequest");
+  theHeadMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("HeadMotionRequest"));
+  theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
 }//end init
 
 
@@ -78,16 +87,16 @@ void Motion::call()
   processSensorData();
   
   // get orders from cognition
-  if ( !theHeadMotionRequestMsgQueue->empty() )
+  if ( !theHeadMotionRequestReader->empty() )
   {
-    string msg = theHeadMotionRequestMsgQueue->read();
+    string msg = theHeadMotionRequestReader->read();
     stringstream ss(msg);
     Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
   }
   
-  if ( !theMotionRequestMsgQueue->empty() )
+  if ( !theMotionRequestReader->empty() )
   {
-    string msg = theMotionRequestMsgQueue->read();
+    string msg = theMotionRequestReader->read();
     stringstream ss(msg);
     Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
   }
@@ -152,11 +161,11 @@ void Motion::postProcess()
   // send message to cognition
   stringstream msmsg;
   Serializer<MotionStatus>::serialize(theBlackBoard.theMotionStatus, msmsg);
-  theMotionStatusMsgQueue->write(msmsg.str());
+  theMotionStatusWriter->write(msmsg.str());
   
   stringstream odmsg;
   Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
-  theOdometryDataMsgQueue->write(odmsg.str());
+  theOdometryDataWriter->write(odmsg.str());
     
 #ifdef DEBUG
 //TODO

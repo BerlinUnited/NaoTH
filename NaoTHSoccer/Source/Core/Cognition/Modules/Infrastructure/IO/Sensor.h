@@ -65,8 +65,8 @@ public:
   void init(naoth::PlatformInterfaceBase& platformInterface);
   
 private:
-  MessageQueue* theMotionStatusMsgQueue;
-  MessageQueue* theOdometryDataMsgQueue;
+  MessageReader* theMotionStatusReader;
+  MessageReader* theOdometryDataReader;
 };
 
 #endif	/* _SENSOR_H */

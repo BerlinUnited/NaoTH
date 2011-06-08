@@ -6,8 +6,11 @@
  */
 
 #include "MessageQueue.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
-MessageQueue::MessageQueue()
+MessageQueue::MessageQueue():
+theReader(NULL),
+theWriter(NULL)
 {
   theMutex = g_mutex_new();
 }
@@ -15,6 +18,8 @@ MessageQueue::MessageQueue()
 MessageQueue::~MessageQueue()
 {
   g_mutex_free(theMutex);
+  ASSERT(theReader==NULL);
+  ASSERT(theWriter==NULL);
 }
 
 void MessageQueue::write(const std::string& msg)
@@ -46,4 +51,38 @@ void MessageQueue::clear()
   g_mutex_lock(theMutex);
   theMsg = std::queue<std::string>();
   g_mutex_unlock(theMutex);
+}
+
+void MessageQueue::setReader(MessageReader* reader)
+{
+  ASSERT(theReader==NULL || reader == NULL);
+  theReader = reader;
+}
+
+void MessageQueue::setWriter(MessageWriter* writer)
+{
+  ASSERT(theWriter==NULL || writer == NULL);
+  theWriter = writer;
+}
+
+MessageReader::MessageReader(MessageQueue* msgQueue)
+:theMsgQueue(msgQueue)
+{
+  theMsgQueue->setReader(this);
+}
+
+MessageReader::~MessageReader()
+{
+  theMsgQueue->setReader(NULL);
+}
+
+MessageWriter::MessageWriter(MessageQueue* msgQueue)
+:theMsgQueue(msgQueue)
+{
+  theMsgQueue->setWriter(this);
+}
+
+MessageWriter::~MessageWriter()
+{
+  theMsgQueue->setWriter(NULL);
 }
