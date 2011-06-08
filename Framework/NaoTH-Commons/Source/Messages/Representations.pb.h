@@ -46,6 +46,8 @@ class WalkRequest;
 class MotionRequest;
 class LinePercept;
 class FSRData;
+class MotionStatus;
+class OdometryData;
 
 enum Image_Format {
   Image_Format_YUV = 0,
@@ -1691,6 +1693,201 @@ class FSRData : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static FSRData* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class MotionStatus : public ::google::protobuf::Message {
+ public:
+  MotionStatus();
+  virtual ~MotionStatus();
+  
+  MotionStatus(const MotionStatus& from);
+  
+  inline MotionStatus& operator=(const MotionStatus& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const MotionStatus& default_instance();
+  
+  void Swap(MotionStatus* other);
+  
+  // implements Message ----------------------------------------------
+  
+  MotionStatus* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const MotionStatus& from);
+  void MergeFrom(const MotionStatus& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required uint32 time = 1;
+  inline bool has_time() const;
+  inline void clear_time();
+  static const int kTimeFieldNumber = 1;
+  inline ::google::protobuf::uint32 time() const;
+  inline void set_time(::google::protobuf::uint32 value);
+  
+  // required uint32 lastMotion = 2;
+  inline bool has_lastmotion() const;
+  inline void clear_lastmotion();
+  static const int kLastMotionFieldNumber = 2;
+  inline ::google::protobuf::uint32 lastmotion() const;
+  inline void set_lastmotion(::google::protobuf::uint32 value);
+  
+  // required uint32 currentMotion = 3;
+  inline bool has_currentmotion() const;
+  inline void clear_currentmotion();
+  static const int kCurrentMotionFieldNumber = 3;
+  inline ::google::protobuf::uint32 currentmotion() const;
+  inline void set_currentmotion(::google::protobuf::uint32 value);
+  
+  // required uint32 headMotion = 4;
+  inline bool has_headmotion() const;
+  inline void clear_headmotion();
+  static const int kHeadMotionFieldNumber = 4;
+  inline ::google::protobuf::uint32 headmotion() const;
+  inline void set_headmotion(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
+ private:
+  inline void set_has_time();
+  inline void clear_has_time();
+  inline void set_has_lastmotion();
+  inline void clear_has_lastmotion();
+  inline void set_has_currentmotion();
+  inline void clear_has_currentmotion();
+  inline void set_has_headmotion();
+  inline void clear_has_headmotion();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 time_;
+  ::google::protobuf::uint32 lastmotion_;
+  ::google::protobuf::uint32 currentmotion_;
+  ::google::protobuf::uint32 headmotion_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static MotionStatus* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class OdometryData : public ::google::protobuf::Message {
+ public:
+  OdometryData();
+  virtual ~OdometryData();
+  
+  OdometryData(const OdometryData& from);
+  
+  inline OdometryData& operator=(const OdometryData& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const OdometryData& default_instance();
+  
+  void Swap(OdometryData* other);
+  
+  // implements Message ----------------------------------------------
+  
+  OdometryData* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const OdometryData& from);
+  void MergeFrom(const OdometryData& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.Pose2D pose = 1;
+  inline bool has_pose() const;
+  inline void clear_pose();
+  static const int kPoseFieldNumber = 1;
+  inline const ::naothmessages::Pose2D& pose() const;
+  inline ::naothmessages::Pose2D* mutable_pose();
+  inline ::naothmessages::Pose2D* release_pose();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.OdometryData)
+ private:
+  inline void set_has_pose();
+  inline void clear_has_pose();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::Pose2D* pose_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static OdometryData* default_instance_;
+};
 // ===================================================================
 
 
@@ -3266,6 +3463,131 @@ FSRData::valid() const {
 inline ::google::protobuf::RepeatedField< bool >*
 FSRData::mutable_valid() {
   return &valid_;
+}
+
+// -------------------------------------------------------------------
+
+// MotionStatus
+
+// required uint32 time = 1;
+inline bool MotionStatus::has_time() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void MotionStatus::set_has_time() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void MotionStatus::clear_has_time() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void MotionStatus::clear_time() {
+  time_ = 0u;
+  clear_has_time();
+}
+inline ::google::protobuf::uint32 MotionStatus::time() const {
+  return time_;
+}
+inline void MotionStatus::set_time(::google::protobuf::uint32 value) {
+  set_has_time();
+  time_ = value;
+}
+
+// required uint32 lastMotion = 2;
+inline bool MotionStatus::has_lastmotion() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void MotionStatus::set_has_lastmotion() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void MotionStatus::clear_has_lastmotion() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void MotionStatus::clear_lastmotion() {
+  lastmotion_ = 0u;
+  clear_has_lastmotion();
+}
+inline ::google::protobuf::uint32 MotionStatus::lastmotion() const {
+  return lastmotion_;
+}
+inline void MotionStatus::set_lastmotion(::google::protobuf::uint32 value) {
+  set_has_lastmotion();
+  lastmotion_ = value;
+}
+
+// required uint32 currentMotion = 3;
+inline bool MotionStatus::has_currentmotion() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void MotionStatus::set_has_currentmotion() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void MotionStatus::clear_has_currentmotion() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void MotionStatus::clear_currentmotion() {
+  currentmotion_ = 0u;
+  clear_has_currentmotion();
+}
+inline ::google::protobuf::uint32 MotionStatus::currentmotion() const {
+  return currentmotion_;
+}
+inline void MotionStatus::set_currentmotion(::google::protobuf::uint32 value) {
+  set_has_currentmotion();
+  currentmotion_ = value;
+}
+
+// required uint32 headMotion = 4;
+inline bool MotionStatus::has_headmotion() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void MotionStatus::set_has_headmotion() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void MotionStatus::clear_has_headmotion() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void MotionStatus::clear_headmotion() {
+  headmotion_ = 0u;
+  clear_has_headmotion();
+}
+inline ::google::protobuf::uint32 MotionStatus::headmotion() const {
+  return headmotion_;
+}
+inline void MotionStatus::set_headmotion(::google::protobuf::uint32 value) {
+  set_has_headmotion();
+  headmotion_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// OdometryData
+
+// required .naothmessages.Pose2D pose = 1;
+inline bool OdometryData::has_pose() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void OdometryData::set_has_pose() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void OdometryData::clear_has_pose() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void OdometryData::clear_pose() {
+  if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
+  clear_has_pose();
+}
+inline const ::naothmessages::Pose2D& OdometryData::pose() const {
+  return pose_ != NULL ? *pose_ : *default_instance_->pose_;
+}
+inline ::naothmessages::Pose2D* OdometryData::mutable_pose() {
+  set_has_pose();
+  if (pose_ == NULL) pose_ = new ::naothmessages::Pose2D;
+  return pose_;
+}
+inline ::naothmessages::Pose2D* OdometryData::release_pose() {
+  clear_has_pose();
+  ::naothmessages::Pose2D* temp = pose_;
+  pose_ = NULL;
+  return temp;
 }
 
 
