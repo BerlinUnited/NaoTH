@@ -3,9 +3,10 @@
  */
 
 #include "Sensor.h"
-#include "Tools/SwapSpace/SwapSpace.h"
 
-Sensor::Sensor()
+Sensor::Sensor():
+theMotionStatusMsgQueue(NULL),
+theOdometryDataMsgQueue(NULL)
 {
 }
 
@@ -17,7 +18,7 @@ Sensor::~Sensor()
 #define REG_INPUT(R) \
   platformInterface.registerCognitionInput(get##R())
 
-void Sensor::init(naoth::PlatformDataInterface& platformInterface)
+void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   REG_INPUT(AccelerometerData);
   REG_INPUT(BatteryData);
@@ -32,21 +33,38 @@ void Sensor::init(naoth::PlatformDataInterface& platformInterface)
   
   REG_INPUT(FrameInfo);
   REG_INPUT(CurrentCameraSettings);
+  
+  theMotionStatusMsgQueue = platformInterface.getMessageQueue("MotionStatus");
+  theOdometryDataMsgQueue = platformInterface.getMessageQueue("OdometryData");
 }//end init
 
 
 void Sensor::execute()
 {
-  //unsigned int lastTime = theFrameInfo.time;
-
   // data from motion
-  //STOPWATCH_START("Cognition-PullSwap");
-  SwapSpace::getInstance().theMotionCache.pull(
-    getMotionStatus(),
-    getOdometryData());
-  //STOPWATCH_STOP("Cognition-PullSwap");
+  if ( !theMotionStatusMsgQueue->empty() )
+  {
+    string msg = theMotionStatusMsgQueue->read();
+    // drop old message, TODO: use them!
+    while ( !theMotionStatusMsgQueue->empty() )
+    {
+      msg = theMotionStatusMsgQueue->read();
+    }
+    stringstream ss(msg);
+    Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
+  }
   
-  //PLOT("Cognition-Time", theFrameInfo.getTimeSince(lastTime));
-  //STOPWATCH_START("Cognition-Main");
+  if ( !theOdometryDataMsgQueue->empty() )
+  {
+    string msg = theOdometryDataMsgQueue->read();
+    // drop old message, TODO: use them!
+    while ( !theOdometryDataMsgQueue->empty() )
+    {
+      msg = theOdometryDataMsgQueue->read();
+    }
+    stringstream ss(msg);
+    Serializer<OdometryData>::deserialize(ss, getOdometryData());
+  }
+
 }//end execute
 

@@ -11,6 +11,7 @@
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Pose2D.h>
+#include <Tools/DataStructures/Serializer.h>
 
 /**
 * OdometryData
@@ -31,5 +32,16 @@ public:
     stream << "rotation = " << rotation << endl;
   }//end print
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<OdometryData>
+  {
+  public:
+    static void serialize(const OdometryData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, OdometryData& representation);
+  };
+}
 
 #endif //__OdometryData_h_

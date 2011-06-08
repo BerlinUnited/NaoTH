@@ -125,10 +125,6 @@ namespace naoth
       
       _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity);
       
-      
-  //    // init the camera info
-  //    theCameraInfo.init(theConfigPathInfo.camera_parameter + "/camera_info_" + theHardwareIdentity + ".prm");
-  //    theMassConfig = ConfigLoader::loadConfig(theConfigPathInfo.mass_info.c_str());
     }//end init
 
     Configuration& theConfiguration;

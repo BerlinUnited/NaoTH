@@ -8,8 +8,6 @@
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
-//#include "Representations/SwapSpace.h"
-
 
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/LEDData.h>
@@ -42,7 +40,11 @@ public:
 
   virtual void execute();
 
-  void init(naoth::PlatformDataInterface& platformInterface);
+  void init(naoth::PlatformInterfaceBase& platformInterface);
+  
+private:
+  MessageQueue* theHeadMotionRequestMsgQueue;
+  MessageQueue* theMotionRequestMsgQueue;
 };
 
 #endif	/* _ACTUACTOR_H */

@@ -61,7 +61,7 @@ Cognition::~Cognition()
 {
 }
 
-void Cognition::init(naoth::PlatformDataInterface& platformInterface)
+void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   g_message("Cognition register start");
 

@@ -8,6 +8,7 @@
 
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Communication/MessageQueue.h"
 
 #include <map>
 #include <list>
@@ -46,7 +47,7 @@ namespace naoth
       theBasicTimeStep(basicTimeStep)
     {}
 
-    virtual ~PlatformBase() {}
+    virtual ~PlatformBase();
 
     /////////////////////// get ///////////////////////
     virtual string getHardwareIdentity() const = 0;
@@ -56,9 +57,13 @@ namespace naoth
     inline const string& getName() const { return platformName; }
     inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
 
+    MessageQueue* getMessageQueue(const std::string& name);
+
   private:
     std::string platformName;
     unsigned int theBasicTimeStep;
+    
+    std::map<std::string, MessageQueue*> theMessageQueue;
   };//end class PlatformBase
 
 
@@ -187,8 +192,14 @@ namespace naoth
     }//end registerMotionOutput
   };//end class PlatformDataInterface
 
-
-
+  class PlatformInterfaceBase: public PlatformBase, public PlatformDataInterface
+  {
+  protected:
+    PlatformInterfaceBase(const std::string& name, unsigned int basicTimeStep)
+    : PlatformBase(name, basicTimeStep)
+    {
+    }
+  };
 
 
   /*  the platform interface responses for 4 kinds of functionalities:
@@ -198,7 +209,7 @@ namespace naoth
    * - main loop to call cognition and motion
    */
   template<class PlatformType>
-  class PlatformInterface: public PlatformBase, public PlatformDataInterface
+  class PlatformInterface: public PlatformInterfaceBase
   {
   public:
     virtual ~PlatformInterface(){};
@@ -217,7 +228,7 @@ namespace naoth
 
   protected:
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)
-      : PlatformBase(name, basicTimeStep)
+      : PlatformInterfaceBase(name, basicTimeStep)
     {
       cout<<"NaoTH "<<getName()<<" starting..."<<endl;
     }

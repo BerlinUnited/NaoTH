@@ -10,12 +10,15 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-#include "Tools/SwapSpace/SwapSpace.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
-Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
+Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
+theMotionStatusMsgQueue(NULL),
+theOdometryDataMsgQueue(NULL),
+theHeadMotionRequestMsgQueue(NULL),
+theMotionRequestMsgQueue(NULL)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -36,7 +39,7 @@ Motion::~Motion()
   theMotionFactories.clear();
 }
 
-void Motion::init(naoth::PlatformDataInterface& platformInterface)
+void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   theBlackBoard.init();
   theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
@@ -58,6 +61,11 @@ void Motion::init(naoth::PlatformDataInterface& platformInterface)
   REG_OUTPUT(MotorJointData);
   g_message("Motion register end");
   
+  theMotionStatusMsgQueue = platformInterface.getMessageQueue("MotionStatus");
+  theOdometryDataMsgQueue = platformInterface.getMessageQueue("OdometryData");
+  
+  theHeadMotionRequestMsgQueue = platformInterface.getMessageQueue("HeadMotionRequest");
+  theMotionRequestMsgQueue = platformInterface.getMessageQueue("MotionRequest");
 }//end init
 
 
@@ -70,23 +78,19 @@ void Motion::call()
   processSensorData();
   
   // get orders from cognition
-  SwapSpace::getInstance().theCognitionCache.pull(
-    theBlackBoard.theHeadMotionRequest,
-    theBlackBoard.theMotionRequest
-  );
-    // FAKE Motion Request:
-  /*theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  if ( theBlackBoard.theMotionStatus.currentMotion == motion::EMPTY )
-    theBlackBoard.theMotionRequest.id = motion::INIT;
-  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::INIT )
-    theBlackBoard.theMotionRequest.id = motion::STAND;
-  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::STAND )
+  if ( !theHeadMotionRequestMsgQueue->empty() )
   {
-    theBlackBoard.theMotionRequest.id = motion::DANCE;//motion::WALK;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.y = 50;
-    //theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
-  }*/
+    string msg = theHeadMotionRequestMsgQueue->read();
+    stringstream ss(msg);
+    Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
+  }
+  
+  if ( !theMotionRequestMsgQueue->empty() )
+  {
+    string msg = theMotionRequestMsgQueue->read();
+    stringstream ss(msg);
+    Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
+  }
 
   // execute head motion firstly
   theHeadMotionEngine.execute();
@@ -145,10 +149,14 @@ void Motion::postProcess()
   mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
 
-  SwapSpace::getInstance().theMotionCache.push(
-    theBlackBoard.theMotionStatus,
-    theBlackBoard.theOdometryData
-    );
+  // send message to cognition
+  stringstream msmsg;
+  Serializer<MotionStatus>::serialize(theBlackBoard.theMotionStatus, msmsg);
+  theMotionStatusMsgQueue->write(msmsg.str());
+  
+  stringstream odmsg;
+  Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
+  theOdometryDataMsgQueue->write(odmsg.str());
     
 #ifdef DEBUG
 //TODO
@@ -179,22 +187,6 @@ void Motion::selectMotion()
       newMotion = (*iter)->createMotion(theBlackBoard.theMotionRequest);
     }
 
-/*
-    if (newMotion == NULL)
-      newMotion = theInverseKinematicsMotionFactory.createMotion(theBlackBoard.theMotionRequest);
-
-    if (newMotion == NULL)
-      newMotion = theParallelKinematicMotionFactory.createMotion(theBlackBoard.theMotionRequest);
-
-    if(newMotion == NULL)
-      newMotion = theNeuralMotionFactory.createMotion(theBlackBoard.theMotionRequest);
-
-    if (newMotion == NULL)
-      newMotion = theKeyFrameMotionEngine.createMotion(theBlackBoard.theMotionRequest);
-
-    if (newMotion == NULL)
-      newMotion = theDebugMotionEngine.createMotion(theBlackBoard.theMotionRequest);
-*/
     if (NULL != newMotion)
     {
       ASSERT(newMotion->getId() == theBlackBoard.theMotionRequest.id);
