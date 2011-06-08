@@ -52,12 +52,12 @@ private:
   std::list<MotionFactory*> theMotionFactories;
   
   // message from motion to cognition
-  MessageQueue* theMotionStatusMsgQueue;
-  MessageQueue* theOdometryDataMsgQueue;
+  MessageWriter* theMotionStatusWriter;
+  MessageWriter* theOdometryDataWriter;
   
   // message from cognition to motion
-  MessageQueue* theHeadMotionRequestMsgQueue;
-  MessageQueue* theMotionRequestMsgQueue;
+  MessageReader* theHeadMotionRequestReader;
+  MessageReader* theMotionRequestReader;
 };
 
 #endif	/* MOTION_H */

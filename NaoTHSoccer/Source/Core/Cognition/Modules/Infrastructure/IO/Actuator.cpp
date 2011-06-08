@@ -5,13 +5,17 @@
 #include "Actuator.h"
 
 Actuator::Actuator():
-theHeadMotionRequestMsgQueue(NULL),
-theMotionRequestMsgQueue(NULL)
+theHeadMotionRequestWriter(NULL),
+theMotionRequestWriter(NULL)
 {
 }
 
 Actuator::~Actuator()
 {
+  if (theHeadMotionRequestWriter != NULL)
+    delete theHeadMotionRequestWriter;
+  if (theMotionRequestWriter != NULL)
+    delete theMotionRequestWriter;
 }
 
 
@@ -26,8 +30,8 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(UltraSoundSendData);
   REG_OUTPUT(SoundPlayData);
   
-  theHeadMotionRequestMsgQueue = platformInterface.getMessageQueue("HeadMotionRequest");
-  theMotionRequestMsgQueue = platformInterface.getMessageQueue("MotionRequest");
+  theHeadMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("HeadMotionRequest"));
+  theMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("MotionRequest"));
 }//end init
 
 void Actuator::execute()
@@ -35,9 +39,9 @@ void Actuator::execute()
   // data to motion
   stringstream hmmsg;
   Serializer<HeadMotionRequest>::serialize(getHeadMotionRequest(), hmmsg);
-  theHeadMotionRequestMsgQueue->write(hmmsg.str());
+  theHeadMotionRequestWriter->write(hmmsg.str());
   
   stringstream mrmsg;
   Serializer<MotionRequest>::serialize(getMotionRequest(), mrmsg);
-  theMotionRequestMsgQueue->write(mrmsg.str());
+  theMotionRequestWriter->write(mrmsg.str());
 }//end execute
