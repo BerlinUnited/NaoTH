@@ -24,7 +24,8 @@ SimSparkController::SimSparkController()
   theImageData(NULL),
   theImageSize(0),
   isNewImage(false),
-  isNewVirtualVision(false)
+  isNewVirtualVision(false),
+  theSyncMode(false)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -120,6 +121,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 {
   theTeamName = teamName;
   theSync = sync?"(syn)":"";
+  theSyncMode = sync;
   // connect to the simulator
   if(!theSocket.connect(server, port))
   {
@@ -197,6 +199,18 @@ void SimSparkController::initPosition()
 }
 
 void SimSparkController::main()
+{
+  if ( theSyncMode )
+  {
+    singleThreadMain();
+  }
+  else
+  {
+    multiThreadsMain();
+  }
+}
+
+void SimSparkController::singleThreadMain()
 {
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( updateSensors() )

@@ -84,6 +84,7 @@ private:
   list<MotorJointData> theMotorJointData;
   string theTeamName;
   string theSync;
+  bool theSyncMode;
   
 public:
   SimSparkController();
@@ -102,11 +103,7 @@ public:
   /////////////////////// init ///////////////////////
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
-  // the main loop in single thread
   void main();
-
-  // the main loop in three threads
-  void multiThreadsMain();
 
 public:
   void get(FrameInfo& data);
@@ -137,7 +134,13 @@ public:
   void set(const CameraSettingsRequest& data);
 
 protected:
-  virtual void updateInertialSensor();
+  // the main loop in single thread
+  void singleThreadMain();
+
+  // the main loop in threads
+  void multiThreadsMain();
+
+  void updateInertialSensor();
 
 private:
   bool updateSensors();
