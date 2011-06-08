@@ -201,7 +201,10 @@ void SimSparkController::main()
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( updateSensors() )
   {
-    callCognition();
+    if ( isNewImage || isNewVirtualVision )
+    {
+      callCognition();
+    }
     callMotion();
   }//end while
 }//end main
@@ -265,11 +268,13 @@ void SimSparkController::setMotionOutput()
 void SimSparkController::getCognitionInput()
 {
   g_mutex_lock(theCognitionInputMutex);
-  while (!isNewImage)
+  while (!isNewImage && !isNewVirtualVision)
   {
     g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
   }
   PlatformInterface<SimSparkController>::getCognitionInput();
+  isNewVirtualVision = false;
+  isNewImage = false;
   g_mutex_unlock(theCognitionInputMutex);
 }
 
@@ -832,7 +837,7 @@ void SimSparkController::get(AccelerometerData& data)
 
 void SimSparkController::get(Image& data)
 {
-  if (isNewImage)
+  if ( isNewImage )
   {
     data.setCameraInfo(Platform::getInstance().theCameraInfo);
 
@@ -859,8 +864,6 @@ void SimSparkController::get(Image& data)
         data.set(x, y, p);
       }
     }
-
-    isNewImage = false;
   }
 }//end get
 
@@ -885,11 +888,7 @@ void SimSparkController::get(InertialSensorData& data)
 
 void SimSparkController::get(VirtualVision& data)
 {
-  if (isNewVirtualVision)
-  {
-    data = theVirtualVision;
-    isNewVirtualVision = false;
-  }
+  data = theVirtualVision;
 }
 
 void SimSparkController::get(SimSparkGameInfo& data)
