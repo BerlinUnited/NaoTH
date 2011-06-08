@@ -53,10 +53,6 @@ void Sensor::execute()
     stringstream ss(msg);
     Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
   }
-  else
-  {
-    cerr<<"[Sensor] did not get motion status"<<endl;
-  }
   
   if ( !theOdometryDataMsgQueue->empty() )
   {
@@ -68,10 +64,6 @@ void Sensor::execute()
     }
     stringstream ss(msg);
     Serializer<OdometryData>::deserialize(ss, getOdometryData());
-  }
-  else
-  {
-    cerr<<"[Sensor] did not get odometry data"<<endl;
   }
 
 }//end execute
