@@ -8,6 +8,25 @@
 
 using namespace naoth;
 
+PlatformBase::~PlatformBase()
+{
+  for(std::map<std::string, MessageQueue*>::iterator iter = theMessageQueue.begin(); iter!=theMessageQueue.end(); ++iter)
+  {
+    delete iter->second;
+  }
+}
+
+MessageQueue* PlatformBase::getMessageQueue(const std::string& name)
+{
+  if (theMessageQueue.count(name) == 0)
+  {
+    // create a new one
+    theMessageQueue[name] = new MessageQueue();
+  }
+  
+  return theMessageQueue[name];
+}
+
 PlatformDataInterface::PlatformDataInterface()
   :
   motionCallback(NULL),
