@@ -10,14 +10,15 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-#include "Tools/SwapSpace/SwapSpace.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
 theMotionStatusMsgQueue(NULL),
-theOdometryDataMsgQueue(NULL)
+theOdometryDataMsgQueue(NULL),
+theHeadMotionRequestMsgQueue(NULL),
+theMotionRequestMsgQueue(NULL)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -62,6 +63,9 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   
   theMotionStatusMsgQueue = platformInterface.getMessageQueue("MotionStatus");
   theOdometryDataMsgQueue = platformInterface.getMessageQueue("OdometryData");
+  
+  theHeadMotionRequestMsgQueue = platformInterface.getMessageQueue("HeadMotionRequest");
+  theMotionRequestMsgQueue = platformInterface.getMessageQueue("MotionRequest");
 }//end init
 
 
@@ -74,22 +78,18 @@ void Motion::call()
   processSensorData();
   
   // get orders from cognition
-  /*SwapSpace::getInstance().theCognitionCache.pull(
-    theBlackBoard.theHeadMotionRequest,
-    theBlackBoard.theMotionRequest
-  );*/
-    // FAKE Motion Request:
-  theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  if ( theBlackBoard.theMotionStatus.currentMotion == motion::EMPTY )
-    theBlackBoard.theMotionRequest.id = motion::INIT;
-  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::INIT )
-    theBlackBoard.theMotionRequest.id = motion::STAND;
-  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::STAND )
+  if ( !theHeadMotionRequestMsgQueue->empty() )
   {
-    theBlackBoard.theMotionRequest.id = motion::DANCE;//motion::WALK;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.y = 50;
-    //theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
+    string msg = theHeadMotionRequestMsgQueue->read();
+    stringstream ss(msg);
+    Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
+  }
+  
+  if ( !theMotionRequestMsgQueue->empty() )
+  {
+    string msg = theMotionRequestMsgQueue->read();
+    stringstream ss(msg);
+    Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
   }
 
   // execute head motion firstly

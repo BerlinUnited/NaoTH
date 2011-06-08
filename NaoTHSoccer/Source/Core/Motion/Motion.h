@@ -54,6 +54,10 @@ private:
   // message from motion to cognition
   MessageQueue* theMotionStatusMsgQueue;
   MessageQueue* theOdometryDataMsgQueue;
+  
+  // message from cognition to motion
+  MessageQueue* theHeadMotionRequestMsgQueue;
+  MessageQueue* theMotionRequestMsgQueue;
 };
 
 #endif	/* MOTION_H */
