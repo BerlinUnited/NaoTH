@@ -7079,11 +7079,7 @@ public final class Representations {
     boolean hasStopWithStand();
     boolean getStopWithStand();
     
-    // required bool stable = 3;
-    boolean hasStable();
-    boolean getStable();
-    
-    // required .naothmessages.Pose2D pose = 4;
+    // required .naothmessages.Pose2D pose = 3;
     boolean hasPose();
     de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose();
     de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPoseOrBuilder();
@@ -7137,21 +7133,11 @@ public final class Representations {
       return stopWithStand_;
     }
     
-    // required bool stable = 3;
-    public static final int STABLE_FIELD_NUMBER = 3;
-    private boolean stable_;
-    public boolean hasStable() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public boolean getStable() {
-      return stable_;
-    }
-    
-    // required .naothmessages.Pose2D pose = 4;
-    public static final int POSE_FIELD_NUMBER = 4;
+    // required .naothmessages.Pose2D pose = 3;
+    public static final int POSE_FIELD_NUMBER = 3;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D pose_;
     public boolean hasPose() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose() {
       return pose_;
@@ -7163,7 +7149,6 @@ public final class Representations {
     private void initFields() {
       coordinate_ = 0;
       stopWithStand_ = false;
-      stable_ = false;
       pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
@@ -7176,10 +7161,6 @@ public final class Representations {
         return false;
       }
       if (!hasStopWithStand()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasStable()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -7205,10 +7186,7 @@ public final class Representations {
         output.writeBool(2, stopWithStand_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBool(3, stable_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeMessage(4, pose_);
+        output.writeMessage(3, pose_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -7229,11 +7207,7 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(3, stable_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, pose_);
+          .computeMessageSize(3, pose_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7364,14 +7338,12 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000001);
         stopWithStand_ = false;
         bitField0_ = (bitField0_ & ~0x00000002);
-        stable_ = false;
-        bitField0_ = (bitField0_ & ~0x00000004);
         if (poseBuilder_ == null) {
           pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
         } else {
           poseBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -7421,10 +7393,6 @@ public final class Representations {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.stable_ = stable_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
         if (poseBuilder_ == null) {
           result.pose_ = pose_;
         } else {
@@ -7452,9 +7420,6 @@ public final class Representations {
         if (other.hasStopWithStand()) {
           setStopWithStand(other.getStopWithStand());
         }
-        if (other.hasStable()) {
-          setStable(other.getStable());
-        }
         if (other.hasPose()) {
           mergePose(other.getPose());
         }
@@ -7468,10 +7433,6 @@ public final class Representations {
           return false;
         }
         if (!hasStopWithStand()) {
-          
-          return false;
-        }
-        if (!hasStable()) {
           
           return false;
         }
@@ -7519,12 +7480,7 @@ public final class Representations {
               stopWithStand_ = input.readBool();
               break;
             }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              stable_ = input.readBool();
-              break;
-            }
-            case 34: {
+            case 26: {
               de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder();
               if (hasPose()) {
                 subBuilder.mergeFrom(getPose());
@@ -7581,33 +7537,12 @@ public final class Representations {
         return this;
       }
       
-      // required bool stable = 3;
-      private boolean stable_ ;
-      public boolean hasStable() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      public boolean getStable() {
-        return stable_;
-      }
-      public Builder setStable(boolean value) {
-        bitField0_ |= 0x00000004;
-        stable_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearStable() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        stable_ = false;
-        onChanged();
-        return this;
-      }
-      
-      // required .naothmessages.Pose2D pose = 4;
+      // required .naothmessages.Pose2D pose = 3;
       private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D pose_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> poseBuilder_;
       public boolean hasPose() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPose() {
         if (poseBuilder_ == null) {
@@ -7626,7 +7561,7 @@ public final class Representations {
         } else {
           poseBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder setPose(
@@ -7637,12 +7572,12 @@ public final class Representations {
         } else {
           poseBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder mergePose(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
         if (poseBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
               pose_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
             pose_ =
               de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(pose_).mergeFrom(value).buildPartial();
@@ -7653,7 +7588,7 @@ public final class Representations {
         } else {
           poseBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder clearPose() {
@@ -7663,11 +7598,11 @@ public final class Representations {
         } else {
           poseBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder getPoseBuilder() {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getPoseFieldBuilder().getBuilder();
       }
@@ -11040,23 +10975,23 @@ public final class Representations {
       "DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132\034.na",
       "othmessages.DoubleVector3\0220\n\nsearchSize\030" +
       "\007 \001(\0132\034.naothmessages.DoubleVector3\022\027\n\017s" +
-      "earchDirection\030\010 \001(\010\"m\n\013WalkRequest\022\022\n\nc" +
-      "oordinate\030\001 \002(\r\022\025\n\rstopWithStand\030\002 \002(\010\022\016" +
-      "\n\006stable\030\003 \002(\010\022#\n\004pose\030\004 \002(\0132\025.naothmess" +
-      "ages.Pose2D\"j\n\rMotionRequest\022\n\n\002id\030\001 \002(\r" +
-      "\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRe" +
-      "quest\030\004 \001(\0132\032.naothmessages.WalkRequest\"" +
-      "\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothme" +
-      "ssages.FieldLineSegment\0222\n\rintersections",
-      "\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022m" +
-      "iddleCircleCenter\030\003 \001(\0132\034.naothmessages." +
-      "DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022" +
-      "\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"[\n\014MotionSt" +
-      "atus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025" +
-      "\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(" +
-      "\r\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothm" +
-      "essages.Pose2DB)\n\'de.hu_berlin.informati" +
-      "k.ki.nao.messages"
+      "earchDirection\030\010 \001(\010\"]\n\013WalkRequest\022\022\n\nc" +
+      "oordinate\030\001 \002(\r\022\025\n\rstopWithStand\030\002 \002(\010\022#" +
+      "\n\004pose\030\003 \002(\0132\025.naothmessages.Pose2D\"j\n\rM" +
+      "otionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016" +
+      "\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.na" +
+      "othmessages.WalkRequest\"\253\001\n\013LinePercept\022" +
+      ".\n\005lines\030\001 \003(\0132\037.naothmessages.FieldLine" +
+      "Segment\0222\n\rintersections\030\002 \003(\0132\033.naothme",
+      "ssages.Intersection\0228\n\022middleCircleCente" +
+      "r\030\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n" +
+      "\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n" +
+      "\005valid\030\003 \003(\010\"[\n\014MotionStatus\022\014\n\004time\030\001 \002" +
+      "(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030" +
+      "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\"3\n\014OdometryDat" +
+      "a\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)" +
+      "\n\'de.hu_berlin.informatik.ki.nao.message" +
+      "s"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11140,7 +11075,7 @@ public final class Representations {
           internal_static_naothmessages_WalkRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_WalkRequest_descriptor,
-              new java.lang.String[] { "Coordinate", "StopWithStand", "Stable", "Pose", },
+              new java.lang.String[] { "Coordinate", "StopWithStand", "Pose", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder.class);
           internal_static_naothmessages_MotionRequest_descriptor =

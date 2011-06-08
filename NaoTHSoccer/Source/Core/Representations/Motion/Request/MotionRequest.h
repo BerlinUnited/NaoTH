@@ -75,6 +75,17 @@ public:
   }//end print
 };
 
+namespace naoth
+{
+  template<>
+  class Serializer<MotionRequest>
+  {
+  public:
+    static void serialize(const MotionRequest& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, MotionRequest& representation);
+  };
+}
+
 #endif // __MotionRequest_h_
 
 

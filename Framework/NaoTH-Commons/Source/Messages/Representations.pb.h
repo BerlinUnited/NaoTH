@@ -1317,17 +1317,10 @@ class WalkRequest : public ::google::protobuf::Message {
   inline bool stopwithstand() const;
   inline void set_stopwithstand(bool value);
   
-  // required bool stable = 3;
-  inline bool has_stable() const;
-  inline void clear_stable();
-  static const int kStableFieldNumber = 3;
-  inline bool stable() const;
-  inline void set_stable(bool value);
-  
-  // required .naothmessages.Pose2D pose = 4;
+  // required .naothmessages.Pose2D pose = 3;
   inline bool has_pose() const;
   inline void clear_pose();
-  static const int kPoseFieldNumber = 4;
+  static const int kPoseFieldNumber = 3;
   inline const ::naothmessages::Pose2D& pose() const;
   inline ::naothmessages::Pose2D* mutable_pose();
   inline ::naothmessages::Pose2D* release_pose();
@@ -1338,8 +1331,6 @@ class WalkRequest : public ::google::protobuf::Message {
   inline void clear_has_coordinate();
   inline void set_has_stopwithstand();
   inline void clear_has_stopwithstand();
-  inline void set_has_stable();
-  inline void clear_has_stable();
   inline void set_has_pose();
   inline void clear_has_pose();
   
@@ -1347,11 +1338,10 @@ class WalkRequest : public ::google::protobuf::Message {
   
   ::google::protobuf::uint32 coordinate_;
   bool stopwithstand_;
-  bool stable_;
   ::naothmessages::Pose2D* pose_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3153,37 +3143,15 @@ inline void WalkRequest::set_stopwithstand(bool value) {
   stopwithstand_ = value;
 }
 
-// required bool stable = 3;
-inline bool WalkRequest::has_stable() const {
+// required .naothmessages.Pose2D pose = 3;
+inline bool WalkRequest::has_pose() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void WalkRequest::set_has_stable() {
+inline void WalkRequest::set_has_pose() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void WalkRequest::clear_has_stable() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void WalkRequest::clear_stable() {
-  stable_ = false;
-  clear_has_stable();
-}
-inline bool WalkRequest::stable() const {
-  return stable_;
-}
-inline void WalkRequest::set_stable(bool value) {
-  set_has_stable();
-  stable_ = value;
-}
-
-// required .naothmessages.Pose2D pose = 4;
-inline bool WalkRequest::has_pose() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void WalkRequest::set_has_pose() {
-  _has_bits_[0] |= 0x00000008u;
-}
 inline void WalkRequest::clear_has_pose() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void WalkRequest::clear_pose() {
   if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();

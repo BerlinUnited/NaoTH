@@ -79,14 +79,17 @@ public:
   {
     stream << "Current MotionRequest = " << getName() << endl;
   }//end print
+};
 
-/*  template<>
+namespace naoth
+{
+  template<>
   class Serializer<HeadMotionRequest>
   {
   public:
     static void serialize(const HeadMotionRequest& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, HeadMotionRequest& representation);
-  };*/
-};
+  };
+}
 
 #endif // __HeadMotionRequest_h_
