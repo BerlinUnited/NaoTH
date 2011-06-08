@@ -3,7 +3,6 @@
  */
 
 #include "Sensor.h"
-#include "Tools/SwapSpace/SwapSpace.h"
 
 Sensor::Sensor():
 theMotionStatusMsgQueue(NULL),
