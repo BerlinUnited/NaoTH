@@ -1,15 +1,14 @@
 /**
- * @file ThreadChannel.h
+ * @file MessageQueue.h
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * 
  * A message queue for communicating
  */
 
-#ifndef _THREAD_CHANNEL_H_
-#define _THREAD_CHANNEL_H_
+#ifndef _MESSAGE_QUEUE_H_
+#define _MESSAGE_QUEUE_H_
 
-#include "Channel.h"
-
+#include <string>
 #include <queue>
 #include <glib.h>
 
