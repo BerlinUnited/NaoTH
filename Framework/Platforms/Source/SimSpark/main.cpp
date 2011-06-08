@@ -45,7 +45,7 @@ int main(int argc, char** argv)
   };
   
   GError *error = NULL;
-  GOptionContext *context = g_option_context_new(NULL);
+  GOptionContext *context = g_option_context_new("\n-------------------------------\n  http://www.naoth.de");
   g_option_context_add_main_entries (context, entries, "NaoTH Simspark controller");
   if (!g_option_context_parse (context, &argc, &argv, &error))
   {
@@ -77,8 +77,7 @@ int main(int argc, char** argv)
   Motion theMotion;
   theController.registerCallbacks(&theMotion, &theCognition);
 
-  //theController.main();
-  theController.multiThreadsMain();
+  theController.main();
 
   return 0;
 }//end main
