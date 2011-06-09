@@ -29,7 +29,9 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(UltraSoundSendData)
   REQUIRE(SoundPlayData)
   REQUIRE(MotionStatus)
-  REQUIRE(MotionRequest)
+
+  // HACK: check execute()
+  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Actuator)
 
 class Actuator : public ActuatorBase
