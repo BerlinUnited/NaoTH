@@ -13,7 +13,12 @@
 using namespace naoth;
 
 NaoMotionController::NaoMotionController()
-: PlatformInterface<NaoMotionController>("Nao", 10)
+: PlatformInterface<NaoMotionController>("Nao", 10),
+sensorsValue(NULL),
+theMotorJointData(NULL),
+theLEDData(NULL),
+theIRSendData(NULL),
+theUltraSoundSendData(NULL)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -58,11 +63,33 @@ void NaoMotionController::init(ALPtr<ALBroker> pB)
   std::cout << "Init DCMHandler" << endl;
   theDCMHandler.init(pB);
   Platform::getInstance().init(this);
+  
+  // init shared memory
+  libNaothData.open("/libnaoth");
+  sensorsValue = libNaothData.data().sensorsValue;
+  theMotorJointData = &(libNaothData.data().theMotorJointData);
+  
+  naothData.open("/naoth");
+  theLEDData = &(naothData.data().theLEDData);
+  theIRSendData = &(naothData.data().theIRSendData);
+  theUltraSoundSendData = &(naothData.data().theUltraSoundSendData);
+  
+  // save the body ID
+  string bodyID = theDCMHandler.getBodyID();
+  int lenBodyID = min(bodyID.length(), sizeof(libNaothData.data().bodyID) - 1);
+  memcpy(libNaothData.data().bodyID, bodyID.c_str(), lenBodyID);
+  libNaothData.data().bodyID[lenBodyID] = '\0';
+  
+  // save the nick name
+  string nickName = theDCMHandler.getBodyNickName();
+  int lenNickName = min(nickName.length(), sizeof(libNaothData.data().nickName) - 1);
+  memcpy(libNaothData.data().nickName, nickName.c_str(), lenNickName);
+  libNaothData.data().nickName[lenNickName] = '\0';
 }
 
 void NaoMotionController::get(unsigned int& timestamp)
 {
-  timestamp = theDCMHandler.getCurrentTimeStamp();
+  timestamp = libNaothData.data().timeStamp;
 }
 
 void NaoMotionController::get(FrameInfo& data)
@@ -72,79 +99,47 @@ void NaoMotionController::get(FrameInfo& data)
   data.basicTimeStep = getBasicTimeStep();
 }
 
-void NaoMotionController::get(SensorJointData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(AccelerometerData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(GyrometerData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(FSRData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(InertialSensorData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(IRReceiveData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(ButtonData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(BatteryData& data)
-{
-  theDCMHandler.get(data);
-}
-
-void NaoMotionController::get(UltraSoundReceiveData& data)
-{
-  theDCMHandler.get(data);
-}
-
-
 void NaoMotionController::set(const MotorJointData& data)
 {
-  theDCMHandler.set(data);
+  libNaothData.lock(); // lock shared memory before writing
+  *theMotorJointData = data;
+  libNaothData.unlock();
 }
 
 void NaoMotionController::set(const LEDData& data)
 {
-  theDCMHandler.set(data);
+  naothData.lock(); // lock shared memory before writing
+  *theLEDData = data;
+  naothData.unlock();
 }
 
 void NaoMotionController::set(const IRSendData& data)
 {
-  theDCMHandler.set(data);
+  naothData.lock(); // lock shared memory before writing
+  *theIRSendData = data;
+  naothData.unlock();
 }
 
 void NaoMotionController::set(const UltraSoundSendData& data)
 {
-  theDCMHandler.set(data);
+  naothData.lock(); // lock shared memory before writing
+  *theUltraSoundSendData = data;
+  naothData.unlock();
 }
 
 void NaoMotionController::updateSensorData()
 {
-//  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
-  theDCMHandler.readSensorData();
+  libNaothData.lock(); // lock shared memory before writing
+  theDCMHandler.readSensorData(libNaothData.data().timeStamp, sensorsValue);
+  libNaothData.unlock();
 }
 
 void NaoMotionController::setActuatorData()
 {
-  theDCMHandler.sendActuatorData();
+  theDCMHandler.setAllMotorData(*theMotorJointData);
+  naothData.lock(); // lock shared memory before reading
+  theDCMHandler.setLED(*theLEDData);
+  theDCMHandler.setIRSend(*theIRSendData);
+  theDCMHandler.setUltraSoundSend(*theUltraSoundSendData);
+  naothData.unlock();
 }

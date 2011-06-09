@@ -44,23 +44,23 @@ public:
 
   virtual void get(FrameInfo& data);
 
-  virtual void get(SensorJointData& data);
+  virtual void get(SensorJointData& data) { libNaothData.data().get(data); }
 
-  virtual void get(AccelerometerData& data);
+  virtual void get(AccelerometerData& data) { libNaothData.data().get(data); }
 
-  virtual void get(GyrometerData& data);
+  virtual void get(GyrometerData& data) { libNaothData.data().get(data); }
 
-  virtual void get(FSRData& data);
+  virtual void get(FSRData& data) { libNaothData.data().get(data); }
 
-  virtual void get(InertialSensorData& data);
+  virtual void get(InertialSensorData& data) { libNaothData.data().get(data); }
 
-  virtual void get(IRReceiveData& data);
+  virtual void get(IRReceiveData& data) { libNaothData.data().get(data); }
 
-  virtual void get(ButtonData& data);
+  virtual void get(ButtonData& data) { libNaothData.data().get(data); }
 
-  virtual void get(BatteryData& data);
+  virtual void get(BatteryData& data) { libNaothData.data().get(data); }
 
-  virtual void get(UltraSoundReceiveData& data);
+  virtual void get(UltraSoundReceiveData& data) { libNaothData.data().get(data); }
 
   /////////////////////// set ///////////////////////
   virtual void set(const MotorJointData& data);
@@ -73,6 +73,16 @@ public:
 
 private:
   DCMHandler theDCMHandler;
+  
+  SharedMemory<LibNaothData> libNaothData;
+  float* sensorsValue;
+  
+  // Actuators data
+  MotorJointData* theMotorJointData;
+  SharedMemory<NaothData> naothData;
+  LEDData* theLEDData;
+  IRSendData* theIRSendData;
+  UltraSoundSendData* theUltraSoundSendData;
 };
 
 } // end namespace naoth

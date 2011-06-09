@@ -9,10 +9,10 @@
 #ifndef _NAOCONTROLLER_H
 #define	_NAOCONTROLLER_H
 
-#include "DCMHandler.h"
 #include "SoundControl.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include "V4lCameraHandler.h"
+#include "Tools/IPCData.h"
 
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Tools/DataStructures/Singleton.h>
@@ -35,7 +35,7 @@ public:
   virtual string getBodyNickName();
 
   /////////////////////// init ///////////////////////
-  void init(ALPtr<ALBroker> pB);
+  void init();
 
   /////////////////////// run ///////////////////////
   void updateSensorData();
@@ -67,10 +67,10 @@ public:
   virtual void get(BatteryData& data);
 
   virtual void get(UltraSoundReceiveData& data);
+  
+  virtual void get(MotorJointData& data);
 
   /////////////////////// set ///////////////////////
-  virtual void set(const MotorJointData& data);
-
   virtual void set(const CameraSettingsRequest& data);
 
   virtual void set(const LEDData& data);
@@ -82,9 +82,13 @@ public:
   virtual void set(const SoundPlayData& data);
 
 private:
-  DCMHandler theDCMHandler;
   V4lCameraHandler theCameraHandler;
   SoundControl *theSoundHandler;
+  
+  SharedMemory<LibNaothData> libNaothData;
+  float* currentAllSensorsValue;
+  MotorJointData* theMotorJointData;
+  
 };
 
 } // end namespace naoth

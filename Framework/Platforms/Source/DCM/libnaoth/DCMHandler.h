@@ -21,13 +21,6 @@
 #include <alproxies/alledsproxy.h>
 #include <alproxies/dcmproxy.h>
 
-#include "Representations/Infrastructure/FSRData.h"
-#include "Representations/Infrastructure/AccelerometerData.h"
-#include "Representations/Infrastructure/GyrometerData.h"
-#include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/ButtonData.h"
-#include "Representations/Infrastructure/BatteryData.h"
-
 #include "Tools/SharedMemory.h"
 #include "Tools/IPCData.h"
 
@@ -82,7 +75,6 @@ class DCMHandler
     string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
     string DCMPath_UltraSoundSend;
 
-
     //Body-ID
     string DCMPath_BodyId;
     string DCMPath_BodyNickName;
@@ -99,31 +91,6 @@ class DCMHandler
 
     string allSensorsList[numOfSensors];
     float* sensorPtrs[numOfSensors];
-    
-    SharedMemory<LibNaothData> libNaothData;
-    float* currentAllSensorsValue;
-    
-    // Actuators data
-    MotorJointData* theMotorJointData;
-    
-    SharedMemory<NaothData> naothData;
-    LEDData* theLEDData;
-    IRSendData* theIRSendData;
-    UltraSoundSendData* theUltraSoundSendData;
-    
-    unsigned int currentTimestamp;
-
-    // index
-    unsigned int theSensorJointDataIndex;
-    unsigned int theFSRDataIndex;
-    unsigned int theAccelerometerDataIndex;
-    unsigned int theGyrometerDataIndex;
-    unsigned int theInertialSensorDataIndex;
-    unsigned int theIRReceiveDataIndex;
-    unsigned int theButtonDataIndex;
-    unsigned int theUltraSoundReceiveDataIndex;
-    unsigned int thBatteryDataIdex;
-
 
   ALValue getFromALMemory(const string& path);
   
@@ -155,29 +122,12 @@ public:
     string getBodyNickName();
 
     // read sensor data from AL memory
-    void readSensorData();
+    void readSensorData(unsigned int& timeStamp, float* dest);
     
-    // send acturator data to DCM
-    void sendActuatorData();
+    void set(const LEDData& data);
+    void set(const IRSendData& data);
+    void set(const UltraSoundSendData& data);
 
-    void get(SensorJointData& data) const;
-    void get(FSRData& data) const;
-    void get(AccelerometerData& data) const;
-    void get(GyrometerData& data) const;
-    void get(InertialSensorData& data) const;
-    void get(IRReceiveData& data) const;
-    void get(ButtonData& data) const;
-    void get(UltraSoundReceiveData& data) const;
-    void get(BatteryData& data) const;
-    
-    void set(const MotorJointData& data) { (*theMotorJointData) = data; }
-    void set(const LEDData& data) { *theLEDData = data; }
-    void set(const IRSendData& data) { *theIRSendData = data; }
-    void set(const UltraSoundSendData& data) { *theUltraSoundSendData = data; }
-
-    unsigned int getCurrentTimeStamp() const { return currentTimestamp; }
-
-private:
     void setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData);
     void setAllMotorData(const MotorJointData& mjd);
     

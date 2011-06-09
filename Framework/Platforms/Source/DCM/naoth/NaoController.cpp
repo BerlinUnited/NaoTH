@@ -13,7 +13,10 @@
 using namespace naoth;
 
 NaoController::NaoController()
-: PlatformInterface<NaoController>("Nao", 10)
+: PlatformInterface<NaoController>("Nao", 10),
+theSoundHandler(NULL),
+currentAllSensorsValue(NULL),
+theMotorJointData(NULL)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -53,7 +56,6 @@ string NaoController::getHardwareIdentity() const
 
 string NaoController::getBodyID()
 {
-  return theDCMHandler.getBodyID();
 }
 
 string NaoController::getBodyNickName()
@@ -61,18 +63,19 @@ string NaoController::getBodyNickName()
   return theDCMHandler.getBodyNickName();
 }
 
-void NaoController::init(ALPtr<ALBroker> pB)
+void NaoController::init()
 {
-  std::cout << "Init DCMHandler" << endl;
-  theDCMHandler.init(pB);
   std::cout << "Init CameraHandler" << endl;
   theCameraHandler.init("/dev/video");
-  //theCameraHandler.init(pB);
   std::cout << "Init SoundHandler" <<endl;
   theSoundHandler = new SoundControl();
   
-  Platform::getInstance().init(this);
+  std::cout << "Open Shared Memory"<<endl;
+  libNaothData.open("/libnaoth");
+  currentAllSensorsValue = libNaothData.data().currentAllSensorsValue;
+  theMotorJointData = &(libNaothData.data().theMotorJointData);
   
+  Platform::getInstance().init(this);
 }
 
 void NaoController::get(unsigned int& timestamp)
