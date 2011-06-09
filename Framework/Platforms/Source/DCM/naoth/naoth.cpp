@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
   while(true)
   {
     theController.callCognition();
+    //usleep(100000);
   }
   
   return 0;

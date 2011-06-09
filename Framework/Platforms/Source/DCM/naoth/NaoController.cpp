@@ -41,12 +41,6 @@ theUltraSoundSendData(NULL)
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundPlayData>(*this);
   
-  std::cout << "Init CameraHandler" << endl;
-  theCameraHandler.init("/dev/video");
-  
-  std::cout << "Init SoundHandler" <<endl;
-  theSoundHandler = new SoundControl();
-  
   std::cout << "Open Shared Memory"<<endl;
   libNaothData.open("/libnaoth");
   naothData.open("/naoth");
@@ -56,6 +50,12 @@ theUltraSoundSendData(NULL)
   
   cout<<"Init Platform"<<endl;
   Platform::getInstance().init(this);
+  
+  std::cout << "Init CameraHandler" << endl;
+  theCameraHandler.init("/dev/video");
+  
+  std::cout << "Init SoundHandler" <<endl;
+  theSoundHandler = new SoundControl();
 }
 
 NaoController::~NaoController()

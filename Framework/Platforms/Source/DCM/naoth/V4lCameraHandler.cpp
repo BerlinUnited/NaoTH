@@ -7,20 +7,19 @@
 
 #include "V4lCameraHandler.h"
 #include "Tools/Debug/NaoTHAssert.h"
-//#include "Tools/Debug/Stopwatch.h"
+#include "Tools/Debug/Stopwatch.h"
 #include "Representations/Infrastructure/Image.h"
 #include "PlatformInterface/Platform.h"
 
 #include <string.h>
 #include <iostream>
 
-using namespace naoth;
-
 extern "C"
 {
-#include "i2c-small.h"
-#include "Tools/NaoTime.h"
+  #include "i2c-small.h"
+  #include "Tools/NaoTime.h"
 }
+
 // define some non-standard constants
 #ifndef V4L2_CID_AUTOEXPOSURE
 #define V4L2_CID_AUTOEXPOSURE     (V4L2_CID_BASE+32)
@@ -29,14 +28,32 @@ extern "C"
 #define V4L2_CID_CAM_INIT         (V4L2_CID_BASE+33)
 #endif
 
-V4lCameraHandler::V4lCameraHandler()
-: fd(-1), buffers(NULL), n_buffers(0), wasQueried(false), isCapturing(false)
-{
+using namespace naoth;
 
+V4lCameraHandler::V4lCameraHandler()
+:
+  fd(-1), buffers(NULL),
+  actMethodIO(Num_of_MethodIO),
+  selMethodIO(IO_MMAP),
+//  selMethodIO(IO_USERPTR),
+//  selMethodIO(IO_READ),
+  n_buffers(0),
+  hadReset(false),
+  wasQueried(false),
+  isCapturing(false)
+{
+  /*
+  DEBUG_REQUEST_REGISTER("V4lCameraHandler:set_blocking_mode", "...", false);
+  DEBUG_REQUEST_REGISTER("V4lCameraHandler:set_non_blocking_mode", "...", false);
+  DEBUG_REQUEST_REGISTER("V4lCameraHandler:reset_camera", "...", false);
+  DEBUG_REQUEST_REGISTER("V4lCameraHandler:reset_test","test reset camera behavior", false);
+   */
 }
 
 void V4lCameraHandler::init(std::string camDevice)
 {
+  resetCameraCount = 0;
+
   for(int i=0; i < CameraInfo::numOfCamera; i++)
   {
     for(int j=0; j < CameraSettings::numOfCameraSetting; j++)
@@ -44,7 +61,6 @@ void V4lCameraHandler::init(std::string camDevice)
       currentSettings[i].data[j] = -1;
     }
   }
-
   cameraName = camDevice;
   
   // set to the default camera
@@ -53,11 +69,13 @@ void V4lCameraHandler::init(std::string camDevice)
   // set our IDs
   initIDMapping();
 
-  // FIXME: the camera has to be selected here!
+//  // FIXME: the camera has to be selected here!
   fastCameraSelection(CameraInfo::Bottom);
+  //fastCameraSelection(CameraInfo::Top);
   
   // open the device
-  openDevice();
+  openDevice(true);//in blocking mode
+//  openDevice(false);// in non blocking mode
 
   initDevice();
 
@@ -67,13 +85,38 @@ void V4lCameraHandler::init(std::string camDevice)
   //initDevice();
   
   // allocate the internal camera buffers
-  initMMap();
+//  initMMap();
 
   internalUpdateCameraSettings();
   
   // start capturing
   startCapturing();
   setFPS(30);
+}
+
+int V4lCameraHandler::xioctl(int fd, int request, void* arg)
+{
+  int r;
+  do
+  {
+    r = ioctl (fd, request, arg);
+  }
+  while (-1 == r && EINTR == errno);
+  return r;
+}
+
+bool V4lCameraHandler::hasIOError(int errOccured, int errNo, bool exitByIOError = true)
+{
+  if(errOccured < 0)
+  {
+    std::cout << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
+    if(exitByIOError)
+    {
+      assert(errOccured >= 0);
+    }
+    return true;
+  }
+  return false;
 }
 
 void V4lCameraHandler::initIDMapping()
@@ -108,20 +151,72 @@ void V4lCameraHandler::fastCameraSelection(CameraInfo::CameraID camId)
   std::cout << "FAST camera selection to " << camId << std::endl;
   int i2cFd = open("/dev/i2c-0", O_RDWR);
   ASSERT(i2cFd != -1);
-  VERIFY(ioctl(i2cFd, 0x703, 8) == 0);
-  VERIFY(i2c_smbus_read_byte_data(i2cFd, 170) >= 2); // at least Nao V3
+
+  int errorOccured = -1;
+  std::cout << "Selecting camera - Opening i2c bus ";
+  for(int i = 0; i < 20 && errorOccured < 0; i++)
+  {
+    errorOccured = ioctl(i2cFd, 0x703, 8);
+    if(errorOccured < 0 && (errno == EBUSY))
+    {
+      usleep(10);
+      std::cout << ".";
+    }
+    else
+    {
+      hasIOError(errorOccured, errno);
+    }
+  }
+  std::cout << std::endl;
+  hasIOError(errorOccured, errno);
+
+  errorOccured = -1;
+  std::cout << "Selecting camera - Reading i2c bus ";
+  for(int i = 0; i < 20 && errorOccured < 0; i++)
+  {
+    errorOccured = i2c_smbus_read_byte_data(i2cFd, 170);
+    if(errorOccured < 0 && (errno == EBUSY))
+    {
+      usleep(10);
+      std::cout << ".";
+    }
+    else
+    {
+      hasIOError(errorOccured, errno);
+    }
+  }
+  std::cout << std::endl;
+  hasIOError(errorOccured, errno);
+
   unsigned char cmd[2] = {2, 0}; // select lower camera by default
   if (camId == CameraInfo::Top)
   {
     // adjust to the top camera
     cmd[0] = 1;
   }
-  VERIFY(i2c_smbus_write_block_data(i2cFd, 220, 1, cmd) != -1);
+
+  errorOccured = -1;
+  std::cout << "Selecting camera - Writing i2c bus ";
+  for(int i = 0; i < 20 && errorOccured < 0; i++)
+  {
+    errorOccured = i2c_smbus_write_block_data(i2cFd, 220, 1, cmd);
+    if(errorOccured < 0 && (errno == EBUSY))
+    {
+      usleep(10);
+      std::cout << ".";
+    }
+    else
+    {
+      hasIOError(errorOccured, errno);
+    }
+  }
+  std::cout << std::endl;
+  hasIOError(errorOccured, errno);
+
   close(i2cFd);
 
   currentCamera = camId;
   currentSettings[camId].data[CameraSettings::CameraSelection] = camId;
-
 }
 
 
@@ -138,27 +233,7 @@ void V4lCameraHandler::setFPS(int fpsRate)
   currentSettings[currentCamera].data[CameraSettings::FPS] = fpsRate;
 }
 
-//void V4lCameraHandler::get(Image& theImage)
-//{
-//  STOPWATCH_START("ImageRetrieve");
-//  int resultCode = readFrame();
-//  STOPWATCH_STOP("ImageRetrieve");
-//
-//  if (resultCode < 0)
-//  {
-//    std::cerr << "[V4L get] Could not get image, error code " << resultCode << std::endl;
-//  } else
-//  {
-//    theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
-//    //theImage.wrapImageDataYUV422((unsigned char*) buffers[resultCode].start, buffers[resultCode].length);
-//    theImage.setCameraInfo(Platform::getInstance().theCameraInfo);
-//    theImage.cameraInfo.cameraID = currentCamera;
-//    theImage.timestamp = (unsigned int) (((currentBuf.timestamp.tv_sec * 1000000 + currentBuf.timestamp.tv_usec) - NaoTime::startingTimeInMicroSeconds) / 1000 );
-//  }
-//
-//}
-
-void V4lCameraHandler::openDevice()
+void V4lCameraHandler::openDevice(bool blockingMode)
 {
 
   struct stat st;
@@ -176,7 +251,19 @@ void V4lCameraHandler::openDevice()
     return;
   }
 
-  fd = open(cameraName.c_str(), O_RDWR /* required */ | O_NONBLOCK, 0);
+  std::cout << "Opening camera device '" << cameraName << "' ";
+  blockingCaptureModeEnabled = blockingMode;
+  if(blockingMode)
+  {
+    fd = open(cameraName.c_str(), O_RDWR, 0);
+    std::cout << "(blocking mode)";
+  }
+  else
+  {
+    fd = open(cameraName.c_str(), O_RDWR | O_NONBLOCK, 0);
+    std::cout << "(non blocking mode)";
+  }
+  std::cout << endl;
 
   if (-1 == fd)
   {
@@ -184,7 +271,6 @@ void V4lCameraHandler::openDevice()
       << strerror(errno) << std::endl;
     return;
   }
-
 }
 
 void V4lCameraHandler::initDevice()
@@ -192,13 +278,29 @@ void V4lCameraHandler::initDevice()
   struct v4l2_capability cap;
   unsigned int min;
 
-
   // set default parameters and init the camera
   struct v4l2_control control;
   memset(&control, 0, sizeof (struct v4l2_control));
   control.id = V4L2_CID_CAM_INIT;
   control.value = 0;
-  VERIFY(ioctl(fd, VIDIOC_S_CTRL, &control) >= 0);
+
+  int errorOccured = -1;
+  std::cout << "Initializing camera ";
+  for(int i = 0; i < 20 && errorOccured < 0; i++)
+  {
+    errorOccured = ioctl(fd, VIDIOC_S_CTRL, &control);
+    if(errorOccured < 0 && (errno == EBUSY) )
+    {
+      usleep(10);
+      std::cout << ".";
+    }
+    else 
+    {
+      hasIOError(errorOccured, errno);
+    }
+  }
+  std::cout << std::endl;
+  hasIOError(errorOccured, errno);
 
   v4l2_std_id esid0 = 0x04000000UL; // use 0x08000000UL when the width is 640
   VERIFY(!ioctl(fd, VIDIOC_S_STD, &esid0));
@@ -210,7 +312,21 @@ void V4lCameraHandler::initDevice()
   VERIFY(ioctl(fd, VIDIOC_QUERYCAP, &cap) != -1);
 
   VERIFY(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE);
-  VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
+
+  VERIFY(selMethodIO == IO_READ || selMethodIO == IO_MMAP || selMethodIO == IO_USERPTR);
+
+  switch(selMethodIO)
+  {
+    case IO_READ:
+      VERIFY(cap.capabilities & V4L2_CAP_READWRITE);
+      break;
+
+    case IO_MMAP:
+    case IO_USERPTR:
+      VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
+      break;
+
+  }
 
   /* Select video input, video standard and tune here. */
 
@@ -220,10 +336,7 @@ void V4lCameraHandler::initDevice()
   fmt.fmt.pix.width = 320;
   fmt.fmt.pix.height = 240;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-  //  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB444;
   fmt.fmt.pix.field = V4L2_FIELD_NONE;
-//  fmt.fmt.pix.field = V4L2_FIELD_ALTERNATE;
-//  fmt.fmt.pix.field = V4L2_FIELD_ANY;
   VERIFY(ioctl(fd, VIDIOC_S_FMT, &fmt) >= 0);
 
   /* Note VIDIOC_S_FMT may change width and height. */
@@ -237,6 +350,73 @@ void V4lCameraHandler::initDevice()
     fmt.fmt.pix.sizeimage = min;
 
   std::cout << fmt.fmt.pix.sizeimage << endl;
+
+	switch (selMethodIO)
+  {
+    case IO_READ:
+      initRead(fmt.fmt.pix.sizeimage);
+      break;
+
+    case IO_MMAP:
+      initMMap();
+      break;
+
+    case IO_USERPTR:
+      initUP(fmt.fmt.pix.sizeimage);
+      break;
+	}
+  actMethodIO = selMethodIO;
+}
+
+void V4lCameraHandler::resetCamera(Image& theImage)
+{
+  STOPWATCH_START("V4lCameraHandler:reset_camera");
+  std::cout << "V4lCameraHandler:reset_camera" << std::endl;
+  stopCapturing();
+  uninitDevice();
+  initDevice();
+  initMMap();
+//  internalUpdateCameraSettings();
+  internalSetCameraSettings(currentSettings[currentCamera]);
+  startCapturing();
+  STOPWATCH_STOP("V4lCameraHandler:reset_camera");
+  hadReset = true;
+}
+
+void V4lCameraHandler::resetCamera2BlockingMode(Image& theImage)
+{
+  STOPWATCH_START("V4lCameraHandler:set_blocking_mode");
+  std::cout << "V4lCameraHandler:set_blocking_mode" << std::endl;
+  stopCapturing();
+  uninitDevice();
+  closeDevice();
+  usleep(2000);
+  openDevice(true);
+  initDevice();
+  initMMap();
+//  internalUpdateCameraSettings();
+  internalSetCameraSettings(currentSettings[currentCamera]);
+  startCapturing();
+  STOPWATCH_STOP("V4lCameraHandler:set_blocking_mode");
+  hadReset = true;
+}
+
+void V4lCameraHandler::resetCamera2NonBlockingMode(Image& theImage)
+{
+  STOPWATCH_START("V4lCameraHandler:set_non_blocking_mode");
+  std::cout << "V4lCameraHandler:set_non_blocking_mode" << std::endl;
+  stopCapturing();
+  uninitDevice();
+  closeDevice();
+  usleep(2000);
+  openDevice(false);
+  initDevice();
+  initMMap();
+//  internalUpdateCameraSettings();
+  internalSetCameraSettings(currentSettings[currentCamera]);
+  startCapturing();
+  STOPWATCH_STOP("V4lCameraHandler:set_non_blocking_mode");
+  hadReset = true;
 }
 
 void V4lCameraHandler::initMMap()
@@ -281,67 +461,349 @@ void V4lCameraHandler::initMMap()
 
 }
 
-void V4lCameraHandler::startCapturing()
+void V4lCameraHandler::initUP(unsigned int buffer_size)
 {
-  unsigned int i;
-  enum v4l2_buf_type type;
+  struct v4l2_requestbuffers req;
+  unsigned int page_size = getpagesize();
 
-  for (i = 0; i < n_buffers; ++i)
+  buffer_size = (buffer_size + page_size - 1) & ~(page_size - 1);
+  memset(&(req), 0, sizeof (v4l2_requestbuffers));
+
+  req.count = 5; // number of internal buffers, since we use debug images that should be quite big
+  req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  req.memory = V4L2_MEMORY_USERPTR;
+
+  VERIFY(-1 != ioctl(fd, VIDIOC_REQBUFS, &req));
+
+  VERIFY(req.count >= 2);
+
+  buffers = (struct buffer*) calloc(req.count, sizeof (*buffers));
+
+  VERIFY(buffers);
+
+  for (n_buffers = 0; n_buffers < req.count; ++n_buffers)
   {
-    struct v4l2_buffer buf;
+    buffers[n_buffers].length = buffer_size;
+    buffers[n_buffers].start = memalign (page_size, buffer_size);
+    cout << n_buffers << " buffer_size " << buffers[n_buffers].length << endl;
+    cout << n_buffers << " page_size " << buffers[n_buffers].start << endl;
 
-    memset(&(buf), 0, sizeof (struct v4l2_buffer));
-
-    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    buf.memory = V4L2_MEMORY_MMAP;
-    buf.index = i;
-
-    VERIFY(-1 != ioctl(fd, VIDIOC_QBUF, &buf));
+    VERIFY(NULL != buffers[n_buffers].start);
   }
-
-  type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-  VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
-
-  isCapturing = true;
-  wasQueried = false;
-  noBufferChangeCount = 0;
-  lastBuf = currentBuf;
+  cout << " page_size " << page_size << endl;
 
 }
 
-int V4lCameraHandler::readFrame()
+void V4lCameraHandler::initRead(unsigned int		buffer_size)
 {
-  if (wasQueried && lastBuf.index != currentBuf.index)
+  buffers =  (struct buffer*) calloc (1, sizeof (*buffers));
+
+  VERIFY(NULL != buffers);
+
+	buffers[0].length = buffer_size;
+	buffers[0].start = malloc (buffer_size);
+
+	VERIFY(NULL != buffers[0].start);
+}
+
+void V4lCameraHandler::startCapturing()
+{
+  if(actMethodIO != Num_of_MethodIO)
   {
-    VERIFY(-1 != ioctl(fd, VIDIOC_QBUF, &lastBuf));
-//    cout << "last: " << lastBuf.index << ", current: " << currentBuf.index << endl;
-    lastBuf = currentBuf;
+    if(actMethodIO != IO_READ)
+    {
+      unsigned int i;
+      enum v4l2_buf_type type;
+
+      for (i = 0; i < n_buffers; ++i)
+      {
+        struct v4l2_buffer buf;
+
+        memset(&(buf), 0, sizeof (struct v4l2_buffer));
+
+        buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        buf.index = i;
+        if(actMethodIO == IO_MMAP)
+        {
+          buf.memory = V4L2_MEMORY_MMAP;
+        }
+        else
+        {
+          buf.memory = V4L2_MEMORY_USERPTR;
+          buf.m.userptr	= (unsigned long) buffers[i].start;
+          buf.length = buffers[i].length;
+        }
+
+        VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &buf));
+      }
+
+      type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+      VERIFY(-1 != ioctl(fd, VIDIOC_STREAMON, &type));
+    }
+
+    isCapturing = true;
+    wasQueried = false;
+    bufferSwitched = true;
     noBufferChangeCount = 0;
+    lastBuf = currentBuf;
+  }
+}
+
+int V4lCameraHandler::readFrameMMaP()
+{
+  //not the first frame and the buffer changed last frame
+  if (wasQueried)
+  {
+    //no => did the buffer index change?
+    if(bufferSwitched)
+    {
+      //put buffer back in the drivers incoming queue
+      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+      //std::cout << "give buffer to driver" << std::endl;
+      noBufferChangeCount = 0;
+      if(hadReset)
+      {
+        hadReset = false;
+      }
+    }
+   }
+
+  struct v4l2_buffer buf;
+  memset(&(buf), 0, sizeof (struct v4l2_buffer));
+  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  buf.memory = V4L2_MEMORY_MMAP;
+
+  int errorOccured = -1;
+  if(blockingCaptureModeEnabled)
+  {
+    //in blocking mode just get a buffer from the drivers outgoing queue
+    errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
+    hasIOError(errorOccured, errno);
+//    std::cout << "get buffer from driver blocking" << std::endl;
   }
   else
   {
-    noBufferChangeCount++;
+    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
+    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
+    for(int i = 0; i < 20 && errorOccured < 0; i++)
+    {
+      errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
+//      std::cout << "get buffer from driver nonblocking" << std::endl;
+      if(errorOccured < 0 && errno == EAGAIN)
+      {
+        usleep(100);
+      }
+      else
+      {
+        hasIOError(errorOccured, errno);
+      }
+    }
+  }
+  currentBuf = buf;
+
+  //not first frame and no other error while getting next buffer
+  if(wasQueried && ( (!blockingCaptureModeEnabled && errorOccured < 0) || errorOccured == 0) )
+  {
+    if(lastBuf.index != currentBuf.index)
+    {
+      //yes
+      bufferSwitched = true;
+//      std::cout << "switching buffers" << std::endl;
+    }
+    else
+    {
+      //no => count number of failed/overwritten frames
+//      std::cout << "didn't switch buffers" << std::endl;
+      bufferSwitched = false;
+      noBufferChangeCount++;
+    }
   }
 
-  int returnValue = ioctl(fd, VIDIOC_DQBUF, &currentBuf);
-  VERIFY(returnValue >= 0);
+  //remember current buffer for the next frame as last buffer
+  lastBuf = currentBuf;
 
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
   return currentBuf.index;
 }
 
+int V4lCameraHandler::readFrameUP()
+{
+  cout << "#";
+  //not the first frame and the buffer changed last frame
+  if (wasQueried)
+  {
+    //no => did the buffer index change?
+    if(bufferSwitched)
+    {
+      //put buffer back in the drivers incoming queue
+      VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
+      //std::cout << "give buffer to driver" << std::endl;
+      noBufferChangeCount = 0;
+      if(hadReset)
+      {
+        hadReset = false;
+      }
+      cout << "queued buffer: " << lastBuf.index << ", l = " << lastBuf.length << endl;
+    }
+   }
+
+  struct v4l2_buffer buf;
+  memset(&(buf), 0, sizeof (struct v4l2_buffer));
+  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  buf.memory = V4L2_MEMORY_USERPTR;
+
+  int errorOccured = -1;
+//  if(blockingCaptureModeEnabled)
+//  {
+//    //in blocking mode just get a buffer from the drivers outgoing queue
+    errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
+    cout << "after dequeue:" << buf.index << ", l = " << buf.length << endl;
+//    hasIOError(errorOccured, errno);
+////    std::cout << "get buffer from driver blocking" << std::endl;
+//  }
+//  else
+//  {
+//    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
+//    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
+//    for(int i = 0; i < 20 && errorOccured < 0; i++)
+//    {
+//      errorOccured = ioctl(fd, VIDIOC_DQBUF, &buf);
+////      std::cout << "get buffer from driver nonblocking" << std::endl;
+//      if(errorOccured < 0 && errno == EAGAIN)
+//      {
+//        usleep(100);
+//      }
+//      else
+//      {
+//        hasIOError(errorOccured, errno);
+//      }
+//    }
+//  }
+//
+    if(errorOccured < 0 && errno != EAGAIN && errno != EIO)
+    {
+      hasIOError(errorOccured, errno, true);
+      cout << "|";
+    }
+    else
+    {
+      for (int i = 0; i < n_buffers; ++i)
+      {
+          cout << i << "usrptr = " << buf.m.userptr << ", bufptr = " << buffers[i].start << ", l = "<< buf.length << " / "<< buffers[i].length << endl;
+        if (buf.m.userptr == (unsigned long) buffers[i].start && buf.length == buffers[i].length)
+        {
+          currentBuf = buf;
+          currentBuf.index = i;
+          currentBuf.bytesused = buf.length;
+          cout << "frame in buffer: " << i << ", l = " << buf.length << endl;
+        cout << "current buffer: " << currentBuf.index << " last buffer: " << lastBuf.index << endl;
+        }
+      }
+    }
+
+
+    //not first frame and no other error while getting next buffer
+    if(wasQueried && ( (!blockingCaptureModeEnabled && errorOccured < 0) || errorOccured == 0) )
+    {
+      cout << "current buffer: " << currentBuf.index << " last buffer: " << lastBuf.index << endl;
+      if(lastBuf.index != currentBuf.index)
+      {
+        //yes
+        bufferSwitched = true;
+        std::cout << "switching buffers" << std::endl;
+      }
+      else
+      {
+        //no => count number of failed/overwritten frames
+        std::cout << "didn't switch buffers" << std::endl;
+        bufferSwitched = false;
+        noBufferChangeCount++;
+      }
+    }
+
+  //remember current buffer for the next frame as last buffer
+  lastBuf = currentBuf;
+
+  wasQueried = true;
+  ASSERT(currentBuf.index < n_buffers);
+  return currentBuf.index; 
+}
+
+int V4lCameraHandler::readFrameRead()
+{
+  if (-1 == read (fd, buffers[0].start, buffers[0].length))
+  {
+    switch (errno)
+    {
+    case EAGAIN:
+      return 0;
+
+    case EIO:
+				/* Could ignore EIO, see spec. */
+
+				/* fall through */
+
+    default:
+      exit(-1);
+			}
+		}
+  currentBuf.bytesused = buffers[0].length;
+  return 0;
+}
+
+
+int V4lCameraHandler::readFrame()
+{
+	switch (actMethodIO)
+  {
+    case IO_READ:
+      return readFrameRead();
+
+    case IO_MMAP:
+      return readFrameMMaP();
+
+    case IO_USERPTR:
+      return readFrameUP();
+	}
+  return -1;
+}
+
 void V4lCameraHandler::get(Image& theImage)
 {
+  /*
+  DEBUG_REQUEST("V4lCameraHandler:set_blocking_mode",
+    resetCamera2BlockingMode(theImage);
+  );
+  DEBUG_REQUEST("V4lCameraHandler:set_non_blocking_mode",
+    resetCamera2NonBlockingMode(theImage);
+  );
+  DEBUG_REQUEST("V4lCameraHandler:reset_camera",
+    resetCamera(theImage);
+  );*/
+
   if(isCapturing)
   {
-    //this is a HACK experimental
-    if(noBufferChangeCount > 20)
+    if(hadReset)
     {
-      theImage.bufferFailedCount++;
-      noBufferChangeCount = 0;
+      theImage.bufferFailedCount = 0;
+      theImage.wrongBufferSizeCount = 0;
     }
+
+    //try to reinitialize the camera device after some failed buffer switchings
+    if(noBufferChangeCount % currentSettings[currentCamera].data[CameraSettings::FPS] == 1)
+    {
+      if(!hadReset)
+      {
+        theImage.bufferFailedCount++;
+      }
+    }
+
+    /*
+    DEBUG_REQUEST("V4lCameraHandler:reset_test",
+      theImage.bufferFailedCount = 10;
+      );*/
 
     //STOPWATCH_START("ImageRetrieve");
     int resultCode = readFrame();
@@ -354,15 +816,22 @@ void V4lCameraHandler::get(Image& theImage)
     else
     {
       theImage.setCameraInfo(Platform::getInstance().theCameraInfo);
-      if(currentBuf.bytesused != theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL)
+      //if(currentBuf.bytesused != theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL)
+      if(currentBuf.bytesused < theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL)
       {
-        cout << "info: " << (theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
+        theImage.wrongBufferSizeCount++;
+//        cout << "wrong image buffer size: " << (theImage.cameraInfo.size * SIZE_OF_YUV422_PIXEL) << ", buffer: " << currentBuf.bytesused << "/" << currentBuf.length << endl;
       }
       else
       {
-        theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
-
-        //theImage.wrapImageDataYUV422((unsigned char*) buffers[resultCode].start, buffers[resultCode].length);
+        if(actMethodIO == IO_USERPTR)
+        {
+          theImage.wrapImageDataYUV422((unsigned char*) currentBuf.m.userptr, currentBuf.bytesused);
+        }
+        else
+        {
+          theImage.wrapImageDataYUV422((unsigned char*) buffers[currentBuf.index].start, currentBuf.bytesused);
+        }
         theImage.cameraInfo.cameraID = currentCamera;
         theImage.currentBuffer = currentBuf.index;
         theImage.bufferCount = n_buffers;
@@ -373,17 +842,21 @@ void V4lCameraHandler::get(Image& theImage)
       }
     }
   }
-
 }
 
 void V4lCameraHandler::stopCapturing()
 {
-  enum v4l2_buf_type type;
+  if(actMethodIO != Num_of_MethodIO)
+  {
+    if(actMethodIO != IO_READ)
+    {
+      enum v4l2_buf_type type;
 
-  type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+      type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-  VERIFY(-1 != ioctl(fd, VIDIOC_STREAMOFF, &type));
-
+      VERIFY(-1 != ioctl(fd, VIDIOC_STREAMOFF, &type));
+    }
+  }
   isCapturing = false;
 }
 
@@ -391,18 +864,35 @@ void V4lCameraHandler::uninitDevice()
 {
   unsigned int i;
 
-  for (i = 0; i < n_buffers; ++i)
-    if (-1 == munmap(buffers[i].start, buffers[i].length))
-      return;
+	switch (actMethodIO) 
+  {
+    case IO_READ:
+      free (buffers[0].start);
+      break;
 
-  free(buffers);
+    case IO_MMAP:
+      for (i = 0; i < n_buffers; ++i)
+      {
+        VERIFY(-1 != munmap(buffers[i].start, buffers[i].length))
+      }
+      break;
+
+    case IO_USERPTR:
+      for (i = 0; i < n_buffers; ++i)
+      {
+        free (buffers[i].start);
+      }
+      break;
+	}
+	free (buffers);
 }
 
 void V4lCameraHandler::closeDevice()
 {
   if (-1 == close(fd))
+  {
     return;
-
+  }
   fd = -1;
 }
 
@@ -449,13 +939,32 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
 
   struct v4l2_control control_s;
   control_s.id = id;
-  if (ioctl(fd, VIDIOC_G_CTRL, &control_s) < 0)
+
+  int errorOccured = -1;
+  int returnValue = -1;
+
+  std::cout << "Getting camera parameter (" << id << ") ";
+  for(int i = 0; i < 20 && errorOccured < 0; i++)
   {
-    std::cerr << "VIDIOC_G_CTRL failed" << std::endl;
-    return -1;
+    errorOccured = ioctl(fd, VIDIOC_G_CTRL, &control_s);
+    if(errorOccured < 0 && (errno == EBUSY))
+    {
+      usleep(10);
+      std::cout << ".";
+    }
+    else
+    {
+      hasIOError(errorOccured, errno, false);
+    }
+  }
+  std::cout << std::endl;
+
+  if(!hasIOError(errorOccured, errno, false))
+  {
+     returnValue = control_s.value;
   }
 
-  return control_s.value;
+  return returnValue;
 }
 
 int V4lCameraHandler::getSingleCameraParameterCheckFlip(int id, CameraInfo::CameraID camId)
@@ -503,23 +1012,40 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
   // clip value
   if (value < 0)
+  {
     value = queryctrl.default_value;
+  }
   if (value < queryctrl.minimum)
+  {
     value = queryctrl.minimum;
+  }
   if (value > queryctrl.maximum)
+  {
     value = queryctrl.maximum;
+  }
 
   struct v4l2_control control_s;
   control_s.id = id;
   control_s.value = value;
-  if (ioctl(fd, VIDIOC_S_CTRL, &control_s) < 0)
-  {
-    std::cerr << "VIDIOC_S_CTRL failed (" << errno << ": " <<
-      strerror(errno) << ")" << std::endl;
-    return false;
-  }
 
-  return true;
+  int errorOccured = -1;
+  std::cout << "setting camera parameter (" << id << ") ";
+  for(int i = 0; i < 20 && errorOccured < 0; i++)
+  {
+    errorOccured = ioctl(fd, VIDIOC_S_CTRL, &control_s);
+    if(errorOccured < 0 && (errno == EBUSY))
+    {
+      usleep(10);
+      std::cout << ".";
+    }
+    else
+    {
+      std::cout << std::endl;
+      return !hasIOError(errorOccured, errno, false);
+    }
+  }
+  std::cout << std::endl;
+  return !hasIOError(errorOccured, errno, false);
 }
 
 void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
@@ -607,3 +1133,44 @@ V4lCameraHandler::~V4lCameraHandler()
   closeDevice();
 }
 
+string V4lCameraHandler::getErrnoDescription(int err)
+{
+  switch (err)
+  {
+    case	EPERM		: return "Operation not permitted";
+    case	ENOENT	: return "No such file or directory";
+    case	ESRCH		: return "No such process";
+    case	EINTR		: return "Interrupted system call";
+    case	EIO		 	: return "I/O error";
+    case	ENXIO		: return "No such device or address";
+    case	E2BIG		: return "Argument list too long";
+    case	ENOEXEC	: return "Exec format error";
+    case	EBADF		: return "Bad file number";
+    case	ECHILD	: return "No child processes";
+    case	EAGAIN	: return "Try again";
+    case	ENOMEM	: return "Out of memory";
+    case	EACCES	: return "Permission denied";
+    case	EFAULT	: return "Bad address";
+    case	ENOTBLK	: return "Block device required";
+    case	EBUSY		: return "Device or resource busy";
+    case	EEXIST	: return "File exists";
+    case	EXDEV		: return "Cross-device link";
+    case	ENODEV	: return "No such device";
+    case	ENOTDIR	: return "Not a directory";
+    case	EISDIR	: return "Is a directory";
+    case	EINVAL	: return "Invalid argument";
+    case	ENFILE	: return "File table overflow";
+    case	EMFILE	: return "Too many open files";
+    case	ENOTTY	: return "Not a typewriter";
+    case	ETXTBSY	: return "Text file busy";
+    case	EFBIG		: return "File too large";
+    case	ENOSPC	: return "No space left on device";
+    case	ESPIPE	: return "Illegal seek";
+    case	EROFS		: return "Read-only file system";
+    case	EMLINK	: return "Too many links";
+    case	EPIPE		: return "Broken pipe";
+    case	EDOM		: return "Math argument out of domain of func";
+    case	ERANGE	: return "Math result not representable";
+  }
+  return "Unknown errorcode";
+}

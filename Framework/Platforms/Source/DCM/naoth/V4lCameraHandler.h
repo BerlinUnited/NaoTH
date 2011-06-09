@@ -32,6 +32,10 @@ extern "C"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 
+//#include "Tools/Debug/DebugRequest.h"
+//#include "Tools/Debug/Stopwatch.h"
+
+
 struct buffer
 {
   void * start;
@@ -50,8 +54,8 @@ struct buffer
  *
  */
  
-namespace naoth
-{
+ namespace naoth{
+ 
 class V4lCameraHandler
 {
 public:
@@ -66,15 +70,28 @@ public:
   void getCameraSettings(CameraSettings& data);
 
   virtual ~V4lCameraHandler();
+
+  void resetCamera(Image& theImage);
+  void resetCamera2BlockingMode(Image& theImage);
+  void resetCamera2NonBlockingMode(Image& theImage);
+
+
 private:
 
+  int xioctl(int fd, int request, void* arg);
+  bool hasIOError(int errOccured, int errNo, bool exitByIOError);
   void initIDMapping();
   void fastCameraSelection(CameraInfo::CameraID camId);
-  void openDevice();
+  void openDevice(bool blockingMode);
   void initDevice();
   void initMMap();
+  void initUP(unsigned int buffer_size);
+  void initRead(unsigned int buffer_size);
   void startCapturing();
   int readFrame();
+  int readFrameMMaP();
+  int readFrameUP();
+  int readFrameRead();
   void stopCapturing();
   void uninitDevice();
   void closeDevice();
@@ -87,11 +104,24 @@ private:
   void internalUpdateCameraSettings();
   void internalSetCameraSettings(const CameraSettings& data);
 
+  string getErrnoDescription(int err);
+
+  typedef enum
+  {
+    IO_READ,
+    IO_MMAP,
+    IO_USERPTR,
+    Num_of_MethodIO
+  } MethodIO;
+
+  MethodIO selMethodIO;
+  MethodIO actMethodIO;
+
   std::string cameraName;
 
   /** The camera file descriptor */
   int fd;
-  
+
   /** Image buffers (v4l2) */
   struct buffer* buffers;
   /** Buffer number counter */
@@ -100,8 +130,13 @@ private:
   struct v4l2_buffer currentBuf;
   struct v4l2_buffer lastBuf;
 
+  unsigned char* currentImage;
+
+  bool hadReset;
   bool wasQueried;
   bool isCapturing;
+  bool bufferSwitched;
+  bool blockingCaptureModeEnabled;
 
   int csConst[CameraSettings::numOfCameraSetting];
 
@@ -109,8 +144,10 @@ private:
   CameraInfo::CameraID currentCamera;
 
   unsigned int noBufferChangeCount;
+  unsigned int resetCameraCount;
 
 };
 
+} // namespace naoth
 #endif	/* _V4LCAMERAHANDLER_H */
-}
+
