@@ -113,6 +113,7 @@ public:
 
   T& data() { return theMemory->data; }
   
+  const T& data() const { return theMemory->data; }
   
   void close()
     {

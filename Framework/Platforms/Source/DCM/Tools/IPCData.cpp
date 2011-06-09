@@ -10,6 +10,21 @@
 
 using namespace naoth;
 
+string LibNaothData::getBodyID() const
+{
+  return string(bodyID);
+}
+
+string LibNaothData::getNickName() const
+{
+  return string(nickName);
+}
+
+void LibNaothData::get(MotorJointData& data) const
+{
+  data = theMotorJointData;
+}
+
 void LibNaothData::get(SensorJointData& data) const
 {
   unsigned int currentIndex = theSensorJointDataIndex;

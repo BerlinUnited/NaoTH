@@ -51,33 +51,38 @@ project "libnaoth"
      }
   targetname "naoth"
   
--- project "naoth"
-  -- kind "ConsoleApp"
-  -- language "C++"
+project "naoth"
+  kind "ConsoleApp"
+  language "C++"
   
-  -- print("Generating files for naoth")
+  print("Generating files for naoth")
 
-  -- libdirs { alDir .. "/lib/"}
+  libdirs { alDir .. "/lib/"}
 
-  -- includedirs {
-     -- "../Source/DCM", 
-     -- CORE_PATH,
-     -- "../../NaoTH-Tools/Source/",
-     -- alDir .. "/include/",
-     -- alDir .. "/include/alfactory/"
-  -- }
+  includedirs {
+     "../Source/DCM", 
+     CORE_PATH,
+     "../../NaoTH-Tools/Source/",
+     alDir .. "/include/",
+     alDir .. "/include/alfactory/"
+  }
 
-  -- links {CORE, 
-	 -- "NaoTH-Commons",
-	 -- "gthread-2.0", 
-	 -- "glib-2.0",
-	 -- "gio-2.0",
-	 -- "gobject-2.0",
-	 -- "protobuf", 
-	 -- "asound",
+  links {CORE, 
+	 "NaoTH-Commons",
+	 -- "almemoryfastaccess", 
+	 -- "alcommon",
+	 "gthread-2.0", 
+	 "glib-2.0",
+	 "gio-2.0",
+	 "z",
+	 "gmodule-2.0",
+	 "gobject-2.0",
+	 "protobuf", 
+	 "asound",
 	 -- "rttools"
-      -- }
+      }
 
-  -- files{"../Source/DCM/naoth/**.cpp", "../Source/DCM/naoth/**.h"}
-  -- targetname "naoth"
+  files{"../Source/DCM/naoth/**.cpp", "../Source/DCM/naoth/**.h",
+	"../Source/DCM/Tools/**.cpp", "../Source/DCM/Tools/**.h"}
+  targetname "naoth"
 -- END DCM

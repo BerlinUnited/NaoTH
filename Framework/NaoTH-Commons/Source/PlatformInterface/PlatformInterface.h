@@ -51,8 +51,8 @@ namespace naoth
 
     /////////////////////// get ///////////////////////
     virtual string getHardwareIdentity() const = 0;
-    virtual string getBodyID() = 0;
-    virtual string getBodyNickName() = 0;
+    virtual string getBodyID() const = 0;
+    virtual string getBodyNickName() const = 0;
 
     inline const string& getName() const { return platformName; }
     inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }

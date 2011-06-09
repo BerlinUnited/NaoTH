@@ -48,16 +48,6 @@ string NaoMotionController::getHardwareIdentity() const
   return Platform::getMACaddress("eth0");
 }
 
-string NaoMotionController::getBodyID()
-{
-  return theDCMHandler.getBodyID();
-}
-
-string NaoMotionController::getBodyNickName()
-{
-  return theDCMHandler.getBodyNickName();
-}
-
 void NaoMotionController::init(ALPtr<ALBroker> pB)
 {
   std::cout << "Init DCMHandler" << endl;

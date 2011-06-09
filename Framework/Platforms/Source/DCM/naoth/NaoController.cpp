@@ -15,8 +15,9 @@ using namespace naoth;
 NaoController::NaoController()
 : PlatformInterface<NaoController>("Nao", 10),
 theSoundHandler(NULL),
-currentAllSensorsValue(NULL),
-theMotorJointData(NULL)
+theLEDData(NULL),
+theIRSendData(NULL),
+theUltraSoundSendData(NULL)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -31,6 +32,7 @@ theMotorJointData(NULL)
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
+  registerInput<MotorJointData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -38,7 +40,22 @@ theMotorJointData(NULL)
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundPlayData>(*this);
-  registerOutput<const MotorJointData>(*this);
+  
+  std::cout << "Init CameraHandler" << endl;
+  theCameraHandler.init("/dev/video");
+  
+  std::cout << "Init SoundHandler" <<endl;
+  theSoundHandler = new SoundControl();
+  
+  std::cout << "Open Shared Memory"<<endl;
+  libNaothData.open("/libnaoth");
+  naothData.open("/naoth");
+  theLEDData = &(naothData.data().theLEDData);
+  theIRSendData = &(naothData.data().theIRSendData);
+  theUltraSoundSendData = &(naothData.data().theUltraSoundSendData);
+  
+  cout<<"Init Platform"<<endl;
+  Platform::getInstance().init(this);
 }
 
 NaoController::~NaoController()
@@ -54,33 +71,27 @@ string NaoController::getHardwareIdentity() const
   return Platform::getMACaddress("eth0");
 }
 
-string NaoController::getBodyID()
+string NaoController::getBodyID() const
 {
+  //libNaothData.lock(); // lock shared memory before reading
+  string bodyID(libNaothData.data().bodyID);
+  //libNaothData.unlock();
+  return bodyID;
 }
 
-string NaoController::getBodyNickName()
+string NaoController::getBodyNickName() const
 {
-  return theDCMHandler.getBodyNickName();
-}
-
-void NaoController::init()
-{
-  std::cout << "Init CameraHandler" << endl;
-  theCameraHandler.init("/dev/video");
-  std::cout << "Init SoundHandler" <<endl;
-  theSoundHandler = new SoundControl();
-  
-  std::cout << "Open Shared Memory"<<endl;
-  libNaothData.open("/libnaoth");
-  currentAllSensorsValue = libNaothData.data().currentAllSensorsValue;
-  theMotorJointData = &(libNaothData.data().theMotorJointData);
-  
-  Platform::getInstance().init(this);
+  //libNaothData.lock(); // lock shared memory before reading
+  string nickName(libNaothData.data().nickName);
+  //libNaothData.unlock();
+  return nickName;
 }
 
 void NaoController::get(unsigned int& timestamp)
 {
-  timestamp = theDCMHandler.getCurrentTimeStamp();
+  libNaothData.lock(); // lock shared memory before reading
+  timestamp = libNaothData.data().timeStamp;
+  libNaothData.unlock();
 }
 
 void NaoController::get(FrameInfo& data)
@@ -92,12 +103,16 @@ void NaoController::get(FrameInfo& data)
 
 void NaoController::get(SensorJointData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(AccelerometerData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(Image& data)
@@ -107,48 +122,65 @@ void NaoController::get(Image& data)
 
 void NaoController::get(GyrometerData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(FSRData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(InertialSensorData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(IRReceiveData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(ButtonData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(BatteryData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::get(UltraSoundReceiveData& data)
 {
-  theDCMHandler.get(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
-
-void NaoController::set(const MotorJointData& data)
+void NaoController::get(MotorJointData& data)
 {
-  theDCMHandler.set(data);
+  libNaothData.lock(); // lock shared memory before reading
+  libNaothData.data().get(data);
+  libNaothData.unlock();
 }
 
 void NaoController::set(const LEDData& data)
 {
-  theDCMHandler.set(data);
+  naothData.lock(); // lock shared memory before writing
+  *theLEDData = data;
+  naothData.unlock();
 }
 
 void NaoController::set(const CameraSettingsRequest& data)
@@ -163,26 +195,19 @@ void NaoController::get(CurrentCameraSettings& data)
 
 void NaoController::set(const IRSendData& data)
 {
-  theDCMHandler.set(data);
+  naothData.lock(); // lock shared memory before writing
+  *theIRSendData = data;
+  naothData.unlock();
 }
 
 void NaoController::set(const UltraSoundSendData& data)
 {
-  theDCMHandler.set(data);
+  naothData.lock(); // lock shared memory before writing
+  *theUltraSoundSendData = data;
+  naothData.unlock();
 }
 
 void NaoController::set(const SoundPlayData& data)
 {
   theSoundHandler->setSoundData(data);
-}
-
-void NaoController::updateSensorData()
-{
-//  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
-  theDCMHandler.readSensorData();
-}
-
-void NaoController::setActuatorData()
-{
-  theDCMHandler.sendActuatorData();
 }

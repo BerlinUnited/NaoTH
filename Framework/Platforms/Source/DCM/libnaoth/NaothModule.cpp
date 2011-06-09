@@ -58,7 +58,6 @@ std::string NaothModule::version()
   return std::string(NAOTH_VERSION);
 }
 
-
 void NaothModule::init()
 {
   if (!g_thread_supported())

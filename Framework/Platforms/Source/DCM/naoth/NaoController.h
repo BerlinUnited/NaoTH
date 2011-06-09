@@ -13,33 +13,23 @@
 #include "PlatformInterface/PlatformInterface.h"
 #include "V4lCameraHandler.h"
 #include "Tools/IPCData.h"
+#include "Tools/SharedMemory.h"
 
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Tools/DataStructures/Singleton.h>
 
 namespace naoth
 {
-class NaoController : public PlatformInterface<NaoController>, public Singleton<NaoController>
+class NaoController : public PlatformInterface<NaoController>
 {
-protected:
-  friend class Singleton<NaoController>;
+public:
   NaoController();
   virtual ~NaoController();
-  
-public:
 
   virtual string getHardwareIdentity() const;
 
-  virtual string getBodyID();
+  virtual string getBodyID() const;
 
-  virtual string getBodyNickName();
-
-  /////////////////////// init ///////////////////////
-  void init();
-
-  /////////////////////// run ///////////////////////
-  void updateSensorData();
-  void setActuatorData();
+  virtual string getBodyNickName() const;
 
 public:
   virtual void get(unsigned int& timestamp);
@@ -86,9 +76,10 @@ private:
   SoundControl *theSoundHandler;
   
   SharedMemory<LibNaothData> libNaothData;
-  float* currentAllSensorsValue;
-  MotorJointData* theMotorJointData;
-  
+  SharedMemory<NaothData> naothData;
+  LEDData* theLEDData;
+  IRSendData* theIRSendData;
+  UltraSoundSendData* theUltraSoundSendData;
 };
 
 } // end namespace naoth

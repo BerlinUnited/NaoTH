@@ -43,6 +43,9 @@ namespace naoth
     float sensorsValue[numOfSensors];
     MotorJointData theMotorJointData;
     
+    string getBodyID() const;
+    string getNickName() const;
+    void get(MotorJointData& data) const;
     void get(SensorJointData& data) const;
     void get(FSRData& data) const;
     void get(AccelerometerData& data) const;

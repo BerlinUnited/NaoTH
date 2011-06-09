@@ -28,9 +28,9 @@ public:
 
   virtual string getHardwareIdentity() const;
 
-  virtual string getBodyID();
+  virtual string getBodyID() const { return libNaothData.data().getBodyID(); }
 
-  virtual string getBodyNickName();
+  virtual string getBodyNickName() const { return libNaothData.data().getBodyID(); }
 
   /////////////////////// init ///////////////////////
   void init(ALPtr<ALBroker> pB);
