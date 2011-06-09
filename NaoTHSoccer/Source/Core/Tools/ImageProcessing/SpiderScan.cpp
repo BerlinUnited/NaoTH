@@ -11,50 +11,50 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorTable64& theColorTable64)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier)
 :
 theImage(theImage),
-theColorTable64(theColorTable64)
+theColorClassifier(theColorClassifier)
 {
   searchColors = vector<ColorClasses::Color>(1, ColorClasses::numOfColors);
   borderColors = vector<ColorClasses::Color>(1, ColorClasses::green);
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, ColorClasses::Color searchColor)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, ColorClasses::Color searchColor)
 :
 theImage(theImage),
-theColorTable64(theColorTable64)
+theColorClassifier(theColorClassifier)
 {
   searchColors = vector<ColorClasses::Color>(1, searchColor);
   borderColors = vector<ColorClasses::Color>(1, ColorClasses::numOfColors);
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, vector<ColorClasses::Color>& searchColors)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, vector<ColorClasses::Color>& searchColors)
 :
 theImage(theImage),
-theColorTable64(theColorTable64),
+theColorClassifier(theColorClassifier),
 searchColors(searchColors)
 {
   borderColors = vector<ColorClasses::Color>(1, ColorClasses::numOfColors);
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, ColorClasses::Color searchColor, ColorClasses::Color borderColor)
 :
 theImage(theImage),
-theColorTable64(theColorTable64)
+theColorClassifier(theColorClassifier)
 {
   searchColors = vector<ColorClasses::Color>(1, searchColor);
   borderColors = vector<ColorClasses::Color>(1, borderColor);
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors)
 :
 theImage(theImage),
-theColorTable64(theColorTable64),
+theColorClassifier(theColorClassifier),
 searchColors(searchColors),
 borderColors(borderColors)
 {
@@ -212,7 +212,7 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
     ////////////////////////////////
 
     Pixel pixel = theImage.get(currentPoint.x,currentPoint.y);
-    ColorClasses::Color currentPixelColor = theColorTable64.getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = theColorClassifier.getColorClass(pixel);
 
 //    bool hasColor = (currentPixelColor == searchColor) || (searchColor == ColorClasses::numOfColors && currentPixelColor != borderColor);
     bool hasColor = isSearchColor(currentPixelColor) || (searchColors[0] == ColorClasses::numOfColors && !isBorderColor(currentPixelColor));

@@ -33,6 +33,8 @@ ImageProcessor::ImageProcessor()
   DEBUG_REQUEST_REGISTER("ImageProcessor:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
 
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
+
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
@@ -128,5 +130,30 @@ void ImageProcessor::execute()
     );
   }
 
+
+
+
+
+
+
+
+  DEBUG_REQUEST("ImageProcessor:classify_ball_color",
+    // color experiment
+    for(unsigned int x = 0; x < getImage().cameraInfo.resolutionWidth; x++)
+    {
+      for(unsigned int y = 0; y < getImage().cameraInfo.resolutionHeight; y++)
+      {
+        Pixel pixel = getImage().get(x,y);
+
+        double d = (Math::sqr((255.0 - (double)pixel.u)) + Math::sqr((double)pixel.v)) / (2.0*255.0);
+        unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
+        
+        if(t > 120)
+          naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
+        else
+          naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,t,0,0);
+      }//end for
+    }//end for
+  );
 }//end execute
 

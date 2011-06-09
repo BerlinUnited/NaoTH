@@ -41,6 +41,10 @@ void Actuator::execute()
   Serializer<HeadMotionRequest>::serialize(getHeadMotionRequest(), hmmsg);
   theHeadMotionRequestWriter->write(hmmsg.str());
   
+
+  // HACK: copy the time to indicate which motion status this request ist depending on (needed by motion)
+  getMotionRequest().time = getMotionStatus().time;
+
   stringstream mrmsg;
   Serializer<MotionRequest>::serialize(getMotionRequest(), mrmsg);
   theMotionRequestWriter->write(mrmsg.str());
