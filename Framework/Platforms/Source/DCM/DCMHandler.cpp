@@ -593,19 +593,6 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
 
 void DCMHandler::initAllSensorData()
 {
-  int numElements = 4 * (JointData::numOfJoint - 1)
-                  + FSRData::numOfFSR
-                  + AccelerometerData::numOfAccelerometer
-                  + GyrometerData::numOfGyrometer + 1
-                  + InertialSensorData::numOfInertialSensor
-                  + IRReceiveData::numOfIRReceive
-                  + ButtonData::numOfButtons
-                  + 1 + 2 * UltraSoundData::numOfIRSend//3 // ultrasound
-                  + 1; // ???
-
-  allSensorsList.resize(numElements);
-  currentAllSensorsValue.resize(numElements);
-  
   int currentIndex=0;
 
   //SensorJointData
@@ -682,9 +669,9 @@ void DCMHandler::initAllSensorData()
 
   //connect variables
   //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
-  for(TStringArray::const_iterator iter=allSensorsList.begin(); iter!=allSensorsList.end(); ++iter)
+  for(int i=0; i<numOfSensors; i++)
   {
-    sensorPtrs.push_back((float*)al_memoryfast.getDataPtr(pBroker, *iter, false));
+    sensorPtrs[i] = (float*)al_memoryfast.getDataPtr(pBroker, allSensorsList[i], false);
   }
 }
 
@@ -692,7 +679,7 @@ void DCMHandler::getData()
 {
   currentTimestamp = al_dcmproxy->getTime(time_delay);
   //al_memoryfast.GetValues(currentAllSensorsValue);
-  for(int i=0; i<sensorPtrs.size(); i++)
+  for(int i=0; i<numOfSensors; i++)
   {
     currentAllSensorsValue[i] = *(sensorPtrs[i]);
   }

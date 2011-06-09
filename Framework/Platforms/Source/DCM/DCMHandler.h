@@ -37,7 +37,16 @@ using namespace std;
 
 namespace naoth 
 {
-
+  const int numOfSensors = 4 * (JointData::numOfJoint - 1)
+                  + FSRData::numOfFSR
+                  + AccelerometerData::numOfAccelerometer
+                  + GyrometerData::numOfGyrometer + 1
+                  + InertialSensorData::numOfInertialSensor
+                  + IRReceiveData::numOfIRReceive
+                  + ButtonData::numOfButtons
+                  + 1 + 2 * UltraSoundData::numOfIRSend//3 // ultrasound
+                  + 1; // BatteryCharge
+                  
 class DCMHandler
 {
   private:
@@ -45,7 +54,7 @@ class DCMHandler
     ALPtr<ALMemoryProxy> al_memory;
     ALMemoryFastAccess al_memoryfast;
     DCMProxy * al_dcmproxy;
-     
+    
     //Joints
     string DCMPath_MotorJointHardness[JointData::numOfJoint];
     string DCMPath_MotorJointPosition[JointData::numOfJoint];
@@ -98,11 +107,10 @@ class DCMHandler
     ALValue irCommands;
     ALValue usSendCommands;
 
-    TStringArray allSensorsList;
-
-    std::vector<float*> sensorPtrs;
-
-    TFloatArray currentAllSensorsValue;
+    string allSensorsList[numOfSensors];
+    float* sensorPtrs[numOfSensors];
+    float currentAllSensorsValue[numOfSensors];
+    
     unsigned int currentTimestamp;
 
     // index
