@@ -21,34 +21,22 @@
 #include <alproxies/alledsproxy.h>
 #include <alproxies/dcmproxy.h>
 
-#include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/FSRData.h"
-#include "Representations/Infrastructure/LEDData.h"
 #include "Representations/Infrastructure/AccelerometerData.h"
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Infrastructure/ButtonData.h"
-#include "Representations/Infrastructure/IRData.h"
-#include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 
 #include "SharedMemory.h"
+#include "IPCData.h"
 
 using namespace AL;
 using namespace std;
 
 namespace naoth 
 {
-  const int numOfSensors = 4 * (JointData::numOfJoint - 1)
-                  + FSRData::numOfFSR
-                  + AccelerometerData::numOfAccelerometer
-                  + GyrometerData::numOfGyrometer + 1
-                  + InertialSensorData::numOfInertialSensor
-                  + IRReceiveData::numOfIRReceive
-                  + ButtonData::numOfButtons
-                  + 1 + 2 * UltraSoundData::numOfIRSend//3 // ultrasound
-                  + 1; // BatteryCharge
-                  
+ 
 class DCMHandler
 {
   private:
@@ -112,23 +100,12 @@ class DCMHandler
     string allSensorsList[numOfSensors];
     float* sensorPtrs[numOfSensors];
     
-    struct LibNaothData
-    {
-      float currentAllSensorsValue[numOfSensors];
-      MotorJointData theMotorJointData;
-    };
     SharedMemory<LibNaothData> libNaothData;
     float* currentAllSensorsValue;
     
     // Actuators data
     MotorJointData* theMotorJointData;
     
-    struct NaothData
-    {
-      LEDData theLEDData;
-      IRSendData theIRSendData;
-      UltraSoundSendData theUltraSoundSendData;
-    };
     SharedMemory<NaothData> naothData;
     LEDData* theLEDData;
     IRSendData* theIRSendData;

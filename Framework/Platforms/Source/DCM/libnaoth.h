@@ -38,6 +38,5 @@
 /** Release date */
 #define NAOTH_VERSION_DATE     "20100406"
 
-
 #endif	/* _LIB_NAOTH_H */
 
