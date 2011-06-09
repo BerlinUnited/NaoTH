@@ -17,7 +17,8 @@ using namespace naoth;
 WebotsController::WebotsController()
   : 
     PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
-    key(0)
+    key(0),
+    currentStiffness()
 {
   wb_robot_init();
   get_Devices();

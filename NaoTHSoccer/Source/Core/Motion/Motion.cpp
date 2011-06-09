@@ -219,10 +219,10 @@ void Motion::changeMotion(AbstractMotion* m)
 
 bool Motion::exit()
 {
-  theBlackBoard.theMotionRequest.id = motion::INIT;
+  theBlackBoard.theMotionRequest.id = motion::init;
   theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
   
   return (theBlackBoard.currentlyExecutedMotion != NULL)
-    && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::INIT)
+    && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
     && ( theBlackBoard.currentlyExecutedMotion->isFinished() );
 }//end exit

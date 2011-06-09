@@ -10,7 +10,7 @@
 
 InitialMotion::InitialMotion() 
   :
-  AbstractMotion(motion::INIT),
+  AbstractMotion(motion::init),
   initStatus(Dead),
   movedTime(0)
 {
