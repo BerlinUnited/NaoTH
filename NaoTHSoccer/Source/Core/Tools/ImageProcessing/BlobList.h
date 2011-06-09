@@ -12,10 +12,11 @@
 #include <Tools/Math/Moments2.h>
 #include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Container.h>
 
 #include "Blob.h"
 
-class BlobList : public Printable
+class BlobList : public Printable, public Container<Blob>
 {
 public:
   BlobList()

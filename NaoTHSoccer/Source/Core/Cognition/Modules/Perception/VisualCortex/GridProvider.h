@@ -27,7 +27,7 @@
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
 
   PROVIDE(ColoredGrid)
   PROVIDE(Histogram)
@@ -47,7 +47,39 @@ public:
   void execute();
 
 private:
+  class SimpleColorClassifier: public ColorClassifier
+{
+public:
+  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  {
+    return get(a, b, c);
+  }
+
+  inline ColorClasses::Color getColorClass(const Pixel& p) const
+  {
+    return get(p.a, p.b, p.c);
+  }
+
+  inline ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  {
+    double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
+    unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
+
+    if(t > 120)
+      return ColorClasses::orange;
+    else
+      return ColorClasses::none;
+  }//end get
+};
+
   void calculateColoredGrid();
+
+  const SimpleColorClassifier simpleColorClassifier;
+
+  const ColorClassifier& getColorTable64() const
+  {
+    return simpleColorClassifier;
+  }
 };
 
 #endif //__GridProvider_h_
