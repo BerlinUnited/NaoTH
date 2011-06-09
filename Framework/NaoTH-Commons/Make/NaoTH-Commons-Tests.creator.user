@@ -304,7 +304,7 @@
 		<value key="ProjectExplorer.Target.BuildConfigurationCount" type="int">6</value>
 		<valuemap key="ProjectExplorer.Target.RunConfiguration.0" type="QVariantMap">
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.Executable" type="QString">../../../NaoTHSoccer/dist/Native/testCommons</value>
-			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">true</value>
+			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">false</value>
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory" type="QString">%{buildDir}</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">execute ../../../NaoTHSoccer/dist/Native/testCommons</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">OptDebug</value>
@@ -314,7 +314,7 @@
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.RunConfiguration.1" type="QVariantMap">
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.Executable" type="QString">../../../NaoTHSoccer/dist/Native/testCommons</value>
-			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">true</value>
+			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">false</value>
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory" type="QString">%{buildDir}</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">execute ../../../NaoTHSoccer/dist/Native/testCommons</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Debug</value>
@@ -324,7 +324,7 @@
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.RunConfiguration.2" type="QVariantMap">
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.Executable" type="QString">../../../NaoTHSoccer/dist/Native/testCommons</value>
-			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">true</value>
+			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">false</value>
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory" type="QString">%{buildDir}</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">execute ../../../NaoTHSoccer/dist/Native/testCommons</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Release</value>
@@ -334,7 +334,7 @@
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.RunConfiguration.3" type="QVariantMap">
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.Executable" type="QString">../../../NaoTHSoccer/dist/Nao/testCommons</value>
-			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">true</value>
+			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">false</value>
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory" type="QString">%{buildDir}</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">execute ../../../NaoTHSoccer/dist/Nao/testCommons</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">OptDebug|Nao</value>
@@ -344,7 +344,7 @@
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.RunConfiguration.4" type="QVariantMap">
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.Executable" type="QString">../../../NaoTHSoccer/dist/Nao/testCommons</value>
-			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">true</value>
+			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">false</value>
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory" type="QString">%{buildDir}</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">execute ../../../NaoTHSoccer/dist/Nao/testCommons</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Debug|Nao</value>
@@ -354,7 +354,7 @@
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.RunConfiguration.5" type="QVariantMap">
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.Executable" type="QString">../../../NaoTHSoccer/dist/Nao/testCommons</value>
-			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">true</value>
+			<value key="ProjectExplorer.CustomExecutableRunConfiguration.UseTerminal" type="bool">false</value>
 			<value key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory" type="QString">%{buildDir}</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">execute ../../../NaoTHSoccer/dist/Nao/testCommons</value>
 			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Release|Nao</value>
