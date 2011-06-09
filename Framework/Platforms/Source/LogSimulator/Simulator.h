@@ -46,9 +46,9 @@ public:
 
   virtual string getHardwareIdentity() const { return "logsimulator"; }
 
-  virtual string getBodyID() { return "naoth-logsimulator"; }
+  virtual string getBodyID() const { return "naoth-logsimulator"; }
 
-  virtual string getBodyNickName() {return "naoth"; }
+  virtual string getBodyNickName() const {return "naoth"; }
 
   void main();
   void printHelp();

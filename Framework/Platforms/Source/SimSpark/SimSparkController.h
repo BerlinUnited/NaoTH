@@ -93,12 +93,12 @@ public:
 
   virtual string getHardwareIdentity() const { return "simspark"; }
 
-  virtual string getBodyID() { return "naoth-simspark"; }
+  virtual string getBodyID() const { return "naoth-simspark"; }
 
   /* return the team name
    *  it is useful for distinguishing players from different teams in VirtualVision
    */
-  virtual string getBodyNickName() {return theTeamName; }
+  virtual string getBodyNickName() const {return theTeamName; }
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);

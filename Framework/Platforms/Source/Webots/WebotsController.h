@@ -91,9 +91,9 @@ namespace naoth
 
     virtual string getHardwareIdentity() const { return "webots"; }
 
-    virtual string getBodyID() { return "naoth-webots"; }
+    virtual string getBodyID() const { return "naoth-webots"; }
 
-    virtual string getBodyNickName() {return "naoth"; }
+    virtual string getBodyNickName() const {return "naoth"; }
 
     virtual void getCognitionInput();
 
