@@ -7,6 +7,7 @@
 */
 #include "NaothModule.h"
 #include "PlatformInterface/Platform.h"
+#include "libnaoth.h"
 
 using namespace naoth;
 

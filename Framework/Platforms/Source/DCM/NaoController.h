@@ -9,7 +9,6 @@
 #ifndef _NAOCONTROLLER_H
 #define	_NAOCONTROLLER_H
 
-#include "naoth.h"
 #include "DCMHandler.h"
 #include "SoundControl.h"
 #include "PlatformInterface/PlatformInterface.h"
@@ -24,7 +23,7 @@ class NaoController : public PlatformInterface<NaoController>, public Singleton<
 {
 protected:
   friend class Singleton<NaoController>;
-  NaoController();  
+  NaoController();
   virtual ~NaoController();
   
 public:

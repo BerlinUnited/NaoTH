@@ -32,6 +32,8 @@
 #include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 
+#include "SharedMemory.h"
+
 using namespace AL;
 using namespace std;
 
@@ -109,13 +111,28 @@ class DCMHandler
 
     string allSensorsList[numOfSensors];
     float* sensorPtrs[numOfSensors];
-    float currentAllSensorsValue[numOfSensors];
+    
+    struct LibNaothData
+    {
+      float currentAllSensorsValue[numOfSensors];
+      MotorJointData theMotorJointData;
+    };
+    SharedMemory<LibNaothData> libNaothData;
+    float* currentAllSensorsValue;
     
     // Actuators data
-    MotorJointData theMotorJointData;
-    LEDData theLEDData;
-    IRSendData theIRSendData;
-    UltraSoundSendData theUltraSoundSendData;
+    MotorJointData* theMotorJointData;
+    
+    struct NaothData
+    {
+      LEDData theLEDData;
+      IRSendData theIRSendData;
+      UltraSoundSendData theUltraSoundSendData;
+    };
+    SharedMemory<NaothData> naothData;
+    LEDData* theLEDData;
+    IRSendData* theIRSendData;
+    UltraSoundSendData* theUltraSoundSendData;
     
     unsigned int currentTimestamp;
 
@@ -176,10 +193,10 @@ public:
     void get(UltraSoundReceiveData& data) const;
     void get(BatteryData& data) const;
     
-    void set(const MotorJointData& data) { theMotorJointData = data; }
-    void set(const LEDData& data) { theLEDData = data; }
-    void set(const IRSendData& data) { theIRSendData = data; }
-    void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; }
+    void set(const MotorJointData& data) { (*theMotorJointData) = data; }
+    void set(const LEDData& data) { *theLEDData = data; }
+    void set(const IRSendData& data) { *theIRSendData = data; }
+    void set(const UltraSoundSendData& data) { *theUltraSoundSendData = data; }
 
     unsigned int getCurrentTimeStamp() const { return currentTimestamp; }
 

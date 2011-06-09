@@ -3,7 +3,12 @@
 
 using namespace naoth;
 
-DCMHandler::DCMHandler()
+DCMHandler::DCMHandler():
+currentAllSensorsValue(NULL),
+theMotorJointData(NULL),
+theLEDData(NULL),
+theIRSendData(NULL),
+theUltraSoundSendData(NULL)
 {}
 
 DCMHandler::~DCMHandler()
@@ -24,6 +29,16 @@ void DCMHandler::init(ALPtr<ALBroker> pB)
   catch(ALError e) {
     std::cerr << "Failed to init DCMHandler: " << e.toString() << endl;
   }
+  
+  // init shared memory
+  libNaothData.open("/libnaoth");
+  currentAllSensorsValue = libNaothData.data().currentAllSensorsValue;
+  theMotorJointData = &(libNaothData.data().theMotorJointData);
+  
+  naothData.open("/naoth");
+  theLEDData = &(naothData.data().theLEDData);
+  theIRSendData = &(naothData.data().theIRSendData);
+  theUltraSoundSendData = &(naothData.data().theUltraSoundSendData);
 
   //Generate all strings for interaction
   initFSR();
@@ -848,8 +863,8 @@ void DCMHandler::get(BatteryData& data) const
 
 void DCMHandler::sendActuatorData()
 {
-  setAllMotorData(theMotorJointData);
-  setLED(theLEDData);
-  setIRSend(theIRSendData);
-  setUltraSoundSend(theUltraSoundSendData);
+  setAllMotorData(*theMotorJointData);
+  setLED(*theLEDData);
+  setIRSend(*theIRSendData);
+  setUltraSoundSend(*theUltraSoundSendData);
 }
