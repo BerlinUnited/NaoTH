@@ -1,0 +1,4 @@
+../Tests/google_test.cpp
+../Tests/Tools/Communication/ASCIIEncoderTest.cpp
+../Tests/Tools/Math/Vector2Test.cpp
+../Tests/Tools/Math/Pose2DTest.cpp
