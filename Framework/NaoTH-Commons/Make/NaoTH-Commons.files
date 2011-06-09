@@ -22,6 +22,7 @@
 ../Source/DebugCommunication/DebugServer.cpp
 ../Source/Tools/NaoTime.cpp
 ../Source/Tools/NaoInfo.cpp
+../Source/Tools/Communication/MessageQueue.cpp
 ../Source/Tools/Communication/SerialPort/Serial.cpp
 ../Source/Tools/Kinematics/Link.cpp
 ../Source/Tools/DataStructures/ParameterList.cpp
@@ -70,6 +71,7 @@
 ../Source/Tools/Communication/RoboCupGameControlData.h
 ../Source/Tools/Communication/DummyBidirectionCommunicator.h
 ../Source/Tools/Communication/BidirectionalCommunicator.h
+../Source/Tools/Communication/MessageQueue.h
 ../Source/Tools/Communication/CommunicationCollection.h
 ../Source/Tools/Communication/ASCIIEncoder.h
 ../Source/Tools/Communication/SerialPort/Serial.h
@@ -81,6 +83,7 @@
 ../Source/Tools/ImageProcessing/ImagePrimitives.h
 ../Source/Tools/DataStructures/Serializer.h
 ../Source/Tools/DataStructures/Area.h
+../Source/Tools/DataStructures/Container.h
 ../Source/Tools/DataStructures/ParameterList.h
 ../Source/Tools/DataStructures/Singleton.h
 ../Source/Tools/DataStructures/Printable.h

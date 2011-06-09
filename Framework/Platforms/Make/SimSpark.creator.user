@@ -1,10 +1,6 @@
 <!DOCTYPE QtCreatorProject>
 <qtcreator>
 <data>
-	<variable>GenericProjectManager.GenericProject.Toolchain</variable>
-	<value type="QString">ProjectExplorer.ToolChain.Gcc:/usr/bin/g++.x86-linux-generic-elf-64bit.</value>
-</data>
-<data>
 	<variable>ProjectExplorer.Project.EditorSettings</variable>
 	<valuemap type="QVariantMap">
 		<value key="EditorConfiguration.UseGlobal" type="bool">true</value>

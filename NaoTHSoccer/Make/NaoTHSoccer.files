@@ -19,6 +19,8 @@
 ../Source/Core/Cognition/Modules/Infrastructure/Debug/StopwatchSender.h
 ../Source/Core/Cognition/Modules/Infrastructure/Debug/ParameterListDebugLoader.h
 ../Source/Core/Cognition/Modules/Infrastructure/Debug/Debug.h
+../Source/Core/Cognition/Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h
+../Source/Core/Cognition/Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h
 ../Source/Core/Cognition/Modules/Perception/VisualCortex/ImageProcessor.h
 ../Source/Core/Cognition/Modules/Perception/VisualCortex/GridProvider.h
 ../Source/Core/Cognition/Modules/Perception/VisualCortex/ObjectDetectors/BallDetector.h
@@ -31,13 +33,13 @@
 ../Source/Core/Tools/ImageProcessing/BlobFinder.h
 ../Source/Core/Tools/ImageProcessing/BlobList.h
 ../Source/Core/Tools/ImageProcessing/Histogram.h
+../Source/Core/Tools/ImageProcessing/ColorClassifier.h
 ../Source/Core/Tools/ImageProcessing/SpiderScan.h
 ../Source/Core/Tools/ImageProcessing/Grid/GridCreator.h
 ../Source/Core/Tools/ImageProcessing/Grid/UniformGrid.h
 ../Source/Core/Tools/ImageProcessing/Grid/Grid.h
 ../Source/Core/Tools/DataStructures/ArrayQueue.h
 ../Source/Core/Tools/Packages/PackageLoader.h
-../Source/Core/Tools/SwapSpace/SwapSpace.h
 ../Source/Core/Tools/Debug/DebugDrawings3D.h
 ../Source/Core/Tools/Debug/DebugDrawings.h
 ../Source/Core/Tools/Debug/DebugRequest.h
@@ -75,11 +77,13 @@
 ../Source/Core/Motion/Engine/InitialMotion/InitialMotion.h
 ../Source/Core/Motion/Engine/InitialMotion/DeadMotion.h
 ../Source/Core/Motion/Engine/HeadMotion/HeadMotionEngine.h
+../Source/Core/Representations/Modeling/OdometryData.cpp
 ../Source/Core/Representations/Modeling/KinematicChain.cpp
 ../Source/Core/Representations/Modeling/SupportPolygon.cpp
 ../Source/Core/Representations/Infrastructure/ColorTable64.cpp
 ../Source/Core/Representations/Infrastructure/FieldInfo.cpp
 ../Source/Core/Representations/Infrastructure/SerialSensorData.cpp
+../Source/Core/Representations/Motion/MotionStatus.cpp
 ../Source/Core/Representations/Motion/Request/MotionRequest.cpp
 ../Source/Core/Representations/Motion/Request/WalkRequest.cpp
 ../Source/Core/Representations/Motion/Request/HeadMotionRequest.cpp
@@ -91,6 +95,8 @@
 ../Source/Core/Cognition/Modules/Infrastructure/Debug/StopwatchSender.cpp
 ../Source/Core/Cognition/Modules/Infrastructure/Debug/ParameterListDebugLoader.cpp
 ../Source/Core/Cognition/Modules/Infrastructure/Debug/Debug.cpp
+../Source/Core/Cognition/Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.cpp
+../Source/Core/Cognition/Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.cpp
 ../Source/Core/Cognition/Modules/Perception/VisualCortex/ImageProcessor.cpp
 ../Source/Core/Cognition/Modules/Perception/VisualCortex/GridProvider.cpp
 ../Source/Core/Cognition/Modules/Perception/VisualCortex/ObjectDetectors/BallDetector.cpp
@@ -100,7 +106,6 @@
 ../Source/Core/Tools/ImageProcessing/BlobFinder.cpp
 ../Source/Core/Tools/ImageProcessing/Grid/GridCreator.cpp
 ../Source/Core/Tools/Packages/PackageLoader.cpp
-../Source/Core/Tools/SwapSpace/SwapSpace.cpp
 ../Source/Core/Tools/Debug/Logger.cpp
 ../Source/Core/Tools/Debug/DebugDrawings3D.cpp
 ../Source/Core/Tools/Debug/DebugRequest.cpp
