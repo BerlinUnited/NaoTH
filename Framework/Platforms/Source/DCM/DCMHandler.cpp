@@ -10,12 +10,7 @@ DCMHandler::~DCMHandler()
 {}
 
 void DCMHandler::init(ALPtr<ALBroker> pB)
-{
-  theMotorJointDataRequested = false;
-  theLEDDataRequested = false;
-  theIRSendDataRequested = false;
-  theUltraSoundSendDataRequested = false;
-  
+{  
   pBroker = pB;
 
   time_delay = 0;
@@ -380,8 +375,8 @@ void DCMHandler::initLED()
 }
 
 void DCMHandler::setLED(const LEDData& data)
-{  
-
+{
+  if ( !data.change ) return;
   
   ledCommands[4][0] = al_dcmproxy->getTime(time_delay);
 
@@ -507,13 +502,15 @@ void DCMHandler::initIRSend()
   }
 }
 
-void DCMHandler::setIRSend(const IRSendData& theIRSendData)
+void DCMHandler::setIRSend(const IRSendData& data)
 {
+  if ( !data.changed ) return;
+  
   irCommands[4][0] = al_dcmproxy->getTime(time_delay);
 
   for(int i=0;i<IRSendData::numOfIRSend;i++)
   {
-    irCommands[5][i][0] = theIRSendData.data[i];
+    irCommands[5][i][0] = data.data[i];
   }
   try
   {
@@ -851,27 +848,8 @@ void DCMHandler::get(BatteryData& data) const
 
 void DCMHandler::sendActuatorData()
 {
-  if ( theMotorJointDataRequested )
-  {
-    setAllMotorData(theMotorJointData);
-    theMotorJointDataRequested = false;
-  }
-  
-  if ( theLEDDataRequested )
-  {
-    setLED(theLEDData);
-    theLEDDataRequested = false;
-  }
-  
-  if ( theIRSendDataRequested )
-  {
-    setIRSend(theIRSendData);
-    theIRSendDataRequested = false;
-  }
-  
-  if ( theUltraSoundSendDataRequested )
-  {
-    setUltraSoundSend(theUltraSoundSendData);
-    theUltraSoundSendDataRequested = false;
-  }
+  setAllMotorData(theMotorJointData);
+  setLED(theLEDData);
+  setIRSend(theIRSendData);
+  setUltraSoundSend(theUltraSoundSendData);
 }

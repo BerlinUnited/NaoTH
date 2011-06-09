@@ -112,13 +112,9 @@ class DCMHandler
     float currentAllSensorsValue[numOfSensors];
     
     // Actuators data
-    bool theMotorJointDataRequested;
     MotorJointData theMotorJointData;
-    bool theLEDDataRequested;
     LEDData theLEDData;
-    bool theIRSendDataRequested;
     IRSendData theIRSendData;
-    bool theUltraSoundSendDataRequested;
     UltraSoundSendData theUltraSoundSendData;
     
     unsigned int currentTimestamp;
@@ -180,10 +176,10 @@ public:
     void get(UltraSoundReceiveData& data) const;
     void get(BatteryData& data) const;
     
-    void set(const MotorJointData& data) { theMotorJointData = data; theMotorJointDataRequested = true; }
-    void set(const LEDData& data) { theLEDData = data; theLEDDataRequested = true; }
-    void set(const IRSendData& data) { theIRSendData = data; theIRSendDataRequested = true; }
-    void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; theUltraSoundSendDataRequested = true; }
+    void set(const MotorJointData& data) { theMotorJointData = data; }
+    void set(const LEDData& data) { theLEDData = data; }
+    void set(const IRSendData& data) { theIRSendData = data; }
+    void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; }
 
     unsigned int getCurrentTimeStamp() const { return currentTimestamp; }
 

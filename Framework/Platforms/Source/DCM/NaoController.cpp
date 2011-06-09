@@ -145,11 +145,7 @@ void NaoController::set(const MotorJointData& data)
 
 void NaoController::set(const LEDData& data)
 {
-  if (data.change)
-  {
-    theDCMHandler.set(data);
-    data.change = false;
-  }
+  theDCMHandler.set(data);
 }
 
 void NaoController::set(const CameraSettingsRequest& data)
@@ -164,11 +160,7 @@ void NaoController::get(CurrentCameraSettings& data)
 
 void NaoController::set(const IRSendData& data)
 {
-  if (data.changed)
-  {
-    theDCMHandler.set(data);
-    data.changed = false;
-  }
+  theDCMHandler.set(data);
 }
 
 void NaoController::set(const UltraSoundSendData& data)
