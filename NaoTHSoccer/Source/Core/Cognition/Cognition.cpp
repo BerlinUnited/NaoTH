@@ -39,6 +39,10 @@
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 
+// Behavior
+#include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
+#include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
+
 
 using namespace std;
 
@@ -61,34 +65,58 @@ Cognition::~Cognition()
 {
 }
 
+
+#define REGISTER_MODULE(module) \
+  registerModule<module>(std::string(#module));
+
+
 void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   g_message("Cognition register start");
 
+  // register of the modules
+
   // input
-  ModuleCreator<Sensor>* sensor = registerModule<Sensor > ("Sensor");
+  ModuleCreator<Sensor>* sensor = REGISTER_MODULE(Sensor);
   sensor->setEnabled(true);
   sensor->getModuleT()->init(platformInterface);
 
+  /* 
+   * to register a module use
+   *   REGISTER_MODULE(ModuleClassName);
+   *
+   * Remark: to enable the module don't forget 
+   *         to set the value in modules.cfg
+   */
+
+  // -- BEGIN MODULES --
+
+  // perception
+  REGISTER_MODULE(GridProvider);
+  REGISTER_MODULE(ImageProcessor);
+
+  // behavior
+  REGISTER_MODULE(SensorBehaviorControl);
+  REGISTER_MODULE(SimpleMotionBehaviorControl);
+
+  // debug
+  REGISTER_MODULE(LEDSetter);
+  REGISTER_MODULE(Debug);
+  REGISTER_MODULE(ParameterListDebugLoader);
+  REGISTER_MODULE(StopwatchSender);
+
+  // -- END MODULES --
+
   // output
-  ModuleCreator<Actuator>* actuator = registerModule<Actuator > ("Actuator");
+  ModuleCreator<Actuator>* actuator = REGISTER_MODULE(Actuator);
   actuator->setEnabled(true);
   actuator->getModuleT()->init(platformInterface);
 
-  // BEGIN MODULES
-  // register of the modules
-  registerModule<GridProvider>("GridProvider");  
-  registerModule<LEDSetter> ("LEDSetter");  
-  registerModule<Debug> ("Debug");
-  registerModule<ParameterListDebugLoader> ("ParameterListDebugLoader");
-  registerModule<StopwatchSender>("StopwatchSender");
+
+  // loat external modules
+  //packageLoader.loadPackages("Packages/", *this);
   
-  registerModule<GridProvider>("GridProvider");
-  registerModule<ImageProcessor>("ImageProcessor");
-  //END MODULES
-  
-  packageLoader.loadPackages("Packages/", *this);
-  
+
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
@@ -105,10 +133,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
     {
       g_message("activating module %s", (*name).c_str());
     }
-  }
+  }//end for
   
   // auto-generate the execution list
-  calculateExecutionList();
+  //calculateExecutionList();
 
   g_message("Cognition register end");
 }//end init

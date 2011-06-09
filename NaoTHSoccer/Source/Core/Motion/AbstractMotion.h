@@ -54,7 +54,7 @@ protected:
 class EmptyMotion: public AbstractMotion
 {
 public:
-  EmptyMotion():AbstractMotion(motion::EMPTY) {};
+  EmptyMotion():AbstractMotion(motion::empty) {};
 
   virtual ~EmptyMotion(){}
 

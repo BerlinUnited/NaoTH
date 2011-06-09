@@ -4,7 +4,7 @@
 #include "DeadMotion.h"
 
 DeadMotion::DeadMotion():
-AbstractMotion(motion::DEAD)
+AbstractMotion(motion::dead)
 {
   stiffness_increase = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() * 5;
 

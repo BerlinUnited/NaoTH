@@ -16,7 +16,7 @@ class DanceMotion: public IKMotion
 public:
 
   DanceMotion()
-  : IKMotion(motion::DANCE),
+  : IKMotion(motion::dance),
     radius(0),
     speed(0),
     t(0)

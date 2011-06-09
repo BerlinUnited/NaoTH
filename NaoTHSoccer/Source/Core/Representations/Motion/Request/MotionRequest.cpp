@@ -17,7 +17,7 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
   message.set_time(representation.time);
   switch (representation.id)
   {
-  case motion::WALK:
+  case motion::walk:
     Serializer<WalkRequest>::serialize(representation.walkRequest, message.mutable_walkrequest());
     break;
   default:

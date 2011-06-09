@@ -29,7 +29,7 @@ public:
   /** constructor */
   MotionRequest() :
   time(0),
-  id(motion::INIT),
+  id(motion::init),
   forced(false),
   standHeight(-1)
   {
@@ -55,7 +55,7 @@ public:
 
   void reset() {
     forced = false;
-    id = motion::EMPTY;
+    id = motion::empty;
     standHeight = -1;
   }//end reset
 
@@ -63,10 +63,10 @@ public:
     stream << "time = " << time << '\n';
     stream << "MotionID = " << motion::getName(id) << endl;
     switch (id) {
-      case motion::WALK:
+      case motion::walk:
         walkRequest.print(stream);
         break;
-      case motion::KICK:
+      case motion::kick:
         kickRequest.print(stream);
         break;
       default:

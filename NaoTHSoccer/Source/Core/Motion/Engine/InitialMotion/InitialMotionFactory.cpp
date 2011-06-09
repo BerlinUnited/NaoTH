@@ -36,8 +36,8 @@ AbstractMotion* InitialMotionFactory::createMotion(const MotionRequest& motionRe
 
   switch(motionRequest.id)
   {
-    case motion::DEAD: currentMotion = new DeadMotion(); break;
-    case motion::INIT: currentMotion = new InitialMotion(); break;
+    case motion::dead: currentMotion = new DeadMotion(); break;
+    case motion::init: currentMotion = new InitialMotion(); break;
     default: currentMotion = NULL;
   }//end switch
 
