@@ -100,6 +100,8 @@ class DCMHandler
 
     TStringArray allSensorsList;
 
+    std::vector<float*> sensorPtrs;
+
     TFloatArray currentAllSensorsValue;
     unsigned int currentTimestamp;
 

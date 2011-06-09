@@ -681,13 +681,21 @@ void DCMHandler::initAllSensorData()
   allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
 
   //connect variables
-  al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
+  //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
+  for(TStringArray::const_iterator iter=allSensorsList.begin(); iter!=allSensorsList.end(); ++iter)
+  {
+    sensorPtrs.push_back((float*)al_memoryfast.getDataPtr(pBroker, *iter, false));
+  }
 }
 
 void DCMHandler::getData()
 {
   currentTimestamp = al_dcmproxy->getTime(time_delay);
-  al_memoryfast.GetValues(currentAllSensorsValue);
+  //al_memoryfast.GetValues(currentAllSensorsValue);
+  for(int i=0; i<sensorPtrs.size(); i++)
+  {
+    currentAllSensorsValue[i] = *(sensorPtrs[i]);
+  }
 }
 
 void DCMHandler::get(SensorJointData& data) const
