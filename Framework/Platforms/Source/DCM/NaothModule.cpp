@@ -97,6 +97,7 @@ void NaothModule::motionCallbackPre()
     // we are at the moment shortly before the DCM commands are send to the
     // USB bus, so put the motion execute stuff here
     NaoController::getInstance().callMotion();
+    NaoController::getInstance().setActuatorData();
 }
 
 void NaothModule::motionCallbackPost()

@@ -140,12 +140,16 @@ void NaoController::get(UltraSoundReceiveData& data)
 
 void NaoController::set(const MotorJointData& data)
 {
-  theDCMHandler.setAllMotorData(data);
+  theDCMHandler.set(data);
 }
 
 void NaoController::set(const LEDData& data)
 {
-  theDCMHandler.setLED(data);
+  if (data.change)
+  {
+    theDCMHandler.set(data);
+    data.change = false;
+  }
 }
 
 void NaoController::set(const CameraSettingsRequest& data)
@@ -160,12 +164,16 @@ void NaoController::get(CurrentCameraSettings& data)
 
 void NaoController::set(const IRSendData& data)
 {
-  theDCMHandler.setIRSend(data);
+  if (data.changed)
+  {
+    theDCMHandler.set(data);
+    data.changed = false;
+  }
 }
 
 void NaoController::set(const UltraSoundSendData& data)
 {
-  theDCMHandler.setUltraSoundSend(data);
+  theDCMHandler.set(data);
 }
 
 void NaoController::set(const SoundPlayData& data)
@@ -176,6 +184,10 @@ void NaoController::set(const SoundPlayData& data)
 void NaoController::updateSensorData()
 {
 //  Platform::getInstance()._commCollection.getSerialComm().sendMessage("hui");
-  theDCMHandler.getData();
+  theDCMHandler.readSensorData();
 }
 
+void NaoController::setActuatorData()
+{
+  theDCMHandler.sendActuatorData();
+}

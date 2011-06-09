@@ -11,6 +11,11 @@ DCMHandler::~DCMHandler()
 
 void DCMHandler::init(ALPtr<ALBroker> pB)
 {
+  theMotorJointDataRequested = false;
+  theLEDDataRequested = false;
+  theIRSendDataRequested = false;
+  theUltraSoundSendDataRequested = false;
+  
   pBroker = pB;
 
   time_delay = 0;
@@ -211,7 +216,7 @@ void DCMHandler::setSingleMotorData(const JointData::JointID jointID,const Motor
   sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],timestamp);
 }
 
-void DCMHandler::setAllMotorData(const MotorJointData& theMotorJointData)
+void DCMHandler::setAllMotorData(const MotorJointData& mjd)
 {
   int currentAbsDelay = al_dcmproxy->getTime(time_delay);
   allMotorPositionCommands[4][0] = currentAbsDelay;
@@ -220,13 +225,13 @@ void DCMHandler::setAllMotorData(const MotorJointData& theMotorJointData)
   //MotorJoints
   for(int i=0;i<JointData::RHipYawPitch;i++)
   {
-    allMotorHardnessCommands[5][i][0] = theMotorJointData.stiffness[i];
-    allMotorPositionCommands[5][i][0] = theMotorJointData.position[i];
+    allMotorHardnessCommands[5][i][0] = mjd.stiffness[i];
+    allMotorPositionCommands[5][i][0] = mjd.position[i];
   }
   for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
   {
-    allMotorHardnessCommands[5][i-1][0] = theMotorJointData.stiffness[i];
-    allMotorPositionCommands[5][i-1][0] = theMotorJointData.position[i];
+    allMotorHardnessCommands[5][i-1][0] = mjd.stiffness[i];
+    allMotorPositionCommands[5][i-1][0] = mjd.position[i];
   }
 
   try
@@ -374,7 +379,7 @@ void DCMHandler::initLED()
   }
 }
 
-void DCMHandler::setLED(const LEDData& theLEDData)
+void DCMHandler::setLED(const LEDData& data)
 {  
 
   
@@ -382,13 +387,13 @@ void DCMHandler::setLED(const LEDData& theLEDData)
 
   for(int i=0;i<LEDData::numOfMonoLED;i++)
   {
-    ledCommands[5][i][0] = theLEDData.theMonoLED[i];
+    ledCommands[5][i][0] = data.theMonoLED[i];
   }
   for(int i=0;i<LEDData::numOfMultiLED;i++)
   {
-    ledCommands[5][LEDData::numOfMonoLED + 3*i][0] = theLEDData.theMultiLED[i][LEDData::RED];
-    ledCommands[5][LEDData::numOfMonoLED + 3*i+1][0] = theLEDData.theMultiLED[i][LEDData::GREEN];
-    ledCommands[5][LEDData::numOfMonoLED + 3*i+2][0] = theLEDData.theMultiLED[i][LEDData::BLUE];
+    ledCommands[5][LEDData::numOfMonoLED + 3*i][0] = data.theMultiLED[i][LEDData::RED];
+    ledCommands[5][LEDData::numOfMonoLED + 3*i+1][0] = data.theMultiLED[i][LEDData::GREEN];
+    ledCommands[5][LEDData::numOfMonoLED + 3*i+2][0] = data.theMultiLED[i][LEDData::BLUE];
   }
   try
   {
@@ -675,7 +680,7 @@ void DCMHandler::initAllSensorData()
   }
 }
 
-void DCMHandler::getData()
+void DCMHandler::readSensorData()
 {
   currentTimestamp = al_dcmproxy->getTime(time_delay);
   //al_memoryfast.GetValues(currentAllSensorsValue);
@@ -844,3 +849,29 @@ void DCMHandler::get(BatteryData& data) const
   }
 }
 
+void DCMHandler::sendActuatorData()
+{
+  if ( theMotorJointDataRequested )
+  {
+    setAllMotorData(theMotorJointData);
+    theMotorJointDataRequested = false;
+  }
+  
+  if ( theLEDDataRequested )
+  {
+    setLED(theLEDData);
+    theLEDDataRequested = false;
+  }
+  
+  if ( theIRSendDataRequested )
+  {
+    setIRSend(theIRSendData);
+    theIRSendDataRequested = false;
+  }
+  
+  if ( theUltraSoundSendDataRequested )
+  {
+    setUltraSoundSend(theUltraSoundSendData);
+    theUltraSoundSendDataRequested = false;
+  }
+}

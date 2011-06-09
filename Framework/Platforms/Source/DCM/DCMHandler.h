@@ -111,6 +111,16 @@ class DCMHandler
     float* sensorPtrs[numOfSensors];
     float currentAllSensorsValue[numOfSensors];
     
+    // Actuators data
+    bool theMotorJointDataRequested;
+    MotorJointData theMotorJointData;
+    bool theLEDDataRequested;
+    LEDData theLEDData;
+    bool theIRSendDataRequested;
+    IRSendData theIRSendData;
+    bool theUltraSoundSendDataRequested;
+    UltraSoundSendData theUltraSoundSendData;
+    
     unsigned int currentTimestamp;
 
     // index
@@ -154,7 +164,11 @@ public:
     string getBodyID();
     string getBodyNickName();
 
-    void getData();
+    // read sensor data from AL memory
+    void readSensorData();
+    
+    // send acturator data to DCM
+    void sendActuatorData();
 
     void get(SensorJointData& data) const;
     void get(FSRData& data) const;
@@ -165,13 +179,19 @@ public:
     void get(ButtonData& data) const;
     void get(UltraSoundReceiveData& data) const;
     void get(BatteryData& data) const;
+    
+    void set(const MotorJointData& data) { theMotorJointData = data; theMotorJointDataRequested = true; }
+    void set(const LEDData& data) { theLEDData = data; theLEDDataRequested = true; }
+    void set(const IRSendData& data) { theIRSendData = data; theIRSendDataRequested = true; }
+    void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; theUltraSoundSendDataRequested = true; }
 
     unsigned int getCurrentTimeStamp() const { return currentTimestamp; }
 
+private:
     void setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData);
-    void setAllMotorData(const MotorJointData& theMotorJointData);
+    void setAllMotorData(const MotorJointData& mjd);
     
-    void setLED(const LEDData& theLEDData);
+    void setLED(const LEDData& data);
 
     void setIRSend(const IRSendData& theIRSendData);
     void setUltraSoundSend(const UltraSoundSendData& data);

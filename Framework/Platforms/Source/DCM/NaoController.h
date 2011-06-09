@@ -40,6 +40,7 @@ public:
 
   /////////////////////// run ///////////////////////
   void updateSensorData();
+  void setActuatorData();
 
 public:
   virtual void get(unsigned int& timestamp);
