@@ -8,16 +8,9 @@
 #ifndef _NAOTHMODULE_H
 #define	_NAOTHMODULE_H
 
-
-#include "Cognition.h"
 #include "Motion.h"
-
-
-#include "CognitionThread.h"
-#include "NaoController.h"
-
+#include "NaoMotionController.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-
 #include "Tools/NaoTime.h"
 
 using namespace AL;
@@ -32,10 +25,15 @@ class NaothModule : public ALModule
     //std::string controllerName;
 
     ALPtr<ALBroker> pBroker;
-    CognitionThread *theCognitionThread;
 
-    Cognition* theCognition;
     Motion* theMotion;
+    
+    class DummyCognition : public naoth::Callable
+    {
+    public:
+      virtual void call() {};
+      void init(PlatformInterfaceBase& platformInterface) {};
+    } theCognition;
   
   public:
     

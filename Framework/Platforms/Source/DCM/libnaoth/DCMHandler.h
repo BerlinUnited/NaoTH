@@ -28,8 +28,8 @@
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Representations/Infrastructure/BatteryData.h"
 
-#include "SharedMemory.h"
-#include "IPCData.h"
+#include "Tools/SharedMemory.h"
+#include "Tools/IPCData.h"
 
 using namespace AL;
 using namespace std;

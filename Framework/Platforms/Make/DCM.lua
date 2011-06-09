@@ -1,5 +1,5 @@
 -- NaoTH controller running in the Cyberbotics Webots simulator
-project "DCM"
+project "libnaoth"
   kind "SharedLib"
   language "C++"
   
@@ -30,7 +30,7 @@ project "DCM"
 	libdirs { alDir .. "/lib/"}
 
 	includedirs {
-		"../Source/", 
+		"../Source/DCM", 
 		CORE_PATH,
 		"../../NaoTH-Tools/Source/",
 		alDir .. "/include/",
@@ -51,7 +51,7 @@ project "DCM"
 			"rttools"
 		}
 
-  files{"../Source/DCM/**.cpp", "../Source/DCM/**.h"}
+  files{"../Source/DCM/libnaoth/**.cpp", "../Source/DCM/libnaoth/**.h"}
   targetname "naoth"
   
    

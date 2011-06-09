@@ -40,7 +40,6 @@ ALCALL int _createModule(ALPtr<ALBroker> pBroker )
 ALCALL int _closeModule(  )
 {
   // Delete module instance. Will unregister automatically
-//  delete lMyModule;
   return 0;
 }
 
