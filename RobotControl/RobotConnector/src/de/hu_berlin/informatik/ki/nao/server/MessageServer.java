@@ -295,6 +295,10 @@ public class MessageServer
           byteStream.reset();
           offset = i+1;
         }
+        else
+        {
+          byteStream.write(buf[i]);
+        }
       }//end for
 
       byteStream.write(buf, offset, received-offset);

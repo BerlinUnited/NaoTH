@@ -23,7 +23,7 @@ using namespace naoth;
 class CameraMatrix : public Pose3D, public Printable, public Streamable
 {
 public:
-  CameraMatrix() {}
+  CameraMatrix(): cameraNumber(-1), valid(false) {}
   CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraNumber(-1), valid(false) {}
 
   int cameraNumber;
