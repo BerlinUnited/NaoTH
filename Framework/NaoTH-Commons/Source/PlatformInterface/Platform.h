@@ -36,14 +36,10 @@ namespace naoth
 
     Platform()
     : _hardwareIdentity("Uninitialized"),
-      _bodyID("Uninitialized"),
-      _bodyNickName("Uninitialized"),
       _platformInterface(NULL),
       theConfiguration(_configuration),
       theConfigDirectory(_configDir),
       theHardwareIdentity(_hardwareIdentity),
-      theBodyID(_bodyID),
-      theBodyNickName(_bodyNickName),
       theScheme(_scheme),
       thePlatformInterface(_platformInterface)
     {
@@ -53,8 +49,6 @@ namespace naoth
     Platform& operator=( const Platform& ) { return *this; }
 
     std::string _hardwareIdentity;
-    std::string _bodyID;
-    std::string _bodyNickName;
     Configuration _configuration;
     std::string _configDir;
     std::string _scheme;
@@ -107,8 +101,6 @@ namespace naoth
 
       // set the the hardware identity according to platform
       _hardwareIdentity = _interface->getHardwareIdentity();
-      _bodyID = _interface->getBodyID();
-      _bodyNickName = _interface->getBodyNickName();
       _configDir = "Config/";
       /* todo:
       if(getenv("NAO_CONFIG") != NULL)
@@ -130,8 +122,6 @@ namespace naoth
     Configuration& theConfiguration;
     const string& theConfigDirectory;
     const string& theHardwareIdentity; // the string to indentify different robots
-    const string& theBodyID;
-    const string& theBodyNickName;
     const string& theScheme;
     CameraInfoParameter theCameraInfo;
   //  Config theMassConfig;
