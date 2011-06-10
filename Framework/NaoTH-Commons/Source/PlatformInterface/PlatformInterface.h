@@ -330,9 +330,6 @@ namespace naoth
         std::cerr << "register MOTION callback" << std::endl;
         this->motionCallback = motionCallback;
         motionCallback->init(*this);
-      }else
-      {
-        std::cerr << "could not register MOTION callback because it was NULL" << std::endl;
       }
 
       if(cognitionCallback != NULL)
@@ -340,9 +337,6 @@ namespace naoth
         std::cerr << "register COGNITION callback" << std::endl;
         this->cognitionCallback = cognitionCallback;
         cognitionCallback->init(*this);
-      }else
-      {
-        std::cerr << "could not register COGNITION callback because it was NULL" << std::endl;
       }
     }//end registerCallbacks
 

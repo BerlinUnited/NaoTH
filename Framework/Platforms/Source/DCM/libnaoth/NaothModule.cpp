@@ -8,6 +8,7 @@
 #include "NaothModule.h"
 #include "PlatformInterface/Platform.h"
 #include "libnaoth.h"
+#include "Tools/DummpyCallable.h"
 
 using namespace naoth;
 
@@ -76,7 +77,7 @@ void NaothModule::init()
   theMotion = new Motion();
   
   cout << "Registering Motion" << endl;
-  theContorller->registerCallbacks(theMotion,&theCognition);
+  theContorller->registerCallbacks(theMotion,(DummyCallable*)NULL);
   
   getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
   //getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);

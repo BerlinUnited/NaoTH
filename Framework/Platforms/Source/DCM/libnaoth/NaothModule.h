@@ -28,13 +28,6 @@ class NaothModule : public ALModule
 
     NaoMotionController* theContorller;
     Motion* theMotion;
-    
-    class DummyCognition : public naoth::Callable
-    {
-    public:
-      virtual void call() {};
-      void init(PlatformInterfaceBase& platformInterface) {};
-    } theCognition;
   
   public:
     

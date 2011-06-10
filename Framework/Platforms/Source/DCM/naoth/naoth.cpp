@@ -5,10 +5,10 @@
  *
  */
 
-#include "naoth.h"
 #include "NaoController.h"
 #include "PlatformInterface/Platform.h"
 #include "Cognition.h"
+#include "Tools/DummpyCallable.h"
 #include <glib.h>
 #include <glib-object.h>
 
@@ -23,8 +23,7 @@ int main(int argc, char *argv[])
   
   NaoController theController;
   Cognition theCognition;
-  DummyMotion theMotion;
-  theController.registerCallbacks(&theMotion, &theCognition);
+  theController.registerCallbacks((DummyCallable*)NULL, &theCognition);
   
   while(true)
   {
