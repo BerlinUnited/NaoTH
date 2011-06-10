@@ -7,15 +7,14 @@
  */
 
 #include "NaoController.h"
-#include "Tools/NaoTime.h"
 #include <PlatformInterface/Platform.h>
 
 using namespace naoth;
 
 NaoController::NaoController()
-: PlatformInterface<NaoController>("Nao", 10),
+:
 theSoundHandler(NULL),
-libNaothDataReading(NULL),
+//libNaothDataReading(NULL),
 naothDataWriting(NULL)
 {
   // register input
@@ -60,28 +59,6 @@ NaoController::~NaoController()
   {
     delete theSoundHandler;
   }
-}
-
-string NaoController::getHardwareIdentity() const
-{
-  return Platform::getMACaddress("eth0");
-}
-
-string NaoController::getBodyID() const
-{
-  return libNaothDataReading->getBodyID();
-}
-
-string NaoController::getBodyNickName() const
-{
-  return libNaothDataReading->getNickName();
-}
-
-void NaoController::get(FrameInfo& data)
-{
-  data.time = NaoTime::getNaoTimeInMilliSeconds();
-  data.frameNumber++;
-  data.basicTimeStep = getBasicTimeStep();
 }
 
 void NaoController::get(Image& data)

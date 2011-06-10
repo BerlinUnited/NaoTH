@@ -214,18 +214,6 @@ namespace naoth
   public:
     virtual ~PlatformInterface(){};
 
-    template<class T>
-    void get(T& data)
-    {
-      PlatformType::get(data);
-    }
-
-    template<class T>
-    void set(const T& data)
-    {
-      PlatformType::set(data);
-    }
-
   protected:
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)
       : PlatformInterfaceBase(name, basicTimeStep)

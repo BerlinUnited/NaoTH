@@ -7,14 +7,11 @@
  */
 
 #include "NaoMotionController.h"
-#include "Tools/NaoTime.h"
 #include <PlatformInterface/Platform.h>
 
 using namespace naoth;
 
 NaoMotionController::NaoMotionController()
-: PlatformInterface<NaoMotionController>("Nao", 10),
-libNaothDataReading(NULL)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -39,11 +36,6 @@ NaoMotionController::~NaoMotionController()
 {
 }
 
-string NaoMotionController::getHardwareIdentity() const
-{
-  return Platform::getMACaddress("eth0");
-}
-
 void NaoMotionController::init(ALPtr<ALBroker> pB)
 {
   // init shared memory
@@ -64,13 +56,6 @@ void NaoMotionController::init(ALPtr<ALBroker> pB)
   // save the nick name
   string nickName = theDCMHandler.getBodyNickName();
   std::cout << "get nickName"<< nickName << endl;
-}
-
-void NaoMotionController::get(FrameInfo& data)
-{
-  data.time = NaoTime::getNaoTimeInMilliSeconds();
-  data.frameNumber++;
-  data.basicTimeStep = getBasicTimeStep();
 }
 
 void NaoMotionController::set(const MotorJointData& data)
