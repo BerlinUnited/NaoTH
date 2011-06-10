@@ -118,7 +118,7 @@ public:
   bool swapReading()
   {
     lock();
-    bool swappingReady = theMemory->swappingReady;
+    const bool swappingReady = theMemory->swappingReady;
     if ( swappingReady )
     {
       swap(theMemory->reading, theMemory->swapping);

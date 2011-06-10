@@ -61,10 +61,10 @@ void NaoMotionController::set(const MotorJointData& data)
 
 void NaoMotionController::getMotionInput()
 {
-  libNaothData.swapWriting();
   LibNaothData* libNaothDataWriting = libNaothData.writing();
   theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
   libNaothDataReading = libNaothDataWriting;
+  libNaothData.swapWriting();
   NaoControllerBase<NaoMotionController>::getMotionInput();
 }
 

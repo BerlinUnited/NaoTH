@@ -12,9 +12,10 @@
 using namespace naoth;
 
 NaoController::NaoController()
-:theSoundHandler(NULL),
-naothDataWriting(NULL)
+:theSoundHandler(NULL)
 {
+  naothDataWriting = naothData.writing();
+  
   // register input
   registerInput<AccelerometerData>(*this);
   registerInput<FrameInfo>(*this);
@@ -80,8 +81,14 @@ void NaoController::getCognitionInput()
   if ( libNaothData.swapReading() )
   {
     libNaothDataReading = libNaothData.reading();
-    NaoControllerBase<NaoController>::getCognitionInput();
   }
+  else
+  {
+    // didn't get new sensor data
+    libNaothDataReading = NULL;
+  }
+  
+  NaoControllerBase<NaoController>::getCognitionInput();
 }
   
 void NaoController::setCognitionOutput()

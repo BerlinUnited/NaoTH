@@ -46,25 +46,25 @@ public:
     data.basicTimeStep = this->getBasicTimeStep();
   }
   
-  void get(unsigned int& timestamp) { timestamp = libNaothDataReading->timeStamp; }
+  void get(unsigned int& timestamp) { if (libNaothDataReading!=NULL) timestamp = libNaothDataReading->timeStamp; }
 
-  void get(SensorJointData& data) { libNaothDataReading->get(data); }
+  void get(SensorJointData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(AccelerometerData& data) { libNaothDataReading->get(data); }
+  void get(AccelerometerData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(GyrometerData& data) { libNaothDataReading->get(data); }
+  void get(GyrometerData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(FSRData& data) { libNaothDataReading->get(data); }
+  void get(FSRData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(InertialSensorData& data) { libNaothDataReading->get(data); }
+  void get(InertialSensorData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(IRReceiveData& data) { libNaothDataReading->get(data); }
+  void get(IRReceiveData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(ButtonData& data) { libNaothDataReading->get(data); }
+  void get(ButtonData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(BatteryData& data) { libNaothDataReading->get(data); }
+  void get(BatteryData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
-  void get(UltraSoundReceiveData& data) { libNaothDataReading->get(data); }
+  void get(UltraSoundReceiveData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
 protected:
   const LibNaothData* libNaothDataReading;
