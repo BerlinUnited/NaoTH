@@ -50,6 +50,9 @@ private:
   class SimpleColorClassifier: public ColorClassifier
 {
 public:
+
+  SimpleColorClassifier() {}
+
   inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
     return get(a, b, c);

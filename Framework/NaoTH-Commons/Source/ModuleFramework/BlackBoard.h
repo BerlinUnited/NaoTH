@@ -64,6 +64,8 @@ public:
     virtual const std::string getTypeName() const = 0;
     virtual const std::string getName() const = 0;
     virtual const Representation& getRepresentation() const = 0;
+
+    virtual ~BlackBoardData() {}
   };//end class BlackBoardData
 
 
