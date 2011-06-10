@@ -2,7 +2,7 @@
  * @file NaoController.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
- * @breief Interface for the real robot
+ * @breief Interface for the real robot for cognition
  *
  */
 
@@ -12,9 +12,7 @@
 using namespace naoth;
 
 NaoController::NaoController()
-:
-theSoundHandler(NULL),
-//libNaothDataReading(NULL),
+:theSoundHandler(NULL),
 naothDataWriting(NULL)
 {
   // register input
@@ -38,10 +36,6 @@ naothDataWriting(NULL)
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundPlayData>(*this);
-  
-  std::cout << "Open Shared Memory"<<endl;
-  libNaothData.open("/libnaoth");
-  naothData.open("/naoth");
   
   cout<<"Init Platform"<<endl;
   Platform::getInstance().init(this);

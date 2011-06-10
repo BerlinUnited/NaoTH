@@ -2,7 +2,7 @@
  * @file NaoController.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
- * @breief Interface for the real robot
+ * @breief Interface for the real robot for cognition
  *
  */
 
@@ -12,7 +12,6 @@
 #include "SoundControl.h"
 #include "V4lCameraHandler.h"
 #include "Tools/NaoControllerBase.h"
-#include "Tools/SharedMemory.h"
 
 namespace naoth
 {
@@ -53,10 +52,6 @@ public:
 private:
   V4lCameraHandler theCameraHandler;
   SoundControl *theSoundHandler;
-  
-  SharedMemory<LibNaothData> libNaothData;
-  
-  SharedMemory<NaothData> naothData;
   NaothData* naothDataWriting;
 };
 

@@ -2,7 +2,7 @@
  * @file NaoMotionController.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
- * @breief Interface for the real robot
+ * @breief Interface for the real robot for motion
  *
  */
 
@@ -38,11 +38,6 @@ NaoMotionController::~NaoMotionController()
 
 void NaoMotionController::init(ALPtr<ALBroker> pB)
 {
-  // init shared memory
-  std::cout << "Open Shared Memory" << endl;
-  libNaothData.open("/libnaoth");
-  naothData.open("/naoth");
-  
   std::cout << "Init Platform" << endl;
   Platform::getInstance().init(this);
   

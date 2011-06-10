@@ -2,7 +2,7 @@
  * @file NaoControllerBase.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- * @breief Interface for the real robot
+ * @breief Interface for the real robot for both cognition and motion
  *
  */
 
@@ -12,6 +12,7 @@
 #include "IPCData.h"
 #include "MacAddr.h"
 #include "Tools/NaoTime.h"
+#include "SharedMemory.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -23,6 +24,10 @@ class NaoControllerBase : public PlatformInterface<PlatformType>
 public:
   NaoControllerBase():PlatformInterface<PlatformType>("Nao", 10),libNaothDataReading(NULL)
   {
+    // init shared memory
+    std::cout << "Open Shared Memory" << endl;
+    libNaothData.open("/libnaoth");
+    naothData.open("/naoth");
   }
 
   virtual string getHardwareIdentity() const { return getMACaddress("eth0");}
@@ -60,6 +65,9 @@ public:
 
 protected:
   const LibNaothData* libNaothDataReading;
+  
+  SharedMemory<LibNaothData> libNaothData;
+  SharedMemory<NaothData> naothData;
 };
 
 } // end namespace naoth

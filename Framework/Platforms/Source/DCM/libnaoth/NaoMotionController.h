@@ -2,7 +2,7 @@
  * @file NaoMotionController.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
- * @breief Interface for the real robot
+ * @breief Interface for the real robot for motion
  *
  */
 
@@ -40,9 +40,6 @@ public:
 
 private:
   DCMHandler theDCMHandler;
-  
-  SharedMemory<LibNaothData> libNaothData;
-  SharedMemory<NaothData> naothData;
 };
 
 } // end namespace naoth
