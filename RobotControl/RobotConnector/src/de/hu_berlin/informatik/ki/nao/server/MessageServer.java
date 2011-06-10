@@ -287,14 +287,14 @@ public class MessageServer
       for (int i = 0; i < received; i++)
       {
         // look for the end of the message
-        if (buf[i] > 0)
-        {
-          byteStream.write(buf[i]);
-        }
-        else
+        if (buf[i] == 0)
         {
           decodeAndHandleMessage(byteStream.toByteArray());
           byteStream = new ByteArrayOutputStream();
+        }
+        else
+        {
+          byteStream.write(buf[i]);
         }
       }//end for
 
