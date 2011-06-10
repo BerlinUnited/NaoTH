@@ -14,7 +14,7 @@
 		<value key="ProjectExplorer.Target.ActiveBuildConfiguration" type="int">0</value>
 		<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericTarget</value>
 		<valuemap key="ProjectExplorer.Target.BuildConfiguration.0" type="QVariantMap">
-			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">/home/thomas/projekte/privat/nao/NaoTH-2011/NaoTHSoccer/Make</value>
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">../../../NaoTHSoccer/Make</value>
 			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
 			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
 				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
@@ -62,7 +62,7 @@
 			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.BuildConfiguration.1" type="QVariantMap">
-			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">/home/thomas/projekte/privat/nao/NaoTH-2011/NaoTHSoccer/Make</value>
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">../../../NaoTHSoccer/Make</value>
 			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
 			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
 				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
@@ -110,7 +110,7 @@
 			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.BuildConfiguration.2" type="QVariantMap">
-			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">/home/thomas/projekte/privat/nao/NaoTH-2011/NaoTHSoccer/Make</value>
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">../../../NaoTHSoccer/Make</value>
 			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
 			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
 				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
@@ -158,7 +158,7 @@
 			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.BuildConfiguration.3" type="QVariantMap">
-			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">/home/thomas/projekte/privat/nao/NaoTH-2011/NaoTHSoccer/Make</value>
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">../../../NaoTHSoccer/Make</value>
 			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
 			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
 				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
@@ -206,7 +206,7 @@
 			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.BuildConfiguration.4" type="QVariantMap">
-			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">/home/thomas/projekte/privat/nao/NaoTH-2011/NaoTHSoccer/Make</value>
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">../../../NaoTHSoccer/Make</value>
 			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
 			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
 				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
@@ -254,7 +254,7 @@
 			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
 		</valuemap>
 		<valuemap key="ProjectExplorer.Target.BuildConfiguration.5" type="QVariantMap">
-			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">/home/thomas/projekte/privat/nao/NaoTH-2011/NaoTHSoccer/Make</value>
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">../../../NaoTHSoccer/Make</value>
 			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
 			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
 				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
