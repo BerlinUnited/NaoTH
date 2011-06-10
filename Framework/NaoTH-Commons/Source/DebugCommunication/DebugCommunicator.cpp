@@ -85,7 +85,7 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   {
     gsize pos = 0;
 
-    while(pos+1 < size)
+    while(pos + 1 < size)
     {
       if(err == NULL && connection != NULL)
       {

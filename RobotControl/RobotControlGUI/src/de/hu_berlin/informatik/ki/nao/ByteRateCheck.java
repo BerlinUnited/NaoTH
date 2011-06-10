@@ -47,4 +47,4 @@ public class ByteRateCheck implements Plugin
     }
   }
 
-}
+}//end ByteRateCheck

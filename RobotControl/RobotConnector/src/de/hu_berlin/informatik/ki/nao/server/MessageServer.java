@@ -275,7 +275,7 @@ public class MessageServer
   // send-receive-periodicExecution //
   public void receiveLoop() throws InterruptedException, IOException
   {
-    byte[] buf = new byte[64 * 1024];
+    byte[] buf = new byte[1024*256];
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
     while (isActive && serverSocket != null && serverSocket.isConnected())
@@ -284,19 +284,20 @@ public class MessageServer
       int received = serverSocket.getInputStream().read(buf);
       receivedBytes += received;
 
+      int offset = 0;
       for (int i = 0; i < received; i++)
       {
         // look for the end of the message
-        if (buf[i] > 0)
+        if (buf[i] == 0)
         {
-          byteStream.write(buf[i]);
-        }
-        else
-        {
+          byteStream.write(buf, offset, i-offset);
           decodeAndHandleMessage(byteStream.toByteArray());
-          byteStream = new ByteArrayOutputStream();
+          byteStream.reset();
+          offset = i+1;
         }
       }//end for
+
+      byteStream.write(buf, offset, received-offset);
 
       try
       {
@@ -309,10 +310,12 @@ public class MessageServer
     }//end while
   }//end receiveLoop
 
+  Base64 base64 = new Base64();
   private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
   {
     SingleExecEntry entry = callbackQueue.take();
-    byte[] decoded = Base64.decodeBase64(bytes);
+    //byte[] decoded = Base64.decodeBase64(bytes);
+    byte[] decoded = base64.decode(bytes);
 
     if (entry != null && entry.sender != null)
     {
