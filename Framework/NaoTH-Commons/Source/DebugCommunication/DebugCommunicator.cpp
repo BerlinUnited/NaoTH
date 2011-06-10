@@ -84,8 +84,8 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   if (connection != NULL)
   {
     gsize pos = 0;
-    // FIXME: we get a really eval case if size == 0
-    while(pos < size-1)
+
+    while(pos+1 < size)
     {
       if(err == NULL && connection != NULL)
       {
