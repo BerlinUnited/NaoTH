@@ -8,7 +8,7 @@ newaction {
     
     local result = {};
     
-    extract_todos_files(os.matchfiles(".../Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../Source/**.cpp"), result);
     extract_todos_files(os.matchfiles("../Source/**.h"), result);
     
     io.output("../TODO")
@@ -34,7 +34,7 @@ newaction {
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
-  configurations {"Debug", "OptDebug", "Release"}
+  configurations {"OptDebug", "Debug", "Release"}
   
   CORE_PATH = {
     path.getabsolute("../Source/Core/Cognition/"), 

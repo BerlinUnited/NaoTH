@@ -1,0 +1,320 @@
+<!DOCTYPE QtCreatorProject>
+<qtcreator>
+<data>
+	<variable>ProjectExplorer.Project.EditorSettings</variable>
+	<valuemap type="QVariantMap">
+		<value key="EditorConfiguration.UseGlobal" type="bool">true</value>
+	</valuemap>
+</data>
+<data>
+	<variable>ProjectExplorer.Project.Target.0</variable>
+	<valuemap type="QVariantMap">
+		<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+		<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+		<value key="ProjectExplorer.Target.ActiveBuildConfiguration" type="int">0</value>
+		<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericTarget</value>
+		<valuemap key="ProjectExplorer.Target.BuildConfiguration.0" type="QVariantMap">
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">.</value>
+			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<value key="ProjectExplorer.ProcessStep.Arguments" type="QString">gmake</value>
+					<value key="ProjectExplorer.ProcessStep.Command" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProcessStep.Enabled" type="bool">true</value>
+					<value key="ProjectExplorer.ProcessStep.WorkingDirectory" type="QString">%{buildDir}</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Generate Makefiles with premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.ProcessStep</value>
+				</valuemap>
+				<valuemap key="ProjectExplorer.BuildStepList.Step.1" type="QVariantMap">
+				<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+					<value type="QString">NaoTHSoccer</value>
+				</valuelist>
+				<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">-R config=optdebug</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">2</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">build</value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Build</value>
+			</valuemap>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.1" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+						<value type="QString">clean</value>
+					</valuelist>
+					<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">config=optdebug</value>
+					<value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Make</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">1</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Clean</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Clean</value>
+			</valuemap>
+			<value key="ProjectExplorer.BuildConfiguration.BuildStepListCount" type="int">2</value>
+			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">OptDebug</value>
+			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
+		</valuemap>
+		<valuemap key="ProjectExplorer.Target.BuildConfiguration.1" type="QVariantMap">
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">.</value>
+			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<value key="ProjectExplorer.ProcessStep.Arguments" type="QString">gmake</value>
+					<value key="ProjectExplorer.ProcessStep.Command" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProcessStep.Enabled" type="bool">true</value>
+					<value key="ProjectExplorer.ProcessStep.WorkingDirectory" type="QString">%{buildDir}</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Generate Makefiles with premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.ProcessStep</value>
+				</valuemap>
+				<valuemap key="ProjectExplorer.BuildStepList.Step.1" type="QVariantMap">
+				<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+					<value type="QString">NaoTHSoccer</value>
+				</valuelist>
+				<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">-R config=debug</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">2</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">build</value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Build</value>
+			</valuemap>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.1" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+						<value type="QString">clean</value>
+					</valuelist>
+					<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">config=debug</value>
+					<value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Make</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">1</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Clean</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Clean</value>
+			</valuemap>
+			<value key="ProjectExplorer.BuildConfiguration.BuildStepListCount" type="int">2</value>
+			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Debug</value>
+			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
+		</valuemap>
+		<valuemap key="ProjectExplorer.Target.BuildConfiguration.2" type="QVariantMap">
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">.</value>
+			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<value key="ProjectExplorer.ProcessStep.Arguments" type="QString">gmake</value>
+					<value key="ProjectExplorer.ProcessStep.Command" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProcessStep.Enabled" type="bool">true</value>
+					<value key="ProjectExplorer.ProcessStep.WorkingDirectory" type="QString">%{buildDir}</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Generate Makefiles with premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.ProcessStep</value>
+				</valuemap>
+				<valuemap key="ProjectExplorer.BuildStepList.Step.1" type="QVariantMap">
+				<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+					<value type="QString">NaoTHSoccer</value>
+				</valuelist>
+				<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">-R config=release</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">2</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">build</value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Build</value>
+			</valuemap>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.1" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+						<value type="QString">clean</value>
+					</valuelist>
+					<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">config=release</value>
+					<value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Make</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">1</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Clean</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Clean</value>
+			</valuemap>
+			<value key="ProjectExplorer.BuildConfiguration.BuildStepListCount" type="int">2</value>
+			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Release</value>
+			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
+		</valuemap>
+		<valuemap key="ProjectExplorer.Target.BuildConfiguration.3" type="QVariantMap">
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">.</value>
+			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<value key="ProjectExplorer.ProcessStep.Arguments" type="QString">gmake</value>
+					<value key="ProjectExplorer.ProcessStep.Command" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProcessStep.Enabled" type="bool">true</value>
+					<value key="ProjectExplorer.ProcessStep.WorkingDirectory" type="QString">%{buildDir}</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Generate Makefiles with premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.ProcessStep</value>
+				</valuemap>
+				<valuemap key="ProjectExplorer.BuildStepList.Step.1" type="QVariantMap">
+				<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+					<value type="QString">NaoTHSoccer</value>
+				</valuelist>
+				<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">-R config=optdebugnao</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">2</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">build</value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Build</value>
+			</valuemap>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.1" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+						<value type="QString">clean</value>
+					</valuelist>
+					<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">config=optdebugnao</value>
+					<value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Make</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">1</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Clean</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Clean</value>
+			</valuemap>
+			<value key="ProjectExplorer.BuildConfiguration.BuildStepListCount" type="int">2</value>
+			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">OptDebug|Nao</value>
+			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
+		</valuemap>
+		<valuemap key="ProjectExplorer.Target.BuildConfiguration.4" type="QVariantMap">
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">.</value>
+			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<value key="ProjectExplorer.ProcessStep.Arguments" type="QString">gmake</value>
+					<value key="ProjectExplorer.ProcessStep.Command" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProcessStep.Enabled" type="bool">true</value>
+					<value key="ProjectExplorer.ProcessStep.WorkingDirectory" type="QString">%{buildDir}</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Generate Makefiles with premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.ProcessStep</value>
+				</valuemap>
+				<valuemap key="ProjectExplorer.BuildStepList.Step.1" type="QVariantMap">
+				<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+					<value type="QString">NaoTHSoccer</value>
+				</valuelist>
+				<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">-R config=debugnao</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">2</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">build</value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Build</value>
+			</valuemap>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.1" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+						<value type="QString">clean</value>
+					</valuelist>
+					<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">config=debugnao</value>
+					<value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Make</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">1</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Clean</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Clean</value>
+			</valuemap>
+			<value key="ProjectExplorer.BuildConfiguration.BuildStepListCount" type="int">2</value>
+			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Debug|Nao</value>
+			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
+		</valuemap>
+		<valuemap key="ProjectExplorer.Target.BuildConfiguration.5" type="QVariantMap">
+			<value key="GenericProjectManager.GenericBuildConfiguration.BuildDirectory" type="QString">.</value>
+			<value key="ProjectExplorer.BuildCOnfiguration.ToolChain" type="QString">INVALID</value>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.0" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<value key="ProjectExplorer.ProcessStep.Arguments" type="QString">gmake</value>
+					<value key="ProjectExplorer.ProcessStep.Command" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProcessStep.Enabled" type="bool">true</value>
+					<value key="ProjectExplorer.ProcessStep.WorkingDirectory" type="QString">%{buildDir}</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Generate Makefiles with premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">premake4</value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.ProcessStep</value>
+				</valuemap>
+				<valuemap key="ProjectExplorer.BuildStepList.Step.1" type="QVariantMap">
+				<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+					<value type="QString">NaoTHSoccer</value>
+				</valuelist>
+				<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">-R config=releasenao</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">NaoTHSoccer</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">2</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">build</value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Build</value>
+			</valuemap>
+			<valuemap key="ProjectExplorer.BuildConfiguration.BuildStepList.1" type="QVariantMap">
+				<valuemap key="ProjectExplorer.BuildStepList.Step.0" type="QVariantMap">
+					<valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList">
+						<value type="QString">clean</value>
+					</valuelist>
+					<value key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QString">config=releasenao</value>
+					<value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Make</value>
+					<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+					<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericMakeStep</value>
+				</valuemap>
+				<value key="ProjectExplorer.BuildStepList.StepsCount" type="int">1</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString">Clean</value>
+				<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString"></value>
+				<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">ProjectExplorer.BuildSteps.Clean</value>
+			</valuemap>
+			<value key="ProjectExplorer.BuildConfiguration.BuildStepListCount" type="int">2</value>
+			<value key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName" type="QString"></value>
+			<value key="ProjectExplorer.ProjectConfiguration.DisplayName" type="QString">Release|Nao</value>
+			<value key="ProjectExplorer.ProjectConfiguration.Id" type="QString">GenericProjectManager.GenericBuildConfiguration</value>
+		</valuemap>
+		<value key="ProjectExplorer.Target.BuildConfigurationCount" type="int">6</value>
+		<value key="ProjectExplorer.Target.RunConfigurationCount" type="int">0</value>
+	</valuemap>
+</data>
+<data>
+	<variable>ProjectExplorer.Project.Updater.EnvironmentId</variable>
+	<value type="QString">{1cb8bdb9-cc2d-4370-be08-99c433148e91}</value>
+</data>
+<data>
+	<variable>ProjectExplorer.Project.TargetCount</variable>
+	<value type="int">1</value>
+</data>
+<data>
+	<variable>ProjectExplorer.Project.Updater.FileVersion</variable>
+	<value type="int">9</value>
+</data>
+</qtcreator>
