@@ -25,9 +25,12 @@ public:
   NaoControllerBase():PlatformInterface<PlatformType>("Nao", 10),libNaothDataReading(NULL)
   {
     // init shared memory
-    std::cout << "Open Shared Memory" << endl;
-    libNaothData.open("/libnaoth");
-    naothData.open("/naoth");
+    const std::string libnaothpath = "/libnaoth";
+    const std::string naothpath = "/naoth";
+    std::cout << "Opening Shared Memory: "<<libnaothpath<<std::endl;
+    libNaothData.open(libnaothpath);
+    std::cout<< "Opening Shared Memory: "<<naothpath<<std::endl;
+    naothData.open(naothpath);
   }
 
   virtual string getHardwareIdentity() const { return getMACaddress("eth0");}
