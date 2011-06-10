@@ -50,11 +50,8 @@ string NaoMotionController::getHardwareIdentity() const
 
 void NaoMotionController::init(ALPtr<ALBroker> pB)
 {
-  std::cout << "Init DCMHandler" << endl;
-  theDCMHandler.init(pB);
-  Platform::getInstance().init(this);
-  
   // init shared memory
+  std::cout << "Open Shared Memory" << endl;
   libNaothData.open("/libnaoth");
   sensorsValue = libNaothData.data().sensorsValue;
   theMotorJointData = &(libNaothData.data().theMotorJointData);
@@ -64,17 +61,25 @@ void NaoMotionController::init(ALPtr<ALBroker> pB)
   theIRSendData = &(naothData.data().theIRSendData);
   theUltraSoundSendData = &(naothData.data().theUltraSoundSendData);
   
+  std::cout << "Init Platform" << endl;
+  Platform::getInstance().init(this);
+  
+  std::cout << "Init DCMHandler" << endl;
+  theDCMHandler.init(pB);
+  
   // save the body ID
   string bodyID = theDCMHandler.getBodyID();
   int lenBodyID = min(bodyID.length(), sizeof(libNaothData.data().bodyID) - 1);
   memcpy(libNaothData.data().bodyID, bodyID.c_str(), lenBodyID);
   libNaothData.data().bodyID[lenBodyID] = '\0';
+  std::cout << "get bodyID"<< bodyID << endl;
   
   // save the nick name
   string nickName = theDCMHandler.getBodyNickName();
   int lenNickName = min(nickName.length(), sizeof(libNaothData.data().nickName) - 1);
   memcpy(libNaothData.data().nickName, nickName.c_str(), lenNickName);
   libNaothData.data().nickName[lenNickName] = '\0';
+  std::cout << "get nickName"<< nickName << endl;
 }
 
 void NaoMotionController::get(unsigned int& timestamp)
