@@ -80,3 +80,21 @@ void NaoController::set(const SoundPlayData& data)
 {
   theSoundHandler->setSoundData(data);
 }
+
+void NaoController::getCognitionInput()
+{
+  if ( libNaothData.swapReading() )
+  {
+    libNaothDataReading = libNaothData.reading();
+    NaoControllerBase<NaoController>::getCognitionInput();
+  }
+}
+  
+void NaoController::setCognitionOutput()
+{
+  NaoControllerBase<NaoController>::setCognitionOutput();
+  
+  naothData.swapWriting();
+  naothDataWriting = naothData.writing();
+}
+  

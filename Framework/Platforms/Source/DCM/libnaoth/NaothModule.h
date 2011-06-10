@@ -26,6 +26,7 @@ class NaothModule : public ALModule
 
     ALPtr<ALBroker> pBroker;
 
+    NaoMotionController* theContorller;
     Motion* theMotion;
     
     class DummyCognition : public naoth::Callable

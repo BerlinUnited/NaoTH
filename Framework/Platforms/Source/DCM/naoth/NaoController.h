@@ -45,6 +45,10 @@ public:
   void set(const UltraSoundSendData& data) { naothDataWriting->set(data); }
 
   void set(const SoundPlayData& data);
+  
+  virtual void getCognitionInput();
+  
+  virtual void setCognitionOutput();
 
 private:
   V4lCameraHandler theCameraHandler;

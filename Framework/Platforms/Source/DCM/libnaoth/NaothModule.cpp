@@ -27,7 +27,9 @@ inline static void motion_wrapper_post()
 
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ): 
   ALModule(pB, pName ),
-  pBroker(pB)
+  pBroker(pB),
+  theContorller(NULL),
+  theMotion(NULL)
 {
   theModule = this;
   
@@ -41,7 +43,10 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ):
 NaothModule::~NaothModule()
 {
   theModule = NULL;
-  delete theMotion;
+  if ( theMotion != NULL )
+    delete theMotion;
+  if ( theContorller != NULL )
+    delete theContorller;
 }
 
 bool NaothModule::innerTest() 
@@ -64,33 +69,30 @@ void NaothModule::init()
     g_thread_init(NULL);
   
   cout << "Initializing Controller" << endl;
-  NaoMotionController::getInstance().init(pBroker);
+  theContorller = new NaoMotionController();
+  theContorller->init(pBroker);
 
-  
   cout << "Creating Motion" << endl;
   theMotion = new Motion();
   
   cout << "Registering Motion" << endl;
-  NaoMotionController::getInstance().registerCallbacks(theMotion,&theCognition);
+  theContorller->registerCallbacks(theMotion,&theCognition);
   
   getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
-  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
+  //getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "NaothModule:init finished!" << endl;
 }
 
 void NaothModule::motionCallbackPre()
 {
-    // we are at the moment shortly before the DCM commands are send to the
-    // USB bus, so put the motion execute stuff here
-    NaoMotionController::getInstance().callMotion();
-    NaoMotionController::getInstance().setActuatorData();
+  // we are at the moment shortly before the DCM commands are send to the
+  // USB bus, so put the motion execute stuff here
+  theContorller->callMotion();
 }
 
 void NaothModule::motionCallbackPost()
 {
-  NaoMotionController::getInstance().updateSensorData(); // read sensor data from DCM
-  
   // right behind the sensor update from the DCM
   // TODO: get stuff into internal buffers
 }

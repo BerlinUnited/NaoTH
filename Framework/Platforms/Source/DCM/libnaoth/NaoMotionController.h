@@ -11,18 +11,14 @@
 
 #include "DCMHandler.h"
 #include "Tools/NaoControllerBase.h"
-#include <Tools/DataStructures/Singleton.h>
 
 namespace naoth
 {
-class NaoMotionController : public NaoControllerBase<NaoMotionController>, public Singleton<NaoMotionController>
+class NaoMotionController : public NaoControllerBase<NaoMotionController>
 {
-protected:
-  friend class Singleton<NaoMotionController>;
+public:
   NaoMotionController();
   virtual ~NaoMotionController();
-  
-public:
 
   template<typename T>
   void get(T& data)
@@ -32,10 +28,10 @@ public:
 
   /////////////////////// init ///////////////////////
   void init(ALPtr<ALBroker> pB);
-
-  /////////////////////// run ///////////////////////
-  void updateSensorData();
-  void setActuatorData();
+  
+  virtual void getMotionInput();
+  
+  virtual void setMotionOutput();
 
 public:
 
