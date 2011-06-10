@@ -43,6 +43,9 @@ namespace naoth
     float sensorsValue[numOfSensors];
     MotorJointData theMotorJointData;
     
+    void setBodyID(const string& id);
+    void setNickName(const string& name);
+    
     string getBodyID() const;
     string getNickName() const;
     void get(MotorJointData& data) const;
@@ -58,8 +61,17 @@ namespace naoth
   };
   
   // data written by naoth
-  struct NaothData
+  class NaothData
   {
+  public:
+    void set(const LEDData& data) { theLEDData = data; }
+    void set(const IRSendData& data) { theIRSendData = data; }
+    void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; }
+    
+    const LEDData& lEDData() const { return theLEDData; }
+    const IRSendData& iRSendData() const { return theIRSendData; }
+    const UltraSoundSendData& ultraSoundSendData() const { return theUltraSoundSendData; }
+  private:
     LEDData theLEDData;
     IRSendData theIRSendData;
     UltraSoundSendData theUltraSoundSendData;

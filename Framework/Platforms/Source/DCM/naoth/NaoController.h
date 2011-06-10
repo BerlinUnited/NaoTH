@@ -32,42 +32,42 @@ public:
   virtual string getBodyNickName() const;
 
 public:
-  virtual void get(unsigned int& timestamp);
-
   virtual void get(FrameInfo& data);
-
-  virtual void get(SensorJointData& data);
-
-  virtual void get(AccelerometerData& data);
-
+  
   virtual void get(Image& data);
-
-  virtual void get(GyrometerData& data);
-
-  virtual void get(FSRData& data);
-
-  virtual void get(InertialSensorData& data);
-
-  virtual void get(IRReceiveData& data);
-
+  
   virtual void get(CurrentCameraSettings& data);
 
-  virtual void get(ButtonData& data);
+  virtual void get(unsigned int& timestamp) { timestamp = libNaothDataReading->timeStamp; }
 
-  virtual void get(BatteryData& data);
+  virtual void get(SensorJointData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(UltraSoundReceiveData& data);
+  virtual void get(AccelerometerData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(GyrometerData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(FSRData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(InertialSensorData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(IRReceiveData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(ButtonData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(BatteryData& data) { libNaothDataReading->get(data); }
+
+  virtual void get(UltraSoundReceiveData& data) { libNaothDataReading->get(data); }
   
-  virtual void get(MotorJointData& data);
+  virtual void get(MotorJointData& data) { libNaothDataReading->get(data); }
 
   /////////////////////// set ///////////////////////
   virtual void set(const CameraSettingsRequest& data);
 
-  virtual void set(const LEDData& data);
+  virtual void set(const LEDData& data) { naothDataWriting->set(data); }
 
-  virtual void set(const IRSendData& data);
+  virtual void set(const IRSendData& data) { naothDataWriting->set(data); }
 
-  virtual void set(const UltraSoundSendData& data);
+  virtual void set(const UltraSoundSendData& data) { naothDataWriting->set(data); }
 
   virtual void set(const SoundPlayData& data);
 
@@ -76,10 +76,10 @@ private:
   SoundControl *theSoundHandler;
   
   SharedMemory<LibNaothData> libNaothData;
+  const LibNaothData* libNaothDataReading;
+  
   SharedMemory<NaothData> naothData;
-  LEDData* theLEDData;
-  IRSendData* theIRSendData;
-  UltraSoundSendData* theUltraSoundSendData;
+  NaothData* naothDataWriting;
 };
 
 } // end namespace naoth

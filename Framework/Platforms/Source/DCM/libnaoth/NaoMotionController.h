@@ -28,9 +28,9 @@ public:
 
   virtual string getHardwareIdentity() const;
 
-  virtual string getBodyID() const { return libNaothData.data().getBodyID(); }
+  virtual string getBodyID() const { return libNaothDataReading->getBodyID(); }
 
-  virtual string getBodyNickName() const { return libNaothData.data().getBodyID(); }
+  virtual string getBodyNickName() const { return libNaothDataReading->getBodyID(); }
 
   /////////////////////// init ///////////////////////
   void init(ALPtr<ALBroker> pB);
@@ -40,49 +40,40 @@ public:
   void setActuatorData();
 
 public:
-  virtual void get(unsigned int& timestamp);
+  
 
   virtual void get(FrameInfo& data);
+  
+  virtual void get(unsigned int& timestamp) { timestamp = libNaothDataReading->timeStamp; }
 
-  virtual void get(SensorJointData& data) { libNaothData.data().get(data); }
+  virtual void get(SensorJointData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(AccelerometerData& data) { libNaothData.data().get(data); }
+  virtual void get(AccelerometerData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(GyrometerData& data) { libNaothData.data().get(data); }
+  virtual void get(GyrometerData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(FSRData& data) { libNaothData.data().get(data); }
+  virtual void get(FSRData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(InertialSensorData& data) { libNaothData.data().get(data); }
+  virtual void get(InertialSensorData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(IRReceiveData& data) { libNaothData.data().get(data); }
+  virtual void get(IRReceiveData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(ButtonData& data) { libNaothData.data().get(data); }
+  virtual void get(ButtonData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(BatteryData& data) { libNaothData.data().get(data); }
+  virtual void get(BatteryData& data) { libNaothDataReading->get(data); }
 
-  virtual void get(UltraSoundReceiveData& data) { libNaothData.data().get(data); }
+  virtual void get(UltraSoundReceiveData& data) { libNaothDataReading->get(data); }
 
   /////////////////////// set ///////////////////////
   virtual void set(const MotorJointData& data);
-
-  virtual void set(const LEDData& data);
-
-  virtual void set(const IRSendData& data);
-
-  virtual void set(const UltraSoundSendData& data);
 
 private:
   DCMHandler theDCMHandler;
   
   SharedMemory<LibNaothData> libNaothData;
-  float* sensorsValue;
+  const LibNaothData* libNaothDataReading;
   
-  // Actuators data
-  MotorJointData* theMotorJointData;
   SharedMemory<NaothData> naothData;
-  LEDData* theLEDData;
-  IRSendData* theIRSendData;
-  UltraSoundSendData* theUltraSoundSendData;
 };
 
 } // end namespace naoth

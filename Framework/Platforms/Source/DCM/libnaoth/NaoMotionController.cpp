@@ -14,11 +14,7 @@ using namespace naoth;
 
 NaoMotionController::NaoMotionController()
 : PlatformInterface<NaoMotionController>("Nao", 10),
-sensorsValue(NULL),
-theMotorJointData(NULL),
-theLEDData(NULL),
-theIRSendData(NULL),
-theUltraSoundSendData(NULL)
+libNaothDataReading(NULL)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -33,9 +29,9 @@ theUltraSoundSendData(NULL)
   registerInput<UltraSoundReceiveData>(*this);
 
   // register output
-  registerOutput<const LEDData>(*this);
-  registerOutput<const IRSendData>(*this);
-  registerOutput<const UltraSoundSendData>(*this);
+  //registerOutput<const LEDData>(*this);
+  //registerOutput<const IRSendData>(*this);
+  //registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const MotorJointData>(*this);
 }
 
@@ -53,13 +49,7 @@ void NaoMotionController::init(ALPtr<ALBroker> pB)
   // init shared memory
   std::cout << "Open Shared Memory" << endl;
   libNaothData.open("/libnaoth");
-  sensorsValue = libNaothData.data().sensorsValue;
-  theMotorJointData = &(libNaothData.data().theMotorJointData);
-  
   naothData.open("/naoth");
-  theLEDData = &(naothData.data().theLEDData);
-  theIRSendData = &(naothData.data().theIRSendData);
-  theUltraSoundSendData = &(naothData.data().theUltraSoundSendData);
   
   std::cout << "Init Platform" << endl;
   Platform::getInstance().init(this);
@@ -69,22 +59,11 @@ void NaoMotionController::init(ALPtr<ALBroker> pB)
   
   // save the body ID
   string bodyID = theDCMHandler.getBodyID();
-  int lenBodyID = min(bodyID.length(), sizeof(libNaothData.data().bodyID) - 1);
-  memcpy(libNaothData.data().bodyID, bodyID.c_str(), lenBodyID);
-  libNaothData.data().bodyID[lenBodyID] = '\0';
   std::cout << "get bodyID"<< bodyID << endl;
   
   // save the nick name
   string nickName = theDCMHandler.getBodyNickName();
-  int lenNickName = min(nickName.length(), sizeof(libNaothData.data().nickName) - 1);
-  memcpy(libNaothData.data().nickName, nickName.c_str(), lenNickName);
-  libNaothData.data().nickName[lenNickName] = '\0';
   std::cout << "get nickName"<< nickName << endl;
-}
-
-void NaoMotionController::get(unsigned int& timestamp)
-{
-  timestamp = libNaothData.data().timeStamp;
 }
 
 void NaoMotionController::get(FrameInfo& data)
@@ -96,45 +75,25 @@ void NaoMotionController::get(FrameInfo& data)
 
 void NaoMotionController::set(const MotorJointData& data)
 {
-  libNaothData.lock(); // lock shared memory before writing
-  *theMotorJointData = data;
-  libNaothData.unlock();
-}
-
-void NaoMotionController::set(const LEDData& data)
-{
-  naothData.lock(); // lock shared memory before writing
-  *theLEDData = data;
-  naothData.unlock();
-}
-
-void NaoMotionController::set(const IRSendData& data)
-{
-  naothData.lock(); // lock shared memory before writing
-  *theIRSendData = data;
-  naothData.unlock();
-}
-
-void NaoMotionController::set(const UltraSoundSendData& data)
-{
-  naothData.lock(); // lock shared memory before writing
-  *theUltraSoundSendData = data;
-  naothData.unlock();
+  libNaothData.writing()->theMotorJointData = data;
+  theDCMHandler.setAllMotorData(data);
 }
 
 void NaoMotionController::updateSensorData()
 {
-  libNaothData.lock(); // lock shared memory before writing
-  theDCMHandler.readSensorData(libNaothData.data().timeStamp, sensorsValue);
-  libNaothData.unlock();
+  libNaothData.swapWriting();
+  LibNaothData* libNaothDataWriting = libNaothData.writing();
+  theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
+  libNaothDataReading = libNaothDataWriting;
 }
 
 void NaoMotionController::setActuatorData()
 {
-  theDCMHandler.setAllMotorData(*theMotorJointData);
-  naothData.lock(); // lock shared memory before reading
-  theDCMHandler.setLED(*theLEDData);
-  theDCMHandler.setIRSend(*theIRSendData);
-  theDCMHandler.setUltraSoundSend(*theUltraSoundSendData);
-  naothData.unlock();
+  if ( naothData.swapReading() )
+  {
+    const NaothData* naothDataReading = naothData.reading();
+    theDCMHandler.setLED(naothDataReading->lEDData());
+    theDCMHandler.setIRSend(naothDataReading->iRSendData());
+    theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
+  }
 }

@@ -23,10 +23,16 @@ template<typename T>
 class SharedMemory
 {
 private:
-  struct Memory
+  class Memory
   {
+  public:
+    Memory():writing(0),swapping(1),reading(2),swappingReady(false){}
+  
     int numRef; // how many objects share the same memory
-    T data;
+    volatile int writing, swapping, reading;
+    volatile bool swappingReady;
+    
+    T data[3]; // buffers, one for writing, on for reading, and one for swapping
   };
   
 public:
@@ -92,8 +98,9 @@ public:
       }
 
       if (newMemory)
-        theMemory->numRef = 0;
-      theMemory->numRef++;
+        theMemory->numRef = 1;
+      else
+        theMemory->numRef++;
 
       unlock();
       
@@ -106,14 +113,32 @@ public:
     {
       close();
     }
-
-  void lock() { sem_wait(sem); }
-
-  void unlock() { sem_post(sem); }
-
-  T& data() { return theMemory->data; }
   
-  const T& data() const { return theMemory->data; }
+  // return if get the new data
+  bool swapReading()
+  {
+    lock();
+    bool swappingReady = theMemory->swappingReady;
+    if ( swappingReady )
+    {
+      swap(theMemory->reading, theMemory->swapping);
+      theMemory->swappingReady = false;
+    }
+    unlock();
+    return swappingReady;
+  }
+  
+  void swapWriting()
+  {
+    lock();
+    swap(theMemory->writing, theMemory->swapping);
+    theMemory->swappingReady = true;
+    unlock();
+  }
+
+  T* writing() { return &(theMemory->data[theMemory->writing]); }
+  
+  const T* reading() const { return &(theMemory->data[theMemory->reading]); }
   
   void close()
     {
@@ -133,6 +158,10 @@ public:
       
       ready = false;
     }
+    
+protected:
+    void lock() { sem_wait(sem); }
+    void unlock() { sem_post(sem); }
   
 private:
   std::string theName;
