@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.channels.NotYetConnectedException;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +95,6 @@ public class MessageServer
         {
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
         }
-                  System.out.println("FINISHED senderThread");
       }
     });
     
@@ -121,10 +121,15 @@ public class MessageServer
         {
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
         }
+        catch(SocketException ex)
+        {
+          // ignore
+        }
         catch (IOException ex)
         {
-          // ignore, possible only a disconnect
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "socket read failed", ex);
         }
+        
       }
     });
 
@@ -184,7 +189,7 @@ public class MessageServer
       // clear commands in order to shutdown
       commandRequestQueue.clear();
       
-      // join all threads
+      // wait until rest of the thread are settled
       receiverThread.join();
       
       // clear queues and send remaining error messages
@@ -338,7 +343,7 @@ public class MessageServer
       }
       catch(InterruptedException ex)
       {
-
+        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
       }
     }//end while
   }//end receiveLoop
@@ -385,7 +390,8 @@ public class MessageServer
       }
       catch (IOException ex)
       {
-        // ignore
+        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+        disconnect();
       }
     }
   }
@@ -414,10 +420,8 @@ public class MessageServer
 
           long startTime = System.currentTimeMillis();
 
-          if (callbackQueue.size() == 0) // do not send if the robot is already busy
-          {
-            sendPeriodicCommands();
-          }
+          sendPeriodicCommands();
+
           long stopTime = System.currentTimeMillis();
           long diff = updateIntervall - (stopTime - startTime);
           long wait = Math.max(0, diff);
@@ -471,7 +475,7 @@ public class MessageServer
       catch (InterruptedException ex)
       {
         Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
-          "interrupted in periodic command execution, will disconnect", ex);
+          "interrupted in periodic command execution", ex);
       }
     }  // end for each listenerF
   }//end sendPeriodicCommands
