@@ -1,0 +1,18 @@
+INPUT=Framework/NaoTH-Commons/Source/ Framework/Platforms/Source/ NaoTHSoccer/Source/
+FILE_PATTERNS=*.cpp *.h
+RECURSIVE=YES
+EXTRACT_ALL = YES
+EXTRACT_PRIVATE        = YES
+
+OUTPUT_DIRECTORY = doc
+
+GENERATE_LATEX = NO
+GENERATE_HTML = YES
+
+
+GENERATE_QHP = YES
+QCH_FILE = naoth.qch
+QHP_NAMESPACE = de.naoth
+QHP_VIRTUAL_FOLDER = NaoTHSoccer-2011
+QHG_LOCATION = /usr/bin/qhelpgenerator
+

@@ -57,10 +57,12 @@ public class MessageServer
   private List<CommandSender> listeners;
   private BlockingQueue<SingleExecEntry> commandRequestQueue;
   private BlockingQueue<SingleExecEntry> callbackQueue;
-  private boolean isActive;
   private IMessageServerParent parent;
   private long receivedBytes;
   private long sentBytes;
+  
+  private Base64 base64 = new Base64();
+  
 
   public MessageServer()
   {
@@ -78,16 +80,7 @@ public class MessageServer
 
     this.commandRequestQueue = new LinkedBlockingQueue<SingleExecEntry>();
     this.callbackQueue = new LinkedBlockingQueue<SingleExecEntry>();
-  }
-
-  public void connect(String host, int port) throws IOException
-  {
-    if (serverSocket != null && serverSocket.isConnected())
-    {
-      isActive = false;
-      serverSocket.close();
-    }
-
+    
     senderThread = new Thread(new Runnable()
     {
 
@@ -100,11 +93,22 @@ public class MessageServer
         catch (InterruptedException ex)
         {
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
-          disconnect();
         }
+                  System.out.println("FINISHED senderThread");
       }
     });
+    
+  }
 
+  public void connect(String host, int port) throws IOException
+  {
+    if (serverSocket != null && serverSocket.isConnected())
+    {
+      serverSocket.close();
+    }
+
+    // define the threads
+    
     receiverThread = new Thread(new Runnable()
     {
       public void run()
@@ -117,11 +121,10 @@ public class MessageServer
         {
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
-          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "general exception occured...", ex);
+          // ignore, possible only a disconnect
         }
-        disconnect();
       }
     });
 
@@ -137,8 +140,6 @@ public class MessageServer
     serverSocket = new Socket();
     serverSocket.connect(address, 1000);
 
-    isActive = true;
-
     if (parent != null)
     {
       parent.showConnected(true);
@@ -151,17 +152,42 @@ public class MessageServer
       // nothing
     }
 
+    // start threads
+    
+    if(!senderThread.isAlive())
+    {
+      // start sender only once
+      senderThread.start();
+    }
+    
     periodicExecutionThread.start();
-    senderThread.start();
     receiverThread.start();
   }//end connect
 
   public void disconnect()
-  {
-    isActive = false;
-    
-    if (serverSocket != null && serverSocket.isConnected())
+  {    
+    if(!isConnected())
     {
+      // nothing to do
+      return;
+    }
+    
+    try
+    {
+      // disconnect
+      serverSocket.close();
+      serverSocket = null;
+            
+      // wait until no new commands are inserted
+      periodicExecutionThread.join();
+      
+      // clear commands in order to shutdown
+      commandRequestQueue.clear();
+      
+      // join all threads
+      receiverThread.join();
+      
+      // clear queues and send remaining error messages
       for (SingleExecEntry entry : callbackQueue)
       {
         if (entry.sender != null)
@@ -169,24 +195,26 @@ public class MessageServer
           entry.sender.handleError(-2);
         }
       }
-      commandRequestQueue.clear();
       callbackQueue.clear();
-      try
-      {
-        // disconnent
-        serverSocket.close();
-      }
-      catch (IOException ex)
-      {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+    }    
+    catch (IOException ex)
+    {
+      Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    finally
+    {
       serverSocket = null;
       // notifiy disconnect
       if (parent != null)
       {
         parent.showConnected(false);
       } // end if
-    }//end if
+    }
   }//end disconnect
 
   public InetSocketAddress getAddress()
@@ -278,13 +306,15 @@ public class MessageServer
     byte[] buf = new byte[1024*256];
     ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 
-    while (isActive && serverSocket != null && serverSocket.isConnected())
+    while (isConnected())
     {
       // reader answer
       int received = serverSocket.getInputStream().read(buf);
       receivedBytes += received;
 
       int offset = 0;
+      
+      
       for (int i = 0; i < received; i++)
       {
         // look for the end of the message
@@ -295,14 +325,13 @@ public class MessageServer
           byteStream.reset();
           offset = i+1;
         }
-        else
-        {
-          byteStream.write(buf[i]);
-        }
       }//end for
 
-      byteStream.write(buf, offset, received-offset);
-
+      if(offset < received)
+      {
+        byteStream.write(buf, offset, received-offset);
+      }
+      
       try
       {
         Thread.sleep(1);
@@ -314,24 +343,12 @@ public class MessageServer
     }//end while
   }//end receiveLoop
 
-  Base64 base64 = new Base64();
-  private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
-  {
-    SingleExecEntry entry = callbackQueue.take();
-    //byte[] decoded = Base64.decodeBase64(bytes);
-    byte[] decoded = base64.decode(bytes);
-
-    if (entry != null && entry.sender != null)
-    {
-      entry.sender.handleResponse(decoded, entry.command);
-    }
-  }//end decodeAndHandleMessage
-
   public void sendLoop() throws InterruptedException
   {
-    while (isActive && serverSocket != null && serverSocket.isConnected())
+    while (true)
     {
       SingleExecEntry entry = commandRequestQueue.take();
+      
       callbackQueue.put(entry);
 
       Command c = entry.command;
@@ -359,21 +376,36 @@ public class MessageServer
       buffer.append("\n");
       try
       {
-        byte[] bytes = buffer.toString().getBytes();
-        serverSocket.getOutputStream().write(bytes);
-        sentBytes += bytes.length;
+        if(isConnected())
+        {
+          byte[] bytes = buffer.toString().getBytes();
+          serverSocket.getOutputStream().write(bytes);
+          sentBytes += bytes.length;
+        }
       }
       catch (IOException ex)
       {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
-        disconnect();
+        // ignore
       }
     }
   }
+  
+  private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
+  {
+    SingleExecEntry entry = callbackQueue.take();
+    //byte[] decoded = Base64.decodeBase64(bytes);
+    byte[] decoded = base64.decode(bytes);
+
+    if (entry != null && entry.sender != null)
+    {
+      entry.sender.handleResponse(decoded, entry.command);
+    }
+  }//end decodeAndHandleMessage
+
 
   public void periodicExecution()
   {
-    while (isActive && serverSocket != null && serverSocket.isConnected())
+    while (isConnected())
     {
       try
       {
@@ -382,7 +414,7 @@ public class MessageServer
 
           long startTime = System.currentTimeMillis();
 
-          if (callbackQueue.size() == 0) // do not send if the robot is busy
+          if (callbackQueue.size() == 0) // do not send if the robot is already busy
           {
             sendPeriodicCommands();
           }
@@ -396,9 +428,7 @@ public class MessageServer
         }
         catch (InterruptedException ex)
         {
-          isActive = false;
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
-          disconnect();
         }
       }
       catch (IOException ex)
@@ -442,7 +472,6 @@ public class MessageServer
       {
         Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
           "interrupted in periodic command execution, will disconnect", ex);
-        disconnect();
       }
     }  // end for each listenerF
   }//end sendPeriodicCommands
