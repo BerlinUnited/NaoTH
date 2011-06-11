@@ -14,6 +14,7 @@
 #include "Tools/NaoTime.h"
 #include "SharedMemory.h"
 #include "PlatformInterface/PlatformInterface.h"
+#include "Tools/Communication/MessageQueue/MessageQueue4Process.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
 namespace naoth
@@ -65,6 +66,12 @@ public:
   void get(BatteryData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
 
   void get(UltraSoundReceiveData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+
+protected:
+  virtual MessageQueue* createMessageQueue(const std::string& name)
+  {
+    return new MessageQueue4Process(name);
+  }
 
 protected:
   const LibNaothData* libNaothDataReading;

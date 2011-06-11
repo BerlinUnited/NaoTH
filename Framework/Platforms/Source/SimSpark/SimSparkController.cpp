@@ -9,7 +9,7 @@
 #include "SimSparkController.h"
 #include <iostream>
 #include <fstream>
-//#include "Tools/NaoInfo.h"
+#include "Tools/Communication/MessageQueue/MessageQueue4Process.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
 
@@ -1131,4 +1131,10 @@ bool SimSparkController::updateIMU(const sexp_t* sexp)
   theIMU[0] = asin(-imu[2]);
   theIMU[1] = -atan2(imu[5], imu[8]);
   return true;
+}
+
+MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
+{
+  // for multi threads
+  return new MessageQueue4Process(name);//MessageQueue4Threads();
 }
