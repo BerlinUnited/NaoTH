@@ -134,6 +134,8 @@ public:
   void set(const CameraSettingsRequest& data);
 
 protected:
+  virtual MessageQueue* createMessageQueue(const std::string& name);
+  
   // the main loop in single thread
   void singleThreadMain();
 

@@ -8,7 +8,7 @@
 
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/Communication/MessageQueue.h"
+#include "Tools/Communication/MessageQueue/MessageQueue.h"
 
 #include <map>
 #include <list>
@@ -58,11 +58,13 @@ namespace naoth
     inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
 
     MessageQueue* getMessageQueue(const std::string& name);
-
+    
+  protected:
+    virtual MessageQueue* createMessageQueue(const std::string& name) = 0;
+    
   private:
     std::string platformName;
     unsigned int theBasicTimeStep;
-    
     std::map<std::string, MessageQueue*> theMessageQueue;
   };//end class PlatformBase
 

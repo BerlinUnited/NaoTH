@@ -21,7 +21,7 @@ MessageQueue* PlatformBase::getMessageQueue(const std::string& name)
   if (theMessageQueue.count(name) == 0)
   {
     // create a new one
-    theMessageQueue[name] = new MessageQueue();
+    theMessageQueue[name] = this->createMessageQueue(name);
   }
   
   return theMessageQueue[name];

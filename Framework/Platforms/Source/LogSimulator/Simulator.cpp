@@ -612,3 +612,9 @@ void Simulator::generalGet(T& data, std::string name)
 Simulator::~Simulator()
 {
 }
+
+MessageQueue* Simulator::createMessageQueue(const std::string& name);
+{
+  // for single thread
+  return new MessageQueue();
+}

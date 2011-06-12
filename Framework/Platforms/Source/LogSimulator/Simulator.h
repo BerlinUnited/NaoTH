@@ -98,6 +98,8 @@ public:
   /////////////////////// init ///////////////////////
   virtual void init();
   
+protected:
+  virtual MessageQueue* createMessageQueue(const std::string& name);
 
 private:
   bool noFrameInfo;
