@@ -1,5 +1,6 @@
 dofile "helper/naocrosscompile.lua"
 dofile "helper/extract_todos.lua"
+dofile "helper/qtcreator.lua"
 
 newaction {
   trigger = "todo",
