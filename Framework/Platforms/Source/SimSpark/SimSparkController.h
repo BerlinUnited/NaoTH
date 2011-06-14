@@ -33,7 +33,7 @@
 #include <Representations/Infrastructure/SimSparkGameInfo.h>
 
 
-#include "Communication/SocketStream.h"
+#include <Tools/Communication/SocketStream/SocketStream.h>
 //#include "SimSparkTeamCommunicator.h"
 
 #include "PlatformInterface/Platform.h"
@@ -47,6 +47,7 @@ using namespace naoth;
 class SimSparkController : public PlatformInterface<SimSparkController>
 {
 private:
+  GSocket* socket;
   PrefixedSocketStream theSocket;
 
   // sensor data
@@ -145,6 +146,8 @@ protected:
   void updateInertialSensor();
 
 private:
+  bool connect(const std::string& host, int port);
+
   bool updateSensors();
 
   int parseString(char* data, std::string& value);

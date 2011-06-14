@@ -26,7 +26,10 @@ public:
 
   ~SocketStream();
 
-  bool connect(const std::string& host, int port);
+  void init(GSocket* s)
+  {
+    socket = s;
+  }
 
   void send(const std::string& msg);
 

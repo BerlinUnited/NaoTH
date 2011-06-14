@@ -3,6 +3,7 @@
 ../Source/Tools/Communication/MessageQueue/MessageQueue.cpp
 ../Source/Tools/Communication/MessageQueue/MessageQueue4Threads.cpp
 ../Source/Tools/Communication/MessageQueue/MessageQueue4Process.cpp
+../Source/Tools/Communication/SocketStream/SocketStream.cpp
 ../Source/Tools/Communication/SerialPort/Serial.cpp
 ../Source/Tools/Math/Matrix2x2.cpp
 ../Source/Tools/Math/Geometry.cpp
@@ -54,6 +55,7 @@
 ../Source/Tools/Communication/MessageQueue/MessageQueue4Process.h
 ../Source/Tools/Communication/MessageQueue/MessageQueue4Threads.h
 ../Source/Tools/Communication/MessageQueue/MessageQueue.h
+../Source/Tools/Communication/SocketStream/SocketStream.h
 ../Source/Tools/Communication/SerialPort/DefinitionsWindows.h
 ../Source/Tools/Communication/SerialPort/Serial.h
 ../Source/Tools/Communication/SerialPort/DefinitionsLinux.h

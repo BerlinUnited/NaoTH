@@ -8,6 +8,7 @@
 #include "MessageQueue4Process.h"
 #include <gio/gunixsocketaddress.h>
 #include "Tools/Debug/NaoTHAssert.h"
+#include <cstring>
 
 MessageQueue4Process::MessageQueue4Process(const std::string& name):
 theName("/tmp/naoth.messagequeue."+name),
@@ -20,31 +21,21 @@ theName("/tmp/naoth.messagequeue."+name),
 
 MessageQueue4Process::~MessageQueue4Process()
 {
+  //TODO: close all sockets
   //g_object_unref()
 }
   
 void MessageQueue4Process::write(const std::string& msg)
 {
   if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
+  {
     writeSocket = g_socket_accept(serverSocket, NULL, NULL);
+    theWriteStream.init(writeSocket);
+  }
   if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
     return;
 
-  GError* err = NULL;
-
-  for(int i=0; i<msg.length(); i++)
-  {
-    ASSERT( *(msg.c_str()+i) != '\0' );
-  }
-
-  gssize bytesWritten = g_socket_send(writeSocket, msg.c_str(), (msg.length()+1),NULL, &err);
-  if (err)
-  {
-    std::cerr << "send error: " << err->message << std::endl;
-    g_error_free(err);
-    err = NULL;
-  }
-  //cout<<"write = "<<bytesWritten<<" == "<<(msg.length()+1)*sizeof(char)<<endl;
+  theWriteStream<<msg<<send;
 }
 
 bool MessageQueue4Process::empty()
@@ -52,21 +43,11 @@ bool MessageQueue4Process::empty()
   if ( !g_socket_is_connected(readSocket) ) connect();
   if ( !g_socket_is_connected(readSocket) ) return true;
 
-  // receive all data
-  gchar charBuffer;
-
-  while ( g_socket_receive(readSocket, &charBuffer, sizeof(gchar), NULL, NULL) > 0 )
+  string msg;
+  theReadStream>>msg;
+  if ( msg.size() > 0 )
   {
-    if ( charBuffer != '\0')
-    {
-      readBuffer += charBuffer;
-    }
-    else
-    {
-      cout<<"read one msg"<< readBuffer.length() <<endl;
-      MessageQueue::write(readBuffer);
-      readBuffer = "";
-    }
+    MessageQueue::write(msg);
   }
 
   return MessageQueue::empty();
@@ -85,7 +66,9 @@ void MessageQueue4Process::connect()
   if ( error != NULL )
   {
     cerr<<"connect error: "<<error->message<<endl;
+    return;
   }
+  theReadStream.init(readSocket);
 }
 
 void MessageQueue4Process::setReader(MessageReader* reader)

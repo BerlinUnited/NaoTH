@@ -106,6 +106,15 @@ SimSparkController::SimSparkController()
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   theTeamName = "NaoTH";
+
+  GError *err = NULL;
+  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
+  if (err)
+  {
+    socket = NULL;
+    g_warning("Could not create a socket. This is a fatal error and communication is available. Error message:\n%s", err->message);
+    g_error_free (err);
+  }
 }
 
 SimSparkController::~SimSparkController()
@@ -117,17 +126,62 @@ SimSparkController::~SimSparkController()
     delete [] theImageData;
 }
 
+bool SimSparkController::connect(const std::string& host, int port)
+{
+  if(socket != NULL)
+  {
+  gboolean conn = false;
+    GError** error = NULL;
+  GCancellable* cancellable = NULL;
+  GSocketAddress* sockaddr = NULL;
+  GError* conn_error = NULL;
+
+  GSocketConnectable* addr = g_network_address_new(host.c_str(), port);
+  GSocketAddressEnumerator* enumerator = g_socket_connectable_enumerate(addr);
+  g_object_unref(addr);
+
+  while (!conn && (sockaddr = g_socket_address_enumerator_next(enumerator, cancellable, error)))
+    {
+    conn = g_socket_connect(socket, sockaddr, NULL, conn_error ? NULL : &conn_error);
+    g_object_unref(sockaddr);
+    }
+  g_object_unref(enumerator);
+
+  if (conn)
+    {
+      return true;
+    }
+  else if (error)
+    {
+    if (conn_error){
+      g_warning("Could not connect. Error message:\n%s", conn_error->message);
+      g_error_free(conn_error);
+    }
+      return false;
+    }
+  else
+    {
+      g_propagate_error(error, conn_error);
+      return false;
+    }
+  }
+
+  return false;
+}
+
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
   theTeamName = teamName;
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
   // connect to the simulator
-  if(!theSocket.connect(server, port))
+
+  if(!connect(server, port))
   {
     std::cerr << "SimSparkController could not connect" << std::endl;
     return false;
   }
+  theSocket.init(socket);
 
   // send create command to simulator
 

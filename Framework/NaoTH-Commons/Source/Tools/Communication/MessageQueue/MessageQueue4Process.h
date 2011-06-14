@@ -11,6 +11,7 @@
 #include "MessageQueue.h"
 #include <glib.h>
 #include <gio/gio.h>
+#include "Tools/Communication/SocketStream/SocketStream.h"
 
 class MessageQueue4Process: public MessageQueue
 {
@@ -33,15 +34,18 @@ public:
 
 protected:
   void connect();
+
+  bool isFixedLengthDataAvailable(unsigned int len);
   
 private:
   std::string theName;
   GSocketAddress* addr;
 
   GSocket* serverSocket;
+  PrefixedSocketStream theReadStream;
+  PrefixedSocketStream theWriteStream;
   GSocket* readSocket;
   GSocket* writeSocket;
-  std::string readBuffer;
 };
 
 #endif // _MESSAGE_QUEUE_4_PROCESS_H_
