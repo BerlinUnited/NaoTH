@@ -80,15 +80,12 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   {
     gsize pos = 0;
 
-    while(pos + 1 < size)
+    while(err == NULL && connection != NULL && pos + 1 < size)
     {
-      if(err == NULL && connection != NULL)
-      {
-        gsize length = size-pos;
+      gsize length = size-pos;
 
-        gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
-        pos += sent;
-      }
+      gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
+      pos += sent;
     }//end while
 
     if (err) return err;

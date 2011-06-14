@@ -344,8 +344,8 @@ void DebugServer::clearBothQueues()
 
   while (g_async_queue_length(answers) > 0)
   {
-    char* tmp = (char*) g_async_queue_pop(answers);
-    g_free(tmp);
+    GString* tmp = (GString*) g_async_queue_pop(answers);
+    g_string_free(tmp, true);
   }
 
 }

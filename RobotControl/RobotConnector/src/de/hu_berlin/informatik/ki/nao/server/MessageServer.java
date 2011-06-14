@@ -55,6 +55,8 @@ public class MessageServer
   private Thread receiverThread;
   private Thread periodicExecutionThread;
   private long updateIntervall = 60;
+  private final long graceTime = 10;
+  private final long maxGraceTime = 500;
   private List<CommandSender> listeners;
   private BlockingQueue<SingleExecEntry> commandRequestQueue;
   private BlockingQueue<SingleExecEntry> callbackQueue;
@@ -315,6 +317,7 @@ public class MessageServer
     {
       // reader answer
       int received = serverSocket.getInputStream().read(buf);
+      
       receivedBytes += received;
 
       int offset = 0;
@@ -419,9 +422,16 @@ public class MessageServer
         {
 
           long startTime = System.currentTimeMillis();
-
+          
+          // do not send if the robot is already busy
+          while(isConnected() 
+            && callbackQueue.size() > 0
+            && (System.currentTimeMillis() - startTime) < maxGraceTime)
+          {
+            Thread.sleep(graceTime);
+          }
           sendPeriodicCommands();
-
+          
           long stopTime = System.currentTimeMillis();
           long diff = updateIntervall - (stopTime - startTime);
           long wait = Math.max(0, diff);
