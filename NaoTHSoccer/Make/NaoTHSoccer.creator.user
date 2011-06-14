@@ -30,7 +30,6 @@
       <valuelist key="GenericProjectManager.GenericMakeStep.BuildTargets" type="QVariantList"/>
       <valuelist key="GenericProjectManager.GenericMakeStep.MakeArguments" type="QVariantList">
        <value type="QString">-j2</value>
-       <value type="QString">config=debug</value>
        <value type="QString">SimSpark</value>
       </valuelist>
       <value key="GenericProjectManager.GenericMakeStep.MakeCommand" type="QString"></value>

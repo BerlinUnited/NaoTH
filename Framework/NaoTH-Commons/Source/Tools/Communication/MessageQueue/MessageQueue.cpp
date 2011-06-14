@@ -25,7 +25,7 @@ void MessageQueue::write(const std::string& msg)
   theMsg.push(msg);
 }
   
-bool MessageQueue::empty() const
+bool MessageQueue::empty()
 {
   return theMsg.empty();
 }

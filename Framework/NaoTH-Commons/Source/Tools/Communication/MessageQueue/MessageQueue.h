@@ -31,7 +31,7 @@ protected:
   virtual void write(const std::string& msg);
   
   /* is there any message in the channel */
-  virtual bool empty() const;
+  virtual bool empty();
   
   /* read one message from the channel */
   virtual std::string read();
@@ -39,11 +39,11 @@ protected:
   /* clear messages in the channel */
   virtual void clear();
   
-  void setReader(MessageReader* reader);
+  virtual void setReader(MessageReader* reader);
   
-  void setWriter(MessageWriter* writer);
+  virtual void setWriter(MessageWriter* writer);
   
-private:
+protected:
   std::queue<std::string> theMsg;
   
   MessageReader* theReader;
