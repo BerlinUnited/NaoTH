@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -54,9 +55,7 @@ public class MessageServer
   private Thread senderThread;
   private Thread receiverThread;
   private Thread periodicExecutionThread;
-  private long updateIntervall = 60;
-  private final long graceTime = 10;
-  private final long maxGraceTime = 500;
+  private long updateIntervall = 33;
   private List<CommandSender> listeners;
   private BlockingQueue<SingleExecEntry> commandRequestQueue;
   private BlockingQueue<SingleExecEntry> callbackQueue;
@@ -355,46 +354,70 @@ public class MessageServer
   {
     while (true)
     {
-      SingleExecEntry entry = commandRequestQueue.take();
-      
-      callbackQueue.put(entry);
-
-      Command c = entry.command;
-
-      StringBuilder buffer = new StringBuilder();
-      buffer.append("+").append(c.getName());
-      if (c.getArguments() != null)
+      SingleExecEntry entry = commandRequestQueue.poll(1, TimeUnit.SECONDS);
+      if(entry == null)
       {
-        for (Map.Entry<String, byte[]> e : c.getArguments().entrySet())
+        // fire an empty message to check the connection
+        try
         {
-          boolean hasArg = e.getValue() != null;
-          buffer.append(" ");
-          if (hasArg)
+          if(isConnected())
           {
-            buffer.append("+");
+            byte[] bytes = new byte[] {13};
+            serverSocket.getOutputStream().write(bytes);
           }
-          buffer.append(e.getKey());
-          if (hasArg)
+        }
+        catch (SocketException ex)
+        {
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+          disconnect();
+        }
+        catch (IOException ex)
+        {
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+          disconnect();
+        }
+      }
+      else
+      {
+        callbackQueue.put(entry);
+
+        Command c = entry.command;
+
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("+").append(c.getName());
+        if (c.getArguments() != null)
+        {
+          for (Map.Entry<String, byte[]> e : c.getArguments().entrySet())
           {
+            boolean hasArg = e.getValue() != null;
             buffer.append(" ");
-            buffer.append(new String(Base64.encodeBase64(e.getValue())));
+            if (hasArg)
+            {
+              buffer.append("+");
+            }
+            buffer.append(e.getKey());
+            if (hasArg)
+            {
+              buffer.append(" ");
+              buffer.append(new String(Base64.encodeBase64(e.getValue())));
+            }
           }
         }
-      }
-      buffer.append("\n");
-      try
-      {
-        if(isConnected())
+        buffer.append("\n");
+        try
         {
-          byte[] bytes = buffer.toString().getBytes();
-          serverSocket.getOutputStream().write(bytes);
-          sentBytes += bytes.length;
+          if(isConnected())
+          {
+            byte[] bytes = buffer.toString().getBytes();
+            serverSocket.getOutputStream().write(bytes);
+            sentBytes += bytes.length;
+          }
         }
-      }
-      catch (IOException ex)
-      {
-        Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
-        disconnect();
+        catch (IOException ex)
+        {
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+          disconnect();
+        }
       }
     }
   }
@@ -423,13 +446,12 @@ public class MessageServer
 
           long startTime = System.currentTimeMillis();
           
-          // do not send if the robot is already busy
-          while(isConnected() 
-            && callbackQueue.size() > 0
-            && (System.currentTimeMillis() - startTime) < maxGraceTime)
+          // do not send if the robot is still busy
+          while(isConnected() && callbackQueue.size() > 0)
           {
-            Thread.sleep(graceTime);
+            Thread.yield();
           }
+          
           sendPeriodicCommands();
           
           long stopTime = System.currentTimeMillis();
