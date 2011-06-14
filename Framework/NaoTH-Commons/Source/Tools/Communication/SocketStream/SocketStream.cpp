@@ -18,7 +18,7 @@ SocketStream::~SocketStream()
   delete [] mRecvBuf;
 }
 
-void SocketStream::send(const std::string& msg)
+void SocketStream::send(const std::string& msg) throw(std::runtime_error)
 {
   if(socket == NULL)
   {
@@ -31,15 +31,14 @@ void SocketStream::send(const std::string& msg)
     g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err);
     if(err)
     {
-      g_warning("Could not send message. Error message:\n%s", err->message);
-      g_error_free (err);
-      assert(false);
+      std::string errMsg = err->message;
+      g_error_free(err);
+      throw std::runtime_error(errMsg);
     }
   }
   else
   {
-    g_warning("Can't send, not connected");
-    assert(false);
+    throw std::runtime_error("Can't send, not connected");
   }
 }
 
@@ -50,7 +49,7 @@ SocketStream& SocketStream::send()
   return *this;
 }
 
-int SocketStream::recv(std::string& msg)
+int SocketStream::recv(std::string& msg) throw(std::runtime_error)
 {
   if(socket == NULL)
   {
@@ -58,7 +57,7 @@ int SocketStream::recv(std::string& msg)
   }
   else if(!g_socket_is_connected(socket))
   {
-    g_warning("Can not receive, socket is not connected");
+    throw std::runtime_error("Can't receive, not connected");
     return -1;
   }
 
@@ -67,8 +66,9 @@ int SocketStream::recv(std::string& msg)
   int status = g_socket_receive(socket, mRecvBuf, mRecvBufSize, NULL, &err);
   if (err)
   {
-    std::cerr << "status == -1   error message: " << err->message << std::endl;
+    std::string errMsg = err->message;
     g_error_free(err);
+    throw std::runtime_error(errMsg);
   }
   else if (status > 0) {
     msg = mRecvBuf;
@@ -84,7 +84,7 @@ void SocketStream::prefixedSend()
   if (!mSendStr.str().empty()) {
     // prefix the message with it's payload length
     unsigned int len = static_cast<unsigned int> (g_htonl(mSendStr.str().size()));
-    static char preChar[sizeof (unsigned int) ];
+    char preChar[sizeof (unsigned int) ];
     memcpy(preChar, &len, sizeof (unsigned int));
     std::string msg = mSendStr.str();
     msg.insert(0, preChar, sizeof (unsigned int));

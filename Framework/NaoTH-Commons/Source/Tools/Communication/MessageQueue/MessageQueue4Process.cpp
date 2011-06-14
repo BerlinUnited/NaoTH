@@ -34,12 +34,24 @@ void MessageQueue4Process::write(const std::string& msg)
   if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
   {
     writeSocket = g_socket_accept(serverSocket, NULL, NULL);
-    theWriteStream.init(writeSocket);
+    if ( writeSocket!=NULL )
+    {
+      theWriteStream.init(writeSocket);
+      cout<<"MessageQueue " << theName << " writing opened"<<endl;
+    }
   }
   if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
     return;
 
-  theWriteStream<<msg<<send;
+  try
+  {
+    theWriteStream<<msg<<send;
+  }
+  catch (runtime_error& e)
+  {
+    cerr<<"MessageQueue " << theName << " writing closed, because "<<e.what()<<endl;
+    g_socket_close(writeSocket, NULL);
+  }
 }
 
 bool MessageQueue4Process::empty()
@@ -48,7 +60,15 @@ bool MessageQueue4Process::empty()
   if ( !g_socket_is_connected(readSocket) ) return true;
 
   string msg;
-  theReadStream>>msg;
+  try{
+    theReadStream>>msg;
+  }
+  catch (runtime_error& e)
+  {
+    cerr<<"MessageQueue " << theName << " reading closed, because "<<e.what()<<endl;
+    g_socket_close(readSocket, NULL);
+  }
+
   if ( msg.size() > 0 )
   {
     MessageQueue::write(msg);
@@ -63,16 +83,11 @@ void MessageQueue4Process::clear()
 
 void MessageQueue4Process::connect()
 {
-  g_socket_connect(readSocket, addr, NULL, NULL);
-
-  GError* error = NULL;
-  g_socket_check_connect_result(readSocket,&error);
-  if ( error != NULL )
+  if ( g_socket_connect(readSocket, addr, NULL, NULL) )
   {
-    cerr<<"connect error: "<<error->message<<endl;
-    return;
+    theReadStream.init(readSocket);
+    cout<<"MessageQueue " << theName << " reading opened"<<endl;
   }
-  theReadStream.init(readSocket);
 }
 
 void MessageQueue4Process::setReader(MessageReader* reader)
