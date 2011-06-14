@@ -28,6 +28,7 @@ public:
 
   void init(GSocket* s)
   {
+    g_object_ref(s);
     socket = s;
   }
 

@@ -21,8 +21,12 @@ theName("/tmp/naoth.messagequeue."+name),
 
 MessageQueue4Process::~MessageQueue4Process()
 {
-  //TODO: close all sockets
-  //g_object_unref()
+  if ( serverSocket != NULL )
+    g_socket_close(serverSocket, NULL);
+  if ( readSocket != NULL )
+    g_socket_close(readSocket, NULL);
+  if ( writeSocket != NULL )
+    g_socket_close(writeSocket, NULL);
 }
   
 void MessageQueue4Process::write(const std::string& msg)

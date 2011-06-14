@@ -13,7 +13,7 @@ SocketStream::~SocketStream()
 {
   if(socket != NULL)
   {
-    g_socket_close(socket, NULL);
+    g_object_unref(socket);
   }
   delete [] mRecvBuf;
 }

@@ -122,6 +122,9 @@ SimSparkController::~SimSparkController()
   g_mutex_free(theCognitionInputMutex);
   g_cond_free(theCognitionInputCond);
   
+  if (socket != NULL)
+    g_socket_close(socket, NULL);
+
   if (theImageData != NULL)
     delete [] theImageData;
 }
