@@ -52,8 +52,17 @@ void MessageQueue4Process::write(const std::string& msg)
   }
   catch (runtime_error& e)
   {
-    cerr<<"MessageQueue " << theName << " writing closed, because "<<e.what()<<endl;
-    g_socket_close(writeSocket, NULL);
+    if ( g_socket_close(writeSocket, NULL) )
+    {
+      cerr<<"MessageQueue " << theName << " writing closed, because "<<e.what()<<endl;
+      g_object_unref(writeSocket);
+      writeSocket = NULL;
+      theWriteStream.init(NULL);
+    }
+    else
+    {
+      cerr<<"MessageQueue " << theName << " writing can not close"<<endl;
+    }
   }
 }
 
@@ -68,8 +77,17 @@ bool MessageQueue4Process::empty()
   }
   catch (runtime_error& e)
   {
-    cerr<<"MessageQueue " << theName << " reading closed, because "<<e.what()<<endl;
-    g_socket_close(readSocket, NULL);
+    if ( g_socket_close(readSocket, NULL) )
+    {
+      cerr<<"MessageQueue " << theName << " reading closed, because "<<e.what()<<endl;
+      g_object_unref(readSocket);
+      readSocket = g_socket_new(G_SOCKET_FAMILY_UNIX, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_DEFAULT, NULL);
+      g_socket_set_blocking(readSocket, false);
+    }
+    else
+    {
+      cerr<<"MessageQueue " << theName << " reading close failed"<<endl;
+    }
   }
 
   if ( msg.size() > 0 )

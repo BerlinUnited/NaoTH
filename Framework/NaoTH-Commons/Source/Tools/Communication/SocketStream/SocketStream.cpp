@@ -3,7 +3,7 @@
 #include <glib.h>
 
 SocketStream::SocketStream()
-: mRecvdLen(0)
+: mRecvdLen(0),socket(NULL)
 {
     mRecvBuf = new char[default_recv_buffer_size + 1];
     mRecvBufSize = default_recv_buffer_size;
@@ -11,11 +11,24 @@ SocketStream::SocketStream()
 
 SocketStream::~SocketStream()
 {
-  if(socket != NULL)
+  init(NULL);
+  delete [] mRecvBuf;
+}
+
+void SocketStream::init(GSocket* s)
+{
+  if ( socket != NULL)
   {
     g_object_unref(socket);
+    socket = NULL;
   }
-  delete [] mRecvBuf;
+
+  if ( s != NULL)
+  {
+    g_object_ref(s);
+    socket = s;
+  }
+  mRecvdLen = 0;
 }
 
 void SocketStream::send(const std::string& msg) throw(std::runtime_error)
@@ -64,7 +77,7 @@ int SocketStream::recv(std::string& msg) throw(std::runtime_error)
   memset(mRecvBuf, 0, mRecvBufSize + 1);
   GError* err = NULL;
   int status = g_socket_receive(socket, mRecvBuf, mRecvBufSize, NULL, &err);
-  if (err)
+  if (status < 0)
   {
     std::string errMsg = err->message;
     g_error_free(err);
@@ -94,7 +107,7 @@ void SocketStream::prefixedSend()
   }
 }
 
-bool SocketStream::isFixedLengthDataAvailable(unsigned int len)
+bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error)
 {
   if(socket == NULL || !g_socket_is_connected(socket))
   {
@@ -112,10 +125,19 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len)
   for (;;) {
     /* See if we have enough data to satisfy request */
     if (mRecvdLen >= len) return true;
+
     /* there was not enough data in the read buffer, so let's try to get some more */
     int res = g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, NULL);
     
-    if (res <= 0) return false;
+    if (res <= 0)
+    {
+      bool lostConnection = g_socket_condition_check(socket, G_IO_IN) & (G_IO_HUP|G_IO_ERR);
+      if ( lostConnection )
+      {
+        throw std::runtime_error("lost connection");
+      }
+      return false;
+    }
     /* res is > 0 */
     mRecvdLen += res;
   }

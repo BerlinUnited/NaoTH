@@ -27,11 +27,7 @@ public:
 
   ~SocketStream();
 
-  void init(GSocket* s)
-  {
-    g_object_ref(s);
-    socket = s;
-  }
+  void init(GSocket* s);
 
   void send(const std::string& msg) throw(std::runtime_error);
 
@@ -62,7 +58,7 @@ protected:
 
   void prefixedSend();
 
-  bool isFixedLengthDataAvailable(unsigned int len);
+  bool isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error);
 
   int prefixedRecv(std::string& msg);
 
