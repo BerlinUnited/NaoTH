@@ -99,7 +99,6 @@ void Motion::call()
     string msg = theMotionRequestReader->read();
     stringstream ss(msg);
     Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
-    cout<<"get motion request"<<endl;
   }
 
   // execute head motion firstly

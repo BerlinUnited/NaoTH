@@ -83,7 +83,6 @@ void MessageQueue4Process::setReader(MessageReader* reader)
   MessageQueue::setReader(reader);
 }
 
-
 void MessageQueue4Process::setWriter(MessageWriter* writer)
 {
   serverSocket = g_socket_new(G_SOCKET_FAMILY_UNIX, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_DEFAULT, NULL);
@@ -105,5 +104,6 @@ void MessageQueue4Process::setWriter(MessageWriter* writer)
   }
 
   MessageQueue::setWriter(writer);
+  cout<<"MessageQueue open "<<theName<<endl;
 }
 

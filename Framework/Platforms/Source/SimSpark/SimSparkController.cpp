@@ -9,7 +9,7 @@
 #include "SimSparkController.h"
 #include <iostream>
 #include <fstream>
-#include "Tools/Communication/MessageQueue/MessageQueue4Process.h"
+#include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
 
@@ -1192,6 +1192,8 @@ bool SimSparkController::updateIMU(const sexp_t* sexp)
 
 MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
 {
-  // for multi threads
-  return new MessageQueue4Process(name);//MessageQueue4Threads();
+  if ( theSyncMode )
+    return new MessageQueue();
+  else
+    return new MessageQueue4Threads();
 }
