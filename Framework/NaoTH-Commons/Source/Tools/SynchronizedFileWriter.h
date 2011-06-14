@@ -36,7 +36,8 @@ public:
       // synchronize with the filesystem, 
       // i.e., purge the fs buffer to the disk
 #ifdef NAO
-      fsync(file);
+      int fd = fileno(file);
+      fsync(fd);
 #endif
 
       fclose(file);
