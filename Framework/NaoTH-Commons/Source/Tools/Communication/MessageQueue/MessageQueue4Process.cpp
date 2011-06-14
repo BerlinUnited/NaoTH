@@ -89,6 +89,8 @@ void MessageQueue4Process::setWriter(MessageWriter* writer)
   serverSocket = g_socket_new(G_SOCKET_FAMILY_UNIX, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_DEFAULT, NULL);
   g_socket_set_blocking(serverSocket, false);
 
+  unlink(theName.c_str());
+
   GError* error = NULL;
   bool suc = g_socket_bind(serverSocket, addr, TRUE, &error);
   if ( suc )
