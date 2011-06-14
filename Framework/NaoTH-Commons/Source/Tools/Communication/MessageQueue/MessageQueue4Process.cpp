@@ -6,9 +6,12 @@
  */
 
 #include "MessageQueue4Process.h"
-#include <gio/gunixsocketaddress.h>
 #include "Tools/Debug/NaoTHAssert.h"
 #include <cstring>
+
+// only avaiable on Nao
+#ifdef NAO
+#include <gio/gunixsocketaddress.h>
 
 MessageQueue4Process::MessageQueue4Process(const std::string& name):
 theName("/tmp/naoth.messagequeue."+name),
@@ -121,4 +124,6 @@ void MessageQueue4Process::setWriter(MessageWriter* writer)
   MessageQueue::setWriter(writer);
   cout<<"MessageQueue open "<<theName<<endl;
 }
+
+#endif
 
