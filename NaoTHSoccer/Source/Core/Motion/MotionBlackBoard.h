@@ -20,6 +20,7 @@
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Infrastructure/LEDData.h>
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
@@ -80,6 +81,8 @@ public:
   MotionRequest theMotionRequest;
   
   AbstractMotion* currentlyExecutedMotion;
+
+  LEDData theLEDData;
 };
 
 #endif	/* _MOTIONBLACKBOARD_H */

@@ -39,6 +39,8 @@ protected:
   void selectMotion();
   
   void changeMotion(AbstractMotion* m);
+
+  void checkWarningState();
   
 private:
   MotionBlackBoard& theBlackBoard;
@@ -58,6 +60,8 @@ private:
   // message from cognition to motion
   MessageReader* theHeadMotionRequestReader;
   MessageReader* theMotionRequestReader;
+
+  unsigned int frameNumSinceLastMotionRequest;
 };
 
 #endif	/* MOTION_H */
