@@ -56,7 +56,7 @@ public:
         return false;
       }
 
-      lock();
+      trylock();
       
       if((shmId = shm_open(theName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1)
       {
@@ -117,7 +117,9 @@ public:
   // return if get the new data
   bool swapReading()
   {
-    lock();
+    if ( !trylock() )
+      return false;
+
     const bool swappingReady = theMemory->swappingReady;
     if ( swappingReady )
     {
@@ -130,9 +132,11 @@ public:
   
   void swapWriting()
   {
-    lock();
-    swap(theMemory->writing, theMemory->swapping);
-    theMemory->swappingReady = true;
+    if ( trylock() )
+    {
+      swap(theMemory->writing, theMemory->swapping);
+      theMemory->swappingReady = true;
+    }
     unlock();
   }
 
@@ -160,6 +164,7 @@ public:
     }
     
 protected:
+    bool trylock() { return sem_trywait(sem) == 0; }
     void lock() { sem_wait(sem); }
     void unlock() { sem_post(sem); }
   
