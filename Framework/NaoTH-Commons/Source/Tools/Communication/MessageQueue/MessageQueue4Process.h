@@ -24,9 +24,6 @@ public:
   
   /* is there any message in the channel */
   virtual bool empty();
-  
-  /* clear messages in the channel */
-  virtual void clear();
 
   virtual void setReader(MessageReader* reader);
 

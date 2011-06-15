@@ -42,9 +42,10 @@ void MessageQueue4Process::write(const std::string& msg)
       theWriteStream.init(writeSocket);
       cout<<"MessageQueue " << theName << " writing opened"<<endl;
     }
+
+    if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
+      return;
   }
-  if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
-    return;
 
   try
   {
@@ -68,8 +69,12 @@ void MessageQueue4Process::write(const std::string& msg)
 
 bool MessageQueue4Process::empty()
 {
-  if ( !g_socket_is_connected(readSocket) ) connect();
-  if ( !g_socket_is_connected(readSocket) ) return true;
+  if ( !g_socket_is_connected(readSocket) )
+  {
+    connect();
+    if ( !g_socket_is_connected(readSocket) )
+      return true;
+  }
 
   string msg;
   try{
@@ -96,10 +101,6 @@ bool MessageQueue4Process::empty()
   }
 
   return MessageQueue::empty();
-}
-
-void MessageQueue4Process::clear()
-{
 }
 
 void MessageQueue4Process::connect()
@@ -137,6 +138,7 @@ void MessageQueue4Process::setWriter(MessageWriter* writer)
   {
     cerr<<"can not open "<<theName<<endl;
     cerr<<error->message<<endl;
+    g_error_free(error);
   }
 
   MessageQueue::setWriter(writer);
