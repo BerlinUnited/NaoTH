@@ -26,9 +26,7 @@ NaoMotionController::NaoMotionController()
   registerInput<UltraSoundReceiveData>(*this);
 
   // register output
-  //registerOutput<const LEDData>(*this);
-  //registerOutput<const IRSendData>(*this);
-  //registerOutput<const UltraSoundSendData>(*this);
+  registerOutput<const LEDData>(*this);
   registerOutput<const MotorJointData>(*this);
 }
 
@@ -80,3 +78,9 @@ void NaoMotionController::setMotionOutput()
     theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
   }
 }
+
+void NaoMotionController::set(const LEDData& data)
+{
+  theDCMHandler.setLED(data);
+}
+
