@@ -28,7 +28,7 @@ private:
   
   InverseKinematic::ZMPFeetPose walk(const WalkRequest& req);
   
-  InverseKinematic::ZMPFeetPose stopWalking();
+  InverseKinematic::CoMFeetPose stopWalking();
   
   bool canStop() const;
   
@@ -46,6 +46,8 @@ private:
   int theUnsupportedCount;
   
   bool isStopping;
+  bool stoppingStepFinished;
+  WalkRequest stoppingRequest;
   
   int currentCycle;
   FootStep currentFootStep;
