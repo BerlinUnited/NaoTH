@@ -26,6 +26,8 @@ public:
     NaoControllerBase<NaoMotionController>::get(data);
   }
 
+  void set(const LEDData& data);
+
   /////////////////////// init ///////////////////////
   void init(ALPtr<ALBroker> pB);
   

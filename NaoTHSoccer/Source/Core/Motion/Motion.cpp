@@ -18,7 +18,8 @@ Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
 theMotionStatusWriter(NULL),
 theOdometryDataWriter(NULL),
 theHeadMotionRequestReader(NULL),
-theMotionRequestReader(NULL)
+theMotionRequestReader(NULL),
+  frameNumSinceLastMotionRequest(0)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -68,6 +69,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   platformInterface.registerMotionOutput(theBlackBoard.the##R)
 
   REG_OUTPUT(MotorJointData);
+  REG_OUTPUT(LEDData);
   g_message("Motion register end");
   
   theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
@@ -99,7 +101,14 @@ void Motion::call()
     string msg = theMotionRequestReader->read();
     stringstream ss(msg);
     Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
+    frameNumSinceLastMotionRequest = 0;
   }
+  else
+  {
+    frameNumSinceLastMotionRequest++;
+  }
+
+  checkWarningState();
 
   // execute head motion firstly
   theHeadMotionEngine.execute();
@@ -226,3 +235,32 @@ bool Motion::exit()
     && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
     && ( theBlackBoard.currentlyExecutedMotion->isFinished() );
 }//end exit
+
+void Motion::checkWarningState()
+{
+  // check if cognition is running
+  if ( frameNumSinceLastMotionRequest*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() > 1 )
+  {
+    theBlackBoard.theMotionRequest.id = motion::init;
+    theBlackBoard.theLEDData.change = true;
+
+    LEDData& theLEDData = theBlackBoard.theLEDData;
+    int begin = int(frameNumSinceLastMotionRequest*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond()*10)%10;
+    theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
+    theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
+    int end = (begin+2)%10;
+    theLEDData.theMonoLED[LEDData::EarRight0 + end] = 1;
+    theLEDData.theMonoLED[LEDData::EarLeft0 + end] = 1;
+
+    for(int i=0; i<LEDData::numOfMultiLED; i++)
+    {
+      theLEDData.theMultiLED[i][LEDData::RED] = 0;
+      theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
+      theLEDData.theMultiLED[i][LEDData::BLUE] = 1;
+    }
+  }
+  else
+  {
+    theBlackBoard.theLEDData.change = false;
+  }
+}
