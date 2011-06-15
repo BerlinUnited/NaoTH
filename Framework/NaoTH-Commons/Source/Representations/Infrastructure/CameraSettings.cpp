@@ -55,7 +55,7 @@ void CameraSettings::print(ostream& stream) const
 
 
 CameraSettingsRequest::CameraSettingsRequest()
-: ParameterList("CameraSettingsRequest"),
+: ParameterList("CameraSettings"),
     /*Platform::getInstance().theConfigPathInfo.camera_parameter+"/camera_setting.prm"),*/
   queryCameraSettings(false)
 {

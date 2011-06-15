@@ -1,12 +1,12 @@
 /**
-* @file naoth.h
+* @file libnaoth.h
 *
 * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
 * 
 */
 
-#ifndef _NAOTH_H
-#define	_NAOTH_H
+#ifndef _LIB_NAOTH_H
+#define	_LIB_NAOTH_H
 
 // ..::: Headers ::
 #include <fstream>
@@ -38,6 +38,5 @@
 /** Release date */
 #define NAOTH_VERSION_DATE     "20100406"
 
-
-#endif	/* _NAOTH_H */
+#endif	/* _LIB_NAOTH_H */
 

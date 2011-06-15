@@ -91,10 +91,10 @@ namespace naoth
 
     virtual string getHardwareIdentity() const { return "webots"; }
 
-    virtual string getBodyID() { return "naoth-webots"; }
+    virtual string getBodyID() const { return "naoth-webots"; }
 
-    virtual string getBodyNickName() {return "naoth"; }
-
+    virtual string getBodyNickName() const {return "naoth"; }
+    
     virtual void getCognitionInput();
 
     /////////////////////// init ///////////////////////
@@ -130,6 +130,9 @@ namespace naoth
      void set(const UltraSoundSendData& data);
      void set(const SoundData& data);
      void set(const MotorJointData& data);
+
+  protected:
+    virtual MessageQueue* createMessageQueue(const std::string& name);
 
   private:
     void get_Devices();

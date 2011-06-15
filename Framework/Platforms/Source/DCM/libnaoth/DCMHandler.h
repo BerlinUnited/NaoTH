@@ -21,23 +21,15 @@
 #include <alproxies/alledsproxy.h>
 #include <alproxies/dcmproxy.h>
 
-#include "Representations/Infrastructure/JointData.h"
-#include "Representations/Infrastructure/FSRData.h"
-#include "Representations/Infrastructure/LEDData.h"
-#include "Representations/Infrastructure/AccelerometerData.h"
-#include "Representations/Infrastructure/GyrometerData.h"
-#include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/ButtonData.h"
-#include "Representations/Infrastructure/IRData.h"
-#include "Representations/Infrastructure/UltraSoundData.h"
-#include "Representations/Infrastructure/BatteryData.h"
+#include "Tools/SharedMemory.h"
+#include "Tools/IPCData.h"
 
 using namespace AL;
 using namespace std;
 
 namespace naoth 
 {
-
+ 
 class DCMHandler
 {
   private:
@@ -45,7 +37,7 @@ class DCMHandler
     ALPtr<ALMemoryProxy> al_memory;
     ALMemoryFastAccess al_memoryfast;
     DCMProxy * al_dcmproxy;
-     
+    
     //Joints
     string DCMPath_MotorJointHardness[JointData::numOfJoint];
     string DCMPath_MotorJointPosition[JointData::numOfJoint];
@@ -83,7 +75,6 @@ class DCMHandler
     string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
     string DCMPath_UltraSoundSend;
 
-
     //Body-ID
     string DCMPath_BodyId;
     string DCMPath_BodyNickName;
@@ -98,22 +89,8 @@ class DCMHandler
     ALValue irCommands;
     ALValue usSendCommands;
 
-    TStringArray allSensorsList;
-
-    TFloatArray currentAllSensorsValue;
-    unsigned int currentTimestamp;
-
-    // index
-    unsigned int theSensorJointDataIndex;
-    unsigned int theFSRDataIndex;
-    unsigned int theAccelerometerDataIndex;
-    unsigned int theGyrometerDataIndex;
-    unsigned int theInertialSensorDataIndex;
-    unsigned int theIRReceiveDataIndex;
-    unsigned int theButtonDataIndex;
-    unsigned int theUltraSoundReceiveDataIndex;
-    unsigned int thBatteryDataIdex;
-
+    string allSensorsList[numOfSensors];
+    float* sensorPtrs[numOfSensors];
 
   ALValue getFromALMemory(const string& path);
   
@@ -144,24 +121,17 @@ public:
     string getBodyID();
     string getBodyNickName();
 
-    void getData();
-
-    void get(SensorJointData& data) const;
-    void get(FSRData& data) const;
-    void get(AccelerometerData& data) const;
-    void get(GyrometerData& data) const;
-    void get(InertialSensorData& data) const;
-    void get(IRReceiveData& data) const;
-    void get(ButtonData& data) const;
-    void get(UltraSoundReceiveData& data) const;
-    void get(BatteryData& data) const;
-
-    unsigned int getCurrentTimeStamp() const { return currentTimestamp; }
+    // read sensor data from AL memory
+    void readSensorData(unsigned int& timeStamp, float* dest);
+    
+    void set(const LEDData& data);
+    void set(const IRSendData& data);
+    void set(const UltraSoundSendData& data);
 
     void setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData);
-    void setAllMotorData(const MotorJointData& theMotorJointData);
+    void setAllMotorData(const MotorJointData& mjd);
     
-    void setLED(const LEDData& theLEDData);
+    void setLED(const LEDData& data);
 
     void setIRSend(const IRSendData& theIRSendData);
     void setUltraSoundSend(const UltraSoundSendData& data);

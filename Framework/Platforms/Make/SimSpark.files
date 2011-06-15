@@ -1,6 +1,4 @@
-../Source/SimSpark/main.cpp
 ../Source/SimSpark/SimSparkController.cpp
-../Source/SimSpark/Communication/SocketStream.cpp
+../Source/SimSpark/main.cpp
 ../Source/SimSpark/SimSparkController.h
-../Source/SimSpark/Communication/SocketStream.h
 ../Source/SimSpark/sfsexp/SexpParser.h

@@ -1,5 +1,5 @@
 /**
- * @file naoth.cpp
+ * @file libnaoth.cpp
  *
  * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
  *
@@ -8,7 +8,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "naoth.h"
+#include "libnaoth.h"
 #include "NaothModule.h"
 
 using namespace std;
@@ -40,7 +40,6 @@ ALCALL int _createModule(ALPtr<ALBroker> pBroker )
 ALCALL int _closeModule(  )
 {
   // Delete module instance. Will unregister automatically
-//  delete lMyModule;
   return 0;
 }
 

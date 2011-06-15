@@ -26,12 +26,18 @@ public:
 #endif
     if (file != NULL) 
     {
-      fwrite(content.c_str(), 1, content.length(), file);
+      size_t byteWrite = fwrite(content.c_str(), 1, content.length(), file);
+
+      if ( byteWrite != content.length() )
+      {
+        printf("SynchronizedFileWriter write failed to %s", filename.c_str());
+      }
 
       // synchronize with the filesystem, 
       // i.e., purge the fs buffer to the disk
 #ifdef NAO
-      fsync(file);
+      int fd = fileno(file);
+      fsync(fd);
 #endif
 
       fclose(file);

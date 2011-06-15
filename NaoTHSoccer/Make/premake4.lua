@@ -69,6 +69,7 @@ solution "NaoTHSoccer"
     targetdir "../dist/Native"
     
   configuration {"Nao"}
+    defines { "NAO" }
     targetdir "../dist/Nao"
   
   -- additional defines for windows

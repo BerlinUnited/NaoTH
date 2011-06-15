@@ -33,7 +33,7 @@
 #include <Representations/Infrastructure/SimSparkGameInfo.h>
 
 
-#include "Communication/SocketStream.h"
+#include <Tools/Communication/SocketStream/SocketStream.h>
 //#include "SimSparkTeamCommunicator.h"
 
 #include "PlatformInterface/Platform.h"
@@ -47,6 +47,7 @@ using namespace naoth;
 class SimSparkController : public PlatformInterface<SimSparkController>
 {
 private:
+  GSocket* socket;
   PrefixedSocketStream theSocket;
 
   // sensor data
@@ -93,12 +94,12 @@ public:
 
   virtual string getHardwareIdentity() const { return "simspark"; }
 
-  virtual string getBodyID() { return "naoth-simspark"; }
+  virtual string getBodyID() const { return "naoth-simspark"; }
 
   /* return the team name
    *  it is useful for distinguishing players from different teams in VirtualVision
    */
-  virtual string getBodyNickName() {return theTeamName; }
+  virtual string getBodyNickName() const {return theTeamName; }
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
@@ -134,6 +135,8 @@ public:
   void set(const CameraSettingsRequest& data);
 
 protected:
+  virtual MessageQueue* createMessageQueue(const std::string& name);
+  
   // the main loop in single thread
   void singleThreadMain();
 
@@ -143,6 +146,8 @@ protected:
   void updateInertialSensor();
 
 private:
+  bool connect(const std::string& host, int port);
+
   bool updateSensors();
 
   int parseString(char* data, std::string& value);

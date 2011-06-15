@@ -28,28 +28,23 @@ public:
 protected:
   
   /* write message to the channel */
-  void write(const std::string& msg);
+  virtual void write(const std::string& msg);
   
   /* is there any message in the channel */
-  bool empty() const;
+  virtual bool empty();
   
   /* read one message from the channel */
-  std::string read();
+  virtual std::string read();
   
   /* clear messages in the channel */
-  void clear();
+  virtual void clear();
   
-  void setReader(MessageReader* reader);
+  virtual void setReader(MessageReader* reader);
   
-  void setWriter(MessageWriter* writer);
+  virtual void setWriter(MessageWriter* writer);
   
-  void lock();
-  
-  void unlock();
-  
-private:
+protected:
   std::queue<std::string> theMsg;
-  GMutex* theMutex;
   
   MessageReader* theReader;
   MessageWriter* theWriter;

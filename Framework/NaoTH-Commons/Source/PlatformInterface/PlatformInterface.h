@@ -8,7 +8,7 @@
 
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/Communication/MessageQueue.h"
+#include "Tools/Communication/MessageQueue/MessageQueue.h"
 
 #include <map>
 #include <list>
@@ -51,18 +51,20 @@ namespace naoth
 
     /////////////////////// get ///////////////////////
     virtual string getHardwareIdentity() const = 0;
-    virtual string getBodyID() = 0;
-    virtual string getBodyNickName() = 0;
+    virtual string getBodyID() const = 0;
+    virtual string getBodyNickName() const = 0;
 
     inline const string& getName() const { return platformName; }
     inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
 
     MessageQueue* getMessageQueue(const std::string& name);
-
+    
+  protected:
+    virtual MessageQueue* createMessageQueue(const std::string& name) = 0;
+    
   private:
     std::string platformName;
     unsigned int theBasicTimeStep;
-    
     std::map<std::string, MessageQueue*> theMessageQueue;
   };//end class PlatformBase
 
@@ -214,18 +216,6 @@ namespace naoth
   public:
     virtual ~PlatformInterface(){};
 
-    template<class T>
-    void get(T& data)
-    {
-      PlatformType::get(data);
-    }
-
-    template<class T>
-    void set(const T& data)
-    {
-      PlatformType::set(data);
-    }
-
   protected:
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)
       : PlatformInterfaceBase(name, basicTimeStep)
@@ -342,9 +332,6 @@ namespace naoth
         std::cerr << "register MOTION callback" << std::endl;
         this->motionCallback = motionCallback;
         motionCallback->init(*this);
-      }else
-      {
-        std::cerr << "could not register MOTION callback because it was NULL" << std::endl;
       }
 
       if(cognitionCallback != NULL)
@@ -352,9 +339,6 @@ namespace naoth
         std::cerr << "register COGNITION callback" << std::endl;
         this->cognitionCallback = cognitionCallback;
         cognitionCallback->init(*this);
-      }else
-      {
-        std::cerr << "could not register COGNITION callback because it was NULL" << std::endl;
       }
     }//end registerCallbacks
 

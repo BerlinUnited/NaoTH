@@ -10,7 +10,7 @@ DCMHandler::~DCMHandler()
 {}
 
 void DCMHandler::init(ALPtr<ALBroker> pB)
-{
+{  
   pBroker = pB;
 
   time_delay = 0;
@@ -44,7 +44,6 @@ void DCMHandler::init(ALPtr<ALBroker> pB)
   DCMPath_BatteryCharge = "Device/SubDeviceList/Battery/Charge/Sensor/Value";
 
   initAllSensorData();
-
 }
 
 string DCMHandler::getBodyID()
@@ -211,7 +210,7 @@ void DCMHandler::setSingleMotorData(const JointData::JointID jointID,const Motor
   sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],timestamp);
 }
 
-void DCMHandler::setAllMotorData(const MotorJointData& theMotorJointData)
+void DCMHandler::setAllMotorData(const MotorJointData& mjd)
 {
   int currentAbsDelay = al_dcmproxy->getTime(time_delay);
   allMotorPositionCommands[4][0] = currentAbsDelay;
@@ -220,13 +219,13 @@ void DCMHandler::setAllMotorData(const MotorJointData& theMotorJointData)
   //MotorJoints
   for(int i=0;i<JointData::RHipYawPitch;i++)
   {
-    allMotorHardnessCommands[5][i][0] = theMotorJointData.stiffness[i];
-    allMotorPositionCommands[5][i][0] = theMotorJointData.position[i];
+    allMotorHardnessCommands[5][i][0] = mjd.stiffness[i];
+    allMotorPositionCommands[5][i][0] = mjd.position[i];
   }
   for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
   {
-    allMotorHardnessCommands[5][i-1][0] = theMotorJointData.stiffness[i];
-    allMotorPositionCommands[5][i-1][0] = theMotorJointData.position[i];
+    allMotorHardnessCommands[5][i-1][0] = mjd.stiffness[i];
+    allMotorPositionCommands[5][i-1][0] = mjd.position[i];
   }
 
   try
@@ -374,21 +373,21 @@ void DCMHandler::initLED()
   }
 }
 
-void DCMHandler::setLED(const LEDData& theLEDData)
-{  
-
+void DCMHandler::setLED(const LEDData& data)
+{
+  if ( !data.change ) return;
   
   ledCommands[4][0] = al_dcmproxy->getTime(time_delay);
 
   for(int i=0;i<LEDData::numOfMonoLED;i++)
   {
-    ledCommands[5][i][0] = theLEDData.theMonoLED[i];
+    ledCommands[5][i][0] = data.theMonoLED[i];
   }
   for(int i=0;i<LEDData::numOfMultiLED;i++)
   {
-    ledCommands[5][LEDData::numOfMonoLED + 3*i][0] = theLEDData.theMultiLED[i][LEDData::RED];
-    ledCommands[5][LEDData::numOfMonoLED + 3*i+1][0] = theLEDData.theMultiLED[i][LEDData::GREEN];
-    ledCommands[5][LEDData::numOfMonoLED + 3*i+2][0] = theLEDData.theMultiLED[i][LEDData::BLUE];
+    ledCommands[5][LEDData::numOfMonoLED + 3*i][0] = data.theMultiLED[i][LEDData::RED];
+    ledCommands[5][LEDData::numOfMonoLED + 3*i+1][0] = data.theMultiLED[i][LEDData::GREEN];
+    ledCommands[5][LEDData::numOfMonoLED + 3*i+2][0] = data.theMultiLED[i][LEDData::BLUE];
   }
   try
   {
@@ -502,13 +501,15 @@ void DCMHandler::initIRSend()
   }
 }
 
-void DCMHandler::setIRSend(const IRSendData& theIRSendData)
+void DCMHandler::setIRSend(const IRSendData& data)
 {
+  if ( !data.changed ) return;
+  
   irCommands[4][0] = al_dcmproxy->getTime(time_delay);
 
   for(int i=0;i<IRSendData::numOfIRSend;i++)
   {
-    irCommands[5][i][0] = theIRSendData.data[i];
+    irCommands[5][i][0] = data.data[i];
   }
   try
   {
@@ -593,23 +594,10 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
 
 void DCMHandler::initAllSensorData()
 {
-  int numElements = 4 * (JointData::numOfJoint - 1)
-                  + FSRData::numOfFSR
-                  + AccelerometerData::numOfAccelerometer
-                  + GyrometerData::numOfGyrometer + 1
-                  + InertialSensorData::numOfInertialSensor
-                  + IRReceiveData::numOfIRReceive
-                  + ButtonData::numOfButtons
-                  + 1 + 2 * UltraSoundData::numOfIRSend//3 // ultrasound
-                  + 1; // ???
-
-  allSensorsList.resize(numElements);
-  currentAllSensorsValue.resize(numElements);
-  
   int currentIndex=0;
 
   //SensorJointData
-  theSensorJointDataIndex = currentIndex;
+  ASSERT(theSensorJointDataIndex == currentIndex);
   for(int i=0;i<JointData::RHipYawPitch;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
@@ -627,49 +615,49 @@ void DCMHandler::initAllSensorData()
   }
 
   //FSRData
-  theFSRDataIndex = currentIndex;
+  ASSERT(theFSRDataIndex == currentIndex);
   for(int i=0;i<FSRData::numOfFSR;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_FSR[i];
   }
 
   //AccelerometerData
-  theAccelerometerDataIndex = currentIndex;
+  ASSERT(theAccelerometerDataIndex == currentIndex);
   for(int i=0;i<AccelerometerData::numOfAccelerometer;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_Accelerometer[i];
   }
 
   //GyrometerData
-  theGyrometerDataIndex = currentIndex;
+  ASSERT(theGyrometerDataIndex == currentIndex);
   for(int i=0;i<GyrometerData::numOfGyrometer+1;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_Gyrometer[i];
   }
 
   //InertialSensorsData
-  theInertialSensorDataIndex = currentIndex;
+  ASSERT(theInertialSensorDataIndex == currentIndex);
   for(int i=0;i<InertialSensorData::numOfInertialSensor;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_InertialSensor[i];
   }
 
   //IRReceiveData
-  theIRReceiveDataIndex = currentIndex;
+  ASSERT(theIRReceiveDataIndex == currentIndex);
   for(int i=0;i<IRReceiveData::numOfIRReceive;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_IRReceive[i];
   }
 
   //ButtonData
-  theButtonDataIndex = currentIndex;
+  ASSERT(theButtonDataIndex == currentIndex);
   for(int i=0;i<ButtonData::numOfButtons;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_Button[i];
   }
 
   //UltraSoundReceiveData
-  theUltraSoundReceiveDataIndex = currentIndex;
+  ASSERT(theUltraSoundReceiveDataIndex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive; 
   for(int i = 0; i < UltraSoundData::numOfIRSend; i++)
   {
@@ -677,175 +665,23 @@ void DCMHandler::initAllSensorData()
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveRight[i];
   }
 
-  thBatteryDataIdex = currentIndex;
+  ASSERT(thBatteryDataIdex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
 
   //connect variables
-  al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
-}
-
-void DCMHandler::getData()
-{
-  currentTimestamp = al_dcmproxy->getTime(time_delay);
-  al_memoryfast.GetValues(currentAllSensorsValue);
-}
-
-void DCMHandler::get(SensorJointData& data) const
-{
-  try {
-    unsigned int currentIndex = theSensorJointDataIndex;
-    for (int i = 0; i < JointData::RHipYawPitch; i++) {
-      data.electricCurrent[i] = currentAllSensorsValue[currentIndex++];
-      data.temperature[i] = currentAllSensorsValue[currentIndex++];
-      data.position[i] = currentAllSensorsValue[currentIndex++];
-      data.stiffness[i] = currentAllSensorsValue[currentIndex++];
-    }
-    for (int i = JointData::RHipYawPitch + 1; i < JointData::numOfJoint; i++) {
-      data.electricCurrent[i] = currentAllSensorsValue[currentIndex++];
-      data.temperature[i] = currentAllSensorsValue[currentIndex++];
-      data.position[i] = currentAllSensorsValue[currentIndex++];
-      data.stiffness[i] = currentAllSensorsValue[currentIndex++];
-    }
-    data.electricCurrent[JointData::RHipYawPitch] = data.electricCurrent[JointData::LHipYawPitch];
-    data.temperature[JointData::RHipYawPitch] = data.temperature[JointData::LHipYawPitch];
-    data.position[JointData::RHipYawPitch] = data.position[JointData::LHipYawPitch];
-    data.stiffness[JointData::RHipYawPitch] = data.stiffness[JointData::LHipYawPitch];
-  }  catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(FSRData& data) const
-{
-  try {
-    unsigned int currentIndex = theFSRDataIndex;
-    for (int i = 0; i < FSRData::numOfFSR; i++) {
-      data.data[i] = currentAllSensorsValue[currentIndex++];
-      data.force[i] = data.data[i] * 9.81; // The value returned for each FSR is similar to Kg in NaoQi 1.3.17
-      data.valid[i] = ( data.force[i] >= NaoInfo::FSRMinForce && data.force[i] <= NaoInfo::FSRMaxForce );
-    }
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(AccelerometerData& data) const
-{
-  try{
-    //forum of Aldebaran scale = g/56.0
-    //experiments Nao36 scale = g/60.0
-    //wrong sign in Aldebaran
-    static float scale_acc = -9.81/60.0;
-
-    unsigned int currentIndex = theAccelerometerDataIndex;
-    for (int i = 0; i < AccelerometerData::numOfAccelerometer; i++) {
-      data.rawData[i] = currentAllSensorsValue[currentIndex++];
-      //0.1532289 = 9.80665/64
-      data.data[i] = data.rawData[i] * scale_acc;//* 0.1532289;
-    }
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(GyrometerData& data) const
-{
-  try {
-    //data = (raw-zero) * 2.7 * PI/180 [rad/s]
-    static float scale_gyro = 2.7 * M_PI/180.0;
-
-    unsigned int currentIndex = theGyrometerDataIndex;
-    for (int i = 0; i < GyrometerData::numOfGyrometer + 1; i++) {
-      data.rawData[i] = currentAllSensorsValue[currentIndex++];
-    }
-    for (int i = 0; i < GyrometerData::numOfGyrometer; i++) {
-      data.data[i] = (data.rawData[i] - data.rawData[2]) * scale_gyro;
-    }
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(InertialSensorData& data) const
-{
-  try {
-    unsigned int currentIndex = theInertialSensorDataIndex;
-    for (int i = 0; i < InertialSensorData::numOfInertialSensor; i++)
-    {
-      data.data[i] = currentAllSensorsValue[currentIndex++] + data.offset[i];
-    }
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(IRReceiveData& data) const
-{
-  try {
-    unsigned int currentIndex = theIRReceiveDataIndex;
-    for (int i = 0; i < IRReceiveData::numOfIRReceive; i++) {
-      data.data[i] = currentAllSensorsValue[currentIndex++];
-    }
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(ButtonData& data) const
-{
-  try{
-    unsigned int currentIndex = theButtonDataIndex;
-    for (int i = 0; i < ButtonData::numOfButtons; i++) {
-      float temp = currentAllSensorsValue[currentIndex++];
-      bool wasAlreadPressed = data.isPressed[i];
-      if (temp == 1.0f) {
-        data.isPressed[i] = true;
-        data.numOfFramesPressed[i]++;
-        if (!wasAlreadPressed) {
-          data.eventCounter[i]++;
-        }
-      } else {
-        data.isPressed[i] = false;
-        data.numOfFramesPressed[i] = 0;
-      }
-    }
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
-  }
-}
-
-void DCMHandler::get(UltraSoundReceiveData& data) const
-{
-  try
+  //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
+  for(int i=0; i<numOfSensors; i++)
   {
-    unsigned int currentIndex = theUltraSoundReceiveDataIndex;
-    if(data.ultraSoundTimeStep != 100) //Hack:is only 100 if mode 4 or 12 etc were the third bit is set
-    {
-      data.rawdata = currentAllSensorsValue[currentIndex++];
-      currentIndex += UltraSoundData::numOfIRSend * 2;
-    }
-    else
-    {
-      currentIndex++;
-      for(int i = 0; i < UltraSoundData::numOfIRSend;i++)
-      {
-        data.dataLeft[i] = currentAllSensorsValue[currentIndex++];
-        data.dataRight[i] = currentAllSensorsValue[currentIndex++];
-      }
-    }
-  } 
-  catch (ALError e)
-  {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
+    sensorPtrs[i] = (float*)al_memoryfast.getDataPtr(pBroker, allSensorsList[i], false);
   }
 }
 
-void DCMHandler::get(BatteryData& data) const
+void DCMHandler::readSensorData(unsigned int& timeStamp, float* dest)
 {
-  try{
-    data.charge = currentAllSensorsValue[thBatteryDataIdex];
-  } catch (ALError e) {
-    std::cerr << "Failed to get Information from: " << e.toString() << endl;
+  timeStamp = al_dcmproxy->getTime(time_delay);
+
+  for(int i=0; i<numOfSensors; i++)
+  {
+    dest[i] = *(sensorPtrs[i]);
   }
 }
-

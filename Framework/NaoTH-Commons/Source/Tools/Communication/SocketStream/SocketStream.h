@@ -15,6 +15,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <stdexcept>
 
 const int default_recv_buffer_size = 1024;
 
@@ -26,13 +27,13 @@ public:
 
   ~SocketStream();
 
-  bool connect(const std::string& host, int port);
+  void init(GSocket* s);
 
-  void send(const std::string& msg);
+  void send(const std::string& msg) throw(std::runtime_error);
 
   SocketStream& send();
 
-  int recv(std::string& msg);
+  int recv(std::string& msg) throw(std::runtime_error);
 
   template <class T>
   SocketStream & operator <<(const T& msg)
@@ -57,7 +58,7 @@ protected:
 
   void prefixedSend();
 
-  bool isFixedLengthDataAvailable(unsigned int len);
+  bool isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error);
 
   int prefixedRecv(std::string& msg);
 

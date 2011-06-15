@@ -548,3 +548,9 @@ void WebotsController::getCognitionInput()
   PlatformInterface<WebotsController>::getCognitionInput();
   //get(theGPSDataProvider.theGPSData);
 }
+
+MessageQueue* WebotsController::createMessageQueue(const std::string& name)
+{
+  // for single thread
+  return new MessageQueue();
+}

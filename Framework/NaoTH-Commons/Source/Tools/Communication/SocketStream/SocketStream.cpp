@@ -3,74 +3,35 @@
 #include <glib.h>
 
 SocketStream::SocketStream()
-: mRecvdLen(0)
+: mRecvdLen(0),socket(NULL)
 {
     mRecvBuf = new char[default_recv_buffer_size + 1];
     mRecvBufSize = default_recv_buffer_size;
-
-    GError *err = NULL;
-    socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
-    if (err)
-    {
-      socket = NULL;
-      g_warning("Could not create a socket. This is a fatal error and communication is available. Error message:\n%s", err->message);
-      g_error_free (err);
-    }
 }
 
 SocketStream::~SocketStream()
 {
-  if(socket != NULL)
-  {
-    g_socket_close(socket, NULL);
-  }
+  init(NULL);
   delete [] mRecvBuf;
 }
 
-bool SocketStream::connect(const std::string& host, int port)
+void SocketStream::init(GSocket* s)
 {
-  if(socket != NULL)
+  if ( socket != NULL)
   {
-	gboolean conn = false;
-    GError** error = NULL;
-	GCancellable* cancellable = NULL;
-	GSocketAddress* sockaddr = NULL;
-	GError* conn_error = NULL;
-
-	GSocketConnectable* addr = g_network_address_new(host.c_str(), port);
-	GSocketAddressEnumerator* enumerator = g_socket_connectable_enumerate(addr);
-	g_object_unref(addr);
-
-	while (!conn && (sockaddr = g_socket_address_enumerator_next(enumerator, cancellable, error)))
-    {
-		conn = g_socket_connect(socket, sockaddr, NULL, conn_error ? NULL : &conn_error);
-		g_object_unref(sockaddr);
-    }
-	g_object_unref(enumerator);
-	
-	if (conn)
-    {
-      return true;
-    }
-	else if (error)
-    {
-		if (conn_error){
-			g_warning("Could not connect. Error message:\n%s", conn_error->message);
-			g_error_free(conn_error);
-		}
-      return false;
-    }
-	else
-    {
-      g_propagate_error(error, conn_error);
-      return false;
-    }
+    g_object_unref(socket);
+    socket = NULL;
   }
 
-  return false;
+  if ( s != NULL)
+  {
+    g_object_ref(s);
+    socket = s;
+  }
+  mRecvdLen = 0;
 }
 
-void SocketStream::send(const std::string& msg)
+void SocketStream::send(const std::string& msg) throw(std::runtime_error)
 {
   if(socket == NULL)
   {
@@ -83,15 +44,14 @@ void SocketStream::send(const std::string& msg)
     g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err);
     if(err)
     {
-      g_warning("Could not send message. Error message:\n%s", err->message);
-      g_error_free (err);
-      assert(false);
+      std::string errMsg = err->message;
+      g_error_free(err);
+      throw std::runtime_error(errMsg);
     }
   }
   else
   {
-    g_warning("Can't send, not connected");
-    assert(false);
+    throw std::runtime_error("Can't send, not connected");
   }
 }
 
@@ -102,7 +62,7 @@ SocketStream& SocketStream::send()
   return *this;
 }
 
-int SocketStream::recv(std::string& msg)
+int SocketStream::recv(std::string& msg) throw(std::runtime_error)
 {
   if(socket == NULL)
   {
@@ -110,17 +70,18 @@ int SocketStream::recv(std::string& msg)
   }
   else if(!g_socket_is_connected(socket))
   {
-    g_warning("Can not receive, socket is not connected");
+    throw std::runtime_error("Can't receive, not connected");
     return -1;
   }
 
   memset(mRecvBuf, 0, mRecvBufSize + 1);
   GError* err = NULL;
   int status = g_socket_receive(socket, mRecvBuf, mRecvBufSize, NULL, &err);
-  if (err)
+  if (status < 0)
   {
-    std::cerr << "status == -1   error message: " << err->message << std::endl;
+    std::string errMsg = err->message;
     g_error_free(err);
+    throw std::runtime_error(errMsg);
   }
   else if (status > 0) {
     msg = mRecvBuf;
@@ -136,7 +97,7 @@ void SocketStream::prefixedSend()
   if (!mSendStr.str().empty()) {
     // prefix the message with it's payload length
     unsigned int len = static_cast<unsigned int> (g_htonl(mSendStr.str().size()));
-    static char preChar[sizeof (unsigned int) ];
+    char preChar[sizeof (unsigned int) ];
     memcpy(preChar, &len, sizeof (unsigned int));
     std::string msg = mSendStr.str();
     msg.insert(0, preChar, sizeof (unsigned int));
@@ -146,7 +107,7 @@ void SocketStream::prefixedSend()
   }
 }
 
-bool SocketStream::isFixedLengthDataAvailable(unsigned int len)
+bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runtime_error)
 {
   if(socket == NULL || !g_socket_is_connected(socket))
   {
@@ -164,10 +125,19 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len)
   for (;;) {
     /* See if we have enough data to satisfy request */
     if (mRecvdLen >= len) return true;
+
     /* there was not enough data in the read buffer, so let's try to get some more */
     int res = g_socket_receive(socket, mRecvBuf + mRecvdLen, mRecvBufSize - mRecvdLen, NULL, NULL);
     
-    if (res <= 0) return false;
+    if (res <= 0)
+    {
+      bool lostConnection = g_socket_condition_check(socket, G_IO_IN) & (G_IO_HUP|G_IO_ERR);
+      if ( lostConnection )
+      {
+        throw std::runtime_error("lost connection");
+      }
+      return false;
+    }
     /* res is > 0 */
     mRecvdLen += res;
   }
