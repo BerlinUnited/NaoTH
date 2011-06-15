@@ -96,8 +96,7 @@ message HeadMotionRequest {
 message WalkRequest {
   required uint32 coordinate = 1;
   required bool stopWithStand = 2;
-  required bool stable = 3;
-  required Pose2D pose = 4;
+  required Pose2D pose = 3;
 }
 
 message MotionRequest {
@@ -121,3 +120,17 @@ message FSRData {
   repeated bool valid = 3;
 }
 
+// TODO: this representation should not be in naoth-comm */
+message MotionStatus 
+{
+  required uint32 time = 1;
+  required uint32 lastMotion = 2;
+  required uint32 currentMotion = 3;
+  required uint32 headMotion = 4;
+  
+}
+
+message OdometryData
+{
+  required Pose2D pose = 1;
+}

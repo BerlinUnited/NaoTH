@@ -14,18 +14,11 @@
 #include <Tools/Math/Moments2.h>
 #include <Tools/DataStructures/OccupancyGrid.h>
 #include <Tools/DataStructures/Area.h>
+#include <Tools/DataStructures/Container.h>
 
 // local tools
 #include "Blob.h"
 #include "ColoredGrid.h"
-
-
-template<typename T>
-class Container
-{
-public:
-  virtual void add(const T& blob) const = 0;
-};
 
 
 class BlobFinder

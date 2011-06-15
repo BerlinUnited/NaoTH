@@ -45,7 +45,7 @@ public:
   unsigned int time;
   motion::MotionID lastMotion;
   motion::MotionID currentMotion;
-  HeadMotionRequest::HeadMotionID headMotionRequest;
+  HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
 
   virtual void print(ostream& stream) const
@@ -55,5 +55,16 @@ public:
     stream << "currentMotion = " << motion::getName(currentMotion) << '\n';
   }//end print
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<MotionStatus>
+  {
+  public:
+    static void serialize(const MotionStatus& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, MotionStatus& representation);
+  };
+}
 
 #endif // __MotionStatus_h_

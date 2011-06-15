@@ -5,6 +5,8 @@
  * Created on 10. September 2010, 15:38
  */
 
+#include <string.h>
+
 #include <string>
 #include <cstdlib>
 
@@ -15,6 +17,8 @@
 
 DebugServer::DebugServer()
 {
+  m_executing = g_mutex_new();
+
   commands = g_async_queue_new();
   answers = g_async_queue_new();
 
@@ -23,7 +27,7 @@ DebugServer::DebugServer()
 }//end DebugServer
 
 
-void DebugServer::start(unsigned int port)
+void DebugServer::start(unsigned short port)
 {
   if (g_thread_supported())
   {
@@ -51,19 +55,33 @@ void DebugServer::mainReader()
   g_debug("Starting DebugServer reader loop");
   while (true)
   {
+    if(!comm.isConnected())
+    {
+      // connect again, wait until connction is etablished
+      comm.connect(true);
+    }
+
     char* msg = comm.readMessage();
+
     if (msg == NULL)
     {
-      // error occured, we should empty the command queue (the answer queue is cleared by the writer)
-      while (g_async_queue_length(commands) > 0)
-      {
-        char* tmp = (char*) g_async_queue_pop(commands);
-        g_free(tmp);
-      }
-    } else
+      // error occured, clear all queues
+
+      // stop executing (so it's not messing up with our queues)
+      g_mutex_lock(m_executing);
+      clearBothQueues();
+      g_mutex_unlock(m_executing);
+
+      // all commands are "answered", disconnect
+      comm.disconnect();
+    }
+    else
     {
       g_async_queue_push(commands, msg);
     }
+
+    // always give other thread the possibility to gain control before entering
+    // the loop again
     g_thread_yield();
   }//end while
 
@@ -79,19 +97,19 @@ void DebugServer::mainWriter()
   g_debug("Starting DebugServer writer loop");
   while (true)
   {
+    // wait for an answer
     GString* answer = (GString*) g_async_queue_pop(answers);
-    //g_debug("popped answer from queue");
-    if (!comm.sendMessage(answer->str, answer->len))
+
+    bool success = comm.sendMessage(answer->str, answer->len+1);
+    if(!success)
     {
       g_warning("could not send message");
-      // error, clear answer queue
-      while (g_async_queue_length(answers) > 0)
-      {
-        GString* tmp = (GString*) g_async_queue_pop(answers);
-        g_string_free(tmp, true);
-      }
     }
+
     g_string_free(answer, true);
+
+    // always give other thread the possibility to gain control before entering
+    // the loop again
     g_thread_yield();
   }//end while
 
@@ -101,18 +119,23 @@ void DebugServer::mainWriter()
 
 void DebugServer::execute()
 {
+  g_mutex_lock(m_executing);
+
+  // handle all commands
   while (g_async_queue_length(commands) > 0)
   {
     char* cmdRaw = (char*) g_async_queue_pop(commands);
 
     GString* answer = g_string_new("");
     handleCommand(cmdRaw, answer);
-    
-    //g_debug("pushed answer to queue");
+
     g_async_queue_push(answers, answer);
 
     g_free(cmdRaw);
   }//end while
+
+  g_mutex_unlock(m_executing);
+
 }//end execute
 
 
@@ -128,7 +151,8 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
   {
     g_string_append(answer, "parsing error: ");
     g_string_append(answer, parseError->message);
-  } else
+  }
+  else
   {
     std::map<std::string, std::string> arguments;
     std::string commandName = "";
@@ -217,23 +241,18 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
       << "\", use \"help\" for a list of available commands" << std::endl;
   }
   
-  //g_debug("called executor for %s", command.c_str());
-  
   const std::string& str = answerFromHandler.str();
 
   if (encodeBase64 && str.length() > 0)
   {
     char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
+
     g_string_append(answer, encoded);
-    //g_debug("encoding to base64, old size=%d and new size=%d, encoded raw length=%d", 
-    //  answerFromHandler.str().length(), answer->len, strlen(encoded));
     g_free(encoded);
   } else
   {
-    //g_debug("no base64 encoding");
     g_string_append(answer, str.c_str());
   }
-  
 }//end handleCommand
 
 
@@ -315,6 +334,22 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
   }
 }
 
+void DebugServer::clearBothQueues()
+{
+  while (g_async_queue_length(commands) > 0)
+  {
+    char* tmp = (char*) g_async_queue_pop(commands);
+    g_free(tmp);
+  }
+
+  while (g_async_queue_length(answers) > 0)
+  {
+    GString* tmp = (GString*) g_async_queue_pop(answers);
+    g_string_free(tmp, true);
+  }
+
+}
+
 void* DebugServer::reader_static(void* ref)
 {
   ((DebugServer*) ref)->mainReader();
@@ -329,6 +364,8 @@ void* DebugServer::writer_static(void* ref)
 
 DebugServer::~DebugServer()
 {
+  g_mutex_free(m_executing);
+
   g_free(readerThread);
   g_free(writerThread);
   g_async_queue_unref(commands);

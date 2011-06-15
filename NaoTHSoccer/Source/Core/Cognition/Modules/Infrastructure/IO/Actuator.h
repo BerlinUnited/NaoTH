@@ -8,8 +8,6 @@
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
-//#include "Representations/SwapSpace.h"
-
 
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/LEDData.h>
@@ -31,7 +29,9 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(UltraSoundSendData)
   REQUIRE(SoundPlayData)
   REQUIRE(MotionStatus)
-  REQUIRE(MotionRequest)
+
+  // HACK: check execute()
+  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Actuator)
 
 class Actuator : public ActuatorBase
@@ -42,7 +42,11 @@ public:
 
   virtual void execute();
 
-  void init(naoth::PlatformDataInterface& platformInterface);
+  void init(naoth::PlatformInterfaceBase& platformInterface);
+  
+private:
+  MessageWriter* theHeadMotionRequestWriter;
+  MessageWriter* theMotionRequestWriter;
 };
 
 #endif	/* _ACTUACTOR_H */

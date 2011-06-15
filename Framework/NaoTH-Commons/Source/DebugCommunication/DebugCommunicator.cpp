@@ -62,15 +62,11 @@ GError* DebugCommunicator::internalInit()
 
 bool DebugCommunicator::sendMessage(const char* data, size_t size)
 {
-  //g_debug("sending message with size %d:\n%s", (int) size, data);
   GError* err = internalSendMessage(data, size);
   if (err)
   {
     g_warning("(SocketException in sendMessage) %s", err->message);
-
     g_error_free(err);
-
-    disconnect();
     return false;
   }
   return true;
@@ -79,72 +75,31 @@ bool DebugCommunicator::sendMessage(const char* data, size_t size)
 
 GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 {
-  char zero = '\0';
   GError* err = NULL;
   if (connection != NULL)
   {
     gsize pos = 0;
-    // FIXME: we get a really eval case if size == 0
-    while(pos < size-1)
+
+    while(err == NULL && connection != NULL && pos + 1 < size)
     {
-      if(err == NULL && connection != NULL)
-      {
-        pos += g_socket_send(connection, data+pos, size-pos, NULL, &err);
-      }
+      gsize length = size-pos;
+
+      gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
+      pos += sent;
     }//end while
-    
-    if(err == NULL)
-    {
-      g_socket_send(connection, &zero, sizeof(char), NULL, &err);
-    }
-    
+
     if (err) return err;
   }//end if
   return NULL;
 }//end sendMessage
 
 
-GError* DebugCommunicator::triggerConnect()
-{
-  GError* err = NULL;
-
-  if (connection == NULL)
-  {
-    // try to accept an eventually pending connection request
-    if (serverSocket != NULL)
-    {
-      connection = g_socket_accept(serverSocket, NULL, &err);
-      if (err) return err;
-
-      if (connection != NULL)
-      {
-
-        GInetSocketAddress* remoteSocketAddr =
-          G_INET_SOCKET_ADDRESS(g_socket_get_remote_address(connection, &err));
-
-        if (err) return err;
-
-        GInetAddress* addr = g_inet_socket_address_get_address(remoteSocketAddr);
-
-        char* addrString = g_inet_address_to_string(addr);
-        g_message("DebugServer port %d connected to %s", port, addrString);
-        g_free(addrString);
-        g_object_unref(remoteSocketAddr);
-
-      }
-    }
-  }
-  return NULL;
-}
-
-char* DebugCommunicator::triggerReceive(GError** err)
+char* DebugCommunicator::internalReadMessage(GError** err)
 {
   *err = NULL;
   if (connection != NULL)
   {
-
-
-    // check if there is data available
+    // wait until if there is data available
     g_socket_condition_wait(connection, G_IO_IN, NULL, err);
     if(*err == NULL)
     {
@@ -159,7 +114,6 @@ char* DebugCommunicator::triggerReceive(GError** err)
         g_string_free(buffer, true);
         // if G_IO_IN was signalled but there was no data available this is a sign that
         // the client was disconnected
-        disconnect();
         return NULL;
       }
 
@@ -181,10 +135,6 @@ char* DebugCommunicator::triggerReceive(GError** err)
       g_string_append_c(buffer,'\0');
       return g_string_free(buffer, false);
     }
-    else
-    {
-      disconnect();
-    }
   }//end if
   return NULL;
 }
@@ -195,31 +145,79 @@ char* DebugCommunicator::readMessage()
     return NULL;
   }
 
-  GError* err = triggerConnect();
-  if (err)
-  {
-    fatalFail = true;
-    std::cerr << "[DebugServer:port " << port << "] " << "FATAL ERROR in triggerRead: "
-      << err->message << std::endl;
-    std::cerr << "will not try again to get connection" << std::endl;
-
-    g_error_free(err);
-
-    return NULL;
-  }
-
-  char* result = triggerReceive(&err);
+  GError* err = NULL;
+  char* result = internalReadMessage(&err);
   if(err)
   {
     std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in triggerRead) "
       << err->message << std::endl;
-    disconnect();
     g_free(result);
     g_error_free(err);
     return NULL;
   }
   return result;
 }//end triggerRead
+
+bool DebugCommunicator::isDataAvailable()
+{
+  if(fatalFail)
+  {
+    return false;
+  }
+
+  if(connection != NULL)
+  {
+    GIOCondition ret = g_socket_condition_check(connection, G_IO_IN);
+    if(ret & G_IO_IN)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool DebugCommunicator::connect(bool blocking)
+{
+  GError* err = NULL;
+
+  if (connection == NULL)
+  {
+    // try to accept an eventually pending connection request
+    if (serverSocket != NULL)
+    {
+      g_socket_set_blocking(serverSocket, blocking);
+      connection = g_socket_accept(serverSocket, NULL, &err);
+      g_socket_set_blocking(serverSocket, true);
+      if (err) return false;
+
+      if (connection != NULL)
+      {
+
+        GInetSocketAddress* remoteSocketAddr =
+          G_INET_SOCKET_ADDRESS(g_socket_get_remote_address(connection, &err));
+
+        if (err)
+        {
+          // cleanup
+          g_socket_close(connection, NULL);
+          g_object_unref(connection);
+          connection = NULL;
+          return false;
+        }
+        GInetAddress* addr = g_inet_socket_address_get_address(remoteSocketAddr);
+
+        char* addrString = g_inet_address_to_string(addr);
+        g_message("DebugServer port %d connected to %s", port, addrString);
+        g_free(addrString);
+        g_object_unref(remoteSocketAddr);
+
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 void DebugCommunicator::disconnect()
 {
@@ -230,6 +228,11 @@ void DebugCommunicator::disconnect()
     connection = NULL;
     std::cerr << "[DebugServer:port " << port << "] " << "disconnected" << std::endl;
   }//end if
+}
+
+bool DebugCommunicator::isConnected()
+{
+  return connection != NULL;
 }
 
 DebugCommunicator::~DebugCommunicator()

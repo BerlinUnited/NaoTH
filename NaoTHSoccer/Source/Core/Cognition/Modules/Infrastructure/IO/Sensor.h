@@ -8,7 +8,6 @@
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
-//#include "Representations/SwapSpace.h"
 
 // input representations
 // sensors
@@ -63,7 +62,11 @@ public:
 
   virtual void execute();
 
-  void init(naoth::PlatformDataInterface& platformInterface);
+  void init(naoth::PlatformInterfaceBase& platformInterface);
+  
+private:
+  MessageReader* theMotionStatusReader;
+  MessageReader* theOdometryDataReader;
 };
 
 #endif	/* _SENSOR_H */

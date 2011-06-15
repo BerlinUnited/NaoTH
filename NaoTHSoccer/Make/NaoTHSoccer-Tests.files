@@ -1,0 +1,3 @@
+../Tests/google_test.cpp
+../Tests/Core/Cognition/Modules/Perception/VisualCortex/GridProviderTest.cpp
+../Tests/Core/Cognition/Modules/Infrastructure/LEDSetter/LEDSetterTest.cpp

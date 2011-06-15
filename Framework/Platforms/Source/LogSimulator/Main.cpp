@@ -69,17 +69,20 @@ int main(int argc, char** argv)
 		return (EXIT_FAILURE);
 	}
   
-  Cognition theCognition;
-  Motion theMotion;
-  
+  // create the simulator instance
   Simulator sim(logpath, compatibleMode, backendMode);
   
+  // init the platform
   Platform::getInstance().init(&sim);
   
+  Cognition theCognition;
+  Motion theMotion;
   sim.registerCallbacks(&theMotion, &theCognition);
   
+  // start the execution
   sim.main();
   
+  // dump some debug information
   Stopwatch::getInstance().dump();
 
   return (EXIT_SUCCESS);

@@ -142,7 +142,7 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.openingAngleHeight = msg.openingangleheight();
   r.opticalCenterX = msg.opticalcenterx();
   r.opticalCenterY = msg.opticalcentery();
-  r.size = msg.size();
+  r.size = (unsigned long)msg.size();
   r.cameraRollOffset = msg.camerarolloffset();
   r.cameraTiltOffset = msg.cameratiltoffset();
   

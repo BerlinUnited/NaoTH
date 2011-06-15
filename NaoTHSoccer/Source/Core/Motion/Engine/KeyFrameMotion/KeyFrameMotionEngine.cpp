@@ -33,6 +33,7 @@ KeyFrameMotionEngine::~KeyFrameMotionEngine()
 
 void KeyFrameMotionEngine::loadAvailableMotionNets(const std::string& directoryName)
 {
+/*
   DIR *hdir;
   struct dirent *entry;
 
@@ -57,6 +58,7 @@ void KeyFrameMotionEngine::loadAvailableMotionNets(const std::string& directoryN
     }//end if
   } while (entry);
   closedir(hdir);
+  */
 }//end loadAvailableMotionNets
 
 

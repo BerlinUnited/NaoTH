@@ -1,0 +1,4 @@
+../Source/SimSpark/SimSparkController.cpp
+../Source/SimSpark/main.cpp
+../Source/SimSpark/SimSparkController.h
+../Source/SimSpark/sfsexp/SexpParser.h

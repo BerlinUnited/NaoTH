@@ -11,24 +11,26 @@
 
 #include <vector>
 
-//#include "Cognition/Cognition.h"
-
 #include "Tools/ColorClasses.h"
 #include "Tools/Math/Vector2.h"
-//#include "Tools/Math/Matrix_nxn.h"
 #include "Tools/Math/PointList.h"
 
+#include "ColorClassifier.h"
+
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/ColorTable64.h"
+//#include "Representations/Infrastructure/ColorTable64.h"
+
+using namespace std;
+using namespace naoth;
 
 class SpiderScan
 {
 public:
-	SpiderScan(const Image& theImage, const ColorTable64& theColorTable64);
-	SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, ColorClasses::Color searchColor);
-	SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, vector<ColorClasses::Color>& searchColors);
-	SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor);
-	SpiderScan(const Image& theImage, const ColorTable64& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors);
+	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64);
+	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor);
+	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors);
+	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor);
+	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors);
   void init();
 
   class Scans
@@ -88,7 +90,7 @@ private:
   inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;
 
   const Image& theImage;
-  const ColorTable64& theColorTable64;
+  const ColorClassifier& theColorClassifier;
 
   bool drawScanLines;
   vector<ColorClasses::Color> searchColors;

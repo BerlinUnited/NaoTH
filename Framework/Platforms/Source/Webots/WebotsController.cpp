@@ -17,7 +17,8 @@ using namespace naoth;
 WebotsController::WebotsController()
   : 
     PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
-    key(0)
+    key(0),
+    currentStiffness()
 {
   wb_robot_init();
   get_Devices();
@@ -125,7 +126,11 @@ void WebotsController::init()
     {
       int n = 1;
       // TODO: don't use sscanf
+#ifdef WIN32
+      sscanf_s(robotName.c_str(), "blue player %d", &n);
+#else
       sscanf(robotName.c_str(), "blue player %d", &n);
+#endif
       playerNumber = n;
     }
   }
@@ -135,7 +140,11 @@ void WebotsController::init()
     {
       int n = 1;
       // TODO: don't use sscanf
+#ifdef WIN32
+      sscanf_s(robotName.c_str(), "red player %d", &n);
+#else
       sscanf(robotName.c_str(), "red player %d", &n);
+#endif
       playerNumber = n;
     }
   }
@@ -538,4 +547,10 @@ void WebotsController::getCognitionInput()
 {
   PlatformInterface<WebotsController>::getCognitionInput();
   //get(theGPSDataProvider.theGPSData);
+}
+
+MessageQueue* WebotsController::createMessageQueue(const std::string& name)
+{
+  // for single thread
+  return new MessageQueue();
 }

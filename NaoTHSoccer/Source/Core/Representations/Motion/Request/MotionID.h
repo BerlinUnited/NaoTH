@@ -15,22 +15,22 @@ namespace motion
 {
 
   /** ids for all motion types */
-  enum MotionID {
-    
-    EMPTY,
-    INIT,
-    DEAD,
+  enum MotionID
+  {
+    empty,
+    init,
+    dead,
     
     /* inverse kinematic */
-    STAND,
+    stand,
     
-    WALK,
-    KICK,
-    DANCE,
+    walk,
+    kick,
+    dance,
     //SIT_STABLE,
     /* motion net */
-    STAND_UP_FROM_FRONT,
-    STAND_UP_FROM_BACK,
+    stand_up_from_front,
+    stand_up_from_back,
     /*BLOCK_LEFT,
     BLOCK_RIGHT,
     BLOCK_MIDDLE,
@@ -60,17 +60,17 @@ namespace motion
   {
     switch(id)
     {
-      case EMPTY: return "empty";
-      case INIT: return "init";
-      case DEAD: return "dead";
-      case STAND: return "stand";
+      case empty: return "empty";
+      case init: return "init";
+      case dead: return "dead";
+      case stand: return "stand";
 
-      case WALK: return "walk";
-      case KICK: return "kick";
-      case DANCE: return "dance";
+      case walk: return "walk";
+      case kick: return "kick";
+      case dance: return "dance";
       
-      case STAND_UP_FROM_FRONT: return "stand_up_from_front";
-      case STAND_UP_FROM_BACK: return "stand_up_from_back";
+      case stand_up_from_front: return "stand_up_from_front";
+      case stand_up_from_back: return "stand_up_from_back";
       /*case check_reactivity: return "check_reactivity";
 
 //      case pre_grasping:    return "pre_grasping";

@@ -14,7 +14,7 @@
 ParameterListDebugLoader::ParameterListDebugLoader()
 {
   // TODO: get the information automatically
-  paramlists["CameraSettingsRequest"] = &getCameraSettingsRequest();
+  paramlists["CameraSettings"] = &getCameraSettingsRequest();
   paramlists["FieldInfo"] = &getFieldInfo();
   
   std::map<std::string,ParameterList*>::const_iterator it = paramlists.begin();

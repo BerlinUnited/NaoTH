@@ -21,7 +21,7 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
-  virtual void start(unsigned int port);
+  virtual void start(unsigned short port);
 
   /**
    * Register a command and a handler for this command.
@@ -46,12 +46,16 @@ public:
   static void* writer_static(void* ref);
 private:
 
+  /** Communication interface */
   DebugCommunicator comm;
+
   GThread* readerThread;
   GThread* writerThread;
 
   GAsyncQueue* commands;
   GAsyncQueue* answers;
+
+  GMutex* m_executing;
 
   /** hash map with all registered callback function  */
   std::map<std::string, DebugCommandExecutor*> executorMap;
@@ -62,6 +66,8 @@ private:
   void handleCommand(char* cmdRaw, GString* answer);
   void handleCommand(std::string command, std::map<std::string,std::string> arguments,
     GString* answer, bool encodeBase64);
+
+  void clearBothQueues();
   
 };
 

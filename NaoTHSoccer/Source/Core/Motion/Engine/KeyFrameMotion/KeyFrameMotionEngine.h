@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
-#include <dirent.h>
+//#include <dirent.h>
 #include <iostream>
 
 using namespace std;

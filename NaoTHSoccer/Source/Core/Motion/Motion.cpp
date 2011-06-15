@@ -10,12 +10,15 @@
 
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-#include "Tools/SwapSpace/SwapSpace.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
-Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance())
+Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
+theMotionStatusWriter(NULL),
+theOdometryDataWriter(NULL),
+theHeadMotionRequestReader(NULL),
+theMotionRequestReader(NULL)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -34,9 +37,18 @@ Motion::~Motion()
     delete *iter;
   }
   theMotionFactories.clear();
+  
+  if (theMotionStatusWriter != NULL)
+    delete theMotionStatusWriter;
+  if (theOdometryDataWriter != NULL)
+    delete theOdometryDataWriter;
+  if (theHeadMotionRequestReader != NULL)
+    delete theHeadMotionRequestReader;
+  if (theMotionRequestReader != NULL)
+    delete theMotionRequestReader;
 }
 
-void Motion::init(naoth::PlatformDataInterface& platformInterface)
+void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   theBlackBoard.init();
   theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
@@ -58,6 +70,11 @@ void Motion::init(naoth::PlatformDataInterface& platformInterface)
   REG_OUTPUT(MotorJointData);
   g_message("Motion register end");
   
+  theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
+  theOdometryDataWriter = new MessageWriter(platformInterface.getMessageQueue("OdometryData"));
+  
+  theHeadMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("HeadMotionRequest"));
+  theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
 }//end init
 
 
@@ -70,23 +87,19 @@ void Motion::call()
   processSensorData();
   
   // get orders from cognition
-  SwapSpace::getInstance().theCognitionCache.pull(
-    theBlackBoard.theHeadMotionRequest,
-    theBlackBoard.theMotionRequest
-  );
-    // FAKE Motion Request:
-  /*theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  if ( theBlackBoard.theMotionStatus.currentMotion == motion::EMPTY )
-    theBlackBoard.theMotionRequest.id = motion::INIT;
-  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::INIT )
-    theBlackBoard.theMotionRequest.id = motion::STAND;
-  else if ( theBlackBoard.theMotionStatus.currentMotion == motion::STAND )
+  if ( !theHeadMotionRequestReader->empty() )
   {
-    theBlackBoard.theMotionRequest.id = motion::DANCE;//motion::WALK;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.x = 50;
-    //theBlackBoard.theMotionRequest.walkRequest.translation.y = 50;
-    //theBlackBoard.theMotionRequest.walkRequest.rotation = Math::fromDegrees(90);
-  }*/
+    string msg = theHeadMotionRequestReader->read();
+    stringstream ss(msg);
+    Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
+  }
+  
+  if ( !theMotionRequestReader->empty() )
+  {
+    string msg = theMotionRequestReader->read();
+    stringstream ss(msg);
+    Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
+  }
 
   // execute head motion firstly
   theHeadMotionEngine.execute();
@@ -145,10 +158,14 @@ void Motion::postProcess()
   mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
 
-  SwapSpace::getInstance().theMotionCache.push(
-    theBlackBoard.theMotionStatus,
-    theBlackBoard.theOdometryData
-    );
+  // send message to cognition
+  stringstream msmsg;
+  Serializer<MotionStatus>::serialize(theBlackBoard.theMotionStatus, msmsg);
+  theMotionStatusWriter->write(msmsg.str());
+  
+  stringstream odmsg;
+  Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
+  theOdometryDataWriter->write(odmsg.str());
     
 #ifdef DEBUG
 //TODO
@@ -179,22 +196,6 @@ void Motion::selectMotion()
       newMotion = (*iter)->createMotion(theBlackBoard.theMotionRequest);
     }
 
-/*
-    if (newMotion == NULL)
-      newMotion = theInverseKinematicsMotionFactory.createMotion(theBlackBoard.theMotionRequest);
-
-    if (newMotion == NULL)
-      newMotion = theParallelKinematicMotionFactory.createMotion(theBlackBoard.theMotionRequest);
-
-    if(newMotion == NULL)
-      newMotion = theNeuralMotionFactory.createMotion(theBlackBoard.theMotionRequest);
-
-    if (newMotion == NULL)
-      newMotion = theKeyFrameMotionEngine.createMotion(theBlackBoard.theMotionRequest);
-
-    if (newMotion == NULL)
-      newMotion = theDebugMotionEngine.createMotion(theBlackBoard.theMotionRequest);
-*/
     if (NULL != newMotion)
     {
       ASSERT(newMotion->getId() == theBlackBoard.theMotionRequest.id);
@@ -218,10 +219,10 @@ void Motion::changeMotion(AbstractMotion* m)
 
 bool Motion::exit()
 {
-  theBlackBoard.theMotionRequest.id = motion::INIT;
+  theBlackBoard.theMotionRequest.id = motion::init;
   theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
   
   return (theBlackBoard.currentlyExecutedMotion != NULL)
-    && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::INIT)
+    && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
     && ( theBlackBoard.currentlyExecutedMotion->isFinished() );
 }//end exit

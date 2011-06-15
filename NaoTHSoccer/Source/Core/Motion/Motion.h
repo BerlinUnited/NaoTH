@@ -26,7 +26,7 @@ public:
 
   virtual void call();
 
-  void init(naoth::PlatformDataInterface& platformInterface);
+  void init(naoth::PlatformInterfaceBase& platformInterface);
   
   bool exit();
   
@@ -50,6 +50,14 @@ private:
   
   HeadMotionEngine theHeadMotionEngine;
   std::list<MotionFactory*> theMotionFactories;
+  
+  // message from motion to cognition
+  MessageWriter* theMotionStatusWriter;
+  MessageWriter* theOdometryDataWriter;
+  
+  // message from cognition to motion
+  MessageReader* theHeadMotionRequestReader;
+  MessageReader* theMotionRequestReader;
 };
 
 #endif	/* MOTION_H */

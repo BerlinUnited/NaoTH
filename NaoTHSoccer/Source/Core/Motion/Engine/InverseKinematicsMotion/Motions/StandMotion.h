@@ -21,7 +21,7 @@ class StandMotion : public IKMotion
 public:
 
   StandMotion()
-  : IKMotion(motion::STAND),
+  : IKMotion(motion::stand),
     totalTime(0),
     time(0),
     height(-1)

@@ -448,8 +448,8 @@ void Simulator::adjust_frame_time()
   f.set_time(current_time);
 
   // write the result back
-  string result = f.SerializeAsString();
-  representations["FrameInfo"] = result;
+  //string result = f.SerializeAsString();
+  //representations["FrameInfo"] = result;
 }//end adjust_frame_time
 
 
@@ -611,4 +611,10 @@ void Simulator::generalGet(T& data, std::string name)
 
 Simulator::~Simulator()
 {
+}
+
+MessageQueue* Simulator::createMessageQueue(const std::string& name);
+{
+  // for single thread
+  return new MessageQueue();
 }

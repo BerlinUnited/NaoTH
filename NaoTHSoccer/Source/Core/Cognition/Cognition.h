@@ -25,7 +25,7 @@ public:
 
   virtual void call();
 
-  void init(naoth::PlatformDataInterface& platformInterface);
+  void init(naoth::PlatformInterfaceBase& platformInterface);
 
   void executeDebugCommand(const std::string& command, 
                            const std::map<std::string,std::string>& arguments, 

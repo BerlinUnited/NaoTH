@@ -12,7 +12,7 @@
 using namespace InverseKinematic;
 
 Walk::Walk()
-:IKMotion(motion::WALK),
+:IKMotion(motion::walk),
 theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
 theUnsupportedCount(0),

@@ -3,21 +3,26 @@
  */
 
 #include "Sensor.h"
-#include "Tools/SwapSpace/SwapSpace.h"
 
-Sensor::Sensor()
+Sensor::Sensor():
+theMotionStatusReader(NULL),
+theOdometryDataReader(NULL)
 {
 }
 
 Sensor::~Sensor()
 {
+  if (theMotionStatusReader != NULL)
+    delete theMotionStatusReader;
+  if (theOdometryDataReader != NULL)
+    delete theOdometryDataReader;
 }
 
 
 #define REG_INPUT(R) \
   platformInterface.registerCognitionInput(get##R())
 
-void Sensor::init(naoth::PlatformDataInterface& platformInterface)
+void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   REG_INPUT(AccelerometerData);
   REG_INPUT(BatteryData);
@@ -32,21 +37,38 @@ void Sensor::init(naoth::PlatformDataInterface& platformInterface)
   
   REG_INPUT(FrameInfo);
   REG_INPUT(CurrentCameraSettings);
+  
+  theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
+  theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
 }//end init
 
 
 void Sensor::execute()
 {
-  //unsigned int lastTime = theFrameInfo.time;
-
   // data from motion
-  //STOPWATCH_START("Cognition-PullSwap");
-  SwapSpace::getInstance().theMotionCache.pull(
-    getMotionStatus(),
-    getOdometryData());
-  //STOPWATCH_STOP("Cognition-PullSwap");
+  if ( !theMotionStatusReader->empty() )
+  {
+    string msg = theMotionStatusReader->read();
+    // drop old message, TODO: use them!
+    while ( !theMotionStatusReader->empty() )
+    {
+      msg = theMotionStatusReader->read();
+    }
+    stringstream ss(msg);
+    Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
+  }
   
-  //PLOT("Cognition-Time", theFrameInfo.getTimeSince(lastTime));
-  //STOPWATCH_START("Cognition-Main");
+  if ( !theOdometryDataReader->empty() )
+  {
+    string msg = theOdometryDataReader->read();
+    // drop old message, TODO: use them!
+    while ( !theOdometryDataReader->empty() )
+    {
+      msg = theOdometryDataReader->read();
+    }
+    stringstream ss(msg);
+    Serializer<OdometryData>::deserialize(ss, getOdometryData());
+  }
+
 }//end execute
 

@@ -1,5 +1,6 @@
 dofile "helper/naocrosscompile.lua"
 dofile "helper/extract_todos.lua"
+dofile "helper/qtcreator.lua"
 
 newaction {
   trigger = "todo",
@@ -8,7 +9,7 @@ newaction {
     
     local result = {};
     
-    extract_todos_files(os.matchfiles(".../Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../Source/**.cpp"), result);
     extract_todos_files(os.matchfiles("../Source/**.h"), result);
     
     io.output("../TODO")
@@ -34,7 +35,7 @@ newaction {
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
-  configurations {"Debug", "OptDebug", "Release"}
+  configurations {"OptDebug", "Debug", "Release"}
   
   CORE_PATH = {
     path.getabsolute("../Source/Core/Cognition/"), 
@@ -51,11 +52,11 @@ solution "NaoTHSoccer"
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
-    flags { "Symbols", "ExtraWarnings", "FatalWarnings" }
+    flags { "Symbols", "FatalWarnings" }
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "ExtraWarnings", "FatalWarnings" }
+    flags { "Optimize", "FatalWarnings" }
       
   configuration{"Native"}
     includedirs {
@@ -68,11 +69,14 @@ solution "NaoTHSoccer"
     targetdir "../dist/Native"
     
   configuration {"Nao"}
+    defines { "NAO" }
     targetdir "../dist/Nao"
   
   -- additional defines for windows
   configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
+	buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
+	              "/wd4996"} -- disable warning: "...deprecated..."
     
   configuration {"linux"}
     buildoptions {"-fPIC"}

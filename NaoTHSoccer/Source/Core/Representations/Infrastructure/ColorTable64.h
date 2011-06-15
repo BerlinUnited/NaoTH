@@ -8,7 +8,8 @@
 #ifndef _ColorTable64_h_
 #define _ColorTable64_h_
 
-#include "Tools/ImageProcessing/ImagePrimitives.h"
+//#include "Tools/ImageProcessing/ImagePrimitives.h"
+#include "Tools/ImageProcessing/ColorClassifier.h"
 
 #include "Tools/ColorClasses.h"
 
@@ -29,7 +30,7 @@ using namespace naoth;
 * Contains a ColorTable64 which can decode the color for
 * every 4 * 4 * 4 cube in the 255 * 255 * 255 RGB color space.
 */
-class ColorTable64 : public Printable
+class ColorTable64 : public Printable, public ColorClassifier
 {
 public:
   /** Constructor */
@@ -38,30 +39,8 @@ public:
     reset();
   };
 
-  ~ColorTable64(){};
+  virtual ~ColorTable64(){};
 
-  /** 
-  * Calculates the color class of a pixel.
-  * @param r the r value of the pixel
-  * @param g the g value of the pixel
-  * @param b the b value of the pixel
-  * @return the color class
-  */
-  ColorClasses::Color getColorClass(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
-  {
-    return get(channel1, channel2, channel3);
-  }
-
-  /**
-  * Calculates the color class of a pixel.
-  * @param pixel The pixel color
-  * @return the color class
-  */
-  ColorClasses::Color getColorClass(const Pixel& p) const
-  {
-    return get(p.a, p.b, p.c);
-  }
- 
   void setColorClass(const ColorClasses::Color& color, const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3)
   {
     set( static_cast<unsigned char>(color), channel1, channel2, channel3);
@@ -95,7 +74,7 @@ private:
     colorClasses[idx] = color;
   }//end set
 
-  inline ColorClasses::Color get(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
+  virtual inline ColorClasses::Color get(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
   {
     unsigned int idx = ((channel1 & div4) << 10) + ((channel2 & div4) << 4) + (channel3 >> 2);
     ASSERT(idx < colorTableLength);

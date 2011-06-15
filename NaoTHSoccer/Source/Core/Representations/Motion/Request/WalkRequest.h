@@ -1,15 +1,18 @@
 /**
 * @file WalkRequest.h
 *
-* @author <a href="mailto:goehring@informatik.hu-berlin.de">Daniel Goehring</a>
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * Definition of the class Cognition
 */
 
 #ifndef __WalkRequest_h_
 #define __WalkRequest_h_
 
-#include "Tools/Math/Pose2D.h"
-#include "Tools/DataStructures/Printable.h"
+#include <string>
+#include <Tools/Math/Pose2D.h>
+#include <Tools/DataStructures/Printable.h>
+#include <Messages/Representations.pb.h>
+#include <Tools/DataStructures/Serializer.h>
 
 /**
 * This describes the WalkRequest
@@ -28,8 +31,7 @@ public:
   /** constructor */
   WalkRequest():
     coordinate(Hip),
-    stopWithStand(true),
-    stable(false)
+    stopWithStand(true)
   {};
   ~WalkRequest(){};
 
@@ -46,8 +48,6 @@ public:
   
   Coordinate coordinate;
   bool stopWithStand; // Should the robot keep the standard stand pose or not after walking
-
-  bool stable;
 
   void print(ostream& stream) const
   {
@@ -66,6 +66,20 @@ public:
   }//end print
   
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<WalkRequest>
+  {
+  public:
+    static void serialize(const WalkRequest& representation, std::ostream& stream);
+    static void serialize(const WalkRequest& representation, naothmessages::WalkRequest* msg);
+    static void deserialize(std::istream& stream, WalkRequest& representation);
+    static void deserialize(naothmessages::WalkRequest* msg, WalkRequest& representation);
+  };
+}
+
 
 #endif // __WalkRequest_h_
 

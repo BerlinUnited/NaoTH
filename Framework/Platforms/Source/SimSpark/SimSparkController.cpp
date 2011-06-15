@@ -9,7 +9,7 @@
 #include "SimSparkController.h"
 #include <iostream>
 #include <fstream>
-//#include "Tools/NaoInfo.h"
+#include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
 
@@ -24,7 +24,8 @@ SimSparkController::SimSparkController()
   theImageData(NULL),
   theImageSize(0),
   isNewImage(false),
-  isNewVirtualVision(false)
+  isNewVirtualVision(false),
+  theSyncMode(false)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -105,6 +106,15 @@ SimSparkController::SimSparkController()
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   theTeamName = "NaoTH";
+
+  GError *err = NULL;
+  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
+  if (err)
+  {
+    socket = NULL;
+    g_warning("Could not create a socket. This is a fatal error and communication is available. Error message:\n%s", err->message);
+    g_error_free (err);
+  }
 }
 
 SimSparkController::~SimSparkController()
@@ -112,20 +122,69 @@ SimSparkController::~SimSparkController()
   g_mutex_free(theCognitionInputMutex);
   g_cond_free(theCognitionInputCond);
   
+  if (socket != NULL)
+    g_socket_close(socket, NULL);
+
   if (theImageData != NULL)
     delete [] theImageData;
+}
+
+bool SimSparkController::connect(const std::string& host, int port)
+{
+  if(socket != NULL)
+  {
+  gboolean conn = false;
+    GError** error = NULL;
+  GCancellable* cancellable = NULL;
+  GSocketAddress* sockaddr = NULL;
+  GError* conn_error = NULL;
+
+  GSocketConnectable* addr = g_network_address_new(host.c_str(), port);
+  GSocketAddressEnumerator* enumerator = g_socket_connectable_enumerate(addr);
+  g_object_unref(addr);
+
+  while (!conn && (sockaddr = g_socket_address_enumerator_next(enumerator, cancellable, error)))
+    {
+    conn = g_socket_connect(socket, sockaddr, NULL, conn_error ? NULL : &conn_error);
+    g_object_unref(sockaddr);
+    }
+  g_object_unref(enumerator);
+
+  if (conn)
+    {
+      return true;
+    }
+  else if (error)
+    {
+    if (conn_error){
+      g_warning("Could not connect. Error message:\n%s", conn_error->message);
+      g_error_free(conn_error);
+    }
+      return false;
+    }
+  else
+    {
+      g_propagate_error(error, conn_error);
+      return false;
+    }
+  }
+
+  return false;
 }
 
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
   theTeamName = teamName;
   theSync = sync?"(syn)":"";
+  theSyncMode = sync;
   // connect to the simulator
-  if(!theSocket.connect(server, port))
+
+  if(!connect(server, port))
   {
     std::cerr << "SimSparkController could not connect" << std::endl;
     return false;
   }
+  theSocket.init(socket);
 
   // send create command to simulator
 
@@ -198,10 +257,25 @@ void SimSparkController::initPosition()
 
 void SimSparkController::main()
 {
+  if ( theSyncMode )
+  {
+    singleThreadMain();
+  }
+  else
+  {
+    multiThreadsMain();
+  }
+}
+
+void SimSparkController::singleThreadMain()
+{
   cout << "SimSpark Controller runs in single thread" << endl;
   while ( updateSensors() )
   {
-    callCognition();
+    if ( isNewImage || isNewVirtualVision )
+    {
+      callCognition();
+    }
     callMotion();
   }//end while
 }//end main
@@ -265,11 +339,13 @@ void SimSparkController::setMotionOutput()
 void SimSparkController::getCognitionInput()
 {
   g_mutex_lock(theCognitionInputMutex);
-  while (!isNewImage)
+  while (!isNewImage && !isNewVirtualVision)
   {
     g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
   }
   PlatformInterface<SimSparkController>::getCognitionInput();
+  isNewVirtualVision = false;
+  isNewImage = false;
   g_mutex_unlock(theCognitionInputMutex);
 }
 
@@ -832,7 +908,7 @@ void SimSparkController::get(AccelerometerData& data)
 
 void SimSparkController::get(Image& data)
 {
-  if (isNewImage)
+  if ( isNewImage )
   {
     data.setCameraInfo(Platform::getInstance().theCameraInfo);
 
@@ -859,8 +935,6 @@ void SimSparkController::get(Image& data)
         data.set(x, y, p);
       }
     }
-
-    isNewImage = false;
   }
 }//end get
 
@@ -885,11 +959,7 @@ void SimSparkController::get(InertialSensorData& data)
 
 void SimSparkController::get(VirtualVision& data)
 {
-  if (isNewVirtualVision)
-  {
-    data = theVirtualVision;
-    isNewVirtualVision = false;
-  }
+  data = theVirtualVision;
 }
 
 void SimSparkController::get(SimSparkGameInfo& data)
@@ -944,11 +1014,11 @@ void SimSparkController::jointControl()
     // normalize the joint angle
     double target = data.position[i];
     double ang = theLastSensorJointData.position[i];// + theLastSensorJointData.dp[i] * theStepTime;
-    double v = (target - ang) * d * data.stiffness[i];
+    double v = (target - ang) * d * max(0.0, data.stiffness[i]);
     v = Math::clamp(v, -maxJointAbsSpeed, maxJointAbsSpeed);
     ang += (v * theStepTime);
     target = data2.position[i];
-    double v2 = (target - ang) * d * data2.stiffness[i];
+    double v2 = (target - ang) * d * max(0.0, data2.stiffness[i]);
     theLastSensorJointData.stiffness[i] = data2.stiffness[i];
     v2 = Math::clamp(v2, -maxJointAbsSpeed, maxJointAbsSpeed);
 
@@ -1118,4 +1188,12 @@ bool SimSparkController::updateIMU(const sexp_t* sexp)
   theIMU[0] = asin(-imu[2]);
   theIMU[1] = -atan2(imu[5], imu[8]);
   return true;
+}
+
+MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
+{
+  if ( theSyncMode )
+    return new MessageQueue();
+  else
+    return new MessageQueue4Threads();
 }

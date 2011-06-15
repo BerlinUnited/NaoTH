@@ -47,9 +47,9 @@ AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest
 
   switch(motionRequest.id)
   {
-    case motion::STAND: currentMotion = new StandMotion(); break;
-    case motion::DANCE: currentMotion = new DanceMotion(); break;
-    case motion::WALK: currentMotion = new Walk(); break;
+    case motion::stand: currentMotion = new StandMotion(); break;
+    case motion::dance: currentMotion = new DanceMotion(); break;
+    case motion::walk: currentMotion = new Walk(); break;
     /*
     case MotionRequestID::kick: currentMotion = new IKDynamicKickMotion_new(engine); break;
     case MotionRequestID::grasp: currentMotion = new IKGrasping(engine); break;

@@ -5,41 +5,40 @@
 */
 
 #include "MotionRequest.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
 
-/*
-void MotionRequest::toDataStream(ostream& stream) const
+void Serializer<MotionRequest>::serialize(const MotionRequest& representation, std::ostream& stream)
 {
   naothmessages::MotionRequest message;
-  message.set_id(id);
-  message.set_forced(forced);
-  message.set_time(time);
-  switch (id)
+  message.set_id(representation.id);
+  message.set_forced(representation.forced);
+  message.set_time(representation.time);
+  switch (representation.id)
   {
-  case MotionRequestID::walk:
-    walkRequest.toMessage(*message.mutable_walkrequest());
+  case motion::walk:
+    Serializer<WalkRequest>::serialize(representation.walkRequest, message.mutable_walkrequest());
     break;
   default:
     //TODO
     break;
   }
-  google::protobuf::io::OstreamOutputStreamLite buf(&stream);
+  google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
-}//end toDataStream
+}
 
-void MotionRequest::fromDataStream(istream& stream)
+void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest& representation)
 {
   naothmessages::MotionRequest message;
-  google::protobuf::io::IstreamInputStreamLite buf(&stream);
+  google::protobuf::io::IstreamInputStream buf(&stream);
   message.ParseFromZeroCopyStream(&buf);
 
-  id = static_cast<MotionRequestID::MotionID>(message.id());
-  forced = message.forced();
-  time = message.time();
+  representation.id = static_cast<motion::MotionID>(message.id());
+  representation.forced = message.forced();
+  representation.time = message.time();
   if ( message.has_walkrequest() )
   {
-    walkRequest.fromMessage(*message.mutable_walkrequest());
+    Serializer<WalkRequest>::deserialize(message.mutable_walkrequest(), representation.walkRequest);
   }
-}//end fromDataStream
-*/
+}

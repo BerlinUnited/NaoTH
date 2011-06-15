@@ -51,7 +51,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
-    Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);
+    const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
 
     Pixel pixel = getImage().get(point.x,point.y);
     grey += pixel.y;
