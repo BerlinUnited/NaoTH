@@ -192,12 +192,13 @@ CoMFeetPose Walk::stopWalking()
   // add one step to get stand pose
   ///////////////////////////////////////////////////////
 
-  CoMFeetPose result;
+  ZMPFeetPose stoppingMovment;
   if ( !stoppingStepFinished )
   {
     // make stopping step
     if ( !isStopping ) // remember the stopping foot
     {
+      /*
       switch (currentFootStep.liftingFoot()) {
       case FootStep::LEFT:
         stoppingRequest.coordinate = WalkRequest::LFoot;
@@ -205,16 +206,17 @@ CoMFeetPose Walk::stopWalking()
       case FootStep::RIGHT:
         stoppingRequest.coordinate = WalkRequest::RFoot;
         break;
-      }
+      }*/
 
+      stoppingRequest.coordinate = WalkRequest::Hip;
       stoppingRequest.translation.x = 0;
       stoppingRequest.translation.y = 0;
       stoppingRequest.rotation = 0;
     }
 
-    theZMPFeetPose = walk(stoppingRequest);
+    stoppingMovment = walk(stoppingRequest);
 
-    if ( currentCycle >= numberOfCyclePerFootStep )
+    if ( currentCycle == 1 )
     {
       Pose3D diff = currentFootStep.footBegin().invert() * currentFootStep.footEnd();
       if ( diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1) )
@@ -222,21 +224,25 @@ CoMFeetPose Walk::stopWalking()
         stoppingStepFinished = true;
       }
     }
-    result = theEngine.controlZMP(theZMPFeetPose);
   }
-  else
+
+  isStopping = true;
+  if ( stoppingStepFinished )
   {
     // wait for the preview buffer
     theZMPFeetPose.zmp.translation.y = (theZMPFeetPose.feet.left.translation.y + theZMPFeetPose.feet.right.translation.y)*0.5;
+    CoMFeetPose result = theCoMFeetPose;
     if ( theEngine.stopControlZMP(theZMPFeetPose, result) )
     {
       currentState = stopped;
     }
+    return result;
   }
-
-  isStopping = true;
-
-  return result;
+  else
+  {
+    theZMPFeetPose = stoppingMovment;
+    return theEngine.controlZMP(theZMPFeetPose);
+  }
 }
 
 FootStep Walk::firstStep(const WalkRequest& req)
