@@ -17,8 +17,6 @@
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 
-using namespace std;
-
 namespace naoth
 {
 
@@ -26,30 +24,10 @@ namespace naoth
   {
   public:
 
-    InertialSensorData();
-    ~InertialSensorData();
-
     Vector2<double> data;
-    static Vector2<double> offset;
-
-    Vector2<double> get() const {
-      Vector2<double> v = data + offset;
-      v.x = Math::normalizeAngle(v.x);
-      v.y = Math::normalizeAngle(v.y);
-      return v;
-    }
-
-    void init();
-
-    void calibrate();
-    void stopCalibrating();
 
     virtual void print(ostream& stream) const;
 
-  private:
-    // member for calibration
-    static int calibrateNum;
-    static string configGroup;
   };
   
   template<>
