@@ -38,6 +38,8 @@ ImageProcessor::ImageProcessor()
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
+  theGoalDetector = registerModule<GoalDetector>("GoalDetector");
+  theGoalDetector->setEnabled(true);
 }//end constructor
 
 
@@ -47,6 +49,12 @@ void ImageProcessor::execute()
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
+
+
+  STOPWATCH_START("GoalDetector");
+  theGoalDetector->execute();
+  STOPWATCH_STOP("GoalDetector");
+
 
   // estimate the relative position of the ball
   if(getBallPercept().ballWasSeen)
@@ -145,12 +153,15 @@ void ImageProcessor::execute()
       {
         Pixel pixel = getImage().get(x,y);
 
-        double d = (Math::sqr((255.0 - (double)pixel.u)) + Math::sqr((double)pixel.v)) / (2.0*255.0);
+        //double d = (Math::sqr((255.0 - (double)pixel.u)) + Math::sqr((double)pixel.v)) / (2.0*255.0);
+
+        double d = (Math::sqr((double)pixel.u) + Math::sqr((255.0 - (double)pixel.v))) / (2.0*255.0);
         unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
         
+        /*
         if(t > 120)
           naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
-        else
+        else*/
           naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,t,0,0);
       }//end for
     }//end for
