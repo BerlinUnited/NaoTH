@@ -19,6 +19,7 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   message.set_lastmotion(representation.lastMotion);
   message.set_currentmotion(representation.currentMotion);
   message.set_headmotion(representation.headMotion);
+  message.set_currentmotionstate(representation.currentMotionState);
   
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
@@ -34,4 +35,5 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
   representation.lastMotion = static_cast<motion::MotionID>(message.lastmotion());
   representation.currentMotion = static_cast<motion::MotionID>(message.currentmotion());
   representation.headMotion = static_cast<HeadMotionRequest::HeadMotionID>(message.headmotion());
+  representation.currentMotionState = static_cast<motion::State>(message.currentmotionstate());
 }

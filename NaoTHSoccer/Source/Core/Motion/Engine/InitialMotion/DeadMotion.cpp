@@ -21,7 +21,7 @@ void DeadMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*mot
     // restore hardness
     if ( setStiffness(oldStiffness, stiffness_increase) )
     {
-      currentState = stopped;
+      currentState = motion::stopped;
     }
     for (int i = 0; i < JointData::numOfJoint; i++)
     {
@@ -29,7 +29,7 @@ void DeadMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*mot
     }
 
     return;
-  }else if(currentState == stopped) // executed the first time
+  }else if(currentState == motion::stopped) // executed the first time
   {
     // store hardness
     for (int i = 0; i < JointData::numOfJoint; i++)
@@ -41,5 +41,5 @@ void DeadMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*mot
   // set joint free
   setStiffness(freeStiffness, 10);
 
-  currentState = running;
+  currentState = motion::running;
 }//end execute

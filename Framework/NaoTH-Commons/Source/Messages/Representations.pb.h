@@ -1767,6 +1767,13 @@ class MotionStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 headmotion() const;
   inline void set_headmotion(::google::protobuf::uint32 value);
   
+  // required uint32 currentMotionState = 5;
+  inline bool has_currentmotionstate() const;
+  inline void clear_currentmotionstate();
+  static const int kCurrentMotionStateFieldNumber = 5;
+  inline ::google::protobuf::uint32 currentmotionstate() const;
+  inline void set_currentmotionstate(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
   inline void set_has_time();
@@ -1777,6 +1784,8 @@ class MotionStatus : public ::google::protobuf::Message {
   inline void clear_has_currentmotion();
   inline void set_has_headmotion();
   inline void clear_has_headmotion();
+  inline void set_has_currentmotionstate();
+  inline void clear_has_currentmotionstate();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1784,9 +1793,10 @@ class MotionStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint32 lastmotion_;
   ::google::protobuf::uint32 currentmotion_;
   ::google::protobuf::uint32 headmotion_;
+  ::google::protobuf::uint32 currentmotionstate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3523,6 +3533,28 @@ inline ::google::protobuf::uint32 MotionStatus::headmotion() const {
 inline void MotionStatus::set_headmotion(::google::protobuf::uint32 value) {
   set_has_headmotion();
   headmotion_ = value;
+}
+
+// required uint32 currentMotionState = 5;
+inline bool MotionStatus::has_currentmotionstate() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void MotionStatus::set_has_currentmotionstate() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void MotionStatus::clear_has_currentmotionstate() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void MotionStatus::clear_currentmotionstate() {
+  currentmotionstate_ = 0u;
+  clear_has_currentmotionstate();
+}
+inline ::google::protobuf::uint32 MotionStatus::currentmotionstate() const {
+  return currentmotionstate_;
+}
+inline void MotionStatus::set_currentmotionstate(::google::protobuf::uint32 value) {
+  set_has_currentmotionstate();
+  currentmotionstate_ = value;
 }
 
 // -------------------------------------------------------------------

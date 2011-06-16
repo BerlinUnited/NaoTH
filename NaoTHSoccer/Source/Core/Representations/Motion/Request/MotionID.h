@@ -120,6 +120,28 @@ namespace motion
 
     return "unkown";
   }///end getName
+
+
+  enum State
+  {
+    running,
+    waiting,
+    stopped,
+    unknow
+  };
+  static std::string getName(State state)
+  {
+    switch(state)
+    {
+    case running: return "running";
+    case waiting: return "waiting";
+    case stopped: return "stopped";
+    default: return "unknow";
+    }
+
+    return "unknow";
+  }
+
 } // namespace motion
 
 #endif // __MotionRequestID_h_

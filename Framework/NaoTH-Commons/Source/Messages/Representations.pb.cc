@@ -317,11 +317,12 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
   MotionStatus_descriptor_ = file->message_type(13);
-  static const int MotionStatus_offsets_[4] = {
+  static const int MotionStatus_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, currentmotion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, headmotion_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, currentmotionstate_),
   };
   MotionStatus_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -489,12 +490,12 @@ void protobuf_AddDesc_Representations_2eproto() {
     "ssages.Intersection\0228\n\022middleCircleCente"
     "r\030\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n"
     "\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n"
-    "\005valid\030\003 \003(\010\"[\n\014MotionStatus\022\014\n\004time\030\001 \002"
+    "\005valid\030\003 \003(\010\"w\n\014MotionStatus\022\014\n\004time\030\001 \002"
     "(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030"
-    "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\"3\n\014OdometryDat"
-    "a\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)"
-    "\n\'de.hu_berlin.informatik.ki.nao.message"
-    "s", 2321);
+    "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMoti"
+    "onState\030\005 \002(\r\"3\n\014OdometryData\022#\n\004pose\030\001 "
+    "\002(\0132\025.naothmessages.Pose2DB)\n\'de.hu_berl"
+    "in.informatik.ki.nao.messages", 2349);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -5313,6 +5314,7 @@ const int MotionStatus::kTimeFieldNumber;
 const int MotionStatus::kLastMotionFieldNumber;
 const int MotionStatus::kCurrentMotionFieldNumber;
 const int MotionStatus::kHeadMotionFieldNumber;
+const int MotionStatus::kCurrentMotionStateFieldNumber;
 #endif  // !_MSC_VER
 
 MotionStatus::MotionStatus()
@@ -5335,6 +5337,7 @@ void MotionStatus::SharedCtor() {
   lastmotion_ = 0u;
   currentmotion_ = 0u;
   headmotion_ = 0u;
+  currentmotionstate_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5373,6 +5376,7 @@ void MotionStatus::Clear() {
     lastmotion_ = 0u;
     currentmotion_ = 0u;
     headmotion_ = 0u;
+    currentmotionstate_ = 0u;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -5443,6 +5447,22 @@ bool MotionStatus::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(40)) goto parse_currentMotionState;
+        break;
+      }
+      
+      // required uint32 currentMotionState = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_currentMotionState:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &currentmotionstate_)));
+          set_has_currentmotionstate();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -5485,6 +5505,11 @@ void MotionStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->headmotion(), output);
   }
   
+  // required uint32 currentMotionState = 5;
+  if (has_currentmotionstate()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->currentmotionstate(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -5511,6 +5536,11 @@ void MotionStatus::SerializeWithCachedSizes(
   // required uint32 headMotion = 4;
   if (has_headmotion()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->headmotion(), target);
+  }
+  
+  // required uint32 currentMotionState = 5;
+  if (has_currentmotionstate()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->currentmotionstate(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -5552,6 +5582,13 @@ int MotionStatus::ByteSize() const {
           this->headmotion());
     }
     
+    // required uint32 currentMotionState = 5;
+    if (has_currentmotionstate()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->currentmotionstate());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -5591,6 +5628,9 @@ void MotionStatus::MergeFrom(const MotionStatus& from) {
     if (from.has_headmotion()) {
       set_headmotion(from.headmotion());
     }
+    if (from.has_currentmotionstate()) {
+      set_currentmotionstate(from.currentmotionstate());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -5608,7 +5648,7 @@ void MotionStatus::CopyFrom(const MotionStatus& from) {
 }
 
 bool MotionStatus::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
   
   return true;
 }
@@ -5619,6 +5659,7 @@ void MotionStatus::Swap(MotionStatus* other) {
     std::swap(lastmotion_, other->lastmotion_);
     std::swap(currentmotion_, other->currentmotion_);
     std::swap(headmotion_, other->headmotion_);
+    std::swap(currentmotionstate_, other->currentmotionstate_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
