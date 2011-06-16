@@ -286,7 +286,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   public: representationName##StaticRequiringRegistrator() : StaticRequiringRegistrator<representationName>(#representationName){} \
   }the##representationName; \
   protected: \
-  const representationName& get##representationName() const \
+  inline const representationName& get##representationName() const \
   { \
     static const representationName& representation = the##representationName.get(getBlackBoard()); \
     return representation; \
@@ -304,7 +304,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   public: representationName##StaticRequiringRegistrator() : StaticProvidingRegistrator<representationName>(#representationName){} \
   }the##representationName; \
   protected: \
-  representationName& get##representationName() \
+  inline representationName& get##representationName() \
   { \
     static representationName& representation = the##representationName.get(getBlackBoard()); \
     return representation; \

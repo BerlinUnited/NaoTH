@@ -76,7 +76,8 @@ solution "NaoTHSoccer"
   configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
 	buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
-	              "/wd4996"} -- disable warning: "...deprecated..."
+	              "/wd4996", -- disable warning: "...deprecated..."
+				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
     
   configuration {"linux"}
     buildoptions {"-fPIC"}

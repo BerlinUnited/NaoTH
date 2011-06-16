@@ -131,7 +131,7 @@ bool SocketStream::isFixedLengthDataAvailable(unsigned int len) throw(std::runti
     
     if (res <= 0)
     {
-      bool lostConnection = g_socket_condition_check(socket, G_IO_IN) & (G_IO_HUP|G_IO_ERR);
+      int lostConnection = g_socket_condition_check(socket, G_IO_IN) & (G_IO_HUP|G_IO_ERR);
       if ( lostConnection )
       {
         throw std::runtime_error("lost connection");
