@@ -21,8 +21,10 @@ InertialSensorData::~InertialSensorData()
 void InertialSensorData::init()
 {
   const naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
-  offset.x = config.getDouble(configGroup, "offset.x");
-  offset.y = config.getDouble(configGroup, "offset.y");
+  if ( config.hasKey(configGroup, "offset.x") )
+    offset.x = config.getDouble(configGroup, "offset.x");
+  if ( config.hasKey(configGroup, "offset.y") )
+    offset.y = config.getDouble(configGroup, "offset.y");
 }
 
 void InertialSensorData::calibrate()
