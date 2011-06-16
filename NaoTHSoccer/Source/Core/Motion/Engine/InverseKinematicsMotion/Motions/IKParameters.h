@@ -9,6 +9,7 @@
 #define __IK__PARAMETERS_H_
 
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Math/Vector2.h>
 
 class IKParameters : public ParameterList
 {
@@ -42,6 +43,11 @@ public:
     int maxUnsupportedCount;
     int maxWaitLandingCount; // <0 means wait for ever until landing
   } walk;
+
+  struct RotationStabilize {
+      Vector2<double> k;
+      Vector2<double> threshold;
+    } rotationStabilize;
   
   IKParameters();
 };

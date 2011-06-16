@@ -218,51 +218,48 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   return result;
 }
 
-void InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
+bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
 {
-  /*
-  double xr = hip.rotation.getXAngle();
-  double yr = hip.rotation.getYAngle();
+  Vector2d r;
+  r.x = hip.rotation.getXAngle();
+  r.y = hip.rotation.getYAngle();
 
-  double xs = theBlackBoard.theInertialSensorData.get(InertialSensorData::X);
-  double ys = theBlackBoard.theInertialSensorData.get(InertialSensorData::Y);
+  const Vector2d& s = theBlackBoard.theInertialPercept.data;
 
-  double xe = xr - xs;
-  double ye = yr - ys;
+  Vector2d e = r - s;
 
   const double disabelAngle = Math::fromDegrees(45);
-  if ( abs(xe) > disabelAngle || abs(ye) > disabelAngle )
+  if ( abs(e.x) > disabelAngle || abs(e.y) > disabelAngle )
   {
-    return;
+    return false;
   }
 
 //  PLOT("xe", xe);
 //  PLOT("ye", ye);
 
-  double thresholdx = Math::fromDegrees(getParameters().rotationStabilize.threshold.x);
-  double thresholdy = Math::fromDegrees(getParameters().rotationStabilize.threshold.y);
-
+  bool isWorking = false;
   Vector2<double> chestRotationStabilizerValue;
-  if (abs(xe) > thresholdx)
+  const double maxAngle = Math::fromDegrees(30);
+  for( int i=0; i<2; i++ )
   {
-    chestRotationStabilizerValue.x = (xe - Math::sgn(xe) * thresholdx) * getParameters().rotationStabilize.k.x;
+    double threshold = Math::fromDegrees(getParameters().rotationStabilize.threshold[i]);
+    if ( abs(e[i]) > threshold )
+    {
+      chestRotationStabilizerValue[i] = (e[i] - Math::sgn(e[i]) * threshold) * getParameters().rotationStabilize.k[i];
+      chestRotationStabilizerValue[i] = Math::clamp(chestRotationStabilizerValue[i], -maxAngle, maxAngle);
+      isWorking = true;
+    }
   }
 
-  if (abs(ye) > thresholdy)
+  if ( isWorking )
   {
-    chestRotationStabilizerValue.y = (ye - Math::sgn(ye) * thresholdy) * getParameters().rotationStabilize.k.y;
+    double height = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].p.z;
+    hip.translate(0, 0, -height);
+    hip.rotateX(chestRotationStabilizerValue.x);
+    hip.rotateY(chestRotationStabilizerValue.y);
+    hip.translate(0, 0, height);
   }
-
-  const double maxX = Math::fromDegrees(30);
-  const double maxY = Math::fromDegrees(30);
-  chestRotationStabilizerValue.x = Math::clamp(chestRotationStabilizerValue.x, -maxX, maxX);
-  chestRotationStabilizerValue.y = Math::clamp(chestRotationStabilizerValue.y, -maxY, maxY);
-
-  double height = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].p.z;
-  chest.translate(0, 0, -height);
-  chest.rotateX(chestRotationStabilizerValue.x);
-  chest.rotateY(chestRotationStabilizerValue.y);
-  chest.translate(0, 0, height);*/
+  return isWorking;
 }
 
 void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFeetPose& p)
