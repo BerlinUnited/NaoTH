@@ -973,8 +973,8 @@ void SimSparkController::updateInertialSensor()
   const double *gyrometer = theGyroData.data;
   static double oldGyroX = gyrometer[0];
   static double oldGyroY = gyrometer[1];
-  theInertialSensorData.data[InertialSensorData::X] += ((gyrometer[0]+oldGyroX) * 0.5 * theStepTime);
-  theInertialSensorData.data[InertialSensorData::Y] += ((gyrometer[1]+oldGyroY) * 0.5 * theStepTime);
+  theInertialSensorData.data.x += ((gyrometer[0]+oldGyroX) * 0.5 * theStepTime);
+  theInertialSensorData.data.y += ((gyrometer[1]+oldGyroY) * 0.5 * theStepTime);
   oldGyroX = gyrometer[0];
   oldGyroY = gyrometer[1];
 
@@ -990,8 +990,8 @@ void SimSparkController::updateInertialSensor()
 
     double k = 0.04;
 //    MODIFY("updateInertialSensor.k", k);
-    theInertialSensorData.data[InertialSensorData::X] = (1 - k) * theInertialSensorData.data[InertialSensorData::X] + k * x;
-    theInertialSensorData.data[InertialSensorData::Y] = (1 - k) * theInertialSensorData.data[InertialSensorData::Y] + k * y;
+    theInertialSensorData.data.x = (1 - k) * theInertialSensorData.data.x + k * x;
+    theInertialSensorData.data.y = (1 - k) * theInertialSensorData.data.y + k * y;
   }
 }
 

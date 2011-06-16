@@ -60,7 +60,7 @@ class DCMHandler
     string DCMPath_Gyrometer[GyrometerData::numOfGyrometer+1];
 
     //Inertial Sensors
-    string DCMPath_InertialSensor[InertialSensorData::numOfInertialSensor];
+    string DCMPath_InertialSensor[2];
 
     //Buttons
     string DCMPath_Button[ButtonData::numOfButtons];

@@ -384,8 +384,8 @@ void WebotsController::get(InertialSensorData& data)
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);
   double time = getBasicTimeStep() * 1e-3;
-  data.data[InertialSensorData::X] += (webots_gyrometer[0] * time);
-  data.data[InertialSensorData::Y] += (webots_gyrometer[1] * time);
+  data.data.x += (webots_gyrometer[0] * time);
+  data.data.y += (webots_gyrometer[1] * time);
 
   // calibrate the Interial Sensor while the robot is static
   if ( abs(webots_gyrometer[0]) < 0.01 && abs(webots_gyrometer[1]) < 0.01  )
@@ -395,11 +395,11 @@ void WebotsController::get(InertialSensorData& data)
     double len = sqrt(Math::sqr(webots_acc[0])+Math::sqr(webots_acc[1])+Math::sqr(webots_acc[2]));
     if(len > 1)
     {
-      data.data[InertialSensorData::X] = asin(webots_acc[1]/len);
-      double cx = cos(data.data[InertialSensorData::X]);
+      data.data.x = asin(webots_acc[1]/len);
+      double cx = cos(data.data.x);
       if(fabs(cx) > 0)
       {
-        data.data[InertialSensorData::Y] = -atan2(webots_acc[0]/cx, webots_acc[2]/cx);
+        data.data.y = -atan2(webots_acc[0]/cx, webots_acc[2]/cx);
       }
     }
 //    else

@@ -421,12 +421,8 @@ void DCMHandler::initGyrometer()
 
 void DCMHandler::initInertialSensor()
 {
-  for(int i=0;i<InertialSensorData::numOfInertialSensor;i++)
-  {
-    DCMPath_InertialSensor[i] = "Device/SubDeviceList/InertialSensor/Angle"
-                                + InertialSensorData::getInertialSensorName((InertialSensorData::InertialSensorID) i)
-                                + "/Sensor/Value";
-  }
+  DCMPath_InertialSensor[0] = "Device/SubDeviceList/InertialSensor/Angle/X/Sensor/Value";
+  DCMPath_InertialSensor[1] = "Device/SubDeviceList/InertialSensor/Angle/Y/Sensor/Value";
 }
 
 void DCMHandler::initButton()
@@ -637,7 +633,7 @@ void DCMHandler::initAllSensorData()
 
   //InertialSensorsData
   ASSERT(theInertialSensorDataIndex == currentIndex);
-  for(int i=0;i<InertialSensorData::numOfInertialSensor;i++)
+  for(int i=0;i<2;i++)
   {
     allSensorsList[currentIndex++] = DCMPath_InertialSensor[i];
   }

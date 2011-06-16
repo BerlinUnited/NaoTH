@@ -613,7 +613,7 @@ Simulator::~Simulator()
 {
 }
 
-MessageQueue* Simulator::createMessageQueue(const std::string& name);
+MessageQueue* Simulator::createMessageQueue(const std::string& name)
 {
   // for single thread
   return new MessageQueue();

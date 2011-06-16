@@ -15,6 +15,7 @@
 #include "Tools/DataStructures/Serializer.h"
 
 #include "Tools/Math/Common.h"
+#include "Tools/Math/Vector2.h"
 
 using namespace std;
 
@@ -24,31 +25,24 @@ namespace naoth
   class InertialSensorData : public Streamable, public Printable, public PlatformInterchangeable
   {
   public:
-   
-    enum InertialSensorID
-    {
-      X,
-      Y,
-      numOfInertialSensor
-    };
 
     InertialSensorData();
     ~InertialSensorData();
 
-    double data[numOfInertialSensor];
-    double lastData[numOfInertialSensor][4];
-    static double offset[numOfInertialSensor];
+    Vector2<double> data;
+    static Vector2<double> offset;
 
-    double get(InertialSensorID id) const {
-        return Math::normalizeAngle(data[id] + offset[id]);
+    Vector2<double> get() const {
+      Vector2<double> v = data + offset;
+      v.x = Math::normalizeAngle(v.x);
+      v.y = Math::normalizeAngle(v.y);
+      return v;
     }
 
     void init();
 
     void calibrate();
     void stopCalibrating();
-    
-    static string getInertialSensorName(InertialSensorID angle);
 
     virtual void print(ostream& stream) const;
 

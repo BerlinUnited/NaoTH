@@ -482,6 +482,7 @@ void HeadMotionEngine::lookStraightAhead()
 
 void HeadMotionEngine::lookStraightAheadWithStabilization()
 {
-  Vector2<double> target(0.0, -theBlackBoard.theInertialSensorData.data[InertialSensorData::Y]);
+  Vector2d is = theBlackBoard.theInertialSensorData.get();
+  Vector2<double> target(0.0, -is.y);
   gotoAngle(target);
 }//end lookStraightAheadWithStabilization

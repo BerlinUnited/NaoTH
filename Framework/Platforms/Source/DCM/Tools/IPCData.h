@@ -27,7 +27,7 @@ namespace naoth
   const unsigned int theAccelerometerDataIndex = theFSRDataIndex + FSRData::numOfFSR;
   const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + AccelerometerData::numOfAccelerometer;
   const unsigned int theInertialSensorDataIndex = theGyrometerDataIndex + GyrometerData::numOfGyrometer + 1;
-  const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + InertialSensorData::numOfInertialSensor;
+  const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2;
   const unsigned int theButtonDataIndex = theIRReceiveDataIndex + IRReceiveData::numOfIRReceive;
   const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex + ButtonData::numOfButtons;
   const unsigned int thBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundData::numOfIRSend;

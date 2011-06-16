@@ -175,13 +175,13 @@ void InitialMotion::freeJoint(bool freely)
 bool InitialMotion::isSafe() const
 {
   const double safeAngle = Math::fromDegrees(10);
-  return abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::X)) < safeAngle
-      && abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::Y)) < safeAngle;
+  Vector2<double> is = theBlackBoard.theInertialSensorData.get();
+  return abs(is.x) < safeAngle && abs(is.y) < safeAngle;
 }
 
 bool InitialMotion::isDanger() const
 {
   const double dangerAngle = Math::fromDegrees(30);
-  return abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::X)) > dangerAngle
-      || abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::Y)) > dangerAngle;
+  Vector2<double> is = theBlackBoard.theInertialSensorData.get();
+  return abs(is.x) > dangerAngle || abs(is.y) > dangerAngle;
 }
