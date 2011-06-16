@@ -192,13 +192,11 @@ CoMFeetPose Walk::stopWalking()
   // add one step to get stand pose
   ///////////////////////////////////////////////////////
 
-  isStopping = true;
-
   CoMFeetPose result;
   if ( !stoppingStepFinished )
   {
     // make stopping step
-    if (currentCycle >= numberOfCyclePerFootStep) // its is time to switch foot
+    if ( !isStopping ) // remember the stopping foot
     {
       switch (currentFootStep.liftingFoot()) {
       case FootStep::LEFT:
@@ -218,7 +216,11 @@ CoMFeetPose Walk::stopWalking()
 
     if ( currentCycle >= numberOfCyclePerFootStep )
     {
-      stoppingStepFinished = true;
+      Pose3D diff = currentFootStep.footBegin().invert() * currentFootStep.footEnd();
+      if ( diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1) )
+      {
+        stoppingStepFinished = true;
+      }
     }
     result = theEngine.controlZMP(theZMPFeetPose);
   }
@@ -231,6 +233,9 @@ CoMFeetPose Walk::stopWalking()
       currentState = stopped;
     }
   }
+
+  isStopping = true;
+
   return result;
 }
 
