@@ -18,7 +18,6 @@ void MotionBlackBoard::init()
   theSensorJointData.init();
   theKinematicChain.init(theSensorJointData);
   theKinematicChainModel.init(theMotorJointData);
-  theInertialSensorData.init();
 }
 
 MotionBlackBoard::~MotionBlackBoard()

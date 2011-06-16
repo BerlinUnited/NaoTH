@@ -59,11 +59,12 @@ void InitialMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*
   switch (initStatus) 
   {
     case Dead:
-      currentState = running;
+      currentState = motion::running;
       dead();
       break;
       
     case Init:
+      currentState = motion::running;
       increaseStiffness();
       break;
 
@@ -76,11 +77,12 @@ void InitialMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*
       break;
 
     case InitialPoseReady:
+      currentState = motion::waiting;
       freeJoint(motionRequest.id == getId());
       break;
 
     case Finish:
-      currentState = stopped;
+      currentState = motion::stopped;
     break;
   }//end switch
 }//end execute
@@ -157,11 +159,10 @@ void InitialMotion::moveToInitialPose()
 
 void InitialMotion::freeJoint(bool freely)
 {
-  double stiffDelta = theBlackBoard.theFrameInfo.basicTimeStep;
+  double stiffDelta = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
   if (freely)
   {
-    if (setStiffness(freeStiffness, stiffDelta))
-      finished = true;
+    setStiffness(freeStiffness, stiffDelta);
   }
   else
   {
@@ -175,13 +176,13 @@ void InitialMotion::freeJoint(bool freely)
 bool InitialMotion::isSafe() const
 {
   const double safeAngle = Math::fromDegrees(10);
-  return abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::X)) < safeAngle
-      && abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::Y)) < safeAngle;
+  return abs(theBlackBoard.theInertialSensorData.data.x) < safeAngle
+      && abs(theBlackBoard.theInertialSensorData.data.y) < safeAngle;
 }
 
 bool InitialMotion::isDanger() const
 {
   const double dangerAngle = Math::fromDegrees(30);
-  return abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::X)) > dangerAngle
-      || abs(theBlackBoard.theInertialSensorData.get(InertialSensorData::Y)) > dangerAngle;
+  return abs(theBlackBoard.theInertialSensorData.data.x) > dangerAngle
+      || abs(theBlackBoard.theInertialSensorData.data.y) > dangerAngle;
 }

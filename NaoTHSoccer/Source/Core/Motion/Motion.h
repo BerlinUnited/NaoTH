@@ -15,6 +15,7 @@
 #include "AbstractMotion.h"
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
+#include "SensorFilter/InertialFilter.h"
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
 
@@ -47,6 +48,7 @@ private:
 
   EmptyMotion theEmptyMotion;
   
+  InertialFilter theInertialFilter;
   SupportPolygonGenerator theSupportPolygonGenerator;
   OdometryCalculator theOdometryCalculator;
   
@@ -62,6 +64,8 @@ private:
   MessageReader* theMotionRequestReader;
 
   unsigned int frameNumSinceLastMotionRequest;
+
+  bool isExiting;
 };
 
 #endif	/* MOTION_H */

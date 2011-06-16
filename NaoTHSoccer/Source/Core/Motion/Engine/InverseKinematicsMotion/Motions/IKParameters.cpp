@@ -29,6 +29,11 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxStepWidth) = 50;
   PARAMETER_REGISTER(walk.maxStepChange) = 0.5;
   PARAMETER_REGISTER(walk.enableFSRProtection) = true;
+
+  PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
+  PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
+  PARAMETER_REGISTER(rotationStabilize.threshold.x) = 2;
+  PARAMETER_REGISTER(rotationStabilize.threshold.y) = 2;
   
   loadFromConfig();
 }

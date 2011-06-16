@@ -127,7 +127,7 @@ message MotionStatus
   required uint32 lastMotion = 2;
   required uint32 currentMotion = 3;
   required uint32 headMotion = 4;
-  
+  required uint32 currentMotionState = 5;  
 }
 
 message OdometryData

@@ -141,7 +141,7 @@ FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRe
       pose.localInLeftFoot();
   }
 
-  FootStep zeroStep(pose, FootStep::Foot(-startFoot) );
+  FootStep zeroStep(pose, static_cast<FootStep::Foot>(-startFoot) );
   return nextStep(zeroStep, req);
 }
 

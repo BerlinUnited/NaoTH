@@ -67,7 +67,10 @@ public:
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
-  void rotationStabilize(Pose3D& hip) const;
+  /**
+   * @return if stabilizer is working
+   */
+  bool rotationStabilize(Pose3D& hip) const;
   
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   

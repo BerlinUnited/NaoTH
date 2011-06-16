@@ -25,7 +25,8 @@ void SupportPolygonGenerator::init(double* fsr, Vector3<double>* fsrPos, Kinemat
     theFSRPos = fsrPos;
     theLink = link;
 
-  string leftFootTouchDetectorCfg, rightFootTouchDetectorCfg;
+  string leftFootTouchDetectorCfg("1 1 1 1 -5");
+  string rightFootTouchDetectorCfg("1 1 1 1 -5");
   const Configuration& cfg = Platform::getInstance().theConfiguration;
   string cfgname = "TouchDetector";
   if ( cfg.hasGroup(cfgname) )
@@ -125,9 +126,8 @@ Vector3<double> SupportPolygonGenerator::calcSupportForceCenter()
     Vector3<double> c(0,0,0);
     double fs=0;
     for(int i=0;i<FSRData::numOfFSR;i++){
-        double f = /*theFSRData[i];/*/1/theFSRData[i];
-        fs += f;
-        c += (theFSRPos[i] * f);
+        fs += theFSRData[i];
+        c += (theFSRPos[i] * theFSRData[i]);
     }
     if (fs > 0){
         c /= fs;
