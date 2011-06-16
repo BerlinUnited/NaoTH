@@ -54,6 +54,59 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
   }//end switch
 }
 
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
+{
+  Pose2D step = calculateStep(lastStep, req);
+  return nextStep(lastStep, step);
+}
+
+Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
+{
+  Pose2D step = req;
+
+  if ( req.coordinate == WalkRequest::Hip )
+      return step;
+
+  Pose3D supFoot = lastStep.footEnd();
+  Pose2D stepCoord = reduceDimen(supFoot);
+  switch (lastStep.liftingFoot()) {
+  case FootStep::LEFT:
+    stepCoord.translate(0, -theFootOffsetY);
+    break;
+  case FootStep::RIGHT:
+    stepCoord.translate(0, theFootOffsetY);
+    break;
+  default:
+    ASSERT(false);
+    break;
+  }//end switch
+
+  FeetPose lastPose = lastStep.end();
+  Pose2D target;
+  switch (req.coordinate) {
+  case WalkRequest::LFoot:
+  {
+    Pose2D lfoot = reduceDimen(lastPose.left);
+    target = lfoot + step;
+    target.translate(0, -theFootOffsetY);
+    break;
+  }
+  case WalkRequest::RFoot:
+  {
+    Pose2D rfoot = reduceDimen(lastPose.right);
+    target = rfoot + step;
+    target.translate(0, theFootOffsetY);
+    break;
+  }
+  default:
+    ASSERT(false);
+    break;
+  }//end switch
+
+  step = target - stepCoord;
+  return step;
+}
+
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
 {
   ASSERT(step.rotation <= Math::pi);
@@ -73,18 +126,23 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(FeetPose pose, Pose2D step)
+FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req)
 {
-  pose.localInRightFoot();
-  FootStep newStep(pose, FootStep::LEFT );
-  FootStep zeroStep(pose, FootStep::RIGHT );
-  
-  restrictStepSize(step, zeroStep);
-  restrictStepChange(step, theLastStepSize);
-  theLastStepSize = step;
-  
-  addStep(newStep, step);
-  return newStep;
+  // choose foot, TODO: consider current com?
+  FootStep::Foot startFoot;
+  if (req.rotation >= theMaxTurnInner || ( abs(req.rotation) < theMaxTurnInner && req.translation.y > 0))
+  {
+      startFoot = FootStep::LEFT;
+      pose.localInRightFoot();
+  }
+  else
+  {
+      startFoot = FootStep::RIGHT;
+      pose.localInLeftFoot();
+  }
+
+  FootStep zeroStep(pose, FootStep::Foot(-startFoot) );
+  return nextStep(zeroStep, req);
 }
 
 void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) const

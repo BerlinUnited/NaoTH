@@ -17,6 +17,7 @@ theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
 theUnsupportedCount(0),
 isStopping(false),
+stoppingStepFinished(false),
 currentCycle(0)
 {
   updateParameters();
@@ -92,8 +93,7 @@ bool Walk::canStop() const
     return true;
     
   // wait until full step finished
-  //cycle > numberOfSamples
-  return false;
+  return currentCycle >= numberOfCyclePerFootStep;
 }
 
 CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
@@ -103,15 +103,19 @@ CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
   ASSERT(!Math::isNan(walkRequest.translation.y));
   ASSERT(!Math::isNan(walkRequest.rotation));
   
+  CoMFeetPose result;
   if (motionRequest.id == getId() || !canStop() )
   {
     theZMPFeetPose = walk(walkRequest);
+    result = theEngine.controlZMP(theZMPFeetPose);
+    isStopping = false;
+    stoppingStepFinished = false;
   }
   else
   {
     if (walkRequest.stopWithStand) // should end with typical stand
     {
-      theZMPFeetPose = stopWalking();
+      result = stopWalking();
     }
     else
     {
@@ -119,7 +123,6 @@ CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
     }
   }
   
-  CoMFeetPose result = theEngine.controlZMP(theZMPFeetPose);
   return result;
 }
 
@@ -179,16 +182,60 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   result.zmp.rotation.rotateY(bodyPitchOffset);
   
   currentState = running;
-  isStopping = false;
-  //stoppingStepFinished = false;
-    //stoppingStepCount = 0;
   currentCycle++;
   return result;
 }
 
-ZMPFeetPose Walk::stopWalking()
+CoMFeetPose Walk::stopWalking()
 {
-  ZMPFeetPose result;
+  ////////////////////////////////////////////////////////
+  // add one step to get stand pose
+  ///////////////////////////////////////////////////////
+
+  CoMFeetPose result;
+  if ( !stoppingStepFinished )
+  {
+    // make stopping step
+    if ( !isStopping ) // remember the stopping foot
+    {
+      switch (currentFootStep.liftingFoot()) {
+      case FootStep::LEFT:
+        stoppingRequest.coordinate = WalkRequest::LFoot;
+        break;
+      case FootStep::RIGHT:
+        stoppingRequest.coordinate = WalkRequest::RFoot;
+        break;
+      }
+
+      stoppingRequest.translation.x = 0;
+      stoppingRequest.translation.y = 0;
+      stoppingRequest.rotation = 0;
+    }
+
+    theZMPFeetPose = walk(stoppingRequest);
+
+    if ( currentCycle >= numberOfCyclePerFootStep )
+    {
+      Pose3D diff = currentFootStep.footBegin().invert() * currentFootStep.footEnd();
+      if ( diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1) )
+      {
+        stoppingStepFinished = true;
+      }
+    }
+    result = theEngine.controlZMP(theZMPFeetPose);
+  }
+  else
+  {
+    // wait for the preview buffer
+    theZMPFeetPose.zmp.translation.y = (theZMPFeetPose.feet.left.translation.y + theZMPFeetPose.feet.right.translation.y)*0.5;
+    if ( theEngine.stopControlZMP(theZMPFeetPose, result) )
+    {
+      currentState = stopped;
+    }
+  }
+
+  isStopping = true;
+
   return result;
 }
 

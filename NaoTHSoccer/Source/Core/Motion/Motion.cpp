@@ -242,6 +242,7 @@ void Motion::checkWarningState()
   if ( frameNumSinceLastMotionRequest*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() > 1 )
   {
     theBlackBoard.theMotionRequest.id = motion::init;
+    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
     theBlackBoard.theLEDData.change = true;
 
     LEDData& theLEDData = theBlackBoard.theLEDData;
