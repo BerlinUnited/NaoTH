@@ -35,6 +35,8 @@ private:
   FootStep firstStep(const WalkRequest& req);
   
   void updateParameters();
+
+  void calculateError();
   
 private:
   const IKParameters::Walk& theWalkParameters;
@@ -53,6 +55,8 @@ private:
   FootStep currentFootStep;
   
   FootStepPlanner theFootStepPlanner;
+
+  Vector3d theCoMErr;
   
   // calcualted parameters of walk
   double bodyPitchOffset;

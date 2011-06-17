@@ -28,6 +28,8 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   if ( FSRProtection() ) return;
   
   if ( waitLanding() ) return;
+
+  calculateError();
   
   theCoMFeetPose = genCoMFeetTrajectory(motionRequest);
   
@@ -147,10 +149,12 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   {
     if ( currentCycle >= numberOfCyclePerFootStep )
     {
+      theCoMErr /= numberOfCyclePerFootStep;
       // new foot step
       updateParameters();
-      currentFootStep = theFootStepPlanner.nextStep(currentFootStep, req);
+      currentFootStep = theFootStepPlanner.nextStep(currentFootStep, req, theCoMErr);
       currentCycle = 0;
+      theCoMErr = Vector3d();
     }
   }
   
@@ -261,7 +265,7 @@ FootStep Walk::firstStep(const WalkRequest& req)
   startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
   
   //TODO: consider current ZMP
-  FootStep step = theFootStepPlanner.firstStep(startingZMPFeetPose.feet, req);
+  FootStep step = theFootStepPlanner.firstStep(startingZMPFeetPose.feet, req, theCoMErr);
   return step;
 }
 
@@ -275,4 +279,28 @@ void Walk::updateParameters()
   numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
   
   theFootStepPlanner.updateParameters(theParameters);
+}
+
+void Walk::calculateError()
+{
+  if ( currentState != motion::running )
+    return;
+
+  bool leftFootSupport = theCoMFeetPose.feet.left.translation.z < 0.1;
+  bool rightFootSupport = theCoMFeetPose.feet.right.translation.z < 0.1;
+
+  // at least one support foot
+  ASSERT( leftFootSupport || rightFootSupport );
+
+  // calculate error of com
+  KinematicChain::LinkID supFoot = leftFootSupport ? KinematicChain::LFoot : KinematicChain::RFoot;
+  Pose3D footObs = theBlackBoard.theKinematicChain.theLinks[supFoot].M;
+  footObs.translate(0, 0, -NaoInfo::FootHeight);
+  Vector3d comObs = footObs.rotation * ( footObs.invert() * theBlackBoard.theKinematicChain.CoM );
+
+  const Pose3D& footRef = leftFootSupport ? theCoMFeetPose.feet.left : theCoMFeetPose.feet.right;
+  Vector3d comRef = footRef.invert() * theCoMFeetPose.com.translation;
+  Vector3d comErr = comObs - comRef;
+
+  theCoMErr += comErr;
 }

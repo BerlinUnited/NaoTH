@@ -54,10 +54,10 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
   }//end switch
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req, const Vector3d& comErr)
 {
   Pose2D step = calculateStep(lastStep, req);
-  return nextStep(lastStep, step);
+  return nextStep(lastStep, step, comErr);
 }
 
 Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
@@ -107,7 +107,7 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
   return step;
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, const Vector3d& /*comErr*/)
 {
   ASSERT(step.rotation <= Math::pi);
   ASSERT(step.rotation > -Math::pi);
@@ -115,9 +115,13 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
   restrictStepSize(step, lastStep);
   restrictStepChange(step, theLastStepSize);
   
-  //TODO
-  //adapt step size
-  
+  //adapt step size, because of delay, it dosn't help
+  /*
+  const double k = 1;
+  step.translation.x += (comErr.x * k);
+  step.translation.y += (comErr.y * k);
+  */
+
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, static_cast<FootStep::Foot>(-lastStep.liftingFoot()) );
   addStep(newStep, step);
@@ -126,7 +130,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req)
+FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req, const Vector3d& comErr)
 {
   // choose foot, TODO: consider current com?
   FootStep::Foot startFoot;
@@ -142,7 +146,7 @@ FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRe
   }
 
   FootStep zeroStep(pose, static_cast<FootStep::Foot>(-startFoot) );
-  return nextStep(zeroStep, req);
+  return nextStep(zeroStep, req, comErr);
 }
 
 void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) const

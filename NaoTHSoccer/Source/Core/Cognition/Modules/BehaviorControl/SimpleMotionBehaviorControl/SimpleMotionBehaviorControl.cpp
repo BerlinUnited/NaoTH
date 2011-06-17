@@ -33,6 +33,8 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:strafe_right", "Set the motion request to 'strafe'.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:turn_left", "Set the motion request to 'turn_right'.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:turn_right", "Set the motion request to 'turn_right'.", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_forward", "Walk foraward as fast as possible", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stepping", "walk with zero speed", false);
 
   // key frame motion
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
@@ -169,6 +171,14 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().walkRequest.rotation = Math::fromDegrees(180);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stepping",
+      getMotionRequest().id = motion::walk;
+      getMotionRequest().walkRequest.translation.x = 0.0;
+      getMotionRequest().walkRequest.translation.y = 0.0;
+      getMotionRequest().walkRequest.rotation = 0;
+      getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
+    );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_front",
     getMotionRequest().id = motion::stand_up_from_front;
