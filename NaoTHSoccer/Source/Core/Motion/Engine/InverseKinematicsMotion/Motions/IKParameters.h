@@ -14,6 +14,7 @@
 class IKParameters : public ParameterList
 {
 public:
+  double bodyPitchOffset;
   double hipOffsetX;
   double footOffsetY;
   

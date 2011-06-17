@@ -11,6 +11,7 @@
 IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
+  PARAMETER_REGISTER(bodyPitchOffset) = 3;
   PARAMETER_REGISTER(hipOffsetX) = 10;
   PARAMETER_REGISTER(footOffsetY) = 0;
   
