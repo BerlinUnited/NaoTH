@@ -17,6 +17,7 @@ IKParameters::IKParameters()
   
   PARAMETER_REGISTER(stand.speed) = 0.04;
   
+  PARAMETER_REGISTER(walk.stiffness) = 0.7;
   PARAMETER_REGISTER(walk.comHeight) = 260;
   PARAMETER_REGISTER(walk.singleSupportTime) = 300;
   PARAMETER_REGISTER(walk.doubleSupportTime) = 40;
@@ -32,9 +33,9 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxUnsupportedCount) = 0;
   PARAMETER_REGISTER(walk.maxWaitLandingCount) = 20;
   PARAMETER_REGISTER(walk.leftHipRollSingleSupFactor) = 0.4;
-  PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.4;
+  PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.3;
 
-  PARAMETER_REGISTER(rotationStabilize.k.x) = -0.4;
+  PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
   PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
   PARAMETER_REGISTER(rotationStabilize.threshold.x) = 2;
   PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;

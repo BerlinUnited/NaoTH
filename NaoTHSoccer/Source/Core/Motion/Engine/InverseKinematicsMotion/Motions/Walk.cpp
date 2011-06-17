@@ -20,7 +20,6 @@ isStopping(false),
 stoppingStepFinished(false),
 currentCycle(0)
 {
-  updateParameters();
 }
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
@@ -279,6 +278,12 @@ void Walk::updateParameters()
   numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
   
   theFootStepPlanner.updateParameters(theParameters);
+
+  // set the stiffness for walking
+  for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
+  {
+    theMotorJointData.stiffness[i] = theWalkParameters.stiffness;
+  }
 }
 
 void Walk::calculateError()

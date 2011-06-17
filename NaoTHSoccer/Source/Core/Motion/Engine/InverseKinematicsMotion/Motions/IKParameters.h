@@ -23,6 +23,7 @@ public:
   } stand;
 
   struct Walk {
+    double stiffness;
     double comHeight;
     
     double singleSupportTime;
