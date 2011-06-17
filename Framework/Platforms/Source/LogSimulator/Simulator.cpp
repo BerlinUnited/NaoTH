@@ -613,11 +613,9 @@ Simulator::~Simulator()
 {
 }
 
-<<<<<<< TREE
+
 MessageQueue* Simulator::createMessageQueue(const std::string& name)
-=======
-MessageQueue* Simulator::createMessageQueue(const std::string& name)
->>>>>>> MERGE-SOURCE
+
 {
   // for single thread
   return new MessageQueue();
