@@ -33,8 +33,17 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
   
+  theEngine.rotationStabilize(c.hip);
+
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
+
+  // force the hip joint
+  if (theMotorJointData.position[JointData::LHipRoll] < 0)
+    theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
+
+  if (theMotorJointData.position[JointData::RHipRoll] > 0)
+    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
 }
 
 bool Walk::FSRProtection()
@@ -168,7 +177,8 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
     }
   }
   
-  result.zmp = ZMPPlanner::simplest(currentFootStep, theWalkParameters.comHeight);
+  Vector2d zmp = ZMPPlanner::simplest(currentFootStep);
+  result.zmp.translation = Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight);
   
   // body rotation
   double rAng = result.feet.left.rotation.getZAngle();

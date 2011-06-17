@@ -43,6 +43,9 @@ public:
     
     int maxUnsupportedCount;
     int maxWaitLandingCount; // <0 means wait for ever until landing
+
+    double leftHipRollSingleSupFactor;
+    double rightHipRollSingleSupFactor;
   } walk;
 
   struct RotationStabilize {

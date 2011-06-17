@@ -158,7 +158,7 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.translation.x = 0.0;
     getMotionRequest().walkRequest.translation.y = 0.0;
-    getMotionRequest().walkRequest.rotation = Math::fromDegrees(-180);
+    getMotionRequest().walkRequest.rotation = Math::fromDegrees(-179);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
