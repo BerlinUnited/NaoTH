@@ -174,7 +174,7 @@ void Simulator::play()
     stepForward();
 
     #ifdef WIN32
-    Sleep(30);
+    Sleep(60);
     if(_kbhit())
     #else
     // wait some time
@@ -226,7 +226,7 @@ void Simulator::loop()
     stepForward();
 
     #ifdef WIN32
-    Sleep(30);
+    Sleep(60);
     if(_kbhit())
     #else
     // wait some time
@@ -613,7 +613,11 @@ Simulator::~Simulator()
 {
 }
 
+<<<<<<< TREE
 MessageQueue* Simulator::createMessageQueue(const std::string& name)
+=======
+MessageQueue* Simulator::createMessageQueue(const std::string& name)
+>>>>>>> MERGE-SOURCE
 {
   // for single thread
   return new MessageQueue();
