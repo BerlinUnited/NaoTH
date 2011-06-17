@@ -65,7 +65,7 @@ private:
 
   unsigned int frameNumSinceLastMotionRequest;
 
-  bool isExiting;
+  bool isRunning;
 };
 
 #endif	/* MOTION_H */

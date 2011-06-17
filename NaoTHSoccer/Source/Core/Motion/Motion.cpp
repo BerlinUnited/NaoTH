@@ -21,7 +21,7 @@ theOdometryDataWriter(NULL),
 theHeadMotionRequestReader(NULL),
 theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
-  isExiting(false)
+  isRunning(false)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -81,6 +81,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
 
   selectMotion();// create init motion
+  isRunning = false;
 }//end init
 
 
@@ -92,26 +93,23 @@ void Motion::call()
   // process sensor data
   processSensorData();
   
-  if ( !isExiting )
+  if ( isRunning )
   {
+    frameNumSinceLastMotionRequest++;
     // get orders from cognition
-    if ( !theHeadMotionRequestReader->empty() )
+    while ( !theHeadMotionRequestReader->empty() )
     {
       string msg = theHeadMotionRequestReader->read();
       stringstream ss(msg);
       Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
     }
 
-    if ( !theMotionRequestReader->empty() )
+    while ( !theMotionRequestReader->empty() )
     {
       string msg = theMotionRequestReader->read();
       stringstream ss(msg);
       Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
       frameNumSinceLastMotionRequest = 0;
-    }
-    else
-    {
-      frameNumSinceLastMotionRequest++;
     }
   }
 
@@ -125,6 +123,7 @@ void Motion::call()
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
+  isRunning = true;
   //STOPWATCH_STOP("MotionExecute");
   
   postProcess();
@@ -239,7 +238,7 @@ bool Motion::exit()
   theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
   theBlackBoard.theMotionRequest.id = motion::init;
   theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  isExiting = true;
+  isRunning = false;
 
   return (theBlackBoard.currentlyExecutedMotion != NULL)
     && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
