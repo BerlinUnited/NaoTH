@@ -228,15 +228,6 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
 
   Vector2d e = r - s;
 
-  const double disabelAngle = Math::fromDegrees(45);
-  if ( abs(e.x) > disabelAngle || abs(e.y) > disabelAngle )
-  {
-    return false;
-  }
-
-//  PLOT("xe", xe);
-//  PLOT("ye", ye);
-
   bool isWorking = false;
   Vector2<double> chestRotationStabilizerValue;
   const double maxAngle = Math::fromDegrees(30);
