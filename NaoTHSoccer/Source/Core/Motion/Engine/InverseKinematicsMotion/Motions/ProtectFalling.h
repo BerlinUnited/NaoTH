@@ -43,6 +43,8 @@ public:
 
     theEngine.rotationStabilize(c.hip);
 
+    decreaseHeight(c);
+
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
     decreaseStiffness();
@@ -50,6 +52,15 @@ public:
   }
 
 private:
+  void decreaseHeight(InverseKinematic::HipFeetPose& p)
+  {
+    const Vector2d& is = theBlackBoard.theInertialPercept.data;
+    double angle = max( abs(is.x), abs(is.y) );
+    double height = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].p.z;
+    double decrease = (1- cos(angle)) * height;
+    p.hip.translate(0, 0, -decrease);
+  }
+
   /* decrease stiffness according to body rotation */
   void decreaseStiffness()
   {
