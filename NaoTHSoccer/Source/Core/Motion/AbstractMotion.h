@@ -47,17 +47,15 @@ protected:
 class EmptyMotion: public AbstractMotion
 {
 public:
-  EmptyMotion():AbstractMotion(motion::empty) {};
+  EmptyMotion():AbstractMotion(motion::empty)
+  {
+    currentState = motion::stopped;
+  }
 
   virtual ~EmptyMotion(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*moitonStatus*/)
+  virtual void execute(const MotionRequest& /*motionRequest*/, MotionStatus& /*moitonStatus*/)
   {
-    if(motionRequest.id != getId())
-      currentState = motion::stopped;
-    else
-      currentState = motion::waiting;
-
     /** do nothing */
   }//end execute
 };

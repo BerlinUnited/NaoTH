@@ -65,7 +65,12 @@ private:
 
   unsigned int frameNumSinceLastMotionRequest;
 
-  bool isRunning;
+  enum State
+  {
+    initial,
+    running,
+    exiting,
+  } state;
 };
 
 #endif	/* MOTION_H */

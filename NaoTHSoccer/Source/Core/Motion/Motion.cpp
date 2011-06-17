@@ -21,7 +21,7 @@ theOdometryDataWriter(NULL),
 theHeadMotionRequestReader(NULL),
 theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
-  isRunning(false)
+  state(initial)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -81,7 +81,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
 
   selectMotion();// create init motion
-  isRunning = false;
+  state = initial;
 }//end init
 
 
@@ -93,7 +93,17 @@ void Motion::call()
   // process sensor data
   processSensorData();
   
-  if ( isRunning )
+  switch (state)
+  {
+  case initial:
+  {
+    if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
+        && theBlackBoard.theMotionStatus.currentMotionState == motion::running )
+    {
+      state = running;
+    }
+  }
+  case running:
   {
     frameNumSinceLastMotionRequest++;
     // get orders from cognition
@@ -111,6 +121,8 @@ void Motion::call()
       Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
       frameNumSinceLastMotionRequest = 0;
     }
+    break;
+  }
   }
 
   checkWarningState();
@@ -123,7 +135,7 @@ void Motion::call()
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
-  isRunning = true;
+
   //STOPWATCH_STOP("MotionExecute");
   
   postProcess();
@@ -238,11 +250,11 @@ bool Motion::exit()
   theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
   theBlackBoard.theMotionRequest.id = motion::init;
   theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  isRunning = false;
+  state = exiting;
 
   return (theBlackBoard.currentlyExecutedMotion != NULL)
     && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
-    && ( theBlackBoard.currentlyExecutedMotion->state() != motion::running );
+    && ( theBlackBoard.currentlyExecutedMotion->state() == motion::waiting );
 }//end exit
 
 void Motion::checkWarningState()
