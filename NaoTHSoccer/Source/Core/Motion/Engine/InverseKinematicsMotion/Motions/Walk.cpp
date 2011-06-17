@@ -128,7 +128,7 @@ CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
 
 ZMPFeetPose Walk::walk(const WalkRequest& req)
 {
-  if ( currentState == motion::stopped )
+  if ( currentState != motion::running )
   {
     updateParameters();
     currentFootStep = firstStep(req);
