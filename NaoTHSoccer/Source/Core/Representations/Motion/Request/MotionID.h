@@ -27,6 +27,7 @@ namespace motion
     walk,
     kick,
     dance,
+    protect_falling,
     //SIT_STABLE,
     /* motion net */
     stand_up_from_front,
@@ -68,6 +69,7 @@ namespace motion
       case walk: return "walk";
       case kick: return "kick";
       case dance: return "dance";
+      case protect_falling: return "protect_falling";
       
       case stand_up_from_front: return "stand_up_from_front";
       case stand_up_from_back: return "stand_up_from_back";

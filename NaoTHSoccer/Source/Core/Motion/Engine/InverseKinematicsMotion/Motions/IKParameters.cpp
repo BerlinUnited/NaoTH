@@ -11,7 +11,7 @@
 IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
-  PARAMETER_REGISTER(hipOffsetX) = 0;
+  PARAMETER_REGISTER(hipOffsetX) = 10;
   PARAMETER_REGISTER(footOffsetY) = 0;
   
   PARAMETER_REGISTER(stand.speed) = 0.04;
