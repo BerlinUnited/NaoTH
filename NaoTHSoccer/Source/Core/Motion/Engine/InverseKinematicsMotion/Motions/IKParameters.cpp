@@ -19,10 +19,10 @@ IKParameters::IKParameters()
   
   PARAMETER_REGISTER(walk.comHeight) = 260;
   PARAMETER_REGISTER(walk.bodyPitchOffset) = 0;
-  PARAMETER_REGISTER(walk.singleSupportTime) = 420;
-  PARAMETER_REGISTER(walk.doubleSupportTime) = 80;
-  PARAMETER_REGISTER(walk.stepHeight) = 20;
-  PARAMETER_REGISTER(walk.curveFactor) = 10;
+  PARAMETER_REGISTER(walk.singleSupportTime) = 300;
+  PARAMETER_REGISTER(walk.doubleSupportTime) = 40;
+  PARAMETER_REGISTER(walk.stepHeight) = 10;
+  PARAMETER_REGISTER(walk.curveFactor) = 7;
   PARAMETER_REGISTER(walk.maxTurnInner) = 10;
   PARAMETER_REGISTER(walk.maxStepTurn) = 30;
   PARAMETER_REGISTER(walk.maxStepLength) = 50;
