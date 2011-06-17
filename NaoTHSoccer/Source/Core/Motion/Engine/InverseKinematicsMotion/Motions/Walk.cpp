@@ -63,10 +63,14 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0;
-  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0;
-  
+  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0.1;
+  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0.1;
+
   // don't raise two feet
+  if( raiseLeftFoot && raiseRightFoot )
+  {
+    cout<<"walk pose:\n "<<theCoMFeetPose.com<<"\n\n"<<theCoMFeetPose.feet.left<<"\n\n"<<theCoMFeetPose.feet.right<<endl;
+  }
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
   
   bool rightFootSupportable = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
@@ -177,7 +181,7 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
     }
   }
   
-  Vector2d zmp = ZMPPlanner::simplest(currentFootStep);
+  Vector2d zmp = ZMPPlanner::simplest(currentFootStep, theParameters.hipOffsetX);
   result.zmp.translation = Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight);
   
   // body rotation
@@ -269,7 +273,7 @@ void Walk::updateParameters()
 {
   const unsigned int basicTimeStep = theBlackBoard.theFrameInfo.basicTimeStep;
   
-  bodyPitchOffset = Math::fromDegrees(theWalkParameters.bodyPitchOffset);
+  bodyPitchOffset = Math::fromDegrees(theParameters.bodyPitchOffset);
   samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
   samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
   numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;

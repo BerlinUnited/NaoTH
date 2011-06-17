@@ -9,8 +9,9 @@
 
 using namespace InverseKinematic;
 
-Vector2d ZMPPlanner::simplest(const FootStep& step)
+Vector2d ZMPPlanner::simplest(const FootStep& step, double offsetX)
 {
-  const Pose3D& supFoot = step.supFoot();
+  Pose3D supFoot = step.supFoot();
+  supFoot.translate(offsetX, 0, 0);
   return Vector2d(supFoot.translation.x, supFoot.translation.y);
 }

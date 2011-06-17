@@ -24,7 +24,6 @@ public:
 
   struct Walk {
     double comHeight;
-    double bodyPitchOffset;
     
     double singleSupportTime;
     double doubleSupportTime;
