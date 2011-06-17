@@ -82,8 +82,6 @@ public:
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
-
-
   }//end execute
 
 private:

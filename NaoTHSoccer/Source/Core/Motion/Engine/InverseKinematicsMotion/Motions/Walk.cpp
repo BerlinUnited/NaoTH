@@ -67,14 +67,10 @@ bool Walk::waitLanding()
   bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0.1;
 
   // don't raise two feet
-  if( raiseLeftFoot && raiseRightFoot )
-  {
-    cout<<"walk pose:\n "<<theCoMFeetPose.com<<"\n\n"<<theCoMFeetPose.feet.left<<"\n\n"<<theCoMFeetPose.feet.right<<endl;
-  }
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
   
-  bool rightFootSupportable = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
-  bool leftFootSupportable = theBlackBoard.theSupportPolygon.isRightFootSupportable();
+  bool leftFootSupportable = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
+  bool rightFootSupportable = theBlackBoard.theSupportPolygon.isRightFootSupportable();
 
   bool unSupporting = (raiseLeftFoot && !rightFootSupportable)
                       || (raiseRightFoot && !leftFootSupportable);
