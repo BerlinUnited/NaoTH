@@ -9,8 +9,11 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Cognition/CognitionDebugServer.h"
+
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/Stopwatch.h>
+
+#include <PlatformInterface/Platform.h>
 
 Debug::Debug() : cognitionLogger("log")
 {
@@ -53,6 +56,39 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   else if(command == "ping")
   {
     outstream << "pong";
+  }
+  else if (command == "colortable:load")
+  {
+    const string file = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";
+
+    if (g_file_test(file.c_str(), G_FILE_TEST_EXISTS))
+    {
+      if (getColorTable64().loadFromFile(file))
+        outstream << "colortable loaded";
+      else
+        outstream << "colortable cold not be loaded";
+    }
+    else
+    {
+      outstream << "colortable doesn't exist at location " << file;
+    }
+  }
+  else if (command == "colortable:file_path")
+  {
+    const string file = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";
+    
+    if (file.length() == 0)
+      outstream << "colortable file path is empty";
+    else
+      outstream << file;
+  }
+  else if (command == "motion_request:set")
+  {
+    if (!arguments.empty())
+    {
+      getMotionRequest().id = motion::getId(arguments.begin()->first);
+      outstream << "Set MotionRequest to " << motion::getName(getMotionRequest().id) << endl;
+    }
   }
 }
 

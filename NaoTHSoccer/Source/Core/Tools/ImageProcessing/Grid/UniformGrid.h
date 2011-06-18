@@ -53,7 +53,7 @@ public:
     return scaledImageIndex[y * width + x];
   }
 
-  const Vector2<int>& getGridCoordinates(unsigned int idx) const
+  inline const Vector2<int>& getGridCoordinates(unsigned int idx) const
   {
     ASSERT(idx < Grid::maxNumberOfPoints);
     return gridCoordinates[idx];

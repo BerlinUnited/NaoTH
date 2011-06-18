@@ -20,6 +20,7 @@
 
 // submodules
 #include "ObjectDetectors/BallDetector.h"
+#include "ObjectDetectors/GoalDetector.h"
 
 // Representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -55,6 +56,8 @@ public:
 
 private:
   ModuleCreator<BallDetector>* theBallDetector;
+  ModuleCreator<GoalDetector>* theGoalDetector;
+  
 };//end class ImageProcessor
 
 #endif // __ImageProcessor_H_

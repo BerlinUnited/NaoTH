@@ -17,11 +17,15 @@
 #include <Representations/Infrastructure/CameraSettings.h>
 #include "Representations/Infrastructure/FieldInfo.h"
 
+#include "Representations/Infrastructure/ColorTable64.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(ParameterListDebugLoader)
   PROVIDE(CameraSettingsRequest)  
   PROVIDE(FieldInfo)
+
+  PROVIDE(ColorTable64)
 END_DECLARE_MODULE(ParameterListDebugLoader)
 
 class ParameterListDebugLoader : public ParameterListDebugLoaderBase, public DebugCommandExecutor

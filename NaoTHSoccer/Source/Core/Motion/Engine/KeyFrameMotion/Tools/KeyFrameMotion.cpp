@@ -19,7 +19,7 @@ KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::Motion
 
 KeyFrameMotion::KeyFrameMotion()
   :
-  AbstractMotion(motion::NUM_OF_MOTION),
+  AbstractMotion(motion::num_of_motions),
   t(0.0),
   stiffness(0.7)
 {
