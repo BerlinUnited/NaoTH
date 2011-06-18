@@ -11,7 +11,7 @@
 
 using namespace std;
 
-bool ColorTable64::loadFromFile(std::string fileName)
+bool ColorTable64::loadFromFile(const std::string& fileName)
 {
   ifstream inputFileStream ( fileName.c_str() , ifstream::in );
   

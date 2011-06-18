@@ -1,3 +1,5 @@
+local extern_dir = "../../../Extern"
+
 project "NaoTHSoccer-Tests"
   kind "ConsoleApp"
   language "C++"
@@ -15,13 +17,17 @@ project "NaoTHSoccer-Tests"
 
   includedirs {
     "../Tests/",
-    "../Source/",
+    "../Source/Core/",
     "../../Framework/NaoTH-Commons/Source/"
   }
 
   links {"NaoTHSoccer", "NaoTH-Commons", 
-    "glib-2.0","gio-2.0","gobject-2.0", "protobuf",
-    "gtest", "gmock", "pthread"
+    "glib-2.0",
+	"gio-2.0",
+	"gobject-2.0", 
+	"protobuf",
+    "gtest", 
+	"gmock"
   }
   
   targetname "testNaoTHSoccer"

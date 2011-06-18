@@ -35,8 +35,8 @@ public:
   MotionStatus()
   :
   time(0),
-  lastMotion(motion::NUM_OF_MOTION),
-  currentMotion(motion::NUM_OF_MOTION)
+  lastMotion(motion::num_of_motions),
+  currentMotion(motion::num_of_motions)
   {
   }
 
