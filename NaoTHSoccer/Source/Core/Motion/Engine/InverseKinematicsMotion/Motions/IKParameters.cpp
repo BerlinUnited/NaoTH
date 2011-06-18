@@ -33,7 +33,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxUnsupportedCount) = 0;
   PARAMETER_REGISTER(walk.maxWaitLandingCount) = 20;
   PARAMETER_REGISTER(walk.leftHipRollSingleSupFactor) = 0.4;
-  PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.3;
+  PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.4;
 
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
   PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
