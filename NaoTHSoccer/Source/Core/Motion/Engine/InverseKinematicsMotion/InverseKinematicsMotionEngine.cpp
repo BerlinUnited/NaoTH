@@ -228,15 +228,6 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
 
   Vector2d e = r - s;
 
-  const double disabelAngle = Math::fromDegrees(45);
-  if ( abs(e.x) > disabelAngle || abs(e.y) > disabelAngle )
-  {
-    return false;
-  }
-
-//  PLOT("xe", xe);
-//  PLOT("ye", ye);
-
   bool isWorking = false;
   Vector2<double> chestRotationStabilizerValue;
   const double maxAngle = Math::fromDegrees(30);
@@ -291,9 +282,17 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
 
 void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
 {
-  // TODO: fill with current ZMP, use COM at the moment
-  CoMFeetPose startCoMPose = getCurrentCoMFeetPose();
-  thePreviewControlCoM = Vector2<double>(startCoMPose.com.translation.x,startCoMPose.com.translation.y);
+  ZMPFeetPose startZMPPose = getPlannedZMPFeetPose();
+  startZMPPose.localInLeftFoot();
+
+  // here assume the foot movment can not jump
+  // so we can keep them in the same coordinate
+  const Pose3D& trans = target.feet.left;
+  startZMPPose.feet.left *= trans;
+  startZMPPose.feet.right *= trans;
+  startZMPPose.zmp *= trans;
+
+  thePreviewControlCoM = Vector2<double>(startZMPPose.zmp.translation.x,startZMPPose.zmp.translation.y);
   thePreviewControldCoM = Vector2<double>(0,0);
   thePreviewControlddCoM = Vector2<double>(0,0);
   thePreviewController.init(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
@@ -301,14 +300,14 @@ void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
   unsigned int previewSteps = thePreviewController.previewSteps();
   theZMPFeetPoseBuffer.clear();
   thePreviewController.clear();
-  
-  ZMPFeetPose startZMPPose; // get start ZMP
-  startZMPPose.zmp = startCoMPose.com;
-  startZMPPose.feet = startCoMPose.feet;
+
+  ZMPFeetPose myTarget = target;
+  myTarget.zmp.translation.x = startZMPPose.zmp.translation.x;
+  myTarget.zmp.translation.y = startZMPPose.zmp.translation.y;
   for (unsigned int i = 0; i < previewSteps-1; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
-    ZMPFeetPose p = interpolate(startZMPPose, target, t);
+    ZMPFeetPose p = interpolate(startZMPPose, myTarget, t);
     thePreviewController.push(Vector2<double>(p.zmp.translation.x, p.zmp.translation.y));
     theZMPFeetPoseBuffer.push_back(p);
   }

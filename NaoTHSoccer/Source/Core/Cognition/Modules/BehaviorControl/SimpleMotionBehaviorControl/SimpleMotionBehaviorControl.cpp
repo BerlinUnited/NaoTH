@@ -33,32 +33,19 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:strafe_right", "Set the motion request to 'strafe'.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:turn_left", "Set the motion request to 'turn_right'.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:turn_right", "Set the motion request to 'turn_right'.", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_forward", "Walk foraward as fast as possible", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stepping", "walk with zero speed", false);
 
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:neural_walk", "", false);
+  // key frame motion
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back", "Set the motion request to 'stand_up_from_back'", false);
 
   // other motions
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand", "The default motion, otherwise do nothing", true);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:check_reactivity", "", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:parallel_dance", "...", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:parallel_stepper", "...", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:sensor_stepper", "...", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back", "Set the motion request to 'stand_up_from_back'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:test", "Set the motion request to 'test'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:block_left", "Set the motion request to 'block_left'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:block_right", "Set the motion request to 'block_right'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:block_middle", "Set the motion request to 'block_middle'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:goalie_dive_left", "Set the motion request to 'goalie_dive_left'", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:goalie_dive_right", "Set the motion request to 'goalie_dive_right'", false);
-
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:goalie_sit_small", "", false);
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:goalie_get_down", "", false);
-
-  // motion editor
-  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:play_editor_motionnet", "Set the motion request to 'play_editor_motionnet'", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
 }
 
 void SimpleMotionBehaviorControl::execute() 
@@ -136,10 +123,6 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().walkRequest.stopWithStand = true;
   );
 
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:test",
-    //getMotionRequest().id = motion::test;
-  );
-
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_forward",
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.translation.x = 500;
@@ -177,7 +160,7 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.translation.x = 0.0;
     getMotionRequest().walkRequest.translation.y = 0.0;
-    getMotionRequest().walkRequest.rotation = Math::fromDegrees(-180);
+    getMotionRequest().walkRequest.rotation = Math::fromDegrees(-179);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
@@ -189,9 +172,13 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:neural_walk",
-    //getMotionRequest().id = motion::neural_walk;
-  );
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stepping",
+      getMotionRequest().id = motion::walk;
+      getMotionRequest().walkRequest.translation.x = 0.0;
+      getMotionRequest().walkRequest.translation.y = 0.0;
+      getMotionRequest().walkRequest.rotation = 0;
+      getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
+    );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_front",
     getMotionRequest().id = motion::stand_up_from_front;
@@ -210,55 +197,12 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().id = motion::init;
   );
 
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:block_left",
-    //getMotionRequest().id = motion::block_left;
-  );
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:block_right",
-    //getMotionRequest().id = motion::block_right;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:block_middle",
-    //getMotionRequest().id = motion::block_middle;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:goalie_dive_left",
-    //getMotionRequest().id = motion::goalie_dive_left;
-  );
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:goalie_dive_right",
-    //getMotionRequest().id = motion::goalie_dive_right;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:goalie_sit_small",
-    //getMotionRequest().id = motion::goalie_sit_small;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:goalie_get_down",
-    //getMotionRequest().id = motion::goalie_get_down;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:play_editor_motionnet",
-    //getMotionRequest().id = motion::play_editor_motionnet;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:check_reactivity",
-    //getMotionRequest().id = motion::check_reactivity;
-  );
-
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:dance",
     getMotionRequest().id = motion::dance;
   );
 
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:parallel_dance",
-    //getMotionRequest().id = motion::parallel_dance;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:parallel_stepper",
-    //getMotionRequest().id = motion::parallel_stepper;
-  );
-
-  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:sensor_stepper",
-    //getMotionRequest().id = motion::sensor_stepper;
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:protect_falling",
+    getMotionRequest().id = motion::protect_falling;
   );
           
 }//end testMotion

@@ -14,6 +14,7 @@
 class IKParameters : public ParameterList
 {
 public:
+  double bodyPitchOffset;
   double hipOffsetX;
   double footOffsetY;
   
@@ -22,8 +23,8 @@ public:
   } stand;
 
   struct Walk {
+    double stiffness;
     double comHeight;
-    double bodyPitchOffset;
     
     double singleSupportTime;
     double doubleSupportTime;
@@ -42,6 +43,9 @@ public:
     
     int maxUnsupportedCount;
     int maxWaitLandingCount; // <0 means wait for ever until landing
+
+    double leftHipRollSingleSupFactor;
+    double rightHipRollSingleSupFactor;
   } walk;
 
   struct RotationStabilize {

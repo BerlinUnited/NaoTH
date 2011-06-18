@@ -23,9 +23,6 @@ public:
   {
   }
 
-  /**
-  * this method is called every cycle
-  */
   void calculateTrajectory(const MotionRequest& motionRequest)
   {
     currentState = motion::running; // set the motion to running by default
