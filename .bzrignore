@@ -83,3 +83,6 @@ Framework/Platforms/Make/*.make
 RobotControl/RobotControlGUI/plugins/
 build-impl.xml
 genfiles.properties
+Framework/NaoTH-Commons/Make/NaoTH-Commons.creator.user
+NaoTHSoccer/Make/NaoTHSoccer.creator.user
+NaoTHSoccer/Make/NaoTHSoccer.files
