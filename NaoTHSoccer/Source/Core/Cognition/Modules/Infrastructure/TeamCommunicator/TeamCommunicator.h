@@ -4,12 +4,14 @@
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/TeamMessage.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Modeling/PlayerInfo.h"
 
 #include <glib.h>
 #include <gio/gio.h>
 
 BEGIN_DECLARE_MODULE(TeamCommunicator)
   REQUIRE(FrameInfo)
+  REQUIRE(PlayerInfo)
 
   PROVIDE(TeamMessage)
 END_DECLARE_MODULE(TeamCommunicator)

@@ -129,9 +129,32 @@ void TeamCommunicator::handleMessage(char *buffer, gsize size)
 
 void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
 {
-  // TODO: fill with real values
-  msg.set_playernumber(1);
-  msg.set_teamnumber(7);
+
+  msg.set_playernumber(getPlayerInfo().playerNumber);
+  msg.set_teamnumber(getPlayerInfo().teamNumber);
+  msg.set_ispenalized(getPlayerInfo().gameState == PlayerInfo::penalized);
+  msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
+
+  // TODO: set falldown state in teamcomm message
+  /*
+  msg.set_isfallendown(theBodyState.fall_down_state != BodyState::upright
+    || theMotionStatus.currentMotion == MotionRequestID::stand_up_from_back
+    || theMotionStatus.currentMotion == MotionRequestID::stand_up_from_front);
+  */
+
+  // TODO: set ball and pose info in teamcomm message
+  /*
+  msg.set_timetoball(theSoccerStrategy.timeToBall);
+
+  msg.set_timesinceballwasseen(
+    getFrameInfo().getTimeSince(theBallModel.frameInfoWhenBallWasSeen.time));
+  msg.mutable_ballposition()->set_x(theBallModel.position.x);
+  msg.mutable_ballposition()->set_y(theBallModel.position.y);
+
+  msg.mutable_positiononfield()->set_rotation(theRobotPose.rotation);
+  msg.mutable_positiononfield()->mutable_translation()->set_x(theRobotPose.translation.x);
+  msg.mutable_positiononfield()->mutable_translation()->set_y(theRobotPose.translation.y);
+*/
 }
 
 TeamCommunicator::~TeamCommunicator()
