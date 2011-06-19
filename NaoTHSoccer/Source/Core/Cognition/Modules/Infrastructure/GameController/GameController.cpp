@@ -5,7 +5,7 @@
 #include <PlatformInterface/Platform.h>
 
 GameController::GameController()
-  : lastChestButtonEventCounter(0)
+  : lastChestButtonEventCounter(0), socket(NULL)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -14,6 +14,31 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
 
   loadPlayerInfoFromFile();
+
+  GError* err = bindAndListen();
+  if(err)
+  {
+    g_warning("could not listen for GameController: %s", err->message);
+    socket = NULL;
+    g_error_free(err);
+  }
+}
+
+GError* GameController::bindAndListen(unsigned int port)
+{
+  GError* err = NULL;
+  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
+  if(err) return err;
+
+  GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
+  GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
+
+  g_socket_bind(socket, socketAddress, true, &err);
+
+  g_object_unref(inetAddress);
+  g_object_unref(socketAddress);
+
+  if (err) return err;
 }
 
 void GameController::loadPlayerInfoFromFile()
@@ -232,4 +257,8 @@ void GameController::updateLEDs()
 
 GameController::~GameController()
 {
+  if(socket != NULL)
+  {
+    g_object_unref(socket);
+  }
 }

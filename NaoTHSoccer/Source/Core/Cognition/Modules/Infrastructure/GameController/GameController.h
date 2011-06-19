@@ -6,6 +6,10 @@
 #include <Representations/Infrastructure/ButtonData.h>
 #include "Representations/Modeling/PlayerInfo.h"
 
+#include <Tools/Communication/RoboCupGameControlData.h>
+
+#include <gio/gio.h>
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameController)
@@ -24,11 +28,13 @@ public:
 
 private:
     int lastChestButtonEventCounter;
+    GSocket* socket;
 
     void loadPlayerInfoFromFile();
     void readButtons();
     void readWLAN();
     void updateLEDs();
+    GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
 };
 
 #endif // GAMECONTROLLER_H

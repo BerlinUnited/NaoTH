@@ -25,6 +25,7 @@ TeamCommunicator::TeamCommunicator()
       g_object_unref(socket);
       socket = NULL;
     }
+    g_error_free(err);
   }
   else
   {
