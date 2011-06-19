@@ -36,13 +36,13 @@ TeamCommunicator::TeamCommunicator()
     {
       GInetAddress* address = g_inet_address_new_from_string(config.getString("teamcomm", "wlan").c_str());
       wlanBroadcastAddress = g_inet_socket_address_new(address, port);
-      g_free(address);
+      g_object_unref(address);
     }
     if(config.hasKey("teamcomm", "lan"))
     {
       GInetAddress* address = g_inet_address_new_from_string(config.getString("teamcomm", "lan").c_str());
       lanBroadcastAddress = g_inet_socket_address_new(address, port);
-      g_free(address);
+      g_object_unref(address);
     }
   }
 
@@ -107,6 +107,7 @@ void TeamCommunicator::execute()
         }
 
       }
+      lastSentTimestamp = getFrameInfo().time;
     }
   }
 }
