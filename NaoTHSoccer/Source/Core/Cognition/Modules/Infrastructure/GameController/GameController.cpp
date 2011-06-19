@@ -160,6 +160,14 @@ void GameController::execute()
     getPlayerInfo().gameState = PlayerInfo::penalized;
   );
 
+  if(oldState != getPlayerInfo().gameState
+    || oldTeamColor != getPlayerInfo().teamColor
+    || oldOwnKickOff != getPlayerInfo().ownKickOff
+    || getPlayerInfo().gameState == PlayerInfo::inital)
+  {
+    updateLEDs();
+  }
+
 } // end execute
 
 void GameController::updateLEDs()
