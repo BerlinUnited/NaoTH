@@ -20,6 +20,8 @@ public:
     virtual ~GameController();
 
 private:
+    int lastChestButtonEventCounter;
+
     void loadPlayerInfoFromFile();
     void readButtons();
     void readWLAN();

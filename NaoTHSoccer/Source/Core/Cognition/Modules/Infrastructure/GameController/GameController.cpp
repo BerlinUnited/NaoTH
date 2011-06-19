@@ -5,6 +5,7 @@
 #include <PlatformInterface/Platform.h>
 
 GameController::GameController()
+  : lastChestButtonEventCounter(0)
 {
   DEBUG_REQUEST_REGISTER("gamecontroller:play", "force the play state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:penalized", "force the penalized state", false);
@@ -65,6 +66,68 @@ void GameController::loadPlayerInfoFromFile()
 void GameController::readButtons()
 {
 
+  // state change?
+  if (getButtonData().eventCounter[ButtonData::Chest] > lastChestButtonEventCounter )
+  {
+    lastChestButtonEventCounter = getButtonData().eventCounter[ButtonData::Chest];
+    switch (getPlayerInfo().gameState)
+    {
+      case PlayerInfo::inital :
+
+          getPlayerInfo().gameState = PlayerInfo::penalized;
+        break;
+      case PlayerInfo::playing :
+
+          getPlayerInfo().gameState = PlayerInfo::penalized;
+        break;
+      case PlayerInfo::penalized :
+
+          getPlayerInfo().gameState = PlayerInfo::playing;
+        break;
+     default:
+        break;
+    }
+  }
+
+  // re-set team color or kickoff in initial
+  if (getPlayerInfo().gameState == PlayerInfo::inital)
+  {
+    if (getButtonData().numOfFramesPressed[ButtonData::LeftFootLeft] == 1
+      || getButtonData().numOfFramesPressed[ButtonData::LeftFootRight] == 1)
+    {
+      // switch team color
+      PlayerInfo::TeamColor oldColor = getPlayerInfo().teamColor;
+      if (oldColor == PlayerInfo::blue)
+      {
+        getPlayerInfo().teamColor = PlayerInfo::red;
+      }
+      else if (oldColor == PlayerInfo::red)
+      {
+        getPlayerInfo().teamColor = PlayerInfo::blue;
+      }
+    }
+
+    if (getButtonData().numOfFramesPressed[ButtonData::RightFootLeft] == 1
+      || getButtonData().numOfFramesPressed[ButtonData::RightFootRight] == 1)
+    {
+      // switch kickof team
+      getPlayerInfo().ownKickOff = !getPlayerInfo().ownKickOff;
+    }
+  }
+    // go back from penalized to initial both foot bumpers are pressed for over 30 frames
+  else if (getPlayerInfo().gameState == PlayerInfo::penalized &&
+    (getButtonData().numOfFramesPressed[ButtonData::LeftFootLeft] > 30
+    || getButtonData().numOfFramesPressed[ButtonData::LeftFootRight] > 30
+    )
+    &&
+    (getButtonData().numOfFramesPressed[ButtonData::RightFootLeft] > 30
+    || getButtonData().numOfFramesPressed[ButtonData::RightFootRight] > 30
+    )
+    )
+  {
+    getPlayerInfo().gameState = PlayerInfo::inital;
+  }
+
 } // end readButtons
 
 void GameController::readWLAN()
@@ -79,6 +142,7 @@ void GameController::execute()
   bool oldOwnKickOff = getPlayerInfo().ownKickOff;
 
 
+  readButtons();
 
   DEBUG_REQUEST("gamecontroller:initial",
     getPlayerInfo().gameState = PlayerInfo::inital;
