@@ -115,7 +115,7 @@ void GameController::readButtons()
     }
   }
     // go back from penalized to initial both foot bumpers are pressed for over 30 frames
-  else if (getPlayerInfo().gameState == PlayerInfo::penalized &&
+  else if (getPlayerInfo()  .gameState == PlayerInfo::penalized &&
     (getButtonData().numOfFramesPressed[ButtonData::LeftFootLeft] > 30
     || getButtonData().numOfFramesPressed[ButtonData::LeftFootRight] > 30
     )
@@ -161,6 +161,66 @@ void GameController::execute()
   );
 
 } // end execute
+
+void GameController::updateLEDs()
+{
+  // reset
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.0;
+
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::GREEN] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 0.0;
+
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 0.0;
+  getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE] = 0.0;
+
+  // show game state in torso
+  switch (getPlayerInfo().gameState)
+  {
+    case PlayerInfo::ready :
+      std::cout << "in ready" << std::endl;
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+      break;
+    case PlayerInfo::set :
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      break;
+    case PlayerInfo::playing :
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 1.0;
+      break;
+    case PlayerInfo::penalized :
+        getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      break;
+    default:
+      break;
+  }
+
+  // show team color on left foot
+  if (getPlayerInfo().teamColor == PlayerInfo::red)
+  {
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::RED] = 1.0;
+  }
+  else if (getPlayerInfo().teamColor == PlayerInfo::blue)
+  {
+    getGameControllerLEDRequest().request.theMultiLED[LEDData::FootLeft][LEDData::BLUE] = 1.0;
+  }
+
+  // show kickoff state on right foot in initial, ready and set
+  if (getPlayerInfo().gameState == PlayerInfo::inital
+    || getPlayerInfo().gameState == PlayerInfo::ready
+    || getPlayerInfo().gameState == PlayerInfo::set)
+  {
+    if (getPlayerInfo().ownKickOff)
+    {
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::RED] = 0.7;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::GREEN] = 1.0;
+      getGameControllerLEDRequest().request.theMultiLED[LEDData::FootRight][LEDData::BLUE] = 1.0;
+    }
+  }
+} // end updateLEDs
 
 GameController::~GameController()
 {

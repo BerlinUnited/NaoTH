@@ -2,14 +2,17 @@
 #define GAMECONTROLLER_H
 
 #include <ModuleFramework/Module.h>
+#include <Representations/Infrastructure/LEDRequest.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include "Representations/Modeling/PlayerInfo.h"
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(GameController)
-REQUIRE(ButtonData)
-PROVIDE(PlayerInfo)
+  REQUIRE(ButtonData)
+
+  PROVIDE(GameControllerLEDRequest)
+  PROVIDE(PlayerInfo)
 END_DECLARE_MODULE(GameController)
 
 class GameController : public GameControllerBase
@@ -25,6 +28,7 @@ private:
     void loadPlayerInfoFromFile();
     void readButtons();
     void readWLAN();
+    void updateLEDs();
 };
 
 #endif // GAMECONTROLLER_H
