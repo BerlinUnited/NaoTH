@@ -330,6 +330,7 @@ cp -f ${NAOTH_BZR}/NaoTHSoccer/dist/Nao/naoth $TMP_MOUNT_POINT/home/nao/bin/
 
 echo "Changing file permissions..."
 chown -R $NAO_UID:$NAO_GID $TMP_MOUNT_POINT/home/nao/naoqi/
+chown -R $NAO_UID:$NAO_GID $TMP_MOUNT_POINT/home/nao/bin/
 
 fi
 
