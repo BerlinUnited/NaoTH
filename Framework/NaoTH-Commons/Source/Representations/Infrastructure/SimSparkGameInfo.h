@@ -58,6 +58,7 @@ public:
   /** information of the game */
   double theGameTime;
   PlayMode thePlayMode;
+  unsigned int timeSincePlayModeChanged; // ms
 
   /** information of robot player */
   unsigned int thePlayerNum;

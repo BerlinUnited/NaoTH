@@ -38,6 +38,7 @@ string SimSparkGameInfo::getTeamIndexName(SimSparkGameInfo::TeamIndex ti)
 SimSparkGameInfo::SimSparkGameInfo() :
 theGameTime(0),
 thePlayMode(numOfPlayMode),
+timeSincePlayModeChanged(0),
 thePlayerNum(0),
 theTeamIndex(TI_NULL),
 halfTime(5 * 60), // 5 minutes

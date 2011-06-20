@@ -83,7 +83,6 @@ private:
   RobotMessageData theRobotMessageData; // message to other robots
   TeamMessageData theTeamMessageData; // message from other robots
   double theIMU[2];
-  Vector3<double> startPose;
 
   list<MotorJointData> theMotorJointData;
   string theTeamName;

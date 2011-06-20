@@ -25,6 +25,10 @@ SimSparkController::SimSparkController()
   theImageSize(0),
   isNewImage(false),
   isNewVirtualVision(false),
+  theTeamName("NaoTH"),
+  theStepTime(0),
+  theCameraId(0),
+  theSenseTime(0),
   theSyncMode(false)
 {
   // register input
@@ -96,18 +100,12 @@ SimSparkController::SimSparkController()
   theJointMotorNameMap[JointData::RAnklePitch] = "rle5";
   theJointMotorNameMap[JointData::RAnkleRoll] = "rle6";
 
-
-  theCameraId = 0;
-  theSenseTime = 0;
-
   if (!g_thread_supported())
     g_thread_init(NULL);
   theCognitionInputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
 
   maxJointAbsSpeed = Math::fromDegrees(351.77);
-
-  theTeamName = "NaoTH";
 
   GError *err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_TCP, &err);
@@ -230,30 +228,10 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   */
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.thePlayerNum << endl;
-
-  initPosition();
+  theGameInfo.timeSincePlayModeChanged = 0;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
   return true;
-}
-
-void SimSparkController::initPosition()
-{
-  ifstream ifile("init_position.txt");
-  std::map<int, Vector3<double> > positions;
-  while (!ifile.fail() && !ifile.eof() )
-  {
-    int num;
-    Vector3<double> p;
-    ifile>>num>>p.x>>p.y>>p.z;
-    positions[num] = p;
-  }
-
-  if ( positions.find( theGameInfo.thePlayerNum ) != positions.end() )
-  {
-    startPose =positions[theGameInfo.thePlayerNum];
-    beam(startPose);
-  }
 }
 
 void SimSparkController::main()
@@ -372,6 +350,8 @@ bool SimSparkController::updateSensors()
   {
     theFSRData.data[i] = 0;
   }
+
+  theGameInfo.timeSincePlayModeChanged += theStepTime*1000;
 
   while(sexp)
   {
@@ -716,7 +696,12 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get play mode value\n";
         }
-        theGameInfo.thePlayMode = SimSparkGameInfo::getPlayModeByName(pm);
+        SimSparkGameInfo::PlayMode playMode = SimSparkGameInfo::getPlayModeByName(pm);
+        if ( theGameInfo.thePlayMode != playMode )
+        {
+          theGameInfo.thePlayMode = playMode;
+          theGameInfo.timeSincePlayModeChanged = 0;
+        }
       } else if ("unum" == name) // unum
       {
         if (!SexpParser::parseValue(t->next, theGameInfo.thePlayerNum))
@@ -1140,30 +1125,42 @@ void SimSparkController::beam(const Vector3<double>& p)
 
 void SimSparkController::autoBeam()
 {
-  /*
-  DEBUG_REQUEST("SimSparkController:beam", beam(););
 
-  static PlayerInfo::PlayMode lastPlayMode = PlayerInfo::numOfPlayMode;
-  if (theGameInfo.thePlayMode == PlayerInfo::PM_GOAL_LEFT
-    || theGameInfo.thePlayMode == PlayerInfo::PM_GOAL_RIGHT
-    || (theGameInfo.thePlayMode == PlayerInfo::PM_BEFORE_KICK_OFF && theGameInfo.theGameTime > 1))
+  //DEBUG_REQUEST("SimSparkController:beam", beam(););
+
+  if (theGameInfo.thePlayMode == SimSparkGameInfo::PM_GOAL_LEFT
+    || theGameInfo.thePlayMode == SimSparkGameInfo::PM_GOAL_RIGHT
+    || theGameInfo.thePlayMode == SimSparkGameInfo::PM_BEFORE_KICK_OFF)
   {
-//    if ( lastPlayMode != theGameInfo.thePlayMode ){
-//      beam();// execute once
-//    }
-    if (int(theSenseTime / theStepTime) % 20 == 0)
+    if ( theGameInfo.timeSincePlayModeChanged < 1000 )
     {
-      beam();
+      const Configuration& cfg = Platform::getInstance().theConfiguration;
+      string group = "PoseBeforeKickOff";
+      if ( !cfg.hasGroup(group) )
+      {
+        cerr<<"SimSparkController: can not beam, because there is no configuration"<<endl;
+        return;
+      }
+
+      stringstream key;
+      key<<"Player"<<theGameInfo.thePlayerNum<<".Pose.";
+      string keyx = key.str()+"x";
+      string keyy = key.str()+"y";
+      string keyr = key.str()+"rot";
+      if ( ! (cfg.hasKey(group, keyx) && cfg.hasKey(group, keyy) && cfg.hasKey(group, keyr)) )
+      {
+        cerr<<"SimSparkController: can not beam, because configuration for Player "<<theGameInfo.thePlayerNum
+            <<" is misssing"<<endl;
+        return;
+      }
+      Vector3d pose;
+      pose.x = cfg.getDouble(group, keyx);
+      pose.y = cfg.getDouble(group, keyy);
+      pose.z = cfg.getDouble(group, keyr);
+
+      beam(pose); // execute 1 second
     }
-//    MotorJointData initJoint;
-//    for (int i = 0; i < JointData::numOfJoint; i++)
-//    {
-//      initJoint.hardness[i] = theSensorJointData.hardness[i];
-//    }
-//    set(initJoint);
   }
-  lastPlayMode = theGameInfo.thePlayMode;
-  */
 }
 
 bool SimSparkController::updateIMU(const sexp_t* sexp)

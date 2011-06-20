@@ -23,7 +23,8 @@ void SimSparkTeamComm::execute()
 
 void SimSparkTeamComm::readMessage()
 {
-  cout<<"read:\n";
+  if ( !getTeamMessageData().data.empty() )
+    cout<<"read: \n";
   for(vector<string>::const_iterator i=getTeamMessageData().data.begin();
       i!=getTeamMessageData().data.end(); ++i)
   {
