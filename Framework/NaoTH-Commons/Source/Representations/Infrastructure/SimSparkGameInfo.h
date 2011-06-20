@@ -58,6 +58,7 @@ public:
   /** information of the game */
   double theGameTime;
   PlayMode thePlayMode;
+  unsigned int timeSincePlayModeChanged; // ms
 
   /** information of robot player */
   unsigned int thePlayerNum;
@@ -65,6 +66,7 @@ public:
 
   // static information
   double halfTime;
+  unsigned int numOfPlayers;
 };
 
 #endif	/* _SIMSPARK_GAME_INFO_H */

@@ -48,6 +48,8 @@ GError* DebugCommunicator::internalInit()
 
   if (err) return err;
 
+  g_socket_set_blocking(serverSocket, true);
+
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
 
@@ -105,25 +107,27 @@ char* DebugCommunicator::internalReadMessage(GError** err)
     {
       // read until \0 or \n character found
       GString* buffer = g_string_new("");
-      char c;
-
-      int bytesReceived = g_socket_receive(connection, &c, 1, NULL, NULL);
-
-      if(bytesReceived < 1)
-      {
-        g_string_free(buffer, true);
-        // if G_IO_IN was signalled but there was no data available this is a sign that
-        // the client was disconnected
-        return NULL;
-      }
+      char c = 0;
 
       while(*err == NULL && c != '\n')
       {
-        if(c != '\r')
+        g_socket_condition_wait(connection, G_IO_IN, NULL, err);
+        if(err != NULL)
+        {
+          gssize read_bytes = g_socket_receive(connection, &c, 1, NULL, err);
+          if(read_bytes < 1)
+          {
+            g_string_free(buffer, true);
+            // if G_IO_IN was signalled but there was no data available this is a sign that
+            // the client was disconnected
+            return NULL;
+          }
+        }
+
+        if(c != '\r' && c != '\n')
         {
           g_string_append_c(buffer,c);
         }
-        g_socket_receive(connection, &c, 1, NULL, err);
       }
 
       if(*err)

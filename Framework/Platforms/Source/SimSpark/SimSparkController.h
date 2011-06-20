@@ -29,6 +29,7 @@
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/BatteryData.h>
 #include <Representations/Infrastructure/VirtualVision.h>
+#include <Representations/Infrastructure/TeamMessageData.h>
 
 #include <Representations/Infrastructure/SimSparkGameInfo.h>
 
@@ -79,8 +80,9 @@ private:
   InertialSensorData theInertialSensorData;
   SimSparkGameInfo theGameInfo;
   SensorJointData theSensorJointData;
+  RobotMessageData theRobotMessageData; // message to other robots
+  TeamMessageData theTeamMessageData; // message from other robots
   double theIMU[2];
-  Vector3<double> startPose;
 
   list<MotorJointData> theMotorJointData;
   string theTeamName;
@@ -127,10 +129,14 @@ public:
 
   void get(VirtualVision& data);
 
+  void get(TeamMessageData& data);
+
   void get(SimSparkGameInfo& data);
 
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);
+
+  void set(const RobotMessageData& data);
 
   void set(const CameraSettingsRequest& data);
 
