@@ -31,12 +31,6 @@ GoalDetector::GoalDetector()
 
 void GoalDetector::execute()
 {
-  
-
-}//end executegetLargestValidPoly
-
-void GoalDetector::horizonScan(int /*___old*/)
-{
   getGoalPercept().reset();
 
   //if there is no field percept, then, there is also no goal ?!

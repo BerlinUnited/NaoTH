@@ -141,6 +141,12 @@ void ImageProcessor::execute()
 
 
 
+  //draw horizon to image
+  DEBUG_REQUEST("ImageProcessor:draw_horizon",
+    Vector2<double> a(getCameraMatrix().horizon.begin());
+    Vector2<double> b(getCameraMatrix().horizon.end());
+    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+  );
 
 
 
