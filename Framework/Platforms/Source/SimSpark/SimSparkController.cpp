@@ -13,10 +13,6 @@
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
 
-//#include "CommunicationCollectionImpl.h"
-//#include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/DebugModify.h"
-
 using namespace std;
 
 SimSparkController::SimSparkController()
@@ -43,6 +39,7 @@ SimSparkController::SimSparkController()
   registerInput<BatteryData>(*this);
   registerInput<VirtualVision>(*this);
   registerInput<TeamMessageData>(*this);
+  registerInput<GameData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -174,6 +171,9 @@ bool SimSparkController::connect(const std::string& host, int port)
 
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
+  Platform::getInstance().init(this);
+  theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
+
   theTeamName = teamName;
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
@@ -210,22 +210,6 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   {
     debugPort = 5500 + theGameData.playerNumber;
   }
-
-  //Platform::getInstance().init(this, new SimSparkCommunicationCollection(debugPort,theGameInfo, theTeamComm));
-  
-  Platform::getInstance().init(this);
-
-
-  /*
-  if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_LEFT ){
-    thePlayerInfoInitializer.thePlayerInfo.teamColor = PlayerInfo::blue;
-    thePlayerInfoInitializer.thePlayerInfo.teamNumber = 1;
-  }
-  else if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_RIGHT ){
-    thePlayerInfoInitializer.thePlayerInfo.teamColor = PlayerInfo::red;
-    thePlayerInfoInitializer.thePlayerInfo.teamNumber = 2;
-  }
-  */
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   theGameData.timeSincePlayModeChanged = 0;
@@ -724,6 +708,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           cerr << "SimSparkGameInfo::update failed get team index value\n";
         }
         theGameData.teamColor = SimSparkGameInfo::getTeamColorByName(team);
+        theGameData.teamNumber = theGameData.teamColor;
       } else
       {
         ok = false;
@@ -1061,6 +1046,9 @@ void SimSparkController::get(CurrentCameraSettings& data)
 
 void SimSparkController::say()
 {
+  if ( theGameData.numOfPlayers == 0 )
+    return;
+
   // make sure all robot have chance to say something
   if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
     return;
@@ -1076,7 +1064,8 @@ void SimSparkController::say()
       //      cout<<"Nr."<<static_cast<int>(thePlayerInfoInitializer.thePlayerInfo.playerNumber)<<" say @ "<<theSenseTime<<endl;
       theSocket << ("(say "+msg+")");
     }
-    msg = "";
+    msg.clear();
+    cout<<"msg = "<<msg<<endl;
   }
 }
 

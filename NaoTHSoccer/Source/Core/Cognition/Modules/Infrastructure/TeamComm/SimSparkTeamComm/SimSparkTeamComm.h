@@ -18,6 +18,7 @@
 
 BEGIN_DECLARE_MODULE(SimSparkTeamComm)
   REQUIRE(TeamMessageData)
+  REQUIRE(FrameInfo)
 
   PROVIDE(TeamMessage)
   PROVIDE(RobotMessageData)

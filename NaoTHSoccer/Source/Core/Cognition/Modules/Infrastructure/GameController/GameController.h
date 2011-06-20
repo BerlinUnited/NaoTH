@@ -2,6 +2,7 @@
 #define GAMECONTROLLER_H
 
 #include <ModuleFramework/Module.h>
+#include <PlatformInterface/PlatformInterface.h>
 #include <Representations/Infrastructure/LEDRequest.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include "Representations/Modeling/PlayerInfo.h"
