@@ -194,7 +194,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   // initialize the teamname and number
   theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << theSync << send;
   // wait the response
-  while (theGameInfo.thePlayerNum == 0)
+  while (theGameData.playerNumber == 0)
   {
     updateSensors();
     theSocket << theSync << send;
@@ -203,12 +203,12 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   // calculate debug communicaiton port
   unsigned short debugPort = 5401;
-  if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_LEFT )
+  if (theGameData.teamColor == GameData::blue )
   {
-    debugPort = 5400 + theGameInfo.thePlayerNum;
-  } else if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_RIGHT)
+    debugPort = 5400 + theGameData.playerNumber;
+  } else if (theGameData.teamColor == GameData::red )
   {
-    debugPort = 5500 + theGameInfo.thePlayerNum;
+    debugPort = 5500 + theGameData.playerNumber;
   }
 
   //Platform::getInstance().init(this, new SimSparkCommunicationCollection(debugPort,theGameInfo, theTeamComm));
@@ -227,8 +227,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   }
   */
 
-  cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.thePlayerNum << endl;
-  theGameInfo.timeSincePlayModeChanged = 0;
+  cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
+  theGameData.timeSincePlayModeChanged = 0;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
   return true;
@@ -351,7 +351,7 @@ bool SimSparkController::updateSensors()
     theFSRData.data[i] = 0;
   }
 
-  theGameInfo.timeSincePlayModeChanged += theStepTime*1000;
+  theGameData.timeSincePlayModeChanged += theStepTime*1000;
 
   while(sexp)
   {
@@ -683,10 +683,15 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     {
       if ("t" == name) // time
       {
-        if (!SexpParser::parseValue(t->next, theGameInfo.theGameTime))
+        double gameTime = 0;
+        if (!SexpParser::parseValue(t->next, gameTime))
         {
           ok = false;
           cerr << "SimSparkGameInfo::update failed get time value\n";
+        }
+        else
+        {
+          theGameData.gameTime = gameTime*1000;
         }
       } else if ("pm" == name) // play mode
       {
@@ -696,15 +701,16 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get play mode value\n";
         }
-        SimSparkGameInfo::PlayMode playMode = SimSparkGameInfo::getPlayModeByName(pm);
-        if ( theGameInfo.thePlayMode != playMode )
+        SimSparkGameInfo::PlayMode sPlayMode = SimSparkGameInfo::getPlayModeByName(pm);
+        GameData::PlayMode playMode = SimSparkGameInfo::covertPlayMode(sPlayMode, theGameData.teamColor);
+        if ( theGameData.playMode != playMode )
         {
-          theGameInfo.thePlayMode = playMode;
-          theGameInfo.timeSincePlayModeChanged = 0;
+          theGameData.playMode = playMode;
+          theGameData.timeSincePlayModeChanged = 0;
         }
       } else if ("unum" == name) // unum
       {
-        if (!SexpParser::parseValue(t->next, theGameInfo.thePlayerNum))
+        if (!SexpParser::parseValue(t->next, theGameData.playerNumber))
         {
           ok = false;
           cerr << "SimSparkGameInfo::update failed get unum value\n";
@@ -717,7 +723,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get team index value\n";
         }
-        theGameInfo.theTeamIndex = SimSparkGameInfo::getTeamIndexByName(team);
+        theGameData.teamColor = SimSparkGameInfo::getTeamColorByName(team);
       } else
       {
         ok = false;
@@ -948,9 +954,9 @@ void SimSparkController::get(VirtualVision& data)
   data = theVirtualVision;
 }
 
-void SimSparkController::get(SimSparkGameInfo& data)
+void SimSparkController::get(GameData& data)
 {
-  data = theGameInfo;
+  data = theGameData;
 }
 
 void SimSparkController::updateInertialSensor()
@@ -1056,7 +1062,7 @@ void SimSparkController::get(CurrentCameraSettings& data)
 void SimSparkController::say()
 {
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.numOfPlayers) +1 != theGameInfo.thePlayerNum )
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
     return;
 
   string& msg = theRobotMessageData.data;
@@ -1128,11 +1134,11 @@ void SimSparkController::autoBeam()
 
   //DEBUG_REQUEST("SimSparkController:beam", beam(););
 
-  if (theGameInfo.thePlayMode == SimSparkGameInfo::PM_GOAL_LEFT
-    || theGameInfo.thePlayMode == SimSparkGameInfo::PM_GOAL_RIGHT
-    || theGameInfo.thePlayMode == SimSparkGameInfo::PM_BEFORE_KICK_OFF)
+  if (theGameData.playMode == GameData::goal_own
+    || theGameData.playMode == GameData::goal_opp
+    || theGameData.playMode == GameData::before_kick_off)
   {
-    if ( theGameInfo.timeSincePlayModeChanged < 1000 )
+    if ( theGameData.timeSincePlayModeChanged < 1000 )
     {
       const Configuration& cfg = Platform::getInstance().theConfiguration;
       string group = "PoseBeforeKickOff";
@@ -1143,13 +1149,13 @@ void SimSparkController::autoBeam()
       }
 
       stringstream key;
-      key<<"Player"<<theGameInfo.thePlayerNum<<".Pose.";
+      key<<"Player"<<theGameData.playerNumber<<".Pose.";
       string keyx = key.str()+"x";
       string keyy = key.str()+"y";
       string keyr = key.str()+"rot";
       if ( ! (cfg.hasKey(group, keyx) && cfg.hasKey(group, keyy) && cfg.hasKey(group, keyr)) )
       {
-        cerr<<"SimSparkController: can not beam, because configuration for Player "<<theGameInfo.thePlayerNum
+        cerr<<"SimSparkController: can not beam, because configuration for Player "<<theGameData.playerNumber
             <<" is misssing"<<endl;
         return;
       }
