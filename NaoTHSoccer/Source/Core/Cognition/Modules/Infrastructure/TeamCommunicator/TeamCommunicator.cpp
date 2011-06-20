@@ -113,8 +113,10 @@ void TeamCommunicator::handleMessage(char *buffer, gsize size)
   naothmessages::TeamCommMessage msg;
   msg.ParseFromArray(buffer, size);
 
+
   int num = msg.playernumber();
-  if(num <= MAX_NUM_PLAYERS)
+
+  if(num <= MAX_NUM_PLAYERS && msg.teamnumber() == getPlayerInfo().teamNumber)
   {
     getTeamMessage().messageReceived[num] = true;
     getTeamMessage().timeWhenReceived[num] = getFrameInfo().time;
