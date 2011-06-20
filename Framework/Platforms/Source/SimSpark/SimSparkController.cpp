@@ -658,6 +658,9 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
 // Example message: "(GS (t 0.00) (pm BeforeKickOff))"
 bool SimSparkController::updateGameInfo(const sexp_t* sexp)
 {
+  // in Simspark there is only one valid source of game state information
+  theGameData.valid = true;
+
   bool ok = true;
   string name;
   while (sexp)

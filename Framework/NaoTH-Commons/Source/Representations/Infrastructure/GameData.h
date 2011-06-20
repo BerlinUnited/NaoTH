@@ -84,6 +84,8 @@ public:
   unsigned int gameTime; // in ms
   unsigned int timeSincePlayModeChanged; // ms
 
+  bool valid;
+
   // static information
   unsigned int playerNumber;
   TeamColor teamColor;

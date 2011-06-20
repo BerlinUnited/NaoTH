@@ -37,6 +37,8 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
 void SPLGameController::update(GameData& gameData)
 {
+  gameData.valid = false;
+
   if(socket == NULL)
   {
     return;
@@ -121,8 +123,9 @@ void SPLGameController::update(GameData& gameData)
           {
             gameData.gameState = GameData::penalized;
           }
+          gameData.valid = true;
         }
-      }
+      } // end if team info index correct
     } // end if header correct
   } // end if size correct
 } // end updateWLAN

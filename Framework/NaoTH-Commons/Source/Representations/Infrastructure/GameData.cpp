@@ -16,6 +16,7 @@ GameData::GameData()
     playMode(numOfPlayMode),
     gameTime(0),
     timeSincePlayModeChanged(0),
+    valid(false),
     playerNumber(0),
     teamColor(numOfTeamColor),
     teamNumber(0),
