@@ -48,6 +48,8 @@ GError* DebugCommunicator::internalInit()
 
   if (err) return err;
 
+  g_socket_set_blocking(serverSocket, true);
+
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
 
