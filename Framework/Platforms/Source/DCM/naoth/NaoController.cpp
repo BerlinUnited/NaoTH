@@ -46,6 +46,9 @@ NaoController::NaoController()
   
   std::cout << "Init SoundHandler" <<endl;
   theSoundHandler = new SoundControl();
+
+  std:cout<< "Init TeamComm"<<endl;
+  theTeamComm = new TeamCommunicator();
 }
 
 NaoController::~NaoController()
@@ -53,6 +56,11 @@ NaoController::~NaoController()
   if (theSoundHandler!=NULL)
   {
     delete theSoundHandler;
+  }
+
+  if ( theTeamComm != NULL)
+  {
+    delete theTeamComm;
   }
 }
 
@@ -97,5 +105,16 @@ void NaoController::setCognitionOutput()
   
   naothData.swapWriting();
   naothDataWriting = naothData.writing();
+}
+
+void NaoController::get(TeamMessageData& data)
+{
+  data.data.clear();
+  theTeamComm->receive(data.data);
+}
+
+void NaoController::set(const RobotMessageData& data)
+{
+  theTeamComm->send(data.data);
 }
   

@@ -2,9 +2,10 @@
 #define TEAMCOMMUNICATOR_H
 
 #include <ModuleFramework/Module.h>
-#include <Representations/Infrastructure/TeamMessage.h>
 #include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/TeamMessageData.h>
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/TeamMessage.h"
 
 #include <glib.h>
 #include <gio/gio.h>
@@ -12,8 +13,10 @@
 BEGIN_DECLARE_MODULE(TeamCommunicator)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
+  REQUIRE(TeamMessageData)
 
   PROVIDE(TeamMessage)
+  PROVIDE(RobotMessageData)
 END_DECLARE_MODULE(TeamCommunicator)
 
 class TeamCommunicator : public TeamCommunicatorBase
@@ -26,15 +29,9 @@ public:
 
   virtual ~TeamCommunicator();
 private:
-  bool initialized;
-  GSocket* socket;
   unsigned int lastSentTimestamp;
 
-  GSocketAddress* lanBroadcastAddress;
-  GSocketAddress* wlanBroadcastAddress;
-
-  GError* bindAndListen(unsigned int port);
-  void handleMessage(char* buffer, gsize size);
+  void handleMessage(const std::string& data);
   void createMessage(naothmessages::TeamCommMessage& msg);
 };
 

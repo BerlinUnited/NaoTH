@@ -11,7 +11,9 @@
 
 #include "SoundControl.h"
 #include "V4lCameraHandler.h"
+#include "TeamCommunicator.h"
 #include "Tools/NaoControllerBase.h"
+#include "Representations/Infrastructure/TeamMessageData.h"
 
 namespace naoth
 {
@@ -31,6 +33,8 @@ public:
   void get(Image& data);
   
   void get(CurrentCameraSettings& data);
+
+  void get(TeamMessageData& data);
   
   void get(MotorJointData& data) { libNaothDataReading->get(data); }
 
@@ -44,6 +48,8 @@ public:
   void set(const UltraSoundSendData& data) { naothDataWriting->set(data); }
 
   void set(const SoundPlayData& data);
+
+  void set(const RobotMessageData& data);
   
   virtual void getCognitionInput();
   
@@ -53,6 +59,7 @@ private:
   V4lCameraHandler theCameraHandler;
   SoundControl *theSoundHandler;
   NaothData* naothDataWriting;
+  TeamCommunicator* theTeamComm;
 };
 
 } // end namespace naoth
