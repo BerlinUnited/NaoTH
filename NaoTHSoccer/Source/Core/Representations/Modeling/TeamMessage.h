@@ -8,12 +8,10 @@
 #ifndef _TEAMMESSAGE_H
 #define	_TEAMMESSAGE_H
 
+#include <Tools/Communication/RoboCupGameControlData.h>
+#include <Tools/Math/Vector2.h>
 #include <Messages/Messages.pb.h>
-
-#include "Tools/Communication/RoboCupGameControlData.h"
-
-#include "Tools/Math/Vector2.h"
-#include "Tools/DataStructures/Printable.h"
+#include <Tools/DataStructures/Printable.h>
 
 class TeamMessage : public Printable
 {
@@ -27,16 +25,16 @@ public:
       timeWhenReceived[i] = 0;
       frameNumberWhenReceived[i] = 0;
     }
-  }
+  };
 
   bool messageReceived[MAX_NUM_PLAYERS+1];
   unsigned int timeWhenReceived[MAX_NUM_PLAYERS+1];
   unsigned int frameNumberWhenReceived[MAX_NUM_PLAYERS+1];
   naothmessages::TeamCommMessage message[MAX_NUM_PLAYERS+1];
 
-  virtual ~TeamMessage() {}
+  virtual ~TeamMessage() {};
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     int count = 0;
     for(int i = 1; i <= MAX_NUM_PLAYERS; i++)
@@ -59,7 +57,7 @@ public:
           << message[i].ballposition().y() << "; "
           << ballPos.abs() << endl;
         stream << "TimeSinceBallwasSeen: " << message[i].timesinceballwasseen() << endl;
-        stream << "TiemToBall: "<< message[i].timetoball() <<endl;
+        stream << "TimeToBall: "<< message[i].timetoball() <<endl;
         stream << "wasStriker: " << (message[i].wasstriker() ? "yes" : "no") << endl;
         stream << "isPenalized: " << (message[i].ispenalized() ? "yes" : "no") << endl;
         if ( message[i].has_opponent() ) {
@@ -79,7 +77,6 @@ public:
 
   }//end print
 };
-
 
 #endif	/* _TEAMMESSAGE_H */
 
