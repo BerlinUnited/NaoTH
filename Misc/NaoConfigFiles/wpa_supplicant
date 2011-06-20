@@ -1,0 +1,31 @@
+#!/bin/bash
+
+case "$1" in
+  start)
+    # use this chance to patch the wireless which always assumes the worst bitrate
+    iwconfig wlan0 rate 54M
+    if [ -e /var/run/wpa_supplicant/wlan0 ]
+    then
+      echo "wpa_supplicant already started"
+    else
+      wpa_supplicant -B -Dwext -iwlan0 -c/etc/wpa_supplicant.conf
+      sleep 2
+    fi
+    ;;
+  stop)
+    killall wpa_supplicant
+    ;;
+
+  force-reload|restart)
+    $0 stop
+    sleep 2
+    $0 start
+    ;;
+  *)
+    echo "Usage: /etc/init.d/naoqi {start|stop|restart|force-reload}"
+    exit 1
+    ;;
+
+esac
+
+exit 0
