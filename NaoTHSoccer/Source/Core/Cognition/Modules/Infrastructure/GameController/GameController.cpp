@@ -42,6 +42,8 @@ GError* GameController::bindAndListen(unsigned int port)
   g_object_unref(socketAddress);
 
   if (err) return err;
+
+  return NULL;
 }
 
 void GameController::loadPlayerInfoFromFile()
