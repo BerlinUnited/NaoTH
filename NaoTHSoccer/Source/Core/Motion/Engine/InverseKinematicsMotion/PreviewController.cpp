@@ -14,16 +14,16 @@
 
 PreviewController::PreviewController()
 :parameters(NULL),
-theHeight(0)
+theHeight(0),
+theStepTime(0)
 {
 }
 
-void PreviewController::setParameters(unsigned int stepTime, double height)
+void PreviewController::setHeight(double height)
 {
   unsigned int newHeight = (unsigned int)Math::round(height);
   ASSERT(newHeight>=200);
   ASSERT(newHeight<=300);
-  ASSERT(stepTime==10||stepTime==20||stepTime==40);
   
   if ( theHeight != newHeight )
   {
@@ -31,7 +31,7 @@ void PreviewController::setParameters(unsigned int stepTime, double height)
     if ( loadedParameters.find(theHeight) == loadedParameters.end() )
     {
       stringstream ss;
-      ss << "Config/general/previewController/"<<stepTime<<"/"<< theHeight << ".prm";
+      ss << "Config/general/previewController/"<<theStepTime<<"/"<< theHeight << ".prm";
       cout<<"PreviewController load "<<ss.str()<<endl;
     
       ifstream ifs(ss.str().c_str());
@@ -62,20 +62,20 @@ bool PreviewController::ready() const
   if (parameters == NULL)
     return false;
     
-  size_t size = previewSteps() - 1;
+  size_t size = previewSteps();
   return refZMPx.size() >= size && refZMPy.size() >= size;
 }
 
-void PreviewController::control(const Vector2<double>& zmp, Vector2<double>& com, Vector2<double>& dcom, Vector2<double>& ddcom)
+void PreviewController::control(Vector3<double>& com, Vector2<double>& dcom, Vector2<double>& ddcom)
 {
   ASSERT(ready());
-  refZMPx.push_back(zmp.x);
-  refZMPy.push_back(zmp.y);
-
+  double h = refZMPz.front();
+  setHeight(h);
   update(refZMPx, theX, theErr.x);
   update(refZMPy, theY, theErr.y);
   refZMPx.pop_front();
   refZMPy.pop_front();
+  refZMPz.pop_front();
 
   com.x = theX[0];
   dcom.x = theX[1];
@@ -83,17 +83,24 @@ void PreviewController::control(const Vector2<double>& zmp, Vector2<double>& com
   com.y = theY[0];
   dcom.y = theY[1];
   ddcom.y = theY[2];
+  com.z = h;
 }
 
 void PreviewController::clear()
 {
   refZMPx.clear();
   refZMPy.clear();
+  refZMPz.clear();
   theErr = Vector2<double>(0, 0);
 }
 
-void PreviewController::init(const Vector2<double>& com, const Vector2<double>& dcom, const Vector2<double>& ddcom)
+void PreviewController::init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom, unsigned int stepTime)
 {
+  ASSERT(stepTime==10||stepTime==20||stepTime==40);
+  theStepTime = stepTime;
+
+  setHeight(com.z);
+
   theX[0] = com.x;
   theX[1] = dcom.x;
   theX[2] = ddcom.x;
@@ -103,10 +110,21 @@ void PreviewController::init(const Vector2<double>& com, const Vector2<double>& 
   theY[2] = ddcom.y;
 }
 
-void PreviewController::push(const Vector2<double>& zmp)
+void PreviewController::push(const Vector3d& zmp)
 {
   refZMPx.push_back(zmp.x);
   refZMPy.push_back(zmp.y);
+  refZMPz.push_back(zmp.z);
+}
+
+Vector3d PreviewController::front() const
+{
+  return Vector3d(refZMPx.front(), refZMPy.front(), refZMPz.front());
+}
+
+Vector3d PreviewController::back() const
+{
+  return Vector3d(refZMPx.back(), refZMPy.back(), refZMPz.back());
 }
 
 std::istream & operator >>(std::istream& ist, PreviewController::Parameters& p)

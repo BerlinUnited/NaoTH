@@ -54,10 +54,10 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
   }//end switch
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req, const Vector3d& comErr)
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
 {
   Pose2D step = calculateStep(lastStep, req);
-  return nextStep(lastStep, step, comErr);
+  return nextStep(lastStep, step);
 }
 
 Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
@@ -107,30 +107,24 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
   return step;
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, const Vector3d& /*comErr*/)
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
 {
   ASSERT(step.rotation <= Math::pi);
   ASSERT(step.rotation > -Math::pi);
   
   restrictStepSize(step, lastStep);
   restrictStepChange(step, theLastStepSize);
-  
-  //adapt step size, because of delay, it dosn't help
-  /*
-  const double k = 1;
-  step.translation.x += (comErr.x * k);
-  step.translation.y += (comErr.y * k);
-  */
 
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, static_cast<FootStep::Foot>(-lastStep.liftingFoot()) );
   addStep(newStep, step);
   theLastStepSize = step;
   
+  ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req, const Vector3d& comErr)
+FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req)
 {
   // choose foot, TODO: consider current com?
   FootStep::Foot startFoot;
@@ -146,7 +140,7 @@ FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRe
   }
 
   FootStep zeroStep(pose, static_cast<FootStep::Foot>(-startFoot) );
-  return nextStep(zeroStep, req, comErr);
+  return nextStep(zeroStep, req);
 }
 
 void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) const
