@@ -14,6 +14,7 @@
 #include "TeamCommunicator.h"
 #include "Tools/NaoControllerBase.h"
 #include "Representations/Infrastructure/TeamMessageData.h"
+#include "Representations/Infrastructure/GameData.h"
 
 namespace naoth
 {
@@ -35,6 +36,8 @@ public:
   void get(CurrentCameraSettings& data);
 
   void get(TeamMessageData& data);
+
+  void get(GameData& data);
   
   void get(MotorJointData& data) { libNaothDataReading->get(data); }
 
@@ -54,6 +57,10 @@ public:
   virtual void getCognitionInput();
   
   virtual void setCognitionOutput();
+
+private:
+  GameData loadPlayerCfg();
+  bool playerCfgLoaded;
 
 private:
   V4lCameraHandler theCameraHandler;

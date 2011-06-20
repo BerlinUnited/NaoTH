@@ -12,7 +12,9 @@
 using namespace naoth;
 
 NaoController::NaoController()
-:theSoundHandler(NULL)
+:playerCfgLoaded(false),
+theSoundHandler(NULL),
+theTeamComm(NULL)
 {
   naothDataWriting = naothData.writing();
   
@@ -117,4 +119,12 @@ void NaoController::set(const RobotMessageData& data)
 {
   theTeamComm->send(data.data);
 }
-  
+
+void NaoController::get(GameData& data)
+{
+  if (!playerCfgLoaded)
+  {
+    playerCfgLoaded = true;
+    data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
+  }
+}

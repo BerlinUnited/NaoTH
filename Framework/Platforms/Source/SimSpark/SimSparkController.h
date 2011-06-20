@@ -30,8 +30,9 @@
 #include <Representations/Infrastructure/BatteryData.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/GameData.h>
 
-#include <Representations/Infrastructure/SimSparkGameInfo.h>
+#include "SimSparkGameInfo.h"
 
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
@@ -78,7 +79,7 @@ private:
   virtual SimSparkController& getPlatform(){return *this;}
   
   InertialSensorData theInertialSensorData;
-  SimSparkGameInfo theGameInfo;
+  GameData theGameData;
   SensorJointData theSensorJointData;
   RobotMessageData theRobotMessageData; // message to other robots
   TeamMessageData theTeamMessageData; // message from other robots
@@ -131,7 +132,7 @@ public:
 
   void get(TeamMessageData& data);
 
-  void get(SimSparkGameInfo& data);
+  void get(GameData& data);
 
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);
