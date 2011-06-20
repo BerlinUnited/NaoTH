@@ -14,45 +14,49 @@ LEDSetter::LEDSetter()
 
 void LEDSetter::execute()
 {
-  /*
-  theLEDData.change = false;
+  copyData(getGameControllerLEDRequest());
+} // end execute
+
+void LEDSetter::copyData(const LEDRequest &data)
+{
+  getLEDData().change = false;
   for(int i=0; i < LEDData::numOfMonoLED; i++)
   {
-    if(theLEDRequest.request.theMonoLED[i] != theLEDData.theMonoLED[i])
+    if(data.request.theMonoLED[i] != getLEDData().theMonoLED[i])
     {
-      theLEDData.theMonoLED[i] = theLEDRequest.request.theMonoLED[i];
-      theLEDData.change = true;
+      getLEDData().theMonoLED[i] = data.request.theMonoLED[i];
+      getLEDData().change = true;
     }
   }
 
   for(int i=0; i < LEDData::numOfMultiLED; i++)
   {
-    if(theLEDRequest.request.theMultiLED[i][LEDData::RED]
-      != theLEDData.theMultiLED[i][LEDData::RED])
+    if(data.request.theMultiLED[i][LEDData::RED]
+      != getLEDData().theMultiLED[i][LEDData::RED])
     {
-      theLEDData.theMultiLED[i][LEDData::RED] =
-       theLEDRequest.request.theMultiLED[i][LEDData::RED];
-      theLEDData.change = true;
+      getLEDData().theMultiLED[i][LEDData::RED] =
+       data.request.theMultiLED[i][LEDData::RED];
+      getLEDData().change = true;
     }
 
-    if(theLEDRequest.request.theMultiLED[i][LEDData::BLUE]
-      != theLEDData.theMultiLED[i][LEDData::BLUE])
+    if(data.request.theMultiLED[i][LEDData::BLUE]
+      != getLEDData().theMultiLED[i][LEDData::BLUE])
     {
-      theLEDData.theMultiLED[i][LEDData::BLUE] =
-        theLEDRequest.request.theMultiLED[i][LEDData::BLUE];
-      theLEDData.change = true;
+      getLEDData().theMultiLED[i][LEDData::BLUE] =
+        data.request.theMultiLED[i][LEDData::BLUE];
+      getLEDData().change = true;
     }
 
-    if(theLEDRequest.request.theMultiLED[i][LEDData::GREEN]
-      != theLEDData.theMultiLED[i][LEDData::GREEN])
+    if(data.request.theMultiLED[i][LEDData::GREEN]
+      != getLEDData().theMultiLED[i][LEDData::GREEN])
     {
-      theLEDData.theMultiLED[i][LEDData::GREEN] =
-        theLEDRequest.request.theMultiLED[i][LEDData::GREEN];
-      theLEDData.change = true;
+      getLEDData().theMultiLED[i][LEDData::GREEN] =
+        data.request.theMultiLED[i][LEDData::GREEN];
+      getLEDData().change = true;
     }
   }
-  */
-}//end execute
+
+}//end copyData
 
 LEDSetter::~LEDSetter()
 {

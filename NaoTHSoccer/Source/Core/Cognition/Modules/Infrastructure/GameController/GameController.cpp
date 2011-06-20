@@ -13,6 +13,8 @@ GameController::GameController()
   DEBUG_REQUEST_REGISTER("gamecontroller:ready", "force the ready state", false);
   DEBUG_REQUEST_REGISTER("gamecontroller:set", "force the set state", false);
 
+  getPlayerInfo().gameState = PlayerInfo::inital;
+
   loadPlayerInfoFromFile();
 
   GError* err = bindAndListen();
