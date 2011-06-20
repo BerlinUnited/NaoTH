@@ -34,6 +34,8 @@
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommunicator.h"
+#include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
 #include "Modules/Perception/VisualCortex/GridProvider.h"
@@ -90,6 +92,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
    */
 
   // -- BEGIN MODULES --
+
+  // infrastructure
+  REGISTER_MODULE(TeamCommunicator);
+  REGISTER_MODULE(GameController);
 
   // perception
   REGISTER_MODULE(GridProvider);

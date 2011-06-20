@@ -421,6 +421,7 @@ void Simulator::adjust_frame_time()
   if(noFrameInfo)
   {
     f.set_framenumber(*currentFrame);
+    f.set_basictimestep(60);
     lastFrameTime = 0;
   }
   else
@@ -448,8 +449,8 @@ void Simulator::adjust_frame_time()
   f.set_time(current_time);
 
   // write the result back
-  //string result = f.SerializeAsString();
-  //representations["FrameInfo"] = result;
+  string result = f.SerializeAsString();
+  representations["FrameInfo"] = result;
 }//end adjust_frame_time
 
 

@@ -68,7 +68,6 @@ SimpleSoccerAgent/Make/SimpleSoccerAgent.make
 SimpleSoccerAgent/nbproject/Package-Default.bash
 Framework/NaoTH-Commons/Make/NaoTH-Commons.project
 Framework/Platforms/Make/LogSimulator.project
-
 Framework/NaoTH-Commons/Make/NaoTH-Commons-Tests.mk
 Framework/Platforms/Make/LogSimulator.mkFramework/Platforms/Make/SimSpark.mk
 Framework/Platforms/Make/Webots.mk
