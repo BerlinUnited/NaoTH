@@ -19,19 +19,12 @@ TeamCommunicator::TeamCommunicator()
   GError* err = bindAndListen(port);
   if(err)
   {
-    g_warning("could not initialize teamcomm: %s", err->message);
-    if(socket)
-    {
-      g_object_unref(socket);
-      socket = NULL;
-    }
+    g_warning("could not initialize teamcomm properly: %s", err->message);
     g_error_free(err);
   }
   else
   {
     g_message("Team Communication started on port %d", port);
-
-    g_socket_set_blocking(socket, false);
 
     if(config.hasKey("teamcomm", "wlan"))
     {
@@ -54,6 +47,8 @@ GError* TeamCommunicator::bindAndListen(unsigned int port)
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
   if(err) return err;
+
+  g_socket_set_blocking(socket, false);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);

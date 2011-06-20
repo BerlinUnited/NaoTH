@@ -29,6 +29,7 @@ GError* GameController::bindAndListen(unsigned int port)
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
   if(err) return err;
+  g_socket_set_blocking(socket, false);
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
@@ -157,8 +158,94 @@ void GameController::readButtons()
 
 void GameController::readWLAN()
 {
-  // TODO: WLAN GameController support
-}
+  if(socket == NULL)
+  {
+    return;
+  }
+
+  char* tmp = (char*) malloc(sizeof(RoboCupGameControlData));
+  int size = g_socket_receive(socket, tmp, sizeof(RoboCupGameControlData), NULL, NULL);
+  if(size == sizeof(RoboCupGameControlData))
+  {
+    RoboCupGameControlData* data = (RoboCupGameControlData*) tmp;
+    std::string header;
+    header.assign(data->header, 4);
+    if(header == GAMECONTROLLER_STRUCT_HEADER)
+    {
+      int teamInfoIndex = -1;
+      TeamInfo tinfo;
+
+      bool isRed = true;
+
+      if (data->teams[TEAM_RED].teamNumber == getPlayerInfo().teamNumber)
+      {
+        isRed = true;
+      }
+      else if (data->teams[TEAM_BLUE].teamNumber == getPlayerInfo().teamNumber)
+      {
+        isRed = false;
+      }
+      else
+      {
+        // no message for us invalidate data
+        return;
+      }
+
+      if(isRed)
+      {
+        tinfo = data->teams[TEAM_RED];
+        teamInfoIndex = TEAM_RED;
+        getPlayerInfo().teamColor = PlayerInfo::red;
+      }
+      else
+      {
+        tinfo = data->teams[TEAM_BLUE];
+        teamInfoIndex = TEAM_BLUE;
+        getPlayerInfo().teamColor = PlayerInfo::blue;
+      }
+
+      if (teamInfoIndex >= 0)
+      {
+        switch (data->state)
+        {
+          case STATE_INITIAL:
+            getPlayerInfo().gameState = PlayerInfo::inital;
+            break;
+          case STATE_READY:
+            getPlayerInfo().gameState = PlayerInfo::ready;
+            break;
+          case STATE_SET:
+            getPlayerInfo().gameState = PlayerInfo::set;
+            break;
+          case STATE_PLAYING:
+            getPlayerInfo().gameState = PlayerInfo::playing;
+            break;
+          case STATE_FINISHED:
+            getPlayerInfo().gameState = PlayerInfo::finished;
+            break;
+        }
+
+        getPlayerInfo().numOfPlayers = data->playersPerTeam;
+
+        getPlayerInfo().ownKickOff = (data->kickOffTeam == teamInfoIndex);
+
+        unsigned char playerNumberForGameController =
+          getPlayerInfo().playerNumber - 1; // gamecontroller starts counting at 0
+
+        if(playerNumberForGameController < MAX_NUM_PLAYERS)
+        {
+          RobotInfo rinfo =
+            data->teams[teamInfoIndex].players[playerNumberForGameController];
+          if (rinfo.penalty != PENALTY_NONE)
+          {
+            getPlayerInfo().gameState = PlayerInfo::penalized;
+          }
+        }
+      }
+    } // end if header correct
+  } // end if size correct
+  free(tmp);
+} // end updateWLAN
 
 void GameController::execute()
 {
@@ -166,8 +253,8 @@ void GameController::execute()
   PlayerInfo::TeamColor oldTeamColor = getPlayerInfo().teamColor;
   bool oldOwnKickOff = getPlayerInfo().ownKickOff;
 
-
   readButtons();
+  readWLAN();
 
   DEBUG_REQUEST("gamecontroller:initial",
     getPlayerInfo().gameState = PlayerInfo::inital;
