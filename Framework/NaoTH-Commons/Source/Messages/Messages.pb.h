@@ -322,10 +322,17 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline ::naothmessages::PlayerModel* mutable_opponent();
   inline ::naothmessages::PlayerModel* release_opponent();
   
-  // optional double timeToBall = 9;
+  // optional bool isFallenDown = 9 [default = false];
+  inline bool has_isfallendown() const;
+  inline void clear_isfallendown();
+  static const int kIsFallenDownFieldNumber = 9;
+  inline bool isfallendown() const;
+  inline void set_isfallendown(bool value);
+  
+  // optional double timeToBall = 10;
   inline bool has_timetoball() const;
   inline void clear_timetoball();
-  static const int kTimeToBallFieldNumber = 9;
+  static const int kTimeToBallFieldNumber = 10;
   inline double timetoball() const;
   inline void set_timetoball(double value);
   
@@ -347,6 +354,8 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline void clear_has_positiononfield();
   inline void set_has_opponent();
   inline void clear_has_opponent();
+  inline void set_has_isfallendown();
+  inline void clear_has_isfallendown();
   inline void set_has_timetoball();
   inline void clear_has_timetoball();
   
@@ -361,9 +370,10 @@ class TeamCommMessage : public ::google::protobuf::Message {
   double timetoball_;
   bool wasstriker_;
   bool ispenalized_;
+  bool isfallendown_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -2345,15 +2355,37 @@ inline ::naothmessages::PlayerModel* TeamCommMessage::release_opponent() {
   return temp;
 }
 
-// optional double timeToBall = 9;
-inline bool TeamCommMessage::has_timetoball() const {
+// optional bool isFallenDown = 9 [default = false];
+inline bool TeamCommMessage::has_isfallendown() const {
   return (_has_bits_[0] & 0x00000100u) != 0;
 }
-inline void TeamCommMessage::set_has_timetoball() {
+inline void TeamCommMessage::set_has_isfallendown() {
   _has_bits_[0] |= 0x00000100u;
 }
-inline void TeamCommMessage::clear_has_timetoball() {
+inline void TeamCommMessage::clear_has_isfallendown() {
   _has_bits_[0] &= ~0x00000100u;
+}
+inline void TeamCommMessage::clear_isfallendown() {
+  isfallendown_ = false;
+  clear_has_isfallendown();
+}
+inline bool TeamCommMessage::isfallendown() const {
+  return isfallendown_;
+}
+inline void TeamCommMessage::set_isfallendown(bool value) {
+  set_has_isfallendown();
+  isfallendown_ = value;
+}
+
+// optional double timeToBall = 10;
+inline bool TeamCommMessage::has_timetoball() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void TeamCommMessage::set_has_timetoball() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void TeamCommMessage::clear_has_timetoball() {
+  _has_bits_[0] &= ~0x00000200u;
 }
 inline void TeamCommMessage::clear_timetoball() {
   timetoball_ = 0;

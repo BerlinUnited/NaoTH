@@ -12,14 +12,14 @@
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
 
-//#include <Representations/Infrastructure/LEDRequest.h>
+#include <Representations/Infrastructure/LEDRequest.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(LEDSetter)
-  //REQUIRE(LEDRequest)
+  REQUIRE(GameControllerLEDRequest)
   REQUIRE(FrameInfo)
 
   PROVIDE(LEDData)
