@@ -40,7 +40,8 @@ theGameTime(0),
 thePlayMode(numOfPlayMode),
 thePlayerNum(0),
 theTeamIndex(TI_NULL),
-halfTime(5 * 60) // 5 minutes
+halfTime(5 * 60), // 5 minutes
+numOfPlayers(9)
 {
 }
 

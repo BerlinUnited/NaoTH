@@ -37,6 +37,7 @@ message TeamCommMessage {
   optional DoubleVector2 ballPosition = 6;
   optional Pose2D positionOnField = 7;
   optional PlayerModel opponent = 8;
+  optional double timeToBall = 9;
 }
 
 

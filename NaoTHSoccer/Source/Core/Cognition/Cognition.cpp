@@ -34,6 +34,7 @@
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
+#include "Modules/Infrastructure/TeamComm/SimSparkTeamComm/SimSparkTeamComm.h"
 
 // Perception
 #include "Modules/Perception/VisualCortex/GridProvider.h"
@@ -92,6 +93,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // -- BEGIN MODULES --
 
   // perception
+  REGISTER_MODULE(SimSparkTeamComm);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
 

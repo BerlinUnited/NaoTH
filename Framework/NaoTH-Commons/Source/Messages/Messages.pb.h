@@ -322,6 +322,13 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline ::naothmessages::PlayerModel* mutable_opponent();
   inline ::naothmessages::PlayerModel* release_opponent();
   
+  // optional double timeToBall = 9;
+  inline bool has_timetoball() const;
+  inline void clear_timetoball();
+  static const int kTimeToBallFieldNumber = 9;
+  inline double timetoball() const;
+  inline void set_timetoball(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.TeamCommMessage)
  private:
   inline void set_has_playernumber();
@@ -340,6 +347,8 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline void clear_has_positiononfield();
   inline void set_has_opponent();
   inline void clear_has_opponent();
+  inline void set_has_timetoball();
+  inline void clear_has_timetoball();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -349,11 +358,12 @@ class TeamCommMessage : public ::google::protobuf::Message {
   ::naothmessages::DoubleVector2* ballposition_;
   ::naothmessages::Pose2D* positiononfield_;
   ::naothmessages::PlayerModel* opponent_;
+  double timetoball_;
   bool wasstriker_;
   bool ispenalized_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -2333,6 +2343,28 @@ inline ::naothmessages::PlayerModel* TeamCommMessage::release_opponent() {
   ::naothmessages::PlayerModel* temp = opponent_;
   opponent_ = NULL;
   return temp;
+}
+
+// optional double timeToBall = 9;
+inline bool TeamCommMessage::has_timetoball() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void TeamCommMessage::set_has_timetoball() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void TeamCommMessage::clear_has_timetoball() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void TeamCommMessage::clear_timetoball() {
+  timetoball_ = 0;
+  clear_has_timetoball();
+}
+inline double TeamCommMessage::timetoball() const {
+  return timetoball_;
+}
+inline void TeamCommMessage::set_timetoball(double value) {
+  set_has_timetoball();
+  timetoball_ = value;
 }
 
 // -------------------------------------------------------------------

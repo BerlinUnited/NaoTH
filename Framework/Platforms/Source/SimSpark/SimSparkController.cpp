@@ -38,10 +38,12 @@ SimSparkController::SimSparkController()
   registerInput<CurrentCameraSettings>(*this);
   registerInput<BatteryData>(*this);
   registerInput<VirtualVision>(*this);
+  registerInput<TeamMessageData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const MotorJointData>(*this);
+  registerOutput<const RobotMessageData>(*this);
 
 
   // init the name -- id maps
@@ -134,7 +136,7 @@ bool SimSparkController::connect(const std::string& host, int port)
   if(socket != NULL)
   {
   gboolean conn = false;
-    GError** error = NULL;
+  GError** error = NULL;
   GCancellable* cancellable = NULL;
   GSocketAddress* sockaddr = NULL;
   GError* conn_error = NULL;
@@ -225,7 +227,6 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
     thePlayerInfoInitializer.thePlayerInfo.teamColor = PlayerInfo::red;
     thePlayerInfoInitializer.thePlayerInfo.teamNumber = 2;
   }
-  thePlayerInfoInitializer.thePlayerInfo.playerNumber = theGameInfo.thePlayerNum;
   */
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.thePlayerNum << endl;
@@ -1068,11 +1069,12 @@ void SimSparkController::get(CurrentCameraSettings& data)
 }
 
 void SimSparkController::say()
-{/*
+{
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/theBasicTimeStep/2)) % thePlayerInfoInitializer.thePlayerInfo.numOfPlayers) +1 != thePlayerInfoInitializer.thePlayerInfo.playerNumber )
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.numOfPlayers) +1 != theGameInfo.thePlayerNum )
     return;
-  string msg = theTeamComm.peekSayMessage();
+
+  string& msg = theRobotMessageData.data;
   if (!msg.empty()){
     if (msg.size()>20){
       cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
@@ -1080,11 +1082,11 @@ void SimSparkController::say()
     }
     if (msg != "")
     {
-//      cout<<"Nr."<<static_cast<int>(thePlayerInfoInitializer.thePlayerInfo.playerNumber)<<" say @ "<<theSenseTime<<endl;
+      //      cout<<"Nr."<<static_cast<int>(thePlayerInfoInitializer.thePlayerInfo.playerNumber)<<" say @ "<<theSenseTime<<endl;
       theSocket << ("(say "+msg+")");
     }
+    msg = "";
   }
-  */
 }
 
 bool SimSparkController::hear(const sexp_t* sexp)
@@ -1097,6 +1099,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
   }
 
   sexp = sexp->next;
+  /*
   std::string direction;
   double dir;
   if (!SexpParser::parseValue(sexp, direction))
@@ -1104,6 +1107,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
     std::cerr << "[SimSparkController Hear] can not get direction" << std::endl;
     return false;
   }
+
 
   if ("self" == direction)
   {
@@ -1116,14 +1120,14 @@ bool SimSparkController::hear(const sexp_t* sexp)
       std::cerr << "[SimSparkController Hear] can not parse the direction" << std::endl;
       return false;
     }
-  }
+  }*/
 
   sexp = sexp->next;
   string msg;
   SexpParser::parseValue(sexp, msg);
 
   if ( !msg.empty() && msg != ""){
-//    theTeamComm.addHearMessage(msg);
+    theTeamMessageData.data.push_back(msg);
   }
 //  std::cout << "hear message : " << time << ' ' << direction << ' ' << dir << ' ' << msg << std::endl;
   return true;
@@ -1197,3 +1201,15 @@ MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
   else
     return new MessageQueue4Threads();
 }
+
+void SimSparkController::get(TeamMessageData& data)
+{
+  data = theTeamMessageData;
+  theTeamMessageData.data.clear();
+}
+
+void SimSparkController::set(const RobotMessageData& data)
+{
+  theRobotMessageData = data;
+}
+
