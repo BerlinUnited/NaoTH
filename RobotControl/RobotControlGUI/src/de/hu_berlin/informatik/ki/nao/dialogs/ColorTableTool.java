@@ -1169,7 +1169,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
             
             Command command = new Command(setColorTableCommandBase)
                     .addArg("path", lastPath)
-                    .addArg("+content", new String(buffer));
+                    .addArg("content", new String(buffer));
 
             sendCommand(command);
             sendCommand(reloadColorTableCommand);

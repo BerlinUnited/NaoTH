@@ -101,45 +101,39 @@ char* DebugCommunicator::internalReadMessage(GError** err)
   *err = NULL;
   if (connection != NULL)
   {
-    // wait until if there is data available
-    g_socket_condition_wait(connection, G_IO_IN, NULL, err);
-    if(*err == NULL)
+
+    GString* buffer = g_string_new("");
+    char c = 0;
+
+    // read until \n character found
+    while(*err == NULL && c != '\n')
     {
-      // read until \0 or \n character found
-      GString* buffer = g_string_new("");
-      char c = 0;
-
-      while(*err == NULL && c != '\n')
+      if(err != NULL)
       {
-        g_socket_condition_wait(connection, G_IO_IN, NULL, err);
-        if(err != NULL)
+        g_socket_set_blocking(connection, true);
+        gssize read_bytes = g_socket_receive(connection, &c, 1, NULL, err);
+        if(read_bytes < 1)
         {
-          gssize read_bytes = g_socket_receive(connection, &c, 1, NULL, err);
-          if(read_bytes < 1)
-          {
-            g_string_free(buffer, true);
-            // if G_IO_IN was signalled but there was no data available this is a sign that
-            // the client was disconnected
-            return NULL;
-          }
-        }
-
-        if(c != '\r' && c != '\n')
-        {
-          g_string_append_c(buffer,c);
+          g_string_free(buffer, true);
+          return NULL;
         }
       }
 
-      if(*err)
+      if(c != '\r' && c != '\n')
       {
-        g_string_free(buffer,true);
-        return NULL;
+        g_string_append_c(buffer,c);
       }
+    } // end while no \n found
 
-      g_string_append_c(buffer,'\0');
-      return g_string_free(buffer, false);
+    if(*err)
+    {
+      g_string_free(buffer,true);
+      return NULL;
     }
-  }//end if
+
+    g_string_append_c(buffer,'\0');
+    return g_string_free(buffer, false);
+  }//end if connection not null
   return NULL;
 }
 char* DebugCommunicator::readMessage()
