@@ -676,7 +676,8 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         }
         else
         {
-          theGameData.gameTime = gameTime*1000;
+          ASSERT(gameTime > 0);
+          theGameData.gameTime = static_cast<unsigned int>(gameTime)*1000;
         }
       } else if ("pm" == name) // play mode
       {

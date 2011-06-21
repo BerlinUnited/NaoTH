@@ -38,8 +38,18 @@ ImageProcessor::ImageProcessor()
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
+  theRobotDetector = registerModule<RobotDetector>("RobotDetector");
+  theRobotDetector->setEnabled(true);
+
+  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->setEnabled(true);
+
+  theLineDetector = registerModule<LineDetector>("LineDetector");
+  theLineDetector->setEnabled(true);
+
   theGoalDetector = registerModule<GoalDetector>("GoalDetector");
   theGoalDetector->setEnabled(true);
+
 }//end constructor
 
 
@@ -50,6 +60,17 @@ void ImageProcessor::execute()
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
 
+  STOPWATCH_START("RobotDetector");
+  theRobotDetector->execute();
+  STOPWATCH_STOP("RobotDetector");
+
+  STOPWATCH_START("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->execute();
+  STOPWATCH_STOP("ScanLineEdgelDetector");
+
+  STOPWATCH_START("LineDetector");
+  theLineDetector->execute();
+  STOPWATCH_STOP("LineDetector");
 
   STOPWATCH_START("GoalDetector");
   theGoalDetector->execute();
