@@ -27,7 +27,7 @@
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
-//  REQUIRE(ColorTable64)
+  REQUIRE(ColorTable64)
 
   PROVIDE(ColoredGrid)
   PROVIDE(Histogram)
@@ -78,11 +78,12 @@ public:
   void calculateColoredGrid();
 
   const SimpleColorClassifier simpleColorClassifier;
-
+/*
   const ColorClassifier& getColorTable64() const
   {
     return simpleColorClassifier;
   }
+  */
 };
 
 #endif //__GridProvider_h_
