@@ -71,6 +71,8 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
       currentPixelColor == ColorClasses::green ||
       currentPixelColor == ColorClasses::orange ||
       currentPixelColor == ColorClasses::skyblue ||
+      currentPixelColor == ColorClasses::blue ||
+      currentPixelColor == ColorClasses::red ||
       currentPixelColor == ColorClasses::yellow
     )
     {
