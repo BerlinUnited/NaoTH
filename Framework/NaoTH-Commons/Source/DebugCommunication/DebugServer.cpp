@@ -317,7 +317,12 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
           out << ": " << iter->second << "\n";
         }
       }
-    } else
+    }
+    else if( command == "endFrame")
+    {
+      out << "endFrame" << std::endl;
+    }
+    else
     {
       std::string firstArg = arguments.begin()->first;
       if (descriptionMap.find(firstArg) != descriptionMap.end())

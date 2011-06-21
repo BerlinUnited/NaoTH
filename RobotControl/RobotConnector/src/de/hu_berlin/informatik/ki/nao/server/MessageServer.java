@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -55,13 +56,17 @@ public class MessageServer
   private Thread senderThread;
   private Thread receiverThread;
   private Thread periodicExecutionThread;
-  private long updateIntervall = 33;
   private List<CommandSender> listeners;
   private BlockingQueue<SingleExecEntry> commandRequestQueue;
   private BlockingQueue<SingleExecEntry> callbackQueue;
   private IMessageServerParent parent;
   private long receivedBytes;
   private long sentBytes;
+  
+  private AtomicInteger pendingFrames = new AtomicInteger();
+  private long updateIntervall = 33;
+  // the assumed maximum network delay
+  private long networkDelay = 500;
   
   private Base64 base64 = new Base64();
   
@@ -425,12 +430,18 @@ public class MessageServer
   private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
   {
     SingleExecEntry entry = callbackQueue.take();
-    //byte[] decoded = Base64.decodeBase64(bytes);
     byte[] decoded = base64.decode(bytes);
 
-    if (entry != null && entry.sender != null)
+    if(entry != null)
     {
-      entry.sender.handleResponse(decoded, entry.command);
+      if(entry.command != null && "endFrame".equals(entry.command.getName()))
+      {
+        pendingFrames.decrementAndGet();
+      }
+      else if(entry.sender != null)
+      {        
+        entry.sender.handleResponse(decoded, entry.command);
+      }
     }
   }//end decodeAndHandleMessage
 
@@ -447,9 +458,10 @@ public class MessageServer
           long startTime = System.currentTimeMillis();
           
           // do not send if the robot is still busy
-          while(isConnected() && callbackQueue.size() > 0)
+          int maximalBuffereFrames = (int) (networkDelay / updateIntervall);
+          while(isConnected() && pendingFrames.get() >= maximalBuffereFrames)
           {
-            Thread.yield();
+            Thread.sleep(10);
           }
           
           sendPeriodicCommands();
@@ -509,7 +521,20 @@ public class MessageServer
         Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
           "interrupted in periodic command execution", ex);
       }
-    }  // end for each listenerF
+    }  // end for each listener
+    
+    SingleExecEntry eFrameEnd = new SingleExecEntry();
+    eFrameEnd.command = new Command("endFrame");
+    try
+    {
+      commandRequestQueue.put(eFrameEnd);
+      pendingFrames.incrementAndGet();
+    }
+    catch (InterruptedException ex)
+    {
+      Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    
   }//end sendPeriodicCommands
 
   private class SingleExecEntry
