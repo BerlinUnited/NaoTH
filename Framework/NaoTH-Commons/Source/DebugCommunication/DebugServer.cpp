@@ -16,6 +16,7 @@
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
+  : frameEnded(false)
 {
   m_executing = g_mutex_new();
 
@@ -39,6 +40,9 @@ void DebugServer::start(unsigned short port)
     writerThread = g_thread_create(writer_static, this, true, &err);
 
     registerCommand("help", "list available commands or get the description of a specific command", this);
+    registerCommand("endFrame",
+      "marking a frame as ended, thus the processing of rest of the messages will be done in the next cycle",
+       this);
   }
   else
   {
@@ -121,8 +125,10 @@ void DebugServer::execute()
 {
   g_mutex_lock(m_executing);
 
+  frameEnded = false;
+
   // handle all commands
-  while (g_async_queue_length(commands) > 0)
+  while (!frameEnded && g_async_queue_length(commands) > 0)
   {
     char* cmdRaw = (char*) g_async_queue_pop(commands);
 
@@ -132,6 +138,7 @@ void DebugServer::execute()
     g_async_queue_push(answers, answer);
 
     g_free(cmdRaw);
+
   }//end while
 
   g_mutex_unlock(m_executing);
@@ -231,7 +238,6 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
 void DebugServer::handleCommand(std::string command, std::map<std::string,
   std::string> arguments, GString* answer, bool encodeBase64)
 {
-
   std::stringstream answerFromHandler;
   
   if (executorMap.find(command) != executorMap.end())
@@ -318,10 +324,6 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
         }
       }
     }
-    else if( command == "endFrame")
-    {
-      out << "endFrame" << std::endl;
-    }
     else
     {
       std::string firstArg = arguments.begin()->first;
@@ -339,6 +341,10 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
 
     }
     out << "\n";
+  }
+  else if( command == "endFrame")
+  {
+    frameEnded = true;
   }
 }
 

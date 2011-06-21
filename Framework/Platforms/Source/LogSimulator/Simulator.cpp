@@ -171,14 +171,16 @@ void Simulator::play()
   bool endReached = false;
   while(!endReached && c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
   {
+    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
+    unsigned int waitTime = std::max((unsigned int) 0, 33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime));
 
     #ifdef WIN32
-    Sleep(60);
+    Sleep(waitTime);
     if(_kbhit())
     #else
     // wait some time
-    usleep(60000);
+    usleep(waitTime * 1000);
     #endif
     c = getInput();
 
@@ -223,14 +225,15 @@ void Simulator::loop()
   int c = -1;
   while(c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
   {
+    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
-
+    unsigned int waitTime = std::max((unsigned int) 0, 33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime));
     #ifdef WIN32
-    Sleep(60);
+    Sleep(waitTime);
     if(_kbhit())
     #else
     // wait some time
-    usleep(60000);
+    usleep(waitTime * 1000);
     #endif
     c = getInput();
   }//while

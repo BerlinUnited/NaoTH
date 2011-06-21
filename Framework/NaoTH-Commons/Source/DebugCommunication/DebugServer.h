@@ -65,6 +65,8 @@ private:
   base64::Decoder base64Decoder;
   base64::Encoder base64Encoder;
 
+  bool frameEnded;
+
   void mainReader();
   void mainWriter();
   void handleCommand(char* cmdRaw, GString* answer);

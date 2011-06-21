@@ -65,8 +65,8 @@ public class MessageServer
   
   private AtomicInteger pendingFrames = new AtomicInteger();
   private long updateIntervall = 33;
-  // the assumed maximum network delay
-  private long networkDelay = 500;
+  // dpends on the assumed maximum network delay
+  private long maximalBufferedFrames = 3;
   
   private Base64 base64 = new Base64();
   
@@ -197,6 +197,8 @@ public class MessageServer
       
       // wait until rest of the thread are settled
       receiverThread.join();
+      
+      pendingFrames.set(0);
       
       // clear queues and send remaining error messages
       for (SingleExecEntry entry : callbackQueue)
@@ -458,8 +460,7 @@ public class MessageServer
           long startTime = System.currentTimeMillis();
           
           // do not send if the robot is still busy
-          int maximalBuffereFrames = (int) (networkDelay / updateIntervall);
-          while(isConnected() && pendingFrames.get() >= maximalBuffereFrames)
+          while(isConnected() && pendingFrames.get() >= maximalBufferedFrames)
           {
             Thread.sleep(10);
           }
