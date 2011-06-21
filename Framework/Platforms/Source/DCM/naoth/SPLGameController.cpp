@@ -35,13 +35,11 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   return err;
 }
 
-void SPLGameController::update(GameData& gameData)
+bool SPLGameController::update(GameData& gameData, unsigned int time)
 {
-  gameData.valid = false;
-
   if(socket == NULL)
   {
-    return;
+    return false;
   }
 
   int size = g_socket_receive(socket, buffer, sizeof(RoboCupGameControlData), NULL, NULL);
@@ -52,6 +50,7 @@ void SPLGameController::update(GameData& gameData)
     header.assign(data->header, 4);
     if(header == GAMECONTROLLER_STRUCT_HEADER)
     {
+      GameData::GameState lastGameState = gameData.gameState;
       int teamInfoIndex = -1;
       TeamInfo tinfo;
 
@@ -68,7 +67,7 @@ void SPLGameController::update(GameData& gameData)
       else
       {
         // no message for us invalidate data
-        return;
+        return false;
       }
 
       if(isRed)
@@ -107,7 +106,9 @@ void SPLGameController::update(GameData& gameData)
 
         gameData.numOfPlayers = data->playersPerTeam;
 
-        if ( gameData.gameState == GameData::playing )
+        if ( gameData.gameState == GameData::ready
+            || gameData.gameState == GameData::set
+            || gameData.gameState == GameData::playing )
         {
           //TODO: check more conditions (time, etc.)
           gameData.playMode = (data->kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
@@ -123,12 +124,17 @@ void SPLGameController::update(GameData& gameData)
           {
             gameData.gameState = GameData::penalized;
           }
-          gameData.valid = true;
         }
-      } // end if team info index correct
+      }
+      if ( lastGameState != gameData.gameState )
+      {
+        gameData.timeWhenGameStateChanged = time;
+      }
+      return true;
     } // end if header correct
   } // end if size correct
-} // end updateWLAN
+  return false;
+}
 
 SPLGameController::~SPLGameController()
 {

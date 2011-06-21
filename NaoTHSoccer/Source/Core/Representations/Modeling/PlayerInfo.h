@@ -21,6 +21,8 @@ public:
   ~PlayerInfo();
   
   naoth::GameData gameData;
+  unsigned int timeSincePlayModeChanged; // ms
+  unsigned int timeSinceGameStateChanged; // ms
 
   /** Whether the behavior decided to play as striker */
   bool isPlayingStriker;

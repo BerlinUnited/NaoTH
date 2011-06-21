@@ -77,14 +77,14 @@ public:
   GameData();
 
 public:
+  unsigned int frameNumber; // indicates when it is updated
+
   GameState gameState;
-  unsigned int timeSinceGameStateChanged;
+  unsigned int timeWhenGameStateChanged;
 
   PlayMode playMode;
   unsigned int gameTime; // in ms
-  unsigned int timeSincePlayModeChanged; // ms
-
-  bool valid;
+  unsigned int timeWhenPlayModeChanged; // ms
 
   // static information
   unsigned int playerNumber;

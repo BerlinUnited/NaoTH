@@ -12,6 +12,7 @@
 #include "SoundControl.h"
 #include "V4lCameraHandler.h"
 #include "TeamCommunicator.h"
+#include "SPLGameController.h"
 #include "Tools/NaoControllerBase.h"
 #include "Representations/Infrastructure/TeamMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
@@ -67,6 +68,7 @@ private:
   SoundControl *theSoundHandler;
   NaothData* naothDataWriting;
   TeamCommunicator* theTeamComm;
+  SPLGameController* theGameController;
 };
 
 } // end namespace naoth

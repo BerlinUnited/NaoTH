@@ -67,6 +67,7 @@ private:
   GyrometerData theGyroData;
   AccelerometerData theAccelerometerData;
   FSRData theFSRData;
+  FrameInfo theFrameInfo;
 
   int theCameraId;
   CameraInfo theCameraInfo;

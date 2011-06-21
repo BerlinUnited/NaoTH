@@ -12,11 +12,11 @@ public:
 
     ~SPLGameController();
 
+    bool update(naoth::GameData& gameData, unsigned int time);
+
 private:
     GSocket* socket;
     char* buffer;
-
-    void update(naoth::GameData& gameData);
 
     GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
 };

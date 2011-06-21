@@ -102,6 +102,7 @@ SimSparkController::SimSparkController()
   theCognitionInputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
 
+  theFrameInfo.basicTimeStep = getBasicTimeStep();
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   GError *err = NULL;
@@ -212,7 +213,6 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   }
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
-  theGameData.timeSincePlayModeChanged = 0;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
   return true;
@@ -335,7 +335,7 @@ bool SimSparkController::updateSensors()
     theFSRData.data[i] = 0;
   }
 
-  theGameData.timeSincePlayModeChanged += theStepTime*1000;
+  theFrameInfo.frameNumber++;
 
   while(sexp)
   {
@@ -362,6 +362,7 @@ bool SimSparkController::updateSensors()
       {
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
         theStepTime = theSenseTime - lastSenseTime;
+        theFrameInfo.time = static_cast<unsigned int>(theSenseTime * 1000.0);
         if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() )
           cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
       } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
@@ -658,9 +659,6 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
 // Example message: "(GS (t 0.00) (pm BeforeKickOff))"
 bool SimSparkController::updateGameInfo(const sexp_t* sexp)
 {
-  // in Simspark there is only one valid source of game state information
-  theGameData.valid = true;
-
   bool ok = true;
   string name;
   while (sexp)
@@ -688,12 +686,12 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get play mode value\n";
         }
-        SimSparkGameInfo::PlayMode sPlayMode = SimSparkGameInfo::getPlayModeByName(pm);
-        GameData::PlayMode playMode = SimSparkGameInfo::covertPlayMode(sPlayMode, theGameData.teamColor);
+        SimSparkGameInfo::PlayMode splayMode = SimSparkGameInfo::getPlayModeByName(pm);
+        GameData::PlayMode playMode = SimSparkGameInfo::covertPlayMode(splayMode, theGameData.teamColor);
         if ( theGameData.playMode != playMode )
         {
           theGameData.playMode = playMode;
-          theGameData.timeSincePlayModeChanged = 0;
+          theGameData.timeWhenPlayModeChanged = theFrameInfo.time;
         }
       } else if ("unum" == name) // unum
       {
@@ -725,6 +723,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     sexp = sexp->next;
   }
 
+  if ( ok ) theGameData.frameNumber = theFrameInfo.frameNumber;
   return ok;
 }//end updateGameInfo
 
@@ -861,9 +860,7 @@ bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
 
 void SimSparkController::get(FrameInfo& data)
 {
-  data.time = static_cast<unsigned int>(theSenseTime * 1000.0);
-  data.frameNumber++;
-  data.basicTimeStep = getBasicTimeStep();
+  data = theFrameInfo;
 }
 
 void SimSparkController::get(SensorJointData& data)
@@ -1130,7 +1127,7 @@ void SimSparkController::autoBeam()
     || theGameData.playMode == GameData::goal_opp
     || theGameData.playMode == GameData::before_kick_off)
   {
-    if ( theGameData.timeSincePlayModeChanged < 1000 )
+    if ( theFrameInfo.time - theGameData.timeWhenPlayModeChanged < 1000 )
     {
       const Configuration& cfg = Platform::getInstance().theConfiguration;
       string group = "PoseBeforeKickOff";
