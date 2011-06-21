@@ -54,19 +54,12 @@ namespace naoth
     void init(PlatformBase* _interface)
     {
       ASSERT(_interface!=NULL);
-      // TODO: check the communication?
-      //ASSERT(comm!=NULL);
+
       _platformInterface = _interface;
 
       // set the the hardware identity according to platform
       _hardwareIdentity = _interface->getHardwareIdentity();
       _configDir = "Config/";
-      /* todo:
-      if(getenv("NAO_CONFIG") != NULL)
-      {
-        _configDir = getenv("NAO_CONFIG");
-      }
-       */
       _scheme = _interface->getName(); // set to platform by default
       std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
       if(schemefile.is_open() && schemefile.good())

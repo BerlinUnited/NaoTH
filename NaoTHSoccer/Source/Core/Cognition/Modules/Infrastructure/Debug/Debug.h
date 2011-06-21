@@ -21,6 +21,9 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
 
+#include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+
 #include "Tools/Debug/Logger.h"
 
 using namespace naoth;
@@ -35,6 +38,8 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(AccelerometerData)
   REQUIRE(FSRData)
   
+  PROVIDE(ColorTable64)
+  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, public DebugCommandExecutor

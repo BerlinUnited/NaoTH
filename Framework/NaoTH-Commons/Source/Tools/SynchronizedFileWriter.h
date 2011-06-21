@@ -26,9 +26,9 @@ public:
 #endif
     if (file != NULL) 
     {
-      size_t byteWrite = fwrite(content.c_str(), 1, content.length(), file);
+      size_t byteWrite = fwrite(content.c_str(), 1, content.size(), file);
 
-      if ( byteWrite != content.length() )
+      if ( byteWrite != content.size() )
       {
         printf("SynchronizedFileWriter write failed to %s", filename.c_str());
       }

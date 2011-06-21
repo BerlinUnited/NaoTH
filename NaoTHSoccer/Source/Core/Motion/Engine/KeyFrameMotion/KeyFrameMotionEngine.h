@@ -47,7 +47,7 @@ private:
   // loading motion-nets
   void loadMotionNetFromFile(const std::string& fileName, MotionNet& motionNet);
   bool loadMotionNet(const std::string& fileName, const std::string& motionNetName);
-  void loadAvailableMotionNets(const std::string& directoryName);
+  void loadAvailableMotionNets(std::string directoryName);
 };
 
 #endif //__KeyFrameMotionEngine_h_

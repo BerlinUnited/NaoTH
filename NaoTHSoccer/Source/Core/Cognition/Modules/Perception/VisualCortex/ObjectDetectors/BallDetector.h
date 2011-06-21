@@ -23,7 +23,6 @@
 
 #include <Representations/Infrastructure/Image.h>
 
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 //#include "Representations/Perception/BlobPercept.h"
@@ -33,6 +32,7 @@
 #include "Representations/Perception/BallPercept.h"
 
 // tools
+#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
 

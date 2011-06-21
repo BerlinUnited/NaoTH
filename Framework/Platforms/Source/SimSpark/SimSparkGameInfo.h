@@ -8,22 +8,12 @@
 #ifndef _SIMSPARK_GAME_INFO_H
 #define	_SIMSPARK_GAME_INFO_H
 
-#include <PlatformInterface/PlatformInterchangeable.h>
+#include <Representations/Infrastructure/GameData.h>
 #include <string>
 
-class SimSparkGameInfo : public naoth::PlatformInterchangeable
+class SimSparkGameInfo
 {
 public:
-  SimSparkGameInfo();
-
-  ~SimSparkGameInfo();
-
-  enum TeamIndex
-  {
-    TI_LEFT = 0,
-    TI_RIGHT,
-    TI_NULL /*< this must be the last entry >*/
-  };
 
   enum PlayMode
   {
@@ -48,23 +38,12 @@ public:
     numOfPlayMode, /*!< no play mode, this must be the last entry */
   };
 
-  static TeamIndex getTeamIndexByName(const std::string& name);
-  static std::string getTeamIndexName(TeamIndex ti);
+  static naoth::GameData::TeamColor getTeamColorByName(const std::string& name);
 
   static PlayMode getPlayModeByName(const std::string& name);
   static std::string getPlayModeName(SimSparkGameInfo::PlayMode pm);
 
-public:
-  /** information of the game */
-  double theGameTime;
-  PlayMode thePlayMode;
-
-  /** information of robot player */
-  unsigned int thePlayerNum;
-  TeamIndex theTeamIndex;
-
-  // static information
-  double halfTime;
+  static naoth::GameData::PlayMode covertPlayMode(PlayMode pm, naoth::GameData::TeamColor team);
 };
 
 #endif	/* _SIMSPARK_GAME_INFO_H */
