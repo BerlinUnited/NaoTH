@@ -30,6 +30,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   calculateError();
   
   plan(motionRequest);
+
   theCoMFeetPose = executeStep();
   
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
@@ -300,6 +301,9 @@ void Walk::stopWalking()
       Pose3D diff = planningStep.footStep.footBegin().invert() * planningStep.footStep.footEnd();
       if ( diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1) )
       {
+        // don't need to move the foot
+        FootStep zeroStep(planningStep.footStep.end(), FootStep::NONE);
+        stepBuffer.back().footStep = zeroStep;
         stoppingStepFinished = true;
       }
     }
@@ -311,18 +315,18 @@ void Walk::stopWalking()
   }
   else
   {
+    Vector3d finalZmp = theEngine.controlZMPback();
+    FeetPose feet = stepBuffer.back().footStep.end();
+    finalZmp.x = (feet.left.translation.x + feet.right.translation.x)*0.5 + theParameters.hipOffsetX;
+    finalZmp.y = (feet.left.translation.y + feet.right.translation.y)*0.5;
+    finalZmp.z = theWalkParameters.comHeight;
     // wait for the com stops
-    if ( theEngine.controlZMPstop() )
+    if ( theEngine.controlZMPstop(finalZmp) )
     {
       currentState = motion::stopped;
     }
     else
     {
-      Vector3d zmp = theEngine.controlZMPback();
-      FeetPose feet = stepBuffer.back().footStep.end();
-      zmp.x = (feet.left.translation.x + feet.right.translation.x)*0.5 + theParameters.hipOffsetX;
-      zmp.y = (feet.left.translation.y + feet.right.translation.y)*0.5;
-      theEngine.controlZMPpush(Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight));
       stepBuffer.back().numberOfCyclePerFootStep++;
     }
   }

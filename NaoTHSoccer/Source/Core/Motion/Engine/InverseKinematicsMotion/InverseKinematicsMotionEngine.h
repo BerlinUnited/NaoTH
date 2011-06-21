@@ -67,7 +67,7 @@ public:
 
   Vector3d controlZMPback() const;
 
-  bool controlZMPstop();
+  bool controlZMPstop(const Vector3d& finalZmp);
 
   /**
    * @param com return the result

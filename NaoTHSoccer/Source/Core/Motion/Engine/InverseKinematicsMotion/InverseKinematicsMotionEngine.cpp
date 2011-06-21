@@ -309,17 +309,11 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   unsigned int previewSteps = thePreviewController.previewSteps();
   thePreviewController.clear();
 
-  ZMPFeetPose myTarget = start;
-  ZMPFeetPose currentZMPPose;
-  currentZMPPose.zmp = currentCoMPose.com;
-  currentZMPPose.feet = currentZMPPose.feet;
-  myTarget.zmp.translation.x = currentZMPPose.zmp.translation.x;
-  myTarget.zmp.translation.y = currentZMPPose.zmp.translation.y;
   for (unsigned int i = 0; i < previewSteps-1; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
-    ZMPFeetPose p = interpolate(currentZMPPose, myTarget, t);
-    thePreviewController.push(p.zmp.translation);
+    Pose3D p = interpolate(currentCoMPose.com, start.zmp, t);
+    thePreviewController.push(p.translation);
   }
   return previewSteps;
 }
@@ -340,14 +334,17 @@ bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
   return false;
 }
 
-bool InverseKinematicsMotionEngine::controlZMPstop()
+bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
 {
-  Vector3d target = thePreviewController.front();
-  Vector3d diff = target - thePreviewControlCoM;
+  Vector3d diff = finalZmp - thePreviewControlCoM;
   bool stoppted = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 & thePreviewControlddCoM.abs2() < 1;
   if ( stoppted )
   {
     thePreviewController.clear();
+  }
+  else
+  {
+    controlZMPpush(finalZmp);
   }
 
   return stoppted;

@@ -36,7 +36,7 @@ template<class OWNER, class ELEMENT>
 class Trajectory
 {
   // HACK
-  friend OWNER;
+  friend class IKDynamicKickMotion;
 
 private:
   std::list<ELEMENT> trajectory;
