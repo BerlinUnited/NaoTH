@@ -42,7 +42,7 @@ void BallDetector::execute()
 {
   //if there is no field percept, then, there is also no goal ?!
   /*
-  if(!theFieldPercept.isValid())
+  if(!getFieldPercept().isValid())
   {
     getBallPercept().ballWasSeen = false;
     return;
@@ -57,7 +57,7 @@ void BallDetector::execute()
   BlobList blobList;
   WholeArea wholeImageArea;
   theBlobFinder.execute(blobList, connectedColors, wholeImageArea);
-  //theBlobFinder.execute(connectedColors, theFieldPercept.getLargestValidPoly(getCameraMatrix().horizon));
+  //theBlobFinder.execute(connectedColors, getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon));
 
   //search for ball if orange blobs were found
   if(blobList.blobNumber > 0)
@@ -259,8 +259,8 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, c
 //  max.y = std::min(max.y, (int)getImage().cameraInfo.resolutionHeight-1);
   // senity check
 
-//  Vector2<int> min = theFieldPercept.getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMin);
-//  Vector2<int> max = theFieldPercept.getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMax);
+//  Vector2<int> min = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMin);
+//  Vector2<int> max = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMax);
 //  if(min.x >= max.x || min.y >= max.y) return false;
 
 

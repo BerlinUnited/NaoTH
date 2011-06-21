@@ -27,7 +27,6 @@ project "SimSpark"
     CORE,
 	"NaoTH-Commons", 
 	"sfsexp",
-    "b64",
 	"glib-2.0",
 	"gio-2.0",
 	"gobject-2.0",

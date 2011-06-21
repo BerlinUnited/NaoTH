@@ -83,11 +83,11 @@ then
 	    DEVSIZE=2
 	fi
 	if [ ${DEVSIZE} == 1 ] || [ ${DEVSIZE} == 2 ] || [ ${DEVSIZE} == 4 ]; then
-	    if [ -f $AL_DIR/naoqi/share/flash-usbstick/first_sector_${DEVSIZE}GB.raw ];then
+	    if [ -f $AL_DIR/share/flash-usbstick/first_sector_${DEVSIZE}GB.raw ];then
 		echo "write MBR for usbstick ${DEVSIZE}G"
-		dd if="${AL_DIR}/naoqi/share/flash-usbstick/first_sector_${DEVSIZE}GB.raw" of=$DEVICE bs=16k || exit 1
+		dd if="${AL_DIR}/share/flash-usbstick/first_sector_${DEVSIZE}GB.raw" of=$DEVICE bs=16k || exit 1
 	    else
-		echo "You need file : ${AL_DIR}/naoqi/share/flash-usbstick/first_sector_${DEVSIZE}GB.raw" && exit 1
+		echo "You need file : ${AL_DIR}/share/flash-usbstick/first_sector_${DEVSIZE}GB.raw" && exit 1
 	    fi
 
 #	    parted $DEVICE --script mklabel msdos

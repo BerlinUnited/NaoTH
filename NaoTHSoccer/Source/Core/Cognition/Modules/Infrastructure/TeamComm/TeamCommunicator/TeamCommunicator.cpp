@@ -35,21 +35,18 @@ void TeamCommunicator::handleMessage(const string& data)
 
   int num = msg.playernumber();
 
-  if(num <= MAX_NUM_PLAYERS && msg.teamnumber() == getPlayerInfo().teamNumber)
-  {
-    getTeamMessage().messageReceived[num] = true;
-    getTeamMessage().timeWhenReceived[num] = getFrameInfo().time;
-    getTeamMessage().frameNumberWhenReceived[num] = getFrameInfo().frameNumber;
-    getTeamMessage().message[num] = msg;
-  }
+  TeamMessage::TeamMessageData& content = getTeamMessage().data[num];
+  content.frameInfo.time = getFrameInfo().time;
+  content.frameInfo.frameNumber++;
+  content.message = msg;
 }
 
 void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
 {
 
-  msg.set_playernumber(getPlayerInfo().playerNumber);
-  msg.set_teamnumber(getPlayerInfo().teamNumber);
-  msg.set_ispenalized(getPlayerInfo().gameState == PlayerInfo::penalized);
+  msg.set_playernumber(getPlayerInfo().gameData.playerNumber);
+  msg.set_teamnumber(getPlayerInfo().gameData.teamNumber);
+  msg.set_ispenalized(getPlayerInfo().gameData.gameState == GameData::penalized);
   msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
 
   // TODO: set falldown state in teamcomm message

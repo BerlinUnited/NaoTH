@@ -26,7 +26,7 @@
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 //#include "Representations/Perception/BlobPercept.h"
-//#include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/FieldPercept.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BallPercept.h"

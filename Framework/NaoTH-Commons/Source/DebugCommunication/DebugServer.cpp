@@ -183,10 +183,12 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
         {
           if (valueIsBase64)
           {
-            size_t len;
-            char* decoded = (char*) g_base64_decode(argv[i], (gsize*) &len);
-            arguments[lastKey].assign(decoded);
-            g_free(decoded);
+            std::string arg(argv[i]);
+            char* decoded = (char*) malloc(arg.size());
+            int decodedSize = base64Decoder.decode(arg, decoded, arg.size());
+            //char* decoded = (char*) g_base64_decode(argv[i], (gsize*) &len);
+            arguments[lastKey].assign(decoded, decodedSize);
+            free(decoded);
           } else
           {
             arguments[lastKey].assign(argv[i]);
@@ -245,10 +247,11 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
 
   if (encodeBase64 && str.length() > 0)
   {
-    char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
+    std::string encoded = base64Encoder.encode((const char*) str.c_str(), str.length());
+    //char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
 
-    g_string_append(answer, encoded);
-    g_free(encoded);
+    g_string_append(answer, encoded.c_str());
+//    g_free(encoded);
   } else
   {
     g_string_append(answer, str.c_str());
@@ -314,7 +317,12 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
           out << ": " << iter->second << "\n";
         }
       }
-    } else
+    }
+    else if( command == "endFrame")
+    {
+      out << "endFrame" << std::endl;
+    }
+    else
     {
       std::string firstArg = arguments.begin()->first;
       if (descriptionMap.find(firstArg) != descriptionMap.end())

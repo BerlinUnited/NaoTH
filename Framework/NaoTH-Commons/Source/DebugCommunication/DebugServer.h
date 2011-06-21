@@ -9,7 +9,8 @@
 #define	DEBUGSERVER_H
 
 #include <glib.h>
-
+#include <libb64/decode.h>
+#include <libb64/encode.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
 
 #include "DebugCommandExecutor.h"
@@ -60,6 +61,9 @@ private:
   /** hash map with all registered callback function  */
   std::map<std::string, DebugCommandExecutor*> executorMap;
   std::map<std::string, std::string> descriptionMap;
+
+  base64::Decoder base64Decoder;
+  base64::Encoder base64Encoder;
 
   void mainReader();
   void mainWriter();

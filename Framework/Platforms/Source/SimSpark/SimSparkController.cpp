@@ -13,10 +13,6 @@
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
 
-//#include "CommunicationCollectionImpl.h"
-//#include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/DebugModify.h"
-
 using namespace std;
 
 SimSparkController::SimSparkController()
@@ -43,6 +39,7 @@ SimSparkController::SimSparkController()
   registerInput<BatteryData>(*this);
   registerInput<VirtualVision>(*this);
   registerInput<TeamMessageData>(*this);
+  registerInput<GameData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -105,6 +102,7 @@ SimSparkController::SimSparkController()
   theCognitionInputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
 
+  theFrameInfo.basicTimeStep = getBasicTimeStep();
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   GError *err = NULL;
@@ -174,6 +172,9 @@ bool SimSparkController::connect(const std::string& host, int port)
 
 bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
 {
+  Platform::getInstance().init(this);
+  theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
+
   theTeamName = teamName;
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
@@ -194,7 +195,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   // initialize the teamname and number
   theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << theSync << send;
   // wait the response
-  while (theGameInfo.thePlayerNum == 0)
+  while (theGameData.playerNumber == 0)
   {
     updateSensors();
     theSocket << theSync << send;
@@ -203,32 +204,15 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   // calculate debug communicaiton port
   unsigned short debugPort = 5401;
-  if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_LEFT )
+  if (theGameData.teamColor == GameData::blue )
   {
-    debugPort = 5400 + theGameInfo.thePlayerNum;
-  } else if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_RIGHT)
+    debugPort = 5400 + theGameData.playerNumber;
+  } else if (theGameData.teamColor == GameData::red )
   {
-    debugPort = 5500 + theGameInfo.thePlayerNum;
+    debugPort = 5500 + theGameData.playerNumber;
   }
 
-  //Platform::getInstance().init(this, new SimSparkCommunicationCollection(debugPort,theGameInfo, theTeamComm));
-  
-  Platform::getInstance().init(this);
-
-
-  /*
-  if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_LEFT ){
-    thePlayerInfoInitializer.thePlayerInfo.teamColor = PlayerInfo::blue;
-    thePlayerInfoInitializer.thePlayerInfo.teamNumber = 1;
-  }
-  else if (theGameInfo.theTeamIndex == SimSparkGameInfo::TI_RIGHT ){
-    thePlayerInfoInitializer.thePlayerInfo.teamColor = PlayerInfo::red;
-    thePlayerInfoInitializer.thePlayerInfo.teamNumber = 2;
-  }
-  */
-
-  cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameInfo.thePlayerNum << endl;
-  theGameInfo.timeSincePlayModeChanged = 0;
+  cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
   return true;
@@ -351,7 +335,7 @@ bool SimSparkController::updateSensors()
     theFSRData.data[i] = 0;
   }
 
-  theGameInfo.timeSincePlayModeChanged += theStepTime*1000;
+  theFrameInfo.frameNumber++;
 
   while(sexp)
   {
@@ -378,6 +362,7 @@ bool SimSparkController::updateSensors()
       {
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
         theStepTime = theSenseTime - lastSenseTime;
+        theFrameInfo.time = static_cast<unsigned int>(theSenseTime * 1000.0);
         if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() )
           cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
       } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
@@ -683,10 +668,16 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     {
       if ("t" == name) // time
       {
-        if (!SexpParser::parseValue(t->next, theGameInfo.theGameTime))
+        double gameTime = 0;
+        if (!SexpParser::parseValue(t->next, gameTime))
         {
           ok = false;
           cerr << "SimSparkGameInfo::update failed get time value\n";
+        }
+        else
+        {
+          ASSERT(gameTime > 0);
+          theGameData.gameTime = static_cast<unsigned int>(gameTime)*1000;
         }
       } else if ("pm" == name) // play mode
       {
@@ -696,15 +687,16 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get play mode value\n";
         }
-        SimSparkGameInfo::PlayMode playMode = SimSparkGameInfo::getPlayModeByName(pm);
-        if ( theGameInfo.thePlayMode != playMode )
+        SimSparkGameInfo::PlayMode splayMode = SimSparkGameInfo::getPlayModeByName(pm);
+        GameData::PlayMode playMode = SimSparkGameInfo::covertPlayMode(splayMode, theGameData.teamColor);
+        if ( theGameData.playMode != playMode )
         {
-          theGameInfo.thePlayMode = playMode;
-          theGameInfo.timeSincePlayModeChanged = 0;
+          theGameData.playMode = playMode;
+          theGameData.timeWhenPlayModeChanged = theFrameInfo.time;
         }
       } else if ("unum" == name) // unum
       {
-        if (!SexpParser::parseValue(t->next, theGameInfo.thePlayerNum))
+        if (!SexpParser::parseValue(t->next, theGameData.playerNumber))
         {
           ok = false;
           cerr << "SimSparkGameInfo::update failed get unum value\n";
@@ -717,7 +709,8 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get team index value\n";
         }
-        theGameInfo.theTeamIndex = SimSparkGameInfo::getTeamIndexByName(team);
+        theGameData.teamColor = SimSparkGameInfo::getTeamColorByName(team);
+        theGameData.teamNumber = theGameData.teamColor;
       } else
       {
         ok = false;
@@ -731,6 +724,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     sexp = sexp->next;
   }
 
+  if ( ok ) theGameData.frameNumber = theFrameInfo.frameNumber;
   return ok;
 }//end updateGameInfo
 
@@ -867,9 +861,7 @@ bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
 
 void SimSparkController::get(FrameInfo& data)
 {
-  data.time = static_cast<unsigned int>(theSenseTime * 1000.0);
-  data.frameNumber++;
-  data.basicTimeStep = getBasicTimeStep();
+  data = theFrameInfo;
 }
 
 void SimSparkController::get(SensorJointData& data)
@@ -948,9 +940,9 @@ void SimSparkController::get(VirtualVision& data)
   data = theVirtualVision;
 }
 
-void SimSparkController::get(SimSparkGameInfo& data)
+void SimSparkController::get(GameData& data)
 {
-  data = theGameInfo;
+  data = theGameData;
 }
 
 void SimSparkController::updateInertialSensor()
@@ -1055,8 +1047,11 @@ void SimSparkController::get(CurrentCameraSettings& data)
 
 void SimSparkController::say()
 {
+  if ( theGameData.numOfPlayers == 0 )
+    return;
+
   // make sure all robot have chance to say something
-  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameInfo.numOfPlayers) +1 != theGameInfo.thePlayerNum )
+  if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
     return;
 
   string& msg = theRobotMessageData.data;
@@ -1070,7 +1065,8 @@ void SimSparkController::say()
       //      cout<<"Nr."<<static_cast<int>(thePlayerInfoInitializer.thePlayerInfo.playerNumber)<<" say @ "<<theSenseTime<<endl;
       theSocket << ("(say "+msg+")");
     }
-    msg = "";
+    msg.clear();
+    cout<<"msg = "<<msg<<endl;
   }
 }
 
@@ -1128,11 +1124,11 @@ void SimSparkController::autoBeam()
 
   //DEBUG_REQUEST("SimSparkController:beam", beam(););
 
-  if (theGameInfo.thePlayMode == SimSparkGameInfo::PM_GOAL_LEFT
-    || theGameInfo.thePlayMode == SimSparkGameInfo::PM_GOAL_RIGHT
-    || theGameInfo.thePlayMode == SimSparkGameInfo::PM_BEFORE_KICK_OFF)
+  if (theGameData.playMode == GameData::goal_own
+    || theGameData.playMode == GameData::goal_opp
+    || theGameData.playMode == GameData::before_kick_off)
   {
-    if ( theGameInfo.timeSincePlayModeChanged < 1000 )
+    if ( theFrameInfo.time - theGameData.timeWhenPlayModeChanged < 1000 )
     {
       const Configuration& cfg = Platform::getInstance().theConfiguration;
       string group = "PoseBeforeKickOff";
@@ -1143,13 +1139,13 @@ void SimSparkController::autoBeam()
       }
 
       stringstream key;
-      key<<"Player"<<theGameInfo.thePlayerNum<<".Pose.";
+      key<<"Player"<<theGameData.playerNumber<<".Pose.";
       string keyx = key.str()+"x";
       string keyy = key.str()+"y";
       string keyr = key.str()+"rot";
       if ( ! (cfg.hasKey(group, keyx) && cfg.hasKey(group, keyy) && cfg.hasKey(group, keyr)) )
       {
-        cerr<<"SimSparkController: can not beam, because configuration for Player "<<theGameInfo.thePlayerNum
+        cerr<<"SimSparkController: can not beam, because configuration for Player "<<theGameData.playerNumber
             <<" is misssing"<<endl;
         return;
       }

@@ -9,45 +9,24 @@
 #include <iostream>
 
 using namespace std;
+using namespace naoth;
 
 #define STR_TI_LEFT "left"
 #define STR_TI_RIGHT "right"
-#define STR_TI_NULL "unknown"
+#define LEFT_TEAM_COLOR GameData::blue
+#define RIGHT_TEAM_COLOR GameData::red
 
-SimSparkGameInfo::TeamIndex SimSparkGameInfo::getTeamIndexByName(const string& name)
-    {
-        if (name == STR_TI_LEFT)
-            return TI_LEFT;
-        if (name == STR_TI_RIGHT)
-            return TI_RIGHT;
-        return TI_NULL;
-}
-
-string SimSparkGameInfo::getTeamIndexName(SimSparkGameInfo::TeamIndex ti)
+GameData::TeamColor SimSparkGameInfo::getTeamColorByName(const string& name)
 {
-  switch (ti) {
-  case TI_LEFT:
-    return STR_TI_LEFT;
-  case TI_RIGHT:
-    return STR_TI_RIGHT;
-  default:
-    return STR_TI_NULL;
+  if ( name == STR_TI_LEFT )
+  {
+    return LEFT_TEAM_COLOR;
   }
-}
-
-SimSparkGameInfo::SimSparkGameInfo() :
-theGameTime(0),
-thePlayMode(numOfPlayMode),
-timeSincePlayModeChanged(0),
-thePlayerNum(0),
-theTeamIndex(TI_NULL),
-halfTime(5 * 60), // 5 minutes
-numOfPlayers(9)
-{
-}
-
-SimSparkGameInfo::~SimSparkGameInfo()
-{
+  else if ( name == STR_TI_RIGHT )
+  {
+    return RIGHT_TEAM_COLOR;
+  }
+  return GameData::numOfTeamColor;
 }
 
 /** mapping from PlayMode to string constants */
@@ -148,5 +127,46 @@ string SimSparkGameInfo::getPlayModeName(SimSparkGameInfo::PlayMode pm)
   case PM_FREE_KICK_RIGHT:
     return STR_PM_FREE_KICK_RIGHT;
   default: return STR_PM_UNKNOWN;
+  }
+}
+
+GameData::PlayMode SimSparkGameInfo::covertPlayMode(PlayMode pm, naoth::GameData::TeamColor team)
+{
+  switch (pm) {
+  case PM_BEFORE_KICK_OFF:
+    return GameData::before_kick_off;
+  case PM_KICK_OFF_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::kick_in_own : GameData::kick_off_opp;
+  case PM_KICK_OFF_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::kick_in_own : GameData::kick_off_opp;
+  case PM_PLAY_ON:
+    return GameData::play_on;
+  case PM_KICK_IN_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::kick_in_own : GameData::kick_in_opp;
+  case PM_KICK_IN_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::kick_in_own : GameData::kick_in_opp;
+  case PM_CORNER_KICK_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::corner_kick_own : GameData::corner_kick_opp;
+  case PM_CORNER_KICK_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::corner_kick_own : GameData::corner_kick_opp;
+  case PM_GOAL_KICK_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::goal_kick_own : GameData::goal_kick_opp;
+  case PM_GOAL_KICK_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::goal_kick_own : GameData::goal_kick_opp;
+  case PM_OFFSIDE_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::offside_own : GameData::offside_opp;
+  case PM_OFFSIDE_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::offside_own : GameData::offside_opp;
+  case PM_GAME_OVER:
+    return GameData::game_over;
+  case PM_GOAL_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::goal_own : GameData::goal_opp;
+  case PM_GOAL_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::goal_own : GameData::goal_opp;
+  case PM_FREE_KICK_LEFT:
+    return team==LEFT_TEAM_COLOR ? GameData::free_kick_own : GameData::free_kick_opp;
+  case PM_FREE_KICK_RIGHT:
+    return team==RIGHT_TEAM_COLOR ? GameData::free_kick_own : GameData::free_kick_opp;
+  default: return GameData::numOfPlayMode;
   }
 }

@@ -73,11 +73,11 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     {
       const string& fileName = pIter->second;
 
-      map<string, string>::const_iterator cIter = arguments.find("+content");
+      map<string, string>::const_iterator cIter = arguments.find("content");
       if (cIter != arguments.end() )
       {
         const string& str = cIter->second;
-
+        int tmp = str.size();
         if(SynchronizedFileWriter::saveStringToFile(str, fileName))
           outstream << fileName << " successfull written.";
         else

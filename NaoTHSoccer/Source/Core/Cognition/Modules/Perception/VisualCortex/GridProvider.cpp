@@ -7,7 +7,11 @@
 
 #include "GridProvider.h"
 
+// Debug
 #include "Tools/Debug/DebugRequest.h"
+//#include "Tools/Debug/DebugImageDrawings.h"
+#include <Tools/Debug/Stopwatch.h>
+
 
 GridProvider::GridProvider()
 {
@@ -67,6 +71,8 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
       currentPixelColor == ColorClasses::green ||
       currentPixelColor == ColorClasses::orange ||
       currentPixelColor == ColorClasses::skyblue ||
+      currentPixelColor == ColorClasses::blue ||
+      currentPixelColor == ColorClasses::red ||
       currentPixelColor == ColorClasses::yellow
     )
     {
