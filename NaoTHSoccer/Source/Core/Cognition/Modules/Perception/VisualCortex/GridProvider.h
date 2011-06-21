@@ -10,11 +10,6 @@
 
 #include <ModuleFramework/Module.h>
 
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/DebugImageDrawings.h"
-#include <Tools/Debug/Stopwatch.h>
-
 //Tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
