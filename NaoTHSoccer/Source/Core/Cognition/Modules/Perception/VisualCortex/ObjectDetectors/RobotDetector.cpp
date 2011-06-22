@@ -30,14 +30,7 @@ RobotDetector::RobotDetector()
     blueColors[n] = false;
   }
   blueColors[ColorClasses::blue] = true;
-  blueColors[ColorClasses::skyblue] = true;
   //red and blue:
-  for (int n = 0; n < ColorClasses::numOfColors; n++)
-  {
-    searchColors[n] = false;
-  }
-  searchColors[ColorClasses::red] = true;
-  searchColors[ColorClasses::blue] = true;
   
   blueMarkers.reserve(MAX_MARKER_NUMBER);
   redMarkers.reserve(MAX_MARKER_NUMBER);
@@ -45,23 +38,22 @@ RobotDetector::RobotDetector()
   resolutionHeight = getImage().cameraInfo.resolutionHeight;
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_blobs", "draw the blobs", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_poly", "draw marker's polygon", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_poly_params", "draw marker's polygon parameters", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_scanlines_marker", "draw marker scanlines", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_scanlines_robot", "draw robot scanlines", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_search_region", "draw blob search region", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_point_on_field", "draw the lowest robot's point", false);
 }
 
 void RobotDetector::execute()
 {  
-  searchArea.clear();
   blueBlobs.reset();
   redBlobs.reset();
   getPlayersPercept().reset();
   blueMarkers.clear();
   redMarkers.clear();
   //estimate the search region
+  //we don't use it in current project
+  /*
   Vector2<int> p1(getCameraMatrix().horizon.begin());
   Vector2<int> p2(getCameraMatrix().horizon.end());
   if (p1.x < 0)
@@ -81,11 +73,12 @@ void RobotDetector::execute()
     IMAGE_DRAWING_CONTEXT;
   RECT_PX(ColorClasses::yellow, searchArea.points[0].x, searchArea.points[0].y, searchArea.points[2].x, searchArea.points[2].y);
   );
+  */
   detectRobotMarkers();
   detectRobots();
 }
 
-void RobotDetector::detectRobots()
+inline void RobotDetector::detectRobots()
 {
   for (std::vector<Marker>::const_iterator  iter = blueMarkers.begin(); iter != blueMarkers.end(); ++iter)
   {
@@ -105,30 +98,19 @@ void RobotDetector::detectRobots()
       {
         lowestPoint.y += stepSize;
       }
-      //is the robot standing? 
-      bool standing = ((marker.angle >= 0.0f && marker.angle <= 0.5f) || (marker.angle >= Math::pi - 0.5f && marker.angle <= Math::pi)) ? true : false;
       //estimate the position of the robot based on lowest point
       Vector2<double> positon;
-      Vector2<double> angleTo;
       Geometry::imagePixelToFieldCoord(getCameraMatrix(), getImage().cameraInfo, lowestPoint.x, lowestPoint.y, 0.0, positon);
-      angleTo = Geometry::angleToPointInImage(getCameraMatrix(), getImage().cameraInfo, marker.cog.x, marker.cog.y);
       player.pose.translation = positon;
-      player.angleTo = angleTo;
-      player.isStanding = standing;
+      player.angleTo = Geometry::angleToPointInImage(getCameraMatrix(), getImage().cameraInfo, marker.cog.x, marker.cog.y);
+      player.isStanding = ((marker.angle >= 0.0f && marker.angle <= 0.5f) || (marker.angle >= Math::pi - 0.5f && marker.angle <= Math::pi)) ? true : false;
       player.teamColor = marker.color;
+      player.poseValid = exactLocalisation(getImage(), lowestPoint) ? true : false;
       //add robot into playersPercept
-      //if the lowest point lies over the imageboundaries
-      if (exactLocalisation(getImage(), lowestPoint))
-      {
-        getPlayersPercept().addPlayer(player);
-      }
-      else
-      {
-        getPlayersPercept().addUnlocalizedPlayer(player);
-      }
+      getPlayersPercept().addPlayer(player);
       
       //debug
-      DEBUG_REQUEST("RobotDetector:draw_point_on_field",
+      DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_point_on_field",
         RECT_PX(ColorClasses::green, lowestPoint.x-2,lowestPoint.y-2,lowestPoint.x+2,lowestPoint.y+2);
         POINT_PX(ColorClasses::yellow, lowestPoint.x, lowestPoint.y);
         );
@@ -136,7 +118,7 @@ void RobotDetector::detectRobots()
   }
 }
 
-void RobotDetector::detectRobotMarkers()
+inline void RobotDetector::detectRobotMarkers()
 {
   findBlobs();
   for (int i = 0; i < blueBlobs.blobNumber; i++)
@@ -163,7 +145,7 @@ void RobotDetector::detectRobotMarkers()
   }
 }//end detectRobotMarkers
 
-bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
+inline bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
 {
   bool result = true;
   drawScanLinesRobot = false;
@@ -186,19 +168,17 @@ bool RobotDetector::evaluateMarkerEnvironment(Marker& marker)
 
   //check the marker's environment below the marker
   Vector2<int> leftDown = left + marker.minorAxis*4;
-  Vector2<int> middleDown = marker.cog + marker.minorAxis*2;
   Vector2<int> rightDown = right + marker.minorAxis*4;
   int whitePixelsBelow = 0;
   int totalPixelsBelow = 0;
   totalPixelsBelow += scanline(getImage(), getColorTable64(), ColorClasses::white, left+marker.minorAxis, leftDown, whitePixelsBelow, drawScanLinesRobot);
-  totalPixelsBelow += scanline(getImage(), getColorTable64(), ColorClasses::white, middle+marker.minorAxis, middleDown, whitePixelsBelow, drawScanLinesRobot);
   totalPixelsBelow += scanline(getImage(), getColorTable64(), ColorClasses::white, right+marker.minorAxis, rightDown, whitePixelsBelow, drawScanLinesRobot);
   double belowWhiteRatio = (double)whitePixelsBelow/(double)totalPixelsBelow;  
   result = (belowWhiteRatio > BELOW_WHITE_RATIO && aboveWhiteRatio > ABOVE_WHITE_RATIO) ? true : false;
   return result;
 }//end evaluateMarkerEnvironment
 
-void RobotDetector::findBlobs()
+inline void RobotDetector::findBlobs()
 {  
   //start finding the blobs
   STOPWATCH_START("RobotDetector: find blobs");
@@ -230,7 +210,7 @@ void RobotDetector::findBlobs()
     );//end debug
 }// end findBlobs
 
-void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color color)
+inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color color)
 {
   drawScanLinesMarker = false;
   DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_scanlines_marker",
@@ -264,43 +244,22 @@ void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color color)
   //scan in all directions
   //TODO: make functions
 
-  scanLine(cog, up, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  firstPoint = Point;
-  scanLine(cog, upUpRight, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, upRight, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, upRightRight, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, right, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, downRightRight, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, downRight, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, downDownRight, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, down, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, downDownLeft, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, downLeft, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, downLeftLeft, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, left, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, upLeftLeft, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, upLeft, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-  scanLine(cog, upUpLeft, 4, color, Point, drawScanLinesMarker);
-  marker.polygon.add(Point);
-
-  //add the firstPoint to complete the Polygon
-  marker.polygon.add(firstPoint);
-
+  scanLine(cog, up, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upUpRight, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upRight, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upRightRight, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, right, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downRightRight, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downRight, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downDownRight, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, down, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downDownLeft, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downLeft, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, downLeftLeft, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, left, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upLeftLeft, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upLeft, 4, color, Point, drawScanLinesMarker, marker);
+  scanLine(cog, upUpLeft, 4, color, Point, drawScanLinesMarker, marker);
   //add the color
   if (color == ColorClasses::blue)
   {
@@ -320,39 +279,14 @@ void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color color)
     if(color == ColorClasses::red)
     redMarkers.push_back(marker);
   }
-  
   STOPWATCH_STOP("RobotDetector:find poly");
-  DEBUG_REQUEST("RobotDetector:draw_poly",
-              IMAGE_DRAWING_CONTEXT;
-  for (std::vector<Marker>::const_iterator iter = blueMarkers.begin(); iter != blueMarkers.end(); ++iter)
-  {
-    Vector2<int> p1 = iter->polygon.points[0];
-    for (int i = 1; i < iter->polygon.length; i++)
-    {
-      Vector2<int> p2 = iter->polygon.points[i];
-      LINE_PX(ColorClasses::white, p1.x, p1.y, p2.x, p2.y);
-      p1 = p2;
-    }//end for
-  }//end for
-  for (std::vector<Marker>::const_iterator iter = redMarkers.begin(); iter != redMarkers.end(); ++iter)
-  {
-    Vector2<int> p1 = iter->polygon.points[0];
-    for (int i = 1; i < iter->polygon.length; i++)
-    {
-      Vector2<int> p2 = iter->polygon.points[i];
-      LINE_PX(ColorClasses::white, p1.x, p1.y, p2.x, p2.y);
-      p1 = p2;
-    }//end for
-  }//end for
-  );//end debug
 }//end findmarkerpoly
 
 
 //check marker's properties
-bool RobotDetector::checkMarkerPoly(Marker& marker)
+inline bool RobotDetector::checkMarkerPoly(Marker& marker)
 {
   STOPWATCH_START("RobotDetector: check poly params");
-
   bool result;
   // get the marker's area
   estimateArea(marker);
@@ -368,7 +302,6 @@ bool RobotDetector::checkMarkerPoly(Marker& marker)
     // his parameters
     
     estimateMoments(marker);
-    STOPWATCH_STOP("RobotDetector: check poly params");
 
     result = true;
     if (1.5 < marker.eccentricity && marker.eccentricity < 13)
@@ -379,89 +312,133 @@ bool RobotDetector::checkMarkerPoly(Marker& marker)
     {
       result = false;
     }
-    // debug
-    DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_poly_params",
-      POINT_PX(ColorClasses::yellow, (int)marker.cog.x, (int)marker.cog.y);
-      LINE_PX(ColorClasses::gray,(int)(marker.cog.x - marker.majorAxis.x), (int)(marker.cog.y - marker.majorAxis.y), (int)(marker.cog.x + marker.majorAxis.x), (int)(marker.cog.y + marker.majorAxis.y));
-      LINE_PX(ColorClasses::black,(int)(marker.cog.x - marker.minorAxis.x), (int)(marker.cog.y - marker.minorAxis.y), (int)(marker.cog.x + marker.minorAxis.x), (int)(marker.cog.y + marker.minorAxis.y));
-
-    );//end debug
   }
+  STOPWATCH_STOP("RobotDetector: check poly params");
+  // debug
+  DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_poly_params",
+    POINT_PX(ColorClasses::yellow, (int)marker.cog.x, (int)marker.cog.y);
+  LINE_PX(ColorClasses::gray,(int)(marker.cog.x - marker.majorAxis.x), (int)(marker.cog.y - marker.majorAxis.y), (int)(marker.cog.x + marker.majorAxis.x), (int)(marker.cog.y + marker.majorAxis.y));
+  LINE_PX(ColorClasses::black,(int)(marker.cog.x - marker.minorAxis.x), (int)(marker.cog.y - marker.minorAxis.y), (int)(marker.cog.x + marker.minorAxis.x), (int)(marker.cog.y + marker.minorAxis.y));
+  );//end debug
   return result;
 }//end checkMarkerPoly
 
 //help functions
 //to validate the polygon
 
-void RobotDetector::estimateArea(Marker& marker)
+inline void RobotDetector::estimateArea(Marker& marker)
 {
-  int area = 0;
-  for (int n = 1; n <= marker.polygon.length; n++)
-  {
-    area += (marker.polygon.points[n-1].x * marker.polygon.points[n].y - 
-            marker.polygon.points[n].x * marker.polygon.points[n-1].y);
-  }
-  marker.area = abs(area/2);
+//   int area = 0;
+//   for (int n = 1; n <= marker.polygon.length; n++)
+//   {
+//     area += (marker.polygon.points[n-1].x * marker.polygon.points[n].y - 
+//             marker.polygon.points[n].x * marker.polygon.points[n-1].y);
+//   }
+  marker.area = marker.moments.getRawMoment(0,0);
 }
 
-void RobotDetector::estimateMoments(Marker& marker)
+inline void RobotDetector::estimateMoments(Marker& marker)
 {
-  int tempValue = 0;
-  double normalizedMoment10 = 0;
-  double normalizedMoment01 = 0;
-  double normalizedMoment20 = 0;
-  double normalizedMoment02 = 0;
-  double normalizedMoment11 = 0;
-  
-  for (int n = 1; n <= marker.polygon.length; n++)
-  {
-    int xi_1 = marker.polygon.points[n-1].x;
-    int xi = marker.polygon.points[n].x;
-    int yi_1 = marker.polygon.points[n-1].y;
-    int yi = marker.polygon.points[n].y;
+  double u20 = marker.moments.getCentralMoment(2, 0);
+  double u02 = marker.moments.getCentralMoment(0, 2);
+  double u11 = marker.moments.getCentralMoment(1, 1);
+  double u00 = marker.moments.getRawMoment(0, 0);
 
-    tempValue = (xi_1 * yi - xi * yi_1);
-    normalizedMoment10 += ((tempValue) * (xi_1 + xi));
-    normalizedMoment01 += ((tempValue) * (yi_1 + yi));
-    normalizedMoment20 += ((tempValue) * (xi_1 * xi_1 + xi_1 * xi + xi * xi));
-    normalizedMoment02 += ((tempValue) * (yi_1 * yi_1 + yi_1 * yi + yi * yi));
-    normalizedMoment11 += ((tempValue) * (2*xi_1*yi_1 + xi_1*yi + xi*yi_1 + 2*xi*yi)); 
-  }
-  normalizedMoment10 = normalizedMoment10/(6*marker.area);
-  normalizedMoment01 = normalizedMoment01/(6*marker.area);
-  normalizedMoment20 = normalizedMoment20/(12*marker.area);
-  normalizedMoment02 = normalizedMoment02/(12*marker.area);
-  normalizedMoment11 = normalizedMoment11/(24*marker.area);
+  marker.cog = marker.moments.getCentroid();
 
-  double centralMoment20 = (normalizedMoment20 - normalizedMoment10 * normalizedMoment10);
-  double centralMoment02 = (normalizedMoment02 - normalizedMoment01 * normalizedMoment01);
-  double centralMoment11 = (normalizedMoment11 - normalizedMoment10 * normalizedMoment01);
+  //if no pixel was added to the distribution
+  //no axes can be calculated
+  if(u00==0) return;
 
-  double sum = (centralMoment20 + centralMoment02);
-  double diff = (centralMoment20 - centralMoment02);
-  double eccroot = sqrt(diff*diff + 4*centralMoment11*centralMoment11);
+  //the covariance Matrix of the pixel distribution is defined as
+  // u20/u00   u11/u00
+  // u11/u00   u02/u00
 
-  double largerEigenValue = sum + eccroot;
-  double smallerEigenValue = sum - eccroot;
+  //calculate the elements of this matrix
+  double us20=u20/u00;
+  double us02=u02/u00;
+  double us11=u11/u00;
 
-  marker.eccentricity = largerEigenValue/smallerEigenValue;
+  //determine the larger eigenvalue of this matrix
+  double l1=(us20+us02) + sqrt(4*us11*us11+(us20-us02)*(us20-us02));
+  //determine the smaller eigenvalue of this matrix
+  double l2=(us20+us02) - sqrt(4*us11*us11+(us20-us02)*(us20-us02));
 
-  marker.cog.x = normalizedMoment10;
-  marker.cog.y = normalizedMoment01;
+  marker.eccentricity = l1/l2;
 
-  marker.angle = 0.5*atan2(2*centralMoment11, centralMoment20-centralMoment02);
-  
-  marker.majorAxis.x = cos(marker.angle);
-  marker.majorAxis.y = sin(marker.angle);
+  //calculate the angle theta of the unit eigenvector associated 
+  //with the largest eigenvalue
+  marker.angle = 0.5*atan2(2 * us11, us20 - us02);
+
+  //calculate the unit vector with angle theta
+  marker.majorAxis.x=cos(marker.angle);
+  marker.majorAxis.y=sin(marker.angle);
+
+  //calculate the unit vector with angle theta+pi/2
   marker.minorAxis.x = -marker.majorAxis.y;
-  marker.minorAxis.y = marker.majorAxis.x;
+  marker.minorAxis.y =  marker.majorAxis.x;
 
-  //scale the axes
-  marker.majorAxis *= sqrt(largerEigenValue);
-  marker.minorAxis *= sqrt(smallerEigenValue);
+  //scale the axes with the square root of their corresponding eigenvalues
+  //i.e. the standard deviation along those axes
+  marker.majorAxis*=sqrt(l1);
+  marker.minorAxis*=sqrt(l2);
+
+//   int tempValue = 0;
+//   double normalizedMoment10 = 0;
+//   double normalizedMoment01 = 0;
+//   double normalizedMoment20 = 0;
+//   double normalizedMoment02 = 0;
+//   double normalizedMoment11 = 0;
+//   
+//   for (int n = 1; n <= marker.polygon.length; n++)
+//   {
+//     int xi_1 = marker.polygon.points[n-1].x;
+//     int xi = marker.polygon.points[n].x;
+//     int yi_1 = marker.polygon.points[n-1].y;
+//     int yi = marker.polygon.points[n].y;
+// 
+//     tempValue = (xi_1 * yi - xi * yi_1);
+//     normalizedMoment10 += ((tempValue) * (xi_1 + xi));
+//     normalizedMoment01 += ((tempValue) * (yi_1 + yi));
+//     normalizedMoment20 += ((tempValue) * (xi_1 * xi_1 + xi_1 * xi + xi * xi));
+//     normalizedMoment02 += ((tempValue) * (yi_1 * yi_1 + yi_1 * yi + yi * yi));
+//     normalizedMoment11 += ((tempValue) * (2*xi_1*yi_1 + xi_1*yi + xi*yi_1 + 2*xi*yi)); 
+//   }
+//   normalizedMoment10 = normalizedMoment10/(6*marker.area);
+//   normalizedMoment01 = normalizedMoment01/(6*marker.area);
+//   normalizedMoment20 = normalizedMoment20/(12*marker.area);
+//   normalizedMoment02 = normalizedMoment02/(12*marker.area);
+//   normalizedMoment11 = normalizedMoment11/(24*marker.area);
+// 
+//   double centralMoment20 = (normalizedMoment20 - normalizedMoment10 * normalizedMoment10);
+//   double centralMoment02 = (normalizedMoment02 - normalizedMoment01 * normalizedMoment01);
+//   double centralMoment11 = (normalizedMoment11 - normalizedMoment10 * normalizedMoment01);
+// 
+//   double sum = (centralMoment20 + centralMoment02);
+//   double diff = (centralMoment20 - centralMoment02);
+//   double eccroot = sqrt(diff*diff + 4*centralMoment11*centralMoment11);
+// 
+//   double largerEigenValue = sum + eccroot;
+//   double smallerEigenValue = sum - eccroot;
+// 
+//   marker.eccentricity = largerEigenValue/smallerEigenValue;
+// 
+//   marker.cog.x = normalizedMoment10;
+//   marker.cog.y = normalizedMoment01;
+// 
+//   marker.angle = 0.5*atan2(2*centralMoment11, centralMoment20-centralMoment02);
+//   
+//   marker.majorAxis.x = cos(marker.angle);
+//   marker.majorAxis.y = sin(marker.angle);
+//   marker.minorAxis.x = -marker.majorAxis.y;
+//   marker.minorAxis.y = marker.majorAxis.x;
+// 
+//   //scale the axes
+//   marker.majorAxis *= sqrt(largerEigenValue);
+//   marker.minorAxis *= sqrt(smallerEigenValue);
 }
 
-double RobotDetector::findGreenRatio(int yCoord, int xStart, int xEnd, int stepSize)
+inline double RobotDetector::findGreenRatio(int yCoord, int xStart, int xEnd, int stepSize)
 {
   const double numberOfPixels(double(xEnd - xStart)/stepSize);
   int greenColor(0);
@@ -479,7 +456,9 @@ double RobotDetector::findGreenRatio(int yCoord, int xStart, int xEnd, int stepS
 
 // scan section
 
-void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction, int maxColorPointsToSkip, ColorClasses::Color searchColor, Vector2<int>& point, bool draw)
+inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction, 
+                             int maxColorPointsToSkip, ColorClasses::Color searchColor, 
+                             Vector2<int>& point, bool draw, Marker& marker)
 {
   Vector2<int> currentPoint(start);  //set the starting point
   int searchColorPointsSkipIndex(0);  //reset number of skipped pixels
@@ -514,6 +493,7 @@ void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction, int ma
     borderPoint = currentPoint;
     searchColorPointsSkipIndex = 0;
     borderPointFound = true;
+    marker.moments.add(currentPoint);
   }//end else
   else
   {
@@ -549,15 +529,13 @@ if(borderPointFound) //if a point was found ...
 
 
 //check whether a point is in the image
-bool RobotDetector::pixelInSearchArea(Vector2<int>& pixel)
+inline bool RobotDetector::pixelInSearchArea(Vector2<int>& pixel)
   {
-  return (pixel.x >= searchArea[0].x && pixel.y >= searchArea[0].y 
-    &&(unsigned int)pixel.x<resolutionWidth &&
-    (unsigned int)pixel.y<resolutionHeight);
+  return searchArea.isInside(pixel);
   }//end pixelInImage
 
 
-bool RobotDetector::isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor)
+inline bool RobotDetector::isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor)
 {
   if(color == searchColor)
   {
