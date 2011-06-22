@@ -36,8 +36,6 @@ public:
     naothData.open(naothpath);
   }
 
-  virtual string getHardwareIdentity() const { return getMACaddress("eth0");}
-
   virtual string getBodyID() const { return libNaothDataReading->getBodyID(); }
 
   virtual string getBodyNickName() const { return libNaothDataReading->getBodyID(); }

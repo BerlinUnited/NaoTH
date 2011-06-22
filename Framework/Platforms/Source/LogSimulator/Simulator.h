@@ -44,8 +44,6 @@ public:
   Simulator(const char* filePath, bool compatibleMode, bool backendMode);
   ~Simulator();
 
-  virtual string getHardwareIdentity() const { return "logsimulator"; }
-
   virtual string getBodyID() const { return "naoth-logsimulator"; }
 
   virtual string getBodyNickName() const {return "naoth"; }

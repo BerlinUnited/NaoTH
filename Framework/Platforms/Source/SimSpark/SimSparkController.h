@@ -91,8 +91,6 @@ public:
 
   virtual ~SimSparkController();
 
-  virtual string getHardwareIdentity() const { return "simspark"; }
-
   virtual string getBodyID() const;
 
   virtual string getBodyNickName() const;
