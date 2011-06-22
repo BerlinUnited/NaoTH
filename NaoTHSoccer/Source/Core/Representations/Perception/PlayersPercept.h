@@ -25,10 +25,17 @@ public:
   {
   public:
 
-    Player() : poseRotationValid(false), teamColorIsValid(false), numberIsValid(false),isStanding(false)
+    Player() 
+      : 
+    poseValid(false),
+    poseRotationValid(false), 
+    teamColorIsValid(false), 
+    numberIsValid(false),
+    isStanding(false)
     {}
 
     Pose2D pose;
+    bool poseValid;
     bool poseRotationValid;
     GameData::TeamColor teamColor;
     bool teamColorIsValid;
@@ -44,8 +51,7 @@ public:
 
   /** list of seen players */
   std::list<Player> playersList;
-  /** list of unlocalized players */
-  std::list<Player> unlocalizedPlayers;
+ 
   FrameInfo theFrameInfo;
 
   void addPlayer(const Player& player)
@@ -53,23 +59,17 @@ public:
     playersList.push_back(player);
 	}//end add
 
-  void addUnlocalizedPlayer(const Player& player)
-  {
-    unlocalizedPlayers.push_back(player);
-  }
-
   /* reset percept */
   void reset()
   {
     playersList.clear();
-    unlocalizedPlayers.clear();
   }//end reset
 
   virtual void print(ostream& stream) const
   {
     for(std::list<Player>::const_iterator iter=playersList.begin(); iter!=playersList.end(); ++iter)
     {
-      stream << GameData::teamColorToString(iter->teamColor) <<" : "<< iter->pose<< '\n';
+      stream << GameData::teamColorToString(iter->teamColor)<<" : "<<iter->poseValid<<" : "<< iter->pose<<" : "<<iter->angleTo<<'\n';
     }
   }//end print
 
@@ -93,12 +93,9 @@ public:
       {
         PEN("FF00FF", 20);
       }
-
       ROBOT(iter->pose.translation.x, iter->pose.translation.y, iter->pose.rotation);
-
     }
   }
-
 };
 
 #endif //__PlayersPercept_h_
