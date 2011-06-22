@@ -1066,7 +1066,6 @@ void SimSparkController::say()
       theSocket << ("(say "+msg+")");
     }
     msg.clear();
-    cout<<"msg = "<<msg<<endl;
   }
 }
 
