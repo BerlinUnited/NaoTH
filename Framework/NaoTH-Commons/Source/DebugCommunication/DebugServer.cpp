@@ -16,9 +16,10 @@
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
-  : frameEnded(false)
+  : frameEnded(false), abort(false)
 {
   m_executing = g_mutex_new();
+  m_abort = g_mutex_new();
 
   commands = g_async_queue_new();
   answers = g_async_queue_new();
@@ -59,31 +60,41 @@ void DebugServer::mainReader()
   g_debug("Starting DebugServer reader loop");
   while (true)
   {
+    g_mutex_lock(m_abort);
+    if(abort)
+    {
+      g_mutex_unlock(m_abort);
+      break;
+    }
+    g_mutex_unlock(m_abort);
+
     if(!comm.isConnected())
     {
-      // connect again, wait until connction is etablished
-      comm.connect(true);
+      // connect again, wait max 1 second until connection is etablished
+      comm.connect(1);
     }
 
-    char* msg = comm.readMessage();
-
-    if (msg == NULL)
+    if(comm.isConnected())
     {
-      // error occured, clear all queues
+      char* msg = comm.readMessage();
 
-      // stop executing (so it's not messing up with our queues)
-      g_mutex_lock(m_executing);
-      clearBothQueues();
-      g_mutex_unlock(m_executing);
+      if (msg == NULL)
+      {
+        // error occured, clear all queues
 
-      // all commands are "answered", disconnect
-      comm.disconnect();
-    }
-    else
-    {
-      g_async_queue_push(commands, msg);
-    }
+        // stop executing (so it's not messing up with our queues)
+        g_mutex_lock(m_executing);
+        clearBothQueues();
+        g_mutex_unlock(m_executing);
 
+        // all commands are "answered", disconnect
+        comm.disconnect();
+      }
+      else
+      {
+        g_async_queue_push(commands, msg);
+      }
+    } // end if connected
     // always give other thread the possibility to gain control before entering
     // the loop again
     g_thread_yield();
@@ -101,16 +112,30 @@ void DebugServer::mainWriter()
   g_debug("Starting DebugServer writer loop");
   while (true)
   {
-    // wait for an answer
-    GString* answer = (GString*) g_async_queue_pop(answers);
-
-    bool success = comm.sendMessage(answer->str, answer->len+1);
-    if(!success)
+    g_mutex_lock(m_abort);
+    if(abort)
     {
-      g_warning("could not send message");
+      g_mutex_unlock(m_abort);
+      break;
     }
+    g_mutex_unlock(m_abort);
 
-    g_string_free(answer, true);
+    // wait for an answer
+    GTimeVal t;
+    g_get_current_time(&t);
+    g_time_val_add(&t, 1000*1000); // one second
+    GString* answer = (GString*) g_async_queue_timed_pop(answers, &t);
+
+    if(answer != NULL)
+    {
+      bool success = comm.sendMessage(answer->str, answer->len+1);
+      if(!success)
+      {
+        g_warning("could not send message");
+      }
+
+      g_string_free(answer, true);
+    } // end if answer != NULL
 
     // always give other thread the possibility to gain control before entering
     // the loop again
@@ -378,11 +403,25 @@ void* DebugServer::writer_static(void* ref)
 
 DebugServer::~DebugServer()
 {
+  g_mutex_lock(m_abort);
+  abort = true;
+  g_mutex_unlock(m_abort);
+
+  // HACK: use a kind of shutdown function here (not disconnect...)
+  comm.fatalFail = true;
+
+  g_thread_join(readerThread);
+  g_thread_join(writerThread);
+
+  comm.disconnect();
+
   g_mutex_free(m_executing);
+  g_mutex_free(m_abort);
 
   g_free(readerThread);
   g_free(writerThread);
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
+
 }
 

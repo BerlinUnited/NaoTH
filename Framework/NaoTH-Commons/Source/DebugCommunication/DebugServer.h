@@ -57,6 +57,7 @@ private:
   GAsyncQueue* answers;
 
   GMutex* m_executing;
+  GMutex* m_abort;
 
   /** hash map with all registered callback function  */
   std::map<std::string, DebugCommandExecutor*> executorMap;
@@ -66,6 +67,7 @@ private:
   base64::Encoder base64Encoder;
 
   bool frameEnded;
+  bool abort;
 
   void mainReader();
   void mainWriter();
