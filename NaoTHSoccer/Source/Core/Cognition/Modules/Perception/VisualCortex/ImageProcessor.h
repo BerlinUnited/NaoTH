@@ -20,6 +20,11 @@
 
 // submodules
 #include "ObjectDetectors/BallDetector.h"
+#include "ObjectDetectors/LineDetector.h"
+#include "ObjectDetectors/ScanLineEdgelDetector.h"
+#include "ObjectDetectors/RobotDetector.h"
+#include "ObjectDetectors/GoalDetector.h"
+
 
 // Representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -28,8 +33,9 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 //#include "Representations/Perception/BlobPercept.h"
-//#include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 
 
@@ -43,6 +49,9 @@ BEGIN_DECLARE_MODULE(ImageProcessor)
   REQUIRE(FieldInfo)
 
   PROVIDE(BallPercept)
+  PROVIDE(PlayersPercept)
+  PROVIDE(LinePercept)
+  PROVIDE(ScanLineEdgelPercept)
 END_DECLARE_MODULE(ImageProcessor)
 
 class ImageProcessor: private ImageProcessorBase, private ModuleManager
@@ -55,6 +64,10 @@ public:
 
 private:
   ModuleCreator<BallDetector>* theBallDetector;
+  ModuleCreator<RobotDetector>* theRobotDetector;
+  ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
+  ModuleCreator<LineDetector>* theLineDetector;
+  ModuleCreator<GoalDetector>* theGoalDetector;
 };//end class ImageProcessor
 
 #endif // __ImageProcessor_H_

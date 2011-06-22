@@ -57,7 +57,7 @@ public:
   * Each element in the array contains the color class of a 4x4x4 cube in the color space.
   */
 
-  bool loadFromFile(std::string fileName);
+  bool loadFromFile(const std::string& fileName);
 
 private:
   static const unsigned int colorTableLength = 64 * 64 * 64;

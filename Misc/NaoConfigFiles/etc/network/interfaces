@@ -1,0 +1,19 @@
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+     address ETH_ADDR
+     network ETH_NET
+     netmask 255.255.255.0
+#     gateway ETH_GATE
+
+auto wlan0
+iface wlan0 inet static
+     address WLAN_ADDR
+     network WLAN_NET
+     netmask 255.255.255.0
+#     gateway WLAN_GATE
+     
+

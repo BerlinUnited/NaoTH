@@ -37,8 +37,9 @@ message TeamCommMessage {
   optional DoubleVector2 ballPosition = 6;
   optional Pose2D positionOnField = 7;
   optional PlayerModel opponent = 8;
+  optional bool isFallenDown = 9 [default=false];
+  optional double timeToBall = 10;
 }
-
 
 // pure RC messages //
 

@@ -94,16 +94,17 @@ CoMFeetPose InverseKinematicsMotionEngine::getCurrentCoMFeetPose() const
 
 ZMPFeetPose InverseKinematicsMotionEngine::getPlannedZMPFeetPose() const
 {
-  if ( thePreviewController.ready() )
-  {
-    return theZMPFeetPoseBuffer.back();
-  }
-  
   // TODO: calculate ZMP according to sensor, return CoM as ZMP at the moment
   ZMPFeetPose result;
   CoMFeetPose com = getCurrentCoMFeetPose();
   result.zmp = com.com;
   result.feet = com.feet;
+
+  /*if ( thePreviewController.ready() )
+  {
+    result.zmp.translation = thePreviewController.back();
+  }*/
+  
   return result;
 }
 
@@ -280,75 +281,80 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   position[JointData::RHipYawPitch] = hipYawPitch;
 }
 
-void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
+
+int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
 {
-  ZMPFeetPose startZMPPose = getPlannedZMPFeetPose();
-  startZMPPose.localInLeftFoot();
+  // if it is not ready, it should be empty
+  ASSERT( thePreviewController.count() == 0 );
+
+  CoMFeetPose currentCoMPose = getCurrentCoMFeetPose();
+  currentCoMPose.localInLeftFoot();
 
   // here assume the foot movment can not jump
   // so we can keep them in the same coordinate
-  const Pose3D& trans = target.feet.left;
-  startZMPPose.feet.left *= trans;
-  startZMPPose.feet.right *= trans;
-  startZMPPose.zmp *= trans;
+  const Pose3D& trans = start.feet.left;
+  //currentCoMPose.feet.left *= trans;
+  //currentCoMPose.feet.right *= trans;
+  currentCoMPose.com *= trans;
 
-  thePreviewControlCoM = Vector2<double>(startZMPPose.zmp.translation.x,startZMPPose.zmp.translation.y);
+  thePreviewControlCoM = currentCoMPose.com.translation;
   thePreviewControldCoM = Vector2<double>(0,0);
   thePreviewControlddCoM = Vector2<double>(0,0);
-  thePreviewController.init(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+  thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM,
+                            theBlackBoard.theFrameInfo.basicTimeStep);
   
-  unsigned int previewSteps = thePreviewController.previewSteps();
-  theZMPFeetPoseBuffer.clear();
+  unsigned int previewSteps = thePreviewController.previewSteps() - 1;
   thePreviewController.clear();
 
-  ZMPFeetPose myTarget = target;
-  myTarget.zmp.translation.x = startZMPPose.zmp.translation.x;
-  myTarget.zmp.translation.y = startZMPPose.zmp.translation.y;
-  for (unsigned int i = 0; i < previewSteps-1; i++)
+  for (unsigned int i = 0; i < previewSteps; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
-    ZMPFeetPose p = interpolate(startZMPPose, myTarget, t);
-    thePreviewController.push(Vector2<double>(p.zmp.translation.x, p.zmp.translation.y));
-    theZMPFeetPoseBuffer.push_back(p);
+    Pose3D p = interpolate(currentCoMPose.com, start.zmp, t);
+    thePreviewController.push(p.translation);
   }
+  return previewSteps;
 }
 
-CoMFeetPose InverseKinematicsMotionEngine::controlZMP(const ZMPFeetPose& p)
+void InverseKinematicsMotionEngine::controlZMPpush(const Vector3d& zmp)
 {
-  theZMPFeetPoseBuffer.push_back(p);
+  thePreviewController.push(zmp);
+}
 
-  Vector2<double> zmp(p.zmp.translation.x, p.zmp.translation.y);
-  thePreviewController.setParameters(theBlackBoard.theFrameInfo.basicTimeStep, p.zmp.translation.z);
-  
-  if ( !thePreviewController.ready() )
+bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
+{
+  if ( thePreviewController.ready() )
   {
-    startControlZMP(p);
+    thePreviewController.control(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+    com = thePreviewControlCoM;
+    return true;
   }
-  
-  thePreviewController.control(zmp, thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
-  
-  const ZMPFeetPose& bP = theZMPFeetPoseBuffer.front();
-  CoMFeetPose result;
-  result.com = bP.zmp;
-  result.feet = bP.feet;
-  theZMPFeetPoseBuffer.pop_front();
-  result.com.translation.x = thePreviewControlCoM.x;
-  result.com.translation.y = thePreviewControlCoM.y;
-  return result;
+  return false;
 }
 
-bool InverseKinematicsMotionEngine::stopControlZMP(const ZMPFeetPose& p, CoMFeetPose& result)
+bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
 {
-  result = controlZMP(p);
-  
-  // if ZMP == CoM
-  Vector2<double> diff = Vector2<double>(result.com.translation.x-p.zmp.translation.x, result.com.translation.y-p.zmp.translation.y);
-  bool stopped = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
-  
-  if ( stopped )
+  Vector3d diff = finalZmp - thePreviewControlCoM;
+  bool stoppted = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 & thePreviewControlddCoM.abs2() < 1;
+  if ( stoppted )
   {
     thePreviewController.clear();
   }
-  
-  return stopped;
+  else
+  {
+    controlZMPpush(finalZmp);
+  }
+
+  return stoppted;
 }
+
+Vector3d InverseKinematicsMotionEngine::controlZMPback() const
+{
+  return thePreviewController.back();
+}
+
+Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
+{
+  return thePreviewController.front();
+}
+
+

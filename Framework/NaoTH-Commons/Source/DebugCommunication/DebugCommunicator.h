@@ -65,9 +65,6 @@ public:
 
   bool isConnected();
 
-  /** Returns true if some data is available for read, will not block. */
-  bool isDataAvailable();
-
 private:
   GSocket* serverSocket;
   GSocket* connection;

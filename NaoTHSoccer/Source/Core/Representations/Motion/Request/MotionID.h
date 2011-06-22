@@ -53,7 +53,7 @@ namespace motion
     fall_left,
     fall_right,*/
 
-    NUM_OF_MOTION //error value
+    num_of_motions //error value
   };
 
   /** return a string reprenting the id */
@@ -117,11 +117,22 @@ namespace motion
       case neural_walk: return "neural_walk";
 
       case kick_right: return "kick_right";*/
-      case NUM_OF_MOTION: return "num_of_motion";
+      case num_of_motions: return "num_of_motion";
     }///end switch
 
     return "unkown";
   }///end getName
+
+  /** return the motion id reprented by the name */
+  static MotionID getId(const std::string& name)
+  {
+    for(int i = 0; i < num_of_motions; i++)
+    {
+      if(name == getName((MotionID)i)) return (MotionID)i;
+    }//end for
+    
+    return num_of_motions;
+  }//end motionIDFromName
 
 
   enum State

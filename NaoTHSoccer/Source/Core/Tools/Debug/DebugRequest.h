@@ -49,7 +49,7 @@ private:
 // MACROS //
 
 #ifdef DEBUG
-  /** Execute the code depending wether the request with this name is active ,fast version*/
+  /** Execute the code depending wether the request with this name is active, fast version */
   #define DEBUG_REQUEST(name, code) { static const bool& _debug_request_is_active_ = DebugRequest::getInstance().getValueReference(name); if(_debug_request_is_active_){code}} ((void)0)
   /** Execute the code depending wether the request with this name is active */
   #define DEBUG_REQUEST_SLOW(name, code) { if(DebugRequest::getInstance().getValueReference(name)){code}} ((void)0)
