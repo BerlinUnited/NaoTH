@@ -221,6 +221,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 
 bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
 {
+  // use stablization when at least one foot is on the ground
+  if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
+    return false;
+
   Vector2d r;
   r.x = hip.rotation.getXAngle();
   r.y = hip.rotation.getYAngle();
@@ -355,6 +359,11 @@ Vector3d InverseKinematicsMotionEngine::controlZMPback() const
 Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
 {
   return thePreviewController.front();
+}
+
+void InverseKinematicsMotionEngine::controlZMPclear()
+{
+  thePreviewController.clear();
 }
 
 void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&position)[JointData::numOfJoint])

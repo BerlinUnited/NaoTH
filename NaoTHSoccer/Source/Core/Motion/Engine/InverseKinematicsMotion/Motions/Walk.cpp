@@ -25,24 +25,22 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 {
   //calculateError();
 
-  bool protecting = FSRProtection();
-  if ( protecting )
+  if ( FSRProtection() )
   {
-    stopWalking();
-    theCoMFeetPose = executeStep();
+    stepBuffer.clear();
+    theEngine.controlZMPclear();
+    currentState == motion::stopped;
+    //theCoMFeetPose = getStandPose(theWalkParameters.comHeight);
   }
   else if ( !waitLanding() )
   {
     plan(motionRequest);
     theCoMFeetPose = executeStep();
   }
-  
+
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
-  
-  if ( !protecting )
-  {
-    theEngine.rotationStabilize(c.hip);
-  }
+
+  theEngine.rotationStabilize(c.hip);
 
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
@@ -60,9 +58,9 @@ bool Walk::FSRProtection()
 {
   // no foot on the ground, stop walking
   if ( theWalkParameters.enableFSRProtection &&
-    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE ) 
+    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
+      && canStop() )
   {
-    //TODO: clear walk?
     return true;
   }
   else
@@ -73,8 +71,13 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0.1;
-  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0.1;
+  if ( currentState != motion::running )
+    return false;
+
+  double leftH = theCoMFeetPose.feet.left.translation.z;
+  double rightH = theCoMFeetPose.feet.right.translation.z;
+  bool raiseLeftFoot = leftH > 0.1 && leftH > rightH;
+  bool raiseRightFoot = rightH > 0.1 && rightH > leftH;
 
   // don't raise two feet
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
@@ -149,6 +152,7 @@ void Walk::manageSteps(const WalkRequest& req)
     cout<<"walk start"<<endl;
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
     currentZMP.localInLeftFoot();
+    currentZMP.zmp.translation.z = theWalkParameters.comHeight;
     Step zeroStep;
     updateParameters(zeroStep);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);

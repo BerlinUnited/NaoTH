@@ -73,6 +73,8 @@ public:
 
   bool controlZMPstop(const Vector3d& finalZmp);
 
+  void controlZMPclear();
+
   /**
    * @param com return the result
    */
