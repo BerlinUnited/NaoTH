@@ -339,13 +339,12 @@ void Walk::stopWalking()
   }
   else
   {
-    Vector3d finalZmp = theEngine.controlZMPback();
-    FeetPose feet = stepBuffer.back().footStep.end();
-    finalZmp.x = (feet.left.translation.x + feet.right.translation.x)*0.5 + theParameters.hipOffsetX;
-    finalZmp.y = (feet.left.translation.y + feet.right.translation.y)*0.5;
-    finalZmp.z = theWalkParameters.comHeight;
+    Pose3D finalLeftFoot = stepBuffer.back().footStep.end().left;
+    CoMFeetPose standPose = getStandPose(theWalkParameters.comHeight);
+    standPose.localInLeftFoot();
+    Pose3D finalBody = finalLeftFoot * standPose.com;
     // wait for the com stops
-    if ( theEngine.controlZMPstop(finalZmp) )
+    if ( theEngine.controlZMPstop(finalBody.translation) )
     {
       currentState = motion::stopped;
       stepBuffer.clear();
