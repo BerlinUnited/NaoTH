@@ -10,7 +10,6 @@
 /** Any relevant information about the game state for the player */
 class PlayerInfo : public naoth::Printable
 {
-  
 public:
 
   // the representation of the game mode of Simsparc in xabsl

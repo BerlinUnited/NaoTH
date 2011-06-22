@@ -90,16 +90,18 @@ public:
   unsigned int playerNumber;
   TeamColor teamColor;
   unsigned int teamNumber;
+  std::string teamName;
   double halfTime;
   unsigned int numOfPlayers;
 };
+
+}// namespace naoth
 
 /**
  * the Operator ! inverts the team color, i.e.,
  * !red = blue, !blue = red, !unknownTeamColor = unknownTeamColor
  * e.g., the color of the opponent team is !thePlayerInfo.teamColor
  */
-GameData::TeamColor operator! (const GameData::TeamColor& color);
+naoth::GameData::TeamColor operator! (const naoth::GameData::TeamColor& color);
 
-}// namespace naoth
 #endif // GAMEDATA_H

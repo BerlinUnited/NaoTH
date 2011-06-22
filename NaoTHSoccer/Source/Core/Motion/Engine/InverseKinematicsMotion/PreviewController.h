@@ -33,7 +33,7 @@ public:
 
   void clear();
   
-  void init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom, unsigned int stepTime);
+  void init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom);
 
   void push(const Vector3d& zmp);
 
@@ -66,7 +66,6 @@ private:
 
   map<int, Parameters> loadedParameters;
   unsigned int theHeight;
-  unsigned int theStepTime;
 };
 
 std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);

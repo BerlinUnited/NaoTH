@@ -58,7 +58,7 @@ namespace naoth
       _platformInterface = _interface;
 
       // set the the hardware identity according to platform
-      _hardwareIdentity = _interface->getHardwareIdentity();
+      _hardwareIdentity = _interface->getBodyNickName();
       _configDir = "Config/";
       _scheme = _interface->getName(); // set to platform by default
       std::ifstream schemefile((_configDir + "scheme.cfg").c_str());

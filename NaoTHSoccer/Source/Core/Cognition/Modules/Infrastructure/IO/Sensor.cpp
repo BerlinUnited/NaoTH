@@ -24,6 +24,12 @@ Sensor::~Sensor()
 
 void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
 {
+  // read RobotInfo
+  RobotInfo& robot = getRobotInfo();
+  robot.platform = platformInterface.getName();
+  robot.bodyNickName = platformInterface.getBodyNickName();
+  robot.bodyID = platformInterface.getBodyID();
+
   REG_INPUT(AccelerometerData);
   REG_INPUT(BatteryData);
   REG_INPUT(ButtonData);

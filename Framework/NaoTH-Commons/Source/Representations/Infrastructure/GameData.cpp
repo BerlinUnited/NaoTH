@@ -20,6 +20,7 @@ GameData::GameData()
     playerNumber(0),
     teamColor(numOfTeamColor),
     teamNumber(0),
+    teamName("NaoTH"),
     halfTime(0),
     numOfPlayers(0)
 {
@@ -122,6 +123,7 @@ void GameData::print(ostream& stream) const
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";
   stream << "teamNumber = " << teamNumber << "\n";
+  stream << "teamName = "<< teamName << "\n";
   stream << "numOfPlayers = " << numOfPlayers << "\n";
 }//end print
 
