@@ -8,7 +8,7 @@ verify_aldir ()
         echo "  * AL_DIR has not been set, using default path '$DEFAULT_AL_DIR'"
         export AL_DIR=$DEFAULT_AL_DIR
   fi
-  if  [ ! -f $AL_DIR/naoqi/bin/naoqi-bin ]
+  if  [ ! -f $AL_DIR/bin/naoqi-bin ]
   then
         echo "WARN: I was unable to find naoqi/bin/naoqi-bin in AL_DIR - the path is probably invalid" 
   fi 

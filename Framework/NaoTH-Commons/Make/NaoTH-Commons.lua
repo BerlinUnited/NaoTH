@@ -11,6 +11,7 @@ project "NaoTH-Commons"
   
   files {
     "../Source/**.cpp",
-    "../Source/**.cc", 
+    "../Source/**.cc",
+    "../Source/**.c", 
     "../Source/**.h"
   }

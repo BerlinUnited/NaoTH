@@ -95,7 +95,11 @@ void GameController::execute()
   GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
 
   readButtons();
-  getPlayerInfo().gameData = getGameData();
+  if ( getGameData().frameNumber == getFrameInfo().frameNumber )
+  {
+    getPlayerInfo().gameData = getGameData();
+  }
+  getPlayerInfo().gameData.frameNumber = getFrameInfo().frameNumber;
 
   DEBUG_REQUEST("gamecontroller:initial",
     getPlayerInfo().gameData.gameState = GameData::initial;

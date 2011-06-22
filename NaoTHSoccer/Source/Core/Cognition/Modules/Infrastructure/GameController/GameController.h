@@ -3,6 +3,7 @@
 
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/LEDRequest.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include "Representations/Modeling/PlayerInfo.h"
@@ -12,6 +13,7 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(ButtonData)
   REQUIRE(GameData)
+  REQUIRE(FrameInfo)
 
   PROVIDE(GameControllerLEDRequest)
   PROVIDE(PlayerInfo)

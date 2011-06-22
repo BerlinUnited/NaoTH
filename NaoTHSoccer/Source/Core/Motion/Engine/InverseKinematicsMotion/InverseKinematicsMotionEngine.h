@@ -60,10 +60,23 @@ public:
   }
 
   InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p);
-  
-  InverseKinematic::CoMFeetPose controlZMP(const InverseKinematic::ZMPFeetPose& p);
-  
-  bool stopControlZMP(const InverseKinematic::ZMPFeetPose& p, InverseKinematic::CoMFeetPose& result);
+
+  unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
+
+  int controlZMPstart(const InverseKinematic::ZMPFeetPose& start);
+
+  void controlZMPpush(const Vector3d& zmp);
+
+  Vector3d controlZMPback() const;
+
+  Vector3d controlZMPfront() const;
+
+  bool controlZMPstop(const Vector3d& finalZmp);
+
+  /**
+   * @param com return the result
+   */
+  bool controlZMPpop(Vector3d& com);
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
@@ -77,7 +90,6 @@ public:
   const IKParameters& getParameters() const { return theParameters; }
   
 private:
-  void startControlZMP(const InverseKinematic::ZMPFeetPose& target);
 
   const MotionBlackBoard& theBlackBoard;
   
@@ -86,10 +98,9 @@ private:
   Kinematics::InverseKinematics theInverseKinematics;
   
   Vector3<double> theCoMControlResult; // save CoM control result to be reused
-  
+
   PreviewController thePreviewController;
-  std::list<InverseKinematic::ZMPFeetPose> theZMPFeetPoseBuffer;
-  Vector2<double> thePreviewControlCoM;
+  Vector3<double> thePreviewControlCoM;
   Vector2<double> thePreviewControldCoM;
   Vector2<double> thePreviewControlddCoM;
 };

@@ -52,12 +52,9 @@ class GoalDetector: public GoalDetectorBase
 
 public:
 	GoalDetector();
-
   ~GoalDetector(){};
 
   void execute();
-
-  void horizonScan(int heightOfHorizon);
 
 private:
   class Blob;

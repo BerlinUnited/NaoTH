@@ -57,7 +57,7 @@ project "Webots"
     files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
     
     links {CORE, "NaoTH-Commons", "Controller",
-      "glib-2.0",
+    "glib-2.0",
 	  "gio-2.0",
 	  "gobject-2.0",
 	  "gmodule-2.0",

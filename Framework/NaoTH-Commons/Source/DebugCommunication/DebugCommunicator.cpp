@@ -156,25 +156,6 @@ char* DebugCommunicator::readMessage()
   return result;
 }//end triggerRead
 
-bool DebugCommunicator::isDataAvailable()
-{
-  if(fatalFail)
-  {
-    return false;
-  }
-
-  if(connection != NULL)
-  {
-    GIOCondition ret = g_socket_condition_check(connection, G_IO_IN);
-    if(ret & G_IO_IN)
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 bool DebugCommunicator::connect(bool blocking)
 {
   GError* err = NULL;

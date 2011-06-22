@@ -1,6 +1,8 @@
 #include "TeamCommunicator.h"
 #include "PlatformInterface/Platform.h"
 
+#include <sys/socket.h>
+
 #define TEAMCOMM_MAX_MSG_SIZE 4096
 
 using namespace naoth;
@@ -51,6 +53,9 @@ GError* TeamCommunicator::bindAndListen(unsigned int port)
   if(err) return err;
 
   g_socket_set_blocking(socket, false);
+
+  bool broadcast = true;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(bool));
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);

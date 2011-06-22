@@ -11,11 +11,12 @@
 using namespace naoth;
 
 GameData::GameData()
-  :gameState(numOfGameState),
-    timeSinceGameStateChanged(0),
+  :frameNumber(0),
+    gameState(numOfGameState),
+    timeWhenGameStateChanged(0),
     playMode(numOfPlayMode),
     gameTime(0),
-    timeSincePlayModeChanged(0),
+    timeWhenPlayModeChanged(0),
     playerNumber(0),
     teamColor(numOfTeamColor),
     teamNumber(0),
@@ -115,8 +116,9 @@ GameData::TeamColor operator! (const GameData::TeamColor& color)
 
 void GameData::print(ostream& stream) const
 {
-  stream << "gameState = " << gameStateToString(gameState) << "\n";
-  stream << "PlayMode = " << playModeToString(playMode) <<"\n";
+  stream << "GameData @" << frameNumber<<"\n";
+  stream << "gameState = " << gameStateToString(gameState) <<" since "<< timeWhenGameStateChanged << "\n";
+  stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";
   stream << "teamNumber = " << teamNumber << "\n";

@@ -11,6 +11,7 @@ Modified for SimSpark (http://simspark.sourceforge.net)
 #define BASE64_DECODE_H
 
 #include <iostream>
+#include <string>
 
 namespace base64 {
 extern "C" {
