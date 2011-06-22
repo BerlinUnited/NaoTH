@@ -17,6 +17,7 @@
 #include "Tools/NaoTime.h"
 #include <Messages/Representations.pb.h>
 
+#include "Tools/Math/Common.h"
 
 using namespace std;
 using namespace naoth;
@@ -173,7 +174,7 @@ void Simulator::play()
   {
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
-    unsigned int waitTime = std::max((unsigned int) 0, 33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime));
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 0, (unsigned int) 33);
 
     #ifdef WIN32
     Sleep(waitTime);
@@ -227,7 +228,8 @@ void Simulator::loop()
   {
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
-    unsigned int waitTime = std::max((unsigned int) 0, 33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime));
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 0, (unsigned int) 33);
+
     #ifdef WIN32
     Sleep(waitTime);
     if(_kbhit())
