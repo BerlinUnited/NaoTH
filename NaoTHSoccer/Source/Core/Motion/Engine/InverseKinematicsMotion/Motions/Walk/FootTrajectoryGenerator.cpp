@@ -10,11 +10,12 @@
 #include "FootTrajectoryGenerator.h"
 
 Pose3D FootTrajectorGenerator::genTrajectory(const Pose3D& oldFoot, const Pose3D& targetFoot,
-  double cycle, double samplesDoubleSupport, double samplesSingleSupport,
+  double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport,
   double stepHeight, double footPitchOffset, double footYawOffset, double footRollOffset, double curveFactor)
 {
-  double doubleSupportEnd = samplesDoubleSupport / 2;
+  double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
+  samplesSingleSupport -= extendDoubleSupport;
 
   if (cycle <= doubleSupportEnd)
   {
