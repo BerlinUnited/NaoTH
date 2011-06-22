@@ -54,6 +54,10 @@ public:
       Vector2<double> threshold;
   } rotationStabilize;
 
+  struct Arm {
+    double maxSpeed;
+  } arm;
+
   struct KickParameters {
     // 
     double shiftSpeed;

@@ -43,7 +43,9 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
   PARAMETER_REGISTER(rotationStabilize.threshold.x) = 2;
   PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;
-  
+
+  // arm parameter
+  PARAMETER_REGISTER(arm.maxSpeed) = 200;
 
   // kick parameter
   PARAMETER_REGISTER(kick.shiftSpeed) = 0.05;

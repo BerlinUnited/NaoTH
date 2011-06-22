@@ -89,6 +89,8 @@ public:
   
   const IKParameters& getParameters() const { return theParameters; }
   
+  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[JointData::numOfJoint]);
+
 private:
 
   const MotionBlackBoard& theBlackBoard;

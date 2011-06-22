@@ -39,6 +39,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
+  theEngine.autoArms(c, theMotorJointData.position);
 
   // force the hip joint
   if (theMotorJointData.position[JointData::LHipRoll] < 0)
