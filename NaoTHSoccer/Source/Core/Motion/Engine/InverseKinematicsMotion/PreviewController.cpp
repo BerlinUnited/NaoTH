@@ -11,11 +11,12 @@
 #include <iostream>
 
 #include "PreviewController.h"
+#include <PlatformInterface/Platform.h>
+#include <Tools/DataConversion.h>
 
 PreviewController::PreviewController()
 :parameters(NULL),
-theHeight(0),
-theStepTime(0)
+theHeight(0)
 {
 }
 
@@ -30,11 +31,12 @@ void PreviewController::setHeight(double height)
     theHeight = newHeight;
     if ( loadedParameters.find(theHeight) == loadedParameters.end() )
     {
-      stringstream ss;
-      ss << "Config/general/previewController/"<<theStepTime<<"/"<< theHeight << ".prm";
-      cout<<"PreviewController load "<<ss.str()<<endl;
+      string path =naoth::Platform::getInstance().theConfigDirectory + "scheme/"
+            + naoth::Platform::getInstance().theScheme + "/previewControl/";
+      path += DataConversion::toStr(theHeight)+".prm";
+      cout<<"PreviewController load "<<path<<endl;
     
-      ifstream ifs(ss.str().c_str());
+      ifstream ifs(path.c_str());
       ASSERT(ifs.good());
       ifs >> loadedParameters[theHeight];
     }
@@ -94,11 +96,8 @@ void PreviewController::clear()
   theErr = Vector2<double>(0, 0);
 }
 
-void PreviewController::init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom, unsigned int stepTime)
+void PreviewController::init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom)
 {
-  ASSERT(stepTime==10||stepTime==20||stepTime==40);
-  theStepTime = stepTime;
-
   setHeight(com.z);
 
   theX[0] = com.x;
