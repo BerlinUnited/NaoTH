@@ -150,12 +150,8 @@ void Walk::manageSteps(const WalkRequest& req)
       zeroStep.planningCycle = prepareStep;
       stepBuffer.push_back(zeroStep);
     }
-
     theFootStepPlanner.updateParameters(theParameters);
-    Step step;
-    step.footStep = firstStep(req);
-    updateParameters(step);
-    stepBuffer.push_back(step);
+
     // set the stiffness for walking
     for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
     {
@@ -196,6 +192,8 @@ CoMFeetPose Walk::executeStep()
   }
 
   Step& executingStep = stepBuffer.front();
+  ASSERT(executingStep.executingCycle < executingStep.planningCycle);
+
   FootStep& exeFootStep = executingStep.footStep;
   Pose3D* liftFoot = NULL;
 

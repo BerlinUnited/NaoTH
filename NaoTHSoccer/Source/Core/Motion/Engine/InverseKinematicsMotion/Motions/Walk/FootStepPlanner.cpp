@@ -134,12 +134,10 @@ FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRe
   if (req.rotation >= theMaxTurnInner || ( abs(req.rotation) < theMaxTurnInner && req.translation.y > 0))
   {
       startFoot = FootStep::LEFT;
-      pose.localInRightFoot();
   }
   else
   {
       startFoot = FootStep::RIGHT;
-      pose.localInLeftFoot();
   }
 
   FootStep zeroStep(pose, static_cast<FootStep::Foot>(-startFoot) );
