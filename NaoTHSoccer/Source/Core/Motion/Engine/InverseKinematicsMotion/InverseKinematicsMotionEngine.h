@@ -69,6 +69,8 @@ public:
 
   Vector3d controlZMPback() const;
 
+  Vector3d controlZMPfront() const;
+
   bool controlZMPstop(const Vector3d& finalZmp);
 
   /**

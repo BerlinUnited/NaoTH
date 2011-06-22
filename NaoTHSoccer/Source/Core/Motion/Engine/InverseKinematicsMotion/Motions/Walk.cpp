@@ -23,15 +23,15 @@ stoppingStepFinished(false)
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
 {
-  //if ( FSRProtection() ) return;
-  
-  //if ( waitLanding() ) return;
+  if ( FSRProtection() ) return;
 
-  calculateError();
-  
-  plan(motionRequest);
+  //calculateError();
 
-  theCoMFeetPose = executeStep();
+  if ( !waitLanding() )
+  {
+    plan(motionRequest);
+    theCoMFeetPose = executeStep();
+  }
   
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
   
@@ -41,11 +41,11 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   theEngine.copyLegJoints(theMotorJointData.position);
 
   // force the hip joint
-  /*if (theMotorJointData.position[JointData::LHipRoll] < 0)
+  if (theMotorJointData.position[JointData::LHipRoll] < 0)
     theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
 
   if (theMotorJointData.position[JointData::RHipRoll] > 0)
-    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;*/
+    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
 }
 
 bool Walk::FSRProtection()
@@ -144,12 +144,9 @@ void Walk::manageSteps(const WalkRequest& req)
     updateParameters(zeroStep);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
     int prepareStep = theEngine.controlZMPstart(currentZMP);
-    if ( prepareStep > 0 )
-    {
-      zeroStep.numberOfCyclePerFootStep = prepareStep;
-      zeroStep.planningCycle = prepareStep;
-      stepBuffer.push_back(zeroStep);
-    }
+    zeroStep.numberOfCyclePerFootStep = prepareStep;
+    zeroStep.planningCycle = prepareStep;
+    stepBuffer.push_back(zeroStep);
     theFootStepPlanner.updateParameters(theParameters);
 
     // set the stiffness for walking
@@ -158,25 +155,24 @@ void Walk::manageSteps(const WalkRequest& req)
       theMotorJointData.stiffness[i] = theWalkParameters.stiffness;
     }
   }
-  else
+
+  Step& planningStep = stepBuffer.back();
+  if ( planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep )
   {
-    Step& planningStep = stepBuffer.back();
-    if ( planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep )
-    {
-      // this step is planned completely
-      // new foot step
-      Step step;
-      step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-      theFootStepPlanner.updateParameters(theParameters);
-      updateParameters(step);
-      stepBuffer.push_back(step);
-    }
+    // this step is planned completely
+    // new foot step
+    Step step;
+    step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+    theFootStepPlanner.updateParameters(theParameters);
+    updateParameters(step);
+    stepBuffer.push_back(step);
   }
 }
 
 void Walk::planStep()
 {
   Step& planningStep = stepBuffer.back();
+  ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
   Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX);
   // TODO: change the height?
   theEngine.controlZMPpush(Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight));
@@ -241,7 +237,7 @@ CoMFeetPose Walk::executeStep()
         else
         {
           executingStep.lifted = true;
-          cout<<"extend "<<executingStep.extendDoubleSupport<<"/"<<maxExtendSamples<<endl;
+          //cout<<"extend "<<executingStep.extendDoubleSupport<<"/"<<maxExtendSamples<<endl;
         }
       }
     }
@@ -277,6 +273,8 @@ CoMFeetPose Walk::executeStep()
     //theCoMErr /= numberOfCyclePerFootStep;
     theCoMErr = Vector3d();
   }
+
+
 
   return result;
 }
@@ -326,8 +324,9 @@ void Walk::stopWalking()
       {
         // don't need to move the foot
         FootStep zeroStep(planningStep.footStep.end(), FootStep::NONE);
-        stepBuffer.back().footStep = zeroStep;
-        stepBuffer.back().numberOfCyclePerFootStep = theEngine.contorlZMPlength();
+        Step& lastStep = stepBuffer.back();
+        lastStep.footStep = zeroStep;
+        lastStep.numberOfCyclePerFootStep = 0;
         stoppingStepFinished = true;
       }
     }
@@ -352,8 +351,8 @@ void Walk::stopWalking()
     else
     {
       Step& lastStep = stepBuffer.back();
-      lastStep.executingCycle = 0;
       lastStep.planningCycle++;
+      lastStep.numberOfCyclePerFootStep = lastStep.planningCycle;
     }
   }
 

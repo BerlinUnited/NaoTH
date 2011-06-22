@@ -303,10 +303,10 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM,
                             theBlackBoard.theFrameInfo.basicTimeStep);
   
-  unsigned int previewSteps = thePreviewController.previewSteps();
+  unsigned int previewSteps = thePreviewController.previewSteps() - 1;
   thePreviewController.clear();
 
-  for (unsigned int i = 0; i < previewSteps-1; i++)
+  for (unsigned int i = 0; i < previewSteps; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
     Pose3D p = interpolate(currentCoMPose.com, start.zmp, t);
@@ -351,4 +351,10 @@ Vector3d InverseKinematicsMotionEngine::controlZMPback() const
 {
   return thePreviewController.back();
 }
+
+Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
+{
+  return thePreviewController.front();
+}
+
 

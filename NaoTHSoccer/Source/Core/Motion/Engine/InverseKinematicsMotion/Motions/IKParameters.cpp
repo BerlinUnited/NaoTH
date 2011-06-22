@@ -11,7 +11,7 @@
 IKParameters::IKParameters()
 :ParameterList("IKParameters")
 {
-  PARAMETER_REGISTER(bodyPitchOffset) = 3;
+  PARAMETER_REGISTER(bodyPitchOffset) = 0;
   PARAMETER_REGISTER(hipOffsetX) = 10;
   PARAMETER_REGISTER(footOffsetY) = 0;
   
@@ -28,7 +28,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.curveFactor) = 7;
   PARAMETER_REGISTER(walk.maxTurnInner) = 10;
   PARAMETER_REGISTER(walk.maxStepTurn) = 30;
-  PARAMETER_REGISTER(walk.maxStepLength) = 30;
+  PARAMETER_REGISTER(walk.maxStepLength) = 50;
   PARAMETER_REGISTER(walk.maxStepLengthBack) = 50;
   PARAMETER_REGISTER(walk.maxStepWidth) = 50;
   PARAMETER_REGISTER(walk.maxStepChange) = 0.5;
