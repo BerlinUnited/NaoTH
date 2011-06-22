@@ -174,7 +174,7 @@ void Simulator::play()
   {
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
-    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 0, (unsigned int) 33);
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
     #ifdef WIN32
     Sleep(waitTime);
@@ -228,7 +228,7 @@ void Simulator::loop()
   {
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
-    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 0, (unsigned int) 33);
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
     #ifdef WIN32
     Sleep(waitTime);
