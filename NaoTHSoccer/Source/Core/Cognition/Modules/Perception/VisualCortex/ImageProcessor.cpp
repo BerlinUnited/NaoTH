@@ -55,6 +55,11 @@ ImageProcessor::ImageProcessor()
 
 void ImageProcessor::execute()
 {
+  //reset the Representations:
+  getBallPercept().reset();
+  getGoalPercept().reset();
+  getScanLineEdgelPercept().reset();
+  getLinePercept().reset();
 
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();

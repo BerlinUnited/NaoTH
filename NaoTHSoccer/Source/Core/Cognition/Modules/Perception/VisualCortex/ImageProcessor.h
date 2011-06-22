@@ -51,6 +51,7 @@ BEGIN_DECLARE_MODULE(ImageProcessor)
   PROVIDE(BallPercept)
   PROVIDE(PlayersPercept)
   PROVIDE(LinePercept)
+  PROVIDE(GoalPercept)
   PROVIDE(ScanLineEdgelPercept)
 END_DECLARE_MODULE(ImageProcessor)
 
