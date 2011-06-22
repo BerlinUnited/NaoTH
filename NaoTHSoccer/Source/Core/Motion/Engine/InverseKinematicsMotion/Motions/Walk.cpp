@@ -23,11 +23,15 @@ stoppingStepFinished(false)
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
 {
-  if ( FSRProtection() ) return;
-
   //calculateError();
 
-  if ( !waitLanding() )
+  bool protecting = FSRProtection();
+  if ( protecting )
+  {
+    stopWalking();
+    theCoMFeetPose = executeStep();
+  }
+  else if ( !waitLanding() )
   {
     plan(motionRequest);
     theCoMFeetPose = executeStep();
@@ -35,7 +39,10 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
   
-  theEngine.rotationStabilize(c.hip);
+  if ( !protecting )
+  {
+    theEngine.rotationStabilize(c.hip);
+  }
 
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
@@ -116,7 +123,7 @@ void Walk::plan(const MotionRequest& motionRequest)
   ASSERT(!Math::isNan(walkRequest.translation.y));
   ASSERT(!Math::isNan(walkRequest.rotation));
   
-  if (motionRequest.id == getId() || !canStop() )
+  if ( motionRequest.id == getId() || !canStop() )
   {
     walk(walkRequest);
     isStopping = false;
@@ -139,6 +146,7 @@ void Walk::manageSteps(const WalkRequest& req)
 {
   if ( stepBuffer.empty() )
   {
+    cout<<"walk start"<<endl;
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
     currentZMP.localInLeftFoot();
     Step zeroStep;
@@ -293,6 +301,8 @@ void Walk::stopWalking()
   // add one step to get stand pose
   ///////////////////////////////////////////////////////
 
+  if ( currentState == motion::stopped )
+    return;
 
   if ( !isStopping ) // remember the stopping foot
   {
@@ -348,6 +358,7 @@ void Walk::stopWalking()
     {
       currentState = motion::stopped;
       stepBuffer.clear();
+      cout<<"walk stopped"<<endl;
     }
     else
     {
