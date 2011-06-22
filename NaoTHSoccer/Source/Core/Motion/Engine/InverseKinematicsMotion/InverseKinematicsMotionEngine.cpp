@@ -100,10 +100,10 @@ ZMPFeetPose InverseKinematicsMotionEngine::getPlannedZMPFeetPose() const
   result.zmp = com.com;
   result.feet = com.feet;
 
-  if ( thePreviewController.ready() )
+  /*if ( thePreviewController.ready() )
   {
     result.zmp.translation = thePreviewController.back();
-  }
+  }*/
   
   return result;
 }
@@ -284,9 +284,6 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
 
 int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
 {
-  if ( thePreviewController.ready() )
-    return 0;
-
   // if it is not ready, it should be empty
   ASSERT( thePreviewController.count() == 0 );
 
@@ -296,8 +293,8 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   // here assume the foot movment can not jump
   // so we can keep them in the same coordinate
   const Pose3D& trans = start.feet.left;
-  currentCoMPose.feet.left *= trans;
-  currentCoMPose.feet.right *= trans;
+  //currentCoMPose.feet.left *= trans;
+  //currentCoMPose.feet.right *= trans;
   currentCoMPose.com *= trans;
 
   thePreviewControlCoM = currentCoMPose.com.translation;

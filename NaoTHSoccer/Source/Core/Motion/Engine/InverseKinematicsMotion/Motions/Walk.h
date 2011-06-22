@@ -23,16 +23,18 @@ public:
 private:
   struct Step {
 
-    Step():planningCycle(0),executingCycle(0){}
+    Step():planningCycle(0),executingCycle(0),lifted(false),extendDoubleSupport(0){}
 
     int planningCycle;
     int executingCycle;
+    bool lifted;
     FootStep footStep;
     // parameters
     // calcualted parameters of walk
     double bodyPitchOffset;
     int samplesDoubleSupport;
     int samplesSingleSupport;
+    int extendDoubleSupport;
     int numberOfCyclePerFootStep;
   };
 

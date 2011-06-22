@@ -62,7 +62,7 @@ bool PreviewController::ready() const
   if (parameters == NULL)
     return false;
     
-  size_t size = previewSteps();
+  size_t size = previewSteps() - 1;
   return refZMPx.size() >= size && refZMPy.size() >= size;
 }
 

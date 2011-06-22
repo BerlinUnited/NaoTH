@@ -61,6 +61,8 @@ public:
 
   InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p);
 
+  unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
+
   int controlZMPstart(const InverseKinematic::ZMPFeetPose& start);
 
   void controlZMPpush(const Vector3d& zmp);

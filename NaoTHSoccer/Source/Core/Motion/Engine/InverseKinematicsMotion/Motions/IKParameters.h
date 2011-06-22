@@ -28,6 +28,7 @@ public:
     
     double singleSupportTime;
     double doubleSupportTime;
+    double maxExtendDoubleSupportTime;
     
     double stepHeight;
     double curveFactor;

@@ -57,7 +57,10 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
 FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& req)
 {
   Pose2D step = calculateStep(lastStep, req);
-  return nextStep(lastStep, step);
+  if ( lastStep.liftingFoot() == FootStep::NONE )
+    return firstStep(lastStep.end(), req);
+  else
+    return nextStep(lastStep, step);
 }
 
 Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)

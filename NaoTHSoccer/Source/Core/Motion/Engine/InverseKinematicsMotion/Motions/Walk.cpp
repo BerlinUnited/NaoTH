@@ -23,9 +23,9 @@ stoppingStepFinished(false)
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
 {
-  if ( FSRProtection() ) return;
+  //if ( FSRProtection() ) return;
   
-  if ( waitLanding() ) return;
+  //if ( waitLanding() ) return;
 
   calculateError();
   
@@ -41,11 +41,11 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   theEngine.copyLegJoints(theMotorJointData.position);
 
   // force the hip joint
-  if (theMotorJointData.position[JointData::LHipRoll] < 0)
+  /*if (theMotorJointData.position[JointData::LHipRoll] < 0)
     theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
 
   if (theMotorJointData.position[JointData::RHipRoll] > 0)
-    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
+    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;*/
 }
 
 bool Walk::FSRProtection()
@@ -136,7 +136,7 @@ void Walk::plan(const MotionRequest& motionRequest)
 
 void Walk::manageSteps(const WalkRequest& req)
 {
-  if ( (currentState != motion::running || stepBuffer.empty()) && !isStopping )
+  if ( stepBuffer.empty() )
   {
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
     currentZMP.localInLeftFoot();
@@ -162,7 +162,7 @@ void Walk::manageSteps(const WalkRequest& req)
       theMotorJointData.stiffness[i] = theWalkParameters.stiffness;
     }
   }
-  else if ( !stepBuffer.empty() )
+  else
   {
     Step& planningStep = stepBuffer.back();
     if ( planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep )
@@ -200,19 +200,21 @@ CoMFeetPose Walk::executeStep()
   Pose3D* liftFoot = NULL;
 
   CoMFeetPose result;
+  bool footSupporting;
   switch(exeFootStep.liftingFoot())
   {
   case FootStep::LEFT:
   {
     liftFoot = &result.feet.left;
     result.feet.right = exeFootStep.supFoot();
+    footSupporting = theBlackBoard.theSupportPolygon.isRightFootSupportable();
     break;
   }
   case FootStep::RIGHT:
   {
     liftFoot = &result.feet.right;
     result.feet.left = exeFootStep.supFoot();
-
+    footSupporting = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
     break;
   }
   case FootStep::NONE:
@@ -225,11 +227,33 @@ CoMFeetPose Walk::executeStep()
 
   if ( liftFoot != NULL )
   {
+
+    // checking on when the foot is lifting
+    if ( !executingStep.lifted ) // the foot is on the ground now
+    {
+      double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
+      if( executingStep.executingCycle > doubleSupportEnd ) // want to lift the foot
+      {
+        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / theBlackBoard.theFrameInfo.basicTimeStep );
+        if( !footSupporting // but another foot can not support
+            && executingStep.extendDoubleSupport < maxExtendSamples ) // allow to extend double support
+        {
+          executingStep.extendDoubleSupport++;
+        }
+        else
+        {
+          executingStep.lifted = true;
+          cout<<"extend "<<executingStep.extendDoubleSupport<<"/"<<maxExtendSamples<<endl;
+        }
+      }
+    }
+
     *liftFoot = FootTrajectorGenerator::genTrajectory(exeFootStep.footBegin(),
                                                       exeFootStep.footEnd(),
                                                       executingStep.executingCycle,
                                                       executingStep.samplesDoubleSupport,
                                                       executingStep.samplesSingleSupport,
+                                                      executingStep.extendDoubleSupport,
                                                       theWalkParameters.stepHeight, 0, 0, 0,
                                                       theWalkParameters.curveFactor);
   }
@@ -249,6 +273,7 @@ CoMFeetPose Walk::executeStep()
   executingStep.executingCycle++;
   if ( executingStep.executingCycle >= executingStep.numberOfCyclePerFootStep )
   {
+    ASSERT( stepBuffer.size() > 1);
     // this step is executed
     stepBuffer.pop_front();
     //theCoMErr /= numberOfCyclePerFootStep;
@@ -304,6 +329,7 @@ void Walk::stopWalking()
         // don't need to move the foot
         FootStep zeroStep(planningStep.footStep.end(), FootStep::NONE);
         stepBuffer.back().footStep = zeroStep;
+        stepBuffer.back().numberOfCyclePerFootStep = theEngine.contorlZMPlength();
         stoppingStepFinished = true;
       }
     }
@@ -324,10 +350,13 @@ void Walk::stopWalking()
     if ( theEngine.controlZMPstop(finalZmp) )
     {
       currentState = motion::stopped;
+      stepBuffer.clear();
     }
     else
     {
-      stepBuffer.back().numberOfCyclePerFootStep++;
+      Step& lastStep = stepBuffer.back();
+      lastStep.executingCycle = 0;
+      lastStep.planningCycle++;
     }
   }
 
