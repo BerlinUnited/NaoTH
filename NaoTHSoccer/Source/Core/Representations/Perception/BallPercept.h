@@ -10,9 +10,9 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
 #include <Tools/ColorClasses.h>
-#include "Tools/DataStructures/Printable.h"
+#include <Tools/DataStructures/Printable.h>
 
-#include "Representations/Infrastructure/FrameInfo.h"
+#include <Representations/Infrastructure/FrameInfo.h>
 
 
 class BallPercept : public Printable

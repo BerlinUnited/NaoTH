@@ -21,7 +21,6 @@ SimSparkController::SimSparkController()
   theImageSize(0),
   isNewImage(false),
   isNewVirtualVision(false),
-  theTeamName("NaoTH"),
   theStepTime(0),
   theCameraId(0),
   theSenseTime(0),
@@ -127,6 +126,16 @@ SimSparkController::~SimSparkController()
     delete [] theImageData;
 }
 
+string SimSparkController::getBodyNickName() const
+{
+  return theGameData.teamName + DataConversion::toStr(theGameData.playerNumber);
+}
+
+string SimSparkController::getBodyID() const
+{
+  return DataConversion::toStr(theGameData.playerNumber);
+}
+
 bool SimSparkController::connect(const std::string& host, int port)
 {
   if(socket != NULL)
@@ -175,7 +184,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   Platform::getInstance().init(this);
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
 
-  theTeamName = teamName;
+  theGameData.teamName = teamName;
   theSync = sync?"(syn)":"";
   theSyncMode = sync;
   // connect to the simulator
