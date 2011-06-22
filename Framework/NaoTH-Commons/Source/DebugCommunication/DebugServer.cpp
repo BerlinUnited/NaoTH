@@ -418,8 +418,6 @@ DebugServer::~DebugServer()
   g_mutex_free(m_executing);
   g_mutex_free(m_abort);
 
-  g_free(readerThread);
-  g_free(writerThread);
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
 
