@@ -12,7 +12,6 @@ import de.hu_berlin.informatik.ki.nao.manager.ImageManager;
 import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
 import de.hu_berlin.informatik.ki.nao.server.Command;
 import de.hu_berlin.informatik.ki.nao.server.CommandSender;
-import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

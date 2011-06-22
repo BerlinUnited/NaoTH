@@ -61,8 +61,8 @@ END_DECLARE_MODULE(RobotDetector)
 #define MAX_MARKER_NUMBER 20
 #define MARKER_MIN_SIZE 30
 #define BLOB_MIN_MOMENT 3
-#define ABOVE_WHITE_RATIO 0.6f
-#define BELOW_WHITE_RATIO 0.6f
+#define ABOVE_WHITE_RATIO 0.5f
+#define BELOW_WHITE_RATIO 0.5f
 #define GREEN_GROUND_RATIO 0.8f
 
 class RobotDetector: public RobotDetectorBase
@@ -78,14 +78,12 @@ private:
   //variables
   bool redColors[ColorClasses::numOfColors];
   bool blueColors[ColorClasses::numOfColors];
-  bool searchColors[ColorClasses::numOfColors];
   BlobList redBlobs;
   BlobList blueBlobs;
   BlobList blobs;
   BlobFinder theBlobFinder;
   ColoredGrid coloredGrid;
-  Math::Polygon<4> searchArea;
-  typedef Math::Polygon<MARKER_MIN_SIZE> poly;
+  WholeArea searchArea;
   //define Marker class
   class Marker
   {
@@ -99,7 +97,6 @@ private:
       {};
     //default destructor
     ~Marker(){};
-    poly polygon;
     double area;
     double eccentricity;
     double angle;
@@ -136,7 +133,8 @@ private:
   inline double findGreenRatio(int yCoord, int xStart, int xEnd, int stepSize);
 
   //scan functions
-  inline void scanLine(Vector2<int> start, Vector2<int>& direction, int maxColorPointsToSkip, ColorClasses::Color searchColor, Vector2<int>& point, bool draw);
+  inline void scanLine(Vector2<int> start, Vector2<int>& direction, int maxColorPointsToSkip, 
+                        ColorClasses::Color searchColor, Vector2<int>& point, bool draw, Marker& marker);
   inline bool isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor);
   inline bool pixelInSearchArea(Vector2<int>& pixel);
 

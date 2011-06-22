@@ -18,10 +18,10 @@
 inline int scanline(
              const Image& theImage,
              const ColorTable64& theColorTable64,
-             const ColorClasses::Color& teamColor,
+             const ColorClasses::Color& searchColor,
              const Vector2<int>& start,
              Vector2<int>& end,
-             int& whitePixels,
+             int& pixelsTharHaveSearchColor,
              bool draw)
 {
   BresenhamLineScan scan = BresenhamLineScan(start, end);
@@ -35,13 +35,13 @@ inline int scanline(
     if(end.x >= 0 && (unsigned int)end.x < theImage.cameraInfo.resolutionWidth
       && end.y >= 0 && (unsigned int)end.y < theImage.cameraInfo.resolutionHeight)
     {
-      if(currentPixelColor == ColorClasses::white)
+      if(currentPixelColor == searchColor)
       {
         if (draw)
         {
           POINT_PX(ColorClasses::green, (unsigned int)(end.x), (unsigned int)(end.y));
         }
-        whitePixels++;
+        pixelsTharHaveSearchColor++;
         continue;
       }
       else
