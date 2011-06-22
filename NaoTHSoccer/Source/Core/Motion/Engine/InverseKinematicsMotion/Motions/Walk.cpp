@@ -174,7 +174,7 @@ void Walk::planStep()
 {
   Step& planningStep = stepBuffer.back();
   ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
-  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX);
+  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX, theWalkParameters.ZMPOffsetY);
   // TODO: change the height?
   theEngine.controlZMPpush(Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight));
   planningStep.planningCycle++;

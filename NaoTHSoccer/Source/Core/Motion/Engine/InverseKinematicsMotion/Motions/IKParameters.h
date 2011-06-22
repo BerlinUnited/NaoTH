@@ -25,6 +25,7 @@ public:
   struct Walk {
     double stiffness;
     double comHeight;
+    double ZMPOffsetY;
     
     double singleSupportTime;
     double doubleSupportTime;

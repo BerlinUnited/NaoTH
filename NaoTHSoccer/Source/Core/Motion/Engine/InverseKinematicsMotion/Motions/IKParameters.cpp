@@ -21,6 +21,7 @@ IKParameters::IKParameters()
   // walk parameter
   PARAMETER_REGISTER(walk.stiffness) = 0.7;
   PARAMETER_REGISTER(walk.comHeight) = 260;
+  PARAMETER_REGISTER(walk.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.singleSupportTime) = 300;
   PARAMETER_REGISTER(walk.doubleSupportTime) = 40;
   PARAMETER_REGISTER(walk.maxExtendDoubleSupportTime) = 20;
