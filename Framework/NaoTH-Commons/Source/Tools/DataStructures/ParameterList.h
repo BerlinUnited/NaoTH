@@ -25,6 +25,9 @@ public:
   double& registerParameter(const std::string& name, double& parameter);
   std::string& registerParameter(const std::string& name, std::string& parameter);
 
+  // change some key characters, e.g. []
+  std::string covertName(std::string name);
+
   virtual void loadFromConfig();
   virtual void saveToConfig();
 
@@ -40,6 +43,6 @@ private:
   std::map<std::string, bool*> boolParameterReferences;
 };
 
-#define PARAMETER_REGISTER(parameter) registerParameter(#parameter, parameter)
+#define PARAMETER_REGISTER(parameter) registerParameter(covertName(#parameter), parameter)
 
 #endif // __ParameterList_h

@@ -44,8 +44,8 @@ void ForwardKinematics::calcChestRotation(Link* theLinks, const InertialSensorDa
 {
   Link* chest = (theLinks + KinematicChain::Torso);
   // Rotation from Inertial sensor data
-  chest->R = RotationMatrix::getRotationX(theInertialSensorData.get(InertialSensorData::X));
-  chest->R.rotateY(theInertialSensorData.get(InertialSensorData::Y));
+  chest->R = RotationMatrix::getRotationX(theInertialSensorData.data.x);
+  chest->R.rotateY(theInertialSensorData.data.y);
 }//end calcChestRotation
 
 void ForwardKinematics::calcChestAll(Link* theLinks,

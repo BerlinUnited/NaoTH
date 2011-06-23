@@ -23,12 +23,9 @@ public:
   {
   }
 
-  /**
-  * this method is called every cycle
-  */
   void calculateTrajectory(const MotionRequest& motionRequest)
   {
-    currentState = running; // set the motion to running by default
+    currentState = motion::running; // set the motion to running by default
 
     //-- BEGIN -- generate the trajectory --//
 
@@ -58,7 +55,7 @@ public:
       && abs(speed) < 1.0 && radius < 0.1 ) {
       speed = 0;
       radius = 0;
-      currentState = stopped;
+      currentState = motion::stopped;
     }
 
     // increase the current time
@@ -78,7 +75,7 @@ public:
 
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
   {
-    if (currentState == stopped) {
+    if (currentState == motion::stopped) {
       // create the initial pose of the robot
       p = theEngine.getCurrentCoMFeetPose();
       p.localInCoM();

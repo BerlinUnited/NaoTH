@@ -17,6 +17,7 @@
 #include "Tools/NaoTime.h"
 #include <Messages/Representations.pb.h>
 
+#include "Tools/Math/Common.h"
 
 using namespace std;
 using namespace naoth;
@@ -171,14 +172,16 @@ void Simulator::play()
   bool endReached = false;
   while(!endReached && c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
   {
+    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
     #ifdef WIN32
-    Sleep(30);
+    Sleep(waitTime);
     if(_kbhit())
     #else
     // wait some time
-    usleep(60000);
+    usleep(waitTime * 1000);
     #endif
     c = getInput();
 
@@ -223,14 +226,16 @@ void Simulator::loop()
   int c = -1;
   while(c != 'l' && c != 'p' && c != '\n' && c != 's' && c != 'q' && c !='x')
   {
+    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
     stepForward();
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
     #ifdef WIN32
-    Sleep(30);
+    Sleep(waitTime);
     if(_kbhit())
     #else
     // wait some time
-    usleep(60000);
+    usleep(waitTime * 1000);
     #endif
     c = getInput();
   }//while
@@ -421,6 +426,7 @@ void Simulator::adjust_frame_time()
   if(noFrameInfo)
   {
     f.set_framenumber(*currentFrame);
+    f.set_basictimestep(60);
     lastFrameTime = 0;
   }
   else
@@ -448,8 +454,8 @@ void Simulator::adjust_frame_time()
   f.set_time(current_time);
 
   // write the result back
-  //string result = f.SerializeAsString();
-  //representations["FrameInfo"] = result;
+  string result = f.SerializeAsString();
+  representations["FrameInfo"] = result;
 }//end adjust_frame_time
 
 
@@ -613,7 +619,9 @@ Simulator::~Simulator()
 {
 }
 
-MessageQueue* Simulator::createMessageQueue(const std::string& name);
+
+MessageQueue* Simulator::createMessageQueue(const std::string& name)
+
 {
   // for single thread
   return new MessageQueue();

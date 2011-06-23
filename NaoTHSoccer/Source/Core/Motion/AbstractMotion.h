@@ -17,17 +17,10 @@ private:
   motion::MotionID theId;
   
 protected:
-  enum State
-  {
-    running,
-    stopped
-  };
 
-  State currentState;
+  motion::State currentState;
   MotorJointData& theMotorJointData;
   const MotionBlackBoard& theBlackBoard;
-  
-  bool finished;
 
 public:
 
@@ -38,13 +31,13 @@ public:
   virtual void init(){}
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& moitonStatus) = 0;
 
-  bool isRunning() const {return currentState == running; }
+  bool isStopped() const {return currentState == motion::stopped; }
 
   motion::MotionID getId() const { return theId; }
   
   std::string getName() const { return motion::getName(theId); } 
 
-  bool isFinished() const { return finished; }
+  motion::State state() const { return currentState; }
 
 protected:
   /** set the stiffness with max changes */
@@ -54,17 +47,15 @@ protected:
 class EmptyMotion: public AbstractMotion
 {
 public:
-  EmptyMotion():AbstractMotion(motion::empty) {};
+  EmptyMotion():AbstractMotion(motion::empty)
+  {
+    currentState = motion::stopped;
+  }
 
   virtual ~EmptyMotion(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*moitonStatus*/)
+  virtual void execute(const MotionRequest& /*motionRequest*/, MotionStatus& /*moitonStatus*/)
   {
-    if(motionRequest.id != getId())
-      currentState = stopped;
-    else
-      currentState = running;
-
     /** do nothing */
   }//end execute
 };

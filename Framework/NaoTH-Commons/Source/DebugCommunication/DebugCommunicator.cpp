@@ -48,6 +48,8 @@ GError* DebugCommunicator::internalInit()
 
   if (err) return err;
 
+  g_socket_set_blocking(serverSocket, true);
+
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
 
@@ -80,7 +82,7 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   {
     gsize pos = 0;
 
-    while(err == NULL && connection != NULL && pos + 1 < size)
+    while(err == NULL && connection != NULL && pos < size)
     {
       gsize length = size-pos;
 
@@ -99,43 +101,39 @@ char* DebugCommunicator::internalReadMessage(GError** err)
   *err = NULL;
   if (connection != NULL)
   {
-    // wait until if there is data available
-    g_socket_condition_wait(connection, G_IO_IN, NULL, err);
-    if(*err == NULL)
+
+    GString* buffer = g_string_new("");
+    char c = 0;
+
+    // read until \n character found
+    while(!fatalFail && *err == NULL && c != '\n')
     {
-      // read until \0 or \n character found
-      GString* buffer = g_string_new("");
-      char c;
-
-      int bytesReceived = g_socket_receive(connection, &c, 1, NULL, NULL);
-
-      if(bytesReceived < 1)
+      if(err != NULL)
       {
-        g_string_free(buffer, true);
-        // if G_IO_IN was signalled but there was no data available this is a sign that
-        // the client was disconnected
-        return NULL;
-      }
-
-      while(*err == NULL && c != '\n')
-      {
-        if(c != '\r')
+        g_socket_set_blocking(connection, true);
+        gssize read_bytes = g_socket_receive(connection, &c, 1, NULL, err);
+        if(read_bytes < 1)
         {
-          g_string_append_c(buffer,c);
+          g_string_free(buffer, true);
+          return NULL;
         }
-        g_socket_receive(connection, &c, 1, NULL, err);
       }
 
-      if(*err)
+      if(c != '\r' && c != '\n')
       {
-        g_string_free(buffer,true);
-        return NULL;
+        g_string_append_c(buffer,c);
       }
+    } // end while no \n found
 
-      g_string_append_c(buffer,'\0');
-      return g_string_free(buffer, false);
+    if(*err)
+    {
+      g_string_free(buffer,true);
+      return NULL;
     }
-  }//end if
+
+    g_string_append_c(buffer,'\0');
+    return g_string_free(buffer, false);
+  }//end if connection not null
   return NULL;
 }
 char* DebugCommunicator::readMessage()
@@ -149,7 +147,7 @@ char* DebugCommunicator::readMessage()
   char* result = internalReadMessage(&err);
   if(err)
   {
-    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in triggerRead) "
+    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
       << err->message << std::endl;
     g_free(result);
     g_error_free(err);
@@ -158,26 +156,7 @@ char* DebugCommunicator::readMessage()
   return result;
 }//end triggerRead
 
-bool DebugCommunicator::isDataAvailable()
-{
-  if(fatalFail)
-  {
-    return false;
-  }
-
-  if(connection != NULL)
-  {
-    GIOCondition ret = g_socket_condition_check(connection, G_IO_IN);
-    if(ret & G_IO_IN)
-    {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool DebugCommunicator::connect(bool blocking)
+bool DebugCommunicator::connect(unsigned int timeout)
 {
   GError* err = NULL;
 
@@ -186,9 +165,9 @@ bool DebugCommunicator::connect(bool blocking)
     // try to accept an eventually pending connection request
     if (serverSocket != NULL)
     {
-      g_socket_set_blocking(serverSocket, blocking);
+      g_socket_set_timeout(serverSocket, timeout);
       connection = g_socket_accept(serverSocket, NULL, &err);
-      g_socket_set_blocking(serverSocket, true);
+      g_socket_set_timeout(serverSocket, 0);
       if (err) return false;
 
       if (connection != NULL)

@@ -19,7 +19,7 @@ KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::Motion
 
 KeyFrameMotion::KeyFrameMotion()
   :
-  AbstractMotion(motion::NUM_OF_MOTION),
+  AbstractMotion(motion::num_of_motions),
   t(0.0),
   stiffness(0.7)
 {
@@ -91,10 +91,10 @@ void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /
 
   double timeStep = theBlackBoard.theFrameInfo.basicTimeStep;
 
-  if(currentState == stopped)
+  if(currentState == motion::stopped)
   {
     init();
-    currentState = running;
+    currentState = motion::running;
   }//end if
 
   // skip frames if necessary
@@ -104,7 +104,7 @@ void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /
     //get next transition
     getNextTransition(condition);
 
-    if(currentState == stopped)
+    if(currentState == motion::stopped)
     {
       return;
     }//end if
@@ -156,7 +156,7 @@ void KeyFrameMotion::getNextTransition(std::string condition)
     t = currentTransition.duration;
   }else
   {
-    currentState = stopped;
+    currentState = motion::stopped;
   }
 
   //printf("Transition[%s]: %d --> %d(%s)\n",condition,transition.fromKeyFrame,transition.toKeyFrame,transition.toMotionNetName);

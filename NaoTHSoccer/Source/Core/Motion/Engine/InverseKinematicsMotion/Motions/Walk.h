@@ -11,6 +11,7 @@
 #include "IKMotion.h"
 #include "Walk/FootStep.h"
 #include "Walk/FootStepPlanner.h"
+#include <list>
 
 class Walk: public IKMotion
 {
@@ -20,43 +21,64 @@ public:
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus);
   
 private:
+  struct Step {
+
+    Step():planningCycle(0),executingCycle(0),lifted(false),extendDoubleSupport(0){}
+
+    int planningCycle;
+    int executingCycle;
+    bool lifted;
+    FootStep footStep;
+    // parameters
+    // calcualted parameters of walk
+    double bodyPitchOffset;
+    int samplesDoubleSupport;
+    int samplesSingleSupport;
+    int extendDoubleSupport;
+    int numberOfCyclePerFootStep;
+  };
+
   bool FSRProtection();
   
   bool waitLanding();
   
-  InverseKinematic::CoMFeetPose genCoMFeetTrajectory(const MotionRequest& motionRequest);
+  void plan(const MotionRequest& motionRequest);
   
-  InverseKinematic::ZMPFeetPose walk(const WalkRequest& req);
+  void walk(const WalkRequest& req);
   
-  InverseKinematic::ZMPFeetPose stopWalking();
+  void stopWalking();
   
   bool canStop() const;
   
   FootStep firstStep(const WalkRequest& req);
   
-  void updateParameters();
+  void updateParameters(Step& step) const;
+
+  void calculateError();
+
+  void manageSteps(const WalkRequest& req);
+
+  void planStep();
+
+  InverseKinematic::CoMFeetPose executeStep();
   
 private:
   const IKParameters::Walk& theWalkParameters;
   
-  InverseKinematic::ZMPFeetPose theZMPFeetPose;
   InverseKinematic::CoMFeetPose theCoMFeetPose;
   
   int theWaitLandingCount;
   int theUnsupportedCount;
   
   bool isStopping;
+  bool stoppingStepFinished;
+  WalkRequest stoppingRequest;
   
-  int currentCycle;
-  FootStep currentFootStep;
+  std::list<Step> stepBuffer;
   
   FootStepPlanner theFootStepPlanner;
-  
-  // calcualted parameters of walk
-  double bodyPitchOffset;
-  int samplesDoubleSupport;
-  int samplesSingleSupport;
-  int numberOfCyclePerFootStep;
+
+  Vector3d theCoMErr;
 };
 
 #endif // _IK_MOTION_H_

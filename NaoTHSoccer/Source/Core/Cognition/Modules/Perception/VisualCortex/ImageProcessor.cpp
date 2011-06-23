@@ -38,15 +38,51 @@ ImageProcessor::ImageProcessor()
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
+  theRobotDetector = registerModule<RobotDetector>("RobotDetector");
+  theRobotDetector->setEnabled(true);
+
+  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->setEnabled(true);
+
+  theLineDetector = registerModule<LineDetector>("LineDetector");
+  theLineDetector->setEnabled(true);
+
+  theGoalDetector = registerModule<GoalDetector>("GoalDetector");
+  theGoalDetector->setEnabled(true);
+
 }//end constructor
 
 
 void ImageProcessor::execute()
 {
+  //reset the Representations:
+  
+  getBallPercept().reset();
+  getGoalPercept().reset();
+  getScanLineEdgelPercept().reset();
+  getLinePercept().reset();
+  getPlayersPercept().reset();
 
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
+
+  STOPWATCH_START("RobotDetector");
+  theRobotDetector->execute();
+  STOPWATCH_STOP("RobotDetector");
+
+  STOPWATCH_START("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->execute();
+  STOPWATCH_STOP("ScanLineEdgelDetector");
+
+  STOPWATCH_START("LineDetector");
+  theLineDetector->execute();
+  STOPWATCH_STOP("LineDetector");
+
+  STOPWATCH_START("GoalDetector");
+  theGoalDetector->execute();
+  STOPWATCH_STOP("GoalDetector");
+
 
   // estimate the relative position of the ball
   if(getBallPercept().ballWasSeen)
@@ -133,6 +169,12 @@ void ImageProcessor::execute()
 
 
 
+  //draw horizon to image
+  DEBUG_REQUEST("ImageProcessor:draw_horizon",
+    Vector2<double> a(getCameraMatrix().horizon.begin());
+    Vector2<double> b(getCameraMatrix().horizon.end());
+    LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
+  );
 
 
 
@@ -145,12 +187,15 @@ void ImageProcessor::execute()
       {
         Pixel pixel = getImage().get(x,y);
 
-        double d = (Math::sqr((255.0 - (double)pixel.u)) + Math::sqr((double)pixel.v)) / (2.0*255.0);
+        //double d = (Math::sqr((255.0 - (double)pixel.u)) + Math::sqr((double)pixel.v)) / (2.0*255.0);
+
+        double d = (Math::sqr((double)pixel.u) + Math::sqr((255.0 - (double)pixel.v))) / (2.0*255.0);
         unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
         
+        /*
         if(t > 120)
           naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
-        else
+        else*/
           naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,t,0,0);
       }//end for
     }//end for

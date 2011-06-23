@@ -18,18 +18,12 @@ SupportPolygon::~SupportPolygon()
 
 bool SupportPolygon::isLeftFootSupportable() const
 {
-  return mode == (SupportPolygon::DOUBLE |
-                  SupportPolygon::DOUBLE_LEFT |
-                  SupportPolygon::DOUBLE_RIGHT |
-                  SupportPolygon::RIGHT );
+  return ( mode & (DOUBLE | DOUBLE_LEFT | DOUBLE_RIGHT | LEFT ) ) != 0;
 }
   
 bool SupportPolygon::isRightFootSupportable() const
 {
-  return mode == (SupportPolygon::DOUBLE |
-                  SupportPolygon::DOUBLE_LEFT |
-                  SupportPolygon::DOUBLE_RIGHT |
-                  SupportPolygon::LEFT);
+  return ( mode & (DOUBLE | DOUBLE_LEFT | DOUBLE_RIGHT | RIGHT ) ) != 0;
 }
 
 std::ostream& operator <<(std::ostream& ost, const SupportPolygon& v)

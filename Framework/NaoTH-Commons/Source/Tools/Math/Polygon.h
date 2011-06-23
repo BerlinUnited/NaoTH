@@ -10,7 +10,7 @@
 
 #include "Tools/Math/PointList.h"
 #include "Tools/DataStructures/Area.h"
-#include "Tools/ImageProcessing/Moments2.h"
+#include "Tools/Math/Moments2.h"
 
 namespace Math {
 

@@ -31,34 +31,32 @@ KeyFrameMotionEngine::~KeyFrameMotionEngine()
   delete currentMotion;
 }
 
-void KeyFrameMotionEngine::loadAvailableMotionNets(const std::string& directoryName)
+void KeyFrameMotionEngine::loadAvailableMotionNets(std::string dirlocation)
 {
-/*
-  DIR *hdir;
-  struct dirent *entry;
-
-  hdir = opendir(directoryName.c_str());
-  if (hdir == NULL) return;
-  
-  cout << "KeyFrameMotionEngine: " << "load motionnets from " << directoryName << endl;
-  
-  do
+  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
-    entry = readdir(hdir);
-    if (entry)
-    {
-      std::string fileName(entry->d_name);
-      int size = fileName.size();
+    dirlocation = dirlocation + "/";
+  }
 
-      if(size > 4 && fileName.substr(size-4) == ".mef")
+  GDir* dir = g_dir_open(dirlocation.c_str(), 0, NULL);
+  if (dir != NULL)
+  {
+    const gchar* name;
+    while ((name = g_dir_read_name(dir)) != NULL)
+    {
+      if (g_str_has_suffix(name, ".mef"))
       {
-        std::string filePath(directoryName);
-        loadMotionNet(filePath.append(fileName), fileName.substr(0,size-4));
-      }//end if
-    }//end if
-  } while (entry);
-  closedir(hdir);
-  */
+        gchar* group = g_strndup(name, strlen(name) - strlen(".cfg"));
+        
+        std::string completeFileName = dirlocation + name;
+        loadMotionNet(completeFileName, std::string(group));
+
+        g_free(group);
+      }
+    }//end while
+
+    g_dir_close(dir);
+  }//end if
 }//end loadAvailableMotionNets
 
 

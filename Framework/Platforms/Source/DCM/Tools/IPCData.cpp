@@ -101,11 +101,8 @@ void LibNaothData::get(GyrometerData& data) const
 
 void LibNaothData::get(InertialSensorData& data) const
 {
-  unsigned int currentIndex = theInertialSensorDataIndex;
-    for (int i = 0; i < InertialSensorData::numOfInertialSensor; i++)
-    {
-      data.data[i] = sensorsValue[currentIndex++] + data.offset[i];
-    }
+  data.data.x = sensorsValue[theInertialSensorDataIndex];
+  data.data.y= sensorsValue[theInertialSensorDataIndex+1];
 }
 
 void LibNaothData::get(IRReceiveData& data) const

@@ -10,6 +10,7 @@
 
 #include "FootStep.h"
 #include "../IKParameters.h"
+#include "Representations/Motion/Request/WalkRequest.h"
 
 class FootStepPlanner
 {
@@ -17,12 +18,19 @@ public:
   FootStepPlanner();
   
   void updateParameters(const IKParameters& parameters);
-  
-  FootStep nextStep(const FootStep& lastStep, Pose2D step);
-  
-  FootStep firstStep(InverseKinematic::FeetPose pose, Pose2D step);
+
+  FootStep firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req);
+
+  FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
   
 private:
+  Pose2D calculateStep(const FootStep& lastStep,const WalkRequest& req);
+
+  /**
+   * @param step: the step in WalkRequest::Hip
+   */
+  FootStep nextStep(const FootStep& lastStep, Pose2D step);
+
   void restrictStepSize(Pose2D& step, const FootStep& lastStep) const;
   
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;

@@ -17,23 +17,35 @@ theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
 theUnsupportedCount(0),
 isStopping(false),
-currentCycle(0)
+stoppingStepFinished(false)
 {
-  updateParameters();
 }
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
 {
   if ( FSRProtection() ) return;
-  
-  if ( waitLanding() ) return;
-  
-  theCoMFeetPose = genCoMFeetTrajectory(motionRequest);
+
+  //calculateError();
+
+  if ( !waitLanding() )
+  {
+    plan(motionRequest);
+    theCoMFeetPose = executeStep();
+  }
   
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
   
+  theEngine.rotationStabilize(c.hip);
+
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
+
+  // force the hip joint
+  if (theMotorJointData.position[JointData::LHipRoll] < 0)
+    theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
+
+  if (theMotorJointData.position[JointData::RHipRoll] > 0)
+    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
 }
 
 bool Walk::FSRProtection()
@@ -53,14 +65,14 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0;
-  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0;
-  
+  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0.1;
+  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0.1;
+
   // don't raise two feet
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
   
-  bool rightFootSupportable = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
-  bool leftFootSupportable = theBlackBoard.theSupportPolygon.isRightFootSupportable();
+  bool leftFootSupportable = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
+  bool rightFootSupportable = theBlackBoard.theSupportPolygon.isRightFootSupportable();
 
   bool unSupporting = (raiseLeftFoot && !rightFootSupportable)
                       || (raiseRightFoot && !leftFootSupportable);
@@ -88,15 +100,15 @@ bool Walk::waitLanding()
 
 bool Walk::canStop() const
 {
-  if (isStopping)
+  if (isStopping || stepBuffer.empty() )
     return true;
     
   // wait until full step finished
-  //cycle > numberOfSamples
-  return false;
+  const Step& planningStep = stepBuffer.back();
+  return planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep;
 }
 
-CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
+void Walk::plan(const MotionRequest& motionRequest)
 {
   WalkRequest walkRequest = motionRequest.walkRequest;
   ASSERT(!Math::isNan(walkRequest.translation.x));
@@ -105,68 +117,141 @@ CoMFeetPose Walk::genCoMFeetTrajectory(const MotionRequest& motionRequest)
   
   if (motionRequest.id == getId() || !canStop() )
   {
-    theZMPFeetPose = walk(walkRequest);
+    walk(walkRequest);
+    isStopping = false;
+    stoppingStepFinished = false;
   }
   else
   {
     if (walkRequest.stopWithStand) // should end with typical stand
     {
-      theZMPFeetPose = stopWalking();
+      stopWalking();
     }
     else
     {
-      currentState = stopped;
+      currentState = motion::stopped;
     }
   }
-  
-  CoMFeetPose result = theEngine.controlZMP(theZMPFeetPose);
-  return result;
 }
 
-ZMPFeetPose Walk::walk(const WalkRequest& req)
+void Walk::manageSteps(const WalkRequest& req)
 {
-  if ( currentState == stopped )
+  if ( stepBuffer.empty() )
   {
-    updateParameters();
-    currentFootStep = firstStep(req);
-    currentCycle = 0;
-  }
-  else
-  {
-    if ( currentCycle >= numberOfCyclePerFootStep )
+    ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
+    currentZMP.localInLeftFoot();
+    Step zeroStep;
+    updateParameters(zeroStep);
+    zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
+    int prepareStep = theEngine.controlZMPstart(currentZMP);
+    zeroStep.numberOfCyclePerFootStep = prepareStep;
+    zeroStep.planningCycle = prepareStep;
+    stepBuffer.push_back(zeroStep);
+    theFootStepPlanner.updateParameters(theParameters);
+
+    // set the stiffness for walking
+    for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
     {
-      // new foot step
-      updateParameters();
-      currentFootStep = theFootStepPlanner.nextStep(currentFootStep, req);
-      currentCycle = 0;
+      theMotorJointData.stiffness[i] = theWalkParameters.stiffness;
     }
   }
-  
-  // generate ZMP and Feet trajectory
-  ZMPFeetPose result;
-  Pose3D liftFoot = FootTrajectorGenerator::genTrajectory(currentFootStep.footBegin(),
-                    currentFootStep.footEnd(),
-                    currentCycle, samplesDoubleSupport, samplesSingleSupport,
-                    theWalkParameters.stepHeight, 0, 0, 0,
-                    theWalkParameters.curveFactor);
-  switch(currentFootStep.liftingFoot())
+
+  Step& planningStep = stepBuffer.back();
+  if ( planningStep.planningCycle >= planningStep.numberOfCyclePerFootStep )
   {
-    case FootStep::LEFT:
-    {
-      result.feet.left = liftFoot;
-      result.feet.right = currentFootStep.supFoot();
-      break;
-    }
-    case FootStep::RIGHT:
-    {
-      result.feet.left = currentFootStep.supFoot();
-      result.feet.right = liftFoot;
-      break;
-    }
+    // this step is planned completely
+    // new foot step
+    Step step;
+    step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+    theFootStepPlanner.updateParameters(theParameters);
+    updateParameters(step);
+    stepBuffer.push_back(step);
   }
-  
-  result.zmp = ZMPPlanner::simplest(currentFootStep, theWalkParameters.comHeight);
-  
+}
+
+void Walk::planStep()
+{
+  Step& planningStep = stepBuffer.back();
+  ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
+  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX);
+  // TODO: change the height?
+  theEngine.controlZMPpush(Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight));
+  planningStep.planningCycle++;
+}
+
+CoMFeetPose Walk::executeStep()
+{
+  Vector3d com;
+  if ( !theEngine.controlZMPpop(com) || stepBuffer.empty() )
+  {
+    return theEngine.getCurrentCoMFeetPose();
+  }
+
+  Step& executingStep = stepBuffer.front();
+  ASSERT(executingStep.executingCycle < executingStep.planningCycle);
+
+  FootStep& exeFootStep = executingStep.footStep;
+  Pose3D* liftFoot = NULL;
+
+  CoMFeetPose result;
+  bool footSupporting;
+  switch(exeFootStep.liftingFoot())
+  {
+  case FootStep::LEFT:
+  {
+    liftFoot = &result.feet.left;
+    result.feet.right = exeFootStep.supFoot();
+    footSupporting = theBlackBoard.theSupportPolygon.isRightFootSupportable();
+    break;
+  }
+  case FootStep::RIGHT:
+  {
+    liftFoot = &result.feet.right;
+    result.feet.left = exeFootStep.supFoot();
+    footSupporting = theBlackBoard.theSupportPolygon.isLeftFootSupportable();
+    break;
+  }
+  case FootStep::NONE:
+  {
+    result.feet = exeFootStep.begin();
+    break;
+  }
+  default: ASSERT(false);
+  }
+
+  if ( liftFoot != NULL )
+  {
+
+    // checking on when the foot is lifting
+    if ( !executingStep.lifted ) // the foot is on the ground now
+    {
+      double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
+      if( executingStep.executingCycle > doubleSupportEnd ) // want to lift the foot
+      {
+        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / theBlackBoard.theFrameInfo.basicTimeStep );
+        if( !footSupporting // but another foot can not support
+            && executingStep.extendDoubleSupport < maxExtendSamples ) // allow to extend double support
+        {
+          executingStep.extendDoubleSupport++;
+        }
+        else
+        {
+          executingStep.lifted = true;
+          //cout<<"extend "<<executingStep.extendDoubleSupport<<"/"<<maxExtendSamples<<endl;
+        }
+      }
+    }
+
+    *liftFoot = FootTrajectorGenerator::genTrajectory(exeFootStep.footBegin(),
+                                                      exeFootStep.footEnd(),
+                                                      executingStep.executingCycle,
+                                                      executingStep.samplesDoubleSupport,
+                                                      executingStep.samplesSingleSupport,
+                                                      executingStep.extendDoubleSupport,
+                                                      theWalkParameters.stepHeight, 0, 0, 0,
+                                                      theWalkParameters.curveFactor);
+  }
+
   // body rotation
   double rAng = result.feet.left.rotation.getZAngle();
   double lAng = result.feet.right.rotation.getZAngle();
@@ -175,21 +260,103 @@ ZMPFeetPose Walk::walk(const WalkRequest& req)
   {
     hipRotation = Math::normalizeAngle(hipRotation + Math::pi);
   }
-  result.zmp.rotation = RotationMatrix::getRotationZ(hipRotation);
-  result.zmp.rotation.rotateY(bodyPitchOffset);
-  
-  currentState = running;
-  isStopping = false;
-  //stoppingStepFinished = false;
-    //stoppingStepCount = 0;
-  currentCycle++;
+  result.com.translation = com;
+  result.com.rotation = RotationMatrix::getRotationZ(hipRotation);
+  result.com.rotation.rotateY(executingStep.bodyPitchOffset);
+
+  executingStep.executingCycle++;
+  if ( executingStep.executingCycle >= executingStep.numberOfCyclePerFootStep )
+  {
+    ASSERT( stepBuffer.size() > 1);
+    // this step is executed
+    stepBuffer.pop_front();
+    //theCoMErr /= numberOfCyclePerFootStep;
+    theCoMErr = Vector3d();
+  }
+
+
+
   return result;
 }
 
-ZMPFeetPose Walk::stopWalking()
+void Walk::walk(const WalkRequest& req)
 {
-  ZMPFeetPose result;
-  return result;
+  manageSteps(req);
+  planStep();
+  currentState = motion::running;
+}
+
+void Walk::stopWalking()
+{
+  ////////////////////////////////////////////////////////
+  // add one step to get stand pose
+  ///////////////////////////////////////////////////////
+
+
+  if ( !isStopping ) // remember the stopping foot
+  {
+    /*
+    switch (currentFootStep.liftingFoot()) {
+    case FootStep::LEFT:
+      stoppingRequest.coordinate = WalkRequest::LFoot;
+      break;
+    case FootStep::RIGHT:
+      stoppingRequest.coordinate = WalkRequest::RFoot;
+      break;
+    }*/
+
+    stoppingRequest.coordinate = WalkRequest::Hip;
+    stoppingRequest.translation.x = 0;
+    stoppingRequest.translation.y = 0;
+    stoppingRequest.rotation = 0;
+  }
+
+  if ( !stoppingStepFinished )
+  {
+    // make stopping step
+    manageSteps(stoppingRequest);
+
+    const Step& planningStep = stepBuffer.back();
+    if ( planningStep.planningCycle == 0 )
+    {
+      Pose3D diff = planningStep.footStep.footBegin().invert() * planningStep.footStep.footEnd();
+      if ( diff.translation.abs2() < 1 && diff.rotation.getZAngle() < Math::fromDegrees(1) )
+      {
+        // don't need to move the foot
+        FootStep zeroStep(planningStep.footStep.end(), FootStep::NONE);
+        Step& lastStep = stepBuffer.back();
+        lastStep.footStep = zeroStep;
+        lastStep.numberOfCyclePerFootStep = 0;
+        stoppingStepFinished = true;
+      }
+    }
+  }
+
+  if ( !stoppingStepFinished )
+  {
+    planStep();
+  }
+  else
+  {
+    Pose3D finalLeftFoot = stepBuffer.back().footStep.end().left;
+    CoMFeetPose standPose = getStandPose(theWalkParameters.comHeight);
+    standPose.localInLeftFoot();
+    Pose3D finalBody = finalLeftFoot * standPose.com;
+    // wait for the com stops
+    if ( theEngine.controlZMPstop(finalBody.translation) )
+    {
+      currentState = motion::stopped;
+      stepBuffer.clear();
+    }
+    else
+    {
+      Step& lastStep = stepBuffer.back();
+      lastStep.planningCycle++;
+      lastStep.numberOfCyclePerFootStep = lastStep.planningCycle;
+    }
+  }
+
+  isStopping = true;
 }
 
 FootStep Walk::firstStep(const WalkRequest& req)
@@ -202,14 +369,36 @@ FootStep Walk::firstStep(const WalkRequest& req)
   return step;
 }
 
-void Walk::updateParameters()
+void Walk::updateParameters(Step& step) const
 {
   const unsigned int basicTimeStep = theBlackBoard.theFrameInfo.basicTimeStep;
   
-  bodyPitchOffset = Math::fromDegrees(theWalkParameters.bodyPitchOffset);
-  samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
-  samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
-  numberOfCyclePerFootStep = samplesDoubleSupport + samplesSingleSupport;
-  
-  theFootStepPlanner.updateParameters(theParameters);
+  step.bodyPitchOffset = Math::fromDegrees(theParameters.bodyPitchOffset);
+  step.samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
+  step.samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
+  step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
+}
+
+void Walk::calculateError()
+{
+  if ( currentState != motion::running )
+    return;
+
+  bool leftFootSupport = theCoMFeetPose.feet.left.translation.z < 0.1;
+  bool rightFootSupport = theCoMFeetPose.feet.right.translation.z < 0.1;
+
+  // at least one support foot
+  ASSERT( leftFootSupport || rightFootSupport );
+
+  // calculate error of com
+  KinematicChain::LinkID supFoot = leftFootSupport ? KinematicChain::LFoot : KinematicChain::RFoot;
+  Pose3D footObs = theBlackBoard.theKinematicChain.theLinks[supFoot].M;
+  footObs.translate(0, 0, -NaoInfo::FootHeight);
+  Vector3d comObs = footObs.rotation * ( footObs.invert() * theBlackBoard.theKinematicChain.CoM );
+
+  const Pose3D& footRef = leftFootSupport ? theCoMFeetPose.feet.left : theCoMFeetPose.feet.right;
+  Vector3d comRef = footRef.invert() * theCoMFeetPose.com.translation;
+  Vector3d comErr = comObs - comRef;
+
+  theCoMErr += comErr;
 }

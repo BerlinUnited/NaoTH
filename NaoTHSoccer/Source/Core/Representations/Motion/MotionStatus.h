@@ -35,8 +35,8 @@ public:
   MotionStatus()
   :
   time(0),
-  lastMotion(motion::NUM_OF_MOTION),
-  currentMotion(motion::NUM_OF_MOTION)
+  lastMotion(motion::num_of_motions),
+  currentMotion(motion::num_of_motions)
   {
   }
 
@@ -45,6 +45,7 @@ public:
   unsigned int time;
   motion::MotionID lastMotion;
   motion::MotionID currentMotion;
+  motion::State currentMotionState;
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
 
@@ -53,6 +54,7 @@ public:
     stream << "time = " << time << '\n';
     stream << "lastMotion = " << motion::getName(lastMotion) << '\n';
     stream << "currentMotion = " << motion::getName(currentMotion) << '\n';
+    stream << "currentMotionState = " << motion::getName(currentMotionState) << '\n';
   }//end print
 };
 

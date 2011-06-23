@@ -12,7 +12,9 @@
 using namespace naoth;
 
 NaoController::NaoController()
-:theSoundHandler(NULL)
+:playerCfgLoaded(false),
+theSoundHandler(NULL),
+theTeamComm(NULL)
 {
   naothDataWriting = naothData.writing();
   
@@ -30,6 +32,8 @@ NaoController::NaoController()
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<MotorJointData>(*this);
+  registerInput<GameData>(*this);
+  registerInput<TeamMessageData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -37,6 +41,7 @@ NaoController::NaoController()
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundPlayData>(*this);
+  registerOutput<const RobotMessageData>(*this);
   
   cout<<"Init Platform"<<endl;
   Platform::getInstance().init(this);
@@ -46,6 +51,12 @@ NaoController::NaoController()
   
   std::cout << "Init SoundHandler" <<endl;
   theSoundHandler = new SoundControl();
+
+  std::cout<< "Init TeamComm"<<endl;
+  theTeamComm = new TeamCommunicator();
+
+  std::cout<< "Init SPLGameController"<<endl;
+  theGameController = new SPLGameController();
 }
 
 NaoController::~NaoController()
@@ -53,6 +64,11 @@ NaoController::~NaoController()
   if (theSoundHandler!=NULL)
   {
     delete theSoundHandler;
+  }
+
+  if ( theTeamComm != NULL)
+  {
+    delete theTeamComm;
   }
 }
 
@@ -87,7 +103,8 @@ void NaoController::getCognitionInput()
     // didn't get new sensor data
     libNaothDataReading = NULL;
   }
-  
+
+  updateFrameInfo();
   NaoControllerBase<NaoController>::getCognitionInput();
 }
   
@@ -98,4 +115,29 @@ void NaoController::setCognitionOutput()
   naothData.swapWriting();
   naothDataWriting = naothData.writing();
 }
-  
+
+void NaoController::get(TeamMessageData& data)
+{
+  data.data.clear();
+  theTeamComm->receive(data.data);
+}
+
+void NaoController::set(const RobotMessageData& data)
+{
+  theTeamComm->send(data.data);
+}
+
+void NaoController::get(GameData& data)
+{
+  if (!playerCfgLoaded)
+  {
+    playerCfgLoaded = true;
+    data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
+    data.frameNumber = theFrameInfo.frameNumber;
+  }
+
+  if ( theGameController->update(data, theFrameInfo.time) )
+  {
+    data.frameNumber = theFrameInfo.frameNumber;
+  }
+}

@@ -262,4 +262,7 @@ std::ostream& operator <<(std::ostream& ost, const Vector2<DATATYPE>& v)
     return ost;
 }
 
+typedef Vector2<float> Vector2f;
+typedef Vector2<double> Vector2d;
+
 #endif // __Vector2_h__

@@ -80,7 +80,7 @@ void NaothModule::init()
   theContorller->registerCallbacks(theMotion,(DummyCallable*)NULL);
   
   getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
-  //getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
+  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "NaothModule:init finished!" << endl;
 }
@@ -89,13 +89,15 @@ void NaothModule::motionCallbackPre()
 {
   // we are at the moment shortly before the DCM commands are send to the
   // USB bus, so put the motion execute stuff here
-  theContorller->callMotion();
+  //theContorller->callMotion();
+  theMotion->call();
+  theContorller->setMotionOutput();
 }
 
 void NaothModule::motionCallbackPost()
 {
   // right behind the sensor update from the DCM
-  // TODO: get stuff into internal buffers
+  theContorller->getMotionInput();
 }
 
 void NaothModule::exit()

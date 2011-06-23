@@ -10,6 +10,7 @@
 #define __Pose3D_h__
 
 #include "Matrix.h"
+#include "Pose2D.h"
 
 /** representation for 3D Transformation (Location + Orientation)*/
 template<typename DATATYPE>
@@ -237,5 +238,16 @@ std::ostream& operator <<(std::ostream& ost, const Pose3T<DATATYPE>& v)
 }
 
 typedef Pose3T<double> Pose3D;
+
+/* covert Pose3T to Pose2T, drop some information */
+template<typename DATATYPE>
+Pose2T<DATATYPE> reduceDimen(const Pose3T<DATATYPE>& in)
+{
+  Pose2T<DATATYPE> out;
+  out.translation.x = in.translation.x;
+  out.translation.y = in.translation.y;
+  out.rotation = in.rotation.getZAngle();
+  return out;
+}
 
 #endif // __Pose3D_h__

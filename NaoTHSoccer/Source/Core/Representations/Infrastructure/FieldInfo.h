@@ -13,12 +13,12 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/ColorClasses.h>
 #include <Tools/DataStructures/ParameterList.h>
-
+#include <Tools/DataStructures/Printable.h>
 #include "Tools/LinesTable.h"
 
 
 
-class FieldInfo : public ParameterList
+class FieldInfo : public ParameterList, public Printable
 {
 private:
   void calculateValues();
@@ -31,6 +31,8 @@ private:
 
 public:
   FieldInfo();
+
+  virtual void print(ostream& stream) const;
 
 
   //colors

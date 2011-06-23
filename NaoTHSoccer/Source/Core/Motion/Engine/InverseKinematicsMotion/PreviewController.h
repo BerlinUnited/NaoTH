@@ -29,15 +29,17 @@ public:
 
   PreviewController();
 
-  void setParameters(unsigned int stepTime, double height);
-
-  void control(const Vector2<double>& zmp, Vector2<double>& com, Vector2<double>& dcom, Vector2<double>& ddcom);
+  void control(Vector3d& com, Vector2<double>& dcom, Vector2<double>& ddcom);
 
   void clear();
   
-  void init(const Vector2<double>& com, const Vector2<double>& dcom, const Vector2<double>& ddcom);
+  void init(const Vector3d& com, const Vector2<double>& dcom, const Vector2<double>& ddcom);
 
-  void push(const Vector2<double>& zmp);
+  void push(const Vector3d& zmp);
+
+  Vector3d front() const;
+
+  Vector3d back() const;
 
   size_t previewSteps() const
   {
@@ -46,11 +48,14 @@ public:
   
   bool ready() const;
 
+  unsigned int count() const { return refZMPx.size(); }
+
 private:
+  void setHeight(double height);
+
   void update(const std::list<double>& ref, Vector3<double>&x, double& err) const;
 
   const Parameters* parameters;
-  unsigned int dt; // ms
   
   Vector3<double> theX; // x, x', x''
   Vector3<double> theY; // y, y' ,y''

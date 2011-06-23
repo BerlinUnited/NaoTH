@@ -9886,6 +9886,10 @@ public final class Representations {
     // required uint32 headMotion = 4;
     boolean hasHeadMotion();
     int getHeadMotion();
+    
+    // required uint32 currentMotionState = 5;
+    boolean hasCurrentMotionState();
+    int getCurrentMotionState();
   }
   public static final class MotionStatus extends
       com.google.protobuf.GeneratedMessage
@@ -9956,11 +9960,22 @@ public final class Representations {
       return headMotion_;
     }
     
+    // required uint32 currentMotionState = 5;
+    public static final int CURRENTMOTIONSTATE_FIELD_NUMBER = 5;
+    private int currentMotionState_;
+    public boolean hasCurrentMotionState() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public int getCurrentMotionState() {
+      return currentMotionState_;
+    }
+    
     private void initFields() {
       time_ = 0;
       lastMotion_ = 0;
       currentMotion_ = 0;
       headMotion_ = 0;
+      currentMotionState_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9983,6 +9998,10 @@ public final class Representations {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasCurrentMotionState()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -10001,6 +10020,9 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(4, headMotion_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeUInt32(5, currentMotionState_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -10026,6 +10048,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, headMotion_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, currentMotionState_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10159,6 +10185,8 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000004);
         headMotion_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
+        currentMotionState_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -10213,6 +10241,10 @@ public final class Representations {
           to_bitField0_ |= 0x00000008;
         }
         result.headMotion_ = headMotion_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.currentMotionState_ = currentMotionState_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10241,6 +10273,9 @@ public final class Representations {
         if (other.hasHeadMotion()) {
           setHeadMotion(other.getHeadMotion());
         }
+        if (other.hasCurrentMotionState()) {
+          setCurrentMotionState(other.getCurrentMotionState());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10259,6 +10294,10 @@ public final class Representations {
           return false;
         }
         if (!hasHeadMotion()) {
+          
+          return false;
+        }
+        if (!hasCurrentMotionState()) {
           
           return false;
         }
@@ -10306,6 +10345,11 @@ public final class Representations {
             case 32: {
               bitField0_ |= 0x00000008;
               headMotion_ = input.readUInt32();
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              currentMotionState_ = input.readUInt32();
               break;
             }
           }
@@ -10394,6 +10438,27 @@ public final class Representations {
       public Builder clearHeadMotion() {
         bitField0_ = (bitField0_ & ~0x00000008);
         headMotion_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required uint32 currentMotionState = 5;
+      private int currentMotionState_ ;
+      public boolean hasCurrentMotionState() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public int getCurrentMotionState() {
+        return currentMotionState_;
+      }
+      public Builder setCurrentMotionState(int value) {
+        bitField0_ |= 0x00000010;
+        currentMotionState_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCurrentMotionState() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        currentMotionState_ = 0;
         onChanged();
         return this;
       }
@@ -10986,12 +11051,12 @@ public final class Representations {
       "ssages.Intersection\0228\n\022middleCircleCente" +
       "r\030\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n" +
       "\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n" +
-      "\005valid\030\003 \003(\010\"[\n\014MotionStatus\022\014\n\004time\030\001 \002" +
+      "\005valid\030\003 \003(\010\"w\n\014MotionStatus\022\014\n\004time\030\001 \002" +
       "(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030" +
-      "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\"3\n\014OdometryDat" +
-      "a\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)" +
-      "\n\'de.hu_berlin.informatik.ki.nao.message" +
-      "s"
+      "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMoti" +
+      "onState\030\005 \002(\r\"3\n\014OdometryData\022#\n\004pose\030\001 " +
+      "\002(\0132\025.naothmessages.Pose2DB)\n\'de.hu_berl" +
+      "in.informatik.ki.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11107,7 +11172,7 @@ public final class Representations {
           internal_static_naothmessages_MotionStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionStatus_descriptor,
-              new java.lang.String[] { "Time", "LastMotion", "CurrentMotion", "HeadMotion", },
+              new java.lang.String[] { "Time", "LastMotion", "CurrentMotion", "HeadMotion", "CurrentMotionState", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.Builder.class);
           internal_static_naothmessages_OdometryData_descriptor =

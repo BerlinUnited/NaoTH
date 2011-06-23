@@ -22,6 +22,8 @@
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/LEDData.h>
 
+#include "Representations/Perception/InertialPercept.h"
+
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -30,8 +32,6 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/SupportPolygon.h"
 
-//#include "MotionEngine/InverseKinematicsMotionEngine/Tools/ReachibilityGrid.h"
-//#include "MotionEngine/InverseKinematicsMotionEngine/Tools/IKMotionParameters.h"
 
 class AbstractMotion;
 
@@ -52,19 +52,13 @@ public:
   KinematicChain theKinematicChain; // data based on sensors
   KinematicChain theKinematicChainModel; // data based on joint command (motor joint data)
   SupportPolygon theSupportPolygon;
-  // InertialMeasurement theInertialMeasurement;
 
   Vector3<double> theFSRPos[FSRData::numOfFSR];
   FrameInfo theFrameInfo;
-  //unsigned int lastTimeStamp;
-
-//  ReachibilityGrid reachibilityGrid;
-//  IKMotionParameters theIKMotionParameters;
-
-  // data copied to cognition
   AccelerometerData theAccelerometerData;
   GyrometerData theGyrometerData;
   InertialSensorData theInertialSensorData;
+  InertialPercept theInertialPercept;
   FSRData theFSRData;
   MotorJointData theMotorJointData;
   MotorJointData theLastMotorJointData;

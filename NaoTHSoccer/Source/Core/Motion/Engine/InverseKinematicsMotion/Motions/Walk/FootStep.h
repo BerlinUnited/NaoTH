@@ -16,6 +16,7 @@ class FootStep
 public:
   enum Foot {
     LEFT = 1,
+    NONE = 0,
     RIGHT = -LEFT
   };
   
@@ -34,10 +35,12 @@ public:
         break;
       }
       case RIGHT:
+      case NONE:
       {
         theFootBegin = feet.right;
         theFootEnd = feet.right;
         theSupFoot = feet.left;
+        break;
       }
     }
   }
@@ -55,6 +58,7 @@ public:
         break;
       }
       case RIGHT:
+      case NONE:
       {
         feet.left = theSupFoot;
         feet.right = theFootBegin;
@@ -76,6 +80,7 @@ public:
         break;
       }
       case RIGHT:
+      case NONE:
       {
         feet.left = theSupFoot;
         feet.right = theFootEnd;

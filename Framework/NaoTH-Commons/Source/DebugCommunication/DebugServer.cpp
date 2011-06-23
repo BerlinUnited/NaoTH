@@ -16,8 +16,10 @@
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
+  : frameEnded(false), abort(false)
 {
   m_executing = g_mutex_new();
+  m_abort = g_mutex_new();
 
   commands = g_async_queue_new();
   answers = g_async_queue_new();
@@ -39,6 +41,9 @@ void DebugServer::start(unsigned short port)
     writerThread = g_thread_create(writer_static, this, true, &err);
 
     registerCommand("help", "list available commands or get the description of a specific command", this);
+    registerCommand("endFrame",
+      "marking a frame as ended, thus the processing of rest of the messages will be done in the next cycle",
+       this);
   }
   else
   {
@@ -55,31 +60,41 @@ void DebugServer::mainReader()
   g_debug("Starting DebugServer reader loop");
   while (true)
   {
+    g_mutex_lock(m_abort);
+    if(abort)
+    {
+      g_mutex_unlock(m_abort);
+      break;
+    }
+    g_mutex_unlock(m_abort);
+
     if(!comm.isConnected())
     {
-      // connect again, wait until connction is etablished
-      comm.connect(true);
+      // connect again, wait max 1 second until connection is etablished
+      comm.connect(1);
     }
 
-    char* msg = comm.readMessage();
-
-    if (msg == NULL)
+    if(comm.isConnected())
     {
-      // error occured, clear all queues
+      char* msg = comm.readMessage();
 
-      // stop executing (so it's not messing up with our queues)
-      g_mutex_lock(m_executing);
-      clearBothQueues();
-      g_mutex_unlock(m_executing);
+      if (msg == NULL)
+      {
+        // error occured, clear all queues
 
-      // all commands are "answered", disconnect
-      comm.disconnect();
-    }
-    else
-    {
-      g_async_queue_push(commands, msg);
-    }
+        // stop executing (so it's not messing up with our queues)
+        g_mutex_lock(m_executing);
+        clearBothQueues();
+        g_mutex_unlock(m_executing);
 
+        // all commands are "answered", disconnect
+        comm.disconnect();
+      }
+      else
+      {
+        g_async_queue_push(commands, msg);
+      }
+    } // end if connected
     // always give other thread the possibility to gain control before entering
     // the loop again
     g_thread_yield();
@@ -97,16 +112,30 @@ void DebugServer::mainWriter()
   g_debug("Starting DebugServer writer loop");
   while (true)
   {
-    // wait for an answer
-    GString* answer = (GString*) g_async_queue_pop(answers);
-
-    bool success = comm.sendMessage(answer->str, answer->len+1);
-    if(!success)
+    g_mutex_lock(m_abort);
+    if(abort)
     {
-      g_warning("could not send message");
+      g_mutex_unlock(m_abort);
+      break;
     }
+    g_mutex_unlock(m_abort);
 
-    g_string_free(answer, true);
+    // wait for an answer
+    GTimeVal t;
+    g_get_current_time(&t);
+    g_time_val_add(&t, 1000*1000); // one second
+    GString* answer = (GString*) g_async_queue_timed_pop(answers, &t);
+
+    if(answer != NULL)
+    {
+      bool success = comm.sendMessage(answer->str, answer->len+1);
+      if(!success)
+      {
+        g_warning("could not send message");
+      }
+
+      g_string_free(answer, true);
+    } // end if answer != NULL
 
     // always give other thread the possibility to gain control before entering
     // the loop again
@@ -121,8 +150,10 @@ void DebugServer::execute()
 {
   g_mutex_lock(m_executing);
 
+  frameEnded = false;
+
   // handle all commands
-  while (g_async_queue_length(commands) > 0)
+  while (!frameEnded && g_async_queue_length(commands) > 0)
   {
     char* cmdRaw = (char*) g_async_queue_pop(commands);
 
@@ -132,6 +163,7 @@ void DebugServer::execute()
     g_async_queue_push(answers, answer);
 
     g_free(cmdRaw);
+
   }//end while
 
   g_mutex_unlock(m_executing);
@@ -183,10 +215,12 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
         {
           if (valueIsBase64)
           {
-            size_t len;
-            char* decoded = (char*) g_base64_decode(argv[i], (gsize*) &len);
-            arguments[lastKey].assign(decoded);
-            g_free(decoded);
+            std::string arg(argv[i]);
+            char* decoded = (char*) malloc(arg.size());
+            int decodedSize = base64Decoder.decode(arg, decoded, arg.size());
+            //char* decoded = (char*) g_base64_decode(argv[i], (gsize*) &len);
+            arguments[lastKey].assign(decoded, decodedSize);
+            free(decoded);
           } else
           {
             arguments[lastKey].assign(argv[i]);
@@ -229,7 +263,6 @@ void DebugServer::handleCommand(char* cmdRaw, GString* answer)
 void DebugServer::handleCommand(std::string command, std::map<std::string,
   std::string> arguments, GString* answer, bool encodeBase64)
 {
-
   std::stringstream answerFromHandler;
   
   if (executorMap.find(command) != executorMap.end())
@@ -245,10 +278,11 @@ void DebugServer::handleCommand(std::string command, std::map<std::string,
 
   if (encodeBase64 && str.length() > 0)
   {
-    char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
+    std::string encoded = base64Encoder.encode((const char*) str.c_str(), str.length());
+    //char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
 
-    g_string_append(answer, encoded);
-    g_free(encoded);
+    g_string_append(answer, encoded.c_str());
+//    g_free(encoded);
   } else
   {
     g_string_append(answer, str.c_str());
@@ -314,7 +348,8 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
           out << ": " << iter->second << "\n";
         }
       }
-    } else
+    }
+    else
     {
       std::string firstArg = arguments.begin()->first;
       if (descriptionMap.find(firstArg) != descriptionMap.end())
@@ -331,6 +366,10 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
 
     }
     out << "\n";
+  }
+  else if( command == "endFrame")
+  {
+    frameEnded = true;
   }
 }
 
@@ -364,11 +403,23 @@ void* DebugServer::writer_static(void* ref)
 
 DebugServer::~DebugServer()
 {
-  g_mutex_free(m_executing);
+  g_mutex_lock(m_abort);
+  abort = true;
+  g_mutex_unlock(m_abort);
 
-  g_free(readerThread);
-  g_free(writerThread);
+  // HACK: use a kind of shutdown function here (not disconnect...)
+  comm.fatalFail = true;
+
+  g_thread_join(readerThread);
+  g_thread_join(writerThread);
+
+  comm.disconnect();
+
+  g_mutex_free(m_executing);
+  g_mutex_free(m_abort);
+
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
+
 }
 

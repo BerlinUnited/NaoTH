@@ -32,6 +32,12 @@ newaction {
   end
 }
 
+if os.is("windows") then
+  dofile "helper/naocrosscompile_windows.lua"
+else
+  dofile "helper/naocrosscompile.lua"
+end
+
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
@@ -73,11 +79,14 @@ solution "NaoTHSoccer"
     targetdir "../dist/Nao"
   
   -- additional defines for windows
+  if(_OPTIONS["platform"] ~= "Nao") then
   configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
 	buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
-	              "/wd4996"} -- disable warning: "...deprecated..."
-    
+				  "/wd4996", -- disable warning: "...deprecated..."
+				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
+  end
+  
   configuration {"linux"}
     buildoptions {"-fPIC"}
       

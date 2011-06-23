@@ -15,11 +15,13 @@
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
+theInertialFilter(theBlackBoard),
 theMotionStatusWriter(NULL),
 theOdometryDataWriter(NULL),
 theHeadMotionRequestReader(NULL),
 theMotionRequestReader(NULL),
-  frameNumSinceLastMotionRequest(0)
+  frameNumSinceLastMotionRequest(0),
+  state(initial)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -77,6 +79,9 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   
   theHeadMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("HeadMotionRequest"));
   theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
+
+  selectMotion();// create init motion
+  state = initial;
 }//end init
 
 
@@ -88,24 +93,36 @@ void Motion::call()
   // process sensor data
   processSensorData();
   
-  // get orders from cognition
-  if ( !theHeadMotionRequestReader->empty() )
+  switch (state)
   {
-    string msg = theHeadMotionRequestReader->read();
-    stringstream ss(msg);
-    Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
-  }
-  
-  if ( !theMotionRequestReader->empty() )
+  case initial:
   {
-    string msg = theMotionRequestReader->read();
-    stringstream ss(msg);
-    Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
-    frameNumSinceLastMotionRequest = 0;
+    if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
+        && theBlackBoard.theMotionStatus.currentMotionState == motion::running )
+    {
+      state = running;
+    }
   }
-  else
+  case running:
   {
     frameNumSinceLastMotionRequest++;
+    // get orders from cognition
+    while ( !theHeadMotionRequestReader->empty() )
+    {
+      string msg = theHeadMotionRequestReader->read();
+      stringstream ss(msg);
+      Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
+    }
+
+    while ( !theMotionRequestReader->empty() )
+    {
+      string msg = theMotionRequestReader->read();
+      stringstream ss(msg);
+      Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
+      frameNumSinceLastMotionRequest = 0;
+    }
+    break;
+  }
   }
 
   checkWarningState();
@@ -117,8 +134,8 @@ void Motion::call()
   selectMotion();
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
-  //cout<<theBlackBoard.currentlyExecutedMotion->getName()<<endl;
-  // TODO
+  theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
+
   //STOPWATCH_STOP("MotionExecute");
   
   postProcess();
@@ -128,10 +145,12 @@ void Motion::processSensorData()
 {
   // check all joint stiffness
   theBlackBoard.theSensorJointData.checkStiffness();
+
+  theBlackBoard.theInertialPercept = theInertialFilter.filte();
   
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     theBlackBoard.theAccelerometerData,
-    theBlackBoard.theInertialSensorData,
+    theBlackBoard.theInertialPercept,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRPos,
     theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
@@ -185,18 +204,18 @@ void Motion::postProcess()
 void Motion::selectMotion()
 {
   // test if the current MotionStatus allready arrived in cognition
-  if ( theBlackBoard.theMotionStatus.time > theBlackBoard.theMotionRequest.time )
+  if ( theBlackBoard.theMotionStatus.time != theBlackBoard.theMotionRequest.time )
     return;
 
   if (theBlackBoard.theMotionStatus.currentMotion == theBlackBoard.theMotionRequest.id
-    && !theBlackBoard.currentlyExecutedMotion->isRunning())
+    && theBlackBoard.currentlyExecutedMotion->isStopped())
   {
     changeMotion(&theEmptyMotion);
   }
 
   if (theBlackBoard.theMotionStatus.currentMotion != theBlackBoard.theMotionRequest.id
     &&
-    (!theBlackBoard.currentlyExecutedMotion->isRunning() || theBlackBoard.theMotionRequest.forced))
+    (theBlackBoard.currentlyExecutedMotion->isStopped() || theBlackBoard.theMotionRequest.forced))
   {
     AbstractMotion* newMotion = NULL;
     for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin(); 
@@ -228,12 +247,14 @@ void Motion::changeMotion(AbstractMotion* m)
 
 bool Motion::exit()
 {
+  theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
   theBlackBoard.theMotionRequest.id = motion::init;
   theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-  
+  state = exiting;
+
   return (theBlackBoard.currentlyExecutedMotion != NULL)
     && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
-    && ( theBlackBoard.currentlyExecutedMotion->isFinished() );
+    && ( theBlackBoard.currentlyExecutedMotion->state() == motion::waiting );
 }//end exit
 
 void Motion::checkWarningState()
@@ -242,6 +263,7 @@ void Motion::checkWarningState()
   if ( frameNumSinceLastMotionRequest*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() > 1 )
   {
     theBlackBoard.theMotionRequest.id = motion::init;
+    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
     theBlackBoard.theLEDData.change = true;
 
     LEDData& theLEDData = theBlackBoard.theLEDData;

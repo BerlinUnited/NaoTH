@@ -9,10 +9,12 @@
 #define __IK__PARAMETERS_H_
 
 #include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Math/Vector2.h>
 
 class IKParameters : public ParameterList
 {
 public:
+  double bodyPitchOffset;
   double hipOffsetX;
   double footOffsetY;
   
@@ -21,11 +23,12 @@ public:
   } stand;
 
   struct Walk {
+    double stiffness;
     double comHeight;
-    double bodyPitchOffset;
     
     double singleSupportTime;
     double doubleSupportTime;
+    double maxExtendDoubleSupportTime;
     
     double stepHeight;
     double curveFactor;
@@ -41,7 +44,58 @@ public:
     
     int maxUnsupportedCount;
     int maxWaitLandingCount; // <0 means wait for ever until landing
+
+    double leftHipRollSingleSupFactor;
+    double rightHipRollSingleSupFactor;
   } walk;
+
+  struct RotationStabilize {
+      Vector2<double> k;
+      Vector2<double> threshold;
+  } rotationStabilize;
+
+  struct KickParameters {
+    // 
+    double shiftSpeed;
+
+    //
+    double time_for_first_preparation;
+
+    //
+    double retractionSpeed;
+
+    //
+    double takeBackSpeed;
+
+    //
+    double timeToLand;
+
+    //
+    double stabilization_time;
+
+    // prolongate the kick to make it srtonger or weaker
+    double strengthOffset;
+
+    // minimal number of cycles for the preparation
+    double minNumberOfPreKickSteps;
+    // duration of the shifting to one foot
+    double shiftTime;
+    // duration of the shifting to both feets after the kick
+    double stopTime;
+    // duration of the kicking phase
+    double kickSpeed;
+    // wait a little before taking the foot back after the kick is executed
+    double afterKickTime;
+    // the height of the hip
+    double hipHeight;
+
+    //
+    double footRadius;
+    //
+    double maxDistanceToRetract;
+
+    bool enableStaticStabilizer;
+  } kick;
   
   IKParameters();
 };
