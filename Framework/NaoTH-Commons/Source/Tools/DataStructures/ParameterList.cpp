@@ -17,15 +17,6 @@ ParameterList::ParameterList(const std::string& parentClassName)
   this->parentClassName = parentClassName;
 }//end constructor ParameterList
 
-void ParameterList::initParams()
-{
-  // first load values from configuration
-  loadFromConfig();
-  // now store them, this will create an entry for all parameters that are
-  // unknown in the configuration
-  saveToConfig();
-}
-
 unsigned int& ParameterList::registerParameter(const std::string& name, unsigned int& parameter)
 {
   ASSERT(unsignedIntParameterReferences.find(name) == unsignedIntParameterReferences.end());
@@ -115,7 +106,6 @@ void ParameterList::loadFromConfig()
 
 void ParameterList::saveToConfig()
 {
-  /*
   naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 
   for(std::map<std::string, unsigned int*>::iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); iter++)
@@ -142,7 +132,6 @@ void ParameterList::saveToConfig()
   {
     config.setBool(parentClassName, iter->first, *(iter->second));
   }//end for
-*/
 }
 
 std::string ParameterList::covertName(std::string name)
