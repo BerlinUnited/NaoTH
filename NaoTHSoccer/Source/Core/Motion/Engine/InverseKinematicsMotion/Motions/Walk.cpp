@@ -133,13 +133,13 @@ void Walk::plan(const MotionRequest& motionRequest)
   }
   else
   {
-    if (walkRequest.stopWithStand) // should end with typical stand
+    if (motionRequest.standardStand) // should end with typical stand
     {
       stopWalking();
     }
     else
     {
-      currentState = motion::stopped;
+      stopWalkingWithoutStand();
     }
   }
 }
@@ -264,17 +264,8 @@ CoMFeetPose Walk::executeStep()
                                                       theWalkParameters.curveFactor);
   }
 
-  // body rotation
-  double rAng = result.feet.left.rotation.getZAngle();
-  double lAng = result.feet.right.rotation.getZAngle();
-  double hipRotation = Math::calculateMeanAngle(rAng, lAng);
-  if (abs(Math::normalizeAngle(hipRotation - lAng)) > Math::pi_2)
-  {
-    hipRotation = Math::normalizeAngle(hipRotation + Math::pi);
-  }
   result.com.translation = com;
-  result.com.rotation = RotationMatrix::getRotationZ(hipRotation);
-  result.com.rotation.rotateY(executingStep.bodyPitchOffset);
+  result.com.rotation = calculateBodyRotation(result.feet ,executingStep.bodyPitchOffset);
 
   executingStep.executingCycle++;
   if ( executingStep.executingCycle >= executingStep.numberOfCyclePerFootStep )
@@ -286,9 +277,21 @@ CoMFeetPose Walk::executeStep()
     theCoMErr = Vector3d();
   }
 
-
-
   return result;
+}
+
+RotationMatrix Walk::calculateBodyRotation(const FeetPose& feet, double pitch) const
+{
+  double rAng = feet.left.rotation.getZAngle();
+  double lAng = feet.right.rotation.getZAngle();
+  double bodyRotation = Math::calculateMeanAngle(rAng, lAng);
+  if (abs(Math::normalizeAngle(bodyRotation - lAng)) > Math::pi_2)
+  {
+    bodyRotation = Math::normalizeAngle(bodyRotation + Math::pi);
+  }
+  RotationMatrix rot = RotationMatrix::getRotationZ(bodyRotation);
+  rot.rotateY(pitch);
+  return rot;
 }
 
 void Walk::walk(const WalkRequest& req)
@@ -356,6 +359,72 @@ void Walk::stopWalking()
     CoMFeetPose standPose = getStandPose(theWalkParameters.comHeight);
     standPose.localInLeftFoot();
     Pose3D finalBody = finalLeftFoot * standPose.com;
+    // wait for the com stops
+    if ( theEngine.controlZMPstop(finalBody.translation) )
+    {
+      currentState = motion::stopped;
+      stepBuffer.clear();
+      cout<<"walk stopped"<<endl;
+    }
+    else
+    {
+      Step& lastStep = stepBuffer.back();
+      lastStep.planningCycle++;
+      lastStep.numberOfCyclePerFootStep = lastStep.planningCycle;
+    }
+  }
+
+  isStopping = true;
+}
+
+void Walk::stopWalkingWithoutStand()
+{
+  ////////////////////////////////////////////////////////
+  // add one step to get stand pose
+  ///////////////////////////////////////////////////////
+
+  if ( currentState == motion::stopped )
+    return;
+
+  if ( !isStopping ) // remember the stopping foot
+  {
+    stoppingRequest.coordinate = WalkRequest::Hip;
+    stoppingRequest.translation.x = 0;
+    stoppingRequest.translation.y = 0;
+    stoppingRequest.rotation = 0;
+  }
+
+  if ( !stoppingStepFinished )
+  {
+    // make stopping step
+    manageSteps(stoppingRequest);
+
+    const Step& planningStep = stepBuffer.back();
+    if ( planningStep.planningCycle == 0 )
+    {
+      // just modify last planning step
+      FootStep zeroStep(planningStep.footStep.begin(), FootStep::NONE);
+      Step& lastStep = stepBuffer.back();
+      lastStep.footStep = zeroStep;
+      lastStep.numberOfCyclePerFootStep = 0;
+      stoppingStepFinished = true;
+    }
+  }
+
+  if ( !stoppingStepFinished )
+  {
+    planStep();
+  }
+  else
+  {
+    const Step& finalStep = stepBuffer.back();
+    const FeetPose& finalFeet = finalStep.footStep.end();
+    Pose3D finalBody;
+    finalBody.rotation = calculateBodyRotation(finalFeet, finalStep.bodyPitchOffset);
+    finalBody.translation = (finalFeet.left.translation + finalFeet.right.translation) * 0.5;
+    finalBody.translation.z = theWalkParameters.comHeight;
+    finalBody.translate(theParameters.hipOffsetX, 0, 0);
+
     // wait for the com stops
     if ( theEngine.controlZMPstop(finalBody.translation) )
     {
