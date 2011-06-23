@@ -144,3 +144,20 @@ void ParameterList::saveToConfig()
   }//end for
 */
 }
+
+std::string ParameterList::covertName(std::string name)
+{
+  for( string::iterator i=name.begin(); i!= name.end();  )
+  {
+    if ( *i == '[' || *i == ']' )
+    {
+      i = name.erase(i);
+    }
+    else
+    {
+      ++i;
+    }
+  }
+  return name;
+}
+
