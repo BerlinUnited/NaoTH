@@ -13,3 +13,4 @@ DebugCommunication:
 
 SoccerNaoTH:
  - basci structure finished
+ -ttest
