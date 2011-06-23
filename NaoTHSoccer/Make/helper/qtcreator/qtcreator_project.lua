@@ -47,7 +47,7 @@
     _p(2, "</valuemap>");
   end
   
-  function premake.qtcreator.build_configuration(prj, cfg, cfgCounter)
+  function premake.qtcreator.build_configuration(prj, cfg, cfgCounter, platform)
     _p(2, "<valuemap key=\"ProjectExplorer.Target.BuildConfiguration.%d\" type=\"QVariantMap\">", cfgCounter)
     _p(3, "<value key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\" type=\"QString\">%s</value>", path.getrelative(cfg.basedir, prj.solution.location))
     _p(3, "<value key=\"ProjectExplorer.BuildCOnfiguration.ToolChain\" type=\"QString\">INVALID</value>")
@@ -55,7 +55,11 @@
     -- the build steps for "Make"
     _p(3, "<valuemap key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\" type=\"QVariantMap\">")
     _p(4, "<valuemap key=\"ProjectExplorer.BuildStepList.Step.0\" type=\"QVariantMap\">")
-    _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">gmake</value>")
+    if(platform == "Native") then
+      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">gmake</value>")
+    else
+      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">--platform=\"".. platform .."\" gmake</value>")
+    end
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.Command\" type=\"QString\">premake4</value>")
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.Enabled\" type=\"bool\">true</value>")
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.WorkingDirectory\" type=\"QString\">%%{buildDir}</value>")
@@ -132,8 +136,7 @@
 		-- build configurations
 		for _, platform in ipairs(platforms) do
 		  for cfg in premake.eachconfig(prj, platform) do
-		    
-		    qc.build_configuration(prj, cfg, cfgCounter) 		     
+		    qc.build_configuration(prj, cfg, cfgCounter, platform)
 		    cfgCounter = cfgCounter + 1
 		  end
 		end
@@ -143,9 +146,9 @@
     cfgCounter = 0
 	  for _, platform in ipairs(platforms) do
 	    for cfg in premake.eachconfig(prj, platform) do
-        if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then	      
-	        qc.run_configuration(prj, cfg, cfgCounter) 		     
-	        cfgCounter = cfgCounter + 1      
+        if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
+	        qc.run_configuration(prj, cfg, cfgCounter)
+	        cfgCounter = cfgCounter + 1
         end -- if kind == *App
 	    end
 	  end
