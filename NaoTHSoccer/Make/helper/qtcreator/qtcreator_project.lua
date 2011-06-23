@@ -55,10 +55,10 @@
     -- the build steps for "Make"
     _p(3, "<valuemap key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\" type=\"QVariantMap\">")
     _p(4, "<valuemap key=\"ProjectExplorer.BuildStepList.Step.0\" type=\"QVariantMap\">")
-    if(platform == "Native") then
-      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">gmake</value>")
-    else
+    if(platform ~= "") then
       _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">--platform=\"".. platform .."\" gmake</value>")
+    else
+      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">gmake</value>")
     end
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.Command\" type=\"QString\">premake4</value>")
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.Enabled\" type=\"bool\">true</value>")
@@ -118,6 +118,10 @@
 		-- io.eol = '\r\n'
 		
 		local cc = premake[_OPTIONS.cc]
+		local userPlatform = ""
+		if(_OPTIONS["platform"] ~= nil) then
+		  userPlatform = _OPTIONS.platform
+		end
 		local platforms = premake.filterplatforms(prj.solution, cc.platforms, "Native")
 		
 		qc.header()
@@ -129,27 +133,23 @@
     _p(2, "<value key=\"ProjectExplorer.ProjectConfiguration.DisplayName\" type=\"QString\"></value>")
     _p(2, "<value key=\"ProjectExplorer.Target.ActiveBuildConfiguration\" type=\"int\">0</value>")
     _p(2, "<value key=\"ProjectExplorer.ProjectConfiguration.Id\" type=\"QString\">GenericProjectManager.GenericTarget</value>")
-  		
-		-- write out configurations
-	
 		local cfgCounter = 0
-		-- build configurations
 		for _, platform in ipairs(platforms) do
 		  for cfg in premake.eachconfig(prj, platform) do
-		    qc.build_configuration(prj, cfg, cfgCounter, platform)
+		    qc.build_configuration(prj, cfg, cfgCounter, userPlatform)
 		    cfgCounter = cfgCounter + 1
 		  end
 		end
 		_p(2, "<value key=\"ProjectExplorer.Target.BuildConfigurationCount\" type=\"int\">%d</value>", cfgCounter)
 	
 	  -- run configurations
-    cfgCounter = 0
+	cfgCounter = 0
 	  for _, platform in ipairs(platforms) do
 	    for cfg in premake.eachconfig(prj, platform) do
-        if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
+	      if(cfg.kind == "ConsoleApp" or cfg.kind == "WindowedApp") then
 	        qc.run_configuration(prj, cfg, cfgCounter)
 	        cfgCounter = cfgCounter + 1
-        end -- if kind == *App
+	      end -- if kind == *App
 	    end
 	  end
 	  _p(2, "<value key=\"ProjectExplorer.Target.RunConfigurationCount\" type=\"int\">%d</value>", cfgCounter)
