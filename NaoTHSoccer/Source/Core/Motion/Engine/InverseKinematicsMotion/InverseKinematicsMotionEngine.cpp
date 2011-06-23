@@ -221,6 +221,10 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 
 bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
 {
+  // use stablization when at least one foot is on the ground
+  if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
+    return false;
+
   Vector2d r;
   r.x = hip.rotation.getXAngle();
   r.y = hip.rotation.getYAngle();
@@ -356,4 +360,68 @@ Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
   return thePreviewController.front();
 }
 
+void InverseKinematicsMotionEngine::controlZMPclear()
+{
+  thePreviewController.clear();
+}
 
+void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&position)[JointData::numOfJoint])
+{
+  double target[JointData::LElbowYaw + 1];
+  target[JointData::RElbowYaw] = Math::fromDegrees(90);
+  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
+  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(100);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(100);
+  target[JointData::RElbowRoll] = Math::fromDegrees(30);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
+
+  // move the arm according to motion ----------------
+  /*double shouldPitchRate = 0.5;
+  double shouldRollRate = 0.5;
+  double elbowRollRate = 0.5;
+  Pose3D lFoot = pose.hip.local(pose.feet.left);
+  Pose3D rFoot = pose.hip.local(pose.feet.right);
+  target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
+  target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
+  target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
+  target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
+  target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
+  target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);*/
+  //----------------------------------------------
+
+  // move the arm accoring to interial sensor -------------
+  /*
+  if (getParameters().arm.alwaysEnabled
+    || (theBlackBoard.theMotionStatus.currentMotion == MotionRequestID::walk && getParameters().walk.useArm))
+  {
+    const InertialSensorData& isd = theBlackBoard.theInertialSensorData;
+    double shoulderPitch = isd.get(InertialSensorData::Y) * getParameters().arm.shoulderPitchInterialSensorRate;
+    double shoulderRoll = isd.get(InertialSensorData::X) * getParameters().arm.shoulderRollInterialSensorRate;
+    target[JointData::RShoulderPitch] += shoulderPitch;
+    target[JointData::LShoulderPitch] += shoulderPitch;
+    target[JointData::RShoulderRoll] += shoulderRoll;
+    target[JointData::LShoulderRoll] += shoulderRoll;
+  }*/
+  //----------------------------------------------
+
+  // make sure the arms do not collide legs --------------
+  target[JointData::RShoulderRoll] = min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
+  target[JointData::LShoulderRoll] = max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
+  //---------------------------------------------
+
+  // limit the joint range to avoid collision --------------
+
+  //---------------------------------------------
+
+  // limit the max speed -----------------------------
+  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
+  {
+    double s = target[i] - position[i];
+    s = Math::clamp(s, -max_speed, max_speed);
+    position[i] += s;
+  }
+  //----------------------------------------------
+}//end autoArms

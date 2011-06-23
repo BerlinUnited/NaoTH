@@ -75,13 +75,11 @@ public:
     InverseKinematic::CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
     InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
 
-    // use stablization when at least one foot is on the ground
-    if (theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE) {
-      theEngine.rotationStabilize(c.hip);
-    }
+    theEngine.rotationStabilize(c.hip);
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
+    theEngine.autoArms(c, theMotorJointData.position);
   }//end execute
 
 private:

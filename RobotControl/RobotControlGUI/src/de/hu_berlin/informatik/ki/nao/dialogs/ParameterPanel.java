@@ -77,7 +77,6 @@ public class ParameterPanel extends AbstractDialog
     cbParameterId = new javax.swing.JComboBox();
     jToggleButtonRefresh = new javax.swing.JToggleButton();
     jButtonSend = new javax.swing.JButton();
-    jButtonStore = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     jTextArea = new javax.swing.JTextArea();
 
@@ -103,7 +102,7 @@ public class ParameterPanel extends AbstractDialog
     });
     jToolBar1.add(jToggleButtonRefresh);
 
-    jButtonSend.setText("Send");
+    jButtonSend.setText("Set");
     jButtonSend.setFocusable(false);
     jButtonSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     jButtonSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -113,17 +112,6 @@ public class ParameterPanel extends AbstractDialog
       }
     });
     jToolBar1.add(jButtonSend);
-
-    jButtonStore.setText("Store");
-    jButtonStore.setFocusable(false);
-    jButtonStore.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButtonStore.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButtonStore.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButtonStoreActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(jButtonStore);
 
     jTextArea.setColumns(20);
     jTextArea.setRows(5);
@@ -189,18 +177,6 @@ private void sendParameters()
     jToggleButtonRefresh.setSelected(false);
   }
 }
-
-private void jButtonStoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonStoreActionPerformed
-  if (parent.checkConnected())
-  {
-    Command command = new Command(cbParameterId.getSelectedItem().toString() + ":store");
-    sendCommand(command);
-  }
-  else
-  {
-    jToggleButtonRefresh.setSelected(false);
-  }
-}//GEN-LAST:event_jButtonStoreActionPerformed
 
 private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
 {//GEN-HEADEREND:event_cbParameterIdActionPerformed
@@ -302,7 +278,6 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox cbParameterId;
   private javax.swing.JButton jButtonSend;
-  private javax.swing.JButton jButtonStore;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea jTextArea;
   private javax.swing.JToggleButton jToggleButtonRefresh;

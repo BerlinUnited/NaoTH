@@ -25,6 +25,7 @@ public:
   struct Walk {
     double stiffness;
     double comHeight;
+    double ZMPOffsetY;
     
     double singleSupportTime;
     double doubleSupportTime;
@@ -53,6 +54,10 @@ public:
       Vector2<double> k;
       Vector2<double> threshold;
   } rotationStabilize;
+
+  struct Arm {
+    double maxSpeed;
+  } arm;
 
   struct KickParameters {
     // 

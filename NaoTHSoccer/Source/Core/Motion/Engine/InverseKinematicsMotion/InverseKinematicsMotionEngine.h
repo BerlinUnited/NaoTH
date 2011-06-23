@@ -73,6 +73,8 @@ public:
 
   bool controlZMPstop(const Vector3d& finalZmp);
 
+  void controlZMPclear();
+
   /**
    * @param com return the result
    */
@@ -89,6 +91,8 @@ public:
   
   const IKParameters& getParameters() const { return theParameters; }
   
+  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[JointData::numOfJoint]);
+
 private:
 
   const MotionBlackBoard& theBlackBoard;

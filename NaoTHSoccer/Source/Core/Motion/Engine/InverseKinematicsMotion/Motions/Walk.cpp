@@ -23,22 +23,28 @@ stoppingStepFinished(false)
   
 void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatus)
 {
-  if ( FSRProtection() ) return;
-
   //calculateError();
 
-  if ( !waitLanding() )
+  if ( FSRProtection() )
+  {
+    stepBuffer.clear();
+    theEngine.controlZMPclear();
+    currentState == motion::stopped;
+    //theCoMFeetPose = getStandPose(theWalkParameters.comHeight);
+  }
+  else if ( !waitLanding() )
   {
     plan(motionRequest);
     theCoMFeetPose = executeStep();
   }
-  
+
   HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
-  
+
   theEngine.rotationStabilize(c.hip);
 
   theEngine.solveHipFeetIK(c);
   theEngine.copyLegJoints(theMotorJointData.position);
+  theEngine.autoArms(c, theMotorJointData.position);
 
   // force the hip joint
   if (theMotorJointData.position[JointData::LHipRoll] < 0)
@@ -52,9 +58,9 @@ bool Walk::FSRProtection()
 {
   // no foot on the ground, stop walking
   if ( theWalkParameters.enableFSRProtection &&
-    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE ) 
+    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
+      && canStop() )
   {
-    //TODO: clear walk?
     return true;
   }
   else
@@ -65,8 +71,13 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  bool raiseLeftFoot = theCoMFeetPose.feet.left.translation.z > 0.1;
-  bool raiseRightFoot = theCoMFeetPose.feet.right.translation.z > 0.1;
+  if ( currentState != motion::running )
+    return false;
+
+  double leftH = theCoMFeetPose.feet.left.translation.z;
+  double rightH = theCoMFeetPose.feet.right.translation.z;
+  bool raiseLeftFoot = leftH > 0.1 && leftH > rightH;
+  bool raiseRightFoot = rightH > 0.1 && rightH > leftH;
 
   // don't raise two feet
   ASSERT( !(raiseLeftFoot && raiseRightFoot) );
@@ -115,7 +126,7 @@ void Walk::plan(const MotionRequest& motionRequest)
   ASSERT(!Math::isNan(walkRequest.translation.y));
   ASSERT(!Math::isNan(walkRequest.rotation));
   
-  if (motionRequest.id == getId() || !canStop() )
+  if ( motionRequest.id == getId() || !canStop() )
   {
     walk(walkRequest);
     isStopping = false;
@@ -138,8 +149,10 @@ void Walk::manageSteps(const WalkRequest& req)
 {
   if ( stepBuffer.empty() )
   {
+    cout<<"walk start"<<endl;
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
     currentZMP.localInLeftFoot();
+    currentZMP.zmp.translation.z = theWalkParameters.comHeight;
     Step zeroStep;
     updateParameters(zeroStep);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
@@ -173,7 +186,7 @@ void Walk::planStep()
 {
   Step& planningStep = stepBuffer.back();
   ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
-  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX);
+  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX, theWalkParameters.ZMPOffsetY);
   // TODO: change the height?
   theEngine.controlZMPpush(Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight));
   planningStep.planningCycle++;
@@ -292,6 +305,8 @@ void Walk::stopWalking()
   // add one step to get stand pose
   ///////////////////////////////////////////////////////
 
+  if ( currentState == motion::stopped )
+    return;
 
   if ( !isStopping ) // remember the stopping foot
   {
@@ -347,6 +362,7 @@ void Walk::stopWalking()
     {
       currentState = motion::stopped;
       stepBuffer.clear();
+      cout<<"walk stopped"<<endl;
     }
     else
     {

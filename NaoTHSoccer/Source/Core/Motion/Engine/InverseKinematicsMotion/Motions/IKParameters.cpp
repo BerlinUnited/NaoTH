@@ -21,6 +21,7 @@ IKParameters::IKParameters()
   // walk parameter
   PARAMETER_REGISTER(walk.stiffness) = 0.7;
   PARAMETER_REGISTER(walk.comHeight) = 260;
+  PARAMETER_REGISTER(walk.ZMPOffsetY) = 5;
   PARAMETER_REGISTER(walk.singleSupportTime) = 300;
   PARAMETER_REGISTER(walk.doubleSupportTime) = 40;
   PARAMETER_REGISTER(walk.maxExtendDoubleSupportTime) = 20;
@@ -43,7 +44,9 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(rotationStabilize.k.y) = -0.2;
   PARAMETER_REGISTER(rotationStabilize.threshold.x) = 2;
   PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;
-  
+
+  // arm parameter
+  PARAMETER_REGISTER(arm.maxSpeed) = 200;
 
   // kick parameter
   PARAMETER_REGISTER(kick.shiftSpeed) = 0.05;
