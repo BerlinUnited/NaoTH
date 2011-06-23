@@ -42,14 +42,12 @@ void ParameterListDebugLoader::executeDebugCommand(const std::string& command, c
   while(itParamList != paramlists.end())
   {
     if (command == std::string(itParamList->first).append(":set"))
-    {
-      // save the old values
-      itParamList->second->saveToConfig();
-      
+    {      
       for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); iter++)
       {
-        // update global config
-        config.setRawValue(itParamList->first, iter->first, iter->second);
+        // update global config when value changed
+        if ( config.getRawValue(itParamList->first, iter->first) != iter->second )
+          config.setRawValue(itParamList->first, iter->first, iter->second);
       }
       config.save();
       // load from the changed config

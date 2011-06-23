@@ -12,7 +12,6 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include <list>
 
 using namespace naoth;
 
