@@ -30,7 +30,7 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   PARAMETER_REGISTER(goalHeight) = 800;
   PARAMETER_REGISTER(goalpostRadius) = 50;
 
-
+  loadFromConfig();
 
   calculateValues();
 }
@@ -203,3 +203,44 @@ void FieldInfo::createLinesTable()
 
   fieldLinesTable.findIntersections();
 }//end createLinesTable
+
+void FieldInfo::print(ostream& stream) const
+{
+  stream << "ballColor = "<< ColorClasses::getColorName( ballColor )<<"\n";
+
+  stream << "//////////////// basic values from configuration ////////////////\n";
+  stream << "ballRadius = "<< ballRadius <<"\n";
+
+  stream << "size of the whole field (including the green area outside the lines): \n";
+  stream << "xFieldLength = "<< xFieldLength <<"\n";
+  stream << "yFieldLength = "<< yFieldLength <<"\n";
+
+  stream << "size of the field lines:\n";
+  stream << "xLength = "<< xLength <<"\n";
+  stream << "yLength = "<< yLength <<"\n";
+
+  stream << "xPosOpponentPenaltyArea = "<< xPosOpponentPenaltyArea <<"\n";
+  stream << "yPosLeftPenaltyArea = "<< yPosLeftPenaltyArea <<"\n";
+
+  stream << "centerCircleRadius = "<< centerCircleRadius <<"\n";
+  stream << "fieldLinesWidth = "<< fieldLinesWidth <<"\n";
+  stream << "goalWidth = "<< goalWidth <<"\n";
+  stream << "goalHeight = "<< goalHeight <<"\n";
+  stream << "goalpostRadius = "<< goalpostRadius <<"\n";
+
+  stream << "/////////////// pre-calculated values from basic values //////////////\n";
+  stream << "xPosHalfWayLine = "<< xPosHalfWayLine <<"\n";
+
+  stream << "xPosOwnGoal = "<< xPosOwnGoal <<"\n";
+  stream << "xPosOpponentGoal = "<< xPosOpponentGoal <<"\n";
+  stream << "xPosOwnGroundline = "<< xPosOwnGroundline <<"\n";
+  stream << "xPosOpponentGroundline = "<< xPosOpponentGroundline <<"\n";
+  stream << "xPosOwnPenaltyArea = "<< xPosOwnPenaltyArea <<"\n";
+
+  stream << "yPosLeftSideline = "<< yPosLeftSideline <<"\n";
+  stream << "yPosRightSideline = "<< yPosRightSideline <<"\n";
+  stream << "yPosRightPenaltyArea = "<< yPosRightPenaltyArea <<"\n";
+
+  stream << "yPosRightGoalpost = "<< yPosRightGoalpost <<"\n";
+  stream << "yPosLeftGoalpost = "<< yPosLeftGoalpost <<"\n";
+}
