@@ -11,30 +11,6 @@
 
 using namespace naoth;
 
-void LibNaothData::setBodyID(const string& id)
-{
-  int lenBodyID = min(id.length(), sizeof(bodyID) - 1);
-  memcpy(bodyID, id.c_str(), lenBodyID);
-  bodyID[lenBodyID] = '\0';
-}
-
-void LibNaothData::setNickName(const string& name)
-{
-  int lenNickName = min(name.length(), sizeof(nickName) - 1);
-  memcpy(nickName, name.c_str(), lenNickName);
-  nickName[lenNickName] = '\0';
-}
-
-string LibNaothData::getBodyID() const
-{
-  return string(bodyID);
-}
-
-string LibNaothData::getNickName() const
-{
-  return string(nickName);
-}
-
 void LibNaothData::get(MotorJointData& data) const
 {
   data = theMotorJointData;

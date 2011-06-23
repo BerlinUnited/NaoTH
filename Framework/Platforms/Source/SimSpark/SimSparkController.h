@@ -74,10 +74,6 @@ private:
 
   double theSenseTime;
   double theStepTime; // the time of last step in seconds
-
-  //SimSparkTeamCommunicator theTeamComm;
-
-  virtual SimSparkController& getPlatform(){return *this;}
   
   InertialSensorData theInertialSensorData;
   GameData theGameData;
@@ -87,7 +83,6 @@ private:
   double theIMU[2];
 
   list<MotorJointData> theMotorJointData;
-  string theTeamName;
   string theSync;
   bool theSyncMode;
   
@@ -96,14 +91,9 @@ public:
 
   virtual ~SimSparkController();
 
-  virtual string getHardwareIdentity() const { return "simspark"; }
+  virtual string getBodyID() const;
 
-  virtual string getBodyID() const { return "naoth-simspark"; }
-
-  /* return the team name
-   *  it is useful for distinguishing players from different teams in VirtualVision
-   */
-  virtual string getBodyNickName() const {return theTeamName; }
+  virtual string getBodyNickName() const;
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);

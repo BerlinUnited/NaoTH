@@ -106,7 +106,7 @@ char* DebugCommunicator::internalReadMessage(GError** err)
     char c = 0;
 
     // read until \n character found
-    while(*err == NULL && c != '\n')
+    while(!fatalFail && *err == NULL && c != '\n')
     {
       if(err != NULL)
       {
@@ -147,7 +147,7 @@ char* DebugCommunicator::readMessage()
   char* result = internalReadMessage(&err);
   if(err)
   {
-    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in triggerRead) "
+    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
       << err->message << std::endl;
     g_free(result);
     g_error_free(err);
@@ -156,7 +156,7 @@ char* DebugCommunicator::readMessage()
   return result;
 }//end triggerRead
 
-bool DebugCommunicator::connect(bool blocking)
+bool DebugCommunicator::connect(unsigned int timeout)
 {
   GError* err = NULL;
 
@@ -165,9 +165,9 @@ bool DebugCommunicator::connect(bool blocking)
     // try to accept an eventually pending connection request
     if (serverSocket != NULL)
     {
-      g_socket_set_blocking(serverSocket, blocking);
+      g_socket_set_timeout(serverSocket, timeout);
       connection = g_socket_accept(serverSocket, NULL, &err);
-      g_socket_set_blocking(serverSocket, true);
+      g_socket_set_timeout(serverSocket, 0);
       if (err) return false;
 
       if (connection != NULL)

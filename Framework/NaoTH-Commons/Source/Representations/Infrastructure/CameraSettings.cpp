@@ -56,7 +56,6 @@ void CameraSettings::print(ostream& stream) const
 
 CameraSettingsRequest::CameraSettingsRequest()
 : ParameterList("CameraSettings"),
-    /*Platform::getInstance().theConfigPathInfo.camera_parameter+"/camera_setting.prm"),*/
   queryCameraSettings(false)
 {
   for(int i=0;i<numOfCameraSetting;i++)
@@ -64,7 +63,7 @@ CameraSettingsRequest::CameraSettingsRequest()
     registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
   }//end for
   
-  initParams();
+  loadFromConfig();
 }
 
 CurrentCameraSettings::CurrentCameraSettings()
