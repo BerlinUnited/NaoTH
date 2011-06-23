@@ -29,8 +29,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   {
     stepBuffer.clear();
     theEngine.controlZMPclear();
-    currentState == motion::stopped;
-    //theCoMFeetPose = getStandPose(theWalkParameters.comHeight);
+    currentState = motion::stopped;
   }
   else if ( !waitLanding() )
   {
