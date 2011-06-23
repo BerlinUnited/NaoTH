@@ -15,6 +15,7 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
   message.set_id(representation.id);
   message.set_forced(representation.forced);
   message.set_time(representation.time);
+  message.set_starndardstand(representation.standardStand);
   switch (representation.id)
   {
   case motion::walk:
@@ -37,6 +38,7 @@ void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest&
   representation.id = static_cast<motion::MotionID>(message.id());
   representation.forced = message.forced();
   representation.time = message.time();
+  representation.standardStand = message.starndardstand();
   if ( message.has_walkrequest() )
   {
     Serializer<WalkRequest>::deserialize(message.mutable_walkrequest(), representation.walkRequest);

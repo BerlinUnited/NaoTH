@@ -7657,6 +7657,10 @@ public final class Representations {
     boolean hasWalkRequest();
     de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest getWalkRequest();
     de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequestOrBuilder getWalkRequestOrBuilder();
+    
+    // optional bool starndardStand = 5;
+    boolean hasStarndardStand();
+    boolean getStarndardStand();
   }
   public static final class MotionRequest extends
       com.google.protobuf.GeneratedMessage
@@ -7730,11 +7734,22 @@ public final class Representations {
       return walkRequest_;
     }
     
+    // optional bool starndardStand = 5;
+    public static final int STARNDARDSTAND_FIELD_NUMBER = 5;
+    private boolean starndardStand_;
+    public boolean hasStarndardStand() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public boolean getStarndardStand() {
+      return starndardStand_;
+    }
+    
     private void initFields() {
       id_ = 0;
       time_ = 0;
       forced_ = false;
       walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
+      starndardStand_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7778,6 +7793,9 @@ public final class Representations {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, walkRequest_);
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBool(5, starndardStand_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -7802,6 +7820,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, walkRequest_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, starndardStand_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7940,6 +7962,8 @@ public final class Representations {
           walkRequestBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
+        starndardStand_ = false;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -7998,6 +8022,10 @@ public final class Representations {
         } else {
           result.walkRequest_ = walkRequestBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.starndardStand_ = starndardStand_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -8025,6 +8053,9 @@ public final class Representations {
         }
         if (other.hasWalkRequest()) {
           mergeWalkRequest(other.getWalkRequest());
+        }
+        if (other.hasStarndardStand()) {
+          setStarndardStand(other.getStarndardStand());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -8097,6 +8128,11 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setWalkRequest(subBuilder.buildPartial());
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              starndardStand_ = input.readBool();
               break;
             }
           }
@@ -8256,6 +8292,27 @@ public final class Representations {
           walkRequest_ = null;
         }
         return walkRequestBuilder_;
+      }
+      
+      // optional bool starndardStand = 5;
+      private boolean starndardStand_ ;
+      public boolean hasStarndardStand() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public boolean getStarndardStand() {
+        return starndardStand_;
+      }
+      public Builder setStarndardStand(boolean value) {
+        bitField0_ |= 0x00000010;
+        starndardStand_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearStarndardStand() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        starndardStand_ = false;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.MotionRequest)
@@ -11042,21 +11099,22 @@ public final class Representations {
       "\007 \001(\0132\034.naothmessages.DoubleVector3\022\027\n\017s" +
       "earchDirection\030\010 \001(\010\"]\n\013WalkRequest\022\022\n\nc" +
       "oordinate\030\001 \002(\r\022\025\n\rstopWithStand\030\002 \002(\010\022#" +
-      "\n\004pose\030\003 \002(\0132\025.naothmessages.Pose2D\"j\n\rM" +
-      "otionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016" +
-      "\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.na" +
-      "othmessages.WalkRequest\"\253\001\n\013LinePercept\022" +
-      ".\n\005lines\030\001 \003(\0132\037.naothmessages.FieldLine" +
-      "Segment\0222\n\rintersections\030\002 \003(\0132\033.naothme",
-      "ssages.Intersection\0228\n\022middleCircleCente" +
-      "r\030\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n" +
-      "\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n" +
-      "\005valid\030\003 \003(\010\"w\n\014MotionStatus\022\014\n\004time\030\001 \002" +
-      "(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030" +
-      "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMoti" +
-      "onState\030\005 \002(\r\"3\n\014OdometryData\022#\n\004pose\030\001 " +
-      "\002(\0132\025.naothmessages.Pose2DB)\n\'de.hu_berl" +
-      "in.informatik.ki.nao.messages"
+      "\n\004pose\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\r" +
+      "MotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022" +
+      "\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.n" +
+      "aothmessages.WalkRequest\022\026\n\016starndardSta" +
+      "nd\030\005 \001(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132" +
+      "\037.naothmessages.FieldLineSegment\0222\n\rinte",
+      "rsections\030\002 \003(\0132\033.naothmessages.Intersec" +
+      "tion\0228\n\022middleCircleCenter\030\003 \001(\0132\034.naoth" +
+      "messages.DoubleVector2\"5\n\007FSRData\022\r\n\005for" +
+      "ce\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"w\n" +
+      "\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotio" +
+      "n\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMo" +
+      "tion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\"3" +
+      "\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothmess" +
+      "ages.Pose2DB)\n\'de.hu_berlin.informatik.k" +
+      "i.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11148,7 +11206,7 @@ public final class Representations {
           internal_static_naothmessages_MotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionRequest_descriptor,
-              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", },
+              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.Builder.class);
           internal_static_naothmessages_LinePercept_descriptor =

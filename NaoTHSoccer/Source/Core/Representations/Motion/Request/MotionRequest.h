@@ -31,7 +31,8 @@ public:
   time(0),
   id(motion::init),
   forced(false),
-  standHeight(-1)
+  standHeight(-1),
+  standardStand(true)
   {
   }
 
@@ -52,6 +53,8 @@ public:
   // hich of the hip when "stand" is requested
   // if the value is < 0, then the default value is used 
   double standHeight;
+
+  bool standardStand;
 
   void reset() {
     forced = false;

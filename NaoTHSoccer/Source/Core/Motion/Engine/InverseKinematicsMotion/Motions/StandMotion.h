@@ -24,19 +24,22 @@ public:
   : IKMotion(motion::stand),
     totalTime(0),
     time(0),
-    height(-1000)
+    height(-1000),
+    standardStand(true)
   {
   }
 
   void calculateTrajectory(const MotionRequest& motionRequest)
   {
     // standing
-    if ( abs(height - motionRequest.standHeight) > 1 ) {
+    if ( abs(height - motionRequest.standHeight) > 1 || standardStand != motionRequest.standardStand ) {
+      standardStand = motionRequest.standardStand;
       // init pose
       height = motionRequest.standHeight;
       double comHeight = (motionRequest.standHeight < 0.0) ? theParameters.walk.comHeight : motionRequest.standHeight;
-      targetPose = getStandPose(comHeight);
       startPose = theEngine.getCurrentCoMFeetPose();
+      targetPose = getStandPose(comHeight, standardStand);
+
       targetPose.localInCoM();
       startPose.localInCoM();
 
@@ -86,6 +89,7 @@ private:
   double totalTime;
   double time;
   double height;
+  bool standardStand;
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
 };

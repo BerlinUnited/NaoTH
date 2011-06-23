@@ -104,6 +104,7 @@ message MotionRequest {
   required uint32 time = 2;
   required bool forced = 3;
   optional WalkRequest walkRequest = 4;
+  optional bool starndardStand = 5;
 }
 
 message LinePercept {

@@ -1435,6 +1435,13 @@ class MotionRequest : public ::google::protobuf::Message {
   inline ::naothmessages::WalkRequest* mutable_walkrequest();
   inline ::naothmessages::WalkRequest* release_walkrequest();
   
+  // optional bool starndardStand = 5;
+  inline bool has_starndardstand() const;
+  inline void clear_starndardstand();
+  static const int kStarndardStandFieldNumber = 5;
+  inline bool starndardstand() const;
+  inline void set_starndardstand(bool value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1445,6 +1452,8 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_forced();
   inline void set_has_walkrequest();
   inline void clear_has_walkrequest();
+  inline void set_has_starndardstand();
+  inline void clear_has_starndardstand();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1452,9 +1461,10 @@ class MotionRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 time_;
   ::naothmessages::WalkRequest* walkrequest_;
   bool forced_;
+  bool starndardstand_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3279,6 +3289,28 @@ inline ::naothmessages::WalkRequest* MotionRequest::release_walkrequest() {
   ::naothmessages::WalkRequest* temp = walkrequest_;
   walkrequest_ = NULL;
   return temp;
+}
+
+// optional bool starndardStand = 5;
+inline bool MotionRequest::has_starndardstand() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void MotionRequest::set_has_starndardstand() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void MotionRequest::clear_has_starndardstand() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void MotionRequest::clear_starndardstand() {
+  starndardstand_ = false;
+  clear_has_starndardstand();
+}
+inline bool MotionRequest::starndardstand() const {
+  return starndardstand_;
+}
+inline void MotionRequest::set_starndardstand(bool value) {
+  set_has_starndardstand();
+  starndardstand_ = value;
 }
 
 // -------------------------------------------------------------------
