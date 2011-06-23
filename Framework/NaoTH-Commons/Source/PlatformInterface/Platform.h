@@ -76,7 +76,6 @@ namespace naoth
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theScheme;
     CameraInfoParameter theCameraInfo;
-  //  Config theMassConfig;
 
     PlatformBase* const & thePlatformInterface;
 
