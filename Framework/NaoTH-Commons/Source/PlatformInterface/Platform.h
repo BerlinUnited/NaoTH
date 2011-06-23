@@ -35,6 +35,7 @@ namespace naoth
       theScheme(_scheme),
       thePlatformInterface(_platformInterface)
     {
+      _configDir = "Config/";
     }
 
     // cannot be copied
@@ -59,7 +60,6 @@ namespace naoth
 
       // set the the hardware identity according to platform
       _hardwareIdentity = _interface->getBodyNickName();
-      _configDir = "Config/";
       _scheme = _interface->getName(); // set to platform by default
       std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
       if(schemefile.is_open() && schemefile.good())
