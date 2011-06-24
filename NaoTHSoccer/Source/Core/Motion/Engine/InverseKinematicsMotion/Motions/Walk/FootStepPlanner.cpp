@@ -131,21 +131,42 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req)
+FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req)
 {
-  // choose foot, TODO: consider current com?
-  FootStep::Foot startFoot;
-  if (req.rotation >= theMaxTurnInner || ( abs(req.rotation) < theMaxTurnInner && req.translation.y > 0))
+  FootStep zeroStepLeft(pose, FootStep::LEFT );
+  FootStep zeroStepRight(pose, FootStep::RIGHT);
+  FootStep firstStepLeft = nextStep(zeroStepRight, req);
+  FootStep firstStepRight = nextStep(zeroStepLeft, req);
+
+  Pose3D leftMove = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
+  Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
+
+  if ( abs(req.rotation) > theMaxTurnInner )
   {
-      startFoot = FootStep::LEFT;
+    // choose foot by rotation
+    double leftTurn = leftMove.rotation.getZAngle();
+    double rightTurn = rightMove.rotation.getZAngle();
+    if ( abs(leftTurn) > abs(rightTurn) )
+    {
+      return firstStepLeft;
+    }
+    else
+    {
+      return firstStepRight;
+    }
   }
   else
   {
-      startFoot = FootStep::RIGHT;
+    // choose foot by distance
+    if ( leftMove.translation.abs2() > rightMove.translation.abs2() )
+    {
+      return firstStepLeft;
+    }
+    else
+    {
+      return firstStepRight;
+    }
   }
-
-  FootStep zeroStep(pose, static_cast<FootStep::Foot>(-startFoot) );
-  return nextStep(zeroStep, req);
 }
 
 void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) const

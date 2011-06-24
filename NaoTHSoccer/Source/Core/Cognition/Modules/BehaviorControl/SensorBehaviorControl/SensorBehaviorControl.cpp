@@ -95,7 +95,6 @@ void SensorBehaviorControl::testBehavior()
       getMotionRequest().walkRequest.translation.y = ballLeftFootPreview.y;
       getMotionRequest().walkRequest.rotation = ballLeftFootPreview.angle();
       getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
-      getMotionRequest().walkRequest.stopWithStand = false;
 
       DEBUG_REQUEST("SensorBehaviorControl:behavior:kick",
         if (diffX > -getFieldInfo().ballRadius && diffX < 10 &&
@@ -124,7 +123,6 @@ void SensorBehaviorControl::testBehavior()
         getMotionRequest().walkRequest.translation.y = 0;
         getMotionRequest().walkRequest.rotation = Math::fromDegrees(20);
         getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
-        getMotionRequest().walkRequest.stopWithStand = true;
 
         getHeadMotionRequest().id = HeadMotionRequest::search;
         getHeadMotionRequest().searchCenter = Vector3d(2000, 0, 0);
@@ -140,7 +138,6 @@ void SensorBehaviorControl::testBehavior()
     getMotionRequest().walkRequest.translation.y = 0;
     getMotionRequest().walkRequest.rotation = Math::fromDegrees(20);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
-    getMotionRequest().walkRequest.stopWithStand = true;
   );
 
 
@@ -148,7 +145,6 @@ void SensorBehaviorControl::testBehavior()
     static unsigned int last_time = getFrameInfo().time;
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
-    getMotionRequest().walkRequest.stopWithStand = true;
 
     if(last_time < 3000)
     {

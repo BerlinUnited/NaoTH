@@ -47,10 +47,10 @@ private:
   void walk(const WalkRequest& req);
   
   void stopWalking();
+
+  void stopWalkingWithoutStand();
   
   bool canStop() const;
-  
-  FootStep firstStep(const WalkRequest& req);
   
   void updateParameters(Step& step) const;
 
@@ -61,6 +61,8 @@ private:
   void planStep();
 
   InverseKinematic::CoMFeetPose executeStep();
+
+  RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
   
 private:
   const IKParameters::Walk& theWalkParameters;

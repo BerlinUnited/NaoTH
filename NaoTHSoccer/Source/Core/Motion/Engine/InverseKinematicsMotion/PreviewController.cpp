@@ -23,8 +23,7 @@ theHeight(0)
 void PreviewController::setHeight(double height)
 {
   unsigned int newHeight = (unsigned int)Math::round(height);
-  ASSERT(newHeight>=200);
-  ASSERT(newHeight<=300);
+  newHeight = Math::clamp(newHeight, 200u, 300u);
   
   if ( theHeight != newHeight )
   {

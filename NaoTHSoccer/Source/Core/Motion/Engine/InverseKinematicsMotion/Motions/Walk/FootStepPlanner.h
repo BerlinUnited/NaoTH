@@ -19,7 +19,7 @@ public:
   
   void updateParameters(const IKParameters& parameters);
 
-  FootStep firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req);
+  FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
 
   FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
   

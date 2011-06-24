@@ -1310,13 +1310,6 @@ class WalkRequest : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 coordinate() const;
   inline void set_coordinate(::google::protobuf::uint32 value);
   
-  // required bool stopWithStand = 2;
-  inline bool has_stopwithstand() const;
-  inline void clear_stopwithstand();
-  static const int kStopWithStandFieldNumber = 2;
-  inline bool stopwithstand() const;
-  inline void set_stopwithstand(bool value);
-  
   // required .naothmessages.Pose2D pose = 3;
   inline bool has_pose() const;
   inline void clear_pose();
@@ -1329,19 +1322,16 @@ class WalkRequest : public ::google::protobuf::Message {
  private:
   inline void set_has_coordinate();
   inline void clear_has_coordinate();
-  inline void set_has_stopwithstand();
-  inline void clear_has_stopwithstand();
   inline void set_has_pose();
   inline void clear_has_pose();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::uint32 coordinate_;
-  bool stopwithstand_;
   ::naothmessages::Pose2D* pose_;
+  ::google::protobuf::uint32 coordinate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1435,6 +1425,13 @@ class MotionRequest : public ::google::protobuf::Message {
   inline ::naothmessages::WalkRequest* mutable_walkrequest();
   inline ::naothmessages::WalkRequest* release_walkrequest();
   
+  // optional bool starndardStand = 5;
+  inline bool has_starndardstand() const;
+  inline void clear_starndardstand();
+  static const int kStarndardStandFieldNumber = 5;
+  inline bool starndardstand() const;
+  inline void set_starndardstand(bool value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1445,6 +1442,8 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_forced();
   inline void set_has_walkrequest();
   inline void clear_has_walkrequest();
+  inline void set_has_starndardstand();
+  inline void clear_has_starndardstand();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1452,9 +1451,10 @@ class MotionRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 time_;
   ::naothmessages::WalkRequest* walkrequest_;
   bool forced_;
+  bool starndardstand_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3131,37 +3131,15 @@ inline void WalkRequest::set_coordinate(::google::protobuf::uint32 value) {
   coordinate_ = value;
 }
 
-// required bool stopWithStand = 2;
-inline bool WalkRequest::has_stopwithstand() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void WalkRequest::set_has_stopwithstand() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void WalkRequest::clear_has_stopwithstand() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void WalkRequest::clear_stopwithstand() {
-  stopwithstand_ = false;
-  clear_has_stopwithstand();
-}
-inline bool WalkRequest::stopwithstand() const {
-  return stopwithstand_;
-}
-inline void WalkRequest::set_stopwithstand(bool value) {
-  set_has_stopwithstand();
-  stopwithstand_ = value;
-}
-
 // required .naothmessages.Pose2D pose = 3;
 inline bool WalkRequest::has_pose() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
 inline void WalkRequest::set_has_pose() {
-  _has_bits_[0] |= 0x00000004u;
+  _has_bits_[0] |= 0x00000002u;
 }
 inline void WalkRequest::clear_has_pose() {
-  _has_bits_[0] &= ~0x00000004u;
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void WalkRequest::clear_pose() {
   if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
@@ -3279,6 +3257,28 @@ inline ::naothmessages::WalkRequest* MotionRequest::release_walkrequest() {
   ::naothmessages::WalkRequest* temp = walkrequest_;
   walkrequest_ = NULL;
   return temp;
+}
+
+// optional bool starndardStand = 5;
+inline bool MotionRequest::has_starndardstand() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void MotionRequest::set_has_starndardstand() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void MotionRequest::clear_has_starndardstand() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void MotionRequest::clear_starndardstand() {
+  starndardstand_ = false;
+  clear_has_starndardstand();
+}
+inline bool MotionRequest::starndardstand() const {
+  return starndardstand_;
+}
+inline void MotionRequest::set_starndardstand(bool value) {
+  set_has_starndardstand();
+  starndardstand_ = value;
 }
 
 // -------------------------------------------------------------------

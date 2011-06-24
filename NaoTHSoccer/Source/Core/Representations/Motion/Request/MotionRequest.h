@@ -31,7 +31,8 @@ public:
   time(0),
   id(motion::init),
   forced(false),
-  standHeight(-1)
+  standHeight(-1),
+  standardStand(true)
   {
   }
 
@@ -53,6 +54,8 @@ public:
   // if the value is < 0, then the default value is used 
   double standHeight;
 
+  bool standardStand;
+
   void reset() {
     forced = false;
     id = motion::empty;
@@ -62,6 +65,7 @@ public:
   virtual void print(ostream& stream) const {
     stream << "time = " << time << '\n';
     stream << "MotionID = " << motion::getName(id) << endl;
+    stream << "standardStand = " << standardStand <<endl;
     switch (id) {
       case motion::walk:
         walkRequest.print(stream);

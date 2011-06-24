@@ -13,7 +13,8 @@
 using namespace InverseKinematic;
 
 InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
-:theBlackBoard(MotionBlackBoard::getInstance())
+:theBlackBoard(MotionBlackBoard::getInstance()),
+  rotationStabilizeFactor(0)
 {
   
 }
@@ -219,11 +220,17 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   return result;
 }
 
-bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
+bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
 {
-  // use stablization when at least one foot is on the ground
+  // disable stablization slowly when no foot is on the ground
+  const double switchingTime = 3000; // ms
+  const double switchingRate = theBlackBoard.theFrameInfo.basicTimeStep / switchingTime;
   if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
-    return false;
+    rotationStabilizeFactor -= switchingRate;
+  else
+    rotationStabilizeFactor += switchingRate;
+
+  rotationStabilizeFactor = Math::clamp(rotationStabilizeFactor, 0.0, 1.0);
 
   Vector2d r;
   r.x = hip.rotation.getXAngle();
@@ -243,6 +250,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
     {
       chestRotationStabilizerValue[i] = (e[i] - Math::sgn(e[i]) * threshold) * getParameters().rotationStabilize.k[i];
       chestRotationStabilizerValue[i] = Math::clamp(chestRotationStabilizerValue[i], -maxAngle, maxAngle);
+      chestRotationStabilizerValue[i] *= rotationStabilizeFactor;
       isWorking = true;
     }
   }
