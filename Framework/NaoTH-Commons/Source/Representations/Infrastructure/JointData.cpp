@@ -28,21 +28,19 @@ void JointData::init()
   const Configuration& cfg = Platform::getInstance().theConfiguration;
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    double maxDeg = 0;
     string jointName = JointData::getJointName((JointData::JointID)i);
     if (cfg.hasKey("joints", jointName + "Max"))
     {
-      maxDeg = cfg.getDouble("joints", jointName + "Max");
+      double maxDeg = cfg.getDouble("joints", jointName + "Max");
       max[i] = Math::fromDegrees(maxDeg);
     } else
     {
       THROW("JointData: can not get " + jointName + " max angle")
     }
 
-    double minDeg = 0;
     if (cfg.hasKey("joints", jointName + "Min"))
     {
-      minDeg = cfg.getDouble("joints", jointName + "Min");
+      double minDeg = cfg.getDouble("joints", jointName + "Min");
       min[i] = Math::fromDegrees(minDeg);
     } else
     {

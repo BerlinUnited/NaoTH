@@ -14,7 +14,7 @@
 
 //static Trace* trace = 0;
 
-Trace::Line::Line(const char* f, int l, const std::string msg)
+Trace::Line::Line(const char* f, int l, const std::string& msg)
   : 
   line(l),
   msg(msg)
