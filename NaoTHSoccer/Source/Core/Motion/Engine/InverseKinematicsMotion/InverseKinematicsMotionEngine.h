@@ -85,7 +85,7 @@ public:
   /**
    * @return if stabilizer is working
    */
-  bool rotationStabilize(Pose3D& hip) const;
+  bool rotationStabilize(Pose3D& hip);
   
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
@@ -107,6 +107,8 @@ private:
   Vector3<double> thePreviewControlCoM;
   Vector2<double> thePreviewControldCoM;
   Vector2<double> thePreviewControlddCoM;
+
+  double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
 
 #endif // _INVERSE_KINEMATCS_MOTION_ENGINE_
