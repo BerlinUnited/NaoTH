@@ -86,3 +86,5 @@ Framework/NaoTH-Commons/Make/*.creator.user
 Framework/NaoTH-Commons/Make/*.files
 NaoTHSoccer/Make/*.files
 NaoTHSoccer/Make/*.creator.user
+NaoTHSoccer/Make/NaoTHSoccer.creator
+NaoTHSoccer/Make/NaoTHSoccer-Tests.creator
