@@ -56,7 +56,6 @@ namespace naoth
     {
       stream << "frameNumber = " << frameNumber << endl;
       stream << "time(ms) = " << time << endl;
-      stream << "time(s) = " << getTimeInSeconds() << endl;
       stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << endl;
       stream << "basic time step = "<< basicTimeStep << endl;
     }

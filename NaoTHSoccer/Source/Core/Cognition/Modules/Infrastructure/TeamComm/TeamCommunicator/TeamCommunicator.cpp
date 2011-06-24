@@ -35,7 +35,7 @@ void TeamCommunicator::handleMessage(const string& data)
 
   int num = msg.playernumber();
 
-  TeamMessage::TeamMessageData& content = getTeamMessage().data[num];
+  TeamMessage::Data& content = getTeamMessage().data[num];
   content.frameInfo.time = getFrameInfo().time;
   content.frameInfo.frameNumber++;
   content.message = msg;
