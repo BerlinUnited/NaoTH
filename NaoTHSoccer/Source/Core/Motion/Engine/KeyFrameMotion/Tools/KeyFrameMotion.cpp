@@ -89,7 +89,7 @@ void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /
     condition = "run";
   }
 
-  double timeStep = theBlackBoard.theFrameInfo.basicTimeStep;
+  double timeStep = theBlackBoard.theRobotInfo.basicTimeStep;
 
   if(currentState == motion::stopped)
   {

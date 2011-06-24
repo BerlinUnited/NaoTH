@@ -224,7 +224,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
 {
   // disable stablization slowly when no foot is on the ground
   const double switchingTime = 3000; // ms
-  const double switchingRate = theBlackBoard.theFrameInfo.basicTimeStep / switchingTime;
+  const double switchingRate = theBlackBoard.theRobotInfo.basicTimeStep / switchingTime;
   if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
     rotationStabilizeFactor -= switchingRate;
   else
@@ -424,7 +424,7 @@ void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&p
   //---------------------------------------------
 
   // limit the max speed -----------------------------
-  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
   for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
   {
     double s = target[i] - position[i];

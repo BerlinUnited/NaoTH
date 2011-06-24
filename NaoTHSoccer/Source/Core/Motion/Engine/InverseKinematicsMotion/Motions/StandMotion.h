@@ -62,7 +62,7 @@ public:
 
     calculateTrajectory(motionRequest);
 
-    time += theBlackBoard.theFrameInfo.basicTimeStep;
+    time += theBlackBoard.theRobotInfo.basicTimeStep;
     double k = time / totalTime;
 
     if ( k < 1 )

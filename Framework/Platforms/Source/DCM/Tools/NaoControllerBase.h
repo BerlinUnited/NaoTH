@@ -27,7 +27,6 @@ public:
   NaoControllerBase():PlatformInterface<PlatformType>("Nao", 10),libNaothDataReading(NULL)
   {
     staticMemberPath = Platform::getInstance().theConfigDirectory+"nao.info";
-    theFrameInfo.basicTimeStep = this->getBasicTimeStep();
 
     // init shared memory
     const std::string libnaothpath = "/libnaoth";

@@ -101,7 +101,6 @@ SimSparkController::SimSparkController()
   theCognitionInputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
 
-  theFrameInfo.basicTimeStep = getBasicTimeStep();
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   GError *err = NULL;

@@ -99,14 +99,14 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     localInStandFoot(targetPose);
 
     double totalTime = targetPose.time;
-    double k = min( ((double)theBlackBoard.theFrameInfo.basicTimeStep) / totalTime, 1.0);
+    double k = min( ((double)theBlackBoard.theRobotInfo.basicTimeStep) / totalTime, 1.0);
 
     currentPose.pose = theEngine.interpolate(currentPose.pose, targetPose.pose, k);
 
-    if(targetPose.time <= theBlackBoard.theFrameInfo.basicTimeStep)
+    if(targetPose.time <= theBlackBoard.theRobotInfo.basicTimeStep)
       trajectory.pop_front();
     else
-      targetPose.time -= theBlackBoard.theFrameInfo.basicTimeStep;
+      targetPose.time -= theBlackBoard.theRobotInfo.basicTimeStep;
     
     // calculate the chest
     InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(currentPose.pose);
@@ -433,11 +433,11 @@ void IKDynamicKickMotion::action_execute(const Pose3D& kickPose)
   direction.normalize();
   kickFoot.translation = currentFootPose.translation;
   
-  for(double t = theBlackBoard.theFrameInfo.basicTimeStep; t <= t_end; t += theBlackBoard.theFrameInfo.basicTimeStep)
+  for(double t = theBlackBoard.theRobotInfo.basicTimeStep; t <= t_end; t += theBlackBoard.theRobotInfo.basicTimeStep)
   {
-    v += a*theBlackBoard.theFrameInfo.basicTimeStep;
-    kickFoot.translation += direction*v*theBlackBoard.theFrameInfo.basicTimeStep;
-    p.time = theBlackBoard.theFrameInfo.basicTimeStep;
+    v += a*theBlackBoard.theRobotInfo.basicTimeStep;
+    kickFoot.translation += direction*v*theBlackBoard.theRobotInfo.basicTimeStep;
+    p.time = theBlackBoard.theRobotInfo.basicTimeStep;
     trajectory.push_back(p);
   }//end for
 
@@ -580,8 +580,8 @@ void IKDynamicKickMotion::stopKick()
 
   // put the foot smoothly to the ground (smooth landing)
 //  p.interpolationType = InverseKinematic::None;
-  p.time = theBlackBoard.theFrameInfo.basicTimeStep;
-  double numberOfSteps = theParameters.timeToLand/theBlackBoard.theFrameInfo.basicTimeStep;
+  p.time = theBlackBoard.theRobotInfo.basicTimeStep;
+  double numberOfSteps = theParameters.timeToLand/theBlackBoard.theRobotInfo.basicTimeStep;
   for(double i = 0; i < numberOfSteps; i++)
   {
     double t = i/numberOfSteps;

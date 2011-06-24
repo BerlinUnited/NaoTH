@@ -59,7 +59,7 @@ public:
     }
 
     // increase the current time
-    t += Math::fromDegrees(speed * theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
+    t += Math::fromDegrees(speed * theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
     
     // calculate the xy-coordinates for the chest
     p.com.translation.x = cos(t) * radius;

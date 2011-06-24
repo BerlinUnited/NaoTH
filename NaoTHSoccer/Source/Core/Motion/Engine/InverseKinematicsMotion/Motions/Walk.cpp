@@ -245,7 +245,7 @@ CoMFeetPose Walk::executeStep()
       double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
       if( executingStep.executingCycle > doubleSupportEnd ) // want to lift the foot
       {
-        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / theBlackBoard.theFrameInfo.basicTimeStep );
+        int maxExtendSamples = static_cast<int>( theWalkParameters.maxExtendDoubleSupportTime / theBlackBoard.theRobotInfo.basicTimeStep );
         if( !footSupporting // but another foot can not support
             && executingStep.extendDoubleSupport < maxExtendSamples ) // allow to extend double support
         {
@@ -450,7 +450,7 @@ void Walk::stopWalkingWithoutStand()
 
 void Walk::updateParameters(Step& step) const
 {
-  const unsigned int basicTimeStep = theBlackBoard.theFrameInfo.basicTimeStep;
+  const unsigned int basicTimeStep = theBlackBoard.theRobotInfo.basicTimeStep;
   
   step.bodyPitchOffset = Math::fromDegrees(theParameters.bodyPitchOffset);
   step.samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));

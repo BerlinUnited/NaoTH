@@ -169,7 +169,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   double max_velocity_deg_in_second = 90.0;
   //TODO
   //MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
-  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 
   double stiffness = 0.7;
   //TODO
@@ -431,7 +431,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
 
   cycle++;
   int nextMotionState = (headMotionState+1)%MAXSTATE;
-  double s = cycle / ( (points[nextMotionState]-points[headMotionState]).abs() / (max_speed*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() ));
+  double s = cycle / ( (points[nextMotionState]-points[headMotionState]).abs() / (max_speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() ));
 
   if ( s > 1 )
   {

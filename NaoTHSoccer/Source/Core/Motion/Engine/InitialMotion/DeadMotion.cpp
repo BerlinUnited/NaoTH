@@ -6,7 +6,7 @@
 DeadMotion::DeadMotion():
 AbstractMotion(motion::dead)
 {
-  stiffness_increase = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() * 5;
+  stiffness_increase = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() * 5;
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {

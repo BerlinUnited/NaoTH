@@ -807,30 +807,20 @@ class FrameInfo : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 time() const;
   inline void set_time(::google::protobuf::uint32 value);
   
-  // required uint32 basicTimeStep = 3;
-  inline bool has_basictimestep() const;
-  inline void clear_basictimestep();
-  static const int kBasicTimeStepFieldNumber = 3;
-  inline ::google::protobuf::uint32 basictimestep() const;
-  inline void set_basictimestep(::google::protobuf::uint32 value);
-  
   // @@protoc_insertion_point(class_scope:naothmessages.FrameInfo)
  private:
   inline void set_has_framenumber();
   inline void clear_has_framenumber();
   inline void set_has_time();
   inline void clear_has_time();
-  inline void set_has_basictimestep();
-  inline void clear_has_basictimestep();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 framenumber_;
   ::google::protobuf::uint32 time_;
-  ::google::protobuf::uint32 basictimestep_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -2606,28 +2596,6 @@ inline ::google::protobuf::uint32 FrameInfo::time() const {
 inline void FrameInfo::set_time(::google::protobuf::uint32 value) {
   set_has_time();
   time_ = value;
-}
-
-// required uint32 basicTimeStep = 3;
-inline bool FrameInfo::has_basictimestep() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void FrameInfo::set_has_basictimestep() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void FrameInfo::clear_has_basictimestep() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void FrameInfo::clear_basictimestep() {
-  basictimestep_ = 0u;
-  clear_has_basictimestep();
-}
-inline ::google::protobuf::uint32 FrameInfo::basictimestep() const {
-  return basictimestep_;
-}
-inline void FrameInfo::set_basictimestep(::google::protobuf::uint32 value) {
-  set_has_basictimestep();
-  basictimestep_ = value;
 }
 
 // -------------------------------------------------------------------

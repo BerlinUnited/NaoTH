@@ -426,7 +426,6 @@ void Simulator::adjust_frame_time()
   if(noFrameInfo)
   {
     f.set_framenumber(*currentFrame);
-    f.set_basictimestep(60);
     lastFrameTime = 0;
   }
   else
