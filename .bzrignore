@@ -44,14 +44,11 @@ nao_robocup
 NaoTHSoccer/TODO
 Framework/NaoTH-Commons/Make/Makefile
 Framework/Platforms/Make/Makefile
-Framework/Platforms/Make/SimSpark.project
-Framework/Platforms/Make/Webots.project
 Framework/Platforms/Make/nbproject/Package-Default.bash
-NaoTHSoccer/Make/NaoTHSoccer-Tests.project
-NaoTHSoccer/Make/NaoTHSoccer.project
 NaoTHSoccer/Make/NaoTHSoccer.workspace
 SimpleSoccerAgent/Make/Makefile
 SimpleSoccerAgent/nbproject/Package-Default.bash
+*.project
 *.config
 *.creator
 *.files
