@@ -10,7 +10,6 @@ import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.frontend.MissingDockableStrategy;
-import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
@@ -64,8 +63,10 @@ public class RobotControlImpl extends javax.swing.JFrame
     new File(configlocation + "layout.dat");
 
   private DockFrontend frontend;
-  private MessageServer messageServer;
   private DialogRegistry dialogRegistry;
+
+  private MessageServer messageServer;
+  
   // Propertes
   private File fConfig;
   private Properties config;
@@ -79,8 +80,9 @@ public class RobotControlImpl extends javax.swing.JFrame
     try
     {
       // set Look and Feel before adding all the components
-      UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+      //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
       //UIManager.setLookAndFeel(new GTKLookAndFeel());
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
     catch (Exception ex)
     {

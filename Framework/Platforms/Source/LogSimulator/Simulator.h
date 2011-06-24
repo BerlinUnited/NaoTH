@@ -31,12 +31,33 @@
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/SoundData.h>
 
+//
+#include <Representations/Perception/CameraMatrix.h>
+
 #include "PlatformInterface/PlatformInterface.h"
 #include "Tools/DataStructures/Streamable.h"
+
+#include <ModuleFramework/Module.h>
 
 #define CYCLE_TIME 20
 
 using namespace naoth;
+
+
+#define LOG_REPRESENTATION_PROVIDER(representationName)\
+  BEGIN_DECLARE_MODULE(representationName##LogProvider)\
+    PROVIDE(representationName)\
+  END_DECLARE_MODULE(representationName##LogProvider)\
+  class representationName##LogProvider: public representationName##LogProviderBase\
+  {\
+  public:\
+    void init(naoth::PlatformInterfaceBase& platformInterface)\
+    {\
+      platformInterface.registerCognitionInput(get##representationName());\
+    }\
+    void execute(){}\
+  };
+
 
 class Simulator : public PlatformInterface<Simulator>
 {
@@ -60,10 +81,10 @@ public:
   void play();
   void loop();
 
-  template<class T> void generalGet(T& data, std::string name);
+  template<class T> void generalGet(T& data, std::string name) const;
 
   /////////////////////// get ///////////////////////
-  #define SIM_GET(rep) virtual void get(rep& data) {generalGet(data,#rep);}
+  #define SIM_GET(rep) virtual void get(rep& data) const {generalGet(data,#rep);}
   virtual void get(unsigned int& /*timestamp*/){};
 
   SIM_GET(FrameInfo);
@@ -79,6 +100,10 @@ public:
   SIM_GET(ButtonData);
   SIM_GET(BatteryData);
   SIM_GET(UltraSoundReceiveData);
+
+  SIM_GET(CameraMatrix);
+
+  LOG_REPRESENTATION_PROVIDER(CameraMatrix);
 
   /////////////////////// set ///////////////////////
   virtual void set(const MotorJointData& /*data*/){};
