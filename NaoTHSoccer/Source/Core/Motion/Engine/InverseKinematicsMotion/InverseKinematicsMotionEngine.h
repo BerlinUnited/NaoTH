@@ -60,24 +60,40 @@ public:
   }
 
   InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p);
-  
-  InverseKinematic::CoMFeetPose controlZMP(const InverseKinematic::ZMPFeetPose& p);
-  
-  bool stopControlZMP(const InverseKinematic::ZMPFeetPose& p, InverseKinematic::CoMFeetPose& result);
+
+  unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
+
+  int controlZMPstart(const InverseKinematic::ZMPFeetPose& start);
+
+  void controlZMPpush(const Vector3d& zmp);
+
+  Vector3d controlZMPback() const;
+
+  Vector3d controlZMPfront() const;
+
+  bool controlZMPstop(const Vector3d& finalZmp);
+
+  void controlZMPclear();
+
+  /**
+   * @param com return the result
+   */
+  bool controlZMPpop(Vector3d& com);
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
   /**
    * @return if stabilizer is working
    */
-  bool rotationStabilize(Pose3D& hip) const;
+  bool rotationStabilize(Pose3D& hip);
   
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
   const IKParameters& getParameters() const { return theParameters; }
   
+  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[JointData::numOfJoint]);
+
 private:
-  void startControlZMP(const InverseKinematic::ZMPFeetPose& target);
 
   const MotionBlackBoard& theBlackBoard;
   
@@ -86,12 +102,13 @@ private:
   Kinematics::InverseKinematics theInverseKinematics;
   
   Vector3<double> theCoMControlResult; // save CoM control result to be reused
-  
+
   PreviewController thePreviewController;
-  std::list<InverseKinematic::ZMPFeetPose> theZMPFeetPoseBuffer;
-  Vector2<double> thePreviewControlCoM;
+  Vector3<double> thePreviewControlCoM;
   Vector2<double> thePreviewControldCoM;
   Vector2<double> thePreviewControlddCoM;
+
+  double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
 
 #endif // _INVERSE_KINEMATCS_MOTION_ENGINE_

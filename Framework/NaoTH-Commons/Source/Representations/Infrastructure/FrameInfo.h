@@ -47,7 +47,7 @@ namespace naoth
      */
     double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
 
-    unsigned int time; /**< The time stamp of the data processed in the current frame in us (miliseconds). */
+    unsigned int time; /**< The time stamp of the data processed in the current frame in miliseconds. */
     unsigned int frameNumber; /**< The number of the frame. */
     
     unsigned int basicTimeStep; /**< The time of each step which depends on platforms */

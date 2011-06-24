@@ -8,72 +8,62 @@
 #ifndef _TEAMMESSAGE_H
 #define	_TEAMMESSAGE_H
 
-#include <Tools/Communication/RoboCupGameControlData.h>
 #include <Tools/Math/Vector2.h>
 #include <Messages/Messages.pb.h>
 #include <Tools/DataStructures/Printable.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 
 class TeamMessage : public Printable
 {
 public:
 
+
   TeamMessage()
   {
-    for(unsigned int i=0; i <= MAX_NUM_PLAYERS; i++)
-    {
-      messageReceived[i] = false;
-      timeWhenReceived[i] = 0;
-      frameNumberWhenReceived[i] = 0;
-    }
   };
 
-  bool messageReceived[MAX_NUM_PLAYERS+1];
-  unsigned int timeWhenReceived[MAX_NUM_PLAYERS+1];
-  unsigned int frameNumberWhenReceived[MAX_NUM_PLAYERS+1];
-  naothmessages::TeamCommMessage message[MAX_NUM_PLAYERS+1];
+  struct TeamMessageData
+  {
+    naoth::FrameInfo frameInfo;
+    naothmessages::TeamCommMessage message;
+  };
+
+  std::map<unsigned int, TeamMessageData> data;
 
   virtual ~TeamMessage() {};
 
   virtual void print(std::ostream& stream) const
   {
-    int count = 0;
-    for(int i = 1; i <= MAX_NUM_PLAYERS; i++)
+    for(std::map<unsigned int, TeamMessageData>::const_iterator i=data.begin();
+        i != data.end(); ++i)
     {
-//      if(messageReceived[i])
-      {
-        Vector2<double> ballPos;
-        ballPos.x = message[i].ballposition().x();
-        ballPos.y = message[i].ballposition().y();
-        stream << "From " << i << endl;
-        stream << "Time: " << timeWhenReceived[i] << endl;
-        stream << "Frame: " << frameNumberWhenReceived[i] << endl;
-        stream << "Message: " << endl;
-        stream << "\tPos (x; y; rotation) = "
-          << message[i].positiononfield().translation().x() << "; "
-          << message[i].positiononfield().translation().y() << "; "
-          << message[i].positiononfield().rotation() << endl;
-        stream << "\tBall (x; y; distance) = "
-          << message[i].ballposition().x() << "; " 
-          << message[i].ballposition().y() << "; "
-          << ballPos.abs() << endl;
-        stream << "TimeSinceBallwasSeen: " << message[i].timesinceballwasseen() << endl;
-        stream << "TimeToBall: "<< message[i].timetoball() <<endl;
-        stream << "wasStriker: " << (message[i].wasstriker() ? "yes" : "no") << endl;
-        stream << "isPenalized: " << (message[i].ispenalized() ? "yes" : "no") << endl;
-        if ( message[i].has_opponent() ) {
-          stream << "opponent " << message[i].opponent().number() << " : "
-            << message[i].opponent().poseonfield().translation().x() << "; "
-            << message[i].opponent().poseonfield().translation().y() << "; "
-            << message[i].opponent().poseonfield().rotation()
-            << "\n";
-        }
-        count++;
-        stream << "------------------------" << endl;
-      }//end if
+      const naothmessages::TeamCommMessage& message = i->second.message;
+      stream << "From " << i->first << endl;
+      i->second.frameInfo.print(stream);
+      stream << "Message: " << endl;
+      stream << "\tPos (x; y; rotation) = "
+             << message.positiononfield().translation().x() << "; "
+             << message.positiononfield().translation().y() << "; "
+             << message.positiononfield().rotation() << endl;
+      stream << "\tBall (x; y) = "
+             << message.ballposition().x() << "; "
+             << message.ballposition().y() << endl;
+      stream << "TimeSinceBallwasSeen: " << message.timesinceballwasseen() << endl;
+      stream << "TimeToBall: "<< message.timetoball() <<endl;
+      stream << "wasStriker: " << (message.wasstriker() ? "yes" : "no") << endl;
+      stream << "isPenalized: " << (message.ispenalized() ? "yes" : "no") << endl;
+      if ( message.has_opponent() ) {
+        stream << "opponent " << message.opponent().number() << " : "
+               << message.opponent().poseonfield().translation().x() << "; "
+               << message.opponent().poseonfield().translation().y() << "; "
+               << message.opponent().poseonfield().rotation()
+               << "\n";
+      }
+      stream << "------------------------" << endl;
     }//end for
 
     stream << "----------------------"  << endl;
-    stream << "active team-members: " << count << endl;
+    stream << "active team-members: " << data.size() << endl;
 
   }//end print
 };

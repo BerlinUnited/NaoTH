@@ -9,8 +9,8 @@
 #define __Polygon_H_
 
 #include "Tools/Math/PointList.h"
-#include "Tools/Math/Moments2.h"
 #include "Tools/DataStructures/Area.h"
+#include "Tools/Math/Moments2.h"
 
 namespace Math {
 

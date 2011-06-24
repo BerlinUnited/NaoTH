@@ -50,7 +50,6 @@ namespace naoth
     virtual ~PlatformBase();
 
     /////////////////////// get ///////////////////////
-    virtual string getHardwareIdentity() const = 0;
     virtual string getBodyID() const = 0;
     virtual string getBodyNickName() const = 0;
 

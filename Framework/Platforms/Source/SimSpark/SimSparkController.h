@@ -30,8 +30,9 @@
 #include <Representations/Infrastructure/BatteryData.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/GameData.h>
 
-#include <Representations/Infrastructure/SimSparkGameInfo.h>
+#include "SimSparkGameInfo.h"
 
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
@@ -66,26 +67,22 @@ private:
   GyrometerData theGyroData;
   AccelerometerData theAccelerometerData;
   FSRData theFSRData;
+  FrameInfo theFrameInfo;
 
   int theCameraId;
   CameraInfo theCameraInfo;
 
   double theSenseTime;
   double theStepTime; // the time of last step in seconds
-
-  //SimSparkTeamCommunicator theTeamComm;
-
-  virtual SimSparkController& getPlatform(){return *this;}
   
   InertialSensorData theInertialSensorData;
-  SimSparkGameInfo theGameInfo;
+  GameData theGameData;
   SensorJointData theSensorJointData;
   RobotMessageData theRobotMessageData; // message to other robots
   TeamMessageData theTeamMessageData; // message from other robots
   double theIMU[2];
 
   list<MotorJointData> theMotorJointData;
-  string theTeamName;
   string theSync;
   bool theSyncMode;
   
@@ -94,14 +91,9 @@ public:
 
   virtual ~SimSparkController();
 
-  virtual string getHardwareIdentity() const { return "simspark"; }
+  virtual string getBodyID() const;
 
-  virtual string getBodyID() const { return "naoth-simspark"; }
-
-  /* return the team name
-   *  it is useful for distinguishing players from different teams in VirtualVision
-   */
-  virtual string getBodyNickName() const {return theTeamName; }
+  virtual string getBodyNickName() const;
 
   /////////////////////// init ///////////////////////
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
@@ -131,7 +123,7 @@ public:
 
   void get(TeamMessageData& data);
 
-  void get(SimSparkGameInfo& data);
+  void get(GameData& data);
 
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);

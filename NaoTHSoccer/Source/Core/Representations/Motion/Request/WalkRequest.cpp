@@ -20,7 +20,6 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, std::
 void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naothmessages::WalkRequest* msg)
 {
   msg->set_coordinate(representation.coordinate);
-  msg->set_stopwithstand(representation.stopWithStand);
   msg->mutable_pose()->mutable_translation()->set_x(representation.translation.x);
   msg->mutable_pose()->mutable_translation()->set_y(representation.translation.y);
   msg->mutable_pose()->set_rotation(representation.rotation);
@@ -38,7 +37,6 @@ void Serializer<WalkRequest>::deserialize(std::istream& stream, WalkRequest& rep
 void Serializer<WalkRequest>::deserialize(naothmessages::WalkRequest* msg, WalkRequest& representation)
 {
   representation.coordinate = static_cast<WalkRequest::Coordinate>(msg->coordinate());
-  representation.stopWithStand = msg->stopwithstand();
   representation.translation.x = msg->pose().translation().x();
   representation.translation.y = msg->pose().translation().y();
   representation.rotation = msg->pose().rotation();

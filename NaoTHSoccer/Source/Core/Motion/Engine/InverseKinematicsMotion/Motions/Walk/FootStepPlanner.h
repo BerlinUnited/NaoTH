@@ -19,9 +19,9 @@ public:
   
   void updateParameters(const IKParameters& parameters);
 
-  FootStep firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req, const Vector3d& comErr);
+  FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
 
-  FootStep nextStep(const FootStep& lastStep,const WalkRequest& req, const Vector3d& comErr);
+  FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
   
 private:
   Pose2D calculateStep(const FootStep& lastStep,const WalkRequest& req);
@@ -29,7 +29,7 @@ private:
   /**
    * @param step: the step in WalkRequest::Hip
    */
-  FootStep nextStep(const FootStep& lastStep, Pose2D step, const Vector3d& comErr);
+  FootStep nextStep(const FootStep& lastStep, Pose2D step);
 
   void restrictStepSize(Pose2D& step, const FootStep& lastStep) const;
   

@@ -15,6 +15,8 @@
 
 #include <PlatformInterface/Platform.h>
 
+#include <Tools/SynchronizedFileWriter.h>
+
 Debug::Debug() : cognitionLogger("log")
 {
   // TODO: use the player and team number for defining the port
@@ -25,7 +27,14 @@ Debug::Debug() : cognitionLogger("log")
   
   REGISTER_DEBUG_COMMAND("image", "get the image of the robot", this);
   REGISTER_DEBUG_COMMAND("ping",  "gives you a pong", this);
+
+  REGISTER_DEBUG_COMMAND("file::read", "read a file, usage: file::read path=<file path>", this);
+  REGISTER_DEBUG_COMMAND("file::write", "read a file, usage: file::write path=<file path> [+]content=<content>", this);
   
+  REGISTER_DEBUG_COMMAND("colortable:load", "set the current color table", this);
+  REGISTER_DEBUG_COMMAND("colortable:file_path",
+    "return the path of the currentelly loaded colortable (needed by ColorTableTool", this);
+
   cognitionLogger.addRepresentation(&(getImage()), "Image");
   cognitionLogger.addRepresentation(&(getSensorJointData()), "SensorJointData");
   cognitionLogger.addRepresentation(&(getInertialSensorData()), "InertialSensorData");
@@ -57,6 +66,59 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   {
     outstream << "pong";
   }
+  else if (command == "file::write")
+  {
+    map<string, string>::const_iterator pIter = arguments.find("path");
+    if( pIter != arguments.end() )
+    {
+      const string& fileName = pIter->second;
+
+      map<string, string>::const_iterator cIter = arguments.find("content");
+      if (cIter != arguments.end() )
+      {
+        const string& str = cIter->second;
+        int tmp = str.size();
+        if(SynchronizedFileWriter::saveStringToFile(str, fileName))
+          outstream << fileName << " successfull written.";
+        else
+          outstream << fileName << " couldn't write file " << fileName;
+      }
+      else
+      {
+        outstream << fileName << " could not be written.";
+      }
+    }
+    else
+    {
+      outstream << "No path given";
+    }
+    return;
+  }
+  else if (command == "file::read")
+  {
+    map<string, string>::const_iterator pIter = arguments.find("path");
+    if( pIter != arguments.end() )
+    {
+      const string& fileName = pIter->second;
+      FILE* file = fopen(fileName.c_str(), "rb");
+      if (file) {
+        char c;
+        while (fread(&c, 1, 1, file)) {
+          outstream << c;
+        }//end while
+        fclose(file);
+      }
+      else
+      {
+        outstream << fileName << " could not be read.";
+      }
+    }
+    else
+    {
+      outstream << "No path given";
+    }
+    return;
+  }
   else if (command == "colortable:load")
   {
     const string file = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";
@@ -75,7 +137,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   }
   else if (command == "colortable:file_path")
   {
-    const string file = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";
+    const string file = naoth::Platform::getInstance().theConfigDirectory + "colortable.c64";
     
     if (file.length() == 0)
       outstream << "colortable file path is empty";

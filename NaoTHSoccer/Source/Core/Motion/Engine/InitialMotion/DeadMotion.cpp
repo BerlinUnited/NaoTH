@@ -29,7 +29,7 @@ void DeadMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*mot
     }
 
     return;
-  }else if(currentState == motion::stopped) // executed the first time
+  }else if( currentState != motion::running ) // executed the first time
   {
     // store hardness
     for (int i = 0; i < JointData::numOfJoint; i++)

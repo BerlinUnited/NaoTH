@@ -32,12 +32,12 @@ public:
   /**
     * Accept a connection made by the outside world.
     *
-    * @param blocking If blocking is set to true this call will wait until a
-    *        connection is available.
+    * @param timeout Time in seconds which should be waited for connection.
+    *                 0 means forever.
     *
     * @return True if connection was etablished. False on error.
     */
-  bool connect(bool blocking=false);
+  bool connect(unsigned int timeout);
   /**
     * Disconnects a existing connection.
     */
@@ -65,16 +65,14 @@ public:
 
   bool isConnected();
 
-  /** Returns true if some data is available for read, will not block. */
-  bool isDataAvailable();
+
+  bool fatalFail;
 
 private:
   GSocket* serverSocket;
   GSocket* connection;
 
   unsigned short port;
-
-  bool fatalFail;
 
   GError* internalSendMessage(const char* data, size_t size);
   GError* internalInit();

@@ -31,4 +31,4 @@ echo "Installing Google Mock"
 cd ..
 
 # compile and install projects that are included as source code
-cd Make && premake4 gmake && make && premake4 install && cd ..
+# cd Make && premake4 gmake && make && premake4 install && cd ..

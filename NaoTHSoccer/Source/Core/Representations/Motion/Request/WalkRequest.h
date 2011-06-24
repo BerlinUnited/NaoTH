@@ -30,8 +30,7 @@ public:
 
   /** constructor */
   WalkRequest():
-    coordinate(Hip),
-    stopWithStand(true)
+    coordinate(Hip)
   {};
   ~WalkRequest(){};
 
@@ -47,7 +46,6 @@ public:
   }//end getCoordinateName
   
   Coordinate coordinate;
-  bool stopWithStand; // Should the robot keep the standard stand pose or not after walking
 
   void print(ostream& stream) const
   {
@@ -55,14 +53,6 @@ public:
     stream << "y = " << translation.y << endl;
     stream << "rotation = " << rotation << endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
-    if ( stopWithStand )
-    {
-      stream << " stop with stand " <<endl;
-    }
-    else
-    {
-      stream <<" stop without stand "<<endl;
-    }
   }//end print
   
 };

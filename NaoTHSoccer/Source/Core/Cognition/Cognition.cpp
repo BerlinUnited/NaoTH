@@ -39,8 +39,10 @@
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
+#include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
+#include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -100,8 +102,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GameController);
 
   // perception
+  REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
+  REGISTER_MODULE(VirtualVisionProcessor);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);

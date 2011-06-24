@@ -24,6 +24,8 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
+#include <Representations/Infrastructure/GameData.h>
+#include <Representations/Infrastructure/RobotInfo.h>
 
 #include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -54,6 +56,8 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(UltraSoundReceiveData)
   PROVIDE(SoundCaptureData)
   PROVIDE(TeamMessageData)
+  PROVIDE(GameData)
+  PROVIDE(RobotInfo)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase

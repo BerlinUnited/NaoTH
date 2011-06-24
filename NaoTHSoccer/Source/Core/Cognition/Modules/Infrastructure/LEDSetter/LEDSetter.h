@@ -33,6 +33,8 @@ public:
 
   virtual void execute();
 private:
+
+  void copyData(const LEDRequest& data);
 };
 
 #endif	/* _LEDSETTER_H */

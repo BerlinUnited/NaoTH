@@ -35,20 +35,25 @@ NaoMotionController::~NaoMotionController()
 }
 
 void NaoMotionController::init(ALPtr<ALBroker> pB)
-{
-  std::cout << "Init Platform" << endl;
-  Platform::getInstance().init(this);
-  
+{ 
   std::cout << "Init DCMHandler" << endl;
   theDCMHandler.init(pB);
   
   // save the body ID
-  string bodyID = theDCMHandler.getBodyID();
-  std::cout << "get bodyID"<< bodyID << endl;
+  theBodyID = theDCMHandler.getBodyID();
+  std::cout << "bodyID: "<< theBodyID << endl;
   
   // save the nick name
-  string nickName = theDCMHandler.getBodyNickName();
-  std::cout << "get nickName"<< nickName << endl;
+  theBodyNickName = theDCMHandler.getBodyNickName();
+  std::cout << "nickName: "<< theBodyNickName << endl;
+
+  // save the value to file
+  ofstream os(staticMemberPath.c_str());
+  ASSERT(os.good());
+  os<<theBodyID<<"\n"<<theBodyNickName<<endl;
+
+  std::cout << "Init Platform" << endl;
+  Platform::getInstance().init(this);
 }
 
 void NaoMotionController::set(const MotorJointData& data)
@@ -59,6 +64,7 @@ void NaoMotionController::set(const MotorJointData& data)
 
 void NaoMotionController::getMotionInput()
 {
+  updateFrameInfo();
   LibNaothData* libNaothDataWriting = libNaothData.writing();
   theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
   libNaothDataReading = libNaothDataWriting;

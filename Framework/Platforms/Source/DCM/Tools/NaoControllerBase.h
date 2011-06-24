@@ -14,6 +14,7 @@
 #include "Tools/NaoTime.h"
 #include "SharedMemory.h"
 #include "PlatformInterface/PlatformInterface.h"
+#include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Process.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -25,6 +26,9 @@ class NaoControllerBase : public PlatformInterface<PlatformType>
 public:
   NaoControllerBase():PlatformInterface<PlatformType>("Nao", 10),libNaothDataReading(NULL)
   {
+    staticMemberPath = Platform::getInstance().theConfigDirectory+"nao.info";
+    theFrameInfo.basicTimeStep = this->getBasicTimeStep();
+
     // init shared memory
     const std::string libnaothpath = "/libnaoth";
     const std::string naothpath = "/naoth";
@@ -34,18 +38,11 @@ public:
     naothData.open(naothpath);
   }
 
-  virtual string getHardwareIdentity() const { return getMACaddress("eth0");}
+  virtual string getBodyID() const { return theBodyID; }
 
-  virtual string getBodyID() const { return libNaothDataReading->getBodyID(); }
-
-  virtual string getBodyNickName() const { return libNaothDataReading->getBodyID(); }
+  virtual string getBodyNickName() const { return theBodyNickName; }
   
-  void get(FrameInfo& data)
-  {
-    data.time = NaoTime::getNaoTimeInMilliSeconds();
-    data.frameNumber++;
-    data.basicTimeStep = this->getBasicTimeStep();
-  }
+  void get(FrameInfo& data) { data = theFrameInfo; }
   
   void get(unsigned int& timestamp) { if (libNaothDataReading!=NULL) timestamp = libNaothDataReading->timeStamp; }
 
@@ -73,11 +70,22 @@ protected:
     return new MessageQueue4Process(name);
   }
 
+  void updateFrameInfo()
+  {
+    theFrameInfo.time = NaoTime::getNaoTimeInMilliSeconds();
+    theFrameInfo.frameNumber++;
+  }
+
 protected:
   const LibNaothData* libNaothDataReading;
   
   SharedMemory<LibNaothData> libNaothData;
   SharedMemory<NaothData> naothData;
+  FrameInfo theFrameInfo;
+
+  std::string staticMemberPath;
+  std::string theBodyID;
+  std::string theBodyNickName;
 };
 
 } // end namespace naoth

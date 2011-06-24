@@ -1,17 +1,21 @@
 -- NaoTH controller running in the real robot
 
   
-------------------------- AL_DIR -----------------------------
-local alDir = os.getenv("AL_DIR")
+  ------------------------- AL_DIR -----------------------------
+  local alDir = os.getenv("AL_DIR")
 
--- check if the directory can be opened by lua and warn if not
-if(alDir == nil) then
-   print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. alDir .. ")!")
-   print("(PROBABLY) no compilation for DCM possible.\n")
-else
-   print("INFO: Configuring with NaoQi located in \"" .. alDir .. "\"")
-end
-----------------------------------------------------------------
+  -- check if the directory can be opened by lua and warn if not
+   if(alDir == nil) then
+    alDir = "/opt/aldebaran/info/naoqi"
+    print("Error: Enviroment variable AL_DIR not set. trying default: \"" .. alDir .. "\"")
+  end
+-- if(alDir == nil) then
+--    print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. alDir .. ")!")
+--	print("(PROBABLY) no compilation for DCM possible.\n")
+-- else
+--    print("INFO: Configuring with NaoQi located in \"" .. alDir .. "\"")
+--  end
+  ----------------------------------------------------------------
 
 if(CORE_PATH == nil or CORE == nil) then
    print("WARNING: no path for the core is set")

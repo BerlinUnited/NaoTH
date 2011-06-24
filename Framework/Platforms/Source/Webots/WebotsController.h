@@ -89,8 +89,6 @@ namespace naoth
 
     virtual WebotsController& getPlatform(){return *this;}
 
-    virtual string getHardwareIdentity() const { return "webots"; }
-
     virtual string getBodyID() const { return "naoth-webots"; }
 
     virtual string getBodyNickName() const {return "naoth"; }

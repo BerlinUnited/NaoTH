@@ -13,7 +13,8 @@
 using namespace InverseKinematic;
 
 InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
-:theBlackBoard(MotionBlackBoard::getInstance())
+:theBlackBoard(MotionBlackBoard::getInstance()),
+  rotationStabilizeFactor(0)
 {
   
 }
@@ -94,16 +95,17 @@ CoMFeetPose InverseKinematicsMotionEngine::getCurrentCoMFeetPose() const
 
 ZMPFeetPose InverseKinematicsMotionEngine::getPlannedZMPFeetPose() const
 {
-  if ( thePreviewController.ready() )
-  {
-    return theZMPFeetPoseBuffer.back();
-  }
-  
   // TODO: calculate ZMP according to sensor, return CoM as ZMP at the moment
   ZMPFeetPose result;
   CoMFeetPose com = getCurrentCoMFeetPose();
   result.zmp = com.com;
   result.feet = com.feet;
+
+  /*if ( thePreviewController.ready() )
+  {
+    result.zmp.translation = thePreviewController.back();
+  }*/
+  
   return result;
 }
 
@@ -218,8 +220,18 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   return result;
 }
 
-bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
+bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
 {
+  // disable stablization slowly when no foot is on the ground
+  const double switchingTime = 3000; // ms
+  const double switchingRate = theBlackBoard.theFrameInfo.basicTimeStep / switchingTime;
+  if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
+    rotationStabilizeFactor -= switchingRate;
+  else
+    rotationStabilizeFactor += switchingRate;
+
+  rotationStabilizeFactor = Math::clamp(rotationStabilizeFactor, 0.0, 1.0);
+
   Vector2d r;
   r.x = hip.rotation.getXAngle();
   r.y = hip.rotation.getYAngle();
@@ -238,6 +250,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip) const
     {
       chestRotationStabilizerValue[i] = (e[i] - Math::sgn(e[i]) * threshold) * getParameters().rotationStabilize.k[i];
       chestRotationStabilizerValue[i] = Math::clamp(chestRotationStabilizerValue[i], -maxAngle, maxAngle);
+      chestRotationStabilizerValue[i] *= rotationStabilizeFactor;
       isWorking = true;
     }
   }
@@ -280,75 +293,143 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   position[JointData::RHipYawPitch] = hipYawPitch;
 }
 
-void InverseKinematicsMotionEngine::startControlZMP(const ZMPFeetPose& target)
+
+int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
 {
-  ZMPFeetPose startZMPPose = getPlannedZMPFeetPose();
-  startZMPPose.localInLeftFoot();
+  // if it is not ready, it should be empty
+  ASSERT( thePreviewController.count() == 0 );
+
+  CoMFeetPose currentCoMPose = getCurrentCoMFeetPose();
+  currentCoMPose.localInLeftFoot();
 
   // here assume the foot movment can not jump
   // so we can keep them in the same coordinate
-  const Pose3D& trans = target.feet.left;
-  startZMPPose.feet.left *= trans;
-  startZMPPose.feet.right *= trans;
-  startZMPPose.zmp *= trans;
+  const Pose3D& trans = start.feet.left;
+  //currentCoMPose.feet.left *= trans;
+  //currentCoMPose.feet.right *= trans;
+  currentCoMPose.com *= trans;
 
-  thePreviewControlCoM = Vector2<double>(startZMPPose.zmp.translation.x,startZMPPose.zmp.translation.y);
+  thePreviewControlCoM = currentCoMPose.com.translation;
   thePreviewControldCoM = Vector2<double>(0,0);
   thePreviewControlddCoM = Vector2<double>(0,0);
-  thePreviewController.init(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+  thePreviewController.init(currentCoMPose.com.translation, thePreviewControldCoM, thePreviewControlddCoM);
   
-  unsigned int previewSteps = thePreviewController.previewSteps();
-  theZMPFeetPoseBuffer.clear();
+  unsigned int previewSteps = thePreviewController.previewSteps() - 1;
   thePreviewController.clear();
 
-  ZMPFeetPose myTarget = target;
-  myTarget.zmp.translation.x = startZMPPose.zmp.translation.x;
-  myTarget.zmp.translation.y = startZMPPose.zmp.translation.y;
-  for (unsigned int i = 0; i < previewSteps-1; i++)
+  for (unsigned int i = 0; i < previewSteps; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
-    ZMPFeetPose p = interpolate(startZMPPose, myTarget, t);
-    thePreviewController.push(Vector2<double>(p.zmp.translation.x, p.zmp.translation.y));
-    theZMPFeetPoseBuffer.push_back(p);
+    Pose3D p = interpolate(currentCoMPose.com, start.zmp, t);
+    thePreviewController.push(p.translation);
   }
+  return previewSteps;
 }
 
-CoMFeetPose InverseKinematicsMotionEngine::controlZMP(const ZMPFeetPose& p)
+void InverseKinematicsMotionEngine::controlZMPpush(const Vector3d& zmp)
 {
-  theZMPFeetPoseBuffer.push_back(p);
+  thePreviewController.push(zmp);
+}
 
-  Vector2<double> zmp(p.zmp.translation.x, p.zmp.translation.y);
-  thePreviewController.setParameters(theBlackBoard.theFrameInfo.basicTimeStep, p.zmp.translation.z);
-  
-  if ( !thePreviewController.ready() )
+bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
+{
+  if ( thePreviewController.ready() )
   {
-    startControlZMP(p);
+    thePreviewController.control(thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
+    com = thePreviewControlCoM;
+    return true;
   }
-  
-  thePreviewController.control(zmp, thePreviewControlCoM, thePreviewControldCoM, thePreviewControlddCoM);
-  
-  const ZMPFeetPose& bP = theZMPFeetPoseBuffer.front();
-  CoMFeetPose result;
-  result.com = bP.zmp;
-  result.feet = bP.feet;
-  theZMPFeetPoseBuffer.pop_front();
-  result.com.translation.x = thePreviewControlCoM.x;
-  result.com.translation.y = thePreviewControlCoM.y;
-  return result;
+  return false;
 }
 
-bool InverseKinematicsMotionEngine::stopControlZMP(const ZMPFeetPose& p, CoMFeetPose& result)
+bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
 {
-  result = controlZMP(p);
-  
-  // if ZMP == CoM
-  Vector2<double> diff = Vector2<double>(result.com.translation.x-p.zmp.translation.x, result.com.translation.y-p.zmp.translation.y);
-  bool stopped = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
-  
-  if ( stopped )
+  Vector3d diff = finalZmp - thePreviewControlCoM;
+  bool stoppted = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
+  if ( stoppted )
   {
     thePreviewController.clear();
   }
-  
-  return stopped;
+  else
+  {
+    controlZMPpush(finalZmp);
+  }
+
+  return stoppted;
 }
+
+Vector3d InverseKinematicsMotionEngine::controlZMPback() const
+{
+  return thePreviewController.back();
+}
+
+Vector3d InverseKinematicsMotionEngine::controlZMPfront() const
+{
+  return thePreviewController.front();
+}
+
+void InverseKinematicsMotionEngine::controlZMPclear()
+{
+  thePreviewController.clear();
+}
+
+void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&position)[JointData::numOfJoint])
+{
+  double target[JointData::LElbowYaw + 1];
+  target[JointData::RElbowYaw] = Math::fromDegrees(90);
+  target[JointData::LElbowYaw] = Math::fromDegrees(-90);
+  target[JointData::RShoulderRoll] = Math::fromDegrees(-10);
+  target[JointData::LShoulderRoll] = Math::fromDegrees(10);
+  target[JointData::RShoulderPitch] = Math::fromDegrees(100);
+  target[JointData::LShoulderPitch] = Math::fromDegrees(100);
+  target[JointData::RElbowRoll] = Math::fromDegrees(30);
+  target[JointData::LElbowRoll] = Math::fromDegrees(-30);
+
+  // move the arm according to motion ----------------
+  /*double shouldPitchRate = 0.5;
+  double shouldRollRate = 0.5;
+  double elbowRollRate = 0.5;
+  Pose3D lFoot = pose.hip.local(pose.feet.left);
+  Pose3D rFoot = pose.hip.local(pose.feet.right);
+  target[JointData::RShoulderPitch] -= (Math::fromDegrees(lFoot.translation.x) * shouldPitchRate);
+  target[JointData::RShoulderRoll] -= (Math::fromDegrees(lFoot.translation.y - NaoInfo::HipOffsetY) * shouldRollRate);
+  target[JointData::RElbowRoll] += (Math::fromDegrees(lFoot.translation.x) * elbowRollRate);
+  target[JointData::LShoulderPitch] -= (Math::fromDegrees(rFoot.translation.x) * shouldPitchRate);
+  target[JointData::LShoulderRoll] -= (Math::fromDegrees(rFoot.translation.y + NaoInfo::HipOffsetY) * shouldRollRate);
+  target[JointData::LElbowRoll] -= (Math::fromDegrees(rFoot.translation.x) * elbowRollRate);*/
+  //----------------------------------------------
+
+  // move the arm accoring to interial sensor -------------
+  /*
+  if (getParameters().arm.alwaysEnabled
+    || (theBlackBoard.theMotionStatus.currentMotion == MotionRequestID::walk && getParameters().walk.useArm))
+  {
+    const InertialSensorData& isd = theBlackBoard.theInertialSensorData;
+    double shoulderPitch = isd.get(InertialSensorData::Y) * getParameters().arm.shoulderPitchInterialSensorRate;
+    double shoulderRoll = isd.get(InertialSensorData::X) * getParameters().arm.shoulderRollInterialSensorRate;
+    target[JointData::RShoulderPitch] += shoulderPitch;
+    target[JointData::LShoulderPitch] += shoulderPitch;
+    target[JointData::RShoulderRoll] += shoulderRoll;
+    target[JointData::LShoulderRoll] += shoulderRoll;
+  }*/
+  //----------------------------------------------
+
+  // make sure the arms do not collide legs --------------
+  target[JointData::RShoulderRoll] = min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
+  target[JointData::LShoulderRoll] = max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
+  //---------------------------------------------
+
+  // limit the joint range to avoid collision --------------
+
+  //---------------------------------------------
+
+  // limit the max speed -----------------------------
+  double max_speed = Math::fromDegrees(getParameters().arm.maxSpeed) * theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  for (int i = JointData::RShoulderRoll; i <= JointData::LElbowYaw; i++)
+  {
+    double s = target[i] - position[i];
+    s = Math::clamp(s, -max_speed, max_speed);
+    position[i] += s;
+  }
+  //----------------------------------------------
+}//end autoArms
