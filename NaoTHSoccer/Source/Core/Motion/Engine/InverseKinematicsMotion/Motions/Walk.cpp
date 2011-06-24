@@ -448,16 +448,6 @@ void Walk::stopWalkingWithoutStand()
   isStopping = true;
 }
 
-FootStep Walk::firstStep(const WalkRequest& req)
-{
-  ZMPFeetPose startingZMPFeetPose;
-  startingZMPFeetPose = theEngine.getPlannedZMPFeetPose();
-  
-  //TODO: consider current ZMP
-  FootStep step = theFootStepPlanner.firstStep(startingZMPFeetPose.feet, req);
-  return step;
-}
-
 void Walk::updateParameters(Step& step) const
 {
   const unsigned int basicTimeStep = theBlackBoard.theFrameInfo.basicTimeStep;
