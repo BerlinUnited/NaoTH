@@ -59,7 +59,7 @@ public:
     * Complete Messages are always ended by a "\n" character (which is not part
     * of the result)
     *
-    * @return A null terminated message string or NULL if an error occured.
+    * @return A null terminated message string or NULL if nothing to read after timeout
     */
   char* readMessage();
 

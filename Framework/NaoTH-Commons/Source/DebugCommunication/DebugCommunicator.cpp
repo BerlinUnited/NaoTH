@@ -110,12 +110,25 @@ char* DebugCommunicator::internalReadMessage(GError** err)
     {
       if(err != NULL)
       {
-        g_socket_set_blocking(connection, true);
-        gssize read_bytes = g_socket_receive(connection, &c, 1, NULL, err);
+        gssize read_bytes =
+            g_socket_receive_with_blocking(connection, &c, 1, buffer->len == 0 ? false : true ,NULL, err);
+
         if(read_bytes < 1)
         {
           g_string_free(buffer, true);
-          return NULL;
+
+          if(read_bytes == 0)
+          {
+            // we got 0 bytes, this indicates
+            // an error in the connection (-1 is set if no data was available
+            // in non-blocking mode)
+            throw "Connection Error";
+          }
+          else
+          {
+            // just return nothing
+            return NULL;
+          }
         }
       }
 
@@ -128,7 +141,6 @@ char* DebugCommunicator::internalReadMessage(GError** err)
     if(*err)
     {
       g_string_free(buffer,true);
-      return NULL;
     }
 
     g_string_append_c(buffer,'\0');
@@ -140,18 +152,28 @@ char* DebugCommunicator::readMessage()
 {
   if (fatalFail)
   {
-    return NULL;
+    throw "fatalFail";
   }
 
   GError* err = NULL;
   char* result = internalReadMessage(&err);
   if(err)
   {
-    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
+    if(err->code != G_IO_ERROR_WOULD_BLOCK)
+    {
+      std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
       << err->message << std::endl;
-    g_free(result);
-    g_error_free(err);
-    return NULL;
+
+      if(result != NULL)
+      {
+        g_free(result);
+      }
+      throw "Socket Exception";
+    }
+    else
+    {
+      g_error_free(err);
+    }
   }
   return result;
 }//end triggerRead

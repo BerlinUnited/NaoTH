@@ -43,15 +43,13 @@ public:
 
   virtual void objectDestructed(DebugCommandExecutor* object);
 
-  static void* reader_static(void* ref);
-  static void* writer_static(void* ref);
+  static void* connection_thread_static(void* ref);
 private:
 
   /** Communication interface */
   DebugCommunicator comm;
 
-  GThread* readerThread;
-  GThread* writerThread;
+  GThread* connectionThread;
 
   GAsyncQueue* commands;
   GAsyncQueue* answers;
@@ -69,12 +67,12 @@ private:
   bool frameEnded;
   bool abort;
 
-  void mainReader();
-  void mainWriter();
+  void mainConnection();
   void handleCommand(char* cmdRaw, GString* answer);
   void handleCommand(std::string command, std::map<std::string,std::string> arguments,
     GString* answer, bool encodeBase64);
 
+  void disconnect();
   void clearBothQueues();
   
 };

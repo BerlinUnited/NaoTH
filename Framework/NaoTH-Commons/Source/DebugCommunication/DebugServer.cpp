@@ -36,9 +36,12 @@ void DebugServer::start(unsigned short port)
     comm.init(port);
 
     GError* err = NULL;
-    g_debug("Starting debug server as two seperate threads (reader and writer)");
-    readerThread = g_thread_create(reader_static, this, true, &err);
-    writerThread = g_thread_create(writer_static, this, true, &err);
+    g_debug("Starting debug server thread");
+    connectionThread = g_thread_create(connection_thread_static, this, true, &err);
+    if(err)
+    {
+      g_warning("Could not start debug server thread: %s", err->message);
+    }
 
     registerCommand("help", "list available commands or get the description of a specific command", this);
     registerCommand("endFrame",
@@ -51,99 +54,93 @@ void DebugServer::start(unsigned short port)
   }
 }//end start
 
-
-void DebugServer::mainReader()
+void DebugServer::mainConnection()
 {
-  g_debug("Reader init");
   g_async_queue_ref(commands);
+  g_async_queue_ref(answers);
 
-  g_debug("Starting DebugServer reader loop");
-  while (true)
+  while(true)
   {
     g_mutex_lock(m_abort);
     if(abort)
     {
       g_mutex_unlock(m_abort);
-      break;
+      break; // end loop;
     }
     g_mutex_unlock(m_abort);
+
+    if(comm.isConnected())
+    {
+      // 1. send out already answered messages
+      while(g_async_queue_length(answers) > 0)
+      {
+        GString* answer = (GString*) g_async_queue_pop(answers);
+
+        if(answer != NULL)
+        {
+          bool success = comm.sendMessage(answer->str, answer->len+1);
+          if(!success)
+          {
+            g_warning("could not send message");
+            disconnect();
+          }
+
+          g_string_free(answer, true);
+        } // end if answer != NULL
+      }
+    }
+
+    if(comm.isConnected())
+    {
+      // 2. get new commands (maximal 50)
+      try
+      {
+        char* msg = NULL;
+        unsigned int counter = 0;
+        do
+        {
+          msg = comm.readMessage();
+          if(msg != NULL)
+          {
+            g_async_queue_push(commands, msg);
+          }
+          counter++;
+        } while(msg != NULL && counter < 50);
+      }
+      catch(...)
+      {
+        // error occured, clear all queues and disconnect
+        disconnect();
+      } // end catch
+    }
 
     if(!comm.isConnected())
     {
       // connect again, wait max 1 second until connection is etablished
       comm.connect(1);
-    }
-
-    if(comm.isConnected())
-    {
-      char* msg = comm.readMessage();
-
-      if (msg == NULL)
-      {
-        // error occured, clear all queues
-
-        // stop executing (so it's not messing up with our queues)
-        g_mutex_lock(m_executing);
-        clearBothQueues();
-        g_mutex_unlock(m_executing);
-
-        // all commands are "answered", disconnect
-        comm.disconnect();
-      }
-      else
-      {
-        g_async_queue_push(commands, msg);
-      }
     } // end if connected
+
     // always give other thread the possibility to gain control before entering
     // the loop again
+    g_usleep(1000);
     g_thread_yield();
-  }//end while
+
+  } // end while true
 
   g_async_queue_unref(commands);
-}//end mainReader
-
-
-void DebugServer::mainWriter()
-{
-  g_debug("Writer init");
-  g_async_queue_ref(answers);
-
-  g_debug("Starting DebugServer writer loop");
-  while (true)
-  {
-    g_mutex_lock(m_abort);
-    if(abort)
-    {
-      g_mutex_unlock(m_abort);
-      break;
-    }
-    g_mutex_unlock(m_abort);
-
-    // wait for an answer
-    GTimeVal t;
-    g_get_current_time(&t);
-    g_time_val_add(&t, 1000*1000); // one second
-    GString* answer = (GString*) g_async_queue_timed_pop(answers, &t);
-
-    if(answer != NULL)
-    {
-      bool success = comm.sendMessage(answer->str, answer->len+1);
-      if(!success)
-      {
-        g_warning("could not send message");
-      }
-
-      g_string_free(answer, true);
-    } // end if answer != NULL
-
-    // always give other thread the possibility to gain control before entering
-    // the loop again
-    g_thread_yield();
-  }//end while
-
   g_async_queue_unref(answers);
-}//end mainWriter
+}
+
+void DebugServer::disconnect()
+{
+  // stop executing (so it's not messing up with our queues)
+  g_mutex_lock(m_executing);
+  clearBothQueues();
+  g_mutex_unlock(m_executing);
+
+  // all commands are "answered", disconnect
+  comm.disconnect();
+}
 
 
 void DebugServer::execute()
@@ -389,17 +386,12 @@ void DebugServer::clearBothQueues()
 
 }
 
-void* DebugServer::reader_static(void* ref)
+void* DebugServer::connection_thread_static(void* ref)
 {
-  ((DebugServer*) ref)->mainReader();
+  ((DebugServer*) ref)->mainConnection();
   return NULL;
 }
 
-void* DebugServer::writer_static(void* ref)
-{
-  ((DebugServer*) ref)->mainWriter();
-  return NULL;
-}
 
 DebugServer::~DebugServer()
 {
@@ -407,12 +399,9 @@ DebugServer::~DebugServer()
   abort = true;
   g_mutex_unlock(m_abort);
 
-  // HACK: use a kind of shutdown function here (not disconnect...)
-  comm.fatalFail = true;
+  g_thread_join(connectionThread);
 
-  g_thread_join(readerThread);
-  g_thread_join(writerThread);
-
+  clearBothQueues();
   comm.disconnect();
 
   g_mutex_free(m_executing);
