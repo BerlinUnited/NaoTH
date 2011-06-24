@@ -79,10 +79,10 @@ solution "NaoTHSoccer"
     targetdir "../dist/Nao"
   
   -- additional defines for windows
-  if(_OPTIONS["platform"] ~= "Nao") then
+  if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
   configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
-	buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
+    buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
   end
