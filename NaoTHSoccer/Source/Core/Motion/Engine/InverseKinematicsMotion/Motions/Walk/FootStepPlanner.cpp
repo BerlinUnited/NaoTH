@@ -131,7 +131,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
   return newStep;
 }
 
-FootStep FootStepPlanner::firstStep(InverseKinematic::FeetPose pose,const WalkRequest& req)
+FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req)
 {
   FootStep zeroStepLeft(pose, FootStep::LEFT );
   FootStep zeroStepRight(pose, FootStep::RIGHT);
