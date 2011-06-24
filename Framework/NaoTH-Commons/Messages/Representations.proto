@@ -95,7 +95,6 @@ message HeadMotionRequest {
 
 message WalkRequest {
   required uint32 coordinate = 1;
-  required bool stopWithStand = 2;
   required Pose2D pose = 3;
 }
 

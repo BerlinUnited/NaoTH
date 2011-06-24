@@ -65,6 +65,7 @@ public:
   virtual void print(ostream& stream) const {
     stream << "time = " << time << '\n';
     stream << "MotionID = " << motion::getName(id) << endl;
+    stream << "standardStand = " << standardStand <<endl;
     switch (id) {
       case motion::walk:
         walkRequest.print(stream);
