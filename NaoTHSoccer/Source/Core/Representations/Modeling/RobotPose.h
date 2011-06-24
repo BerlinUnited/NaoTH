@@ -9,10 +9,9 @@
 #define __RobotPose_h_
 
 #include "Tools/Math/Pose2D.h"
-#include "Tools/ModuleFramework/Representation.h"
 #include "Tools/DataStructures/Printable.h"
 
-class RobotPose: public Pose2D, public Printable
+class RobotPose: public Pose2D, public naoth::Printable
 {
 public:
 
@@ -56,7 +55,5 @@ public:
   }//end print
 
 };
-
-REPRESENTATION_INTERFACE(RobotPose);
 
 #endif// __RobotPose_h_

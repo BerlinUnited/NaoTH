@@ -51,6 +51,8 @@
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/BallLocator/ParticleFilterBallLocator.h"
+#include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
+#include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -119,6 +121,8 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(ParticleFilterBallLocator);
+  REGISTER_MODULE(GPS_SelfLocator);
+  REGISTER_MODULE(OdometrySelfLocator);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);

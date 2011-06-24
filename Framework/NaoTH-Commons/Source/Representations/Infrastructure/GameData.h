@@ -86,12 +86,26 @@ public:
   unsigned int gameTime; // in ms
   unsigned int timeWhenPlayModeChanged; // ms
 
-  // static information
+  //
+  // static information, i.e., this stuff shouldn't change during the game
+  //
+
+  /** player number from 0 to 255. 255 means unknown */
   unsigned int playerNumber;
+
+  /** the color of the current team */
   TeamColor teamColor;
+
+  /** current team number (needed for the teamcomm) */
   unsigned int teamNumber;
+
+  /** the name of the team */
   std::string teamName;
+
+  //TODO: what is it?
   double halfTime;
+
+  /** number of player per team */
   unsigned int numOfPlayers;
 };
 
