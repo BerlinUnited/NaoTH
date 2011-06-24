@@ -11,7 +11,6 @@
 #define	_HEADMOTIONENGINE_H
 
 #include <Tools/Math/Vector2.h>
-#include <PlatformInterface/Platform.h>
 #include "Motion/MotionBlackBoard.h"
 
 class HeadMotionEngine

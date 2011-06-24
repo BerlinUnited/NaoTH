@@ -20,6 +20,8 @@
 #include <Tools/NaoInfo.h>
 #include <Tools/CameraGeometry.h>
 
+#include <PlatformInterface/Platform.h>
+
 // Debug
 //#include "Tools/Debug/DebugBufferedOutput.h"
 //#include "Tools/Debug/DebugDrawings.h"

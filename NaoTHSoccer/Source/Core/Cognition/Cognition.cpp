@@ -39,10 +39,15 @@
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
+#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+
+// Modeling
+#include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
+#include "Modules/Modeling/BallLocator/ParticleFilterBallLocator.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -102,10 +107,15 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GameController);
 
   // perception
+  REGISTER_MODULE(CameraMatrixProvider);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
+
+  // modeling
+  REGISTER_MODULE(BodyStateProvider);
+  REGISTER_MODULE(ParticleFilterBallLocator);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);

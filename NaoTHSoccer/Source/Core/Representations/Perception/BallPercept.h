@@ -16,7 +16,7 @@
 
 
 class BallPercept : public Printable
-{ 
+{
 public:
   BallPercept(): 
     ballWasSeen(false),
