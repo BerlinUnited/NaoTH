@@ -11,6 +11,9 @@
 
 #include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugDrawings3D.h"
 #include <Tools/Debug/Stopwatch.h>
 #include "Tools/Debug/DebugRequest.h"
 
@@ -163,6 +166,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   g_message("Cognition register end");
 }//end init
 
+
 void Cognition::call()
 {  
   // execute all modules
@@ -181,8 +185,14 @@ void Cognition::call()
     }//end if
   }//end for all modules
   
+
   // HACK: reset all the debug stuff before executing the modules
+  STOPWATCH_START("Debug ~ Init");
+  DebugBufferedOutput::getInstance().update();
+  DebugDrawings::getInstance().update();
   DebugImageDrawings::getInstance().reset();
+  DebugDrawings3D::getInstance().update();
+  STOPWATCH_STOP("Debug ~ Init");
   
 }//end call
 

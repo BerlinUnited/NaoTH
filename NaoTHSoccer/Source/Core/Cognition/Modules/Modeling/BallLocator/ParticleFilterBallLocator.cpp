@@ -22,7 +22,7 @@
 
 ParticleFilterBallLocator::ParticleFilterBallLocator()
 {
-  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_model_on_field", "draw the ball model on the field", false);
+  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_ball_on_field", "draw the ball model on the field", false);
   DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_samples", "draw the sample set", false);
 }
 
@@ -30,16 +30,28 @@ void ParticleFilterBallLocator::execute()
 {
   getBallModel().reset();
   
-
+  updateByBallPercept();
+  
+  DEBUG_REQUEST("ParticleFilterBallLocator:draw_ball_on_field", drawBallModel(getBallModel()); );
+  DEBUG_REQUEST("ParticleFilterBallLocator:draw_samples", drawSamples(sampleSet); );
 }//end execute
 
 
 void ParticleFilterBallLocator::updateByBallPercept()
 {
-  
 
-  DEBUG_REQUEST("BallLocator:draw_ball_on_field", drawBallModel(getBallModel()); );
-  DEBUG_REQUEST("BallLocator:draw_samples", drawSamples(sampleSet); );
+  // integrate new percepts
+  if(sampleSet.size() < 100)
+  {
+    Sample s;
+    s.position = getBallPercept().bearingBasedOffsetOnField;
+    sampleSet.push_back(s);
+  }
+  else
+  {
+    int idx = Math::random(100);
+    sampleSet[idx].position = getBallPercept().bearingBasedOffsetOnField;
+  }
 }//end updateByBallPercept
 
 
