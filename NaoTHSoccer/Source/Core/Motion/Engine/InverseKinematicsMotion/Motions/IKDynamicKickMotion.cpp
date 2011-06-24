@@ -184,7 +184,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   if(oldKickState != kickState)
   {
     action_done = false;
-    state_start_time = theBlackBoard.theFrameInfo.time;
+    state_start_time = theBlackBoard.theFrameInfo.getTime();
     oldKickState = kickState;
   }//end if
 

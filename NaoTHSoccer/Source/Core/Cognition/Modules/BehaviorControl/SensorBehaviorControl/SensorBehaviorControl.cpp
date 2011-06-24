@@ -65,7 +65,7 @@ void SensorBehaviorControl::testBehavior()
   MODIFY("SensorBehaviorControl:KickExercise:kickDirection", kickDirection);
 
   DEBUG_REQUEST("SensorBehaviorControl:behavior:goto_ball",
-    int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.time);
+    int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.getTime());
 
     if (timeSinceBallWasSeen < 1000) 
     {
@@ -142,7 +142,7 @@ void SensorBehaviorControl::testBehavior()
 
 
   DEBUG_REQUEST("SensorBehaviorControl:behavior:stability_test",
-    static unsigned int last_time = getFrameInfo().time;
+    static unsigned int last_time = getFrameInfo().getTime();
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
 
@@ -167,7 +167,7 @@ void SensorBehaviorControl::kickExercise()
   MODIFY("SensorBehaviorControl:KickExercise:kickDirection", kickDirection);
 
   DEBUG_REQUEST("SensorBehaviorControl:motion:kick",
-          int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.time);
+          int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.getTime());
 
     if (timeSinceBallWasSeen < 1000 &&
         fabs(getBallPercept().bearingBasedOffsetOnField.x) < 500 &&

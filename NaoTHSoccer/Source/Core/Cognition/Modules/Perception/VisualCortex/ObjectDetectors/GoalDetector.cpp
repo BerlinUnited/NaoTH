@@ -269,7 +269,7 @@ void GoalDetector::execute()
 
     if(getGoalPercept().getNumberOfSeenPosts() > 0)
     {
-      if(getFrameInfo().frameNumber - lastFrame == 1)
+      if(getFrameInfo().getFrameNumber() - lastFrame == 1)
       {
         double differenceInImage = (lastGoalPost.basePoint - getGoalPercept().getPost(0).basePoint).abs();
         PLOT("GoalDetector:differenceInImage", differenceInImage);
@@ -287,7 +287,7 @@ void GoalDetector::execute()
       }//end if
 
       lastGoalPost = getGoalPercept().getPost(0);
-      lastFrame = getFrameInfo().frameNumber;
+      lastFrame = getFrameInfo().getFrameNumber();
     }
   );
 }//end horizonScan

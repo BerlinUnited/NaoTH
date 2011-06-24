@@ -23,7 +23,7 @@ void SimSparkTeamComm::execute()
 
 void SimSparkTeamComm::readMessage()
 {
-  unsigned int time = getFrameInfo().time;
+  unsigned int time = getFrameInfo().getTime();
   for(vector<string>::const_iterator i=getTeamMessageData().data.begin();
       i!=getTeamMessageData().data.end(); ++i)
   {
@@ -33,8 +33,7 @@ void SimSparkTeamComm::readMessage()
       unsigned int playerNumber = encoder.decodeUnsigned(i->substr(1, 1));
       TeamMessage::Data& data = getTeamMessage().data[playerNumber];
 
-      data.frameInfo.time = time;
-      data.frameInfo.frameNumber++;
+      data.frameInfo.setTime( time );
 
       naothmessages::TeamCommMessage& message = data.message;
       message.set_ispenalized(false); // no penalize rule in SimSpark

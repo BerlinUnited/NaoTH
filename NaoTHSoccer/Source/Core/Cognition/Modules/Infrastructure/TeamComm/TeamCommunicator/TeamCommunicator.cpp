@@ -24,7 +24,7 @@ void TeamCommunicator::execute()
     createMessage(msg);
 
     getRobotMessageData().data = msg.SerializeAsString();
-    lastSentTimestamp = getFrameInfo().time;
+    lastSentTimestamp = getFrameInfo().getTime();
   }
 }
 
@@ -36,8 +36,7 @@ void TeamCommunicator::handleMessage(const string& data)
   int num = msg.playernumber();
 
   TeamMessage::Data& content = getTeamMessage().data[num];
-  content.frameInfo.time = getFrameInfo().time;
-  content.frameInfo.frameNumber++;
+  content.frameInfo.setTime( getFrameInfo().getTime() );
   content.message = msg;
 }
 

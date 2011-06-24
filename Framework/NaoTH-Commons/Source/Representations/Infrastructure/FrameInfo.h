@@ -26,6 +26,7 @@ namespace naoth
     */
     FrameInfo() :
         time(0),
+        step(0),
         frameNumber(0)
     {}
 
@@ -42,8 +43,18 @@ namespace naoth
     */
     double getTimeInSeconds() const {return static_cast<double>(time)/1000.0; }
 
-    unsigned int time; /**< The time stamp of the data processed in the current frame in miliseconds. */
-    unsigned int frameNumber; /**< The number of the frame. */
+    unsigned int getTime() const { return time; }
+
+    unsigned int getFrameNumber() const { return frameNumber; }
+
+    unsigned int getStep() const { return step; }
+
+    void setTime(unsigned int t)
+    {
+      step = t - time;
+      time = t;
+      frameNumber++;
+    }
 
     virtual void print(std::ostream& stream) const
     {
@@ -51,6 +62,14 @@ namespace naoth
       stream << "time(ms) = " << time << endl;
       stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << endl;
     }
+
+    friend class Serializer<FrameInfo>;
+
+  private:
+
+    unsigned int time; /**< The time stamp of the data processed in the current frame in miliseconds. */
+    unsigned int step; /**< the time of last step */
+    unsigned int frameNumber; /**< The number of the frame. */
   };
   
   template<>

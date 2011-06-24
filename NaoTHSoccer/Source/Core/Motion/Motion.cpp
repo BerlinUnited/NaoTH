@@ -248,7 +248,7 @@ void Motion::changeMotion(AbstractMotion* m)
   theBlackBoard.currentlyExecutedMotion = m;
   theBlackBoard.theMotionStatus.lastMotion = theBlackBoard.theMotionStatus.currentMotion;
   theBlackBoard.theMotionStatus.currentMotion = theBlackBoard.currentlyExecutedMotion->getId();
-  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.time;
+  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.getTime();
 }//end changeMotion
 
 bool Motion::exit()

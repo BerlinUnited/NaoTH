@@ -71,8 +71,7 @@ protected:
 
   void updateFrameInfo()
   {
-    theFrameInfo.time = NaoTime::getNaoTimeInMilliSeconds();
-    theFrameInfo.frameNumber++;
+    theFrameInfo.setTime( NaoTime::getNaoTimeInMilliSeconds() );
   }
 
 protected:
