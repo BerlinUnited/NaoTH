@@ -50,7 +50,6 @@ void InertialFilter::calibrate()
         {
           // every 50 datas
           theOffset = theNewOffset;
-          cout<<" calibrate "<<theOffset<<endl;
         }
         return;
       }
