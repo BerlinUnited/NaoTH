@@ -17,6 +17,7 @@
 
 #include "DebugCommunicator.h"
 
+
 DebugCommunicator::DebugCommunicator()
 : serverSocket(NULL),
 connection(NULL),
@@ -89,10 +90,9 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
       gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
       pos += sent;
     }//end while
-
-    if (err) return err;
   }//end if
-  return NULL;
+
+  return err;
 }//end sendMessage
 
 
@@ -146,6 +146,7 @@ char* DebugCommunicator::internalReadMessage(GError** err)
     g_string_append_c(buffer,'\0');
     return g_string_free(buffer, false);
   }//end if connection not null
+
   return NULL;
 }
 char* DebugCommunicator::readMessage()

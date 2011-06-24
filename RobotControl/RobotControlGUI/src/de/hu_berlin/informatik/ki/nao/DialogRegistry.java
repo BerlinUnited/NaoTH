@@ -93,8 +93,7 @@ public class DialogRegistry
     if(existing == null)
     {
       Dockable newDockable = createView(dialogName, dialog);
-      
-      station.drop(newDockable, StackDockProperty.FRONT);
+      station.drop(newDockable);
     }
     else
     {

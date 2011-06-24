@@ -345,7 +345,7 @@ bool InverseKinematicsMotionEngine::controlZMPpop(Vector3d& com)
 bool InverseKinematicsMotionEngine::controlZMPstop(const Vector3d& finalZmp)
 {
   Vector3d diff = finalZmp - thePreviewControlCoM;
-  bool stoppted = diff.abs2() < 1 && thePreviewControldCoM.abs2() < 1 && thePreviewControlddCoM.abs2() < 1;
+  bool stoppted = (diff.abs2() < 1) && (thePreviewControldCoM.abs2() < 1) && (thePreviewControlddCoM.abs2() < 1);
   if ( stoppted )
   {
     thePreviewController.clear();
