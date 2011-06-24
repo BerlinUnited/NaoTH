@@ -25,11 +25,13 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 {
   //calculateError();
 
-  if ( FSRProtection() )
+  bool protecting = FSRProtection();
+  if ( protecting && canStop() )
   {
     stepBuffer.clear();
     theEngine.controlZMPclear();
     currentState = motion::stopped;
+    return;
   }
   else if ( !waitLanding() )
   {
@@ -57,8 +59,7 @@ bool Walk::FSRProtection()
 {
   // no foot on the ground, stop walking
   if ( theWalkParameters.enableFSRProtection &&
-    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
-      && canStop() )
+    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE )
   {
     return true;
   }
@@ -70,8 +71,12 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
-  if ( currentState != motion::running )
+  if ( currentState != motion::running
+      || theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE )
+  {
+    theUnsupportedCount = 0;
     return false;
+  }
 
   double leftH = theCoMFeetPose.feet.left.translation.z;
   double rightH = theCoMFeetPose.feet.right.translation.z;
