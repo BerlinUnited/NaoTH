@@ -7,6 +7,8 @@
 
 #include "ScanLineEdgelDetector.h"
 
+#include "Tools/CameraGeometry.h"
+
 ScanLineEdgelDetector::ScanLineEdgelDetector()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:mark_edgels", "mark the edgels on the image", false);
@@ -73,7 +75,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
 
-    Geometry::imagePixelToFieldCoord(
+    CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
       endPoint.posInImage.x, 

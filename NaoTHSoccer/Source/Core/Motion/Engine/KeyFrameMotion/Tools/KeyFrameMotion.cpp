@@ -7,6 +7,8 @@
 
 #include "KeyFrameMotion.h"
 
+using namespace naoth;
+
 KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id)
   : 
   AbstractMotion(id),

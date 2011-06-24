@@ -7,6 +7,8 @@
 
 #include "KeyFrameMotionEngine.h"
 
+using namespace naoth;
+
 KeyFrameMotionEngine::KeyFrameMotionEngine()
 :currentMotion(NULL)
 {

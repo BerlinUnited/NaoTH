@@ -14,7 +14,7 @@
 /**
 * Matrix describing transformation from neck joint to camera.
 */
-class CameraMatrix : public Pose3D, public Printable
+class CameraMatrix : public Pose3D, public naoth::Printable
 {
 public:
   CameraMatrix() {}
@@ -69,7 +69,5 @@ public:
   }
   */
 };
-
-REPRESENTATION_INTERFACE(CameraMatrix);
 
 #endif //__CameraMatrix_h_

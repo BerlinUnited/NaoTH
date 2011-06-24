@@ -19,7 +19,7 @@
 
 // Tools
 #include "Tools/Math/Line.h"
-#include "Tools/Math/Geometry.h"
+#include "Tools/CameraGeometry.h"
 
 ImageProcessor::ImageProcessor()
 {
@@ -88,7 +88,7 @@ void ImageProcessor::execute()
   if(getBallPercept().ballWasSeen)
   {
     // estimate the projection of the ball on the ground
-    getBallPercept().ballWasSeen = Geometry::imagePixelToFieldCoord(
+    getBallPercept().ballWasSeen = CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
       getBallPercept().centerInImage.x, 
@@ -155,7 +155,7 @@ void ImageProcessor::execute()
   {
     // no ball in the image found
 
-    Vector2<int> projectedBall = Geometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
         Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
                         getBallPercept().bearingBasedOffsetOnField.y, 
                         getFieldInfo().ballRadius));

@@ -14,6 +14,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include <vector>
 
+using namespace naoth;
 
 BresenhamLineScan::BresenhamLineScan(const Vector2<int>& start, const Vector2<int>& end)
 {

@@ -26,7 +26,7 @@ public:
   {
     reset();
 
-    const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
+    const std::string& dirlocation = naoth::Platform::getInstance().theConfigDirectory;
     std::string path = dirlocation + "/general/reachability_grid.cfg";
     loadFromFile(path);
   }
@@ -35,7 +35,7 @@ public:
   {
     reset();
 
-    const std::string& dirlocation = Platform::getInstance().theConfigDirectory;
+    const std::string& dirlocation = naoth::Platform::getInstance().theConfigDirectory;
     std::string path = dirlocation + "/general/" + file_name;
     loadFromFile(path);
   }

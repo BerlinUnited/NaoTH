@@ -10,6 +10,7 @@
 #include "Walk/FootTrajectoryGenerator.h"
 
 using namespace InverseKinematic;
+using namespace naoth;
 
 Walk::Walk()
 :IKMotion(motion::walk),

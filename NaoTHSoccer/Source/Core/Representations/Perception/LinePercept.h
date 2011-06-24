@@ -7,12 +7,17 @@
 #ifndef __LinePercept_h_
 #define __LinePercept_h_
 
+
+#include "Messages/Representations.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+
 #include <vector>
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Line.h"
-#include "Tools/Math/Geometry.h"
+#include "Tools/CameraGeometry.h"
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
@@ -69,11 +74,11 @@ public:
 
         //TODO: handle the case if the projection is not possible
         Vector2<double> beginLineOnField;
-        Geometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, begin.x, begin.y, 0.0, beginLineOnField);
+        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, begin.x, begin.y, 0.0, beginLineOnField);
 
         //TODO: handle the case if the projection is not possible
         Vector2<double> endLineOnField;
-        Geometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
+        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
         lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
       }
 
@@ -97,11 +102,11 @@ public:
 
         //TODO: handle the case if the projection is not possible
         Vector2<double> beginLineOnField;
-        Geometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, base.x, base.y, 0.0, beginLineOnField);
+        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, base.x, base.y, 0.0, beginLineOnField);
 
         //TODO: handle the case if the projection is not possible
         Vector2<double> endLineOnField;
-        Geometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
+        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
         lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
       }
 
@@ -223,7 +228,7 @@ public:
       pos(pos)
     {
       type = Math::Intersection::unknown;
-      Geometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, pos.x, pos.y, 0.0, posOnField);
+      CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, pos.x, pos.y, 0.0, posOnField);
     }
 
     void setSegments(int segOne, int segTwo, double distOne, double distTwo)

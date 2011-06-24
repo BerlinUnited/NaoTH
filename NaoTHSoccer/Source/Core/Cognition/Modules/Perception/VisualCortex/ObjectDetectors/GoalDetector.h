@@ -20,8 +20,6 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 
-
-#include "Tools/Math/Geometry.h"
 #include "Tools/Math/Polygon.h"
 #include "Tools/Math/Moments2.h"
 

@@ -14,7 +14,6 @@
 #include "Tools/ColorClasses.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Matrix_nxn.h"
-#include "Tools/Math/Geometry.h"
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
 #include "Tools/Math/PointList.h"

@@ -25,10 +25,13 @@ public:
 
 private:
   const MotionBlackBoard& theBlackBoard;
-  MotorJointData& theMotorJointData;
+
+  naoth::MotorJointData& theMotorJointData;
+  naoth::JointData theJointData;
+
   MotionStatus& theMotionStatus;
   KinematicChain theKinematicChain;
-  JointData theJointData;
+  
 
   bool trajectoryHeadMove(const std::vector<Vector3<double> >& points);
   void gotoPointOnTheGround(const Vector2<double>& target);

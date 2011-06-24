@@ -11,7 +11,7 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Matrix_nxn.h>
 #include <Tools/Math/Matrix_mxn.h>
-#include <Tools/Math/Geometry.h>
+#include <Tools/CameraGeometry.h>
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
@@ -182,7 +182,7 @@ void VirtualVisionProcessor::updateBall()
     theBallPercept.bearingBasedOffsetOnField.y = p.y;
 
     theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.focalLength;
-    theBallPercept.centerInImage = Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
+    theBallPercept.centerInImage = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
   }
   else
   {
@@ -213,7 +213,7 @@ void VirtualVisionProcessor::updateGoal()
       Vector2<double> position(p.x, p.y);
 
       p.z = 0;
-      Vector2<int> basePoint = Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
+      Vector2<int> basePoint = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
 
       ColorClasses::Color color = goalPostColors.find(*i)->second;
 
@@ -375,7 +375,7 @@ void VirtualVisionProcessor::findIntersections()
       LinePercept::Intersection intersection;
       intersection.setPosOnField(point);
       Vector3<double> pSpace(point.x, point.y, 0.0);
-      Vector2<int> pointInImage = Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, pSpace);
+      Vector2<int> pointInImage = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, pSpace);
       intersection.setPosInImage(pointInImage);
 
       double d1 = lineOne.minDistance(intersection.getPosOnField());
@@ -607,12 +607,12 @@ void VirtualVisionProcessor::addLine(const Vector3<double>& pol0, const Vector3<
   line.thickness = 100; //TODO
   line.set
     (
-    Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, bP),
-    Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, eP)
+    CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, bP),
+    CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, eP)
     );
 
-  //line.begin = Geometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
-  //line.end = Geometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
+  //line.begin = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
+  //line.end = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
   line.lineOnField = Math::LineSegment(bPos, ePos);
   line.valid = true;
 

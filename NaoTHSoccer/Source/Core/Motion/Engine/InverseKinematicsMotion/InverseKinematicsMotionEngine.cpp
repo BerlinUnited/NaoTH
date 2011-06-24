@@ -11,6 +11,7 @@
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 using namespace InverseKinematic;
+using namespace naoth;
 
 InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
 :theBlackBoard(MotionBlackBoard::getInstance()),

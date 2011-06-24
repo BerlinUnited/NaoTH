@@ -13,10 +13,10 @@
 #include "PreviewController.h"
 #include "Motions/IKParameters.h"
 
-class InverseKinematicsMotionEngine: public Singleton<InverseKinematicsMotionEngine>
+class InverseKinematicsMotionEngine: public naoth::Singleton<InverseKinematicsMotionEngine>
 {
 private:
-  friend class Singleton<InverseKinematicsMotionEngine>;
+  friend class naoth::Singleton<InverseKinematicsMotionEngine>;
   
   InverseKinematicsMotionEngine();
   
@@ -91,7 +91,7 @@ public:
   
   const IKParameters& getParameters() const { return theParameters; }
   
-  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[JointData::numOfJoint]);
+  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[naoth::JointData::numOfJoint]);
 
 private:
 

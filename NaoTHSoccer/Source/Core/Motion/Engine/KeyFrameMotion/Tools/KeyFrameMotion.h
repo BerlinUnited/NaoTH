@@ -13,7 +13,7 @@
 #include "Motion/AbstractMotion.h"
 #include "Tools/DataStructures/Printable.h"
 
-class KeyFrameMotion: public AbstractMotion, public Printable
+class KeyFrameMotion: public AbstractMotion, public naoth::Printable
 {
 private:
   string name;
@@ -27,7 +27,7 @@ private:
   double t;
 
   /**  */
-  MotorJointData lastMotorJointData;
+  naoth::MotorJointData lastMotorJointData;
 
   void getNextTransition(std::string condition);
 

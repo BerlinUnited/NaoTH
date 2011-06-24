@@ -8,6 +8,8 @@
 #include "InitialMotion.h"
 #include "PlatformInterface/Platform.h"
 
+using namespace naoth;
+
 InitialMotion::InitialMotion() 
   :
   AbstractMotion(motion::init),

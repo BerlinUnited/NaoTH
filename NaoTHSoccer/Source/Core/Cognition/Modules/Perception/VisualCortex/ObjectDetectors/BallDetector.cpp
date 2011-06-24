@@ -7,12 +7,14 @@
 */
 
 #include "BallDetector.h"
+
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/ImageProcessing/BlobList.h"
+#include "Tools/CameraGeometry.h"
 
 #include "Tools/Debug/Stopwatch.h"
 
@@ -79,7 +81,7 @@ void BallDetector::execute()
   }
   else // no orange blobs found in the image 
   {
-    Vector2<int> projectedBall = Geometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
         Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
                         getBallPercept().bearingBasedOffsetOnField.y, 
                         getFieldInfo().ballRadius));

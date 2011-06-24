@@ -23,7 +23,7 @@ public:
   /** executes the module */
   static void calculateCameraMatrix(
     CameraMatrix& theCameraMatrix,
-    CameraInfo::CameraID cameraId,
+    naoth::CameraInfo::CameraID cameraId,
     const KinematicChain& theKinematicChain
   );
 };
