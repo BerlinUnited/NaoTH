@@ -22,19 +22,19 @@ public:
   {
   };
 
-  struct TeamMessageData
+  struct Data
   {
     naoth::FrameInfo frameInfo;
     naothmessages::TeamCommMessage message;
   };
 
-  std::map<unsigned int, TeamMessageData> data;
+  std::map<unsigned int, Data> data;
 
   virtual ~TeamMessage() {};
 
   virtual void print(std::ostream& stream) const
   {
-    for(std::map<unsigned int, TeamMessageData>::const_iterator i=data.begin();
+    for(std::map<unsigned int, Data>::const_iterator i=data.begin();
         i != data.end(); ++i)
     {
       const naothmessages::TeamCommMessage& message = i->second.message;

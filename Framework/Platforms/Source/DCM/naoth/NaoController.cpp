@@ -145,11 +145,11 @@ void NaoController::get(GameData& data)
   {
     playerCfgLoaded = true;
     data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-    data.frameNumber = theFrameInfo.frameNumber;
+    data.frameNumber = theFrameInfo.getFrameNumber();
   }
 
-  if ( theGameController->update(data, theFrameInfo.time) )
+  if ( theGameController->update(data, theFrameInfo.getTime()) )
   {
-    data.frameNumber = theFrameInfo.frameNumber;
+    data.frameNumber = theFrameInfo.getFrameNumber();
   }
 }

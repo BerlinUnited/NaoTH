@@ -23,7 +23,7 @@ public:
 
   MessageQueue();
   
-  ~MessageQueue();
+  virtual ~MessageQueue();
   
 protected:
   

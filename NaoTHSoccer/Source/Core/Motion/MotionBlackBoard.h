@@ -21,6 +21,7 @@
 #include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/LEDData.h>
+#include <Representations/Infrastructure/RobotInfo.h>
 
 #include "Representations/Perception/InertialPercept.h"
 
@@ -47,6 +48,8 @@ public:
   void init();
 
   ~MotionBlackBoard();
+
+  RobotInfo theRobotInfo;
 
   // data used internally
   KinematicChain theKinematicChain; // data based on sensors

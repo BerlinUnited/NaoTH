@@ -63,7 +63,6 @@ message CameraMatrix {
 message FrameInfo {
   required uint32 frameNumber = 1; 
   required uint32 time = 2;
-  required uint32 basicTimeStep = 3;
 }
 
 message BallPercept {

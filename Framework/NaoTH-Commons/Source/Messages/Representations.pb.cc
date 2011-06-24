@@ -171,10 +171,9 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraMatrix));
   FrameInfo_descriptor_ = file->message_type(5);
-  static const int FrameInfo_offsets_[3] = {
+  static const int FrameInfo_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, framenumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, time_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, basictimestep_),
   };
   FrameInfo_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -457,45 +456,45 @@ void protobuf_AddDesc_Representations_2eproto() {
     "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
     "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
     "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n"
-    "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\"E\n\tFr"
+    "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr"
     "ameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002"
-    "(\r\022\025\n\rbasicTimeStep\030\003 \002(\r\"\224\002\n\013BallPercep"
-    "t\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInImage\030"
-    "\002 \001(\0132\034.naothmessages.DoubleVector2\022\025\n\rr"
-    "adiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024."
-    "naothmessages.Color\022\?\n\031bearingBasedOffse"
-    "tOnField\030\005 \001(\0132\034.naothmessages.DoubleVec"
-    "tor2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001(\0132\030"
-    ".naothmessages.FrameInfo\"\234\001\n\013GoalPercept"
-    "\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCentroi"
-    "d\030\002 \001(\0132\034.naothmessages.DoubleVector3\022\031\n"
-    "\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027"
-    ".naothmessages.GoalPost\"\342\002\n\021HeadMotionRe"
-    "quest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\0229\n\023t"
-    "argetJointPosition\030\003 \001(\0132\034.naothmessages"
-    ".DoubleVector2\0228\n\022targetPointInImage\030\004 \001"
-    "(\0132\034.naothmessages.DoubleVector2\022;\n\025targ"
-    "etPointInTheWorld\030\005 \001(\0132\034.naothmessages."
-    "DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132\034.na"
-    "othmessages.DoubleVector3\0220\n\nsearchSize\030"
-    "\007 \001(\0132\034.naothmessages.DoubleVector3\022\027\n\017s"
-    "earchDirection\030\010 \001(\010\"F\n\013WalkRequest\022\022\n\nc"
-    "oordinate\030\001 \002(\r\022#\n\004pose\030\003 \002(\0132\025.naothmes"
-    "sages.Pose2D\"\202\001\n\rMotionRequest\022\n\n\002id\030\001 \002"
-    "(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walk"
-    "Request\030\004 \001(\0132\032.naothmessages.WalkReques"
-    "t\022\026\n\016starndardStand\030\005 \001(\010\"\253\001\n\013LinePercep"
-    "t\022.\n\005lines\030\001 \003(\0132\037.naothmessages.FieldLi"
-    "neSegment\0222\n\rintersections\030\002 \003(\0132\033.naoth"
-    "messages.Intersection\0228\n\022middleCircleCen"
-    "ter\030\003 \001(\0132\034.naothmessages.DoubleVector2\""
-    "5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022"
-    "\r\n\005valid\030\003 \003(\010\"w\n\014MotionStatus\022\014\n\004time\030\001"
-    " \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotio"
-    "n\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMo"
-    "tionState\030\005 \002(\r\"3\n\014OdometryData\022#\n\004pose\030"
-    "\001 \002(\0132\025.naothmessages.Pose2DB)\n\'de.hu_be"
-    "rlin.informatik.ki.nao.messages", 2351);
+    "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022"
+    "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D"
+    "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb"
+    "allColor\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031"
+    "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm"
+    "essages.DoubleVector2\022:\n\030frameInfoWhenBa"
+    "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf"
+    "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001"
+    "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages"
+    ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001("
+    "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost"
+    "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca"
+    "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001("
+    "\0132\034.naothmessages.DoubleVector2\0228\n\022targe"
+    "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub"
+    "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013"
+    "2\034.naothmessages.DoubleVector3\0222\n\014search"
+    "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto"
+    "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
+    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"F\n"
+    "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022#\n\004pose"
+    "\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMotion"
+    "Request\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006for"
+    "ced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothme"
+    "ssages.WalkRequest\022\026\n\016starndardStand\030\005 \001"
+    "(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naot"
+    "hmessages.FieldLineSegment\0222\n\rintersecti"
+    "ons\030\002 \003(\0132\033.naothmessages.Intersection\0228"
+    "\n\022middleCircleCenter\030\003 \001(\0132\034.naothmessag"
+    "es.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003"
+    "(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"w\n\014Motio"
+    "nStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002("
+    "\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004"
+    " \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\"3\n\014Odom"
+    "etryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.P"
+    "ose2DB)\n\'de.hu_berlin.informatik.ki.nao."
+    "messages", 2328);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -2502,7 +2501,6 @@ void CameraMatrix::Swap(CameraMatrix* other) {
 #ifndef _MSC_VER
 const int FrameInfo::kFrameNumberFieldNumber;
 const int FrameInfo::kTimeFieldNumber;
-const int FrameInfo::kBasicTimeStepFieldNumber;
 #endif  // !_MSC_VER
 
 FrameInfo::FrameInfo()
@@ -2523,7 +2521,6 @@ void FrameInfo::SharedCtor() {
   _cached_size_ = 0;
   framenumber_ = 0u;
   time_ = 0u;
-  basictimestep_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2560,7 +2557,6 @@ void FrameInfo::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     framenumber_ = 0u;
     time_ = 0u;
-    basictimestep_ = 0u;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -2599,22 +2595,6 @@ bool FrameInfo::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(24)) goto parse_basicTimeStep;
-        break;
-      }
-      
-      // required uint32 basicTimeStep = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_basicTimeStep:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &basictimestep_)));
-          set_has_basictimestep();
-        } else {
-          goto handle_uninterpreted;
-        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2647,11 +2627,6 @@ void FrameInfo::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->time(), output);
   }
   
-  // required uint32 basicTimeStep = 3;
-  if (has_basictimestep()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->basictimestep(), output);
-  }
-  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2668,11 +2643,6 @@ void FrameInfo::SerializeWithCachedSizes(
   // required uint32 time = 2;
   if (has_time()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->time(), target);
-  }
-  
-  // required uint32 basicTimeStep = 3;
-  if (has_basictimestep()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->basictimestep(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2698,13 +2668,6 @@ int FrameInfo::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->time());
-    }
-    
-    // required uint32 basicTimeStep = 3;
-    if (has_basictimestep()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt32Size(
-          this->basictimestep());
     }
     
   }
@@ -2740,9 +2703,6 @@ void FrameInfo::MergeFrom(const FrameInfo& from) {
     if (from.has_time()) {
       set_time(from.time());
     }
-    if (from.has_basictimestep()) {
-      set_basictimestep(from.basictimestep());
-    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2760,7 +2720,7 @@ void FrameInfo::CopyFrom(const FrameInfo& from) {
 }
 
 bool FrameInfo::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
   return true;
 }
@@ -2769,7 +2729,6 @@ void FrameInfo::Swap(FrameInfo* other) {
   if (other != this) {
     std::swap(framenumber_, other->framenumber_);
     std::swap(time_, other->time_);
-    std::swap(basictimestep_, other->basictimestep_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

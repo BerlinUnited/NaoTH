@@ -88,7 +88,7 @@ void PlatformDataInterface::setMotionOutput()
 
 void PlatformDataInterface::delete_action_list(ActionList& actionList)
 {
-  for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); iter++)
+  for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); ++iter)
   {
     delete (*iter);
   }//end for
@@ -97,7 +97,7 @@ void PlatformDataInterface::delete_action_list(ActionList& actionList)
 
 void PlatformDataInterface::execute(ActionList& actionList) const
 {
-  for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); iter++)
+  for(ActionList::iterator iter = actionList.begin(); iter != actionList.end(); ++iter)
   {
     (*iter)->execute();
   }//end for

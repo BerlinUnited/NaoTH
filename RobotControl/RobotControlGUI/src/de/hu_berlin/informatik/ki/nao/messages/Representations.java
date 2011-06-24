@@ -3598,10 +3598,6 @@ public final class Representations {
     // required uint32 time = 2;
     boolean hasTime();
     int getTime();
-    
-    // required uint32 basicTimeStep = 3;
-    boolean hasBasicTimeStep();
-    int getBasicTimeStep();
   }
   public static final class FrameInfo extends
       com.google.protobuf.GeneratedMessage
@@ -3652,20 +3648,9 @@ public final class Representations {
       return time_;
     }
     
-    // required uint32 basicTimeStep = 3;
-    public static final int BASICTIMESTEP_FIELD_NUMBER = 3;
-    private int basicTimeStep_;
-    public boolean hasBasicTimeStep() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public int getBasicTimeStep() {
-      return basicTimeStep_;
-    }
-    
     private void initFields() {
       frameNumber_ = 0;
       time_ = 0;
-      basicTimeStep_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3677,10 +3662,6 @@ public final class Representations {
         return false;
       }
       if (!hasTime()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasBasicTimeStep()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -3696,9 +3677,6 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeUInt32(2, time_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeUInt32(3, basicTimeStep_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3716,10 +3694,6 @@ public final class Representations {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(2, time_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(3, basicTimeStep_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3849,8 +3823,6 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000001);
         time_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
-        basicTimeStep_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -3897,10 +3869,6 @@ public final class Representations {
           to_bitField0_ |= 0x00000002;
         }
         result.time_ = time_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.basicTimeStep_ = basicTimeStep_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3923,9 +3891,6 @@ public final class Representations {
         if (other.hasTime()) {
           setTime(other.getTime());
         }
-        if (other.hasBasicTimeStep()) {
-          setBasicTimeStep(other.getBasicTimeStep());
-        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -3936,10 +3901,6 @@ public final class Representations {
           return false;
         }
         if (!hasTime()) {
-          
-          return false;
-        }
-        if (!hasBasicTimeStep()) {
           
           return false;
         }
@@ -3977,11 +3938,6 @@ public final class Representations {
             case 16: {
               bitField0_ |= 0x00000002;
               time_ = input.readUInt32();
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              basicTimeStep_ = input.readUInt32();
               break;
             }
           }
@@ -4028,27 +3984,6 @@ public final class Representations {
       public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000002);
         time_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // required uint32 basicTimeStep = 3;
-      private int basicTimeStep_ ;
-      public boolean hasBasicTimeStep() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      public int getBasicTimeStep() {
-        return basicTimeStep_;
-      }
-      public Builder setBasicTimeStep(int value) {
-        bitField0_ |= 0x00000004;
-        basicTimeStep_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearBasicTimeStep() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        basicTimeStep_ = 0;
         onChanged();
         return this;
       }
@@ -11010,45 +10945,45 @@ public final class Representations {
       "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
       "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
       "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n",
-      "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\"E\n\tFr" +
+      "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr" +
       "ameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002" +
-      "(\r\022\025\n\rbasicTimeStep\030\003 \002(\r\"\224\002\n\013BallPercep" +
-      "t\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInImage\030" +
-      "\002 \001(\0132\034.naothmessages.DoubleVector2\022\025\n\rr" +
-      "adiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024." +
-      "naothmessages.Color\022?\n\031bearingBasedOffse" +
-      "tOnField\030\005 \001(\0132\034.naothmessages.DoubleVec" +
-      "tor2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001(\0132\030" +
-      ".naothmessages.FrameInfo\"\234\001\n\013GoalPercept",
-      "\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCentroi" +
-      "d\030\002 \001(\0132\034.naothmessages.DoubleVector3\022\031\n" +
-      "\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027" +
-      ".naothmessages.GoalPost\"\342\002\n\021HeadMotionRe" +
-      "quest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\0229\n\023t" +
-      "argetJointPosition\030\003 \001(\0132\034.naothmessages" +
-      ".DoubleVector2\0228\n\022targetPointInImage\030\004 \001" +
-      "(\0132\034.naothmessages.DoubleVector2\022;\n\025targ" +
-      "etPointInTheWorld\030\005 \001(\0132\034.naothmessages." +
-      "DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132\034.na",
-      "othmessages.DoubleVector3\0220\n\nsearchSize\030" +
-      "\007 \001(\0132\034.naothmessages.DoubleVector3\022\027\n\017s" +
-      "earchDirection\030\010 \001(\010\"F\n\013WalkRequest\022\022\n\nc" +
-      "oordinate\030\001 \002(\r\022#\n\004pose\030\003 \002(\0132\025.naothmes" +
-      "sages.Pose2D\"\202\001\n\rMotionRequest\022\n\n\002id\030\001 \002" +
-      "(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walk" +
-      "Request\030\004 \001(\0132\032.naothmessages.WalkReques" +
-      "t\022\026\n\016starndardStand\030\005 \001(\010\"\253\001\n\013LinePercep" +
-      "t\022.\n\005lines\030\001 \003(\0132\037.naothmessages.FieldLi" +
-      "neSegment\0222\n\rintersections\030\002 \003(\0132\033.naoth",
-      "messages.Intersection\0228\n\022middleCircleCen" +
-      "ter\030\003 \001(\0132\034.naothmessages.DoubleVector2\"" +
-      "5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022" +
-      "\r\n\005valid\030\003 \003(\010\"w\n\014MotionStatus\022\014\n\004time\030\001" +
-      " \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotio" +
-      "n\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMo" +
-      "tionState\030\005 \002(\r\"3\n\014OdometryData\022#\n\004pose\030" +
-      "\001 \002(\0132\025.naothmessages.Pose2DB)\n\'de.hu_be" +
-      "rlin.informatik.ki.nao.messages"
+      "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022" +
+      "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D" +
+      "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb" +
+      "allColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031" +
+      "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm" +
+      "essages.DoubleVector2\022:\n\030frameInfoWhenBa" +
+      "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf" +
+      "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001",
+      "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages" +
+      ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(" +
+      "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost" +
+      "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
+      "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(" +
+      "\0132\034.naothmessages.DoubleVector2\0228\n\022targe" +
+      "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub" +
+      "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013" +
+      "2\034.naothmessages.DoubleVector3\0222\n\014search" +
+      "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto",
+      "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D" +
+      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"F\n" +
+      "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022#\n\004pose" +
+      "\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMotion" +
+      "Request\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006for" +
+      "ced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothme" +
+      "ssages.WalkRequest\022\026\n\016starndardStand\030\005 \001" +
+      "(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naot" +
+      "hmessages.FieldLineSegment\0222\n\rintersecti" +
+      "ons\030\002 \003(\0132\033.naothmessages.Intersection\0228",
+      "\n\022middleCircleCenter\030\003 \001(\0132\034.naothmessag" +
+      "es.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003" +
+      "(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"w\n\014Motio" +
+      "nStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(" +
+      "\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004" +
+      " \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\"3\n\014Odom" +
+      "etryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.P" +
+      "ose2DB)\n\'de.hu_berlin.informatik.ki.nao." +
+      "messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11100,7 +11035,7 @@ public final class Representations {
           internal_static_naothmessages_FrameInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FrameInfo_descriptor,
-              new java.lang.String[] { "FrameNumber", "Time", "BasicTimeStep", },
+              new java.lang.String[] { "FrameNumber", "Time", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder.class);
           internal_static_naothmessages_BallPercept_descriptor =

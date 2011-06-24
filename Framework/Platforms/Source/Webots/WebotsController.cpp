@@ -17,6 +17,7 @@ using namespace naoth;
 WebotsController::WebotsController()
   : 
     PlatformInterface<WebotsController>("Webots", (int)wb_robot_get_basic_time_step()/*40*/),
+    time(0),
     key(0),
     currentStiffness()
 {
@@ -175,7 +176,7 @@ void WebotsController::main()
     {
       key-='0';
     }
-
+    time += getBasicTimeStep();
     callCognition();
     callMotion();
   }//end while
@@ -185,9 +186,7 @@ void WebotsController::main()
 
 void WebotsController::get(FrameInfo& data)
 {
-  data.frameNumber++;
-  data.time += getBasicTimeStep();
-  data.basicTimeStep = getBasicTimeStep();
+  data.setTime(time);
 }
 
 void WebotsController::get(SensorJointData& data)
