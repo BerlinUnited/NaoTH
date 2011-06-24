@@ -32,12 +32,6 @@ newaction {
   end
 }
 
-if os.is("windows") then
-  dofile "helper/naocrosscompile_windows.lua"
-else
-  dofile "helper/naocrosscompile.lua"
-end
-
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
