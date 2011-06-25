@@ -61,9 +61,6 @@ private:
   std::map<std::string, DebugCommandExecutor*> executorMap;
   std::map<std::string, std::string> descriptionMap;
 
-  base64::Decoder base64Decoder;
-  base64::Encoder base64Encoder;
-
   bool frameEnded;
   bool abort;
 

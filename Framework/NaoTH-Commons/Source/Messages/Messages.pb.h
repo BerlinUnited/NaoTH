@@ -34,7 +34,7 @@ void protobuf_AssignDesc_Messages_2eproto();
 void protobuf_ShutdownFile_Messages_2eproto();
 
 class CMDArg;
-class Command;
+class CMD;
 class PlayerModel;
 class TeamCommMessage;
 class StopwatchItem;
@@ -218,14 +218,14 @@ class CMDArg : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Command : public ::google::protobuf::Message {
+class CMD : public ::google::protobuf::Message {
  public:
-  Command();
-  virtual ~Command();
+  CMD();
+  virtual ~CMD();
   
-  Command(const Command& from);
+  CMD(const CMD& from);
   
-  inline Command& operator=(const Command& from) {
+  inline CMD& operator=(const CMD& from) {
     CopyFrom(from);
     return *this;
   }
@@ -239,17 +239,17 @@ class Command : public ::google::protobuf::Message {
   }
   
   static const ::google::protobuf::Descriptor* descriptor();
-  static const Command& default_instance();
+  static const CMD& default_instance();
   
-  void Swap(Command* other);
+  void Swap(CMD* other);
   
   // implements Message ----------------------------------------------
   
-  Command* New() const;
+  CMD* New() const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const Command& from);
-  void MergeFrom(const Command& from);
+  void CopyFrom(const CMD& from);
+  void MergeFrom(const CMD& from);
   void Clear();
   bool IsInitialized() const;
   
@@ -295,7 +295,7 @@ class Command : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >*
       mutable_args();
   
-  // @@protoc_insertion_point(class_scope:naothmessages.Command)
+  // @@protoc_insertion_point(class_scope:naothmessages.CMD)
  private:
   inline void set_has_name();
   inline void clear_has_name();
@@ -313,7 +313,7 @@ class Command : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Messages_2eproto();
   
   void InitAsDefaultInstance();
-  static Command* default_instance_;
+  static CMD* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -2436,56 +2436,56 @@ inline ::std::string* CMDArg::release_bytes() {
 
 // -------------------------------------------------------------------
 
-// Command
+// CMD
 
 // required string name = 1;
-inline bool Command::has_name() const {
+inline bool CMD::has_name() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Command::set_has_name() {
+inline void CMD::set_has_name() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Command::clear_has_name() {
+inline void CMD::clear_has_name() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void Command::clear_name() {
+inline void CMD::clear_name() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     name_->clear();
   }
   clear_has_name();
 }
-inline const ::std::string& Command::name() const {
+inline const ::std::string& CMD::name() const {
   return *name_;
 }
-inline void Command::set_name(const ::std::string& value) {
+inline void CMD::set_name(const ::std::string& value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void Command::set_name(const char* value) {
+inline void CMD::set_name(const char* value) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(value);
 }
-inline void Command::set_name(const char* value, size_t size) {
+inline void CMD::set_name(const char* value, size_t size) {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* Command::mutable_name() {
+inline ::std::string* CMD::mutable_name() {
   set_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     name_ = new ::std::string;
   }
   return name_;
 }
-inline ::std::string* Command::release_name() {
+inline ::std::string* CMD::release_name() {
   clear_has_name();
   if (name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -2497,27 +2497,27 @@ inline ::std::string* Command::release_name() {
 }
 
 // repeated .naothmessages.CMDArg args = 2;
-inline int Command::args_size() const {
+inline int CMD::args_size() const {
   return args_.size();
 }
-inline void Command::clear_args() {
+inline void CMD::clear_args() {
   args_.Clear();
 }
-inline const ::naothmessages::CMDArg& Command::args(int index) const {
+inline const ::naothmessages::CMDArg& CMD::args(int index) const {
   return args_.Get(index);
 }
-inline ::naothmessages::CMDArg* Command::mutable_args(int index) {
+inline ::naothmessages::CMDArg* CMD::mutable_args(int index) {
   return args_.Mutable(index);
 }
-inline ::naothmessages::CMDArg* Command::add_args() {
+inline ::naothmessages::CMDArg* CMD::add_args() {
   return args_.Add();
 }
 inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >&
-Command::args() const {
+CMD::args() const {
   return args_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >*
-Command::mutable_args() {
+CMD::mutable_args() {
   return &args_;
 }
 

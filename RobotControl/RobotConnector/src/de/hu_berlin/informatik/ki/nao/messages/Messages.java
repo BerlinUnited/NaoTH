@@ -451,7 +451,7 @@ public final class Messages {
     // @@protoc_insertion_point(class_scope:naothmessages.CMDArg)
   }
   
-  public interface CommandOrBuilder
+  public interface CMDOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
     // required string name = 1;
@@ -468,32 +468,32 @@ public final class Messages {
     de.hu_berlin.informatik.ki.nao.messages.Messages.CMDArgOrBuilder getArgsOrBuilder(
         int index);
   }
-  public static final class Command extends
+  public static final class CMD extends
       com.google.protobuf.GeneratedMessage
-      implements CommandOrBuilder {
-    // Use Command.newBuilder() to construct.
-    private Command(Builder builder) {
+      implements CMDOrBuilder {
+    // Use CMD.newBuilder() to construct.
+    private CMD(Builder builder) {
       super(builder);
     }
-    private Command(boolean noInit) {}
+    private CMD(boolean noInit) {}
     
-    private static final Command defaultInstance;
-    public static Command getDefaultInstance() {
+    private static final CMD defaultInstance;
+    public static CMD getDefaultInstance() {
       return defaultInstance;
     }
     
-    public Command getDefaultInstanceForType() {
+    public CMD getDefaultInstanceForType() {
       return defaultInstance;
     }
     
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_Command_descriptor;
+      return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_CMD_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_Command_fieldAccessorTable;
+      return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_CMD_fieldAccessorTable;
     }
     
     private int bitField0_;
@@ -611,41 +611,41 @@ public final class Messages {
       return super.writeReplace();
     }
     
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(byte[] data)
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data).buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return newBuilder().mergeFrom(data, extensionRegistry)
                .buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(java.io.InputStream input)
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseDelimitedFrom(java.io.InputStream input)
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       Builder builder = newBuilder();
       if (builder.mergeDelimitedFrom(input)) {
@@ -654,7 +654,7 @@ public final class Messages {
         return null;
       }
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseDelimitedFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -665,12 +665,12 @@ public final class Messages {
         return null;
       }
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return newBuilder().mergeFrom(input).buildParsed();
     }
-    public static de.hu_berlin.informatik.ki.nao.messages.Messages.Command parseFrom(
+    public static de.hu_berlin.informatik.ki.nao.messages.Messages.CMD parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -680,7 +680,7 @@ public final class Messages {
     
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Messages.Command prototype) {
+    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Messages.CMD prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -693,18 +693,18 @@ public final class Messages {
     }
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements de.hu_berlin.informatik.ki.nao.messages.Messages.CommandOrBuilder {
+       implements de.hu_berlin.informatik.ki.nao.messages.Messages.CMDOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_Command_descriptor;
+        return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_CMD_descriptor;
       }
       
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_Command_fieldAccessorTable;
+        return de.hu_berlin.informatik.ki.nao.messages.Messages.internal_static_naothmessages_CMD_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.Command.newBuilder()
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -741,24 +741,24 @@ public final class Messages {
       
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return de.hu_berlin.informatik.ki.nao.messages.Messages.Command.getDescriptor();
+        return de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.getDescriptor();
       }
       
-      public de.hu_berlin.informatik.ki.nao.messages.Messages.Command getDefaultInstanceForType() {
-        return de.hu_berlin.informatik.ki.nao.messages.Messages.Command.getDefaultInstance();
+      public de.hu_berlin.informatik.ki.nao.messages.Messages.CMD getDefaultInstanceForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.getDefaultInstance();
       }
       
-      public de.hu_berlin.informatik.ki.nao.messages.Messages.Command build() {
-        de.hu_berlin.informatik.ki.nao.messages.Messages.Command result = buildPartial();
+      public de.hu_berlin.informatik.ki.nao.messages.Messages.CMD build() {
+        de.hu_berlin.informatik.ki.nao.messages.Messages.CMD result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
       
-      private de.hu_berlin.informatik.ki.nao.messages.Messages.Command buildParsed()
+      private de.hu_berlin.informatik.ki.nao.messages.Messages.CMD buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        de.hu_berlin.informatik.ki.nao.messages.Messages.Command result = buildPartial();
+        de.hu_berlin.informatik.ki.nao.messages.Messages.CMD result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
@@ -766,8 +766,8 @@ public final class Messages {
         return result;
       }
       
-      public de.hu_berlin.informatik.ki.nao.messages.Messages.Command buildPartial() {
-        de.hu_berlin.informatik.ki.nao.messages.Messages.Command result = new de.hu_berlin.informatik.ki.nao.messages.Messages.Command(this);
+      public de.hu_berlin.informatik.ki.nao.messages.Messages.CMD buildPartial() {
+        de.hu_berlin.informatik.ki.nao.messages.Messages.CMD result = new de.hu_berlin.informatik.ki.nao.messages.Messages.CMD(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -789,16 +789,16 @@ public final class Messages {
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Messages.Command) {
-          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Messages.Command)other);
+        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Messages.CMD) {
+          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Messages.CMD)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
       
-      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Messages.Command other) {
-        if (other == de.hu_berlin.informatik.ki.nao.messages.Messages.Command.getDefaultInstance()) return this;
+      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Messages.CMD other) {
+        if (other == de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.getDefaultInstance()) return this;
         if (other.hasName()) {
           setName(other.getName());
         }
@@ -1108,15 +1108,15 @@ public final class Messages {
         return argsBuilder_;
       }
       
-      // @@protoc_insertion_point(builder_scope:naothmessages.Command)
+      // @@protoc_insertion_point(builder_scope:naothmessages.CMD)
     }
     
     static {
-      defaultInstance = new Command(true);
+      defaultInstance = new CMD(true);
       defaultInstance.initFields();
     }
     
-    // @@protoc_insertion_point(class_scope:naothmessages.Command)
+    // @@protoc_insertion_point(class_scope:naothmessages.CMD)
   }
   
   public interface PlayerModelOrBuilder
@@ -13455,10 +13455,10 @@ public final class Messages {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_CMDArg_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_naothmessages_Command_descriptor;
+    internal_static_naothmessages_CMD_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_naothmessages_Command_fieldAccessorTable;
+      internal_static_naothmessages_CMD_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_PlayerModel_descriptor;
   private static
@@ -13550,70 +13550,70 @@ public final class Messages {
     java.lang.String[] descriptorData = {
       "\n\016Messages.proto\022\rnaothmessages\032\021CommonT" +
       "ypes.proto\"%\n\006CMDArg\022\014\n\004name\030\001 \002(\t\022\r\n\005by" +
-      "tes\030\003 \001(\014\"<\n\007Command\022\014\n\004name\030\001 \002(\t\022#\n\004ar" +
-      "gs\030\002 \003(\0132\025.naothmessages.CMDArg\"I\n\013Playe" +
-      "rModel\022\016\n\006number\030\001 \002(\005\022*\n\013poseOnField\030\002 " +
-      "\001(\0132\025.naothmessages.Pose2D\"\343\002\n\017TeamCommM" +
-      "essage\022\024\n\014playerNumber\030\001 \002(\005\022\022\n\nteamNumb" +
-      "er\030\002 \002(\005\022\031\n\nwasStriker\030\003 \001(\010:\005false\022\032\n\013i" +
-      "sPenalized\030\004 \001(\010:\005false\022\034\n\024timeSinceBall" +
-      "WasSeen\030\005 \001(\001\0222\n\014ballPosition\030\006 \001(\0132\034.na",
-      "othmessages.DoubleVector2\022.\n\017positionOnF" +
-      "ield\030\007 \001(\0132\025.naothmessages.Pose2D\022,\n\010opp" +
-      "onent\030\010 \001(\0132\032.naothmessages.PlayerModel\022" +
-      "\033\n\014isFallenDown\030\t \001(\010:\005false\022\022\n\ntimeToBa" +
-      "ll\030\n \001(\001\022\016\n\006bodyID\030\013 \001(\t\"+\n\rStopwatchIte" +
-      "m\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stopwat" +
-      "ches\0221\n\013stopwatches\030\001 \003(\0132\034.naothmessage" +
-      "s.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030\001 \002" +
-      "(\0162 .naothmessages.PlotItem.PlotType\022\014\n\004" +
-      "name\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001",
-      "y\030\005 \001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType\022\013\n" +
-      "\007Default\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"/\n\005" +
-      "Plots\022&\n\005plots\030\001 \003(\0132\027.naothmessages.Plo" +
-      "tItem\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007" +
-      "unknown\022>\n\004type\030\002 \001(\0162\'.naothmessages.XA" +
-      "BSLParameter.ParamType:\007Unknown\022\024\n\014decim" +
-      "alValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenum" +
-      "Value\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n" +
-      "\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XA" +
-      "BSLAction\022<\n\004type\030\001 \001(\0162%.naothmessages.",
-      "XABSLAction.ActionType:\007Unknown\022\025\n\004name\030" +
-      "\002 \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:" +
-      "\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001" +
-      "(\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessages.X" +
-      "ABSLParameter\0224\n\020activeSubActions\030\007 \003(\0132" +
-      "\032.naothmessages.XABSLAction\022\024\n\014decimalVa" +
-      "lue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValu" +
-      "e\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBa" +
-      "sicBehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027" +
-      "\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutputSym",
-      "bol\020\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus\022\r\n" +
-      "\005agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132" +
-      "\032.naothmessages.XABSLAction\0223\n\014inputSymb" +
-      "ols\030\003 \003(\0132\035.naothmessages.XABSLParameter" +
-      "\0224\n\routputSymbols\030\004 \003(\0132\035.naothmessages." +
-      "XABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\"k\n\006M" +
-      "odule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentatio" +
-      "ns\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003(" +
-      "\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&" +
-      "\n\007modules\030\001 \003(\0132\025.naothmessages.Module\"\213",
-      "\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothme" +
-      "ssages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005ang" +
-      "le\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002" +
-      "(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectio" +
-      "nResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPo" +
-      "ints\030\002 \003(\0132\036.naothmessages.FeatureKeyPoi" +
-      "nt\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages." +
-      "SingleDescriptor\022\031\n\021namesForKeyPoints\030\004 " +
-      "\003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264" +
-      "\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Featu",
-      "reClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037" +
-      ".naothmessages.SingleDescriptor\022\024\n\014objec" +
-      "tHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes" +
-      "\030\001 \003(\0132\033.naothmessages.FeatureClass\022#\n\027n" +
-      "umberOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.h" +
-      "u_berlin.informatik.ki.nao.messages"
+      "tes\030\003 \001(\014\"8\n\003CMD\022\014\n\004name\030\001 \002(\t\022#\n\004args\030\002" +
+      " \003(\0132\025.naothmessages.CMDArg\"I\n\013PlayerMod" +
+      "el\022\016\n\006number\030\001 \002(\005\022*\n\013poseOnField\030\002 \001(\0132" +
+      "\025.naothmessages.Pose2D\"\343\002\n\017TeamCommMessa" +
+      "ge\022\024\n\014playerNumber\030\001 \002(\005\022\022\n\nteamNumber\030\002" +
+      " \002(\005\022\031\n\nwasStriker\030\003 \001(\010:\005false\022\032\n\013isPen" +
+      "alized\030\004 \001(\010:\005false\022\034\n\024timeSinceBallWasS" +
+      "een\030\005 \001(\001\0222\n\014ballPosition\030\006 \001(\0132\034.naothm",
+      "essages.DoubleVector2\022.\n\017positionOnField" +
+      "\030\007 \001(\0132\025.naothmessages.Pose2D\022,\n\010opponen" +
+      "t\030\010 \001(\0132\032.naothmessages.PlayerModel\022\033\n\014i" +
+      "sFallenDown\030\t \001(\010:\005false\022\022\n\ntimeToBall\030\n" +
+      " \001(\001\022\016\n\006bodyID\030\013 \001(\t\"+\n\rStopwatchItem\022\014\n" +
+      "\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stopwatches" +
+      "\0221\n\013stopwatches\030\001 \003(\0132\034.naothmessages.St" +
+      "opwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030\001 \002(\0162 " +
+      ".naothmessages.PlotItem.PlotType\022\014\n\004name" +
+      "\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001y\030\005 ",
+      "\001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType\022\013\n\007Def" +
+      "ault\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"/\n\005Plot" +
+      "s\022&\n\005plots\030\001 \003(\0132\027.naothmessages.PlotIte" +
+      "m\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007unkn" +
+      "own\022>\n\004type\030\002 \001(\0162\'.naothmessages.XABSLP" +
+      "arameter.ParamType:\007Unknown\022\024\n\014decimalVa" +
+      "lue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenumValu" +
+      "e\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n\007Boo" +
+      "lean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XABSLA" +
+      "ction\022<\n\004type\030\001 \001(\0162%.naothmessages.XABS",
+      "LAction.ActionType:\007Unknown\022\025\n\004name\030\002 \001(" +
+      "\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:\0010\022\023" +
+      "\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001(\003\0221" +
+      "\n\nparameters\030\006 \003(\0132\035.naothmessages.XABSL" +
+      "Parameter\0224\n\020activeSubActions\030\007 \003(\0132\032.na" +
+      "othmessages.XABSLAction\022\024\n\014decimalValue\030" +
+      "\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValue\030\n " +
+      "\001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBasicB" +
+      "ehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027\n\023Bo" +
+      "oleanOutputSymbol\020\003\022\024\n\020EnumOutputSymbol\020",
+      "\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus\022\r\n\005age" +
+      "nt\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132\032.na" +
+      "othmessages.XABSLAction\0223\n\014inputSymbols\030" +
+      "\003 \003(\0132\035.naothmessages.XABSLParameter\0224\n\r" +
+      "outputSymbols\030\004 \003(\0132\035.naothmessages.XABS" +
+      "LParameter\022\023\n\013frameNumber\030\005 \001(\r\"k\n\006Modul" +
+      "e\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002" +
+      " \003(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n" +
+      "\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007mo" +
+      "dules\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017F",
+      "eatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessag" +
+      "es.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003" +
+      " \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020" +
+      "\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionRes" +
+      "ult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints" +
+      "\030\002 \003(\0132\036.naothmessages.FeatureKeyPoint\0224" +
+      "\n\013descriptors\030\003 \003(\0132\037.naothmessages.Sing" +
+      "leDescriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022" +
+      "#\n\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020" +
+      "SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureCl",
+      "ass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.nao" +
+      "thmessages.SingleDescriptor\022\024\n\014objectHei" +
+      "ght\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003" +
+      "(\0132\033.naothmessages.FeatureClass\022#\n\027numbe" +
+      "rOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.hu_be" +
+      "rlin.informatik.ki.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -13628,14 +13628,14 @@ public final class Messages {
               new java.lang.String[] { "Name", "Bytes", },
               de.hu_berlin.informatik.ki.nao.messages.Messages.CMDArg.class,
               de.hu_berlin.informatik.ki.nao.messages.Messages.CMDArg.Builder.class);
-          internal_static_naothmessages_Command_descriptor =
+          internal_static_naothmessages_CMD_descriptor =
             getDescriptor().getMessageTypes().get(1);
-          internal_static_naothmessages_Command_fieldAccessorTable = new
+          internal_static_naothmessages_CMD_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_naothmessages_Command_descriptor,
+              internal_static_naothmessages_CMD_descriptor,
               new java.lang.String[] { "Name", "Args", },
-              de.hu_berlin.informatik.ki.nao.messages.Messages.Command.class,
-              de.hu_berlin.informatik.ki.nao.messages.Messages.Command.Builder.class);
+              de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.class,
+              de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.Builder.class);
           internal_static_naothmessages_PlayerModel_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_naothmessages_PlayerModel_fieldAccessorTable = new

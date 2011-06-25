@@ -11,7 +11,7 @@ message CMDArg {
   optional bytes bytes = 3;
 }
 
-message Command {
+message CMD {
   required string name = 1;
   repeated CMDArg args = 2;
 }

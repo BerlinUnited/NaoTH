@@ -105,45 +105,53 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
   if (connection != NULL)
   {
 
-    guint32 sizeOfMessage;
+    guint32 sizeOfMessage = 0;
     if(fatalFail) return NULL;
 
     gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
 
     if(initialBytes == 4)
     {
-      GString* buffer = g_string_sized_new(sizeOfMessage);
-      g_string_set_size(buffer, sizeOfMessage);
-      g_assert(buffer->len == sizeOfMessage);
-
-      gssize pos = 0;
-      // read message completly
-      while(!fatalFail && *err == NULL)
+      if(sizeOfMessage > 0)
       {
-        gssize read_bytes =
-            g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
+        GString* buffer = g_string_sized_new(sizeOfMessage);
+        g_string_set_size(buffer, sizeOfMessage);
+        g_assert(buffer->len == sizeOfMessage);
 
-        if(read_bytes == 0)
+        gssize pos = 0;
+        // read message completly
+        while(!fatalFail && *err == NULL && pos < sizeOfMessage)
+        {
+          gssize read_bytes =
+              g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
+
+          if(read_bytes == 0)
+          {
+            g_string_free(buffer, true);
+            buffer = NULL;
+            // we got 0 bytes, this indicates
+            // an error in the connection (-1 is set if no data was available
+            // in non-blocking mode)
+            throw "Connection Error";
+
+          }
+            pos += read_bytes;
+        } // end while read bytes
+
+        if(*err)
         {
           g_string_free(buffer, true);
-          buffer = NULL;
-          // we got 0 bytes, this indicates
-          // an error in the connection (-1 is set if no data was available
-          // in non-blocking mode)
-          throw "Connection Error";
-
+          return NULL;
         }
-        pos += read_bytes;
 
-      } // end while no \n found
-
-      if(*err)
-      {
-        g_string_free(buffer, true);
-        return NULL;
+        return buffer;
       }
-
-      return buffer;
+      else
+      {
+        //g_debug("keepalive received");
+        // keepalive message, ignore
+        return NULL;
+      } // end if sizeOfMessage > 0
     } // end if header read
   }//end if connection not null
 

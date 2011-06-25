@@ -20,9 +20,9 @@ namespace {
 const ::google::protobuf::Descriptor* CMDArg_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CMDArg_reflection_ = NULL;
-const ::google::protobuf::Descriptor* Command_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* CMD_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  Command_reflection_ = NULL;
+  CMD_reflection_ = NULL;
 const ::google::protobuf::Descriptor* PlayerModel_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PlayerModel_reflection_ = NULL;
@@ -100,22 +100,22 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CMDArg));
-  Command_descriptor_ = file->message_type(1);
-  static const int Command_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, name_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, args_),
+  CMD_descriptor_ = file->message_type(1);
+  static const int CMD_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMD, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMD, args_),
   };
-  Command_reflection_ =
+  CMD_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
-      Command_descriptor_,
-      Command::default_instance_,
-      Command_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Command, _unknown_fields_),
+      CMD_descriptor_,
+      CMD::default_instance_,
+      CMD_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMD, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CMD, _unknown_fields_),
       -1,
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(Command));
+      sizeof(CMD));
   PlayerModel_descriptor_ = file->message_type(2);
   static const int PlayerModel_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlayerModel, number_),
@@ -423,7 +423,7 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CMDArg_descriptor_, &CMDArg::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    Command_descriptor_, &Command::default_instance());
+    CMD_descriptor_, &CMD::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PlayerModel_descriptor_, &PlayerModel::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -463,8 +463,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_Messages_2eproto() {
   delete CMDArg::default_instance_;
   delete CMDArg_reflection_;
-  delete Command::default_instance_;
-  delete Command_reflection_;
+  delete CMD::default_instance_;
+  delete CMD_reflection_;
   delete PlayerModel::default_instance_;
   delete PlayerModel_reflection_;
   delete TeamCommMessage::default_instance_;
@@ -509,74 +509,74 @@ void protobuf_AddDesc_Messages_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\016Messages.proto\022\rnaothmessages\032\021CommonT"
     "ypes.proto\"%\n\006CMDArg\022\014\n\004name\030\001 \002(\t\022\r\n\005by"
-    "tes\030\003 \001(\014\"<\n\007Command\022\014\n\004name\030\001 \002(\t\022#\n\004ar"
-    "gs\030\002 \003(\0132\025.naothmessages.CMDArg\"I\n\013Playe"
-    "rModel\022\016\n\006number\030\001 \002(\005\022*\n\013poseOnField\030\002 "
-    "\001(\0132\025.naothmessages.Pose2D\"\343\002\n\017TeamCommM"
-    "essage\022\024\n\014playerNumber\030\001 \002(\005\022\022\n\nteamNumb"
-    "er\030\002 \002(\005\022\031\n\nwasStriker\030\003 \001(\010:\005false\022\032\n\013i"
-    "sPenalized\030\004 \001(\010:\005false\022\034\n\024timeSinceBall"
-    "WasSeen\030\005 \001(\001\0222\n\014ballPosition\030\006 \001(\0132\034.na"
-    "othmessages.DoubleVector2\022.\n\017positionOnF"
-    "ield\030\007 \001(\0132\025.naothmessages.Pose2D\022,\n\010opp"
-    "onent\030\010 \001(\0132\032.naothmessages.PlayerModel\022"
-    "\033\n\014isFallenDown\030\t \001(\010:\005false\022\022\n\ntimeToBa"
-    "ll\030\n \001(\001\022\016\n\006bodyID\030\013 \001(\t\"+\n\rStopwatchIte"
-    "m\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stopwat"
-    "ches\0221\n\013stopwatches\030\001 \003(\0132\034.naothmessage"
-    "s.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030\001 \002"
-    "(\0162 .naothmessages.PlotItem.PlotType\022\014\n\004"
-    "name\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001"
-    "y\030\005 \001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType\022\013\n"
-    "\007Default\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"/\n\005"
-    "Plots\022&\n\005plots\030\001 \003(\0132\027.naothmessages.Plo"
-    "tItem\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007"
-    "unknown\022>\n\004type\030\002 \001(\0162\'.naothmessages.XA"
-    "BSLParameter.ParamType:\007Unknown\022\024\n\014decim"
-    "alValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenum"
-    "Value\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n"
-    "\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XA"
-    "BSLAction\022<\n\004type\030\001 \001(\0162%.naothmessages."
-    "XABSLAction.ActionType:\007Unknown\022\025\n\004name\030"
-    "\002 \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:"
-    "\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001"
-    "(\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessages.X"
-    "ABSLParameter\0224\n\020activeSubActions\030\007 \003(\0132"
-    "\032.naothmessages.XABSLAction\022\024\n\014decimalVa"
-    "lue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValu"
-    "e\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBa"
-    "sicBehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027"
-    "\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutputSym"
-    "bol\020\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus\022\r\n"
-    "\005agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132"
-    "\032.naothmessages.XABSLAction\0223\n\014inputSymb"
-    "ols\030\003 \003(\0132\035.naothmessages.XABSLParameter"
-    "\0224\n\routputSymbols\030\004 \003(\0132\035.naothmessages."
-    "XABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\"k\n\006M"
-    "odule\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentatio"
-    "ns\030\002 \003(\t\022\037\n\027providedRepresentations\030\003 \003("
-    "\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&"
-    "\n\007modules\030\001 \003(\0132\025.naothmessages.Module\"\213"
-    "\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothme"
-    "ssages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005ang"
-    "le\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002"
-    "(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectio"
-    "nResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPo"
-    "ints\030\002 \003(\0132\036.naothmessages.FeatureKeyPoi"
-    "nt\0224\n\013descriptors\030\003 \003(\0132\037.naothmessages."
-    "SingleDescriptor\022\031\n\021namesForKeyPoints\030\004 "
-    "\003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:\00264"
-    "\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Featu"
-    "reClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037"
-    ".naothmessages.SingleDescriptor\022\024\n\014objec"
-    "tHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes"
-    "\030\001 \003(\0132\033.naothmessages.FeatureClass\022#\n\027n"
-    "umberOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.h"
-    "u_berlin.informatik.ki.nao.messages", 2635);
+    "tes\030\003 \001(\014\"8\n\003CMD\022\014\n\004name\030\001 \002(\t\022#\n\004args\030\002"
+    " \003(\0132\025.naothmessages.CMDArg\"I\n\013PlayerMod"
+    "el\022\016\n\006number\030\001 \002(\005\022*\n\013poseOnField\030\002 \001(\0132"
+    "\025.naothmessages.Pose2D\"\343\002\n\017TeamCommMessa"
+    "ge\022\024\n\014playerNumber\030\001 \002(\005\022\022\n\nteamNumber\030\002"
+    " \002(\005\022\031\n\nwasStriker\030\003 \001(\010:\005false\022\032\n\013isPen"
+    "alized\030\004 \001(\010:\005false\022\034\n\024timeSinceBallWasS"
+    "een\030\005 \001(\001\0222\n\014ballPosition\030\006 \001(\0132\034.naothm"
+    "essages.DoubleVector2\022.\n\017positionOnField"
+    "\030\007 \001(\0132\025.naothmessages.Pose2D\022,\n\010opponen"
+    "t\030\010 \001(\0132\032.naothmessages.PlayerModel\022\033\n\014i"
+    "sFallenDown\030\t \001(\010:\005false\022\022\n\ntimeToBall\030\n"
+    " \001(\001\022\016\n\006bodyID\030\013 \001(\t\"+\n\rStopwatchItem\022\014\n"
+    "\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stopwatches"
+    "\0221\n\013stopwatches\030\001 \003(\0132\034.naothmessages.St"
+    "opwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030\001 \002(\0162 "
+    ".naothmessages.PlotItem.PlotType\022\014\n\004name"
+    "\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001y\030\005 "
+    "\001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType\022\013\n\007Def"
+    "ault\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"/\n\005Plot"
+    "s\022&\n\005plots\030\001 \003(\0132\027.naothmessages.PlotIte"
+    "m\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007unkn"
+    "own\022>\n\004type\030\002 \001(\0162\'.naothmessages.XABSLP"
+    "arameter.ParamType:\007Unknown\022\024\n\014decimalVa"
+    "lue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenumValu"
+    "e\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n\007Boo"
+    "lean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XABSLA"
+    "ction\022<\n\004type\030\001 \001(\0162%.naothmessages.XABS"
+    "LAction.ActionType:\007Unknown\022\025\n\004name\030\002 \001("
+    "\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:\0010\022\023"
+    "\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001(\003\0221"
+    "\n\nparameters\030\006 \003(\0132\035.naothmessages.XABSL"
+    "Parameter\0224\n\020activeSubActions\030\007 \003(\0132\032.na"
+    "othmessages.XABSLAction\022\024\n\014decimalValue\030"
+    "\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValue\030\n "
+    "\001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBasicB"
+    "ehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027\n\023Bo"
+    "oleanOutputSymbol\020\003\022\024\n\020EnumOutputSymbol\020"
+    "\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus\022\r\n\005age"
+    "nt\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132\032.na"
+    "othmessages.XABSLAction\0223\n\014inputSymbols\030"
+    "\003 \003(\0132\035.naothmessages.XABSLParameter\0224\n\r"
+    "outputSymbols\030\004 \003(\0132\035.naothmessages.XABS"
+    "LParameter\022\023\n\013frameNumber\030\005 \001(\r\"k\n\006Modul"
+    "e\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002"
+    " \003(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n"
+    "\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007mo"
+    "dules\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017F"
+    "eatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessag"
+    "es.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003"
+    " \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020"
+    "\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionRes"
+    "ult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints"
+    "\030\002 \003(\0132\036.naothmessages.FeatureKeyPoint\0224"
+    "\n\013descriptors\030\003 \003(\0132\037.naothmessages.Sing"
+    "leDescriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022"
+    "#\n\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020"
+    "SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureCl"
+    "ass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.nao"
+    "thmessages.SingleDescriptor\022\024\n\014objectHei"
+    "ght\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003"
+    "(\0132\033.naothmessages.FeatureClass\022#\n\027numbe"
+    "rOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.hu_be"
+    "rlin.informatik.ki.nao.messages", 2631);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   CMDArg::default_instance_ = new CMDArg();
-  Command::default_instance_ = new Command();
+  CMD::default_instance_ = new CMD();
   PlayerModel::default_instance_ = new PlayerModel();
   TeamCommMessage::default_instance_ = new TeamCommMessage();
   StopwatchItem::default_instance_ = new StopwatchItem();
@@ -594,7 +594,7 @@ void protobuf_AddDesc_Messages_2eproto() {
   FeatureClass::default_instance_ = new FeatureClass();
   FeatureTable::default_instance_ = new FeatureTable();
   CMDArg::default_instance_->InitAsDefaultInstance();
-  Command::default_instance_->InitAsDefaultInstance();
+  CMD::default_instance_->InitAsDefaultInstance();
   PlayerModel::default_instance_->InitAsDefaultInstance();
   TeamCommMessage::default_instance_->InitAsDefaultInstance();
   StopwatchItem::default_instance_->InitAsDefaultInstance();
@@ -898,35 +898,35 @@ void CMDArg::Swap(CMDArg* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int Command::kNameFieldNumber;
-const int Command::kArgsFieldNumber;
+const int CMD::kNameFieldNumber;
+const int CMD::kArgsFieldNumber;
 #endif  // !_MSC_VER
 
-Command::Command()
+CMD::CMD()
   : ::google::protobuf::Message() {
   SharedCtor();
 }
 
-void Command::InitAsDefaultInstance() {
+void CMD::InitAsDefaultInstance() {
 }
 
-Command::Command(const Command& from)
+CMD::CMD(const CMD& from)
   : ::google::protobuf::Message() {
   SharedCtor();
   MergeFrom(from);
 }
 
-void Command::SharedCtor() {
+void CMD::SharedCtor() {
   _cached_size_ = 0;
   name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
-Command::~Command() {
+CMD::~CMD() {
   SharedDtor();
 }
 
-void Command::SharedDtor() {
+void CMD::SharedDtor() {
   if (name_ != &::google::protobuf::internal::kEmptyString) {
     delete name_;
   }
@@ -934,27 +934,27 @@ void Command::SharedDtor() {
   }
 }
 
-void Command::SetCachedSize(int size) const {
+void CMD::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Command::descriptor() {
+const ::google::protobuf::Descriptor* CMD::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Command_descriptor_;
+  return CMD_descriptor_;
 }
 
-const Command& Command::default_instance() {
+const CMD& CMD::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
 }
 
-Command* Command::default_instance_ = NULL;
+CMD* CMD::default_instance_ = NULL;
 
-Command* Command::New() const {
-  return new Command;
+CMD* CMD::New() const {
+  return new CMD;
 }
 
-void Command::Clear() {
+void CMD::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_name()) {
       if (name_ != &::google::protobuf::internal::kEmptyString) {
@@ -967,7 +967,7 @@ void Command::Clear() {
   mutable_unknown_fields()->Clear();
 }
 
-bool Command::MergePartialFromCodedStream(
+bool CMD::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!(EXPRESSION)) return false
   ::google::protobuf::uint32 tag;
@@ -1020,7 +1020,7 @@ bool Command::MergePartialFromCodedStream(
 #undef DO_
 }
 
-void Command::SerializeWithCachedSizes(
+void CMD::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // required string name = 1;
   if (has_name()) {
@@ -1043,7 +1043,7 @@ void Command::SerializeWithCachedSizes(
   }
 }
 
-::google::protobuf::uint8* Command::SerializeWithCachedSizesToArray(
+::google::protobuf::uint8* CMD::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
   // required string name = 1;
   if (has_name()) {
@@ -1069,7 +1069,7 @@ void Command::SerializeWithCachedSizes(
   return target;
 }
 
-int Command::ByteSize() const {
+int CMD::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -1100,10 +1100,10 @@ int Command::ByteSize() const {
   return total_size;
 }
 
-void Command::MergeFrom(const ::google::protobuf::Message& from) {
+void CMD::MergeFrom(const ::google::protobuf::Message& from) {
   GOOGLE_CHECK_NE(&from, this);
-  const Command* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const Command*>(
+  const CMD* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const CMD*>(
       &from);
   if (source == NULL) {
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
@@ -1112,7 +1112,7 @@ void Command::MergeFrom(const ::google::protobuf::Message& from) {
   }
 }
 
-void Command::MergeFrom(const Command& from) {
+void CMD::MergeFrom(const CMD& from) {
   GOOGLE_CHECK_NE(&from, this);
   args_.MergeFrom(from.args_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
@@ -1123,19 +1123,19 @@ void Command::MergeFrom(const Command& from) {
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
-void Command::CopyFrom(const ::google::protobuf::Message& from) {
+void CMD::CopyFrom(const ::google::protobuf::Message& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Command::CopyFrom(const Command& from) {
+void CMD::CopyFrom(const CMD& from) {
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Command::IsInitialized() const {
+bool CMD::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   for (int i = 0; i < args_size(); i++) {
@@ -1144,7 +1144,7 @@ bool Command::IsInitialized() const {
   return true;
 }
 
-void Command::Swap(Command* other) {
+void CMD::Swap(CMD* other) {
   if (other != this) {
     std::swap(name_, other->name_);
     args_.Swap(&other->args_);
@@ -1154,11 +1154,11 @@ void Command::Swap(Command* other) {
   }
 }
 
-::google::protobuf::Metadata Command::GetMetadata() const {
+::google::protobuf::Metadata CMD::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Command_descriptor_;
-  metadata.reflection = Command_reflection_;
+  metadata.descriptor = CMD_descriptor_;
+  metadata.reflection = CMD_reflection_;
   return metadata;
 }
 

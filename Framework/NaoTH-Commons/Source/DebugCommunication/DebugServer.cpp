@@ -161,7 +161,7 @@ void DebugServer::execute()
 
     g_async_queue_push(answers, answer);
 
-    g_free(cmdRaw);
+    g_string_free(cmdRaw, true);
 
   }//end while
 
@@ -174,7 +174,7 @@ void DebugServer::handleCommand(GString* cmdRaw, std::stringstream& answer)
 {
   // parse command
 
-  naothmessages::Command cmd;
+  naothmessages::CMD cmd;
   std::map<std::string, std::string> arguments;
   std::string commandName = "invalidcommand";
 
