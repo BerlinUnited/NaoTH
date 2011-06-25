@@ -69,7 +69,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& 
 
 Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
 {
-  Pose2D step = req;
+  Pose2D step = req.target;
 
   if ( req.coordinate == WalkRequest::Hip )
       return step;
@@ -141,7 +141,7 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const
   Pose3D leftMove = firstStepLeft.footBegin().invert() * firstStepLeft.footEnd();
   Pose3D rightMove = firstStepRight.footBegin().invert() * firstStepRight.footEnd();
 
-  if ( abs(req.rotation) > theMaxTurnInner )
+  if ( abs(req.target.rotation) > theMaxTurnInner )
   {
     // choose foot by rotation
     double leftTurn = leftMove.rotation.getZAngle();

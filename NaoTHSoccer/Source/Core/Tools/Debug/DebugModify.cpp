@@ -8,6 +8,8 @@
 #include "DebugModify.h"
 #include "Cognition/CognitionDebugServer.h"
 
+using namespace naoth;
+
 DebugModify::DebugModify()
 {
   REGISTER_DEBUG_COMMAND("modify:list", 
