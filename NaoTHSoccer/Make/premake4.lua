@@ -11,6 +11,10 @@ newaction {
     
     extract_todos_files(os.matchfiles("../Source/**.cpp"), result);
     extract_todos_files(os.matchfiles("../Source/**.h"), result);
+    extract_todos_files(os.matchfiles("../../Framework/NaoTH-Commmons/Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../../Framework/NaoTH-Commmons/Source/**.h"), result);
+    extract_todos_files(os.matchfiles("../../Framework/Platforms/Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../../Framework/Platforms/Source/**.h"), result);
     
     io.output("../TODO")
     io.write("= TODO list =\n\n")
@@ -23,7 +27,7 @@ newaction {
       local message = string.gsub(v.message, "\n", "")
       message = string.gsub(message, "\r", "")
       
-      io.write("|| " .. i .. " || " .. v.kind .. " || " .. message .. " || [source:trunk/Projects/NaoController/Make/" ..  
+      io.write("|| " .. i .. " || " .. v.kind .. " || " .. message .. " || [source:NaoTHSoccer/Make/" ..  
         v.file .. "#L" .. v.line .. " " .. path.getname(v.file) .. ":" .. v.line .. "] ||\n")
       i = i +1
     end
