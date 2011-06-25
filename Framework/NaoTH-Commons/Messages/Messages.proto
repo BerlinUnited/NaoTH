@@ -5,11 +5,10 @@ option java_package= "de.hu_berlin.informatik.ki.nao.messages";
 import "CommonTypes.proto";
 
 // command line interface //
-/*
+
 message CMDArg {
   required string name = 1;
-  optional string value = 2;
-  optional bytes value_bytes = 3;
+  optional bytes bytes = 3;
 }
 
 message Command {
@@ -17,10 +16,6 @@ message Command {
   repeated CMDArg args = 2;
 }
 
-message CommandList {
-  repeated Command cmd = 1;
-}
-*/
 
 message PlayerModel {
   required int32 number = 1;

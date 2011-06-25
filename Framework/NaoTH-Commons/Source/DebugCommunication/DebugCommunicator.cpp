@@ -81,8 +81,11 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   GError* err = NULL;
   if (connection != NULL)
   {
-    gsize pos = 0;
+    // send message size in 4 bytes
+    guint32 sizeFixed = size;
+    g_socket_send(connection, (char*) &sizeFixed, 4, NULL, &err);
 
+    gsize pos = 0;
     while(err == NULL && connection != NULL && pos < size)
     {
       gsize length = size-pos;
@@ -102,49 +105,43 @@ char* DebugCommunicator::internalReadMessage(GError** err)
   if (connection != NULL)
   {
 
-    GString* buffer = g_string_new("");
-    char c = 0;
+    guint32 sizeOfMessage;
+    if(fatalFail) return NULL;
 
-    // read until \n character found
-    while(!fatalFail && *err == NULL && c != '\n')
+    gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
+
+    if(initialBytes == 4)
     {
-      if(err != NULL)
+      char* buffer = (char*) g_malloc0(sizeOfMessage);
+      gssize pos = 0;
+      // read message completly
+      while(!fatalFail && *err == NULL)
       {
         gssize read_bytes =
-            g_socket_receive_with_blocking(connection, &c, 1, buffer->len == 0 ? false : true ,NULL, err);
+            g_socket_receive_with_blocking(connection, buffer+pos, sizeOfMessage - pos, true ,NULL, err);
 
-        if(read_bytes < 1)
+        if(read_bytes == 0)
         {
-          g_string_free(buffer, true);
+          g_free(buffer);
+          buffer = NULL;
+          // we got 0 bytes, this indicates
+          // an error in the connection (-1 is set if no data was available
+          // in non-blocking mode)
+          throw "Connection Error";
 
-          if(read_bytes == 0)
-          {
-            // we got 0 bytes, this indicates
-            // an error in the connection (-1 is set if no data was available
-            // in non-blocking mode)
-            throw "Connection Error";
-          }
-          else
-          {
-            // just return nothing
-            return NULL;
-          }
         }
-      }
+        pos += read_bytes;
 
-      if(c != '\r' && c != '\n')
+      } // end while no \n found
+
+      if(*err)
       {
-        g_string_append_c(buffer,c);
+        g_free(buffer);
+        buffer = NULL;
       }
-    } // end while no \n found
 
-    if(*err)
-    {
-      g_string_free(buffer,true);
-    }
-
-    g_string_append_c(buffer,'\0');
-    return g_string_free(buffer, false);
+      return buffer;
+    } // end if header read
   }//end if connection not null
 
   return NULL;
