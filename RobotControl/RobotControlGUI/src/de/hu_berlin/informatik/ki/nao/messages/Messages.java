@@ -554,6 +554,10 @@ public final class Messages {
     // optional double timeToBall = 10;
     boolean hasTimeToBall();
     double getTimeToBall();
+    
+    // optional string bodyID = 11;
+    boolean hasBodyID();
+    String getBodyID();
   }
   public static final class TeamCommMessage extends
       com.google.protobuf.GeneratedMessage
@@ -693,6 +697,38 @@ public final class Messages {
       return timeToBall_;
     }
     
+    // optional string bodyID = 11;
+    public static final int BODYID_FIELD_NUMBER = 11;
+    private java.lang.Object bodyID_;
+    public boolean hasBodyID() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    public String getBodyID() {
+      java.lang.Object ref = bodyID_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          bodyID_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getBodyIDBytes() {
+      java.lang.Object ref = bodyID_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        bodyID_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       playerNumber_ = 0;
       teamNumber_ = 0;
@@ -704,6 +740,7 @@ public final class Messages {
       opponent_ = de.hu_berlin.informatik.ki.nao.messages.Messages.PlayerModel.getDefaultInstance();
       isFallenDown_ = false;
       timeToBall_ = 0D;
+      bodyID_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -773,6 +810,9 @@ public final class Messages {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         output.writeDouble(10, timeToBall_);
       }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        output.writeBytes(11, getBodyIDBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -821,6 +861,10 @@ public final class Messages {
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(10, timeToBall_);
+      }
+      if (((bitField0_ & 0x00000400) == 0x00000400)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(11, getBodyIDBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -981,6 +1025,8 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000100);
         timeToBall_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000200);
+        bodyID_ = "";
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
       
@@ -1071,6 +1117,10 @@ public final class Messages {
           to_bitField0_ |= 0x00000200;
         }
         result.timeToBall_ = timeToBall_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.bodyID_ = bodyID_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1116,6 +1166,9 @@ public final class Messages {
         }
         if (other.hasTimeToBall()) {
           setTimeToBall(other.getTimeToBall());
+        }
+        if (other.hasBodyID()) {
+          setBodyID(other.getBodyID());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1234,6 +1287,11 @@ public final class Messages {
             case 81: {
               bitField0_ |= 0x00000200;
               timeToBall_ = input.readDouble();
+              break;
+            }
+            case 90: {
+              bitField0_ |= 0x00000400;
+              bodyID_ = input.readBytes();
               break;
             }
           }
@@ -1657,6 +1715,42 @@ public final class Messages {
         timeToBall_ = 0D;
         onChanged();
         return this;
+      }
+      
+      // optional string bodyID = 11;
+      private java.lang.Object bodyID_ = "";
+      public boolean hasBodyID() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public String getBodyID() {
+        java.lang.Object ref = bodyID_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          bodyID_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setBodyID(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000400;
+        bodyID_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBodyID() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        bodyID_ = getDefaultInstance().getBodyID();
+        onChanged();
+        return this;
+      }
+      void setBodyID(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000400;
+        bodyID_ = value;
+        onChanged();
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.TeamCommMessage)
@@ -12336,7 +12430,7 @@ public final class Messages {
       "\n\016Messages.proto\022\rnaothmessages\032\021CommonT" +
       "ypes.proto\"I\n\013PlayerModel\022\016\n\006number\030\001 \002(" +
       "\005\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages.P" +
-      "ose2D\"\323\002\n\017TeamCommMessage\022\024\n\014playerNumbe" +
+      "ose2D\"\343\002\n\017TeamCommMessage\022\024\n\014playerNumbe" +
       "r\030\001 \002(\005\022\022\n\nteamNumber\030\002 \002(\005\022\031\n\nwasStrike" +
       "r\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005fal" +
       "se\022\034\n\024timeSinceBallWasSeen\030\005 \001(\001\0222\n\014ball" +
@@ -12344,58 +12438,59 @@ public final class Messages {
       "tor2\022.\n\017positionOnField\030\007 \001(\0132\025.naothmes" +
       "sages.Pose2D\022,\n\010opponent\030\010 \001(\0132\032.naothme",
       "ssages.PlayerModel\022\033\n\014isFallenDown\030\t \001(\010" +
-      ":\005false\022\022\n\ntimeToBall\030\n \001(\001\"+\n\rStopwatch" +
-      "Item\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stop" +
-      "watches\0221\n\013stopwatches\030\001 \003(\0132\034.naothmess" +
-      "ages.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030" +
-      "\001 \002(\0162 .naothmessages.PlotItem.PlotType\022" +
-      "\014\n\004name\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022" +
-      "\t\n\001y\030\005 \001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType" +
-      "\022\013\n\007Default\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"" +
-      "/\n\005Plots\022&\n\005plots\030\001 \003(\0132\027.naothmessages.",
-      "PlotItem\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(" +
-      "\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.naothmessages" +
-      ".XABSLParameter.ParamType:\007Unknown\022\024\n\014de" +
-      "cimalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\te" +
-      "numValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000" +
-      "\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n" +
-      "\013XABSLAction\022<\n\004type\030\001 \001(\0162%.naothmessag" +
-      "es.XABSLAction.ActionType:\007Unknown\022\025\n\004na" +
-      "me\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001" +
-      "(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030",
-      "\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessage" +
-      "s.XABSLParameter\0224\n\020activeSubActions\030\007 \003" +
-      "(\0132\032.naothmessages.XABSLAction\022\024\n\014decima" +
-      "lValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumV" +
-      "alue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n" +
-      "\rBasicBehavior\020\001\022\027\n\023DecimalOutputSymbol\020" +
-      "\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutput" +
-      "Symbol\020\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus" +
-      "\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003" +
-      "(\0132\032.naothmessages.XABSLAction\0223\n\014inputS",
-      "ymbols\030\003 \003(\0132\035.naothmessages.XABSLParame" +
-      "ter\0224\n\routputSymbols\030\004 \003(\0132\035.naothmessag" +
-      "es.XABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\"k" +
-      "\n\006Module\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresenta" +
-      "tions\030\002 \003(\t\022\037\n\027providedRepresentations\030\003" +
-      " \003(\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleLis" +
-      "t\022&\n\007modules\030\001 \003(\0132\025.naothmessages.Modul" +
-      "e\"\213\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naot" +
-      "hmessages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005" +
-      "angle\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030",
-      "\005 \002(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetec" +
-      "tionResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tke" +
-      "yPoints\030\002 \003(\0132\036.naothmessages.FeatureKey" +
-      "Point\0224\n\013descriptors\030\003 \003(\0132\037.naothmessag" +
-      "es.SingleDescriptor\022\031\n\021namesForKeyPoints" +
-      "\030\004 \003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:" +
-      "\00264\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Fe" +
-      "atureClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(" +
-      "\0132\037.naothmessages.SingleDescriptor\022\024\n\014ob" +
-      "jectHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007clas",
-      "ses\030\001 \003(\0132\033.naothmessages.FeatureClass\022#" +
-      "\n\027numberOfFeatureElements\030\002 \001(\005:\00264B)\n\'d" +
-      "e.hu_berlin.informatik.ki.nao.messages"
+      ":\005false\022\022\n\ntimeToBall\030\n \001(\001\022\016\n\006bodyID\030\013 " +
+      "\001(\t\"+\n\rStopwatchItem\022\014\n\004name\030\001 \002(\t\022\014\n\004ti" +
+      "me\030\002 \002(\005\"@\n\013Stopwatches\0221\n\013stopwatches\030\001" +
+      " \003(\0132\034.naothmessages.StopwatchItem\"\262\001\n\010P" +
+      "lotItem\022.\n\004type\030\001 \002(\0162 .naothmessages.Pl" +
+      "otItem.PlotType\022\014\n\004name\030\002 \002(\t\022\r\n\005value\030\003" +
+      " \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001y\030\005 \001(\001\022\020\n\010rotation\030\006" +
+      " \001(\001\"1\n\010PlotType\022\013\n\007Default\020\001\022\n\n\006Plot2D\020" +
+      "\002\022\014\n\010Origin2D\020\003\"/\n\005Plots\022&\n\005plots\030\001 \003(\0132",
+      "\027.naothmessages.PlotItem\"\341\001\n\016XABSLParame" +
+      "ter\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\016" +
+      "2\'.naothmessages.XABSLParameter.ParamTyp" +
+      "e:\007Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tbool" +
+      "Value\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamT" +
+      "ype\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022" +
+      "\013\n\007Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001" +
+      "(\0162%.naothmessages.XABSLAction.ActionTyp" +
+      "e:\007Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017tim" +
+      "eOfExecution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001",
+      "(\t\022\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003(" +
+      "\0132\035.naothmessages.XABSLParameter\0224\n\020acti" +
+      "veSubActions\030\007 \003(\0132\032.naothmessages.XABSL" +
+      "Action\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValu" +
+      "e\030\t \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionTyp" +
+      "e\022\n\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Deci" +
+      "malOutputSymbol\020\002\022\027\n\023BooleanOutputSymbol" +
+      "\020\003\022\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\326\001" +
+      "\n\016BehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activ" +
+      "eRootActions\030\002 \003(\0132\032.naothmessages.XABSL",
+      "Action\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmess" +
+      "ages.XABSLParameter\0224\n\routputSymbols\030\004 \003" +
+      "(\0132\035.naothmessages.XABSLParameter\022\023\n\013fra" +
+      "meNumber\030\005 \001(\r\"k\n\006Module\022\014\n\004name\030\001 \002(\t\022\033" +
+      "\n\023usedRepresentations\030\002 \003(\t\022\037\n\027providedR" +
+      "epresentations\030\003 \003(\t\022\025\n\006active\030\004 \001(\010:\005fa" +
+      "lse\"4\n\nModuleList\022&\n\007modules\030\001 \003(\0132\025.nao" +
+      "thmessages.Module\"\213\001\n\017FeatureKeyPoint\022\'\n" +
+      "\002pt\030\001 \002(\0132\033.naothmessages.FloatVector2\022\014" +
+      "\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010response\030",
+      "\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010class_id\030\006 \002(\005\"" +
+      "\331\001\n\026FeatureDetectionResult\022\026\n\016grayScaleI" +
+      "mage\030\001 \002(\014\0221\n\tkeyPoints\030\002 \003(\0132\036.naothmes" +
+      "sages.FeatureKeyPoint\0224\n\013descriptors\030\003 \003" +
+      "(\0132\037.naothmessages.SingleDescriptor\022\031\n\021n" +
+      "amesForKeyPoints\030\004 \003(\t\022#\n\027numberOfFeatur" +
+      "eElements\030\005 \001(\005:\00264\"\035\n\020SingleDescriptor\022" +
+      "\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass\022\014\n\004name\030\001 \002(\t" +
+      "\0220\n\007samples\030\002 \003(\0132\037.naothmessages.Single" +
+      "Descriptor\022\024\n\014objectHeight\030\003 \001(\001\"a\n\014Feat",
+      "ureTable\022,\n\007classes\030\001 \003(\0132\033.naothmessage" +
+      "s.FeatureClass\022#\n\027numberOfFeatureElement" +
+      "s\030\002 \001(\005:\00264B)\n\'de.hu_berlin.informatik.k" +
+      "i.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -12415,7 +12510,7 @@ public final class Messages {
           internal_static_naothmessages_TeamCommMessage_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_TeamCommMessage_descriptor,
-              new java.lang.String[] { "PlayerNumber", "TeamNumber", "WasStriker", "IsPenalized", "TimeSinceBallWasSeen", "BallPosition", "PositionOnField", "Opponent", "IsFallenDown", "TimeToBall", },
+              new java.lang.String[] { "PlayerNumber", "TeamNumber", "WasStriker", "IsPenalized", "TimeSinceBallWasSeen", "BallPosition", "PositionOnField", "Opponent", "IsFallenDown", "TimeToBall", "BodyID", },
               de.hu_berlin.informatik.ki.nao.messages.Messages.TeamCommMessage.class,
               de.hu_berlin.informatik.ki.nao.messages.Messages.TeamCommMessage.Builder.class);
           internal_static_naothmessages_StopwatchItem_descriptor =

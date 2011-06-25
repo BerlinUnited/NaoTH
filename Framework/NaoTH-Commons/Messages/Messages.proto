@@ -39,6 +39,7 @@ message TeamCommMessage {
   optional PlayerModel opponent = 8;
   optional bool isFallenDown = 9 [default=false];
   optional double timeToBall = 10;
+  optional string bodyID = 11; 
 }
 
 // pure RC messages //

@@ -95,7 +95,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PlayerModel));
   TeamCommMessage_descriptor_ = file->message_type(1);
-  static const int TeamCommMessage_offsets_[10] = {
+  static const int TeamCommMessage_offsets_[11] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, playernumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, teamnumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, wasstriker_),
@@ -106,6 +106,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, opponent_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, isfallendown_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, timetoball_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TeamCommMessage, bodyid_),
   };
   TeamCommMessage_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -463,7 +464,7 @@ void protobuf_AddDesc_Messages_2eproto() {
     "\n\016Messages.proto\022\rnaothmessages\032\021CommonT"
     "ypes.proto\"I\n\013PlayerModel\022\016\n\006number\030\001 \002("
     "\005\022*\n\013poseOnField\030\002 \001(\0132\025.naothmessages.P"
-    "ose2D\"\323\002\n\017TeamCommMessage\022\024\n\014playerNumbe"
+    "ose2D\"\343\002\n\017TeamCommMessage\022\024\n\014playerNumbe"
     "r\030\001 \002(\005\022\022\n\nteamNumber\030\002 \002(\005\022\031\n\nwasStrike"
     "r\030\003 \001(\010:\005false\022\032\n\013isPenalized\030\004 \001(\010:\005fal"
     "se\022\034\n\024timeSinceBallWasSeen\030\005 \001(\001\0222\n\014ball"
@@ -471,58 +472,59 @@ void protobuf_AddDesc_Messages_2eproto() {
     "tor2\022.\n\017positionOnField\030\007 \001(\0132\025.naothmes"
     "sages.Pose2D\022,\n\010opponent\030\010 \001(\0132\032.naothme"
     "ssages.PlayerModel\022\033\n\014isFallenDown\030\t \001(\010"
-    ":\005false\022\022\n\ntimeToBall\030\n \001(\001\"+\n\rStopwatch"
-    "Item\022\014\n\004name\030\001 \002(\t\022\014\n\004time\030\002 \002(\005\"@\n\013Stop"
-    "watches\0221\n\013stopwatches\030\001 \003(\0132\034.naothmess"
-    "ages.StopwatchItem\"\262\001\n\010PlotItem\022.\n\004type\030"
-    "\001 \002(\0162 .naothmessages.PlotItem.PlotType\022"
-    "\014\n\004name\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022"
-    "\t\n\001y\030\005 \001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType"
-    "\022\013\n\007Default\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\""
-    "/\n\005Plots\022&\n\005plots\030\001 \003(\0132\027.naothmessages."
-    "PlotItem\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001("
-    "\t:\007unknown\022>\n\004type\030\002 \001(\0162\'.naothmessages"
-    ".XABSLParameter.ParamType:\007Unknown\022\024\n\014de"
-    "cimalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\te"
-    "numValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000"
-    "\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n"
-    "\013XABSLAction\022<\n\004type\030\001 \001(\0162%.naothmessag"
-    "es.XABSLAction.ActionType:\007Unknown\022\025\n\004na"
-    "me\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001"
-    "(\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030"
-    "\005 \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessage"
-    "s.XABSLParameter\0224\n\020activeSubActions\030\007 \003"
-    "(\0132\032.naothmessages.XABSLAction\022\024\n\014decima"
-    "lValue\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumV"
-    "alue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n"
-    "\rBasicBehavior\020\001\022\027\n\023DecimalOutputSymbol\020"
-    "\002\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutput"
-    "Symbol\020\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus"
-    "\022\r\n\005agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003"
-    "(\0132\032.naothmessages.XABSLAction\0223\n\014inputS"
-    "ymbols\030\003 \003(\0132\035.naothmessages.XABSLParame"
-    "ter\0224\n\routputSymbols\030\004 \003(\0132\035.naothmessag"
-    "es.XABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\"k"
-    "\n\006Module\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresenta"
-    "tions\030\002 \003(\t\022\037\n\027providedRepresentations\030\003"
-    " \003(\t\022\025\n\006active\030\004 \001(\010:\005false\"4\n\nModuleLis"
-    "t\022&\n\007modules\030\001 \003(\0132\025.naothmessages.Modul"
-    "e\"\213\001\n\017FeatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naot"
-    "hmessages.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005"
-    "angle\030\003 \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030"
-    "\005 \002(\005\022\020\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetec"
-    "tionResult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tke"
-    "yPoints\030\002 \003(\0132\036.naothmessages.FeatureKey"
-    "Point\0224\n\013descriptors\030\003 \003(\0132\037.naothmessag"
-    "es.SingleDescriptor\022\031\n\021namesForKeyPoints"
-    "\030\004 \003(\t\022#\n\027numberOfFeatureElements\030\005 \001(\005:"
-    "\00264\"\035\n\020SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014Fe"
-    "atureClass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003("
-    "\0132\037.naothmessages.SingleDescriptor\022\024\n\014ob"
-    "jectHeight\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007clas"
-    "ses\030\001 \003(\0132\033.naothmessages.FeatureClass\022#"
-    "\n\027numberOfFeatureElements\030\002 \001(\005:\00264B)\n\'d"
-    "e.hu_berlin.informatik.ki.nao.messages", 2518);
+    ":\005false\022\022\n\ntimeToBall\030\n \001(\001\022\016\n\006bodyID\030\013 "
+    "\001(\t\"+\n\rStopwatchItem\022\014\n\004name\030\001 \002(\t\022\014\n\004ti"
+    "me\030\002 \002(\005\"@\n\013Stopwatches\0221\n\013stopwatches\030\001"
+    " \003(\0132\034.naothmessages.StopwatchItem\"\262\001\n\010P"
+    "lotItem\022.\n\004type\030\001 \002(\0162 .naothmessages.Pl"
+    "otItem.PlotType\022\014\n\004name\030\002 \002(\t\022\r\n\005value\030\003"
+    " \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001y\030\005 \001(\001\022\020\n\010rotation\030\006"
+    " \001(\001\"1\n\010PlotType\022\013\n\007Default\020\001\022\n\n\006Plot2D\020"
+    "\002\022\014\n\010Origin2D\020\003\"/\n\005Plots\022&\n\005plots\030\001 \003(\0132"
+    "\027.naothmessages.PlotItem\"\341\001\n\016XABSLParame"
+    "ter\022\025\n\004name\030\001 \001(\t:\007unknown\022>\n\004type\030\002 \001(\016"
+    "2\'.naothmessages.XABSLParameter.ParamTyp"
+    "e:\007Unknown\022\024\n\014decimalValue\030\003 \001(\001\022\021\n\tbool"
+    "Value\030\004 \001(\010\022\021\n\tenumValue\030\005 \001(\t\"<\n\tParamT"
+    "ype\022\013\n\007Decimal\020\000\022\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022"
+    "\013\n\007Unknown\020\003\"\316\003\n\013XABSLAction\022<\n\004type\030\001 \001"
+    "(\0162%.naothmessages.XABSLAction.ActionTyp"
+    "e:\007Unknown\022\025\n\004name\030\002 \001(\t:\007unknown\022\032\n\017tim"
+    "eOfExecution\030\003 \001(\003:\0010\022\023\n\013activeState\030\004 \001"
+    "(\t\022\021\n\tstateTime\030\005 \001(\003\0221\n\nparameters\030\006 \003("
+    "\0132\035.naothmessages.XABSLParameter\0224\n\020acti"
+    "veSubActions\030\007 \003(\0132\032.naothmessages.XABSL"
+    "Action\022\024\n\014decimalValue\030\010 \001(\001\022\021\n\tboolValu"
+    "e\030\t \001(\010\022\021\n\tenumValue\030\n \001(\t\"\200\001\n\nActionTyp"
+    "e\022\n\n\006Option\020\000\022\021\n\rBasicBehavior\020\001\022\027\n\023Deci"
+    "malOutputSymbol\020\002\022\027\n\023BooleanOutputSymbol"
+    "\020\003\022\024\n\020EnumOutputSymbol\020\004\022\013\n\007Unknown\020\005\"\326\001"
+    "\n\016BehaviorStatus\022\r\n\005agent\030\001 \001(\t\0225\n\021activ"
+    "eRootActions\030\002 \003(\0132\032.naothmessages.XABSL"
+    "Action\0223\n\014inputSymbols\030\003 \003(\0132\035.naothmess"
+    "ages.XABSLParameter\0224\n\routputSymbols\030\004 \003"
+    "(\0132\035.naothmessages.XABSLParameter\022\023\n\013fra"
+    "meNumber\030\005 \001(\r\"k\n\006Module\022\014\n\004name\030\001 \002(\t\022\033"
+    "\n\023usedRepresentations\030\002 \003(\t\022\037\n\027providedR"
+    "epresentations\030\003 \003(\t\022\025\n\006active\030\004 \001(\010:\005fa"
+    "lse\"4\n\nModuleList\022&\n\007modules\030\001 \003(\0132\025.nao"
+    "thmessages.Module\"\213\001\n\017FeatureKeyPoint\022\'\n"
+    "\002pt\030\001 \002(\0132\033.naothmessages.FloatVector2\022\014"
+    "\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010response\030"
+    "\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010class_id\030\006 \002(\005\""
+    "\331\001\n\026FeatureDetectionResult\022\026\n\016grayScaleI"
+    "mage\030\001 \002(\014\0221\n\tkeyPoints\030\002 \003(\0132\036.naothmes"
+    "sages.FeatureKeyPoint\0224\n\013descriptors\030\003 \003"
+    "(\0132\037.naothmessages.SingleDescriptor\022\031\n\021n"
+    "amesForKeyPoints\030\004 \003(\t\022#\n\027numberOfFeatur"
+    "eElements\030\005 \001(\005:\00264\"\035\n\020SingleDescriptor\022"
+    "\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass\022\014\n\004name\030\001 \002(\t"
+    "\0220\n\007samples\030\002 \003(\0132\037.naothmessages.Single"
+    "Descriptor\022\024\n\014objectHeight\030\003 \001(\001\"a\n\014Feat"
+    "ureTable\022,\n\007classes\030\001 \003(\0132\033.naothmessage"
+    "s.FeatureClass\022#\n\027numberOfFeatureElement"
+    "s\030\002 \001(\005:\00264B)\n\'de.hu_berlin.informatik.k"
+    "i.nao.messages", 2534);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   PlayerModel::default_instance_ = new PlayerModel();
@@ -837,6 +839,7 @@ const int TeamCommMessage::kPositionOnFieldFieldNumber;
 const int TeamCommMessage::kOpponentFieldNumber;
 const int TeamCommMessage::kIsFallenDownFieldNumber;
 const int TeamCommMessage::kTimeToBallFieldNumber;
+const int TeamCommMessage::kBodyIDFieldNumber;
 #endif  // !_MSC_VER
 
 TeamCommMessage::TeamCommMessage()
@@ -868,6 +871,7 @@ void TeamCommMessage::SharedCtor() {
   opponent_ = NULL;
   isfallendown_ = false;
   timetoball_ = 0;
+  bodyid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -876,6 +880,9 @@ TeamCommMessage::~TeamCommMessage() {
 }
 
 void TeamCommMessage::SharedDtor() {
+  if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
+    delete bodyid_;
+  }
   if (this != default_instance_) {
     delete ballposition_;
     delete positiononfield_;
@@ -923,6 +930,11 @@ void TeamCommMessage::Clear() {
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     isfallendown_ = false;
     timetoball_ = 0;
+    if (has_bodyid()) {
+      if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
+        bodyid_->clear();
+      }
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -1083,6 +1095,23 @@ bool TeamCommMessage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(90)) goto parse_bodyID;
+        break;
+      }
+      
+      // optional string bodyID = 11;
+      case 11: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_bodyID:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_bodyid()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->bodyid().data(), this->bodyid().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1158,6 +1187,15 @@ void TeamCommMessage::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(10, this->timetoball(), output);
   }
   
+  // optional string bodyID = 11;
+  if (has_bodyid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->bodyid().data(), this->bodyid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      11, this->bodyid(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1220,6 +1258,16 @@ void TeamCommMessage::SerializeWithCachedSizes(
   // optional double timeToBall = 10;
   if (has_timetoball()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(10, this->timetoball(), target);
+  }
+  
+  // optional string bodyID = 11;
+  if (has_bodyid()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->bodyid().data(), this->bodyid().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        11, this->bodyid(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1295,6 +1343,13 @@ int TeamCommMessage::ByteSize() const {
       total_size += 1 + 8;
     }
     
+    // optional string bodyID = 11;
+    if (has_bodyid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->bodyid());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -1354,6 +1409,9 @@ void TeamCommMessage::MergeFrom(const TeamCommMessage& from) {
     if (from.has_timetoball()) {
       set_timetoball(from.timetoball());
     }
+    if (from.has_bodyid()) {
+      set_bodyid(from.bodyid());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -1397,6 +1455,7 @@ void TeamCommMessage::Swap(TeamCommMessage* other) {
     std::swap(opponent_, other->opponent_);
     std::swap(isfallendown_, other->isfallendown_);
     std::swap(timetoball_, other->timetoball_);
+    std::swap(bodyid_, other->bodyid_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

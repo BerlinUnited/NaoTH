@@ -42,12 +42,15 @@ public:
   }//end print
 };
 
-template<>
-class naoth::Serializer<CameraMatrix>
+namespace naoth
 {
-public:
-  static void serialize(const CameraMatrix& representation, std::ostream& stream);
-  static void deserialize(std::istream& stream, CameraMatrix& representation);
-};
+  template<>
+  class Serializer<CameraMatrix>
+  {
+  public:
+    static void serialize(const CameraMatrix& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, CameraMatrix& representation);
+  };
+}
 
 #endif //__CameraMatrix_h_

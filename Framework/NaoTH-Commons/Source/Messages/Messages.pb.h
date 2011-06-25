@@ -336,6 +336,17 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline double timetoball() const;
   inline void set_timetoball(double value);
   
+  // optional string bodyID = 11;
+  inline bool has_bodyid() const;
+  inline void clear_bodyid();
+  static const int kBodyIDFieldNumber = 11;
+  inline const ::std::string& bodyid() const;
+  inline void set_bodyid(const ::std::string& value);
+  inline void set_bodyid(const char* value);
+  inline void set_bodyid(const char* value, size_t size);
+  inline ::std::string* mutable_bodyid();
+  inline ::std::string* release_bodyid();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.TeamCommMessage)
  private:
   inline void set_has_playernumber();
@@ -358,6 +369,8 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline void clear_has_isfallendown();
   inline void set_has_timetoball();
   inline void clear_has_timetoball();
+  inline void set_has_bodyid();
+  inline void clear_has_bodyid();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -368,12 +381,13 @@ class TeamCommMessage : public ::google::protobuf::Message {
   ::naothmessages::Pose2D* positiononfield_;
   ::naothmessages::PlayerModel* opponent_;
   double timetoball_;
+  ::std::string* bodyid_;
   bool wasstriker_;
   bool ispenalized_;
   bool isfallendown_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(11 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -2397,6 +2411,64 @@ inline double TeamCommMessage::timetoball() const {
 inline void TeamCommMessage::set_timetoball(double value) {
   set_has_timetoball();
   timetoball_ = value;
+}
+
+// optional string bodyID = 11;
+inline bool TeamCommMessage::has_bodyid() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void TeamCommMessage::set_has_bodyid() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void TeamCommMessage::clear_has_bodyid() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void TeamCommMessage::clear_bodyid() {
+  if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
+    bodyid_->clear();
+  }
+  clear_has_bodyid();
+}
+inline const ::std::string& TeamCommMessage::bodyid() const {
+  return *bodyid_;
+}
+inline void TeamCommMessage::set_bodyid(const ::std::string& value) {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(value);
+}
+inline void TeamCommMessage::set_bodyid(const char* value) {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(value);
+}
+inline void TeamCommMessage::set_bodyid(const char* value, size_t size) {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* TeamCommMessage::mutable_bodyid() {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  return bodyid_;
+}
+inline ::std::string* TeamCommMessage::release_bodyid() {
+  clear_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = bodyid_;
+    bodyid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
 }
 
 // -------------------------------------------------------------------

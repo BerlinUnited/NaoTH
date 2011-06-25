@@ -42,7 +42,8 @@
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
-#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+// TODO: missing header file
+//#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -112,7 +113,8 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GameController);
 
   // perception
-  REGISTER_MODULE(CameraMatrixProvider);
+  // TODO: MISSING CameraMatrixProvider!
+//  REGISTER_MODULE(CameraMatrixProvider);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
