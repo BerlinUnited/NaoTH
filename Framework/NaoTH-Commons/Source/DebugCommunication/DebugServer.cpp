@@ -13,6 +13,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <Messages/Messages.pb.h>
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
@@ -74,18 +75,19 @@ void DebugServer::mainConnection()
       // 1. send out already answered messages
       while(g_async_queue_length(answers) > 0)
       {
-        GString* answer = (GString*) g_async_queue_pop(answers);
+        std::stringstream* answer = (std::stringstream*) g_async_queue_pop(answers);
 
         if(answer != NULL)
         {
-          bool success = comm.sendMessage(answer->str, answer->len+1);
+          std::string answerAsString = answer->str();
+          bool success = comm.sendMessage(answerAsString.c_str(), answerAsString.size());
           if(!success)
           {
             g_warning("could not send message");
             disconnect();
           }
 
-          g_string_free(answer, true);
+          delete answer;
         } // end if answer != NULL
       }
     }
@@ -95,7 +97,7 @@ void DebugServer::mainConnection()
       // 2. get new commands (maximal 50)
       try
       {
-        char* msg = NULL;
+        GString* msg = NULL;
         unsigned int counter = 0;
         do
         {
@@ -152,10 +154,10 @@ void DebugServer::execute()
   // handle all commands
   while (!frameEnded && g_async_queue_length(commands) > 0)
   {
-    char* cmdRaw = (char*) g_async_queue_pop(commands);
+    GString* cmdRaw = (GString*) g_async_queue_pop(commands);
 
-    GString* answer = g_string_new("");
-    handleCommand(cmdRaw, answer);
+    std::stringstream* answer = new std::stringstream();
+    handleCommand(cmdRaw, *answer);
 
     g_async_queue_push(answers, answer);
 
@@ -168,121 +170,45 @@ void DebugServer::execute()
 }//end execute
 
 
-void DebugServer::handleCommand(char* cmdRaw, GString* answer)
+void DebugServer::handleCommand(GString* cmdRaw, std::stringstream& answer)
 {
   // parse command
-  GError* parseError = NULL;
-  int argc;
-  char** argv;
-  g_shell_parse_argv(cmdRaw, &argc, &argv, &parseError);
 
-  if (parseError)
-  {
-    g_string_append(answer, "parsing error: ");
-    g_string_append(answer, parseError->message);
-  }
-  else
+  naothmessages::Command cmd;
+  if(cmd.ParseFromArray(cmdRaw->str, cmdRaw->len))
   {
     std::map<std::string, std::string> arguments;
-    std::string commandName = "";
-    // iterate over the command parts and build up the arguments as map
-    bool answerAsBase64 = false;
-    // command name
-    if (argc > 0)
+    std::string commandName = cmd.name();
+
+    for(int i=0; i < cmd.args().size(); i++)
     {
-      if (g_str_has_prefix(argv[0], "+"))
+      const naothmessages::CMDArg& arg = cmd.args().Get(i);
+      if(arg.has_bytes())
       {
-        answerAsBase64 = true;
-        commandName.assign(argv[0] + 1);
-      } else
-      {
-        answerAsBase64 = false;
-        commandName.assign(argv[0]);
+        arguments[arg.name()] = arg.bytes();
       }
-    }
-    // argument names and if existings their values
-    std::string lastKey;
-    bool nextIsValue = false;
-    bool valueIsBase64 = false;
-    for (int i = 1; i < argc; i++)
-    {
-      if (nextIsValue)
+      else
       {
-        if (lastKey != "")
-        {
-          if (valueIsBase64)
-          {
-            std::string arg(argv[i]);
-            char* decoded = (char*) malloc(arg.size());
-            int decodedSize = base64Decoder.decode(arg, decoded, arg.size());
-            //char* decoded = (char*) g_base64_decode(argv[i], (gsize*) &len);
-            arguments[lastKey].assign(decoded, decodedSize);
-            free(decoded);
-          } else
-          {
-            arguments[lastKey].assign(argv[i]);
-          }
-        }
-
-        lastKey.assign("");
-        nextIsValue = false;
-      } else
-      {
-        if (g_str_has_prefix(argv[i], "-"))
-        {
-          nextIsValue = true;
-          valueIsBase64 = false;
-
-          lastKey.assign(argv[i] + 1);
-        } else if (g_str_has_prefix(argv[i], "+"))
-        {
-          nextIsValue = true;
-          valueIsBase64 = true;
-
-          lastKey.assign(argv[i] + 1);
-        } else
-        {
-          nextIsValue = false;
-          lastKey.assign(argv[i]);
-        }
-        arguments[lastKey] = "";
-
+        arguments[arg.name()] = arg.name();
       }
     }
 
-    g_strfreev(argv);
+    handleCommand(commandName, arguments, answer);
 
-    handleCommand(commandName, arguments, answer, answerAsBase64);
   }
 }//end handleCommand
 
 
-void DebugServer::handleCommand(std::string command, std::map<std::string,
-  std::string> arguments, GString* answer, bool encodeBase64)
+void DebugServer::handleCommand(std::string& command, std::map<std::string,
+  std::string>& arguments, std::stringstream& answer)
 {
-  std::stringstream answerFromHandler;
-  
   if (executorMap.find(command) != executorMap.end())
   {
-    executorMap[command]->executeDebugCommand(command, arguments, answerFromHandler);
+    executorMap[command]->executeDebugCommand(command, arguments, answer);
   } else
   {
-    answerFromHandler << "Unknown command \"" << command
+    answer << "Unknown command \"" << command
       << "\", use \"help\" for a list of available commands" << std::endl;
-  }
-  
-  const std::string& str = answerFromHandler.str();
-
-  if (encodeBase64 && str.length() > 0)
-  {
-    std::string encoded = base64Encoder.encode((const char*) str.c_str(), str.length());
-    //char* encoded = g_base64_encode((guchar*) str.c_str(), str.length());
-
-    g_string_append(answer, encoded.c_str());
-//    g_free(encoded);
-  } else
-  {
-    g_string_append(answer, str.c_str());
   }
 }//end handleCommand
 
@@ -374,14 +300,14 @@ void DebugServer::clearBothQueues()
 {
   while (g_async_queue_length(commands) > 0)
   {
-    char* tmp = (char*) g_async_queue_pop(commands);
-    g_free(tmp);
+    GString* tmp = (GString*) g_async_queue_pop(commands);
+    g_string_free(tmp, true);
   }
 
   while (g_async_queue_length(answers) > 0)
   {
-    GString* tmp = (GString*) g_async_queue_pop(answers);
-    g_string_free(tmp, true);
+    std::stringstream* tmp = (std::stringstream*) g_async_queue_pop(answers);
+    delete tmp;
   }
 
 }

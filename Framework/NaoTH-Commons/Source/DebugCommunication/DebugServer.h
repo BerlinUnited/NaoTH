@@ -68,9 +68,9 @@ private:
   bool abort;
 
   void mainConnection();
-  void handleCommand(char* cmdRaw, GString* answer);
-  void handleCommand(std::string command, std::map<std::string,std::string> arguments,
-    GString* answer, bool encodeBase64);
+  void handleCommand(GString* cmdRaw, std::stringstream& answer);
+  void handleCommand(std::string& command, std::map<std::string,std::string>& arguments,
+    std::stringstream& answer);
 
   void disconnect();
   void clearBothQueues();

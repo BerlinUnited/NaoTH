@@ -99,7 +99,7 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 }//end sendMessage
 
 
-char* DebugCommunicator::internalReadMessage(GError** err)
+GString* DebugCommunicator::internalReadMessage(GError** err)
 {
   *err = NULL;
   if (connection != NULL)
@@ -112,17 +112,19 @@ char* DebugCommunicator::internalReadMessage(GError** err)
 
     if(initialBytes == 4)
     {
-      char* buffer = (char*) g_malloc0(sizeOfMessage);
+      GString* buffer = g_string_sized_new(sizeOfMessage);
+      g_assert(buffer->len == sizeOfMessage);
+
       gssize pos = 0;
       // read message completly
       while(!fatalFail && *err == NULL)
       {
         gssize read_bytes =
-            g_socket_receive_with_blocking(connection, buffer+pos, sizeOfMessage - pos, true ,NULL, err);
+            g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
 
         if(read_bytes == 0)
         {
-          g_free(buffer);
+          g_string_free(buffer, true);
           buffer = NULL;
           // we got 0 bytes, this indicates
           // an error in the connection (-1 is set if no data was available
@@ -136,8 +138,8 @@ char* DebugCommunicator::internalReadMessage(GError** err)
 
       if(*err)
       {
-        g_free(buffer);
-        buffer = NULL;
+        g_string_free(buffer, true);
+        return NULL;
       }
 
       return buffer;
@@ -146,7 +148,7 @@ char* DebugCommunicator::internalReadMessage(GError** err)
 
   return NULL;
 }
-char* DebugCommunicator::readMessage()
+GString* DebugCommunicator::readMessage()
 {
   if (fatalFail)
   {
@@ -154,7 +156,7 @@ char* DebugCommunicator::readMessage()
   }
 
   GError* err = NULL;
-  char* result = internalReadMessage(&err);
+  GString* result = internalReadMessage(&err);
   if(err)
   {
     if(err->code != G_IO_ERROR_WOULD_BLOCK)
@@ -164,7 +166,7 @@ char* DebugCommunicator::readMessage()
 
       if(result != NULL)
       {
-        g_free(result);
+        g_string_free(result,true);
       }
       throw "Socket Exception";
     }
