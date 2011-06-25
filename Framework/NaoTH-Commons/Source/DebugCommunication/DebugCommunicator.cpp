@@ -187,7 +187,7 @@ GString* DebugCommunicator::readMessage()
   return result;
 }//end triggerRead
 
-bool DebugCommunicator::connect(unsigned int timeout)
+bool DebugCommunicator::connect(int timeout)
 {
   GError* err = NULL;
 
@@ -196,9 +196,18 @@ bool DebugCommunicator::connect(unsigned int timeout)
     // try to accept an eventually pending connection request
     if (serverSocket != NULL)
     {
-      g_socket_set_timeout(serverSocket, timeout);
+      if(timeout < 0)
+      {
+        g_socket_set_blocking(serverSocket, false);
+      }
+      else
+      {
+        g_socket_set_timeout(serverSocket, timeout);
+      }
       connection = g_socket_accept(serverSocket, NULL, &err);
+      g_socket_set_blocking(serverSocket, true);
       g_socket_set_timeout(serverSocket, 0);
+
       if (err) return false;
 
       if (connection != NULL)

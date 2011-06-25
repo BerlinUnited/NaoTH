@@ -22,7 +22,7 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
-  virtual void start(unsigned short port);
+  virtual void start(unsigned short port, bool threaded = false);
 
   /**
    * Register a command and a handler for this command.
@@ -61,10 +61,11 @@ private:
   std::map<std::string, DebugCommandExecutor*> executorMap;
   std::map<std::string, std::string> descriptionMap;
 
-  bool frameEnded;
   bool abort;
 
   void mainConnection();
+  void receiveAll();
+  void sendAll();
   void handleCommand(GString* cmdRaw, std::stringstream& answer);
   void handleCommand(std::string& command, std::map<std::string,std::string>& arguments,
     std::stringstream& answer);

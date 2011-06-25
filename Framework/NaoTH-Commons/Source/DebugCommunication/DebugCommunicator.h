@@ -37,7 +37,7 @@ public:
     *
     * @return True if connection was etablished. False on error.
     */
-  bool connect(unsigned int timeout);
+  bool connect(int timeout);
   /**
     * Disconnects a existing connection.
     */

@@ -17,7 +17,7 @@
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
-  : frameEnded(false), abort(false)
+  : abort(false)
 {
   m_executing = g_mutex_new();
   m_abort = g_mutex_new();
@@ -30,29 +30,27 @@ DebugServer::DebugServer()
 }//end DebugServer
 
 
-void DebugServer::start(unsigned short port)
+void DebugServer::start(unsigned short port, bool threaded)
 {
-  if (g_thread_supported())
+
+  comm.init(port);
+
+  connectionThread = NULL;
+  if(g_thread_supported() && threaded)
   {
-    comm.init(port);
 
     GError* err = NULL;
     g_debug("Starting debug server thread");
+   
     connectionThread = g_thread_create(connection_thread_static, this, true, &err);
     if(err)
     {
       g_warning("Could not start debug server thread: %s", err->message);
     }
+  }
 
-    registerCommand("help", "list available commands or get the description of a specific command", this);
-    registerCommand("endFrame",
-      "marking a frame as ended, thus the processing of rest of the messages will be done in the next cycle",
-       this);
-  }
-  else
-  {
-    g_warning("No threading support: DebugServer not available");
-  }
+  registerCommand("help", "list available commands or get the description of a specific command", this);
+ 
 }//end start
 
 void DebugServer::mainConnection()
@@ -70,24 +68,17 @@ void DebugServer::mainConnection()
     }
     g_mutex_unlock(m_abort);
 
+    
     if(comm.isConnected())
     {
       // 1. send out already answered messages
-      while(g_async_queue_length(answers) > 0)
+      try
       {
-        GString* answer = (GString*) g_async_queue_pop(answers);
-
-        if(answer != NULL)
-        {
-          bool success = comm.sendMessage(answer->str, answer->len);
-          if(!success)
-          {
-            g_warning("could not send message");
-            disconnect();
-          }
-
-          g_string_free(answer, true);
-        } // end if answer != NULL
+        sendAll();
+      }
+      catch(...)
+      {
+        disconnect();
       }
     }
 
@@ -96,24 +87,14 @@ void DebugServer::mainConnection()
       // 2. get new commands (maximal 50)
       try
       {
-        GString* msg = NULL;
-        unsigned int counter = 0;
-        do
-        {
-          msg = comm.readMessage();
-          if(msg != NULL)
-          {
-            g_async_queue_push(commands, msg);
-          }
-          counter++;
-        } while(msg != NULL && counter < 50);
+        receiveAll();
       }
       catch(...)
       {
-        // error occured, clear all queues and disconnect
         disconnect();
-      } // end catch
+      }
     }
+
 
     if(!comm.isConnected())
     {
@@ -132,6 +113,41 @@ void DebugServer::mainConnection()
   g_async_queue_unref(answers);
 }
 
+void DebugServer::receiveAll()
+{
+  GString* msg = NULL;
+  unsigned int counter = 0;
+  do
+  {
+    msg = comm.readMessage();
+    if(msg != NULL)
+    {
+      g_async_queue_push(commands, msg);
+    }
+    counter++;
+  } while(msg != NULL && counter < 50);
+}
+
+void DebugServer::sendAll()
+{
+  while(g_async_queue_length(answers) > 0)
+  {
+    GString* answer = (GString*) g_async_queue_pop(answers);
+
+    if(answer != NULL)
+    {
+      bool success = comm.sendMessage(answer->str, answer->len);
+      if(!success)
+      {
+        g_warning("could not send message");
+        disconnect();
+      }
+
+      g_string_free(answer, true);
+    } // end if answer != NULL
+  }
+}
+
 void DebugServer::disconnect()
 {
   // stop executing (so it's not messing up with our queues)
@@ -148,10 +164,25 @@ void DebugServer::execute()
 {
   g_mutex_lock(m_executing);
 
-  frameEnded = false;
+  if(connectionThread == NULL && !comm.isConnected())
+  {
+    comm.connect(-1);
+  }
+
+  if(connectionThread == NULL && comm.isConnected())
+  {
+    try
+    {
+      receiveAll();
+    }
+    catch(...)
+    {
+      disconnect();
+    }
+  }
 
   // handle all commands
-  while (!frameEnded && g_async_queue_length(commands) > 0)
+  while (g_async_queue_length(commands) > 0)
   {
     GString* cmdRaw = (GString*) g_async_queue_pop(commands);
 
@@ -168,6 +199,17 @@ void DebugServer::execute()
 
   }//end while
 
+  if(connectionThread == NULL && comm.isConnected())
+  {
+    try
+    {
+      sendAll();
+    }
+    catch(...)
+    {
+      disconnect();
+    }
+  }
   g_mutex_unlock(m_executing);
 
 }//end execute
@@ -294,10 +336,6 @@ void DebugServer::executeDebugCommand(const std::string& command, const std::map
     }
     out << "\n";
   }
-  else if( command == "endFrame")
-  {
-    frameEnded = true;
-  }
 }
 
 void DebugServer::clearBothQueues()
@@ -329,7 +367,10 @@ DebugServer::~DebugServer()
   abort = true;
   g_mutex_unlock(m_abort);
 
-  g_thread_join(connectionThread);
+  if(connectionThread != NULL)
+  {
+    g_thread_join(connectionThread);
+  }
 
   clearBothQueues();
   comm.disconnect();

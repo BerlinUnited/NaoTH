@@ -20,7 +20,7 @@
 Debug::Debug() : cognitionLogger("log")
 {
   // TODO: use the player and team number for defining the port
-  CognitionDebugServer::getInstance().start(5401);
+  CognitionDebugServer::getInstance().start(5401, true);
     
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
   
