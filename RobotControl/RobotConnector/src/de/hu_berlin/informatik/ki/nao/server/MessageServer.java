@@ -295,7 +295,7 @@ public class MessageServer
         }
       } // while(isActive)
     }
-    catch(IOException ex)
+    catch(Exception ex)
     {
       isActive = false;
       Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -493,6 +493,10 @@ public class MessageServer
     {
       buffer.flip();
       return buffer;
+    }
+    else if(byteCountSingle == -1)
+    {
+      throw new IOException("socket stream closed");
     }
     else
     {
