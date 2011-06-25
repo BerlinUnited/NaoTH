@@ -6,6 +6,7 @@
 
 #include "WalkRequest.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
@@ -20,9 +21,7 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, std::
 void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naothmessages::WalkRequest* msg)
 {
   msg->set_coordinate(representation.coordinate);
-  msg->mutable_pose()->mutable_translation()->set_x(representation.translation.x);
-  msg->mutable_pose()->mutable_translation()->set_y(representation.translation.y);
-  msg->mutable_pose()->set_rotation(representation.rotation);
+  DataConversion::toMessage(representation.target, *(msg->mutable_target()));
 }
 
 void Serializer<WalkRequest>::deserialize(std::istream& stream, WalkRequest& representation)
@@ -34,10 +33,8 @@ void Serializer<WalkRequest>::deserialize(std::istream& stream, WalkRequest& rep
   deserialize(&message, representation);
 }
 
-void Serializer<WalkRequest>::deserialize(naothmessages::WalkRequest* msg, WalkRequest& representation)
+void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg, WalkRequest& representation)
 {
   representation.coordinate = static_cast<WalkRequest::Coordinate>(msg->coordinate());
-  representation.translation.x = msg->pose().translation().x();
-  representation.translation.y = msg->pose().translation().y();
-  representation.rotation = msg->pose().rotation();
+  DataConversion::fromMessage(msg->target(), representation.target);
 }

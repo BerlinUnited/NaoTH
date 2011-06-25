@@ -8,6 +8,7 @@
 #include "MotionStatus.h"
 #include <Messages/Representations.pb.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
@@ -20,7 +21,8 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   message.set_currentmotion(representation.currentMotion);
   message.set_headmotion(representation.headMotion);
   message.set_currentmotionstate(representation.currentMotionState);
-  
+  DataConversion::toMessage(representation.plannedMotion.lFoot, *message.mutable_plannedmotionleftfoot());
+  DataConversion::toMessage(representation.plannedMotion.rFoot, *message.mutable_plannedmotionrightfoot());
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
@@ -36,4 +38,6 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
   representation.currentMotion = static_cast<motion::MotionID>(message.currentmotion());
   representation.headMotion = static_cast<HeadMotionRequest::HeadMotionID>(message.headmotion());
   representation.currentMotionState = static_cast<motion::State>(message.currentmotionstate());
+  DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
+  DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
 }

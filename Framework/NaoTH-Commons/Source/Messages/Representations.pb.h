@@ -1300,24 +1300,24 @@ class WalkRequest : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 coordinate() const;
   inline void set_coordinate(::google::protobuf::uint32 value);
   
-  // required .naothmessages.Pose2D pose = 3;
-  inline bool has_pose() const;
-  inline void clear_pose();
-  static const int kPoseFieldNumber = 3;
-  inline const ::naothmessages::Pose2D& pose() const;
-  inline ::naothmessages::Pose2D* mutable_pose();
-  inline ::naothmessages::Pose2D* release_pose();
+  // required .naothmessages.Pose2D target = 3;
+  inline bool has_target() const;
+  inline void clear_target();
+  static const int kTargetFieldNumber = 3;
+  inline const ::naothmessages::Pose2D& target() const;
+  inline ::naothmessages::Pose2D* mutable_target();
+  inline ::naothmessages::Pose2D* release_target();
   
   // @@protoc_insertion_point(class_scope:naothmessages.WalkRequest)
  private:
   inline void set_has_coordinate();
   inline void clear_has_coordinate();
-  inline void set_has_pose();
-  inline void clear_has_pose();
+  inline void set_has_target();
+  inline void clear_has_target();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::naothmessages::Pose2D* pose_;
+  ::naothmessages::Pose2D* target_;
   ::google::protobuf::uint32 coordinate_;
   
   mutable int _cached_size_;
@@ -1764,6 +1764,22 @@ class MotionStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 currentmotionstate() const;
   inline void set_currentmotionstate(::google::protobuf::uint32 value);
   
+  // required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+  inline bool has_plannedmotionleftfoot() const;
+  inline void clear_plannedmotionleftfoot();
+  static const int kPlannedMotionLeftFootFieldNumber = 6;
+  inline const ::naothmessages::Pose2D& plannedmotionleftfoot() const;
+  inline ::naothmessages::Pose2D* mutable_plannedmotionleftfoot();
+  inline ::naothmessages::Pose2D* release_plannedmotionleftfoot();
+  
+  // required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+  inline bool has_plannedmotionrightfoot() const;
+  inline void clear_plannedmotionrightfoot();
+  static const int kPlannedMotionRightFootFieldNumber = 7;
+  inline const ::naothmessages::Pose2D& plannedmotionrightfoot() const;
+  inline ::naothmessages::Pose2D* mutable_plannedmotionrightfoot();
+  inline ::naothmessages::Pose2D* release_plannedmotionrightfoot();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
   inline void set_has_time();
@@ -1776,6 +1792,10 @@ class MotionStatus : public ::google::protobuf::Message {
   inline void clear_has_headmotion();
   inline void set_has_currentmotionstate();
   inline void clear_has_currentmotionstate();
+  inline void set_has_plannedmotionleftfoot();
+  inline void clear_has_plannedmotionleftfoot();
+  inline void set_has_plannedmotionrightfoot();
+  inline void clear_has_plannedmotionrightfoot();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1783,10 +1803,12 @@ class MotionStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint32 lastmotion_;
   ::google::protobuf::uint32 currentmotion_;
   ::google::protobuf::uint32 headmotion_;
+  ::naothmessages::Pose2D* plannedmotionleftfoot_;
+  ::naothmessages::Pose2D* plannedmotionrightfoot_;
   ::google::protobuf::uint32 currentmotionstate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3099,32 +3121,32 @@ inline void WalkRequest::set_coordinate(::google::protobuf::uint32 value) {
   coordinate_ = value;
 }
 
-// required .naothmessages.Pose2D pose = 3;
-inline bool WalkRequest::has_pose() const {
+// required .naothmessages.Pose2D target = 3;
+inline bool WalkRequest::has_target() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void WalkRequest::set_has_pose() {
+inline void WalkRequest::set_has_target() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void WalkRequest::clear_has_pose() {
+inline void WalkRequest::clear_has_target() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void WalkRequest::clear_pose() {
-  if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
-  clear_has_pose();
+inline void WalkRequest::clear_target() {
+  if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
+  clear_has_target();
 }
-inline const ::naothmessages::Pose2D& WalkRequest::pose() const {
-  return pose_ != NULL ? *pose_ : *default_instance_->pose_;
+inline const ::naothmessages::Pose2D& WalkRequest::target() const {
+  return target_ != NULL ? *target_ : *default_instance_->target_;
 }
-inline ::naothmessages::Pose2D* WalkRequest::mutable_pose() {
-  set_has_pose();
-  if (pose_ == NULL) pose_ = new ::naothmessages::Pose2D;
-  return pose_;
+inline ::naothmessages::Pose2D* WalkRequest::mutable_target() {
+  set_has_target();
+  if (target_ == NULL) target_ = new ::naothmessages::Pose2D;
+  return target_;
 }
-inline ::naothmessages::Pose2D* WalkRequest::release_pose() {
-  clear_has_pose();
-  ::naothmessages::Pose2D* temp = pose_;
-  pose_ = NULL;
+inline ::naothmessages::Pose2D* WalkRequest::release_target() {
+  clear_has_target();
+  ::naothmessages::Pose2D* temp = target_;
+  target_ = NULL;
   return temp;
 }
 
@@ -3523,6 +3545,64 @@ inline ::google::protobuf::uint32 MotionStatus::currentmotionstate() const {
 inline void MotionStatus::set_currentmotionstate(::google::protobuf::uint32 value) {
   set_has_currentmotionstate();
   currentmotionstate_ = value;
+}
+
+// required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+inline bool MotionStatus::has_plannedmotionleftfoot() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void MotionStatus::set_has_plannedmotionleftfoot() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void MotionStatus::clear_has_plannedmotionleftfoot() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void MotionStatus::clear_plannedmotionleftfoot() {
+  if (plannedmotionleftfoot_ != NULL) plannedmotionleftfoot_->::naothmessages::Pose2D::Clear();
+  clear_has_plannedmotionleftfoot();
+}
+inline const ::naothmessages::Pose2D& MotionStatus::plannedmotionleftfoot() const {
+  return plannedmotionleftfoot_ != NULL ? *plannedmotionleftfoot_ : *default_instance_->plannedmotionleftfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::mutable_plannedmotionleftfoot() {
+  set_has_plannedmotionleftfoot();
+  if (plannedmotionleftfoot_ == NULL) plannedmotionleftfoot_ = new ::naothmessages::Pose2D;
+  return plannedmotionleftfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionleftfoot() {
+  clear_has_plannedmotionleftfoot();
+  ::naothmessages::Pose2D* temp = plannedmotionleftfoot_;
+  plannedmotionleftfoot_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+inline bool MotionStatus::has_plannedmotionrightfoot() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void MotionStatus::set_has_plannedmotionrightfoot() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void MotionStatus::clear_has_plannedmotionrightfoot() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void MotionStatus::clear_plannedmotionrightfoot() {
+  if (plannedmotionrightfoot_ != NULL) plannedmotionrightfoot_->::naothmessages::Pose2D::Clear();
+  clear_has_plannedmotionrightfoot();
+}
+inline const ::naothmessages::Pose2D& MotionStatus::plannedmotionrightfoot() const {
+  return plannedmotionrightfoot_ != NULL ? *plannedmotionrightfoot_ : *default_instance_->plannedmotionrightfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::mutable_plannedmotionrightfoot() {
+  set_has_plannedmotionrightfoot();
+  if (plannedmotionrightfoot_ == NULL) plannedmotionrightfoot_ = new ::naothmessages::Pose2D;
+  return plannedmotionrightfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionrightfoot() {
+  clear_has_plannedmotionrightfoot();
+  ::naothmessages::Pose2D* temp = plannedmotionrightfoot_;
+  plannedmotionrightfoot_ = NULL;
+  return temp;
 }
 
 // -------------------------------------------------------------------
