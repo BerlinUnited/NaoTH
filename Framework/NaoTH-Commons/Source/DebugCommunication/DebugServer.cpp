@@ -75,19 +75,18 @@ void DebugServer::mainConnection()
       // 1. send out already answered messages
       while(g_async_queue_length(answers) > 0)
       {
-        std::stringstream* answer = (std::stringstream*) g_async_queue_pop(answers);
+        GString* answer = (GString*) g_async_queue_pop(answers);
 
         if(answer != NULL)
         {
-          std::string answerAsString = answer->str();
-          bool success = comm.sendMessage(answerAsString.c_str(), answerAsString.size());
+          bool success = comm.sendMessage(answer->str, answer->len);
           if(!success)
           {
             g_warning("could not send message");
             disconnect();
           }
 
-          delete answer;
+          g_string_free(answer, true);
         } // end if answer != NULL
       }
     }
@@ -156,8 +155,12 @@ void DebugServer::execute()
   {
     GString* cmdRaw = (GString*) g_async_queue_pop(commands);
 
-    std::stringstream* answer = new std::stringstream();
-    handleCommand(cmdRaw, *answer);
+    GString* answer = g_string_new("");
+
+    std::stringstream answerStringStream;
+    handleCommand(cmdRaw, answerStringStream);
+    std::string answerAsString = answerStringStream.str();
+    g_string_append_len(answer, answerAsString.c_str(), answerAsString.size());
 
     g_async_queue_push(answers, answer);
 
@@ -307,8 +310,8 @@ void DebugServer::clearBothQueues()
 
   while (g_async_queue_length(answers) > 0)
   {
-    std::stringstream* tmp = (std::stringstream*) g_async_queue_pop(answers);
-    delete tmp;
+    GString* tmp = (GString*) g_async_queue_pop(answers);
+    g_string_free(tmp, true);
   }
 
 }

@@ -114,11 +114,11 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
     {
       if(sizeOfMessage > 0)
       {
-        GString* buffer = g_string_sized_new(sizeOfMessage);
+        GString* buffer = g_string_new("");
         g_string_set_size(buffer, sizeOfMessage);
         g_assert(buffer->len == sizeOfMessage);
 
-        gssize pos = 0;
+        guint32 pos = 0;
         // read message completly
         while(!fatalFail && *err == NULL && pos < sizeOfMessage)
         {
