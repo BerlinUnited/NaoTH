@@ -175,10 +175,12 @@ void DebugServer::handleCommand(GString* cmdRaw, std::stringstream& answer)
   // parse command
 
   naothmessages::Command cmd;
+  std::map<std::string, std::string> arguments;
+  std::string commandName = "invalidcommand";
+
   if(cmd.ParseFromArray(cmdRaw->str, cmdRaw->len))
   {
-    std::map<std::string, std::string> arguments;
-    std::string commandName = cmd.name();
+    commandName = cmd.name();
 
     for(int i=0; i < cmd.args().size(); i++)
     {
@@ -192,10 +194,9 @@ void DebugServer::handleCommand(GString* cmdRaw, std::stringstream& answer)
         arguments[arg.name()] = arg.name();
       }
     }
-
-    handleCommand(commandName, arguments, answer);
-
   }
+  handleCommand(commandName, arguments, answer);
+
 }//end handleCommand
 
 

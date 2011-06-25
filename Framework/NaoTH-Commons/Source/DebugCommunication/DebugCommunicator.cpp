@@ -113,6 +113,7 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
     if(initialBytes == 4)
     {
       GString* buffer = g_string_sized_new(sizeOfMessage);
+      g_string_set_size(buffer, sizeOfMessage);
       g_assert(buffer->len == sizeOfMessage);
 
       gssize pos = 0;
