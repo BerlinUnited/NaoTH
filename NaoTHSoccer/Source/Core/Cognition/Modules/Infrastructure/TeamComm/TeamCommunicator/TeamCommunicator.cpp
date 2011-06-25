@@ -1,6 +1,5 @@
 #include "TeamCommunicator.h"
 
-
 TeamCommunicator::TeamCommunicator()
   :lastSentTimestamp(0)
 {
@@ -47,6 +46,7 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   msg.set_teamnumber(getPlayerInfo().gameData.teamNumber);
   msg.set_ispenalized(getPlayerInfo().gameData.gameState == GameData::penalized);
   msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
+  msg.set_bodyid(getRobotInfo().bodyID);
 
   // TODO: set falldown state in teamcomm message
   /*
