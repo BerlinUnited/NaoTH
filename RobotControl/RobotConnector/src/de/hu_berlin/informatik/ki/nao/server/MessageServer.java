@@ -1,11 +1,17 @@
 package de.hu_berlin.informatik.ki.nao.server;
 
+import com.google.protobuf.ByteString;
+import de.hu_berlin.informatik.ki.nao.messages.Messages.CMD;
+import de.hu_berlin.informatik.ki.nao.messages.Messages.CMDArg;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.NotYetConnectedException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +74,7 @@ public class MessageServer
   // dpends on the assumed maximum network delay
   private long maximalBufferedFrames = 3;
   
-  private Base64 base64 = new Base64();
   
-
   public MessageServer()
   {
     this(null);
@@ -316,36 +320,29 @@ public class MessageServer
   // send-receive-periodicExecution //
   public void receiveLoop() throws InterruptedException, IOException
   {
-    byte[] buf = new byte[1024*256];
-    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-
     while (isConnected())
     {
-      // reader answer
-      int received = serverSocket.getInputStream().read(buf);
+      ByteBuffer header = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
       
-      receivedBytes += received;
-
-      int offset = 0;
-      
-      
-      for (int i = 0; i < received; i++)
+      // reader header
+      int headerRec = serverSocket.getInputStream().read(header.array());
+      if(headerRec == 4)
       {
-        // look for the end of the message
-        if (buf[i] == 0)
+        receivedBytes += headerRec;
+        int msgSize = header.getInt();
+        
+        ByteBuffer content = ByteBuffer.allocate(msgSize);
+        int pos=0;
+        while(pos < msgSize)
         {
-          byteStream.write(buf, offset, i-offset);
-          decodeAndHandleMessage(byteStream.toByteArray());
-          byteStream.reset();
-          offset = i+1;
+          int readBytes = serverSocket.getInputStream()
+            .read(content.array(), pos, msgSize - pos);
+          pos += readBytes;
+          receivedBytes += readBytes;
         }
-      }//end for
-
-      if(offset < received)
-      {
-        byteStream.write(buf, offset, received-offset);
+        decodeAndHandleMessage(content.array());
       }
-      
+            
       try
       {
         Thread.sleep(1);
@@ -369,8 +366,10 @@ public class MessageServer
         {
           if(isConnected())
           {
-            byte[] bytes = new byte[] {13};
-            serverSocket.getOutputStream().write(bytes);
+            ByteBuffer header = ByteBuffer.allocate(4);            
+            header.putInt(Integer.reverseBytes(0));
+            
+            serverSocket.getOutputStream().write(header.array());
           }
         }
         catch (SocketException ex)
@@ -389,33 +388,34 @@ public class MessageServer
         callbackQueue.put(entry);
 
         Command c = entry.command;
-
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("+").append(c.getName());
+        CMD.Builder cmdBuilder = CMD.newBuilder();
+        
+        cmdBuilder = cmdBuilder.setName(c.getName());
+        
         if (c.getArguments() != null)
         {
           for (Map.Entry<String, byte[]> e : c.getArguments().entrySet())
           {
-            boolean hasArg = e.getValue() != null;
-            buffer.append(" ");
-            if (hasArg)
+            CMDArg.Builder arg = CMDArg.newBuilder().setName(e.getKey());
+            if(e.getValue() != null)
             {
-              buffer.append("+");
+              arg = arg.setBytes(ByteString.copyFrom(e.getValue()));
             }
-            buffer.append(e.getKey());
-            if (hasArg)
-            {
-              buffer.append(" ");
-              buffer.append(new String(Base64.encodeBase64(e.getValue())));
-            }
+            cmdBuilder = cmdBuilder.addArgs(arg);
           }
         }
-        buffer.append("\n");
         try
         {
           if(isConnected())
           {
-            byte[] bytes = buffer.toString().getBytes();
+            CMD cmd = cmdBuilder.build();
+            byte[] bytes = cmd.toByteArray();
+            
+            // write first header
+            ByteBuffer header = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+            
+            header.putInt(bytes.length);
+            serverSocket.getOutputStream().write(header.array());
             serverSocket.getOutputStream().write(bytes);
             sentBytes += bytes.length;
           }
@@ -432,8 +432,7 @@ public class MessageServer
   private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
   {
     SingleExecEntry entry = callbackQueue.take();
-    byte[] decoded = base64.decode(bytes);
-
+    
     if(entry != null)
     {
       if(entry.command != null && "endFrame".equals(entry.command.getName()))
@@ -442,7 +441,7 @@ public class MessageServer
       }
       else if(entry.sender != null)
       {        
-        entry.sender.handleResponse(decoded, entry.command);
+        entry.sender.handleResponse(bytes, entry.command);
       }
     }
   }//end decodeAndHandleMessage

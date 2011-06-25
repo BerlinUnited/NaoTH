@@ -61,7 +61,7 @@ public:
     *
     * @return A null terminated message string or NULL if nothing to read after timeout
     */
-  char* readMessage();
+  GString* readMessage();
 
   bool isConnected();
 
@@ -76,7 +76,7 @@ private:
 
   GError* internalSendMessage(const char* data, size_t size);
   GError* internalInit();
-  char* internalReadMessage(GError** err);
+  GString* internalReadMessage(GError** err);
 };
 
 #endif	/* _DEBUGCOMMUNICATOR_H */

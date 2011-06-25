@@ -61,16 +61,13 @@ private:
   std::map<std::string, DebugCommandExecutor*> executorMap;
   std::map<std::string, std::string> descriptionMap;
 
-  base64::Decoder base64Decoder;
-  base64::Encoder base64Encoder;
-
   bool frameEnded;
   bool abort;
 
   void mainConnection();
-  void handleCommand(char* cmdRaw, GString* answer);
-  void handleCommand(std::string command, std::map<std::string,std::string> arguments,
-    GString* answer, bool encodeBase64);
+  void handleCommand(GString* cmdRaw, std::stringstream& answer);
+  void handleCommand(std::string& command, std::map<std::string,std::string>& arguments,
+    std::stringstream& answer);
 
   void disconnect();
   void clearBothQueues();

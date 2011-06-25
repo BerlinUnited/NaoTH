@@ -81,8 +81,11 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   GError* err = NULL;
   if (connection != NULL)
   {
-    gsize pos = 0;
+    // send message size in 4 bytes
+    guint32 sizeFixed = size;
+    g_socket_send(connection, (char*) &sizeFixed, 4, NULL, &err);
 
+    gsize pos = 0;
     while(err == NULL && connection != NULL && pos < size)
     {
       gsize length = size-pos;
@@ -96,60 +99,65 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
 }//end sendMessage
 
 
-char* DebugCommunicator::internalReadMessage(GError** err)
+GString* DebugCommunicator::internalReadMessage(GError** err)
 {
   *err = NULL;
   if (connection != NULL)
   {
 
-    GString* buffer = g_string_new("");
-    char c = 0;
+    guint32 sizeOfMessage = 0;
+    if(fatalFail) return NULL;
 
-    // read until \n character found
-    while(!fatalFail && *err == NULL && c != '\n')
+    gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
+
+    if(initialBytes == 4)
     {
-      if(err != NULL)
+      if(sizeOfMessage > 0)
       {
-        gssize read_bytes =
-            g_socket_receive_with_blocking(connection, &c, 1, buffer->len == 0 ? false : true ,NULL, err);
+        GString* buffer = g_string_sized_new(sizeOfMessage);
+        g_string_set_size(buffer, sizeOfMessage);
+        g_assert(buffer->len == sizeOfMessage);
 
-        if(read_bytes < 1)
+        gssize pos = 0;
+        // read message completly
+        while(!fatalFail && *err == NULL && pos < sizeOfMessage)
         {
-          g_string_free(buffer, true);
+          gssize read_bytes =
+              g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
 
           if(read_bytes == 0)
           {
+            g_string_free(buffer, true);
+            buffer = NULL;
             // we got 0 bytes, this indicates
             // an error in the connection (-1 is set if no data was available
             // in non-blocking mode)
             throw "Connection Error";
+
           }
-          else
-          {
-            // just return nothing
-            return NULL;
-          }
+            pos += read_bytes;
+        } // end while read bytes
+
+        if(*err)
+        {
+          g_string_free(buffer, true);
+          return NULL;
         }
-      }
 
-      if(c != '\r' && c != '\n')
+        return buffer;
+      }
+      else
       {
-        g_string_append_c(buffer,c);
-      }
-    } // end while no \n found
-
-    if(*err)
-    {
-      g_string_free(buffer,true);
-    }
-
-    g_string_append_c(buffer,'\0');
-    return g_string_free(buffer, false);
+        //g_debug("keepalive received");
+        // keepalive message, ignore
+        return NULL;
+      } // end if sizeOfMessage > 0
+    } // end if header read
   }//end if connection not null
 
   return NULL;
 }
-char* DebugCommunicator::readMessage()
+GString* DebugCommunicator::readMessage()
 {
   if (fatalFail)
   {
@@ -157,7 +165,7 @@ char* DebugCommunicator::readMessage()
   }
 
   GError* err = NULL;
-  char* result = internalReadMessage(&err);
+  GString* result = internalReadMessage(&err);
   if(err)
   {
     if(err->code != G_IO_ERROR_WOULD_BLOCK)
@@ -167,7 +175,7 @@ char* DebugCommunicator::readMessage()
 
       if(result != NULL)
       {
-        g_free(result);
+        g_string_free(result,true);
       }
       throw "Socket Exception";
     }
