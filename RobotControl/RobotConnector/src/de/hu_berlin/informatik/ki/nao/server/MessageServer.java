@@ -74,9 +74,7 @@ public class MessageServer
   // dpends on the assumed maximum network delay
   private long maximalBufferedFrames = 3;
   
-  private Base64 base64 = new Base64();
   
-
   public MessageServer()
   {
     this(null);
@@ -434,8 +432,7 @@ public class MessageServer
   private void decodeAndHandleMessage(byte[] bytes) throws InterruptedException
   {
     SingleExecEntry entry = callbackQueue.take();
-    byte[] decoded = base64.decode(bytes);
-
+    
     if(entry != null)
     {
       if(entry.command != null && "endFrame".equals(entry.command.getName()))
@@ -444,7 +441,7 @@ public class MessageServer
       }
       else if(entry.sender != null)
       {        
-        entry.sender.handleResponse(decoded, entry.command);
+        entry.sender.handleResponse(bytes, entry.command);
       }
     }
   }//end decodeAndHandleMessage
