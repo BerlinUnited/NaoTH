@@ -22,7 +22,7 @@
 
 class FieldPercept : public naoth::Printable
 {
-
+public:
   typedef Math::Polygon<4> FieldRect;
   typedef Math::Polygon<20> FieldPoly;
 
@@ -68,6 +68,9 @@ public:
     generateDefaultField();
     fields.reserve(MAX_FIELD_COUNT);
     reset();
+
+    // the whole image is fiel by default
+    add(fullFieldPoly, fullFieldRect);
   }
 
   ~FieldPercept(){}
