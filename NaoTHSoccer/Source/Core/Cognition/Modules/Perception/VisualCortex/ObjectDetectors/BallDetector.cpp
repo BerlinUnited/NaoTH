@@ -261,8 +261,8 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, c
 //  max.y = std::min(max.y, (int)getImage().cameraInfo.resolutionHeight-1);
   // senity check
 
-//  Vector2<int> min = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMin);
-//  Vector2<int> max = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMax);
+//  Vector2<int> min = getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).getClosestPoint(orgMin);
+//  Vector2<int> max = getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).getClosestPoint(orgMax);
 //  if(min.x >= max.x || min.y >= max.y) return false;
 
 
