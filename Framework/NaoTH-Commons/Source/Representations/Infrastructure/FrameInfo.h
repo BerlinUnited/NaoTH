@@ -30,6 +30,12 @@ namespace naoth
         frameNumber(0)
     {}
 
+    FrameInfo(unsigned int time, unsigned int frameNumber) 
+      :
+        time(time),
+        frameNumber(frameNumber)
+    {}
+
     /**
     * The method returns the time difference between a given time stamp and the
     * current frame time.
@@ -49,6 +55,7 @@ namespace naoth
 
     unsigned int getStep() const { return step; }
 
+    // TODO: there should be functionality in representations!!!
     void setTime(unsigned int t)
     {
       step = t - time;
