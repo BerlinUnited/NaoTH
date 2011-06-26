@@ -84,9 +84,8 @@ public:
 	 * @param pos The position of the current pixel on the line, which is incremented by the
 	 * Bresenham algorithm
 	 */
-	inline bool getNext(Vector2<int>& pos)
+	inline void getNext(Vector2<int>& pos)
 	{
-    bool valid = (pixelCount >= 0 && pixelCount < numberOfPixels);
 	  pos += standardOffset;
 	  error += delta;
 	  if(error > 0)
@@ -95,8 +94,17 @@ public:
 		  error += resetError;
 	  }
     pixelCount++;
-    return valid;
 	}//end getNext
+
+  inline bool getNextWithCheck(Vector2<int>& pos)
+	{
+    if (pixelCount >= 0 && pixelCount < numberOfPixels)
+    {
+      getNext(pos);
+      return true;
+    }
+	  return false;
+	}//end getNextWithCheck
 
 	/**
 	 * Increments the coordinates to the next point on the line.
@@ -143,10 +151,6 @@ private:
 
 	/** Computes the Bresenham parameters. */
 	void setup(const Vector2<int>& diff);
-
-  bool intersectionPointsWithImageFrame(
-    const Math::Line& line, const naoth::CameraInfo& cameraInfo,
-    Vector2<int>& startPoint, Vector2<int>& endPoint);
 
 };
 

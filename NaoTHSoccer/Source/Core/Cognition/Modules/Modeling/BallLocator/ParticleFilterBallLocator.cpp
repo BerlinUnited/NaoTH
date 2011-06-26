@@ -30,18 +30,26 @@ void ParticleFilterBallLocator::execute()
 {
   getBallModel().reset();
   
-  updateByBallPercept();
+  updateByOdometry(theSampleSet, true);
+  lastRobotOdometry = getOdometryData();
+
+  // update by motion model
+  // ...
+
+  updateByBallPercept(theSampleSet);
   
   DEBUG_REQUEST("ParticleFilterBallLocator:draw_ball_on_field", drawBallModel(getBallModel()); );
-  DEBUG_REQUEST("ParticleFilterBallLocator:draw_samples", drawSamples(sampleSet); );
+  DEBUG_REQUEST("ParticleFilterBallLocator:draw_samples", drawSamples(theSampleSet); );
 }//end execute
 
 
-void ParticleFilterBallLocator::updateByBallPercept()
+
+void ParticleFilterBallLocator::updateByBallPercept(SampleSet& sampleSet)
 {
+  unsigned int maxNumberOfParticles = 20;
 
   // integrate new percepts
-  if(sampleSet.size() < 100)
+  if(sampleSet.size() < maxNumberOfParticles)
   {
     Sample s;
     s.position = getBallPercept().bearingBasedOffsetOnField;
@@ -55,7 +63,24 @@ void ParticleFilterBallLocator::updateByBallPercept()
 }//end updateByBallPercept
 
 
-void ParticleFilterBallLocator::resampleGT07(bool noise)
+void ParticleFilterBallLocator::updateByOdometry(SampleSet& sampleSet, bool noise) const
+{
+  double motionNoiseDistance = 10;
+  Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+  // todo: what about speed?
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {      
+    sampleSet[i].position = odometryDelta * sampleSet[i].position; 
+    if(noise)
+    {
+      sampleSet[i].position.x += (Math::random()-0.5)*motionNoiseDistance;
+      sampleSet[i].position.y += (Math::random()-0.5)*motionNoiseDistance;
+    }
+  }//end for
+}//end updateByOdometry
+
+
+void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 {
   // parameters
   double processNoiseDistance = 5;

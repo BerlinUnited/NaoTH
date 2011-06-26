@@ -19,93 +19,62 @@
 #include "Representations/Perception/CameraMatrix.h"
 
 
-class LinePercept : public naoth::Printable//, public Streamable
+class LinePercept : public naoth::Printable//, public naoth::Streamable
 { 
 public:
-  class FieldLineSegment : public Math::LineSegment
+
+  enum LineType
+  {
+    unknown, //equals ColorClasses::none
+    O, //line along field bounds, equals ColorClasses::orange
+    I, //line inside of field, equals ColorClasses::yellow
+    C, //circle line, equals ColorClasses::skyblue
+    none //invalid line, equals ColorClasses::white
+  };
+
+  enum LineID
+  {
+    center_line,
+    goal_line_own,
+    goal_line_opponent,
+    unknown_id
+  };
+
+  class LineSegmentImage
+  {
+  public:
+    LineSegmentImage()
+      :
+      thickness(0.0),
+      angle(0.0),
+      type(LinePercept::unknown),
+      valid(false)
+    {}
+
+    /** the line detected in the image (pixel coordinates) */
+    Math::LineSegment segment;
+
+    // information in image
+    double thickness;
+    double angle;
+
+    /** the type of the line estimated in image */
+    LineType type;
+
+    bool valid;
+  };
+
+
+
+  class FieldLineSegment
   {
     public:
-      enum LineType
-      {
-        unknown, //equals ColorClasses::none
-        O, //line along field bounds, equals ColorClasses::orange
-        I, //line inside of field, equals ColorClasses::yellow
-        C, //circle line, equals ColorClasses::skyblue
-        none //invalid line, equals ColorClasses::white
-      };
-
-      enum LineID
-      {
-        center_line,
-        goal_line_own,
-        goal_line_opponent,
-        unknown_id
-      };
-
       FieldLineSegment()
         :
-        thickness(0.0),
-        slope(0.0),
-        angle(0.0),
         valid(false),
-        partOfCircle(false),
         seen_id(unknown_id)
       {}
 
-      void set(const Vector2<int>& begin, const Vector2<int>& end)
-      {
-        base = begin;
-        direction = end - begin;
-        length = direction.abs();
-        direction.normalize();
-      }
-
-      void set(const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo, const Vector2<int>& begin, const Vector2<int>& end)
-      {
-        /*
-        base = begin;
-        direction = end - begin;
-        length = direction.abs();
-        direction.normalize();
-
-        //TODO: handle the case if the projection is not possible
-        Vector2<double> beginLineOnField;
-        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, begin.x, begin.y, 0.0, beginLineOnField);
-
-        //TODO: handle the case if the projection is not possible
-        Vector2<double> endLineOnField;
-        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
-        lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
-        */
-      }
-
-      void setBegin(const Vector2<int>& begin)
-      {
-        base = begin;
-      }
-
-      void setEnd(const Vector2<int>& end)
-      {
-        direction = end - base;
-        length = direction.abs();
-        direction.normalize();
-      }
-
-      void setEnd(const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo, const Vector2<int>& end)
-      {
-        direction = end - base;
-        length = direction.abs();
-        direction.normalize();
-
-        //TODO: handle the case if the projection is not possible
-        Vector2<double> beginLineOnField;
-        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, base.x, base.y, 0.0, beginLineOnField);
-
-        //TODO: handle the case if the projection is not possible
-        Vector2<double> endLineOnField;
-        CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
-        lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
-      }
 /*
       void fillProtobuf(naothmessages::FieldLineSegment* segment) const
       {
@@ -173,25 +142,24 @@ public:
       }//end readFromProtobuf
 */
 
-      // information in image
-      int beginExtendCount;
-      int endExtendCount;
-      double thickness;
-      double slope;
-      double angle;
-
-      bool valid; // TODO: when exactly is a line segment valid?
+      // TODO: when exactly is a line segment valid?
+      bool valid; 
 
       /** mark if this segment apears to be a part of the middle circle */
-      bool partOfCircle;
+      // bool partOfCircle;
+
       // TODO: is the type filled properly?
-      // if yes, we don't need "partOfCircle"
+      /** if yes, we don't need "partOfCircle" */
       LineType type;
 
-      // estimated id of the line, e.g., center line, goal line etc.
+      /** estimated id of the line, e.g., center line, goal line etc. */
       LineID seen_id;
 
-      // the projection of the line segment on the ground
+
+      /** the line detected in the image (pixel coordinates) */
+      LineSegmentImage lineInImage;
+
+      /** the projection of the line segment on the ground (robot coordinates) */
       Math::LineSegment lineOnField;
   };//end class FieldLineSegment
 
@@ -229,18 +197,24 @@ public:
       CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, pos.x, pos.y, 0.0, posOnField);
     }
 
+    void setSegments(int segOne, int segTwo)
+    {
+      segmentIndices[0] = segOne;
+      segmentIndices[1] = segTwo;
+    }
+
     void setSegments(int segOne, int segTwo, double distOne, double distTwo)
     {
       segmentIndices[0] = segOne;
       segmentsDistanceToIntersection[0] = distOne;
       segmentIndices[1] = segTwo;
       segmentsDistanceToIntersection[1] = distTwo;
-    };
+    }
 
     Vector2<unsigned int>& getSegmentIndices()
     {
       return segmentIndices;
-    };
+    }
 
     Vector2<double>& getSegmentsDistancesToIntersection()
     {
@@ -267,7 +241,7 @@ public:
       return type;
     }
 
-    Vector2<double> getPos()
+    const Vector2<double>& getPos() const
     {
       return pos;
     }
@@ -374,36 +348,26 @@ public:
     for(unsigned int i = 0; i < lines.size(); i++)
     {
       const FieldLineSegment& line = lines[i];
-      stream << "== Line " << i << " ==\n"
-        << "valid = " << (line.valid ? "true" : "false") << '\n'
-        << "begin = (" << line.begin() << ") end = (" << line.end() << ")\n"
-        << "lineOnField = (" << line.lineOnField.begin() << ") -- (" << line.lineOnField.end() << ")\n"
-        << "thickness = (" << line.thickness << ")\n"
-        << "slope = (" << line.slope << ")\n"
-        << "angle = (" << line.angle << ")\n"
+      stream 
+        << "== Line " << i << " == " << endl
+        << "valid = " << (line.valid ? "true" : "false")  << endl
+        << "lineInImage = (" << line.lineInImage.segment.begin() << ") -- (" << line.lineInImage.segment.end() << ")" << endl
+        << "lineOnField = (" << line.lineOnField.begin() << ") -- (" << line.lineOnField.end() << ")" << endl
+        << "thickness = (" << line.lineInImage.thickness << ")" << endl
+        << "angle = (" << line.lineInImage.angle << ")" << endl
       ;
     }
-//    for(unsigned int i = 0; i < intersections.size(); i++)
-//    {
-//      const Intersection& intersection = intersections[i];
-//      stream << "== Intersection " << i << " ==\n"
-//        << "position = (" << intersection.getPos() << ") on field = (" << intersection.getPosOnField() << ")\n"
-//        << "indices of line segments = (" << intersection.getSegmentIndices()[0] << " , " << intersection.getSegmentIndices()[1] << ")\n"
-//        << "distances inside line to intersection = (" << intersection.getSegmentsDistancesToIntersection()[0] << " , " << intersection.getSegmentsDistancesToIntersection()[1] << ")\n"
-////        << "slope = (" << intersection. << ")\n"
-////        << "angle = (" << intersection.angle << ")\n"
-//      ;
-//    }
 
     cout<<"\n";
     for(unsigned int i=0; i<flags.size(); i++)
     {
-      stream <<"== Flag "<< i<< "==\n"
-        <<"seenPosOnField = "<<flags[i].seenPosOnField<<"\n"
-        <<"absolutePosOnField = "<<flags[i].absolutePosOnField<<"\n"
+      stream 
+        << "== Flag " << i << "==" << endl
+        << "seenPosOnField = " << flags[i].seenPosOnField << endl
+        << "absolutePosOnField = " << flags[i].absolutePosOnField << endl
         ;
     }
-  }
+  }//end print
 
   /*
   virtual void toDataStream(ostream& stream) const

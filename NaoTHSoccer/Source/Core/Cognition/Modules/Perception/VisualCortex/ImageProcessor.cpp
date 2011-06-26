@@ -35,14 +35,17 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
+  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->setEnabled(true);
+
+  theFieldDetector = registerModule<FieldDetector>("FieldDetector");
+  theFieldDetector->setEnabled(true);
+
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
   theRobotDetector = registerModule<RobotDetector>("RobotDetector");
   theRobotDetector->setEnabled(true);
-
-  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->setEnabled(true);
 
   theLineDetector = registerModule<LineDetector>("LineDetector");
   theLineDetector->setEnabled(true);
@@ -66,6 +69,15 @@ void ImageProcessor::execute()
   getLinePercept().reset();
   getPlayersPercept().reset();
 
+
+  STOPWATCH_START("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->execute();
+  STOPWATCH_STOP("ScanLineEdgelDetector");
+
+  STOPWATCH_START("FieldDetector");
+  theFieldDetector->execute();
+  STOPWATCH_STOP("FieldDetector");
+
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
@@ -73,10 +85,6 @@ void ImageProcessor::execute()
   STOPWATCH_START("RobotDetector");
   theRobotDetector->execute();
   STOPWATCH_STOP("RobotDetector");
-
-  STOPWATCH_START("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->execute();
-  STOPWATCH_STOP("ScanLineEdgelDetector");
 
   STOPWATCH_START("LineDetector");
   theLineDetector->execute();

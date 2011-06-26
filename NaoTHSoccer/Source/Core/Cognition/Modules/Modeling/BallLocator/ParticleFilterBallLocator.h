@@ -61,10 +61,13 @@ private:
 
   typedef std::vector<Sample> SampleSet;
 
-  SampleSet sampleSet;
+  SampleSet theSampleSet;
+  Pose2D lastRobotOdometry;
 
-  void updateByBallPercept();
-  void resampleGT07(bool noise);
+  void updateByBallPercept(SampleSet& sampleSet);
+  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+
+  void resampleGT07(SampleSet& sampleSet, bool noise);
 
 
   void drawBallModel(const BallModel& ballModel) const;

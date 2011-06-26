@@ -63,6 +63,7 @@ void ScanLineEdgelDetector::execute()
 
 void ScanLineEdgelDetector::integrated_edgel_detection()
 {
+  // TODO: fix it
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
   int scanLineID = 0;
 
@@ -162,6 +163,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
 void ScanLineEdgelDetector::iterative_edgel_detection()
 {
+  // TODO: fixit
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
   int resumedScanCount;
   int scanLineID = 0;

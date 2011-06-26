@@ -306,7 +306,7 @@ void Simulator::jumpTo(unsigned int position)
     {
       currentFrame++;
     }
-  }
+  }//end while
 
   if(wasFound)
   {
@@ -315,11 +315,10 @@ void Simulator::jumpTo(unsigned int position)
   else
   {
     cout << "frame not found!" << endl;
-    printCurrentLineInfo();
     currentFrame = oldPos;
+    printCurrentLineInfo();
   }
-
-}
+}//end jumpTo
 
 void Simulator::executeCurrentFrame()
 {  
