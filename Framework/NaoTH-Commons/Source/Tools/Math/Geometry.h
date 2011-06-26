@@ -23,7 +23,7 @@ class Geometry
 {
 public:
   /** 
-  * GT07
+  * copied from GT07
   * Calculates the angle between a pose and a position
   * @param from The base pose.
   * @param to The other position.
@@ -32,7 +32,7 @@ public:
   static double angleTo(const Pose2D& from, const Vector2<double>& to);
 
   /** 
-  * GT07
+  * copied from GT07
   * Calculates the distance from a pose to a position
   * @param from The base pose.
   * @param to The other position.
@@ -41,7 +41,7 @@ public:
   static double distanceTo(const Pose2D& from, const Vector2<double>& to);
 
   /** 
-  * GT07
+  * copied from GT07
   * Calculates the relative vector from a pose to a position
   * @param from The base pose.
   * @param to The other position.
@@ -50,7 +50,7 @@ public:
   static Vector2<double> vectorTo(const Pose2D& from, const Vector2<double>& to);
 
   /**
-  * GT07
+  * copied from GT07
   * Function does the transformation from 2d field coordinates
 	* to coordinates relative to the robot.
   * @param robotPose current Robot Pose.
@@ -61,7 +61,7 @@ public:
 
 
   /**
-  * GT07
+  * copied from GT07
   * Function does the transformation from 2d relative robot coordinates
 	* to absolute field coordinates.
   * @param rp current Robot Pose.
@@ -69,6 +69,24 @@ public:
   * @return Returns the positon in absolute coordinates
   */
 	static Vector2<double> relativeToFieldCoord(const Pose2D& robotPose, const Vector2<double>& relativeCoord);
+
+
+  /**
+  * copied from BHuman10
+  * Clips a line with a rectangle
+  * @param bottomLeft The bottom left corner of the rectangle
+  * @param topRight The top right corner of the rectangle
+  * @param line The line to be clipped
+  * @param point1 The starting point of the resulting line
+  * @param point2 The end point of the resulting line
+  * @return states whether clipping was necessary (and done)
+  */
+  static bool getIntersectionPointsOfLineAndRectangle(
+    const Vector2<int>& bottomLeft, 
+    const Vector2<int>& topRight,
+    const Math::Line line,
+    Vector2<int>& point1, 
+    Vector2<int>& point2);
 };
 
 #endif //__Geometry_h____

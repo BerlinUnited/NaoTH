@@ -38,3 +38,81 @@ Vector2<double> Geometry::relativeToFieldCoord(const Pose2D& robotPose, const Ve
   return robotPose * relativeCoord;
 }//end relativeToFieldCoord
 
+
+bool Geometry::getIntersectionPointsOfLineAndRectangle(
+  const Vector2<int>& bottomLeft, 
+  const Vector2<int>& topRight,
+  const Math::Line line,
+  Vector2<int>& point1, 
+  Vector2<int>& point2)
+{
+  int foundPoints=0;
+  Vector2<double> point[2];
+  if (line.getDirection().x!=0)
+  {
+    double y1=line.getBase().y+(bottomLeft.x-line.getBase().x)*line.getDirection().y/line.getDirection().x;
+    if ((y1>=bottomLeft.y)&&(y1<=topRight.y))
+    {
+      point[foundPoints].x=(double) bottomLeft.x;
+      point[foundPoints++].y=y1;
+    }
+    double y2=line.getBase().y+(topRight.x-line.getBase().x)*line.getDirection().y/line.getDirection().x;
+    if ((y2>=bottomLeft.y)&&(y2<=topRight.y))
+    {
+      point[foundPoints].x=(double) topRight.x;
+      point[foundPoints++].y=y2;
+    }
+  }
+  if (line.getDirection().y!=0)
+  {
+    double x1=line.getBase().x+(bottomLeft.y-line.getBase().y)*line.getDirection().x/line.getDirection().y;
+    if ((x1>=bottomLeft.x)&&(x1<=topRight.x)&&(foundPoints<2))
+    {
+      point[foundPoints].x=x1;
+      point[foundPoints].y=(double) bottomLeft.y;
+      if ((foundPoints==0)||((point[0]-point[1]).abs()>0.1))
+      {
+        foundPoints++;
+      }
+    }
+    double x2=line.getBase().x+(topRight.y-line.getBase().y)*line.getDirection().x/line.getDirection().y;
+    if ((x2>=bottomLeft.x)&&(x2<=topRight.x)&&(foundPoints<2))
+    {
+      point[foundPoints].x=x2;
+      point[foundPoints].y=(double) topRight.y;
+      if ((foundPoints==0)||((point[0]-point[1]).abs()>0.1))
+      {
+        foundPoints++;
+      }
+    }
+  }
+  switch (foundPoints)
+  {
+  case 1:
+    point1.x=(int)point[0].x;
+    point2.x=point1.x;
+    point1.y=(int)point[0].y;
+    point2.y=point1.y;
+    foundPoints++;
+    return true;
+  case 2:
+    if ((point[1]-point[0])*line.getDirection() > 0)
+    {
+      point1.x=(int)point[0].x;
+      point1.y=(int)point[0].y;
+      point2.x=(int)point[1].x;
+      point2.y=(int)point[1].y;
+    }
+    else
+    {
+      point1.x=(int)point[1].x;
+      point1.y=(int)point[1].y;
+      point2.x=(int)point[0].x;
+      point2.y=(int)point[0].y;
+    }
+    return true;
+  default:
+    return false;
+  }
+}//end getIntersectionPointsOfLineAndRectangle
+

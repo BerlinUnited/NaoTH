@@ -48,6 +48,15 @@ public:
                                               const double imgY);
 
 
+  /**
+    wrapper
+  */
+  static bool imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
+                                       const naoth::CameraInfo& cameraInfo,
+                                       const Vector2<double>& imagePoint, 
+                                       const double objectHeight,
+                                       Vector2<double>& result);
+
   /** 
    * Calculates from a given Pixel in the Image and the Camera Matrix the Point, 
    * where the Object lies on the Ground, or on the 
@@ -56,9 +65,9 @@ public:
    */
   static bool imagePixelToFieldCoord(  const CameraMatrix& cameraMatrix, 
                                        const naoth::CameraInfo& cameraInfo,
-                                       const double imgX, 
-                                       const double imgY, 
-                                       const double objectHeight,
+                                       const double& imgX, 
+                                       const double& imgY, 
+                                       const double& objectHeight,
                                        Vector2<double>& result);
 
 

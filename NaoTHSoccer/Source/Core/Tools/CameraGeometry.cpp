@@ -64,9 +64,18 @@ Vector2<double> CameraGeometry::angleToPointInImage( const CameraMatrix& cameraM
 
 bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
                                        const CameraInfo& cameraInfo,
-                                       const double imgX, 
-                                       const double imgY, 
+                                       const Vector2<double>& imagePoint, 
                                        const double objectHeight,
+                                       Vector2<double>& result)
+{
+  return imagePixelToFieldCoord(cameraMatrix, cameraInfo, imagePoint.x, imagePoint.y, objectHeight, result);
+}
+
+bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
+                                       const CameraInfo& cameraInfo,
+                                       const double& imgX, 
+                                       const double& imgY, 
+                                       const double& objectHeight,
                                        Vector2<double>& result)
 {
   double epsilon = 1e-13;
