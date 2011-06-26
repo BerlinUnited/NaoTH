@@ -8,8 +8,6 @@
 #ifndef __ColorClasses_h__
 #define __ColorClasses_h__
 
-namespace naoth
-{
 class ColorClasses
 {
 public:
@@ -134,5 +132,5 @@ public:
     };
   }//end colorClassToRGB
 };
-}//end namespace naoth
+
 #endif //__ColorClasses_h_

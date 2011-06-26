@@ -18,7 +18,6 @@
 #include <fstream>
 
 using namespace std;
-using namespace naoth;
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
@@ -30,7 +29,7 @@ using namespace naoth;
 * Contains a ColorTable64 which can decode the color for
 * every 4 * 4 * 4 cube in the 255 * 255 * 255 RGB color space.
 */
-class ColorTable64 : public Printable, public ColorClassifier
+class ColorTable64 : public naoth::Printable, public ColorClassifier
 {
 public:
   /** Constructor */

@@ -194,9 +194,9 @@ void ImageProcessor::execute()
         
         /*
         if(t > 120)
-          naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
+          naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
         else*/
-          naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,t,0,0);
+          naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,t,0,0);
       }//end for
     }//end for
   );
