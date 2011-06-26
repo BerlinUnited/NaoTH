@@ -7,24 +7,19 @@
 #ifndef __LinePercept_h_
 #define __LinePercept_h_
 
-
-#include "Messages/Representations.pb.h"
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-
-
 #include <vector>
 
-#include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Line.h"
 #include "Tools/CameraGeometry.h"
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
 
 
-
-class LinePercept : public Printable, public Streamable
+class LinePercept : public naoth::Printable//, public Streamable
 { 
 public:
   class FieldLineSegment : public Math::LineSegment
@@ -65,8 +60,9 @@ public:
         direction.normalize();
       }
 
-      void set(const CameraMatrix& cameraMatrix, const CameraInfo& cameraInfo, const Vector2<int>& begin, const Vector2<int>& end)
+      void set(const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo, const Vector2<int>& begin, const Vector2<int>& end)
       {
+        /*
         base = begin;
         direction = end - begin;
         length = direction.abs();
@@ -80,6 +76,7 @@ public:
         Vector2<double> endLineOnField;
         CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
         lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
+        */
       }
 
       void setBegin(const Vector2<int>& begin)
@@ -94,7 +91,7 @@ public:
         direction.normalize();
       }
 
-      void setEnd(const CameraMatrix& cameraMatrix, const CameraInfo& cameraInfo, const Vector2<int>& end)
+      void setEnd(const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo, const Vector2<int>& end)
       {
         direction = end - base;
         length = direction.abs();
@@ -109,7 +106,7 @@ public:
         CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, end.x, end.y, 0.0, endLineOnField);
         lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
       }
-
+/*
       void fillProtobuf(naothmessages::FieldLineSegment* segment) const
       {
         segment->mutable_lineinimage()->mutable_base()->set_x(base.x);
@@ -174,6 +171,7 @@ public:
         if(segment->has_valid())
           valid = segment->valid();
       }//end readFromProtobuf
+*/
 
       // information in image
       int beginExtendCount;
@@ -223,7 +221,7 @@ public:
       type = Math::Intersection::unknown;
     }
 
-    Intersection(const CameraMatrix& cameraMatrix, const CameraInfo& cameraInfo, const Vector2<double>& pos)
+    Intersection(const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo, const Vector2<double>& pos)
       :
       pos(pos)
     {
@@ -278,7 +276,7 @@ public:
     {
       return posOnField;
     }
-
+/*
     void fillProtobuf(naothmessages::Intersection* intersection) const
     {
       intersection->set_type((naothmessages::Intersection_IntersectionType) type);
@@ -322,7 +320,7 @@ public:
         segmentsDistanceToIntersection[1] = intersection->segmenttwodistance();
       }
     }
-
+*/
   private:
     Math::Intersection::IntersectionType type;
     Vector2<unsigned int> segmentIndices;
@@ -473,6 +471,16 @@ public:
 */
 };
 
+namespace naoth
+{
+  template<>
+  class Serializer<LinePercept>
+  {
+  public:
+    static void serialize(const LinePercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, LinePercept& representation);
+  };
+}
 
 #endif //__LinePercept_h_
 

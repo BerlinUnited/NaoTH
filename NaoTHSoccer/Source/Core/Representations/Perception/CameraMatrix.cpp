@@ -1,5 +1,5 @@
 /**
- * @file CameraMatrix.h
+ * @file CameraMatrix.cpp
  * 
  * Definition of class CameraMatrix
  */ 

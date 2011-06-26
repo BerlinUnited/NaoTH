@@ -11,7 +11,6 @@
 #include "Tools/Math/Line.h"
 
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 /**

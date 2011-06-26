@@ -12,14 +12,15 @@
 
 #include "Tools/Math/Polygon.h"
 #include "Tools/Math/Line.h"
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/DataStructures/Printable.h"
 
 
 #define MAX_FIELD_COUNT 4
 
-class FieldPercept : public Printable
+class FieldPercept : public naoth::Printable
 {
 
   typedef Math::Polygon<4> FieldRect;
@@ -239,6 +240,17 @@ public:
   }//end print
 
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<FieldPercept>
+  {
+  public:
+    static void serialize(const FieldPercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, FieldPercept& representation);
+  };
+}
 
 #endif	/* _FIELDPERCEPT_H */
 

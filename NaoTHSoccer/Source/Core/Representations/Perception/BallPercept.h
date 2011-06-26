@@ -9,13 +9,15 @@
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
-#include <Tools/ColorClasses.h>
+#include "Tools/ColorClasses.h"
+
 #include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
 
-class BallPercept : public Printable
+class BallPercept : public naoth::Printable
 {
 public:
   BallPercept(): 
@@ -41,72 +43,14 @@ public:
   /* relative ball position to the robot based on the seen size of the ball */
   Vector3<double> sizeBasedRelativePosition; 
   
-  FrameInfo frameInfoWhenBallWasSeen;
+  naoth::FrameInfo frameInfoWhenBallWasSeen;
 
   /* reset percept */
   void reset()
   {
     ballWasSeen = false;
   }//end reset
-/*
-  virtual void toDataStream(ostream& stream) const
-  {
-    naothmessages::BallPercept p;
 
-    p.set_ballwasseen(ballWasSeen);
-    
-    p.mutable_centerinimage()->set_x(centerInImage.x);
-    p.mutable_centerinimage()->set_y(centerInImage.y);
-
-    p.set_radiusinimage(radiusInImage);
-    
-    p.set_ballcolor((naothmessages::Color) ballColor);
-
-    p.mutable_bearingbasedoffsetonfield()->set_x(bearingBasedOffsetOnField.x);
-    p.mutable_bearingbasedoffsetonfield()->set_y(bearingBasedOffsetOnField.y);
-
-    p.mutable_frameinfowhenballwasseen()->set_framenumber(frameInfoWhenBallWasSeen.frameNumber);
-    p.mutable_frameinfowhenballwasseen()->set_time(frameInfoWhenBallWasSeen.time);
-
-    google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-    p.SerializeToZeroCopyStream(&buf);
-  }
-
-  virtual void fromDataStream(istream& stream)
-  {
-    naothmessages::BallPercept p;
-    google::protobuf::io::IstreamInputStreamLite buf(&stream);
-    p.ParseFromZeroCopyStream(&buf);
-
-    if(p.has_ballwasseen())
-    {
-      ballWasSeen = p.ballwasseen();
-    }
-    if(p.has_centerinimage())
-    {
-      centerInImage.x = p.centerinimage().x();
-      centerInImage.y = p.centerinimage().y();
-    }
-    if(p.has_radiusinimage())
-    {
-      radiusInImage = p.radiusinimage();
-    }
-    if(p.has_ballcolor())
-    {
-      ballColor = (ColorClasses::Color) p.ballcolor();
-    }
-    if(p.has_bearingbasedoffsetonfield())
-    {
-      bearingBasedOffsetOnField.x = p.bearingbasedoffsetonfield().x();
-      bearingBasedOffsetOnField.y = p.bearingbasedoffsetonfield().y();
-    }
-    if(p.has_frameinfowhenballwasseen())
-    {
-      frameInfoWhenBallWasSeen.frameNumber = p.frameinfowhenballwasseen().framenumber();
-      frameInfoWhenBallWasSeen.time = p.frameinfowhenballwasseen().time();
-    }
-  }
-*/
   virtual void print(ostream& stream) const
   {
     stream << "ballWasSeen = " << ballWasSeen << endl;
@@ -118,6 +62,16 @@ public:
   }//end print
 };
 
+namespace naoth
+{
+  template<>
+  class Serializer<BallPercept>
+  {
+  public:
+    static void serialize(const BallPercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, BallPercept& representation);
+  };
+}
 
 #endif //__BallPercept_h_
 
