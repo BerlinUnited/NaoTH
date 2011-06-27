@@ -15,11 +15,11 @@ BEGIN_DECLARE_MODULE(TeamCommunicator)
 
 REQUIRE(FrameInfo)
 REQUIRE(PlayerInfo)
-REQUIRE(TeamMessageData)
+REQUIRE(TeamMessageDataIn)
 REQUIRE(RobotInfo)
 
 PROVIDE(TeamMessage)
-PROVIDE(RobotMessageData)
+PROVIDE(TeamMessageDataOut)
 
 END_DECLARE_MODULE(TeamCommunicator)
 

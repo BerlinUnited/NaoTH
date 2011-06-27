@@ -29,7 +29,7 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(IRSendData);
   REG_OUTPUT(UltraSoundSendData);
   REG_OUTPUT(SoundPlayData);
-  REG_OUTPUT(RobotMessageData);
+  REG_OUTPUT(TeamMessageDataOut);
   
   theHeadMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("HeadMotionRequest"));
   theMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("MotionRequest"));

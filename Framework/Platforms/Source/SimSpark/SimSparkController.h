@@ -78,8 +78,8 @@ private:
   InertialSensorData theInertialSensorData;
   GameData theGameData;
   SensorJointData theSensorJointData;
-  RobotMessageData theRobotMessageData; // message to other robots
-  TeamMessageData theTeamMessageData; // message from other robots
+  TeamMessageDataOut theTeamMessageDataOut; // message to other robots
+  TeamMessageDataIn theTeamMessageDataIn; // message from other robots
   double theIMU[2];
 
   list<MotorJointData> theMotorJointData;
@@ -121,14 +121,14 @@ public:
 
   void get(VirtualVision& data);
 
-  void get(TeamMessageData& data);
+  void get(TeamMessageDataIn& data);
 
   void get(GameData& data);
 
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);
 
-  void set(const RobotMessageData& data);
+  void set(const TeamMessageDataOut& data);
 
   void set(const CameraSettingsRequest& data);
 

@@ -37,13 +37,13 @@ SimSparkController::SimSparkController()
   registerInput<CurrentCameraSettings>(*this);
   registerInput<BatteryData>(*this);
   registerInput<VirtualVision>(*this);
-  registerInput<TeamMessageData>(*this);
+  registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const MotorJointData>(*this);
-  registerOutput<const RobotMessageData>(*this);
+  registerOutput<const TeamMessageDataOut>(*this);
 
 
   // init the name -- id maps
@@ -1060,7 +1060,7 @@ void SimSparkController::say()
   if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
     return;
 
-  string& msg = theRobotMessageData.data;
+  string& msg = theTeamMessageDataOut.data;
   if (!msg.empty()){
     if (msg.size()>20){
       cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
@@ -1113,7 +1113,7 @@ bool SimSparkController::hear(const sexp_t* sexp)
   SexpParser::parseValue(sexp, msg);
 
   if ( !msg.empty() && msg != ""){
-    theTeamMessageData.data.push_back(msg);
+    theTeamMessageDataIn.data.push_back(msg);
   }
 //  std::cout << "hear message : " << time << ' ' << direction << ' ' << dir << ' ' << msg << std::endl;
   return true;
@@ -1200,14 +1200,14 @@ MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
     return new MessageQueue4Threads();
 }
 
-void SimSparkController::get(TeamMessageData& data)
+void SimSparkController::get(TeamMessageDataIn& data)
 {
-  data = theTeamMessageData;
-  theTeamMessageData.data.clear();
+  data = theTeamMessageDataIn;
+  theTeamMessageDataIn.data.clear();
 }
 
-void SimSparkController::set(const RobotMessageData& data)
+void SimSparkController::set(const TeamMessageDataOut& data)
 {
-  theRobotMessageData = data;
+  theTeamMessageDataOut = data;
 }
 

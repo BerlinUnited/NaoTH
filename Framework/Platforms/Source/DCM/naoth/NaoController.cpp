@@ -40,7 +40,7 @@ theTeamComm(NULL)
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<MotorJointData>(*this);
   registerInput<GameData>(*this);
-  registerInput<TeamMessageData>(*this);
+  registerInput<TeamMessageDataIn>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -48,7 +48,7 @@ theTeamComm(NULL)
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundPlayData>(*this);
-  registerOutput<const RobotMessageData>(*this);
+  registerOutput<const TeamMessageDataOut>(*this);
   
   cout<<"Init Platform"<<endl;
   Platform::getInstance().init(this);
@@ -128,13 +128,13 @@ void NaoController::setCognitionOutput()
   naothDataWriting = naothData.writing();
 }
 
-void NaoController::get(TeamMessageData& data)
+void NaoController::get(TeamMessageDataIn& data)
 {
   data.data.clear();
   theTeamComm->receive(data.data);
 }
 
-void NaoController::set(const RobotMessageData& data)
+void NaoController::set(const TeamMessageDataOut& data)
 {
   theTeamComm->send(data.data);
 }

@@ -23,7 +23,6 @@ private:
   bool initialized;
   GSocket* socket;
   char* buffer;
-  unsigned int lastSentTimestamp;
 
   GSocketAddress* lanBroadcastAddress;
   GSocketAddress* wlanBroadcastAddress;
