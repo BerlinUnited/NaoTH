@@ -94,8 +94,8 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
       pos += sent;
     }//end while
 
-    if(pos > 0)
-      std::cout << " s " << std::endl;
+    //if(pos > 0)
+      //std::cout << " s " << std::endl;
   }//end if
 
   return err;
@@ -141,7 +141,7 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
             pos += read_bytes;
         } // end while read bytes
 
-        std::cout << " r ";
+        //std::cout << " r ";
 
         if(*err)
         {

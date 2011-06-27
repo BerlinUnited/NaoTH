@@ -17,23 +17,26 @@ DebugExecutor::DebugExecutor()
 
 void DebugExecutor::execute()
 {
-  getDebugMessageIn().messages.clear();
+  //getDebugMessageIn().messages.clear();
 
   // important both are needed!!!
-  getDebugMessageOut().answer.clear();
-  getDebugMessageOut().answer.str("");
+  //getDebugMessageOut().answers.clear();
 
+  //std::cout << "DebugExecutor" << std::endl;
  // theDebugServer.execute(); // try reconect
 
   theDebugServer.getDebugMessageIn(getDebugMessageIn());
 
-  for(unsigned int i = 0; i < getDebugMessageIn().messages.size(); i++)
+  while(!getDebugMessageIn().messages.empty())
   {
-    const DebugMessageIn::Message& message = getDebugMessageIn().messages[i];
-    DebugCommandServer::getInstance().handleCommand(message.command, message.arguments, getDebugMessageOut().answer);
+    const DebugMessageIn::Message& message = getDebugMessageIn().messages.front();
+    std::stringstream answer;
+    DebugCommandServer::getInstance().handleCommand(message.command, message.arguments, answer);
+    getDebugMessageOut().answers.push(answer.str());
+    getDebugMessageIn().messages.pop();
   }//end for
 
-  if(getDebugMessageIn().messages.size() > 0)
+  if(getDebugMessageOut().answers.size() > 0)
     theDebugServer.setDebugMessageOut(getDebugMessageOut());
 }//end execute
 

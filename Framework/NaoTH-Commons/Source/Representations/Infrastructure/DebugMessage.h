@@ -10,7 +10,7 @@
 
 #include <sstream>
 #include <map>
-#include <vector>
+#include <queue>
 
 #include "PlatformInterface/PlatformInterchangeable.h"
 
@@ -27,13 +27,13 @@ public:
     std::map<std::string, std::string> arguments;
   };
 
-  std::vector<Message> messages;
+  std::queue<Message> messages;
 };
 
 class DebugMessageOut: public PlatformInterchangeable
 {
 public:
-  std::stringstream answer;
+  std::queue<std::string> answers;
 };
 
 } // namespace naoth

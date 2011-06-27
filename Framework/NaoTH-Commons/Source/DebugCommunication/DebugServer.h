@@ -27,7 +27,7 @@ public:
   static void* connection_thread_static(void* ref);
 
   void getDebugMessageIn(naoth::DebugMessageIn& buffer);
-  void setDebugMessageOut(const naoth::DebugMessageOut& buffer);
+  void setDebugMessageOut(naoth::DebugMessageOut& buffer);
 
 private:
 
