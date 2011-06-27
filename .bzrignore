@@ -59,3 +59,5 @@ SimpleSoccerAgent/nbproject/Package-Default.bash
 RobotControl/RobotControlGUI/plugins/
 build-impl.xml
 genfiles.properties
+doc
+Deploy
