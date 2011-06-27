@@ -43,6 +43,7 @@
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+//#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -113,6 +114,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
+  //REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
@@ -249,31 +251,16 @@ void Cognition::executeDebugCommand(const std::string& command,
   }
   else if( command == "modules:store" )
   {
-    /*
-    // write the modules to a config
-    Config cfg;
-
-    list<string>::iterator iterMod;
-    for (iterMod = Cognition::getInstance().moduleExecutionList.begin();
-      iterMod != Cognition::getInstance().moduleExecutionList.end(); ++iterMod)
+    naoth::Configuration& config = Platform::getInstance().theConfiguration;
+    for(list<string>::const_iterator name=getExecutionList().begin();
+      name != getExecutionList().end(); name++)
     {
-      ModuleClassWraperBase* moduleWrapper = 
-        Cognition::getInstance().moduleExecutionMap.find(*iterMod)->second;
-
-      cfg.set(*iterMod, moduleWrapper->isEnabled());
+      config.setBool("modules", *name, getModule(*name)->isEnabled());
     }//end for
 
     // write the config to file
-    const std::string& filename = Platform::getInstance().theConfigPathInfo.modules;
-    std::stringstream sstream;
-    sstream << cfg;
-
-    if (SynchronizedFileWriter::saveStreamToFile(sstream, filename)) {
-      outstream << "SUCCESS: saved to " << filename << endl;
-    } else {
-      outstream << "ERROR: save to configure file "<< filename << " failed" << endl;
-    }
-    */
+    config.save();
+    outstream << "modules saved to private/modules.cfg" << endl;
   }
   else if (command == "modules:set")
   {

@@ -60,17 +60,20 @@ void PerceptionsVisualization::execute()
       //mark lines
       for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
       {
-        if (!getLinePercept().lines[i].valid) continue;
-        LinePercept::FieldLineSegment line = getLinePercept().lines[i];
-        Vector2<double> d(0.0, ceil(line.thickness / 2.0));
-        Vector2<int> lowerLeft(getLinePercept().lines[i].begin() - d);
-        Vector2<int> upperLeft(getLinePercept().lines[i].begin() + d);
-        Vector2<int> lowerRight(getLinePercept().lines[i].end() - d);
-        Vector2<int> upperRight(getLinePercept().lines[i].end() + d);
+        const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
+
+        Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
+        //d.rotate(Math::pi_2 - line.angle);
+
+        Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
+        Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
+        Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
+        Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
         LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
         LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
         LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
         LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
+
         LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
       }//end for
     }

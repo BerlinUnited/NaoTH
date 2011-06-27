@@ -46,6 +46,8 @@ void ParticleFilterBallLocator::execute()
 
 void ParticleFilterBallLocator::updateByBallPercept(SampleSet& sampleSet)
 {
+  if(!getBallPercept().ballWasSeen) return;
+
   unsigned int maxNumberOfParticles = 20;
 
   // integrate new percepts
@@ -57,7 +59,7 @@ void ParticleFilterBallLocator::updateByBallPercept(SampleSet& sampleSet)
   }
   else
   {
-    int idx = Math::random(100);
+    int idx = Math::random(sampleSet.size());
     sampleSet[idx].position = getBallPercept().bearingBasedOffsetOnField;
   }
 }//end updateByBallPercept
