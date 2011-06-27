@@ -58,7 +58,7 @@ public:
 
   void printHelp();
   
-
+  void executeCognition();
   void stepForward();
   void stepBack();
   void jumpToStart();
@@ -77,6 +77,8 @@ private:
   vector<const string> allFiles;
   //current position
   unsigned int currentPos;
+
+  bool imageLoaded;
 
   void copyImage(Image& image, Mat mat);
 
