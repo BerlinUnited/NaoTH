@@ -23,6 +23,9 @@
 
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/BallModel.h"
 
 #include "Tools/Debug/Logger.h"
 
@@ -37,6 +40,9 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(InertialSensorData)
   REQUIRE(AccelerometerData)
   REQUIRE(FSRData)
+  REQUIRE(RobotPose)
+  REQUIRE(KinematicChain)
+  REQUIRE(BallModel)
   
   PROVIDE(ColorTable64)
   PROVIDE(MotionRequest)
@@ -56,6 +62,9 @@ public:
 
 private:
   Logger cognitionLogger;
+
+  void draw3D();
+  void drawRobot3D(const Pose3D& robotPose);
 };
 
 #endif	/* DEBUG_H */
