@@ -19,7 +19,7 @@
 
 
 // list the modules and representations on the blackboard
-#include "CognitionDebugServer.h"
+#include "DebugCommandServer.h"
 #include "Messages/Messages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
@@ -35,6 +35,7 @@
 #include "Modules/Infrastructure/IO/Actuator.h"
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
+#include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
 #include "Modules/Infrastructure/TeamComm/SimSparkTeamComm/SimSparkTeamComm.h"
@@ -135,6 +136,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(ParameterListDebugLoader);
   REGISTER_MODULE(StopwatchSender);
+  REGISTER_MODULE(DebugExecutor);
 
   // -- END MODULES --
 

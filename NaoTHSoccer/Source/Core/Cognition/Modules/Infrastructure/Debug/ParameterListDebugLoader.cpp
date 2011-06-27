@@ -9,7 +9,7 @@
 #include <PlatformInterface/Platform.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 
-#include "Cognition/CognitionDebugServer.h"
+#include "Cognition/DebugCommandServer.h"
 
 ParameterListDebugLoader::ParameterListDebugLoader()
 {

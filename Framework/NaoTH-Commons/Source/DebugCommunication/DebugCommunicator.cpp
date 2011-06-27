@@ -93,6 +93,9 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
       gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
       pos += sent;
     }//end while
+
+    if(pos > 0)
+      std::cout << " s " << std::endl;
   }//end if
 
   return err;
@@ -137,6 +140,8 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
           }
             pos += read_bytes;
         } // end while read bytes
+
+        std::cout << " r ";
 
         if(*err)
         {

@@ -7,7 +7,7 @@
 
 #include "DebugBufferedOutput.h"
 
-#include "Cognition/CognitionDebugServer.h"
+#include "Cognition/DebugCommandServer.h"
 
 DebugBufferedOutput::DebugBufferedOutput()
   :
