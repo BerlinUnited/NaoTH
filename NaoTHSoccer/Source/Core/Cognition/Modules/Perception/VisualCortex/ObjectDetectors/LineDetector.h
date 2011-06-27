@@ -62,19 +62,30 @@ public:
   void execute();
  
 private:
+  vector<LinePercept::LineSegmentImage> lineSegments;
 
-  vector<LinePercept::FieldLineSegment> getLines(vector<Edgel>& edgelList);
-  void estimateCorners(vector<LinePercept::FieldLineSegment>& lineSegments);
-  void expandLines(vector<LinePercept::FieldLineSegment>& lineSegments);
-  bool scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor);
-  void classifyIntersections(vector<LinePercept::FieldLineSegment>& lineSegments);
+  /** estimate the line segments from edgels */
+  void clusterEdgels(const vector<Edgel>& edgelList);
 
-  void setLinePercepts(vector<LinePercept::FieldLineSegment>& lineSegments);
+  /** */
+  void expandLines();
+
+  /** */
+  void estimateCorners();
   
+  /** */
+  void classifyIntersections();
+
+  /** */
+  void setLinePercepts();
+  
+
   // TEST
   void analyzeEndPoints();
 
-  double calculateListMeanAngle(double list[], int numberOfValues);
+  /** scan helpers */
+  void scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor);
+  void scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor);
 
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;

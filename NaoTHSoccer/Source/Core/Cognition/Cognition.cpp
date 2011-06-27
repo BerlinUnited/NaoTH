@@ -11,6 +11,9 @@
 
 #include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugDrawings3D.h"
 #include <Tools/Debug/Stopwatch.h>
 #include "Tools/Debug/DebugRequest.h"
 
@@ -39,10 +42,18 @@
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
+#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+//#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+
+// Modeling
+#include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
+#include "Modules/Modeling/BallLocator/ParticleFilterBallLocator.h"
+#include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
+#include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -102,10 +113,18 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GameController);
 
   // perception
+  REGISTER_MODULE(CameraMatrixProvider);
+  //REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
+
+  // modeling
+  REGISTER_MODULE(BodyStateProvider);
+  REGISTER_MODULE(ParticleFilterBallLocator);
+  REGISTER_MODULE(GPS_SelfLocator);
+  REGISTER_MODULE(OdometrySelfLocator);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
@@ -153,6 +172,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   g_message("Cognition register end");
 }//end init
 
+
 void Cognition::call()
 {  
   // execute all modules
@@ -171,8 +191,14 @@ void Cognition::call()
     }//end if
   }//end for all modules
   
+
   // HACK: reset all the debug stuff before executing the modules
+  STOPWATCH_START("Debug ~ Init");
+  DebugBufferedOutput::getInstance().update();
+  DebugDrawings::getInstance().update();
   DebugImageDrawings::getInstance().reset();
+  DebugDrawings3D::getInstance().update();
+  STOPWATCH_STOP("Debug ~ Init");
   
 }//end call
 
@@ -225,31 +251,16 @@ void Cognition::executeDebugCommand(const std::string& command,
   }
   else if( command == "modules:store" )
   {
-    /*
-    // write the modules to a config
-    Config cfg;
-
-    list<string>::iterator iterMod;
-    for (iterMod = Cognition::getInstance().moduleExecutionList.begin();
-      iterMod != Cognition::getInstance().moduleExecutionList.end(); ++iterMod)
+    naoth::Configuration& config = Platform::getInstance().theConfiguration;
+    for(list<string>::const_iterator name=getExecutionList().begin();
+      name != getExecutionList().end(); name++)
     {
-      ModuleClassWraperBase* moduleWrapper = 
-        Cognition::getInstance().moduleExecutionMap.find(*iterMod)->second;
-
-      cfg.set(*iterMod, moduleWrapper->isEnabled());
+      config.setBool("modules", *name, getModule(*name)->isEnabled());
     }//end for
 
     // write the config to file
-    const std::string& filename = Platform::getInstance().theConfigPathInfo.modules;
-    std::stringstream sstream;
-    sstream << cfg;
-
-    if (SynchronizedFileWriter::saveStreamToFile(sstream, filename)) {
-      outstream << "SUCCESS: saved to " << filename << endl;
-    } else {
-      outstream << "ERROR: save to configure file "<< filename << " failed" << endl;
-    }
-    */
+    config.save();
+    outstream << "modules saved to private/modules.cfg" << endl;
   }
   else if (command == "modules:set")
   {

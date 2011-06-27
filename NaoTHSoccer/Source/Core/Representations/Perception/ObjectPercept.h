@@ -12,15 +12,19 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/Math/Polygon.h"
-
 #include "Tools/ColorClasses.h"
 
-#include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/DataStructures/Printable.h"
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
+
 #include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/Edgel.h"
 
-class ObjectPercept : public Printable
+
+#include "Representations/Infrastructure/FrameInfo.h"
+
+
+class ObjectPercept : public naoth::Printable
 { 
 public:
   ObjectPercept():
@@ -215,6 +219,16 @@ public:
   }//end print
 };
 
+namespace naoth
+{
+  template<>
+  class Serializer<ObjectPercept>
+  {
+  public:
+    static void serialize(const ObjectPercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, ObjectPercept& representation);
+  };
+}
 
 #endif //__ObjectPercept_h_
 

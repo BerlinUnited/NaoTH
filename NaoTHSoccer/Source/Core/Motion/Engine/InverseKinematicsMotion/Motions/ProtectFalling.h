@@ -33,7 +33,7 @@ public:
     {
       // remember the pose
       keepPose = theEngine.getCurrentHipFeetPose();
-      for(int i=0; i<JointData::numOfJoint; i++)
+      for(int i=0; i<naoth::JointData::numOfJoint; i++)
       {
         keepStiffness[i] = theBlackBoard.theSensorJointData.stiffness[i];
       }
@@ -60,7 +60,7 @@ private:
     angle = Math::clamp(angle, 0.0, Math::pi_2);
 
     double k = 1.5 * cos(angle) - 0.5;
-    for( int i=0; i<JointData::numOfJoint; i++)
+    for( int i=0; i<naoth::JointData::numOfJoint; i++)
     {
       if ( k < 0 )
       {
@@ -75,7 +75,7 @@ private:
 
 private:
     InverseKinematic::HipFeetPose keepPose;
-    double keepStiffness[JointData::numOfJoint];
+    double keepStiffness[naoth::JointData::numOfJoint];
 };
 
 #endif // PROTECTFALLING_H

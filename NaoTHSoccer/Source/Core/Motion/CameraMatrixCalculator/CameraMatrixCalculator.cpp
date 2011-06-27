@@ -10,11 +10,11 @@
 
 void CameraMatrixCalculator::calculateCameraMatrix(
     CameraMatrix& theCameraMatrix,
-    CameraInfo::CameraID cameraId,
+    naoth::CameraInfo::CameraID cameraId,
     const KinematicChain& theKinematicChain
   )
 {
-  const CameraInfoParameter& theCameraInfo = Platform::getInstance().theCameraInfo;
+  const naoth::CameraInfoParameter& theCameraInfo = naoth::Platform::getInstance().theCameraInfo;
 
   // get the pose of the head
   Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);

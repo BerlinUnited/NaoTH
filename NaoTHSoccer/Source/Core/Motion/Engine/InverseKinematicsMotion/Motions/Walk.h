@@ -63,6 +63,8 @@ private:
   InverseKinematic::CoMFeetPose executeStep();
 
   RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
+
+  void updateMotionStatus(MotionStatus& motionStatus);
   
 private:
   const IKParameters::Walk& theWalkParameters;

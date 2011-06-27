@@ -17,6 +17,7 @@
 
 #include "DebugCommunicator.h"
 
+
 DebugCommunicator::DebugCommunicator()
 : serverSocket(NULL),
 connection(NULL),
@@ -80,8 +81,11 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
   GError* err = NULL;
   if (connection != NULL)
   {
-    gsize pos = 0;
+    // send message size in 4 bytes
+    guint32 sizeFixed = size;
+    g_socket_send(connection, (char*) &sizeFixed, 4, NULL, &err);
 
+    gsize pos = 0;
     while(err == NULL && connection != NULL && pos < size)
     {
       gsize length = size-pos;
@@ -89,74 +93,101 @@ GError* DebugCommunicator::internalSendMessage(const char* data, size_t size)
       gsize sent = g_socket_send(connection, data+pos, length, NULL, &err);
       pos += sent;
     }//end while
-
-    if (err) return err;
   }//end if
-  return NULL;
+
+  return err;
 }//end sendMessage
 
 
-char* DebugCommunicator::internalReadMessage(GError** err)
+GString* DebugCommunicator::internalReadMessage(GError** err)
 {
   *err = NULL;
   if (connection != NULL)
   {
 
-    GString* buffer = g_string_new("");
-    char c = 0;
+    guint32 sizeOfMessage = 0;
+    if(fatalFail) return NULL;
 
-    // read until \n character found
-    while(!fatalFail && *err == NULL && c != '\n')
+    gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
+
+    if(initialBytes == 4)
     {
-      if(err != NULL)
+      if(sizeOfMessage > 0)
       {
-        g_socket_set_blocking(connection, true);
-        gssize read_bytes = g_socket_receive(connection, &c, 1, NULL, err);
-        if(read_bytes < 1)
+        GString* buffer = g_string_new("");
+        g_string_set_size(buffer, sizeOfMessage);
+        g_assert(buffer->len == sizeOfMessage);
+
+        guint32 pos = 0;
+        // read message completly
+        while(!fatalFail && *err == NULL && pos < sizeOfMessage)
+        {
+          gssize read_bytes =
+              g_socket_receive_with_blocking(connection, buffer->str + pos, sizeOfMessage - pos, true ,NULL, err);
+
+          if(read_bytes == 0)
+          {
+            g_string_free(buffer, true);
+            buffer = NULL;
+            // we got 0 bytes, this indicates
+            // an error in the connection (-1 is set if no data was available
+            // in non-blocking mode)
+            throw "Connection Error";
+
+          }
+            pos += read_bytes;
+        } // end while read bytes
+
+        if(*err)
         {
           g_string_free(buffer, true);
           return NULL;
         }
-      }
 
-      if(c != '\r' && c != '\n')
+        return buffer;
+      }
+      else
       {
-        g_string_append_c(buffer,c);
-      }
-    } // end while no \n found
-
-    if(*err)
-    {
-      g_string_free(buffer,true);
-      return NULL;
-    }
-
-    g_string_append_c(buffer,'\0');
-    return g_string_free(buffer, false);
+        //g_debug("keepalive received");
+        // keepalive message, ignore
+        return NULL;
+      } // end if sizeOfMessage > 0
+    } // end if header read
   }//end if connection not null
+
   return NULL;
 }
-char* DebugCommunicator::readMessage()
+GString* DebugCommunicator::readMessage()
 {
   if (fatalFail)
   {
-    return NULL;
+    throw "fatalFail";
   }
 
   GError* err = NULL;
-  char* result = internalReadMessage(&err);
+  GString* result = internalReadMessage(&err);
   if(err)
   {
-    std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
+    if(err->code != G_IO_ERROR_WOULD_BLOCK)
+    {
+      std::cerr << "[DebugServer:port " << port << "] " << "ERROR: (SocketException in readMessage) "
       << err->message << std::endl;
-    g_free(result);
-    g_error_free(err);
-    return NULL;
+
+      if(result != NULL)
+      {
+        g_string_free(result,true);
+      }
+      throw "Socket Exception";
+    }
+    else
+    {
+      g_error_free(err);
+    }
   }
   return result;
 }//end triggerRead
 
-bool DebugCommunicator::connect(unsigned int timeout)
+bool DebugCommunicator::connect(int timeout)
 {
   GError* err = NULL;
 
@@ -165,9 +196,18 @@ bool DebugCommunicator::connect(unsigned int timeout)
     // try to accept an eventually pending connection request
     if (serverSocket != NULL)
     {
-      g_socket_set_timeout(serverSocket, timeout);
+      if(timeout < 0)
+      {
+        g_socket_set_blocking(serverSocket, false);
+      }
+      else
+      {
+        g_socket_set_timeout(serverSocket, timeout);
+      }
       connection = g_socket_accept(serverSocket, NULL, &err);
+      g_socket_set_blocking(serverSocket, true);
       g_socket_set_timeout(serverSocket, 0);
+
       if (err) return false;
 
       if (connection != NULL)

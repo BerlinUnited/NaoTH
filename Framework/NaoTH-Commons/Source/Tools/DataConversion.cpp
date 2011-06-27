@@ -1,0 +1,43 @@
+/**
+* @file DataConversion.cpp
+*
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* convert data to string or string to data
+* or data to protobuf message
+*/
+
+
+#include "DataConversion.h"
+
+namespace naoth
+{
+
+namespace DataConversion
+{
+
+void toMessage(const Vector2<double>& data, naothmessages::DoubleVector2& msg)
+{
+  msg.set_x(data.x);
+  msg.set_y(data.y);
+}
+
+void fromMessage(const naothmessages::DoubleVector2& msg, Vector2<double>& data)
+{
+  data.x = msg.x();
+  data.y = msg.y();
+}
+
+void toMessage(const Pose2D& data, naothmessages::Pose2D& msg)
+{
+  toMessage(data.translation, *msg.mutable_translation() );
+  msg.set_rotation(data.rotation);
+}
+
+void fromMessage(const naothmessages::Pose2D& msg, Pose2D& data)
+{
+  fromMessage(msg.translation(), data.translation);
+  data.rotation = msg.rotation();
+}
+
+} // namespace DataConversion
+} // namespace naoth

@@ -10,6 +10,7 @@
 #include "Walk/FootTrajectoryGenerator.h"
 
 using namespace InverseKinematic;
+using namespace naoth;
 
 Walk::Walk()
 :IKMotion(motion::walk),
@@ -31,28 +32,32 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     stepBuffer.clear();
     theEngine.controlZMPclear();
     currentState = motion::stopped;
-    return;
   }
-  else if ( !waitLanding() )
+  else
   {
-    plan(motionRequest);
-    theCoMFeetPose = executeStep();
+    if ( !waitLanding() )
+    {
+      plan(motionRequest);
+      theCoMFeetPose = executeStep();
+    }
+
+    HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
+
+    theEngine.rotationStabilize(c.hip);
+
+    theEngine.solveHipFeetIK(c);
+    theEngine.copyLegJoints(theMotorJointData.position);
+    theEngine.autoArms(c, theMotorJointData.position);
+
+    // force the hip joint
+    if (theMotorJointData.position[JointData::LHipRoll] < 0)
+      theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
+
+    if (theMotorJointData.position[JointData::RHipRoll] > 0)
+      theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
   }
 
-  HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
-
-  theEngine.rotationStabilize(c.hip);
-
-  theEngine.solveHipFeetIK(c);
-  theEngine.copyLegJoints(theMotorJointData.position);
-  theEngine.autoArms(c, theMotorJointData.position);
-
-  // force the hip joint
-  if (theMotorJointData.position[JointData::LHipRoll] < 0)
-    theMotorJointData.position[JointData::LHipRoll] *= theWalkParameters.leftHipRollSingleSupFactor;
-
-  if (theMotorJointData.position[JointData::RHipRoll] > 0)
-    theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
+  updateMotionStatus(motionStatus);
 }
 
 bool Walk::FSRProtection()
@@ -126,9 +131,9 @@ bool Walk::canStop() const
 void Walk::plan(const MotionRequest& motionRequest)
 {
   WalkRequest walkRequest = motionRequest.walkRequest;
-  ASSERT(!Math::isNan(walkRequest.translation.x));
-  ASSERT(!Math::isNan(walkRequest.translation.y));
-  ASSERT(!Math::isNan(walkRequest.rotation));
+  ASSERT(!Math::isNan(walkRequest.target.translation.x));
+  ASSERT(!Math::isNan(walkRequest.target.translation.y));
+  ASSERT(!Math::isNan(walkRequest.target.rotation));
   
   if ( motionRequest.id == getId() || !canStop() )
   {
@@ -328,9 +333,7 @@ void Walk::stopWalking()
     }*/
 
     stoppingRequest.coordinate = WalkRequest::Hip;
-    stoppingRequest.translation.x = 0;
-    stoppingRequest.translation.y = 0;
-    stoppingRequest.rotation = 0;
+    stoppingRequest.target = Pose2D();
   }
 
   if ( !stoppingStepFinished )
@@ -394,9 +397,7 @@ void Walk::stopWalkingWithoutStand()
   if ( !isStopping ) // remember the stopping foot
   {
     stoppingRequest.coordinate = WalkRequest::Hip;
-    stoppingRequest.translation.x = 0;
-    stoppingRequest.translation.y = 0;
-    stoppingRequest.rotation = 0;
+    stoppingRequest.target = Pose2D();
   }
 
   if ( !stoppingStepFinished )
@@ -480,4 +481,22 @@ void Walk::calculateError()
   Vector3d comErr = comObs - comRef;
 
   theCoMErr += comErr;
+}
+
+void Walk::updateMotionStatus(MotionStatus& motionStatus)
+{
+  if ( stepBuffer.empty() )
+  {
+    motionStatus.plannedMotion.lFoot = Pose2D();
+    motionStatus.plannedMotion.rFoot = Pose2D();
+  }
+  else
+  {
+    FeetPose lastFeet = stepBuffer.back().footStep.end();
+    Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
+    Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;
+
+    motionStatus.plannedMotion.lFoot =  reduceDimen(plannedlFoot);
+    motionStatus.plannedMotion.rFoot = reduceDimen(plannedrFoot);
+  }
 }

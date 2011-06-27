@@ -126,58 +126,44 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_forward",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 500;
-    getMotionRequest().walkRequest.translation.y = 0.0;
-    getMotionRequest().walkRequest.rotation = 0.0;
+    getMotionRequest().walkRequest.target = Pose2D(0, 500, 0);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_backward",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = -500;
-    getMotionRequest().walkRequest.translation.y = 0.0;
-    getMotionRequest().walkRequest.rotation = 0.0;
+    getMotionRequest().walkRequest.target = Pose2D(0, -500, 0);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:strafe_right",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 0.0;
-    getMotionRequest().walkRequest.translation.y = -500;
-    getMotionRequest().walkRequest.rotation = 0.0;
+    getMotionRequest().walkRequest.target = Pose2D(0, 0, -500);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:strafe_left",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 0.0;
-    getMotionRequest().walkRequest.translation.y = 500;
-    getMotionRequest().walkRequest.rotation = 0.0;
+    getMotionRequest().walkRequest.target = Pose2D(0, 0, 500);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:turn_right",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 0.0;
-    getMotionRequest().walkRequest.translation.y = 0.0;
-    getMotionRequest().walkRequest.rotation = Math::fromDegrees(-179);
+    getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(-179), 0, 0);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:turn_left",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 0.0;
-    getMotionRequest().walkRequest.translation.y = 0.0;
-    getMotionRequest().walkRequest.rotation = Math::fromDegrees(180);
+    getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(180), 0, 0);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stepping",
       getMotionRequest().id = motion::walk;
-      getMotionRequest().walkRequest.translation.x = 0.0;
-      getMotionRequest().walkRequest.translation.y = 0.0;
-      getMotionRequest().walkRequest.rotation = 0;
+      getMotionRequest().walkRequest.target = Pose2D();
       getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
     );
 

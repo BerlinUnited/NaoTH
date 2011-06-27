@@ -22,7 +22,7 @@ public:
   DebugServer();
   virtual ~DebugServer();
 
-  virtual void start(unsigned short port);
+  virtual void start(unsigned short port, bool threaded = false);
 
   /**
    * Register a command and a handler for this command.
@@ -43,15 +43,13 @@ public:
 
   virtual void objectDestructed(DebugCommandExecutor* object);
 
-  static void* reader_static(void* ref);
-  static void* writer_static(void* ref);
+  static void* connection_thread_static(void* ref);
 private:
 
   /** Communication interface */
   DebugCommunicator comm;
 
-  GThread* readerThread;
-  GThread* writerThread;
+  GThread* connectionThread;
 
   GAsyncQueue* commands;
   GAsyncQueue* answers;
@@ -63,18 +61,16 @@ private:
   std::map<std::string, DebugCommandExecutor*> executorMap;
   std::map<std::string, std::string> descriptionMap;
 
-  base64::Decoder base64Decoder;
-  base64::Encoder base64Encoder;
-
-  bool frameEnded;
   bool abort;
 
-  void mainReader();
-  void mainWriter();
-  void handleCommand(char* cmdRaw, GString* answer);
-  void handleCommand(std::string command, std::map<std::string,std::string> arguments,
-    GString* answer, bool encodeBase64);
+  void mainConnection();
+  void receiveAll();
+  void sendAll();
+  void handleCommand(GString* cmdRaw, std::stringstream& answer);
+  void handleCommand(std::string& command, std::map<std::string,std::string>& arguments,
+    std::stringstream& answer);
 
+  void disconnect();
   void clearBothQueues();
   
 };

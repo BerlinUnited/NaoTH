@@ -3,6 +3,8 @@
 */
 #include "DeadMotion.h"
 
+using namespace naoth;
+
 DeadMotion::DeadMotion():
 AbstractMotion(motion::dead)
 {

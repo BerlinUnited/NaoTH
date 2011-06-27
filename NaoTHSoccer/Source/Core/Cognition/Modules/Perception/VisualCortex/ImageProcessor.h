@@ -19,11 +19,13 @@
 #include "Tools/ImageProcessing/Histogram.h"
 
 // submodules
+#include "ObjectDetectors/ScanLineEdgelDetector.h"
+#include "ObjectDetectors/FieldDetector.h"
 #include "ObjectDetectors/BallDetector.h"
 #include "ObjectDetectors/LineDetector.h"
-#include "ObjectDetectors/ScanLineEdgelDetector.h"
 #include "ObjectDetectors/RobotDetector.h"
 #include "ObjectDetectors/GoalDetector.h"
+#include "PerceptionsVisualization.h"
 
 
 // Representations
@@ -64,11 +66,15 @@ public:
   virtual void execute();
 
 private:
+  ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
+  ModuleCreator<FieldDetector>* theFieldDetector;
+
   ModuleCreator<BallDetector>* theBallDetector;
   ModuleCreator<RobotDetector>* theRobotDetector;
-  ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
+  
   ModuleCreator<LineDetector>* theLineDetector;
   ModuleCreator<GoalDetector>* theGoalDetector;
+  ModuleCreator<PerceptionsVisualization>* thePerceprionsVusalization;
 };//end class ImageProcessor
 
 #endif // __ImageProcessor_H_

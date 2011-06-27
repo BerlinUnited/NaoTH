@@ -10,10 +10,15 @@
 #define __PlayersPercept_h_
 
 #include "Tools/Math/Pose2D.h"
+#include "Tools/Debug/DebugDrawings.h"
+
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
+
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/Debug/DebugDrawings.h"
+
+#include <vector>
 
 class PlayersPercept : public naoth::Printable
 { 
@@ -97,6 +102,17 @@ public:
     }
   }
 };
+
+namespace naoth
+{
+  template<>
+  class Serializer<PlayersPercept>
+  {
+  public:
+    static void serialize(const PlayersPercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, PlayersPercept& representation);
+  };
+}
 
 #endif //__PlayersPercept_h_
 

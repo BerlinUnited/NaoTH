@@ -7,6 +7,8 @@
 
 #include "ScanLineEdgelDetector.h"
 
+#include "Tools/CameraGeometry.h"
+
 ScanLineEdgelDetector::ScanLineEdgelDetector()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetector:mark_edgels", "mark the edgels on the image", false);
@@ -61,6 +63,7 @@ void ScanLineEdgelDetector::execute()
 
 void ScanLineEdgelDetector::integrated_edgel_detection()
 {
+  // TODO: fix it
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
   int scanLineID = 0;
 
@@ -73,7 +76,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
 
-    Geometry::imagePixelToFieldCoord(
+    CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
       endPoint.posInImage.x, 
@@ -160,6 +163,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
 void ScanLineEdgelDetector::iterative_edgel_detection()
 {
+  // TODO: fixit
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
   int resumedScanCount;
   int scanLineID = 0;

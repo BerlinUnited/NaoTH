@@ -8,17 +8,18 @@
 #define __ScanLineEdgelPercept_h_
 
 #include "Tools/Math/Vector2.h"
-
-#include "Tools/DataStructures/Printable.h"
 #include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ColorClasses.h"
+
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
 #include <vector>
 
 #define MAX_NUMBER_OF_SCANLINE_EDGELS SCANLINE_COUNT * (SCANLINE_RESUME_COUNT + 1)
 
-class ScanLineEdgelPercept : public Printable
+class ScanLineEdgelPercept : public naoth::Printable
 { 
 public:
   ScanLineEdgelPercept()
@@ -73,6 +74,16 @@ public:
   }//end print
 };
 
+namespace naoth
+{
+  template<>
+  class Serializer<ScanLineEdgelPercept>
+  {
+  public:
+    static void serialize(const ScanLineEdgelPercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, ScanLineEdgelPercept& representation);
+  };
+}
 
 #endif //__ScanLineEdgelPercept_h_
 

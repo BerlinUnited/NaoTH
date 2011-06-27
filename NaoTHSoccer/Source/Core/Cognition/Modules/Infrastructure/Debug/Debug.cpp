@@ -11,6 +11,7 @@
 #include "Cognition/CognitionDebugServer.h"
 
 #include <Tools/Debug/DebugImageDrawings.h>
+#include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/Stopwatch.h>
 
 #include <PlatformInterface/Platform.h>
@@ -20,7 +21,7 @@
 Debug::Debug() : cognitionLogger("log")
 {
   // TODO: use the player and team number for defining the port
-  CognitionDebugServer::getInstance().start(5401);
+  CognitionDebugServer::getInstance().start(5401, true);
     
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
   
@@ -42,10 +43,22 @@ Debug::Debug() : cognitionLogger("log")
   cognitionLogger.addRepresentation(&getGyrometerData(), "GyrometerData");
   cognitionLogger.addRepresentation(&(getFSRData()), "FSRData");
   cognitionLogger.addRepresentation(&(getFrameInfo()), "FrameInfo");
+
+  // 3d drawings
+  DEBUG_REQUEST_REGISTER("3DViewer:Robot:Body", "Show the robot body in the 3D viewer.", true);
+  DEBUG_REQUEST_REGISTER("3DViewer:Robot:CoM", "Show the robot's center of mass in the 3D viewer.", true);
+  DEBUG_REQUEST_REGISTER("3DViewer:Ball", "Show the ball in the 3D viewer.", true);
+  DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
 }
 
 void Debug::execute()
 {
+  // draw 3d only when 3d viewer is active
+  if (DebugDrawings3D::getInstance().isActive())
+  {
+    draw3D();
+  }
+
   CognitionDebugServer::getInstance().execute(); 
   DEBUG_REQUEST("debug:request:test", std::cout << "hello debug request" << std::endl;);
 }
@@ -158,3 +171,43 @@ Debug::~Debug()
 {
 }
 
+void Debug::draw3D()
+{
+  Pose3D robotPose;
+  DEBUG_REQUEST("3DViewer:Global",
+    robotPose.translation.x = getRobotPose().translation.x;
+    robotPose.translation.y = getRobotPose().translation.y;
+    robotPose.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation);
+    );
+
+  DEBUG_REQUEST("3DViewer:Robot:Body", drawRobot3D(robotPose););
+
+  DEBUG_REQUEST("3DViewer:Robot:CoM",
+    Vector3d p0 = robotPose * getKinematicChain().CoM;
+    Vector3d p1 = p0;
+    p1.z = 0;
+    LINE_3D(ColorClasses::red, p0, p1);
+    );
+
+  // draw ball in 3D viewer
+  Vector3d ballPos = robotPose * Vector3d(getBallModel().position.x, getBallModel().position.y, getFieldInfo().ballRadius);
+  DEBUG_REQUEST("3DViewer:Ball", SPHERE(getFieldInfo().ballColor, getFieldInfo().ballRadius, ballPos););
+
+}//end draw3D
+
+void Debug::drawRobot3D(const Pose3D& robotPose)
+{
+  const Kinematics::Link* theLink = getKinematicChain().theLinks;
+
+  for (int i = 0; i < KinematicChain::numOfLinks; i++)
+  {
+    if (i != KinematicChain::Neck
+      && i != KinematicChain::LShoulder && i != KinematicChain::LElbow
+      && i != KinematicChain::RShoulder && i != KinematicChain::RElbow
+      && i != KinematicChain::Hip)
+    {
+      Pose3D p = robotPose * theLink[i].M;
+      ENTITY(KinematicChain::getLinkName((KinematicChain::LinkID)i), p);
+    }
+  }//end for
+}//end drawRobot3D

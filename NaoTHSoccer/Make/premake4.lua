@@ -11,6 +11,10 @@ newaction {
     
     extract_todos_files(os.matchfiles("../Source/**.cpp"), result);
     extract_todos_files(os.matchfiles("../Source/**.h"), result);
+    extract_todos_files(os.matchfiles("../../Framework/NaoTH-Commmons/Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../../Framework/NaoTH-Commmons/Source/**.h"), result);
+    extract_todos_files(os.matchfiles("../../Framework/Platforms/Source/**.cpp"), result);
+    extract_todos_files(os.matchfiles("../../Framework/Platforms/Source/**.h"), result);
     
     io.output("../TODO")
     io.write("= TODO list =\n\n")
@@ -23,7 +27,7 @@ newaction {
       local message = string.gsub(v.message, "\n", "")
       message = string.gsub(message, "\r", "")
       
-      io.write("|| " .. i .. " || " .. v.kind .. " || " .. message .. " || [source:trunk/Projects/NaoController/Make/" ..  
+      io.write("|| " .. i .. " || " .. v.kind .. " || " .. message .. " || [source:NaoTHSoccer/Make/" ..  
         v.file .. "#L" .. v.line .. " " .. path.getname(v.file) .. ":" .. v.line .. "] ||\n")
       i = i +1
     end
@@ -31,12 +35,6 @@ newaction {
     
   end
 }
-
-if os.is("windows") then
-  dofile "helper/naocrosscompile_windows.lua"
-else
-  dofile "helper/naocrosscompile.lua"
-end
 
 -- definition of the solution
 solution "NaoTHSoccer"
@@ -79,10 +77,10 @@ solution "NaoTHSoccer"
     targetdir "../dist/Nao"
   
   -- additional defines for windows
-  if(_OPTIONS["platform"] ~= "Nao") then
+  if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
   configuration {"windows"}
     defines {"WIN32", "NOMINMAX"}
-	buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
+    buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
   end
@@ -99,7 +97,8 @@ solution "NaoTHSoccer"
   else
     dofile "../../Framework/Platforms/Make/SimSpark.lua"
     dofile "../../Framework/Platforms/Make/Webots.lua"
-    dofile "../../Framework/Platforms/Make/LogSimulator.lua"    
+    dofile "../../Framework/Platforms/Make/LogSimulator.lua"
+	dofile "../../Framework/Platforms/Make/OpenCVImageLoader.lua"
     dofile "Tests.lua"
     dofile "../../Framework/NaoTH-Commons/Make/Tests.lua"
   end

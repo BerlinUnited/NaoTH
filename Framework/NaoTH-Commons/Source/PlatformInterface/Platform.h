@@ -68,7 +68,8 @@ namespace naoth
       }
       
       _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity);
-      
+      theCameraInfo.init(); // TODO: the camera info should not be memeber of platform
+
     }//end init
 
     Configuration& theConfiguration;

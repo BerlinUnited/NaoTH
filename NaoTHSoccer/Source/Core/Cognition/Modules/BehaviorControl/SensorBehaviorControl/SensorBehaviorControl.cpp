@@ -91,15 +91,13 @@ void SensorBehaviorControl::testBehavior()
 
       // set the motion request
       getMotionRequest().id = motion::walk;
-      getMotionRequest().walkRequest.translation.x = diffX * 0.7;
-      getMotionRequest().walkRequest.translation.y = ballLeftFootPreview.y;
-      getMotionRequest().walkRequest.rotation = ballLeftFootPreview.angle();
+      getMotionRequest().walkRequest.target = Pose2D(ballLeftFootPreview.angle(), diffX * 0.7, ballLeftFootPreview.y);
       getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
 
       DEBUG_REQUEST("SensorBehaviorControl:behavior:kick",
         if (diffX > -getFieldInfo().ballRadius && diffX < 10 &&
-            fabs(getMotionRequest().walkRequest.translation.y) < 10 &&
-            fabs(getMotionRequest().walkRequest.rotation) < Math::fromDegrees(10)
+            fabs(getMotionRequest().walkRequest.target.translation.y) < 10 &&
+            fabs(getMotionRequest().walkRequest.target.rotation) < Math::fromDegrees(10)
             )
         {
           getMotionRequest().id = motion::kick;
@@ -119,9 +117,7 @@ void SensorBehaviorControl::testBehavior()
 
       DEBUG_REQUEST("SensorBehaviorControl:behavior:search_ball",
         getMotionRequest().id = motion::walk;
-        getMotionRequest().walkRequest.translation.x = 0;
-        getMotionRequest().walkRequest.translation.y = 0;
-        getMotionRequest().walkRequest.rotation = Math::fromDegrees(20);
+        getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(20), 0, 0);
         getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
 
         getHeadMotionRequest().id = HeadMotionRequest::search;
@@ -134,9 +130,7 @@ void SensorBehaviorControl::testBehavior()
 
   DEBUG_REQUEST("SensorBehaviorControl:behavior:walk_cycle",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 100;
-    getMotionRequest().walkRequest.translation.y = 0;
-    getMotionRequest().walkRequest.rotation = Math::fromDegrees(20);
+    getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(20), 100, 0);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
   );
 
@@ -148,14 +142,10 @@ void SensorBehaviorControl::testBehavior()
 
     if(last_time < 3000)
     {
-      getMotionRequest().walkRequest.translation.x = 1000;
-      getMotionRequest().walkRequest.translation.y = 0;
-      getMotionRequest().walkRequest.rotation = Math::fromDegrees(0);
+      getMotionRequest().walkRequest.target = Pose2D(0, 1000, 0);
     }else
     {
-      getMotionRequest().walkRequest.translation.x = 1000;
-      getMotionRequest().walkRequest.translation.y = 0;
-      getMotionRequest().walkRequest.rotation = Math::fromDegrees(90);
+      getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(90), 1000, 0);
     }
   );
 }//end testBehavior

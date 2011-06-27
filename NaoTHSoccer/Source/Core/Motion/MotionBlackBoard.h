@@ -36,10 +36,10 @@
 
 class AbstractMotion;
 
-class MotionBlackBoard : public Singleton<MotionBlackBoard>
+class MotionBlackBoard : public naoth::Singleton<MotionBlackBoard>
 {
 private:
-  friend class Singleton<MotionBlackBoard>;
+  friend class naoth::Singleton<MotionBlackBoard>;
 
   MotionBlackBoard();
 
@@ -49,37 +49,37 @@ public:
 
   ~MotionBlackBoard();
 
-  RobotInfo theRobotInfo;
+  naoth::RobotInfo theRobotInfo;
 
   // data used internally
   KinematicChain theKinematicChain; // data based on sensors
   KinematicChain theKinematicChainModel; // data based on joint command (motor joint data)
   SupportPolygon theSupportPolygon;
 
-  Vector3<double> theFSRPos[FSRData::numOfFSR];
-  FrameInfo theFrameInfo;
-  AccelerometerData theAccelerometerData;
-  GyrometerData theGyrometerData;
-  InertialSensorData theInertialSensorData;
-  InertialPercept theInertialPercept;
-  FSRData theFSRData;
-  MotorJointData theMotorJointData;
-  MotorJointData theLastMotorJointData;
-  SensorJointData theSensorJointData;
+  Vector3<double> theFSRPos[naoth::FSRData::numOfFSR];
+  naoth::FrameInfo theFrameInfo;
+  naoth::AccelerometerData theAccelerometerData;
+  naoth::GyrometerData theGyrometerData;
+  naoth::InertialSensorData theInertialSensorData;
+  naoth::FSRData theFSRData;
+  naoth::MotorJointData theMotorJointData;
+  naoth::MotorJointData theLastMotorJointData;
+  naoth::SensorJointData theSensorJointData;
+  naoth::LEDData theLEDData;
+  
   // SerialSensorData theSerialSensorData;
   // SerialSensorDataRequest theSerialSensorDataRequest;
   // BumperData theBumperData;
   CameraMatrix theCameraMatrix;
   MotionStatus theMotionStatus;
   OdometryData theOdometryData;
+  InertialPercept theInertialPercept;
 
   // data copied from cognition
   HeadMotionRequest theHeadMotionRequest;
   MotionRequest theMotionRequest;
   
   AbstractMotion* currentlyExecutedMotion;
-
-  LEDData theLEDData;
 };
 
 #endif	/* _MOTIONBLACKBOARD_H */

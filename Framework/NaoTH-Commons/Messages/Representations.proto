@@ -94,7 +94,7 @@ message HeadMotionRequest {
 
 message WalkRequest {
   required uint32 coordinate = 1;
-  required Pose2D pose = 3;
+  required Pose2D target = 3;
 }
 
 message MotionRequest {
@@ -126,7 +126,9 @@ message MotionStatus
   required uint32 lastMotion = 2;
   required uint32 currentMotion = 3;
   required uint32 headMotion = 4;
-  required uint32 currentMotionState = 5;  
+  required uint32 currentMotionState = 5;
+  required Pose2D plannedMotionLeftFoot = 6;
+  required Pose2D plannedMotionRightFoot = 7;
 }
 
 message OdometryData

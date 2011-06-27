@@ -17,19 +17,22 @@
 
 LineDetector::LineDetector()
 {
+  
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:expand_lines", "mark the pixels touched during the line extension", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_line_segments", "mark the line candidates on the image", false);
- 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_lines", "mark the expanded line candidates on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_expanded_segments", "mark the expanded line candidates on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_corners", "...", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_lines", "mark the final lines in the image", false);
+  
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:estimate_corners", "...", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:line_clusters", "mark the clustered edgels", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:expand_lines", "mark the pixels touched during the line extension", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:estimate_corners", "...", false);
 
+  
   // not finished ...
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_circle", "mark the middle circle in the image", false);
-  
 }
 
 
@@ -37,8 +40,12 @@ LineDetector::LineDetector()
 // edgels -> line segment -> circle & line segments ->  //
 // expanded  lines -> merged lines                      //
 //////////////////////////////////////////////////////////
-void LineDetector::execute() 
+void LineDetector::execute()
 {
+  // remove old percepts
+  lineSegments.clear();
+
+
   cameraBrighness = getCurrentCameraSettings().data[CameraSettings::Brightness];
   if(cameraBrighness <= 0 || cameraBrighness > 255)
   {
@@ -57,7 +64,7 @@ void LineDetector::execute()
   edgelList.reserve(MAX_NUMBER_OF_SCANLINE_EDGELS);
   for(unsigned int i = 0; i < getScanLineEdgelPercept().numOfSeenEdgels; i++)
   {
-    if 
+    if
     (
       getScanLineEdgelPercept().scanLineEdgels[i].valid && 
       getScanLineEdgelPercept().scanLineEdgels[i].end.x != 0 && 
@@ -69,56 +76,73 @@ void LineDetector::execute()
   }//end for
 
 
-  STOPWATCH_START("LineDetector ~ find lines");
-  vector<LinePercept::FieldLineSegment> lineSegments;
-  lineSegments = getLines(edgelList);
-  STOPWATCH_STOP("LineDetector ~ find lines");
+  STOPWATCH_START("LineDetector ~ cluster edgels");
+  clusterEdgels(edgelList);
+  STOPWATCH_STOP("LineDetector ~ cluster edgels");
+
 
   DEBUG_REQUEST("ImageProcessor:LineDetector:mark_line_segments",
     for (unsigned int i = 0; i < lineSegments.size(); i++)
     {
+      const LinePercept::LineSegmentImage& line = lineSegments[i];
       if (!lineSegments[i].valid) continue;
-      LINE_PX(ColorClasses::red, (int) lineSegments[i].begin().x, (int) lineSegments[i].begin().y, (int) lineSegments[i].end().x, (int) lineSegments[i].end().y);
-      CIRCLE_PX(ColorClasses::white, (int) lineSegments[i].begin().x, (int) lineSegments[i].begin().y, (int) ceil(lineSegments[i].thickness / 2));
-      CIRCLE_PX(ColorClasses::gray, (int) lineSegments[i].end().x, (int) lineSegments[i].end().y, (int) ceil(lineSegments[i].thickness / 2));
+      LINE_PX(ColorClasses::red, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) line.segment.end().x, (int) line.segment.end().y);
+      CIRCLE_PX(ColorClasses::white, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) ceil(line.thickness / 2));
+      CIRCLE_PX(ColorClasses::gray, (int) line.segment.end().x, (int) line.segment.end().y, (int) ceil(line.thickness / 2));
       
       LINE_PX(ColorClasses::red,(2*i)+1,1,(2*i)+1,6);
     }//end for
   );
   
+
   STOPWATCH_START("LineDetector ~ expand lines");
-  expandLines(lineSegments);
+  expandLines();
   STOPWATCH_STOP("LineDetector ~ expand lines");
 
+
+  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_expanded_segments",
+    for (unsigned int i = 0; i < lineSegments.size(); i++)
+    {
+      const LinePercept::LineSegmentImage& line = lineSegments[i];
+      if (!lineSegments[i].valid) continue;
+      LINE_PX(ColorClasses::red, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) line.segment.end().x, (int) line.segment.end().y);
+      CIRCLE_PX(ColorClasses::white, (int) line.segment.begin().x, (int) line.segment.begin().y, (int) ceil(line.thickness / 2));
+      CIRCLE_PX(ColorClasses::gray, (int) line.segment.end().x, (int) line.segment.end().y, (int) ceil(line.thickness / 2));
+      
+      LINE_PX(ColorClasses::red,(2*i)+1,1,(2*i)+1,6);
+    }//end for
+  );
+
   STOPWATCH_START("LineDetector ~ estimate corners");
-  estimateCorners(lineSegments);
+  estimateCorners();
   STOPWATCH_STOP("LineDetector ~ estimate corners");
 
+
+  // copy the line segments to the percept
+  setLinePercepts();
+
+
   STOPWATCH_START("LineDetector ~ classify intersections");
-  classifyIntersections(lineSegments);
+  classifyIntersections();
   STOPWATCH_STOP("LineDetector ~ classify intersections");
 
   // TEST
   //analyzeEndPoints();
 
-  // copy the line segments to the percept
-  setLinePercepts(lineSegments);
 
-
-  // marc the lines surface in image
+  // mark the lines surface in image
   DEBUG_REQUEST("ImageProcessor:LineDetector:mark_lines",
     for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
     {
-      if (!getLinePercept().lines[i].valid) continue;
-      LinePercept::FieldLineSegment line = getLinePercept().lines[i];
-      
-      Vector2<double> d(0.0, ceil(line.thickness / 2.0));
+      const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
+
+      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
       //d.rotate(Math::pi_2 - line.angle);
 
-      Vector2<int> lowerLeft(getLinePercept().lines[i].begin() - d);
-      Vector2<int> upperLeft(getLinePercept().lines[i].begin() + d);
-      Vector2<int> lowerRight(getLinePercept().lines[i].end() - d);
-      Vector2<int> upperRight(getLinePercept().lines[i].end() + d);
+      Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
+      Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
+      Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
+      Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
       LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
       LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
       LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
@@ -128,20 +152,78 @@ void LineDetector::execute()
     }//end for
   );
 
+  
+  DEBUG_REQUEST("ImageProcessor:LineDetector:mark_corners",
+    for (unsigned int i = 0; i < getLinePercept().intersections.size(); i++)
+    {
+      const LinePercept::Intersection& intersection = getLinePercept().intersections[i];
+      CIRCLE_PX(ColorClasses::red, (int) intersection.getPos().x, (int) intersection.getPos().y, 5);
+    }//end for
+  );
+
 }//end execute
 
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
-void LineDetector::setLinePercepts(vector<LinePercept::FieldLineSegment>& lineSegments)
+void LineDetector::setLinePercepts()
 {
+  // TODO: make it more efficient
+  vector<int> idx(lineSegments.size());
+
   //register valid lines in percept
   for (unsigned int i = 0; i < lineSegments.size(); i++)
   {
-    if (lineSegments[i].valid)
+    const LinePercept::LineSegmentImage& line = lineSegments[i];
+
+    if (line.valid)
     {
-      getLinePercept().lines.push_back(lineSegments[i]);
+      idx[i] = getLinePercept().lines.size();
+
+      LinePercept::FieldLineSegment fieldLineSegment;
+
+      fieldLineSegment.lineInImage = line;
+      fieldLineSegment.valid = line.valid;
+      fieldLineSegment.type = line.type;
+
+      // TODO: set seen_id
+
+
+      //TODO: handle the case if the projection is not possible
+      Vector2<double> beginLineOnField;
+      CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(), getImage().cameraInfo, 
+        line.segment.begin(), 
+        0.0, 
+        beginLineOnField);
+
+      //TODO: handle the case if the projection is not possible
+      Vector2<double> endLineOnField;
+      CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(), getImage().cameraInfo, 
+        line.segment.end(), 
+        0.0, 
+        endLineOnField);
+
+
+      fieldLineSegment.lineOnField = Math::LineSegment(beginLineOnField, endLineOnField);
+
+
+      getLinePercept().lines.push_back(fieldLineSegment);
     }
-  }
+    else
+    {
+      idx[i] = -1;
+    }
+  }//end for
+
+
+  // HACK: correct the intersection indizes
+  for(unsigned int i = 0; i < getLinePercept().intersections.size(); i++)
+  {
+    const Vector2<unsigned int>& indices = getLinePercept().intersections[i].getSegmentIndices();
+    ASSERT(idx[indices[0]] > -1 && idx[indices[1]] > -1);
+    getLinePercept().intersections[i].setSegments(idx[indices[0]], idx[indices[1]]);
+  }//end for
 }//end setLinePercepts
 
 
@@ -200,178 +282,156 @@ void LineDetector::analyzeEndPoints()
 }//end analyzeEndPoints
 
 
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-void LineDetector::expandLines(vector<LinePercept::FieldLineSegment>& lineSegments)
+
+void LineDetector::expandLines()
 {
   bool expandLines = false;
   DEBUG_REQUEST("ImageProcessor:LineDetector:expand_lines",
     expandLines = true;
   );
+
+  // TODO: this is not expanding, but clustering
+
   // make smaller lines invalid 
   // if an near line is bigger and has nearly the same in direction
   // and if the difference of both hessian distances is smaller/equal than the line thickness
   for (unsigned int i = 0; i < lineSegments.size(); i++)
   {
+    LinePercept::LineSegmentImage& segmentOne = lineSegments[i];
+
     for(unsigned int j = 0; j < i; j++)
     {
-      if (!lineSegments[j].valid)
+      LinePercept::LineSegmentImage& segmentTwo = lineSegments[j];
+
+      if (!segmentTwo.valid)
       {
         continue;
       }
-      Vector2<double> lineNormal = Vector2<double>(lineSegments[i].getDirection()).rotateLeft();
-      double distanceDifference = fabs(lineNormal * Vector2<double>(lineSegments[j].getBase()) - lineNormal * Vector2<double>(lineSegments[i].getBase()));
-      if(distanceDifference <= lineSegments[i].thickness && fabs(lineSegments[i].angle - lineSegments[j].angle) < MAX_LINE_ANGLE_DIFF)
+
+      Vector2<double> lineNormal = segmentOne.segment.getDirection().rotateLeft();
+      double distanceDifference = fabs(lineNormal * segmentTwo.segment.getBase() - lineNormal * segmentOne.segment.getBase());
+      if(distanceDifference <= segmentOne.thickness && fabs(segmentOne.angle - segmentTwo.angle) < MAX_LINE_ANGLE_DIFF)
       {
-        double iLength = lineSegments[i].getLength();
-        double jLength = lineSegments[j].getLength();
-        if(iLength >= jLength)
+        if(segmentOne.segment.getLength() >= segmentTwo.segment.getLength())
         {
-          lineSegments[j].valid = false;
+          segmentTwo.valid = false;
         }
         else
         {
-          lineSegments[i].valid = false;
+          segmentOne.valid = false;
         }
       }
     }//end for
-  }
+  }//end for
+
+
+
   //scan along inside the line to expand it
   for (unsigned int i = 0; i < lineSegments.size(); i++)
   {
-    if (!lineSegments[i].valid)
+    LinePercept::LineSegmentImage& segmentOne = lineSegments[i];
+
+    if (!segmentOne.valid)
     {
       continue;
     }
-    Math::LineSegment line = lineSegments[i];
+    Math::LineSegment line = segmentOne.segment;
 
     Vector2<int> lineOnePointUpper
     (
       (int) line.end().x, 
-      (int) (line.end().y + floor(lineSegments[i].thickness / 3))
+      (int) (line.end().y + floor(segmentOne.thickness / 3))
     );
     Vector2<int> lineOnePointMiddle(line.end());
     Vector2<int> lineOnePointLower
     (
       (int) line.end().x, 
-      (int) (line.end().y - floor(lineSegments[i].thickness / 3))
+      (int) (line.end().y - floor(segmentOne.thickness / 3))
     );
     
     Vector2<int> lineTwoPointUpper
     (
       (int) line.begin().x, 
-      (int) (line.begin().y + floor(lineSegments[i].thickness / 3))
+      (int) (line.begin().y + floor(segmentOne.thickness / 3))
     );
     Vector2<int> lineTwoPointMiddle(line.begin());
     Vector2<int> lineTwoPointLower
     (
       (int) line.begin().x, 
-      (int) (line.begin().y - floor(lineSegments[i].thickness / 3))
+      (int) (line.begin().y - floor(segmentOne.thickness / 3))
     );
     
-    Vector2<int> direction = lineOnePointMiddle - lineTwoPointMiddle;//(line.getDirection());
-    
-    BresenhamLineScan scanLineOneUpper(lineOnePointUpper, direction, getImage().cameraInfo);
-    BresenhamLineScan scanLineOneMiddle(lineOnePointMiddle, direction, getImage().cameraInfo);
-    BresenhamLineScan scanLineOneLower(lineOnePointLower, direction, getImage().cameraInfo);
+    Vector2<int> direction = line.end() - line.begin();
+    ColorClasses::Color color = expandLines?ColorClasses::pink:ColorClasses::numOfColors;
 
-    BresenhamLineScan scanLineTwoUpper(lineTwoPointUpper, -direction, getImage().cameraInfo);
-    BresenhamLineScan scanLineTwoMiddle(lineTwoPointMiddle, -direction, getImage().cameraInfo);
-    BresenhamLineScan scanLineTwoLower(lineTwoPointLower, -direction, getImage().cameraInfo);
-
-    bool lineOneScanned = false;
-    bool lineTwoScanned = false;
-
-    ColorClasses::Color color;
-
-    while (!lineOneScanned || !lineTwoScanned)
-    { 
-      if(!lineOneScanned) 
-      {
-        if(expandLines)
-        {
-          color = ColorClasses::pink;
-        }
-        else
-        {
-          color = ColorClasses::numOfColors;
-        }
-        if(lineSegments[i].thickness <= 3)
-        {
-          lineOneScanned = scanAlongLine(lineOnePointMiddle, scanLineOneMiddle, color);
-        }
-        else
-        {
-          lineOneScanned = 
-          scanAlongLine(lineOnePointUpper, scanLineOneUpper, color) ||
-          scanAlongLine(lineOnePointLower, scanLineOneLower, color);
-        }
-      }//endif
-      if(!lineTwoScanned)
-      {
-        if(expandLines)
-        {
-          color = ColorClasses::pink;
-        }
-        else
-        {
-          color = ColorClasses::numOfColors;
-        }
-        if(lineSegments[i].thickness <= 3)
-        {
-          lineTwoScanned = scanAlongLine(lineTwoPointMiddle, scanLineTwoMiddle, color);
-        }
-        else
-        {
-          lineTwoScanned = 
-          scanAlongLine(lineTwoPointUpper, scanLineTwoUpper, color) ||
-          scanAlongLine(lineTwoPointLower, scanLineTwoLower, color);
-        }
-      }//end if
-    }//end while
-    if(lineSegments[i].thickness > 3)
+    // TODO: do we need the double line scan?
+    if(true || segmentOne.thickness <= 3)
     {
+      scanAlongLine(lineOnePointMiddle, direction, color);
+      scanAlongLine(lineTwoPointMiddle, -direction, color);
+    }
+    else
+    {
+      // is not working currently
+      scanAlongLine(lineOnePointUpper, direction, color);
+      scanAlongLine(lineOnePointLower, direction, color);
+
+      scanAlongLine(lineTwoPointUpper, -direction, color);
+      scanAlongLine(lineTwoPointLower, -direction, color);
+
+      // estimate the center
       lineTwoPointMiddle.x = lineTwoPointUpper.x;
-      lineTwoPointMiddle.y = lineTwoPointLower.y + (lineTwoPointUpper.y - lineTwoPointLower.y) / 2;
+      lineTwoPointMiddle.y = (lineTwoPointUpper.y + lineTwoPointLower.y) / 2;
       lineOnePointMiddle.x = lineOnePointUpper.x;
-      lineOnePointMiddle.y = lineOnePointLower.y + (lineOnePointUpper.y - lineOnePointLower.y) / 2;
-    }//end if
-    lineSegments[i].set(getCameraMatrix(), getImage().cameraInfo,lineTwoPointMiddle, lineOnePointMiddle);
+      lineOnePointMiddle.y = (lineOnePointUpper.y + lineOnePointLower.y) / 2;
+    }
+
+    // set new segment
+    segmentOne.segment = Math::LineSegment(lineTwoPointMiddle, lineOnePointMiddle);
   }//end for
 }//end expandLines
 
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-bool LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor)
+
+inline void LineDetector::scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor)
 {
-  if(scanLine.getNext(linePoint))
+  BresenhamLineScan scanLine(linePoint, direction, getImage().cameraInfo);
+  scanAlongLine(linePoint, scanLine, markColor);
+}//end scanAlongLine
+
+
+void LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor)
+{
+  for(int i = 0; i < scanLine.numberOfPixels; i++)
   {
-    if( !getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).isInside(linePoint) )
+    scanLine.getNext(linePoint);
+
+    if( !getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).isInside(linePoint) )
     {
       scanLine.getLast(linePoint);
-      return true;
+      break;
     }
+
     Pixel pixel = getImage().get(linePoint.x,linePoint.y);
     ColorClasses::Color thisPixelColor = getColorTable64().getColorClass(pixel);
+
     int g = (int)(pixel.y - 0.3456 * (pixel.u - 128) - 0.71448 * (pixel.v - 128));
     if(g < 0) g = 0; else if(g > 255) g = 255;
     if((g > GREENAMOUNT && pixel.y < edgelBrightnessLevel) || thisPixelColor == ColorClasses::green)
     {
-      return true;
+      break; // end of line found
     }
+
+    // some debug
     if(markColor != ColorClasses::numOfColors)
     {
       POINT_PX(markColor, linePoint.x, linePoint.y);
     }
-    return false;
-  }
-  return true;
+  }//end for
 }//scanAlongLine
 
 
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-void LineDetector::estimateCorners(vector<LinePercept::FieldLineSegment>& lineSegments)
+
+void LineDetector::estimateCorners()
 {
   bool estimate_corners = false;
   DEBUG_REQUEST("ImageProcessor:LineDetector:estimate_corners",
@@ -384,31 +444,33 @@ void LineDetector::estimateCorners(vector<LinePercept::FieldLineSegment>& lineSe
 
   for (unsigned int k = 0; k < lineSegments.size(); k++)
   {
-    if (!lineSegments[k].valid) 
+    LinePercept::LineSegmentImage& lineOne = lineSegments[k];
+
+    if (!lineOne.valid) 
     {
       continue;
     }
-    const Math::LineSegment& lineOne = lineSegments[k];
 
     // intersect with remaining lines segments
     for (unsigned int i = k + 1; i < lineSegments.size(); i++)
     {
-      if (!lineSegments[i].valid)
+      LinePercept::LineSegmentImage& lineTwo = lineSegments[i];
+
+      if (!lineTwo.valid)
       {
         continue;
       }
-      const Math::LineSegment& lineTwo = lineSegments[i];
       
-      double tOneL = lineOne.Line::intersection(lineTwo);
-      double tTwoL = lineTwo.Line::intersection(lineOne);
+      double tOneL = lineOne.segment.Line::intersection(lineTwo.segment);
+      double tTwoL = lineTwo.segment.Line::intersection(lineOne.segment);
 
       // intersection between the theoretical lines
-      Vector2<double> point = lineOne.Line::point(tOneL);
+      Vector2<double> point = lineOne.segment.Line::point(tOneL);
       Vector2<int> intersectionPoint((int)(point.x+0.5), (int)(point.y+0.5));
       
       // "projection" of the intersection to the segments
-      Vector2<int> lineOnePoint(lineOne.point(tOneL));
-      Vector2<int> lineTwoPoint(lineTwo.point(tTwoL));
+      Vector2<int> lineOnePoint(lineOne.segment.point(tOneL));
+      Vector2<int> lineTwoPoint(lineTwo.segment.point(tTwoL));
 
       // project the intersection on te ground
       // TODO: do it somewhere else
@@ -416,39 +478,19 @@ void LineDetector::estimateCorners(vector<LinePercept::FieldLineSegment>& lineSe
 
 
       // needed later ...
-      double tOne = Math::clamp(tOneL, 0.0, lineOne.getLength());
-      double tTwo = Math::clamp(tTwoL, 0.0, lineTwo.getLength());
+      double tOne = Math::clamp(tOneL, 0.0, lineOne.segment.getLength());
+      double tTwo = Math::clamp(tTwoL, 0.0, lineTwo.segment.getLength());
 
 
       BresenhamLineScan scanLineOne(lineOnePoint, intersectionPoint);
       BresenhamLineScan scanLineTwo(lineTwoPoint, intersectionPoint);
-      bool lineOneScanned = false;
-      bool lineTwoScanned = false;
-      while (!lineOneScanned || !lineTwoScanned)
-      { 
-        if(!lineOneScanned) 
-        {
-          if(estimate_corners)
-          {
-            lineOneScanned = scanAlongLine(lineOnePoint, scanLineOne, ColorClasses::orange);
-          }
-          else
-          {
-            lineOneScanned = scanAlongLine(lineOnePoint, scanLineOne, ColorClasses::numOfColors);
-          }
-        }//endif
-        if(!lineTwoScanned)
-        {
-          if(estimate_corners)
-          {
-            lineTwoScanned = scanAlongLine(lineTwoPoint, scanLineTwo, ColorClasses::skyblue);
-          }
-          else
-          {
-            lineTwoScanned = scanAlongLine(lineTwoPoint, scanLineTwo, ColorClasses::numOfColors);
-          }
-        }//end if
-      }//end while
+
+      ColorClasses::Color debugColorOne = estimate_corners?ColorClasses::orange:ColorClasses::numOfColors;
+      ColorClasses::Color debugColorTwo = estimate_corners?ColorClasses::orange:ColorClasses::numOfColors;
+
+      scanAlongLine(lineOnePoint, scanLineOne, debugColorOne);
+      scanAlongLine(lineTwoPoint, scanLineTwo, debugColorTwo);
+
 
       ////if(Geometry::imagePixelToFieldCoord(getCameraMatrix(), getImage().cameraInfo,
       ////  point.x, point.y, 0.0, intersection.pos))
@@ -467,13 +509,13 @@ void LineDetector::estimateCorners(vector<LinePercept::FieldLineSegment>& lineSe
           lineOnePoint.y < (int) getImage().cameraInfo.resolutionHeight 
         )
         {    
-          if(tOne < 1.5 * lineSegments[i].thickness)
+          if(tOne < 1.5 * lineTwo.thickness)
           {
-            lineSegments[k].set(getCameraMatrix(), getImage().cameraInfo, lineOnePoint,  lineSegments[k].end());
+            lineOne.segment = Math::LineSegment((Vector2<double>)lineOnePoint,  lineOne.segment.end());
           }
-          else if(tOne > lineSegments[k].getLength() - 1.5 * lineSegments[i].thickness)
+          else if(tOne > lineOne.segment.getLength() - 1.5 * lineTwo.thickness)
           {
-            lineSegments[k].set(getCameraMatrix(), getImage().cameraInfo, lineSegments[k].begin(), lineOnePoint);
+            lineOne.segment = Math::LineSegment(lineOne.segment.begin(), (Vector2<double>)lineOnePoint);
           }
         }//end if
         if
@@ -484,25 +526,26 @@ void LineDetector::estimateCorners(vector<LinePercept::FieldLineSegment>& lineSe
           lineTwoPoint.y < (int) getImage().cameraInfo.resolutionHeight 
         )
         {
-          if(tTwo < 1.5 * lineSegments[k].thickness)
+          if(tTwo < 1.5 * lineOne.thickness)
           {
-            lineSegments[i].set(getCameraMatrix(), getImage().cameraInfo, lineTwoPoint,  lineSegments[i].end());
+            lineTwo.segment = Math::LineSegment((Vector2<double>)lineTwoPoint,  lineTwo.segment.end());
           }
-          else if(tTwo > lineSegments[i].getLength() - 1.5 * lineSegments[k].thickness)
+          else if(tTwo > lineTwo.segment.getLength() - 1.5 * lineOne.thickness)
           {
-            lineSegments[i].set(getCameraMatrix(), getImage().cameraInfo, lineSegments[i].begin(), lineTwoPoint);
+            lineTwo.segment = Math::LineSegment(lineTwo.segment.begin(), (Vector2<double>)lineTwoPoint);
           }
         }//end if
 
         intersection.setSegments(k, i, tOne, tTwo);
         getLinePercept().intersections.push_back(intersection);
       }//end if
-      ////lineOne = lineTwo;
     }//end for
   }//end for
+
 }//end estimateCorners
 
-void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& lineSegments)
+
+void LineDetector::classifyIntersections()
 {
 
   vector<Vector2<double> > circlePoints;
@@ -511,7 +554,7 @@ void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& 
   vector<Vector2<double> > circleMiddlePoints;
   circleMiddlePoints.reserve(getLinePercept().intersections.size());
 
-  // the drawing context is needed for furthrr drawings
+  // the drawing context is needed for further drawings
   DEBUG_REQUEST("ImageProcessor:LineDetector:mark_circle",
     FIELD_DRAWING_CONTEXT;
   );
@@ -520,9 +563,10 @@ void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& 
 
   for(unsigned int i = 0; i < getLinePercept().intersections.size(); i++)
   {
-    Vector2<unsigned int> indices = getLinePercept().intersections[i].getSegmentIndices();
-    LinePercept::FieldLineSegment segOne = lineSegments[indices[0]];
-    LinePercept::FieldLineSegment segTwo = lineSegments[indices[1]];
+    const Vector2<unsigned int>& indices = getLinePercept().intersections[i].getSegmentIndices();
+    const LinePercept::FieldLineSegment& segOne = getLinePercept().lines[indices[0]];
+    const LinePercept::FieldLineSegment& segTwo = getLinePercept().lines[indices[1]];
+
 
     double angleDiff = fabs(Math::normalize(segOne.lineOnField.getDirection().angle() - segTwo.lineOnField.getDirection().angle()));
 
@@ -546,8 +590,8 @@ void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& 
       )
       {
         Vector2<double> segmentDistancesToIntersection = getLinePercept().intersections[i].getSegmentsDistancesToIntersection();
-        bool tIntersectsOne = segmentDistancesToIntersection[0] > segTwo.thickness && segmentDistancesToIntersection[0] < segOne.getLength() - segTwo.thickness;
-        bool tIntersectsTwo = segmentDistancesToIntersection[1] > segOne.thickness && segmentDistancesToIntersection[1] < segTwo.getLength() - segOne.thickness;
+        bool tIntersectsOne = segmentDistancesToIntersection[0] > segTwo.lineInImage.thickness && segmentDistancesToIntersection[0] < segOne.lineInImage.segment.getLength() - segTwo.lineInImage.thickness;
+        bool tIntersectsTwo = segmentDistancesToIntersection[1] > segOne.lineInImage.thickness && segmentDistancesToIntersection[1] < segTwo.lineInImage.segment.getLength() - segOne.lineInImage.thickness;
 //        cout << segmentDistancesToIntersection;
         if(tIntersectsOne && tIntersectsTwo)
         {
@@ -614,8 +658,8 @@ void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& 
 
         // mark the lines as circle lines
         Vector2<unsigned int> lineIdx = getLinePercept().intersections[i].getSegmentIndices();
-        lineSegments[lineIdx[0]].partOfCircle = true;
-        lineSegments[lineIdx[1]].partOfCircle = true;
+        lineSegments[lineIdx[0]].type = LinePercept::C;
+        lineSegments[lineIdx[1]].type = LinePercept::C;
       }//end if
     }//end if
 
@@ -678,18 +722,18 @@ void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& 
   // check if the center line is seen
   if(getLinePercept().middleCircleWasSeen)
   {
-    for(unsigned int i = 0; i < lineSegments.size(); i++)
+    for(unsigned int i = 0; i < getLinePercept().lines.size(); i++)
     {
-      if(!lineSegments[i].partOfCircle)
+      if(getLinePercept().lines[i].type != LinePercept::C)
       {
-        double d = lineSegments[i].lineOnField.minDistance(getLinePercept().middleCircleCenter);
+        double d = getLinePercept().lines[i].lineOnField.minDistance(getLinePercept().middleCircleCenter);
         if(d < 300.0)
         {
-          lineSegments[i].seen_id = LinePercept::FieldLineSegment::center_line;
+          getLinePercept().lines[i].seen_id = LinePercept::center_line;
           // estimate the orientation of the circle
           // TODO: treat the case if there are several lines
           getLinePercept().middleCircleOrientationWasSeen = true;
-          getLinePercept().middleCircleOrientation = lineSegments[i].lineOnField.getDirection();
+          getLinePercept().middleCircleOrientation = getLinePercept().lines[i].lineOnField.getDirection();
         }
       }
     }//end for
@@ -723,52 +767,54 @@ void LineDetector::classifyIntersections(vector<LinePercept::FieldLineSegment>& 
 // clusters given edgels to line segments, verifies    //
 // the segments and writes to given line array      //
 //////////////////////////////////////////////////////////
-vector<LinePercept::FieldLineSegment> LineDetector::getLines(vector<Edgel>& edgelList)
+void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
 {
-  vector<LinePercept::FieldLineSegment> lineSegments;
+  if(edgelList.empty()) return;
   
-  if(edgelList.empty()) return lineSegments;
-  
+
   vector<ClusteredLine> lineClusters;
   lineClusters.reserve(20);
 
-  
   lineClusters.push_back(ClusteredLine(edgelList[0],0));
+
   DEBUG_REQUEST("ImageProcessor:LineDetector:line_clusters",
     CIRCLE_PX((ColorClasses::Color) (0) , edgelList[0].center.x, edgelList[0].center.y, 5);
   );
 
   for(unsigned int i = 1; i < edgelList.size(); i++)
   {
-    if(edgelList[i].valid)
+    const Edgel& edgel = edgelList[i];
+
+    if(edgel.valid)
     {
       bool matchingClusterFound = false;
       unsigned int clusterIndex = 0;
 
       while(clusterIndex < lineClusters.size() && !matchingClusterFound)
       {
-        if(lineClusters[clusterIndex].add(edgelList[i]))
+        if(lineClusters[clusterIndex].add(edgel))
         {
           matchingClusterFound = true;
           DEBUG_REQUEST("ImageProcessor:LineDetector:line_clusters",
             int idx = ((lineClusters[clusterIndex].id() ) % (unsigned int)ColorClasses::numOfColors);
             CIRCLE_PX(
               (ColorClasses::Color) (idx) , 
-              edgelList[i].center.x, edgelList[i].center.y, 
+              edgel.center.x, edgel.center.y, 
               5 + idx);
           );
         }
         clusterIndex++;
       }//end while
 
+      // no cluster found, create a new one
       if(!matchingClusterFound)
       {
-        ClusteredLine newCluster(edgelList[i], lineClusters.size());
+        ClusteredLine newCluster(edgel, lineClusters.size());
         DEBUG_REQUEST("ImageProcessor:LineDetector:line_clusters",
           int idx = ((newCluster.id() ) % (unsigned int)ColorClasses::numOfColors);
           CIRCLE_PX(
             (ColorClasses::Color) (idx) , 
-            edgelList[i].center.x, edgelList[i].center.y, 
+            edgel.center.x, edgel.center.y, 
             5 + idx);
         );
         lineClusters.push_back(newCluster);
@@ -779,7 +825,8 @@ vector<LinePercept::FieldLineSegment> LineDetector::getLines(vector<Edgel>& edge
 
 
   // create lines from clusters
-  lineSegments.reserve(lineClusters.size());
+  //lineSegments.reserve(lineClusters.size());
+
   // distance between scanlines
   double delta_x = (double)(getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);
 
@@ -798,16 +845,15 @@ vector<LinePercept::FieldLineSegment> LineDetector::getLines(vector<Edgel>& edge
 
     if(cluster.count > 1 && cluster.thickness > 1 && weight > 0.5)
     {
-      LinePercept::FieldLineSegment lineSegment;
-      lineSegment.set(getCameraMatrix(), getImage().cameraInfo, cluster.start, cluster.end);
-      lineSegment.thickness = cluster.thickness; //(int) ceil(cluster.thickness / 2);
-      lineSegment.valid = true;
-      lineSegment.type = LinePercept::FieldLineSegment::unknown;
+      LinePercept::LineSegmentImage lineSegment;
+
+      lineSegment.segment = Math::LineSegment(cluster.start, cluster.end);
+      lineSegment.thickness = cluster.thickness;
       lineSegment.angle = lineVector.angle();
+      lineSegment.valid = true;
       lineSegments.push_back(lineSegment);
     }
   }//end for
 
-  return lineSegments;
-}//end getLinesNew
+}//end clusterEdgels
 

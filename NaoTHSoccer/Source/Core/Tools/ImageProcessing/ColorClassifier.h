@@ -18,7 +18,7 @@ public:
   * @param b the b value of the pixel
   * @return the color class
   */
-  inline naoth::ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
     return get(a, b, c);
   }
@@ -28,14 +28,14 @@ public:
   * @param pixel The pixel color
   * @return the color class
   */
-  inline naoth::ColorClasses::Color getColorClass(const Pixel& p) const
+  inline ColorClasses::Color getColorClass(const Pixel& p) const
   {
     return get(p.a, p.b, p.c);
   }
 
 protected:
 
-  virtual naoth::ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const = 0;
+  virtual ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const = 0;
 };
 
 #endif //__ColorClassifier_h__

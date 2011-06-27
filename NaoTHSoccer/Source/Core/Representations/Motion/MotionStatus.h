@@ -26,7 +26,6 @@ public:
 
   struct PlannedMotion
   {
-    Pose2D hip;
     Pose2D lFoot;
     Pose2D rFoot;
   };
@@ -55,6 +54,9 @@ public:
     stream << "lastMotion = " << motion::getName(lastMotion) << '\n';
     stream << "currentMotion = " << motion::getName(currentMotion) << '\n';
     stream << "currentMotionState = " << motion::getName(currentMotionState) << '\n';
+    stream << "plannedMotion: \n";
+    stream << "left foot = "<< plannedMotion.lFoot<<"\n";
+    stream << "right foot = "<< plannedMotion.rFoot<<"\n";
   }//end print
 };
 

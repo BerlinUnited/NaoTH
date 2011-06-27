@@ -11,7 +11,7 @@
 class Blob
 {
 public:
-  Blob() : blobMass(0), color(naoth::ColorClasses::none) {}
+  Blob() : blobMass(0), color(ColorClasses::none) {}
   
   Vector2<int> upperLeft;
   Vector2<int> upperRight;
@@ -20,7 +20,7 @@ public:
   Vector2<int> centerOfMass;
   Moments2<1>  moments;
   int blobMass;
-  naoth::ColorClasses::Color color;
+  ColorClasses::Color color;
 
   void draw()
   {

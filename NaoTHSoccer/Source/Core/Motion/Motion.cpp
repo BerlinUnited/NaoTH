@@ -14,6 +14,8 @@
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
+using namespace naoth;
+
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
 theInertialFilter(theBlackBoard),
 theMotionStatusWriter(NULL),

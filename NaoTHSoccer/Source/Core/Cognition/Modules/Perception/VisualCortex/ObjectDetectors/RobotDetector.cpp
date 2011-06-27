@@ -13,6 +13,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/CameraGeometry.h"
 
 RobotDetector::RobotDetector()
   : theBlobFinder(getColoredGrid())
@@ -100,9 +101,9 @@ inline void RobotDetector::detectRobots()
       }
       //estimate the position of the robot based on lowest point
       Vector2<double> positon;
-      Geometry::imagePixelToFieldCoord(getCameraMatrix(), getImage().cameraInfo, lowestPoint.x, lowestPoint.y, 0.0, positon);
+      CameraGeometry::imagePixelToFieldCoord(getCameraMatrix(), getImage().cameraInfo, lowestPoint.x, lowestPoint.y, 0.0, positon);
       player.pose.translation = positon;
-      player.angleTo = Geometry::angleToPointInImage(getCameraMatrix(), getImage().cameraInfo, marker.cog.x, marker.cog.y);
+      player.angleTo = CameraGeometry::angleToPointInImage(getCameraMatrix(), getImage().cameraInfo, marker.cog.x, marker.cog.y);
       player.isStanding = ((marker.angle >= 0.0f && marker.angle <= 0.5f) || (marker.angle >= Math::pi - 0.5f && marker.angle <= Math::pi)) ? true : false;
       player.teamColor = marker.color;
       player.poseValid = exactLocalisation(getImage(), lowestPoint) ? true : false;

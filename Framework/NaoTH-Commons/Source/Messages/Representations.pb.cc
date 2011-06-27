@@ -249,7 +249,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
   WalkRequest_descriptor_ = file->message_type(9);
   static const int WalkRequest_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, coordinate_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, pose_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, target_),
   };
   WalkRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -316,12 +316,14 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
   MotionStatus_descriptor_ = file->message_type(13);
-  static const int MotionStatus_offsets_[5] = {
+  static const int MotionStatus_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, currentmotion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, headmotion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, currentmotionstate_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, plannedmotionleftfoot_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, plannedmotionrightfoot_),
   };
   MotionStatus_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -477,24 +479,26 @@ void protobuf_AddDesc_Representations_2eproto() {
     "2\034.naothmessages.DoubleVector3\0222\n\014search"
     "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto"
     "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
-    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"F\n"
-    "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022#\n\004pose"
-    "\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMotion"
-    "Request\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006for"
-    "ced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothme"
-    "ssages.WalkRequest\022\026\n\016starndardStand\030\005 \001"
-    "(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naot"
-    "hmessages.FieldLineSegment\0222\n\rintersecti"
-    "ons\030\002 \003(\0132\033.naothmessages.Intersection\0228"
-    "\n\022middleCircleCenter\030\003 \001(\0132\034.naothmessag"
-    "es.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003"
-    "(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"w\n\014Motio"
-    "nStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002("
-    "\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004"
-    " \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\"3\n\014Odom"
-    "etryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.P"
-    "ose2DB)\n\'de.hu_berlin.informatik.ki.nao."
-    "messages", 2328);
+    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"H\n"
+    "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022%\n\006targ"
+    "et\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMoti"
+    "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f"
+    "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth"
+    "messages.WalkRequest\022\026\n\016starndardStand\030\005"
+    " \001(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.na"
+    "othmessages.FieldLineSegment\0222\n\rintersec"
+    "tions\030\002 \003(\0132\033.naothmessages.Intersection"
+    "\0228\n\022middleCircleCenter\030\003 \001(\0132\034.naothmess"
+    "ages.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001"
+    " \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\344\001\n\014Mo"
+    "tionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002"
+    " \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotio"
+    "n\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025p"
+    "lannedMotionLeftFoot\030\006 \002(\0132\025.naothmessag"
+    "es.Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002("
+    "\0132\025.naothmessages.Pose2D\"3\n\014OdometryData"
+    "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)\n"
+    "\'de.hu_berlin.informatik.ki.nao.messages", 2440);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -4043,7 +4047,7 @@ void HeadMotionRequest::Swap(HeadMotionRequest* other) {
 
 #ifndef _MSC_VER
 const int WalkRequest::kCoordinateFieldNumber;
-const int WalkRequest::kPoseFieldNumber;
+const int WalkRequest::kTargetFieldNumber;
 #endif  // !_MSC_VER
 
 WalkRequest::WalkRequest()
@@ -4052,7 +4056,7 @@ WalkRequest::WalkRequest()
 }
 
 void WalkRequest::InitAsDefaultInstance() {
-  pose_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+  target_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
 }
 
 WalkRequest::WalkRequest(const WalkRequest& from)
@@ -4064,7 +4068,7 @@ WalkRequest::WalkRequest(const WalkRequest& from)
 void WalkRequest::SharedCtor() {
   _cached_size_ = 0;
   coordinate_ = 0u;
-  pose_ = NULL;
+  target_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4074,7 +4078,7 @@ WalkRequest::~WalkRequest() {
 
 void WalkRequest::SharedDtor() {
   if (this != default_instance_) {
-    delete pose_;
+    delete target_;
   }
 }
 
@@ -4101,8 +4105,8 @@ WalkRequest* WalkRequest::New() const {
 void WalkRequest::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     coordinate_ = 0u;
-    if (has_pose()) {
-      if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
+    if (has_target()) {
+      if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -4126,17 +4130,17 @@ bool WalkRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_pose;
+        if (input->ExpectTag(26)) goto parse_target;
         break;
       }
       
-      // required .naothmessages.Pose2D pose = 3;
+      // required .naothmessages.Pose2D target = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_pose:
+         parse_target:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_pose()));
+               input, mutable_target()));
         } else {
           goto handle_uninterpreted;
         }
@@ -4167,10 +4171,10 @@ void WalkRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->coordinate(), output);
   }
   
-  // required .naothmessages.Pose2D pose = 3;
-  if (has_pose()) {
+  // required .naothmessages.Pose2D target = 3;
+  if (has_target()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->pose(), output);
+      3, this->target(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -4186,11 +4190,11 @@ void WalkRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->coordinate(), target);
   }
   
-  // required .naothmessages.Pose2D pose = 3;
-  if (has_pose()) {
+  // required .naothmessages.Pose2D target = 3;
+  if (has_target()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->pose(), target);
+        3, this->target(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4211,11 +4215,11 @@ int WalkRequest::ByteSize() const {
           this->coordinate());
     }
     
-    // required .naothmessages.Pose2D pose = 3;
-    if (has_pose()) {
+    // required .naothmessages.Pose2D target = 3;
+    if (has_target()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->pose());
+          this->target());
     }
     
   }
@@ -4248,8 +4252,8 @@ void WalkRequest::MergeFrom(const WalkRequest& from) {
     if (from.has_coordinate()) {
       set_coordinate(from.coordinate());
     }
-    if (from.has_pose()) {
-      mutable_pose()->::naothmessages::Pose2D::MergeFrom(from.pose());
+    if (from.has_target()) {
+      mutable_target()->::naothmessages::Pose2D::MergeFrom(from.target());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -4270,8 +4274,8 @@ void WalkRequest::CopyFrom(const WalkRequest& from) {
 bool WalkRequest::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
-  if (has_pose()) {
-    if (!this->pose().IsInitialized()) return false;
+  if (has_target()) {
+    if (!this->target().IsInitialized()) return false;
   }
   return true;
 }
@@ -4279,7 +4283,7 @@ bool WalkRequest::IsInitialized() const {
 void WalkRequest::Swap(WalkRequest* other) {
   if (other != this) {
     std::swap(coordinate_, other->coordinate_);
-    std::swap(pose_, other->pose_);
+    std::swap(target_, other->target_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -5274,6 +5278,8 @@ const int MotionStatus::kLastMotionFieldNumber;
 const int MotionStatus::kCurrentMotionFieldNumber;
 const int MotionStatus::kHeadMotionFieldNumber;
 const int MotionStatus::kCurrentMotionStateFieldNumber;
+const int MotionStatus::kPlannedMotionLeftFootFieldNumber;
+const int MotionStatus::kPlannedMotionRightFootFieldNumber;
 #endif  // !_MSC_VER
 
 MotionStatus::MotionStatus()
@@ -5282,6 +5288,8 @@ MotionStatus::MotionStatus()
 }
 
 void MotionStatus::InitAsDefaultInstance() {
+  plannedmotionleftfoot_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+  plannedmotionrightfoot_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
 }
 
 MotionStatus::MotionStatus(const MotionStatus& from)
@@ -5297,6 +5305,8 @@ void MotionStatus::SharedCtor() {
   currentmotion_ = 0u;
   headmotion_ = 0u;
   currentmotionstate_ = 0u;
+  plannedmotionleftfoot_ = NULL;
+  plannedmotionrightfoot_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5306,6 +5316,8 @@ MotionStatus::~MotionStatus() {
 
 void MotionStatus::SharedDtor() {
   if (this != default_instance_) {
+    delete plannedmotionleftfoot_;
+    delete plannedmotionrightfoot_;
   }
 }
 
@@ -5336,6 +5348,12 @@ void MotionStatus::Clear() {
     currentmotion_ = 0u;
     headmotion_ = 0u;
     currentmotionstate_ = 0u;
+    if (has_plannedmotionleftfoot()) {
+      if (plannedmotionleftfoot_ != NULL) plannedmotionleftfoot_->::naothmessages::Pose2D::Clear();
+    }
+    if (has_plannedmotionrightfoot()) {
+      if (plannedmotionrightfoot_ != NULL) plannedmotionrightfoot_->::naothmessages::Pose2D::Clear();
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -5422,6 +5440,34 @@ bool MotionStatus::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(50)) goto parse_plannedMotionLeftFoot;
+        break;
+      }
+      
+      // required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_plannedMotionLeftFoot:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_plannedmotionleftfoot()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(58)) goto parse_plannedMotionRightFoot;
+        break;
+      }
+      
+      // required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_plannedMotionRightFoot:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_plannedmotionrightfoot()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -5469,6 +5515,18 @@ void MotionStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->currentmotionstate(), output);
   }
   
+  // required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+  if (has_plannedmotionleftfoot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, this->plannedmotionleftfoot(), output);
+  }
+  
+  // required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+  if (has_plannedmotionrightfoot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      7, this->plannedmotionrightfoot(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -5500,6 +5558,20 @@ void MotionStatus::SerializeWithCachedSizes(
   // required uint32 currentMotionState = 5;
   if (has_currentmotionstate()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->currentmotionstate(), target);
+  }
+  
+  // required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+  if (has_plannedmotionleftfoot()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        6, this->plannedmotionleftfoot(), target);
+  }
+  
+  // required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+  if (has_plannedmotionrightfoot()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        7, this->plannedmotionrightfoot(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -5548,6 +5620,20 @@ int MotionStatus::ByteSize() const {
           this->currentmotionstate());
     }
     
+    // required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+    if (has_plannedmotionleftfoot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->plannedmotionleftfoot());
+    }
+    
+    // required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+    if (has_plannedmotionrightfoot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->plannedmotionrightfoot());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -5590,6 +5676,12 @@ void MotionStatus::MergeFrom(const MotionStatus& from) {
     if (from.has_currentmotionstate()) {
       set_currentmotionstate(from.currentmotionstate());
     }
+    if (from.has_plannedmotionleftfoot()) {
+      mutable_plannedmotionleftfoot()->::naothmessages::Pose2D::MergeFrom(from.plannedmotionleftfoot());
+    }
+    if (from.has_plannedmotionrightfoot()) {
+      mutable_plannedmotionrightfoot()->::naothmessages::Pose2D::MergeFrom(from.plannedmotionrightfoot());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -5607,8 +5699,14 @@ void MotionStatus::CopyFrom(const MotionStatus& from) {
 }
 
 bool MotionStatus::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
+  if ((_has_bits_[0] & 0x0000007f) != 0x0000007f) return false;
   
+  if (has_plannedmotionleftfoot()) {
+    if (!this->plannedmotionleftfoot().IsInitialized()) return false;
+  }
+  if (has_plannedmotionrightfoot()) {
+    if (!this->plannedmotionrightfoot().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -5619,6 +5717,8 @@ void MotionStatus::Swap(MotionStatus* other) {
     std::swap(currentmotion_, other->currentmotion_);
     std::swap(headmotion_, other->headmotion_);
     std::swap(currentmotionstate_, other->currentmotionstate_);
+    std::swap(plannedmotionleftfoot_, other->plannedmotionleftfoot_);
+    std::swap(plannedmotionrightfoot_, other->plannedmotionrightfoot_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
