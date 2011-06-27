@@ -75,7 +75,7 @@ public:
 
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
   {
-    if (currentState == motion::stopped) {
+    if ( currentState != motion::running ) {
       // create the initial pose of the robot
       p = theEngine.getCurrentCoMFeetPose();
       p.localInCoM();
