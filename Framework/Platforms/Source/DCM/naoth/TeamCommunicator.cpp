@@ -54,8 +54,8 @@ GError* TeamCommunicator::bindAndListen(unsigned int port)
 
   g_socket_set_blocking(socket, false);
 
-  bool broadcast = true;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(bool));
+  int broadcast = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
@@ -65,7 +65,7 @@ GError* TeamCommunicator::bindAndListen(unsigned int port)
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
 
-  if (err) return err;
+  return err;
 }
 
 void TeamCommunicator::send(const std::string& data)
@@ -78,11 +78,31 @@ void TeamCommunicator::send(const std::string& data)
   {
     if(lanBroadcastAddress)
     {
-      g_socket_send_to(socket, lanBroadcastAddress, data.c_str(), data.size(), NULL, NULL);
+      GError *error = NULL;
+      gssize result = g_socket_send_to(socket, lanBroadcastAddress, data.c_str(), data.size(), NULL, &error);
+      if ( result != data.size() )
+      {
+        g_warning("lan broadcast error, sended size = %d", result);
+      }
+      if (error)
+      {
+        g_warning("g_socket_send_to error: %s", error->message);
+        g_error_free(error);
+      }
     }
     if(wlanBroadcastAddress)
     {
-      g_socket_send_to(socket, wlanBroadcastAddress, data.c_str(), data.size(), NULL, NULL);
+      GError *error = NULL;
+      gssize result = g_socket_send_to(socket, wlanBroadcastAddress, data.c_str(), data.size(), NULL, &error);
+      if ( result != data.size() )
+      {
+        g_warning("lan broadcast error, sended size = %d", result);
+      }
+      if (error)
+      {
+        g_warning("g_socket_send_to error: %s", error->message);
+        g_error_free(error);
+      }
     }
   }
 }
