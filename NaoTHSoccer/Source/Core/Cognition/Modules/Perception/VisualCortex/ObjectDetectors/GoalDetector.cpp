@@ -12,6 +12,8 @@
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/Stopwatch.h"
 
+#include "Tools/CameraGeometry.h"
+
 #include <algorithm>
 #include <vector>
 
@@ -148,14 +150,14 @@ void GoalDetector::execute()
 
 
     //TODO: handle the case if the projection is not possible
-    Geometry::imagePixelToFieldCoord(
+    CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(),
       getImage().cameraInfo,
       postOne.basePoint.x, postOne.basePoint.y, 0.0,
       postOne.position);
 
     //TODO: handle the case if the projection is not possible
-    Geometry::imagePixelToFieldCoord(
+    CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(),
       getImage().cameraInfo,
       postTwo.basePoint.x, postTwo.basePoint.y, 0.0,
@@ -176,7 +178,7 @@ void GoalDetector::execute()
   else if(numberOfPostsFound > 0) // only one post found
   {
     //TODO: handle the case if the projection is not possible
-    Geometry::imagePixelToFieldCoord(
+    CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(),
       getImage().cameraInfo,
       postOne.basePoint.x, postOne.basePoint.y, 0.0,
@@ -212,7 +214,7 @@ void GoalDetector::execute()
       centroid /= 2.0;
     }//end if
 
-    Vector2<double> angles = Geometry::angleToPointInImage(
+    Vector2<double> angles = CameraGeometry::angleToPointInImage(
             getCameraMatrix(), 
             getImage().cameraInfo,
             (int)centroid.x, 
@@ -220,7 +222,7 @@ void GoalDetector::execute()
 
     getGoalPercept().angleToSeenGoal = angles.x;
 
-    getGoalPercept().goalCentroid = Geometry::imagePixelToWorld(
+    getGoalPercept().goalCentroid = CameraGeometry::imagePixelToWorld(
             getCameraMatrix(), 
             getImage().cameraInfo,
             centroid.x,
@@ -269,14 +271,14 @@ void GoalDetector::execute()
 
     if(getGoalPercept().getNumberOfSeenPosts() > 0)
     {
-      if(getFrameInfo().frameNumber - lastFrame == 1)
+      if(getFrameInfo().getFrameNumber() - lastFrame == 1)
       {
         double differenceInImage = (lastGoalPost.basePoint - getGoalPercept().getPost(0).basePoint).abs();
         PLOT("GoalDetector:differenceInImage", differenceInImage);
 
         // back projection test
         Vector2<int> projectedPost = 
-          Geometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+          CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
             Vector3<double>(lastGoalPost.position.x,
                             lastGoalPost.position.y, 
                             0.0)
@@ -287,7 +289,7 @@ void GoalDetector::execute()
       }//end if
 
       lastGoalPost = getGoalPercept().getPost(0);
-      lastFrame = getFrameInfo().frameNumber;
+      lastFrame = getFrameInfo().getFrameNumber();
     }
   );
 }//end horizonScan
@@ -296,7 +298,7 @@ void GoalDetector::execute()
 Vector2<int> GoalDetector::extendCandidate(ColorClasses::Color color, const Vector2<int>& start)
 {
   Vector2<double> p1, p2;
-  Geometry::calculateArtificialHorizon((Pose3D&)getCameraMatrix(), getImage().cameraInfo, p1, p2);
+  CameraGeometry::calculateArtificialHorizon((Pose3D&)getCameraMatrix(), getImage().cameraInfo, p1, p2);
   
   Vector2<int> direction(p2 - p1);
   

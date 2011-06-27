@@ -10,169 +10,6 @@
 #include "Geometry.h"
 
 
-Vector3<double> Geometry::imagePixelToCameraCoords(const CameraMatrix& cameraMatrix,
-                                                   const CameraInfo& cameraInfo,
-                                                   const double imgX,
-                                                   const double imgY)
-{
-  Vector3<double> pixelVector;
-
-  pixelVector.x = cameraInfo.focalLength;
-  pixelVector.y = -imgX + cameraInfo.opticalCenterX;
-  pixelVector.z = -imgY + cameraInfo.opticalCenterY;
-
-  pixelVector = cameraMatrix.rotation * pixelVector;
-  return pixelVector;
-}//end imagePixelCameraCoords
-
-
-Vector2<int> Geometry::relativePointToImage( const CameraMatrix& cameraMatrix,
-                                             const CameraInfo& cameraInfo,
-                                             const Vector3<double>& point)
-{
-  Vector3<double> vectorToPoint = cameraMatrix.rotation.invert() * (point - cameraMatrix.translation);
-
-  // the point is behind me...
-  if(vectorToPoint.x <= 0)
-  {
-    return Vector2<int>(-1,-1);
-  }//end if
-
-  double factor = cameraInfo.focalLength / vectorToPoint.x;
-  
-  Vector2<int> pointInImage;
-  pointInImage.x = (int)floor(-(vectorToPoint.y * factor) + 0.5 + cameraInfo.opticalCenterX);
-  pointInImage.y = (int)floor(-(vectorToPoint.z * factor) + 0.5 +  cameraInfo.opticalCenterY);
-
-  return pointInImage;
-}//end relativePointToImage
-
-
-Vector2<double> Geometry::angleToPointInImage( const CameraMatrix& cameraMatrix,
-                                               const CameraInfo& cameraInfo,
-                                               const double imgX,
-                                               const double imgY)
-{
-  Vector3<double> direction = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
-  direction.normalize();
-  return Vector2<double>(
-      atan2(direction.y, direction.x), // angle horizontal
-      atan2(direction.z, direction.x) // angle vertical
-      );
-}//end angleToPointInImage
-
-
-bool Geometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix, 
-                                       const CameraInfo& cameraInfo,
-                                       const double imgX, 
-                                       const double imgY, 
-                                       const double objectHeight,
-                                       Vector2<double>& result)
-{
-  double epsilon = 1e-13;
-
-  Vector3<double> pixelVector = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
-  
-  double heightDiff = objectHeight-cameraMatrix.translation.z;
-
-
-  // projection is impossible, because
-  //  - the height of the object is the same as the height of the camera
-  //    (it should never be pixelVector.z == 0 or heightDiff == 0)
-  //  - the point in image lies over the horizont, but the height of the 
-  //    object is smaller as the height of the camera or vice versa 
-  //    (it should allways hold sign(pixelVector.z) == sign(heightDiff))
-  if (pixelVector.z*heightDiff < epsilon)
-  {
-    return false;
-  }
-
-  result.x = pixelVector.x;
-  result.y = pixelVector.y;
-
-  result *= heightDiff/pixelVector.z;
-
-  result.x += cameraMatrix.translation.x;
-  result.y += cameraMatrix.translation.y;    
-  
-  return true;
-}//end imagePixelToFieldCoord
-
-
-Vector3<double> Geometry::imagePixelToWorld(const CameraMatrix& cameraMatrix,
-                                            const CameraInfo& cameraInfo,
-                                            const double imgX,
-                                            const double imgY,
-                                            const Vector3<double>& pointInWorld)
-{
-  Vector3<double> w = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
-  Vector3<double> v = pointInWorld - cameraMatrix.translation;
-
-  return w * (w * v.normalize());
-}//end imagePixelToWorld
-
-void Geometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
-                                           const CameraInfo& cameraInfo,
-                                           Vector2<double>& p1,
-                                           Vector2<double>& p2 )
-{
-  double r31 = cameraMatrix.rotation.c[0].z;
-  double r32 = cameraMatrix.rotation.c[1].z;
-  double r33 = cameraMatrix.rotation.c[2].z;
-  
-  if(r33 == 0) 
-    r33 = 1e-5;
-  
-  double x1 = 0,
-         x2 = cameraInfo.resolutionWidth - 1,
-
-         v1 = cameraInfo.focalLength,
-         v2 = cameraInfo.opticalCenterX,
-         v3 = cameraInfo.opticalCenterY,
-
-         y1 = (v3 * r33 + r31 * v1 + r32 * v2) / r33,
-         y2 = (v3 * r33 + r31 * v1 - r32 * v2) / r33;
-  
-  // Mirror ends of horizon if Camera rotated to the left  
-  if((cameraMatrix.rotation * Vector3<double>(0,0,1)).z < 0)
-  {
-    double t = x1;
-    x1 = x2;
-    x2 = t;
-    t = y1;
-    y1 = y2;
-    y2 = t;
-  }//end if
-
-  p1.x = x1;
-  p1.y = y1;
-  p2.x = x2;
-  p2.y = y2;
-}//end calculateArtificialHorizone
-
-
-Vector2<double> Geometry::lookAtPoint(Vector3<double> point, double cameraHeight)
-{
-  Vector3<double> vector;
-  Vector2<double> result;
-  double pitch;
-  double yaw;
-  vector.x = point.x;
-  vector.y = point.y;
-  //camera height
-  vector.z = point.z-cameraHeight;
-
-  yaw = atan2(vector.y,vector.x);
-  pitch = -atan2(vector.z,sqrt(vector.y*vector.y + vector.x*vector.x));
-
-  result.x = yaw;
-  result.y = pitch;
-
-  return result;
-}//end lookAtPoint
-
-
-
 double Geometry::angleTo(const Pose2D& from, const Vector2<double>& to)
 {
   return (Pose2D(to) - from).translation.angle();
@@ -200,4 +37,82 @@ Vector2<double> Geometry::relativeToFieldCoord(const Pose2D& robotPose, const Ve
 {
   return robotPose * relativeCoord;
 }//end relativeToFieldCoord
+
+
+bool Geometry::getIntersectionPointsOfLineAndRectangle(
+  const Vector2<int>& bottomLeft, 
+  const Vector2<int>& topRight,
+  const Math::Line line,
+  Vector2<int>& point1, 
+  Vector2<int>& point2)
+{
+  int foundPoints=0;
+  Vector2<double> point[2];
+  if (line.getDirection().x!=0)
+  {
+    double y1=line.getBase().y+(bottomLeft.x-line.getBase().x)*line.getDirection().y/line.getDirection().x;
+    if ((y1>=bottomLeft.y)&&(y1<=topRight.y))
+    {
+      point[foundPoints].x=(double) bottomLeft.x;
+      point[foundPoints++].y=y1;
+    }
+    double y2=line.getBase().y+(topRight.x-line.getBase().x)*line.getDirection().y/line.getDirection().x;
+    if ((y2>=bottomLeft.y)&&(y2<=topRight.y))
+    {
+      point[foundPoints].x=(double) topRight.x;
+      point[foundPoints++].y=y2;
+    }
+  }
+  if (line.getDirection().y!=0)
+  {
+    double x1=line.getBase().x+(bottomLeft.y-line.getBase().y)*line.getDirection().x/line.getDirection().y;
+    if ((x1>=bottomLeft.x)&&(x1<=topRight.x)&&(foundPoints<2))
+    {
+      point[foundPoints].x=x1;
+      point[foundPoints].y=(double) bottomLeft.y;
+      if ((foundPoints==0)||((point[0]-point[1]).abs()>0.1))
+      {
+        foundPoints++;
+      }
+    }
+    double x2=line.getBase().x+(topRight.y-line.getBase().y)*line.getDirection().x/line.getDirection().y;
+    if ((x2>=bottomLeft.x)&&(x2<=topRight.x)&&(foundPoints<2))
+    {
+      point[foundPoints].x=x2;
+      point[foundPoints].y=(double) topRight.y;
+      if ((foundPoints==0)||((point[0]-point[1]).abs()>0.1))
+      {
+        foundPoints++;
+      }
+    }
+  }
+  switch (foundPoints)
+  {
+  case 1:
+    point1.x=(int)point[0].x;
+    point2.x=point1.x;
+    point1.y=(int)point[0].y;
+    point2.y=point1.y;
+    foundPoints++;
+    return true;
+  case 2:
+    if ((point[1]-point[0])*line.getDirection() > 0)
+    {
+      point1.x=(int)point[0].x;
+      point1.y=(int)point[0].y;
+      point2.x=(int)point[1].x;
+      point2.y=(int)point[1].y;
+    }
+    else
+    {
+      point1.x=(int)point[1].x;
+      point1.y=(int)point[1].y;
+      point2.x=(int)point[0].x;
+      point2.y=(int)point[0].y;
+    }
+    return true;
+  default:
+    return false;
+  }
+}//end getIntersectionPointsOfLineAndRectangle
 

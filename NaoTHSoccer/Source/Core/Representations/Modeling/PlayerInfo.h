@@ -12,15 +12,24 @@ class PlayerInfo : public naoth::Printable
 {
 public:
 
-  // the representation of the game mode of Simsparc in xabsl
-
+  enum TeamColor
+  {
+    red,
+    blue,
+    numOfTeamColor
+  };
 
   PlayerInfo();
   //PlayerInfo(unsigned int playerNumber, naoth::GameData::TeamColor teamColor, unsigned int teamNumber, bool isPlayingStriker);
   ~PlayerInfo();
   
+  /** */
   naoth::GameData gameData;
+
+  /** */
   unsigned int timeSincePlayModeChanged; // ms
+
+  /** */
   unsigned int timeSinceGameStateChanged; // ms
 
   /** Whether the behavior decided to play as striker */

@@ -65,7 +65,7 @@ void SensorBehaviorControl::testBehavior()
   MODIFY("SensorBehaviorControl:KickExercise:kickDirection", kickDirection);
 
   DEBUG_REQUEST("SensorBehaviorControl:behavior:goto_ball",
-    int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.time);
+    int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.getTime());
 
     if (timeSinceBallWasSeen < 1000) 
     {
@@ -91,16 +91,13 @@ void SensorBehaviorControl::testBehavior()
 
       // set the motion request
       getMotionRequest().id = motion::walk;
-      getMotionRequest().walkRequest.translation.x = diffX * 0.7;
-      getMotionRequest().walkRequest.translation.y = ballLeftFootPreview.y;
-      getMotionRequest().walkRequest.rotation = ballLeftFootPreview.angle();
+      getMotionRequest().walkRequest.target = Pose2D(ballLeftFootPreview.angle(), diffX * 0.7, ballLeftFootPreview.y);
       getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
-      getMotionRequest().walkRequest.stopWithStand = false;
 
       DEBUG_REQUEST("SensorBehaviorControl:behavior:kick",
         if (diffX > -getFieldInfo().ballRadius && diffX < 10 &&
-            fabs(getMotionRequest().walkRequest.translation.y) < 10 &&
-            fabs(getMotionRequest().walkRequest.rotation) < Math::fromDegrees(10)
+            fabs(getMotionRequest().walkRequest.target.translation.y) < 10 &&
+            fabs(getMotionRequest().walkRequest.target.rotation) < Math::fromDegrees(10)
             )
         {
           getMotionRequest().id = motion::kick;
@@ -120,11 +117,8 @@ void SensorBehaviorControl::testBehavior()
 
       DEBUG_REQUEST("SensorBehaviorControl:behavior:search_ball",
         getMotionRequest().id = motion::walk;
-        getMotionRequest().walkRequest.translation.x = 0;
-        getMotionRequest().walkRequest.translation.y = 0;
-        getMotionRequest().walkRequest.rotation = Math::fromDegrees(20);
+        getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(20), 0, 0);
         getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
-        getMotionRequest().walkRequest.stopWithStand = true;
 
         getHeadMotionRequest().id = HeadMotionRequest::search;
         getHeadMotionRequest().searchCenter = Vector3d(2000, 0, 0);
@@ -136,30 +130,22 @@ void SensorBehaviorControl::testBehavior()
 
   DEBUG_REQUEST("SensorBehaviorControl:behavior:walk_cycle",
     getMotionRequest().id = motion::walk;
-    getMotionRequest().walkRequest.translation.x = 100;
-    getMotionRequest().walkRequest.translation.y = 0;
-    getMotionRequest().walkRequest.rotation = Math::fromDegrees(20);
+    getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(20), 100, 0);
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
-    getMotionRequest().walkRequest.stopWithStand = true;
   );
 
 
   DEBUG_REQUEST("SensorBehaviorControl:behavior:stability_test",
-    static unsigned int last_time = getFrameInfo().time;
+    static unsigned int last_time = getFrameInfo().getTime();
     getMotionRequest().id = motion::walk;
     getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
-    getMotionRequest().walkRequest.stopWithStand = true;
 
     if(last_time < 3000)
     {
-      getMotionRequest().walkRequest.translation.x = 1000;
-      getMotionRequest().walkRequest.translation.y = 0;
-      getMotionRequest().walkRequest.rotation = Math::fromDegrees(0);
+      getMotionRequest().walkRequest.target = Pose2D(0, 1000, 0);
     }else
     {
-      getMotionRequest().walkRequest.translation.x = 1000;
-      getMotionRequest().walkRequest.translation.y = 0;
-      getMotionRequest().walkRequest.rotation = Math::fromDegrees(90);
+      getMotionRequest().walkRequest.target = Pose2D(Math::fromDegrees(90), 1000, 0);
     }
   );
 }//end testBehavior
@@ -171,7 +157,7 @@ void SensorBehaviorControl::kickExercise()
   MODIFY("SensorBehaviorControl:KickExercise:kickDirection", kickDirection);
 
   DEBUG_REQUEST("SensorBehaviorControl:motion:kick",
-          int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.time);
+          int timeSinceBallWasSeen = getFrameInfo().getTimeSince(getBallPercept().frameInfoWhenBallWasSeen.getTime());
 
     if (timeSinceBallWasSeen < 1000 &&
         fabs(getBallPercept().bearingBasedOffsetOnField.x) < 500 &&

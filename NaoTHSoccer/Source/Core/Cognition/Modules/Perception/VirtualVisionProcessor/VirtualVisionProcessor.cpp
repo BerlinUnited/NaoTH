@@ -11,7 +11,7 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Matrix_nxn.h>
 #include <Tools/Math/Matrix_mxn.h>
-#include <Tools/Math/Geometry.h>
+#include <Tools/CameraGeometry.h>
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
@@ -93,7 +93,7 @@ void VirtualVisionProcessor::execute()
       Vector2<double> b = iter->lineOnField.begin();
       Vector2<double> e = iter->lineOnField.end();
       
-      if(iter->partOfCircle)
+      if(iter->type == LinePercept::C)
         PEN("FF0000", 20);
 
       LINE(b.x, b.y, e.x, e.y);
@@ -182,7 +182,7 @@ void VirtualVisionProcessor::updateBall()
     theBallPercept.bearingBasedOffsetOnField.y = p.y;
 
     theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.focalLength;
-    theBallPercept.centerInImage = Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
+    theBallPercept.centerInImage = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
   }
   else
   {
@@ -213,7 +213,7 @@ void VirtualVisionProcessor::updateGoal()
       Vector2<double> position(p.x, p.y);
 
       p.z = 0;
-      Vector2<int> basePoint = Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
+      Vector2<int> basePoint = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
 
       ColorClasses::Color color = goalPostColors.find(*i)->second;
 
@@ -375,7 +375,7 @@ void VirtualVisionProcessor::findIntersections()
       LinePercept::Intersection intersection;
       intersection.setPosOnField(point);
       Vector3<double> pSpace(point.x, point.y, 0.0);
-      Vector2<int> pointInImage = Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, pSpace);
+      Vector2<int> pointInImage = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, pSpace);
       intersection.setPosInImage(pointInImage);
 
       double d1 = lineOne.minDistance(intersection.getPosOnField());
@@ -442,8 +442,8 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
       )
       {
         Vector2<double> segmentDistancesToIntersection = theLinePercept.intersections[i].getSegmentsDistancesToIntersection();
-        bool tIntersectsOne = segmentDistancesToIntersection[0] > segTwo.thickness && segmentDistancesToIntersection[0] < segOne.lineOnField.getLength() - segTwo.thickness;
-        bool tIntersectsTwo = segmentDistancesToIntersection[1] > segOne.thickness && segmentDistancesToIntersection[1] < segTwo.lineOnField.getLength() - segOne.thickness;
+        bool tIntersectsOne = segmentDistancesToIntersection[0] > segTwo.lineInImage.thickness && segmentDistancesToIntersection[0] < segOne.lineOnField.getLength() - segTwo.lineInImage.thickness;
+        bool tIntersectsTwo = segmentDistancesToIntersection[1] > segOne.lineInImage.thickness && segmentDistancesToIntersection[1] < segTwo.lineOnField.getLength() - segOne.lineInImage.thickness;
 
         if(tIntersectsOne && tIntersectsTwo)
         {
@@ -493,8 +493,8 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
 
         // mark the lines as circle lines
         Vector2<unsigned int> lineIdx = theLinePercept.intersections[i].getSegmentIndices();
-        lineSegments[lineIdx[0]].partOfCircle = true;
-        lineSegments[lineIdx[1]].partOfCircle = true;
+        lineSegments[lineIdx[0]].type = LinePercept::C;
+        lineSegments[lineIdx[1]].type = LinePercept::C;
       }//end if
     }//end if
   }//end for
@@ -552,12 +552,12 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
   {
     for(unsigned int i = 0; i < lineSegments.size(); i++)
     {
-      if(!lineSegments[i].partOfCircle)
+      if(lineSegments[i].type != LinePercept::C)
       {
         double d = lineSegments[i].lineOnField.minDistance(theLinePercept.middleCircleCenter);
         if(d < 300.0)
         {
-          lineSegments[i].seen_id = LinePercept::FieldLineSegment::center_line;
+          lineSegments[i].seen_id = LinePercept::center_line;
           // estimate the orientation of the circle
           // TODO: treat the case if there are several lines
           theLinePercept.middleCircleOrientationWasSeen = true;
@@ -598,26 +598,27 @@ void VirtualVisionProcessor::addLine(const Vector3<double>& pol0, const Vector3<
 {
   const CameraMatrix& theCameraMatrix = getCameraMatrix();
   const CameraInfo& theCameraInfo = getCameraInfo();
+
   Vector3<double> bP = calculatePosition(pol0);
   Vector3<double> eP = calculatePosition(pol1);
   Vector2<double> bPos(bP.x, bP.y);
   Vector2<double> ePos(eP.x, eP.y);
 
   LinePercept::FieldLineSegment line;
-  line.thickness = 100; //TODO
-  line.set
-    (
-    Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, bP),
-    Geometry::relativePointToImage(theCameraMatrix, theCameraInfo, eP)
+  line.lineInImage.thickness = 100; //TODO
+  line.lineInImage.segment = 
+    Math::LineSegment(
+      CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, bP),
+      CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, eP)
     );
 
-  //line.begin = Geometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
-  //line.end = Geometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
+  //line.begin = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
+  //line.end = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
   line.lineOnField = Math::LineSegment(bPos, ePos);
   line.valid = true;
 
   getLinePercept().lines.push_back(line);
-}
+}//end addLine
 
 void VirtualVisionProcessor::updatePlayers()
 {

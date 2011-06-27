@@ -1,8 +1,10 @@
-/* 
- * File:   Configuration.cpp
- * Author: thomas
- * 
- * Created on 8. November 2010, 12:47
+/*
+ * @file Configuration.cpp
+ *
+ * @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ * @breief the gloabl configuration for NaoTH framework
+ *
  */
 
 #include "Configuration.h"
@@ -10,59 +12,65 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include <list>
 
 using namespace naoth;
 
 Configuration::Configuration()
 {
-  keyFile = g_key_file_new();
+  publicKeyFile = g_key_file_new();
+  privateKeyFile = g_key_file_new();
 }
 
 Configuration::Configuration(const Configuration& orig)
 {
-  keyFile = g_key_file_new();
+  publicKeyFile = g_key_file_new();
+  privateKeyFile = g_key_file_new();
 
+  // copy public key
   gsize bufferLength;
-  gchar* buffer = g_key_file_to_data(orig.keyFile, &bufferLength, NULL);
-
-  g_key_file_load_from_data(keyFile, buffer, bufferLength, G_KEY_FILE_NONE, NULL);
-
+  gchar* buffer = g_key_file_to_data(orig.publicKeyFile, &bufferLength, NULL);
+  g_key_file_load_from_data(publicKeyFile, buffer, bufferLength, G_KEY_FILE_NONE, NULL);
   g_free(buffer);
 
+  // copy private key
+  buffer = g_key_file_to_data(orig.privateKeyFile, &bufferLength, NULL);
+  g_key_file_load_from_data(privateKeyFile, buffer, bufferLength, G_KEY_FILE_NONE, NULL);
+  g_free(buffer);
 }
 
-void Configuration::loadFromDir(std::string dirlocation, std::string scheme, std::string id)
+Configuration::~Configuration()
+{
+  if (publicKeyFile != NULL)
+  {
+    g_key_file_free(publicKeyFile);
+  }
+  if (privateKeyFile != NULL)
+  {
+    g_key_file_free(privateKeyFile);
+  }
+}
+
+void Configuration::loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& id)
 {
   if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
     dirlocation = dirlocation + "/";
   }
 
-  clear();
-
   if (g_file_test(dirlocation.c_str(), G_FILE_TEST_EXISTS) && g_file_test(dirlocation.c_str(), G_FILE_TEST_IS_DIR))
   {
-    loadFromSingleDir(dirlocation + "general/");
-    loadFromSingleDir(dirlocation + "scheme/" + scheme + "/");
-    loadFromSingleDir(dirlocation + "robots/" + id + "/");
-    loadFromSingleDir(dirlocation + "private/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "general/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + id + "/");
+    privateDir = dirlocation + "private/";
+    loadFromSingleDir(privateKeyFile, privateDir);
   } else
   {
     g_warning("Could not load configuration from %s: directory does not exist", dirlocation.c_str());
   }
 }
 
-void Configuration::clear()
-{
-  if (keyFile != NULL)
-  {
-    g_key_file_free(keyFile);
-  }
-  keyFile = g_key_file_new();
-}
-
-void Configuration::loadFromSingleDir(std::string dirlocation)
+void Configuration::loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation)
 {
   // iterate over all files in the folder
 
@@ -84,7 +92,7 @@ void Configuration::loadFromSingleDir(std::string dirlocation)
         if (g_file_test(completeFileName.c_str(), G_FILE_TEST_EXISTS)
           && g_file_test(completeFileName.c_str(), G_FILE_TEST_IS_REGULAR))
         {
-          loadFile(completeFileName, std::string(group));
+          loadFile(keyFile, completeFileName, std::string(group));
         }
         g_free(group);
       }
@@ -95,7 +103,7 @@ void Configuration::loadFromSingleDir(std::string dirlocation)
   }
 }
 
-void Configuration::loadFile(std::string file, std::string groupName)
+void Configuration::loadFile(GKeyFile* keyFile, std::string file, std::string groupName)
 {
   GError* err = NULL;
 
@@ -145,21 +153,23 @@ void Configuration::loadFile(std::string file, std::string groupName)
   g_key_file_free(tmpKeyFile);
 }
 
-void Configuration::save(std::string dirlocation)
+void Configuration::save()
 {
-  if (!g_str_has_suffix(dirlocation.c_str(), "/"))
-  {
-    dirlocation = dirlocation + "/";
-  }
+  if (privateDir.empty())
+    return;
 
-  std::list<std::string> groups = getGroups();
-  for(std::list<std::string>::const_iterator it=groups.begin(); it != groups.end(); it++)
+  gsize length = 0;
+  gchar** groups = g_key_file_get_groups(privateKeyFile, &length);
+  for(gsize i=0; i < length; i++)
   {
-    saveFile(dirlocation + "private/" + *it + ".cfg", *it );
+    std::string groupname = std::string(groups[i]);
+    std::string filename = privateDir + groupname + ".cfg";
+    saveFile(privateKeyFile, filename, groupname );
   }
+  g_strfreev(groups);
 }
 
-void Configuration::saveFile(std::string file, std::string group)
+void Configuration::saveFile(GKeyFile* keyFile, const std::string& file, const std::string& group)
 {
   GKeyFile* tmpKeyFile = g_key_file_new();
   gsize numOfKeys = 0;
@@ -198,47 +208,48 @@ void Configuration::saveFile(std::string file, std::string group)
   g_key_file_free(tmpKeyFile);
 }
 
-std::list<std::string> Configuration::getGroups() const
+
+std::set<std::string> Configuration::getKeys(const std::string& group) const
 {
 
-  std::list<std::string> result;
+  std::set<std::string> result;
+
+  // public keys
   gsize length = 0;
-  gchar** groups = g_key_file_get_groups(keyFile, &length);
+  gchar** keys = g_key_file_get_keys(publicKeyFile, group.c_str(), &length, NULL);
   for(gsize i=0; i < length; i++)
   {
-    result.push_back(std::string(groups[i]));
+    result.insert(std::string(keys[i]));
   }
-  g_strfreev(groups);
-  return result;
-}
+  g_strfreev(keys);
 
-
-std::list<std::string> Configuration::getKeys(std::string group) const
-{
-
-  std::list<std::string> result;
-  gsize length = 0;
-  gchar** keys = g_key_file_get_keys(keyFile, group.c_str(), &length, NULL);
+  // private keys
+  length = 0;
+  keys = g_key_file_get_keys(privateKeyFile, group.c_str(), &length, NULL);
   for(gsize i=0; i < length; i++)
   {
-    result.push_back(std::string(keys[i]));
+    result.insert(std::string(keys[i]));
   }
   g_strfreev(keys);
   return result;
 }
 
-bool Configuration::hasKey(std::string group, std::string key) const
+bool Configuration::hasKey(const std::string& group, const std::string& key) const
 {
-  return g_key_file_has_key(keyFile, group.c_str(), key.c_str(), NULL) > 0;
+  return ( g_key_file_has_key(publicKeyFile, group.c_str(), key.c_str(), NULL) > 0 )
+      || ( g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 );
 }
 
-bool Configuration::hasGroup(std::string group) const
+bool Configuration::hasGroup(const std::string& group) const
 {
-  return g_key_file_has_group(keyFile, group.c_str()) > 0;
+  return ( g_key_file_has_group(publicKeyFile, group.c_str()) > 0 )
+      || ( g_key_file_has_group(privateKeyFile, group.c_str()) > 0 );
 }
 
-std::string Configuration::getString(std::string group, std::string key) const
+std::string Configuration::getString(const std::string& group, const std::string& key) const
 {
+  GKeyFile* keyFile = chooseKeyFile(group, key);
+
   gchar* buf = g_key_file_get_string(keyFile, group.c_str(), key.c_str(), NULL);
   if (buf != NULL)
   {
@@ -249,13 +260,15 @@ std::string Configuration::getString(std::string group, std::string key) const
   return "";
 }
 
-void Configuration::setString(std::string group, std::string key, std::string value)
+void Configuration::setString(const std::string& group, const std::string& key, const std::string& value)
 {
-  g_key_file_set_string(keyFile, group.c_str(), key.c_str(), value.c_str());
+  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), value.c_str());
 }
 
-std::string Configuration::getRawValue(std::string group, std::string key) const
+std::string Configuration::getRawValue(const std::string& group, const std::string& key) const
 {
+  GKeyFile* keyFile = chooseKeyFile(group, key);
+
   gchar* buf = g_key_file_get_value(keyFile, group.c_str(), key.c_str(), NULL);
   if (buf != NULL)
   {
@@ -266,47 +279,41 @@ std::string Configuration::getRawValue(std::string group, std::string key) const
   return "";
 }
 
-void Configuration::setRawValue(std::string group, std::string key, std::string value)
+void Configuration::setRawValue(const std::string& group, const std::string& key, const std::string& value)
 {
-  g_key_file_set_value(keyFile, group.c_str(), key.c_str(), value.c_str());
+  g_key_file_set_value(privateKeyFile, group.c_str(), key.c_str(), value.c_str());
 }
 
-int Configuration::getInt(std::string group, std::string key) const
+int Configuration::getInt(const std::string& group, const std::string& key) const
 {
+  GKeyFile* keyFile = chooseKeyFile(group, key);
   return g_key_file_get_integer(keyFile, group.c_str(), key.c_str(), NULL);
 }
 
-void Configuration::setInt(std::string group, std::string key, int value)
+void Configuration::setInt(const std::string& group, const std::string& key, int value)
 {
-  g_key_file_set_integer(keyFile, group.c_str(), key.c_str(), value);
+  g_key_file_set_integer(privateKeyFile, group.c_str(), key.c_str(), value);
 }
 
-double Configuration::getDouble(std::string group, std::string key) const
+double Configuration::getDouble(const std::string& group, const std::string& key) const
 {
+  GKeyFile* keyFile = chooseKeyFile(group, key);
   return g_key_file_get_double(keyFile, group.c_str(), key.c_str(), NULL);
 }
 
-void Configuration::setDouble(std::string group, std::string key, double value)
+void Configuration::setDouble(const std::string& group, const std::string& key, double value)
 {
-
-  g_key_file_set_double(keyFile, group.c_str(), key.c_str(), value);
+  g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
 }
 
-bool Configuration::getBool(std::string group, std::string key) const
+bool Configuration::getBool(const std::string& group, const std::string& key) const
 {
+  GKeyFile* keyFile = chooseKeyFile(group, key);
   return g_key_file_get_boolean(keyFile, group.c_str(), key.c_str(), NULL) > 0;
 }
 
-void Configuration::setBool(std::string group, std::string key, bool value)
+void Configuration::setBool(const std::string& group, const std::string& key, bool value)
 {
-  g_key_file_set_boolean(keyFile, group.c_str(), key.c_str(), value);
-}
-
-Configuration::~Configuration()
-{
-  if (keyFile != NULL)
-  {
-    g_key_file_free(keyFile);
-  }
+  g_key_file_set_boolean(privateKeyFile, group.c_str(), key.c_str(), value);
 }
 

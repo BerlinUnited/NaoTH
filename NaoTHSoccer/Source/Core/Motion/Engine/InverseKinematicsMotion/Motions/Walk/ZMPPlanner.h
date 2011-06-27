@@ -16,7 +16,7 @@ public:
   /**
    * @brief just set the ZMP on support foot
    */
-  static Vector2d simplest(const FootStep& step, double offsetX);
+  static Vector2d simplest(const FootStep& step, double offsetX, double offsetY);
 };
 
 #endif // _FOOT_STEP_PLANNER_H

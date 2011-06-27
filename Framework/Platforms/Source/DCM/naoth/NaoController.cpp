@@ -16,6 +16,13 @@ NaoController::NaoController()
 theSoundHandler(NULL),
 theTeamComm(NULL)
 {
+  // read the value from file
+  ifstream is(staticMemberPath.c_str());
+  ASSERT(is.good());
+  is>>theBodyID>>theBodyNickName;
+  cout<<"bodyID: "<<theBodyID<<endl;
+  cout<<"bodyNickName: "<<theBodyNickName<<endl;
+
   naothDataWriting = naothData.writing();
   
   // register input
@@ -69,6 +76,11 @@ NaoController::~NaoController()
   if ( theTeamComm != NULL)
   {
     delete theTeamComm;
+  }
+
+  if ( theGameController != NULL )
+  {
+    delete theGameController;
   }
 }
 
@@ -133,11 +145,11 @@ void NaoController::get(GameData& data)
   {
     playerCfgLoaded = true;
     data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
-    data.frameNumber = theFrameInfo.frameNumber;
+    data.frameNumber = theFrameInfo.getFrameNumber();
   }
 
-  if ( theGameController->update(data, theFrameInfo.time) )
+  if ( theGameController->update(data, theFrameInfo.getTime()) )
   {
-    data.frameNumber = theFrameInfo.frameNumber;
+    data.frameNumber = theFrameInfo.getFrameNumber();
   }
 }

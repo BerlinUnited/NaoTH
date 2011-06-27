@@ -5,18 +5,22 @@
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include "Representations/Modeling/PlayerInfo.h"
+#include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/TeamMessage.h"
 
 #include <glib.h>
 #include <gio/gio.h>
 
 BEGIN_DECLARE_MODULE(TeamCommunicator)
-  REQUIRE(FrameInfo)
-  REQUIRE(PlayerInfo)
-  REQUIRE(TeamMessageData)
 
-  PROVIDE(TeamMessage)
-  PROVIDE(RobotMessageData)
+REQUIRE(FrameInfo)
+REQUIRE(PlayerInfo)
+REQUIRE(TeamMessageData)
+REQUIRE(RobotInfo)
+
+PROVIDE(TeamMessage)
+PROVIDE(RobotMessageData)
+
 END_DECLARE_MODULE(TeamCommunicator)
 
 class TeamCommunicator : public TeamCommunicatorBase

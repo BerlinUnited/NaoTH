@@ -1,15 +1,17 @@
-/* 
- * File:   Configuration.h
- * Author: thomas
+/*
+ * @file Configuration.h
  *
- * Created on 8. November 2010, 12:47
+ * @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu Yuan</a>
+ * @breief the gloabl configuration for NaoTH framework
+ *
  */
 
 #ifndef CONFIGURATION_H
 #define	CONFIGURATION_H
 
 #include <string>
-#include <list>
+#include <set>
 
 #include <glib.h>
 
@@ -22,26 +24,17 @@ namespace naoth
     Configuration(const Configuration& orig);
     virtual ~Configuration();
 
-    void loadFromDir(std::string dirlocation, std::string scheme, std::string id);
-    void loadFile(std::string file, std::string groupName);
-    void clear();
+    void loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& id);
 
-    void save(std::string dirlocation);
-    void saveFile(std::string file, std::string group);
-
-    /**
-     * Get all group names.
-     * @param group
-     * @return
-     */
-    std::list<std::string> getGroups() const;
+    // note this function only save private keys
+    void save();
 
     /**
      * Get all keys for a specific group.
      * @param group
      * @return
      */
-    std::list<std::string> getKeys(std::string group) const;
+    std::set<std::string> getKeys(const std::string& group) const;
 
     /**
      * Returns true if the configuration has a key with this name and group
@@ -49,13 +42,13 @@ namespace naoth
      * @param key
      * @return
      */
-    bool hasKey(std::string group, std::string key) const;
+    bool hasKey(const std::string& group, const std::string& key) const;
 
   /**
    * Returns true if the configuration has a group with this name
    * @param group
    */
-  bool hasGroup(std::string group) const;
+  bool hasGroup(const std::string& group) const;
 
     /**
      * Get a string value from the configuration
@@ -63,9 +56,9 @@ namespace naoth
      * @param key
      * @return
      */
-    std::string getString(std::string group, std::string key) const;
+    std::string getString(const std::string& group, const std::string& key) const;
 
-    void setString(std::string group, std::string key, std::string value);
+    void setString(const std::string& group, const std::string& key, const std::string& value);
 
     /**
      * Get a double value from the configuration
@@ -73,9 +66,9 @@ namespace naoth
      * @param key
      * @return
      */
-    double getDouble(std::string group, std::string key) const;
+    double getDouble(const std::string& group, const std::string& key) const;
 
-    void setDouble(std::string group, std::string key, double value);
+    void setDouble(const std::string& group, const std::string& key, double value);
 
     /**
      * Get an integer value from the configuration
@@ -83,9 +76,9 @@ namespace naoth
      * @param key
      * @return
      */
-    int getInt(std::string group, std::string key) const;
+    int getInt(const std::string& group, const std::string& key) const;
 
-    void setInt(std::string group, std::string key, int value);
+    void setInt(const std::string& group, const std::string& key, int value);
 
     /**
      * Get a bool value from the configuration
@@ -93,9 +86,9 @@ namespace naoth
      * @param key
      * @return
      */
-    bool getBool(std::string group, std::string key) const;
+    bool getBool(const std::string& group, const std::string& key) const;
 
-    void setBool(std::string group, std::string key, bool value);
+    void setBool(const std::string& group, const std::string& key, bool value);
 
     /**
      * Get a raw and uninterpretated string from the configuration
@@ -103,16 +96,22 @@ namespace naoth
      * @param key
      * @return
      */
-    std::string getRawValue(std::string group, std::string key) const;
+    std::string getRawValue(const std::string& group, const std::string& key) const;
 
-    void setRawValue(std::string group, std::string key, std::string value);
+    void setRawValue(const std::string& group, const std::string& key, const std::string& value);
 
   private:
+    GKeyFile* publicKeyFile;
+    GKeyFile* privateKeyFile;
+    std::string privateDir;
 
-    GKeyFile* keyFile;
+    void loadFromSingleDir(GKeyFile* keyFile, std::string dirlocation);
 
-    void loadFromSingleDir(std::string dirlocation);
+    void loadFile(GKeyFile* keyFile, std::string file, std::string groupName);
 
+    void saveFile(GKeyFile* keyFile, const std::string& file, const std::string& group);
+
+    GKeyFile* chooseKeyFile(const std::string& group, const std::string& key) const { return ( g_key_file_has_key(privateKeyFile, group.c_str(), key.c_str(), NULL) > 0 ) ? privateKeyFile : publicKeyFile; }
   };
 }
 

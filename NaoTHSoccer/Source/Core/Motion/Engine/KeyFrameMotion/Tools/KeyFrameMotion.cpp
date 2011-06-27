@@ -7,6 +7,8 @@
 
 #include "KeyFrameMotion.h"
 
+using namespace naoth;
+
 KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id)
   : 
   AbstractMotion(id),
@@ -89,7 +91,7 @@ void KeyFrameMotion::execute(const MotionRequest& motionRequest, MotionStatus& /
     condition = "run";
   }
 
-  double timeStep = theBlackBoard.theFrameInfo.basicTimeStep;
+  double timeStep = theBlackBoard.theRobotInfo.basicTimeStep;
 
   if(currentState == motion::stopped)
   {

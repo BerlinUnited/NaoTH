@@ -1,6 +1,5 @@
 #include "TeamCommunicator.h"
 
-
 TeamCommunicator::TeamCommunicator()
   :lastSentTimestamp(0)
 {
@@ -24,7 +23,7 @@ void TeamCommunicator::execute()
     createMessage(msg);
 
     getRobotMessageData().data = msg.SerializeAsString();
-    lastSentTimestamp = getFrameInfo().time;
+    lastSentTimestamp = getFrameInfo().getTime();
   }
 }
 
@@ -35,9 +34,8 @@ void TeamCommunicator::handleMessage(const string& data)
 
   int num = msg.playernumber();
 
-  TeamMessage::TeamMessageData& content = getTeamMessage().data[num];
-  content.frameInfo.time = getFrameInfo().time;
-  content.frameInfo.frameNumber++;
+  TeamMessage::Data& content = getTeamMessage().data[num];
+  content.frameInfo.setTime( getFrameInfo().getTime() );
   content.message = msg;
 }
 
@@ -48,6 +46,7 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   msg.set_teamnumber(getPlayerInfo().gameData.teamNumber);
   msg.set_ispenalized(getPlayerInfo().gameData.gameState == GameData::penalized);
   msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
+  msg.set_bodyid(getRobotInfo().bodyID);
 
   // TODO: set falldown state in teamcomm message
   /*

@@ -21,13 +21,10 @@ ParameterListDebugLoader::ParameterListDebugLoader()
   while(it != paramlists.end())
   {
     REGISTER_DEBUG_COMMAND(std::string(it->first).append(":set"),
-                           std::string("set the parameters for ").append(it->first), this);
+                           std::string("set and save the parameters for ").append(it->first), this);
 
     REGISTER_DEBUG_COMMAND(std::string(it->first).append(":list"),
                            "get the list of available parameters", this);
-
-    REGISTER_DEBUG_COMMAND(std::string(it->first).append(":store"),
-                           "store the configure file according to the path", this);
     it++;
   }
 }
@@ -45,15 +42,14 @@ void ParameterListDebugLoader::executeDebugCommand(const std::string& command, c
   while(itParamList != paramlists.end())
   {
     if (command == std::string(itParamList->first).append(":set"))
-    {
-      // save the old values
-      itParamList->second->saveToConfig();
-      
+    {      
       for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); iter++)
       {
-        // update global config
-        config.setRawValue(itParamList->first, iter->first, iter->second);
+        // update global config when value changed
+        if ( config.getRawValue(itParamList->first, iter->first) != iter->second )
+          config.setRawValue(itParamList->first, iter->first, iter->second);
       }
+      config.save();
       // load from the changed config
       itParamList->second->loadFromConfig();
 
@@ -62,17 +58,12 @@ void ParameterListDebugLoader::executeDebugCommand(const std::string& command, c
     }
     else if (command == std::string(itParamList->first).append(":list"))
     {
-      std::list<std::string> keys = config.getKeys(itParamList->first);
-      for(std::list<std::string>::const_iterator it = keys.begin(); it != keys.end(); it++)
+      set<string> keys = config.getKeys(itParamList->first);
+      for(set<string>::const_iterator it = keys.begin(); it != keys.end(); it++)
       {
-        std::string val = config.getRawValue(itParamList->first, *it);
+        string val = config.getRawValue(itParamList->first, *it);
         outstream << *it << "=" << val << std::endl;
       }
-    }
-    else if (command == std::string(itParamList->first).append(":store"))
-    {
-      config.save(naoth::Platform::getInstance().theConfigDirectory);
-      outstream << "saved to " << naoth::Platform::getInstance().theConfigDirectory << std::endl;
     }
     itParamList++;
   }

@@ -11,7 +11,6 @@
 #define	_HEADMOTIONENGINE_H
 
 #include <Tools/Math/Vector2.h>
-#include <PlatformInterface/Platform.h>
 #include "Motion/MotionBlackBoard.h"
 
 class HeadMotionEngine
@@ -25,10 +24,13 @@ public:
 
 private:
   const MotionBlackBoard& theBlackBoard;
-  MotorJointData& theMotorJointData;
+
+  naoth::MotorJointData& theMotorJointData;
+  naoth::JointData theJointData;
+
   MotionStatus& theMotionStatus;
   KinematicChain theKinematicChain;
-  JointData theJointData;
+  
 
   bool trajectoryHeadMove(const std::vector<Vector3<double> >& points);
   void gotoPointOnTheGround(const Vector2<double>& target);

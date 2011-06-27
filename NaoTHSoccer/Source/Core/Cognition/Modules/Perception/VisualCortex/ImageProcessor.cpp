@@ -19,7 +19,7 @@
 
 // Tools
 #include "Tools/Math/Line.h"
-#include "Tools/Math/Geometry.h"
+#include "Tools/CameraGeometry.h"
 
 ImageProcessor::ImageProcessor()
 {
@@ -35,20 +35,26 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
+  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->setEnabled(true);
+
+  theFieldDetector = registerModule<FieldDetector>("FieldDetector");
+  theFieldDetector->setEnabled(true);
+
   theBallDetector = registerModule<BallDetector>("BallDetector");
   theBallDetector->setEnabled(true);
 
   theRobotDetector = registerModule<RobotDetector>("RobotDetector");
   theRobotDetector->setEnabled(true);
 
-  theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->setEnabled(true);
-
   theLineDetector = registerModule<LineDetector>("LineDetector");
   theLineDetector->setEnabled(true);
 
   theGoalDetector = registerModule<GoalDetector>("GoalDetector");
   theGoalDetector->setEnabled(true);
+
+  thePerceprionsVusalization = registerModule<PerceptionsVisualization>("PerceptionsVisualization");
+  thePerceprionsVusalization->setEnabled(true);
 
 }//end constructor
 
@@ -63,6 +69,15 @@ void ImageProcessor::execute()
   getLinePercept().reset();
   getPlayersPercept().reset();
 
+
+  STOPWATCH_START("ScanLineEdgelDetector");
+  theScanLineEdgelDetector->execute();
+  STOPWATCH_STOP("ScanLineEdgelDetector");
+
+  STOPWATCH_START("FieldDetector");
+  theFieldDetector->execute();
+  STOPWATCH_STOP("FieldDetector");
+
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
@@ -70,10 +85,6 @@ void ImageProcessor::execute()
   STOPWATCH_START("RobotDetector");
   theRobotDetector->execute();
   STOPWATCH_STOP("RobotDetector");
-
-  STOPWATCH_START("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->execute();
-  STOPWATCH_STOP("ScanLineEdgelDetector");
 
   STOPWATCH_START("LineDetector");
   theLineDetector->execute();
@@ -83,12 +94,17 @@ void ImageProcessor::execute()
   theGoalDetector->execute();
   STOPWATCH_STOP("GoalDetector");
 
+  STOPWATCH_START("PerceptionsVisualization");
+  thePerceprionsVusalization->execute();
+  STOPWATCH_STOP("PerceptionsVisualization");
+
+
 
   // estimate the relative position of the ball
   if(getBallPercept().ballWasSeen)
   {
     // estimate the projection of the ball on the ground
-    getBallPercept().ballWasSeen = Geometry::imagePixelToFieldCoord(
+    getBallPercept().ballWasSeen = CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
       getBallPercept().centerInImage.x, 
@@ -155,7 +171,7 @@ void ImageProcessor::execute()
   {
     // no ball in the image found
 
-    Vector2<int> projectedBall = Geometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
         Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
                         getBallPercept().bearingBasedOffsetOnField.y, 
                         getFieldInfo().ballRadius));
@@ -194,9 +210,9 @@ void ImageProcessor::execute()
         
         /*
         if(t > 120)
-          naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
+          naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,pixel.y,pixel.u,pixel.v);
         else*/
-          naoth::ImageDrawings::drawPointToImage(naoth::DebugImageDrawings::getInstance(),x,y,t,0,0);
+          naoth::ImageDrawings::drawPointToImage(DebugImageDrawings::getInstance(),x,y,t,0,0);
       }//end for
     }//end for
   );

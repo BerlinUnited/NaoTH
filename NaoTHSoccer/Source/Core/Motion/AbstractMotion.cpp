@@ -6,6 +6,7 @@
 
 #include "AbstractMotion.h"
 
+using namespace naoth;
 
 AbstractMotion::AbstractMotion(motion::MotionID id)
 : theId(id),

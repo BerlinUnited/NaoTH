@@ -10,9 +10,10 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/ColorClasses.h"
-#include "Tools/DataStructures/Printable.h"
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/DataStructures/Serializer.h>
 
-class GoalPercept : public Printable
+class GoalPercept : public naoth::Printable
 { 
 public:
   GoalPercept()
@@ -131,82 +132,7 @@ public:
       stream << "reliable=" << (post[n].positionReliable? "true" : "false") << endl;
     }//end for
   }//end print
-/*
-  virtual void toDataStream(ostream& stream) const
-  {
-    naothmessages::GoalPercept g;
-    
-    g.set_angletoseengoal(angleToSeenGoal);
-    
-    g.mutable_goalcentroid()->set_x(goalCentroid.x);
-    g.mutable_goalcentroid()->set_y(goalCentroid.y);
-    g.mutable_goalcentroid()->set_z(goalCentroid.z);
 
-    g.set_numberofseenposts(numberOfSeenPosts);
-
-    for(unsigned int i=0; i < numberOfSeenPosts && i < MAXNUMBEROFPOSTS; i++)
-    {
-      naothmessages::GoalPost* p = g.add_post();
-      p->mutable_basepoint()->set_x(post[i].basePoint.x);
-      p->mutable_basepoint()->set_y(post[i].basePoint.y);
-
-      p->mutable_position()->set_x(post[i].position.x);
-      p->mutable_position()->set_y(post[i].position.y);
-
-      p->set_color((naothmessages::Color) post[i].color);
-
-      p->set_type((naothmessages::GoalPost_PostType) post[i].type);
-
-      p->set_positionreliable(post[i].positionReliable);
-
-      p->set_seenheight(post[i].seenHeight);
-    }
-
-    google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-    g.SerializeToZeroCopyStream(&buf);
-  }
-  
-  virtual void fromDataStream(istream& stream)
-  {
-    // clear the percept befor reading from stream
-    this->reset();
-
-    naothmessages::GoalPercept g;
-    google::protobuf::io::IstreamInputStreamLite buf(&stream);
-    g.ParseFromZeroCopyStream(&buf);
-
-    if(g.has_angletoseengoal())
-    {
-      angleToSeenGoal = g.angletoseengoal();
-    }
-    if(g.has_goalcentroid())
-    {
-      goalCentroid.x = g.goalcentroid().x();
-      goalCentroid.y = g.goalcentroid().y();
-      goalCentroid.z = g.goalcentroid().z();
-    }
-    if(g.has_numberofseenposts())
-    {
-      numberOfSeenPosts = g.numberofseenposts();
-    }
-    for(unsigned int i=0; i < (unsigned int)g.post_size() && i < numberOfSeenPosts && i < MAXNUMBEROFPOSTS; i++)
-    {
-      post[i].basePoint.x = g.post(i).basepoint().x();
-      post[i].basePoint.y = g.post(i).basepoint().y();
-
-      post[i].position.x = g.post(i).position().x();
-      post[i].position.y = g.post(i).position().y();
-
-      post[i].color = (ColorClasses::Color) g.post(i).color();
-
-      post[i].type = (GoalPost::PostType) g.post(i).type();
-
-      post[i].positionReliable = g.post(i).positionreliable();
-
-      post[i].seenHeight = g.post(i).seenheight();
-    }
-  }
-*/
   //////////////////////////////////////
   // getters
   unsigned int getNumberOfSeenPosts() const { return numberOfSeenPosts; }
@@ -219,7 +145,20 @@ private:
   /* array of recognized posts in arbitrary order */
   GoalPost post[MAXNUMBEROFPOSTS];
 
+
+  friend class naoth::Serializer<GoalPercept>;
 };//end GoalPercept
+
+namespace naoth
+{
+  template<>
+  class Serializer<GoalPercept>
+  {
+  public:
+    static void serialize(const GoalPercept& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, GoalPercept& representation);
+  };
+}
 
 #endif //__GoalPercept_h_
 

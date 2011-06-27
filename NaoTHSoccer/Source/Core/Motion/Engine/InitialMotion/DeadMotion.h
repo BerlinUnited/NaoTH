@@ -22,8 +22,8 @@ public:
 private:
 
   double stiffness_increase;
-  double oldStiffness[JointData::numOfJoint];
-  double freeStiffness[JointData::numOfJoint];
+  double oldStiffness[naoth::JointData::numOfJoint];
+  double freeStiffness[naoth::JointData::numOfJoint];
 };
 
 #endif	/* _DEADMOTION_H */

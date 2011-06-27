@@ -76,9 +76,15 @@ int main(int argc, char** argv)
   Platform::getInstance().init(&sim);
   
   Cognition theCognition;
+
+  ModuleCreator<Simulator::CameraMatrixLogProvider>* theCameraMatrixLogProvider = theCognition.registerModule<Simulator::CameraMatrixLogProvider>(std::string("Simulator::CameraMatrixLogProvider"));
+
   Motion theMotion;
   sim.registerCallbacks(&theMotion, &theCognition);
   
+  theCameraMatrixLogProvider->setEnabled(true);
+  theCameraMatrixLogProvider->getModuleT()->init(sim);
+
   // start the execution
   sim.main();
   

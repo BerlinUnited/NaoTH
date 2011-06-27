@@ -40,6 +40,9 @@ compatibleMode(compatibleMode),
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this); 
+
+  // percepts
+  registerInput<CameraMatrix>(*this); 
   
   logFile.open(filePath, ios::in | ios::binary);
 
@@ -303,7 +306,7 @@ void Simulator::jumpTo(unsigned int position)
     {
       currentFrame++;
     }
-  }
+  }//end while
 
   if(wasFound)
   {
@@ -312,11 +315,10 @@ void Simulator::jumpTo(unsigned int position)
   else
   {
     cout << "frame not found!" << endl;
-    printCurrentLineInfo();
     currentFrame = oldPos;
+    printCurrentLineInfo();
   }
-
-}
+}//end jumpTo
 
 void Simulator::executeCurrentFrame()
 {  
@@ -415,6 +417,7 @@ void Simulator::executeCurrentFrame()
 
 void Simulator::adjust_frame_time()
 {
+  return;
   // HACK: adjust the timestamp: 
   // the time should contineously increase even if the logfile is played backwards (!)
   static unsigned int current_time = 0;
@@ -426,7 +429,6 @@ void Simulator::adjust_frame_time()
   if(noFrameInfo)
   {
     f.set_framenumber(*currentFrame);
-    f.set_basictimestep(60);
     lastFrameTime = 0;
   }
   else
@@ -601,16 +603,16 @@ void Simulator::parseFile()
 ///// Getter/Setter /////
 
 template<class T>
-void Simulator::generalGet(T& data, std::string name)
+void Simulator::generalGet(T& data, std::string name) const
 {
-  if(representations.find(name) != representations.end())
+  std::map<std::string, std::string>::const_iterator iter = representations.find(name); 
+  if(iter != representations.end())
   {
-    
   //std::cout << "getting " << name << std::endl;
-    std::stringstream stream(representations[name]);
+    std::stringstream stream(iter->second);
     Serializer<T>::deserialize(stream, data);
-  }
-}
+  }//end if
+}//end generalGet
 
 
 ///// end Getter/Setter /////

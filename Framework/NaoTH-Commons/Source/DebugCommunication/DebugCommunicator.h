@@ -37,7 +37,7 @@ public:
     *
     * @return True if connection was etablished. False on error.
     */
-  bool connect(unsigned int timeout);
+  bool connect(int timeout);
   /**
     * Disconnects a existing connection.
     */
@@ -59,9 +59,9 @@ public:
     * Complete Messages are always ended by a "\n" character (which is not part
     * of the result)
     *
-    * @return A null terminated message string or NULL if an error occured.
+    * @return A null terminated message string or NULL if nothing to read after timeout
     */
-  char* readMessage();
+  GString* readMessage();
 
   bool isConnected();
 
@@ -76,7 +76,7 @@ private:
 
   GError* internalSendMessage(const char* data, size_t size);
   GError* internalInit();
-  char* internalReadMessage(GError** err);
+  GString* internalReadMessage(GError** err);
 };
 
 #endif	/* _DEBUGCOMMUNICATOR_H */

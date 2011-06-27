@@ -44,7 +44,7 @@ private:
     * @param f The name of the source file a passed trace point is located in.
     * @param l The line a passed trace point is located in.
     */
-    Line(const char* f = "", int l = 0, const std::string msg = "");
+    Line(const char* f = "", int l = 0, const std::string& msg = "");
   };
 
   RingBuffer<Line, 256> buffer; /**< A buffer for the last 256 passed trace points. */

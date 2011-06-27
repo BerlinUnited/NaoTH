@@ -16,9 +16,11 @@
 
 // Tools
 #include <Tools/Math/Common.h>
-#include <Tools/Math/Geometry.h>
 #include <Tools/Math/Matrix2x2.h>
 #include <Tools/NaoInfo.h>
+#include <Tools/CameraGeometry.h>
+
+#include <PlatformInterface/Platform.h>
 
 // Debug
 //#include "Tools/Debug/DebugBufferedOutput.h"
@@ -29,6 +31,7 @@
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
 
+using namespace naoth;
 
 HeadMotionEngine::HeadMotionEngine()
     :
@@ -125,7 +128,7 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
   
   Vector2<double> centerOnField;
   //TODO: handle the case if the projection is not possible
-  Geometry::imagePixelToFieldCoord(
+  CameraGeometry::imagePixelToFieldCoord(
     theBlackBoard.theCameraMatrix, 
     Platform::getInstance().theCameraInfo,
     (double)Platform::getInstance().theCameraInfo.opticalCenterX, 
@@ -169,7 +172,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   double max_velocity_deg_in_second = 90.0;
   //TODO
   //MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
-  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 
   double stiffness = 0.7;
   //TODO
@@ -235,7 +238,7 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
     Platform::getInstance().theCameraInfo.opticalCenterX,
     Platform::getInstance().theCameraInfo.opticalCenterY);
 
-  Vector3<double> direction = Geometry::imagePixelToCameraCoords(
+  Vector3<double> direction = CameraGeometry::imagePixelToCameraCoords(
     cameraMatrix, 
     Platform::getInstance().theCameraInfo, 
     projectionPointInImage.x, 
@@ -408,7 +411,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
     cycle = 0.0;
   }//end if
 
-//  Vector2<double> headTo2D = Geometry::imagePixelToFieldCoord(
+//  Vector2<double> headTo2D = CameraGeometry::imagePixelToFieldCoord(
 //    theBlackBoard.theCameraMatrix, RobotInfo::getInstance().theCameraInfo,
 //    RobotInfo::getInstance().theCameraInfo.opticalCenterX,
 //    RobotInfo::getInstance().theCameraInfo.opticalCenterY, points[headMotionState].z);
@@ -431,7 +434,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
 
   cycle++;
   int nextMotionState = (headMotionState+1)%MAXSTATE;
-  double s = cycle / ( (points[nextMotionState]-points[headMotionState]).abs() / (max_speed*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() ));
+  double s = cycle / ( (points[nextMotionState]-points[headMotionState]).abs() / (max_speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() ));
 
   if ( s > 1 )
   {

@@ -8,6 +8,8 @@
 #include "InitialMotion.h"
 #include "PlatformInterface/Platform.h"
 
+using namespace naoth;
+
 InitialMotion::InitialMotion() 
   :
   AbstractMotion(motion::init),
@@ -108,7 +110,7 @@ void InitialMotion::increaseStiffness()
     theMotorJointData.position[i] = theBlackBoard.theSensorJointData.position[i];
   }
 
-  double stiffDelta = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() * 10;
+  double stiffDelta = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() * 10;
   if ( setStiffness(safeStiffness, stiffDelta) )
   {
     initStatus = StiffnessReady;
@@ -130,7 +132,7 @@ void InitialMotion::moveToExtendPose()
       theMotorJointData.position[i] = (1 - t) * startJoints.position[i] + t * extendJoints.position[i];
       theMotorJointData.stiffness[i] = safeStiffness[i];
     }
-    movedTime += theBlackBoard.theFrameInfo.basicTimeStep;
+    movedTime += theBlackBoard.theRobotInfo.basicTimeStep;
   } else
   {
     initStatus = ExtendPoseReady;
@@ -150,7 +152,7 @@ void InitialMotion::moveToInitialPose()
       theMotorJointData.position[i] = (1 - t) * extendJoints.position[i] + t * theInitJoints.position[i];
       theMotorJointData.stiffness[i] = safeStiffness[i];
     }
-    movedTime += theBlackBoard.theFrameInfo.basicTimeStep;
+    movedTime += theBlackBoard.theRobotInfo.basicTimeStep;
   } else
   {
     initStatus = InitialPoseReady;
@@ -159,7 +161,7 @@ void InitialMotion::moveToInitialPose()
 
 void InitialMotion::freeJoint(bool freely)
 {
-  double stiffDelta = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  double stiffDelta = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
   if (freely)
   {
     setStiffness(freeStiffness, stiffDelta);

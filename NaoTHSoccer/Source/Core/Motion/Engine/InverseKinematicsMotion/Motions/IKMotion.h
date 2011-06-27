@@ -18,7 +18,7 @@ class IKMotion: public AbstractMotion
 {
 protected:
 
-  InverseKinematic::CoMFeetPose getStandPose(double comHeight) const;
+  InverseKinematic::CoMFeetPose getStandPose(double comHeight, bool standard=true) const;
 
 protected:
 

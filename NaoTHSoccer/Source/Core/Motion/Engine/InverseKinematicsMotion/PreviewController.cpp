@@ -23,8 +23,7 @@ theHeight(0)
 void PreviewController::setHeight(double height)
 {
   unsigned int newHeight = (unsigned int)Math::round(height);
-  ASSERT(newHeight>=200);
-  ASSERT(newHeight<=300);
+  newHeight = Math::clamp(newHeight, 200u, 300u);
   
   if ( theHeight != newHeight )
   {
@@ -33,7 +32,7 @@ void PreviewController::setHeight(double height)
     {
       string path =naoth::Platform::getInstance().theConfigDirectory + "scheme/"
             + naoth::Platform::getInstance().theScheme + "/previewControl/";
-      path += DataConversion::toStr(theHeight)+".prm";
+      path += naoth::DataConversion::toStr(theHeight)+".prm";
       cout<<"PreviewController load "<<path<<endl;
     
       ifstream ifs(path.c_str());

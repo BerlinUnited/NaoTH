@@ -41,12 +41,12 @@ private:
   bool isDanger() const;
 
   double movedTime;
-  JointData startJoints;
-  JointData extendJoints;
-  JointData theInitJoints;
-  double maxStiffness[JointData::numOfJoint];
-  double safeStiffness[JointData::numOfJoint];
-  double freeStiffness[JointData::numOfJoint];
+  naoth::JointData startJoints;
+  naoth::JointData extendJoints;
+  naoth::JointData theInitJoints;
+  double maxStiffness[naoth::JointData::numOfJoint];
+  double safeStiffness[naoth::JointData::numOfJoint];
+  double freeStiffness[naoth::JointData::numOfJoint];
 };
 
 #endif	/* _INITIALMOTION_H */

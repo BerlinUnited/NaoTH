@@ -13,10 +13,10 @@
 #include "PreviewController.h"
 #include "Motions/IKParameters.h"
 
-class InverseKinematicsMotionEngine: public Singleton<InverseKinematicsMotionEngine>
+class InverseKinematicsMotionEngine: public naoth::Singleton<InverseKinematicsMotionEngine>
 {
 private:
-  friend class Singleton<InverseKinematicsMotionEngine>;
+  friend class naoth::Singleton<InverseKinematicsMotionEngine>;
   
   InverseKinematicsMotionEngine();
   
@@ -73,6 +73,8 @@ public:
 
   bool controlZMPstop(const Vector3d& finalZmp);
 
+  void controlZMPclear();
+
   /**
    * @param com return the result
    */
@@ -83,12 +85,14 @@ public:
   /**
    * @return if stabilizer is working
    */
-  bool rotationStabilize(Pose3D& hip) const;
+  bool rotationStabilize(Pose3D& hip);
   
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
   const IKParameters& getParameters() const { return theParameters; }
   
+  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[naoth::JointData::numOfJoint]);
+
 private:
 
   const MotionBlackBoard& theBlackBoard;
@@ -103,6 +107,8 @@ private:
   Vector3<double> thePreviewControlCoM;
   Vector2<double> thePreviewControldCoM;
   Vector2<double> thePreviewControlddCoM;
+
+  double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
 
 #endif // _INVERSE_KINEMATCS_MOTION_ENGINE_

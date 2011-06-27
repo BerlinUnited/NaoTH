@@ -37,17 +37,10 @@ namespace naoth
   class LibNaothData
   {
   public:
-    char bodyID[24];
-    char nickName[24];
     unsigned int timeStamp;
     float sensorsValue[numOfSensors];
     MotorJointData theMotorJointData;
     
-    void setBodyID(const string& id);
-    void setNickName(const string& name);
-    
-    string getBodyID() const;
-    string getNickName() const;
     void get(MotorJointData& data) const;
     void get(SensorJointData& data) const;
     void get(FSRData& data) const;

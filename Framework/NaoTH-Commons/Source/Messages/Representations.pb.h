@@ -807,30 +807,20 @@ class FrameInfo : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 time() const;
   inline void set_time(::google::protobuf::uint32 value);
   
-  // required uint32 basicTimeStep = 3;
-  inline bool has_basictimestep() const;
-  inline void clear_basictimestep();
-  static const int kBasicTimeStepFieldNumber = 3;
-  inline ::google::protobuf::uint32 basictimestep() const;
-  inline void set_basictimestep(::google::protobuf::uint32 value);
-  
   // @@protoc_insertion_point(class_scope:naothmessages.FrameInfo)
  private:
   inline void set_has_framenumber();
   inline void clear_has_framenumber();
   inline void set_has_time();
   inline void clear_has_time();
-  inline void set_has_basictimestep();
-  inline void clear_has_basictimestep();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 framenumber_;
   ::google::protobuf::uint32 time_;
-  ::google::protobuf::uint32 basictimestep_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1310,38 +1300,28 @@ class WalkRequest : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 coordinate() const;
   inline void set_coordinate(::google::protobuf::uint32 value);
   
-  // required bool stopWithStand = 2;
-  inline bool has_stopwithstand() const;
-  inline void clear_stopwithstand();
-  static const int kStopWithStandFieldNumber = 2;
-  inline bool stopwithstand() const;
-  inline void set_stopwithstand(bool value);
-  
-  // required .naothmessages.Pose2D pose = 3;
-  inline bool has_pose() const;
-  inline void clear_pose();
-  static const int kPoseFieldNumber = 3;
-  inline const ::naothmessages::Pose2D& pose() const;
-  inline ::naothmessages::Pose2D* mutable_pose();
-  inline ::naothmessages::Pose2D* release_pose();
+  // required .naothmessages.Pose2D target = 3;
+  inline bool has_target() const;
+  inline void clear_target();
+  static const int kTargetFieldNumber = 3;
+  inline const ::naothmessages::Pose2D& target() const;
+  inline ::naothmessages::Pose2D* mutable_target();
+  inline ::naothmessages::Pose2D* release_target();
   
   // @@protoc_insertion_point(class_scope:naothmessages.WalkRequest)
  private:
   inline void set_has_coordinate();
   inline void clear_has_coordinate();
-  inline void set_has_stopwithstand();
-  inline void clear_has_stopwithstand();
-  inline void set_has_pose();
-  inline void clear_has_pose();
+  inline void set_has_target();
+  inline void clear_has_target();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::naothmessages::Pose2D* target_;
   ::google::protobuf::uint32 coordinate_;
-  bool stopwithstand_;
-  ::naothmessages::Pose2D* pose_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1435,6 +1415,13 @@ class MotionRequest : public ::google::protobuf::Message {
   inline ::naothmessages::WalkRequest* mutable_walkrequest();
   inline ::naothmessages::WalkRequest* release_walkrequest();
   
+  // optional bool starndardStand = 5;
+  inline bool has_starndardstand() const;
+  inline void clear_starndardstand();
+  static const int kStarndardStandFieldNumber = 5;
+  inline bool starndardstand() const;
+  inline void set_starndardstand(bool value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1445,6 +1432,8 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_forced();
   inline void set_has_walkrequest();
   inline void clear_has_walkrequest();
+  inline void set_has_starndardstand();
+  inline void clear_has_starndardstand();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1452,9 +1441,10 @@ class MotionRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 time_;
   ::naothmessages::WalkRequest* walkrequest_;
   bool forced_;
+  bool starndardstand_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1774,6 +1764,22 @@ class MotionStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 currentmotionstate() const;
   inline void set_currentmotionstate(::google::protobuf::uint32 value);
   
+  // required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+  inline bool has_plannedmotionleftfoot() const;
+  inline void clear_plannedmotionleftfoot();
+  static const int kPlannedMotionLeftFootFieldNumber = 6;
+  inline const ::naothmessages::Pose2D& plannedmotionleftfoot() const;
+  inline ::naothmessages::Pose2D* mutable_plannedmotionleftfoot();
+  inline ::naothmessages::Pose2D* release_plannedmotionleftfoot();
+  
+  // required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+  inline bool has_plannedmotionrightfoot() const;
+  inline void clear_plannedmotionrightfoot();
+  static const int kPlannedMotionRightFootFieldNumber = 7;
+  inline const ::naothmessages::Pose2D& plannedmotionrightfoot() const;
+  inline ::naothmessages::Pose2D* mutable_plannedmotionrightfoot();
+  inline ::naothmessages::Pose2D* release_plannedmotionrightfoot();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
   inline void set_has_time();
@@ -1786,6 +1792,10 @@ class MotionStatus : public ::google::protobuf::Message {
   inline void clear_has_headmotion();
   inline void set_has_currentmotionstate();
   inline void clear_has_currentmotionstate();
+  inline void set_has_plannedmotionleftfoot();
+  inline void clear_has_plannedmotionleftfoot();
+  inline void set_has_plannedmotionrightfoot();
+  inline void clear_has_plannedmotionrightfoot();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1793,10 +1803,12 @@ class MotionStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint32 lastmotion_;
   ::google::protobuf::uint32 currentmotion_;
   ::google::protobuf::uint32 headmotion_;
+  ::naothmessages::Pose2D* plannedmotionleftfoot_;
+  ::naothmessages::Pose2D* plannedmotionrightfoot_;
   ::google::protobuf::uint32 currentmotionstate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -2608,28 +2620,6 @@ inline void FrameInfo::set_time(::google::protobuf::uint32 value) {
   time_ = value;
 }
 
-// required uint32 basicTimeStep = 3;
-inline bool FrameInfo::has_basictimestep() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void FrameInfo::set_has_basictimestep() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void FrameInfo::clear_has_basictimestep() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void FrameInfo::clear_basictimestep() {
-  basictimestep_ = 0u;
-  clear_has_basictimestep();
-}
-inline ::google::protobuf::uint32 FrameInfo::basictimestep() const {
-  return basictimestep_;
-}
-inline void FrameInfo::set_basictimestep(::google::protobuf::uint32 value) {
-  set_has_basictimestep();
-  basictimestep_ = value;
-}
-
 // -------------------------------------------------------------------
 
 // BallPercept
@@ -3131,54 +3121,32 @@ inline void WalkRequest::set_coordinate(::google::protobuf::uint32 value) {
   coordinate_ = value;
 }
 
-// required bool stopWithStand = 2;
-inline bool WalkRequest::has_stopwithstand() const {
+// required .naothmessages.Pose2D target = 3;
+inline bool WalkRequest::has_target() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void WalkRequest::set_has_stopwithstand() {
+inline void WalkRequest::set_has_target() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void WalkRequest::clear_has_stopwithstand() {
+inline void WalkRequest::clear_has_target() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void WalkRequest::clear_stopwithstand() {
-  stopwithstand_ = false;
-  clear_has_stopwithstand();
+inline void WalkRequest::clear_target() {
+  if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
+  clear_has_target();
 }
-inline bool WalkRequest::stopwithstand() const {
-  return stopwithstand_;
+inline const ::naothmessages::Pose2D& WalkRequest::target() const {
+  return target_ != NULL ? *target_ : *default_instance_->target_;
 }
-inline void WalkRequest::set_stopwithstand(bool value) {
-  set_has_stopwithstand();
-  stopwithstand_ = value;
+inline ::naothmessages::Pose2D* WalkRequest::mutable_target() {
+  set_has_target();
+  if (target_ == NULL) target_ = new ::naothmessages::Pose2D;
+  return target_;
 }
-
-// required .naothmessages.Pose2D pose = 3;
-inline bool WalkRequest::has_pose() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void WalkRequest::set_has_pose() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void WalkRequest::clear_has_pose() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void WalkRequest::clear_pose() {
-  if (pose_ != NULL) pose_->::naothmessages::Pose2D::Clear();
-  clear_has_pose();
-}
-inline const ::naothmessages::Pose2D& WalkRequest::pose() const {
-  return pose_ != NULL ? *pose_ : *default_instance_->pose_;
-}
-inline ::naothmessages::Pose2D* WalkRequest::mutable_pose() {
-  set_has_pose();
-  if (pose_ == NULL) pose_ = new ::naothmessages::Pose2D;
-  return pose_;
-}
-inline ::naothmessages::Pose2D* WalkRequest::release_pose() {
-  clear_has_pose();
-  ::naothmessages::Pose2D* temp = pose_;
-  pose_ = NULL;
+inline ::naothmessages::Pose2D* WalkRequest::release_target() {
+  clear_has_target();
+  ::naothmessages::Pose2D* temp = target_;
+  target_ = NULL;
   return temp;
 }
 
@@ -3279,6 +3247,28 @@ inline ::naothmessages::WalkRequest* MotionRequest::release_walkrequest() {
   ::naothmessages::WalkRequest* temp = walkrequest_;
   walkrequest_ = NULL;
   return temp;
+}
+
+// optional bool starndardStand = 5;
+inline bool MotionRequest::has_starndardstand() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void MotionRequest::set_has_starndardstand() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void MotionRequest::clear_has_starndardstand() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void MotionRequest::clear_starndardstand() {
+  starndardstand_ = false;
+  clear_has_starndardstand();
+}
+inline bool MotionRequest::starndardstand() const {
+  return starndardstand_;
+}
+inline void MotionRequest::set_starndardstand(bool value) {
+  set_has_starndardstand();
+  starndardstand_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -3555,6 +3545,64 @@ inline ::google::protobuf::uint32 MotionStatus::currentmotionstate() const {
 inline void MotionStatus::set_currentmotionstate(::google::protobuf::uint32 value) {
   set_has_currentmotionstate();
   currentmotionstate_ = value;
+}
+
+// required .naothmessages.Pose2D plannedMotionLeftFoot = 6;
+inline bool MotionStatus::has_plannedmotionleftfoot() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void MotionStatus::set_has_plannedmotionleftfoot() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void MotionStatus::clear_has_plannedmotionleftfoot() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void MotionStatus::clear_plannedmotionleftfoot() {
+  if (plannedmotionleftfoot_ != NULL) plannedmotionleftfoot_->::naothmessages::Pose2D::Clear();
+  clear_has_plannedmotionleftfoot();
+}
+inline const ::naothmessages::Pose2D& MotionStatus::plannedmotionleftfoot() const {
+  return plannedmotionleftfoot_ != NULL ? *plannedmotionleftfoot_ : *default_instance_->plannedmotionleftfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::mutable_plannedmotionleftfoot() {
+  set_has_plannedmotionleftfoot();
+  if (plannedmotionleftfoot_ == NULL) plannedmotionleftfoot_ = new ::naothmessages::Pose2D;
+  return plannedmotionleftfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionleftfoot() {
+  clear_has_plannedmotionleftfoot();
+  ::naothmessages::Pose2D* temp = plannedmotionleftfoot_;
+  plannedmotionleftfoot_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.Pose2D plannedMotionRightFoot = 7;
+inline bool MotionStatus::has_plannedmotionrightfoot() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void MotionStatus::set_has_plannedmotionrightfoot() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void MotionStatus::clear_has_plannedmotionrightfoot() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void MotionStatus::clear_plannedmotionrightfoot() {
+  if (plannedmotionrightfoot_ != NULL) plannedmotionrightfoot_->::naothmessages::Pose2D::Clear();
+  clear_has_plannedmotionrightfoot();
+}
+inline const ::naothmessages::Pose2D& MotionStatus::plannedmotionrightfoot() const {
+  return plannedmotionrightfoot_ != NULL ? *plannedmotionrightfoot_ : *default_instance_->plannedmotionrightfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::mutable_plannedmotionrightfoot() {
+  set_has_plannedmotionrightfoot();
+  if (plannedmotionrightfoot_ == NULL) plannedmotionrightfoot_ = new ::naothmessages::Pose2D;
+  return plannedmotionrightfoot_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionrightfoot() {
+  clear_has_plannedmotionrightfoot();
+  ::naothmessages::Pose2D* temp = plannedmotionrightfoot_;
+  plannedmotionrightfoot_ = NULL;
+  return temp;
 }
 
 // -------------------------------------------------------------------

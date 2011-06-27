@@ -28,10 +28,8 @@ public:
   // change some key characters, e.g. []
   std::string covertName(std::string name);
 
-  virtual void loadFromConfig();
-  virtual void saveToConfig();
-
-  virtual void initParams();
+  void loadFromConfig();
+  void saveToConfig();
 
 private:
   std::string parentClassName;

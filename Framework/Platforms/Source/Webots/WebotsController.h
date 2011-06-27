@@ -69,8 +69,9 @@ namespace naoth
       numOfWebots_Leds
     };
 
-    //private:
+  private:
 
+    unsigned int time;
     WbDeviceTag camera,
     cameraSelect,
     joint[JointData::numOfJoint],

@@ -101,7 +101,6 @@ SimSparkController::SimSparkController()
   theCognitionInputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
 
-  theFrameInfo.basicTimeStep = getBasicTimeStep();
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
   GError *err = NULL;
@@ -344,8 +343,6 @@ bool SimSparkController::updateSensors()
     theFSRData.data[i] = 0;
   }
 
-  theFrameInfo.frameNumber++;
-
   while(sexp)
   {
     const sexp_t* t = sexp->list;
@@ -371,7 +368,7 @@ bool SimSparkController::updateSensors()
       {
         ok = SexpParser::parseGivenValue(t->next, "now", theSenseTime); // time
         theStepTime = theSenseTime - lastSenseTime;
-        theFrameInfo.time = static_cast<unsigned int>(theSenseTime * 1000.0);
+        theFrameInfo.setTime( static_cast<unsigned int>(theSenseTime * 1000.0) );
         if ( static_cast<unsigned int>(theStepTime*100)*10 > getBasicTimeStep() )
           cerr<<"warning: the step is "<<theStepTime<<" s"<<endl;
       } else if ("GYR" == name) ok = updateGyro(t->next); // gyro rate
@@ -701,7 +698,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         if ( theGameData.playMode != playMode )
         {
           theGameData.playMode = playMode;
-          theGameData.timeWhenPlayModeChanged = theFrameInfo.time;
+          theGameData.timeWhenPlayModeChanged = theFrameInfo.getTime();
         }
       } else if ("unum" == name) // unum
       {
@@ -733,7 +730,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     sexp = sexp->next;
   }
 
-  if ( ok ) theGameData.frameNumber = theFrameInfo.frameNumber;
+  if ( ok ) theGameData.frameNumber = theFrameInfo.getFrameNumber();
   return ok;
 }//end updateGameInfo
 
@@ -1136,7 +1133,7 @@ void SimSparkController::autoBeam()
     || theGameData.playMode == GameData::goal_opp
     || theGameData.playMode == GameData::before_kick_off)
   {
-    if ( theFrameInfo.time - theGameData.timeWhenPlayModeChanged < 1000 )
+    if ( theFrameInfo.getTime() - theGameData.timeWhenPlayModeChanged < 1000 )
     {
       const Configuration& cfg = Platform::getInstance().theConfiguration;
       string group = "PoseBeforeKickOff";

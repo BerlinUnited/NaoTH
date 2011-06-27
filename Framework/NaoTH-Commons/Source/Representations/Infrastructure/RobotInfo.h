@@ -24,12 +24,19 @@ public:
   std::string bodyNickName;
   std::string bodyID;
 
+  unsigned int basicTimeStep; /**< The time of each step which depends on platforms */
+  /**
+   * The method returns the basic time step in seconds
+   */
+  double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
+
 
   virtual void print(ostream& stream) const
   {
     stream<<"Platform: "<<platform<<"\n";
     stream<<"BodyNickName: "<<bodyNickName<<"\n";
     stream<<"BodyID: "<<bodyID<<"\n";
+    stream<<"basicTimeStep: "<<basicTimeStep<<"\n";
   }
 };
 

@@ -13,13 +13,13 @@
 #ifndef __BresenhamLineScan_h_
 #define __BresenhamLineScan_h_
 
-#include "Tools/Math/Geometry.h"
+//#include "Tools/CameraGeometry.h"
 #include "Tools/Math/Common.h"
-
-//#include "Tools/Math/Line.h"
+#include "Tools/Math/Line.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/MVTools.h"
 
+#include "Representations/Infrastructure/CameraInfo.h"
 
 class BresenhamLineScan
 {
@@ -50,7 +50,7 @@ public:
 	 * @param direction The direction (angle) of the line, expressed in radians.
 	 * @param cameraInfo The cameraInfo object of the camera that captured the image.
 	 */
-	BresenhamLineScan(const Vector2<int>& start, const double& direction, const CameraInfo& cameraInfo);
+  BresenhamLineScan(const Vector2<int>& start, const double& direction, const naoth::CameraInfo& cameraInfo);
   
 	/** 
 	 * Constructs a scanline with the given direction starting at start and ending at the 
@@ -61,16 +61,16 @@ public:
 	 * @param cameraInfo The cameraInfo object of the camera that captured the image.
 	 * @author Tobias Oberlies
 	 */
-	BresenhamLineScan(const Vector2<int>& start, const Vector2<double>& direction, const CameraInfo& cameraInfo);
+	BresenhamLineScan(const Vector2<int>& start, const Vector2<double>& direction, const naoth::CameraInfo& cameraInfo);
 
-	BresenhamLineScan(const Math::Line& line, const CameraInfo& cameraInfo);
+	BresenhamLineScan(const Math::Line& line, const naoth::CameraInfo& cameraInfo);
   
   void setup(const Vector2<int>& start, const Vector2<int>& end);
   void setup(const double& direction);
   void setup(const Vector2<double>& direction);
-	void setup(const Vector2<int>& start, const double& direction, const CameraInfo& cameraInfo);
-	void setup(const Vector2<int>& start, const Vector2<double>& direction, const CameraInfo& cameraInfo);
-	void setup(const Math::Line& line, const CameraInfo& cameraInfo);
+	void setup(const Vector2<int>& start, const double& direction, const naoth::CameraInfo& cameraInfo);
+	void setup(const Vector2<int>& start, const Vector2<double>& direction, const naoth::CameraInfo& cameraInfo);
+	void setup(const Math::Line& line, const naoth::CameraInfo& cameraInfo);
 
 
 	/** Resets the error counter */
@@ -84,9 +84,8 @@ public:
 	 * @param pos The position of the current pixel on the line, which is incremented by the
 	 * Bresenham algorithm
 	 */
-	inline bool getNext(Vector2<int>& pos)
+	inline void getNext(Vector2<int>& pos)
 	{
-    bool valid = (pixelCount >= 0 && pixelCount < numberOfPixels);
 	  pos += standardOffset;
 	  error += delta;
 	  if(error > 0)
@@ -95,8 +94,17 @@ public:
 		  error += resetError;
 	  }
     pixelCount++;
-    return valid;
 	}//end getNext
+
+  inline bool getNextWithCheck(Vector2<int>& pos)
+	{
+    if (pixelCount >= 0 && pixelCount < numberOfPixels)
+    {
+      getNext(pos);
+      return true;
+    }
+	  return false;
+	}//end getNextWithCheck
 
 	/**
 	 * Increments the coordinates to the next point on the line.
@@ -143,10 +151,6 @@ private:
 
 	/** Computes the Bresenham parameters. */
 	void setup(const Vector2<int>& diff);
-
-  bool intersectionPointsWithImageFrame(
-    const Math::Line& line, const CameraInfo& cameraInfo,
-    Vector2<int>& startPoint, Vector2<int>& endPoint);
 
 };
 

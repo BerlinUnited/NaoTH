@@ -33,6 +33,8 @@ void  protobuf_AddDesc_Messages_2eproto();
 void protobuf_AssignDesc_Messages_2eproto();
 void protobuf_ShutdownFile_Messages_2eproto();
 
+class CMDArg;
+class CMD;
 class PlayerModel;
 class TeamCommMessage;
 class StopwatchItem;
@@ -115,6 +117,205 @@ inline bool XABSLAction_ActionType_Parse(
     XABSLAction_ActionType_descriptor(), name, value);
 }
 // ===================================================================
+
+class CMDArg : public ::google::protobuf::Message {
+ public:
+  CMDArg();
+  virtual ~CMDArg();
+  
+  CMDArg(const CMDArg& from);
+  
+  inline CMDArg& operator=(const CMDArg& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const CMDArg& default_instance();
+  
+  void Swap(CMDArg* other);
+  
+  // implements Message ----------------------------------------------
+  
+  CMDArg* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const CMDArg& from);
+  void MergeFrom(const CMDArg& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required string name = 1;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 1;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  
+  // optional bytes bytes = 3;
+  inline bool has_bytes() const;
+  inline void clear_bytes();
+  static const int kBytesFieldNumber = 3;
+  inline const ::std::string& bytes() const;
+  inline void set_bytes(const ::std::string& value);
+  inline void set_bytes(const char* value);
+  inline void set_bytes(const void* value, size_t size);
+  inline ::std::string* mutable_bytes();
+  inline ::std::string* release_bytes();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.CMDArg)
+ private:
+  inline void set_has_name();
+  inline void clear_has_name();
+  inline void set_has_bytes();
+  inline void clear_has_bytes();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* name_;
+  ::std::string* bytes_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Messages_2eproto();
+  friend void protobuf_AssignDesc_Messages_2eproto();
+  friend void protobuf_ShutdownFile_Messages_2eproto();
+  
+  void InitAsDefaultInstance();
+  static CMDArg* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class CMD : public ::google::protobuf::Message {
+ public:
+  CMD();
+  virtual ~CMD();
+  
+  CMD(const CMD& from);
+  
+  inline CMD& operator=(const CMD& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const CMD& default_instance();
+  
+  void Swap(CMD* other);
+  
+  // implements Message ----------------------------------------------
+  
+  CMD* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const CMD& from);
+  void MergeFrom(const CMD& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required string name = 1;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 1;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  
+  // repeated .naothmessages.CMDArg args = 2;
+  inline int args_size() const;
+  inline void clear_args();
+  static const int kArgsFieldNumber = 2;
+  inline const ::naothmessages::CMDArg& args(int index) const;
+  inline ::naothmessages::CMDArg* mutable_args(int index);
+  inline ::naothmessages::CMDArg* add_args();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >&
+      args() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >*
+      mutable_args();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.CMD)
+ private:
+  inline void set_has_name();
+  inline void clear_has_name();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* name_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg > args_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Messages_2eproto();
+  friend void protobuf_AssignDesc_Messages_2eproto();
+  friend void protobuf_ShutdownFile_Messages_2eproto();
+  
+  void InitAsDefaultInstance();
+  static CMD* default_instance_;
+};
+// -------------------------------------------------------------------
 
 class PlayerModel : public ::google::protobuf::Message {
  public:
@@ -336,6 +537,17 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline double timetoball() const;
   inline void set_timetoball(double value);
   
+  // optional string bodyID = 11;
+  inline bool has_bodyid() const;
+  inline void clear_bodyid();
+  static const int kBodyIDFieldNumber = 11;
+  inline const ::std::string& bodyid() const;
+  inline void set_bodyid(const ::std::string& value);
+  inline void set_bodyid(const char* value);
+  inline void set_bodyid(const char* value, size_t size);
+  inline ::std::string* mutable_bodyid();
+  inline ::std::string* release_bodyid();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.TeamCommMessage)
  private:
   inline void set_has_playernumber();
@@ -358,6 +570,8 @@ class TeamCommMessage : public ::google::protobuf::Message {
   inline void clear_has_isfallendown();
   inline void set_has_timetoball();
   inline void clear_has_timetoball();
+  inline void set_has_bodyid();
+  inline void clear_has_bodyid();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -368,12 +582,13 @@ class TeamCommMessage : public ::google::protobuf::Message {
   ::naothmessages::Pose2D* positiononfield_;
   ::naothmessages::PlayerModel* opponent_;
   double timetoball_;
+  ::std::string* bodyid_;
   bool wasstriker_;
   bool ispenalized_;
   bool isfallendown_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(11 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -2101,6 +2316,213 @@ class FeatureTable : public ::google::protobuf::Message {
 
 // ===================================================================
 
+// CMDArg
+
+// required string name = 1;
+inline bool CMDArg::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void CMDArg::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void CMDArg::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void CMDArg::clear_name() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& CMDArg::name() const {
+  return *name_;
+}
+inline void CMDArg::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+}
+inline void CMDArg::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+}
+inline void CMDArg::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* CMDArg::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  return name_;
+}
+inline ::std::string* CMDArg::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// optional bytes bytes = 3;
+inline bool CMDArg::has_bytes() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void CMDArg::set_has_bytes() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void CMDArg::clear_has_bytes() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void CMDArg::clear_bytes() {
+  if (bytes_ != &::google::protobuf::internal::kEmptyString) {
+    bytes_->clear();
+  }
+  clear_has_bytes();
+}
+inline const ::std::string& CMDArg::bytes() const {
+  return *bytes_;
+}
+inline void CMDArg::set_bytes(const ::std::string& value) {
+  set_has_bytes();
+  if (bytes_ == &::google::protobuf::internal::kEmptyString) {
+    bytes_ = new ::std::string;
+  }
+  bytes_->assign(value);
+}
+inline void CMDArg::set_bytes(const char* value) {
+  set_has_bytes();
+  if (bytes_ == &::google::protobuf::internal::kEmptyString) {
+    bytes_ = new ::std::string;
+  }
+  bytes_->assign(value);
+}
+inline void CMDArg::set_bytes(const void* value, size_t size) {
+  set_has_bytes();
+  if (bytes_ == &::google::protobuf::internal::kEmptyString) {
+    bytes_ = new ::std::string;
+  }
+  bytes_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* CMDArg::mutable_bytes() {
+  set_has_bytes();
+  if (bytes_ == &::google::protobuf::internal::kEmptyString) {
+    bytes_ = new ::std::string;
+  }
+  return bytes_;
+}
+inline ::std::string* CMDArg::release_bytes() {
+  clear_has_bytes();
+  if (bytes_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = bytes_;
+    bytes_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// -------------------------------------------------------------------
+
+// CMD
+
+// required string name = 1;
+inline bool CMD::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void CMD::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void CMD::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void CMD::clear_name() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& CMD::name() const {
+  return *name_;
+}
+inline void CMD::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+}
+inline void CMD::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+}
+inline void CMD::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* CMD::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  return name_;
+}
+inline ::std::string* CMD::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// repeated .naothmessages.CMDArg args = 2;
+inline int CMD::args_size() const {
+  return args_.size();
+}
+inline void CMD::clear_args() {
+  args_.Clear();
+}
+inline const ::naothmessages::CMDArg& CMD::args(int index) const {
+  return args_.Get(index);
+}
+inline ::naothmessages::CMDArg* CMD::mutable_args(int index) {
+  return args_.Mutable(index);
+}
+inline ::naothmessages::CMDArg* CMD::add_args() {
+  return args_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >&
+CMD::args() const {
+  return args_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::CMDArg >*
+CMD::mutable_args() {
+  return &args_;
+}
+
+// -------------------------------------------------------------------
+
 // PlayerModel
 
 // required int32 number = 1;
@@ -2397,6 +2819,64 @@ inline double TeamCommMessage::timetoball() const {
 inline void TeamCommMessage::set_timetoball(double value) {
   set_has_timetoball();
   timetoball_ = value;
+}
+
+// optional string bodyID = 11;
+inline bool TeamCommMessage::has_bodyid() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void TeamCommMessage::set_has_bodyid() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void TeamCommMessage::clear_has_bodyid() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void TeamCommMessage::clear_bodyid() {
+  if (bodyid_ != &::google::protobuf::internal::kEmptyString) {
+    bodyid_->clear();
+  }
+  clear_has_bodyid();
+}
+inline const ::std::string& TeamCommMessage::bodyid() const {
+  return *bodyid_;
+}
+inline void TeamCommMessage::set_bodyid(const ::std::string& value) {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(value);
+}
+inline void TeamCommMessage::set_bodyid(const char* value) {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(value);
+}
+inline void TeamCommMessage::set_bodyid(const char* value, size_t size) {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  bodyid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* TeamCommMessage::mutable_bodyid() {
+  set_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    bodyid_ = new ::std::string;
+  }
+  return bodyid_;
+}
+inline ::std::string* TeamCommMessage::release_bodyid() {
+  clear_has_bodyid();
+  if (bodyid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = bodyid_;
+    bodyid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
 }
 
 // -------------------------------------------------------------------

@@ -26,7 +26,14 @@ namespace naoth
     */
     FrameInfo() :
         time(0),
+        step(0),
         frameNumber(0)
+    {}
+
+    FrameInfo(unsigned int time, unsigned int frameNumber) 
+      :
+        time(time),
+        frameNumber(frameNumber)
     {}
 
     /**
@@ -41,27 +48,35 @@ namespace naoth
     * The method returns the corrent time in seconds current frame time.
     */
     double getTimeInSeconds() const {return static_cast<double>(time)/1000.0; }
-    
-    /**
-     * The method returns the basic time step in seconds
-     */
-    double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
 
-    unsigned int time; /**< The time stamp of the data processed in the current frame in miliseconds. */
-    unsigned int frameNumber; /**< The number of the frame. */
-    
-    unsigned int basicTimeStep; /**< The time of each step which depends on platforms */
+    unsigned int getTime() const { return time; }
+
+    unsigned int getFrameNumber() const { return frameNumber; }
+
+    unsigned int getStep() const { return step; }
+
+    // TODO: there should be functionality in representations!!!
+    void setTime(unsigned int t)
+    {
+      step = t - time;
+      time = t;
+      frameNumber++;
+    }
 
     virtual void print(std::ostream& stream) const
     {
       stream << "frameNumber = " << frameNumber << endl;
       stream << "time(ms) = " << time << endl;
-      stream << "time(s) = " << getTimeInSeconds() << endl;
       stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << endl;
-      stream << "basic time step = "<< basicTimeStep << endl;
     }
 
+    friend class Serializer<FrameInfo>;
 
+  private:
+
+    unsigned int time; /**< The time stamp of the data processed in the current frame in miliseconds. */
+    unsigned int step; /**< the time of last step */
+    unsigned int frameNumber; /**< The number of the frame. */
   };
   
   template<>

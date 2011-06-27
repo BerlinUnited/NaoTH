@@ -17,7 +17,7 @@
 /**
 * This describes the WalkRequest
 */
-class WalkRequest : public Pose2D, public naoth::Printable
+class WalkRequest : public naoth::Printable
 {
 public:
 
@@ -30,8 +30,7 @@ public:
 
   /** constructor */
   WalkRequest():
-    coordinate(Hip),
-    stopWithStand(true)
+    coordinate(Hip)
   {};
   ~WalkRequest(){};
 
@@ -47,22 +46,12 @@ public:
   }//end getCoordinateName
   
   Coordinate coordinate;
-  bool stopWithStand; // Should the robot keep the standard stand pose or not after walking
+  Pose2D target;
 
   void print(ostream& stream) const
   {
-    stream << "x = " << translation.x << endl;
-    stream << "y = " << translation.y << endl;
-    stream << "rotation = " << rotation << endl;
+    stream << "target: " << target << endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
-    if ( stopWithStand )
-    {
-      stream << " stop with stand " <<endl;
-    }
-    else
-    {
-      stream <<" stop without stand "<<endl;
-    }
   }//end print
   
 };
@@ -76,7 +65,7 @@ namespace naoth
     static void serialize(const WalkRequest& representation, std::ostream& stream);
     static void serialize(const WalkRequest& representation, naothmessages::WalkRequest* msg);
     static void deserialize(std::istream& stream, WalkRequest& representation);
-    static void deserialize(naothmessages::WalkRequest* msg, WalkRequest& representation);
+    static void deserialize(const naothmessages::WalkRequest* msg, WalkRequest& representation);
   };
 }
 

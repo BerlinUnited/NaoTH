@@ -19,7 +19,7 @@ private:
 protected:
 
   motion::State currentState;
-  MotorJointData& theMotorJointData;
+  naoth::MotorJointData& theMotorJointData;
   const MotionBlackBoard& theBlackBoard;
 
 public:

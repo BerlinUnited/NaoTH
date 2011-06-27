@@ -14,6 +14,8 @@
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
+using namespace naoth;
+
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
 theInertialFilter(theBlackBoard),
 theMotionStatusWriter(NULL),
@@ -55,6 +57,12 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   theBlackBoard.init();
   theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
+
+  // init robot info
+  theBlackBoard.theRobotInfo.platform = platformInterface.getName();
+  theBlackBoard.theRobotInfo.bodyNickName = platformInterface.getBodyNickName();
+  theBlackBoard.theRobotInfo.bodyID = platformInterface.getBodyID();
+  theBlackBoard.theRobotInfo.basicTimeStep = platformInterface.getBasicTimeStep();
   
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
@@ -153,7 +161,7 @@ void Motion::processSensorData()
     theBlackBoard.theInertialPercept,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRPos,
-    theBlackBoard.theFrameInfo.getBasicTimeStepInSecond());
+    theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
 
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
   
@@ -176,7 +184,7 @@ void Motion::processSensorData()
 void Motion::postProcess()
 {
   MotorJointData& mjd = theBlackBoard.theMotorJointData;
-  double basicStepInS = theBlackBoard.theFrameInfo.getBasicTimeStepInSecond();
+  double basicStepInS = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 
 #ifdef DEBUG
   mjd.checkStiffness();
@@ -242,7 +250,7 @@ void Motion::changeMotion(AbstractMotion* m)
   theBlackBoard.currentlyExecutedMotion = m;
   theBlackBoard.theMotionStatus.lastMotion = theBlackBoard.theMotionStatus.currentMotion;
   theBlackBoard.theMotionStatus.currentMotion = theBlackBoard.currentlyExecutedMotion->getId();
-  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.time;
+  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.getTime();
 }//end changeMotion
 
 bool Motion::exit()
@@ -260,14 +268,14 @@ bool Motion::exit()
 void Motion::checkWarningState()
 {
   // check if cognition is running
-  if ( frameNumSinceLastMotionRequest*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond() > 1 )
+  if ( frameNumSinceLastMotionRequest*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() > 1 )
   {
     theBlackBoard.theMotionRequest.id = motion::init;
     theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
     theBlackBoard.theLEDData.change = true;
 
     LEDData& theLEDData = theBlackBoard.theLEDData;
-    int begin = int(frameNumSinceLastMotionRequest*theBlackBoard.theFrameInfo.getBasicTimeStepInSecond()*10)%10;
+    int begin = int(frameNumSinceLastMotionRequest*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond()*10)%10;
     theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
     theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
     int end = (begin+2)%10;

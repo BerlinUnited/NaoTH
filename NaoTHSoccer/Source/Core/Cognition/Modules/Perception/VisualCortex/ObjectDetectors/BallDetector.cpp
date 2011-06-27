@@ -7,12 +7,14 @@
 */
 
 #include "BallDetector.h"
+
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/ImageProcessing/BlobList.h"
+#include "Tools/CameraGeometry.h"
 
 #include "Tools/Debug/Stopwatch.h"
 
@@ -79,7 +81,7 @@ void BallDetector::execute()
   }
   else // no orange blobs found in the image 
   {
-    Vector2<int> projectedBall = Geometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
         Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
                         getBallPercept().bearingBasedOffsetOnField.y, 
                         getFieldInfo().ballRadius));
@@ -259,8 +261,8 @@ bool BallDetector::randomScan(ColorClasses::Color color, Vector2<int>& result, c
 //  max.y = std::min(max.y, (int)getImage().cameraInfo.resolutionHeight-1);
   // senity check
 
-//  Vector2<int> min = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMin);
-//  Vector2<int> max = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).getClosestPoint(orgMax);
+//  Vector2<int> min = getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).getClosestPoint(orgMin);
+//  Vector2<int> max = getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).getClosestPoint(orgMax);
 //  if(min.x >= max.x || min.y >= max.y) return false;
 
 
