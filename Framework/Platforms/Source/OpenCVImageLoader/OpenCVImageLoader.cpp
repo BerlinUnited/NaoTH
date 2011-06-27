@@ -41,6 +41,7 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
   findFiles(dirPath);
   allFiles.reserve(1000);
   currentPos = 0;
+  imageLoaded = false;
 }
 
 void OpenCVImageLoader::main()
@@ -71,6 +72,10 @@ void OpenCVImageLoader::main()
     {
       jumpToStart();
     }
+    if (c == 'r')
+    {
+      executeCognition();
+    }
     if (c == 'l')
     {
       listFiles();
@@ -91,6 +96,7 @@ void OpenCVImageLoader::makeStep()
   {
     callCognition();
     callMotion();
+    imageLoaded = true;
   }//end if
   else
   {
@@ -151,6 +157,20 @@ void OpenCVImageLoader::jumpToStart()
   makeStep();
 }//end jumpToStart
 
+void OpenCVImageLoader::executeCognition()
+{
+  if (imageLoaded)
+  {
+    cout << "cognition: just executing new cycle" << endl;
+    callCognition();
+    callMotion();
+  }
+  else
+  {
+    cout << "you haven't load any image yet!" << endl;
+  }
+}//end executeCognition
+
 void OpenCVImageLoader::printHelp()
 {
   cout << endl;
@@ -164,6 +184,7 @@ void OpenCVImageLoader::printHelp()
   cout << "w - jump to specific file" << endl << endl;
 
   cout << "l - list all files in the directory" << endl;
+  cout << "r - just execute cognition (current image) one more time" << endl;
   cout << "q or x - quit/exit" << endl << endl;
 }//end printHelp
 
