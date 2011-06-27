@@ -50,7 +50,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
   //private VisualizationViewer<Node, Edge> vv;
 
   private final String storeModules = "modules:store";
-  
+  private final Command storeModulesCommand = new Command(storeModules);
 
   /** Creates new form ModuleConfigurationViewer */
   public ModuleConfigurationViewer()
@@ -219,7 +219,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }//GEN-LAST:event_btSaveActionPerformed
 
     private void btSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSendActionPerformed
-//      sendCommand(storeModulesCommand);
+      sendCommand(storeModulesCommand);
     }//GEN-LAST:event_btSendActionPerformed
 
   @Override
