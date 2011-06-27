@@ -7,7 +7,7 @@ TeamCommunicator::TeamCommunicator()
 
 void TeamCommunicator::execute()
 {
-  const naoth::TeamMessageData& teamMessageData = getTeamMessageData();
+  const naoth::TeamMessageDataIn& teamMessageData = getTeamMessageDataIn();
 
   for(vector<string>::const_iterator iter = teamMessageData.data.begin();
       iter != teamMessageData.data.end(); ++iter)
@@ -22,7 +22,7 @@ void TeamCommunicator::execute()
     naothmessages::TeamCommMessage msg;
     createMessage(msg);
 
-    getRobotMessageData().data = msg.SerializeAsString();
+    getTeamMessageDataOut().data = msg.SerializeAsString();
     lastSentTimestamp = getFrameInfo().getTime();
   }
 }

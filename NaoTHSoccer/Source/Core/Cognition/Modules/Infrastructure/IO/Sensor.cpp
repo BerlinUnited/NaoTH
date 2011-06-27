@@ -41,7 +41,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(FSRData);
   REG_INPUT(SensorJointData);
   REG_INPUT(UltraSoundReceiveData);
-  REG_INPUT(TeamMessageData);
+  REG_INPUT(TeamMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(FrameInfo);
   REG_INPUT(CurrentCameraSettings);

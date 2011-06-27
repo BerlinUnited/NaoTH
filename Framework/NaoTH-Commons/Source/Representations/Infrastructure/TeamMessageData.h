@@ -11,22 +11,33 @@
 #include <string>
 #include <vector>
 #include "PlatformInterface/PlatformInterchangeable.h"
+#include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
 
 // message to other robots
-class RobotMessageData: public PlatformInterchangeable
+class TeamMessageDataOut: public PlatformInterchangeable, public Printable
 {
 public:
   std::string data;
+
+  virtual void print(ostream& stream) const
+  {
+    stream<<"size = "<<data.size()<<"\n";
+  }
 };
 
 // message from other robots
-class TeamMessageData: public PlatformInterchangeable
+class TeamMessageDataIn: public PlatformInterchangeable, public Printable
 {
 public:
   std::vector<std::string> data;
+
+  virtual void print(ostream& stream) const
+  {
+    stream<<"size = "<<data.size()<<"\n";
+  }
 };
 
 } // namespace naoth

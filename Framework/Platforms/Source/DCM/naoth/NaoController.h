@@ -36,7 +36,7 @@ public:
   
   void get(CurrentCameraSettings& data);
 
-  void get(TeamMessageData& data);
+  void get(TeamMessageDataIn& data);
 
   void get(GameData& data);
   
@@ -53,7 +53,7 @@ public:
 
   void set(const SoundPlayData& data);
 
-  void set(const RobotMessageData& data);
+  void set(const TeamMessageDataOut& data);
   
   virtual void getCognitionInput();
   

@@ -8,7 +8,7 @@
 using namespace naoth;
 
 TeamCommunicator::TeamCommunicator()
-  : initialized(false), socket(NULL), lastSentTimestamp(0),
+  : initialized(false), socket(NULL),
     lanBroadcastAddress(NULL), wlanBroadcastAddress(NULL)
 {
   buffer = new char[TEAMCOMM_MAX_MSG_SIZE];
