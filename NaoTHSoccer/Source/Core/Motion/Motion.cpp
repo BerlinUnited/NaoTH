@@ -112,6 +112,7 @@ void Motion::call()
     }
   }
   case running:
+  case exiting:
   {
     frameNumSinceLastMotionRequest++;
     // get orders from cognition

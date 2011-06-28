@@ -21,9 +21,9 @@ SimSparkController::SimSparkController()
   theImageSize(0),
   isNewImage(false),
   isNewVirtualVision(false),
-  theStepTime(0),
   theCameraId(0),
   theSenseTime(0),
+  theStepTime(0),
   theSyncMode(false)
 {
   // register input

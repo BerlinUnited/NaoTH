@@ -650,7 +650,7 @@ void VirtualVisionProcessor::updatePlayers()
       vector<string> tokens;
       tokenize(key, tokens); // split by whitespaces
 
-      int id;
+      unsigned int id;
       if(!DataConversion::strTo(tokens[2],id))
         continue; // id couldn't be parsed
 
