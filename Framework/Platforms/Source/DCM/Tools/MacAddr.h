@@ -8,19 +8,18 @@
 #ifndef _MAC_ADDR_H_
 #define _MAC_ADDR_H_
 
-#ifndef WIN32
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <net/if.h>
-#endif // undef WIN32
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
 
 namespace naoth
 {
-  
-  /* Mac & Windows dont have that define */
-#ifdef SIOCGIFHWADDR
   // get Media Access Control address
   static std::string getMACaddress(const std::string& name)
   {
@@ -42,14 +41,63 @@ namespace naoth
 
     return std::string(mac);
   }//end getMACaddress
-#else
-  // do nothing...
-  static std::string getMACaddress(const std::string& /*name*/)
-  {
-    return "unknown_mac_address";
-  }//end getMACaddress
-#endif
 
-}
+  static std::string getIP4(const std::string& name)
+  {
+    string ip("unknown");
+
+    struct ifaddrs * ifAddrStruct=NULL;
+    struct ifaddrs * ifa=NULL;
+    void * tmpAddrPtr=NULL;
+
+    getifaddrs(&ifAddrStruct);
+
+    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+      if (ifa ->ifa_addr->sa_family==AF_INET) { // check it is IP4
+        // is a valid IP4 Address
+        tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
+        char addressBuffer[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+        string n(ifa->ifa_name);
+        if ( n == name )
+        {
+          ip = string(addressBuffer);
+        }
+      }
+    }
+    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+
+    return ip;
+  }
+
+  static std::string getBroadcastAddr(const std::string& name)
+  {
+    string ip("unknown");
+
+    struct ifaddrs * ifAddrStruct=NULL;
+    struct ifaddrs * ifa=NULL;
+    void * tmpAddrPtr=NULL;
+
+    getifaddrs(&ifAddrStruct);
+
+    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) {
+      if (ifa ->ifa_addr->sa_family==AF_INET) { // check it is IP4
+        // is a valid IP4 Address
+        tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_ifu.ifu_broadaddr)->sin_addr;
+        char addressBuffer[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
+        string n(ifa->ifa_name);
+        if ( n == name )
+        {
+          ip = string(addressBuffer);
+        }
+      }
+    }
+    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
+
+    return ip;
+  }
+
+} // namespace naoth
 
 #endif //_MAC_ADDR_H_
