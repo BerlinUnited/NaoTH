@@ -47,7 +47,7 @@ namespace naoth
     cameraTiltOffset(0.0)
     {}
 
-    ~CameraInfo()
+    virtual ~CameraInfo()
     {}
 
     enum CameraID
