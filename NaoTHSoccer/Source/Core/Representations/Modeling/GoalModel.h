@@ -42,15 +42,15 @@ public:
   Goal blueGoal;
   Goal yellowGoal;
 
-  //const Goal& getTeamGoal(PlayerInfo::TeamColor teamColor) const;
-  //Goal& getTeamGoal(PlayerInfo::TeamColor teamColor);
+  const Goal& getTeamGoal(naoth::GameData::TeamColor teamColor) const;
+  Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
 
   virtual void print(ostream& stream) const;
-  //void draw() const;
+  void draw() const;
 
-  //void calculateBlueByYellow(double xLength);
-  //void calculateYellowByBlue(double xLength);
-  //Pose2D calculatePose(ColorClasses::Color opponentGoalColor, const FieldInfo& fieldInfo) const;
+  void calculateBlueByYellow(double xLength);
+  void calculateYellowByBlue(double xLength);
+  Pose2D calculatePose(ColorClasses::Color opponentGoalColor, const FieldInfo& fieldInfo) const;
 };//end class Goal
 
 /** goal model in robot's local coordinates based on pure observations of the goal posts */
@@ -80,7 +80,7 @@ public:
 class SelfLocGoalModel : public GoalModel
 {
 public:
-  void update(PlayerInfo::TeamColor ownColor, const Pose2D& robotPose, const FieldInfo& fieldInfo);
+  void update(naoth::GameData::TeamColor ownColor, const Pose2D& robotPose, const FieldInfo& fieldInfo);
 };
 
 
