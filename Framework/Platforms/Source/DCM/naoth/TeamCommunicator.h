@@ -19,10 +19,25 @@ public:
   void receive(std::vector<std::string>& data);
 
   virtual ~TeamCommunicator();
+
+  void sendLoop();
+
+  void receiveLoop();
+
 private:
-  bool initialized;
+  void send();
+
+private:
+  bool exiting;
   GSocket* socket;
   char* buffer;
+  GThread* sendThread;
+  GThread* receiveThread;
+  std::vector<std::string> messageIn;
+  GMutex*  messageInMutex;
+  std::string messageOut;
+  GMutex*  messageOutMutex;
+  GCond* messageOutCond;
 
   GSocketAddress* lanBroadcastAddress;
   GSocketAddress* wlanBroadcastAddress;

@@ -130,7 +130,6 @@ void NaoController::setCognitionOutput()
 
 void NaoController::get(TeamMessageDataIn& data)
 {
-  data.data.clear();
   theTeamComm->receive(data.data);
 }
 
