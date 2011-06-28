@@ -162,6 +162,8 @@ bool SPLGameController::update()
       }
 
       data.numOfPlayers = dataIn.playersPerTeam;
+      data.secsRemaining = dataIn.secsRemaining;
+      data.firstHalf = (dataIn.firstHalf == 1);
 
       if ( data.gameState == GameData::initial
           || data.gameState == GameData::ready
