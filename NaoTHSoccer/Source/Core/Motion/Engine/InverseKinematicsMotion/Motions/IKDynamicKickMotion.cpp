@@ -236,7 +236,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   // transform the kick request in the coordinate system of the current support foot
   kickPoseRequest = supportFootPose.invert()*kickPoseRequest;
 
-  double ty = kickPoseRequest.translation.y;
+  //double ty = kickPoseRequest.translation.y;
 
   DEBUG_REQUEST("IKDynamicKickMotion:kick_request_geometry",
     FIELD_DRAWING_CONTEXT;
@@ -626,7 +626,7 @@ Pose3D IKDynamicKickMotion::calculatePreparationPose(const Pose3D& kickPose) con
 double IKDynamicKickMotion::retractionValue(const Pose3D& kickPose, const Vector3<double>& pointCoord) const
 {
   // angle deviation
-  const double angle_deviation = Math::fromDegrees(5.0);
+  //const double angle_deviation = Math::fromDegrees(5.0);
 
   double c0 = 0.999;
   MODIFY("IKDynamicKickMotion:angle_factor", c0);

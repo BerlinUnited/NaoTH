@@ -1,5 +1,5 @@
 /**
-* @file MotionRequestID.h
+* @file MotionID.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
@@ -124,15 +124,7 @@ namespace motion
   }///end getName
 
   /** return the motion id reprented by the name */
-  static MotionID getId(const std::string& name)
-  {
-    for(int i = 0; i < num_of_motions; i++)
-    {
-      if(name == getName((MotionID)i)) return (MotionID)i;
-    }//end for
-    
-    return num_of_motions;
-  }//end motionIDFromName
+  MotionID getId(const std::string& name);
 
 
   enum State
@@ -142,18 +134,8 @@ namespace motion
     stopped,
     unknow
   };
-  static std::string getName(State state)
-  {
-    switch(state)
-    {
-    case running: return "running";
-    case waiting: return "waiting";
-    case stopped: return "stopped";
-    default: return "unknow";
-    }
 
-    return "unknow";
-  }
+  std::string getName(State state);
 
 } // namespace motion
 
