@@ -14,6 +14,8 @@ GameData::GameData()
   :frameNumber(0),
     gameState(numOfGameState),
     timeWhenGameStateChanged(0),
+    penaltyState(none),
+    secsTillUnpenalised(0),
     playMode(numOfPlayMode),
     gameTime(0),
     timeWhenPlayModeChanged(0),
@@ -118,7 +120,11 @@ GameData::TeamColor operator! (const GameData::TeamColor& color)
 void GameData::print(ostream& stream) const
 {
   stream << "GameData @" << frameNumber<<"\n";
-  stream << "gameState = " << gameStateToString(gameState) <<" since "<< timeWhenGameStateChanged << "\n";
+  stream << "gameState = " << gameStateToString(gameState) << " since "<< timeWhenGameStateChanged << "\n";
+  if ( gameState == penalized )
+  {
+    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << secsTillUnpenalised << "]\n";
+  }
   stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";
@@ -170,3 +176,31 @@ void GameData::loadFromCfg(Configuration& config)
     teamNumber = 0;
   }
 } // end loadPlayerInfoFromFile
+
+std::string GameData::penaltyStateToString(PenaltyState state)
+{
+  switch (state)
+  {
+  case ball_holding: return "ball_holding";
+  case player_pushing: return "player_pushing";
+  case obstruction: return "obstruction";
+  case inactive_player: return "inactive_player";
+  case illegal_defender: return "illegal_defender";
+  case leaving_the_field: return "leaving_the_field";
+  case playing_with_hands: return "playing_with_hands";
+  case request_for_pickup: return "request_for_pickup";
+  case manual: return "manual";
+  default: return "none";
+  }//end switch
+}//end gameStateToString
+
+string GameReturnData::messageToString(GameReturnData::Message msg)
+{
+  switch(msg)
+  {
+  case manual_penalise: return "manual_penalise";
+  case manual_unpenalise: return "manual_unpenalise";
+  default: return "alive";
+  }
+}
+
