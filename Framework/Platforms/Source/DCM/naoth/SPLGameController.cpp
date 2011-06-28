@@ -6,8 +6,21 @@
 
 using namespace naoth;
 
+void* socketLoopWrap(void* c)
+{
+  SPLGameController* ctr = static_cast<SPLGameController*> (c);
+  ctr->socketLoop();
+  return NULL;
+}//end motionLoopWrap
+
 SPLGameController::SPLGameController()
-  :socket(NULL)
+  :exiting(false),
+    socket(NULL),
+    broadcastAddress(NULL),
+    socketThread(NULL),
+    dataMutex(NULL),
+    lastUpdatedIndex(-1),
+    writingIndex(0)
 {
   GError* err = bindAndListen();
   if(err)
@@ -16,8 +29,17 @@ SPLGameController::SPLGameController()
     socket = NULL;
     g_error_free(err);
   }
+  else
+  {
+    if (!g_thread_supported())
+      g_thread_init(NULL);
+    dataMutex = g_mutex_new();
 
-  buffer = (char*) malloc(sizeof(RoboCupGameControlData));
+    g_message("SPLGameController start socket thread");
+    socketThread = g_thread_create(socketLoopWrap, this, true, NULL);
+    ASSERT(socketThread != NULL);
+    g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+  }
 }
 
 GError* SPLGameController::bindAndListen(unsigned int port)
@@ -25,7 +47,7 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
   if(err) return err;
-  g_socket_set_blocking(socket, false);
+  g_socket_set_blocking(socket, true);
 
   int broadcast = 1;
   setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
@@ -48,17 +70,23 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
 bool SPLGameController::update(GameData& gameData, unsigned int time)
 {
-  if(socket == NULL)
+  Data* data = NULL;
+  if ( g_mutex_trylock(dataMutex) )
   {
-    return false;
+    if ( lastUpdatedIndex >= 0 )
+    {
+      data = &(theData[lastUpdatedIndex]);
+      lastUpdatedIndex = -1;
+    }
+    g_mutex_unlock(dataMutex);
   }
 
-  int size = g_socket_receive(socket, buffer, sizeof(RoboCupGameControlData), NULL, NULL);
-  if(size == sizeof(RoboCupGameControlData))
+  // update
+  if ( data != NULL )
   {
-    RoboCupGameControlData* data = (RoboCupGameControlData*) buffer;
+    RoboCupGameControlData& dataIn = data->dataIn;
     std::string header;
-    header.assign(data->header, 4);
+    header.assign(dataIn.header, 4);
     if(header == GAMECONTROLLER_STRUCT_HEADER)
     {
       GameData::GameState lastGameState = gameData.gameState;
@@ -67,11 +95,11 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
 
       bool isRed = true;
 
-      if (data->teams[TEAM_RED].teamNumber == gameData.teamNumber)
+      if (dataIn.teams[TEAM_RED].teamNumber == gameData.teamNumber)
       {
         isRed = true;
       }
-      else if (data->teams[TEAM_BLUE].teamNumber == gameData.teamNumber)
+      else if (dataIn.teams[TEAM_BLUE].teamNumber == gameData.teamNumber)
       {
         isRed = false;
       }
@@ -83,20 +111,20 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
 
       if(isRed)
       {
-        tinfo = data->teams[TEAM_RED];
+        tinfo = dataIn.teams[TEAM_RED];
         teamInfoIndex = TEAM_RED;
         gameData.teamColor = GameData::red;
       }
       else
       {
-        tinfo = data->teams[TEAM_BLUE];
+        tinfo = dataIn.teams[TEAM_BLUE];
         teamInfoIndex = TEAM_BLUE;
         gameData.teamColor = GameData::blue;
       }
 
       if (teamInfoIndex >= 0)
       {
-        switch (data->state)
+        switch (dataIn.state)
         {
           case STATE_INITIAL:
             gameData.gameState = GameData::initial;
@@ -115,14 +143,14 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
             break;
         }
 
-        gameData.numOfPlayers = data->playersPerTeam;
+        gameData.numOfPlayers = dataIn.playersPerTeam;
 
         if ( gameData.gameState == GameData::ready
             || gameData.gameState == GameData::set
             || gameData.gameState == GameData::playing )
         {
           //TODO: check more conditions (time, etc.)
-          gameData.playMode = (data->kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+          gameData.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
         }
 
         unsigned char playerNumberForGameController = gameData.playerNumber - 1; // gamecontroller starts counting at 0
@@ -130,7 +158,7 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
         if(playerNumberForGameController < MAX_NUM_PLAYERS)
         {
           RobotInfo rinfo =
-            data->teams[teamInfoIndex].players[playerNumberForGameController];
+            dataIn.teams[teamInfoIndex].players[playerNumberForGameController];
           if (rinfo.penalty != PENALTY_NONE)
           {
             gameData.gameState = GameData::penalized;
@@ -142,16 +170,48 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
         gameData.timeWhenGameStateChanged = time;
       }
 
-      returnData(gameData);
+      // return data
+      RoboCupGameControlReturnData& dataOut = data->dataOut;
+      strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
+      dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
+      dataOut.team = gameData.teamNumber;
+      dataOut.player = gameData.playerNumber;
+      dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
       return true;
     } // end if header correct
-  } // end if size correct
+  }
+
   return false;
+}
+
+void SPLGameController::update()
+{
+  int size = g_socket_receive(socket, (char*)(&(theData[writingIndex].dataIn)), sizeof(RoboCupGameControlData), NULL, NULL);
+  if(size == sizeof(RoboCupGameControlData))
+  {
+    sendData(theData[writingIndex].dataOut);
+
+    g_mutex_lock(dataMutex);
+    if ( lastUpdatedIndex < 0 )
+    {
+      lastUpdatedIndex = writingIndex;
+
+      writingIndex++;
+      if (writingIndex>1)
+        writingIndex = 0;
+    }
+    g_mutex_unlock(dataMutex);
+  }
 }
 
 SPLGameController::~SPLGameController()
 {
+  exiting = true;
+
+  g_thread_join(socketThread);
+  g_mutex_free(dataMutex);
+
   if(socket != NULL)
   {
     g_object_unref(socket);
@@ -161,19 +221,10 @@ SPLGameController::~SPLGameController()
   {
     g_object_unref(broadcastAddress);
   }
-
-  free(buffer);
 }
 
-void SPLGameController::returnData(const naoth::GameData& gameData)
+void SPLGameController::sendData(const RoboCupGameControlReturnData& data)
 {
-  RoboCupGameControlReturnData data;
-  strcpy(data.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
-  data.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-  data.team = gameData.teamNumber;
-  data.player = gameData.playerNumber;
-  data.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
-
   GError *error = NULL;
   gssize result = g_socket_send_to(socket, broadcastAddress, (char*)(&data), sizeof(data), NULL, &error);
   if ( result != sizeof(data) )
@@ -184,6 +235,19 @@ void SPLGameController::returnData(const naoth::GameData& gameData)
   {
     g_warning("g_socket_send_to error: %s", error->message);
     g_error_free(error);
+  }
+}
+
+void SPLGameController::socketLoop()
+{
+  if(socket == NULL)
+  {
+    return;
+  }
+
+  while(!exiting)
+  {
+    update();
   }
 }
 

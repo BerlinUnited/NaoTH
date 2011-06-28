@@ -14,14 +14,28 @@ public:
 
     bool update(naoth::GameData& gameData, unsigned int time);
 
+    void socketLoop();
+
 private:
+    void update();
+
+private:
+    bool exiting;
     GSocket* socket;
-    char* buffer;
     GSocketAddress* broadcastAddress;
+    GThread* socketThread;
+    GMutex*  dataMutex;
+    struct Data {
+      RoboCupGameControlData dataIn;
+      RoboCupGameControlReturnData dataOut;
+    } theData[2];
+
+    int lastUpdatedIndex;
+    int writingIndex;
 
     GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
 
-    void returnData(const naoth::GameData& gameData);
+    void sendData(const RoboCupGameControlReturnData& data);
 };
 
 #endif // SPLGAMECONTROLLER_H
