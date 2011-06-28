@@ -36,6 +36,22 @@ public:
   static GameState gameStateFromString(const std::string& name);
   static std::string gameStateToString(GameState gameState);
 
+  enum PenaltyState
+  {
+    none = 0,
+    ball_holding = 1,
+    player_pushing = 2,
+    obstruction = 3,
+    inactive_player = 4,
+    illegal_defender = 5,
+    leaving_the_field = 6,
+    playing_with_hands = 7,
+    request_for_pickup = 8,
+    penalty_manual = 15
+  };
+
+  static std::string penaltyStateToString(PenaltyState state);
+
   enum PlayMode
   {
     before_kick_off,
@@ -81,6 +97,7 @@ public:
 
   GameState gameState;
   unsigned int timeWhenGameStateChanged;
+  PenaltyState penaltyState;
 
   PlayMode playMode;
   unsigned int gameTime; // in ms

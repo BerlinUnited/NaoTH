@@ -162,9 +162,11 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
           if (rinfo.penalty != PENALTY_NONE)
           {
             gameData.gameState = GameData::penalized;
+            gameData.penaltyState = (GameData::PenaltyState)rinfo.penalty;
           }
         }
       }
+
       if ( lastGameState != gameData.gameState )
       {
         gameData.timeWhenGameStateChanged = time;
