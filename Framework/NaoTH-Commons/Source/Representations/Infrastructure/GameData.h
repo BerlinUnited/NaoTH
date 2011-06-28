@@ -47,7 +47,7 @@ public:
     leaving_the_field = 6,
     playing_with_hands = 7,
     request_for_pickup = 8,
-    penalty_manual = 15
+    manual = 15
   };
 
   static std::string penaltyStateToString(PenaltyState state);
@@ -98,6 +98,7 @@ public:
   GameState gameState;
   unsigned int timeWhenGameStateChanged;
   PenaltyState penaltyState;
+  unsigned int secsTillUnpenalised;
 
   PlayMode playMode;
   unsigned int gameTime; // in ms
@@ -124,6 +125,28 @@ public:
 
   /** number of player per team */
   unsigned int numOfPlayers;
+};
+
+class GameReturnData: public PlatformInterchangeable, public Printable
+{
+public:
+  GameReturnData():message(alive){};
+
+  enum Message
+  {
+    manual_penalise = 0,
+    manual_unpenalise = 1,
+    alive = 2,
+  };
+
+  static std::string messageToString(Message msg);
+
+  Message message;
+
+  virtual void print(ostream& stream) const
+  {
+    stream << messageToString(message) << endl;
+  }
 };
 
 }// namespace naoth

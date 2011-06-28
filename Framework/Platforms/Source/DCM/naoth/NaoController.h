@@ -54,14 +54,12 @@ public:
   void set(const SoundPlayData& data);
 
   void set(const TeamMessageDataOut& data);
+
+  void set(const GameReturnData& data);
   
   virtual void getCognitionInput();
   
   virtual void setCognitionOutput();
-
-private:
-  GameData loadPlayerCfg();
-  bool playerCfgLoaded;
 
 private:
   V4lCameraHandler theCameraHandler;

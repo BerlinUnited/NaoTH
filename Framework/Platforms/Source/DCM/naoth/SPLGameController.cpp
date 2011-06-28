@@ -18,9 +18,9 @@ SPLGameController::SPLGameController()
     socket(NULL),
     broadcastAddress(NULL),
     socketThread(NULL),
+    dataUpdated(false),
     dataMutex(NULL),
-    lastUpdatedIndex(-1),
-    writingIndex(0)
+    returnDataMutex(NULL)
 {
   GError* err = bindAndListen();
   if(err)
@@ -31,9 +31,19 @@ SPLGameController::SPLGameController()
   }
   else
   {
+    // init player number, team number and etc.
+    data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
+    // init return data
+    strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
+    dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
+    dataOut.team = data.teamNumber;
+    dataOut.player = data.playerNumber;
+    dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
+
     if (!g_thread_supported())
       g_thread_init(NULL);
     dataMutex = g_mutex_new();
+    returnDataMutex = g_mutex_new();
 
     g_message("SPLGameController start socket thread");
     socketThread = g_thread_create(socketLoopWrap, this, true, NULL);
@@ -68,142 +78,125 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   return err;
 }
 
-bool SPLGameController::update(GameData& gameData, unsigned int time)
+bool SPLGameController::get(GameData& gameData, unsigned int time)
 {
-  Data* data = NULL;
+  bool ok = false;
   if ( g_mutex_trylock(dataMutex) )
   {
-    if ( lastUpdatedIndex >= 0 )
+    if ( dataUpdated )
     {
-      data = &(theData[lastUpdatedIndex]);
-      lastUpdatedIndex = -1;
+      if ( gameData.gameState != data.gameState )
+      {
+        data.timeWhenGameStateChanged = time;
+      }
+      if ( gameData.playMode != data.playMode )
+      {
+        data.timeWhenPlayModeChanged = time;
+      }
+      gameData = data;
+      dataUpdated = false;
+      ok = true;
     }
     g_mutex_unlock(dataMutex);
   }
+  return ok;
+}
 
-  // update
-  if ( data != NULL )
+bool SPLGameController::update()
+{
+  std::string header;
+  header.assign(dataIn.header, 4);
+  if(header == GAMECONTROLLER_STRUCT_HEADER)
   {
-    RoboCupGameControlData& dataIn = data->dataIn;
-    std::string header;
-    header.assign(dataIn.header, 4);
-    if(header == GAMECONTROLLER_STRUCT_HEADER)
+    int teamInfoIndex = -1;
+    TeamInfo tinfo;
+
+    bool isRed = true;
+
+    if (dataIn.teams[TEAM_RED].teamNumber == data.teamNumber)
     {
-      GameData::GameState lastGameState = gameData.gameState;
-      int teamInfoIndex = -1;
-      TeamInfo tinfo;
+      isRed = true;
+    }
+    else if (dataIn.teams[TEAM_BLUE].teamNumber == data.teamNumber)
+    {
+      isRed = false;
+    }
+    else
+    {
+      // no message for us invalidate data
+      return false;
+    }
 
-      bool isRed = true;
+    if(isRed)
+    {
+      tinfo = dataIn.teams[TEAM_RED];
+      teamInfoIndex = TEAM_RED;
+      data.teamColor = GameData::red;
+    }
+    else
+    {
+      tinfo = dataIn.teams[TEAM_BLUE];
+      teamInfoIndex = TEAM_BLUE;
+      data.teamColor = GameData::blue;
+    }
 
-      if (dataIn.teams[TEAM_RED].teamNumber == gameData.teamNumber)
+    if (teamInfoIndex >= 0)
+    {
+      switch (dataIn.state)
       {
-        isRed = true;
+      case STATE_INITIAL:
+        data.gameState = GameData::initial;
+        break;
+      case STATE_READY:
+        data.gameState = GameData::ready;
+        break;
+      case STATE_SET:
+        data.gameState = GameData::set;
+        break;
+      case STATE_PLAYING:
+        data.gameState = GameData::playing;
+        break;
+      case STATE_FINISHED:
+        data.gameState = GameData::finished;
+        break;
       }
-      else if (dataIn.teams[TEAM_BLUE].teamNumber == gameData.teamNumber)
-      {
-        isRed = false;
-      }
-      else
-      {
-        // no message for us invalidate data
-        return false;
-      }
 
-      if(isRed)
+      data.numOfPlayers = dataIn.playersPerTeam;
+
+      if ( data.gameState == GameData::initial
+          || data.gameState == GameData::ready
+          || data.gameState == GameData::set
+          || data.gameState == GameData::playing )
       {
-        tinfo = dataIn.teams[TEAM_RED];
-        teamInfoIndex = TEAM_RED;
-        gameData.teamColor = GameData::red;
-      }
-      else
-      {
-        tinfo = dataIn.teams[TEAM_BLUE];
-        teamInfoIndex = TEAM_BLUE;
-        gameData.teamColor = GameData::blue;
+        //TODO: check more conditions (time, etc.)
+        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
       }
 
-      if (teamInfoIndex >= 0)
+      unsigned char playerNumberForGameController = data.playerNumber - 1; // gamecontroller starts counting at 0
+
+      if(playerNumberForGameController < MAX_NUM_PLAYERS)
       {
-        switch (dataIn.state)
-        {
-          case STATE_INITIAL:
-            gameData.gameState = GameData::initial;
-            break;
-          case STATE_READY:
-            gameData.gameState = GameData::ready;
-            break;
-          case STATE_SET:
-            gameData.gameState = GameData::set;
-            break;
-          case STATE_PLAYING:
-            gameData.gameState = GameData::playing;
-            break;
-          case STATE_FINISHED:
-            gameData.gameState = GameData::finished;
-            break;
-        }
-
-        gameData.numOfPlayers = dataIn.playersPerTeam;
-
-        if ( gameData.gameState == GameData::ready
-            || gameData.gameState == GameData::set
-            || gameData.gameState == GameData::playing )
-        {
-          //TODO: check more conditions (time, etc.)
-          gameData.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
-        }
-
-        unsigned char playerNumberForGameController = gameData.playerNumber - 1; // gamecontroller starts counting at 0
-
-        if(playerNumberForGameController < MAX_NUM_PLAYERS)
-        {
-          RobotInfo rinfo =
+        RobotInfo rinfo =
             dataIn.teams[teamInfoIndex].players[playerNumberForGameController];
-          if (rinfo.penalty != PENALTY_NONE)
-          {
-            gameData.gameState = GameData::penalized;
-            gameData.penaltyState = (GameData::PenaltyState)rinfo.penalty;
-          }
+        data.penaltyState = (GameData::PenaltyState)rinfo.penalty;
+        data.secsTillUnpenalised = rinfo.secsTillUnpenalised;
+        if (rinfo.penalty != PENALTY_NONE)
+        {
+          data.gameState = GameData::penalized;
         }
       }
-
-      if ( lastGameState != gameData.gameState )
-      {
-        gameData.timeWhenGameStateChanged = time;
-      }
-
-      // return data
-      RoboCupGameControlReturnData& dataOut = data->dataOut;
-      strcpy(dataOut.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
-      dataOut.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
-      dataOut.team = gameData.teamNumber;
-      dataOut.player = gameData.playerNumber;
-      dataOut.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
-
-      return true;
-    } // end if header correct
-  }
-
+    }
+    return true;
+  } // end if header correct
   return false;
 }
 
-void SPLGameController::update()
+void SPLGameController::setReturnData(const naoth::GameReturnData& data)
 {
-  int size = g_socket_receive(socket, (char*)(&(theData[writingIndex].dataIn)), sizeof(RoboCupGameControlData), NULL, NULL);
-  if(size == sizeof(RoboCupGameControlData))
+  if ( g_mutex_trylock(returnDataMutex) )
   {
-    sendData(theData[writingIndex].dataOut);
-
-    g_mutex_lock(dataMutex);
-    if ( lastUpdatedIndex < 0 )
-    {
-      lastUpdatedIndex = writingIndex;
-
-      writingIndex++;
-      if (writingIndex>1)
-        writingIndex = 0;
-    }
-    g_mutex_unlock(dataMutex);
+    dataOut.message = data.message;
+    g_mutex_unlock(returnDataMutex);
   }
 }
 
@@ -213,6 +206,7 @@ SPLGameController::~SPLGameController()
 
   g_thread_join(socketThread);
   g_mutex_free(dataMutex);
+  g_mutex_free(returnDataMutex);
 
   if(socket != NULL)
   {
@@ -249,7 +243,20 @@ void SPLGameController::socketLoop()
 
   while(!exiting)
   {
-    update();
+    int size = g_socket_receive(socket, (char*)(&dataIn), sizeof(RoboCupGameControlData), NULL, NULL);
+    if(size == sizeof(RoboCupGameControlData))
+    {
+      g_mutex_lock(dataMutex);
+      if ( update() )
+      {
+        dataUpdated = true;
+      }
+      g_mutex_unlock(dataMutex);
+
+      g_mutex_lock(returnDataMutex);
+      sendData(dataOut);
+      g_mutex_unlock(returnDataMutex);
+    }
   }
 }
 

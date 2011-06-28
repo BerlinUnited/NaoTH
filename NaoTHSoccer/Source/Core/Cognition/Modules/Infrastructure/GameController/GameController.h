@@ -15,6 +15,7 @@ BEGIN_DECLARE_MODULE(GameController)
   REQUIRE(GameData)
   REQUIRE(FrameInfo)
 
+  PROVIDE(GameReturnData)
   PROVIDE(GameControllerLEDRequest)
   PROVIDE(PlayerInfo)
 END_DECLARE_MODULE(GameController)
