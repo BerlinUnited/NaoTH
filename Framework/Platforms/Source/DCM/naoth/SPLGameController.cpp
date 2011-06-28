@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
+#include "Tools/MacAddr.h"
 
 using namespace naoth;
 
@@ -37,8 +38,8 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
 
-  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
-  GInetAddress* wlAddress = g_inet_address_new_from_string(config.getString("teamcomm", "wlan").c_str());
+  string wlanBroadcast = getBroadcastAddr("wlan0");
+  GInetAddress* wlAddress = g_inet_address_new_from_string(wlanBroadcast.c_str());
   wlanBroadcastAddress = g_inet_socket_address_new(wlAddress, port);
   g_object_unref(wlAddress);
 
