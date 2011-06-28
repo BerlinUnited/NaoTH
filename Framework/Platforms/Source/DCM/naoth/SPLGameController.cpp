@@ -38,10 +38,10 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
 
-  string wlanBroadcast = getBroadcastAddr("wlan0");
-  GInetAddress* wlAddress = g_inet_address_new_from_string(wlanBroadcast.c_str());
-  wlanBroadcastAddress = g_inet_socket_address_new(wlAddress, port);
-  g_object_unref(wlAddress);
+  string broadcastAddr = getBroadcastAddr("wlan0");
+  GInetAddress* address = g_inet_address_new_from_string(broadcastAddr.c_str());
+  broadcastAddress = g_inet_socket_address_new(address, port);
+  g_object_unref(address);
 
   return err;
 }
@@ -157,6 +157,11 @@ SPLGameController::~SPLGameController()
     g_object_unref(socket);
   }
 
+  if(broadcastAddress != NULL)
+  {
+    g_object_unref(broadcastAddress);
+  }
+
   free(buffer);
 }
 
@@ -170,7 +175,7 @@ void SPLGameController::returnData(const naoth::GameData& gameData)
   data.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
 
   GError *error = NULL;
-  gssize result = g_socket_send_to(socket, wlanBroadcastAddress, (char*)(&data), sizeof(data), NULL, &error);
+  gssize result = g_socket_send_to(socket, broadcastAddress, (char*)(&data), sizeof(data), NULL, &error);
   if ( result != sizeof(data) )
   {
     g_warning("SPLGameController::returnData, sended size = %d", result);

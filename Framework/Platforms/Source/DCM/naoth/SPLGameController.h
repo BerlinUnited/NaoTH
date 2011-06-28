@@ -17,7 +17,7 @@ public:
 private:
     GSocket* socket;
     char* buffer;
-    GSocketAddress* wlanBroadcastAddress;
+    GSocketAddress* broadcastAddress;
 
     GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
 
