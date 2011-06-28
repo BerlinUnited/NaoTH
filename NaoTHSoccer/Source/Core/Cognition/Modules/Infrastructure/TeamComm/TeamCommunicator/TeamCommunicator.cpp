@@ -25,6 +25,10 @@ void TeamCommunicator::execute()
     getTeamMessageDataOut().data = msg.SerializeAsString();
     lastSentTimestamp = getFrameInfo().getTime();
   }
+  else
+  {
+    getTeamMessageDataOut().data.clear();
+  }
 }
 
 void TeamCommunicator::handleMessage(const string& data)
@@ -32,11 +36,15 @@ void TeamCommunicator::handleMessage(const string& data)
   naothmessages::TeamCommMessage msg;
   msg.ParseFromString(data);
 
-  int num = msg.playernumber();
+  unsigned int num = msg.playernumber();
+  unsigned int teamnum = msg.teamnumber();
 
-  TeamMessage::Data& content = getTeamMessage().data[num];
-  content.frameInfo.setTime( getFrameInfo().getTime() );
-  content.message = msg;
+  if ( teamnum == getPlayerInfo().gameData.teamNumber )
+  {
+    TeamMessage::Data& content = getTeamMessage().data[num];
+    content.frameInfo.setTime( getFrameInfo().getTime() );
+    content.message = msg;
+  }
 }
 
 void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)

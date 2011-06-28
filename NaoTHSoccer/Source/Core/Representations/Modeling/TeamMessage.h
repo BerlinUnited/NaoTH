@@ -38,7 +38,7 @@ public:
         i != data.end(); ++i)
     {
       const naothmessages::TeamCommMessage& message = i->second.message;
-      stream << "From " << i->first << endl;
+      stream << "From " << i->first << " ["<< message.bodyid() <<"]"<< endl;
       i->second.frameInfo.print(stream);
       stream << "Message: " << endl;
       stream << "\tPos (x; y; rotation) = "
