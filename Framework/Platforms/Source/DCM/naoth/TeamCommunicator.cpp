@@ -2,6 +2,7 @@
 #include "PlatformInterface/Platform.h"
 
 #include <sys/socket.h>
+#include "Tools/MacAddr.h"
 
 #define TEAMCOMM_MAX_MSG_SIZE 4096
 
@@ -23,7 +24,7 @@ void* receiveLoopWrap(void* c)
 
 TeamCommunicator::TeamCommunicator()
   : exiting(false), socket(NULL),
-    lanBroadcastAddress(NULL), wlanBroadcastAddress(NULL)
+    broadcastAddress(NULL)
 {
   buffer = new char[TEAMCOMM_MAX_MSG_SIZE];
   if (!g_thread_supported())
@@ -49,18 +50,16 @@ TeamCommunicator::TeamCommunicator()
   {
     g_message("Team Communication started on port %d", port);
 
-    if(config.hasKey("teamcomm", "wlan"))
+    string interface = "wlan0";
+    if(config.hasKey("teamcomm", "interface"))
     {
-      GInetAddress* address = g_inet_address_new_from_string(config.getString("teamcomm", "wlan").c_str());
-      wlanBroadcastAddress = g_inet_socket_address_new(address, port);
-      g_object_unref(address);
+      interface = config.getString("teamcomm", "interface");
     }
-    if(config.hasKey("teamcomm", "lan"))
-    {
-      GInetAddress* address = g_inet_address_new_from_string(config.getString("teamcomm", "lan").c_str());
-      lanBroadcastAddress = g_inet_socket_address_new(address, port);
-      g_object_unref(address);
-    }
+
+    string broadcast = getBroadcastAddr(interface);
+    GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
+    broadcastAddress = g_inet_socket_address_new(address, port);
+    g_object_unref(address);
 
     g_message("TeamCommunicator start sending thread");
     sendThread = g_thread_create(sendLoopWrap, this, true, NULL);
@@ -88,13 +87,9 @@ TeamCommunicator::~TeamCommunicator()
   {
     g_object_unref(socket);
   }
-  if(lanBroadcastAddress != NULL)
+  if(broadcastAddress != NULL)
   {
-    g_object_unref(lanBroadcastAddress);
-  }
-  if(wlanBroadcastAddress != NULL)
-  {
-    g_object_unref(wlanBroadcastAddress);
+    g_object_unref(broadcastAddress);
   }
   delete [] buffer;
 }
@@ -145,27 +140,13 @@ void TeamCommunicator::send()
   }
   else
   {
-    if(lanBroadcastAddress)
+    if(broadcastAddress)
     {
       GError *error = NULL;
-      gssize result = g_socket_send_to(socket, lanBroadcastAddress, messageOut.c_str(), messageOut.size(), NULL, &error);
+      gssize result = g_socket_send_to(socket, broadcastAddress, messageOut.c_str(), messageOut.size(), NULL, &error);
       if ( result != messageOut.size() )
       {
-        g_warning("lan broadcast error, sended size = %d", result);
-      }
-      if (error)
-      {
-        g_warning("g_socket_send_to error: %s", error->message);
-        g_error_free(error);
-      }
-    }
-    if(wlanBroadcastAddress)
-    {
-      GError *error = NULL;
-      gssize result = g_socket_send_to(socket, wlanBroadcastAddress, messageOut.c_str(), messageOut.size(), NULL, &error);
-      if ( result != messageOut.size() )
-      {
-        g_warning("wlan broadcast error, sended size = %d", result);
+        g_warning("broadcast error, sended size = %d", result);
       }
       if (error)
       {

@@ -39,8 +39,7 @@ private:
   GMutex*  messageOutMutex;
   GCond* messageOutCond;
 
-  GSocketAddress* lanBroadcastAddress;
-  GSocketAddress* wlanBroadcastAddress;
+  GSocketAddress* broadcastAddress;
 
   GError* bindAndListen(unsigned int port);
 };
