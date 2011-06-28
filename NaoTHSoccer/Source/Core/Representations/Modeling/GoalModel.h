@@ -1,8 +1,25 @@
+/**
+* @file GoalModel.h
+*
+* @author <a href="mailto:borisov@informatik.hu-berlin.de">Alexander Borisov</a>
+* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* Definition of class GoalModel
+*/
+
 #ifndef __GoalModel_h_
 #define __GoalModel_h_
 
+#include <Tools/Math/Vector2.h>
+#include <Tools/Math/Pose2D.h>
+#include <Tools/DataStructures/Printable.h>
 
-class GoalModel : public Printable
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
+
+class GoalModel : public naoth::Printable
 {
 public:
   class Goal
@@ -60,7 +77,7 @@ public:
 };
 
 /** goal model in robot's local coordinates, it is updated by robot's pose */
-/*class SelfLocGoalModel : public GoalModel
+class SelfLocGoalModel : public GoalModel
 {
 public:
   void update(PlayerInfo::TeamColor ownColor, const Pose2D& robotPose, const FieldInfo& fieldInfo);
@@ -72,10 +89,6 @@ class SensingGoalModel : public GoalModel
 public:
   //indicates whether a complete goal was seen in the last frame
   bool someGoalWasSeen;
-};*/
-
-//REPRESENTATION_INTERFACE(LocalGoalModel);
-//REPRESENTATION_INTERFACE(SelfLocGoalModel);
-//REPRESENTATION_INTERFACE(SensingGoalModel);
+};
 
 #endif // __GoalModel_h_
