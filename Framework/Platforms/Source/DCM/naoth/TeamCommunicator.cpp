@@ -65,10 +65,12 @@ TeamCommunicator::TeamCommunicator()
     g_message("TeamCommunicator start sending thread");
     sendThread = g_thread_create(sendLoopWrap, this, true, NULL);
     ASSERT(sendThread != NULL);
+    g_thread_set_priority(sendThread, G_THREAD_PRIORITY_LOW);
 
     g_message("TeamCommunicator start receiving thread");
     receiveThread = g_thread_create(receiveLoopWrap, this, true, NULL);
     ASSERT(receiveThread != NULL);
+    g_thread_set_priority(receiveThread, G_THREAD_PRIORITY_LOW);
   }
 }
 
