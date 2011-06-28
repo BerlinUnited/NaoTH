@@ -71,6 +71,8 @@ public:
     goal_opp,
     free_kick_own,
     free_kick_opp,
+    penalty_kick_own,
+    penalty_kick_opp,
     numOfPlayMode
   };
 
@@ -99,7 +101,7 @@ public:
   unsigned int timeWhenGameStateChanged;
   PenaltyState penaltyState;
   unsigned int secsTillUnpenalised;
-  unsigned int secsRemaining; // time (seconds) remain in half game
+  unsigned int secsRemaining; // time (million seconds) remain in half game
   bool firstHalf; // indicates if it is in first half game
 
   PlayMode playMode;

@@ -65,29 +65,31 @@ GameData::PlayMode GameData::playModeFromString(const std::string& name)
 }//end playModeFromString
 
 std::string GameData::playModeToString(GameData::PlayMode mode)
+{
+  switch(mode)
   {
-    switch(mode)
-    {
-      case before_kick_off: return "before_kick_off";
-      case kick_off_own: return "kick_off_own";
-      case kick_off_opp: return "kick_off_opp";
-      case play_on: return "play_on";
-      case kick_in_own: return "kick_in_own";
-      case kick_in_opp: return "kick_in_opp";
-      case corner_kick_own: return "corner_kick_own";
-      case corner_kick_opp: return "corner_kick_opp";
-      case goal_kick_own: return "goal_kick_own";
-      case goal_kick_opp: return "goal_kick_opp";
-      case offside_own: return "offside_own";
-      case offside_opp: return "offside_opp";
-      case game_over: return "game_over";
-      case goal_own: return "goal_own";
-      case goal_opp: return "goal_opp";
-      case free_kick_own: return "free_kick_own";
-      case free_kick_opp: return "free_kick_opp";
-      default: return "unknown";
-    }//end switch
-  }//end playModeToString
+  case before_kick_off: return "before_kick_off";
+  case kick_off_own: return "kick_off_own";
+  case kick_off_opp: return "kick_off_opp";
+  case play_on: return "play_on";
+  case kick_in_own: return "kick_in_own";
+  case kick_in_opp: return "kick_in_opp";
+  case corner_kick_own: return "corner_kick_own";
+  case corner_kick_opp: return "corner_kick_opp";
+  case goal_kick_own: return "goal_kick_own";
+  case goal_kick_opp: return "goal_kick_opp";
+  case offside_own: return "offside_own";
+  case offside_opp: return "offside_opp";
+  case game_over: return "game_over";
+  case goal_own: return "goal_own";
+  case goal_opp: return "goal_opp";
+  case free_kick_own: return "free_kick_own";
+  case free_kick_opp: return "free_kick_opp";
+  case penalty_kick_own: return "penalty_kick_own";
+  case penalty_kick_opp: return "penalty_kick_opp";
+  default: return "unknown";
+  }//end switch
+}//end playModeToString
 
 std::string GameData::teamColorToString(TeamColor teamColor)
 {
@@ -127,7 +129,7 @@ void GameData::print(ostream& stream) const
   {
     stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << secsTillUnpenalised << "]\n";
   }
-  stream << (firstHalf?"first":"second") <<" half remains "<< secsRemaining << "seconds\n";
+  stream << (firstHalf?"first":"second") <<" half remains "<< secsRemaining << "ms\n";
   stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";

@@ -162,16 +162,27 @@ bool SPLGameController::update()
       }
 
       data.numOfPlayers = dataIn.playersPerTeam;
-      data.secsRemaining = dataIn.secsRemaining;
+      data.secsRemaining = dataIn.secsRemaining * 1000;
       data.firstHalf = (dataIn.firstHalf == 1);
 
-      if ( data.gameState == GameData::initial
-          || data.gameState == GameData::ready
-          || data.gameState == GameData::set
-          || data.gameState == GameData::playing )
+      if ( dataIn.secondaryState == STATE2_NORMAL )
       {
-        //TODO: check more conditions (time, etc.)
-        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+        if ( data.gameState == GameData::initial
+            || data.gameState == GameData::ready
+            || data.gameState == GameData::set
+            || data.gameState == GameData::playing )
+        {
+          //TODO: check more conditions (time, etc.)
+          data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+        }
+      }
+      else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
+      {
+        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
+      }
+      else if ( dataIn.secondaryState == STATE2_OVERTIME )
+      {
+        data.playMode = GameData::game_over;
       }
 
       unsigned char playerNumberForGameController = data.playerNumber - 1; // gamecontroller starts counting at 0
