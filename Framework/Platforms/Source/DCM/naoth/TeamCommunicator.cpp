@@ -70,6 +70,9 @@ GError* TeamCommunicator::bindAndListen(unsigned int port)
 
 void TeamCommunicator::send(const std::string& data)
 {
+  if ( data.empty() )
+    return;
+
   if(data.size() > TEAMCOMM_MAX_MSG_SIZE)
   {
     g_warning("tried to send too big TeamComm message, please adjust TEAMCOMM_MAX_MSG_SIZE");
