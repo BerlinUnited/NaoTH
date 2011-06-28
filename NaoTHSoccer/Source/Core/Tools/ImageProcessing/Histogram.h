@@ -26,9 +26,11 @@
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/DataStructures/Printable.h"
 
-class Histogram: public Printable
+#define COLOR_CHANNEL_VALUE_COUNT 256
+
+class Histogram: public naoth::Printable
 {
-  public:
+ public:
     Histogram();
     ~Histogram()
     {};
@@ -36,17 +38,21 @@ class Histogram: public Printable
     void init();
     void execute();
 
-    void increaseValue(int x, int y, ColorClasses::Color color);
-    void increaseValue(const UniformGrid& grid, int pixelIndex, ColorClasses::Color color);
+    void increaseValue(const int& x, const int& y, const ColorClasses::Color& color);
+    void increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color);
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
+
+    void increaseChannelValue(const Pixel& pixel);
+
 
     void showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const;
     virtual void print(ostream& stream) const;
 
   public:
     // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
-    int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
+    unsigned int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
+    unsigned int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
+    unsigned int colorChannelHistogram[3][COLOR_CHANNEL_VALUE_COUNT];
 };
 
 
