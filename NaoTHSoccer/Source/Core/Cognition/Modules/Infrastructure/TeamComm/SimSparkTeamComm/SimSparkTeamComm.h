@@ -23,13 +23,13 @@
 #include "Representations/Modeling/PlayerInfo.h"
 
 BEGIN_DECLARE_MODULE(SimSparkTeamComm)
-  REQUIRE(TeamMessageData)
+  REQUIRE(TeamMessageDataIn)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(PlayerInfo)
 
   PROVIDE(TeamMessage)
-  PROVIDE(RobotMessageData)
+  PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(SimSparkTeamComm)
 
 

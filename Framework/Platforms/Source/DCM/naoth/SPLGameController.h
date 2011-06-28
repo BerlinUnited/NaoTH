@@ -12,13 +12,32 @@ public:
 
     ~SPLGameController();
 
-    bool update(naoth::GameData& gameData, unsigned int time);
+    bool get(naoth::GameData& gameData, unsigned int time);
+
+    void setReturnData(const naoth::GameReturnData& data);
+
+    void socketLoop();
 
 private:
+    bool update();
+
+private:
+    bool exiting;
     GSocket* socket;
-    char* buffer;
+    GSocketAddress* broadcastAddress;
+    GThread* socketThread;
+    RoboCupGameControlData dataIn;
+    RoboCupGameControlReturnData dataOut;
+
+    bool dataUpdated;
+    unsigned int lastGetTime;
+    naoth::GameData data;
+    GMutex*  dataMutex;
+    GMutex* returnDataMutex;
 
     GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
+
+    void sendData(const RoboCupGameControlReturnData& data);
 };
 
 #endif // SPLGAMECONTROLLER_H

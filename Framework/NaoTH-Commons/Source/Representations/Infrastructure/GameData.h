@@ -36,6 +36,22 @@ public:
   static GameState gameStateFromString(const std::string& name);
   static std::string gameStateToString(GameState gameState);
 
+  enum PenaltyState
+  {
+    none = 0,
+    ball_holding = 1,
+    player_pushing = 2,
+    obstruction = 3,
+    inactive_player = 4,
+    illegal_defender = 5,
+    leaving_the_field = 6,
+    playing_with_hands = 7,
+    request_for_pickup = 8,
+    manual = 15
+  };
+
+  static std::string penaltyStateToString(PenaltyState state);
+
   enum PlayMode
   {
     before_kick_off,
@@ -55,6 +71,8 @@ public:
     goal_opp,
     free_kick_own,
     free_kick_opp,
+    penalty_kick_own,
+    penalty_kick_opp,
     numOfPlayMode
   };
 
@@ -81,6 +99,10 @@ public:
 
   GameState gameState;
   unsigned int timeWhenGameStateChanged;
+  PenaltyState penaltyState;
+  unsigned int msecsTillUnpenalised;
+  unsigned int msecsRemaining; // time (million seconds) remain in half game
+  bool firstHalf; // indicates if it is in first half game
 
   PlayMode playMode;
   unsigned int gameTime; // in ms
@@ -107,6 +129,28 @@ public:
 
   /** number of player per team */
   unsigned int numOfPlayers;
+};
+
+class GameReturnData: public PlatformInterchangeable, public Printable
+{
+public:
+  GameReturnData():message(alive){};
+
+  enum Message
+  {
+    manual_penalise = 0,
+    manual_unpenalise = 1,
+    alive = 2,
+  };
+
+  static std::string messageToString(Message msg);
+
+  Message message;
+
+  virtual void print(ostream& stream) const
+  {
+    stream << messageToString(message) << endl;
+  }
 };
 
 }// namespace naoth

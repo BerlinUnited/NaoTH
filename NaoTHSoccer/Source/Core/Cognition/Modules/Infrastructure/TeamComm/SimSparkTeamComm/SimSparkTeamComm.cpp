@@ -24,8 +24,8 @@ void SimSparkTeamComm::execute()
 void SimSparkTeamComm::readMessage()
 {
   unsigned int time = getFrameInfo().getTime();
-  for(vector<string>::const_iterator i=getTeamMessageData().data.begin();
-      i!=getTeamMessageData().data.end(); ++i)
+  for(vector<string>::const_iterator i=getTeamMessageDataIn().data.begin();
+      i!=getTeamMessageDataIn().data.end(); ++i)
   {
     unsigned int teamNumber = encoder.decodeUnsigned(i->substr(0, 1));
     if ( teamNumber == getPlayerInfo().gameData.teamNumber )
@@ -46,7 +46,7 @@ void SimSparkTeamComm::readMessage()
 
 void SimSparkTeamComm::sendMessage()
 {
-  string& data = getRobotMessageData().data;
+  string& data = getTeamMessageDataOut().data;
   data.clear();
 
   data += encoder.encode(static_cast<unsigned int>(getPlayerInfo().gameData.teamNumber), 1);

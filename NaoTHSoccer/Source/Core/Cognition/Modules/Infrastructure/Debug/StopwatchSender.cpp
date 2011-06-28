@@ -5,7 +5,7 @@
  */
 #include "StopwatchSender.h"
 
-#include "Cognition/CognitionDebugServer.h"
+#include "Cognition/DebugCommandServer.h"
 #include <Tools/Debug/Stopwatch.h>
 #include "Messages/Messages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>

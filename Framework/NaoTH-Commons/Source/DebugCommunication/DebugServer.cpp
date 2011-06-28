@@ -48,9 +48,6 @@ void DebugServer::start(unsigned short port, bool threaded)
       g_warning("Could not start debug server thread: %s", err->message);
     }
   }
-
-  registerCommand("help", "list available commands or get the description of a specific command", this);
- 
 }//end start
 
 void DebugServer::mainConnection()
@@ -160,10 +157,11 @@ void DebugServer::disconnect()
 }
 
 
-void DebugServer::execute()
+void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
 {
   g_mutex_lock(m_executing);
 
+  // needed only in single threaded mode
   if(connectionThread == NULL && !comm.isConnected())
   {
     comm.connect(-1);
@@ -180,24 +178,42 @@ void DebugServer::execute()
       disconnect();
     }
   }
+  // end -- needed only in single threaded mode
 
-  // handle all commands
+  // copy messages
   while (g_async_queue_length(commands) > 0)
   {
     GString* cmdRaw = (GString*) g_async_queue_pop(commands);
 
-    GString* answer = g_string_new("");
-
-    std::stringstream answerStringStream;
-    handleCommand(cmdRaw, answerStringStream);
-    std::string answerAsString = answerStringStream.str();
-    g_string_append_len(answer, answerAsString.c_str(), answerAsString.size());
-
-    g_async_queue_push(answers, answer);
+    naoth::DebugMessageIn::Message message;
+    parseCommand(cmdRaw, message.command, message.arguments);
+    buffer.messages.push(message);
 
     g_string_free(cmdRaw, true);
-
   }//end while
+
+  g_mutex_unlock(m_executing);
+}//end getDebugMessageIn
+
+
+void DebugServer::setDebugMessageOut(naoth::DebugMessageOut& buffer)
+{
+  g_mutex_lock(m_executing);
+
+  while(!buffer.answers.empty())
+  {
+    GString* answer = g_string_new("");
+    const std::string& answerAsString = buffer.answers.front();
+    g_string_append_len(answer, answerAsString.c_str(), answerAsString.size());
+    g_async_queue_push(answers, answer);
+    buffer.answers.pop();
+  }//wnd while
+
+  // needed only in single threaded mode
+  if(connectionThread == NULL && !comm.isConnected())
+  {
+    comm.connect(-1);
+  }
 
   if(connectionThread == NULL && comm.isConnected())
   {
@@ -210,18 +226,16 @@ void DebugServer::execute()
       disconnect();
     }
   }
+  // end -- needed only in single threaded mode
+
   g_mutex_unlock(m_executing);
+}//end getDebugMessageOut
 
-}//end execute
 
-
-void DebugServer::handleCommand(GString* cmdRaw, std::stringstream& answer)
+void DebugServer::parseCommand(GString* cmdRaw, std::string& commandName, std::map<std::string, std::string>& arguments)
 {
-  // parse command
-
   naothmessages::CMD cmd;
-  std::map<std::string, std::string> arguments;
-  std::string commandName = "invalidcommand";
+  commandName = "invalidcommand";
 
   if(cmd.ParseFromArray(cmdRaw->str, cmdRaw->len))
   {
@@ -239,104 +253,9 @@ void DebugServer::handleCommand(GString* cmdRaw, std::stringstream& answer)
         arguments[arg.name()] = arg.name();
       }
     }
-  }
-  handleCommand(commandName, arguments, answer);
+  }//end if
+}//end parseCommand
 
-}//end handleCommand
-
-
-void DebugServer::handleCommand(std::string& command, std::map<std::string,
-  std::string>& arguments, std::stringstream& answer)
-{
-  if (executorMap.find(command) != executorMap.end())
-  {
-    executorMap[command]->executeDebugCommand(command, arguments, answer);
-  } else
-  {
-    answer << "Unknown command \"" << command
-      << "\", use \"help\" for a list of available commands" << std::endl;
-  }
-}//end handleCommand
-
-
-bool DebugServer::registerCommand(std::string command, std::string description,
-  DebugCommandExecutor* executor)
-{
-  if (executorMap.find(command) == executorMap.end())
-  {
-    // new command
-    executorMap[command] = executor;
-    descriptionMap[command] = description;
-    executor->registerDestructionListener(*this);
-    return true;
-  }
-  return false;
-}//end registerCommand
-
-
-void DebugServer::objectDestructed(DebugCommandExecutor* object)
-{
-  std::list<std::string> registeredKeys;
-
-  // search all registered keys of the object
-  std::map<std::string, DebugCommandExecutor*>::const_iterator iter;
-  for (iter = executorMap.begin(); iter != executorMap.end(); iter++)
-  {
-    if ((*iter).second == object)
-    {
-      registeredKeys.push_back((*iter).first);
-    }//end if
-  }//end for
-
-  // unregister all found commands
-  std::list<std::string>::const_iterator iter_key;
-  for (iter_key = registeredKeys.begin(); iter_key != registeredKeys.end(); iter_key++)
-  {
-    executorMap.erase(*iter_key);
-
-    g_debug("unregistering command %s", (*iter_key).c_str());
-  }//end for
-}
-
-void DebugServer::executeDebugCommand(const std::string& command, const std::map<std::string, std::string>& arguments,
-  std::ostream& out)
-{
-  if (command == "help")
-  {
-    if (arguments.empty())
-    {
-      // list all available commands
-      out << "Available commands, use \"help <command>\" for a description:\n";
-      std::map<std::string, std::string>::const_iterator iter = descriptionMap.begin();
-      while (iter != descriptionMap.end())
-      {
-        out << iter->first;
-        iter++;
-        if (iter != descriptionMap.end())
-        {
-          out << ": " << iter->second << "\n";
-        }
-      }
-    }
-    else
-    {
-      std::string firstArg = arguments.begin()->first;
-      if (descriptionMap.find(firstArg) != descriptionMap.end())
-      {
-        out << firstArg << "\n";
-        out << "------------------\n";
-        out << descriptionMap[firstArg];
-        out << "\n";
-      } else
-      {
-        out << "Unknown command \"" << firstArg
-          << "\", use \"help\" for a list of available commands";
-      }
-
-    }
-    out << "\n";
-  }
-}
 
 void DebugServer::clearBothQueues()
 {

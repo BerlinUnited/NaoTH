@@ -30,7 +30,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(UltraSoundSendData)
   REQUIRE(SoundPlayData)
   REQUIRE(MotionStatus)
-  REQUIRE(RobotMessageData)
+  REQUIRE(TeamMessageDataOut)
 
   // HACK: check execute()
   PROVIDE(MotionRequest)

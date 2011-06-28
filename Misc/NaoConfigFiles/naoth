@@ -1,0 +1,23 @@
+#!/bin/bash
+
+case "$1" in
+  start)
+    echo "starting naoth cognition process"
+    if [ nao = `whoami` ]; then
+      cd /home/nao/naoqi/ && (nohup /home/nao/bin/naoth 2>&1 | logger &)
+    else
+      su -c 'cd /home/nao/naoqi/ && (nohup /home/nao/bin/naoth 2>&1 | logger &)' nao
+    fi
+    ;;
+  stop)
+    echo "killing all naoth cognition processes"
+    killall naoth
+    ;;
+  *)
+    echo "Usage: /etc/init.d/naoqi {start|stop}"
+    exit 1
+    ;;
+
+esac
+
+exit 0

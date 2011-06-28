@@ -12,8 +12,7 @@
 using namespace naoth;
 
 NaoController::NaoController()
-:playerCfgLoaded(false),
-theSoundHandler(NULL),
+:theSoundHandler(NULL),
 theTeamComm(NULL)
 {
   // read the value from file
@@ -40,7 +39,7 @@ theTeamComm(NULL)
   registerInput<UltraSoundReceiveData>(*this);
   registerInput<MotorJointData>(*this);
   registerInput<GameData>(*this);
-  registerInput<TeamMessageData>(*this);
+  registerInput<TeamMessageDataIn>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
@@ -48,7 +47,8 @@ theTeamComm(NULL)
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundPlayData>(*this);
-  registerOutput<const RobotMessageData>(*this);
+  registerOutput<const TeamMessageDataOut>(*this);
+  registerOutput<const GameReturnData>(*this);
   
   cout<<"Init Platform"<<endl;
   Platform::getInstance().init(this);
@@ -128,28 +128,25 @@ void NaoController::setCognitionOutput()
   naothDataWriting = naothData.writing();
 }
 
-void NaoController::get(TeamMessageData& data)
+void NaoController::get(TeamMessageDataIn& data)
 {
-  data.data.clear();
   theTeamComm->receive(data.data);
 }
 
-void NaoController::set(const RobotMessageData& data)
+void NaoController::set(const TeamMessageDataOut& data)
 {
   theTeamComm->send(data.data);
 }
 
 void NaoController::get(GameData& data)
 {
-  if (!playerCfgLoaded)
+  if ( theGameController->get(data, theFrameInfo.getTime()) )
   {
-    playerCfgLoaded = true;
-    data.loadFromCfg( naoth::Platform::getInstance().theConfiguration );
     data.frameNumber = theFrameInfo.getFrameNumber();
   }
+}
 
-  if ( theGameController->update(data, theFrameInfo.getTime()) )
-  {
-    data.frameNumber = theFrameInfo.getFrameNumber();
-  }
+void NaoController::set(const GameReturnData& data)
+{
+  theGameController->setReturnData(data);
 }

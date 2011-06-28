@@ -185,6 +185,7 @@ sed 's/'wep_key0=.\*'/'wep_key0=${WLAN_PASSWORD}'/' $TMP_MOUNT_POINT/etc/wpa_sup
 rm $TMP_MOUNT_POINT/etc/wpa_supplicant.conf.backup
 
 # add a service that starts wpa_supplicant on every start
+echo "adding /etc/init.d/wpa_supplicant"
 cp -f $NAOTH_BZR/Misc/NaoConfigFiles/wpa_supplicant $TMP_MOUNT_POINT/etc/init.d/wpa_supplicant
 chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/wpa_supplicant
 for R in $RC; do
@@ -256,6 +257,15 @@ for R in $RC; do
 done  
 
 ####################################
+
+echo "adding /etc/init.d/naoth"
+cp -f $NAOTH_BZR/Misc/NaoConfigFiles/naoth $TMP_MOUNT_POINT/etc/init.d/naoth
+chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/naoth
+for R in $RC; do
+    ln -sf ../init.d/naoth $TMP_MOUNT_POINT/etc/$R/S99naoth
+done
+
+####################################
 echo "Creating directories..."
 
 mkdir -p $TMP_MOUNT_POINT/home/nao/naoqi/Config/
@@ -286,7 +296,7 @@ do
 done
 
 (echo "[player]" > $TMP_MOUNT_POINT/home/nao/naoqi/Config/private/player.cfg)
-(echo "TeamNumber=$TEAMNR" > $TMP_MOUNT_POINT/home/nao/naoqi/Config/private/player.cfg)
+(echo "TeamNumber=$TEAMNR" >> $TMP_MOUNT_POINT/home/nao/naoqi/Config/private/player.cfg)
 
 while [ TRUE ]
 do

@@ -17,26 +17,38 @@ GameController::GameController()
 
 void GameController::readButtons()
 {
+  // default return message
+  getGameReturnData().message = GameReturnData::alive;
+
   // state change?
   if (getButtonData().eventCounter[ButtonData::Chest] > lastChestButtonEventCounter )
   {
     lastChestButtonEventCounter = getButtonData().eventCounter[ButtonData::Chest];
     switch (getPlayerInfo().gameData.gameState)
     {
-      case GameData::initial :
-
-          getPlayerInfo().gameData.gameState = GameData::penalized;
-        break;
-      case GameData::playing :
-
-          getPlayerInfo().gameData.gameState = GameData::penalized;
-        break;
-      case GameData::penalized :
-
-          getPlayerInfo().gameData.gameState = GameData::playing;
-        break;
-     default:
-        break;
+    case GameData::initial :
+    {
+      getPlayerInfo().gameData.gameState = GameData::penalized;
+      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
+      getGameReturnData().message = GameReturnData::manual_penalise;
+      break;
+    }
+    case GameData::playing :
+    {
+      getPlayerInfo().gameData.gameState = GameData::penalized;
+      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
+      getGameReturnData().message = GameReturnData::manual_penalise;
+      break;
+    }
+    case GameData::penalized :
+    {
+      getPlayerInfo().gameData.gameState = GameData::playing;
+      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
+      getGameReturnData().message = GameReturnData::manual_unpenalise;
+      break;
+    }
+    default:
+      break;
     }
   }
 
@@ -146,7 +158,6 @@ void GameController::updateLEDs()
   switch (getPlayerInfo().gameData.gameState)
   {
     case GameData::ready :
-      std::cout << "in ready" << std::endl;
         getGameControllerLEDRequest().request.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
       break;
     case GameData::set :

@@ -14,6 +14,10 @@ GameData::GameData()
   :frameNumber(0),
     gameState(numOfGameState),
     timeWhenGameStateChanged(0),
+    penaltyState(none),
+    msecsTillUnpenalised(0),
+    msecsRemaining(600000),
+    firstHalf(true),
     playMode(numOfPlayMode),
     gameTime(0),
     timeWhenPlayModeChanged(0),
@@ -61,29 +65,31 @@ GameData::PlayMode GameData::playModeFromString(const std::string& name)
 }//end playModeFromString
 
 std::string GameData::playModeToString(GameData::PlayMode mode)
+{
+  switch(mode)
   {
-    switch(mode)
-    {
-      case before_kick_off: return "before_kick_off";
-      case kick_off_own: return "kick_off_own";
-      case kick_off_opp: return "kick_off_opp";
-      case play_on: return "play_on";
-      case kick_in_own: return "kick_in_own";
-      case kick_in_opp: return "kick_in_opp";
-      case corner_kick_own: return "corner_kick_own";
-      case corner_kick_opp: return "corner_kick_opp";
-      case goal_kick_own: return "goal_kick_own";
-      case goal_kick_opp: return "goal_kick_opp";
-      case offside_own: return "offside_own";
-      case offside_opp: return "offside_opp";
-      case game_over: return "game_over";
-      case goal_own: return "goal_own";
-      case goal_opp: return "goal_opp";
-      case free_kick_own: return "free_kick_own";
-      case free_kick_opp: return "free_kick_opp";
-      default: return "unknown";
-    }//end switch
-  }//end playModeToString
+  case before_kick_off: return "before_kick_off";
+  case kick_off_own: return "kick_off_own";
+  case kick_off_opp: return "kick_off_opp";
+  case play_on: return "play_on";
+  case kick_in_own: return "kick_in_own";
+  case kick_in_opp: return "kick_in_opp";
+  case corner_kick_own: return "corner_kick_own";
+  case corner_kick_opp: return "corner_kick_opp";
+  case goal_kick_own: return "goal_kick_own";
+  case goal_kick_opp: return "goal_kick_opp";
+  case offside_own: return "offside_own";
+  case offside_opp: return "offside_opp";
+  case game_over: return "game_over";
+  case goal_own: return "goal_own";
+  case goal_opp: return "goal_opp";
+  case free_kick_own: return "free_kick_own";
+  case free_kick_opp: return "free_kick_opp";
+  case penalty_kick_own: return "penalty_kick_own";
+  case penalty_kick_opp: return "penalty_kick_opp";
+  default: return "unknown";
+  }//end switch
+}//end playModeToString
 
 std::string GameData::teamColorToString(TeamColor teamColor)
 {
@@ -118,7 +124,13 @@ GameData::TeamColor operator! (const GameData::TeamColor& color)
 void GameData::print(ostream& stream) const
 {
   stream << "GameData @" << frameNumber<<"\n";
-  stream << "gameState = " << gameStateToString(gameState) <<" since "<< timeWhenGameStateChanged << "\n";
+  stream << "gameState = " << gameStateToString(gameState) << " since "<< timeWhenGameStateChanged << "\n";
+  if ( gameState == penalized )
+  {
+    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << msecsTillUnpenalised << "]\n";
+  }
+  stream << (firstHalf?"first":"second") <<" half remains "<< msecsRemaining << "ms\n";
+  stream << "game time = "<< gameTime << "ms\n";
   stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";
@@ -170,3 +182,31 @@ void GameData::loadFromCfg(Configuration& config)
     teamNumber = 0;
   }
 } // end loadPlayerInfoFromFile
+
+std::string GameData::penaltyStateToString(PenaltyState state)
+{
+  switch (state)
+  {
+  case ball_holding: return "ball_holding";
+  case player_pushing: return "player_pushing";
+  case obstruction: return "obstruction";
+  case inactive_player: return "inactive_player";
+  case illegal_defender: return "illegal_defender";
+  case leaving_the_field: return "leaving_the_field";
+  case playing_with_hands: return "playing_with_hands";
+  case request_for_pickup: return "request_for_pickup";
+  case manual: return "manual";
+  default: return "none";
+  }//end switch
+}//end gameStateToString
+
+string GameReturnData::messageToString(GameReturnData::Message msg)
+{
+  switch(msg)
+  {
+  case manual_penalise: return "manual_penalise";
+  case manual_unpenalise: return "manual_unpenalise";
+  default: return "alive";
+  }
+}
+

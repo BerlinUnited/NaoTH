@@ -36,7 +36,7 @@ public:
   
   void get(CurrentCameraSettings& data);
 
-  void get(TeamMessageData& data);
+  void get(TeamMessageDataIn& data);
 
   void get(GameData& data);
   
@@ -53,15 +53,13 @@ public:
 
   void set(const SoundPlayData& data);
 
-  void set(const RobotMessageData& data);
+  void set(const TeamMessageDataOut& data);
+
+  void set(const GameReturnData& data);
   
   virtual void getCognitionInput();
   
   virtual void setCognitionOutput();
-
-private:
-  GameData loadPlayerCfg();
-  bool playerCfgLoaded;
 
 private:
   V4lCameraHandler theCameraHandler;

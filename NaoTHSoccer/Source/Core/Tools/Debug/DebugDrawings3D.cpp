@@ -8,7 +8,7 @@
 
 #include "DebugDrawings3D.h"
 #include "Cognition/Modules/Infrastructure/Debug/Debug.h"
-#include "Cognition/CognitionDebugServer.h"
+#include "Cognition/DebugCommandServer.h"
 
 DebugDrawings3D::DebugDrawings3D()
 {
