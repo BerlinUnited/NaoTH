@@ -17,8 +17,11 @@ public:
 private:
     GSocket* socket;
     char* buffer;
+    GSocketAddress* wlanBroadcastAddress;
 
     GError* bindAndListen(unsigned int port = GAMECONTROLLER_PORT);
+
+    void returnData(const naoth::GameData& gameData);
 };
 
 #endif // SPLGAMECONTROLLER_H

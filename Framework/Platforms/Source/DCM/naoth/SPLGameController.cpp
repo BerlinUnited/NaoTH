@@ -1,5 +1,8 @@
 #include "SPLGameController.h"
 #include <cstdlib>
+#include <PlatformInterface/Platform.h>
+#include <sys/socket.h>
+#include "Tools/MacAddr.h"
 
 using namespace naoth;
 
@@ -24,6 +27,9 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   if(err) return err;
   g_socket_set_blocking(socket, false);
 
+  int broadcast = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
+
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
 
@@ -31,6 +37,11 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
+
+  string wlanBroadcast = getBroadcastAddr("wlan0");
+  GInetAddress* wlAddress = g_inet_address_new_from_string(wlanBroadcast.c_str());
+  wlanBroadcastAddress = g_inet_socket_address_new(wlAddress, port);
+  g_object_unref(wlAddress);
 
   return err;
 }
@@ -130,6 +141,9 @@ bool SPLGameController::update(GameData& gameData, unsigned int time)
       {
         gameData.timeWhenGameStateChanged = time;
       }
+
+      returnData(gameData);
+
       return true;
     } // end if header correct
   } // end if size correct
@@ -145,3 +159,26 @@ SPLGameController::~SPLGameController()
 
   free(buffer);
 }
+
+void SPLGameController::returnData(const naoth::GameData& gameData)
+{
+  RoboCupGameControlReturnData data;
+  strcpy(data.header, GAMECONTROLLER_RETURN_STRUCT_HEADER);
+  data.version = GAMECONTROLLER_RETURN_STRUCT_VERSION;
+  data.team = gameData.teamNumber;
+  data.player = gameData.playerNumber;
+  data.message = GAMECONTROLLER_RETURN_MSG_ALIVE;
+
+  GError *error = NULL;
+  gssize result = g_socket_send_to(socket, wlanBroadcastAddress, (char*)(&data), sizeof(data), NULL, &error);
+  if ( result != sizeof(data) )
+  {
+    g_warning("SPLGameController::returnData, sended size = %d", result);
+  }
+  if (error)
+  {
+    g_warning("g_socket_send_to error: %s", error->message);
+    g_error_free(error);
+  }
+}
+
