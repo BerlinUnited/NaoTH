@@ -100,8 +100,8 @@ public:
   GameState gameState;
   unsigned int timeWhenGameStateChanged;
   PenaltyState penaltyState;
-  unsigned int secsTillUnpenalised;
-  unsigned int secsRemaining; // time (million seconds) remain in half game
+  unsigned int msecsTillUnpenalised;
+  unsigned int msecsRemaining; // time (million seconds) remain in half game
   bool firstHalf; // indicates if it is in first half game
 
   PlayMode playMode;

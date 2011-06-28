@@ -19,6 +19,7 @@ SPLGameController::SPLGameController()
     broadcastAddress(NULL),
     socketThread(NULL),
     dataUpdated(false),
+    lastGetTime(0),
     dataMutex(NULL),
     returnDataMutex(NULL)
 {
@@ -85,16 +86,25 @@ bool SPLGameController::get(GameData& gameData, unsigned int time)
   {
     if ( dataUpdated )
     {
+      if ( data.gameState == GameData::playing
+          || data.gameState == GameData::penalized )
+      {
+        data.gameTime += (time - lastGetTime);
+      }
+
       if ( gameData.gameState != data.gameState )
       {
         data.timeWhenGameStateChanged = time;
       }
+
       if ( gameData.playMode != data.playMode )
       {
         data.timeWhenPlayModeChanged = time;
       }
+
       gameData = data;
       dataUpdated = false;
+      lastGetTime = time;
       ok = true;
     }
     g_mutex_unlock(dataMutex);
@@ -162,7 +172,7 @@ bool SPLGameController::update()
       }
 
       data.numOfPlayers = dataIn.playersPerTeam;
-      data.secsRemaining = dataIn.secsRemaining * 1000;
+      data.msecsRemaining = dataIn.secsRemaining * 1000;
       data.firstHalf = (dataIn.firstHalf == 1);
 
       if ( dataIn.secondaryState == STATE2_NORMAL )
@@ -192,7 +202,7 @@ bool SPLGameController::update()
         RobotInfo rinfo =
             dataIn.teams[teamInfoIndex].players[playerNumberForGameController];
         data.penaltyState = (GameData::PenaltyState)rinfo.penalty;
-        data.secsTillUnpenalised = rinfo.secsTillUnpenalised;
+        data.msecsTillUnpenalised = rinfo.secsTillUnpenalised * 1000;
         if (rinfo.penalty != PENALTY_NONE)
         {
           data.gameState = GameData::penalized;

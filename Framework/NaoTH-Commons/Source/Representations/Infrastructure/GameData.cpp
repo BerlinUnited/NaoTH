@@ -15,8 +15,8 @@ GameData::GameData()
     gameState(numOfGameState),
     timeWhenGameStateChanged(0),
     penaltyState(none),
-    secsTillUnpenalised(0),
-    secsRemaining(600),
+    msecsTillUnpenalised(0),
+    msecsRemaining(600000),
     firstHalf(true),
     playMode(numOfPlayMode),
     gameTime(0),
@@ -127,9 +127,10 @@ void GameData::print(ostream& stream) const
   stream << "gameState = " << gameStateToString(gameState) << " since "<< timeWhenGameStateChanged << "\n";
   if ( gameState == penalized )
   {
-    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << secsTillUnpenalised << "]\n";
+    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << msecsTillUnpenalised << "]\n";
   }
-  stream << (firstHalf?"first":"second") <<" half remains "<< secsRemaining << "ms\n";
+  stream << (firstHalf?"first":"second") <<" half remains "<< msecsRemaining << "ms\n";
+  stream << "game time = "<< gameTime << "ms\n";
   stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";
