@@ -25,6 +25,10 @@ void TeamCommunicator::execute()
     getTeamMessageDataOut().data = msg.SerializeAsString();
     lastSentTimestamp = getFrameInfo().getTime();
   }
+  else
+  {
+    getTeamMessageDataOut().data.clear();
+  }
 }
 
 void TeamCommunicator::handleMessage(const string& data)
