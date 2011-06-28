@@ -8,7 +8,7 @@
 #include "Debug.h"
 
 #include "Tools/Debug/DebugRequest.h"
-#include "Cognition/CognitionDebugServer.h"
+#include "Cognition/DebugCommandServer.h"
 
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
@@ -19,10 +19,7 @@
 #include <Tools/SynchronizedFileWriter.h>
 
 Debug::Debug() : cognitionLogger("log")
-{
-  // TODO: use the player and team number for defining the port
-  CognitionDebugServer::getInstance().start(5401, true);
-    
+{   
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
   
   
@@ -59,7 +56,6 @@ void Debug::execute()
     draw3D();
   }
 
-  CognitionDebugServer::getInstance().execute(); 
   DEBUG_REQUEST("debug:request:test", std::cout << "hello debug request" << std::endl;);
 }
 

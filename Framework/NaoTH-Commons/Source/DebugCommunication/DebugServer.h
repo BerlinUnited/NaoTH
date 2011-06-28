@@ -12,38 +12,23 @@
 #include <libb64/decode.h>
 #include <libb64/encode.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
+#include <Representations/Infrastructure/DebugMessage.h>
 
-#include "DebugCommandExecutor.h"
 #include "DebugCommunicator.h"
 
-class DebugServer : public DebugCommandExecutor, public DestructionListener<DebugCommandExecutor>
+class DebugServer
 {
 public:
   DebugServer();
   virtual ~DebugServer();
 
   virtual void start(unsigned short port, bool threaded = false);
-
-  /**
-   * Register a command and a handler for this command.
-   * @param commmand The name of the command
-   * @param description A description displayed to the user if he uses the help function.
-   *                    You might want to describe possible arguments here, too.
-   * @param executor The callback handler.
-   * @return
-   */
-  bool registerCommand(std::string command, std::string description,
-    DebugCommandExecutor* executor);
-  
-  virtual void execute();
-
-  virtual void executeDebugCommand(const std::string& command,
-    const std::map<std::string,std::string>& arguments,
-    std::ostream& out);
-
-  virtual void objectDestructed(DebugCommandExecutor* object);
-
+ 
   static void* connection_thread_static(void* ref);
+
+  void getDebugMessageIn(naoth::DebugMessageIn& buffer);
+  void setDebugMessageOut(naoth::DebugMessageOut& buffer);
+
 private:
 
   /** Communication interface */
@@ -57,22 +42,15 @@ private:
   GMutex* m_executing;
   GMutex* m_abort;
 
-  /** hash map with all registered callback function  */
-  std::map<std::string, DebugCommandExecutor*> executorMap;
-  std::map<std::string, std::string> descriptionMap;
-
   bool abort;
 
   void mainConnection();
   void receiveAll();
   void sendAll();
-  void handleCommand(GString* cmdRaw, std::stringstream& answer);
-  void handleCommand(std::string& command, std::map<std::string,std::string>& arguments,
-    std::stringstream& answer);
+  void parseCommand(GString* cmdRaw, std::string& commandName, std::map<std::string, std::string>& arguments);
 
   void disconnect();
   void clearBothQueues();
-  
 };
 
 #endif	/* DEBUGSERVER_H */
