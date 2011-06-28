@@ -124,9 +124,6 @@ public:
   /** the name of the team */
   std::string teamName;
 
-  //TODO: what is it?
-  double halfTime;
-
   /** number of player per team */
   unsigned int numOfPlayers;
 };

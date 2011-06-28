@@ -25,7 +25,6 @@ GameData::GameData()
     teamColor(numOfTeamColor),
     teamNumber(0),
     teamName("NaoTH"),
-    halfTime(0),
     numOfPlayers(0)
 {
 }
