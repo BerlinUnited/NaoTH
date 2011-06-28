@@ -68,8 +68,7 @@ void Simulator::init()
   }//end for
   std::cout << "-----------------------------------------" << std::endl;
 
-  // needed to generate the the frame info if not available
-  noFrameInfo = includedRepresentations.find("FrameInfo") == includedRepresentations.end();
+  //noFrameInfo = includedRepresentations.find("FrameInfo") == includedRepresentations.end();
   lastFrameTime = 0;
   startFrameTime = CYCLE_TIME;
 
@@ -417,7 +416,6 @@ void Simulator::executeCurrentFrame()
 
 void Simulator::adjust_frame_time()
 {
-  return;
   // HACK: adjust the timestamp: 
   // the time should contineously increase even if the logfile is played backwards (!)
   static unsigned int current_time = 0;
@@ -530,6 +528,8 @@ void Simulator::printCurrentLineInfo()
 
 void Simulator::parseFile()
 {
+  noFrameInfo = false;
+
   frames.clear();
   includedRepresentations.clear();
 
@@ -544,6 +544,8 @@ void Simulator::parseFile()
 
   unsigned int lastFrameNumber = 0;
   bool firstFrame = true;
+
+  std::set<std::string> perFrameIncluded;
 
   while(!logFile.fail() && !logFile.eof())
   {
@@ -561,6 +563,7 @@ void Simulator::parseFile()
     }
 
     includedRepresentations.insert(currentName);
+    perFrameIncluded.insert(currentName);
 
     size_t currentSize = 0;
     logFile.read((char*) &currentSize, 4);
@@ -593,6 +596,15 @@ void Simulator::parseFile()
       // add new frame
       frames.push_back(currentFrameNumber);
       frameNumber2PosStart[currentFrameNumber] = currentPos;
+
+      // needed to generate the the frame info if not available in one single frame
+      if(perFrameIncluded.find("FrameInfo") == perFrameIncluded.end())
+      {
+        noFrameInfo = true;
+        std::cout << "automated FrameInfo generation" << std::endl;
+      }
+
+      perFrameIncluded.clear();
 
       lastFrameNumber = currentFrameNumber;
     }//end if

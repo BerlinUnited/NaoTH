@@ -257,8 +257,7 @@ void Serializer<Image>::serialize(const Image& representation, std::ostream& str
   img.set_data(representation.yuv422, representation.cameraInfo.size * SIZE_OF_YUV422_PIXEL);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
-  img.SerializePartialToZeroCopyStream(&buf);
-  //g_debug("size of message: %d", buf.ByteCount());
+  img.SerializeToZeroCopyStream(&buf);
 }
 
 void Serializer<Image>::deserialize(std::istream& stream, Image& representation)

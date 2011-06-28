@@ -9,6 +9,7 @@
 #include <map>
 
 #include <Tools/DataStructures/Serializer.h>
+#include <Tools/DataStructures/SerializerWrapper.h>
 #include <Tools/DataStructures/Streamable.h>
 
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -29,7 +30,7 @@ public:
   template<class T> void addRepresentation(const T* representation, std::string name)
   {
     streamables[name] = representation;
-    serializers[name] = &naoth::StreamableSerializer::serialize;
+    serializers[name] = new naoth::SerializerWrapper<T>();
   }
 
   void log(unsigned int frameNum);
@@ -42,13 +43,11 @@ protected:
   
 private:
 
-  typedef void (*SerializerFunction)(const naoth::Streamable&, std::ostream&);
-
   LogfileManager < 30 > logfileManager;
   std::string command;
   std::string description;
-  std::map<std::string, const naoth::Streamable*> streamables;
-  std::map<std::string, SerializerFunction> serializers;
+  std::map<std::string, const void*> streamables;
+  std::map<std::string, naoth::VoidSerializer*> serializers;
   
   std::set<std::string> activeRepresentations;
   bool activated;

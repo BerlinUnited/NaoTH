@@ -40,18 +40,18 @@ public:
     : alwaysWriteOut(alwaysWriteOut)
   {
 
-  };
+  }
   ~LogfileManager()
   {
     closeFile();
-  };
+  }
 
   void openFile(const char* filePath)
   {
     closeFile();
     dataBuffer.init();
     outFile.open(filePath, ios::out | ios::binary);
-  };
+  }
   
   void closeFile()
   {
@@ -60,7 +60,7 @@ public:
       flush();
       outFile.close();
     }
-  };
+  }
 
 
   /**
@@ -88,7 +88,7 @@ public:
     newEntry.data.clear();
 
     return newEntry.data;
-  };
+  }
 
   /**
   * Empty buffer and write to file

@@ -18,7 +18,7 @@
 
 #include <Tools/SynchronizedFileWriter.h>
 
-Debug::Debug() : cognitionLogger("log")
+Debug::Debug() : cognitionLogger("CognitionLog")
 {   
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
   
@@ -46,10 +46,15 @@ Debug::Debug() : cognitionLogger("log")
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:CoM", "Show the robot's center of mass in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Ball", "Show the ball in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
+
+  REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 }
 
 void Debug::execute()
 {
+
+  cognitionLogger.log(getFrameInfo().getFrameNumber());
+
   // draw 3d only when 3d viewer is active
   if (DebugDrawings3D::getInstance().isActive())
   {
