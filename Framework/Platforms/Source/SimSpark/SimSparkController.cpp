@@ -39,11 +39,13 @@ SimSparkController::SimSparkController()
   registerInput<VirtualVision>(*this);
   registerInput<TeamMessageDataIn>(*this);
   registerInput<GameData>(*this);
+  registerInput<DebugMessageIn>(*this);
 
   // register output
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const MotorJointData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
+  registerOutput<const DebugMessageOut>(*this);
 
 
   // init the name -- id maps
@@ -219,6 +221,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   {
     debugPort = 5500 + theGameData.playerNumber;
   }
+
+  theDebugServer.start(debugPort, true);
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
@@ -1221,3 +1225,13 @@ void SimSparkController::set(const TeamMessageDataOut& data)
   theTeamMessageDataOut = data;
 }
 
+void SimSparkController::get(DebugMessageIn& data)
+{
+  theDebugServer.getDebugMessageIn(data);
+}
+
+void SimSparkController::set(const DebugMessageOut& data)
+{
+  if(data.answers.size() > 0)
+    theDebugServer.setDebugMessageOut(data);
+}

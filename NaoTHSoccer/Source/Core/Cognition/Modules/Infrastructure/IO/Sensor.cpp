@@ -46,6 +46,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(FrameInfo);
   REG_INPUT(CurrentCameraSettings);
   REG_INPUT(VirtualVision);
+  REG_INPUT(DebugMessageIn);
   
   theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
   theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
