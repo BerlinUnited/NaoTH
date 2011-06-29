@@ -51,9 +51,8 @@ UltraSoundSendData::UltraSoundSendData()
   mode = 1;
 }
 
-void UltraSoundSendData::setMode(unsigned int _mode, UltraSoundReceiveData& receiver)
+void UltraSoundSendData::setMode(unsigned int _mode)
 {
-  receiver.init();
   switch(_mode)
   {
     case 0:

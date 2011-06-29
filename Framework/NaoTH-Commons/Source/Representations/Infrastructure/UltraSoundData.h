@@ -40,7 +40,7 @@ namespace naoth
   class UltraSoundReceiveData: public UltraSoundData
   {
   public:
-     UltraSoundReceiveData();
+    UltraSoundReceiveData();
     virtual ~UltraSoundReceiveData();
 
     virtual void print(std::ostream& stream) const;
@@ -57,7 +57,7 @@ namespace naoth
      UltraSoundSendData();
     virtual ~UltraSoundSendData();
 
-    void setMode(unsigned int mode, UltraSoundReceiveData& receiver);
+    void setMode(unsigned int mode);
 
     virtual void print(std::ostream& stream) const;
 

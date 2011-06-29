@@ -56,7 +56,10 @@
 #include "Modules/Modeling/GoalLocator/ActiveGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
+#include "Modules/Modeling/ObstacleLocator/RadarObstacleLocator.h"
+#include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/TeamBallLocator/TeamBallLocator.h"
+
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -129,7 +132,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(ActiveGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  REGISTER_MODULE(RadarObstacleLocator);
+  REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(TeamBallLocator);
+
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
