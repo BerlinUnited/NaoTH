@@ -89,8 +89,6 @@ private:
 
   TeamCommEncoder theTeamCommEncoder;
 
-  TeamCommSocket* theTeamCommSocket;
-
 public:
   SimSparkController();
 
@@ -101,7 +99,7 @@ public:
   virtual string getBodyNickName() const;
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync, bool debug);
+  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
 
@@ -201,9 +199,12 @@ public:
 
   virtual void getCognitionInput();
 
+  virtual void setCognitionOutput();
+
 private:
   // members for threads
   GMutex*  theCognitionInputMutex;
+  GMutex*  theCognitionOutputMutex;
   GCond* theCognitionInputCond;
   double maxJointAbsSpeed;
 
