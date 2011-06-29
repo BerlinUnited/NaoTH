@@ -78,14 +78,10 @@ void RoboViz::swapBuffers(const string* setName) {
   drawCmd.clear();
 }
 
-void RoboViz::drawLine(float x1, float y1, float z1, float x2, float y2, float z2, float thickness, float r, float g, float b,
-    const string* setName) {
-  float pa[3] = {x1,y1,z1};
-  float pb[3] = {x2,y2,z2};
-  float color[3] = {r,g,b};
-
+void RoboViz::drawLine(const Vector3d& pa, const Vector3d& pb, double thickness, const Vector3d& color, const string* setName)
+{
   int bufSize = -1;
-  unsigned char* buf = newLine(pa, pb, thickness, color, setName, &bufSize);
+  unsigned char* buf = newLine( &(pa.x), &(pb.x), thickness, &(color.x), setName, &bufSize);
   drawCmd.append(reinterpret_cast<const char*>(buf), bufSize);
   delete[] buf;
 }
@@ -104,9 +100,9 @@ void RoboViz::renderStaticShapes()
 {
   // draw 3D coordinate axes
   string n1("static.axes");
-  drawLine(0,0,0,3,0,0,3,1,0,0,&n1);
-  drawLine(0,0,0,0,3,0,3,0,1,0,&n1);
-  drawLine(0,0,0,0,0,3,3,0,0,1,&n1);
+  drawLine(Vector3d(0,0,0), Vector3d(3,0,0),3, Vector3d(1,0,0),&n1);
+  drawLine(Vector3d(0,0,0), Vector3d(0,3,0),3, Vector3d(0,1,0),&n1);
+  drawLine(Vector3d(0,0,0), Vector3d(0,0,3),3, Vector3d(0,0,1),&n1);
 
   // draw 1 meter lines on field
   /*string n2("static.lines.field");

@@ -9,7 +9,7 @@
 
 #include <ModuleFramework/Module.h>
 #include <Tools/Communication/Broadcast/BroadCaster.h>
-
+#include <Tools/Math/Vector3.h>
 #include "Representations/Modeling/PlayerInfo.h"
 
 BEGIN_DECLARE_MODULE(RoboViz)
@@ -25,7 +25,7 @@ class RoboViz: public RoboVizBase
 
   protected:
   void swapBuffers(const string* setName);
-  void drawLine(float x1, float y1, float z1, float x2, float y2, float z2, float thickness, float r, float g, float b, const string* setName);
+  void drawLine(const Vector3d& pa, const Vector3d& pb, double thickness, const Vector3d& color, const string* setName);
 
   private:
   void test();
