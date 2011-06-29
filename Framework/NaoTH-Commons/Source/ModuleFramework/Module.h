@@ -44,16 +44,26 @@ private:
   const std::string getName() const { return name; }
   std::string name;
 
+protected:
+  //HACK: remove it, here schouldn't be any object data
+  T* data;
+
 public:
 
   TypedRegistrationInterface(const std::string& name)
-    : name(name)
+    : name(name),
+      data(NULL)
   {
   }
 
+  inline T& getData() const { ASSERT(data != NULL); return *data; }
+//  inline const T& getData() const { ASSERT(data != NULL); return *data; }
+
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
-    return get(blackBoard);
+    DataHolder<T>& rep = get(blackBoard);
+    data = &(*rep);
+    return rep;
   }
 
   virtual DataHolder<T>& get(BlackBoard& blackBoard)
@@ -221,9 +231,14 @@ protected:
       data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_providing_registry)[name];
     }
 
-    TYPE_WHAT& get(BlackBoard& blackBoard)
+    TYPE_WHAT& get(BlackBoard& blackBoard) const
     {
       return *(data->get(blackBoard));
+    }
+
+    TYPE_WHAT& getData() const
+    {
+      return data->getData();
     }
   };
 };
@@ -302,13 +317,19 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   class representationName##StaticRequiringRegistrator : public StaticProvidingRegistrator<representationName>\
   { \
   public: representationName##StaticRequiringRegistrator() : StaticProvidingRegistrator<representationName>(#representationName){} \
-  }the##representationName; \
+  } the##representationName; \
   protected: \
-  inline representationName& get##representationName() \
+  inline representationName& get##representationName() const \
+  { \
+    return the##representationName.getData(); \
+  }
+/*
+  inline representationName& get##representationName() const \
   { \
     static representationName& representation = the##representationName.get(getBlackBoard()); \
     return representation; \
   }
+  */
 /*
     static DataHolder<representationName>& representation = getBlackBoard().getRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
     return *representation; \
