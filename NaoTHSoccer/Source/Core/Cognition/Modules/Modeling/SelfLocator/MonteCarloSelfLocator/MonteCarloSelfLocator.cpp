@@ -137,7 +137,7 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
   double sigmaAngle = parameters.sigmaAngleGoalModel;
 
   Pose2D pose;
-  if (getPlayerInfo().gameData.teamColor == PlayerInfo::red)
+  if (getPlayerInfo().gameData.teamColor == GameData::red)
   {
     pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
   }else
@@ -178,7 +178,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
     const double seenDistance = seenPost.position.abs();
     const double seenAngle = seenPost.position.angle();
 
-    const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == PlayerInfo::red)?ColorClasses::skyblue:ColorClasses::yellow;
+    const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
     Vector2<double> leftGoalPosition;
     Vector2<double> rightGoalPosition;
@@ -588,7 +588,7 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
       const double seenDistance = seenPost.position.abs();
       const double seenAngle = seenPost.position.angle();
 
-      const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == PlayerInfo::red)?ColorClasses::skyblue:ColorClasses::yellow;
+      const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
       if (seenPost.color == opponentGoalColor)
       {
@@ -743,7 +743,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   if(n < oldSampleSet.numberOfParticles && getSensingGoalModel().someGoalWasSeen)
   {
     Pose2D pose;
-    if (getPlayerInfo().gameData.teamColor == PlayerInfo::red)
+    if (getPlayerInfo().gameData.teamColor == GameData::red)
     {
       pose = getLocalGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
     }else
@@ -771,7 +771,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
       const double seenDistance = seenPost.position.abs();
       const double seenAngle = seenPost.position.angle();
 
-      const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == PlayerInfo::red)?ColorClasses::skyblue:ColorClasses::yellow;
+      const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
       Vector2<double> leftGoalPosition;
       Vector2<double> rightGoalPosition;
@@ -843,7 +843,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
           int idx = Math::random(0, (int)getGoalPercept().getNumberOfSeenPosts());
           const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(idx);
 
-          const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == PlayerInfo::red)?ColorClasses::skyblue:ColorClasses::yellow;
+          const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
           Vector2<double> leftGoalPosition;
           Vector2<double> rightGoalPosition;
@@ -1345,10 +1345,10 @@ void MonteCarloSelfLocator::drawPosition() const
   FIELD_DRAWING_CONTEXT;
   switch( getPlayerInfo().gameData.teamColor )
   {
-  case PlayerInfo::red:
+  case GameData::red:
     PEN("FF0000", 20);
     break;
-  case PlayerInfo::blue:
+  case GameData::blue:
     PEN("0000FF", 20);
     break;
   default:
