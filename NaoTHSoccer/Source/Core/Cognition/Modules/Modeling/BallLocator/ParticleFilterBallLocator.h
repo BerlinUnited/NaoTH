@@ -70,6 +70,22 @@ private:
   void resampleGT07(SampleSet& sampleSet, bool noise);
 
 
+  /** */
+  double computeAngleWeighting(
+                                double measuredAngle, 
+                                double expectedAngle,
+                                double standardDeviation, 
+                                double bestPossibleWeighting = 1.0) const;
+
+  /** */
+  double computeDistanceWeighting(
+                                double measuredDistance, 
+                                double expectedDistance,
+                                double cameraZ,
+                                double standardDeviation, 
+                                double bestPossibleWeighting = 1.0) const;
+
+  /** some debug drawings */
   void drawBallModel(const BallModel& ballModel) const;
   void drawSamples(const SampleSet& sampleSet) const;
 };
