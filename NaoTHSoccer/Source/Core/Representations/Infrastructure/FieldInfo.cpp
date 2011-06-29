@@ -33,6 +33,10 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   loadFromConfig();
 
   calculateValues();
+
+  // calculate the field lines
+  fieldLinesTable.create_closestPoinsTable(xFieldLength,yFieldLength);
+  fieldLinesTable.create_closestCornerPoinsTable(xFieldLength,yFieldLength);
 }
 
 void FieldInfo::calculateValues()

@@ -44,7 +44,8 @@ void TeamBallLocator::execute()
         {
           getTeamBallModel().positionOnField =  ballPos ;
           //getTeamBallModel().time = getTeamMessage().timeWhenReceived[i];
-          getTeamBallModel().time = i->second.frameInfo.getTimeInSeconds();
+          ASSERT(i->second.frameInfo.getTimeInSeconds() >= 0);
+          getTeamBallModel().time = (unsigned int)i->second.frameInfo.getTimeInSeconds();
 
           num = 1;
         }
