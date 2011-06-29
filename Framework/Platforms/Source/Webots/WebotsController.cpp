@@ -162,6 +162,7 @@ void WebotsController::init()
   }
 
   Platform::getInstance().init(this);
+  theDebugServer.start(port, true);
 }
 
 void WebotsController::main()

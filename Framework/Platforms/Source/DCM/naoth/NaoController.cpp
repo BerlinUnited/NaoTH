@@ -64,6 +64,8 @@ theTeamComm(NULL)
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
+
+  theDebugServer.start(5401, true);
 }
 
 NaoController::~NaoController()

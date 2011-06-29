@@ -72,6 +72,7 @@ void Simulator::init()
   lastFrameTime = 0;
   startFrameTime = CYCLE_TIME;
 
+  theDebugServer.start(5401, true);
 }//end init
 
 void Simulator::printHelp()
