@@ -30,6 +30,7 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/SoundData.h>
+#include <Representations/Infrastructure/GameData.h>
 
 //
 #include <Representations/Perception/CameraMatrix.h>
@@ -105,6 +106,10 @@ public:
 
   LOG_REPRESENTATION_PROVIDER(CameraMatrix);
 
+
+  void get(GameData& data){ data = theGameData; }
+
+
   /////////////////////// set ///////////////////////
   virtual void set(const MotorJointData& /*data*/){};
 
@@ -125,6 +130,8 @@ protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
 
 private:
+  GameData theGameData;
+
   bool noFrameInfo;
   unsigned int startFrameTime;
 
