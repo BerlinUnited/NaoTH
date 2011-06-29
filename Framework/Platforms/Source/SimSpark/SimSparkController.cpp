@@ -45,7 +45,6 @@ SimSparkController::SimSparkController()
   registerOutput<const MotorJointData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
 
-
   // init the name -- id maps
   theJointSensorNameMap.clear();
   theJointSensorNameMap["hj1"] = JointData::HeadYaw;
@@ -219,6 +218,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   {
     debugPort = 5500 + theGameData.playerNumber;
   }
+
+  theDebugServer.start(debugPort, true);
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
@@ -1220,4 +1221,3 @@ void SimSparkController::set(const TeamMessageDataOut& data)
 {
   theTeamMessageDataOut = data;
 }
-

@@ -7,14 +7,14 @@
 #define	__DebugExecutor_h__
 
 #include <ModuleFramework/Module.h>
-#include "Representations/Infrastructure/DebugMessage.h"
-#include <DebugCommunication/DebugServer.h>
+#include <PlatformInterface/PlatformInterface.h>
+#include <Representations/Infrastructure/DebugMessage.h>
 #include "Cognition/DebugCommandServer.h"
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(DebugExecutor)
-  PROVIDE(DebugMessageIn)
+  REQUIRE(DebugMessageIn)
   PROVIDE(DebugMessageOut)
 END_DECLARE_MODULE(DebugExecutor)
 
@@ -25,9 +25,6 @@ public:
   virtual ~DebugExecutor(){};
 
   virtual void execute();
-
-private:
-  DebugServer theDebugServer;
 };
 
 #endif	/* __DebugExecutor_h__ */

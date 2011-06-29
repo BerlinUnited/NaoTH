@@ -9,6 +9,7 @@
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
+#include "DebugCommunication/DebugServer.h"
 
 #include <map>
 #include <list>
@@ -220,8 +221,24 @@ namespace naoth
       : PlatformInterfaceBase(name, basicTimeStep)
     {
       cout<<"NaoTH "<<getName()<<" starting..."<<endl;
+
+      registerInput<DebugMessageIn>(*this);
+
+      registerOutput<const DebugMessageOut>(*this);
     }
 
+    DebugServer theDebugServer;
+
+    void get(DebugMessageIn& data)
+    {
+      theDebugServer.getDebugMessageIn(data);
+    }
+
+    void set(const DebugMessageOut& data)
+    {
+      if(data.answers.size() > 0)
+        theDebugServer.setDebugMessageOut(data);
+    }
 
   //////////////////// GET/SET Actions /////////////////////
   private:
@@ -229,14 +246,14 @@ namespace naoth
 #define _NAOTH_INPUT_ACTION_ 7 
 #define _NAOTH_OUTPUT_ACTION_ 11
 
-    template<int ACTION, class T>
+    template<int ACTION, class T, typename PT>
     class RepresentationAction: public AbstractAction
     {
-      PlatformType& platform;
+      PT& platform;
       T& representation;
 
     public:
-      RepresentationAction(PlatformType& platform, T& representation)
+      RepresentationAction(PT& platform, T& representation)
         : platform(platform),
           representation(representation)
       {
@@ -246,14 +263,14 @@ namespace naoth
     };//end RepresentationAction
 
 
-    template<class T>
-    class RepresentationAction<_NAOTH_INPUT_ACTION_,T>
+    template<class T, typename PT>
+    class RepresentationAction<_NAOTH_INPUT_ACTION_,T,PT>
     {
-      PlatformType& platform;
+      PT& platform;
       T& representation;
 
     public:
-      RepresentationAction(PlatformType& platform, T& representation)
+      RepresentationAction(PT& platform, T& representation)
         : platform(platform),
           representation(representation)
       {
@@ -262,14 +279,14 @@ namespace naoth
       virtual void execute(){ platform.get(representation); }
     };//end RepresentationAction
 
-    template<class T>
-    class RepresentationAction<_NAOTH_OUTPUT_ACTION_,T>
+    template<class T, typename PT>
+    class RepresentationAction<_NAOTH_OUTPUT_ACTION_,T,PT>
     {
-      PlatformType& platform;
+      PT& platform;
       T& representation;
 
     public:
-      RepresentationAction(PlatformType& platform, T& representation)
+      RepresentationAction(PT& platform, T& representation)
         : platform(platform),
           representation(representation)
       {
@@ -280,36 +297,36 @@ namespace naoth
 
 
 
-    template<class T, int ACTION>
+    template<class T, typename PT, int ACTION>
     class ActionCreatorImp: public ActionCreator<T>
     {
-      PlatformType& platform;
+      PT& platform;
 
     public:
-      ActionCreatorImp(PlatformType& platform)
+      ActionCreatorImp(PT& platform)
         : platform(platform)
       {}
 
       virtual AbstractAction* createAction(T& data)
       {
-        return (AbstractAction*) new RepresentationAction<ACTION,T>(platform, data);
+        return (AbstractAction*) new RepresentationAction<ACTION,T,PT>(platform, data);
       }
     };//end InputActionCreator
 
 
   protected:
-    template<class T>
-    void registerInput(PlatformType& platform)
+    template<class T, typename PT>
+    void registerInput(PT& platform)
     {
       cout << getName() << " register input: " << typeid(T).name() << endl;
-      registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,_NAOTH_INPUT_ACTION_>(platform);
+      registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,PT,_NAOTH_INPUT_ACTION_>(platform);
     }//end registerInput
 
-    template<class T>
-    void registerOutput(PlatformType& platform)
+    template<class T, typename PT>
+    void registerOutput(PT& platform)
     {
       cout << getName() << " register output: " << typeid(T).name() << endl;
-      registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,_NAOTH_OUTPUT_ACTION_>(platform);
+      registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,PT,_NAOTH_OUTPUT_ACTION_>(platform);
     }//end registerOutput
 
 
