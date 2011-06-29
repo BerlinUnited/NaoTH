@@ -12,13 +12,6 @@ class PlayerInfo : public naoth::Printable
 {
 public:
 
-  enum TeamColor
-  {
-    red,
-    blue,
-    numOfTeamColor
-  };
-
   PlayerInfo();
   //PlayerInfo(unsigned int playerNumber, naoth::GameData::TeamColor teamColor, unsigned int teamNumber, bool isPlayingStriker);
   ~PlayerInfo();

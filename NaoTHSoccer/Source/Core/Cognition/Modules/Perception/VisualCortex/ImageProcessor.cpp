@@ -53,9 +53,6 @@ ImageProcessor::ImageProcessor()
   theGoalDetector = registerModule<GoalDetector>("GoalDetector");
   theGoalDetector->setEnabled(true);
 
-  thePerceprionsVusalization = registerModule<PerceptionsVisualization>("PerceptionsVisualization");
-  thePerceprionsVusalization->setEnabled(true);
-
 }//end constructor
 
 
@@ -93,11 +90,6 @@ void ImageProcessor::execute()
   STOPWATCH_START("GoalDetector");
   theGoalDetector->execute();
   STOPWATCH_STOP("GoalDetector");
-
-  STOPWATCH_START("PerceptionsVisualization");
-  thePerceprionsVusalization->execute();
-  STOPWATCH_STOP("PerceptionsVisualization");
-
 
 
   // estimate the relative position of the ball

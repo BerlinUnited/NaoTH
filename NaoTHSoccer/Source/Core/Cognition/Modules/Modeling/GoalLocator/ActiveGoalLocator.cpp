@@ -66,7 +66,7 @@ void ActiveGoalLocator::execute() {
   {
     ColorClasses::Color tmp_color_of_the_last_post = getGoalPercept().getPost(0).color;
 
-    for(int i = 1; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+    for(unsigned int i = 1; i < getGoalPercept().getNumberOfSeenPosts(); i++)
     {
       if(tmp_color_of_the_last_post != getGoalPercept().getPost(i).color)
         return;

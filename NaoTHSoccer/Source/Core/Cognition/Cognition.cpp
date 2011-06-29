@@ -48,12 +48,15 @@
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+#include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/BallLocator/ParticleFilterBallLocator.h"
+#include "Modules/Modeling/GoalLocator/ActiveGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
+#include "Modules/Modeling/TeamBallLocator/TeamBallLocator.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -118,12 +121,15 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
+  REGISTER_MODULE(PerceptionsVisualization);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(ParticleFilterBallLocator);
+  REGISTER_MODULE(ActiveGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  REGISTER_MODULE(TeamBallLocator);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);

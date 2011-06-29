@@ -69,10 +69,15 @@ void ParticleFilterBallLocator::updateByOdometry(SampleSet& sampleSet, bool nois
 {
   double motionNoiseDistance = 10;
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
-  // todo: what about speed?
+  
   for (unsigned int i = 0; i < sampleSet.size(); i++)
-  {      
-    sampleSet[i].position = odometryDelta * sampleSet[i].position; 
+  { 
+    // apply odometry
+    sampleSet[i].position = odometryDelta * sampleSet[i].position;
+
+    if(sampleSet[i].moving) // TODO: test if it is correct
+      sampleSet[i].speed = sampleSet[i].speed.rotate(odometryDelta.rotation);
+
     if(noise)
     {
       sampleSet[i].position.x += (Math::random()-0.5)*motionNoiseDistance;
@@ -117,10 +122,10 @@ void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   double sum = -Math::random();
   unsigned int count = 0;
 
-  unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
+  //unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
   unsigned int n = 0;  // Zaehler durchs Ziel-Set
 
-  for(unsigned m = 0; m < sampleSet.size(); m++)
+  for(unsigned int m = 0; m < sampleSet.size(); m++)
   {
     sum += oldSampleSet[m].likelihood * oldSampleSet.size();
 
