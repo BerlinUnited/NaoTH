@@ -42,6 +42,8 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
   allFiles.reserve(1000);
   currentPos = 0;
   imageLoaded = false;
+
+  theDebugServer.start(5401, true);
 }
 
 void OpenCVImageLoader::main()

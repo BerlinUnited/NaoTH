@@ -21,9 +21,9 @@ SimSparkController::SimSparkController()
   theImageSize(0),
   isNewImage(false),
   isNewVirtualVision(false),
-  theStepTime(0),
   theCameraId(0),
   theSenseTime(0),
+  theStepTime(0),
   theSyncMode(false)
 {
   // register input
@@ -44,7 +44,6 @@ SimSparkController::SimSparkController()
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const MotorJointData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
-
 
   // init the name -- id maps
   theJointSensorNameMap.clear();
@@ -219,6 +218,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   {
     debugPort = 5500 + theGameData.playerNumber;
   }
+
+  theDebugServer.start(debugPort, true);
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
@@ -1212,12 +1213,17 @@ MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
 
 void SimSparkController::get(TeamMessageDataIn& data)
 {
-  data = theTeamMessageDataIn;
+  data.data.clear();
+  for(vector<string>::const_iterator iter=theTeamMessageDataIn.data.begin();
+      iter!=theTeamMessageDataIn.data.end(); ++iter)
+  {
+    data.data.push_back( theTeamCommEncoder.decode(*iter) );
+  }
   theTeamMessageDataIn.data.clear();
 }
 
 void SimSparkController::set(const TeamMessageDataOut& data)
 {
-  theTeamMessageDataOut = data;
+  if ( !data.data.empty() )
+    theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
 }
-

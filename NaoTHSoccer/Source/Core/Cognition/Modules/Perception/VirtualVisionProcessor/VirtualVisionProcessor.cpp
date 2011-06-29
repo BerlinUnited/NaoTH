@@ -626,7 +626,7 @@ void VirtualVisionProcessor::updatePlayers()
   const VirtualVision& theVirtualVision = getVirtualVision();
   const PlayerInfo& thePlayerInfo = getPlayerInfo();
   const std::string& teamName = thePlayerInfo.gameData.teamName;
-  const unsigned int playerNumber = thePlayerInfo.gameData.playerNumber;
+  const int playerNumber = thePlayerInfo.gameData.playerNumber;
   const GameData::TeamColor teamColor = thePlayerInfo.gameData.teamColor;
 
   thePlayersPercept.reset();

@@ -38,13 +38,12 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
-#include "Modules/Infrastructure/TeamComm/SimSparkTeamComm/SimSparkTeamComm.h"
-#include "Modules/Infrastructure/TeamComm/TeamCommunicator/TeamCommunicator.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommunicator.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
-//#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -110,12 +109,11 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // infrastructure
   REGISTER_MODULE(TeamCommunicator);
-  REGISTER_MODULE(SimSparkTeamComm);
   REGISTER_MODULE(GameController);
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
-  //REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);

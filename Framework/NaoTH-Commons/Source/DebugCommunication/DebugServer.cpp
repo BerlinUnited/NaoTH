@@ -159,6 +159,8 @@ void DebugServer::disconnect()
 
 void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
 {
+  buffer.messages.clear();
+
   g_mutex_lock(m_executing);
 
   // needed only in single threaded mode
@@ -187,7 +189,7 @@ void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
 
     naoth::DebugMessageIn::Message message;
     parseCommand(cmdRaw, message.command, message.arguments);
-    buffer.messages.push(message);
+    buffer.messages.push_back(message);
 
     g_string_free(cmdRaw, true);
   }//end while
@@ -196,17 +198,15 @@ void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
 }//end getDebugMessageIn
 
 
-void DebugServer::setDebugMessageOut(naoth::DebugMessageOut& buffer)
+void DebugServer::setDebugMessageOut(const naoth::DebugMessageOut& buffer)
 {
   g_mutex_lock(m_executing);
 
-  while(!buffer.answers.empty())
+  for(std::list<std::string>::const_iterator iter=buffer.answers.begin(); iter!=buffer.answers.end(); ++iter)
   {
     GString* answer = g_string_new("");
-    const std::string& answerAsString = buffer.answers.front();
-    g_string_append_len(answer, answerAsString.c_str(), answerAsString.size());
+    g_string_append_len(answer, iter->c_str(), iter->size());
     g_async_queue_push(answers, answer);
-    buffer.answers.pop();
   }//wnd while
 
   // needed only in single threaded mode
