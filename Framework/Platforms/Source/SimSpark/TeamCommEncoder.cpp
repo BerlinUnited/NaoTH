@@ -77,7 +77,5 @@ string TeamCommEncoder::decode(const string& anscii)
   msg.set_ispenalized(false); // no penalize rule in SimSpark
   msg.set_wasstriker(encoder.decodeUnsigned(anscii.substr(2, 1)) != 0);
 
-  string data;
-  msg.SerializeToString(&data);
-  return data;
+  return msg.SerializeAsString();
 }
