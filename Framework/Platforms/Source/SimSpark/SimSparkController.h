@@ -32,8 +32,6 @@
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/GameData.h>
 
-#include <DebugCommunication/DebugServer.h>
-
 #include "SimSparkGameInfo.h"
 
 
@@ -88,8 +86,6 @@ private:
   string theSync;
   bool theSyncMode;
   
-  DebugServer theDebugServer;
-
 public:
   SimSparkController();
 
@@ -129,16 +125,12 @@ public:
 
   void get(GameData& data);
 
-  void get(DebugMessageIn& data);
-
   /////////////////////// set ///////////////////////
   void set(const MotorJointData& data);
 
   void set(const TeamMessageDataOut& data);
 
   void set(const CameraSettingsRequest& data);
-
-  void set(const DebugMessageOut& data);
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
