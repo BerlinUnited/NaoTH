@@ -11,7 +11,8 @@
 
 #include "SoundControl.h"
 #include "V4lCameraHandler.h"
-#include "Tools/Communication/TeamCommSocket/TeamCommSocket.h"
+#include "Tools/Communication/Broadcast/BroadCaster.h"
+#include "Tools/Communication/Broadcast/BroadCastListener.h"
 #include "SPLGameController.h"
 #include "Tools/NaoControllerBase.h"
 #include "Representations/Infrastructure/TeamMessageData.h"
@@ -66,7 +67,7 @@ private:
   SoundControl *theSoundHandler;
   NaothData* naothDataWriting;
   BroadCaster* theBroadCaster;
-  BroadCastLister* theBroadCastLister;
+  BroadCastListener* theBroadCastListener;
   SPLGameController* theGameController;
 };
 

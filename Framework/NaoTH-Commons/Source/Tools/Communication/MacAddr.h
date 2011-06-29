@@ -51,7 +51,7 @@ namespace naoth
 
   static std::string getIP4(const std::string& name)
   {
-    string ip("unknown");
+    std::string ip("unknown");
 
     /* Mac & Windows dont have that define */
 #ifdef SIOCGIFHWADDR
@@ -67,10 +67,10 @@ namespace naoth
         tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
         char addressBuffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-        string n(ifa->ifa_name);
+        std::string n(ifa->ifa_name);
         if ( n == name )
         {
-          ip = string(addressBuffer);
+          ip = std::string(addressBuffer);
         }
       }
     }
@@ -81,7 +81,7 @@ namespace naoth
 
   static std::string getBroadcastAddr(const std::string& name)
   {
-    string ip("unknown");
+    std::string ip("unknown");
     /* Mac & Windows dont have that define */
 #ifdef SIOCGIFHWADDR
     struct ifaddrs * ifAddrStruct=NULL;
@@ -96,10 +96,10 @@ namespace naoth
         tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_ifu.ifu_broadaddr)->sin_addr;
         char addressBuffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-        string n(ifa->ifa_name);
+        std::string n(ifa->ifa_name);
         if ( n == name )
         {
-          ip = string(addressBuffer);
+          ip = std::string(addressBuffer);
         }
       }
     }

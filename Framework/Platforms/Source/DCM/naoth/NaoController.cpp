@@ -16,7 +16,7 @@ using namespace naoth;
 NaoController::NaoController()
 :theSoundHandler(NULL),
 theBroadCaster(NULL),
-theBroadCastLister(NULL)
+theBroadCastListener(NULL)
 {
   // read the value from file
   ifstream is(staticMemberPath.c_str());
@@ -77,7 +77,7 @@ theBroadCastLister(NULL)
   }
 
   theBroadCaster = new BroadCaster(interface, port);
-  theBroadCastLister = new BroadCastLister(port, TEAMCOMM_MAX_MSG_SIZE);
+  theBroadCastListener = new BroadCastListener(port, TEAMCOMM_MAX_MSG_SIZE);
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
@@ -97,9 +97,9 @@ NaoController::~NaoController()
     delete theBroadCaster;
   }
 
-  if ( theBroadCastLister != NULL )
+  if ( theBroadCastListener != NULL )
   {
-    delete theBroadCastLister;
+    delete theBroadCastListener;
   }
 
   if ( theGameController != NULL )
@@ -154,12 +154,19 @@ void NaoController::setCognitionOutput()
 
 void NaoController::get(TeamMessageDataIn& data)
 {
-  theBroadCastLister->receive(data.data);
+  theBroadCastListener->receive(data.data);
 }
 
 void NaoController::set(const TeamMessageDataOut& data)
 {
-  theBroadCaster->send(data.data);
+  if ( data.data.size() <= TEAMCOMM_MAX_MSG_SIZE )
+  {
+    theBroadCaster->send(data.data);
+  }
+  else
+  {
+    cerr<<"NaoController: TeamMessageDataOut is too big "<<data.data.size()<<endl;
+  }
 }
 
 void NaoController::get(GameData& data)
