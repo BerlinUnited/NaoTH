@@ -36,7 +36,7 @@
 
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
-//#include "SimSparkTeamCommunicator.h"
+#include "TeamCommEncoder.h"
 
 #include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
@@ -85,7 +85,9 @@ private:
   list<MotorJointData> theMotorJointData;
   string theSync;
   bool theSyncMode;
-  
+
+  TeamCommEncoder theTeamCommEncoder;
+
 public:
   SimSparkController();
 

@@ -1213,11 +1213,17 @@ MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
 
 void SimSparkController::get(TeamMessageDataIn& data)
 {
-  data = theTeamMessageDataIn;
+  data.data.clear();
+  for(vector<string>::const_iterator iter=theTeamMessageDataIn.data.begin();
+      iter!=theTeamMessageDataIn.data.end(); ++iter)
+  {
+    data.data.push_back( theTeamCommEncoder.decode(*iter) );
+  }
   theTeamMessageDataIn.data.clear();
 }
 
 void SimSparkController::set(const TeamMessageDataOut& data)
 {
-  theTeamMessageDataOut = data;
+  if ( !data.data.empty() )
+    theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
 }
