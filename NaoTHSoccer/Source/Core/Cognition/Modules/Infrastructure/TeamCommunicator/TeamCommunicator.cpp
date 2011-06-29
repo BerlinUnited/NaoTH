@@ -1,8 +1,15 @@
 #include "TeamCommunicator.h"
+#include "PlatformInterface/Platform.h"
 
 TeamCommunicator::TeamCommunicator()
-  :lastSentTimestamp(0)
+  :lastSentTimestamp(0),
+    send_interval(500)
 {
+  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  if ( config.hasKey("teamcomm", "send_interval") )
+  {
+    send_interval = config.getInt("teamcomm", "send_interval");
+  }
 }
 
 void TeamCommunicator::execute()
@@ -16,7 +23,7 @@ void TeamCommunicator::execute()
   }
 
   // only send data in intervals of 500ms
-  if(getFrameInfo().getTimeSince(lastSentTimestamp) > 500)
+  if(getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
   {
     // send data
     naothmessages::TeamCommMessage msg;

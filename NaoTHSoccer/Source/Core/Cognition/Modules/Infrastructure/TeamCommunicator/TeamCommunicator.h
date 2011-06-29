@@ -34,6 +34,7 @@ public:
   virtual ~TeamCommunicator();
 private:
   unsigned int lastSentTimestamp;
+  unsigned int send_interval;
 
   void handleMessage(const std::string& data);
   void createMessage(naothmessages::TeamCommMessage& msg);
