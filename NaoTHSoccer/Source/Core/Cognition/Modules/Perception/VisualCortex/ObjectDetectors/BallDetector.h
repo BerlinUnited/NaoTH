@@ -40,7 +40,7 @@
 BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(Image)
   REQUIRE(ColoredGrid)
-//  REQUIRE(ColorTable64)
+  REQUIRE(ColorTable64)
   REQUIRE(CameraMatrix)
 //  REQUIRE(FieldPercept)
 //  REQUIRE(BlobPercept)
@@ -104,12 +104,12 @@ private:
   double calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z);
 
   const SimpleColorClassifier simpleColorClassifier;
-
+/*
   const ColorClassifier& getColorTable64() const
   {
     return simpleColorClassifier;
   }
-
+*/
 };//end class BallDetector
 
 #endif // __BallDetector_H_
