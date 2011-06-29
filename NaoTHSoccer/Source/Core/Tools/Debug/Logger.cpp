@@ -15,6 +15,12 @@ Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
 
 Logger::~Logger()
 {
+  // cleanup all serializer wrappers
+  for (std::map<std::string, naoth::VoidSerializer*>::iterator iter = serializers.begin();
+    iter != serializers.end(); ++iter)
+  {
+    delete iter->second;
+  }
 }
 
 void Logger::executeDebugCommand(
@@ -36,12 +42,12 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
     activated = false;
 
     // list all logable representations
-    for(std::map<std::string, const naoth::Streamable*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter){
+    for(std::map<std::string, const void*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter){
       outstream << iter->first <<" ";
     }
   }
   else if ("activate" == argName) {
-    for(std::map<string, const naoth::Streamable*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter)
+    for(std::map<string, const void*>::const_iterator iter=streamables.begin(); iter!=streamables.end(); ++iter)
     {
       if ( argValue == iter->first)
       {
@@ -94,12 +100,12 @@ void Logger::log(unsigned int frameNum)
   for (std::set<std::string>::const_iterator iter = activeRepresentations.begin();
     iter != activeRepresentations.end(); ++iter) 
   {
-    std::map<std::string, const naoth::Streamable*>::iterator itStreamables = streamables.find(*iter);
+    std::map<std::string, const void*>::iterator itStreamables = streamables.find(*iter);
     
     if(itStreamables != streamables.end() && serializers.find(*iter) != serializers.end())
     { 
       std::stringstream& stream = logfileManager.log(frameNum, itStreamables->first);
-      serializers[*iter](*(itStreamables->second), stream);
+      serializers[*iter]->serialize(itStreamables->second, stream);
     }
     
   }
