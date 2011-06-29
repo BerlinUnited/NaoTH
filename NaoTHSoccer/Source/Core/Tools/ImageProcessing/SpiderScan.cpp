@@ -193,7 +193,7 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
   bool borderPointFound = false; //if one was found
   bool borderPixelFound = false;      //and if it was followed by a border pixel
 
-  Vector2<int> lastSearchColorPoint(start);
+  Vector2<int> lastSearchColorPoint(-1,-1);
 
   //expand in the selected direction
   for(unsigned int j = 0; j < max_length_of_beam; j++)
@@ -221,27 +221,29 @@ bool SpiderScan::scanLine(const Vector2<int>& start, const Vector2<int>& directi
     // TODO: make it more general by taking the criteria out of the method
     if(!hasColor)
     {
-      //hasColor = currentOrangeSim > currentColorSimThreshold;
+      if(lastSearchColorPoint.x != -1 && lastSearchColorPoint.y != -1)
+      {
+        //hasColor = currentOrangeSim > currentColorSimThreshold;
 
-      Pixel pixelLast = theImage.get(lastSearchColorPoint.x,lastSearchColorPoint.y);
-      double yDiff = pixel.y - pixelLast.y;
-      double uDiff = pixel.u - pixelLast.u;
-      double vDiff = pixel.v - pixelLast.v;
+        Pixel pixelLast = theImage.get(lastSearchColorPoint.x,lastSearchColorPoint.y);
+        double yDiff = pixel.y - pixelLast.y;
+        double uDiff = pixel.u - pixelLast.u;
+        double vDiff = pixel.v - pixelLast.v;
 
 
-      double useY = 0.0;
-//      MODIFY("ImageProcessor:Detector:currentColorSimThreshold", currentColorSimThreshold);
-//      MODIFY("ImageProcessor:Detector:useY", useY);
+        double useY = 0.0;
+  //      MODIFY("ImageProcessor:Detector:currentColorSimThreshold", currentColorSimThreshold);
+  //      MODIFY("ImageProcessor:Detector:useY", useY);
 
-//      hasColor =
-//        ((currentPixelColor == ColorClasses::none)  || (searchColor == ColorClasses::numOfColors && currentPixelColor != borderColor)) &&
-//        searchColorPointsSkipIndex == 0 &&
-//        sqrt( useY*Math::sqr(yDiff) + Math::sqr(uDiff) + Math::sqr(vDiff) ) < currentColorSimThreshold;
-      hasColor =
-        (currentPixelColor == ColorClasses::none || (searchColors[0] == ColorClasses::numOfColors &&  !isBorderColor(currentPixelColor))) &&
-        searchColorPointsSkipIndex == 0 &&
-        sqrt( useY*Math::sqr(yDiff) + Math::sqr(uDiff) + Math::sqr(vDiff) ) < currentColorSimThreshold;
-
+  //      hasColor =
+  //        ((currentPixelColor == ColorClasses::none)  || (searchColor == ColorClasses::numOfColors && currentPixelColor != borderColor)) &&
+  //        searchColorPointsSkipIndex == 0 &&
+  //        sqrt( useY*Math::sqr(yDiff) + Math::sqr(uDiff) + Math::sqr(vDiff) ) < currentColorSimThreshold;
+        hasColor =
+          (currentPixelColor == ColorClasses::none || (searchColors[0] == ColorClasses::numOfColors &&  !isBorderColor(currentPixelColor))) &&
+          searchColorPointsSkipIndex == 0 &&
+          sqrt( useY*Math::sqr(yDiff) + Math::sqr(uDiff) + Math::sqr(vDiff) ) < currentColorSimThreshold;
+      }//end if
     }
     else
     {
