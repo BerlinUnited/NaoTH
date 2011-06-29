@@ -1,5 +1,6 @@
 #include "TeamCommunicator.h"
 #include "PlatformInterface/Platform.h"
+#include "Tools/DataConversion.h"
 
 TeamCommunicator::TeamCommunicator()
   :lastSentTimestamp(0),
@@ -63,6 +64,9 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
   msg.set_bodyid(getRobotInfo().bodyID);
 
+  // robot pose
+  DataConversion::toMessage(getRobotPose(), *(msg.mutable_positiononfield()));
+
   // TODO: set falldown state in teamcomm message
   /*
   msg.set_isfallendown(theBodyState.fall_down_state != BodyState::upright
@@ -79,9 +83,7 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   msg.mutable_ballposition()->set_x(theBallModel.position.x);
   msg.mutable_ballposition()->set_y(theBallModel.position.y);
 
-  msg.mutable_positiononfield()->set_rotation(theRobotPose.rotation);
-  msg.mutable_positiononfield()->mutable_translation()->set_x(theRobotPose.translation.x);
-  msg.mutable_positiononfield()->mutable_translation()->set_y(theRobotPose.translation.y);
+
 */
 }
 
