@@ -37,6 +37,7 @@
 
 #include <Tools/Communication/SocketStream/SocketStream.h>
 #include "TeamCommEncoder.h"
+#include <Tools/Communication/TeamCommSocket/TeamCommSocket.h>
 
 #include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
@@ -87,6 +88,10 @@ private:
   bool theSyncMode;
 
   TeamCommEncoder theTeamCommEncoder;
+
+#ifdef DEBUG
+  TeamCommSocket* theTeamCommSocket;
+#endif
 
 public:
   SimSparkController();

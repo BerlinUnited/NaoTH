@@ -22,8 +22,9 @@ void* receiveLoopWrap(void* c)
   return NULL;
 }//end motionLoopWrap
 
-TeamCommSocket::TeamCommSocket()
+TeamCommSocket::TeamCommSocket(bool enableReceive)
   : exiting(false), socket(NULL),
+    receiveThread(NULL),
     broadcastAddress(NULL)
 {
   buffer = new char[TEAMCOMM_MAX_MSG_SIZE];
@@ -66,10 +67,13 @@ TeamCommSocket::TeamCommSocket()
     ASSERT(sendThread != NULL);
     g_thread_set_priority(sendThread, G_THREAD_PRIORITY_LOW);
 
-    g_message("TeamCommunicator start receiving thread");
-    receiveThread = g_thread_create(receiveLoopWrap, this, true, NULL);
-    ASSERT(receiveThread != NULL);
-    g_thread_set_priority(receiveThread, G_THREAD_PRIORITY_LOW);
+    if ( enableReceive )
+    {
+      g_message("TeamCommunicator start receiving thread");
+      receiveThread = g_thread_create(receiveLoopWrap, this, true, NULL);
+      ASSERT(receiveThread != NULL);
+      g_thread_set_priority(receiveThread, G_THREAD_PRIORITY_LOW);
+    }
   }
 }
 
@@ -78,7 +82,10 @@ TeamCommSocket::~TeamCommSocket()
   exiting = true;
 
   g_thread_join(sendThread);
-  g_thread_join(receiveThread);
+  if ( receiveThread )
+  {
+    g_thread_join(receiveThread);
+  }
   g_mutex_free(messageInMutex);
   g_mutex_free(messageOutMutex);
   g_cond_free(messageOutCond);

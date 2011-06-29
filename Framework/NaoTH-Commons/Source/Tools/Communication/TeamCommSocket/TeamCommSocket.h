@@ -12,7 +12,7 @@ class TeamCommSocket
 {
 
 public:
-  TeamCommSocket();
+  TeamCommSocket(bool enableReceive=true);
 
   void send(const std::string& data);
 

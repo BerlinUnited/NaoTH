@@ -221,6 +221,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   theDebugServer.start(debugPort, true);
 
+  theTeamCommSocket = new TeamCommSocket();
+
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
@@ -1225,5 +1227,10 @@ void SimSparkController::get(TeamMessageDataIn& data)
 void SimSparkController::set(const TeamMessageDataOut& data)
 {
   if ( !data.data.empty() )
+  {
     theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
+#ifdef DEBUG
+    theTeamCommSocket->send(data.data); // broadcast via UDP
+#endif
+  }
 }
