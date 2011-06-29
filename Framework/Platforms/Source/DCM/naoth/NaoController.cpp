@@ -60,7 +60,7 @@ theTeamComm(NULL)
   theSoundHandler = new SoundControl();
 
   std::cout<< "Init TeamComm"<<endl;
-  theTeamComm = new TeamCommunicator();
+  theTeamComm = new TeamCommSocket();
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();

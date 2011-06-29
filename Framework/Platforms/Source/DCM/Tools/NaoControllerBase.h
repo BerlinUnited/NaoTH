@@ -10,7 +10,6 @@
 #define _NAO_CONTROLLER_BASE_H_
 
 #include "IPCData.h"
-#include "MacAddr.h"
 #include "Tools/NaoTime.h"
 #include "SharedMemory.h"
 #include "PlatformInterface/PlatformInterface.h"

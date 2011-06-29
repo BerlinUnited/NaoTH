@@ -11,7 +11,7 @@
 
 #include "SoundControl.h"
 #include "V4lCameraHandler.h"
-#include "TeamCommunicator.h"
+#include "Tools/Communication/TeamCommSocket/TeamCommSocket.h"
 #include "SPLGameController.h"
 #include "Tools/NaoControllerBase.h"
 #include "Representations/Infrastructure/TeamMessageData.h"
@@ -65,7 +65,7 @@ private:
   V4lCameraHandler theCameraHandler;
   SoundControl *theSoundHandler;
   NaothData* naothDataWriting;
-  TeamCommunicator* theTeamComm;
+  TeamCommSocket* theTeamComm;
   SPLGameController* theGameController;
 };
 

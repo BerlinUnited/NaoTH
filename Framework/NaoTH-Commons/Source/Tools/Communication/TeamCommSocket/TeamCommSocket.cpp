@@ -1,8 +1,8 @@
-#include "TeamCommunicator.h"
+#include "TeamCommSocket.h"
 #include "PlatformInterface/Platform.h"
 
 #include <sys/socket.h>
-#include "Tools/MacAddr.h"
+#include "Tools/Communication/MacAddr.h"
 
 #define TEAMCOMM_MAX_MSG_SIZE 4096
 
@@ -10,19 +10,19 @@ using namespace naoth;
 
 void* sendLoopWrap(void* c)
 {
-  TeamCommunicator* comm = static_cast<TeamCommunicator*> (c);
+  TeamCommSocket* comm = static_cast<TeamCommSocket*> (c);
   comm->sendLoop();
   return NULL;
 }//end motionLoopWrap
 
 void* receiveLoopWrap(void* c)
 {
-  TeamCommunicator* comm = static_cast<TeamCommunicator*> (c);
+  TeamCommSocket* comm = static_cast<TeamCommSocket*> (c);
   comm->receiveLoop();
   return NULL;
 }//end motionLoopWrap
 
-TeamCommunicator::TeamCommunicator()
+TeamCommSocket::TeamCommSocket()
   : exiting(false), socket(NULL),
     broadcastAddress(NULL)
 {
@@ -73,7 +73,7 @@ TeamCommunicator::TeamCommunicator()
   }
 }
 
-TeamCommunicator::~TeamCommunicator()
+TeamCommSocket::~TeamCommSocket()
 {
   exiting = true;
 
@@ -94,7 +94,7 @@ TeamCommunicator::~TeamCommunicator()
   delete [] buffer;
 }
 
-GError* TeamCommunicator::bindAndListen(unsigned int port)
+GError* TeamCommSocket::bindAndListen(unsigned int port)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
@@ -116,7 +116,7 @@ GError* TeamCommunicator::bindAndListen(unsigned int port)
   return err;
 }
 
-void TeamCommunicator::send(const std::string& data)
+void TeamCommSocket::send(const std::string& data)
 {
   if ( data.empty() )
     return;
@@ -129,7 +129,7 @@ void TeamCommunicator::send(const std::string& data)
   }
 }
 
-void TeamCommunicator::send()
+void TeamCommSocket::send()
 {
   if ( messageOut.empty() )
     return;
@@ -159,7 +159,7 @@ void TeamCommunicator::send()
   messageOut.clear();
 }
 
-void TeamCommunicator::receive(vector<string>& data)
+void TeamCommSocket::receive(vector<string>& data)
 {
   data.clear();
   if ( g_mutex_trylock(messageInMutex) )
@@ -173,7 +173,7 @@ void TeamCommunicator::receive(vector<string>& data)
   }
 }
 
-void TeamCommunicator::sendLoop()
+void TeamCommSocket::sendLoop()
 {
   while(!exiting)
   {
@@ -188,7 +188,7 @@ void TeamCommunicator::sendLoop()
   }
 }
 
-void TeamCommunicator::receiveLoop()
+void TeamCommSocket::receiveLoop()
 {
   if(socket == NULL)
     return;

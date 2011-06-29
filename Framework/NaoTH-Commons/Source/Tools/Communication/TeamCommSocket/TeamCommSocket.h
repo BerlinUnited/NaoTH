@@ -8,17 +8,17 @@
 
 namespace naoth
 {
-class TeamCommunicator
+class TeamCommSocket
 {
 
 public:
-  TeamCommunicator();
+  TeamCommSocket();
 
   void send(const std::string& data);
 
   void receive(std::vector<std::string>& data);
 
-  virtual ~TeamCommunicator();
+  virtual ~TeamCommSocket();
 
   void sendLoop();
 

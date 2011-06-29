@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
-#include "Tools/MacAddr.h"
+#include "Tools/Communication/MacAddr.h"
 
 using namespace naoth;
 
