@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.6" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
@@ -42,9 +42,11 @@
           <Properties>
             <Property name="editable" type="boolean" value="true"/>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-              <StringArray count="2">
+              <StringArray count="4">
                 <StringItem index="0" value="FieldInfo"/>
                 <StringItem index="1" value="CameraSettings"/>
+                <StringItem index="2" value="MCSLParameters"/>
+                <StringItem index="3" value="ParticleFilterBallLocator"/>
               </StringArray>
             </Property>
           </Properties>

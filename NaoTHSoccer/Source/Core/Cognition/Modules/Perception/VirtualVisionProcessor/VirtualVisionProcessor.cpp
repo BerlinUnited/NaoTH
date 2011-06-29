@@ -658,7 +658,7 @@ void VirtualVisionProcessor::updatePlayers()
       if ( tokens[1] != teamName )
         id = -id; // negative id means opponent
 
-      if ( id == playerNumber ) continue;
+      if ( id == (int)playerNumber ) continue;
 
       if(!seenPlayerPointsMap[id].set(tokens[3], calculatePosition(iter->second)))
         continue; // name of the body part couldn't be parsed

@@ -34,9 +34,9 @@ void FieldColorClassifier::execute()
   STOPWATCH_START("FieldColorClassifier:Cb_Cr_filtering");
   int halfChannelWidth = COLOR_CHANNEL_VALUE_COUNT / 2;
 
-  unsigned int distY = getFieldColorPercept().distY;
-  unsigned int distCb = getFieldColorPercept().distCb;
-  unsigned int distCr = getFieldColorPercept().distCr;
+  unsigned int distY = (unsigned int)getFieldColorPercept().distY;
+  unsigned int distCb = (unsigned int)getFieldColorPercept().distCb;
+  unsigned int distCr = (unsigned int)getFieldColorPercept().distCr;
 
   unsigned int maxDistY = MAX_FIELD_COLOR_Y_CHANNEL_DIST;
   unsigned int maxDistCb = MAX_FIELD_COLOR_Cb_CHANNEL_DIST;
@@ -110,7 +110,7 @@ void FieldColorClassifier::execute()
   if(meanRegionEndIndexCr != 0 && meanRegionBeginIndexCr != 0)
   {
     maxWeightedIndexCr = (meanRegionBeginIndexCr + meanRegionEndIndexCr + getFieldColorPercept().maxWeightedIndexCr) / 3;
-    distCr = (meanRegionEndIndexCr - meanRegionBeginIndexCr + maxDistCr + getFieldColorPercept().distCr) / 4;
+    distCr = (meanRegionEndIndexCr - meanRegionBeginIndexCr + maxDistCr + (unsigned int)getFieldColorPercept().distCr) / 4;
   }
 
   STOPWATCH_STOP("FieldColorClassifier:Cb_Cr_filtering");
@@ -226,7 +226,7 @@ void FieldColorClassifier::execute()
     if(meanRegionEndIndexCb != 0 && meanRegionBeginIndexCb != 0)
     {
       maxWeightedIndexCb = (meanRegionBeginIndexCb + meanRegionEndIndexCb + getFieldColorPercept().maxWeightedIndexCb) / 3;
-      distCb = (meanRegionEndIndexCb - meanRegionBeginIndexCb + maxDistCb + getFieldColorPercept().distCb) / 4;
+      distCb = (meanRegionEndIndexCb - meanRegionBeginIndexCb + maxDistCb + (unsigned int)getFieldColorPercept().distCb) / 4;
     }
 
 //    maxWeightedIndexCb += getFieldColorPercept().maxWeightedIndexCb;
@@ -255,7 +255,7 @@ void FieldColorClassifier::execute()
   if(meanRegionEndIndexY != 0 && meanRegionBeginIndexY != 0)
   {
     maxWeightedIndexY = (meanRegionBeginIndexY + meanRegionEndIndexY + getFieldColorPercept().maxWeightedIndexY) / 3;
-    distY =(meanRegionEndIndexY - meanRegionBeginIndexY + maxDistY + getFieldColorPercept().distY) / 4;
+    distY =(meanRegionEndIndexY - meanRegionBeginIndexY + maxDistY + (unsigned int)getFieldColorPercept().distY) / 4;
   }
 
   if(distY > 0)
@@ -289,7 +289,7 @@ void FieldColorClassifier::execute()
     getFieldColorPercept().maxWeightedIndexCr = maxWeightedIndexCr;
   }
 
-  runDebugRequests(weightedMeanY, meanFieldY);
+  runDebugRequests((int)weightedMeanY, (int)meanFieldY);
 }
 
 double FieldColorClassifier::smoothRungeKutta4(const unsigned int& idx, double* valueArray)

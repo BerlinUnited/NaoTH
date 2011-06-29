@@ -17,6 +17,9 @@
 #include <Representations/Infrastructure/CameraSettings.h>
 #include "Representations/Infrastructure/FieldInfo.h"
 
+#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MCSLParameters.h"
+#include "Cognition/Modules/Modeling/BallLocator/PFBLParameters.h"
+
 #include "Representations/Infrastructure/ColorTable64.h"
 
 using namespace naoth;
@@ -24,6 +27,8 @@ using namespace naoth;
 BEGIN_DECLARE_MODULE(ParameterListDebugLoader)
   PROVIDE(CameraSettingsRequest)  
   PROVIDE(FieldInfo)
+  PROVIDE(MCSLParameters)
+  PROVIDE(PFBLParameters)
 
   PROVIDE(ColorTable64)
 END_DECLARE_MODULE(ParameterListDebugLoader)

@@ -16,6 +16,8 @@ ParameterListDebugLoader::ParameterListDebugLoader()
   // TODO: get the information automatically
   paramlists["CameraSettings"] = &getCameraSettingsRequest();
   paramlists["FieldInfo"] = &getFieldInfo();
+  paramlists["MCSLParameters"] = &getMCSLParameters();
+  paramlists["PFBLParameters"] = &getPFBLParameters();
   
   std::map<std::string,ParameterList*>::const_iterator it = paramlists.begin();
   while(it != paramlists.end())
@@ -58,6 +60,9 @@ void ParameterListDebugLoader::executeDebugCommand(const std::string& command, c
     }
     else if (command == std::string(itParamList->first).append(":list"))
     {
+      // synchronize the config with the current state of the parameter list
+      itParamList->second->saveToConfig();
+
       set<string> keys = config.getKeys(itParamList->first);
       for(set<string>::const_iterator it = keys.begin(); it != keys.end(); it++)
       {
