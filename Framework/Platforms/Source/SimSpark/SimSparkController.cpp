@@ -24,7 +24,8 @@ SimSparkController::SimSparkController()
   theCameraId(0),
   theSenseTime(0),
   theStepTime(0),
-  theSyncMode(false)
+  theSyncMode(false),
+  theTeamCommSocket(NULL)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -177,7 +178,7 @@ bool SimSparkController::connect(const std::string& host, int port)
   return false;
 }
 
-bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync)
+bool SimSparkController::init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync, bool debug)
 {
   Platform::getInstance().init(this);
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
@@ -221,7 +222,10 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   theDebugServer.start(debugPort, true);
 
-  theTeamCommSocket = new TeamCommSocket();
+  if ( debug )
+  {
+    theTeamCommSocket = new TeamCommSocket(false);
+  }
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
   //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
@@ -1229,8 +1233,9 @@ void SimSparkController::set(const TeamMessageDataOut& data)
   if ( !data.data.empty() )
   {
     theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
-#ifdef DEBUG
-    theTeamCommSocket->send(data.data); // broadcast via UDP
-#endif
+    if ( theTeamCommSocket )
+    {
+      theTeamCommSocket->send(data.data); // broadcast via UDP
+    }
   }
 }

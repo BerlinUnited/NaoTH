@@ -34,12 +34,14 @@ int main(int argc, char** argv)
   gchar* optServer = NULL;
   unsigned int port = 3100;
   bool sync = false;
+  bool debug = false;
   
   GOptionEntry entries[] = {
     {"num",'n', 0, G_OPTION_ARG_INT, &num, "player number", "0"},
     {"team", 't', 0, G_OPTION_ARG_STRING, &optTeamName, "team name", "NaoTH"},
     {"server", 's', 0, G_OPTION_ARG_STRING, &optServer, "server host", "localhost"},
     {"port", 'p', 0, G_OPTION_ARG_INT, &port, "server port", "3100"},
+    {"debug", 'd', 0,  G_OPTION_ARG_NONE, &debug, "debug mode", NULL},
     {"sync", 0, 0,  G_OPTION_ARG_NONE, &sync, "sync mode", NULL},
     {NULL} // This is NULL is very important!!!
   };
@@ -67,7 +69,7 @@ int main(int argc, char** argv)
   
   SimSparkController theController;
 
-  if (!theController.init(teamName, num, server, port, sync))
+  if (!theController.init(teamName, num, server, port, sync, debug))
   {
     cerr << "NaoTH SimSpark initialization failed!" << endl;
     return EXIT_FAILURE;

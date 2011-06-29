@@ -44,12 +44,12 @@ TeamCommSocket::TeamCommSocket(bool enableReceive)
   GError* err = bindAndListen(port);
   if(err)
   {
-    g_warning("could not initialize teamcomm properly: %s", err->message);
+    g_warning("could not initialize TeamCommSocket properly: %s", err->message);
     g_error_free(err);
   }
   else
   {
-    g_message("Team Communication started on port %d", port);
+    g_message("TeamCommSocket started on port %d", port);
 
     string interface = "wlan0";
     if(config.hasKey("teamcomm", "interface"))
@@ -62,14 +62,14 @@ TeamCommSocket::TeamCommSocket(bool enableReceive)
     broadcastAddress = g_inet_socket_address_new(address, port);
     g_object_unref(address);
 
-    g_message("TeamCommunicator start sending thread");
+    g_message("TeamCommSocket start sending thread");
     sendThread = g_thread_create(sendLoopWrap, this, true, NULL);
     ASSERT(sendThread != NULL);
     g_thread_set_priority(sendThread, G_THREAD_PRIORITY_LOW);
 
     if ( enableReceive )
     {
-      g_message("TeamCommunicator start receiving thread");
+      g_message("TeamCommSocket start receiving thread");
       receiveThread = g_thread_create(receiveLoopWrap, this, true, NULL);
       ASSERT(receiveThread != NULL);
       g_thread_set_priority(receiveThread, G_THREAD_PRIORITY_LOW);

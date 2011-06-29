@@ -89,9 +89,7 @@ private:
 
   TeamCommEncoder theTeamCommEncoder;
 
-#ifdef DEBUG
   TeamCommSocket* theTeamCommSocket;
-#endif
 
 public:
   SimSparkController();
@@ -103,7 +101,7 @@ public:
   virtual string getBodyNickName() const;
 
   /////////////////////// init ///////////////////////
-  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
+  bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync, bool debug);
 
   void main();
 
