@@ -38,7 +38,7 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
-#include "Modules/Infrastructure/TeamComm/TeamCommunicator/TeamCommunicator.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommunicator.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
