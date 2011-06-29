@@ -46,12 +46,13 @@ public:
   Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
 
   virtual void print(ostream& stream) const;
+
   void draw() const;
 
   void calculateBlueByYellow(double xLength);
   void calculateYellowByBlue(double xLength);
   Pose2D calculatePose(ColorClasses::Color opponentGoalColor, const FieldInfo& fieldInfo) const;
-};//end class Goal
+};//end class GoalModel
 
 /** goal model in robot's local coordinates based on pure observations of the goal posts */
 class LocalGoalModel : public GoalModel
@@ -66,7 +67,6 @@ public:
   bool ownGoalIsValid;
 
   virtual void print(ostream& stream) const;
-
 
   Vector2<double> seen_center;
   double seen_angle;
