@@ -26,6 +26,9 @@ public:
 
 private:
     ASCIIEncoder encoder;
+
+    Vector2d maxSize;
+    double anglePiece;
 };
 
 #endif // TEAMCOMMENCODER_H
