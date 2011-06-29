@@ -4,108 +4,168 @@
 #include <sys/socket.h>
 #include "Tools/Communication/MacAddr.h"
 
-#define TEAMCOMM_MAX_MSG_SIZE 4096
+
 
 using namespace naoth;
 
-void* sendLoopWrap(void* c)
+void* broadcaster_static_loop(void* b)
 {
-  TeamCommSocket* comm = static_cast<TeamCommSocket*> (c);
-  comm->sendLoop();
+  BroadCaster* bc = static_cast<BroadCaster*> (b);
+  bc->loop();
   return NULL;
-}//end motionLoopWrap
+}
 
-void* receiveLoopWrap(void* c)
+BroadCaster::BroadCaster(const std::string& interface, unsigned int port)
+  :exiting(false), socket(NULL), broadcastAddress(NULL),
+    socketThread(NULL), messageMutex(NULL), messageCond(NULL)
 {
-  TeamCommSocket* comm = static_cast<TeamCommSocket*> (c);
-  comm->receiveLoop();
-  return NULL;
-}//end motionLoopWrap
+  GError* err = NULL;
+  socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
 
-TeamCommSocket::TeamCommSocket(bool enableReceive)
+  if(err)
+  {
+    g_warning("could not initialize BroadCaster properly: %s", err->message);
+    g_error_free(err);
+    return;
+  }
+
+  if (!g_thread_supported())
+    g_thread_init(NULL);
+
+  messageMutex = g_mutex_new();
+  messageCond = g_cond_new();
+
+  g_socket_set_blocking(socket, true);
+  int broadcastFlag = 1;
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcastFlag, sizeof(int));
+
+  string broadcast = getBroadcastAddr(interface);
+  GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
+  broadcastAddress = g_inet_socket_address_new(address, port);
+  g_object_unref(address);
+
+  g_message("BroadCaster start thread (%s, %d)", broadcast.c_str(), port);
+  socketThread = g_thread_create(broadcaster_static_loop, this, true, NULL);
+  ASSERT(socketThread != NULL);
+  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
+}
+
+BroadCaster::~BroadCaster()
+{
+  exiting = true;
+  g_cond_signal(messageCond); // tell socket thread to exit
+
+  if ( socketThread )
+    g_thread_join(socketThread);
+  g_mutex_free(messageMutex);
+  g_cond_free(messageCond);
+  if(broadcastAddress != NULL)
+  {
+    g_object_unref(broadcastAddress);
+  }
+}
+
+void BroadCaster::send(const std::string& data)
+{
+  if ( data.empty() )
+    return;
+
+  if ( g_mutex_trylock(messageMutex) )
+  {
+    message = data;
+    g_cond_signal(messageCond); // tell socket thread to send
+    g_mutex_unlock(messageMutex);
+  }
+}
+
+void BroadCaster::loop()
+{
+  while(!exiting)
+  {
+    g_mutex_lock(messageMutex);
+    // wait until it is necessary to send data
+    while ( message.empty() )
+    {
+      g_cond_wait(messageCond, messageMutex);
+    }
+
+    // send data via socket
+    if(broadcastAddress)
+    {
+      GError *error = NULL;
+      gssize result = g_socket_send_to(socket, broadcastAddress, message.c_str(), message.size(), NULL, &error);
+      if ( result != message.size() )
+      {
+        g_warning("broadcast error, sended size = %ld", result);
+      }
+      if (error)
+      {
+        g_warning("g_socket_send_to error: %s", error->message);
+        g_error_free(error);
+      }
+    }
+
+    message.clear();
+    g_mutex_unlock(messageMutex);
+  }
+}
+
+void* broadcastlister_static_loop(void* b)
+{
+  BroadCastLister* bl = static_cast<BroadCastLister*> (b);
+  bl->loop();
+  return NULL;
+}
+
+BroadCastLister::BroadCastLister(unsigned int port, unsigned int buffersize)
   : exiting(false), socket(NULL),
-    receiveThread(NULL),
-    broadcastAddress(NULL)
+    socketThread(NULL)
 {
-  buffer = new char[TEAMCOMM_MAX_MSG_SIZE];
+  bufferSize = buffersize;
+  buffer = new char[buffersize];
+
   if (!g_thread_supported())
     g_thread_init(NULL);
   messageInMutex = g_mutex_new();
-  messageOutMutex = g_mutex_new();
-  messageOutCond = g_cond_new();
-
-  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
-  unsigned int port = 10700;
-  if(config.hasKey("teamcomm", "port"))
-  {
-    port = config.getInt("teamcomm", "port");
-  }
 
   GError* err = bindAndListen(port);
+
   if(err)
   {
     g_warning("could not initialize TeamCommSocket properly: %s", err->message);
     g_error_free(err);
+    return;
   }
-  else
-  {
-    g_message("TeamCommSocket started on port %d", port);
 
-    string interface = "wlan0";
-    if(config.hasKey("teamcomm", "interface"))
-    {
-      interface = config.getString("teamcomm", "interface");
-    }
-
-    string broadcast = getBroadcastAddr(interface);
-    GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
-    broadcastAddress = g_inet_socket_address_new(address, port);
-    g_object_unref(address);
-
-    g_message("TeamCommSocket start sending thread");
-    sendThread = g_thread_create(sendLoopWrap, this, true, NULL);
-    ASSERT(sendThread != NULL);
-    g_thread_set_priority(sendThread, G_THREAD_PRIORITY_LOW);
-
-    if ( enableReceive )
-    {
-      g_message("TeamCommSocket start receiving thread");
-      receiveThread = g_thread_create(receiveLoopWrap, this, true, NULL);
-      ASSERT(receiveThread != NULL);
-      g_thread_set_priority(receiveThread, G_THREAD_PRIORITY_LOW);
-    }
-  }
+  g_message("BroadCastLister start thread (%d)", port);
+  socketThread = g_thread_create(broadcastlister_static_loop, this, true, NULL);
+  ASSERT(socketThread != NULL);
+  g_thread_set_priority(socketThread, G_THREAD_PRIORITY_LOW);
 }
 
-TeamCommSocket::~TeamCommSocket()
+BroadCastLister::~BroadCastLister()
 {
   exiting = true;
 
-  g_thread_join(sendThread);
-  if ( receiveThread )
+  if ( socketThread )
   {
-    g_thread_join(receiveThread);
+    g_thread_join(socketThread);
   }
   g_mutex_free(messageInMutex);
-  g_mutex_free(messageOutMutex);
-  g_cond_free(messageOutCond);
 
   if(socket != NULL)
   {
     g_object_unref(socket);
   }
-  if(broadcastAddress != NULL)
-  {
-    g_object_unref(broadcastAddress);
-  }
+
   delete [] buffer;
 }
 
-GError* TeamCommSocket::bindAndListen(unsigned int port)
+GError* BroadCastLister::bindAndListen(unsigned int port)
 {
   GError* err = NULL;
   socket = g_socket_new(G_SOCKET_FAMILY_IPV4, G_SOCKET_TYPE_DATAGRAM, G_SOCKET_PROTOCOL_UDP, &err);
-  if(err) return err;
+  if (err) return err;
 
   g_socket_set_blocking(socket, true);
 
@@ -123,50 +183,7 @@ GError* TeamCommSocket::bindAndListen(unsigned int port)
   return err;
 }
 
-void TeamCommSocket::send(const std::string& data)
-{
-  if ( data.empty() )
-    return;
-
-  if ( g_mutex_trylock(messageOutMutex) )
-  {
-    messageOut = data;
-    g_cond_signal(messageOutCond); // tell send thread to send
-    g_mutex_unlock(messageOutMutex);
-  }
-}
-
-void TeamCommSocket::send()
-{
-  if ( messageOut.empty() )
-    return;
-
-  if(messageOut.size() > TEAMCOMM_MAX_MSG_SIZE)
-  {
-    g_warning("tried to send too big TeamComm message, please adjust TEAMCOMM_MAX_MSG_SIZE");
-  }
-  else
-  {
-    if(broadcastAddress)
-    {
-      GError *error = NULL;
-      gssize result = g_socket_send_to(socket, broadcastAddress, messageOut.c_str(), messageOut.size(), NULL, &error);
-      if ( result != messageOut.size() )
-      {
-        g_warning("broadcast error, sended size = %ld", result);
-      }
-      if (error)
-      {
-        g_warning("g_socket_send_to error: %s", error->message);
-        g_error_free(error);
-      }
-    }
-  }
-
-  messageOut.clear();
-}
-
-void TeamCommSocket::receive(vector<string>& data)
+void BroadCastLister::receive(vector<string>& data)
 {
   data.clear();
   if ( g_mutex_trylock(messageInMutex) )
@@ -180,22 +197,7 @@ void TeamCommSocket::receive(vector<string>& data)
   }
 }
 
-void TeamCommSocket::sendLoop()
-{
-  while(!exiting)
-  {
-    g_mutex_lock(messageOutMutex);
-    // wait until it is necessary to send data
-    while ( messageOut.empty() )
-    {
-      g_cond_wait(messageOutCond, messageOutMutex);
-    }
-    send();
-    g_mutex_unlock(messageOutMutex);
-  }
-}
-
-void TeamCommSocket::receiveLoop()
+void BroadCastLister::loop()
 {
   if(socket == NULL)
     return;
@@ -203,7 +205,7 @@ void TeamCommSocket::receiveLoop()
   while(!exiting)
   {
     gssize result = g_socket_receive(socket, buffer,
-                                     TEAMCOMM_MAX_MSG_SIZE, NULL, NULL);
+                                     bufferSize, NULL, NULL);
     if(result > 0)
     {
       g_mutex_lock(messageInMutex);

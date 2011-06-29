@@ -8,38 +8,48 @@
 
 namespace naoth
 {
-class TeamCommSocket
-{
 
+class BroadCaster
+{
 public:
-  TeamCommSocket(bool enableReceive=true);
+  BroadCaster(const std::string& interface, unsigned int port);
+
+  ~BroadCaster();
 
   void send(const std::string& data);
 
-  void receive(std::vector<std::string>& data);
-
-  virtual ~TeamCommSocket();
-
-  void sendLoop();
-
-  void receiveLoop();
-
-private:
-  void send();
+  void loop();
 
 private:
   bool exiting;
   GSocket* socket;
+  GSocketAddress* broadcastAddress;
+  GThread* socketThread;
+  GMutex*  messageMutex;
+  GCond* messageCond;
+  std::string message;
+};
+
+class BroadCastLister
+{
+
+public:
+  BroadCastLister(unsigned int port, unsigned int buffersize=4096);
+
+  void receive(std::vector<std::string>& data);
+
+  virtual ~BroadCastLister();
+
+  void loop();
+
+private:
+  unsigned int bufferSize;
+  bool exiting;
+  GSocket* socket;
   char* buffer;
-  GThread* sendThread;
-  GThread* receiveThread;
+  GThread* socketThread;
   std::vector<std::string> messageIn;
   GMutex*  messageInMutex;
-  std::string messageOut;
-  GMutex*  messageOutMutex;
-  GCond* messageOutCond;
-
-  GSocketAddress* broadcastAddress;
 
   GError* bindAndListen(unsigned int port);
 };

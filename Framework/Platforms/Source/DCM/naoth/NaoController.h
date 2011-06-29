@@ -65,7 +65,8 @@ private:
   V4lCameraHandler theCameraHandler;
   SoundControl *theSoundHandler;
   NaothData* naothDataWriting;
-  TeamCommSocket* theTeamComm;
+  BroadCaster* theBroadCaster;
+  BroadCastLister* theBroadCastLister;
   SPLGameController* theGameController;
 };
 
