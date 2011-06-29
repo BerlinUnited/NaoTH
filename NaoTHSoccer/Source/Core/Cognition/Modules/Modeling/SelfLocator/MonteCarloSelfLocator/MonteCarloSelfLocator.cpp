@@ -442,7 +442,8 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
   for(unsigned int lp=0; lp < getLinePercept().intersections.size(); lp++)
   {
     // TODO: separate class
-    int cornerVotes[30] = {0};
+    const int numberOfCornerVotes = 30;
+    vector<int> cornerVotes(numberOfCornerVotes);
     int maxIdx = 0;
 
     for(int s=0; s < sampleSet.numberOfParticles; s++)
@@ -462,11 +463,15 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
         p = getFieldInfo().fieldLinesTable.get_closest_tcrossing_point(absPercept);
       } else if (isL) {
         p = getFieldInfo().fieldLinesTable.get_closest_corner_point(absPercept);
+      }else
+      {
+        // circle or something like this :)
+        continue;
       }
       
       DEBUG_REQUEST("MCSL:draw_corner_votes",
         // vote for the corner id
-        ASSERT(p.id <= 29);
+        ASSERT(p.id < numberOfCornerVotes);
         cornerVotes[p.id]++;
         if(cornerVotes[p.id] > cornerVotes[maxIdx]) 
           maxIdx = p.id;
@@ -483,7 +488,7 @@ void MonteCarloSelfLocator::updateByCornersTable(SampleSet& sampleSet) const
       FIELD_DRAWING_CONTEXT;
 
       PEN("0000FF", 10);
-      for(int i = 0; i < 30; i++)
+      for(unsigned int i = 0; i < getFieldInfo().fieldLinesTable.getIntersections().size(); i++)
       {
         if(cornerVotes[i] > 0)
         {

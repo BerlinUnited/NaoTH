@@ -27,6 +27,7 @@
 #include <Representations/Infrastructure/UltraSoundData.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/SoundData.h>
+#include <Representations/Infrastructure/GameData.h>
 
 //platform:
 #include "PlatformInterface/PlatformInterface.h"
@@ -66,6 +67,8 @@ public:
 
   //get methods
   void get(Image& data);
+  void get(GameData& data){ data = theGameData; }
+
   
 protected:
   virtual MessageQueue* createMessageQueue(const string& name);
@@ -78,6 +81,8 @@ private:
   //current position
   unsigned int currentPos;
 
+  GameData theGameData;
+  unsigned int currentFrame;
   bool imageLoaded;
 
   void copyImage(Image& image, Mat mat);

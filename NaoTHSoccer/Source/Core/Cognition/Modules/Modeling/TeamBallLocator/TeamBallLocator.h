@@ -27,7 +27,7 @@ BEGIN_DECLARE_MODULE(TeamBallLocator)
   PROVIDE(TeamBallModel)
 END_DECLARE_MODULE(TeamBallLocator)
 
-class TeamBallLocator : private TeamBallLocatorBase
+class TeamBallLocator : protected TeamBallLocatorBase
 {
 
 public:
