@@ -9,14 +9,12 @@
 #define __ActiveGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
+#include "AGLParameters.h"
 
-// debug
+// Debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Cognition/Cognition.h"
-
-#include "Tools/Math/Geometry.h"
-
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -24,15 +22,13 @@
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/OdometryData.h"
-
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
-
-
 #include "Representations/Modeling/GoalModel.h"
 
+// Tools
 #include <vector>
-
+#include "Tools/Math/Geometry.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -65,6 +61,7 @@ private:
 
   double averageWeighting;
 
+  AGLParameters parameters;
   OdometryData lastRobotOdometry;
 
   //needs to check the need for using new percept

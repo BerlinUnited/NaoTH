@@ -53,7 +53,8 @@
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/BallLocator/ParticleFilterBallLocator.h"
-#include "Modules/Modeling/GoalLocator/ActiveGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/ActiveGoalLocator/ActiveGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/ObstacleLocator/RadarObstacleLocator.h"
