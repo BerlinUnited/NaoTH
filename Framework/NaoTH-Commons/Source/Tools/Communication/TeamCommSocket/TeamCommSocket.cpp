@@ -146,7 +146,7 @@ void TeamCommSocket::send()
       gssize result = g_socket_send_to(socket, broadcastAddress, messageOut.c_str(), messageOut.size(), NULL, &error);
       if ( result != messageOut.size() )
       {
-        g_warning("broadcast error, sended size = %d", result);
+        g_warning("broadcast error, sended size = %ld", result);
       }
       if (error)
       {
