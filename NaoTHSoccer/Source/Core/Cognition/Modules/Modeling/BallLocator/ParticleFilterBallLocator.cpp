@@ -150,6 +150,34 @@ void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 }//end resampleGT07
 
 
+inline double ParticleFilterBallLocator::computeAngleWeighting(
+                                double measuredAngle, 
+                                double expectedAngle,
+                                double standardDeviation, 
+                                double bestPossibleWeighting) const
+{ 
+  // TODO: normalize?
+  double angleDif = Math::normalize(expectedAngle - measuredAngle);
+  return Math::gaussianProbability(angleDif, standardDeviation) / bestPossibleWeighting;
+}//end computeAngleWeighting
+
+
+inline double ParticleFilterBallLocator::computeDistanceWeighting(
+                                double measuredDistance, 
+                                double expectedDistance,
+                                double cameraZ,
+                                double standardDeviation, 
+                                double bestPossibleWeighting) const
+{
+  const double measuredDistanceAsAngle = atan2(measuredDistance, cameraZ);
+  const double expectedDistanceAsAngle = atan2(expectedDistance, cameraZ);
+
+  // TODO: normalize?
+  double angleDif = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
+  return Math::gaussianProbability(angleDif, standardDeviation) / bestPossibleWeighting;
+}//end computeDistanceWeighting
+
+
 void ParticleFilterBallLocator::drawSamples(const SampleSet& sampleSet) const
 {
   FIELD_DRAWING_CONTEXT;

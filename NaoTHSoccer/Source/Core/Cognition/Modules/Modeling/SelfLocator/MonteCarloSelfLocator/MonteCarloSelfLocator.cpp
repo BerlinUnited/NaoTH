@@ -953,7 +953,7 @@ double MonteCarloSelfLocator::getDistanceDeviation(Pose2D& fromPose, const Vecto
 }//end getDistanceDeviation
 
 
-double MonteCarloSelfLocator::computeAngleWeighting(
+inline double MonteCarloSelfLocator::computeAngleWeighting(
                                 double measuredAngle, 
                                 double expectedAngle,
                                 double standardDeviation, 
@@ -962,10 +962,10 @@ double MonteCarloSelfLocator::computeAngleWeighting(
   // TODO: normalize?
   double angleDif = Math::normalize(expectedAngle - measuredAngle);
   return Math::gaussianProbability(angleDif, standardDeviation) / bestPossibleWeighting;
-}//end getBearingDeviation
+}//end computeAngleWeighting
 
 
-double MonteCarloSelfLocator::computeDistanceWeighting(
+inline double MonteCarloSelfLocator::computeDistanceWeighting(
                                 double measuredDistance, 
                                 double expectedDistance,
                                 double cameraZ,
