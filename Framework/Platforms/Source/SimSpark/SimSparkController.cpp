@@ -750,7 +750,11 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     sexp = sexp->next;
   }
 
-  if ( ok ) theGameData.frameNumber = theFrameInfo.getFrameNumber();
+  if ( ok )
+  {
+    theGameData.frameNumber = theFrameInfo.getFrameNumber();
+    theGameData.valid = true;
+  }
   return ok;
 }//end updateGameInfo
 
@@ -969,6 +973,7 @@ void SimSparkController::get(VirtualVision& data)
 void SimSparkController::get(GameData& data)
 {
   data = theGameData;
+  theGameData.valid = false;
 }
 
 void SimSparkController::updateInertialSensor()

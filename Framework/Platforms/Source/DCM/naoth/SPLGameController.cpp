@@ -18,7 +18,6 @@ SPLGameController::SPLGameController()
     socket(NULL),
     broadcastAddress(NULL),
     socketThread(NULL),
-    dataUpdated(false),
     lastGetTime(0),
     dataMutex(NULL),
     returnDataMutex(NULL)
@@ -84,7 +83,7 @@ bool SPLGameController::get(GameData& gameData, unsigned int time)
   bool ok = false;
   if ( g_mutex_trylock(dataMutex) )
   {
-    if ( dataUpdated )
+    if ( data.valid )
     {
       if ( data.gameState == GameData::playing
           || data.gameState == GameData::penalized )
@@ -103,7 +102,7 @@ bool SPLGameController::get(GameData& gameData, unsigned int time)
       }
 
       gameData = data;
-      dataUpdated = false;
+      data.valid = false;
       lastGetTime = time;
       ok = true;
     }
@@ -272,7 +271,7 @@ void SPLGameController::socketLoop()
       g_mutex_lock(dataMutex);
       if ( update() )
       {
-        dataUpdated = true;
+        data.valid = true;
       }
       g_mutex_unlock(dataMutex);
 

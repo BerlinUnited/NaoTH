@@ -95,6 +95,7 @@ public:
   GameData();
 
 public:
+  bool valid;
   unsigned int frameNumber; // indicates when it is updated
 
   GameState gameState;

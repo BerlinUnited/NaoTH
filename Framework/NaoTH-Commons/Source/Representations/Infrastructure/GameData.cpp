@@ -11,7 +11,8 @@
 using namespace naoth;
 
 GameData::GameData()
-  :frameNumber(0),
+  :valid(false),
+    frameNumber(0),
     gameState(numOfGameState),
     timeWhenGameStateChanged(0),
     penaltyState(none),
@@ -180,6 +181,8 @@ void GameData::loadFromCfg(Configuration& config)
     std::cerr << "No team number (TeamNumber) given" << std::endl;
     teamNumber = 0;
   }
+
+  valid = true;
 } // end loadPlayerInfoFromFile
 
 std::string GameData::penaltyStateToString(PenaltyState state)
