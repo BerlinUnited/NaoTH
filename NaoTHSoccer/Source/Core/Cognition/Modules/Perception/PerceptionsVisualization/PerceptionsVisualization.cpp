@@ -17,10 +17,17 @@ PerceptionsVisualization::PerceptionsVisualization()
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:ball_percept", "draw ball percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:ball_percept", "draw ball percept", false);
 
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:line_percept", "draw line percept", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:edgels_percept", "draw edgels percept", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:players_percept", "draw players percept", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:goal_percept", "draw goal percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:goal_percept", "draw goal percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:goal_percept", "draw goal percept", false);
+
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:edgels_percept", "draw edgels percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:edgels_percept", "draw edgels percept", false);
+
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:line_percept", "draw line percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:line_percept", "draw line percept", false);
+
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:players_percept", "draw players percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:players_percept", "draw players percept", false);
 }
 
 void PerceptionsVisualization::execute()
@@ -63,6 +70,14 @@ void PerceptionsVisualization::execute()
 
   DEBUG_REQUEST("PerceptionsVisualization:image:goal_percept",
 
+  );
+
+
+  DEBUG_REQUEST("PerceptionsVisualization:field:edgels_percept",
+  );
+
+
+  DEBUG_REQUEST("PerceptionsVisualization:image:edgels_percept",
   );
 
 
@@ -130,4 +145,14 @@ void PerceptionsVisualization::execute()
       LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
     }//end for
   );
+
+
+
+  DEBUG_REQUEST("PerceptionsVisualization:field:players_percept",
+    getPlayersPercept().draw();
+  );
+
+  DEBUG_REQUEST("PerceptionsVisualization:image:players_percept",
+  );
+
 }//end execute
