@@ -158,7 +158,7 @@ private void sendParameters()
 {
   if (parent.checkConnected())
   {
-    Command cmd = new Command("ParameterList"+cbParameterId.getSelectedItem().toString() + ":set");
+    Command cmd = new Command("ParameterList:"+cbParameterId.getSelectedItem().toString() + ":set");
 
     String text = this.jTextArea.getText();
 
@@ -181,6 +181,8 @@ private void sendParameters()
       }
     }
     sendCommand(cmd);
+    
+    listParameters();
   }
   else
   {
