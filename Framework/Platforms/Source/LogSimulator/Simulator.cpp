@@ -40,8 +40,7 @@ compatibleMode(compatibleMode),
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
-  registerInput<UltraSoundReceiveData>(*this); 
-  registerInput<GameData>(*this);
+  registerInput<UltraSoundReceiveData>(*this);
 
   // percepts
   registerInput<CameraMatrix>(*this); 
@@ -74,7 +73,6 @@ void Simulator::init()
   lastFrameTime = 0;
   startFrameTime = CYCLE_TIME;
 
-  theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
   theDebugServer.start(5401, true);
 }//end init
 
@@ -406,10 +404,6 @@ void Simulator::executeCurrentFrame()
   }
   
   adjust_frame_time();
-  
-  // HACK: set the frame number...
-  // in fact we don't have to update if every time
-  theGameData.frameNumber = *currentFrame;
     
   // execute
   callCognition();

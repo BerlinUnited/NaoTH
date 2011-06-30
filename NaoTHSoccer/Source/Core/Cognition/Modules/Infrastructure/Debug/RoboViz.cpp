@@ -7,13 +7,33 @@
 #include "RoboViz.h"
 #include <iomanip>
 #include "Tools/Debug/DebugRequest.h"
+#include "PlatformInterface/Platform.h"
 
 using namespace std;
 
 RoboViz::RoboViz()
-  :theBroadCaster("wlan0",32769)
 {
+  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  string interfaceName = "lo";
+  if(config.hasKey("RoboViz", "interface"))
+  {
+    interfaceName = config.getString("RoboViz", "interface");
+  }
+
+  unsigned int port = 32769;
+  if(config.hasKey("RoboViz", "port"))
+  {
+    port = config.getInt("RoboViz", "port");
+  }
+
+  theBroadCaster = new BroadCaster(interfaceName, port);
+
   DEBUG_REQUEST_REGISTER("RoboViz:test", "test drawing of RoboViz", false);
+}
+
+RoboViz::~RoboViz()
+{
+  delete theBroadCaster;
 }
 
 /*
@@ -69,9 +89,9 @@ void RoboViz::drawCircle(const Vector2d& pos, double radius, double thickness, c
   cmd << setprecision(3) << fixed
       << static_cast<char>(1)
       << static_cast<char>(0)
-      << setw(6) << pos.x
-      << setw(6) << pos.y
-      << setw(6) << radius
+      << setw(6) << pos.x * 1e-3
+      << setw(6) << pos.y * 1e-3
+      << setw(6) << radius * 1e-3
       << setw(6) << thickness
       << color.x
       << color.y
@@ -119,12 +139,12 @@ void RoboViz::drawLine(const Vector3d& start, const Vector3d& end, double thickn
   cmd << setprecision(3) << fixed
       << static_cast<char>(1)
       << static_cast<char>(1)
-      << setw(6) << start.x
-      << setw(6) << start.y
-      << setw(6) << start.z
-      << setw(6) << end.x
-      << setw(6) << end.y
-      << setw(6) << end.z
+      << setw(6) << start.x * 1e-3
+      << setw(6) << start.y * 1e-3
+      << setw(6) << start.z * 1e-3
+      << setw(6) << end.x * 1e-3
+      << setw(6) << end.y * 1e-3
+      << setw(6) << end.z * 1e-3
       << setw(6) << thickness
       << color.x
       << color.y
@@ -166,9 +186,9 @@ void RoboViz::drawPoint(const Vector3d& p, double size, const Vector3<unsigned c
   cmd << setprecision(3) << fixed
       << static_cast<char>(1)
       << static_cast<char>(2)
-      << setw(6) << p.x
-      << setw(6) << p.y
-      << setw(6) << p.z
+      << setw(6) << p.x * 1e-3
+      << setw(6) << p.y * 1e-3
+      << setw(6) << p.z * 1e-3
       << setw(6) << size
       << color.x
       << color.y
@@ -212,10 +232,10 @@ void RoboViz::drawSphere(const Vector3d& pos, float radius, const Vector3<unsign
   cmd << setprecision(3) << fixed
       << static_cast<char>(1)
       << static_cast<char>(3)
-      << setw(6) << pos.x
-      << setw(6) << pos.y
-      << setw(6) << pos.z
-      << setw(6) << radius
+      << setw(6) << pos.x * 1e-3
+      << setw(6) << pos.y * 1e-3
+      << setw(6) << pos.z * 1e-3
+      << setw(6) << radius * 1e-3
       << color.x
       << color.y
       << color.z
@@ -265,9 +285,9 @@ void RoboViz::drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned c
       << alpha;
   for(list<Vector3d>::const_iterator iter=vertex.begin(); iter!=vertex.end(); ++iter)
   {
-    cmd << setw(6) << iter->x
-        << setw(6) << iter->y
-        << setw(6) << iter->z;
+    cmd << setw(6) << iter->x * 1e-3
+        << setw(6) << iter->y * 1e-3
+        << setw(6) << iter->z * 1e-3;
   }
   cmd << setName
       << static_cast<char>(0);
@@ -308,9 +328,9 @@ void RoboViz::drawAnnotation(const string& text, const Vector3d& pos, const Vect
   cmd << setprecision(3) << fixed
       << static_cast<char>(2)
       << static_cast<char>(0)
-      << setw(6) << pos.x
-      << setw(6) << pos.y
-      << setw(6) << pos.z
+      << setw(6) << pos.x * 1e-3
+      << setw(6) << pos.y * 1e-3
+      << setw(6) << pos.z * 1e-3
       << color.x
       << color.y
       << color.z
@@ -397,7 +417,7 @@ void RoboViz::execute()
     test();
   );
 
-  theBroadCaster.send(drawCommands);
+  theBroadCaster->send(drawCommands);
 }
 
 void RoboViz::test()
@@ -410,36 +430,36 @@ void RoboViz::testStaticShapes()
 {
   // draw 3D coordinate axes
   string n1("test.static.axes");
-  drawLine(Vector3d(0,0,0), Vector3d(3,0,0),3, Vector3<unsigned char>(255,0,0),n1);
-  drawLine(Vector3d(0,0,0), Vector3d(0,3,0),3, Vector3<unsigned char>(0,255,0),n1);
-  drawLine(Vector3d(0,0,0), Vector3d(0,0,3),3, Vector3<unsigned char>(0,0,255),n1);
+  drawLine(Vector3d(0,0,0), Vector3d(3000,0,0),3, Vector3<unsigned char>(255,0,0),n1);
+  drawLine(Vector3d(0,0,0), Vector3d(0,3000,0),3, Vector3<unsigned char>(0,255,0),n1);
+  drawLine(Vector3d(0,0,0), Vector3d(0,0,3000),3, Vector3<unsigned char>(0,0,255),n1);
 
   // draw 1 meter lines on field
   string n2("test.static.lines.field");
-  drawLine(Vector3d(-9,-6,0), Vector3d(9,-6,0),1,Vector3<unsigned char>(153,230,153),n2);
-  drawLine(Vector3d(-9,6,0), Vector3d(9,6,0),1, Vector3<unsigned char>(153,230,153), n2);
+  drawLine(Vector3d(-9000,-6000,0), Vector3d(9000,-6000,0),1,Vector3<unsigned char>(153,230,153),n2);
+  drawLine(Vector3d(-9000,6000,0), Vector3d(9000,6000,0),1, Vector3<unsigned char>(153,230,153), n2);
 
-  for (int i = 0; i <= 18; i++)
-    drawLine(Vector3d(-9+i,-6,0), Vector3d(-9+i, 6,0),1, Vector3<unsigned char>(153,230,153),n2);
+  for (int i = 0; i <= 18000; i+=1000)
+    drawLine(Vector3d(-9000+i,-6000,0), Vector3d(-9000+i, 6000,0),1, Vector3<unsigned char>(153,230,153),n2);
 
   // draw some circles
   string n3("test.static.circles");
-  drawCircle(Vector2d(-5,0),3,2,Vector3<unsigned char>(0,0,255),n3);
-  drawCircle(Vector2d(5,0),3,2,Vector3<unsigned char>(0,0,255),n3);
+  drawCircle(Vector2d(-5000,0),3000,2,Vector3<unsigned char>(0,0,255),n3);
+  drawCircle(Vector2d(5000,0),3000,2,Vector3<unsigned char>(0,0,255),n3);
 
   // draw some spheres
   string n4("test.static.spheres");
-  drawSphere(Vector3d(-5,0,2),0.5,Vector3<unsigned char>(255,0,128),n4);
-  drawSphere(Vector3d(5,0,2),0.5,Vector3<unsigned char>(255,0,128),n4);
+  drawSphere(Vector3d(-5000,0,2000),500,Vector3<unsigned char>(255,0,128),n4);
+  drawSphere(Vector3d(5000,0,2000),500,Vector3<unsigned char>(255,0,128),n4);
 
   // draw a polygon
   string n5("test.static.polygons");
   list<Vector3d> v;
   v.push_back(Vector3d(0,0,0));
-  v.push_back(Vector3d(1,0,0));
-  v.push_back(Vector3d(1,1,0));
-  v.push_back(Vector3d(0,3,0));
-  v.push_back(Vector3d(-2,-2,0));
+  v.push_back(Vector3d(1000,0,0));
+  v.push_back(Vector3d(1000,1000,0));
+  v.push_back(Vector3d(0,3000,0));
+  v.push_back(Vector3d(-2000,-2000,0));
   drawPolygon(v, Vector3<unsigned char>(255,255,255), 128, n5);
 
   string staticSets("test.static");
@@ -454,13 +474,13 @@ void RoboViz::testAnimatedShapes()
   string n1("test.animated.points");
   for (int i = 0; i < 60; i++) {
     double p = i / 60.0;
-    double height = max(0.0, sin(angle + p * 18));
-    drawPoint(Vector3d(-9 + 18 * p, p * 12 - 6, height), 5, Vector3<unsigned char>(0,0,0),n1);
+    double height = max(0.0, sin(angle + p * 18)) * 1000;
+    drawPoint(Vector3d(-9000 + 18000 * p, p * 12000 - 6000, height), 5, Vector3<unsigned char>(0,0,0),n1);
   }
 
-  double bx = cos(angle) * 2;
-  double by = sin(angle) * 2;
-  double bz = cos(angle) + 1.5;
+  double bx = cos(angle) * 2 * 1000;
+  double by = sin(angle) * 2 * 1000;
+  double bz = cos(angle) * 1000 + 1500;
 
   string n2("test.animated.spinner");
   drawLine(Vector3d(0,0,0),Vector3d(bx,by,bz),5,Vector3<unsigned char>(255,255,0),n2);
@@ -469,7 +489,7 @@ void RoboViz::testAnimatedShapes()
 
   string n3("test.animated.annotation");
   stringstream ss;
-  ss<<setprecision(1)<<fixed<<bz;
+  ss<<static_cast<int>(bz);
   drawAnnotation(ss.str(), Vector3d(bx, by, bz), Vector3<unsigned char>(0,255,0), n3);
 
   string staticSets("test.animated");

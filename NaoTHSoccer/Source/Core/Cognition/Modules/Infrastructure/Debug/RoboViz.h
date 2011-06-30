@@ -24,6 +24,8 @@ class RoboViz: public RoboVizBase
   public:
   RoboViz();
 
+  ~RoboViz();
+
   virtual void execute();
 
   protected:
@@ -45,7 +47,7 @@ class RoboViz: public RoboVizBase
   void testStaticShapes();
   void testAnimatedShapes();
 
-  BroadCaster theBroadCaster;
+  BroadCaster* theBroadCaster;
   std::list<std::string> drawCommands;
 };
 
