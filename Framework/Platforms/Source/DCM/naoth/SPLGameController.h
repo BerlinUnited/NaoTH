@@ -29,7 +29,6 @@ private:
     RoboCupGameControlData dataIn;
     RoboCupGameControlReturnData dataOut;
 
-    bool dataUpdated;
     unsigned int lastGetTime;
     naoth::GameData data;
     GMutex*  dataMutex;
