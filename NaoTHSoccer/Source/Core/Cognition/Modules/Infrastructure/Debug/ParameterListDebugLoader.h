@@ -18,7 +18,8 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MCSLParameters.h"
-#include "Cognition/Modules/Modeling/BallLocator/PFBLParameters.h"
+#include "Cognition/Modules/Modeling/BallLocator/ParticleFilterBallLocator/PFBLParameters.h"
+#include "Cognition/Modules/Modeling/GoalLocator/ActiveGoalLocator/AGLParameters.h"
 
 #include "Representations/Infrastructure/ColorTable64.h"
 
