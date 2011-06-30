@@ -49,8 +49,8 @@ using namespace std;
 RoboViz::RoboViz()
   :theBroadCaster("wlan0",32769)
 {
-  renderStaticShapes();
-  theBroadCaster.send(drawCommands);
+  //renderStaticShapes();
+  //theBroadCaster.send(drawCommands);
 }
 
 /*
@@ -103,7 +103,8 @@ void RoboViz::swapBuffers(const string& setName)
 void RoboViz::drawCircle(const Vector2d& pos, double radius, double thickness, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << static_cast<char>(1)
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(1)
       << static_cast<char>(0)
       << setw(6) << pos.x
       << setw(6) << pos.y
@@ -152,7 +153,8 @@ void RoboViz::drawCircle(const Vector2d& pos, double radius, double thickness, c
 void RoboViz::drawLine(const Vector3d& start, const Vector3d& end, double thickness, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << static_cast<char>(1)
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(1)
       << static_cast<char>(1)
       << setw(6) << start.x
       << setw(6) << start.y
@@ -169,6 +171,52 @@ void RoboViz::drawLine(const Vector3d& start, const Vector3d& end, double thickn
 
   drawCommands.push_back(cmd.str());
 }
+
+/*
+ ----------
+|1         | - 1 byte
+|----------|
+|2         | - 1 byte
+|----------|
+|Position X| - 6 bytes (float/string)
+|----------|
+|Position Y| - 6 bytes (float/string)
+|----------|
+|Position Z| - 6 bytes (float/string)
+|----------|
+|Size      | - 6 bytes (float/string)
+|----------|
+|Red       | - 1 byte
+|----------|
+|Green     | - 1 byte
+|----------|
+|Blue      | - 1 byte
+|----------|
+|Set Name  | - n bytes (string)
+|----------|
+|0         | - 1 byte
+ ----------
+*/
+void RoboViz::drawPoint(const Vector3d& p, double size, const Vector3<unsigned char>& color, const string& setName)
+{
+  stringstream cmd;
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(1)
+      << static_cast<char>(2)
+      << setw(6) << p.x
+      << setw(6) << p.y
+      << setw(6) << p.z
+      << setw(6) << size
+      << color.x
+      << color.y
+      << color.z
+      << setName
+      << static_cast<char>(0);
+  ASSERT(cmd.str().size() == setName.length()+30);
+
+  drawCommands.push_back(cmd.str());
+}
+
 
 /*
  ----------
@@ -198,7 +246,8 @@ void RoboViz::drawLine(const Vector3d& start, const Vector3d& end, double thickn
 void RoboViz::drawSphere(const Vector3d& pos, float radius, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << static_cast<char>(1)
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(1)
       << static_cast<char>(3)
       << setw(6) << pos.x
       << setw(6) << pos.y
@@ -243,7 +292,8 @@ void RoboViz::drawSphere(const Vector3d& pos, float radius, const Vector3<unsign
 void RoboViz::drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned char>& color, unsigned char alpha, const string& setName)
 {
   stringstream cmd;
-  cmd << static_cast<char>(1)
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(1)
       << static_cast<char>(4)
       << static_cast<char>(vertex.size())
       << color.x
@@ -258,6 +308,120 @@ void RoboViz::drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned c
   }
   cmd << setName
       << static_cast<char>(0);
+
+  drawCommands.push_back(cmd.str());
+}
+
+/*
+ ----------
+|2         | - 1 byte
+|----------|
+|0         | - 1 byte
+|----------|
+|Position X| - 6 bytes (float/string)
+|----------|
+|Position Y| - 6 bytes (float/string)
+|----------|
+|Position Z| - 6 bytes (float/string)
+|----------|
+|Red       | - 1 byte
+|----------|
+|Green     | - 1 byte
+|----------|
+|Blue      | - 1 byte
+|----------|
+|Text      | - n bytes (string)
+|----------|
+|0         | - 1 byte
+|----------|
+|Set Name  | - n bytes (string)
+|----------|
+|0         | - 1 byte
+ ----------
+*/
+void RoboViz::drawAnnotation(const string& text, const Vector3d& pos, const Vector3<unsigned char>& color, const string& setName)
+{
+  stringstream cmd;
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(2)
+      << static_cast<char>(0)
+      << setw(6) << pos.x
+      << setw(6) << pos.y
+      << setw(6) << pos.z
+      << color.x
+      << color.y
+      << color.z
+      << text
+      << static_cast<char>(0)
+      << setName
+      << static_cast<char>(0);
+
+  drawCommands.push_back(cmd.str());
+}
+
+int RoboViz::getAgentAnnotationID()
+{
+  int id = getPlayerInfo().gameData.playerNumber - 1;
+  if ( getPlayerInfo().gameData.teamColor != GameData::blue )
+  {
+    id += 128;
+  }
+  return id;
+}
+
+/*
+ ----------
+|2         | - 1 byte
+|----------|
+|1         | - 1 byte
+|----------|
+|Agent/Team| - 1 byte
+|----------|
+|Red       | - 1 byte
+|----------|
+|Green     | - 1 byte
+|----------|
+|Blue      | - 1 byte
+|----------|
+|Text      | - n bytes (string)
+|----------|
+|0         | - 1 byte
+ ----------
+*/
+void RoboViz::drawAgentAnnotation(const string& text, const Vector3<unsigned char>& color)
+{
+  int id = getAgentAnnotationID();
+  stringstream cmd;
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(2)
+      << static_cast<char>(1)
+      << static_cast<char>(id)
+      << color.x
+      << color.y
+      << color.z
+      << text
+      << static_cast<char>(0);
+
+  drawCommands.push_back(cmd.str());
+}
+
+/*
+ ----------
+|2         | - 1 byte
+|----------|
+|2         | - 1 byte
+|----------|
+|Agent/Team| - 1 byte
+ ----------
+*/
+void RoboViz::cleanAgentAnnotation()
+{
+  int id = getAgentAnnotationID();
+  stringstream cmd;
+  cmd << setprecision(3) << fixed
+      << static_cast<char>(2)
+      << static_cast<char>(2)
+      << static_cast<char>(id);
 
   drawCommands.push_back(cmd.str());
 }
@@ -318,5 +482,33 @@ void RoboViz::renderStaticShapes()
 
 void RoboViz::renderAnimatedShapes()
 {
+  static double angle = 0;
+  angle += 0.05;
 
+  string n1("animated.points");
+  for (int i = 0; i < 60; i++) {
+    double p = i / 60.0;
+    double height = max(0.0, sin(angle + p * 18));
+    drawPoint(Vector3d(-9 + 18 * p, p * 12 - 6, height), 5, Vector3<unsigned char>(0,0,0),n1);
+  }
+
+  double bx = cos(angle) * 2;
+  double by = sin(angle) * 2;
+  double bz = cos(angle) + 1.5;
+
+  string n2("animated.spinner");
+  drawLine(Vector3d(0,0,0),Vector3d(bx,by,bz),5,Vector3<unsigned char>(255,255,0),n2);
+  drawLine(Vector3d(bx,by,bz),Vector3d(bx,by,0),5,Vector3<unsigned char>(255,255,0),n2);
+  drawLine(Vector3d(0,0,0),Vector3d(bx,by,0),5,Vector3<unsigned char>(255,255,0),n2);
+
+  string n3("animated.annotation");
+  char tbuf[4];
+  int result = snprintf(tbuf, 4, "%.1f", bz);
+  string aText(tbuf);
+  drawAnnotation(aText, Vector3d(bx, by, bz), Vector3<unsigned char>(0,255,0), n3);
+
+  string staticSets("animated");
+  swapBuffers(staticSets);
+
+  drawAgentAnnotation("Hi, I am "+getRobotInfo().bodyNickName, Vector3<unsigned char>(0,255,255));
 }
