@@ -64,10 +64,10 @@ theBroadCastListener(NULL)
 
   std::cout<< "Init TeamComm"<<endl;
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
-  string interface = "wlan0";
+  string interfaceName = "wlan0";
   if(config.hasKey("teamcomm", "interface"))
   {
-    interface = config.getString("teamcomm", "interface");
+    interfaceName = config.getString("teamcomm", "interface");
   }
 
   unsigned int port = 10700;
