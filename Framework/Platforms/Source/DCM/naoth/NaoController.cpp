@@ -9,11 +9,14 @@
 #include "NaoController.h"
 #include <PlatformInterface/Platform.h>
 
+#define TEAMCOMM_MAX_MSG_SIZE 4096
+
 using namespace naoth;
 
 NaoController::NaoController()
 :theSoundHandler(NULL),
-theTeamComm(NULL)
+theBroadCaster(NULL),
+theBroadCastListener(NULL)
 {
   // read the value from file
   ifstream is(staticMemberPath.c_str());
@@ -60,7 +63,21 @@ theTeamComm(NULL)
   theSoundHandler = new SoundControl();
 
   std::cout<< "Init TeamComm"<<endl;
-  theTeamComm = new TeamCommunicator();
+  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  string interface = "wlan0";
+  if(config.hasKey("teamcomm", "interface"))
+  {
+    interface = config.getString("teamcomm", "interface");
+  }
+
+  unsigned int port = 10700;
+  if(config.hasKey("teamcomm", "port"))
+  {
+    port = config.getInt("teamcomm", "port");
+  }
+
+  theBroadCaster = new BroadCaster(interface, port);
+  theBroadCastListener = new BroadCastListener(port, TEAMCOMM_MAX_MSG_SIZE);
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
@@ -75,9 +92,14 @@ NaoController::~NaoController()
     delete theSoundHandler;
   }
 
-  if ( theTeamComm != NULL)
+  if ( theBroadCaster != NULL)
   {
-    delete theTeamComm;
+    delete theBroadCaster;
+  }
+
+  if ( theBroadCastListener != NULL )
+  {
+    delete theBroadCastListener;
   }
 
   if ( theGameController != NULL )
@@ -132,12 +154,19 @@ void NaoController::setCognitionOutput()
 
 void NaoController::get(TeamMessageDataIn& data)
 {
-  theTeamComm->receive(data.data);
+  theBroadCastListener->receive(data.data);
 }
 
 void NaoController::set(const TeamMessageDataOut& data)
 {
-  theTeamComm->send(data.data);
+  if ( data.data.size() <= TEAMCOMM_MAX_MSG_SIZE )
+  {
+    theBroadCaster->send(data.data);
+  }
+  else
+  {
+    cerr<<"NaoController: TeamMessageDataOut is too big "<<data.data.size()<<endl;
+  }
 }
 
 void NaoController::get(GameData& data)

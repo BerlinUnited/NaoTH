@@ -38,6 +38,7 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
+#include "Modules/Infrastructure/Debug/RoboViz.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommunicator.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 
@@ -145,6 +146,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // debug
   REGISTER_MODULE(LEDSetter);
   REGISTER_MODULE(Debug);
+  REGISTER_MODULE(RoboViz);
   REGISTER_MODULE(ParameterListDebugLoader);
   REGISTER_MODULE(StopwatchSender);
   REGISTER_MODULE(DebugExecutor);

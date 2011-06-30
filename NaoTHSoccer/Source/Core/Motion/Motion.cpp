@@ -273,6 +273,10 @@ void Motion::checkWarningState()
   {
     theBlackBoard.theMotionRequest.id = motion::init;
     theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
+    if ( !theBlackBoard.theLEDData.change )
+    {
+      cerr<<"cognition is dead!"<<endl;
+    }
     theBlackBoard.theLEDData.change = true;
 
     LEDData& theLEDData = theBlackBoard.theLEDData;

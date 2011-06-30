@@ -98,6 +98,7 @@ SimSparkController::SimSparkController()
   if (!g_thread_supported())
     g_thread_init(NULL);
   theCognitionInputMutex = g_mutex_new();
+  theCognitionOutputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
 
   maxJointAbsSpeed = Math::fromDegrees(351.77);
@@ -115,6 +116,7 @@ SimSparkController::SimSparkController()
 SimSparkController::~SimSparkController()
 {
   g_mutex_free(theCognitionInputMutex);
+  g_mutex_free(theCognitionOutputMutex);
   g_cond_free(theCognitionInputCond);
   
   if (socket != NULL)
@@ -319,6 +321,13 @@ void SimSparkController::getCognitionInput()
   isNewVirtualVision = false;
   isNewImage = false;
   g_mutex_unlock(theCognitionInputMutex);
+}
+
+void SimSparkController::setCognitionOutput()
+{
+  g_mutex_lock(theCognitionOutputMutex);
+  PlatformInterface<SimSparkController>::setCognitionOutput();
+  g_mutex_unlock(theCognitionOutputMutex);
 }
 
 bool SimSparkController::updateSensors()
@@ -1071,18 +1080,21 @@ void SimSparkController::say()
   if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
     return;
 
-  string& msg = theTeamMessageDataOut.data;
-  if (!msg.empty()){
-    if (msg.size()>20){
-      cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
-      return;
+  if ( g_mutex_trylock(theCognitionOutputMutex) )
+  {
+    string& msg = theTeamMessageDataOut.data;
+    if (!msg.empty()){
+      if (msg.size()>20){
+        cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
+        return;
+      }
+      if (msg != "")
+      {
+        theSocket << ("(say "+msg+")");
+      }
+      msg.clear();
     }
-    if (msg != "")
-    {
-      //      cout<<"Nr."<<static_cast<int>(thePlayerInfoInitializer.thePlayerInfo.playerNumber)<<" say @ "<<theSenseTime<<endl;
-      theSocket << ("(say "+msg+")");
-    }
-    msg.clear();
+    g_mutex_unlock(theCognitionOutputMutex);
   }
 }
 
@@ -1225,5 +1237,7 @@ void SimSparkController::get(TeamMessageDataIn& data)
 void SimSparkController::set(const TeamMessageDataOut& data)
 {
   if ( !data.data.empty() )
+  {
     theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
+  }
 }

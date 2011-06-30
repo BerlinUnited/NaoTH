@@ -7,6 +7,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/RobotPose.h"
 
 #include <glib.h>
 #include <gio/gio.h>
@@ -17,6 +18,7 @@ REQUIRE(FrameInfo)
 REQUIRE(PlayerInfo)
 REQUIRE(TeamMessageDataIn)
 REQUIRE(RobotInfo)
+REQUIRE(RobotPose)
 
 PROVIDE(TeamMessage)
 PROVIDE(TeamMessageDataOut)
@@ -34,6 +36,7 @@ public:
   virtual ~TeamCommunicator();
 private:
   unsigned int lastSentTimestamp;
+  unsigned int send_interval;
 
   void handleMessage(const std::string& data);
   void createMessage(naothmessages::TeamCommMessage& msg);

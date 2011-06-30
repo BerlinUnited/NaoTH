@@ -1,8 +1,16 @@
 #include "TeamCommunicator.h"
+#include "PlatformInterface/Platform.h"
+#include "Tools/DataConversion.h"
 
 TeamCommunicator::TeamCommunicator()
-  :lastSentTimestamp(0)
+  :lastSentTimestamp(0),
+    send_interval(500)
 {
+  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  if ( config.hasKey("teamcomm", "send_interval") )
+  {
+    send_interval = config.getInt("teamcomm", "send_interval");
+  }
 }
 
 void TeamCommunicator::execute()
@@ -16,7 +24,7 @@ void TeamCommunicator::execute()
   }
 
   // only send data in intervals of 500ms
-  if(getFrameInfo().getTimeSince(lastSentTimestamp) > 500)
+  if(getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
   {
     // send data
     naothmessages::TeamCommMessage msg;
@@ -56,6 +64,9 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
   msg.set_bodyid(getRobotInfo().bodyID);
 
+  // robot pose
+  DataConversion::toMessage(getRobotPose(), *(msg.mutable_positiononfield()));
+
   // TODO: set falldown state in teamcomm message
   /*
   msg.set_isfallendown(theBodyState.fall_down_state != BodyState::upright
@@ -72,9 +83,7 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   msg.mutable_ballposition()->set_x(theBallModel.position.x);
   msg.mutable_ballposition()->set_y(theBallModel.position.y);
 
-  msg.mutable_positiononfield()->set_rotation(theRobotPose.rotation);
-  msg.mutable_positiononfield()->mutable_translation()->set_x(theRobotPose.translation.x);
-  msg.mutable_positiononfield()->mutable_translation()->set_y(theRobotPose.translation.y);
+
 */
 }
 

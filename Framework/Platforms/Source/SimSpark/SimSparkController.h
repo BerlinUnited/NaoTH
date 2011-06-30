@@ -198,9 +198,12 @@ public:
 
   virtual void getCognitionInput();
 
+  virtual void setCognitionOutput();
+
 private:
   // members for threads
   GMutex*  theCognitionInputMutex;
+  GMutex*  theCognitionOutputMutex;
   GCond* theCognitionInputCond;
   double maxJointAbsSpeed;
 

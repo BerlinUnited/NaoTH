@@ -8,6 +8,7 @@
 #ifndef _MAC_ADDR_H_
 #define _MAC_ADDR_H_
 
+#ifndef WIN32
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -17,12 +18,15 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
+#endif // undef WIN32
 
 namespace naoth
 {
   // get Media Access Control address
   static std::string getMACaddress(const std::string& name)
   {
+    /* Mac & Windows dont have that define */
+#ifdef SIOCGIFHWADDR
     int s;
     struct ifreq buffer;
     s = socket(PF_INET, SOCK_DGRAM, 0);
@@ -40,12 +44,17 @@ namespace naoth
       (unsigned char) buffer.ifr_hwaddr.sa_data[5]);
 
     return std::string(mac);
+#else
+    return "unknow";
+#endif
   }//end getMACaddress
 
   static std::string getIP4(const std::string& name)
   {
-    string ip("unknown");
+    std::string ip("unknown");
 
+    /* Mac & Windows dont have that define */
+#ifdef SIOCGIFHWADDR
     struct ifaddrs * ifAddrStruct=NULL;
     struct ifaddrs * ifa=NULL;
     void * tmpAddrPtr=NULL;
@@ -58,22 +67,23 @@ namespace naoth
         tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
         char addressBuffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-        string n(ifa->ifa_name);
+        std::string n(ifa->ifa_name);
         if ( n == name )
         {
-          ip = string(addressBuffer);
+          ip = std::string(addressBuffer);
         }
       }
     }
     if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
-
+#endif
     return ip;
   }
 
   static std::string getBroadcastAddr(const std::string& name)
   {
-    string ip("unknown");
-
+    std::string ip("unknown");
+    /* Mac & Windows dont have that define */
+#ifdef SIOCGIFHWADDR
     struct ifaddrs * ifAddrStruct=NULL;
     struct ifaddrs * ifa=NULL;
     void * tmpAddrPtr=NULL;
@@ -86,15 +96,15 @@ namespace naoth
         tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_ifu.ifu_broadaddr)->sin_addr;
         char addressBuffer[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-        string n(ifa->ifa_name);
+        std::string n(ifa->ifa_name);
         if ( n == name )
         {
-          ip = string(addressBuffer);
+          ip = std::string(addressBuffer);
         }
       }
     }
     if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
-
+#endif
     return ip;
   }
 
