@@ -86,7 +86,7 @@ void RoboViz::swapBuffers(const string& setName)
 void RoboViz::drawCircle(const Vector2d& pos, double radius, double thickness, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(1)
       << static_cast<char>(0)
       << setw(6) << pos.x * 1e-3
@@ -136,7 +136,7 @@ void RoboViz::drawCircle(const Vector2d& pos, double radius, double thickness, c
 void RoboViz::drawLine(const Vector3d& start, const Vector3d& end, double thickness, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(1)
       << static_cast<char>(1)
       << setw(6) << start.x * 1e-3
@@ -183,7 +183,7 @@ void RoboViz::drawLine(const Vector3d& start, const Vector3d& end, double thickn
 void RoboViz::drawPoint(const Vector3d& p, double size, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(1)
       << static_cast<char>(2)
       << setw(6) << p.x * 1e-3
@@ -229,7 +229,7 @@ void RoboViz::drawPoint(const Vector3d& p, double size, const Vector3<unsigned c
 void RoboViz::drawSphere(const Vector3d& pos, float radius, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(1)
       << static_cast<char>(3)
       << setw(6) << pos.x * 1e-3
@@ -275,7 +275,7 @@ void RoboViz::drawSphere(const Vector3d& pos, float radius, const Vector3<unsign
 void RoboViz::drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned char>& color, unsigned char alpha, const string& setName)
 {
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(1)
       << static_cast<char>(4)
       << static_cast<char>(vertex.size())
@@ -325,7 +325,7 @@ void RoboViz::drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned c
 void RoboViz::drawAnnotation(const string& text, const Vector3d& pos, const Vector3<unsigned char>& color, const string& setName)
 {
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(2)
       << static_cast<char>(0)
       << setw(6) << pos.x * 1e-3
@@ -401,7 +401,7 @@ void RoboViz::cleanAgentAnnotation()
 {
   int id = getAgentAnnotationID();
   stringstream cmd;
-  cmd << setprecision(3) << fixed
+  cmd << setprecision(2) << fixed
       << static_cast<char>(2)
       << static_cast<char>(2)
       << static_cast<char>(id);
@@ -417,7 +417,31 @@ void RoboViz::execute()
     test();
   );
 
+  drawRobotPose();
+
+  swapBuffers(getRobotInfo().bodyNickName);
   theBroadCaster->send(drawCommands);
+}
+
+void RoboViz::drawRobotPose()
+{
+  string name = getRobotInfo().bodyNickName + ".RobotPose";
+  Vector3<unsigned char> color(0,0,255);
+  double thickness = 5;
+  drawCircle(getRobotPose().translation, 200, thickness, color, name);
+
+  Pose3D pose;
+  pose.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation) * getKinematicChain().theLinks[KinematicChain::Torso].R;
+  pose.translation = Vector3d(getRobotPose().translation.x, getRobotPose().translation.y, 1);
+
+  Vector3d forward = pose * Vector3d(300, 0, 0);
+  drawLine(pose.translation, forward, thickness, Vector3<unsigned char>(255,0,0), name);
+
+  Vector3d up = pose * Vector3d(0, 0, 500);
+  drawLine(pose.translation, up, thickness, Vector3<unsigned char>(0,255,0), name);
+
+  Vector3d left = pose * Vector3d(0, 300, 0);
+  drawLine(pose.translation, left, thickness, Vector3<unsigned char>(0,0,255), name);
 }
 
 void RoboViz::test()
