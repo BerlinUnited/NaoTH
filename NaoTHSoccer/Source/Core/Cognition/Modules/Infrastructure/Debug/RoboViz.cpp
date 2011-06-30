@@ -7,13 +7,33 @@
 #include "RoboViz.h"
 #include <iomanip>
 #include "Tools/Debug/DebugRequest.h"
+#include "PlatformInterface/Platform.h"
 
 using namespace std;
 
 RoboViz::RoboViz()
-  :theBroadCaster("wlan0",32769)
 {
+  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  string interfaceName = "lo";
+  if(config.hasKey("RoboViz", "interface"))
+  {
+    interfaceName = config.getString("RoboViz", "interface");
+  }
+
+  unsigned int port = 32769;
+  if(config.hasKey("RoboViz", "port"))
+  {
+    port = config.getInt("RoboViz", "port");
+  }
+
+  theBroadCaster = new BroadCaster(interfaceName, port);
+
   DEBUG_REQUEST_REGISTER("RoboViz:test", "test drawing of RoboViz", false);
+}
+
+RoboViz::~RoboViz()
+{
+  delete theBroadCaster;
 }
 
 /*
@@ -397,7 +417,7 @@ void RoboViz::execute()
     test();
   );
 
-  theBroadCaster.send(drawCommands);
+  theBroadCaster->send(drawCommands);
 }
 
 void RoboViz::test()
