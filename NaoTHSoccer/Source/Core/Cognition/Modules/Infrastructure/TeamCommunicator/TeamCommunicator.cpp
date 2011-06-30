@@ -24,7 +24,7 @@ void TeamCommunicator::execute()
   }
 
   // only send data in intervals of 500ms
-  if(getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
+  if((unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
   {
     // send data
     naothmessages::TeamCommMessage msg;

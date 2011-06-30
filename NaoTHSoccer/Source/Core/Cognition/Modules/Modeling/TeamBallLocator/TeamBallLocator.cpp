@@ -46,7 +46,6 @@ void TeamBallLocator::execute()
           //getTeamBallModel().time = getTeamMessage().timeWhenReceived[i];
           ASSERT(i->second.frameInfo.getTimeInSeconds() >= 0);
           getTeamBallModel().time = (unsigned int)i->second.frameInfo.getTimeInSeconds();
-
           num = 1;
         }
         else if ( i->second.frameInfo.getTimeInSeconds() == getTeamBallModel().time )
