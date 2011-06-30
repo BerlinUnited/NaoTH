@@ -3,6 +3,7 @@
  */
 
 #include "Sensor.h"
+#include <PlatformInterface/Platform.h>
 
 Sensor::Sensor():
 theMotionStatusReader(NULL),
@@ -30,6 +31,9 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   robot.bodyNickName = platformInterface.getBodyNickName();
   robot.bodyID = platformInterface.getBodyID();
   robot.basicTimeStep = platformInterface.getBasicTimeStep();
+
+  // init player number, team number and etc.
+  getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
   REG_INPUT(AccelerometerData);
   REG_INPUT(BatteryData);
