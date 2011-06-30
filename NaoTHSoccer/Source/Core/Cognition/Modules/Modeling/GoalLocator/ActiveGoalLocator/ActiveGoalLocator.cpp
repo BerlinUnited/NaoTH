@@ -97,14 +97,10 @@ void ActiveGoalLocator::execute() {
     sampleSet.clear();
   }
 
-  double averageWeightingThreshhold = 0.4;
-  MODIFY("ActiveGoalLocator:averageWeightingThreshhold", averageWeightingThreshhold);
-  double range = 0.1;
-  MODIFY("ActiveGoalLocator:range_of_timeFilter", range);
-  timeFilter += range * averageWeighting;
+  timeFilter += parameters.timeFilterRange * averageWeighting;
 
   //TODO: Recognize which Goal was seen
-  for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) { //&& timeFilter < averageWeightingThreshhold
+  for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) { //&& timeFilter < parameters.sigmaWeightingThreshhold
     //should be more flexible. when two posts are seen, and just one is reliable -> also add possible!
     if (getGoalPercept().getPost(i).positionReliable) {
       if (sampleSet.size() < 40) {
@@ -337,12 +333,6 @@ void ActiveGoalLocator::updateByGoalPercept() {
     opponentGoalColor = ColorClasses::skyblue;
   }
 
-  //zutrauen was der roboter an abweichung haben könnte
-  double standardDeviationDist = 500; //[mm]
-  MODIFY("ActiveGoalLocator:standardDeviationDist", standardDeviationDist);
-  double standardDeviationAngle = 0.15; //[arc]
-  MODIFY("ActiveGoalLocator:standardDeviationAngle", standardDeviationAngle);
-
   for (unsigned int i = 0; i < sampleSet.size(); i++) {
     Sample& sample = sampleSet[i];
 
@@ -350,7 +340,7 @@ void ActiveGoalLocator::updateByGoalPercept() {
 
     //check if particle "close" to sample in relation to its angle
     //double angle = getGoalPercept().getPost(0).position.angle();
-    //double weighting = Math::gaussianProbability(angle, standardDeviationAngle);
+    //double weighting = Math::gaussianProbability(angle, parameters.standardDeviationAngle);
 
     double weighting(0.0);
 
@@ -359,7 +349,7 @@ void ActiveGoalLocator::updateByGoalPercept() {
       if (getGoalPercept().getPost(i).positionReliable) {
         //check with distance to perception
         double value = Math::normalize(sample.position.angle() - getGoalPercept().getPost(i).position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
-        weighting = Math::gaussianProbability(value, standardDeviationAngle);
+        weighting = Math::gaussianProbability(value, parameters.standardDeviationAngle);
 
         //Problem: winkelfehler und Distanz gemischt -> nicht vergleichbare fehler!
 
@@ -370,7 +360,7 @@ void ActiveGoalLocator::updateByGoalPercept() {
         double value2 = abs((sample.position - getGoalPercept().getPost(i).position).abs() - goalWidth);
 
         DEBUG_REQUEST("ActiveGoalLocator:with_distance_gaussian",
-          weighting += Math::gaussianProbability(value2, standardDeviationDist)*670.0;
+          weighting += Math::gaussianProbability(value2, parameters.standardDeviationDist)*670.0;
         );
       }
 
@@ -393,12 +383,6 @@ void ActiveGoalLocator::updateByGoalPercept() {
 
 void ActiveGoalLocator::resampleGT07(bool noise) {
 
-  // parameters
-  double processNoiseDistance = 5;
-  MODIFY("ActiveGoalLocator:processNoiseDistance", processNoiseDistance);
-  double resamplingThreshhold = 0.99;
-  MODIFY("ActiveGoalLocator:resamplingThreshhold", resamplingThreshhold);
-
   double totalWeighting = 0;
 
   //Should also be calculated while "inserting"? -> NO ... better independent from update or insert!
@@ -419,9 +403,9 @@ void ActiveGoalLocator::resampleGT07(bool noise) {
   // TODO: use memcopy?
   std::vector<Sample> oldSampleSet = sampleSet;
 
-  totalWeighting += resamplingThreshhold * oldSampleSet.size();
+  totalWeighting += parameters.resamplingThreshhold * oldSampleSet.size();
   for (unsigned int i = 0; i < oldSampleSet.size(); i++) {
-    oldSampleSet[i].likelihood += resamplingThreshhold;
+    oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
     oldSampleSet[i].likelihood /= totalWeighting; // normalize
   }//end for
 
@@ -445,8 +429,8 @@ void ActiveGoalLocator::resampleGT07(bool noise) {
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
       if (noise) {
-        sampleSet[n].position.x += (Math::random() - 0.5) * processNoiseDistance;
-        sampleSet[n].position.y += (Math::random() - 0.5) * processNoiseDistance;
+        sampleSet[n].position.x += (Math::random() - 0.5) * parameters.processNoiseDistance;
+        sampleSet[n].position.y += (Math::random() - 0.5) * parameters.processNoiseDistance;
       }
 
       n++;
@@ -559,9 +543,7 @@ int ActiveGoalLocator::getClusterSize(const Vector2<double> start)
 
 bool ActiveGoalLocator::isInCluster(const CanopyCluster& cluster, const Sample& sample) const
 {
-
-  //parameters.thresholdCanopy before ... threshhold for cluster-assignment
-  return cluster.distance(sample) < 900;
+  return cluster.distance(sample) < parameters.thresholdCanopy;
 }//end isInCluster
 
 

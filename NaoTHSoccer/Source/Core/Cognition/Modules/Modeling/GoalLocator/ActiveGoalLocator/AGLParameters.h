@@ -17,43 +17,13 @@ public:
   AGLParameters();
   ~AGLParameters();
 
-  // standart deviations for the gausian angle and distance model
-
-  double sigmaDistanceOwnPose;
-  double sigmaAngleOwnPose;
-
-  double sigmaDistanceGoalModel;
-  double sigmaAngleGoalModel;
-
-  double sigmaDistanceGoalPost;
-  double sigmaAngleGoalPost;
-
-  double sigmaDistanceCenterCircle;
-  double sigmaAngleCenterCircle;
-
-  double sigmaDistanceCorner;
-  double sigmaAngleCorner;
-
-  double sigmaDistanceLine;
-  double sigmaAngleLine;
-
+  double standardDeviationDist;
+  double standardDeviationAngle;
+  double timeFilterRange;
+  double sigmaWeightingThreshhold;
   double thresholdCanopy;
-
-  double resamplingThreshhold;
-
   double processNoiseDistance;
-  double processNoiseAngle;
-
-  double motionNoiseDistance;
-  double motionNoiseAngle;
-
-  // updates
-  double updateByGoals;
-  double updateByOldPose;
-  double updateByLinesTable;
-  double updateByCornerTable;
-  double updateByCenterCircle;
-  double updateByFlags;
+  double resamplingThreshhold;
 
   virtual void print(std::ostream& stream) const {}
 
