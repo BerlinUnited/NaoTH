@@ -109,7 +109,7 @@ void BroadCaster::loop()
   {
     g_mutex_lock(messageMutex);
     // wait until it is necessary to send data
-    while ( message.empty() && messages.empty() )
+    while ( message.empty() && messages.empty() && !exiting )
     {
       g_cond_wait(messageCond, messageMutex);
     }

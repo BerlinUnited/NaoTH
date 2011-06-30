@@ -6,7 +6,7 @@
  */
 
 #include "MCSLParameters.h"
-#include "PlatformInterface/Platform.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 MCSLParameters::MCSLParameters()
   : ParameterList("MCSLParameters")
@@ -49,9 +49,11 @@ MCSLParameters::MCSLParameters()
 
   // load from the file after registering all parameters
   loadFromConfig();
+
+  DebugParameterList::getInstance().add(this);
 }
 
 MCSLParameters::~MCSLParameters()
 {
-  
+  DebugParameterList::getInstance().remove(this);
 }

@@ -6,7 +6,7 @@
 */
 
 #include "AGLParameters.h"
-#include "PlatformInterface/Platform.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 AGLParameters::AGLParameters()
   : ParameterList("AGLParameters")
@@ -28,9 +28,11 @@ AGLParameters::AGLParameters()
 
   // load from the file after registering all parameters
   loadFromConfig();
+
+  DebugParameterList::getInstance().add(this);
 }
 
 AGLParameters::~AGLParameters()
 {
-  
+  DebugParameterList::getInstance().remove(this);
 }

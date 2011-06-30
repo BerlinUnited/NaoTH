@@ -20,6 +20,7 @@
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/CameraSettings.h>
 
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Motion/Request/MotionRequest.h"
@@ -46,6 +47,7 @@ BEGIN_DECLARE_MODULE(Debug)
   
   PROVIDE(ColorTable64)
   PROVIDE(MotionRequest)
+  PROVIDE(CameraSettingsRequest)
 END_DECLARE_MODULE(Debug)
 
 class Debug : public DebugBase, public DebugCommandExecutor

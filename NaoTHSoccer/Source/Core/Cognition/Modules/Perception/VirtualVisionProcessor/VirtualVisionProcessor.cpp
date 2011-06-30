@@ -59,9 +59,6 @@ VirtualVisionProcessor::VirtualVisionProcessor()
   flagPosOnField[GameData::red]["F1R"] = theFieldInfo.crossings[FieldInfo::ownCornerRight].position;
   flagPosOnField[GameData::red]["F2R"] = theFieldInfo.crossings[FieldInfo::ownCornerLeft].position;
 
-  DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:draw_lines","draw the all the seen lines in the field viewer",false);
-  DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:draw_ball_on_field", "draw the virtual ball", false);
-  DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:draw_goal_on_field", "draw the virtual goal percept on the field", false);
   DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:corner_flags", "draw the corner flags", false);
 
   DEBUG_REQUEST_REGISTER("VirtualVisionProcessor:LineDetector:mark_circle", "", false);
@@ -83,80 +80,6 @@ void VirtualVisionProcessor::execute()
   findIntersections();
   LinePercept& theLinePercept = getLinePercept();
   classifyIntersections(theLinePercept.lines);
-
-  DEBUG_REQUEST("VirtualVisionProcessor:draw_lines",
-    FIELD_DRAWING_CONTEXT;
-    PEN("999999", 20);
-
-    for(vector<LinePercept::FieldLineSegment>::const_iterator iter=theLinePercept.lines.begin(); iter!=theLinePercept.lines.end(); ++iter)
-    {
-      Vector2<double> b = iter->lineOnField.begin();
-      Vector2<double> e = iter->lineOnField.end();
-      
-      if(iter->type == LinePercept::C)
-        PEN("FF0000", 20);
-
-      LINE(b.x, b.y, e.x, e.y);
-    }//end for
-
-    PEN("0000FF", 20);
-    for(unsigned int i = 0; i < theLinePercept.intersections.size(); i++)
-    {
-      Vector2<double> b = theLinePercept.intersections[i].getPosOnField();
-      CIRCLE(b.x, b.y, 50);
-      string type = "N";
-      switch(theLinePercept.intersections[i].getType())
-      {
-        case Math::Intersection::C: type="C"; break;
-        case Math::Intersection::T: type="T"; break;
-        case Math::Intersection::L: type="L"; break;
-        case Math::Intersection::E: type="E"; break;
-        case Math::Intersection::X: type="X"; break;
-        default: break;
-      }
-      TEXT_DRAWING(b.x + 100, b.y + 100, type);
-    }//end for
-  );
-
-  
-  DEBUG_REQUEST("VirtualVisionProcessor:draw_ball_on_field",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF9900", 20);
-    const BallPercept& theBallPercept = getBallPercept();
-    CIRCLE(theBallPercept.bearingBasedOffsetOnField.x,
-           theBallPercept.bearingBasedOffsetOnField.y,
-           45);
-  );
-
-  DEBUG_REQUEST("VirtualVisionProcessor:draw_goal_on_field",
-    const GoalPercept& theGoalPercept = getGoalPercept();
-    const FieldInfo& theFieldInfo = getFieldInfo();
-    for(unsigned int n=0; n<theGoalPercept.getNumberOfSeenPosts(); n++)
-    {
-      const GoalPercept::GoalPost& post = theGoalPercept.getPost(n);
-
-      FIELD_DRAWING_CONTEXT;
-      if(post.color==ColorClasses::skyblue && post.positionReliable)
-        PEN("8888FF", 20);
-      else if(post.color==ColorClasses::yellow && post.positionReliable)
-        PEN("FFFF00", 20);
-      else
-        PEN("FF0000", 20);
-
-      CIRCLE(post.position.x,
-             post.position.y,
-             theFieldInfo.goalpostRadius);
-
-      std::string typeString("?");
-      if(post.type == GoalPercept::GoalPost::leftPost)
-        typeString = "L";
-      else if(post.type == GoalPercept::GoalPost::rightPost)
-        typeString = "R";
-
-      TEXT_DRAWING(post.position.x+50, post.position.y+50, typeString);
-    }
-  );//end DEBUG
-
 }//end execute
 
 Vector3<double> VirtualVisionProcessor::calculatePosition(const Vector3<double>& pol)

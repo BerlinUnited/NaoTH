@@ -8,6 +8,7 @@
  */
 
 #include "Configuration.h"
+#include "Tools/DataConversion.h"
 
 #include <iostream>
 #include <fstream>
@@ -303,7 +304,9 @@ double Configuration::getDouble(const std::string& group, const std::string& key
 
 void Configuration::setDouble(const std::string& group, const std::string& key, double value)
 {
-  g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
+  //g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
+  // the function above produce unecessary zeros
+  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
 }
 
 bool Configuration::getBool(const std::string& group, const std::string& key) const

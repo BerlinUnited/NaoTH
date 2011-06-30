@@ -103,6 +103,8 @@ public:
   } kick;
   
   IKParameters();
+
+  virtual ~IKParameters();
 };
 
 #endif // __IK__PARAMETERS_H_

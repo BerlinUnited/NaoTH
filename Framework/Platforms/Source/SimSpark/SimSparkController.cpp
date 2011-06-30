@@ -24,7 +24,8 @@ SimSparkController::SimSparkController()
   theCameraId(0),
   theSenseTime(0),
   theStepTime(0),
-  theSyncMode(false)
+  theSyncMode(false),
+  exiting(false)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -260,11 +261,14 @@ void SimSparkController::motionLoop()
   {    
     callMotion();
   }
+
+  exiting = true;
+  g_cond_signal(theCognitionInputCond); // tell cognition to exit
 }//end motionLoop
 
 void SimSparkController::cognitionLoop()
 {
-  while (true)
+  while (!exiting)
   {
     callCognition();
   }
@@ -281,8 +285,6 @@ void* motionLoopWrap(void* c)
 void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
-
-  callMotion();
 
   GThread* motionThread = g_thread_create(motionLoopWrap, this, true, NULL);
   ASSERT(motionThread != NULL);
@@ -313,7 +315,7 @@ void SimSparkController::setMotionOutput()
 void SimSparkController::getCognitionInput()
 {
   g_mutex_lock(theCognitionInputMutex);
-  while (!isNewImage && !isNewVirtualVision)
+  while (!isNewImage && !isNewVirtualVision && !exiting )
   {
     g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
   }
@@ -334,7 +336,15 @@ bool SimSparkController::updateSensors()
 {
   double lastSenseTime = theSenseTime;
   string msg;
-  theSocket >> msg;
+
+  try {
+    theSocket >> msg;
+  }
+  catch (std::runtime_error& exp)
+  {
+    cerr<<"can not get data from server, because of "<<exp.what()<<endl;
+    return false;
+  }
 
   //cout << "Sensor data: " << msg << endl;
 

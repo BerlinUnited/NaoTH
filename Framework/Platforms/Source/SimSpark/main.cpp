@@ -77,12 +77,7 @@ int main(int argc, char** argv)
   Motion theMotion;
   theController.registerCallbacks(&theMotion, &theCognition);
 
-  try{
-    theController.main();
-  }catch (std::runtime_error& exp)
-  {
-    cerr<<"exit because of "<<exp.what()<<endl;
-  }
+  theController.main();
 
   return 0;
 }//end main

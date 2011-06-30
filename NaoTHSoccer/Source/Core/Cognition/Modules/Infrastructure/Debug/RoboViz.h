@@ -13,10 +13,14 @@
 #include <Tools/Math/Vector3.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(RoboViz)
   REQUIRE(RobotInfo)
   REQUIRE(PlayerInfo)
+  REQUIRE(RobotPose)
+  REQUIRE(KinematicChain)
 END_DECLARE_MODULE(RoboViz)
 
 class RoboViz: public RoboVizBase
@@ -43,6 +47,9 @@ class RoboViz: public RoboVizBase
   private:
   int getAgentAnnotationID();
 
+  void drawRobotPose();
+
+  // test functions
   void test();
   void testStaticShapes();
   void testAnimatedShapes();

@@ -28,6 +28,8 @@ NaoMotionController::NaoMotionController()
   // register output
   registerOutput<const LEDData>(*this);
   registerOutput<const MotorJointData>(*this);
+
+  theDebugServer.start(6401, true);
 }
 
 NaoMotionController::~NaoMotionController()
