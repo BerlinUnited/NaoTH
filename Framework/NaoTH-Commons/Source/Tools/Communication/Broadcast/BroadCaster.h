@@ -8,6 +8,7 @@
 #define BROAD_CASTER_H
 
 #include <string>
+#include <list>
 #include <glib.h>
 #include <gio/gio.h>
 
@@ -23,7 +24,12 @@ public:
 
   void send(const std::string& data);
 
+  void send(std::list<std::string>& msgs);
+
   void loop();
+
+private:
+  void socketSend(const std::string& data);
 
 private:
   bool exiting;
@@ -33,6 +39,7 @@ private:
   GMutex*  messageMutex;
   GCond* messageCond;
   std::string message;
+  std::list<std::string> messages;
 };
 
 

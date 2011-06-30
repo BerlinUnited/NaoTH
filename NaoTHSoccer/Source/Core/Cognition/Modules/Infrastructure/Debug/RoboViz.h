@@ -9,6 +9,7 @@
 
 #include <ModuleFramework/Module.h>
 #include <Tools/Communication/Broadcast/BroadCaster.h>
+#include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
 #include "Representations/Modeling/PlayerInfo.h"
 
@@ -24,8 +25,11 @@ class RoboViz: public RoboVizBase
   virtual void execute();
 
   protected:
-  void swapBuffers(const string* setName);
-  void drawLine(const Vector3d& pa, const Vector3d& pb, double thickness, const Vector3d& color, const string* setName);
+  void swapBuffers(const string& setName);
+  void drawCircle(const Vector2d& pos, double radius, double thickness, const Vector3<unsigned char>& color, const string& setName);
+  void drawLine(const Vector3d& pa, const Vector3d& pb, double thickness, const Vector3<unsigned char>& color, const string& setName);
+  void drawSphere(const Vector3d& pos, float radius, const Vector3<unsigned char>& color, const string& setName);
+  void drawPolygon(const list<Vector3d>& vertex, const Vector3<unsigned char>& color, unsigned char alpha, const string& setName);
 
   private:
   void test();
@@ -33,7 +37,7 @@ class RoboViz: public RoboVizBase
   void renderAnimatedShapes();
 
   BroadCaster theBroadCaster;
-  std::string drawCmd;
+  std::list<std::string> drawCommands;
 };
 
 #endif // ROBOVIZ_H

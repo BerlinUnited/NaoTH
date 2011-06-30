@@ -82,34 +82,61 @@ void BroadCaster::send(const std::string& data)
   }
 }
 
+void BroadCaster::send(std::list<std::string>& msgs)
+{
+  if ( msgs.empty() )
+    return;
+
+  if ( g_mutex_trylock(messageMutex) )
+  {
+    messages = msgs;
+    g_cond_signal(messageCond); // tell socket thread to send
+    g_mutex_unlock(messageMutex);
+  }
+}
+
 void BroadCaster::loop()
 {
+  if(broadcastAddress==NULL) return;
+
   while(!exiting)
   {
     g_mutex_lock(messageMutex);
     // wait until it is necessary to send data
-    while ( message.empty() )
+    while ( message.empty() && messages.empty() )
     {
       g_cond_wait(messageCond, messageMutex);
     }
 
     // send data via socket
-    if(broadcastAddress)
+    if ( !message.empty() )
     {
-      GError *error = NULL;
-      gssize result = g_socket_send_to(socket, broadcastAddress, message.c_str(), message.size(), NULL, &error);
-      if ( result != message.size() )
-      {
-        g_warning("broadcast error, sended size = %ld", result);
-      }
-      if (error)
-      {
-        g_warning("g_socket_send_to error: %s", error->message);
-        g_error_free(error);
-      }
+      socketSend(message);
+      message.clear();
     }
 
-    message.clear();
+    for(list<string>::const_iterator iter=messages.begin(); iter!=messages.end(); ++iter)
+    {
+      socketSend(*iter);
+    }
+    messages.clear();
+
     g_mutex_unlock(messageMutex);
   }
 }
+
+void BroadCaster::socketSend(const std::string& data)
+{
+  GError *error = NULL;
+  gssize result = g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error);
+  if ( result != data.size() )
+  {
+    g_warning("broadcast error, sended size = %ld", result);
+  }
+  if (error)
+  {
+    g_warning("g_socket_send_to error: %s", error->message);
+    g_error_free(error);
+  }
+}
+

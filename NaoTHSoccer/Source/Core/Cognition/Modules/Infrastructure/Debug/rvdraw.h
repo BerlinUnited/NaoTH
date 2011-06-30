@@ -50,18 +50,6 @@ inline int writeStringToBuf(unsigned char* buf, const string* text) {
   return i;
 }
 
-unsigned char* newBufferSwap(const string* name, int* bufSize) {
-  *bufSize = 3 + ((name != NULL) ? name->length() : 0);
-  unsigned char* buf = new unsigned char[*bufSize];
-
-  long i = 0;
-  i += writeCharToBuf(buf+i, 0);
-  i += writeCharToBuf(buf+i, 0);
-  i += writeStringToBuf(buf+i, name);
-
-  return buf;
-}
-
 unsigned char* newCircle(const double* center, double radius, double thickness,
     const double* color, const string* setName, int* bufSize) {
 
@@ -83,7 +71,7 @@ unsigned char* newCircle(const double* center, double radius, double thickness,
 
 unsigned char* newLine(const double* a, const double* b, double thickness,
     const double* color, const string* setName, int* bufSize) {
-  
+
   *bufSize = 48 + ((setName != NULL) ? setName->length() : 0);
   unsigned char* buf = new unsigned char[*bufSize];
 
@@ -99,7 +87,7 @@ unsigned char* newLine(const double* a, const double* b, double thickness,
   i += writeDoubleToBuf(buf+i, thickness);
   i += writeColorToBuf(buf+i, color, 3);
   i += writeStringToBuf(buf+i, setName);
-  
+
   return buf;
 }
 
