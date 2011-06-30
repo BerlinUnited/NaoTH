@@ -78,7 +78,7 @@ public:
     }
   }//end print
 
-  virtual void draw()
+  virtual void draw() const
   {
     FIELD_DRAWING_CONTEXT;
     for(std::list<Player>::const_iterator iter=playersList.begin(); iter!=playersList.end(); ++iter)
