@@ -173,7 +173,12 @@ void NaoController::get(GameData& data)
 {
   if ( theGameController->get(data, theFrameInfo.getTime()) )
   {
+    data.valid = true;
     data.frameNumber = theFrameInfo.getFrameNumber();
+  }
+  else
+  {
+    data.valid = false;
   }
 }
 
