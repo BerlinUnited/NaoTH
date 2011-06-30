@@ -76,7 +76,7 @@ theBroadCastListener(NULL)
     port = config.getInt("teamcomm", "port");
   }
 
-  theBroadCaster = new BroadCaster(interface, port);
+  theBroadCaster = new BroadCaster(interfaceName, port);
   theBroadCastListener = new BroadCastListener(port, TEAMCOMM_MAX_MSG_SIZE);
 
   std::cout<< "Init SPLGameController"<<endl;
