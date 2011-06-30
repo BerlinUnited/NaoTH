@@ -30,6 +30,7 @@ BEGIN_DECLARE_MODULE(ParameterListDebugLoader)
   PROVIDE(FieldInfo)
   PROVIDE(MCSLParameters)
   PROVIDE(PFBLParameters)
+  PROVIDE(AGLParameters)
 
   PROVIDE(ColorTable64)
 END_DECLARE_MODULE(ParameterListDebugLoader)
