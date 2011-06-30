@@ -18,7 +18,7 @@ namespace naoth
 class BroadCaster
 {
 public:
-  BroadCaster(const std::string& interface, unsigned int port);
+  BroadCaster(const std::string& interfaceName, unsigned int port);
 
   ~BroadCaster();
 

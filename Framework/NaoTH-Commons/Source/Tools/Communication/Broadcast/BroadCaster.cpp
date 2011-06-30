@@ -5,7 +5,13 @@
  */
 
 #include "BroadCaster.h"
+
+#ifndef WIN32
 #include <sys/socket.h>
+#else
+#include <winsock.h>
+#endif
+
 #include "Tools/Communication/MacAddr.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
@@ -19,8 +25,8 @@ void* broadcaster_static_loop(void* b)
   return NULL;
 }
 
-BroadCaster::BroadCaster(const std::string& interface, unsigned int port)
-  :exiting(false), socket(NULL), broadcastAddress(NULL),
+BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
+ :exiting(false), socket(NULL), broadcastAddress(NULL),
     socketThread(NULL), messageMutex(NULL), messageCond(NULL)
 {
   GError* err = NULL;
@@ -41,9 +47,9 @@ BroadCaster::BroadCaster(const std::string& interface, unsigned int port)
 
   g_socket_set_blocking(socket, true);
   int broadcastFlag = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcastFlag, sizeof(int));
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(int));
 
-  string broadcast = getBroadcastAddr(interface);
+  string broadcast = getBroadcastAddr(interfaceName);
   GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
   broadcastAddress = g_inet_socket_address_new(address, port);
   g_object_unref(address);

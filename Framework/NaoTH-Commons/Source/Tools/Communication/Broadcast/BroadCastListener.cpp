@@ -6,8 +6,11 @@
 
 #include "BroadCastListener.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#ifndef WIN32
 #include <sys/socket.h>
-
+#else
+#include <winsock2.h>
+#endif
 using namespace naoth;
 
 void* broadcastlistener_static_loop(void* b)
@@ -70,7 +73,7 @@ GError* BroadCastListener::bindAndListen(unsigned int port)
   g_socket_set_blocking(socket, true);
 
   int broadcast = 1;
-  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(int));
+  setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcast), sizeof(int));
 
   GInetAddress* inetAddress = g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
   GSocketAddress* socketAddress = g_inet_socket_address_new(inetAddress, port);
