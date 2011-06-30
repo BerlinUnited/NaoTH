@@ -6,6 +6,7 @@
 */
 
 #include "IKParameters.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 
 IKParameters::IKParameters()
@@ -69,4 +70,11 @@ IKParameters::IKParameters()
 
 
   loadFromConfig();
+
+  DebugParameterList::getInstance().add(this);
+}
+
+IKParameters::~IKParameters()
+{
+  DebugParameterList::getInstance().remove(this);
 }

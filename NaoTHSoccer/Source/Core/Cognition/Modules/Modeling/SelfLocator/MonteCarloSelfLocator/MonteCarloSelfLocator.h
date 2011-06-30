@@ -49,8 +49,6 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
 
-  REQUIRE(MCSLParameters)
-
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
 END_DECLARE_MODULE(MonteCarloSelfLocator)

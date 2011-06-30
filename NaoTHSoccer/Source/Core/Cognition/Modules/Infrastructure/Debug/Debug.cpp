@@ -13,6 +13,7 @@
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/Stopwatch.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 #include <PlatformInterface/Platform.h>
 
@@ -48,6 +49,9 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
 
   REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
+
+  // parameter list
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
 }
 
 void Debug::execute()
@@ -170,6 +174,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 
 Debug::~Debug()
 {
+  // parameter list
+  DebugParameterList::getInstance().remove(&(getCameraSettingsRequest()));
 }
 
 void Debug::draw3D()

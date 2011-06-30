@@ -62,7 +62,7 @@ CameraSettingsRequest::CameraSettingsRequest()
   {
     registerParameter(getCameraSettingsName((CameraSettingID) i), data[i]);
   }//end for
-  
+
   loadFromConfig();
 }
 
