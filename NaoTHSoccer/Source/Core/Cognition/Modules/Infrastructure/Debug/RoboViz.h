@@ -42,8 +42,8 @@ class RoboViz: public RoboVizBase
   int getAgentAnnotationID();
 
   void test();
-  void renderStaticShapes();
-  void renderAnimatedShapes();
+  void testStaticShapes();
+  void testAnimatedShapes();
 
   BroadCaster theBroadCaster;
   std::list<std::string> drawCommands;

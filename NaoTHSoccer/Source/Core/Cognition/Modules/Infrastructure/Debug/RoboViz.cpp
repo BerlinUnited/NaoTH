@@ -5,52 +5,15 @@
  */
 
 #include "RoboViz.h"
-#include "rvdraw.h"
 #include <iomanip>
-
-/*
-
-
-
-void drawPoint(float x, float y, float z, float size, float r, float g, float b, const string* setName) {
-  float center[3] = {x,y,z};
-  float color[3] = {r,g,b};
-
-  int bufSize = -1;
-  unsigned char* buf = newPoint(center, size, color, setName, &bufSize);
-  sendto(sockfd, buf, bufSize, 0, p->ai_addr, p->ai_addrlen);
-  delete[] buf;
-}
-
-void drawPolygon(const float* v, int numVerts, float r, float g, float b,
-    float a, const string* setName) {
-  float color[4] = {r,g,b,a};
-
-  int bufSize = -1;
-  unsigned char* buf = newPolygon(v, numVerts, color, setName, &bufSize);
-  sendto(sockfd, buf, bufSize, 0, p->ai_addr, p->ai_addrlen);
-  delete[] buf;
-}
-
-void drawAnnotation(const string* text, float x, float y, float z, float r,
-    float g, float b, const string* setName) {
-  float color[3] = {r,g,b};
-  float pos[3] = {x,y,z};
-
-  int bufSize = -1;
-  unsigned char* buf = newAnnotation(text, pos, color, setName, &bufSize);
-  sendto(sockfd, buf, bufSize, 0, p->ai_addr, p->ai_addrlen);
-  delete[] buf;
-}
-*/
+#include "Tools/Debug/DebugRequest.h"
 
 using namespace std;
 
 RoboViz::RoboViz()
   :theBroadCaster("wlan0",32769)
 {
-  //renderStaticShapes();
-  //theBroadCaster.send(drawCommands);
+  DEBUG_REQUEST_REGISTER("RoboViz:test", "test drawing of RoboViz", false);
 }
 
 /*
@@ -430,26 +393,29 @@ void RoboViz::execute()
 {
   drawCommands.clear();
 
-  test();
+  DEBUG_REQUEST("RoboViz:test",
+    test();
+  );
 
   theBroadCaster.send(drawCommands);
 }
 
 void RoboViz::test()
 {
-  renderAnimatedShapes();
+  testStaticShapes();
+  testAnimatedShapes();
 }
 
-void RoboViz::renderStaticShapes()
+void RoboViz::testStaticShapes()
 {
   // draw 3D coordinate axes
-  string n1("static.axes");
+  string n1("test.static.axes");
   drawLine(Vector3d(0,0,0), Vector3d(3,0,0),3, Vector3<unsigned char>(255,0,0),n1);
   drawLine(Vector3d(0,0,0), Vector3d(0,3,0),3, Vector3<unsigned char>(0,255,0),n1);
   drawLine(Vector3d(0,0,0), Vector3d(0,0,3),3, Vector3<unsigned char>(0,0,255),n1);
 
   // draw 1 meter lines on field
-  string n2("static.lines.field");
+  string n2("test.static.lines.field");
   drawLine(Vector3d(-9,-6,0), Vector3d(9,-6,0),1,Vector3<unsigned char>(153,230,153),n2);
   drawLine(Vector3d(-9,6,0), Vector3d(9,6,0),1, Vector3<unsigned char>(153,230,153), n2);
 
@@ -457,17 +423,17 @@ void RoboViz::renderStaticShapes()
     drawLine(Vector3d(-9+i,-6,0), Vector3d(-9+i, 6,0),1, Vector3<unsigned char>(153,230,153),n2);
 
   // draw some circles
-  string n3("static.circles");
+  string n3("test.static.circles");
   drawCircle(Vector2d(-5,0),3,2,Vector3<unsigned char>(0,0,255),n3);
   drawCircle(Vector2d(5,0),3,2,Vector3<unsigned char>(0,0,255),n3);
 
   // draw some spheres
-  string n4("static.spheres");
+  string n4("test.static.spheres");
   drawSphere(Vector3d(-5,0,2),0.5,Vector3<unsigned char>(255,0,128),n4);
   drawSphere(Vector3d(5,0,2),0.5,Vector3<unsigned char>(255,0,128),n4);
 
   // draw a polygon
-  string n5("static.polygons");
+  string n5("test.static.polygons");
   list<Vector3d> v;
   v.push_back(Vector3d(0,0,0));
   v.push_back(Vector3d(1,0,0));
@@ -476,16 +442,16 @@ void RoboViz::renderStaticShapes()
   v.push_back(Vector3d(-2,-2,0));
   drawPolygon(v, Vector3<unsigned char>(255,255,255), 128, n5);
 
-  string staticSets("static");
+  string staticSets("test.static");
   swapBuffers(staticSets);
 }
 
-void RoboViz::renderAnimatedShapes()
+void RoboViz::testAnimatedShapes()
 {
   static double angle = 0;
   angle += 0.05;
 
-  string n1("animated.points");
+  string n1("test.animated.points");
   for (int i = 0; i < 60; i++) {
     double p = i / 60.0;
     double height = max(0.0, sin(angle + p * 18));
@@ -496,18 +462,17 @@ void RoboViz::renderAnimatedShapes()
   double by = sin(angle) * 2;
   double bz = cos(angle) + 1.5;
 
-  string n2("animated.spinner");
+  string n2("test.animated.spinner");
   drawLine(Vector3d(0,0,0),Vector3d(bx,by,bz),5,Vector3<unsigned char>(255,255,0),n2);
   drawLine(Vector3d(bx,by,bz),Vector3d(bx,by,0),5,Vector3<unsigned char>(255,255,0),n2);
   drawLine(Vector3d(0,0,0),Vector3d(bx,by,0),5,Vector3<unsigned char>(255,255,0),n2);
 
-  string n3("animated.annotation");
-  char tbuf[4];
-  int result = snprintf(tbuf, 4, "%.1f", bz);
-  string aText(tbuf);
-  drawAnnotation(aText, Vector3d(bx, by, bz), Vector3<unsigned char>(0,255,0), n3);
+  string n3("test.animated.annotation");
+  stringstream ss;
+  ss<<setprecision(1)<<fixed<<bz;
+  drawAnnotation(ss.str(), Vector3d(bx, by, bz), Vector3<unsigned char>(0,255,0), n3);
 
-  string staticSets("animated");
+  string staticSets("test.animated");
   swapBuffers(staticSets);
 
   drawAgentAnnotation("Hi, I am "+getRobotInfo().bodyNickName, Vector3<unsigned char>(0,255,255));
