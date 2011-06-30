@@ -19,6 +19,11 @@
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
 
+#ifdef NAO
+#include <Representations/Infrastructure/DebugMessage.h>
+#include <Cognition/Modules/Infrastructure/Debug/StopwatchSender.h>
+#endif
+
 class Motion : public naoth::Callable
 {
 public:
@@ -71,6 +76,12 @@ private:
     running,
     exiting,
   } state;
+
+#ifdef NAO
+  naoth::DebugMessageIn theDebugMessageIn;
+  naoth::DebugMessageOut theDebugMessageOut;
+  StopwatchSender theStopwatchSender;
+#endif
 };
 
 #endif	/* MOTION_H */

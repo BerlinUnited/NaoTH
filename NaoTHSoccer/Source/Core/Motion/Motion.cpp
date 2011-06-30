@@ -13,6 +13,14 @@
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
+#include "Tools/Debug/Stopwatch.h"
+
+#ifdef NAO
+#include "Cognition/DebugCommandServer.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugDrawings3D.h"
+#endif
 
 using namespace naoth;
 
@@ -80,6 +88,11 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 
   REG_OUTPUT(MotorJointData);
   REG_OUTPUT(LEDData);
+
+#ifdef NAO
+  platformInterface.registerMotionInput(theDebugMessageIn);
+  platformInterface.registerMotionOutput(theDebugMessageOut);
+#endif
   g_message("Motion register end");
   
   theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
@@ -95,8 +108,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 
 void Motion::call()
 {
-  // TODO
-  //STOPWATCH_START("MotionExecute");
+  STOPWATCH_START("MotionExecute");
   
   // process sensor data
   processSensorData();
@@ -145,7 +157,7 @@ void Motion::call()
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
 
-  //STOPWATCH_STOP("MotionExecute");
+  STOPWATCH_STOP("MotionExecute");
   
   postProcess();
 }//end call
@@ -204,9 +216,21 @@ void Motion::postProcess()
   Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
   theOdometryDataWriter->write(odmsg.str());
     
-#ifdef DEBUG
-//TODO
-  //MotionDebug::getInstance().execute();
+#ifdef NAO
+  theDebugMessageOut.answers.clear();
+  for(std::list<DebugMessageIn::Message>::const_iterator iter = theDebugMessageIn.messages.begin();
+      iter != theDebugMessageIn.messages.end(); ++iter)
+  {
+    std::stringstream answer;
+    DebugCommandServer::getInstance().handleCommand(iter->command, iter->arguments, answer);
+    theDebugMessageOut.answers.push_back(answer.str());
+  }
+
+  STOPWATCH_START("Debug ~ Init");
+  DebugBufferedOutput::getInstance().update();
+  DebugDrawings::getInstance().update();
+  DebugDrawings3D::getInstance().update();
+  STOPWATCH_STOP("Debug ~ Init");
 #endif
 }
 
