@@ -206,8 +206,7 @@ private:
   GMutex*  theCognitionOutputMutex;
   GCond* theCognitionInputCond;
   double maxJointAbsSpeed;
-
-  //REPRESENTATION_PROVIDER(PlayerInfoInitializer, Cognition, PlayerInfo);
+  bool exiting;
 };
 
 #endif	/* _SIMSPARKCONTROLLER_H */
