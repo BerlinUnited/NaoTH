@@ -10,7 +10,7 @@ using namespace naoth;
 
 AbstractMotion::AbstractMotion(motion::MotionID id)
 : theId(id),
-  currentState(motion::unknow),
+  currentState(motion::stopped),
   theMotorJointData(MotionBlackBoard::getInstance().theMotorJointData),
   theBlackBoard(MotionBlackBoard::getInstance())
 {

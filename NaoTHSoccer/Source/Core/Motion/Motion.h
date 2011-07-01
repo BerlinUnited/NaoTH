@@ -74,7 +74,7 @@ private:
   {
     initial,
     running,
-    exiting,
+    exiting
   } state;
 
 #ifdef NAO
