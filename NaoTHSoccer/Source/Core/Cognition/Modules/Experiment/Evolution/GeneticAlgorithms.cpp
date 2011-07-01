@@ -11,6 +11,8 @@
 #include "GeneticAlgorithms.h"
 #include "Tools/Math/Common.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include <glib.h>
+#include <glib/gstdio.h>
 
 using namespace std;
 
@@ -65,7 +67,10 @@ GeneticAlgorithms::GeneticAlgorithms()
   crossoverRate(1),
   mutationRate(1)
 {
-  
+  GDateTime* dateTime = g_date_time_new_now_local();
+  dataDir = "ga"+string( g_date_time_format(dateTime, "%Y-%m-%d-%H-%M-%S") );
+  g_date_time_unref(dateTime);
+  g_mkdir(dataDir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 }
 
 vector<GeneticAlgorithms::Individual> GeneticAlgorithms::newGeneration(const vector<GeneticAlgorithms::Individual>& old)
@@ -124,7 +129,7 @@ GeneticAlgorithms::Individual& GeneticAlgorithms::getIndividual()
   {
     sort(lastGeneration.begin(), lastGeneration.end());
     stringstream filename;
-    filename << "ga/" << generations.size() <<".txt";
+    filename << dataDir << "/" << generations.size() <<".txt";
     saveGeneration( lastGeneration, filename.str() );
     generations.push_back( newGeneration(lastGeneration) );
     return generations.back().front();

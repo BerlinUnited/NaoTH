@@ -60,6 +60,8 @@ private:
   void saveGeneration(const std::vector<Individual>& gen, const std::string& file);
 
 protected:
+  std::string dataDir;
+
   size_t parentsNum;
   size_t population;
   size_t surviveNum;
