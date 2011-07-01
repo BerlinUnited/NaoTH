@@ -69,7 +69,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.enableStaticStabilizer) = true;
 
 
-  loadFromConfig();
+  syncWithConfig();
 
   DebugParameterList::getInstance().add(this);
 }

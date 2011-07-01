@@ -103,7 +103,7 @@ void CameraInfoParameter::setCameraTrans()
 
 void CameraInfoParameter::init()
 {
-  loadFromConfig();
+  syncWithConfig();
   setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
   setCameraTrans();
 }//end CameraInfoParameter::init

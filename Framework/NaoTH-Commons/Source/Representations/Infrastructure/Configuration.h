@@ -59,6 +59,7 @@ namespace naoth
     std::string getString(const std::string& group, const std::string& key) const;
 
     void setString(const std::string& group, const std::string& key, const std::string& value);
+    void setDefault(const std::string& group, const std::string& key, const std::string& value);
 
     /**
      * Get a double value from the configuration
@@ -69,6 +70,7 @@ namespace naoth
     double getDouble(const std::string& group, const std::string& key) const;
 
     void setDouble(const std::string& group, const std::string& key, double value);
+    void setDefault(const std::string& group, const std::string& key, double value);
 
     /**
      * Get an integer value from the configuration
@@ -79,6 +81,7 @@ namespace naoth
     int getInt(const std::string& group, const std::string& key) const;
 
     void setInt(const std::string& group, const std::string& key, int value);
+    void setDefault(const std::string& group, const std::string& key, int value);
 
     /**
      * Get a bool value from the configuration
@@ -89,6 +92,7 @@ namespace naoth
     bool getBool(const std::string& group, const std::string& key) const;
 
     void setBool(const std::string& group, const std::string& key, bool value);
+    void setDefault(const std::string& group, const std::string& key, bool value);
 
     /**
      * Get a raw and uninterpretated string from the configuration

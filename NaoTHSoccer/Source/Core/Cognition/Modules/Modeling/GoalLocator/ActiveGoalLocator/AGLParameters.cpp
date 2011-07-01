@@ -27,7 +27,7 @@ AGLParameters::AGLParameters()
   PARAMETER_REGISTER(resamplingThreshhold) = 0.99;
 
   // load from the file after registering all parameters
-  loadFromConfig();
+  syncWithConfig();
 
   DebugParameterList::getInstance().add(this);
 }

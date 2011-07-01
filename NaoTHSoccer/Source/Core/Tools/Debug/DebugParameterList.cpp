@@ -47,17 +47,13 @@ void DebugParameterList::executeDebugCommand(
           config.setRawValue(name, iter->first, iter->second);
       }
       config.save();
-      // load from the changed config
-      (*itParamList)->loadFromConfig();
+      (*itParamList)->syncWithConfig();
 
       // always success
       outstream<<"set " << name << " successfully"<< std::endl;
     }
     else if (command == cmd + ":get")
     {
-      // synchronize the config with the current state of the parameter list
-      (*itParamList)->saveToConfig();
-
       set<string> keys = config.getKeys(name);
       for(set<string>::const_iterator it = keys.begin(); it != keys.end(); it++)
       {

@@ -27,7 +27,7 @@ public:
   // change some key characters, e.g. []
   std::string covertName(std::string name);
 
-  void loadFromConfig();
+  void syncWithConfig();
   void saveToConfig();
 
   const std::string& getName() const { return parentClassName; }
