@@ -1,0 +1,111 @@
+// go to the ball and kick if there is no abstacle then go back into goal looking to opp goal
+option clear_ball_far_away{
+  initial state approach_ball{
+    decision {
+     if (action_done) {
+       goto clear_ball;
+     } else 
+        stay;
+    }
+    action{
+      approach_ball_with_correct_foot(dist=180-20*random);
+    }
+  }
+
+  //TODO if obstacle -> block, else clear kick
+  //attack.direction > -75 && attack.direction < 75 is constraint by approach ball
+  state clear_ball {
+    decision{
+      if(obstacle.visual.was_seen){
+        goto block_attacker;
+      }else{
+        goto prepare_kick;
+      } 
+    }
+    action{
+      head.control_mode = search_for_ball_force_model;
+      motion.type =stand;
+    }
+  }
+
+  state prepare_kick
+  {
+    decision
+    {
+      if(state_time > 2000)
+      {
+        if(abs(value = ball.right_foot.x) < 200 && abs(value = ball.right_foot.y) < 20)
+          goto do_kick_right;
+        else if(abs(value = ball.left_foot.x) < 200 && abs(value = ball.left_foot.y) < 20)
+          goto do_kick_left;
+        else
+          goto approach_ball;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  state do_kick_right
+  {
+    decision
+    {
+      if(action_done)
+        goto finished_clear_ball;
+      else
+        stay;
+    }
+    action
+    {
+      kick_ball_with_foot(direction = -5, right = true);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state do_kick_left
+  {
+    decision
+    {
+      if(action_done)
+        goto finished_clear_ball;
+      else
+        stay;
+    }
+    action
+    {
+      kick_ball_with_foot(direction = 5, right = false);
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  target state finished_clear_ball{
+    decision{
+      stay;
+    }
+    action{
+      motion.type = stand;
+      head.control_mode = look_around;
+    }
+  }
+
+  state block_attacker
+  {
+    decision
+    {
+      if (!obstacle.visual.was_seen) {
+        goto prepare_kick;
+      } else
+        stay;
+    }
+       action {
+         motion.type = block_middle; //make a wider stand
+         head.control_mode = search_for_ball;
+       }
+  }
+  
+}

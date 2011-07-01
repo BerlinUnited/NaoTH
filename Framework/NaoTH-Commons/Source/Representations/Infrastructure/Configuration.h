@@ -82,6 +82,7 @@ namespace naoth
 
     void setInt(const std::string& group, const std::string& key, int value);
     void setDefault(const std::string& group, const std::string& key, int value);
+    void setDefault(const std::string& group, const std::string& key, unsigned int value);
 
     /**
      * Get a bool value from the configuration

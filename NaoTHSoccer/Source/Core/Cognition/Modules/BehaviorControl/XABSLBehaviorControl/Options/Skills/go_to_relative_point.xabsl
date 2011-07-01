@@ -1,0 +1,50 @@
+/** goto relative point */
+option go_to_relative_point
+{
+  /**  */
+  float @rotation [deg];
+
+  /**  */
+  float @x [mm];
+
+  /**  */
+  float @y [mm];
+
+
+  target state stand
+  {
+    decision
+    {
+      if ( abs(value= @x) > 40
+        || abs(value= @y) > 40
+        || abs(value= @rotation) > 20)
+                          
+      {
+          goto go_to;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+
+  initial state go_to {
+    decision{
+      if ( abs(value= @x) < 30
+        && abs(value= @y) < 30
+        && abs(value= @rotation) < 15)
+        goto stand;
+      else
+        stay;
+    }
+    action{
+      motion.type = walk;
+      motion.walk_speed.x = (abs(value=@x) < 300 && 0.5*@x > 20)?0.5*@x:@x;
+      motion.walk_speed.y = (abs(value=@y) < 300 && 0.5*@y > 20)?0.5*@y:@y;
+      motion.walk_speed.rot = (abs(value=@rotation) < 30  && 0.5*@rotation > 5)?0.5*@rotation:@rotation;
+    }
+  }
+}

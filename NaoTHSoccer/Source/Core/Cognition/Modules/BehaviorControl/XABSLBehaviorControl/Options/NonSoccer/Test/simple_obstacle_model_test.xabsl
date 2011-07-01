@@ -1,0 +1,64 @@
+option simple_obstacle_model_test
+{
+  common decision
+  {
+    /*if (obstacle.radial.passageway_free(deg1=-45, deg2=45) > 300)
+      goto walk;
+    else if (obstacle.radial.obstacle_left > 300)
+      goto turn_left;
+    else if (obstacle.radial.obstacle_right > 300)
+      goto turn_right;
+    else*/ if(true)
+      goto stand;
+  }
+  
+  initial state walk
+  {
+    action
+    {
+      // walk straightforward
+      motion.type = walk;
+      motion.walk_speed.x = robot_pose.x + 200;
+      motion.walk_speed.y = robot_pose.y;
+      motion.walk_speed.rot = robot_pose.rotation;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+    }
+  }
+
+  state turn_left
+  {
+    action
+    {
+      // turn left to avoid object
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = (robot_pose.rotation+90);
+    }
+  }
+
+  state turn_right
+  {
+    action
+    {
+      // turn right to avoid object
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = (robot_pose.rotation-90);
+    }
+  }
+
+  state stand
+  {
+    action
+    {
+      // stand
+      motion.type = stand;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+}

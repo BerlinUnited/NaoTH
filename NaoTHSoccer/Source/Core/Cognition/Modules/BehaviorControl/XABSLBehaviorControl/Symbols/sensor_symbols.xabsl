@@ -1,0 +1,64 @@
+/** Symbols for accessing sensors*/
+namespace sensor("Sensor Symbols") {
+  
+  /** Gyrometer X */
+  float input sensor.gyro.x;
+
+  /** Gyrometer Y */
+  float input sensor.gyro.y;
+
+  /** Inertial X */
+  float input sensor.inertial.x;
+
+  /** Inertial Y */
+  float input sensor.inertial.y;
+
+  /** Calibrate inertial sensor */
+  bool output sensor.inertial.calibrate;
+
+  bool internal need_calibrate;
+
+  /** The ids of the states */
+  enum fall_down_state {
+    undefined, 
+    upright, 
+    lying_on_front, 
+    lying_on_back,
+    lying_on_left_side,
+    lying_on_right_side
+  };
+
+  /** 
+    Fall-Down-State of the robot.
+    The value is calculated based on the <b>inertial</b> sensor; 
+  */
+  enum fall_down_state input fall_down_state;
+
+  /** Ultrasound distance sensor */
+  float input sensor.ultrasound;
+  float input sensor.ultrasound.left;
+  float input sensor.ultrasound.right;
+
+  /** use the obstacle model (buffer) */
+  float input obstacle.ultrasound.time_since_seen;
+  float input obstacle.ultrasound.distance;
+
+  /** ... */
+  bool input obstacle.visual.was_seen;
+  float input obstacle.visual.x;
+  float input obstacle.visual.y;
+  
+  /** number of the button pressed on a remote control*/
+  float input button.remote;
+
+  /** The current battery charge  */
+  float input platform.battery;
+
+  /** The current frame number (Cognition) */
+  float input platform.frameNumber;
+
+  /** the count indicates failed buffer of camera */
+  float input sensor.camera.buffer_failed_count;
+  bool output sensor.camera.reset;
+}
+  

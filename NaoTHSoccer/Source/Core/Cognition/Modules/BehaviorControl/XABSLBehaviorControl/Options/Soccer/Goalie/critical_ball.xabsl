@@ -1,0 +1,155 @@
+/** clear the ball */
+
+option critical_ball {
+
+ common decision
+  {
+    //ball far away => not critical
+    //use teamball! (locator.field_to_relative.x ball.team.position < 2000  && ball.team.time_since_last_update < 2000)
+    if (executed_motion.type == goalie_dive_right_test 
+          || executed_motion.type == goalie_dive_left_test)
+          //|| executed_motion.type == block_middle)
+      goto wait;             //2000
+    else if((ball.distance > 5000 || ball.time_since_last_seen > 2000) && executed_motion.type != block_middle)
+      goto not_critical;
+  }
+
+  state blockBall {
+    decision {
+     else if(state_time > 7000)
+     {
+       goto not_critical;
+     } else 
+        stay;
+     } 
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = block_middle;
+    }
+
+  }
+
+  state diveLeft {
+    decision {
+      else if (executed_motion.type == goalie_dive_left_test)
+        goto wait;
+      else 
+        stay;
+    }
+    action {
+      motion.execute_immediately = true;
+      motion.type = goalie_dive_left_test;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state diveRight {
+    decision {
+      else if (executed_motion.type == goalie_dive_right_test)
+        goto wait;
+      else 
+        stay;
+    }
+    action {
+      motion.execute_immediately = true;
+      motion.type = goalie_dive_right_test;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state wait {
+    decision {
+      else if (executed_motion.type != goalie_dive_right_test 
+          && executed_motion.type != goalie_dive_left_test
+          && executed_motion.type != block_middle)
+        goto not_critical;
+      else 
+        stay;
+    }
+    action {
+      motion.execute_immediately = false;
+      motion.type = stand;
+      //do noTHING
+    }
+  }
+
+initial state make_ready {
+  decision {
+    else if (state_time > 3000)
+      goto critical_ball;
+    else 
+      stay;
+
+  }
+  action {
+    motion.type = stand;
+    motion.standHeight = 210;
+    head.control_mode = search_for_ball;
+
+  }
+
+}
+
+state critical_ball {
+  decision {//state_time, da ansonsten ball gesehen (aufstehen) aber nicht fixiert                                                                                                     //15
+     //else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.speed > 10 && abs(value=motion.head.yaw) < 10 && motion.head.pitch > -30) {
+     //  goto blockBall; //diese abfrage in common auslagern!
+     //}
+     //else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.speed > 40 && abs(value=motion.head.yaw) < 30 && motion.head.pitch > -10) {
+     //  goto blockBall; //diese abfrage in common auslagern!
+     //}
+     else //if (state_time > 1000 && ball.time_seen > 1000 && motion.head.yaw > 8 && motion.head.pitch > -28 && motion.head.speed > 40)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
+       goto diveLeft;
+     //else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.yaw < -8 && motion.head.pitch > -28 && motion.head.speed > 40)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
+     //  goto diveRight;  
+     //else if (abs(value=ball.angle) > 21) { //20 degree caused by go_to_relative_point(rotation=ball.angle, x=0, y=0); in rotate____
+     //  goto rotate_to_critical_ball;
+     //}
+     //else {
+     //   stay;
+     //}
+  }
+  action {
+    motion.type = stand;
+    motion.standHeight = 210;
+    //head.control_mode = search_for_ball;
+    head.control_mode = none;
+    head.motion_type = look_at_world_point;
+    head.point_in_world.x = ball.percept.x;
+    head.point_in_world.y = ball.percept.y;
+    head.point_in_world.z = ball.radius; // radius of the ball
+  }
+
+}
+
+state rotate_to_critical_ball {
+  decision {
+     else if (action_done || !ball.was_seen) {
+       goto critical_ball;
+     } else {
+        stay;
+     }
+  }
+  action {
+    head.control_mode = search_for_ball_force_model;
+    //TODO: preview
+    go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0);
+  }
+}
+
+target state not_critical {
+  decision {
+    else if (state_time > 1000 && ball.was_seen && ball.distance < 5000) {//2000
+      goto critical_ball;
+    }
+    else {
+      stay;
+    }
+  }
+  action {
+    motion.type = stand;
+    head.control_mode = look_around;
+  }
+}
+
+}

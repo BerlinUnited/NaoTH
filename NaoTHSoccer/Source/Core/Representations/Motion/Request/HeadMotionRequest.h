@@ -66,18 +66,24 @@ public:
 
   Vector2<double> targetPointInImage;
   Vector3<double> targetPointInTheWorld;
-//  Vector2<double> targetPointOnTheGround;
+  Vector2<double> targetPointOnTheGround;
 
   // parameters for head search motion
   Vector3<double> searchCenter;
   Vector3<double> searchSize;
   bool searchDirection;
 
-  string getName() const;
+
+  /** return the name of the motion id */
+  static std::string getName(HeadMotionID id);
+
+  /** return the head motion id reprented by the name */
+  static HeadMotionID getId(const std::string& name);
+
 
   virtual void print(ostream& stream) const
   {
-    stream << "Current MotionRequest = " << getName() << endl;
+    stream << "Current MotionRequest = " << getName(id) << endl;
   }//end print
 };
 

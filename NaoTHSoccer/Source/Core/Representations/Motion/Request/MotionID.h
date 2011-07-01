@@ -29,29 +29,31 @@ namespace motion
     dance,
     protect_falling,
     //SIT_STABLE,
+    
+
     /* motion net */
     stand_up_from_front,
     stand_up_from_back,
-    /*BLOCK_LEFT,
-    BLOCK_RIGHT,
-    BLOCK_MIDDLE,
-
+    
+    block_middle,
     goalie_get_down,
     goalie_sit,
-    goalie_get_up,
+    goalie_sit_small,
 
     goalie_get_fast_down,
-    goalie_sit_small,
-    goalie_get_fast_up,
-
-    goalie_dive_left,
-    goalie_dive_right,
-
-    goalie_dive_left_test,
-    goalie_dive_right_test,
 
     fall_left,
-    fall_right,*/
+    fall_right,
+
+    kick_right,
+
+    goalie_dive_right_test,
+    goalie_dive_left_test,
+    goalie_sit_block,
+    goalie_sit_n_dive_left,
+    goalie_sit_n_dive_right,
+    goalie_sit_n_dive_left_test,
+    goalie_sit_n_dive_right_test,
 
     num_of_motions //error value
   };
@@ -73,50 +75,27 @@ namespace motion
       
       case stand_up_from_front: return "stand_up_from_front";
       case stand_up_from_back: return "stand_up_from_back";
-      /*case check_reactivity: return "check_reactivity";
-
-//      case pre_grasping:    return "pre_grasping";
-      case grasp: return "grasping";
-
       
-      case block_left: return "block_left";
-      case block_right: return "block_right";
       case block_middle: return "block_middle";
-      case evolution_motion: return "evolution_motion"; //(Martin)
-
-      case goto_pose_directly: return "goto_pose_directly";
-      case force_joints: return "force_joints";
-      case test: return "test";
-      case play_editor_motionnet: return "play_editor_motionnet";
-      case knead_mode: return "knead_mode";
-      case reachability_grid_experiment: return "reachability_grid_experiment";
-
       case goalie_get_down: return "goalie_get_down";
       case goalie_sit: return "goalie_sit";
-      case goalie_get_up: return "goalie_get_up";
+      case goalie_sit_small: return "goalie_sit_small";
 
       case goalie_get_fast_down: return "goalie_get_fast_down";
-      case goalie_sit_small: return "goalie_sit_small";
-      case goalie_get_fast_up: return "goalie_get_fast_up";
-
-      case goalie_dive_left: return "goalie_dive_left";
-      case goalie_dive_right: return "goalie_dive_right";
-
-      case goalie_dive_left_test: return "goalie_dive_left_test";
-      case goalie_dive_right_test: return "goalie_dive_right_test";
 
       case fall_left: return "fall_left";
       case fall_right: return "fall_right";
 
-      case sit_stable: return "sit_stable";
+      case kick_right: return "kick_right";
 
-      case parallel_dance: return "parallel_dance";
-      case parallel_stepper: return "parallel_stepper";
-      case sensor_stepper: return "sensor_stepper";
+      case goalie_dive_right_test: return "goalie_dive_right_test";
+      case goalie_dive_left_test: return "goalie_dive_left_test";
+      case goalie_sit_block: return "goalie_sit_block";
+      case goalie_sit_n_dive_left: return "goalie_sit_n_dive_left";
+      case goalie_sit_n_dive_right: return "goalie_sit_n_dive_right";
+      case goalie_sit_n_dive_left_test: return "goalie_sit_n_dive_left_test";
+      case goalie_sit_n_dive_right_test: return "goalie_sit_n_dive_right_test";
 
-      case neural_walk: return "neural_walk";
-
-      case kick_right: return "kick_right";*/
       case num_of_motions: return "num_of_motion";
     }///end switch
 

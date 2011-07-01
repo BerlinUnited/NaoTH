@@ -1,0 +1,93 @@
+/** This is the "main" file for passing challenge */
+
+option passing_challenge_set_penalized_play
+{
+  common decision {
+    if (game.state == _initial_)
+      goto _initial;
+    else if (game.state == ready)
+      goto ready;
+    else if (game.state == set)
+      goto set;
+    else if (game.state == penalized)
+      goto penalized;
+    else if (game.state == finished)
+      goto finished;
+    else if(game.state == playing)
+      goto playing;
+    else if(game.state == unknown)
+      goto dont_know_what_to_do;
+  }
+    
+  initial state _initial {
+    action
+    {
+      last_state_was_penalized = false;
+      head.control_mode = stay_as_forced;
+      motion.type = init;
+    }
+  }
+  
+  state ready {
+    action
+    {
+      last_state_was_penalized = false;
+      // todo: goto position
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+  
+  state set {
+    action
+    {
+      last_state_was_penalized = false;
+      special_kickoff_done = false;
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+  
+  
+  state playing {
+    action 
+    {
+      sound.request = (state_time == 0)  ? playing : off;
+      passing_play_with_check_fall_down();
+      last_state_was_penalized = false;
+    }
+  }
+
+  state penalized {
+    action
+    {
+      last_state_was_penalized = true;
+      sound.request = (state_time == 0) ? penalized : off;
+      head.control_mode = stay_as_forced;
+      motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
+
+      set_left_eye=red;
+      set_right_eye=red;
+
+      ball_was_outside_circle = true;
+    }
+  }
+  
+  state finished {
+    action
+    {
+      last_state_was_penalized = false;
+      head.control_mode = stay_as_forced;
+      motion.type = stand;
+    }
+  }
+
+  state dont_know_what_to_do {
+    action
+    {
+      last_state_was_penalized = false;
+      head.control_mode = stay_as_forced;
+      motion.type = stand;
+    }
+  }
+}

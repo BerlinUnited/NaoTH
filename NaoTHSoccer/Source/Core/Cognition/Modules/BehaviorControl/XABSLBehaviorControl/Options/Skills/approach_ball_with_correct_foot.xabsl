@@ -1,0 +1,151 @@
+/**  */
+option approach_ball_with_correct_foot {
+
+ float @dist [mm];
+
+ initial state approach_ball 
+ {
+   decision
+   {
+     if(abs(value=attack.direction) < 70) // no turn needed
+     {
+       if(attack.direction > 0) //attack.approaching_with_right_foot)
+         goto approach_ball_right;
+       else
+         goto approach_ball_left;
+     }else // need to turn around ball
+     {
+       if(attack.direction > 0) //attack.approaching_with_right_foot)
+         goto approach_ball_left;
+       else
+         goto approach_ball_right;
+     }
+   }
+   action 
+   { 
+   }
+  }
+
+  state approach_ball_right 
+  {
+    decision 
+    {
+	    if(action_done)
+	      goto approach_ball_right_finished;
+      /*else if(obstacle.ultrasound.distance < 350)
+      {
+        if(ball.y > 0)
+          goto avoid_abstacle_left;
+        else
+          goto avoid_abstacle_right;
+      }*/
+	    else
+	      stay;
+    }
+    action {
+      go_to_ball_cool(distance = @dist, right_foot=true);
+    }
+  }
+
+  state approach_ball_left
+  {
+    decision 
+    {
+	    if(action_done)
+	      goto approach_ball_left_finished;
+      /*else if(obstacle.ultrasound.distance < 350)
+      {
+        if(ball.y > 0)
+          goto avoid_abstacle_left;
+        else
+          goto avoid_abstacle_right;
+      }*/
+	    else
+	      stay;
+    }
+    action 
+    {
+      go_to_ball_cool(distance = @dist, right_foot=false);
+    }
+  }
+
+  state avoid_abstacle_right
+  {
+    decision 
+    {
+      if(obstacle.ultrasound.distance > 380)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      //go_to_ball_omni(distance = @dist, right_foot=false);
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -60;
+      motion.walk_speed.rot = 0;
+      motion.walk.coordinate = right_foot;
+      motion.walk.stop_with_stand = true;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state avoid_abstacle_left
+  {
+    decision 
+    {
+      if(obstacle.ultrasound.distance > 380)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      //go_to_ball_omni(distance = @dist, right_foot=false);
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 60;
+      motion.walk_speed.rot = 0;
+      motion.walk.coordinate = right_foot;
+      motion.walk.stop_with_stand = true;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  target state approach_ball_right_finished 
+  {
+    decision 
+    {
+      if(!action_done)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action {
+      go_to_ball_cool(distance = @dist, right_foot=true);
+
+      // hack
+      motion.type = stand;
+    }
+  }
+
+  target state approach_ball_left_finished
+  {
+    decision 
+    {
+      if(!action_done)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_ball_cool(distance = @dist, right_foot=false);
+
+      // hack
+      motion.type = stand;
+    }
+  }
+
+}

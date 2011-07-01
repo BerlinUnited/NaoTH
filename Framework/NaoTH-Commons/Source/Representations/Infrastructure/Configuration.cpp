@@ -9,6 +9,7 @@
 
 #include "Configuration.h"
 #include "Tools/DataConversion.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 #include <iostream>
 #include <fstream>
@@ -304,6 +305,14 @@ void Configuration::setInt(const std::string& group, const std::string& key, int
 void Configuration::setDefault(const std::string& group, const std::string& key, int value)
 {
   g_key_file_set_integer(publicKeyFile, group.c_str(), key.c_str(), value);
+}
+
+void Configuration::setDefault(const std::string& group, const std::string& key, unsigned int value)
+{
+  // todo check it!
+  int tmp = (int)value;
+  ASSERT(tmp > 0);
+  g_key_file_set_integer(publicKeyFile, group.c_str(), key.c_str(), tmp);
 }
 
 double Configuration::getDouble(const std::string& group, const std::string& key) const

@@ -1,0 +1,49 @@
+option getup_demo
+{ 
+  initial state dead
+  {
+    decision
+    {
+      if(button.remote == 1)
+       goto getup;
+      else 
+        stay;
+    }
+    action
+    {
+      motion.type = dead;
+    }
+  }
+
+  state getup
+  {
+    decision
+    {
+      if(executed_motion.type == standup && state_time > 3000)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = standup;
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      if(button.remote == 0)
+       goto dead;
+      else 
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+
+  
+}

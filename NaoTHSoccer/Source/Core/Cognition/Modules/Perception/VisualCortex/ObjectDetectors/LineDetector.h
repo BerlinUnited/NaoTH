@@ -28,6 +28,7 @@
 #include "Tools/ImageProcessing/Edgel.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
 
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Infrastructure/CameraSettings.h"
@@ -47,6 +48,7 @@ BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(ColoredGrid)
   REQUIRE(FieldInfo)
   REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(FrameInfo)
 
   PROVIDE(LinePercept)
   PROVIDE(ObjectPercept)

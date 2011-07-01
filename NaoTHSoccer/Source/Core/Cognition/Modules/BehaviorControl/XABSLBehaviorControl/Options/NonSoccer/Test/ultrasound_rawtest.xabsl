@@ -1,0 +1,52 @@
+option ultrasound_rawtest
+{
+  common decision
+  {
+    if ((sensor.ultrasound > 0.2 && sensor.ultrasound < 1)) //  || game.state != playing
+      goto obstacle_seen;
+    else if (true)
+      goto no_obstacle;
+  }
+  
+  initial state no_obstacle
+  {
+    action
+    {
+      // walk straightforward
+      motion.type = walk;
+      motion.walk_speed.x = robot_pose.x + 200;
+      motion.walk_speed.y = robot_pose.y;
+      motion.walk_speed.rot = robot_pose.rotation;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+      // TODO: test whether it is the correct movement
+      
+      // test without walking
+      /*motion.type = stand;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;*/
+    }
+  }
+
+  state obstacle_seen
+  {
+    action
+    {
+      // walk to the right
+      /*motion.type = walk;
+      motion.walk_speed.x = robot_pose.x;
+      motion.walk_speed.y = robot_pose.y - 200;
+      motion.walk_speed.rot = robot_pose.rotation;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;*/
+      // TODO: test whether it is the correct movement
+      
+      // rotate to avoid object
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = (robot_pose.rotation+90);
+    }
+  }
+}

@@ -1,0 +1,14 @@
+/** go to the strategy position */
+option go_to_strategy_position {
+
+  initial target state go_to_strategy_position {
+    decision {
+      stay;
+    }
+    action {
+      // go to formation position and face to ball
+      go_to_point(x=soccer_strategy.formation.x, y=soccer_strategy.formation.y,
+        rot=atan2(y=ball.position.field.y-robot_pose.planned.y, x=ball.position.field.x-robot_pose.planned.x));
+    }
+  }
+}

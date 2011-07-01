@@ -1,0 +1,47 @@
+/** The root option of the soccer behavio
+    for RoboCup simulation league 3D
+*/
+
+option sim_play_soccer {
+
+  initial state initmotion {
+    decision {
+      if(state_time > 3000)
+        goto stand;
+      else
+        stay;
+    }
+    action { 
+      motion.type = init;
+    }
+  }
+
+  state stand {
+    decision {
+      if(state_time > 2000)
+        goto play_soccer;
+      else
+        stay;
+    }
+    action { 
+      motion.type = stand;
+    }
+  }
+
+  state play_soccer {
+    decision {
+      stay;
+    }
+    action {
+      // make here some initializations
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+      motion.plan.avoid_obstacle = false;
+
+      sim_play_game_mode(); 
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}

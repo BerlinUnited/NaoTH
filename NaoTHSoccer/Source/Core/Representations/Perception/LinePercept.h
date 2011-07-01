@@ -17,6 +17,7 @@
 
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 
 class LinePercept : public naoth::Printable//, public naoth::Streamable
@@ -318,6 +319,18 @@ public:
   Vector2<double> middleCircleCenter;
   bool middleCircleOrientationWasSeen;
   Vector2<double> middleCircleOrientation;
+
+
+  // representationc for the closest line
+  double closestLineSeenLength;
+  Vector2<double> closestPoint;
+  Vector2<double> estOrthPointOfClosestLine;
+  Vector2<double> closestPointOfClosestLine;
+
+  // a line was seen
+  bool lineWasSeen;
+  naoth::FrameInfo frameInfoWhenLineWasSeen;
+
 
   LinePercept()
   {

@@ -1,0 +1,38 @@
+option spl_robust_outside_goalie{
+
+/* test */
+
+	initial state go_to_strategy_point
+	{
+	     decision 
+	     {
+         if (ball.distance < 200 && ball.time_since_last_seen < 1000) 
+         {
+           goto clear_ball;
+         } else 
+	         stay;
+	     }
+	     action {
+	       go_to_absolute_point(rotation=0, x=-2600, y=0);
+         head.control_mode = smart_search;
+         head.smart_search.rate = 0.5;
+	     }
+	}
+
+  state  clear_ball {   
+   decision {
+       if (action_done 
+           || (ball.distance > 300 && ball.time_since_last_seen < 1000)
+           || (ball.time_since_last_seen > 2000)) 
+       {
+         goto go_to_strategy_point;
+       }
+       else stay;
+     }
+     action {
+       team.is_playing_as_striker = true;
+       clear_ball_far_away();
+     }
+}
+  
+}
