@@ -27,8 +27,12 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   //calculateError();
 
   bool protecting = FSRProtection();
-  if ( protecting && canStop() )
+  if ( protecting && canStop() && !isStopping )
   {
+    if ( !isStopped() )
+    {
+      cout<<"walk stopped because of fsr protecting"<<endl;
+    }
     stepBuffer.clear();
     theEngine.controlZMPclear();
     currentState = motion::stopped;
@@ -372,7 +376,7 @@ void Walk::stopWalking()
     {
       currentState = motion::stopped;
       stepBuffer.clear();
-      cout<<"walk stopped"<<endl;
+      cout<<"walk stopped (standard)"<<endl;
     }
     else
     {
