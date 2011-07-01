@@ -12,6 +12,7 @@
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
+#include <Tools/Debug/DebugRequest.h> // HACK: this is in NaoTH-Soccer!!!
 
 using namespace std;
 
@@ -225,7 +226,8 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   theDebugServer.start(debugPort, true);
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
-  //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
+
+  DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
 
   return true;
 }
@@ -1167,13 +1169,15 @@ void SimSparkController::beam(const Vector3<double>& p)
 void SimSparkController::autoBeam()
 {
 
-  //DEBUG_REQUEST("SimSparkController:beam", beam(););
+  bool beamRequest = false;
+  DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
 
-  if (theGameData.playMode == GameData::goal_own
+  if (beamRequest
+    || theGameData.playMode == GameData::goal_own
     || theGameData.playMode == GameData::goal_opp
     || theGameData.playMode == GameData::before_kick_off)
   {
-    if ( theFrameInfo.getTime() - theGameData.timeWhenPlayModeChanged < 1000 )
+    if ( beamRequest || theFrameInfo.getTime() - theGameData.timeWhenPlayModeChanged < 1000 )
     {
       const Configuration& cfg = Platform::getInstance().theConfiguration;
       string group = "PoseBeforeKickOff";
