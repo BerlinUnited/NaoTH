@@ -67,6 +67,8 @@
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
 
+// Experiment
+#include "Modules/Experiment/Evolution/Evolution.h"
 
 using namespace std;
 
@@ -143,6 +145,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
+
+  // experiment
+  REGISTER_MODULE(Evolution);
 
   // debug
   REGISTER_MODULE(LEDSetter);
