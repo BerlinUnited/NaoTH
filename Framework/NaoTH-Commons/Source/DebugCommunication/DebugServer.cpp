@@ -17,7 +17,8 @@
 #include "DebugServer.h"
 
 DebugServer::DebugServer()
-  : abort(false)
+  : connectionThread(NULL),
+    abort(false)
 {
   m_executing = g_mutex_new();
   m_abort = g_mutex_new();
@@ -32,12 +33,12 @@ DebugServer::DebugServer()
 
 void DebugServer::start(unsigned short port, bool threaded)
 {
-
   comm.init(port);
 
-  connectionThread = NULL;
-  if(g_thread_supported() && threaded)
+  if(threaded)
   {
+    if (!g_thread_supported())
+      g_thread_init(NULL);
 
     GError* err = NULL;
     g_debug("Starting debug server thread");
