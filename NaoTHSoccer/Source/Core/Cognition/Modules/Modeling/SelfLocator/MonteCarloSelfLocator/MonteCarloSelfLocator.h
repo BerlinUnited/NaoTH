@@ -72,7 +72,7 @@ private:
   SampleSet theSampleSet;
 
   //GridClustering gridClustering;
-  CanopyClustering canopyClustering;
+  CanopyClustering<SampleSet> canopyClustering;
 
   void resetSampleSet(SampleSet& sampleSet);
   

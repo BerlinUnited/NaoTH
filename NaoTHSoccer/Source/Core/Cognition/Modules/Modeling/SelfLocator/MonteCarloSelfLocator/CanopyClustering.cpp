@@ -12,13 +12,14 @@
             C-Skills. Needs to be redone, currently only prototype status.
             Technically works, but from a code point of view really ugly */
 
-void CanopyClustering::cluster()
+template<class C>
+void CanopyClustering<C>::cluster()
 {
 
   //vector<CanopyCluster> clusters;
   int numOfClusters = 0;
 
-  for (int j = 0; j < sampleSet.numberOfParticles; j++) 
+  for (unsigned int j = 0; j < sampleSet.size(); j++) 
   {
     sampleSet[j].cluster = -1; // no cluster
 
@@ -45,8 +46,8 @@ void CanopyClustering::cluster()
     else if(numOfClusters < maxNumberOfClusters) 
     {
       // initialize a new cluster
-      clusters[numOfClusters].center = sampleSet[j];
-      clusters[numOfClusters].clusterSum = sampleSet[j].translation;
+      clusters[numOfClusters].center = sampleSet[j].getPos();
+      clusters[numOfClusters].clusterSum = sampleSet[j].getPos();
       clusters[numOfClusters].size = 1;
       sampleSet[j].cluster = numOfClusters;
       numOfClusters++;
@@ -64,7 +65,7 @@ void CanopyClustering::cluster()
         continue;
       }
       // merge the clusters k and j
-      if((clusters[k].center.translation - clusters[j].center.translation).abs() < 500) 
+      if((clusters[k].center - clusters[j].center).abs() < 500) 
       {
         clusters[k].size += clusters[j].size;
         clusters[j].size = 0;
@@ -72,8 +73,8 @@ void CanopyClustering::cluster()
         //the merge will be more accurate, but it is not that important because we only
         //merge close clusters, so the error is small
         //remove in case of performance issues:
-        clusters[k].center.translation = (clusters[k].center.translation + clusters[j].center.translation) * 0.5;
-        for (int i = 0; i < sampleSet.numberOfParticles; i++)
+        clusters[k].center = (clusters[k].center + clusters[j].center) * 0.5;
+        for (unsigned int i = 0; i < sampleSet.size(); i++)
         {
           if(sampleSet[i].cluster == j) {
               sampleSet[i].cluster = k;
@@ -85,14 +86,15 @@ void CanopyClustering::cluster()
 }//end cluster
 
 
-int CanopyClustering::getClusterSize(const Vector2<double> start)
+template<class C>
+int CanopyClustering<C>::getClusterSize(const Vector2<double> start)
 {
   CanopyCluster cluster;
-  cluster.center.translation = start;
+  cluster.center = start;
   cluster.clusterSum = start;
   cluster.size = 1;
 
-  for (int j = 0; j < sampleSet.numberOfParticles; j++) 
+  for (unsigned int j = 0; j < sampleSet.size(); j++) 
   {
     sampleSet[j].cluster = -1;
     if(isInCluster(cluster, sampleSet[j]))
@@ -105,33 +107,37 @@ int CanopyClustering::getClusterSize(const Vector2<double> start)
   return (int)cluster.size;
 }//end getClusteSize
 
-bool CanopyClustering::isInCluster(const CanopyCluster& cluster, const Sample& sample) const
+template<class C>
+bool CanopyClustering<C>::isInCluster(const CanopyCluster& cluster, const Sample2D& sample) const
 {
   return cluster.distance(sample) < parameters.thresholdCanopy;
 }//end isInCluster
 
-
-void CanopyClustering::CanopyCluster::add(const Sample& sample) 
+template<class C>
+void CanopyClustering<C>::CanopyCluster::add(const Sample2D& sample) 
 {
   size++;
-  clusterSum += sample.translation;
-  center.translation = (clusterSum / size);
+  clusterSum += sample.getPos();
+  center = (clusterSum / size);
 }//end add
 
 // TODO: make it switchable
-double CanopyClustering::CanopyCluster::distance(const Sample& sample) const
+template<class C>
+double CanopyClustering<C>::CanopyCluster::distance(const Sample2D& sample) const
 {
   return euclideanDistance(sample);
   //return manhattanDistance(sample);
 }//end distance
 
-double CanopyClustering::CanopyCluster::manhattanDistance(const Sample& sample) const
+template<class C>
+double CanopyClustering<C>::CanopyCluster::manhattanDistance(const Sample2D& sample) const
 {
-  return std::fabs(center.translation.x - sample.translation.x)
-       + std::fabs(center.translation.y - sample.translation.y);
+  return std::fabs(center.x - sample.getPos().x)
+       + std::fabs(center.y - sample.getPos().y);
 }//end manhattanDistance
 
-double CanopyClustering::CanopyCluster::euclideanDistance(const Sample& sample) const
+template<class C>
+double CanopyClustering<C>::CanopyCluster::euclideanDistance(const Sample2D& sample) const
 {
-  return (center.translation - sample.translation).abs();
+  return (center - sample.getPos()).abs();
 }//end euclideanDistance

@@ -55,6 +55,8 @@ public:
    */
   Sample& operator[](int index) {return samples[index];}
 
+  unsigned int size() const { return numberOfParticles; }
+
   /**
    * Constant access operator.
    * @param index The index of the sample to access.

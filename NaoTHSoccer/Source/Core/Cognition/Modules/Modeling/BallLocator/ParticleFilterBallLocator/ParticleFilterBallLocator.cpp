@@ -37,7 +37,26 @@ void ParticleFilterBallLocator::execute()
   // ...
 
   updateByBallPercept(theSampleSet);
+
+
+  // calculate the model
+  if(!theSampleSet.empty())
+  {
+    Vector2<double> mean;
+    for (unsigned int i = 0; i < theSampleSet.size(); i++)
+    { 
+      mean += theSampleSet[i].position;
+    }//end for
+    mean /= theSampleSet.size();
+
+    getBallModel().ballWasSeen = getBallPercept().ballWasSeen;
+    getBallModel().position = mean;
+    getBallModel().valid = true;
+
+    updatePreviewModel();
+  }//end if
   
+
   DEBUG_REQUEST("ParticleFilterBallLocator:draw_ball_on_field", drawBallModel(getBallModel()); );
   DEBUG_REQUEST("ParticleFilterBallLocator:draw_samples", drawSamples(theSampleSet); );
 }//end execute
@@ -176,6 +195,23 @@ inline double ParticleFilterBallLocator::computeDistanceWeighting(
   double angleDif = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
   return Math::gaussianProbability(angleDif, standardDeviation) / bestPossibleWeighting;
 }//end computeDistanceWeighting
+
+
+void ParticleFilterBallLocator::updatePreviewModel()
+{
+  const Pose3D& lFoot = getKinematicChain().theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = getKinematicChain().theLinks[KinematicChain::RFoot].M;
+  
+  Pose2D lFootPose(lFoot.rotation.getZAngle(), lFoot.translation.x, lFoot.translation.y);
+  Pose2D rFootPose(rFoot.rotation.getZAngle(), rFoot.translation.x, rFoot.translation.y);
+
+  Vector2<double> ballLeftFoot  = lFootPose/getBallModel().position;
+  Vector2<double> ballRightFoot = rFootPose/getBallModel().position;
+
+  getBallModel().positionPreview = getMotionStatus().plannedMotion.hip / getBallModel().position;
+  getBallModel().positionPreviewInLFoot = getMotionStatus().plannedMotion.lFoot / ballLeftFoot;
+  getBallModel().positionPreviewInRFoot = getMotionStatus().plannedMotion.rFoot / ballRightFoot;
+}//end updatePreviewModel
 
 
 void ParticleFilterBallLocator::drawSamples(const SampleSet& sampleSet) const

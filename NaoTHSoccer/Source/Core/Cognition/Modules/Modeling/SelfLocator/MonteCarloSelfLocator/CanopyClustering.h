@@ -16,10 +16,11 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 
+template<class C>
 class CanopyClustering
 {
 public: 
-  CanopyClustering(SampleSet& sampleSet, MCSLParameters& parameters)
+  CanopyClustering(C& sampleSet, MCSLParameters& parameters)
     :
     sampleSet(sampleSet),
     parameters(parameters)
@@ -32,7 +33,7 @@ public:
   int getClusterSize(const Vector2<double> start);
 
 private:
-  SampleSet& sampleSet;
+  C& sampleSet;
   
   class CanopyCluster
   {
@@ -42,17 +43,17 @@ private:
 
     double size;
     Vector2<double> clusterSum;
-    Sample center;
+    Vector2<double> center;
 
-    void add(const Sample& sample);
-    double distance(const Sample& sample) const;
+    void add(const Sample2D& sample);
+    double distance(const Sample2D& sample) const;
   
   private:
-    double manhattanDistance(const Sample& sample) const;
-    double euclideanDistance(const Sample& sample) const;
+    double manhattanDistance(const Sample2D& sample) const;
+    double euclideanDistance(const Sample2D& sample) const;
   };
 
-  bool isInCluster(const CanopyCluster& cluster, const Sample& sample) const;
+  bool isInCluster(const CanopyCluster& cluster, const Sample2D& sample) const;
 
   static const int maxNumberOfClusters = 100;
   CanopyCluster clusters[maxNumberOfClusters];  //FIXME
