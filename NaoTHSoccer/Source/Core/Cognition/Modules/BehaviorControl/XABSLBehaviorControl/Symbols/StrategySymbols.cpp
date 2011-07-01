@@ -335,7 +335,7 @@ bool StrategySymbols::calculateSetPiecePose()
 
   // check who is alive
   std::vector<Vector2<double> > playersPoints;
-  std::vector<int> playersPointsNumbers;
+  std::vector<unsigned int> playersPointsNumbers;
   vector<PlayersModel::Player>::const_iterator iter = theInstance->playersModel.teammates.begin();
   for (; iter != theInstance->playersModel.teammates.end(); ++iter)
   {

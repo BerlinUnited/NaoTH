@@ -51,6 +51,7 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
       footEnd.translate(0, theFootOffsetY, 0);
       break;
     }
+  default: ASSERT(false);
   }//end switch
 }
 

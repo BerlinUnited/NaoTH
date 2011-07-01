@@ -119,7 +119,7 @@ void BodyContourProvider::execute()
   lineNumber = 0; 
   
   
-  bool intersect = false;
+  //bool intersect = false;
   // add body contours
   STOPWATCH_START("BodyContourProvider");
   add(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::Torso);

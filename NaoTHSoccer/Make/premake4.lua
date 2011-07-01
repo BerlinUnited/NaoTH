@@ -75,7 +75,7 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
-  
+
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
   configuration {"windows"}
@@ -88,6 +88,7 @@ solution "NaoTHSoccer"
   
   configuration {"linux"}
     buildoptions {"-fPIC"}
+    flags { "ExtraWarnings" }
       
   -- base
   dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"

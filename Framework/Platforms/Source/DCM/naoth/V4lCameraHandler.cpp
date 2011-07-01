@@ -32,9 +32,9 @@ using namespace naoth;
 
 V4lCameraHandler::V4lCameraHandler()
 :
-  fd(-1), buffers(NULL),
-  actMethodIO(Num_of_MethodIO),
   selMethodIO(IO_MMAP),
+  actMethodIO(Num_of_MethodIO),
+  fd(-1), buffers(NULL),
 //  selMethodIO(IO_USERPTR),
 //  selMethodIO(IO_READ),
   n_buffers(0),
@@ -325,7 +325,7 @@ void V4lCameraHandler::initDevice()
     case IO_USERPTR:
       VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
       break;
-
+    default: ASSERT(false);
   }
 
   /* Select video input, video standard and tune here. */
@@ -364,6 +364,7 @@ void V4lCameraHandler::initDevice()
     case IO_USERPTR:
       initUP(fmt.fmt.pix.sizeimage);
       break;
+    default: ASSERT(false);
 	}
   actMethodIO = selMethodIO;
 }
@@ -689,7 +690,7 @@ int V4lCameraHandler::readFrameUP()
     }
     else
     {
-      for (int i = 0; i < n_buffers; ++i)
+      for (unsigned int i = 0; i < n_buffers; ++i)
       {
           cout << i << "usrptr = " << buf.m.userptr << ", bufptr = " << buffers[i].start << ", l = "<< buf.length << " / "<< buffers[i].length << endl;
         if (buf.m.userptr == (unsigned long) buffers[i].start && buf.length == buffers[i].length)
@@ -766,6 +767,7 @@ int V4lCameraHandler::readFrame()
 
     case IO_USERPTR:
       return readFrameUP();
+    default: ASSERT(false);
 	}
   return -1;
 }
@@ -883,6 +885,8 @@ void V4lCameraHandler::uninitDevice()
         free (buffers[i].start);
       }
       break;
+
+    default: ASSERT(false);
 	}
 	free (buffers);
 }

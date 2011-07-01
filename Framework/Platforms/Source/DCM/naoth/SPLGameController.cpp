@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
-#include "Tools/Communication/MacAddr.h"
+#include "Tools/Communication/NetAddr.h"
 
 using namespace naoth;
 
@@ -70,7 +70,7 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
 
-  string broadcastAddr = getBroadcastAddr("wlan0");
+  string broadcastAddr = NetAddr::getBroadcastAddr("wlan0");
   GInetAddress* address = g_inet_address_new_from_string(broadcastAddr.c_str());
   broadcastAddress = g_inet_socket_address_new(address, port);
   g_object_unref(address);

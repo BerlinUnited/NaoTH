@@ -152,7 +152,7 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
 void MonteCarloSelfLocator::updateByPose(SampleSet& sampleSet, Pose2D pose, double sigmaDistance, double sigmaAngle) const
 {
   const double bestPossibleDistanceWeighting = 1.0;
-  const double bestPossibleAngleWeighting = 1.0;
+  //const double bestPossibleAngleWeighting = 1.0;
 
   for (int j = 0; j < sampleSet.numberOfParticles; j++)
   {   
@@ -319,13 +319,13 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
     if(getLinePercept().lines[lp].type == LinePercept::C && getLinePercept().middleCircleWasSeen)
       continue;
 
-    const int centerLine_id = 4; // HACK: see FieldInfo
+    //const int centerLine_id = 4; // HACK: see FieldInfo
     // special treatment for the center line
-    if(getLinePercept().lines[lp].seen_id == LinePercept::center_line)
-    {
+    //if(getLinePercept().lines[lp].seen_id == LinePercept::center_line)
+    //{
       // get the center line
-      const Math::LineSegment& centerLine = getFieldInfo().fieldLinesTable.getLines()[centerLine_id];
-    }//end if
+      //const Math::LineSegment& centerLine = getFieldInfo().fieldLinesTable.getLines()[centerLine_id];
+    //}//end if
 
 
     // TODO: separate class
@@ -590,8 +590,8 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
     {
       const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(i);
 
-      const double seenDistance = seenPost.position.abs();
-      const double seenAngle = seenPost.position.angle();
+      //const double seenDistance = seenPost.position.abs();
+      //const double seenAngle = seenPost.position.angle();
 
       const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
@@ -607,8 +607,8 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
 
 
       //
-      double rand_dist = seenDistance + Math::randomGauss()*500;
-      double rand_angle = Math::pi2 * Math::random() -Math::pi;
+      //double rand_dist = seenDistance + Math::randomGauss()*500;
+      //double rand_angle = Math::pi2 * Math::random() -Math::pi;
 
       if(  true /*on field */)
       {

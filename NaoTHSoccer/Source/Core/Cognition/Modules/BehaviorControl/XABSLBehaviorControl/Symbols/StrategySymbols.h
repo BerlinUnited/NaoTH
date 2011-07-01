@@ -72,6 +72,8 @@ private:
   PlayerInfo const& playerInfo;
   FieldInfo const& fieldInfo;
   LocalGoalModel const& localGoalModel;
+  SoccerStrategy const& soccerStrategy;
+  MotionStatus const& motionStatus;
 
   // calculate the best foot to approach the ball with
   // true if the right foot ich choosen, false else
@@ -107,8 +109,6 @@ private:
   Vector2<double> setpiecePosition;
   double goalKickPlayer;
   bool goalKickPositionLeft;
-  SoccerStrategy const& soccerStrategy;
-  MotionStatus const& motionStatus;
 
   static Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
 

@@ -60,11 +60,11 @@ private:
   TeamMessage const& teamMessage;
   FrameInfo const& frameInfo;
   BallModel const& ballModel;
-  PlayerInfo& playerInfo;
   RobotPose const& robotPose;
   FieldInfo const& fieldInfo;
   BodyState const& bodyState;
   MotionStatus const& motionStatus;
+  PlayerInfo& playerInfo;
 
   static TeamSymbols* theInstance;
   static double getTeamMembersAliveCount();

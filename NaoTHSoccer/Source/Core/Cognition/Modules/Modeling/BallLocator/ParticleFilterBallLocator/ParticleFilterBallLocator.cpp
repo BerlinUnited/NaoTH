@@ -117,7 +117,7 @@ void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
 
   // resample 10% of particles
-  int numberOfPartiklesToResample = (int)(((double)sampleSet.size())*0.1+0.5);
+  //int numberOfPartiklesToResample = (int)(((double)sampleSet.size())*0.1+0.5);
  
   double sum = -Math::random();
   unsigned int count = 0;

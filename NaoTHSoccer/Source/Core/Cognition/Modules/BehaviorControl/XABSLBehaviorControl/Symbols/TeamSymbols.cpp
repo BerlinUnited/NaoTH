@@ -74,7 +74,7 @@ bool TeamSymbols::calculateIfStriker()
     i != tm.data.end(); ++i)
   {
     const TeamMessage::Data& messageData = i->second;
-    const int number = i->first;
+    const unsigned int number = i->first;
 
     // TODO: 100 frames or 100 ms?!
     if((fn - messageData.frameInfo.getFrameNumber()) < 100 && // the message is fresh...
@@ -96,7 +96,7 @@ bool TeamSymbols::calculateIfStriker()
     i != tm.data.end(); ++i)
   {
     const TeamMessage::Data& messageData = i->second;
-    const int number = i->first;
+    const unsigned int number = i->first;
 
     if(number == 1) continue; // goalie is not considered
   
