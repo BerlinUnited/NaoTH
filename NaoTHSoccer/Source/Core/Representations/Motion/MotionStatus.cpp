@@ -23,6 +23,7 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   message.set_currentmotionstate(representation.currentMotionState);
   DataConversion::toMessage(representation.plannedMotion.lFoot, *message.mutable_plannedmotionleftfoot());
   DataConversion::toMessage(representation.plannedMotion.rFoot, *message.mutable_plannedmotionrightfoot());
+  DataConversion::toMessage(representation.plannedMotion.hip, *message.mutable_plannedmotionhip());
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
@@ -40,4 +41,5 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
   representation.currentMotionState = static_cast<motion::State>(message.currentmotionstate());
   DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
   DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
+  DataConversion::fromMessage(message.plannedmotionhip(), representation.plannedMotion.hip);
 }

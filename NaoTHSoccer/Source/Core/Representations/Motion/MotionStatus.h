@@ -56,6 +56,7 @@ public:
     stream << "currentMotion = " << motion::getName(currentMotion) << '\n';
     stream << "currentMotionState = " << motion::getName(currentMotionState) << '\n';
     stream << "plannedMotion: \n";
+    stream << "hip = "<< plannedMotion.hip <<"\n";
     stream << "left foot = "<< plannedMotion.lFoot<<"\n";
     stream << "right foot = "<< plannedMotion.rFoot<<"\n";
   }//end print
