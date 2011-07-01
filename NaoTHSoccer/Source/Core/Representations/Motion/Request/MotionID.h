@@ -109,9 +109,7 @@ namespace motion
   enum State
   {
     running,
-    waiting,
-    stopped,
-    unknow
+    stopped
   };
 
   std::string getName(State state);
