@@ -1,0 +1,32 @@
+/** goto the position between ball and own goal */
+option sim_simple_supporter {
+
+ initial target state go_to_position {
+    decision {
+      //if (state_time > 5000 && goal.opp.time_since_seen > 5000
+      //&& goal.own.time_since_seen > 5000 )
+      //  goto search_goal;
+      //else 
+        stay;
+    }
+    action {
+      go_to_strategy_position();
+      head.control_mode = search_for_ball;
+      motion.plan.avoid_obstacle = true;
+    }
+  }
+
+  state search_goal {
+    decision {
+      if ( ( goal.opp.time_since_seen < 100 || goal.own.time_since_seen < 100)
+        /*&& state_time > 1000*/)
+        goto go_to_position;
+      else
+        stay;
+     }
+     action {
+       search_goal(own=false);
+     }
+   }
+      
+}

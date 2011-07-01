@@ -1,0 +1,91 @@
+/** Scan mode for looking at the goal/searching for the goal */
+option search_goal
+{
+  bool @own;
+
+  initial target state stand
+  {
+    decision
+    {
+    if (@own)
+      goto own;
+    else
+      goto op;
+    }
+    action { }
+   }
+   
+  state op
+  {
+    decision
+    {
+      if (state_time > 3000 && 
+          goal.opp.time_since_seen > 1000)
+        goto turn_op;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state turn_op
+  {
+    decision
+    {
+      if (state_time > 5000 || goal.opp.time_since_seen == 0)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+        head.control_mode = search_for_goal;
+        motion.type = walk;
+        
+        motion.walk_speed.x = 0; // mm
+        motion.walk_speed.y = 0; // mm
+        motion.walk_speed.rot = 45; //deg
+    }
+  }
+
+  state own
+  {
+    decision
+    {
+      if (state_time > 3000 && 
+          goal.own.time_since_seen > 1000)
+        goto turn_own;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state turn_own
+  {
+    decision
+    {
+      if (state_time > 5000 || goal.own.time_since_seen == 0)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+        head.control_mode = search_for_goal;
+        motion.type = walk;
+        
+        motion.walk_speed.x = 0; // mm
+        motion.walk_speed.y = 0; // mm
+        motion.walk_speed.rot = 45; //deg
+    }
+  }
+}

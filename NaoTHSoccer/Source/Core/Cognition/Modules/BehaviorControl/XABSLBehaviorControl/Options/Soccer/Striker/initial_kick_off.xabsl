@@ -1,0 +1,41 @@
+/** fancy kickoff behavior */
+
+option initial_kick_off {
+
+  initial state dribble_out_of_circle
+  {
+    decision
+    {
+      if(ball.position.field.x > (field.centerCircleRadius + 100))
+      {
+        goto outside_circle;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      set_left_eye = red_green;
+      set_right_eye = red_green;
+      dribble(direction=ball.angle);
+    }
+  }
+
+
+  target state outside_circle
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      ball_was_outside_circle = true;
+      motion.type = stand;
+    }
+    
+  }
+  
+}

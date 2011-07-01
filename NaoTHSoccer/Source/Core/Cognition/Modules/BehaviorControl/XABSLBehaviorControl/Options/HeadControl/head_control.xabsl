@@ -1,0 +1,121 @@
+/** The base option for the head control behavior */
+option head_control
+{
+  common decision
+  {
+    if (head.control_mode == none)
+      goto none;
+    else if (head.control_mode == look_straight_ahead)
+      goto look_straight_ahead;
+    else if (head.control_mode == search_for_ball)
+      goto search_for_ball;
+    else if (head.control_mode == search_for_ball_force_model)
+      goto search_for_ball_force_model;
+    else if (head.control_mode == stay_as_forced)
+      goto stay_as_forced;
+    
+    else if (head.control_mode == search_for_own_goal)
+      goto search_for_own_goal;
+    else if (head.control_mode == search_for_opp_goal)
+      goto search_for_opp_goal;
+    else if (head.control_mode == search_for_goal)
+      goto search_for_goal;
+    
+    else if (head.control_mode == look_around)
+      goto look_around;
+    else if (head.control_mode == goalie_look_around)
+      goto goalie_look_around;
+    else if (head.control_mode == smart_search)
+      goto smart_search;
+  }
+
+  initial state none
+  {
+    action
+    {
+    // do nothing
+    }
+  }
+    
+  state look_straight_ahead
+  {
+    action
+    {
+      head.motion_type = look_straight_ahead;
+    }
+  }
+  
+  state search_for_ball
+  {
+    action
+    {
+      search_for_ball(force_ball_model_check = false);
+    }
+  }
+
+  state search_for_ball_force_model
+  {
+    action
+    {
+      search_for_ball(force_ball_model_check = true);
+    }
+  }
+  
+  state search_for_own_goal
+  {
+    action
+    {
+      search_for_goal(own = true, opp = false);
+    }
+  }
+  
+  state search_for_opp_goal
+  {
+    action
+    {
+      search_for_goal(own = false, opp = true);
+    }
+  }
+  
+  state search_for_goal
+  {
+    action
+    {
+      search_for_goal(own = true, opp = true);
+    }
+  }
+  
+  state stay_as_forced
+  {
+    action
+    {
+      head.motion_type = hold;
+    }
+  }
+
+  state look_around
+  {
+    action
+    {
+      look_around();
+    }
+  }
+
+  state goalie_look_around
+  {
+    action
+    {
+      goalie_look_around();
+    }
+  }
+
+  state smart_search
+  {
+    action
+    {
+      smart_search();
+    }
+  }
+
+}
+  

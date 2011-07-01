@@ -1,0 +1,127 @@
+/** Go to a specific position on the field */
+option go_to_point_facing_opp_goal
+{
+  
+  /** x position of the point to walk to on the field */
+  float @x; //[-3700..3700] "mm";
+
+  /** y position of the point to walk to on the field */
+  float @y; // [-2700..2700] "mm";
+
+
+  initial state go_to_origin
+  {
+    decision
+    {
+      if(vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 100)
+      {
+        if(abs(value = robot_pose.planned.rotation) <= 1)
+        {
+          goto go_to_origin_without_rotation;
+        }
+        else
+        {
+          goto go_to_origin_with_rotation;
+        }
+      }
+      else
+      {
+        if(abs(value = robot_pose.planned.rotation) > 1)
+        {
+          goto go_to_origin_with_rotation;
+        }
+        else
+        {
+          goto stop;
+        }
+      }      
+    }
+    action
+    {
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state go_to_origin_without_rotation
+  {
+    decision
+    {
+      if(vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 100)
+      {
+        if(abs(value = robot_pose.planned.rotation) <= 1)
+        {
+          stay;
+        }
+        else
+        {
+          goto go_to_origin;
+        }
+      }
+      else
+      {
+        goto go_to_origin;
+       }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.x = @x - robot_pose.planned.x;
+      motion.walk_speed.y = @y - robot_pose.planned.y;
+      motion.walk.coordinate = hip;
+      //motion.walk.stop_with_stand = true;
+      head.control_mode = search_for_goal;
+    }
+  }
+   
+  state go_to_origin_with_rotation
+  {
+    decision
+    {
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 100 )
+      {
+        if( abs(value = robot_pose.planned.rotation) > 1)
+        {
+          stay;
+        }
+        else
+        {
+          goto go_to_origin;
+        }
+      }
+      else
+      {
+        goto go_to_origin;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = normalize(angle = -robot_pose.planned.rotation);
+      motion.walk_speed.x = @x - robot_pose.planned.x;
+      motion.walk_speed.y = @y - robot_pose.planned.y;
+      motion.walk.coordinate = hip;
+      //motion.walk.stop_with_stand = true;
+      head.control_mode = search_for_goal;
+    }
+  }
+
+
+  target state stop
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      motion.type = stand;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      head.control_mode = smart_search;
+      head.smart_search.rate = 0.8;
+    }
+  }
+    
+}

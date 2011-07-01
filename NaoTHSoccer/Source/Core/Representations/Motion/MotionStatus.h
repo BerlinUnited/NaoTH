@@ -26,6 +26,7 @@ public:
 
   struct PlannedMotion
   {
+    Pose2D hip;
     Pose2D lFoot;
     Pose2D rFoot;
   };

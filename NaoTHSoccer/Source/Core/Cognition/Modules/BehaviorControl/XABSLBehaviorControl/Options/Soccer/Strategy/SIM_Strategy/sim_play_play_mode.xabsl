@@ -1,0 +1,108 @@
+/** handle different play mode in simualtion game */
+
+option sim_play_play_mode
+{  
+
+  common decision {
+    if (game.playmode == play_on)
+      goto play_on;
+    else if (game.playmode == goal_kick_opp)
+      goto goal_kick_opp;
+    else if (game.playmode == goal_kick_own)
+      goto goal_kick_own;
+    //else if (game.playmode == kick_off_opp)
+    //  goto kick_off_opp;
+    //else if (game.playmode == kick_off_own)
+    //  goto kick_off_own; //hard coded in XABSL
+    //else if (game.playmode == free_kick_opp)
+      //goto free_kick_opp;
+    //else if (game.playmode == free_kick_own)
+      //goto free_kick_own;
+    //else if (game.playmode == kick_in_opp)
+      //goto kick_in_opp;
+    //else if (game.playmode == kick_in_own)
+      //goto kick_in_own;
+    //else if (game.playmode == corner_kick_opp)
+      //goto corner_kick_opp;
+    //else if (game.playmode == corner_kick_own)
+      //goto corner_kick_own;
+    else if (true)
+      goto play_on;
+  }
+
+  initial state play_on {
+    action 
+    {
+      play_9v9();
+    }
+  }
+  state corner_kick_opp { 
+    action 
+    {
+      corner_kick_opp();
+    }
+  }
+
+  state corner_kick_own { 
+    action 
+    {
+      corner_kick_own();
+    }
+  }
+  
+  state kick_in_own { 
+    action 
+    {
+      kick_in_own();
+    }
+  }
+
+  state kick_in_opp { 
+    action 
+    {
+      kick_in_opp();
+    }
+  }
+
+  state free_kick_own { 
+    action 
+    {
+      free_kick_own();
+    }
+  }
+
+  state goal_kick_opp { 
+    action 
+    {
+      goal_kick_opp();
+    }
+  }
+
+  state kick_off_own { 
+    action 
+    {
+      kick_off_own();
+    }
+  }
+
+  state goal_kick_own {
+    action
+    {
+      goal_kick_own();
+    }
+  }
+
+  state kick_off_opp {
+    action
+    {
+      kick_off_opp();
+    }
+  }
+
+  state free_kick_opp {
+    action
+    {
+      free_kick_opp();
+    }
+  }
+}

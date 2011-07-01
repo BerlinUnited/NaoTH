@@ -1,0 +1,45 @@
+/** This is the "main" file for playing */
+
+option sim_play_game_mode
+{  
+  common decision {
+    if (game.playmode == before_kick_off)
+      goto stand_and_look_around;
+    else if (game.playmode == goal_own )
+      goto stand_and_look_around;
+    else if (game.playmode == goal_opp )
+      goto stand_and_look_around;
+    else if (game.playmode == game_over)
+      goto game_over;
+    else if ( game.playmode == kick_off_opp )
+      goto stand_and_look_around; // do sth. here
+    else if (true)
+      goto play_on;
+  }
+
+  initial state stand_and_look_around {
+    action
+    {
+      head.smart_search.rate = 0.1;
+      head.control_mode = smart_search;// try to look at the ball and goal
+      motion.type = stand;
+      motion.execute_immediately = true;
+      team.is_playing_as_striker = false;
+    }
+  }
+  
+  state play_on {
+    action 
+    {
+      sim_play_with_check_fall_down();
+    }
+  }
+  
+  state game_over {
+    action
+    {
+      head.control_mode = stay_as_forced;
+      motion.type = stand;
+    }
+  }
+}

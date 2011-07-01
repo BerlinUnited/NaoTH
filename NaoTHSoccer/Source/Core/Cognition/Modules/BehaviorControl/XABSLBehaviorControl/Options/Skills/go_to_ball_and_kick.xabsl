@@ -1,0 +1,71 @@
+/** Playing as striker */
+option goto_ball_and_kick {
+
+//initial!!
+  initial state attacking
+  {
+    decision {
+      //if(fall_down_state != upright)
+      //{
+        if(action_done) {
+          goto kicking;
+        } else {
+          stay;
+        }
+      //} else {
+      //  goto stand_up;
+      //}
+    }
+    action {
+      go_to_ball_cool(distance = 100, right_foot=true);
+      
+    }
+  }
+
+  state execute_kick {
+    decision {
+      if (executed_motion.type == kick_right)
+      {
+        stay;
+      } else {
+        goto kick_finished; //initial!!!!
+      }
+    }
+
+    action {
+      head.control_mode = look_straight_ahead;
+      //motion.type = kick_right;
+      //motion.execute_immediately = true;
+    }
+
+  }
+
+  state kicking
+  {
+    decision {
+      if(executed_motion.type == kick_right)  
+      {
+        goto execute_kick;
+      } else {
+        stay;
+      }
+    }
+    action {
+      head.control_mode = look_straight_ahead;
+      motion.type = kick_right;
+      motion.execute_immediately = true;
+    }
+  }
+
+  target state kick_finished
+  {
+    decision {
+      goto attacking;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;    
+    }
+  }
+
+}

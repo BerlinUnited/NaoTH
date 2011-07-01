@@ -39,7 +39,7 @@ public:
 
   // Tells if the ball was seen in the last frame or if not
   bool ballWasSeen;
-  FrameInfo frameInfoWhenBallWasSeen;
+  naoth::FrameInfo frameInfoWhenBallWasSeen;
 
   // 
   bool valid;

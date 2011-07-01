@@ -32,7 +32,7 @@ public:
     unsigned int number; // 0 means unknow
     Pose2D pose;
     Pose2D globalPose;
-    FrameInfo frameInfoWhenWasSeen;
+    naoth::FrameInfo frameInfoWhenWasSeen;
   };
 
   std::vector<Player> opponents;

@@ -1,0 +1,78 @@
+/** just turning and looking for ball */
+option simple_search_ball
+{
+  
+  initial state start_turning
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto stand;
+      else if ( ball.angle < 0 )
+        goto turning_right;
+      else
+        goto turning_left;
+    }
+    action
+    {
+      head.control_mode = look_around;//search_for_ball;
+    }
+  }
+
+  state turning_left
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = look_around;//search_for_ball;
+      search_ball.search_direction = 1;
+      motion.type = walk;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 90; //deg
+      motion.walk.coordinate = hip;
+    }
+  }
+
+  state turning_right
+  {
+    decision
+    {
+      if (ball.was_seen)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = look_around;//search_for_ball;
+      search_ball.search_direction = -1;
+      motion.type = walk;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = -90; //deg
+      motion.walk.coordinate = hip;
+    }
+  }
+
+  target state stand
+  {
+    decision
+    {
+      if (!ball.was_seen)
+        goto start_turning;
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+    }
+  }
+}

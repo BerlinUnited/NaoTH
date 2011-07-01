@@ -11,7 +11,7 @@
 #include "Representations/Infrastructure/LEDData.h"
 #include "Tools/DataStructures/Printable.h"
 
-class LEDRequest : public Printable
+class LEDRequest : public naoth::Printable
 {
 
 public:
@@ -31,7 +31,7 @@ public:
     
   }
 
-  LEDData request;
+  naoth::LEDData request;
 
 };
 

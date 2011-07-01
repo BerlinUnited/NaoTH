@@ -1,0 +1,26 @@
+/** main file for Passing Challenge */
+option passing_challenge
+{
+  initial state play_passing {
+    decision {
+      stay;
+    }
+    action {
+      // make here some initializations
+      
+      set_right_ear = game.player_number*3+1; // show player number
+      battery();
+      set_right_eye = off;
+      set_left_eye = off;
+        
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+
+      passing_challenge_set_penalized_play();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+
+    }
+  }
+}

@@ -1,0 +1,135 @@
+option selfloc_player 
+{
+
+  initial state localize
+  {
+    decision
+    {
+      if(state_time > 30000)
+        goto first_position; 
+      else 
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_goal;
+      motion.type = stand;
+    }
+  }
+
+
+  state first_position
+  {
+    decision
+    {
+      if(action_done)
+        goto finish_first_position; 
+      else 
+        stay;
+    }
+    action
+    {
+      go_to_point(x = 0, y = 0, rot = atan2(y = 0,x = 0));
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state finish_first_position
+  {
+    decision
+    {
+      if(state_time > 10000)
+        goto second_position; 
+      else 
+        stay;
+    }
+    action
+    {
+      // set ears
+      blink();
+      head.control_mode = search_for_goal;
+      motion.type = stand;
+    }
+  }
+
+
+
+
+
+
+
+
+  state second_position
+  {
+    decision
+    {
+      if(action_done)
+        goto finish_second_position; 
+      else 
+        stay;
+    }
+    action
+    {
+      go_to_point(x = 700 ,y = -1200, rot = atan2(y = -1200,x = 700));
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state finish_second_position
+  {
+    decision
+    {
+      if(state_time > 10000)
+        goto third_position; 
+      else 
+        stay;
+    }
+    action
+    {
+      // set ears
+      blink();
+      head.control_mode = search_for_goal;
+      motion.type = stand;
+    }
+  }
+
+
+
+
+
+
+
+
+
+  state third_position
+  {
+    decision
+    {
+      if(action_done)
+        goto finish_third_position; 
+      else 
+        stay;
+    }
+    action
+    {
+      go_to_point(x = 0, y = -1500, rot = atan2(y = -1500, x = 0));
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state finish_third_position
+  {
+    decision
+    {
+        stay;
+    }
+    action
+    {
+      // set ears
+      blink();
+      head.control_mode = search_for_goal;
+      motion.type = stand;
+    }
+  }
+
+}

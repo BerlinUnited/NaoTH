@@ -1,0 +1,154 @@
+option decide_ready_position
+{
+  common decision {
+    if(fall_down_state != upright)
+      goto stand_up;
+  }
+  
+  initial state check_out_the_situation
+  {
+    decision
+    {
+      else if(state_time < 12000)
+        stay;
+      else if(game.own_kickoff)
+      {
+        if(game.player_number == 1)
+          goto goto_goalie_position;
+        else if(game.player_number == 2)
+          goto goto_kickoff_position_striker;
+        else if(game.player_number == 3)
+          goto goto_kickoff_position_supporter;
+        else if(game.player_number == 4)
+          goto goto_kickoff_position_defender;
+        else
+          stay;
+      }
+      else
+      {
+        if(game.player_number == 1)
+          goto goto_goalie_position;
+        else if(game.player_number == 2)
+          goto goto_defending_position_striker;
+        else if(game.player_number == 3)
+          goto goto_defending_position_supporter;
+        else if(game.player_number == 4)
+          goto goto_defending_position_defender;
+        else
+          stay;
+      } 
+    }
+    action
+    {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  state goto_goalie_position
+  {
+    action {
+      goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
+    }
+  }
+
+  state goto_kickoff_position_striker
+  {
+    action
+    {
+      //go_to_point_with_lokalize(x=-200, y=0, rot=0);
+      //go_to_point(x=-200, y=0, rot=0);
+      goto_ready_position(x=-200, y=0, rot=0, check_by_line=true, distToLine=200, maxLineDist=1500, minLineDist=100);
+      //head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_kickoff_position_supporter
+  {
+    action
+    {
+      //go_to_point_with_lokalize(x=-200, y=1000, rot=-15);
+      go_to_point(x=-200, y=1000, rot=-15);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_kickoff_position_defender
+  {
+    action
+    {
+      //go_to_point_with_lokalize(x=-200, y=1000, rot=-15);
+      go_to_point(x=-1200, y=-500, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+
+  state goto_defending_position_striker
+  {
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=-600, rot=0);
+      go_to_point(x=-1300, y=0, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_defending_position_supporter
+  {
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point(x=-1800, y=700, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_defending_position_defender
+  {
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point(x=-1800, y=-700, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+
+  state stand_up
+  {
+    decision
+    {
+      else if(action_done)
+        goto calibrate;
+      else
+        stay;
+    }
+    action 
+    {
+      stand_up();
+    }
+  }
+
+  state calibrate
+  {
+    decision
+    {
+      else if(action_done)
+        goto check_out_the_situation;
+      else
+        stay;
+    }
+    action
+    {
+      calibrate_intertial();
+    }
+  }
+
+  target state stand {
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+}

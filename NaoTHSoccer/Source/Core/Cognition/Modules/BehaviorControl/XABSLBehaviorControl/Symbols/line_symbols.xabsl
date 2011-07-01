@@ -1,0 +1,21 @@
+/** Symbols for accessing local information about field lines */
+namespace line_symbols("Line Symbols") {
+
+  /** general line symbols */
+  bool  input line.was_seen;
+  float input line.time_since_last_seen;
+
+  /** Symbols for the estimated orthogonal point of a seen line */
+  float input line.closest.estOrthPoint.x [mm];
+  float input line.closest.estOrthPoint.y [mm];
+  float input line.closest.estDistance [mm];
+  float input line.closest.estOrthPoint.angle [deg];
+
+  /** Symbols for the closest point of the closest seen line */
+  float input line.closest.closestPoint.x [mm];
+  float input line.closest.closestPoint.y [mm];
+  float input line.closest.distance [mm];
+  float input line.closest.closestPoint.angle [deg];
+  float input line.closest.length [mm];
+}
+  

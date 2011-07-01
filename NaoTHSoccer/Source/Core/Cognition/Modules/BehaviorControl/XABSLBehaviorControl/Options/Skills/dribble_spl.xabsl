@@ -1,0 +1,36 @@
+/** dribble */
+option dribble_spl {
+
+  initial state dribble
+  {
+    decision {
+      if (state_time < 2000)
+        stay;
+      else 
+        goto walk_to_ball_final;
+
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.x = 100; //mm/s
+      motion.walk.coordinate = hip;
+    }
+  }
+
+  target state walk_to_ball_final
+  {
+    decision {
+      stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.x = 100; //mm/s
+      motion.walk.coordinate = hip;
+    }
+  }
+}
