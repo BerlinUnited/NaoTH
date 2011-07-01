@@ -138,6 +138,7 @@ private:
   KickState oldKickState;
   bool action_done;
   unsigned int state_start_time;
+  unsigned int state_frame_count;
 
   void action_prepare();
   void action_retract(const Pose3D& kickPose);
@@ -149,13 +150,20 @@ private:
 
   // returns the state of the last element in the trajectory
   bool isRequested(const MotionRequest& motionRequest) const;
-  //IKMEState currentTrajectoryState() const;
-  //IKMEState preKickState() const;
-  //IKMEState initialState() const;
-  void stopKick();
-  inline double getStandHeight() const;
+  double getStandHeight() const;
+  const KickPose& getCurrentPose() const;
+  const KickPose getStandPoseOnOneFoot();
   void localInStandFoot( KickPose& pose ) const;
+  void stopKick();
 
+
+  // foot accessors
+  Pose3D& getKickingFoot( KickPose& kickPose ) const;
+  const Pose3D& getKickingFoot( const KickPose& kickPose ) const;
+  Pose3D& getStandFoot( KickPose& kickPose ) const;
+  const Pose3D& getStandFoot( const KickPose& kickPose ) const;
+
+  
 
   // tool methods
   Vector3<double> adjustKickPoseForKickDirection(const Pose3D& orgKickPoint) const;

@@ -48,6 +48,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* WalkRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   WalkRequest_reflection_ = NULL;
+const ::google::protobuf::Descriptor* KickRequest_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  KickRequest_reflection_ = NULL;
 const ::google::protobuf::Descriptor* MotionRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   MotionRequest_reflection_ = NULL;
@@ -262,13 +265,32 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(WalkRequest));
-  MotionRequest_descriptor_ = file->message_type(10);
-  static const int MotionRequest_offsets_[5] = {
+  KickRequest_descriptor_ = file->message_type(10);
+  static const int KickRequest_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickpoint_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickdirection_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickfoot_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, finishkick_),
+  };
+  KickRequest_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      KickRequest_descriptor_,
+      KickRequest::default_instance_,
+      KickRequest_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(KickRequest));
+  MotionRequest_descriptor_ = file->message_type(11);
+  static const int MotionRequest_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, forced_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, walkrequest_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, starndardstand_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, kickrequest_),
   };
   MotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -281,7 +303,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionRequest));
-  LinePercept_descriptor_ = file->message_type(11);
+  LinePercept_descriptor_ = file->message_type(12);
   static const int LinePercept_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, lines_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, intersections_),
@@ -298,7 +320,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LinePercept));
-  FSRData_descriptor_ = file->message_type(12);
+  FSRData_descriptor_ = file->message_type(13);
   static const int FSRData_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, force_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, data_),
@@ -315,7 +337,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
-  MotionStatus_descriptor_ = file->message_type(13);
+  MotionStatus_descriptor_ = file->message_type(14);
   static const int MotionStatus_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
@@ -336,7 +358,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionStatus));
-  OdometryData_descriptor_ = file->message_type(14);
+  OdometryData_descriptor_ = file->message_type(15);
   static const int OdometryData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, pose_),
   };
@@ -384,6 +406,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     WalkRequest_descriptor_, &WalkRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    KickRequest_descriptor_, &KickRequest::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     MotionRequest_descriptor_, &MotionRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     LinePercept_descriptor_, &LinePercept::default_instance());
@@ -418,6 +442,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete HeadMotionRequest_reflection_;
   delete WalkRequest::default_instance_;
   delete WalkRequest_reflection_;
+  delete KickRequest::default_instance_;
+  delete KickRequest_reflection_;
   delete MotionRequest::default_instance_;
   delete MotionRequest_reflection_;
   delete LinePercept::default_instance_;
@@ -481,24 +507,29 @@ void protobuf_AddDesc_Representations_2eproto() {
     "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
     "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"H\n"
     "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022%\n\006targ"
-    "et\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMoti"
-    "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f"
-    "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth"
-    "messages.WalkRequest\022\026\n\016starndardStand\030\005"
-    " \001(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.na"
-    "othmessages.FieldLineSegment\0222\n\rintersec"
-    "tions\030\002 \003(\0132\033.naothmessages.Intersection"
-    "\0228\n\022middleCircleCenter\030\003 \001(\0132\034.naothmess"
-    "ages.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001"
-    " \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\344\001\n\014Mo"
-    "tionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002"
-    " \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotio"
-    "n\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025p"
-    "lannedMotionLeftFoot\030\006 \002(\0132\025.naothmessag"
-    "es.Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002("
-    "\0132\025.naothmessages.Pose2D\"3\n\014OdometryData"
-    "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)\n"
-    "\'de.hu_berlin.informatik.ki.nao.messages", 2440);
+    "et\030\003 \002(\0132\025.naothmessages.Pose2D\"{\n\013KickR"
+    "equest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessage"
+    "s.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020"
+    "\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\263\001\n"
+    "\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r"
+    "\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032."
+    "naothmessages.WalkRequest\022\026\n\016starndardSt"
+    "and\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothme"
+    "ssages.KickRequest\"\253\001\n\013LinePercept\022.\n\005li"
+    "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme"
+    "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage"
+    "s.Intersection\0228\n\022middleCircleCenter\030\003 \001"
+    "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD"
+    "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali"
+    "d\030\003 \003(\010\"\344\001\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022"
+    "\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002("
+    "\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSt"
+    "ate\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\013"
+    "2\025.naothmessages.Pose2D\0225\n\026plannedMotion"
+    "RightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\"3"
+    "\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothmess"
+    "ages.Pose2DB)\n\'de.hu_berlin.informatik.k"
+    "i.nao.messages", 2614);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -511,6 +542,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   GoalPercept::default_instance_ = new GoalPercept();
   HeadMotionRequest::default_instance_ = new HeadMotionRequest();
   WalkRequest::default_instance_ = new WalkRequest();
+  KickRequest::default_instance_ = new KickRequest();
   MotionRequest::default_instance_ = new MotionRequest();
   LinePercept::default_instance_ = new LinePercept();
   FSRData::default_instance_ = new FSRData();
@@ -526,6 +558,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   GoalPercept::default_instance_->InitAsDefaultInstance();
   HeadMotionRequest::default_instance_->InitAsDefaultInstance();
   WalkRequest::default_instance_->InitAsDefaultInstance();
+  KickRequest::default_instance_->InitAsDefaultInstance();
   MotionRequest::default_instance_->InitAsDefaultInstance();
   LinePercept::default_instance_->InitAsDefaultInstance();
   FSRData::default_instance_->InitAsDefaultInstance();
@@ -4302,11 +4335,344 @@ void WalkRequest::Swap(WalkRequest* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int KickRequest::kKickPointFieldNumber;
+const int KickRequest::kKickDirectionFieldNumber;
+const int KickRequest::kKickFootFieldNumber;
+const int KickRequest::kFinishKickFieldNumber;
+#endif  // !_MSC_VER
+
+KickRequest::KickRequest()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void KickRequest::InitAsDefaultInstance() {
+  kickpoint_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
+}
+
+KickRequest::KickRequest(const KickRequest& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void KickRequest::SharedCtor() {
+  _cached_size_ = 0;
+  kickpoint_ = NULL;
+  kickdirection_ = 0;
+  kickfoot_ = 0;
+  finishkick_ = false;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+KickRequest::~KickRequest() {
+  SharedDtor();
+}
+
+void KickRequest::SharedDtor() {
+  if (this != default_instance_) {
+    delete kickpoint_;
+  }
+}
+
+void KickRequest::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* KickRequest::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return KickRequest_descriptor_;
+}
+
+const KickRequest& KickRequest::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+KickRequest* KickRequest::default_instance_ = NULL;
+
+KickRequest* KickRequest::New() const {
+  return new KickRequest;
+}
+
+void KickRequest::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_kickpoint()) {
+      if (kickpoint_ != NULL) kickpoint_->::naothmessages::DoubleVector3::Clear();
+    }
+    kickdirection_ = 0;
+    kickfoot_ = 0;
+    finishkick_ = false;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool KickRequest::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.DoubleVector3 kickPoint = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_kickpoint()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(17)) goto parse_kickDirection;
+        break;
+      }
+      
+      // required double kickDirection = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_kickDirection:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &kickdirection_)));
+          set_has_kickdirection();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_kickFoot;
+        break;
+      }
+      
+      // required int32 kickFoot = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_kickFoot:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &kickfoot_)));
+          set_has_kickfoot();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_finishKick;
+        break;
+      }
+      
+      // required bool finishKick = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_finishKick:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &finishkick_)));
+          set_has_finishkick();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void KickRequest::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required .naothmessages.DoubleVector3 kickPoint = 1;
+  if (has_kickpoint()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->kickpoint(), output);
+  }
+  
+  // required double kickDirection = 2;
+  if (has_kickdirection()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->kickdirection(), output);
+  }
+  
+  // required int32 kickFoot = 3;
+  if (has_kickfoot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->kickfoot(), output);
+  }
+  
+  // required bool finishKick = 4;
+  if (has_finishkick()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->finishkick(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* KickRequest::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .naothmessages.DoubleVector3 kickPoint = 1;
+  if (has_kickpoint()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->kickpoint(), target);
+  }
+  
+  // required double kickDirection = 2;
+  if (has_kickdirection()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->kickdirection(), target);
+  }
+  
+  // required int32 kickFoot = 3;
+  if (has_kickfoot()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->kickfoot(), target);
+  }
+  
+  // required bool finishKick = 4;
+  if (has_finishkick()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->finishkick(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int KickRequest::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .naothmessages.DoubleVector3 kickPoint = 1;
+    if (has_kickpoint()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->kickpoint());
+    }
+    
+    // required double kickDirection = 2;
+    if (has_kickdirection()) {
+      total_size += 1 + 8;
+    }
+    
+    // required int32 kickFoot = 3;
+    if (has_kickfoot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->kickfoot());
+    }
+    
+    // required bool finishKick = 4;
+    if (has_finishkick()) {
+      total_size += 1 + 1;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void KickRequest::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const KickRequest* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const KickRequest*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void KickRequest::MergeFrom(const KickRequest& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_kickpoint()) {
+      mutable_kickpoint()->::naothmessages::DoubleVector3::MergeFrom(from.kickpoint());
+    }
+    if (from.has_kickdirection()) {
+      set_kickdirection(from.kickdirection());
+    }
+    if (from.has_kickfoot()) {
+      set_kickfoot(from.kickfoot());
+    }
+    if (from.has_finishkick()) {
+      set_finishkick(from.finishkick());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void KickRequest::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void KickRequest::CopyFrom(const KickRequest& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool KickRequest::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  
+  if (has_kickpoint()) {
+    if (!this->kickpoint().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void KickRequest::Swap(KickRequest* other) {
+  if (other != this) {
+    std::swap(kickpoint_, other->kickpoint_);
+    std::swap(kickdirection_, other->kickdirection_);
+    std::swap(kickfoot_, other->kickfoot_);
+    std::swap(finishkick_, other->finishkick_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata KickRequest::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = KickRequest_descriptor_;
+  metadata.reflection = KickRequest_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int MotionRequest::kIdFieldNumber;
 const int MotionRequest::kTimeFieldNumber;
 const int MotionRequest::kForcedFieldNumber;
 const int MotionRequest::kWalkRequestFieldNumber;
 const int MotionRequest::kStarndardStandFieldNumber;
+const int MotionRequest::kKickRequestFieldNumber;
 #endif  // !_MSC_VER
 
 MotionRequest::MotionRequest()
@@ -4316,6 +4682,7 @@ MotionRequest::MotionRequest()
 
 void MotionRequest::InitAsDefaultInstance() {
   walkrequest_ = const_cast< ::naothmessages::WalkRequest*>(&::naothmessages::WalkRequest::default_instance());
+  kickrequest_ = const_cast< ::naothmessages::KickRequest*>(&::naothmessages::KickRequest::default_instance());
 }
 
 MotionRequest::MotionRequest(const MotionRequest& from)
@@ -4331,6 +4698,7 @@ void MotionRequest::SharedCtor() {
   forced_ = false;
   walkrequest_ = NULL;
   starndardstand_ = false;
+  kickrequest_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4341,6 +4709,7 @@ MotionRequest::~MotionRequest() {
 void MotionRequest::SharedDtor() {
   if (this != default_instance_) {
     delete walkrequest_;
+    delete kickrequest_;
   }
 }
 
@@ -4373,6 +4742,9 @@ void MotionRequest::Clear() {
       if (walkrequest_ != NULL) walkrequest_->::naothmessages::WalkRequest::Clear();
     }
     starndardstand_ = false;
+    if (has_kickrequest()) {
+      if (kickrequest_ != NULL) kickrequest_->::naothmessages::KickRequest::Clear();
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -4457,6 +4829,20 @@ bool MotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(50)) goto parse_kickRequest;
+        break;
+      }
+      
+      // optional .naothmessages.KickRequest kickRequest = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_kickRequest:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_kickrequest()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4505,6 +4891,12 @@ void MotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->starndardstand(), output);
   }
   
+  // optional .naothmessages.KickRequest kickRequest = 6;
+  if (has_kickrequest()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, this->kickrequest(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4538,6 +4930,13 @@ void MotionRequest::SerializeWithCachedSizes(
   // optional bool starndardStand = 5;
   if (has_starndardstand()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->starndardstand(), target);
+  }
+  
+  // optional .naothmessages.KickRequest kickRequest = 6;
+  if (has_kickrequest()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        6, this->kickrequest(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4582,6 +4981,13 @@ int MotionRequest::ByteSize() const {
       total_size += 1 + 1;
     }
     
+    // optional .naothmessages.KickRequest kickRequest = 6;
+    if (has_kickrequest()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->kickrequest());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -4624,6 +5030,9 @@ void MotionRequest::MergeFrom(const MotionRequest& from) {
     if (from.has_starndardstand()) {
       set_starndardstand(from.starndardstand());
     }
+    if (from.has_kickrequest()) {
+      mutable_kickrequest()->::naothmessages::KickRequest::MergeFrom(from.kickrequest());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -4646,6 +5055,9 @@ bool MotionRequest::IsInitialized() const {
   if (has_walkrequest()) {
     if (!this->walkrequest().IsInitialized()) return false;
   }
+  if (has_kickrequest()) {
+    if (!this->kickrequest().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -4656,6 +5068,7 @@ void MotionRequest::Swap(MotionRequest* other) {
     std::swap(forced_, other->forced_);
     std::swap(walkrequest_, other->walkrequest_);
     std::swap(starndardstand_, other->starndardstand_);
+    std::swap(kickrequest_, other->kickrequest_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

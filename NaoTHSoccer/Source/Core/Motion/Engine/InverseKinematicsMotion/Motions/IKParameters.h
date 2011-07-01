@@ -91,8 +91,8 @@ public:
     double kickSpeed;
     // wait a little before taking the foot back after the kick is executed
     double afterKickTime;
-    // the height of the hip
-    double hipHeight;
+    // offset of the hip height according to the default one
+    double hipHeightOffset;
 
     //
     double footRadius;

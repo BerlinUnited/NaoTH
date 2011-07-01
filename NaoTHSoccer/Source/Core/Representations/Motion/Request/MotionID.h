@@ -111,7 +111,7 @@ namespace motion
     running,
     waiting,
     stopped,
-    unknow
+    unknown
   };
 
   std::string getName(State state);
