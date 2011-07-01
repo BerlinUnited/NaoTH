@@ -12,6 +12,7 @@
 #include "Motions/Dance.h"
 #include "Motions/Walk.h"
 #include "Motions/ProtectFalling.h"
+#include "Motions/IKDynamicKickMotion.h"
 
 InverseKinematicsMotionFactory::InverseKinematicsMotionFactory()
   :currentMotion(NULL)
@@ -39,8 +40,8 @@ AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest
     case motion::dance: currentMotion = new DanceMotion(); break;
     case motion::walk: currentMotion = new Walk(); break;
     case motion::protect_falling: currentMotion = new ProtectFalling(); break;
-    /*
-    case MotionRequestID::kick: currentMotion = new IKDynamicKickMotion_new(engine); break;
+    case motion::kick: currentMotion = new IKDynamicKickMotion(); break;
+      /*
     case MotionRequestID::grasp: currentMotion = new IKGrasping(engine); break;
         case MotionRequestID::check_reactivity: currentMotion = new CheckMotion(engine); break;*/
     default: currentMotion = NULL;
