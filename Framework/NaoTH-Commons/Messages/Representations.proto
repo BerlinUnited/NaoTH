@@ -137,6 +137,7 @@ message MotionStatus
   required uint32 currentMotionState = 5;
   required Pose2D plannedMotionLeftFoot = 6;
   required Pose2D plannedMotionRightFoot = 7;
+  required Pose2D plannedMotionHip = 8;
 }
 
 message OdometryData

@@ -24,12 +24,11 @@ std::string getName(State state)
   switch(state)
   {
   case running: return "running";
-  case waiting: return "waiting";
   case stopped: return "stopped";
-  default: return "unknow";
+  default: return "unknown";
   }
 
-  return "unknow";
+  return "unknown";
 }
 
 } // namespace motion

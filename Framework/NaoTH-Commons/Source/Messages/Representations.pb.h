@@ -1905,6 +1905,14 @@ class MotionStatus : public ::google::protobuf::Message {
   inline ::naothmessages::Pose2D* mutable_plannedmotionrightfoot();
   inline ::naothmessages::Pose2D* release_plannedmotionrightfoot();
   
+  // required .naothmessages.Pose2D plannedMotionHip = 8;
+  inline bool has_plannedmotionhip() const;
+  inline void clear_plannedmotionhip();
+  static const int kPlannedMotionHipFieldNumber = 8;
+  inline const ::naothmessages::Pose2D& plannedmotionhip() const;
+  inline ::naothmessages::Pose2D* mutable_plannedmotionhip();
+  inline ::naothmessages::Pose2D* release_plannedmotionhip();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
   inline void set_has_time();
@@ -1921,6 +1929,8 @@ class MotionStatus : public ::google::protobuf::Message {
   inline void clear_has_plannedmotionleftfoot();
   inline void set_has_plannedmotionrightfoot();
   inline void clear_has_plannedmotionrightfoot();
+  inline void set_has_plannedmotionhip();
+  inline void clear_has_plannedmotionhip();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1930,10 +1940,11 @@ class MotionStatus : public ::google::protobuf::Message {
   ::google::protobuf::uint32 headmotion_;
   ::naothmessages::Pose2D* plannedmotionleftfoot_;
   ::naothmessages::Pose2D* plannedmotionrightfoot_;
+  ::naothmessages::Pose2D* plannedmotionhip_;
   ::google::protobuf::uint32 currentmotionstate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3855,6 +3866,35 @@ inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionrightfoot() {
   clear_has_plannedmotionrightfoot();
   ::naothmessages::Pose2D* temp = plannedmotionrightfoot_;
   plannedmotionrightfoot_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.Pose2D plannedMotionHip = 8;
+inline bool MotionStatus::has_plannedmotionhip() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void MotionStatus::set_has_plannedmotionhip() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void MotionStatus::clear_has_plannedmotionhip() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void MotionStatus::clear_plannedmotionhip() {
+  if (plannedmotionhip_ != NULL) plannedmotionhip_->::naothmessages::Pose2D::Clear();
+  clear_has_plannedmotionhip();
+}
+inline const ::naothmessages::Pose2D& MotionStatus::plannedmotionhip() const {
+  return plannedmotionhip_ != NULL ? *plannedmotionhip_ : *default_instance_->plannedmotionhip_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::mutable_plannedmotionhip() {
+  set_has_plannedmotionhip();
+  if (plannedmotionhip_ == NULL) plannedmotionhip_ = new ::naothmessages::Pose2D;
+  return plannedmotionhip_;
+}
+inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionhip() {
+  clear_has_plannedmotionhip();
+  ::naothmessages::Pose2D* temp = plannedmotionhip_;
+  plannedmotionhip_ = NULL;
   return temp;
 }
 

@@ -66,6 +66,8 @@ private:
 
   void updateMotionStatus(MotionStatus& motionStatus);
   
+  Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
+
 private:
   const IKParameters::Walk& theWalkParameters;
   

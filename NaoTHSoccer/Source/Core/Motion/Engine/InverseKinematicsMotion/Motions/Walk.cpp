@@ -425,11 +425,7 @@ void Walk::stopWalkingWithoutStand()
   {
     const Step& finalStep = stepBuffer.back();
     const FeetPose& finalFeet = finalStep.footStep.end();
-    Pose3D finalBody;
-    finalBody.rotation = calculateBodyRotation(finalFeet, finalStep.bodyPitchOffset);
-    finalBody.translation = (finalFeet.left.translation + finalFeet.right.translation) * 0.5;
-    finalBody.translation.z = theWalkParameters.comHeight;
-    finalBody.translate(theParameters.hipOffsetX, 0, 0);
+    Pose3D finalBody = calculateStableCoMByFeet(finalFeet, finalStep.bodyPitchOffset);
 
     // wait for the com stops
     if ( theEngine.controlZMPstop(finalBody.translation) )
@@ -489,14 +485,29 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
   {
     motionStatus.plannedMotion.lFoot = Pose2D();
     motionStatus.plannedMotion.rFoot = Pose2D();
+    motionStatus.plannedMotion.hip = Pose2D();
   }
   else
   {
     FeetPose lastFeet = stepBuffer.back().footStep.end();
+    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, theParameters.bodyPitchOffset);
+    Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
     Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;
 
+    motionStatus.plannedMotion.hip = reduceDimen(plannedHip);
     motionStatus.plannedMotion.lFoot =  reduceDimen(plannedlFoot);
     motionStatus.plannedMotion.rFoot = reduceDimen(plannedrFoot);
   }
+}
+
+Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
+{
+  feet.left.translate(theParameters.hipOffsetX, 0 ,0);
+  feet.right.translate(theParameters.hipOffsetX, 0 ,0);
+  Pose3D com;
+  com.rotation = calculateBodyRotation(feet, pitch);
+  com.translation = (feet.left.translation + feet.right.translation) * 0.5;
+  com.translation.z = theWalkParameters.comHeight;
+  return com;
 }

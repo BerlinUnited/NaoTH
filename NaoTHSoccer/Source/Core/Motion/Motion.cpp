@@ -124,7 +124,6 @@ void Motion::call()
     }
   }
   case running:
-  case exiting:
   {
     frameNumSinceLastMotionRequest++;
     // get orders from cognition
@@ -142,11 +141,19 @@ void Motion::call()
       Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
       frameNumSinceLastMotionRequest = 0;
     }
+
+    checkWarningState();
+
+    break;
+  }
+  case exiting:
+  {
+    theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
+    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
+    theBlackBoard.theMotionRequest.id = motion::init;
     break;
   }
   }
-
-  checkWarningState();
 
   // execute head motion firstly
   theHeadMotionEngine.execute();
@@ -280,14 +287,13 @@ void Motion::changeMotion(AbstractMotion* m)
 
 bool Motion::exit()
 {
-  theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
-  theBlackBoard.theMotionRequest.id = motion::init;
-  theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
   state = exiting;
-
-  return (theBlackBoard.currentlyExecutedMotion != NULL)
-    && ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init)
-    && ( theBlackBoard.currentlyExecutedMotion->state() == motion::waiting );
+  if ( theBlackBoard.currentlyExecutedMotion->getId() == motion::init
+      && theBlackBoard.currentlyExecutedMotion->isFinish() )
+  {
+    return true;
+  }
+  return false;
 }//end exit
 
 void Motion::checkWarningState()

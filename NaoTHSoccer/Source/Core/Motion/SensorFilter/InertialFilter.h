@@ -20,6 +20,8 @@ public:
 private:
   void calibrate();
 
+  bool intentionallyMoving();
+
 private:
   const MotionBlackBoard& theBlackBoard;
   const naoth::InertialSensorData& sensorData;

@@ -32,7 +32,9 @@ public:
   void calculateTrajectory(const MotionRequest& motionRequest)
   {
     // standing
-    if ( abs(height - motionRequest.standHeight) > 1 || standardStand != motionRequest.standardStand ) {
+    if ( currentState != motion::running
+        || abs(height - motionRequest.standHeight) > 1
+        || standardStand != motionRequest.standardStand ) {
       standardStand = motionRequest.standardStand;
       // init pose
       height = motionRequest.standHeight;
@@ -54,7 +56,7 @@ public:
 
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
   {
-    if (currentState == motion::waiting && motionRequest.id != getId())
+    if ( time > totalTime && motionRequest.id != getId() )
     {
       currentState = motion::stopped;
       return;
@@ -63,17 +65,7 @@ public:
     calculateTrajectory(motionRequest);
 
     time += theBlackBoard.theRobotInfo.basicTimeStep;
-    double k = time / totalTime;
-
-    if ( k < 1 )
-    {
-      currentState = motion::running;
-    }
-    else
-    {
-      k = 1;
-      currentState = motion::waiting;
-    }
+    double k = min(time / totalTime, 1.0);
 
     InverseKinematic::CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
     InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
@@ -83,6 +75,8 @@ public:
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
+
+    currentState = motion::running;
   }//end execute
 
 private:

@@ -33,6 +33,8 @@ public:
 
   bool isStopped() const {return currentState == motion::stopped; }
 
+  virtual bool isFinish() const { return isStopped(); }
+
   motion::MotionID getId() const { return theId; }
   
   std::string getName() const { return motion::getName(theId); } 
