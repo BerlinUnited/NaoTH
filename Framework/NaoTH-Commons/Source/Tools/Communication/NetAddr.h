@@ -22,6 +22,10 @@
 
 namespace naoth
 {
+
+class NetAddr
+{
+public:
   // get Media Access Control address
   static std::string getMACaddress(const std::string& name)
   {
@@ -107,7 +111,7 @@ namespace naoth
 #endif
     return ip;
   }
-
+};
 } // namespace naoth
 
 #endif //_MAC_ADDR_H_

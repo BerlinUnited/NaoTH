@@ -12,7 +12,7 @@
 #include <winsock.h>
 #endif
 
-#include "Tools/Communication/MacAddr.h"
+#include "Tools/Communication/NetAddr.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
 using namespace std;
@@ -49,7 +49,7 @@ BroadCaster::BroadCaster(const std::string& interfaceName, unsigned int port)
   int broadcastFlag = 1;
   setsockopt(g_socket_get_fd(socket), SOL_SOCKET, SO_BROADCAST, (const char*)(&broadcastFlag), sizeof(int));
 
-  string broadcast = getBroadcastAddr(interfaceName);
+  string broadcast = NetAddr::getBroadcastAddr(interfaceName);
   GInetAddress* address = g_inet_address_new_from_string(broadcast.c_str());
   broadcastAddress = g_inet_socket_address_new(address, port);
   g_object_unref(address);
@@ -134,10 +134,10 @@ void BroadCaster::loop()
 void BroadCaster::socketSend(const std::string& data)
 {
   GError *error = NULL;
-  gssize result = g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error);
-  if ( result != data.size() )
+  int result = g_socket_send_to(socket, broadcastAddress, data.c_str(), data.size(), NULL, &error);
+  if ( result != static_cast<int>(data.size()) )
   {
-    g_warning("broadcast error, sended size = %ld", result);
+    g_warning("broadcast error, sended size = %d", result);
   }
   if (error)
   {

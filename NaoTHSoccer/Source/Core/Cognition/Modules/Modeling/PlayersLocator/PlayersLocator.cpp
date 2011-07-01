@@ -202,7 +202,7 @@ void PlayersLocator::updateByTeamMessage()
         iter != getTeamMessage().data.end(); ++iter)
   {
     const naothmessages::TeamCommMessage& message = iter->second.message;
-    const int seen_number = iter->first;
+    const unsigned int seen_number = iter->first;
     const FrameInfo& messageFrameInfo = iter->second.frameInfo;
   
     // don't consider own messages

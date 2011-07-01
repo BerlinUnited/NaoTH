@@ -18,8 +18,8 @@
 //class constructor
 RadarGrid::RadarGrid()
   :
-center(0,0),
 angleResolution(20),
+center(0,0),
 nearUpdate(0.5),
 farUpdate(0.2)
 {

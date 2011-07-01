@@ -25,6 +25,8 @@ class ObstacleModel : public Printable
 public:
   struct Obstacle
   {
+    Obstacle():distance(0){}
+
     FrameInfo frameInfoObstacleWasSeen;
     double distance;
     Vector2<double> position;

@@ -590,7 +590,7 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
 
 void DCMHandler::initAllSensorData()
 {
-  int currentIndex=0;
+  unsigned int currentIndex=0;
 
   //SensorJointData
   ASSERT(theSensorJointDataIndex == currentIndex);
@@ -666,7 +666,7 @@ void DCMHandler::initAllSensorData()
 
   //connect variables
   //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
-  for(int i=0; i<numOfSensors; i++)
+  for(unsigned int i=0; i<numOfSensors; i++)
   {
     sensorPtrs[i] = (float*)al_memoryfast.getDataPtr(pBroker, allSensorsList[i], false);
   }
@@ -676,7 +676,7 @@ void DCMHandler::readSensorData(unsigned int& timeStamp, float* dest)
 {
   timeStamp = al_dcmproxy->getTime(time_delay);
 
-  for(int i=0; i<numOfSensors; i++)
+  for(unsigned int i=0; i<numOfSensors; i++)
   {
     dest[i] = *(sensorPtrs[i]);
   }

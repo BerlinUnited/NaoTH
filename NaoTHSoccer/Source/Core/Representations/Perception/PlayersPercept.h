@@ -35,6 +35,7 @@ public:
     poseValid(false),
     poseRotationValid(false), 
     teamColorIsValid(false), 
+    number(0),
     numberIsValid(false),
     isStanding(false)
     {}

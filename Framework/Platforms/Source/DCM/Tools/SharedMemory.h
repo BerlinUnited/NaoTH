@@ -71,7 +71,7 @@ public:
         return false;
       }
 
-      const size_t memSize = sizeof(Memory);
+      const int memSize = sizeof(Memory);
       bool newMemory = false;
       
       if ( shmStat.st_size == 0 )

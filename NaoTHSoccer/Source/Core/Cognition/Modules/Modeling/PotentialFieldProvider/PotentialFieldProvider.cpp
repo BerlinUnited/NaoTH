@@ -50,7 +50,7 @@ void PotentialFieldProvider::execute()
 
   DEBUG_REQUEST("PotentialFieldProvider:goal_field_geometry",
     FIELD_DRAWING_CONTEXT;
-    const double step = 500;
+    //const double step = 500;
     Pose2D robotPose;
     robotPose.translation.x = 2000.0;
     MODIFY("PotentialFieldProvider:global_drawing_direction", robotPose.rotation);
