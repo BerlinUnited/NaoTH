@@ -66,7 +66,7 @@ void ParameterList::syncWithConfig()
     }
     else
     {
-      config.setDefault(parentClassName, iter->first, iter->second);
+      config.setDefault(parentClassName, iter->first, *(iter->second));
     }
   }//end for
 
@@ -79,7 +79,7 @@ void ParameterList::syncWithConfig()
     }
     else
     {
-      config.setDefault(parentClassName, iter->first, iter->second);
+      config.setDefault(parentClassName, iter->first, *(iter->second));
     }
   }//end for
 
@@ -92,7 +92,7 @@ void ParameterList::syncWithConfig()
     }
     else
     {
-      config.setDefault(parentClassName, iter->first, iter->second);
+      config.setDefault(parentClassName, iter->first, *(iter->second));
     }
   }//end for
 
@@ -105,7 +105,7 @@ void ParameterList::syncWithConfig()
     }
     else
     {
-      config.setDefault(parentClassName, iter->first, iter->second);
+      config.setDefault(parentClassName, iter->first, *(iter->second));
     }
   }//end for
 
@@ -118,11 +118,11 @@ void ParameterList::syncWithConfig()
     }
     else
     {
-      config.setDefault(parentClassName, iter->first, iter->second);
+      config.setDefault(parentClassName, iter->first, *(iter->second));
     }
   }//end for
 
-}
+}//end syncWithConfig
 
 void ParameterList::saveToConfig()
 {

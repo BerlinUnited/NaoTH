@@ -79,6 +79,7 @@ private:
   Image const& image;
 
 
+  bool enableInertialSensorCalibrate;
   bool forceGetCameraSettings;
   bool forceGetCameraSettingsOldValue;
 

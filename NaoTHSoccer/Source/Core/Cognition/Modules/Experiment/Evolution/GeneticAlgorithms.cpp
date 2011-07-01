@@ -13,6 +13,7 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -70,7 +71,12 @@ GeneticAlgorithms::GeneticAlgorithms()
   GDateTime* dateTime = g_date_time_new_now_local();
   dataDir = "ga"+string( g_date_time_format(dateTime, "%Y-%m-%d-%H-%M-%S") );
   g_date_time_unref(dateTime);
+
+#ifdef WIN32
+  g_mkdir(dataDir.c_str(), 0); // mode arguments are ignored in windows
+#else
   g_mkdir(dataDir.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
 }
 
 vector<GeneticAlgorithms::Individual> GeneticAlgorithms::newGeneration(const vector<GeneticAlgorithms::Individual>& old)

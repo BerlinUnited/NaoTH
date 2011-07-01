@@ -79,38 +79,38 @@ namespace motion_symbols("Motion Symbols") {
   
   enum motion.type 
   {
+    empty,
     init,
     dead,
+    
     stand,
     walk,
     kick,
+    dance,
+    protect_falling,
+    
     stand_up_from_front,
     stand_up_from_back,
-    goto_pose_directly,
-    force_joints,
-    test,
-    block_left,
-    block_right,
+
     block_middle,
     goalie_get_down,
     goalie_sit,
-    goalie_get_up,
-    goalie_sit_block,
-    goalie_get_fast_down,
     goalie_sit_small,
-    goalie_get_fast_up,
-    goalie_dive_left,
-    goalie_sit_n_dive_left,
-    goalie_dive_right,
-    goalie_sit_n_dive_right,
-    goalie_dive_left_test,
-    goalie_sit_n_dive_left_test,
-    goalie_dive_right_test,
-    goalie_sit_n_dive_right_test,
+
+    goalie_get_fast_down,
+
     fall_left,
     fall_right,
+
     kick_right,
-    unknown
+
+    goalie_dive_right_test,
+    goalie_dive_left_test,
+    goalie_sit_block,
+    goalie_sit_n_dive_left,
+    goalie_sit_n_dive_right,
+    goalie_sit_n_dive_left_test,
+    goalie_sit_n_dive_right_test
   };
 
   enum motion.walk.coordinate

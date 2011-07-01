@@ -114,7 +114,6 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
   PROVIDE(LEDRequest)
   PROVIDE(SoundPlayData)
   PROVIDE(PlayerInfo)
-//  PROVIDE(BehaviorStatus)
 
   //PROVIDE(CameraSettingsRequest)
 */
@@ -153,6 +152,10 @@ private:
   MyErrorHandler theErrorHandler;
   // TODO: remove this member
   std::string agentName;
+
+  /** time passed into the xabsl engine */
+  unsigned int xabslTime;
+
 
   void fillActiveOptions(naothmessages::BehaviorStatus &status);
   void fillAction(const xabsl::Action* source, naothmessages::XABSLAction* dest);

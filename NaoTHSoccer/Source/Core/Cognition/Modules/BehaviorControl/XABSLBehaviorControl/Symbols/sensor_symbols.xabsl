@@ -16,9 +16,6 @@ namespace sensor("Sensor Symbols") {
   /** Calibrate inertial sensor */
   bool output sensor.inertial.calibrate;
 
-  /** force getting the camera settings (will reset to the real setted if false) */
-  bool output sensor.camerasettings_force_get;
-  
   bool internal need_calibrate;
 
   /** The ids of the states */

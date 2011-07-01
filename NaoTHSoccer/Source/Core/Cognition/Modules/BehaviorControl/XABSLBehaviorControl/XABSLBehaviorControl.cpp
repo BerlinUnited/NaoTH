@@ -8,7 +8,9 @@
 #include "XABSLBehaviorControl.h"
 
 #include "Cognition/DebugCommandServer.h"
+#include "PlatformInterface/Platform.h"
 
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #define REGISTER_MODULE(module, enable) \
   the##module = registerModule<module>(std::string(#module), enable)
@@ -21,20 +23,6 @@ XABSLBehaviorControl::XABSLBehaviorControl()
     theErrorHandler(),
     agentName("soccer")
 {
-  /*
-  // load the config
-  Config conf;
-  if(ConfigLoader::loadConfigFile("Config/behavior/agent.cfg", conf))
-  {
-    conf.get("agent", agentName);
-  }
-  else
-  {
-    std::cerr << "could not load \"Config/behavior/agent.cfg\", defaulting to \"Soccer\" agent" << std::endl;
-  }
-  reloadBehaviorFromFile(Platform::getInstance().theConfigPathInfo.behavior, agentName);
-  */
-
   REGISTER_DEBUG_COMMAND("behavior:status", "send the active XABSL options", this);
   REGISTER_DEBUG_COMMAND("behavior:reload", "reload the behavior file", this);
   REGISTER_DEBUG_COMMAND("behavior:get_agent", "get the current selected agent", this);
@@ -66,7 +54,21 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(SoundSymbols, true);
   REGISTER_MODULE(LineSymbols, true);
     
-}
+
+  // load the behavior from config
+  if(naoth::Platform::getInstance().theConfiguration.hasKey("agent", "agent"))
+  {
+    agentName = naoth::Platform::getInstance().theConfiguration.getString("agent", "agent");
+  }
+  else
+  {
+    std::cerr << "could not load \"Config/behavior/agent.cfg\", defaulting to \"Soccer\" agent" << std::endl;
+  }
+
+  const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
+  reloadBehaviorFromFile(behaviorPath, agentName);
+
+}//end constructor
 
 XABSLBehaviorControl::~XABSLBehaviorControl()
 {
@@ -78,8 +80,8 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
 {
   delete theEngine;
 
-        //new xabsl::Engine(theErrorHandler, &NaoTime::getNaoTimeInMilliSeconds);
-  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, getFrameInfo().getTime()); 
+  //new xabsl::Engine(theErrorHandler, &NaoTime::getNaoTimeInMilliSeconds);
+  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
   
   registerXABSLSymbols();
 
@@ -93,6 +95,9 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
 
 void XABSLBehaviorControl::execute()
 {
+  // ATTENTION: it has to be set before xabsl engine is executed!!!
+  xabslTime = getFrameInfo().getTime();
+
   // reset representations
   getMotionRequest().reset();
 
@@ -255,14 +260,15 @@ void XABSLBehaviorControl::executeDebugCommand(
   if(command == "behavior:reload")
   {
     // restart the behavior
-//    reloadBehaviorFromFile(Platform::getInstance().theConfigPathInfo.behavior, agentName);
+    const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
+    reloadBehaviorFromFile(behaviorPath, agentName);
 
     outstream << "behavior reloaded";
   }
   else if(command == "behavior:status")
   {
-//    google::protobuf::io::OstreamOutputStream buf(&outstream);
-//    getBehaviorStatus().status.SerializeToZeroCopyStream(&buf);
+    google::protobuf::io::OstreamOutputStream buf(&outstream);
+    getBehaviorStatus().status.SerializeToZeroCopyStream(&buf);
   }
   else if(command == "behavior:get_agent")
   {

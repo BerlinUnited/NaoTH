@@ -17,7 +17,7 @@ option calibrate_intertial
     {
       //head.control_mode = stay_as_forced;
       motion.type = stand;
-      sensor.camerasettings_force_get = true;
+      sensor.inertial.calibrate = true;
     }
   }
 

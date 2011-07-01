@@ -138,7 +138,6 @@ option ir_demo
   {
     action
     {
-      motion.type = block_right;
       head.control_mode = search_for_ball;
     }
   }

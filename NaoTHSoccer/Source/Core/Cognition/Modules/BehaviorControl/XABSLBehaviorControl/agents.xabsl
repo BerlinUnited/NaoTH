@@ -145,7 +145,7 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
 // NonSoccer
 include "Options/NonSoccer/Test/kick_training.xabsl";
-include "Options/NonSoccer/Test/direct_control_test.xabsl";
+//include "Options/NonSoccer/Test/direct_control_test.xabsl";
 include "Options/NonSoccer/Test/role_test.xabsl";
 include "Options/NonSoccer/Test/skill_test.xabsl";
 include "Options/NonSoccer/Test/ultrasound_test.xabsl";
@@ -181,7 +181,7 @@ agent localize("Localize", selfloc_player);
 
 /** The testing agent */
 agent KickTest("KickTest", goto_ball_and_kick);
-agent test("Test", direct_control_test);
+//agent test("Test", direct_control_test);
 agent skill_test("SkillTest", skill_test);
 /** IR testing agent */
 agent irdemo("IRDemo", ir_demo);
