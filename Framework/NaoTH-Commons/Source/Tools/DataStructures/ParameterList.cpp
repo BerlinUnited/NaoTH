@@ -53,9 +53,9 @@ bool& ParameterList::registerParameter(const std::string& name, bool& parameter)
   return parameter;
 }
 
-void ParameterList::loadFromConfig()
+void ParameterList::syncWithConfig()
 {
-  const naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
+  naoth::Configuration& config =  naoth::Platform::getInstance().theConfiguration;
 
   // unsigned int
   for (std::map<std::string, unsigned int*>::const_iterator iter = unsignedIntParameterReferences.begin(); iter != unsignedIntParameterReferences.end(); ++iter)
@@ -63,6 +63,10 @@ void ParameterList::loadFromConfig()
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getInt(parentClassName, iter->first);
+    }
+    else
+    {
+      config.setDefault(parentClassName, iter->first, iter->second);
     }
   }//end for
 
@@ -73,6 +77,10 @@ void ParameterList::loadFromConfig()
     {
       *(iter->second) = config.getInt(parentClassName, iter->first);
     }
+    else
+    {
+      config.setDefault(parentClassName, iter->first, iter->second);
+    }
   }//end for
 
   // double
@@ -81,6 +89,10 @@ void ParameterList::loadFromConfig()
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getDouble(parentClassName, iter->first);
+    }
+    else
+    {
+      config.setDefault(parentClassName, iter->first, iter->second);
     }
   }//end for
 
@@ -91,6 +103,10 @@ void ParameterList::loadFromConfig()
     {
       *(iter->second) = config.getString(parentClassName, iter->first);
     }
+    else
+    {
+      config.setDefault(parentClassName, iter->first, iter->second);
+    }
   }//end for
 
   // bool
@@ -99,6 +115,10 @@ void ParameterList::loadFromConfig()
     if (config.hasKey(parentClassName, iter->first))
     {
       *(iter->second) = config.getBool(parentClassName, iter->first);
+    }
+    else
+    {
+      config.setDefault(parentClassName, iter->first, iter->second);
     }
   }//end for
 
@@ -132,6 +152,8 @@ void ParameterList::saveToConfig()
   {
     config.setBool(parentClassName, iter->first, *(iter->second));
   }//end for
+
+  config.save();
 }
 
 std::string ParameterList::covertName(std::string name)

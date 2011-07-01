@@ -119,7 +119,7 @@ SimSparkController::~SimSparkController()
   g_mutex_free(theCognitionInputMutex);
   g_mutex_free(theCognitionOutputMutex);
   g_cond_free(theCognitionInputCond);
-  
+
   if (socket != NULL)
     g_socket_close(socket, NULL);
 
@@ -290,6 +290,8 @@ void SimSparkController::multiThreadsMain()
   ASSERT(motionThread != NULL);
 
   cognitionLoop();
+
+  g_thread_join(motionThread);
 }//end multiThreadsMain
 
 void SimSparkController::getMotionInput()

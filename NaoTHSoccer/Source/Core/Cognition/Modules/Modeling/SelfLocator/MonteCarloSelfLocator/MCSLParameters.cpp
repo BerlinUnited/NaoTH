@@ -48,7 +48,7 @@ MCSLParameters::MCSLParameters()
   PARAMETER_REGISTER(updateByFlags) = 0;
 
   // load from the file after registering all parameters
-  loadFromConfig();
+  syncWithConfig();
 
   DebugParameterList::getInstance().add(this);
 }

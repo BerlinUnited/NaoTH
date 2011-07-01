@@ -48,7 +48,7 @@ PFBLParameters::PFBLParameters()
   PARAMETER_REGISTER(updateByFlags) = 0;
 
   // load from the file after registering all parameters
-  loadFromConfig();
+  syncWithConfig();
 }
 
 PFBLParameters::~PFBLParameters()
