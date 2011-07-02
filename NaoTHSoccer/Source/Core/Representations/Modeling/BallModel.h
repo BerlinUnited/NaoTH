@@ -18,11 +18,20 @@
 
 class BallModel : public naoth::Printable
 {
+private:
+
+  unsigned int _timeBallIsSeen;
+  naoth::FrameInfo _frameInfoWhenBallWasSeen;
+  
 public:
   BallModel()
     :
-      ballWasSeen(false),
-      valid(false)
+      _timeBallIsSeen(0),
+      valid(false),
+
+      // accessors
+      frameInfoWhenBallWasSeen(_frameInfoWhenBallWasSeen),
+      timeBallIsSeen(_timeBallIsSeen)
     {}
 
   ~BallModel(){}
@@ -37,9 +46,25 @@ public:
   // The speed of the ball relative to the robot (in mm/s)
   Vector2<double> speed;
 
-  // Tells if the ball was seen in the last frame or if not
-  bool ballWasSeen;
-  naoth::FrameInfo frameInfoWhenBallWasSeen;
+  // Tells when the ball was seen the last time
+  const naoth::FrameInfo& frameInfoWhenBallWasSeen;
+  // time how long the ball is seen without interruption
+  const unsigned int& timeBallIsSeen;
+
+
+  void setFrameInfoWhenBallWasSeen(const naoth::FrameInfo& frameInfo)
+  {
+    if(frameInfo.getFrameNumber() + 1 != frameInfoWhenBallWasSeen.getFrameNumber())
+      _timeBallIsSeen = 0;
+    else
+    {
+      ASSERT(frameInfoWhenBallWasSeen.getTime() < frameInfo.getTime());
+      _timeBallIsSeen += frameInfo.getTimeSince(frameInfoWhenBallWasSeen.getTime());
+    }
+
+    _frameInfoWhenBallWasSeen = frameInfo;
+  }//end setFrameInfoWhenBallWasSeen
+
 
   // 
   bool valid;
@@ -49,14 +74,12 @@ public:
 
   void reset()
   {
-    ballWasSeen = false;
     valid = false;
   }
 
   virtual void print(ostream& stream) const
   {
     stream << "valid = " << valid << endl;
-    stream << "ballWasSeen = " << ballWasSeen << endl;
     stream << "position = " << position << endl;
     stream << "speed = " << speed << endl;
     stream << "frameInfoWhenBallWasSeen:\n" << frameInfoWhenBallWasSeen << endl;

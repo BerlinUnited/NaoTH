@@ -15,7 +15,7 @@ class InertialFilter
 public:
   InertialFilter(const MotionBlackBoard& bb);
 
-  InertialPercept filte();
+  InertialPercept filter();
 
 private:
   void calibrate();

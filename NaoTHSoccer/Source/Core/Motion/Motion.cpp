@@ -174,7 +174,7 @@ void Motion::processSensorData()
   // check all joint stiffness
   theBlackBoard.theSensorJointData.checkStiffness();
 
-  theBlackBoard.theInertialPercept = theInertialFilter.filte();
+  theBlackBoard.theInertialPercept = theInertialFilter.filter();
   
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     theBlackBoard.theAccelerometerData,

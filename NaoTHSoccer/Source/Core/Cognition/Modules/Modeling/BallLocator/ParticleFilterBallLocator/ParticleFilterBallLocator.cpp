@@ -29,8 +29,7 @@ ParticleFilterBallLocator::ParticleFilterBallLocator()
 void ParticleFilterBallLocator::execute()
 {
   getBallModel().reset();
-  getBallModel().frameInfoWhenBallWasSeen = getBallPercept().frameInfoWhenBallWasSeen;
-  
+
   updateByOdometry(theSampleSet, true);
   lastRobotOdometry = getOdometryData();
 
@@ -50,8 +49,13 @@ void ParticleFilterBallLocator::execute()
     }//end for
     mean /= theSampleSet.size();
 
-    getBallModel().ballWasSeen = getBallPercept().ballWasSeen;
+
+    // set the ball model
+    if(getBallPercept().ballWasSeen)
+      getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
+
     getBallModel().position = mean;
+    getBallModel().speed = Vector2<double>();
     getBallModel().valid = true;
 
     updatePreviewModel();
@@ -245,7 +249,7 @@ void ParticleFilterBallLocator::drawBallModel(const BallModel& ballModel) const
   
   if(ballModel.valid)
   {
-    if(ballModel.ballWasSeen)
+    if(getBallPercept().ballWasSeen)
       PEN("FF9900", 20);
     else
       PEN("0099FF", 20);

@@ -230,7 +230,7 @@ void WholeGoalLocator::correct_the_goal_percept(
       0.0,
       post2.position);
 
-}//end calibrate
+}//end correct_the_goal_percept
 
 
 double WholeGoalLocator::projectionError(
