@@ -468,9 +468,12 @@ public class RobotControlImpl extends javax.swing.JFrame
       {
         config.load(new FileReader(fConfig));
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
         ex.printStackTrace();
+        JOptionPane.showMessageDialog(this,
+          "Config could not be loaded from "+fConfig, "WARNING",
+          JOptionPane.WARNING_MESSAGE);
       }
     }//end if
 
