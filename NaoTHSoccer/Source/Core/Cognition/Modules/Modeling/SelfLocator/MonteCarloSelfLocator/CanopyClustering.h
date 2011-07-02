@@ -23,16 +23,53 @@ public:
   CanopyClustering(C& sampleSet, MCSLParameters& parameters)
     :
     sampleSet(sampleSet),
-    parameters(parameters)
+    parameters(parameters),
+    numOfClusters(0),
+    largestCluster(0)
   {
   }
 
   ~CanopyClustering() {}
 
+
+  class CanopyCluster
+  {
+  protected:
+    unsigned int _size;
+    Vector2<double> _clusterSum;
+    Vector2<double> _center;
+
+    void add(const Vector2<double>& point)
+    {
+      _size++;
+      _clusterSum += point;
+      _center = _clusterSum / static_cast<double>(_size);
+    }
+
+    void set(const Vector2<double>& point)
+    {
+      _size = 1;
+      _clusterSum = point;
+      _center = point;
+    }
+
+  public:
+    CanopyCluster() : _size(0){}
+    virtual ~CanopyCluster(){}
+
+    unsigned int size() const { return _size; }
+    const Vector2<double>& clusterSum() const { return _clusterSum; }
+    const Vector2<double>& center() const { return _center; }
+  };//end class CanopyCluster
+
+
+  unsigned int size() { return numOfClusters; }
+  const CanopyCluster& operator[](int index) const { ASSERT(index < numOfClusters); return clusters[index];}
+  const CanopyCluster& getLargestCluster(){ (*this)[largestCluster]; }
+
   void cluster()
   {
-    //vector<CanopyCluster> clusters;
-    int numOfClusters = 0;
+    numOfClusters = 0;
 
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     {
@@ -42,8 +79,8 @@ public:
       double minDistance = 10000; // 10m
       int minIdx = -1;
 
-      for (int k = 0; k < numOfClusters; k++) { //FIXME, static number
-        double dist = clusters[k].distance(sampleSet[j]);
+      for (unsigned int k = 0; k < numOfClusters; k++) { //FIXME, static number
+        double dist = clusters[k].distance(sampleSet[j].getPos());
         if(dist < minDistance)
         {
           minIdx = k;
@@ -55,57 +92,51 @@ public:
       if(minIdx != -1 && isInCluster(clusters[minIdx], sampleSet[j]))
       {
         sampleSet[j].cluster = minIdx;
-        clusters[minIdx].add(sampleSet[j]);
+        clusters[minIdx].add(sampleSet[j].getPos());
       }
       // othervise create new cluster
       else if(numOfClusters < maxNumberOfClusters)
       {
         // initialize a new cluster
-        clusters[numOfClusters].center = sampleSet[j].getPos();
-        clusters[numOfClusters].clusterSum = sampleSet[j].getPos();
-        clusters[numOfClusters].size = 1;
+        clusters[numOfClusters].set(sampleSet[j].getPos());
         sampleSet[j].cluster = numOfClusters;
         numOfClusters++;
       }//end if
     }//end for
 
     // merge close clusters
-    for(int k=0; k< numOfClusters; k++)
+    for(unsigned int k=0; k< numOfClusters; k++)
     {
-      if(clusters[k].size < 4) {
+      if(clusters[k].size() < 4) {
         continue;
       }
-      for(int j=k+1;j<numOfClusters;j++) {
-        if ( clusters[j].size < 4) {
+      for(unsigned int j=k+1;j<numOfClusters;j++) {
+        if ( clusters[j].size() < 4) {
           continue;
         }
         // merge the clusters k and j
-        if((clusters[k].center - clusters[j].center).abs() < 500)
+        if((clusters[k].center() - clusters[j].center()).abs() < 500)
         {
-          clusters[k].size += clusters[j].size;
-          clusters[j].size = 0;
-          //this is kind of pointless because we wont use the new center afterwards.
-          //the merge will be more accurate, but it is not that important because we only
-          //merge close clusters, so the error is small
-          //remove in case of performance issues:
-          clusters[k].center = (clusters[k].center + clusters[j].center) * 0.5;
+          clusters[k].merge(clusters[j]);
+          clusters[j].clear();
+          
+          // TODO: make it more effivient
           for (unsigned int i = 0; i < sampleSet.size(); i++)
           {
             if(sampleSet[i].cluster == j) {
-                sampleSet[i].cluster = k;
+              sampleSet[i].cluster = k;
             }
           } //end for i
         } //end if abs < 500
       } // end for j
     } //end for k
-  }
+  }//end cluster
 
-  int getClusterSize(const Vector2<double> start)
+
+  unsigned int cluster(const Vector2<double>& start)
   {
-    CanopyCluster cluster;
-    cluster.center = start;
-    cluster.clusterSum = start;
-    cluster.size = 1;
+    numOfClusters = 1;
+    CanopyClusterBuilder& cluster = clusters[0];
 
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     {
@@ -113,63 +144,83 @@ public:
       if(isInCluster(cluster, sampleSet[j]))
       {
         sampleSet[j].cluster = 0;
-        cluster.add(sampleSet[j]);
+        cluster.add(sampleSet[j].getPos());
       }
     }//end for j
 
-    return (int)cluster.size;
-  }
+    return cluster.size();
+  }//end cluster
+
+
 
 private:
-  C& sampleSet;
   
-  class CanopyCluster
+  class CanopyClusterBuilder: public CanopyCluster
   {
   public:
-    ~CanopyCluster(){}
-    CanopyCluster():size(0){}
-
-    double size;
-    Vector2<double> clusterSum;
-    Vector2<double> center;
-
-    void add(const Sample2D& sample)
+    ~CanopyClusterBuilder(){}
+    CanopyClusterBuilder(){}
+    CanopyClusterBuilder(const Vector2<double>& point)
     {
-      size++;
-      clusterSum += sample.getPos();
-      center = (clusterSum / size);
+      set(point);
+    }
+
+    void add(const Vector2<double>& point)
+    {
+      CanopyCluster::add(point);
+    }
+
+    void set(const Vector2<double>& point)
+    {
+      CanopyCluster::set(point);
+    }
+
+    void merge(const CanopyCluster& other)
+    {
+      _size += other.size();
+      _clusterSum = (_clusterSum + other.clusterSum()) * 0.5;
+      _center = (_center + other.center()) * 0.5;
+    }
+
+    void clear()
+    {
+      _size = 0;
     }
 
     // TODO: make it switchable
-    double distance(const Sample2D& sample) const
+    double distance(const Vector2<double>& point) const
     {
-      return euclideanDistance(sample);
-      //return manhattanDistance(sample);
+      return euclideanDistance(point);
+      //return manhattanDistance(point);
     }
   
   private:
-    double manhattanDistance(const Sample2D& sample) const
+    double manhattanDistance(const Vector2<double>& point) const
     {
-      return std::fabs(center.x - sample.getPos().x)
-           + std::fabs(center.y - sample.getPos().y);
+      return std::fabs(center().x - point.x)
+           + std::fabs(center().y - point.y);
     }
 
-    double euclideanDistance(const Sample2D& sample) const
+    double euclideanDistance(const Vector2<double>& point) const
     {
-        return (center - sample.getPos()).abs();
+      return (center() - point).abs();
     }
-  };
+  };//end class CanopyClusterBuilder
 
-  bool isInCluster(const CanopyCluster& cluster, const Sample2D& sample) const
+
+  bool isInCluster(const CanopyClusterBuilder& cluster, const Sample2D& sample) const
   {
-    return cluster.distance(sample) < parameters.thresholdCanopy;
+    return cluster.distance(sample.getPos()) < parameters.thresholdCanopy;
   }
 
+
+  C& sampleSet;
   static const int maxNumberOfClusters = 100;
-  CanopyCluster clusters[maxNumberOfClusters];  //FIXME
+  CanopyClusterBuilder clusters[maxNumberOfClusters];  //FIXME
+  unsigned int numOfClusters;
+  int largestCluster;
 
   MCSLParameters& parameters;
-
 };
 
 #endif //__CanopyClustering_h_
