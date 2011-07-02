@@ -90,7 +90,7 @@ string TeamCommEncoder::decode(const string& anscii)
   msg.set_teamnumber( encoder.decodeUnsigned(anscii.substr(0, 1)) );
   msg.set_playernumber( encoder.decodeUnsigned(anscii.substr(1, 1)) );
   msg.set_ispenalized(false); // no penalize rule in SimSpark
-  msg.set_bodyid(msg.playernumber()); // the same as player number
+  msg.set_bodyid(DataConversion::toStr(msg.playernumber())); // the same as player number
   msg.set_wasstriker(encoder.decodeUnsigned(anscii.substr(2, 1)) != 0);
 
   // robot pose
