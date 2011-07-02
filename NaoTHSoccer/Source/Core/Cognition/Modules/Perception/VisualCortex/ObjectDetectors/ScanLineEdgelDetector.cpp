@@ -68,11 +68,14 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   int scanLineID = 0;
 
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);
+  //Vector2<int> start(step / 2, getImage().cameraInfo.resolutionHeight - PIXEL_BORDER - 1);
+
   Vector2<int> start(step / 2, getImage().cameraInfo.resolutionHeight - PIXEL_BORDER - 1);
   Vector2<int> end(step / 2, max((int) beginField.y - 10, 0) );
 
-  for (; start.x < (int) getImage().cameraInfo.resolutionWidth; start.x += step)
+  while (start.x < (int) getImage().cameraInfo.resolutionWidth)
   {
+    start = getBodyContour().returnFirstFreeCell(start);
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
 
@@ -86,7 +89,8 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
     getScanLineEdgelPercept().endPoints.push_back(endPoint);
     scanLineID++;
-  }//end for
+    start.x += step;
+  }//end while
 
 
   DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:mark_edgels",
@@ -163,6 +167,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
 void ScanLineEdgelDetector::iterative_edgel_detection()
 {
+  /*
   // TODO: fixit
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
   int resumedScanCount;
@@ -214,6 +219,7 @@ void ScanLineEdgelDetector::iterative_edgel_detection()
     }//end while
     scanLineID++;
   }//end for
+  */
 }//end execute
 
 

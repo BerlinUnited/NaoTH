@@ -24,6 +24,7 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/BodyContour.h"
 
 #ifndef SCANLINEEDGELDETECTOR_H
 #define	SCANLINEEDGELDETECTOR_H
@@ -35,6 +36,7 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
+  REQUIRE(BodyContour)
 
   PROVIDE(ScanLineEdgelPercept)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
@@ -64,6 +66,5 @@ private:
   double calculateMeanAngle(double angle1,double  angle2);
 
 };
-
 #endif	/* SCANLINEEDGELDETECTOR_H */
 

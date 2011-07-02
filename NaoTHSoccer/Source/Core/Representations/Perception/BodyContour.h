@@ -9,11 +9,13 @@
 #ifndef _BodyContour_h_
 #define _BodyContour_h_
 
+
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
 #include <vector>
 #include "Tools/Debug/DebugBufferedOutput.h"
+
 
 /**
 * @class BodyContour
@@ -44,8 +46,6 @@ public:
     LowerArmRight,
     LegLeft,
     LegRight,
-    //LowerLegLeft,
-    //LowerLegRight,
     FootLeft,
     FootRight,
     numOfBodyPart,
@@ -56,7 +56,8 @@ public:
     bool occupied;
   };
 
-  bool isOccupied(Vector2<int>& point)
+  
+  Vector2<int> returnCellCoord(Vector2<int>& point) const
   {
     Vector2<int> cell;
     cell.x = point.x / stepSize;
@@ -74,7 +75,23 @@ public:
       cell.x = cell.x - 1;
       cell.y = cell.y - 1;
     }
-    return grid[cell.x][cell.y].occupied;
+    return cell;
+  }
+
+  bool isOccupied(Vector2<int>& point) const
+  {
+    Vector2<int> temp = returnCellCoord(point);
+    return grid[temp.x][temp.y].occupied;
+  }
+
+  
+  Vector2<int> returnFirstFreeCell(Vector2<int> start) const
+  {
+    while (isOccupied(start) && start.y >= 0)
+    {
+      start.y -= stepSize;
+    }
+    return start;
   }
 
   std::vector<std::vector<Cell> > grid;
@@ -181,7 +198,7 @@ public:
   *          It will be replaced if necessary. Note that the resulting point
   *          can be outside the image!
   */
-  void clipBottom( int x,  int& y) const;
+  void clipBottom(int x, int& y) const;
 
   /**
   * The method clips the top y coordinate of a vertical line.
@@ -190,7 +207,7 @@ public:
   *          It will be replaced if necessary. Note that the resulting point
   *          can be outside the image!
   */
-  void clipTop( int x,  int& y) const;
+  void clipTop(int x, int& y) const;
 
   /**
   * The method clips the left x coordinate of a horizontal line.
@@ -200,7 +217,7 @@ public:
   *          can be outside the image!
   * @param y The y coordinate of the horizontal line.
   */
-  void clipLeft( int& x,  int y) const;
+  void clipLeft(int& x, int y) const;
 
   /**
   * The method clips the right x coordinate of a horizontal line.
@@ -210,15 +227,10 @@ public:
   *          can be outside the image!
   * @param y The y coordinate of the horizontal line.
   */
-  void clipRight( int& x,  int y) const;
+  void clipRight(int& x, int y) const;
 
   int stepSize;
   int xDensity;
   int yDensity;
-
-  /** Creates drawings of the contour. */
-  void draw();
 };
-
-
 #endif //_BodyContour_h_

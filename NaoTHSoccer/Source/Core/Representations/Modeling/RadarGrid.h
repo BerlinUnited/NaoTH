@@ -24,21 +24,28 @@ public:
 
   //some functions
   //get/set model
-  void set(double angle, double value);
   void set(Vector2<double>);
-  void get(double angle, double& value);
+  void get(double angle, Vector2<double>& value);
+
+  //age the model
+  void ageGrid();
+
+  //update the model:
+  //apply the odometry data, erase old values
+  void updateGrid(Pose2D& odometryDelta);
+  Vector2<double> applyOdometry(int& index, Pose2D& odometryDelta);
+
 
   //set model params:
-  void setCenter(Vector2<double>& newCenter){this->center = newCenter;}
-  void setFarUpdate(double& newFarUpdate){this->nearUpdate = newFarUpdate;}
-  void setNearUpdate(double& setNearUpdate){this->farUpdate = setNearUpdate;}
-
+  void setCenter(Vector2<double>& newCenter){this->center = newCenter;} 
+  void setFarUpdate(double& newFarUpdate){this->nearUpdate = newFarUpdate;} 
+  void setNearUpdate(double& setNearUpdate){this->farUpdate = setNearUpdate;} 
 
   void drawFieldContext();
   void drawImageContext();
 
-  //reset model
-  void reset();
+  //reset cell
+  void resetCell(int& index);
 
   virtual void print(std::ostream& stream) const
   {
@@ -47,19 +54,33 @@ public:
     //for (; RGI != values.end(); ++RGI)
     for (int i = 0; i < 18; ++i)
     {
-      stream << "ValueNr.: " << i << " value: " << values[i] << endl;
+      stream << "ValueNr.: " << i << " value: " << values[i].value << endl;
     }
   }//end print
 
 private:
   //angle resolution of the grid:
   double angleResolution;
+
+  struct Cell
+  {
+    //in polar coordinates system
+    //value.x = distance;
+    //value.y = angle
+    Vector2<double> value;
+    //age of the cell
+    //in some entities
+    int age;
+  };
+
   //values of the grid
   //std::vector<double> values;
-  double values[18];
+  std::vector<Cell> values;
 
   //center of the grid
   Vector2<double> center;
+
+  Pose2D offset;
 
   //model update parameters
   double nearUpdate;

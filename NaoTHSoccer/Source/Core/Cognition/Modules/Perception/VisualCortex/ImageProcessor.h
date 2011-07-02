@@ -25,6 +25,7 @@
 #include "ObjectDetectors/LineDetector.h"
 #include "ObjectDetectors/RobotDetector.h"
 #include "ObjectDetectors/GoalDetector.h"
+#include "../BodyContourProvider/BodyContourProvider.h"
 
 
 // Representations
@@ -66,6 +67,7 @@ public:
 
 private:
   ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
+  ModuleCreator<BodyContourProvider>* theBodyContourProvider;
   ModuleCreator<FieldDetector>* theFieldDetector;
 
   ModuleCreator<BallDetector>* theBallDetector;

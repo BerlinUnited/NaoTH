@@ -50,7 +50,6 @@
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
-#include "Modules/Perception/BodyContourProvider/BodyContourProvider.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -131,7 +130,6 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptionsVisualization);
-  REGISTER_MODULE(BodyContourProvider);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
