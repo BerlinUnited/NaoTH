@@ -38,7 +38,8 @@
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
 #include "Modules/Infrastructure/Debug/RoboViz.h"
-#include "Modules/Infrastructure/TeamCommunicator/TeamCommunicator.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
@@ -119,7 +120,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // -- BEGIN MODULES --
 
   // infrastructure
-  REGISTER_MODULE(TeamCommunicator);
+  REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
 
   // perception
@@ -150,6 +151,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // experiment
   REGISTER_MODULE(Evolution);
+
+  // infrastructure
+  REGISTER_MODULE(TeamCommSender);
 
   // debug
   REGISTER_MODULE(LEDSetter);

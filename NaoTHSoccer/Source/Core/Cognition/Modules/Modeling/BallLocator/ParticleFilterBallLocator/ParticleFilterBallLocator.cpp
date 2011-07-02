@@ -29,6 +29,7 @@ ParticleFilterBallLocator::ParticleFilterBallLocator()
 void ParticleFilterBallLocator::execute()
 {
   getBallModel().reset();
+  getBallModel().frameInfoWhenBallWasSeen = getBallPercept().frameInfoWhenBallWasSeen;
   
   updateByOdometry(theSampleSet, true);
   lastRobotOdometry = getOdometryData();
