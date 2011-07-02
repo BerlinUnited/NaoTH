@@ -85,8 +85,6 @@ public:
     theEngine.autoArms(c, theMotorJointData.position);
 
     turnOffStiffnessWhenJointIsOutOfRange();
-
-    cout<<"com height = "<<theBlackBoard.theKinematicChain.CoM<<endl;
     currentState = motion::running;
   }//end execute
 
