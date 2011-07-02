@@ -1,8 +1,8 @@
-#include "TeamCommunicator.h"
+#include "TeamCommSender.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/DataConversion.h"
 
-TeamCommunicator::TeamCommunicator()
+TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
     send_interval(500)
 {
@@ -13,16 +13,8 @@ TeamCommunicator::TeamCommunicator()
   }
 }
 
-void TeamCommunicator::execute()
+void TeamCommSender::execute()
 {
-  const naoth::TeamMessageDataIn& teamMessageData = getTeamMessageDataIn();
-
-  for(vector<string>::const_iterator iter = teamMessageData.data.begin();
-      iter != teamMessageData.data.end(); ++iter)
-  {
-    handleMessage(*iter);
-  }
-
   // only send data in intervals of 500ms
   if((unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
   {
@@ -39,30 +31,17 @@ void TeamCommunicator::execute()
   }
 }
 
-void TeamCommunicator::handleMessage(const string& data)
+void TeamCommSender::createMessage(naothmessages::TeamCommMessage &msg)
 {
-  naothmessages::TeamCommMessage msg;
-  msg.ParseFromString(data);
-
-  unsigned int num = msg.playernumber();
-  unsigned int teamnum = msg.teamnumber();
-
-  if ( teamnum == getPlayerInfo().gameData.teamNumber )
-  {
-    TeamMessage::Data& content = getTeamMessage().data[num];
-    content.frameInfo.setTime( getFrameInfo().getTime() );
-    content.message = msg;
-  }
-}
-
-void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
-{
-
   msg.set_playernumber(getPlayerInfo().gameData.playerNumber);
   msg.set_teamnumber(getPlayerInfo().gameData.teamNumber);
   msg.set_ispenalized(getPlayerInfo().gameData.gameState == GameData::penalized);
   msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
   msg.set_bodyid(getRobotInfo().bodyID);
+
+  msg.set_timesinceballwasseen(
+    getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()));
+  DataConversion::toMessage(getBallModel().position, *msg.mutable_ballposition());
 
   // robot pose
   DataConversion::toMessage(getRobotPose(), *(msg.mutable_positiononfield()));
@@ -77,16 +56,6 @@ void TeamCommunicator::createMessage(naothmessages::TeamCommMessage &msg)
   // TODO: set ball and pose info in teamcomm message
   /*
   msg.set_timetoball(theSoccerStrategy.timeToBall);
-
-  msg.set_timesinceballwasseen(
-    getFrameInfo().getTimeSince(theBallModel.frameInfoWhenBallWasSeen.time));
-  msg.mutable_ballposition()->set_x(theBallModel.position.x);
-  msg.mutable_ballposition()->set_y(theBallModel.position.y);
-
-
 */
 }
 
-TeamCommunicator::~TeamCommunicator()
-{
-}
