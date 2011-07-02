@@ -14,13 +14,16 @@ FootStepPlanner::FootStepPlanner()
 {
 }
 
-void FootStepPlanner::updateParameters(const IKParameters& parameters)
+void FootStepPlanner::updateParameters(const IKParameters& parameters, double character)
 {
-  theMaxTurnInner = Math::fromDegrees(parameters.walk.maxTurnInner);
-  theMaxStepTurn = Math::fromDegrees(parameters.walk.maxStepTurn);
-  theMaxStepLength = parameters.walk.maxStepLength;
-  theMaxStepLengthBack = parameters.walk.maxStepLengthBack;
-  theMaxStepWidth = parameters.walk.maxStepWidth;
+  // scale the character: [0, 1] --> [0.3, 1]
+  character = 0.7*character + 0.3;
+
+  theMaxTurnInner = Math::fromDegrees(parameters.walk.maxTurnInner) * character;
+  theMaxStepTurn = Math::fromDegrees(parameters.walk.maxStepTurn) * character;
+  theMaxStepLength = parameters.walk.maxStepLength * character;
+  theMaxStepLengthBack = parameters.walk.maxStepLengthBack * character;
+  theMaxStepWidth = parameters.walk.maxStepWidth * character;
   
   theFootOffsetY = NaoInfo::HipOffsetY + parameters.footOffsetY;
   

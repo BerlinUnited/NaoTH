@@ -17,7 +17,7 @@ class FootStepPlanner
 public:
   FootStepPlanner();
   
-  void updateParameters(const IKParameters& parameters);
+  void updateParameters(const IKParameters& parameters, double character);
 
   FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
 

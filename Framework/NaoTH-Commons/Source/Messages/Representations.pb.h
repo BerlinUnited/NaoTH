@@ -1301,6 +1301,13 @@ class WalkRequest : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 coordinate() const;
   inline void set_coordinate(::google::protobuf::uint32 value);
   
+  // required double character = 2;
+  inline bool has_character() const;
+  inline void clear_character();
+  static const int kCharacterFieldNumber = 2;
+  inline double character() const;
+  inline void set_character(double value);
+  
   // required .naothmessages.Pose2D target = 3;
   inline bool has_target() const;
   inline void clear_target();
@@ -1313,16 +1320,19 @@ class WalkRequest : public ::google::protobuf::Message {
  private:
   inline void set_has_coordinate();
   inline void clear_has_coordinate();
+  inline void set_has_character();
+  inline void clear_has_character();
   inline void set_has_target();
   inline void clear_has_target();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  double character_;
   ::naothmessages::Pose2D* target_;
   ::google::protobuf::uint32 coordinate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3267,15 +3277,37 @@ inline void WalkRequest::set_coordinate(::google::protobuf::uint32 value) {
   coordinate_ = value;
 }
 
-// required .naothmessages.Pose2D target = 3;
-inline bool WalkRequest::has_target() const {
+// required double character = 2;
+inline bool WalkRequest::has_character() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void WalkRequest::set_has_target() {
+inline void WalkRequest::set_has_character() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void WalkRequest::clear_has_target() {
+inline void WalkRequest::clear_has_character() {
   _has_bits_[0] &= ~0x00000002u;
+}
+inline void WalkRequest::clear_character() {
+  character_ = 0;
+  clear_has_character();
+}
+inline double WalkRequest::character() const {
+  return character_;
+}
+inline void WalkRequest::set_character(double value) {
+  set_has_character();
+  character_ = value;
+}
+
+// required .naothmessages.Pose2D target = 3;
+inline bool WalkRequest::has_target() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void WalkRequest::set_has_target() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void WalkRequest::clear_has_target() {
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void WalkRequest::clear_target() {
   if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();

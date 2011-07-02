@@ -8,6 +8,7 @@
 #include "Walk.h"
 #include "Walk/ZMPPlanner.h"
 #include "Walk/FootTrajectoryGenerator.h"
+#include "Tools/Debug/DebugModify.h"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -139,6 +140,10 @@ bool Walk::canStop() const
 void Walk::plan(const MotionRequest& motionRequest)
 {
   WalkRequest walkRequest = motionRequest.walkRequest;
+  MODIFY("walk.character", walkRequest.character);
+
+  ASSERT(walkRequest.character<=1);
+  ASSERT(walkRequest.character>=0);
   ASSERT(!Math::isNan(walkRequest.target.translation.x));
   ASSERT(!Math::isNan(walkRequest.target.translation.y));
   ASSERT(!Math::isNan(walkRequest.target.rotation));
@@ -177,7 +182,7 @@ void Walk::manageSteps(const WalkRequest& req)
     zeroStep.numberOfCyclePerFootStep = prepareStep;
     zeroStep.planningCycle = prepareStep;
     stepBuffer.push_back(zeroStep);
-    theFootStepPlanner.updateParameters(theParameters);
+    theFootStepPlanner.updateParameters(theParameters, req.character);
 
     // set the stiffness for walking
     for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
@@ -193,7 +198,7 @@ void Walk::manageSteps(const WalkRequest& req)
     // new foot step
     Step step;
     step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-    theFootStepPlanner.updateParameters(theParameters);
+    theFootStepPlanner.updateParameters(theParameters, req.character);
     updateParameters(step);
     stepBuffer.push_back(step);
   }
