@@ -76,6 +76,9 @@ public:
       case motion::kick:
         kickRequest.print(stream);
         break;
+      case motion::stand:
+        stream << "stand height = "<<standHeight<<"\n";
+        break;
       default:
         break;
     }//end switch

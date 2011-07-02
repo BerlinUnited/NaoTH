@@ -25,7 +25,8 @@ public:
     totalTime(0),
     time(0),
     height(-1000),
-    standardStand(true)
+    standardStand(true),
+    stiffness(0.7)
   {
   }
 
@@ -39,6 +40,7 @@ public:
       // init pose
       height = motionRequest.standHeight;
       double comHeight = (motionRequest.standHeight < 0.0) ? theParameters.walk.comHeight : motionRequest.standHeight;
+      comHeight = Math::clamp(comHeight, 160.0, 270.0); // valid range
       startPose = theEngine.getCurrentCoMFeetPose();
       targetPose = getStandPose(comHeight, standardStand);
 
@@ -51,6 +53,12 @@ public:
       double distMax = (distLeft > distRight) ? distLeft : distRight;
       totalTime = distMax / speed;
       time = 0;
+
+      // set stiffness
+      for( int i=naoth::JointData::RShoulderRoll; i<naoth::JointData::numOfJoint; i++)
+      {
+        theMotorJointData.stiffness[i] = stiffness;
+      }
     }
   }//end calculateTrajectory
 
@@ -76,8 +84,53 @@ public:
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
 
+    turnOffStiffnessWhenJointIsOutOfRange();
+
+    cout<<"com height = "<<theBlackBoard.theKinematicChain.CoM<<endl;
     currentState = motion::running;
   }//end execute
+
+private:
+  void turnOffStiffnessWhenJointIsOutOfRange()
+  {
+    const double* pos = theMotorJointData.position;
+    double* stiff = theMotorJointData.stiffness;
+    // Knee pitch
+    if ( pos[naoth::JointData::LKneePitch] > theMotorJointData.max[naoth::JointData::LKneePitch] )
+    {
+      stiff[naoth::JointData::LKneePitch] = -1;
+    }
+    else
+    {
+      stiff[naoth::JointData::LKneePitch] = stiffness;
+    }
+    if ( pos[naoth::JointData::RKneePitch] > theMotorJointData.max[naoth::JointData::RKneePitch] )
+    {
+      stiff[naoth::JointData::RKneePitch] = -1;
+    }
+    else
+    {
+      stiff[naoth::JointData::RKneePitch] = stiffness;
+    }
+
+    // Ankle pitch
+    if ( pos[naoth::JointData::LAnklePitch] < theMotorJointData.min[naoth::JointData::LAnklePitch] )
+    {
+      stiff[naoth::JointData::LAnklePitch] = -1;
+    }
+    else
+    {
+      stiff[naoth::JointData::LAnklePitch] = stiffness;
+    }
+    if ( pos[naoth::JointData::RAnklePitch] < theMotorJointData.min[naoth::JointData::RAnklePitch] )
+    {
+      stiff[naoth::JointData::RAnklePitch] = -1;
+    }
+    else
+    {
+      stiff[naoth::JointData::RAnklePitch] = stiffness;
+    }
+  }
 
 private:
   double totalTime;
@@ -86,6 +139,7 @@ private:
   bool standardStand;
   InverseKinematic::CoMFeetPose targetPose;
   InverseKinematic::CoMFeetPose startPose;
+  double stiffness;
 };
 
 #endif	/* _StandMotion_H */

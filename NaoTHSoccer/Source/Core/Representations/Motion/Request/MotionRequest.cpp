@@ -24,6 +24,8 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
   case motion::kick:
     Serializer<KickRequest>::serialize(representation.kickRequest, message.mutable_kickrequest());
     break;
+  case motion::stand:
+    message.set_standheight(representation.standHeight);
   default:
     //TODO
     break;
@@ -49,5 +51,9 @@ void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest&
   if ( message.has_kickrequest() )
   {
     Serializer<KickRequest>::deserialize(&(message.kickrequest()), representation.kickRequest);
+  }
+  if ( message.has_standheight() )
+  {
+    representation.standHeight = message.standheight();
   }
 }

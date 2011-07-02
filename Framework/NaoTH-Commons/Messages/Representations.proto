@@ -111,6 +111,7 @@ message MotionRequest {
   optional WalkRequest walkRequest = 4;
   optional bool starndardStand = 5;
   optional KickRequest kickRequest = 6;
+  optional double standHeight = 7;
 }
 
 message LinePercept {

@@ -1544,6 +1544,13 @@ class MotionRequest : public ::google::protobuf::Message {
   inline ::naothmessages::KickRequest* mutable_kickrequest();
   inline ::naothmessages::KickRequest* release_kickrequest();
   
+  // optional double standHeight = 7;
+  inline bool has_standheight() const;
+  inline void clear_standheight();
+  static const int kStandHeightFieldNumber = 7;
+  inline double standheight() const;
+  inline void set_standheight(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1558,6 +1565,8 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_starndardstand();
   inline void set_has_kickrequest();
   inline void clear_has_kickrequest();
+  inline void set_has_standheight();
+  inline void clear_has_standheight();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1565,11 +1574,12 @@ class MotionRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 time_;
   ::naothmessages::WalkRequest* walkrequest_;
   ::naothmessages::KickRequest* kickrequest_;
+  double standheight_;
   bool forced_;
   bool starndardstand_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3533,6 +3543,28 @@ inline ::naothmessages::KickRequest* MotionRequest::release_kickrequest() {
   ::naothmessages::KickRequest* temp = kickrequest_;
   kickrequest_ = NULL;
   return temp;
+}
+
+// optional double standHeight = 7;
+inline bool MotionRequest::has_standheight() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void MotionRequest::set_has_standheight() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void MotionRequest::clear_has_standheight() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void MotionRequest::clear_standheight() {
+  standheight_ = 0;
+  clear_has_standheight();
+}
+inline double MotionRequest::standheight() const {
+  return standheight_;
+}
+inline void MotionRequest::set_standheight(double value) {
+  set_has_standheight();
+  standheight_ = value;
 }
 
 // -------------------------------------------------------------------

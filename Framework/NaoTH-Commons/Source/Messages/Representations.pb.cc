@@ -284,13 +284,14 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(KickRequest));
   MotionRequest_descriptor_ = file->message_type(11);
-  static const int MotionRequest_offsets_[6] = {
+  static const int MotionRequest_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, forced_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, walkrequest_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, starndardstand_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, kickrequest_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, standheight_),
   };
   MotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -511,27 +512,28 @@ void protobuf_AddDesc_Representations_2eproto() {
     "et\030\003 \002(\0132\025.naothmessages.Pose2D\"{\n\013KickR"
     "equest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessage"
     "s.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020"
-    "\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\263\001\n"
+    "\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n"
     "\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r"
     "\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032."
     "naothmessages.WalkRequest\022\026\n\016starndardSt"
     "and\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothme"
-    "ssages.KickRequest\"\253\001\n\013LinePercept\022.\n\005li"
-    "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme"
-    "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage"
-    "s.Intersection\0228\n\022middleCircleCenter\030\003 \001"
-    "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD"
-    "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali"
-    "d\030\003 \003(\010\"\225\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022"
-    "\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002("
-    "\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSt"
-    "ate\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\013"
-    "2\025.naothmessages.Pose2D\0225\n\026plannedMotion"
-    "RightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/"
-    "\n\020plannedMotionHip\030\010 \002(\0132\025.naothmessages"
-    ".Pose2D\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025."
-    "naothmessages.Pose2DB)\n\'de.hu_berlin.inf"
-    "ormatik.ki.nao.messages", 2663);
+    "ssages.KickRequest\022\023\n\013standHeight\030\007 \001(\001\""
+    "\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothme"
+    "ssages.FieldLineSegment\0222\n\rintersections"
+    "\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022m"
+    "iddleCircleCenter\030\003 \001(\0132\034.naothmessages."
+    "DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022"
+    "\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\225\002\n\014MotionS"
+    "tatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022"
+    "\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002"
+    "(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025planne"
+    "dMotionLeftFoot\030\006 \002(\0132\025.naothmessages.Po"
+    "se2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025.n"
+    "aothmessages.Pose2D\022/\n\020plannedMotionHip\030"
+    "\010 \002(\0132\025.naothmessages.Pose2D\"3\n\014Odometry"
+    "Data\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2"
+    "DB)\n\'de.hu_berlin.informatik.ki.nao.mess"
+    "ages", 2684);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -4675,6 +4677,7 @@ const int MotionRequest::kForcedFieldNumber;
 const int MotionRequest::kWalkRequestFieldNumber;
 const int MotionRequest::kStarndardStandFieldNumber;
 const int MotionRequest::kKickRequestFieldNumber;
+const int MotionRequest::kStandHeightFieldNumber;
 #endif  // !_MSC_VER
 
 MotionRequest::MotionRequest()
@@ -4701,6 +4704,7 @@ void MotionRequest::SharedCtor() {
   walkrequest_ = NULL;
   starndardstand_ = false;
   kickrequest_ = NULL;
+  standheight_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4747,6 +4751,7 @@ void MotionRequest::Clear() {
     if (has_kickrequest()) {
       if (kickrequest_ != NULL) kickrequest_->::naothmessages::KickRequest::Clear();
     }
+    standheight_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -4845,6 +4850,22 @@ bool MotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(57)) goto parse_standHeight;
+        break;
+      }
+      
+      // optional double standHeight = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_standHeight:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &standheight_)));
+          set_has_standheight();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4899,6 +4920,11 @@ void MotionRequest::SerializeWithCachedSizes(
       6, this->kickrequest(), output);
   }
   
+  // optional double standHeight = 7;
+  if (has_standheight()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->standheight(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4939,6 +4965,11 @@ void MotionRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         6, this->kickrequest(), target);
+  }
+  
+  // optional double standHeight = 7;
+  if (has_standheight()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->standheight(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4990,6 +5021,11 @@ int MotionRequest::ByteSize() const {
           this->kickrequest());
     }
     
+    // optional double standHeight = 7;
+    if (has_standheight()) {
+      total_size += 1 + 8;
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -5035,6 +5071,9 @@ void MotionRequest::MergeFrom(const MotionRequest& from) {
     if (from.has_kickrequest()) {
       mutable_kickrequest()->::naothmessages::KickRequest::MergeFrom(from.kickrequest());
     }
+    if (from.has_standheight()) {
+      set_standheight(from.standheight());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -5071,6 +5110,7 @@ void MotionRequest::Swap(MotionRequest* other) {
     std::swap(walkrequest_, other->walkrequest_);
     std::swap(starndardstand_, other->starndardstand_);
     std::swap(kickrequest_, other->kickrequest_);
+    std::swap(standheight_, other->standheight_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

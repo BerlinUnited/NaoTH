@@ -8171,6 +8171,10 @@ public final class Representations {
     boolean hasKickRequest();
     de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest getKickRequest();
     de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder getKickRequestOrBuilder();
+    
+    // optional double standHeight = 7;
+    boolean hasStandHeight();
+    double getStandHeight();
   }
   public static final class MotionRequest extends
       com.google.protobuf.GeneratedMessage
@@ -8267,6 +8271,16 @@ public final class Representations {
       return kickRequest_;
     }
     
+    // optional double standHeight = 7;
+    public static final int STANDHEIGHT_FIELD_NUMBER = 7;
+    private double standHeight_;
+    public boolean hasStandHeight() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public double getStandHeight() {
+      return standHeight_;
+    }
+    
     private void initFields() {
       id_ = 0;
       time_ = 0;
@@ -8274,6 +8288,7 @@ public final class Representations {
       walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
       starndardStand_ = false;
       kickRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance();
+      standHeight_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -8329,6 +8344,9 @@ public final class Representations {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeMessage(6, kickRequest_);
       }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeDouble(7, standHeight_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -8361,6 +8379,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, kickRequest_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(7, standHeight_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -8508,6 +8530,8 @@ public final class Representations {
           kickRequestBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
+        standHeight_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
       
@@ -8578,6 +8602,10 @@ public final class Representations {
         } else {
           result.kickRequest_ = kickRequestBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.standHeight_ = standHeight_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -8611,6 +8639,9 @@ public final class Representations {
         }
         if (other.hasKickRequest()) {
           mergeKickRequest(other.getKickRequest());
+        }
+        if (other.hasStandHeight()) {
+          setStandHeight(other.getStandHeight());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -8703,6 +8734,11 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setKickRequest(subBuilder.buildPartial());
+              break;
+            }
+            case 57: {
+              bitField0_ |= 0x00000040;
+              standHeight_ = input.readDouble();
               break;
             }
           }
@@ -8973,6 +9009,27 @@ public final class Representations {
           kickRequest_ = null;
         }
         return kickRequestBuilder_;
+      }
+      
+      // optional double standHeight = 7;
+      private double standHeight_ ;
+      public boolean hasStandHeight() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public double getStandHeight() {
+        return standHeight_;
+      }
+      public Builder setStandHeight(double value) {
+        bitField0_ |= 0x00000040;
+        standHeight_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearStandHeight() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        standHeight_ = 0D;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.MotionRequest)
@@ -12243,27 +12300,28 @@ public final class Representations {
       "et\030\003 \002(\0132\025.naothmessages.Pose2D\"{\n\013KickR" +
       "equest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessage" +
       "s.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020" +
-      "\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\263\001\n" +
+      "\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n" +
       "\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r" +
       "\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032." +
       "naothmessages.WalkRequest\022\026\n\016starndardSt",
       "and\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothme" +
-      "ssages.KickRequest\"\253\001\n\013LinePercept\022.\n\005li" +
-      "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme" +
-      "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage" +
-      "s.Intersection\0228\n\022middleCircleCenter\030\003 \001" +
-      "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD" +
-      "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali" +
-      "d\030\003 \003(\010\"\225\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022" +
-      "\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(" +
-      "\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSt",
-      "ate\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\013" +
-      "2\025.naothmessages.Pose2D\0225\n\026plannedMotion" +
-      "RightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/" +
-      "\n\020plannedMotionHip\030\010 \002(\0132\025.naothmessages" +
-      ".Pose2D\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025." +
-      "naothmessages.Pose2DB)\n\'de.hu_berlin.inf" +
-      "ormatik.ki.nao.messages"
+      "ssages.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"" +
+      "\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothme" +
+      "ssages.FieldLineSegment\0222\n\rintersections" +
+      "\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022m" +
+      "iddleCircleCenter\030\003 \001(\0132\034.naothmessages." +
+      "DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022" +
+      "\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\225\002\n\014MotionS" +
+      "tatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022" +
+      "\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002",
+      "(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025planne" +
+      "dMotionLeftFoot\030\006 \002(\0132\025.naothmessages.Po" +
+      "se2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025.n" +
+      "aothmessages.Pose2D\022/\n\020plannedMotionHip\030" +
+      "\010 \002(\0132\025.naothmessages.Pose2D\"3\n\014Odometry" +
+      "Data\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2" +
+      "DB)\n\'de.hu_berlin.informatik.ki.nao.mess" +
+      "ages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -12363,7 +12421,7 @@ public final class Representations {
           internal_static_naothmessages_MotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionRequest_descriptor,
-              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", },
+              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", "StandHeight", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.Builder.class);
           internal_static_naothmessages_LinePercept_descriptor =
