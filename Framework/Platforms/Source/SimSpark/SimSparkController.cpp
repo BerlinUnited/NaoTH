@@ -905,7 +905,7 @@ bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
 
 void SimSparkController::get(FrameInfo& data)
 {
-  data = theFrameInfo;
+  data.setTime(theFrameInfo.getTime());
 }
 
 void SimSparkController::get(SensorJointData& data)
@@ -986,8 +986,11 @@ void SimSparkController::get(VirtualVision& data)
 
 void SimSparkController::get(GameData& data)
 {
-  data = theGameData;
-  theGameData.valid = false;
+  if ( theGameData.valid )
+  {
+    data = theGameData;
+    theGameData.valid = false;
+  }
 }
 
 void SimSparkController::updateInertialSensor()
