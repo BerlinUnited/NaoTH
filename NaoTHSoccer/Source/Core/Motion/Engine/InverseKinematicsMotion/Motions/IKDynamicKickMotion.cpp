@@ -30,11 +30,12 @@ IKDynamicKickMotion::IKDynamicKickMotion()
   reachibilityGrid(basicReachibilityGrid),
   theParameters(theEngine.getParameters().kick),
   numberOfPreKickSteps(0),
-  theKickingFoot(KickRequest::none),
+  theKickingFoot(KickRequest::right), // right foot by default
   kickState(kick_prepare),
   oldKickState(kickState),
   action_done(false),
-  state_start_time(0)
+  state_start_time(0),
+  state_frame_count(0)
 {
 
   wrap_up_made = false;
@@ -131,7 +132,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   switch(kickState)
   {
     case kick_prepare: 
-      if(currentState == motion::stopped) // first time
+      if(currentState != motion::running) // first time
       {
         kickState = kick_prepare; // stay
       }
@@ -185,10 +186,9 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   {
     action_done = false;
     state_start_time = theBlackBoard.theFrameInfo.getTime();
+    state_frame_count = 0;
     oldKickState = kickState;
   }//end if
-
-
 
   // by default the motion is always running
   currentState = motion::running;
@@ -333,12 +333,27 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
     default: THROW("Unexpected kick state.");
   }//end switch
 
+
+
+  state_frame_count++;
 }//end calculateTrajectory
+
+
+const KickPose IKDynamicKickMotion::getStandPoseOnOneFoot()
+{
+  KickPose standPose = getStandPose(getStandHeight());
+  const Pose3D& standFoot = getStandFoot(standPose);
+  // shift the body
+  standPose.pose.com.translate(Vector3<double>(0, standFoot.translation.y, 0));
+  return standPose;
+}//end getStandPoseOnOneFoot
+
 
 void IKDynamicKickMotion::action_prepare()
 {
   // TODO: rotation of the body?
-  KickPose standPose = getStandPose(getStandHeight());
+  KickPose standPose = getStandPoseOnOneFoot();
+
   localInStandFoot(standPose);
 
   //ASSERT(theParameters.shiftTime >= 0.0);
@@ -383,9 +398,8 @@ void IKDynamicKickMotion::action_retract(const Pose3D& kickPose)
     THROW("the kicking foot should be left or right");
   }
 
-  // HACK: ...the first time
-  // TODO: repair
-  //if (currentTrajectoryState() == initialState)
+  // ...the first time
+  if (state_frame_count == 0)
   {
     p.time = (unsigned int)theParameters.time_for_first_preparation;
     trajectory.push_back(p);
@@ -409,7 +423,7 @@ void IKDynamicKickMotion::action_execute(const Pose3D& kickPose)
   Vector3<double> targetPosition = kickPose.translation;
 
   // TODO: rotation of the body?
-  KickPose p = getStandPose(getStandHeight());
+  KickPose p = getStandPoseOnOneFoot();
   localInStandFoot(p);
 
   Pose3D& kickFoot = theKickingFoot == KickRequest::left ? p.pose.feet.left : p.pose.feet.right;
@@ -537,19 +551,43 @@ Pose3D IKDynamicKickMotion::clampKickPoseInReachableSpace(const Pose3D& pose) co
   return kickPose;
 }//end clampKickPoseInReachableSpace
 
-bool IKDynamicKickMotion::isRequested(const MotionRequest& motionRequest) const
+inline bool IKDynamicKickMotion::isRequested(const MotionRequest& motionRequest) const
 {
-  return motionRequest.id == motion::kick &&
-         motionRequest.kickRequest.kickFoot != KickRequest::none &&
-         (theKickingFoot == motionRequest.kickRequest.kickFoot ||
-          theKickingFoot == KickRequest::none);
+  return motionRequest.id == motion::kick && // request didn't change
+         theKickingFoot == motionRequest.kickRequest.kickFoot; // foot didn't change
 }//end isRequested
 
 
-double IKDynamicKickMotion::getStandHeight() const
+inline Pose3D& IKDynamicKickMotion::getKickingFoot( KickPose& kickPose ) const
 {
-  return theParameters.hipHeight;
+  return (theKickingFoot == KickRequest::left) ? kickPose.pose.feet.left : kickPose.pose.feet.right;
+}//end getKickingFoot
+
+inline const Pose3D& IKDynamicKickMotion::getKickingFoot( const KickPose& kickPose ) const
+{
+  return (theKickingFoot == KickRequest::left) ? kickPose.pose.feet.left : kickPose.pose.feet.right;
+}//end getKickingFoot
+
+inline Pose3D& IKDynamicKickMotion::getStandFoot( KickPose& kickPose ) const
+{
+  return (theKickingFoot == KickRequest::left) ? kickPose.pose.feet.right : kickPose.pose.feet.left;
+}//end getKickingFoot
+
+inline const Pose3D& IKDynamicKickMotion::getStandFoot( const KickPose& kickPose ) const
+{
+  return (theKickingFoot == KickRequest::left) ? kickPose.pose.feet.right : kickPose.pose.feet.left;
+}//end getKickingFoot
+
+
+inline double IKDynamicKickMotion::getStandHeight() const
+{
+  return theEngine.getParameters().walk.comHeight + theParameters.hipHeightOffset;
 }//end getStandHeight
+
+inline const KickPose& IKDynamicKickMotion::getCurrentPose() const
+{
+  return (trajectory.empty())?currentPose:trajectory.back();
+}//end getCurrentPose
 
 void IKDynamicKickMotion::localInStandFoot( KickPose& kickPose ) const
 {
@@ -566,7 +604,7 @@ void IKDynamicKickMotion::stopKick()
   
   // get the foot back to the center
   // TODO: rotation of the body?
-  KickPose p = getStandPose(getStandHeight());
+  KickPose p = getStandPoseOnOneFoot();
   localInStandFoot(p);
 
   Pose3D& currentFootPose = (theKickingFoot == KickRequest::left)?p.pose.feet.left:p.pose.feet.right;
@@ -591,7 +629,7 @@ void IKDynamicKickMotion::stopKick()
 
 
   // move to the center
-  KickPose q = getStandPose(getStandHeight());
+  KickPose q = getStandPose(getStandHeight());;
   localInStandFoot(q);
   
   double v_stop = theParameters.shiftSpeed; // mm/ms = m/s

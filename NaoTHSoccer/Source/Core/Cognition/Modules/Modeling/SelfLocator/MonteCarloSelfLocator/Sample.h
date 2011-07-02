@@ -10,16 +10,30 @@
 
 #include "Tools/Math/Pose2D.h"
 
-class Sample: public Pose2D
+
+class Sample2D
 {
 public: 
-  Sample() : cluster(0), likelihood(0.0){}
-  ~Sample() {}
+  Sample2D() : cluster(0) {}
 
   int cluster; /** id of the cluster this sample belongs to */
+
+  virtual const Vector2<double>& getPos() const = 0;
+};
+
+
+class Sample: public Pose2D, public Sample2D
+{
+public: 
+  Sample() : likelihood(0.0){}
+  ~Sample() {}
+
   double likelihood;
 
-
+  virtual const Vector2<double>& getPos() const
+  {
+    return translation;
+  }
 };
 
 #endif //__Sample_h_

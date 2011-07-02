@@ -97,12 +97,21 @@ message WalkRequest {
   required Pose2D target = 3;
 }
 
+message KickRequest {
+  required DoubleVector3 kickPoint = 1;
+  required double kickDirection = 2;
+  required int32 kickFoot = 3;
+  required bool finishKick = 4;
+}
+
 message MotionRequest {
   required uint32 id = 1;
   required uint32 time = 2;
   required bool forced = 3;
   optional WalkRequest walkRequest = 4;
   optional bool starndardStand = 5;
+  optional KickRequest kickRequest = 6;
+  optional double standHeight = 7;
 }
 
 message LinePercept {

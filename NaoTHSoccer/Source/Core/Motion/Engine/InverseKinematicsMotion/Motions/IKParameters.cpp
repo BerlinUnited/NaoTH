@@ -63,7 +63,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.stopTime) = 1500;
   PARAMETER_REGISTER(kick.kickSpeed) = 1;
   PARAMETER_REGISTER(kick.afterKickTime) = 500;
-  PARAMETER_REGISTER(kick.hipHeight) = 210;
+  PARAMETER_REGISTER(kick.hipHeightOffset) = -10;
   PARAMETER_REGISTER(kick.footRadius) = 40;
   PARAMETER_REGISTER(kick.maxDistanceToRetract) = 200;
   PARAMETER_REGISTER(kick.enableStaticStabilizer) = true;

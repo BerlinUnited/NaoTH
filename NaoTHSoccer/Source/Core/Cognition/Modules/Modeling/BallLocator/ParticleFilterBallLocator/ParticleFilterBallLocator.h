@@ -16,6 +16,8 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/OdometryData.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 #include "Representations/Modeling/BallModel.h"
 
@@ -30,6 +32,8 @@ BEGIN_DECLARE_MODULE(ParticleFilterBallLocator)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
+  REQUIRE(MotionStatus)
+  REQUIRE(KinematicChain)
 
   PROVIDE(BallModel)
 END_DECLARE_MODULE(ParticleFilterBallLocator)
@@ -84,6 +88,8 @@ private:
                                 double cameraZ,
                                 double standardDeviation, 
                                 double bestPossibleWeighting = 1.0) const;
+
+  void updatePreviewModel();
 
   /** some debug drawings */
   void drawBallModel(const BallModel& ballModel) const;

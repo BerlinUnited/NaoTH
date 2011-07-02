@@ -27,8 +27,12 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   //calculateError();
 
   bool protecting = FSRProtection();
-  if ( protecting && canStop() )
+  if ( protecting )
   {
+    if ( !isStopped() )
+    {
+      cout<<"walk stopped because of fsr protecting"<<endl;
+    }
     stepBuffer.clear();
     theEngine.controlZMPclear();
     currentState = motion::stopped;
@@ -62,9 +66,13 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
 bool Walk::FSRProtection()
 {
-  // no foot on the ground, stop walking
+  // no foot on the ground,
+  // both feet should on the ground, e.g canStop
+  // TODO: check current of leg joints
+  // ==> stop walking
   if ( theWalkParameters.enableFSRProtection &&
-    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE )
+    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
+      && !isStopping && canStop() )
   {
     return true;
   }
@@ -372,7 +380,7 @@ void Walk::stopWalking()
     {
       currentState = motion::stopped;
       stepBuffer.clear();
-      cout<<"walk stopped"<<endl;
+      cout<<"walk stopped (standard)"<<endl;
     }
     else
     {

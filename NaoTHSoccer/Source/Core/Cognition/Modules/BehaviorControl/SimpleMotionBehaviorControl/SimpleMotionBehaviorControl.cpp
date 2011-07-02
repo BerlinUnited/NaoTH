@@ -44,6 +44,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   // other motions
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dead", "Set the robot dead.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand", "The default motion, otherwise do nothing", true);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:sit", "sit down, has a rest", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
@@ -122,6 +123,12 @@ void SimpleMotionBehaviorControl::testMotion()
   getMotionRequest().standardStand = false;
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:standard_stand",
     getMotionRequest().standardStand = true;
+      getMotionRequest().standHeight = -1; // minus means the same value as walk
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:sit",
+    getMotionRequest().standardStand = true;
+    getMotionRequest().standHeight = 160;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_forward",

@@ -43,6 +43,7 @@ class BallPercept;
 class GoalPercept;
 class HeadMotionRequest;
 class WalkRequest;
+class KickRequest;
 class MotionRequest;
 class LinePercept;
 class FSRData;
@@ -1332,6 +1333,119 @@ class WalkRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class KickRequest : public ::google::protobuf::Message {
+ public:
+  KickRequest();
+  virtual ~KickRequest();
+  
+  KickRequest(const KickRequest& from);
+  
+  inline KickRequest& operator=(const KickRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const KickRequest& default_instance();
+  
+  void Swap(KickRequest* other);
+  
+  // implements Message ----------------------------------------------
+  
+  KickRequest* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const KickRequest& from);
+  void MergeFrom(const KickRequest& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.DoubleVector3 kickPoint = 1;
+  inline bool has_kickpoint() const;
+  inline void clear_kickpoint();
+  static const int kKickPointFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector3& kickpoint() const;
+  inline ::naothmessages::DoubleVector3* mutable_kickpoint();
+  inline ::naothmessages::DoubleVector3* release_kickpoint();
+  
+  // required double kickDirection = 2;
+  inline bool has_kickdirection() const;
+  inline void clear_kickdirection();
+  static const int kKickDirectionFieldNumber = 2;
+  inline double kickdirection() const;
+  inline void set_kickdirection(double value);
+  
+  // required int32 kickFoot = 3;
+  inline bool has_kickfoot() const;
+  inline void clear_kickfoot();
+  static const int kKickFootFieldNumber = 3;
+  inline ::google::protobuf::int32 kickfoot() const;
+  inline void set_kickfoot(::google::protobuf::int32 value);
+  
+  // required bool finishKick = 4;
+  inline bool has_finishkick() const;
+  inline void clear_finishkick();
+  static const int kFinishKickFieldNumber = 4;
+  inline bool finishkick() const;
+  inline void set_finishkick(bool value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.KickRequest)
+ private:
+  inline void set_has_kickpoint();
+  inline void clear_has_kickpoint();
+  inline void set_has_kickdirection();
+  inline void clear_has_kickdirection();
+  inline void set_has_kickfoot();
+  inline void clear_has_kickfoot();
+  inline void set_has_finishkick();
+  inline void clear_has_finishkick();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::DoubleVector3* kickpoint_;
+  double kickdirection_;
+  ::google::protobuf::int32 kickfoot_;
+  bool finishkick_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static KickRequest* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class MotionRequest : public ::google::protobuf::Message {
  public:
   MotionRequest();
@@ -1422,6 +1536,21 @@ class MotionRequest : public ::google::protobuf::Message {
   inline bool starndardstand() const;
   inline void set_starndardstand(bool value);
   
+  // optional .naothmessages.KickRequest kickRequest = 6;
+  inline bool has_kickrequest() const;
+  inline void clear_kickrequest();
+  static const int kKickRequestFieldNumber = 6;
+  inline const ::naothmessages::KickRequest& kickrequest() const;
+  inline ::naothmessages::KickRequest* mutable_kickrequest();
+  inline ::naothmessages::KickRequest* release_kickrequest();
+  
+  // optional double standHeight = 7;
+  inline bool has_standheight() const;
+  inline void clear_standheight();
+  static const int kStandHeightFieldNumber = 7;
+  inline double standheight() const;
+  inline void set_standheight(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1434,17 +1563,23 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_walkrequest();
   inline void set_has_starndardstand();
   inline void clear_has_starndardstand();
+  inline void set_has_kickrequest();
+  inline void clear_has_kickrequest();
+  inline void set_has_standheight();
+  inline void clear_has_standheight();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 id_;
   ::google::protobuf::uint32 time_;
   ::naothmessages::WalkRequest* walkrequest_;
+  ::naothmessages::KickRequest* kickrequest_;
+  double standheight_;
   bool forced_;
   bool starndardstand_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3163,6 +3298,105 @@ inline ::naothmessages::Pose2D* WalkRequest::release_target() {
 
 // -------------------------------------------------------------------
 
+// KickRequest
+
+// required .naothmessages.DoubleVector3 kickPoint = 1;
+inline bool KickRequest::has_kickpoint() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void KickRequest::set_has_kickpoint() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void KickRequest::clear_has_kickpoint() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void KickRequest::clear_kickpoint() {
+  if (kickpoint_ != NULL) kickpoint_->::naothmessages::DoubleVector3::Clear();
+  clear_has_kickpoint();
+}
+inline const ::naothmessages::DoubleVector3& KickRequest::kickpoint() const {
+  return kickpoint_ != NULL ? *kickpoint_ : *default_instance_->kickpoint_;
+}
+inline ::naothmessages::DoubleVector3* KickRequest::mutable_kickpoint() {
+  set_has_kickpoint();
+  if (kickpoint_ == NULL) kickpoint_ = new ::naothmessages::DoubleVector3;
+  return kickpoint_;
+}
+inline ::naothmessages::DoubleVector3* KickRequest::release_kickpoint() {
+  clear_has_kickpoint();
+  ::naothmessages::DoubleVector3* temp = kickpoint_;
+  kickpoint_ = NULL;
+  return temp;
+}
+
+// required double kickDirection = 2;
+inline bool KickRequest::has_kickdirection() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void KickRequest::set_has_kickdirection() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void KickRequest::clear_has_kickdirection() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void KickRequest::clear_kickdirection() {
+  kickdirection_ = 0;
+  clear_has_kickdirection();
+}
+inline double KickRequest::kickdirection() const {
+  return kickdirection_;
+}
+inline void KickRequest::set_kickdirection(double value) {
+  set_has_kickdirection();
+  kickdirection_ = value;
+}
+
+// required int32 kickFoot = 3;
+inline bool KickRequest::has_kickfoot() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void KickRequest::set_has_kickfoot() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void KickRequest::clear_has_kickfoot() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void KickRequest::clear_kickfoot() {
+  kickfoot_ = 0;
+  clear_has_kickfoot();
+}
+inline ::google::protobuf::int32 KickRequest::kickfoot() const {
+  return kickfoot_;
+}
+inline void KickRequest::set_kickfoot(::google::protobuf::int32 value) {
+  set_has_kickfoot();
+  kickfoot_ = value;
+}
+
+// required bool finishKick = 4;
+inline bool KickRequest::has_finishkick() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void KickRequest::set_has_finishkick() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void KickRequest::clear_has_finishkick() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void KickRequest::clear_finishkick() {
+  finishkick_ = false;
+  clear_has_finishkick();
+}
+inline bool KickRequest::finishkick() const {
+  return finishkick_;
+}
+inline void KickRequest::set_finishkick(bool value) {
+  set_has_finishkick();
+  finishkick_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // MotionRequest
 
 // required uint32 id = 1;
@@ -3280,6 +3514,57 @@ inline bool MotionRequest::starndardstand() const {
 inline void MotionRequest::set_starndardstand(bool value) {
   set_has_starndardstand();
   starndardstand_ = value;
+}
+
+// optional .naothmessages.KickRequest kickRequest = 6;
+inline bool MotionRequest::has_kickrequest() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void MotionRequest::set_has_kickrequest() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void MotionRequest::clear_has_kickrequest() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void MotionRequest::clear_kickrequest() {
+  if (kickrequest_ != NULL) kickrequest_->::naothmessages::KickRequest::Clear();
+  clear_has_kickrequest();
+}
+inline const ::naothmessages::KickRequest& MotionRequest::kickrequest() const {
+  return kickrequest_ != NULL ? *kickrequest_ : *default_instance_->kickrequest_;
+}
+inline ::naothmessages::KickRequest* MotionRequest::mutable_kickrequest() {
+  set_has_kickrequest();
+  if (kickrequest_ == NULL) kickrequest_ = new ::naothmessages::KickRequest;
+  return kickrequest_;
+}
+inline ::naothmessages::KickRequest* MotionRequest::release_kickrequest() {
+  clear_has_kickrequest();
+  ::naothmessages::KickRequest* temp = kickrequest_;
+  kickrequest_ = NULL;
+  return temp;
+}
+
+// optional double standHeight = 7;
+inline bool MotionRequest::has_standheight() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void MotionRequest::set_has_standheight() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void MotionRequest::clear_has_standheight() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void MotionRequest::clear_standheight() {
+  standheight_ = 0;
+  clear_has_standheight();
+}
+inline double MotionRequest::standheight() const {
+  return standheight_;
+}
+inline void MotionRequest::set_standheight(double value) {
+  set_has_standheight();
+  standheight_ = value;
 }
 
 // -------------------------------------------------------------------

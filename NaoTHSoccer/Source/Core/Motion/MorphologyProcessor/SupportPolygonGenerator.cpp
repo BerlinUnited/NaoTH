@@ -19,7 +19,9 @@ SupportPolygonGenerator::SupportPolygonGenerator()
 
 }
 
-void SupportPolygonGenerator::init(double* fsr, Vector3<double>* fsrPos, Kinematics::Link* link)
+void SupportPolygonGenerator::init(const double* fsr,
+                                   const Vector3<double>* fsrPos,
+                                   const Kinematics::Link* link)
 {
     theFSRData = fsr;
     theFSRPos = fsrPos;

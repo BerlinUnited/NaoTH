@@ -10,6 +10,7 @@
 #define __MotionID_h_
 
 #include <string>
+#include <Tools/DataConversion.h>
 
 namespace motion
 {
@@ -99,7 +100,7 @@ namespace motion
       case num_of_motions: return "num_of_motion";
     }///end switch
 
-    return "unkown";
+    return "unknown "+naoth::DataConversion::toStr(id);
   }///end getName
 
   /** return the motion id reprented by the name */

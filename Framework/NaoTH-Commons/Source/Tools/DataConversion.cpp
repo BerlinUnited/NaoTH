@@ -27,6 +27,20 @@ void fromMessage(const naothmessages::DoubleVector2& msg, Vector2<double>& data)
   data.y = msg.y();
 }
 
+void toMessage(const Vector3<double>& data, naothmessages::DoubleVector3& msg)
+{
+  msg.set_x(data.x);
+  msg.set_y(data.y);
+  msg.set_z(data.z);
+}
+
+void fromMessage(const naothmessages::DoubleVector3& msg, Vector3<double>& data)
+{
+  data.x = msg.x();
+  data.y = msg.y();
+  data.z = msg.z();
+}
+
 void toMessage(const Pose2D& data, naothmessages::Pose2D& msg)
 {
   toMessage(data.translation, *msg.mutable_translation() );
