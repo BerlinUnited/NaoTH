@@ -27,7 +27,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   //calculateError();
 
   bool protecting = FSRProtection();
-  if ( protecting && canStop() && !isStopping )
+  if ( protecting )
   {
     if ( !isStopped() )
     {
@@ -66,9 +66,13 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
 bool Walk::FSRProtection()
 {
-  // no foot on the ground, stop walking
+  // no foot on the ground,
+  // both feet should on the ground, e.g canStop
+  // TODO: check current of leg joints
+  // ==> stop walking
   if ( theWalkParameters.enableFSRProtection &&
-    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE )
+    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
+      && !isStopping && canStop() )
   {
     return true;
   }
