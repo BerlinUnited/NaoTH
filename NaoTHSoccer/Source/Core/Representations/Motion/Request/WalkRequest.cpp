@@ -20,6 +20,7 @@ void Serializer<WalkRequest>::serialize(const WalkRequest& representation, std::
 
 void Serializer<WalkRequest>::serialize(const WalkRequest& representation, naothmessages::WalkRequest* msg)
 {
+  msg->set_character(representation.character);
   msg->set_coordinate(representation.coordinate);
   DataConversion::toMessage(representation.target, *(msg->mutable_target()));
 }
@@ -35,6 +36,7 @@ void Serializer<WalkRequest>::deserialize(std::istream& stream, WalkRequest& rep
 
 void Serializer<WalkRequest>::deserialize(const naothmessages::WalkRequest* msg, WalkRequest& representation)
 {
+  representation.character = msg->character();
   representation.coordinate = static_cast<WalkRequest::Coordinate>(msg->coordinate());
   DataConversion::fromMessage(msg->target(), representation.target);
 }

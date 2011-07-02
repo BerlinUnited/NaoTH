@@ -30,6 +30,7 @@ public:
 
   /** constructor */
   WalkRequest():
+    character(0.5),
     coordinate(Hip)
   {};
   ~WalkRequest(){};
@@ -45,6 +46,11 @@ public:
     }
   }//end getCoordinateName
   
+  // indicates speed and stability, in range [0, 1]
+  // 0: stablest (slow)
+  // 0.5: normal
+  // 1: fastest (unstable)
+  double character;
   Coordinate coordinate;
   Pose2D target;
 
@@ -52,6 +58,7 @@ public:
   {
     stream << "target: " << target << endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
+    stream << "character: " << character <<endl;
   }//end print
   
 };
