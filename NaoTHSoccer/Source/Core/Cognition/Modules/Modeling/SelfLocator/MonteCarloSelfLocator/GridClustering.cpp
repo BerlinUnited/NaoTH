@@ -21,7 +21,7 @@ void GridClustering::cluster(double xPosOpponentGroundline, double yPosLeftSidel
   fieldGrid.reset();
   shiftedFieldGrid.reset();
 
-  for (int j = 0; j < sampleSet.numberOfParticles; j++)
+  for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)
   {
     addPointToGrid(fieldGrid, sampleSet[j].translation, xPosOpponentGroundline, yPosLeftSideline);
     addPointToGrid(shiftedFieldGrid, sampleSet[j].translation, xPosOpponentGroundline, yPosLeftSideline);

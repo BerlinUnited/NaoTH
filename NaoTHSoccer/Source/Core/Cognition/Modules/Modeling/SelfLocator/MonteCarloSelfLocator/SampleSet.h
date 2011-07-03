@@ -15,7 +15,7 @@
 class SampleSet
 {
 public:
-  const int& numberOfParticles; /** TODO: make it as parameter */
+  const unsigned int& numberOfParticles; /** TODO: make it as parameter */
 
 private:
   int _numberOfParticles;
@@ -66,7 +66,7 @@ public:
 
   Sample meanOfLargestCluster(Moments2<2>& moments);
 
-  void drawCluster(int clusterId);
+  void drawCluster(unsigned int clusterId);
 
 private:
   void quicksort(int low, int high);
