@@ -689,7 +689,7 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
 // Example message: "(GS (t 0.00) (pm BeforeKickOff))"
 bool SimSparkController::updateGameInfo(const sexp_t* sexp)
 {
-  const unsigned int half_time = 5 * 60 * 1000;
+  const signed int half_time = 5 * 60 * 1000;
   bool ok = true;
   string name;
   while (sexp)
