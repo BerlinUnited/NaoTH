@@ -22,7 +22,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:SwitchToBottomCamera", "Switch to bottom camera", true);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_ball_modell", "Search for ball if not seen", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_straight_ahead", "look straight ahead", false);
-
+	DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_attention_point", "look at attention point", false);
 
   // test motion control
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:standard_stand", "stand as standard or not", true);
@@ -110,6 +110,11 @@ void SimpleMotionBehaviorControl::testHead()
     getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
   );
   
+	DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_at_attention_point",
+		getHeadMotionRequest().id = HeadMotionRequest::look_at_point_on_the_ground;
+		getHeadMotionRequest().targetPointOnTheGround = getAttentionModel().mostInterestingPoint;
+  );
+
 }//end testHead
 
 

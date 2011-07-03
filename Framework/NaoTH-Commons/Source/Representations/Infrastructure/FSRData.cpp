@@ -104,7 +104,7 @@ void Serializer<FSRData>::deserialize(std::istream& stream, FSRData& representat
 {
   // get length of data
   stream.seekg (0, ios::end);
-  int length = stream.tellg();
+  int length = (int)stream.tellg();
   stream.seekg (0, ios::beg);
 
   

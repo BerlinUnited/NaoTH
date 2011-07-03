@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 #include <list>
+#include <iterator>
 #include <vector>
 #include <limits>
 #include <ctime>

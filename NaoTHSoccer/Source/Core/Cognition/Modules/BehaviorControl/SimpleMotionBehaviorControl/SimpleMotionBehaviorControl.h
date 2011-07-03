@@ -19,9 +19,12 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
 
+#include "Representations/Modeling/AttentionModel.h"
+
 BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
   REQUIRE(BallPercept)
   REQUIRE(FieldInfo)
+	REQUIRE(AttentionModel)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)

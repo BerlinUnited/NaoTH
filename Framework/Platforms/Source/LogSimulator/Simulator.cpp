@@ -350,7 +350,7 @@ void Simulator::executeCurrentFrame()
     size_t dataSize = 0;
     logFile.read((char*) &dataSize, 4);
 
-    unsigned int posBeforeRead = logFile.tellg();
+    unsigned int posBeforeRead = (unsigned int)logFile.tellg();
 
     bool found = false;
 
@@ -376,7 +376,7 @@ void Simulator::executeCurrentFrame()
     if(found)
     {
       // check how much data was read
-      unsigned int posAfterRead = logFile.tellg();
+      unsigned int posAfterRead = (unsigned int)logFile.tellg();
       unsigned int diffAfterBefore = posAfterRead - posBeforeRead;
       if(diffAfterBefore < dataSize)
       {
