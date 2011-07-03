@@ -25,7 +25,7 @@
 using namespace naoth;
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
-theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset, theBlackBoard.theCalibrationData.updated),
+theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
 theMotionStatusWriter(NULL),
 theOdometryDataWriter(NULL),
 theHeadMotionRequestReader(NULL),
@@ -224,12 +224,11 @@ void Motion::postProcess()
   Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
   theOdometryDataWriter->write(odmsg.str());
 
-  if ( theBlackBoard.theCalibrationData.updated )
+  if ( frameNumSinceLastMotionRequest == 0 ) // cognition is running
   {
     stringstream cdmsg;
     Serializer<CalibrationData>::serialize(theBlackBoard.theCalibrationData, cdmsg);
     theCalibrationDataWriter->write(cdmsg.str());
-    theBlackBoard.theCalibrationData.updated = false;
   }
     
 #ifdef NAO

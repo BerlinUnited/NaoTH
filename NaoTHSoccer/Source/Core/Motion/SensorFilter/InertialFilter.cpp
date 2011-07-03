@@ -9,11 +9,10 @@
 
 using namespace naoth;
 
-InertialFilter::InertialFilter(const MotionBlackBoard& bb, Vector2d& offset, bool& offsetUpdated):
+InertialFilter::InertialFilter(const MotionBlackBoard& bb, Vector2d& offset):
   theBlackBoard(bb),
   sensorData(bb.theInertialSensorData),
   theOffset(offset),
-  theOffsetUpdated(offsetUpdated),
   calibrateNum(0),
   max_offet(Math::fromDegrees(6))
 {
@@ -54,7 +53,6 @@ void InertialFilter::calibrate()
         {
           // every 50 datas
           theOffset = theNewOffset;
-          theOffsetUpdated = true;
         }
         return;
       }
