@@ -115,7 +115,6 @@ private:
   void updateByGoalModel(SampleSet& sampleSet) const;
 
   void updateByLinesTable(SampleSet& sampleSet) const;
-  void updateByLinesTableNew(SampleSet& sampleSet) const;
   void updateByCornersTable(SampleSet& sampleSet) const;
   void updateByMiddleCircle(SampleSet& sampleSet) const;
   void updateByFlags(SampleSet& sampleSet) const;
@@ -128,6 +127,7 @@ private:
 
   /** apply all the updates ba any avaliable sensor data */
   bool updateBySensors(SampleSet& sampleSet) const;
+
 
   /****************************************
     drawing methods

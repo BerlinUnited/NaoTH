@@ -105,20 +105,7 @@ private:
   
   CameraInfo ci;
   BodyParts bodyparts;
-  Vector2<double> leftUpperCorner;
-  Vector2<double> rightUpperCorner;
-  Vector2<double> leftLowerCorner;
-  Vector2<double> rightLowerCorner;
- 
-
   std::vector<Vector2<int> > imagePoints;
-  BodyContour::Line leftBoundary;
-  BodyContour::Line rightBoundary;
-  BodyContour::Line upperBoundary;
-  BodyContour::Line lowerBoundary;
-  bool intersect;
-  bool convex;
-  bool usegrid;
   int lineNumber;
 };// end class BodyContourProvider
 

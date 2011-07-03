@@ -17,9 +17,10 @@
 // tools
 #include "Tools/Math/Probabilistics.h"
 
+#include "PlatformInterface/Platform.h"
+
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
-  : 
-    MonteCarloSelfLocatorBase(),
+  :
     //gridClustering(sampleSet),
     canopyClustering(theSampleSet, parameters)
 {
@@ -62,7 +63,7 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
   DEBUG_REQUEST_REGISTER("MCSL:draw_Cluster", "draw the clustered particle set", false);
   DEBUG_REQUEST_REGISTER("MCSL:draw_deviation", "draw the ", false);
   
-    
+  
   // resulting position
   DEBUG_REQUEST_REGISTER("MCSL:draw_position","draw robots position (self locator)", false);
 
@@ -242,74 +243,14 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
 }//end updateByGoalPosts
 
 
-void MonteCarloSelfLocator::updateByLinesTableNew(SampleSet& sampleSet) const
-{
-  const double cameraHeight = getCameraMatrix().translation.z;
-  const double sigmaDistance = parameters.sigmaDistanceLine;
-  const double sigmaAngle = parameters.sigmaAngleLine;
-
-  for(unsigned int lp=0; lp < getLinePercept().lines.size(); lp++)
-  {
-    // dont use the lines which are parts of the circle 
-    // when the circle itself was detected
-    if(getLinePercept().lines[lp].type == LinePercept::C && getLinePercept().middleCircleWasSeen)
-      continue;
-
-    const Math::LineSegment& relPercept = getLinePercept().lines[lp].lineOnField;
-
-    for(int s=0; s < sampleSet.numberOfParticles; s++)
-    {
-      Sample& sample = sampleSet[s];
-
-      // translocation of the line percept
-      Math::LineSegment absPercept(sample*relPercept.begin(), sample*relPercept.end());
-      
-      // midpoint
-      Vector2<double> midPoint = absPercept.point(0.5*absPercept.getLength());
-
-      int length = (absPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
-      int direction = (fabs(absPercept.getDirection().x) > fabs(absPercept.getDirection().y))?LinesTable::along_lines:LinesTable::across_lines;
-      int type = (getLinePercept().lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
-
-
-      LinesTable::NamedPoint p_mid = getFieldInfo().fieldLinesTable.get_closest_point(midPoint, type);
-
-
-      LinesTable::NamedPoint p_begin = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.begin(), type);
-      LinesTable::NamedPoint p_end = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.end(), type);
-      
-
-      Vector2<double> p1 = p_begin.position;
-      Vector2<double> p2 = p_end.position;
-      Vector2<double> pm = p_mid.position;
-
-      {
-        Vector2<double> relP1(sample/p1);
-        sample.likelihood *= computeDistanceWeighting(relPercept.begin().abs(), relP1.abs(), cameraHeight, sigmaDistance, 1.0);
-        sample.likelihood *= computeAngleWeighting(relPercept.begin().angle(), relP1.angle(), sigmaAngle, 1.0);
-      }
-      {
-        Vector2<double> relP2(sample/p2);
-        sample.likelihood *= computeDistanceWeighting(relPercept.end().abs(), relP2.abs(), cameraHeight, sigmaDistance, 1.0);
-        sample.likelihood *= computeAngleWeighting(relPercept.end().angle(), relP2.angle(), sigmaAngle, 1.0);
-      }
-      {
-        Vector2<double> relPM(sample/pm);
-        Vector2<double> relMidPoint = relPercept.point(0.5*relPercept.getLength());
-        sample.likelihood *= computeDistanceWeighting(relMidPoint.abs(), relPM.abs(), cameraHeight, sigmaDistance, 1.0);
-        sample.likelihood *= computeAngleWeighting(relMidPoint.angle(), relPM.angle(), sigmaAngle, 1.0);
-      }
-    }//end for
-  }//end for
-}//end updateByLinesTableNew
-
-
 void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
 {
   const double cameraHeight = getCameraMatrix().translation.z;
   const double sigmaDistance = parameters.sigmaDistanceLine;
   const double sigmaAngle = parameters.sigmaAngleLine;
   double shortestLine = 1e+5; // very long...
+
+  //updateByLinesTableNew();
 
   PEN("FF00FF", 10);
   for(unsigned int lp=0; lp < getLinePercept().lines.size(); lp++)
@@ -332,34 +273,38 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
     int lineVotes[30] = {0};
     int maxIdx = 0;
 
-      const Math::LineSegment& relPercept = getLinePercept().lines[lp].lineOnField;
+    const Math::LineSegment& relPercept = getLinePercept().lines[lp].lineOnField;
 
-    for(int s=0; s < sampleSet.numberOfParticles; s++)
+    for(unsigned int s=0; s < sampleSet.size(); s++)
     {
       Sample& sample = sampleSet[s];
 
-      // translocation of the line percept
-      Math::LineSegment absPercept(sample*relPercept.begin(), sample*relPercept.end());
-      
-      // midpoint
-      Vector2<double> midPoint = absPercept.point(0.5*absPercept.getLength());
+      // statistics
+      shortestLine = min(shortestLine, relPercept.getLength());
 
-      shortestLine = min(shortestLine, absPercept.getLength());
 
-      int length = (absPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
-      int direction = (fabs(absPercept.getDirection().x) > fabs(absPercept.getDirection().y))?LinesTable::along_lines:LinesTable::across_lines;
+      // translocation of the line percept to the global coords
+      Vector2<double> abs_begin = sample*relPercept.begin();
+      Vector2<double> abs_end = sample*relPercept.end();
+      Vector2<double> abs_direction = abs_end - abs_begin;
+      Vector2<double> abs_mid = (abs_begin+abs_end)*0.5;
+
+      // classify the line percept
+      int length = (relPercept.getLength() > 700)?LinesTable::long_lines:LinesTable::short_lines|LinesTable::circle_lines|LinesTable::long_lines;
+      int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
       int type = (getLinePercept().lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
 
-      LinesTable::NamedPoint p_begin = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.begin(), type);
-      LinesTable::NamedPoint p_end = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.end(), type);
-      LinesTable::NamedPoint p_mid = getFieldInfo().fieldLinesTable.get_closest_point(midPoint, type);
+      // get the closest line in the world
+      //LinesTable::NamedPoint p_begin = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.begin(), type);
+      //LinesTable::NamedPoint p_end = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.end(), type);
+      LinesTable::NamedPoint p_mid = getFieldInfo().fieldLinesTable.get_closest_point(abs_mid, type);
 
       // there is no such line
-      if(p_begin.id == -1 || p_end.id == -1 || p_mid.id == -1)
+      if(p_mid.id == -1)
         continue;
 
-      bool cc = p_begin.id == p_end.id && p_begin.id == p_mid.id;
-      PLOT("MCSL:cc",cc);
+      // get the line
+      const Math::LineSegment& ref_line = getFieldInfo().fieldLinesTable.getLines()[p_mid.id];
 
       DEBUG_REQUEST("MCSL:draw_corner_votes",
         // vote for the corner id
@@ -369,8 +314,8 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
           maxIdx = p_mid.id;
       );
 
-      Vector2<double> p1 = p_begin.position;
-      Vector2<double> p2 = p_end.position;
+      Vector2<double> p1 = ref_line.projection(abs_begin);
+      Vector2<double> p2 = ref_line.projection(abs_end);
       Vector2<double> pm = p_mid.position;
 
 
@@ -1178,7 +1123,7 @@ void MonteCarloSelfLocator::execute()
   //gridClustering.cluster();
 
   // try to track the hypothesis
-  int clusterSize = canopyClustering.getClusterSize(getRobotPose().translation);
+  int clusterSize = canopyClustering.cluster(getRobotPose().translation);
   PLOT("MCSL:clusterSize", clusterSize);
   
   // TODO: find a beter place for it
@@ -1201,7 +1146,7 @@ void MonteCarloSelfLocator::execute()
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
     if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.numberOfParticles)
-      canopyClustering.getClusterSize(getRobotPose().translation);
+      canopyClustering.cluster(getRobotPose().translation);
     else // jump...
       getRobotPose().isValid = false;
   }//end if

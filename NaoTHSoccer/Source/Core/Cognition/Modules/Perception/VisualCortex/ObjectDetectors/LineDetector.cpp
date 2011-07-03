@@ -31,6 +31,7 @@ LineDetector::LineDetector()
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:expand_lines", "mark the pixels touched during the line extension", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:estimate_corners", "...", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:draw_closest_line", "Red: estimated orthogonal point; Blue: closest point of line", false);
   
   // not finished ...
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_circle", "mark the middle circle in the image", false);
@@ -183,8 +184,9 @@ void LineDetector::execute()
   {
     const Math::LineSegment& line = getLinePercept().lines[i].lineOnField;
 
-    if (minObserveLineLength < line.getLength()) {
-      
+    //not part of circle and big enough
+    if (getLinePercept().lines[i].type != LinePercept::C && minObserveLineLength < line.getLength()) {
+
       Vector2<double> zeroPoint;
       zeroPoint.x = 0;
       zeroPoint.y = 0;
@@ -208,46 +210,41 @@ void LineDetector::execute()
       //just take lines in front of me
 
       if (projection.abs() < projOfClosestLine.abs()) {
-         projOfClosestLine = projection;
-         projOfClosestLineOnSegment = projectionOnSegment;
-         closestLine = line;
-         closestLineLength = line.getLength();
+        projOfClosestLine = projection;
+        projOfClosestLineOnSegment = projectionOnSegment;
+        closestLine = line;
+        closestLineLength = line.getLength();
       }
-
-
-      //make a debug request
-      FIELD_DRAWING_CONTEXT;
-      PEN("0000FF", 20);
-
-      Vector2<double> begin = line.begin();
-      Vector2<double> end = line.end();
-
-      LINE(begin.x, begin.y, end.x, end.y);
-
-      PEN("FF0000", 20);
-      CIRCLE(projection.x, projection.y, 10);
-
-      PEN("0000FF", 40);
-      CIRCLE(projectionOnSegment.x, projectionOnSegment.y, 40);
 
       getLinePercept().lineWasSeen = true;
 
       firstIteration = false;
-    }
+    }//if type and length
   }//end for
-
-  //PEN("00FF00", 50);
-
-  Vector2<double>  begin  = closestLine.begin();
-  Vector2<double>  end    = closestLine.end();
-
-  //LINE(begin.x, begin.y, end.x, end.y);
-  //CIRCLE(projOfClosestLine.x, projOfClosestLine.y, 30);
 
 
   if(getLinePercept().lineWasSeen == true)
-      getLinePercept().frameInfoWhenLineWasSeen = getFrameInfo();
-  
+  {
+    getLinePercept().frameInfoWhenLineWasSeen = getFrameInfo();
+
+    DEBUG_REQUEST("ImageProcessor:LineDetector:draw_closest_line",
+
+        FIELD_DRAWING_CONTEXT;
+        PEN("0000FF", 20);
+
+        Vector2<double> begin = closestLine.begin();
+        Vector2<double> end   = closestLine.end();
+
+        LINE(begin.x, begin.y, end.x, end.y);
+
+        PEN("FF0000", 20);
+        CIRCLE(projOfClosestLine.x, projOfClosestLine.y, 10);
+
+        PEN("0000FF", 40);
+        CIRCLE(projOfClosestLineOnSegment.x, projOfClosestLineOnSegment.y, 40);
+    );
+  }
+
   getLinePercept().estOrthPointOfClosestLine  = projOfClosestLine;
   getLinePercept().closestPointOfClosestLine  = projOfClosestLineOnSegment;
   getLinePercept().closestLineSeenLength      = closestLineLength;

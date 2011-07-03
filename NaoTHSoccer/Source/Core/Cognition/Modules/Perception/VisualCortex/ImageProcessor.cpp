@@ -35,6 +35,9 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
+  theBodyContourProvider = registerModule<BodyContourProvider>("BodyContourProvider");
+  theBodyContourProvider->setEnabled(true);
+
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
   theScanLineEdgelDetector->setEnabled(true);
 
@@ -66,6 +69,17 @@ void ImageProcessor::execute()
   getLinePercept().reset();
   getPlayersPercept().reset();
 
+  STOPWATCH_START("BodyContourProvider");
+  theBodyContourProvider->execute();
+  STOPWATCH_STOP("BodyContourProvider");
+
+  STOPWATCH_START("RobotDetector");
+  theRobotDetector->execute();
+  STOPWATCH_STOP("RobotDetector");
+
+  STOPWATCH_START("GoalDetector");
+  theGoalDetector->execute();
+  STOPWATCH_STOP("GoalDetector");
 
   STOPWATCH_START("ScanLineEdgelDetector");
   theScanLineEdgelDetector->execute();
@@ -79,17 +93,9 @@ void ImageProcessor::execute()
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
 
-  STOPWATCH_START("RobotDetector");
-  theRobotDetector->execute();
-  STOPWATCH_STOP("RobotDetector");
-
   STOPWATCH_START("LineDetector");
   theLineDetector->execute();
   STOPWATCH_STOP("LineDetector");
-
-  STOPWATCH_START("GoalDetector");
-  theGoalDetector->execute();
-  STOPWATCH_STOP("GoalDetector");
 
 
   // estimate the relative position of the ball

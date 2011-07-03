@@ -78,6 +78,12 @@ private:
 
   unsigned int lastTimeObstacleWasSeen;
   OdometryData lastRobotOdometry;
+  bool onceExecuted;
+
+  unsigned int initialTime;
+  unsigned int currentTime;
+
+  Pose2D odometryDelta;
 
   class GroundPointBuffer
   {

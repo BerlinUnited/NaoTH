@@ -17,7 +17,7 @@ InertialFilter::InertialFilter(const MotionBlackBoard& bb):
 {
 }
 
-InertialPercept InertialFilter::filte()
+InertialPercept InertialFilter::filter()
 {
   calibrate();
 

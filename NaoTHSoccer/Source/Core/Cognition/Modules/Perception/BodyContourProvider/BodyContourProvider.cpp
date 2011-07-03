@@ -17,6 +17,7 @@
 #include "PlatformInterface/Platform.h"
 #include "Tools/Math/Geometry.h"
 #include "Tools/CameraGeometry.h"
+#include "Tools/Math/ConvexHull.h"
 #include <vector>
 
 
@@ -24,25 +25,15 @@
 
 BodyContourProvider::BodyContourProvider()
 {
-  //ci = Platform::getInstance().theCameraInfo;
-  // load image boundaries
-  leftUpperCorner = Vector2<double>(0, 0);
-  rightUpperCorner = Vector2<double>(ci.resolutionWidth, 0);
-  leftLowerCorner = Vector2<double>(0, ci.resolutionHeight);
-  rightLowerCorner = Vector2<double>(ci.resolutionWidth, ci.resolutionHeight);
   getBodyContour().stepSize = 20;
-  getBodyContour().yDensity = getCameraInfo().resolutionHeight/getBodyContour().stepSize;
-  getBodyContour().xDensity = getCameraInfo().resolutionWidth/getBodyContour().stepSize;
+  getBodyContour().yDensity = getImage().cameraInfo.resolutionHeight/getBodyContour().stepSize;
+  getBodyContour().xDensity = getImage().cameraInfo.resolutionWidth/getBodyContour().stepSize;
  
   getBodyContour().grid.resize(getBodyContour().xDensity);
   for (int i = 0; i < getBodyContour().xDensity; i++)
   {
     getBodyContour().grid[i].resize(getBodyContour().yDensity);
   }
-  imagePoints.reserve(100);
-  
-  
-  
   // load contour parameters
   // torso
   bodyparts.torso.push_back(Vector3<double>(-60, 17, 80));
@@ -113,28 +104,21 @@ void BodyContourProvider::execute()
   {
     getBodyContour().grid[i].resize(getBodyContour().yDensity);
   }
-
-  convex = false;
-  usegrid = false;
+  
   lineNumber = 0; 
   
-  
-  //bool intersect = false;
   // add body contours
-  STOPWATCH_START("BodyContourProvider");
-  add(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::Torso);
-  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::LegLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::LegRight);
-  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::LegLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::LegRight);
-  add(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::FootLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::FootRight);
-  add(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::UpperArmLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::UpperArmRight);
-  add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm, 1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::LowerArmLeft);
-  add(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, getCameraInfo(), getCameraMatrix(), getBodyContour(), BodyContour::LowerArmRight);
-  STOPWATCH_STOP("BodyContourProvider");
-
+  add(getKinematicChain().theLinks[KinematicChain::Torso].M, bodyparts.torso, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::Torso);
+  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.upperLeg, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.upperLeg, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegRight);
+  add(getKinematicChain().theLinks[KinematicChain::LThigh].M, bodyparts.lowerLeg, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RThigh].M, bodyparts.lowerLeg, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LegRight);
+  add(getKinematicChain().theLinks[KinematicChain::LFoot].M, bodyparts.foot, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::FootLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RFoot].M, bodyparts.foot, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::FootRight);
+  add(getKinematicChain().theLinks[KinematicChain::LBicep].M, bodyparts.upperArm, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::UpperArmLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RBicep].M, bodyparts.upperArm, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::UpperArmRight);
+  add(getKinematicChain().theLinks[KinematicChain::LForeArm].M, bodyparts.lowerArm, 1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LowerArmLeft);
+  add(getKinematicChain().theLinks[KinematicChain::RForeArm].M, bodyparts.lowerArm, -1, getImage().cameraInfo, getCameraMatrix(), getBodyContour(), BodyContour::LowerArmRight);
     
   DEBUG_REQUEST("BodyContourProvider:draw_body_contour_lines",
     if (getBodyContour().lines.size() >= 2)
@@ -549,7 +533,11 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
                               BodyContour& bodyContour, BodyContour::bodyPartID id)
 {
   // some variables
-  Vector2<int> q1, q2, tempPoint;
+  const Vector2<int> frameUpperLeft(0,0);
+  const Vector2<int> frameLowerRight(cameraInfo.resolutionWidth-1, cameraInfo.resolutionHeight-1);
+  
+  Vector2<int> q1, q2, tempPoint(0,0);
+  
   // estimate the position of contour-point based on current position of the limb
   Vector3<double> p1 = origin * Vector3<double>(c[0].x, c[0].y * sign, c[0].z);
   // project this point into the image
@@ -559,86 +547,42 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
   {
     Vector3<double> p2 = origin * Vector3<double>(c[i].x, c[i].y * sign, c[i].z);
     q2 = CameraGeometry::relativePointToImage(cameraMatrix, cameraInfo, p2);
-    //create the temporary line with projected points
+
     BodyContour::Line tempLine = BodyContour::Line(q1, q2, lineNumber, id);
+
     // estimate, whether the points are within the image-boundaries
     bool p1InImage = withinImage(tempLine.p1, cameraInfo);
     bool p2InImage = withinImage(tempLine.p2, cameraInfo);
-    // if the point aren't behind the robot and at least one point
+    // if the points aren't behind the robot and at least one point
     // is within image boundaries
     if (q1.x != -1 && q2.x != -1 && (p1InImage || p2InImage))
-    { 
-      // all points are within the image, just take them
+    {
       if (p1InImage && p2InImage )
       {
         pushLine(tempLine, bodyContour);
       }//end if
+      //at least one point is not image
       else
       {
-        // the first point of the line is outside the image -
-        // we need to find an intersection with the image boundaries
+        //temporary points
+        Vector2<int> pointOne;
+        Vector2<int> pointTwo;
+        Math::LineSegment segment(tempLine.p1, tempLine.p2);
+        //the first point is not in image
         if (!p1InImage)
         {
-          // do we have an intersection with the left boundary?
-          if(tempLine.yAt(tempPoint.x, tempPoint.y))
-          {
-            // yes, we do. check the point.y coordinates.
-            if ((unsigned int)tempPoint.y <= cameraInfo.resolutionHeight && tempPoint.y >= 0)
-            {
-              BodyContour::Line line = BodyContour::Line(tempPoint, tempLine.p2, lineNumber, id);
-              pushLine(line, bodyContour);
-            }
-          }// end if
-          else
-          {
-            if (tempLine.p1.y <= 0)
-            {
-              tempLine.xAt(tempPoint.y, tempPoint.x);
-                BodyContour::Line line = BodyContour::Line(tempPoint, tempLine.p2, lineNumber, id);
-                pushLine(line, bodyContour);
-            }// end if
-            else
-            {
-              tempPoint = Vector2<int>(0, cameraInfo.resolutionHeight);
-              tempLine.xAt(tempPoint.y, tempPoint.x);
-              BodyContour::Line line = BodyContour::Line(tempPoint, tempLine.p2, lineNumber, id);
-              pushLine(line, bodyContour);
-            }// end else
-          }// end else
-        }// end if
-        // the second point of the line is outside the image -
-        // we need to find an intersection with the image boundaries
-        if (!p2InImage)
+          Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, segment, pointOne, pointTwo);
+          BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
+          pushLine(BodyContour::Line(tempLine2.p1, tempLine.p2, lineNumber, id), bodyContour);
+        }
+        else
         {
-          tempPoint = Vector2<int>(cameraInfo.resolutionWidth, 0);
-          if(tempLine.yAt(tempPoint.x, tempPoint.y))
-          {
-            if ((unsigned int)tempPoint.y <= cameraInfo.resolutionHeight && tempPoint.y >= 0)
-            {
-              BodyContour::Line line = BodyContour::Line(tempPoint, tempLine.p1, lineNumber, id);
-              pushLine(line, bodyContour);
-            }
-          }// end if
-          else
-          {
-            if (tempLine.p2.y <= 0)
-            {
-              tempPoint = Vector2<int>(cameraInfo.resolutionWidth, 0);
-              tempLine.xAt(tempPoint.y, tempPoint.x);
-              BodyContour::Line line = BodyContour::Line(tempPoint, tempLine.p1, lineNumber, id);
-              pushLine(line, bodyContour);
-            }// end if
-            else
-            {
-              tempPoint = Vector2<int>(cameraInfo.resolutionWidth, cameraInfo.resolutionHeight);
-              tempLine.xAt(tempPoint.y, tempPoint.x);
-              BodyContour::Line line = BodyContour::Line(tempPoint, tempLine.p1, lineNumber, id);
-              pushLine(line, bodyContour);
-            }// end else
-          }// end else
-        }// end if
-      }// end else 
-    }// end if  
+          Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, segment, pointOne, pointTwo);
+          BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
+          pushLine(BodyContour::Line(tempLine.p1, tempLine2.p2, lineNumber, id), bodyContour);
+        }
+      }//end else
+    }//end if
   p1 = p2;
   q1 = q2;
   }// end for

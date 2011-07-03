@@ -145,20 +145,7 @@ double BallSymbols::getBallTimeSinceLastSeen()
 
 double BallSymbols::getBallTimeSeen()
 {
-  static double timeWhenBallWasDetectFirst = theInstance->ballModel.frameInfoWhenBallWasSeen.getTime();
-  static bool seeingBallAlready = false;
-  double timeNow = theInstance->frameInfo.getTime();
-  
-  if (theInstance->ballModel.ballWasSeen && !seeingBallAlready)  {
-    timeWhenBallWasDetectFirst = theInstance->ballModel.frameInfoWhenBallWasSeen.getTime();
-    seeingBallAlready = true;
-  } else if (!theInstance->ballModel.ballWasSeen)
-    seeingBallAlready = false;
-
-  if (seeingBallAlready)
-    return timeNow - timeWhenBallWasDetectFirst;
-  else
-    return 0;
+  return theInstance->ballModel.timeBallIsSeen;
 }//end getBallTimeSeen
 
 double BallSymbols::getTeamBallTimeSinceLastUpdate()

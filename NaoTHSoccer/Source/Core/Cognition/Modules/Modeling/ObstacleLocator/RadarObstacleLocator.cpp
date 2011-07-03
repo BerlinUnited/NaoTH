@@ -11,17 +11,39 @@ RadarObstacleLocator::RadarObstacleLocator()
 {
   angle_offset = 10.0 + 180.0;
   obstacleBuffer.reserve(18);
+  onceExecuted = false;
 
   DEBUG_REQUEST_REGISTER("RadarObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("RadarObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
 }
 
 void RadarObstacleLocator::execute()
 {
-  // odometry
-  Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+  if (!onceExecuted)
+  {
+    //set initial time
+    initialTime = getFrameInfo().getTime();
+    onceExecuted = true;
+  }
+
+  //get current time
+  currentTime = getFrameInfo().getTime();
+
+  //get current odometry delta
+  odometryDelta += (lastRobotOdometry - getOdometryData());
+  
   lastRobotOdometry = getOdometryData();
 
-  getRadarGrid().reset();
+  if ((currentTime - initialTime) >= 1000)
+  {
+    getRadarGrid().ageGrid();
+    getRadarGrid().updateGrid(odometryDelta);
+    initialTime = currentTime;
+    odometryDelta.translation.x = 0;
+    odometryDelta.translation.y = 0;
+    odometryDelta.rotation = 0;
+  }
+  
 
   if(timeBuffer.getNumberOfEntries() > 0 && getFrameInfo().getTimeSince(timeBuffer.first()) > 1500)
   {
@@ -36,12 +58,9 @@ void RadarObstacleLocator::execute()
 
     if(point.posInImage.y > 10 && 
        point.posInImage.y < 200 && 
-       getBallPercept().ballWasSeen && 
-      (getBallPercept().bearingBasedOffsetOnField - point.posOnField).abs() < 500 &&
-      point.posOnField.abs() < 1000 &&
-      point.color == (int) ColorClasses::white &&
-      point.color != (int) ColorClasses::skyblue &&
-      point.color != (int) ColorClasses::yellow
+        (point.color == (int) ColorClasses::white ||
+         point.color == (int) ColorClasses::skyblue ||
+         point.color == (int) ColorClasses::yellow)
       )
     {
       buffer.add(point.posOnField);
@@ -79,6 +98,9 @@ void RadarObstacleLocator::execute()
 
     PEN("FF0000", 50);
     CIRCLE(mean.x, mean.y, 50);
+  );
+
+  DEBUG_REQUEST("RadarObstacleLocator:RadarGrid:drawGrid",
     getRadarGrid().drawFieldContext();
   );
 
