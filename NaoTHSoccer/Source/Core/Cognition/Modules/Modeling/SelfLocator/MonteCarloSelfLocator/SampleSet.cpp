@@ -57,14 +57,14 @@ void SampleSet::quicksort(int low, int high)
 void SampleSet::normalize()
 {
   double sum = 0;
-  for(int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < numberOfParticles; i++)
   {
     sum += samples[i].likelihood;
   }
 
   if(sum == 0) return;
 
-  for(int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < numberOfParticles; i++)
   {
     samples[i].likelihood /= sum;
   }
@@ -74,7 +74,7 @@ void SampleSet::normalize()
 void SampleSet::resetLikelihood()
 {
   double likelihood = 1.0/static_cast<double>(numberOfParticles);
-  for(int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < numberOfParticles; i++)
   {
     samples[i].likelihood = likelihood;
   }
@@ -88,10 +88,10 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
   std::vector<int> cluster(numberOfParticles);
   std::vector<Vector2<double> > averageTranslation(numberOfParticles);
   std::vector<Vector2<double> > averageRotation(numberOfParticles);
-  int maxIndex = 0;
+  unsigned int maxIndex = 0;
   double maxNumber = 0;
 
-  for(int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < numberOfParticles; i++)
   {
     if(samples[i].cluster >= 0 && samples[i].cluster < numberOfParticles)
     {
@@ -116,7 +116,7 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
 
 
   // calculate the covariance of the largest cluster
-  for(int i = 0; i < numberOfParticles; i++)
+  for(unsigned int i = 0; i < numberOfParticles; i++)
   {
     const Sample& sample = samples[i];
     if(sample.cluster == maxIndex)
@@ -128,10 +128,10 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
   return result;
 }//end meanOfLargestCluster
 
-void SampleSet::drawCluster(int clusterId)
+void SampleSet::drawCluster(unsigned int clusterId)
 {
   FIELD_DRAWING_CONTEXT;
-  for (int i = 0; i < numberOfParticles; i++)
+  for (unsigned int i = 0; i < numberOfParticles; i++)
   {
     if (samples[i].cluster == clusterId) 
       PEN("FFFFFF", 20);

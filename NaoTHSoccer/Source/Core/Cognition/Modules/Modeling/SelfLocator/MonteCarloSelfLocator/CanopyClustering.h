@@ -23,9 +23,9 @@ public:
   CanopyClustering(C& sampleSet, MCSLParameters& parameters)
     :
     sampleSet(sampleSet),
-    parameters(parameters),
     numOfClusters(0),
-    largestCluster(0)
+    largestCluster(0),
+    parameters(parameters)
   {
   }
 
@@ -123,8 +123,7 @@ public:
           // TODO: make it more effivient
           for (unsigned int i = 0; i < sampleSet.size(); i++)
           {
-            if(sampleSet[i].cluster == (int) j)
-            {
+            if(sampleSet[i].cluster == j) {
               sampleSet[i].cluster = k;
             }
           } //end for i
@@ -216,13 +215,12 @@ private:
 
 
   C& sampleSet;
-  MCSLParameters& parameters;
-
   static const unsigned int maxNumberOfClusters = 100;
   CanopyClusterBuilder clusters[maxNumberOfClusters];  //FIXME
   unsigned int numOfClusters;
   int largestCluster;
 
+  MCSLParameters& parameters;
 };
 
 #endif //__CanopyClustering_h_
