@@ -38,10 +38,12 @@ class SoccerStrategyProvider : public SoccerStrategyProviderBase
 {
 public:
 
-  class FormationParameters : public ParameterList
+  class FormationParameters
   {
   public:
     FormationParameters();
+
+    FormationParameters(unsigned int playerNumber);
 
     ~FormationParameters(){}
 

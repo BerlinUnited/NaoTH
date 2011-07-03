@@ -1,3 +1,4 @@
+
 /**
 * @file BallModel.h
 *
@@ -22,7 +23,7 @@ private:
 
   unsigned int _timeBallIsSeen;
   naoth::FrameInfo _frameInfoWhenBallWasSeen;
-  
+
 public:
   BallModel()
     :
@@ -85,3 +86,5 @@ public:
 };
 
 #endif// __BallModel_h_
+
+
