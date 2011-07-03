@@ -17,6 +17,8 @@ Sensor::~Sensor()
     delete theMotionStatusReader;
   if (theOdometryDataReader != NULL)
     delete theOdometryDataReader;
+  if (theCalibrationDataReader != NULL)
+    delete theCalibrationDataReader;
 }
 
 
