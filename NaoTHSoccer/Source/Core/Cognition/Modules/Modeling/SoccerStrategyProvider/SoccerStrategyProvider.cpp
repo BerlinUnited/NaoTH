@@ -6,24 +6,34 @@
 */
 
 #include "SoccerStrategyProvider.h"
-
+#include <PlatformInterface/Platform.h>
 #include  <Tools/DataConversion.h>
 
 SoccerStrategyProvider::FormationParameters::FormationParameters()
-: ParameterList("SoccerStrategyProvider::FormationParameters")
+:num(0), behindBall(true), penaltyAreaAllowed(true)
 {
-  PARAMETER_REGISTER(num) = 0;
-  PARAMETER_REGISTER(home.x) = 0;
-  PARAMETER_REGISTER(home.y) = 0;
-  PARAMETER_REGISTER(attr.x) = 0;
-  PARAMETER_REGISTER(attr.y) = 0;
-  PARAMETER_REGISTER(attr.z) = 0;
-  PARAMETER_REGISTER(min.x) = 0;
-  PARAMETER_REGISTER(min.y) = 0;
-  PARAMETER_REGISTER(max.x) = 0;
-  PARAMETER_REGISTER(max.y) = 0;
-  PARAMETER_REGISTER(behindBall) = true;
-  PARAMETER_REGISTER(penaltyAreaAllowed) = true;
+
+}
+
+SoccerStrategyProvider::FormationParameters::FormationParameters(unsigned int playerNumber)
+{
+  const naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  string group = "Formation";
+  ASSERT( config.hasGroup(group) );
+
+  num = playerNumber;
+  string p = "player"+DataConversion::toStr(playerNumber)+".";
+  home.x = config.getDouble(group, p+"home.x");
+  home.y = config.getDouble(group, p+"home.y");
+  attr.x = config.getDouble(group, p+"attr.x");
+  attr.y = config.getDouble(group, p+"attr.y");
+  attr.z = config.getDouble(group, p+"attr.z");
+  min.x = config.getDouble(group, p+"min.x");
+  min.y = config.getDouble(group, p+"min.y");
+  max.x = config.getDouble(group, p+"max.x");
+  max.y = config.getDouble(group, p+"max.y");
+  behindBall = config.getBool(group, p+"behindBall");
+  penaltyAreaAllowed = config.getBool(group, p+"penaltyAreaAllowed");
 }
 
 SoccerStrategyProvider::SoccerStrategyProvider()
@@ -34,10 +44,7 @@ void SoccerStrategyProvider::execute()
 {
   if (getPlayerInfo().gameData.playerNumber != theFormationParameters.num)
   {
-    // TODO: make it configurable
-    string path = "Config/formation/" + DataConversion::toStr(static_cast<unsigned int> (getPlayerInfo().gameData.playerNumber)) + ".cfg";
-    ASSERT(false); // todo
-    //VERIFY(theFormationParameters.loadFromConfigFile(path));
+    theFormationParameters = FormationParameters(getPlayerInfo().gameData.playerNumber);
   }
   
   getSoccerStrategy().formation = calculateForamtion();
