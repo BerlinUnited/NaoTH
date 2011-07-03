@@ -88,7 +88,7 @@ public:
         }
       }//end for
 
-      // try to add to the nearedst cluster
+      // try to add to the nearest cluster
       if(minIdx != -1 && isInCluster(clusters[minIdx], sampleSet[j]))
       {
         sampleSet[j].cluster = minIdx;
@@ -137,6 +137,7 @@ public:
   {
     numOfClusters = 1;
     CanopyClusterBuilder& cluster = clusters[0];
+    cluster.set(start);
 
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     {

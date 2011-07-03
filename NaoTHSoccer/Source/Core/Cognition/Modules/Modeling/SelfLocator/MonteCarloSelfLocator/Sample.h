@@ -16,7 +16,9 @@ class Sample2D
 public: 
   Sample2D() : cluster(0) {}
 
-  unsigned int cluster; /** id of the cluster this sample belongs to */
+  // ATTENTION: don't make it unsigned (!), it can be -1
+  /** id of the cluster this sample belongs to */
+  int cluster;
 
   virtual const Vector2<double>& getPos() const = 0;
 };
