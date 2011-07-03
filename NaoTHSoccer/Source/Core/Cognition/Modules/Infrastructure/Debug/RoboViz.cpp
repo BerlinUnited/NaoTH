@@ -427,7 +427,7 @@ void RoboViz::execute()
 void RoboViz::drawRobotPose()
 {
   string name = getRobotInfo().bodyNickName + ".RobotPose";
-  Vector3<unsigned char> color(0,0,255);
+  Vector3<unsigned char> color = getPlayerInfo().isPlayingStriker ? Vector3<unsigned char>(255,0,0) : Vector3<unsigned char>(0,0,255);
   double thickness = 5;
   drawCircle(getRobotPose().translation, 200, thickness, color, name);
 
