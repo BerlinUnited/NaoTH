@@ -18,7 +18,7 @@ public:
   const unsigned int& numberOfParticles; /** TODO: make it as parameter */
 
 private:
-  int _numberOfParticles;
+  unsigned int _numberOfParticles;
 
 public: 
   SampleSet(int n = 100) 
