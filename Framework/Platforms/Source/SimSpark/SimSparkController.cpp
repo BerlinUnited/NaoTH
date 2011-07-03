@@ -709,7 +709,7 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         {
           ASSERT(gameTime >= 0);
           theGameData.gameTime = static_cast<unsigned int>(gameTime)*1000;
-          theGameData.firstHalf = (theGameData.gameState < half_time);
+          theGameData.firstHalf = (theGameData.gameTime < half_time);
           if ( theGameData.firstHalf )
           {
             theGameData.msecsRemaining = half_time - theGameData.gameTime;
