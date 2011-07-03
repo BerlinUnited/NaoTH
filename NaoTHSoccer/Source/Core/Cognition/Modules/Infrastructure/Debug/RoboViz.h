@@ -15,12 +15,14 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Motion/Request/MotionRequest.h"
 
 BEGIN_DECLARE_MODULE(RoboViz)
   REQUIRE(RobotInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(RobotPose)
   REQUIRE(KinematicChain)
+  REQUIRE(MotionRequest)
 END_DECLARE_MODULE(RoboViz)
 
 class RoboViz: public RoboVizBase
@@ -48,6 +50,8 @@ class RoboViz: public RoboVizBase
   int getAgentAnnotationID();
 
   void drawRobotPose();
+
+  void drawMotionRequest();
 
   // test functions
   void test();
