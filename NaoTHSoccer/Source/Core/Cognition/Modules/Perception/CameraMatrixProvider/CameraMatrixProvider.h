@@ -15,10 +15,10 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/FSRData.h"
-#include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/AccelerometerData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Perception/InertialPercept.h"
 
 // motion stuff
 #include "Representations/Modeling/KinematicChain.h"
@@ -27,7 +27,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CameraMatrixProvider)
-  REQUIRE(InertialSensorData)
+  REQUIRE(InertialPercept)
   REQUIRE(GoalPercept) // needed fot calibration of the camera matrix
   REQUIRE(Image)
   REQUIRE(FieldInfo)

@@ -54,6 +54,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   
   theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
   theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
+  theCalibrationDataReader = new MessageReader(platformInterface.getMessageQueue("CalibrationData"));
 }//end init
 
 
@@ -83,6 +84,21 @@ void Sensor::execute()
     stringstream ss(msg);
     Serializer<OdometryData>::deserialize(ss, getOdometryData());
   }
+
+  if ( !theCalibrationDataReader->empty() )
+  {
+    string msg = theCalibrationDataReader->read();
+    // drop old message
+    while ( !theCalibrationDataReader->empty() )
+    {
+      msg = theCalibrationDataReader->read();
+    }
+    stringstream ss(msg);
+    Serializer<CalibrationData>::deserialize(ss, getCalibrationData());
+  }
+
+  // add calibration to inertial sensor
+  getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
 
 }//end execute
 

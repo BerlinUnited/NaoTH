@@ -66,6 +66,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* OdometryData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   OdometryData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* CalibrationData_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  CalibrationData_reflection_ = NULL;
 
 }  // namespace
 
@@ -376,6 +379,21 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OdometryData));
+  CalibrationData_descriptor_ = file->message_type(16);
+  static const int CalibrationData_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, inertialsensoroffset_),
+  };
+  CalibrationData_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      CalibrationData_descriptor_,
+      CalibrationData::default_instance_,
+      CalibrationData_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(CalibrationData));
 }
 
 namespace {
@@ -420,6 +438,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     MotionStatus_descriptor_, &MotionStatus::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     OdometryData_descriptor_, &OdometryData::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    CalibrationData_descriptor_, &CalibrationData::default_instance());
 }
 
 }  // namespace
@@ -457,6 +477,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete MotionStatus_reflection_;
   delete OdometryData::default_instance_;
   delete OdometryData_reflection_;
+  delete CalibrationData::default_instance_;
+  delete CalibrationData_reflection_;
 }
 
 void protobuf_AddDesc_Representations_2eproto() {
@@ -533,8 +555,10 @@ void protobuf_AddDesc_Representations_2eproto() {
     "RightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/"
     "\n\020plannedMotionHip\030\010 \002(\0132\025.naothmessages"
     ".Pose2D\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025."
-    "naothmessages.Pose2DB)\n\'de.hu_berlin.inf"
-    "ormatik.ki.nao.messages", 2703);
+    "naothmessages.Pose2D\"M\n\017CalibrationData\022"
+    ":\n\024inertialSensorOffset\030\001 \001(\0132\034.naothmes"
+    "sages.DoubleVector2B)\n\'de.hu_berlin.info"
+    "rmatik.ki.nao.messages", 2782);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -553,6 +577,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   FSRData::default_instance_ = new FSRData();
   MotionStatus::default_instance_ = new MotionStatus();
   OdometryData::default_instance_ = new OdometryData();
+  CalibrationData::default_instance_ = new CalibrationData();
   Image::default_instance_->InitAsDefaultInstance();
   CameraInfo::default_instance_->InitAsDefaultInstance();
   JointData::default_instance_->InitAsDefaultInstance();
@@ -569,6 +594,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   FSRData::default_instance_->InitAsDefaultInstance();
   MotionStatus::default_instance_->InitAsDefaultInstance();
   OdometryData::default_instance_->InitAsDefaultInstance();
+  CalibrationData::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Representations_2eproto);
 }
 
@@ -6488,6 +6514,221 @@ void OdometryData::Swap(OdometryData* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = OdometryData_descriptor_;
   metadata.reflection = OdometryData_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int CalibrationData::kInertialSensorOffsetFieldNumber;
+#endif  // !_MSC_VER
+
+CalibrationData::CalibrationData()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void CalibrationData::InitAsDefaultInstance() {
+  inertialsensoroffset_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+}
+
+CalibrationData::CalibrationData(const CalibrationData& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void CalibrationData::SharedCtor() {
+  _cached_size_ = 0;
+  inertialsensoroffset_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+CalibrationData::~CalibrationData() {
+  SharedDtor();
+}
+
+void CalibrationData::SharedDtor() {
+  if (this != default_instance_) {
+    delete inertialsensoroffset_;
+  }
+}
+
+void CalibrationData::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* CalibrationData::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return CalibrationData_descriptor_;
+}
+
+const CalibrationData& CalibrationData::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+CalibrationData* CalibrationData::default_instance_ = NULL;
+
+CalibrationData* CalibrationData::New() const {
+  return new CalibrationData;
+}
+
+void CalibrationData::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_inertialsensoroffset()) {
+      if (inertialsensoroffset_ != NULL) inertialsensoroffset_->::naothmessages::DoubleVector2::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool CalibrationData::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_inertialsensoroffset()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void CalibrationData::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+  if (has_inertialsensoroffset()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->inertialsensoroffset(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* CalibrationData::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+  if (has_inertialsensoroffset()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->inertialsensoroffset(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int CalibrationData::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+    if (has_inertialsensoroffset()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->inertialsensoroffset());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void CalibrationData::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const CalibrationData* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const CalibrationData*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void CalibrationData::MergeFrom(const CalibrationData& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_inertialsensoroffset()) {
+      mutable_inertialsensoroffset()->::naothmessages::DoubleVector2::MergeFrom(from.inertialsensoroffset());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void CalibrationData::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void CalibrationData::CopyFrom(const CalibrationData& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CalibrationData::IsInitialized() const {
+  
+  if (has_inertialsensoroffset()) {
+    if (!this->inertialsensoroffset().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void CalibrationData::Swap(CalibrationData* other) {
+  if (other != this) {
+    std::swap(inertialsensoroffset_, other->inertialsensoroffset_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata CalibrationData::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = CalibrationData_descriptor_;
+  metadata.reflection = CalibrationData_reflection_;
   return metadata;
 }
 

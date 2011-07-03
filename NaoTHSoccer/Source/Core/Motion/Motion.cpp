@@ -25,7 +25,7 @@
 using namespace naoth;
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
-theInertialFilter(theBlackBoard),
+theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset, theBlackBoard.theCalibrationData.updated),
 theMotionStatusWriter(NULL),
 theOdometryDataWriter(NULL),
 theHeadMotionRequestReader(NULL),
@@ -97,6 +97,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   
   theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
   theOdometryDataWriter = new MessageWriter(platformInterface.getMessageQueue("OdometryData"));
+  theCalibrationDataWriter = new MessageWriter(platformInterface.getMessageQueue("CalibrationData"));
   
   theHeadMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("HeadMotionRequest"));
   theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
@@ -222,6 +223,14 @@ void Motion::postProcess()
   stringstream odmsg;
   Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
   theOdometryDataWriter->write(odmsg.str());
+
+  if ( theBlackBoard.theCalibrationData.updated )
+  {
+    stringstream cdmsg;
+    Serializer<CalibrationData>::serialize(theBlackBoard.theCalibrationData, cdmsg);
+    theCalibrationDataWriter->write(cdmsg.str());
+    theBlackBoard.theCalibrationData.updated = false;
+  }
     
 #ifdef NAO
   theDebugMessageOut.answers.clear();
