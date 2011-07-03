@@ -15,7 +15,11 @@
 class CalibrationData: public naoth::Printable
 {
 public:
+  CalibrationData():updated(false){}
+
   Vector2d inertialSensorOffset;
+
+  bool updated;
 
   virtual void print(ostream& stream) const
   {
