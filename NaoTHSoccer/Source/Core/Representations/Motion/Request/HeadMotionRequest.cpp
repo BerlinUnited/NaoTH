@@ -10,6 +10,7 @@
 
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <Tools/DataConversion.h>
 
 using namespace naoth;
 
@@ -45,24 +46,19 @@ void Serializer<HeadMotionRequest>::serialize(const HeadMotionRequest& represent
   naothmessages::HeadMotionRequest message;
   message.set_id(representation.id);
   message.set_cameraid(representation.cameraID);
-  message.mutable_targetjointposition()->set_x(representation.targetJointPosition.x);
-  message.mutable_targetjointposition()->set_y(representation.targetJointPosition.y);
-  message.mutable_targetpointinimage()->set_x(representation.targetPointInImage.x);
-  message.mutable_targetpointinimage()->set_y(representation.targetPointInImage.y);
-  message.mutable_targetpointintheworld()->set_x(representation.targetPointInTheWorld.x);
-  message.mutable_targetpointintheworld()->set_y(representation.targetPointInTheWorld.y);
-  message.mutable_targetpointintheworld()->set_z(representation.targetPointInTheWorld.z);
-  message.mutable_searchcenter()->set_x(representation.searchCenter.x);
-  message.mutable_searchcenter()->set_y(representation.searchCenter.y);
-  message.mutable_searchcenter()->set_z(representation.searchCenter.z);
-  message.mutable_searchsize()->set_x(representation.searchSize.x);
-  message.mutable_searchsize()->set_y(representation.searchSize.y);
-  message.mutable_searchsize()->set_z(representation.searchSize.z);
+
+  DataConversion::toMessage(representation.targetJointPosition, *(message.mutable_targetjointposition()));
+  DataConversion::toMessage(representation.targetPointInImage, *(message.mutable_targetpointinimage()));
+  DataConversion::toMessage(representation.targetPointInTheWorld, *(message.mutable_targetpointintheworld()));
+  DataConversion::toMessage(representation.targetPointOnTheGround, *(message.mutable_targetpointontheground()));
+  DataConversion::toMessage(representation.searchCenter, *(message.mutable_searchcenter()));
+  DataConversion::toMessage(representation.searchSize, *(message.mutable_searchsize()));
+
   message.set_searchdirection(representation.searchDirection);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializePartialToZeroCopyStream(&buf);
-}
+}//end serialize
 
 void Serializer<HeadMotionRequest>::deserialize(std::istream& stream, HeadMotionRequest& representation)
 {
@@ -72,19 +68,14 @@ void Serializer<HeadMotionRequest>::deserialize(std::istream& stream, HeadMotion
   
   representation.id = static_cast<HeadMotionRequest::HeadMotionID>(message.id());
   representation.cameraID = static_cast<CameraInfo::CameraID>(message.cameraid());
-  representation.targetJointPosition.x = message.mutable_targetjointposition()->x();
-  representation.targetJointPosition.y = message.mutable_targetjointposition()->y();
-  representation.targetPointInImage.x = message.mutable_targetpointinimage()->x();
-  representation.targetPointInImage.y = message.mutable_targetpointinimage()->y();
-  representation.targetPointInTheWorld.x = message.mutable_targetpointintheworld()->x();
-  representation.targetPointInTheWorld.y = message.mutable_targetpointintheworld()->y();
-  representation.targetPointInTheWorld.z = message.mutable_targetpointintheworld()->z();
-  representation.searchCenter.x = message.mutable_searchcenter()->x();
-  representation.searchCenter.y = message.mutable_searchcenter()->y();
-  representation.searchCenter.z = message.mutable_searchcenter()->z();
-  representation.searchSize.x = message.mutable_searchsize()->x();
-  representation.searchSize.y = message.mutable_searchsize()->y();
-  representation.searchSize.z = message.mutable_searchsize()->z();
+
+  DataConversion::fromMessage(message.targetjointposition(), representation.targetJointPosition);
+  DataConversion::fromMessage(message.targetpointinimage(), representation.targetPointInImage);
+  DataConversion::fromMessage(message.targetpointintheworld(), representation.targetPointInTheWorld);
+  DataConversion::fromMessage(message.targetpointontheground(), representation.targetPointOnTheGround);
+  DataConversion::fromMessage(message.searchcenter(), representation.searchCenter);
+  DataConversion::fromMessage(message.searchsize(), representation.searchSize);
+
   representation.searchDirection = message.searchdirection();
-}
+}//end deserialize
 

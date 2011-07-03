@@ -59,7 +59,7 @@ void HeadMotionEngine::execute()
       break;
 
     case HeadMotionRequest::look_at_point_on_the_ground: 
-      //gotoPointOnTheGround(theBlackBoard.theHeadMotionRequest.targetPointOnTheGround);
+      gotoPointOnTheGround(theBlackBoard.theHeadMotionRequest.targetPointOnTheGround);
       break;
 
     case HeadMotionRequest::goto_angle: 
@@ -121,7 +121,6 @@ void HeadMotionEngine::hold()
           theBlackBoard.theSensorJointData.position[JointData::HeadPitch];
 }//end hold
 
-//TODO: check this function
 void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
 {
   Vector3<double> pointOnTheGround(target.x,target.y,0.0);

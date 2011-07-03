@@ -90,6 +90,7 @@ message HeadMotionRequest {
   optional DoubleVector3 searchCenter = 6;
   optional DoubleVector3 searchSize = 7;
   optional bool searchDirection = 8;
+  optional DoubleVector2 targetPointOnTheGround = 9;
 }
 
 message WalkRequest {
