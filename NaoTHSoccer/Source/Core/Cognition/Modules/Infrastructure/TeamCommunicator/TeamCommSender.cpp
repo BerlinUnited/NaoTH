@@ -41,8 +41,7 @@ void TeamCommSender::createMessage(naothmessages::TeamCommMessage &msg)
 
   msg.set_timesinceballwasseen(
     getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()));
-  Vector2d ballOnField = getRobotPose() * getBallModel().position;
-  DataConversion::toMessage(ballOnField, *msg.mutable_ballposition());
+  DataConversion::toMessage(getBallModel().position, *msg.mutable_ballposition());
 
   // robot pose
   DataConversion::toMessage(getRobotPose(), *(msg.mutable_positiononfield()));
