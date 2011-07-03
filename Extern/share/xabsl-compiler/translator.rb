@@ -1,0 +1,10 @@
+require "rexml/document"
+require "rexml/streamlistener"
+require 'constants'
+require 'translator_base'
+require 'language_elements'
+require 'xml_parser'
+require 'symbols'
+require 'symbol_table'
+require 'tokenizer'
+require 'errors'
