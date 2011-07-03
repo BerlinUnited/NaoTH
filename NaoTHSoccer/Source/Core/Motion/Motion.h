@@ -63,6 +63,7 @@ private:
   // message from motion to cognition
   MessageWriter* theMotionStatusWriter;
   MessageWriter* theOdometryDataWriter;
+  MessageWriter* theCalibrationDataWriter;
   
   // message from cognition to motion
   MessageReader* theHeadMotionRequestReader;

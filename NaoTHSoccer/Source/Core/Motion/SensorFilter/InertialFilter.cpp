@@ -9,9 +9,10 @@
 
 using namespace naoth;
 
-InertialFilter::InertialFilter(const MotionBlackBoard& bb):
+InertialFilter::InertialFilter(const MotionBlackBoard& bb, Vector2d& offset):
   theBlackBoard(bb),
   sensorData(bb.theInertialSensorData),
+  theOffset(offset),
   calibrateNum(0),
   max_offet(Math::fromDegrees(6))
 {

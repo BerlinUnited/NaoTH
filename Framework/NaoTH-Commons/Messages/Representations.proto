@@ -146,3 +146,8 @@ message OdometryData
 {
   required Pose2D pose = 1;
 }
+
+message CalibrationData
+{
+  optional DoubleVector2 inertialSensorOffset = 1;
+}

@@ -49,6 +49,7 @@ class LinePercept;
 class FSRData;
 class MotionStatus;
 class OdometryData;
+class CalibrationData;
 
 enum Image_Format {
   Image_Format_YUV = 0,
@@ -2056,6 +2057,89 @@ class OdometryData : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static OdometryData* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class CalibrationData : public ::google::protobuf::Message {
+ public:
+  CalibrationData();
+  virtual ~CalibrationData();
+  
+  CalibrationData(const CalibrationData& from);
+  
+  inline CalibrationData& operator=(const CalibrationData& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const CalibrationData& default_instance();
+  
+  void Swap(CalibrationData* other);
+  
+  // implements Message ----------------------------------------------
+  
+  CalibrationData* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const CalibrationData& from);
+  void MergeFrom(const CalibrationData& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+  inline bool has_inertialsensoroffset() const;
+  inline void clear_inertialsensoroffset();
+  static const int kInertialSensorOffsetFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& inertialsensoroffset() const;
+  inline ::naothmessages::DoubleVector2* mutable_inertialsensoroffset();
+  inline ::naothmessages::DoubleVector2* release_inertialsensoroffset();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.CalibrationData)
+ private:
+  inline void set_has_inertialsensoroffset();
+  inline void clear_has_inertialsensoroffset();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::DoubleVector2* inertialsensoroffset_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static CalibrationData* default_instance_;
+};
 // ===================================================================
 
 
@@ -3992,6 +4076,39 @@ inline ::naothmessages::Pose2D* OdometryData::release_pose() {
   clear_has_pose();
   ::naothmessages::Pose2D* temp = pose_;
   pose_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// CalibrationData
+
+// optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+inline bool CalibrationData::has_inertialsensoroffset() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void CalibrationData::set_has_inertialsensoroffset() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void CalibrationData::clear_has_inertialsensoroffset() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void CalibrationData::clear_inertialsensoroffset() {
+  if (inertialsensoroffset_ != NULL) inertialsensoroffset_->::naothmessages::DoubleVector2::Clear();
+  clear_has_inertialsensoroffset();
+}
+inline const ::naothmessages::DoubleVector2& CalibrationData::inertialsensoroffset() const {
+  return inertialsensoroffset_ != NULL ? *inertialsensoroffset_ : *default_instance_->inertialsensoroffset_;
+}
+inline ::naothmessages::DoubleVector2* CalibrationData::mutable_inertialsensoroffset() {
+  set_has_inertialsensoroffset();
+  if (inertialsensoroffset_ == NULL) inertialsensoroffset_ = new ::naothmessages::DoubleVector2;
+  return inertialsensoroffset_;
+}
+inline ::naothmessages::DoubleVector2* CalibrationData::release_inertialsensoroffset() {
+  clear_has_inertialsensoroffset();
+  ::naothmessages::DoubleVector2* temp = inertialsensoroffset_;
+  inertialsensoroffset_ = NULL;
   return temp;
 }
 
