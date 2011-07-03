@@ -12,17 +12,23 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
 #include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/FieldInfo.h>
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/SoccerStrategy.h"
 
 BEGIN_DECLARE_MODULE(RoboViz)
   REQUIRE(RobotInfo)
+  REQUIRE(FieldInfo)
   REQUIRE(PlayerInfo)
   REQUIRE(RobotPose)
   REQUIRE(KinematicChain)
   REQUIRE(MotionRequest)
+  REQUIRE(BallModel)
+  REQUIRE(SoccerStrategy)
 END_DECLARE_MODULE(RoboViz)
 
 class RoboViz: public RoboVizBase
@@ -52,6 +58,8 @@ class RoboViz: public RoboVizBase
   void drawRobotPose();
 
   void drawMotionRequest();
+
+  void drawBallAndAttackDir();
 
   // test functions
   void test();
