@@ -411,9 +411,18 @@ public class RobotControlImpl extends javax.swing.JFrame
         try
         {
           pluginManager.addPluginsFrom(new URI("classpath://*"));
-          pluginManager.addPluginsFrom(new File("plugins/").toURI());
-          pluginManager.addPluginsFrom(new File(System.getProperty("user.home")
-            + "/.naoth/robotcontrol/plugins/").toURI());
+          File workingDirectoryPlugin = new File("plugins/");
+          if(workingDirectoryPlugin.isDirectory())
+          {
+            pluginManager.addPluginsFrom(workingDirectoryPlugin.toURI());
+          }
+          
+          File userHomePlugin = new File(System.getProperty("user.home")
+            + "/.naoth/robotcontrol/plugins/");
+          if(userHomePlugin.isDirectory())
+          {
+            pluginManager.addPluginsFrom(userHomePlugin.toURI());
+          }
           pluginManager.getPlugin(RobotControl.class).setVisible(true);
         }
         catch (URISyntaxException ex)
