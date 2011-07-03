@@ -50,6 +50,7 @@
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+#include "Modules/Perception/PerceptProjector/PerceptProjector.h"
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 
 // Modeling
@@ -63,6 +64,9 @@
 #include "Modules/Modeling/ObstacleLocator/RadarObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
+
+#include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
+#include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -130,6 +134,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
+  REGISTER_MODULE(PerceptProjector);
   REGISTER_MODULE(PerceptionsVisualization);
 
   // modeling
@@ -142,6 +147,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(SoccerStrategyProvider);
+
+  REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(AttentionAnalyzer);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
