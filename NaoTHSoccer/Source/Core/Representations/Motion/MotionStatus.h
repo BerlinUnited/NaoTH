@@ -49,8 +49,6 @@ public:
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
 
-  Vector2d inertialSensorOffset;
-
   virtual void print(ostream& stream) const
   {
     stream << "time = " << time << '\n';
@@ -61,7 +59,6 @@ public:
     stream << "hip = "<< plannedMotion.hip <<"\n";
     stream << "left foot = "<< plannedMotion.lFoot<<"\n";
     stream << "right foot = "<< plannedMotion.rFoot<<"\n";
-    stream << "inertialSensorOffset = "<<inertialSensorOffset<<"\n";
   }//end print
 };
 
