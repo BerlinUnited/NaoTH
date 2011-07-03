@@ -61,13 +61,11 @@ void TeamSymbols::setWasStriker(bool striker)
 
 bool TeamSymbols::calculateIfStriker()
 {
-
-  unsigned int fn = theInstance->frameInfo.getFrameNumber();
   TeamMessage const& tm = theInstance->teamMessage;
 
   // initialize with max-values. Every Robot must start with same values!
   double shortestDistance = theInstance->fieldInfo.xFieldLength;
-  unsigned int playerNearestToBall = 1; //nobody near to ball, goali doesn't look at team.calc_if_striker
+  unsigned int playerNearestToBall = 0; //nobody near to ball
 
   //if someone is striker, leave! Goali can be striker (while f.e. clearing ball)
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
@@ -77,7 +75,7 @@ bool TeamSymbols::calculateIfStriker()
     const unsigned int number = i->first;
 
     // TODO: 100 frames or 100 ms?!
-    if((fn - messageData.frameInfo.getFrameNumber()) < 100 && // the message is fresh...
+    if((theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 1000) && // the message is fresh...
         number != theInstance->playerInfo.gameData.playerNumber && // its not me...
         messageData.message.wasstriker() // the guy wants to be striker...
         )
@@ -86,12 +84,8 @@ bool TeamSymbols::calculateIfStriker()
     }
   }//end for
 
-
-  
-
   // all team members except goali!! otherwise goali is nearest and all tinks he is striker, but he won't clear ball
   //should check who has best position to goal etc.
-  double count = 0;
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
     i != tm.data.end(); ++i)
   {
@@ -100,17 +94,13 @@ bool TeamSymbols::calculateIfStriker()
 
     if(number == 1) continue; // goalie is not considered
   
-    Vector2<double> ballPos;
     if(
-        messageData.frameInfo.getFrameNumber() != 0 && // for logsimulator?
-        (fn - messageData.frameInfo.getFrameNumber()) < 100 && // its fresh
-        (messageData.message.timesinceballwasseen() < 1000 || // the guy sees the ball 
-         number == theInstance->playerInfo.gameData.playerNumber) // its me
+        theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 1000 && // its fresh
+        (messageData.message.timesinceballwasseen() < 1000 )// the guy sees the ball
       )
-    { 
-      count++;
-      ballPos.x = messageData.message.ballposition().x();
-      ballPos.y = messageData.message.ballposition().y();
+    {
+      Vector2<double> ballPos;
+      DataConversion::fromMessage(messageData.message.ballposition(), ballPos);
       double ballDistance = ballPos.abs();
 
       // striker bonus
@@ -130,6 +120,33 @@ bool TeamSymbols::calculateIfStriker()
   return playerNearestToBall == theInstance->playerInfo.gameData.playerNumber;
 }//end calculateIfStriker
 
+bool TeamSymbols::calculateIfStrikerByTimeToBall()
+{
+  TeamMessage const& tm = theInstance->teamMessage;
+
+  double shortestTime = theInstance->soccerStrategy.timeToBall;
+  if ( theInstance->playerInfo.isPlayingStriker ) shortestTime-=100;
+
+  for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
+      i != tm.data.end(); ++i)
+  {
+    const naothmessages::TeamCommMessage& msg = i->second.message;
+    if (
+      i->first != theInstance->playerInfo.gameData.playerNumber
+      && msg.wasstriker()
+      && msg.timesinceballwasseen() + theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 2000
+      )
+      {
+        if(msg.timetoball() < shortestTime)
+        {
+          return false;
+        }
+      }
+  }//end for
+
+  return true;
+
+}//end calculateIfStriker
 
 TeamSymbols::~TeamSymbols()
 {
