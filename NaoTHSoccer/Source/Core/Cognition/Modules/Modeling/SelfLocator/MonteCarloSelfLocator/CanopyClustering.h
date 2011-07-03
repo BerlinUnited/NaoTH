@@ -63,8 +63,8 @@ public:
 
 
   unsigned int size() { return numOfClusters; }
-  const CanopyCluster& operator[](int index) const { ASSERT(index < this->numOfClusters); return clusters[index];}
-  const CanopyCluster& getLargestCluster(){ (*this)[largestCluster]; }
+  const CanopyCluster& operator[](int index) const { ASSERT(index >= 0 && (unsigned int)index < this->numOfClusters); return clusters[index];}
+  const CanopyCluster& getLargestCluster() const { return (*this)[largestCluster]; }
 
   void cluster()
   {
