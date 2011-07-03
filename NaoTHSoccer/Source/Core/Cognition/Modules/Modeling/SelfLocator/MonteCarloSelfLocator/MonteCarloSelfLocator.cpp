@@ -22,7 +22,7 @@
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
     //gridClustering(sampleSet),
-    canopyClustering(theSampleSet, parameters)
+  canopyClustering(theSampleSet, parameters.thresholdCanopy)
 {
   resetSampleSet(theSampleSet);
 

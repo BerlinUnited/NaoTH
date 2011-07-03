@@ -10,7 +10,6 @@
 #define __CanopyClustering_h_
 
 #include "SampleSet.h"
-#include "MCSLParameters.h"
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -20,12 +19,12 @@ template<class C>
 class CanopyClustering
 {
 public: 
-  CanopyClustering(C& sampleSet, MCSLParameters& parameters)
+  CanopyClustering(C& sampleSet, double clusterThreshold)
     :
     sampleSet(sampleSet),
     numOfClusters(0),
-    largestCluster(0),
-    parameters(parameters)
+    largestCluster(-1),
+    clusterThreshold(clusterThreshold)
   {
   }
 
@@ -64,12 +63,13 @@ public:
 
 
   unsigned int size() { return numOfClusters; }
-  const CanopyCluster& operator[](int index) const { ASSERT(index < this->numOfClusters); return clusters[index];}
-  const CanopyCluster& getLargestCluster(){ (*this)[largestCluster]; }
+  const CanopyCluster& operator[](int index) const { ASSERT(index >= 0 && (unsigned int)index < this->numOfClusters); return clusters[index];}
+  const CanopyCluster& getLargestCluster() const { return (*this)[largestCluster]; }
 
   void cluster()
   {
     numOfClusters = 0;
+    largestCluster = -1;
 
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     {
@@ -79,7 +79,7 @@ public:
       double minDistance = 10000; // 10m
       int minIdx = -1;
 
-      for (unsigned int k = 0; k < numOfClusters; k++) { //FIXME, static number
+      for (unsigned int k = 0; k < numOfClusters; k++) {
         double dist = clusters[k].distance(sampleSet[j].getPos());
         if(dist < minDistance)
         {
@@ -93,6 +93,9 @@ public:
       {
         sampleSet[j].cluster = minIdx;
         clusters[minIdx].add(sampleSet[j].getPos());
+
+        if(clusters[minIdx].size() > clusters[largestCluster].size())
+          largestCluster = minIdx;
       }
       // othervise create new cluster
       else if(numOfClusters < maxNumberOfClusters)
@@ -100,9 +103,14 @@ public:
         // initialize a new cluster
         clusters[numOfClusters].set(sampleSet[j].getPos());
         sampleSet[j].cluster = (int)numOfClusters;
+        
+        if(largestCluster == -1)
+          largestCluster = numOfClusters;
+
         numOfClusters++;
       }//end if
     }//end for
+
 
     // merge close clusters
     for(unsigned int k = 0; k < numOfClusters; k++)
@@ -119,6 +127,9 @@ public:
         {
           clusters[k].merge(clusters[j]);
           clusters[j].clear();
+
+          if(clusters[k].size() > clusters[largestCluster].size())
+            largestCluster = (int)k;
           
           // TODO: make it more effivient
           for (unsigned int i = 0; i < sampleSet.size(); i++)
@@ -136,6 +147,7 @@ public:
   unsigned int cluster(const Vector2<double>& start)
   {
     numOfClusters = 1;
+    largestCluster = 0;
     CanopyClusterBuilder& cluster = clusters[0];
     cluster.set(start);
 
@@ -211,7 +223,7 @@ private:
 
   bool isInCluster(const CanopyClusterBuilder& cluster, const Sample2D& sample) const
   {
-    return cluster.distance(sample.getPos()) < parameters.thresholdCanopy;
+    return cluster.distance(sample.getPos()) < clusterThreshold;
   }
 
 
@@ -221,7 +233,7 @@ private:
   unsigned int numOfClusters;
   int largestCluster;
 
-  MCSLParameters& parameters;
+  const double clusterThreshold;
 };
 
 #endif //__CanopyClustering_h_
