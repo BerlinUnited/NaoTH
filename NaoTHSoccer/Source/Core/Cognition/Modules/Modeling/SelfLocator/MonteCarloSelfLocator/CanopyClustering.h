@@ -64,7 +64,7 @@ public:
 
 
   unsigned int size() { return numOfClusters; }
-  const CanopyCluster& operator[](int index) const { ASSERT(index < numOfClusters); return clusters[index];}
+  const CanopyCluster& operator[](int index) const { ASSERT(index < this->numOfClusters); return clusters[index];}
   const CanopyCluster& getLargestCluster(){ (*this)[largestCluster]; }
 
   void cluster()
@@ -177,14 +177,14 @@ private:
 
     void merge(const CanopyCluster& other)
     {
-      _size += other.size();
-      _clusterSum = (_clusterSum + other.clusterSum()) * 0.5;
-      _center = (_center + other.center()) * 0.5;
+      this->_size += other.size();
+      this->_clusterSum = (this->_clusterSum + other.clusterSum()) * 0.5;
+      this->_center = (this->_center + other.center()) * 0.5;
     }
 
     void clear()
     {
-      _size = 0;
+      this->_size = 0;
     }
 
     // TODO: make it switchable
@@ -197,13 +197,13 @@ private:
   private:
     double manhattanDistance(const Vector2<double>& point) const
     {
-      return std::fabs(center().x - point.x)
-           + std::fabs(center().y - point.y);
+      return std::fabs(this->center().x - point.x)
+           + std::fabs(this->center().y - point.y);
     }
 
     double euclideanDistance(const Vector2<double>& point) const
     {
-      return (center() - point).abs();
+      return (this->center() - point).abs();
     }
   };//end class CanopyClusterBuilder
 
