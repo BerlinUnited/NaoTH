@@ -27,11 +27,12 @@ public:
   BallModel()
     :
       _timeBallIsSeen(0),
-      valid(false),
 
       // accessors
       frameInfoWhenBallWasSeen(_frameInfoWhenBallWasSeen),
-      timeBallIsSeen(_timeBallIsSeen)
+      timeBallIsSeen(_timeBallIsSeen),
+
+      valid(false)
     {}
 
   ~BallModel(){}
@@ -43,6 +44,9 @@ public:
   Vector2<double> positionPreviewInLFoot;
   Vector2<double> positionPreviewInRFoot;
 
+  /** The estimated position of the ball 0-10s in the future */
+  Vector2<double> futurePosition[BALLMODEL_MAX_FUTURE_SECONDS+1];
+
   // The speed of the ball relative to the robot (in mm/s)
   Vector2<double> speed;
 
@@ -50,6 +54,7 @@ public:
   const naoth::FrameInfo& frameInfoWhenBallWasSeen;
   // time how long the ball is seen without interruption
   const unsigned int& timeBallIsSeen;
+  bool valid;
 
 
   void setFrameInfoWhenBallWasSeen(const naoth::FrameInfo& frameInfo)
@@ -64,13 +69,6 @@ public:
 
     _frameInfoWhenBallWasSeen = frameInfo;
   }//end setFrameInfoWhenBallWasSeen
-
-
-  // 
-  bool valid;
-
-  /** The estimated position of the ball 0-10s in the future */
-  Vector2<double> futurePosition[BALLMODEL_MAX_FUTURE_SECONDS+1];
 
   void reset()
   {
