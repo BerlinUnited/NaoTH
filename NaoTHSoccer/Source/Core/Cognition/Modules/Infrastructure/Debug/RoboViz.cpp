@@ -418,6 +418,7 @@ void RoboViz::execute()
   );
 
   drawRobotPose();
+  drawMotionRequest();
 
   swapBuffers(getRobotInfo().bodyNickName);
   theBroadCaster->send(drawCommands);
@@ -426,7 +427,7 @@ void RoboViz::execute()
 void RoboViz::drawRobotPose()
 {
   string name = getRobotInfo().bodyNickName + ".RobotPose";
-  Vector3<unsigned char> color(0,0,255);
+  Vector3<unsigned char> color = getPlayerInfo().isPlayingStriker ? Vector3<unsigned char>(255,0,0) : Vector3<unsigned char>(0,0,255);
   double thickness = 5;
   drawCircle(getRobotPose().translation, 200, thickness, color, name);
 
@@ -442,6 +443,26 @@ void RoboViz::drawRobotPose()
 
   Vector3d left = pose * Vector3d(0, 300, 0);
   drawLine(pose.translation, left, thickness, Vector3<unsigned char>(0,0,255), name);
+}
+
+void RoboViz::drawMotionRequest()
+{
+  string name = getRobotInfo().bodyNickName + ".MotionRequest";
+  const MotionRequest& mq = getMotionRequest();
+  switch(mq.id)
+  {
+  case motion::walk:
+  {
+    Pose3D pose;
+    pose.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation) * getKinematicChain().theLinks[KinematicChain::Torso].R;
+    pose.translation = Vector3d(getRobotPose().translation.x, getRobotPose().translation.y, 1);
+    Vector3d start = pose.translation;
+    pose.translate(mq.walkRequest.target.translation.x, mq.walkRequest.target.translation.y, 0);
+    drawLine(start, pose.translation, 3, Vector3<unsigned char>(0,255,255), name+".Walk");
+    break;
+  }
+  default: break;
+  }
 }
 
 void RoboViz::test()

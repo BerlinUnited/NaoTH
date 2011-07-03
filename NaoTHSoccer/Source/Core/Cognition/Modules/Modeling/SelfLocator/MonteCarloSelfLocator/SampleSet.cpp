@@ -93,7 +93,7 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
 
   for(unsigned int i = 0; i < numberOfParticles; i++)
   {
-    if(samples[i].cluster >= 0 && samples[i].cluster < numberOfParticles)
+    if(samples[i].cluster >= 0 && samples[i].cluster < (int)numberOfParticles)
     {
       int idx = samples[i].cluster;
       cluster[idx]++;
@@ -119,7 +119,7 @@ Sample SampleSet::meanOfLargestCluster(Moments2<2>& moments)
   for(unsigned int i = 0; i < numberOfParticles; i++)
   {
     const Sample& sample = samples[i];
-    if(sample.cluster == maxIndex)
+    if(sample.cluster == (int)maxIndex)
     {
       moments.add(sample.translation);
     }
@@ -133,7 +133,7 @@ void SampleSet::drawCluster(unsigned int clusterId)
   FIELD_DRAWING_CONTEXT;
   for (unsigned int i = 0; i < numberOfParticles; i++)
   {
-    if (samples[i].cluster == clusterId) 
+    if (samples[i].cluster == (int)clusterId)
       PEN("FFFFFF", 20);
     else 
       PEN("000000", 20);

@@ -42,7 +42,8 @@ string TeamCommEncoder::encode(const string& data)
   // ball
   anscii += encoder.encode(static_cast<unsigned int> (msg.timesinceballwasseen())/60, 2); // 60 is vision frame rate
 
-  Vector2<double> ballOnField(msg.ballposition().x(), msg.ballposition().y());
+  Vector2d ballLocal(msg.ballposition().x(), msg.ballposition().y());
+  Vector2d ballOnField = pose * ballLocal;
   ballOnField.x = Math::clamp(ballOnField.x, -maxSize.x, maxSize.x);
   ballOnField.y = Math::clamp(ballOnField.y, -maxSize.y, maxSize.y);
   anscii += encoder.encode(ballOnField, maxSize, 3);
@@ -100,7 +101,8 @@ string TeamCommEncoder::decode(const string& anscii)
   // ball
   msg.set_timesinceballwasseen(encoder.decodeUnsigned(anscii.substr(7, 2))*60); // 60 is vision frame rate
   Vector2d ballOnField = encoder.decodeVector2D(anscii.substr(9, 3), maxSize);
-  DataConversion::toMessage(ballOnField, *(msg.mutable_ballposition()));
+  Vector2d ballLocal = pose.invert() * ballOnField;
+  DataConversion::toMessage(ballLocal, *(msg.mutable_ballposition()));
 
   return msg.SerializeAsString();
 }

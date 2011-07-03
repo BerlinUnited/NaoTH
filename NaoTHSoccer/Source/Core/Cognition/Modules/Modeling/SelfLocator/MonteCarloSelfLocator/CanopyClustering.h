@@ -83,12 +83,12 @@ public:
         double dist = clusters[k].distance(sampleSet[j].getPos());
         if(dist < minDistance)
         {
-          minIdx = k;
+          minIdx = (int)k;
           minDistance = dist;
         }
       }//end for
 
-      // try to add to the nearedst cluster
+      // try to add to the nearest cluster
       if(minIdx != -1 && isInCluster(clusters[minIdx], sampleSet[j]))
       {
         sampleSet[j].cluster = minIdx;
@@ -99,18 +99,18 @@ public:
       {
         // initialize a new cluster
         clusters[numOfClusters].set(sampleSet[j].getPos());
-        sampleSet[j].cluster = numOfClusters;
+        sampleSet[j].cluster = (int)numOfClusters;
         numOfClusters++;
       }//end if
     }//end for
 
     // merge close clusters
-    for(unsigned int k=0; k< numOfClusters; k++)
+    for(unsigned int k = 0; k < numOfClusters; k++)
     {
       if(clusters[k].size() < 4) {
         continue;
       }
-      for(unsigned int j=k+1;j<numOfClusters;j++) {
+      for(unsigned int j = k+1; j < numOfClusters; j++) {
         if ( clusters[j].size() < 4) {
           continue;
         }
@@ -123,8 +123,8 @@ public:
           // TODO: make it more effivient
           for (unsigned int i = 0; i < sampleSet.size(); i++)
           {
-            if(sampleSet[i].cluster == j) {
-              sampleSet[i].cluster = k;
+            if(sampleSet[i].cluster == (int)j) {
+              sampleSet[i].cluster = (int)k;
             }
           } //end for i
         } //end if abs < 500
@@ -137,6 +137,7 @@ public:
   {
     numOfClusters = 1;
     CanopyClusterBuilder& cluster = clusters[0];
+    cluster.set(start);
 
     for (unsigned int j = 0; j < sampleSet.size(); j++)
     {
