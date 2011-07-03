@@ -59,6 +59,8 @@ Motion::~Motion()
     delete theHeadMotionRequestReader;
   if (theMotionRequestReader != NULL)
     delete theMotionRequestReader;
+  if (theCalibrationDataWriter != NULL)
+    delete theCalibrationDataWriter;
 }
 
 void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
