@@ -123,7 +123,8 @@ public:
           // TODO: make it more effivient
           for (unsigned int i = 0; i < sampleSet.size(); i++)
           {
-            if(sampleSet[i].cluster == j) {
+            if(sampleSet[i].cluster == (int) j)
+            {
               sampleSet[i].cluster = k;
             }
           } //end for i
@@ -215,12 +216,13 @@ private:
 
 
   C& sampleSet;
-  static const int maxNumberOfClusters = 100;
+  MCSLParameters& parameters;
+
+  static const unsigned int maxNumberOfClusters = 100;
   CanopyClusterBuilder clusters[maxNumberOfClusters];  //FIXME
   unsigned int numOfClusters;
   int largestCluster;
 
-  MCSLParameters& parameters;
 };
 
 #endif //__CanopyClustering_h_
