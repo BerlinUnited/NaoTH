@@ -18,10 +18,10 @@ public:
   const unsigned int& numberOfParticles; /** TODO: make it as parameter */
 
 private:
-  int _numberOfParticles;
+  unsigned int _numberOfParticles;
 
 public: 
-  SampleSet(int n = 100) 
+  SampleSet(unsigned int n = 100)
     : 
     numberOfParticles(_numberOfParticles),
     _numberOfParticles(n),
