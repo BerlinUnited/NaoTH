@@ -14,7 +14,7 @@
 class Sample2D
 {
 public: 
-  Sample2D() : cluster(0) {}
+  Sample2D() : cluster(-1) {}
 
   // ATTENTION: don't make it unsigned (!), it can be -1
   /** id of the cluster this sample belongs to */

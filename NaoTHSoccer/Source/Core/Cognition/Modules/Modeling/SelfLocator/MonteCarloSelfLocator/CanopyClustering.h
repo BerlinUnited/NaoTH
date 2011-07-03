@@ -83,7 +83,7 @@ public:
         double dist = clusters[k].distance(sampleSet[j].getPos());
         if(dist < minDistance)
         {
-          minIdx = k;
+          minIdx = (int)k;
           minDistance = dist;
         }
       }//end for
@@ -99,18 +99,18 @@ public:
       {
         // initialize a new cluster
         clusters[numOfClusters].set(sampleSet[j].getPos());
-        sampleSet[j].cluster = numOfClusters;
+        sampleSet[j].cluster = (int)numOfClusters;
         numOfClusters++;
       }//end if
     }//end for
 
     // merge close clusters
-    for(unsigned int k=0; k< numOfClusters; k++)
+    for(unsigned int k = 0; k < numOfClusters; k++)
     {
       if(clusters[k].size() < 4) {
         continue;
       }
-      for(unsigned int j=k+1;j<numOfClusters;j++) {
+      for(unsigned int j = k+1; j < numOfClusters; j++) {
         if ( clusters[j].size() < 4) {
           continue;
         }
@@ -123,8 +123,8 @@ public:
           // TODO: make it more effivient
           for (unsigned int i = 0; i < sampleSet.size(); i++)
           {
-            if(sampleSet[i].cluster == j) {
-              sampleSet[i].cluster = k;
+            if(sampleSet[i].cluster == (int)j) {
+              sampleSet[i].cluster = (int)k;
             }
           } //end for i
         } //end if abs < 500
