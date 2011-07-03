@@ -35,8 +35,8 @@ project "SimSpark"
 	"protobuf"}
 
   targetname "naoth-simspark"
-
-  configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+-- removed by fh :)
+--  configuration {"linux"}
+--    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 
 -- END SimSpark
