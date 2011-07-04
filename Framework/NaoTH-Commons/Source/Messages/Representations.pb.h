@@ -1199,6 +1199,14 @@ class HeadMotionRequest : public ::google::protobuf::Message {
   inline bool searchdirection() const;
   inline void set_searchdirection(bool value);
   
+  // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+  inline bool has_targetpointontheground() const;
+  inline void clear_targetpointontheground();
+  static const int kTargetPointOnTheGroundFieldNumber = 9;
+  inline const ::naothmessages::DoubleVector2& targetpointontheground() const;
+  inline ::naothmessages::DoubleVector2* mutable_targetpointontheground();
+  inline ::naothmessages::DoubleVector2* release_targetpointontheground();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.HeadMotionRequest)
  private:
   inline void set_has_id();
@@ -1217,6 +1225,8 @@ class HeadMotionRequest : public ::google::protobuf::Message {
   inline void clear_has_searchsize();
   inline void set_has_searchdirection();
   inline void clear_has_searchdirection();
+  inline void set_has_targetpointontheground();
+  inline void clear_has_targetpointontheground();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1227,10 +1237,11 @@ class HeadMotionRequest : public ::google::protobuf::Message {
   ::naothmessages::DoubleVector3* targetpointintheworld_;
   ::naothmessages::DoubleVector3* searchcenter_;
   ::naothmessages::DoubleVector3* searchsize_;
+  ::naothmessages::DoubleVector2* targetpointontheground_;
   bool searchdirection_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3333,6 +3344,35 @@ inline bool HeadMotionRequest::searchdirection() const {
 inline void HeadMotionRequest::set_searchdirection(bool value) {
   set_has_searchdirection();
   searchdirection_ = value;
+}
+
+// optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+inline bool HeadMotionRequest::has_targetpointontheground() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void HeadMotionRequest::set_has_targetpointontheground() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void HeadMotionRequest::clear_has_targetpointontheground() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void HeadMotionRequest::clear_targetpointontheground() {
+  if (targetpointontheground_ != NULL) targetpointontheground_->::naothmessages::DoubleVector2::Clear();
+  clear_has_targetpointontheground();
+}
+inline const ::naothmessages::DoubleVector2& HeadMotionRequest::targetpointontheground() const {
+  return targetpointontheground_ != NULL ? *targetpointontheground_ : *default_instance_->targetpointontheground_;
+}
+inline ::naothmessages::DoubleVector2* HeadMotionRequest::mutable_targetpointontheground() {
+  set_has_targetpointontheground();
+  if (targetpointontheground_ == NULL) targetpointontheground_ = new ::naothmessages::DoubleVector2;
+  return targetpointontheground_;
+}
+inline ::naothmessages::DoubleVector2* HeadMotionRequest::release_targetpointontheground() {
+  clear_has_targetpointontheground();
+  ::naothmessages::DoubleVector2* temp = targetpointontheground_;
+  targetpointontheground_ = NULL;
+  return temp;
 }
 
 // -------------------------------------------------------------------

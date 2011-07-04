@@ -5799,6 +5799,11 @@ public final class Representations {
     // optional bool searchDirection = 8;
     boolean hasSearchDirection();
     boolean getSearchDirection();
+    
+    // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+    boolean hasTargetPointOnTheGround();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getTargetPointOnTheGround();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getTargetPointOnTheGroundOrBuilder();
   }
   public static final class HeadMotionRequest extends
       com.google.protobuf.GeneratedMessage
@@ -5924,6 +5929,19 @@ public final class Representations {
       return searchDirection_;
     }
     
+    // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+    public static final int TARGETPOINTONTHEGROUND_FIELD_NUMBER = 9;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 targetPointOnTheGround_;
+    public boolean hasTargetPointOnTheGround() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getTargetPointOnTheGround() {
+      return targetPointOnTheGround_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getTargetPointOnTheGroundOrBuilder() {
+      return targetPointOnTheGround_;
+    }
+    
     private void initFields() {
       id_ = 0;
       cameraID_ = 0;
@@ -5933,6 +5951,7 @@ public final class Representations {
       searchCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       searchSize_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       searchDirection_ = false;
+      targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5977,6 +5996,12 @@ public final class Representations {
           return false;
         }
       }
+      if (hasTargetPointOnTheGround()) {
+        if (!getTargetPointOnTheGround().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -6007,6 +6032,9 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeBool(8, searchDirection_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, targetPointOnTheGround_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -6048,6 +6076,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(8, searchDirection_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, targetPointOnTheGround_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6170,6 +6202,7 @@ public final class Representations {
           getTargetPointInTheWorldFieldBuilder();
           getSearchCenterFieldBuilder();
           getSearchSizeFieldBuilder();
+          getTargetPointOnTheGroundFieldBuilder();
         }
       }
       private static Builder create() {
@@ -6214,6 +6247,12 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000040);
         searchDirection_ = false;
         bitField0_ = (bitField0_ & ~0x00000080);
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          targetPointOnTheGroundBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -6304,6 +6343,14 @@ public final class Representations {
           to_bitField0_ |= 0x00000080;
         }
         result.searchDirection_ = searchDirection_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (targetPointOnTheGroundBuilder_ == null) {
+          result.targetPointOnTheGround_ = targetPointOnTheGround_;
+        } else {
+          result.targetPointOnTheGround_ = targetPointOnTheGroundBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -6344,6 +6391,9 @@ public final class Representations {
         if (other.hasSearchDirection()) {
           setSearchDirection(other.getSearchDirection());
         }
+        if (other.hasTargetPointOnTheGround()) {
+          mergeTargetPointOnTheGround(other.getTargetPointOnTheGround());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -6383,6 +6433,12 @@ public final class Representations {
         }
         if (hasSearchSize()) {
           if (!getSearchSize().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasTargetPointOnTheGround()) {
+          if (!getTargetPointOnTheGround().isInitialized()) {
             
             return false;
           }
@@ -6471,6 +6527,15 @@ public final class Representations {
             case 64: {
               bitField0_ |= 0x00000080;
               searchDirection_ = input.readBool();
+              break;
+            }
+            case 74: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasTargetPointOnTheGround()) {
+                subBuilder.mergeFrom(getTargetPointOnTheGround());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setTargetPointOnTheGround(subBuilder.buildPartial());
               break;
             }
           }
@@ -6990,6 +7055,96 @@ public final class Representations {
         searchDirection_ = false;
         onChanged();
         return this;
+      }
+      
+      // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> targetPointOnTheGroundBuilder_;
+      public boolean hasTargetPointOnTheGround() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getTargetPointOnTheGround() {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          return targetPointOnTheGround_;
+        } else {
+          return targetPointOnTheGroundBuilder_.getMessage();
+        }
+      }
+      public Builder setTargetPointOnTheGround(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          targetPointOnTheGround_ = value;
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setTargetPointOnTheGround(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGround_ = builderForValue.build();
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeTargetPointOnTheGround(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              targetPointOnTheGround_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            targetPointOnTheGround_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(targetPointOnTheGround_).mergeFrom(value).buildPartial();
+          } else {
+            targetPointOnTheGround_ = value;
+          }
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearTargetPointOnTheGround() {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder getTargetPointOnTheGroundBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getTargetPointOnTheGroundFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getTargetPointOnTheGroundOrBuilder() {
+        if (targetPointOnTheGroundBuilder_ != null) {
+          return targetPointOnTheGroundBuilder_.getMessageOrBuilder();
+        } else {
+          return targetPointOnTheGround_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getTargetPointOnTheGroundFieldBuilder() {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGroundBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  targetPointOnTheGround_,
+                  getParentForChildren(),
+                  isClean());
+          targetPointOnTheGround_ = null;
+        }
+        return targetPointOnTheGroundBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.HeadMotionRequest)
@@ -12793,7 +12948,7 @@ public final class Representations {
       "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages" +
       ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(" +
       "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost" +
-      "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
+      "\"\240\003\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
       "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(" +
       "\0132\034.naothmessages.DoubleVector2\0228\n\022targe" +
       "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub" +
@@ -12801,35 +12956,37 @@ public final class Representations {
       "2\034.naothmessages.DoubleVector3\0222\n\014search" +
       "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto",
       "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D" +
-      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"[\n" +
-      "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tchar" +
-      "acter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmessa" +
-      "ges.Pose2D\"{\n\013KickRequest\022/\n\tkickPoint\030\001" +
-      " \002(\0132\034.naothmessages.DoubleVector3\022\025\n\rki" +
-      "ckDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nf" +
-      "inishKick\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002id\030" +
-      "\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013w" +
-      "alkRequest\030\004 \001(\0132\032.naothmessages.WalkReq",
-      "uest\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickRequ" +
-      "est\030\006 \001(\0132\032.naothmessages.KickRequest\022\023\n" +
-      "\013standHeight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n\005li" +
-      "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme" +
-      "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage" +
-      "s.Intersection\0228\n\022middleCircleCenter\030\003 \001" +
-      "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD" +
-      "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali" +
-      "d\030\003 \003(\010\"\225\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022" +
-      "\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(",
-      "\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSt" +
-      "ate\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\013" +
-      "2\025.naothmessages.Pose2D\0225\n\026plannedMotion" +
-      "RightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/" +
-      "\n\020plannedMotionHip\030\010 \002(\0132\025.naothmessages" +
-      ".Pose2D\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025." +
-      "naothmessages.Pose2D\"M\n\017CalibrationData\022" +
-      ":\n\024inertialSensorOffset\030\001 \001(\0132\034.naothmes" +
-      "sages.DoubleVector2B)\n\'de.hu_berlin.info" +
-      "rmatik.ki.nao.messages"
+      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n" +
+      "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes" +
+      "sages.DoubleVector2\"[\n\013WalkRequest\022\022\n\nco" +
+      "ordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006tar" +
+      "get\030\003 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kick" +
+      "Request\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessag" +
+      "es.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022" +
+      "\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001" +
+      "\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(",
+      "\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032" +
+      ".naothmessages.WalkRequest\022\026\n\016starndardS" +
+      "tand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothm" +
+      "essages.KickRequest\022\023\n\013standHeight\030\007 \001(\001" +
+      "\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothm" +
+      "essages.FieldLineSegment\0222\n\rintersection" +
+      "s\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022" +
+      "middleCircleCenter\030\003 \001(\0132\034.naothmessages" +
+      ".DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001" +
+      "\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\225\002\n\014Motion",
+      "Status\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r" +
+      "\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 " +
+      "\002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plann" +
+      "edMotionLeftFoot\030\006 \002(\0132\025.naothmessages.P" +
+      "ose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025." +
+      "naothmessages.Pose2D\022/\n\020plannedMotionHip" +
+      "\030\010 \002(\0132\025.naothmessages.Pose2D\"3\n\014Odometr" +
+      "yData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose" +
+      "2D\"M\n\017CalibrationData\022:\n\024inertialSensorO" +
+      "ffset\030\001 \001(\0132\034.naothmessages.DoubleVector",
+      "2B)\n\'de.hu_berlin.informatik.ki.nao.mess" +
+      "ages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -12905,7 +13062,7 @@ public final class Representations {
           internal_static_naothmessages_HeadMotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_HeadMotionRequest_descriptor,
-              new java.lang.String[] { "Id", "CameraID", "TargetJointPosition", "TargetPointInImage", "TargetPointInTheWorld", "SearchCenter", "SearchSize", "SearchDirection", },
+              new java.lang.String[] { "Id", "CameraID", "TargetJointPosition", "TargetPointInImage", "TargetPointInTheWorld", "SearchCenter", "SearchSize", "SearchDirection", "TargetPointOnTheGround", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.Builder.class);
           internal_static_naothmessages_WalkRequest_descriptor =

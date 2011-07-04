@@ -231,7 +231,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GoalPercept));
   HeadMotionRequest_descriptor_ = file->message_type(8);
-  static const int HeadMotionRequest_offsets_[8] = {
+  static const int HeadMotionRequest_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, cameraid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, targetjointposition_),
@@ -240,6 +240,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchcenter_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchsize_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchdirection_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, targetpointontheground_),
   };
   HeadMotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -522,7 +523,7 @@ void protobuf_AddDesc_Representations_2eproto() {
     "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages"
     ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001("
     "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost"
-    "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca"
+    "\"\240\003\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca"
     "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001("
     "\0132\034.naothmessages.DoubleVector2\0228\n\022targe"
     "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub"
@@ -530,35 +531,37 @@ void protobuf_AddDesc_Representations_2eproto() {
     "2\034.naothmessages.DoubleVector3\0222\n\014search"
     "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto"
     "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
-    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"[\n"
-    "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tchar"
-    "acter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmessa"
-    "ges.Pose2D\"{\n\013KickRequest\022/\n\tkickPoint\030\001"
-    " \002(\0132\034.naothmessages.DoubleVector3\022\025\n\rki"
-    "ckDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nf"
-    "inishKick\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002id\030"
-    "\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013w"
-    "alkRequest\030\004 \001(\0132\032.naothmessages.WalkReq"
-    "uest\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickRequ"
-    "est\030\006 \001(\0132\032.naothmessages.KickRequest\022\023\n"
-    "\013standHeight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n\005li"
-    "nes\030\001 \003(\0132\037.naothmessages.FieldLineSegme"
-    "nt\0222\n\rintersections\030\002 \003(\0132\033.naothmessage"
-    "s.Intersection\0228\n\022middleCircleCenter\030\003 \001"
-    "(\0132\034.naothmessages.DoubleVector2\"5\n\007FSRD"
-    "ata\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005vali"
-    "d\030\003 \003(\010\"\225\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022"
-    "\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002("
-    "\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSt"
-    "ate\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\013"
-    "2\025.naothmessages.Pose2D\0225\n\026plannedMotion"
-    "RightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/"
-    "\n\020plannedMotionHip\030\010 \002(\0132\025.naothmessages"
-    ".Pose2D\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025."
-    "naothmessages.Pose2D\"M\n\017CalibrationData\022"
-    ":\n\024inertialSensorOffset\030\001 \001(\0132\034.naothmes"
-    "sages.DoubleVector2B)\n\'de.hu_berlin.info"
-    "rmatik.ki.nao.messages", 2782);
+    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n"
+    "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes"
+    "sages.DoubleVector2\"[\n\013WalkRequest\022\022\n\nco"
+    "ordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006tar"
+    "get\030\003 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kick"
+    "Request\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessag"
+    "es.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022"
+    "\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001"
+    "\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002("
+    "\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032"
+    ".naothmessages.WalkRequest\022\026\n\016starndardS"
+    "tand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothm"
+    "essages.KickRequest\022\023\n\013standHeight\030\007 \001(\001"
+    "\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothm"
+    "essages.FieldLineSegment\0222\n\rintersection"
+    "s\030\002 \003(\0132\033.naothmessages.Intersection\0228\n\022"
+    "middleCircleCenter\030\003 \001(\0132\034.naothmessages"
+    ".DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001"
+    "\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\225\002\n\014Motion"
+    "Status\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r"
+    "\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 "
+    "\002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plann"
+    "edMotionLeftFoot\030\006 \002(\0132\025.naothmessages.P"
+    "ose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025."
+    "naothmessages.Pose2D\022/\n\020plannedMotionHip"
+    "\030\010 \002(\0132\025.naothmessages.Pose2D\"3\n\014Odometr"
+    "yData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose"
+    "2D\"M\n\017CalibrationData\022:\n\024inertialSensorO"
+    "ffset\030\001 \001(\0132\034.naothmessages.DoubleVector"
+    "2B)\n\'de.hu_berlin.informatik.ki.nao.mess"
+    "ages", 2844);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -3592,6 +3595,7 @@ const int HeadMotionRequest::kTargetPointInTheWorldFieldNumber;
 const int HeadMotionRequest::kSearchCenterFieldNumber;
 const int HeadMotionRequest::kSearchSizeFieldNumber;
 const int HeadMotionRequest::kSearchDirectionFieldNumber;
+const int HeadMotionRequest::kTargetPointOnTheGroundFieldNumber;
 #endif  // !_MSC_VER
 
 HeadMotionRequest::HeadMotionRequest()
@@ -3605,6 +3609,7 @@ void HeadMotionRequest::InitAsDefaultInstance() {
   targetpointintheworld_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
   searchcenter_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
   searchsize_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
+  targetpointontheground_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
 }
 
 HeadMotionRequest::HeadMotionRequest(const HeadMotionRequest& from)
@@ -3623,6 +3628,7 @@ void HeadMotionRequest::SharedCtor() {
   searchcenter_ = NULL;
   searchsize_ = NULL;
   searchdirection_ = false;
+  targetpointontheground_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -3637,6 +3643,7 @@ void HeadMotionRequest::SharedDtor() {
     delete targetpointintheworld_;
     delete searchcenter_;
     delete searchsize_;
+    delete targetpointontheground_;
   }
 }
 
@@ -3680,6 +3687,11 @@ void HeadMotionRequest::Clear() {
       if (searchsize_ != NULL) searchsize_->::naothmessages::DoubleVector3::Clear();
     }
     searchdirection_ = false;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (has_targetpointontheground()) {
+      if (targetpointontheground_ != NULL) targetpointontheground_->::naothmessages::DoubleVector2::Clear();
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -3804,6 +3816,20 @@ bool HeadMotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(74)) goto parse_targetPointOnTheGround;
+        break;
+      }
+      
+      // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_targetPointOnTheGround:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_targetpointontheground()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -3871,6 +3897,12 @@ void HeadMotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->searchdirection(), output);
   }
   
+  // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+  if (has_targetpointontheground()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      9, this->targetpointontheground(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3927,6 +3959,13 @@ void HeadMotionRequest::SerializeWithCachedSizes(
   // optional bool searchDirection = 8;
   if (has_searchdirection()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->searchdirection(), target);
+  }
+  
+  // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+  if (has_targetpointontheground()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        9, this->targetpointontheground(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3995,6 +4034,15 @@ int HeadMotionRequest::ByteSize() const {
     }
     
   }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+    if (has_targetpointontheground()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->targetpointontheground());
+    }
+    
+  }
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -4046,6 +4094,11 @@ void HeadMotionRequest::MergeFrom(const HeadMotionRequest& from) {
       set_searchdirection(from.searchdirection());
     }
   }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_targetpointontheground()) {
+      mutable_targetpointontheground()->::naothmessages::DoubleVector2::MergeFrom(from.targetpointontheground());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -4079,6 +4132,9 @@ bool HeadMotionRequest::IsInitialized() const {
   if (has_searchsize()) {
     if (!this->searchsize().IsInitialized()) return false;
   }
+  if (has_targetpointontheground()) {
+    if (!this->targetpointontheground().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -4092,6 +4148,7 @@ void HeadMotionRequest::Swap(HeadMotionRequest* other) {
     std::swap(searchcenter_, other->searchcenter_);
     std::swap(searchsize_, other->searchsize_);
     std::swap(searchdirection_, other->searchdirection_);
+    std::swap(targetpointontheground_, other->targetpointontheground_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

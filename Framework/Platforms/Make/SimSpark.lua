@@ -32,11 +32,11 @@ project "SimSpark"
 	"gobject-2.0",
 	"gmodule-2.0",
 	"gthread-2.0",
-	"protobuf"}
+	"protobuf-static"}
 
   targetname "naoth-simspark"
-
-  configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+-- removed by fh :)
+--  configuration {"linux"}
+--    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 
 -- END SimSpark
