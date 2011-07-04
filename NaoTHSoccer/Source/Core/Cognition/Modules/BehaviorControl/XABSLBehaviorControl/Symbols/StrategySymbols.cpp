@@ -532,7 +532,7 @@ bool StrategySymbols::setpieceParticipation()
 
 double StrategySymbols::calculateAttackDirection()
 {
-  Vector2<double> p = theInstance->soccerStrategy.attackDirection;
+  const Vector2<double>& p = theInstance->soccerStrategy.attackDirection;
   return Math::toDegrees(p.angle());
 }
 

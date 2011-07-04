@@ -503,7 +503,7 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
   else
   {
     FeetPose lastFeet = stepBuffer.back().footStep.end();
-    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, theParameters.bodyPitchOffset);
+    Pose3D lastCom = calculateStableCoMByFeet(lastFeet, Math::fromDegrees(theParameters.bodyPitchOffset));
     Pose3D plannedHip = theCoMFeetPose.com.invert() * lastCom;
     Pose3D plannedlFoot = theCoMFeetPose.feet.left.invert() * lastFeet.left;
     Pose3D plannedrFoot = theCoMFeetPose.feet.right.invert() * lastFeet.right;

@@ -29,7 +29,7 @@ option dribble {
       go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x+200),
                           x=ball.preview.x+200,
                           y=ball.preview.y);
-      motion.walk.coordinate = hip;//(ball.preview.y<0?right_foot:left_foot);
+      motion.walk.coordinate = (ball.preview.y<0?right_foot:left_foot);
 
       //move_around_ball(direction = @direction *0.5, radius = 100+ball.radius);
       //go_to_ball_cool(right_foot=(ball.preview.y<0), distance=-500);
@@ -58,8 +58,8 @@ option dribble {
       }
     }
     action {
-      move_around_ball(direction = @direction, radius = 140+ball.radius);
-      motion.walk_speed.x = (robot_pose.x < field.xPosOppPenaltyArea-1000 ? 1 : 0.3) * motion.walk_speed.x;
+      move_around_ball(direction = @direction*0.5, radius = 100+ball.radius);
+      //motion.walk_speed.x = (robot_pose.x < field.xPosOppPenaltyArea-1000 ? 1 : 0.3) * motion.walk_speed.x;
     }
   }
 
