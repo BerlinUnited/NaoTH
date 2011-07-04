@@ -121,7 +121,7 @@ void Motion::call()
   case initial:
   {
     if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
-        && theBlackBoard.theMotionStatus.currentMotionState == motion::running )
+        && theBlackBoard.currentlyExecutedMotion->isFinish() )
     {
       state = running;
     }

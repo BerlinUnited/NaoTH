@@ -43,7 +43,9 @@ public:
 
 protected:
   /** set the stiffness with max changes */
-  bool setStiffness(double* hardness, double delta);
+  bool setStiffness(double* hardness, double delta,
+                    naoth::JointData::JointID begin=naoth::JointData::HeadPitch,
+                    naoth::JointData::JointID end=naoth::JointData::numOfJoint);
 };
 
 class EmptyMotion: public AbstractMotion

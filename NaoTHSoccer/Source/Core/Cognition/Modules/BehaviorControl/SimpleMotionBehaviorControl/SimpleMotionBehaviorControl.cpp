@@ -133,8 +133,7 @@ void SimpleMotionBehaviorControl::testMotion()
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:sit",
-    getMotionRequest().standardStand = true;
-    getMotionRequest().standHeight = 160;
+    getMotionRequest().id = motion::sit;
   );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_forward",
