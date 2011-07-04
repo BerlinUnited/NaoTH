@@ -504,6 +504,11 @@ void WebotsController::get(ButtonData& /*data*/)
   // not support yet
 }
 
+void WebotsController::get(GameData& data)
+{
+
+}
+
 //void WebotsController::get(GPSData& data)
 //{
 ////    const double *webots_gps = wb_gps_get_values(theWebotsController.gps);
