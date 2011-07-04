@@ -25,7 +25,7 @@ PotentialFieldProvider::PotentialFieldProvider()
 
 void PotentialFieldProvider::execute()
 {
-  Vector2<double> p = calculatePotentialField(getBallModel().position);
+  Vector2<double> p = calculatePotentialField(getBallModel().positionPreview);
   getSoccerStrategy().attackDirection = p;
 
 
@@ -134,6 +134,13 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<do
 
   // begin --- getGoal() ---
   Vector2<double> oppGoal = getGoalTarget(point, *oppGoalModel);
+
+  // preview
+  Pose2D p(oppGoal.angle(), oppGoal.x, oppGoal.y);
+  p -= getMotionStatus().plannedMotion.hip;
+  oppGoal = p.translation;
+  // ----------
+
   /*
   double leftOffset = oppGoalModel->leftPost.y - oppGoalModel->leftPost.abs() * Math::fromDegrees(15);
   double rightOffset = oppGoalModel->rightPost.y + oppGoalModel->rightPost.abs() * Math::fromDegrees(15);
@@ -169,7 +176,8 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<do
   }
   for (vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().teammates.begin(); iter != getPlayersModel().teammates.end(); ++iter)
   {
-    if (getFrameInfo().getTimeSince(iter->frameInfoWhenWasSeen.getTime()) < 1000)
+    if (iter->number != getPlayerInfo().gameData.playerNumber &&
+      getFrameInfo().getTimeSince(iter->frameInfoWhenWasSeen.getTime()) < 1000)
     {
       playerF -= calculatePlayerPotentialField(iter->pose.translation, point);
       isAvoiding = true;
@@ -206,7 +214,11 @@ Vector2<double> PotentialFieldProvider::calculatePlayerPotentialField(const Vect
   const double a = 1500;
   const double d = 2000;
 
-  Vector2<double> v = player-ball;
+  // preview
+  Pose2D p(player.angle(), player.x, player.y);
+  p -= getMotionStatus().plannedMotion.hip;
+
+  Vector2<double> v = p.translation-ball;
   double t = v.abs();
   if ( t >= d-100 ) return Vector2<double>();
 
@@ -248,8 +260,8 @@ Vector2<double> PotentialFieldProvider::getGoal(const Vector2<double>& ball, con
 
 Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel)
 {
-  double angle_inner_threshold = 20;
-  double angle_outer_threshold = 90;
+  double angle_inner_threshold = 15;
+  double angle_outer_threshold = 30;
   double dist_threshold = 0;
   MODIFY("potentialfield:angle_inner_threshold",angle_inner_threshold);
   MODIFY("potentialfield:angle_outer_threshold",angle_outer_threshold);
