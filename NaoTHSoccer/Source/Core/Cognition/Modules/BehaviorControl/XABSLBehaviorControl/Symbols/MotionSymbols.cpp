@@ -149,9 +149,11 @@ void MotionSymbols::execute()
 
    double curTime      = frameInfo.getTimeInSeconds();
 
-   int idx = Math::random(headMotionBuffer.getNumberOfEntries()); //9, because we need the neighboor of the picked struct for the accelaration
+   //pick randomly one percept out of the buffer, the current information are not yet added to the buffer
+   int idx = Math::random(headMotionBuffer.getNumberOfEntries());
 
    double timeDelta = curTime - headMotionBuffer.getEntry(idx).time;
+   ASSERT(timeDelta > 0);
    double appHeadYawSpeed = (curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
    double appHeadPitchSpeed = (curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
 

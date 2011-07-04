@@ -146,6 +146,12 @@ private:
     double headYaw;
     double headPitch;
     double time;
+    HeadMotion()
+      :
+      headYaw(0.0),
+      headPitch(0.0),
+      time(0.0)
+      {}
   };
 
   RingBuffer<HeadMotion, 10 > headMotionBuffer;
