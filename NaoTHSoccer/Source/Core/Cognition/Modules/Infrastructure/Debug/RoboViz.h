@@ -19,6 +19,7 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Perception/BallPercept.h"
 
 BEGIN_DECLARE_MODULE(RoboViz)
   REQUIRE(RobotInfo)
@@ -29,6 +30,7 @@ BEGIN_DECLARE_MODULE(RoboViz)
   REQUIRE(MotionRequest)
   REQUIRE(BallModel)
   REQUIRE(SoccerStrategy)
+  REQUIRE(BallPercept)
 END_DECLARE_MODULE(RoboViz)
 
 class RoboViz: public RoboVizBase

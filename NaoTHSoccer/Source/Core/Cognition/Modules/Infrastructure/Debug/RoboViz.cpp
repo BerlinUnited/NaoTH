@@ -478,6 +478,10 @@ void RoboViz::drawBallAndAttackDir()
   Vector3d ball(ballOnField.x, ballOnField.y, getFieldInfo().ballRadius);
   drawSphere(ball, getFieldInfo().ballRadius, color, getRobotInfo().bodyNickName + ".ball");
 
+  Vector2d ballPerceptOnField = getRobotPose() * getBallPercept().bearingBasedOffsetOnField;
+  ball = Vector3d(ballPerceptOnField.x, ballPerceptOnField.y, getFieldInfo().ballRadius);
+  drawSphere(ball, getFieldInfo().ballRadius, Vector3<unsigned char>(255,0,0), getRobotInfo().bodyNickName + ".ball");
+
   double dir = getRobotPose().rotation + getSoccerStrategy().attackDirection.angle();
   Vector3d atc(ball.x+cos(dir)*1000, ball.y+sin(dir)*1000, ball.z);
   drawLine(ball, atc, 1, color, getRobotInfo().bodyNickName + ".attackDirection");
