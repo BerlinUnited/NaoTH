@@ -75,6 +75,7 @@ template <class V, int maxSize> class RingBuffer
      */
     const V& getEntry (int i) const
     {
+      ASSERT(i>=0 && i<numberOfEntries);
       int j = current - i;
       j %= n;
       if (j < 0) j += n;
