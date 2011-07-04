@@ -28,42 +28,43 @@ void FieldDetector::execute()
 {
   getFieldPercept().reset();
 
-  vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
-
-  for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+  if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
-    points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
-  }
+    vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
 
-  // move the outer points
-  points.front().x = 0;
-  points.back().x = getImage().cameraInfo.resolutionWidth-1;
+    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+    {
+      points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
+    }
 
-  // lower image points
-  points.push_back(Vector2<int>(0,getImage().cameraInfo.resolutionHeight-1));
-  points.push_back(Vector2<int>(getImage().cameraInfo.resolutionWidth-1, getImage().cameraInfo.resolutionHeight-1));
+    // move the outer points
+    points.front().x = 0;
+    points.back().x = getImage().cameraInfo.resolutionWidth-1;
 
+    // lower image points
+    points.push_back(Vector2<int>(0,getImage().cameraInfo.resolutionHeight-1));
+    points.push_back(Vector2<int>(getImage().cameraInfo.resolutionWidth-1, getImage().cameraInfo.resolutionHeight-1));
 
-  // calculate the convex hull
-  vector<Vector2<int> > result = ConvexHull::convexHull(points);
+    // calculate the convex hull
+    vector<Vector2<int> > result = ConvexHull::convexHull(points);
 
-
-  // create the polygon
-  FieldPercept::FieldPoly fieldPoly;
-  for(unsigned int i = 0; i < result.size(); i++)
-  {
-    fieldPoly.add(result[i]);
-  }
-
-  getFieldPercept().add(fieldPoly, getFieldPercept().getFullFieldRect());
-  getFieldPercept().setValid(true);
-
-  DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field",
-    int idx = result.size()-1;
+    // create the polygon
+    FieldPercept::FieldPoly fieldPoly;
     for(unsigned int i = 0; i < result.size(); i++)
     {
-      LINE_PX(ColorClasses::green, result[idx].x, result[idx].y, result[i].x, result[i].y);
-      idx = i;
+      fieldPoly.add(result[i]);
     }
-  );
+
+    getFieldPercept().add(fieldPoly, getFieldPercept().getFullFieldRect());
+    getFieldPercept().setValid(true);
+
+    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field",
+      int idx = result.size()-1;
+      for(unsigned int i = 0; i < result.size(); i++)
+      {
+        LINE_PX(ColorClasses::green, result[idx].x, result[idx].y, result[i].x, result[i].y);
+        idx = i;
+      }
+    );
+  }
 }//end execute

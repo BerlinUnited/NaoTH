@@ -17,10 +17,10 @@ AbstractMotion::AbstractMotion(motion::MotionID id)
   init();
 }
 
-bool AbstractMotion::setStiffness(double* stiffness, double delta)
+bool AbstractMotion::setStiffness(double* stiffness, double delta, JointData::JointID begin, JointData::JointID end)
 {
   int readyJointNum = 0;
-  for (int i = 0; i < JointData::numOfJoint; i++)
+  for (int i = begin; i < end; i++)
   {
     double d = stiffness[i] - theBlackBoard.theSensorJointData.stiffness[i];
     if (fabs(d) < delta || i == JointData::HeadPitch || i==JointData::HeadYaw )
@@ -46,5 +46,5 @@ bool AbstractMotion::setStiffness(double* stiffness, double delta)
     }
   }//end for
 
-  return readyJointNum == JointData::numOfJoint;
+  return readyJointNum == (end - begin);
 }

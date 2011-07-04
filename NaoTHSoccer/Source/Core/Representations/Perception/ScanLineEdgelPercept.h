@@ -17,8 +17,6 @@
 
 #include <vector>
 
-#define MAX_NUMBER_OF_SCANLINE_EDGELS SCANLINE_COUNT * (SCANLINE_RESUME_COUNT + 1)
-
 class ScanLineEdgelPercept : public naoth::Printable
 { 
 public:

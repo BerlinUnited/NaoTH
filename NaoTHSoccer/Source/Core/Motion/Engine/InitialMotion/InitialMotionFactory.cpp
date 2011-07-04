@@ -10,6 +10,7 @@
 // motions
 #include "DeadMotion.h"
 #include "InitialMotion.h"
+#include "Sit.h"
 
 InitialMotionFactory::InitialMotionFactory()
   :
@@ -38,6 +39,7 @@ AbstractMotion* InitialMotionFactory::createMotion(const MotionRequest& motionRe
   {
     case motion::dead: currentMotion = new DeadMotion(); break;
     case motion::init: currentMotion = new InitialMotion(); break;
+    case motion::sit: currentMotion = new Sit(); break;
     default: currentMotion = NULL;
   }//end switch
 
