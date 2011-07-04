@@ -70,6 +70,20 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& 
     return nextStep(lastStep, step);
   }
 }
+FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkRequest& req)
+{
+  WalkRequest myReq = req;
+  myReq.target = req.stepControl.target;//HACK
+  Pose2D step = calculateStep(lastStep, myReq);
+
+  FeetPose newFeetStepBegin = lastStep.end();
+  FootStep newStep(newFeetStepBegin, (req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT) );
+  addStep(newStep, step);
+  theLastStepSize = step;
+
+  ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
+  return newStep;
+}
 
 Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
 {

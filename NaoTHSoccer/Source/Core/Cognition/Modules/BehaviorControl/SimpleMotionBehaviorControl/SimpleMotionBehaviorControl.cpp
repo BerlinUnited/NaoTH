@@ -36,6 +36,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:turn_right", "Set the motion request to 'turn_right'.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_forward", "Walk foraward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stepping", "walk with zero speed", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:step_control", "test step control", false);
 
   // key frame motion
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
@@ -177,6 +178,35 @@ void SimpleMotionBehaviorControl::testMotion()
       getMotionRequest().id = motion::walk;
       getMotionRequest().walkRequest.target = Pose2D();
       getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
+    );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:step_control",
+   if ( getMotionStatus().stepControl.stepID % 5 == 0)
+  {
+    getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+    switch(getMotionStatus().stepControl.moveableFoot)
+  {
+    case MotionStatus::StepControlStatus::LEFT:
+    case MotionStatus::StepControlStatus::BOTH:
+    {
+      getMotionRequest().walkRequest.stepControl.moveLeftFoot = true;
+      getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
+      break;
+    }
+    case MotionStatus::StepControlStatus::RIGHT:
+    {
+      getMotionRequest().walkRequest.stepControl.moveLeftFoot = false;
+      getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
+      break;
+    }
+    default: ASSERT(false);
+      break;
+    }
+  double stepTime = 1000;
+  MODIFY("StepControl.time",stepTime);
+    getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
+    getMotionRequest().walkRequest.stepControl.time = stepTime;
+  }
     );
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_front",

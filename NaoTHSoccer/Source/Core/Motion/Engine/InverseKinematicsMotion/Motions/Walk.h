@@ -71,7 +71,7 @@ private:
   void addStep(const Step& step);
 
 private:
-  unsigned int theStepID; // use for step control
+  static unsigned int theStepID; // use for step control
 
   const IKParameters::Walk& theWalkParameters;
   

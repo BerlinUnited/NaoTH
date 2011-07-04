@@ -22,6 +22,8 @@ public:
   FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
 
   FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
+
+  FootStep controlStep(const FootStep& lastStep,const WalkRequest& req);
   
 private:
   Pose2D calculateStep(const FootStep& lastStep,const WalkRequest& req);

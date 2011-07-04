@@ -13,9 +13,10 @@
 using namespace InverseKinematic;
 using namespace naoth;
 
+unsigned int Walk::theStepID = 0;
+
 Walk::Walk()
 :IKMotion(motion::walk),
-theStepID(0),
 theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
 theUnsupportedCount(0),
@@ -205,9 +206,39 @@ void Walk::manageSteps(const WalkRequest& req)
     // this step is planned completely
     // new foot step
     Step step;
-    step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+    bool stepCtr = false;
+    switch (stepBuffer.back().footStep.liftingFoot())
+    {
+    case FootStep::NONE:
+      stepCtr = true;
+      break;
+    case FootStep::LEFT:
+      stepCtr = !req.stepControl.moveLeftFoot;
+      break;
+    case FootStep::RIGHT:
+      stepCtr = req.stepControl.moveLeftFoot;
+      break;
+    default: ASSERT(false);
+      break;
+    }
+
     theFootStepPlanner.updateParameters(theParameters, req.character);
-    updateParameters(step);
+
+    if ( stepCtr && req.stepControl.stepID == theStepID )
+    {
+      // step control
+      cout<<"step ctr @ "<<theStepID<<endl;
+      step.footStep = theFootStepPlanner.controlStep(planningStep.footStep, req);
+      updateParameters(step);
+      step.samplesSingleSupport = max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
+      step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
+    }
+    else
+    {
+      step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+      updateParameters(step);
+    }
+
     addStep(step);
   }
 }
