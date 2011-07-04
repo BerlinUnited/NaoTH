@@ -120,6 +120,8 @@ namespace naoth
       // TODO
     };
 
+    void get(GameData& data);
+
     //void get(GPSData& data);
 
     /////////////////////// set ///////////////////////

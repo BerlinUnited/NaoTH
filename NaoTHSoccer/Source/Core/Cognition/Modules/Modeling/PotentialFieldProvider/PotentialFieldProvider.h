@@ -66,6 +66,10 @@ private:
 
   Vector2<double> getGoal(const Vector2<double>& ball, const GoalModel::Goal& oppGoalModel);
   Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel);
+
+
+  Vector2<double> approachBall(const Vector2<double>& point, const Vector2<double>& target);
+  Vector2<double> calculateBallPotentialField(const Vector2<double>& point, const Vector2<double>& ball, const Vector2<double>& dir);
 };
 
 #endif //__PotentialFieldProvider_h_

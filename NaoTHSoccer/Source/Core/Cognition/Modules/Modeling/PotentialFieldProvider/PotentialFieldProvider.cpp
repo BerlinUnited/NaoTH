@@ -20,6 +20,9 @@ PotentialFieldProvider::PotentialFieldProvider()
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:goal_field_geometry","...", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:different_colors","...", false);
+
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_ball_approach_field:local", "...", false);
+
 }
 
 
@@ -103,6 +106,31 @@ void PotentialFieldProvider::execute()
         f.normalize(50);
         f = robotPose*f;
         ARROW(robotPose.translation.x, robotPose.translation.y, f.x, f.y);
+      }
+    }
+  );
+
+
+
+  DEBUG_REQUEST("PotentialFieldProvider:draw_ball_approach_field:local",
+    FIELD_DRAWING_CONTEXT;
+    PEN("666600", 2);
+
+    double yMax = fabs(getBallModel().position.y) + 500;
+    double xMax = fabs(getBallModel().position.x) + 500;
+
+    double step = 20;
+    for (double x = -100; x <= xMax; x += step)
+    {
+      for (double y = -yMax; y <= yMax; y += step)
+      {
+        Vector2<double> pos = Vector2<double>(x,y);
+        Vector2<double> target(1000, 1000);
+
+        Vector2<double> f = approachBall(pos, target);
+        f.normalize(10);
+        f += pos;
+        ARROW(pos.x, pos.y, f.x, f.y);
       }
     }
   );
@@ -310,3 +338,56 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
 
   return goalCenter; 
 }//end getGoalTarget
+
+
+Vector2<double> PotentialFieldProvider::approachBall(const Vector2<double>& point, const Vector2<double>& target)
+{
+  double approachDistance = 200;
+  MODIFY("potentialfield:approach_ball:distance",approachDistance);
+
+  double repulsor_strength = 2;
+  MODIFY("potentialfield:approach_ball:repulsor:strength",repulsor_strength);
+  
+  // correct the field by target direction
+  Vector2<double> dirTarget = (target - getBallModel().position).normalize();
+
+  // ball rupulsor
+  Vector2<double> ballRepulsor = calculateBallPotentialField(point, getBallModel().position, dirTarget);
+
+
+
+  // adjust rotation around ball
+  //double relAngleToBall = Math::pi + (ballRepulsor-dirTarget).angle();
+  //double relAngleToBall = -(ballRepulsor-dirTarget).angle();
+  //ballRepulsor.rotate(relAngleToBall);
+
+  // targep point attractor
+  Vector2<double> approachPos = getBallModel().position - dirTarget*approachDistance;
+  Vector2<double> dirApproachPos = (approachPos - point).normalize();
+
+//  if(dirTarget.abs() < 1.0) return ballRepulsor;
+
+  //
+  Vector2<double> dirApproachBall = ballRepulsor*repulsor_strength + dirApproachPos; 
+
+  return dirApproachBall;
+}//end approachBall
+
+Vector2<double> PotentialFieldProvider::calculateBallPotentialField(const Vector2<double>& point, const Vector2<double>& ball, const Vector2<double>& dir)
+{
+  double a = 1000;
+  MODIFY("potentialfield:approach_ball:repulsor:a",a);
+  double d = 600;
+  MODIFY("potentialfield:approach_ball:repulsor:d",d);
+
+  Vector2<double> v = point-ball;
+  double t = v.abs();
+  if ( t >= d-100 ) return Vector2<double>();
+
+  // direction of the repulsion
+  // cos_weight == 1.0: full repulsion
+  // cos_weight == 0.0: low repulsion
+  double cos_weight = (dir*v.normalize() + 1.0)*0.5;
+
+  return v * exp(a / d - a / (d - t))*cos_weight;
+}//end calculateBallPotentialField
