@@ -68,7 +68,11 @@ private:
   
   Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
 
+  void addStep(const Step& step);
+
 private:
+  unsigned int theStepID; // use for step control
+
   const IKParameters::Walk& theWalkParameters;
   
   InverseKinematic::CoMFeetPose theCoMFeetPose;

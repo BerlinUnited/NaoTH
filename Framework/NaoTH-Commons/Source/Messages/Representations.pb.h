@@ -42,11 +42,13 @@ class FrameInfo;
 class BallPercept;
 class GoalPercept;
 class HeadMotionRequest;
+class StepControlRequest;
 class WalkRequest;
 class KickRequest;
 class MotionRequest;
 class LinePercept;
 class FSRData;
+class StepControlStatus;
 class MotionStatus;
 class OdometryData;
 class CalibrationData;
@@ -1252,6 +1254,119 @@ class HeadMotionRequest : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class StepControlRequest : public ::google::protobuf::Message {
+ public:
+  StepControlRequest();
+  virtual ~StepControlRequest();
+  
+  StepControlRequest(const StepControlRequest& from);
+  
+  inline StepControlRequest& operator=(const StepControlRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const StepControlRequest& default_instance();
+  
+  void Swap(StepControlRequest* other);
+  
+  // implements Message ----------------------------------------------
+  
+  StepControlRequest* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const StepControlRequest& from);
+  void MergeFrom(const StepControlRequest& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required uint32 stepID = 1;
+  inline bool has_stepid() const;
+  inline void clear_stepid();
+  static const int kStepIDFieldNumber = 1;
+  inline ::google::protobuf::uint32 stepid() const;
+  inline void set_stepid(::google::protobuf::uint32 value);
+  
+  // required bool moveLeftFoot = 2;
+  inline bool has_moveleftfoot() const;
+  inline void clear_moveleftfoot();
+  static const int kMoveLeftFootFieldNumber = 2;
+  inline bool moveleftfoot() const;
+  inline void set_moveleftfoot(bool value);
+  
+  // required .naothmessages.Pose2D target = 3;
+  inline bool has_target() const;
+  inline void clear_target();
+  static const int kTargetFieldNumber = 3;
+  inline const ::naothmessages::Pose2D& target() const;
+  inline ::naothmessages::Pose2D* mutable_target();
+  inline ::naothmessages::Pose2D* release_target();
+  
+  // required uint32 time = 4;
+  inline bool has_time() const;
+  inline void clear_time();
+  static const int kTimeFieldNumber = 4;
+  inline ::google::protobuf::uint32 time() const;
+  inline void set_time(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.StepControlRequest)
+ private:
+  inline void set_has_stepid();
+  inline void clear_has_stepid();
+  inline void set_has_moveleftfoot();
+  inline void clear_has_moveleftfoot();
+  inline void set_has_target();
+  inline void clear_has_target();
+  inline void set_has_time();
+  inline void clear_has_time();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 stepid_;
+  bool moveleftfoot_;
+  ::naothmessages::Pose2D* target_;
+  ::google::protobuf::uint32 time_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static StepControlRequest* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class WalkRequest : public ::google::protobuf::Message {
  public:
   WalkRequest();
@@ -1328,6 +1443,14 @@ class WalkRequest : public ::google::protobuf::Message {
   inline ::naothmessages::Pose2D* mutable_target();
   inline ::naothmessages::Pose2D* release_target();
   
+  // optional .naothmessages.StepControlRequest stepControl = 4;
+  inline bool has_stepcontrol() const;
+  inline void clear_stepcontrol();
+  static const int kStepControlFieldNumber = 4;
+  inline const ::naothmessages::StepControlRequest& stepcontrol() const;
+  inline ::naothmessages::StepControlRequest* mutable_stepcontrol();
+  inline ::naothmessages::StepControlRequest* release_stepcontrol();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.WalkRequest)
  private:
   inline void set_has_coordinate();
@@ -1336,15 +1459,18 @@ class WalkRequest : public ::google::protobuf::Message {
   inline void clear_has_character();
   inline void set_has_target();
   inline void clear_has_target();
+  inline void set_has_stepcontrol();
+  inline void clear_has_stepcontrol();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   double character_;
   ::naothmessages::Pose2D* target_;
+  ::naothmessages::StepControlRequest* stepcontrol_;
   ::google::protobuf::uint32 coordinate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -1832,6 +1958,98 @@ class FSRData : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class StepControlStatus : public ::google::protobuf::Message {
+ public:
+  StepControlStatus();
+  virtual ~StepControlStatus();
+  
+  StepControlStatus(const StepControlStatus& from);
+  
+  inline StepControlStatus& operator=(const StepControlStatus& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const StepControlStatus& default_instance();
+  
+  void Swap(StepControlStatus* other);
+  
+  // implements Message ----------------------------------------------
+  
+  StepControlStatus* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const StepControlStatus& from);
+  void MergeFrom(const StepControlStatus& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required uint32 stepID = 1;
+  inline bool has_stepid() const;
+  inline void clear_stepid();
+  static const int kStepIDFieldNumber = 1;
+  inline ::google::protobuf::uint32 stepid() const;
+  inline void set_stepid(::google::protobuf::uint32 value);
+  
+  // required uint32 moveableFoot = 2;
+  inline bool has_moveablefoot() const;
+  inline void clear_moveablefoot();
+  static const int kMoveableFootFieldNumber = 2;
+  inline ::google::protobuf::uint32 moveablefoot() const;
+  inline void set_moveablefoot(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.StepControlStatus)
+ private:
+  inline void set_has_stepid();
+  inline void clear_has_stepid();
+  inline void set_has_moveablefoot();
+  inline void clear_has_moveablefoot();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint32 stepid_;
+  ::google::protobuf::uint32 moveablefoot_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static StepControlStatus* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class MotionStatus : public ::google::protobuf::Message {
  public:
   MotionStatus();
@@ -1945,6 +2163,14 @@ class MotionStatus : public ::google::protobuf::Message {
   inline ::naothmessages::Pose2D* mutable_plannedmotionhip();
   inline ::naothmessages::Pose2D* release_plannedmotionhip();
   
+  // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+  inline bool has_stepcontrolstatus() const;
+  inline void clear_stepcontrolstatus();
+  static const int kStepControlStatusFieldNumber = 9;
+  inline const ::naothmessages::StepControlStatus& stepcontrolstatus() const;
+  inline ::naothmessages::StepControlStatus* mutable_stepcontrolstatus();
+  inline ::naothmessages::StepControlStatus* release_stepcontrolstatus();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionStatus)
  private:
   inline void set_has_time();
@@ -1963,6 +2189,8 @@ class MotionStatus : public ::google::protobuf::Message {
   inline void clear_has_plannedmotionrightfoot();
   inline void set_has_plannedmotionhip();
   inline void clear_has_plannedmotionhip();
+  inline void set_has_stepcontrolstatus();
+  inline void clear_has_stepcontrolstatus();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1973,10 +2201,11 @@ class MotionStatus : public ::google::protobuf::Message {
   ::naothmessages::Pose2D* plannedmotionleftfoot_;
   ::naothmessages::Pose2D* plannedmotionrightfoot_;
   ::naothmessages::Pose2D* plannedmotionhip_;
+  ::naothmessages::StepControlStatus* stepcontrolstatus_;
   ::google::protobuf::uint32 currentmotionstate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3377,6 +3606,105 @@ inline ::naothmessages::DoubleVector2* HeadMotionRequest::release_targetpointont
 
 // -------------------------------------------------------------------
 
+// StepControlRequest
+
+// required uint32 stepID = 1;
+inline bool StepControlRequest::has_stepid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void StepControlRequest::set_has_stepid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void StepControlRequest::clear_has_stepid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void StepControlRequest::clear_stepid() {
+  stepid_ = 0u;
+  clear_has_stepid();
+}
+inline ::google::protobuf::uint32 StepControlRequest::stepid() const {
+  return stepid_;
+}
+inline void StepControlRequest::set_stepid(::google::protobuf::uint32 value) {
+  set_has_stepid();
+  stepid_ = value;
+}
+
+// required bool moveLeftFoot = 2;
+inline bool StepControlRequest::has_moveleftfoot() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void StepControlRequest::set_has_moveleftfoot() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void StepControlRequest::clear_has_moveleftfoot() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void StepControlRequest::clear_moveleftfoot() {
+  moveleftfoot_ = false;
+  clear_has_moveleftfoot();
+}
+inline bool StepControlRequest::moveleftfoot() const {
+  return moveleftfoot_;
+}
+inline void StepControlRequest::set_moveleftfoot(bool value) {
+  set_has_moveleftfoot();
+  moveleftfoot_ = value;
+}
+
+// required .naothmessages.Pose2D target = 3;
+inline bool StepControlRequest::has_target() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void StepControlRequest::set_has_target() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void StepControlRequest::clear_has_target() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void StepControlRequest::clear_target() {
+  if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
+  clear_has_target();
+}
+inline const ::naothmessages::Pose2D& StepControlRequest::target() const {
+  return target_ != NULL ? *target_ : *default_instance_->target_;
+}
+inline ::naothmessages::Pose2D* StepControlRequest::mutable_target() {
+  set_has_target();
+  if (target_ == NULL) target_ = new ::naothmessages::Pose2D;
+  return target_;
+}
+inline ::naothmessages::Pose2D* StepControlRequest::release_target() {
+  clear_has_target();
+  ::naothmessages::Pose2D* temp = target_;
+  target_ = NULL;
+  return temp;
+}
+
+// required uint32 time = 4;
+inline bool StepControlRequest::has_time() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void StepControlRequest::set_has_time() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void StepControlRequest::clear_has_time() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void StepControlRequest::clear_time() {
+  time_ = 0u;
+  clear_has_time();
+}
+inline ::google::protobuf::uint32 StepControlRequest::time() const {
+  return time_;
+}
+inline void StepControlRequest::set_time(::google::protobuf::uint32 value) {
+  set_has_time();
+  time_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // WalkRequest
 
 // required uint32 coordinate = 1;
@@ -3449,6 +3777,35 @@ inline ::naothmessages::Pose2D* WalkRequest::release_target() {
   clear_has_target();
   ::naothmessages::Pose2D* temp = target_;
   target_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.StepControlRequest stepControl = 4;
+inline bool WalkRequest::has_stepcontrol() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void WalkRequest::set_has_stepcontrol() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void WalkRequest::clear_has_stepcontrol() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void WalkRequest::clear_stepcontrol() {
+  if (stepcontrol_ != NULL) stepcontrol_->::naothmessages::StepControlRequest::Clear();
+  clear_has_stepcontrol();
+}
+inline const ::naothmessages::StepControlRequest& WalkRequest::stepcontrol() const {
+  return stepcontrol_ != NULL ? *stepcontrol_ : *default_instance_->stepcontrol_;
+}
+inline ::naothmessages::StepControlRequest* WalkRequest::mutable_stepcontrol() {
+  set_has_stepcontrol();
+  if (stepcontrol_ == NULL) stepcontrol_ = new ::naothmessages::StepControlRequest;
+  return stepcontrol_;
+}
+inline ::naothmessages::StepControlRequest* WalkRequest::release_stepcontrol() {
+  clear_has_stepcontrol();
+  ::naothmessages::StepControlRequest* temp = stepcontrol_;
+  stepcontrol_ = NULL;
   return temp;
 }
 
@@ -3887,6 +4244,54 @@ FSRData::mutable_valid() {
 
 // -------------------------------------------------------------------
 
+// StepControlStatus
+
+// required uint32 stepID = 1;
+inline bool StepControlStatus::has_stepid() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void StepControlStatus::set_has_stepid() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void StepControlStatus::clear_has_stepid() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void StepControlStatus::clear_stepid() {
+  stepid_ = 0u;
+  clear_has_stepid();
+}
+inline ::google::protobuf::uint32 StepControlStatus::stepid() const {
+  return stepid_;
+}
+inline void StepControlStatus::set_stepid(::google::protobuf::uint32 value) {
+  set_has_stepid();
+  stepid_ = value;
+}
+
+// required uint32 moveableFoot = 2;
+inline bool StepControlStatus::has_moveablefoot() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void StepControlStatus::set_has_moveablefoot() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void StepControlStatus::clear_has_moveablefoot() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void StepControlStatus::clear_moveablefoot() {
+  moveablefoot_ = 0u;
+  clear_has_moveablefoot();
+}
+inline ::google::protobuf::uint32 StepControlStatus::moveablefoot() const {
+  return moveablefoot_;
+}
+inline void StepControlStatus::set_moveablefoot(::google::protobuf::uint32 value) {
+  set_has_moveablefoot();
+  moveablefoot_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // MotionStatus
 
 // required uint32 time = 1;
@@ -4083,6 +4488,35 @@ inline ::naothmessages::Pose2D* MotionStatus::release_plannedmotionhip() {
   clear_has_plannedmotionhip();
   ::naothmessages::Pose2D* temp = plannedmotionhip_;
   plannedmotionhip_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.StepControlStatus stepControlStatus = 9;
+inline bool MotionStatus::has_stepcontrolstatus() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void MotionStatus::set_has_stepcontrolstatus() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void MotionStatus::clear_has_stepcontrolstatus() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void MotionStatus::clear_stepcontrolstatus() {
+  if (stepcontrolstatus_ != NULL) stepcontrolstatus_->::naothmessages::StepControlStatus::Clear();
+  clear_has_stepcontrolstatus();
+}
+inline const ::naothmessages::StepControlStatus& MotionStatus::stepcontrolstatus() const {
+  return stepcontrolstatus_ != NULL ? *stepcontrolstatus_ : *default_instance_->stepcontrolstatus_;
+}
+inline ::naothmessages::StepControlStatus* MotionStatus::mutable_stepcontrolstatus() {
+  set_has_stepcontrolstatus();
+  if (stepcontrolstatus_ == NULL) stepcontrolstatus_ = new ::naothmessages::StepControlStatus;
+  return stepcontrolstatus_;
+}
+inline ::naothmessages::StepControlStatus* MotionStatus::release_stepcontrolstatus() {
+  clear_has_stepcontrolstatus();
+  ::naothmessages::StepControlStatus* temp = stepcontrolstatus_;
+  stepcontrolstatus_ = NULL;
   return temp;
 }
 

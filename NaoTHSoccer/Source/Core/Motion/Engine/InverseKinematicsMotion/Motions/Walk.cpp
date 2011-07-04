@@ -15,6 +15,7 @@ using namespace naoth;
 
 Walk::Walk()
 :IKMotion(motion::walk),
+theStepID(0),
 theWalkParameters(theParameters.walk),
 theWaitLandingCount(0),
 theUnsupportedCount(0),
@@ -167,6 +168,12 @@ void Walk::plan(const MotionRequest& motionRequest)
   }
 }
 
+void Walk::addStep(const Step& step)
+{
+  stepBuffer.push_back(step);
+  theStepID++;
+}
+
 void Walk::manageSteps(const WalkRequest& req)
 {
   if ( stepBuffer.empty() )
@@ -181,7 +188,8 @@ void Walk::manageSteps(const WalkRequest& req)
     int prepareStep = theEngine.controlZMPstart(currentZMP);
     zeroStep.numberOfCyclePerFootStep = prepareStep;
     zeroStep.planningCycle = prepareStep;
-    stepBuffer.push_back(zeroStep);
+
+    addStep(zeroStep);
     theFootStepPlanner.updateParameters(theParameters, req.character);
 
     // set the stiffness for walking
@@ -200,7 +208,7 @@ void Walk::manageSteps(const WalkRequest& req)
     step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
     theFootStepPlanner.updateParameters(theParameters, req.character);
     updateParameters(step);
-    stepBuffer.push_back(step);
+    addStep(step);
   }
 }
 
@@ -511,6 +519,31 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
     motionStatus.plannedMotion.hip = reduceDimen(plannedHip);
     motionStatus.plannedMotion.lFoot =  reduceDimen(plannedlFoot);
     motionStatus.plannedMotion.rFoot = reduceDimen(plannedrFoot);
+  }
+
+  // step control
+  motionStatus.stepControl.stepID = theStepID;
+  if ( stepBuffer.empty() )
+  {
+    motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::BOTH;
+  }
+  else
+  {
+    FootStep::Foot lastMovingFoot = stepBuffer.back().footStep.liftingFoot();
+    switch(lastMovingFoot)
+    {
+    case FootStep::NONE:
+      motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::BOTH;
+      break;
+    case FootStep::LEFT:
+      motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::RIGHT;
+      break;
+    case FootStep::RIGHT:
+      motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::LEFT;
+      break;
+    default: ASSERT(false);
+      break;
+    }
   }
 }
 

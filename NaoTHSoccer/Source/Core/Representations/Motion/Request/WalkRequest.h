@@ -46,6 +46,16 @@ public:
     }
   }//end getCoordinateName
   
+  struct StepControlRequest
+  {
+    StepControlRequest():stepID(-1), time(0){}
+
+    unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
+    bool moveLeftFoot; // it should also match
+    Pose2D target; // in coordinate
+    unsigned int time; // in ms
+  };
+
   // indicates speed and stability, in range [0, 1]
   // 0: stablest (slow)
   // 0.5: normal
@@ -53,12 +63,19 @@ public:
   double character;
   Coordinate coordinate;
   Pose2D target;
+  StepControlRequest stepControl;
 
   void print(ostream& stream) const
   {
     stream << "target: " << target << endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
     stream << "character: " << character <<endl;
+    if ( stepControl.stepID >= 0 )
+    {
+      stream << "step control: "<< stepControl.stepID <<" "
+             << (stepControl.moveLeftFoot?"L":"R")<<" "<<stepControl.time
+             <<"\n step target: "<< stepControl.target<<"\n";
+    }
   }//end print
   
 };
