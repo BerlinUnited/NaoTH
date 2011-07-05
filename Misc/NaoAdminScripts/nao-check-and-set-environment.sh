@@ -22,7 +22,7 @@ verify_alcross ()
         echo "  * NAO_CROSSCOMPILE has not been set, using default path '$DEFAULT_NAO_CROSSCOMPILE'"
         export NAO_CROSSCOMPILE=$DEFAULT_NAO_CROSSCOMPILE
   fi
-  if  [ ! -d $NAO_CROSSCOMPILE/staging/geode-linux/usr/lib ]
+  if  [ ! -d $NAO_CROSSCOMPILE/staging/usr/lib ]
   then
         echo "WARN: I was unable to find staging/usr/lib in NAO_CROSSCOMPILE - the path is probably invalid" 
   fi
