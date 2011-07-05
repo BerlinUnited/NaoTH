@@ -321,11 +321,11 @@ while [ TRUE ]
 do
 	echo "Please enter Player-number:"
 	read PLAYERNR
-	if [ $PLAYERNR != "" ] && [ $PLAYERNR -le 4 ] && [ $PLAYERNR -ge 0 ]
+	if [ $PLAYERNR != "" ] && [ $PLAYERNR -le 5 ] && [ $PLAYERNR -ge 0 ]
 	then
 		break
 	else
-		echo "Error: Please enter Number between 0 and 4"
+		echo "Error: Please enter Number between 0 and 5"
 	fi
 done
 
