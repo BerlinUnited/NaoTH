@@ -105,7 +105,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // step control
   for(int i = 0; i <= none; i++)
   {
-    string str("motion.walk.step_control.foot");
+    string str("motion.walk.step_control.foot.");
     str.append(getStepControlFootName((StepControlFoot)i));
     engine.registerEnumElement("motion.walk.step_control.foot", str.c_str(), i);
   }//end for
