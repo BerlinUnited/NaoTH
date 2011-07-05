@@ -143,6 +143,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(ParticleFilterBallLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(ActiveGoalLocator);
+  REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(RadarObstacleLocator);

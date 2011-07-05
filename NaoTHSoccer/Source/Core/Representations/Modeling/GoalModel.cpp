@@ -68,7 +68,12 @@ void GoalModel::draw() const
   CIRCLE(yellowGoal.rightPost.x, yellowGoal.rightPost.y, 50);
 }//end draw
 
-LocalGoalModel::LocalGoalModel() : someGoalWasSeen(false), seen_angle(0.0)
+LocalGoalModel::LocalGoalModel() 
+  : 
+  someGoalWasSeen(false), 
+  opponentGoalIsValid(false),
+  ownGoalIsValid(false),
+  seen_angle(0.0)
 {
 
 }
@@ -157,4 +162,10 @@ void SelfLocGoalModel::update(naoth::GameData::TeamColor ownColor, const Pose2D&
   oppGoal.leftPost = robotPose/fieldInfo.opponentGoalPostLeft;
   oppGoal.rightPost = robotPose/fieldInfo.opponentGoalPostRight;
 }//end update
+
+SensingGoalModel::SensingGoalModel()
+  : 
+  someGoalWasSeen(false)
+{
+}
 

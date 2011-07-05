@@ -26,7 +26,7 @@ public:
   {
   public:
     Goal(){};
-    ~Goal(){};
+    virtual ~Goal(){};
 
     Vector2<double> leftPost;
     Vector2<double> rightPost;
@@ -73,7 +73,6 @@ public:
 
   FrameInfo frameWhenOpponentGoalWasSeen;
   FrameInfo frameWhenOwnGoalWasSeen;
-
 };
 
 /** goal model in robot's local coordinates, it is updated by robot's pose */
@@ -87,6 +86,8 @@ public:
 class SensingGoalModel : public GoalModel
 {
 public:
+  SensingGoalModel();
+
   //indicates whether a complete goal was seen in the last frame
   bool someGoalWasSeen;
 };
