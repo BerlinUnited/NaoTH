@@ -1906,6 +1906,15 @@ public class NaoScp extends javax.swing.JFrame
          if (cbRestartNaoth.isSelected())
          {
             Channel cmd = session.openChannel("exec");
+            
+            actionInfo("restarting naoqi");
+            ((ChannelExec) cmd).setCommand("/etc/init.d/naoqi restart");
+            
+            actionInfo("waiting");
+            
+            Thread.sleep(5000);
+            
+            actionInfo("restarting naoth cognition process");
             ((ChannelExec) cmd).setCommand("/etc/init.d/naoth stop");
             ((ChannelExec) cmd).setCommand("/etc/init.d/naoth start");
             InputStream consoleOut = cmd.getInputStream();

@@ -14,22 +14,19 @@ LEDSetter::LEDSetter()
 
 void LEDSetter::execute()
 {
-  copyData(getGameControllerLEDRequest());
+  getLEDData().change = false;
+  // head LEDs from behavior
+  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+  copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
+
+  // feet and chest button from GameController
+  copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
+
 } // end execute
 
-void LEDSetter::copyData(const LEDRequest &data)
+void LEDSetter::copyMultiLEDData(const LEDRequest &data, int from, int to)
 {
-  getLEDData().change = false;
-  for(int i=0; i < LEDData::numOfMonoLED; i++)
-  {
-    if(data.request.theMonoLED[i] != getLEDData().theMonoLED[i])
-    {
-      getLEDData().theMonoLED[i] = data.request.theMonoLED[i];
-      getLEDData().change = true;
-    }
-  }
-
-  for(int i=0; i < LEDData::numOfMultiLED; i++)
+  for(int i=from; i <= to; i++)
   {
     if(data.request.theMultiLED[i][LEDData::RED]
       != getLEDData().theMultiLED[i][LEDData::RED])
@@ -55,6 +52,22 @@ void LEDSetter::copyData(const LEDRequest &data)
       getLEDData().change = true;
     }
   }
+
+}
+
+void LEDSetter::copyMonoLEDData(const LEDRequest &data, int from, int to)
+{
+  // head LEDs from behavior
+
+  for(int i=0; i < LEDData::numOfMonoLED; i++)
+  {
+    if(data.request.theMonoLED[i] != getLEDData().theMonoLED[i])
+    {
+      getLEDData().theMonoLED[i] = data.request.theMonoLED[i];
+      getLEDData().change = true;
+    }
+  }
+
 
 }//end copyData
 
