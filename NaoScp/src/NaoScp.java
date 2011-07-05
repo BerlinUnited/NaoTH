@@ -641,7 +641,7 @@ public class NaoScp extends javax.swing.JFrame
     String inString = readFile(localConfigPath() + "/scheme.cfg");
     if("".equals(inString))
     {
-      inString = "SPL_Adlershof";
+      inString = "Nao";
     }
     jSchemeBox.setSelectedItem(inString);
 
