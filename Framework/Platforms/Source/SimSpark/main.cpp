@@ -20,6 +20,7 @@ void printUsage(char* name)
   cout << "NaoTH Simspark controller" << endl;
   cout << "-------------------------" << endl;
   cout << "http://www.naoteamhumboldt.de" << endl << endl;
+  // todo correct it
   cout << "Usage: "<<name<<" [teamname [playernumber [server [port]]]]" << endl << endl;
 }
 

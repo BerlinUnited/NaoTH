@@ -17,43 +17,12 @@ public:
   PFBLParameters();
   ~PFBLParameters();
 
-  // standart deviations for the gausian angle and distance model
+  double frictionCoefficiant;
+  double odometryNoiseFactor;
+  double velocityNoiseFactor;
 
-  double sigmaDistanceOwnPose;
-  double sigmaAngleOwnPose;
-
-  double sigmaDistanceGoalModel;
-  double sigmaAngleGoalModel;
-
-  double sigmaDistanceGoalPost;
-  double sigmaAngleGoalPost;
-
-  double sigmaDistanceCenterCircle;
-  double sigmaAngleCenterCircle;
-
-  double sigmaDistanceCorner;
-  double sigmaAngleCorner;
-
-  double sigmaDistanceLine;
-  double sigmaAngleLine;
-
-  double thresholdCanopy;
-
-  double resamplingThreshhold;
-
-  double processNoiseDistance;
-  double processNoiseAngle;
-
-  double motionNoiseDistance;
-  double motionNoiseAngle;
-
-  // updates
-  double updateByGoals;
-  double updateByOldPose;
-  double updateByLinesTable;
-  double updateByCornerTable;
-  double updateByCenterCircle;
-  double updateByFlags;
+  double sigmaAngle;
+  double sigmaDistance;
 
   virtual void print(std::ostream& stream) const {}
 
