@@ -13,6 +13,10 @@
 
 #include <assert.h>
 #include <iostream>
+
+#include <errno.h>
+#include <string.h>
+
 #include "Trace.h"
 
 #undef ASSERT
@@ -27,7 +31,15 @@
  * @param cond The condition to be checked.
  */
 // TODO: make it better
-#define ASSERT(cond) { if(!(cond)){ GT_TRACE(#cond); Trace::getInstance().dump(); assert(cond); } }
+#define ASSERT(cond) { \
+  if(!(cond)) { \
+    if(errno != 0) {\
+      std::stringstream s; s << "errno: " << (int) errno << " (" << strerror(errno) << ")"; \
+      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());; \
+    } \
+    GT_TRACE(#cond); Trace::getInstance().dump(); assert(cond);\
+  }\
+}
 
 /**
  * VERIFY prints a message if cond is false and DEBUG is defined.
