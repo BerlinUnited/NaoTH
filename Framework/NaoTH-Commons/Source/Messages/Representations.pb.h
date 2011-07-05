@@ -1461,6 +1461,14 @@ class WalkRequest : public ::google::protobuf::Message {
   inline ::naothmessages::StepControlRequest* mutable_stepcontrol();
   inline ::naothmessages::StepControlRequest* release_stepcontrol();
   
+  // required .naothmessages.Pose2D offset = 5;
+  inline bool has_offset() const;
+  inline void clear_offset();
+  static const int kOffsetFieldNumber = 5;
+  inline const ::naothmessages::Pose2D& offset() const;
+  inline ::naothmessages::Pose2D* mutable_offset();
+  inline ::naothmessages::Pose2D* release_offset();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.WalkRequest)
  private:
   inline void set_has_coordinate();
@@ -1471,16 +1479,19 @@ class WalkRequest : public ::google::protobuf::Message {
   inline void clear_has_target();
   inline void set_has_stepcontrol();
   inline void clear_has_stepcontrol();
+  inline void set_has_offset();
+  inline void clear_has_offset();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   double character_;
   ::naothmessages::Pose2D* target_;
   ::naothmessages::StepControlRequest* stepcontrol_;
+  ::naothmessages::Pose2D* offset_;
   ::google::protobuf::uint32 coordinate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3838,6 +3849,35 @@ inline ::naothmessages::StepControlRequest* WalkRequest::release_stepcontrol() {
   clear_has_stepcontrol();
   ::naothmessages::StepControlRequest* temp = stepcontrol_;
   stepcontrol_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.Pose2D offset = 5;
+inline bool WalkRequest::has_offset() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void WalkRequest::set_has_offset() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void WalkRequest::clear_has_offset() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void WalkRequest::clear_offset() {
+  if (offset_ != NULL) offset_->::naothmessages::Pose2D::Clear();
+  clear_has_offset();
+}
+inline const ::naothmessages::Pose2D& WalkRequest::offset() const {
+  return offset_ != NULL ? *offset_ : *default_instance_->offset_;
+}
+inline ::naothmessages::Pose2D* WalkRequest::mutable_offset() {
+  set_has_offset();
+  if (offset_ == NULL) offset_ = new ::naothmessages::Pose2D;
+  return offset_;
+}
+inline ::naothmessages::Pose2D* WalkRequest::release_offset() {
+  clear_has_offset();
+  ::naothmessages::Pose2D* temp = offset_;
+  offset_ = NULL;
   return temp;
 }
 

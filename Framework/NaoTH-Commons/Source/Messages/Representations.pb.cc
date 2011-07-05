@@ -279,11 +279,12 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StepControlRequest));
   WalkRequest_descriptor_ = file->message_type(10);
-  static const int WalkRequest_offsets_[4] = {
+  static const int WalkRequest_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, coordinate_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, character_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, target_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, stepcontrol_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, offset_),
   };
   WalkRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -587,39 +588,40 @@ void protobuf_AddDesc_Representations_2eproto() {
     "sages.DoubleVector2\"\207\001\n\022StepControlReque"
     "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010"
     "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022"
-    "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\223\001"
+    "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001"
     "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha"
     "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess"
     "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth"
-    "messages.StepControlRequest\"{\n\013KickReque"
-    "st\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Do"
-    "ubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010ki"
-    "ckFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMot"
-    "ionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006"
-    "forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naot"
-    "hmessages.WalkRequest\022\026\n\016starndardStand\030"
-    "\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessag"
-    "es.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013"
-    "LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessag"
-    "es.FieldLineSegment\0222\n\rintersections\030\002 \003"
-    "(\0132\033.naothmessages.Intersection\0228\n\022middl"
-    "eCircleCenter\030\003 \001(\0132\034.naothmessages.Doub"
-    "leVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004d"
-    "ata\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlS"
-    "tatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 "
-    "\002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nla"
-    "stMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n"
-    "\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionState\030"
-    "\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.n"
-    "aothmessages.Pose2D\0225\n\026plannedMotionRigh"
-    "tFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pl"
-    "annedMotionHip\030\010 \002(\0132\025.naothmessages.Pos"
-    "e2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothme"
-    "ssages.StepControlStatus\"3\n\014OdometryData"
-    "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n"
-    "\017CalibrationData\022:\n\024inertialSensorOffset"
-    "\030\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'"
-    "de.hu_berlin.informatik.ki.nao.messages", 3159);
+    "messages.StepControlRequest\022%\n\006offset\030\005 "
+    "\002(\0132\025.naothmessages.Pose2D\"{\n\013KickReques"
+    "t\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Dou"
+    "bleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kic"
+    "kFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMoti"
+    "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f"
+    "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth"
+    "messages.WalkRequest\022\026\n\016starndardStand\030\005"
+    " \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessage"
+    "s.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013L"
+    "inePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessage"
+    "s.FieldLineSegment\0222\n\rintersections\030\002 \003("
+    "\0132\033.naothmessages.Intersection\0228\n\022middle"
+    "CircleCenter\030\003 \001(\0132\034.naothmessages.Doubl"
+    "eVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004da"
+    "ta\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlSt"
+    "atus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002"
+    "(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlas"
+    "tMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\n"
+    "headMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005"
+    " \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.na"
+    "othmessages.Pose2D\0225\n\026plannedMotionRight"
+    "Foot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pla"
+    "nnedMotionHip\030\010 \002(\0132\025.naothmessages.Pose"
+    "2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothmes"
+    "sages.StepControlStatus\"3\n\014OdometryData\022"
+    "#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017"
+    "CalibrationData\022:\n\024inertialSensorOffset\030"
+    "\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'d"
+    "e.hu_berlin.informatik.ki.nao.messages", 3198);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -4605,6 +4607,7 @@ const int WalkRequest::kCoordinateFieldNumber;
 const int WalkRequest::kCharacterFieldNumber;
 const int WalkRequest::kTargetFieldNumber;
 const int WalkRequest::kStepControlFieldNumber;
+const int WalkRequest::kOffsetFieldNumber;
 #endif  // !_MSC_VER
 
 WalkRequest::WalkRequest()
@@ -4615,6 +4618,7 @@ WalkRequest::WalkRequest()
 void WalkRequest::InitAsDefaultInstance() {
   target_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
   stepcontrol_ = const_cast< ::naothmessages::StepControlRequest*>(&::naothmessages::StepControlRequest::default_instance());
+  offset_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
 }
 
 WalkRequest::WalkRequest(const WalkRequest& from)
@@ -4629,6 +4633,7 @@ void WalkRequest::SharedCtor() {
   character_ = 0;
   target_ = NULL;
   stepcontrol_ = NULL;
+  offset_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4640,6 +4645,7 @@ void WalkRequest::SharedDtor() {
   if (this != default_instance_) {
     delete target_;
     delete stepcontrol_;
+    delete offset_;
   }
 }
 
@@ -4672,6 +4678,9 @@ void WalkRequest::Clear() {
     }
     if (has_stepcontrol()) {
       if (stepcontrol_ != NULL) stepcontrol_->::naothmessages::StepControlRequest::Clear();
+    }
+    if (has_offset()) {
+      if (offset_ != NULL) offset_->::naothmessages::Pose2D::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -4739,6 +4748,20 @@ bool WalkRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(42)) goto parse_offset;
+        break;
+      }
+      
+      // required .naothmessages.Pose2D offset = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_offset:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_offset()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4783,6 +4806,12 @@ void WalkRequest::SerializeWithCachedSizes(
       4, this->stepcontrol(), output);
   }
   
+  // required .naothmessages.Pose2D offset = 5;
+  if (has_offset()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->offset(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4813,6 +4842,13 @@ void WalkRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         4, this->stepcontrol(), target);
+  }
+  
+  // required .naothmessages.Pose2D offset = 5;
+  if (has_offset()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        5, this->offset(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4850,6 +4886,13 @@ int WalkRequest::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->stepcontrol());
+    }
+    
+    // required .naothmessages.Pose2D offset = 5;
+    if (has_offset()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->offset());
     }
     
   }
@@ -4891,6 +4934,9 @@ void WalkRequest::MergeFrom(const WalkRequest& from) {
     if (from.has_stepcontrol()) {
       mutable_stepcontrol()->::naothmessages::StepControlRequest::MergeFrom(from.stepcontrol());
     }
+    if (from.has_offset()) {
+      mutable_offset()->::naothmessages::Pose2D::MergeFrom(from.offset());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -4908,13 +4954,16 @@ void WalkRequest::CopyFrom(const WalkRequest& from) {
 }
 
 bool WalkRequest::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  if ((_has_bits_[0] & 0x00000017) != 0x00000017) return false;
   
   if (has_target()) {
     if (!this->target().IsInitialized()) return false;
   }
   if (has_stepcontrol()) {
     if (!this->stepcontrol().IsInitialized()) return false;
+  }
+  if (has_offset()) {
+    if (!this->offset().IsInitialized()) return false;
   }
   return true;
 }
@@ -4925,6 +4974,7 @@ void WalkRequest::Swap(WalkRequest* other) {
     std::swap(character_, other->character_);
     std::swap(target_, other->target_);
     std::swap(stepcontrol_, other->stepcontrol_);
+    std::swap(offset_, other->offset_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

@@ -65,12 +65,14 @@ public:
   Coordinate coordinate;
   Pose2D target;
   StepControlRequest stepControl;
+  Pose2D offset; // offset of relation between left foot and body
 
   void print(ostream& stream) const
   {
     stream << "target: " << target << endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
     stream << "character: " << character <<endl;
+    stream << "offset: "<< offset << "\n";
     if ( stepControl.stepID >= 0 )
     {
       stream << "step control: "<< stepControl.stepID <<" "

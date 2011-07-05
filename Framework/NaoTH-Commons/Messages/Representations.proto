@@ -107,6 +107,7 @@ message WalkRequest {
   required double character = 2;
   required Pose2D target = 3;
   optional StepControlRequest stepControl = 4;
+  required Pose2D offset = 5;
 }
 
 message KickRequest {

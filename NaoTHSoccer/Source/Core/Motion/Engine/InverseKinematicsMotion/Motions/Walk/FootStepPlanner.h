@@ -31,7 +31,7 @@ private:
   /**
    * @param step: the step in WalkRequest::Hip
    */
-  FootStep nextStep(const FootStep& lastStep, Pose2D step, double character);
+  FootStep nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req);
 
   void restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const;
   

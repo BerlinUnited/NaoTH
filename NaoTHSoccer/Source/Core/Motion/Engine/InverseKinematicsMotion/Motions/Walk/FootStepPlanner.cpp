@@ -64,7 +64,7 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& 
   else
   {
     Pose2D step = calculateStep(lastStep, req);
-    return nextStep(lastStep, step, req.character);
+    return nextStep(lastStep, step, req);
   }
 }
 FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkRequest& req)
@@ -130,19 +130,32 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
   return step;
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, double character)
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req)
 {
   ASSERT(step.rotation <= Math::pi);
   ASSERT(step.rotation > -Math::pi);
   
-  restrictStepSize(step, lastStep, character);
+  restrictStepSize(step, lastStep, req.character);
   restrictStepChange(step, theLastStepSize);
+  theLastStepSize = step;
 
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, static_cast<FootStep::Foot>(-lastStep.liftingFoot()) );
+
+  // add offset
+  switch(newStep.liftingFoot())
+  {
+  case FootStep::RIGHT:
+    step -= req.offset;
+    break;
+  case FootStep::LEFT:
+    step += req.offset;
+    break;
+  default: ASSERT(false);
+    break;
+  }
+
   addStep(newStep, step);
-  theLastStepSize = step;
-  
   ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
   return newStep;
 }
