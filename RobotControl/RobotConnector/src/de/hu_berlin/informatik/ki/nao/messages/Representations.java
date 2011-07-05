@@ -7177,6 +7177,10 @@ public final class Representations {
     // required uint32 time = 4;
     boolean hasTime();
     int getTime();
+    
+    // required double speedDirection = 5;
+    boolean hasSpeedDirection();
+    double getSpeedDirection();
   }
   public static final class StepControlRequest extends
       com.google.protobuf.GeneratedMessage
@@ -7250,11 +7254,22 @@ public final class Representations {
       return time_;
     }
     
+    // required double speedDirection = 5;
+    public static final int SPEEDDIRECTION_FIELD_NUMBER = 5;
+    private double speedDirection_;
+    public boolean hasSpeedDirection() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public double getSpeedDirection() {
+      return speedDirection_;
+    }
+    
     private void initFields() {
       stepID_ = 0;
       moveLeftFoot_ = false;
       target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
       time_ = 0;
+      speedDirection_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7274,6 +7289,10 @@ public final class Representations {
         return false;
       }
       if (!hasTime()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSpeedDirection()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -7300,6 +7319,9 @@ public final class Representations {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(4, time_);
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeDouble(5, speedDirection_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -7324,6 +7346,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, time_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(5, speedDirection_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7462,6 +7488,8 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000004);
         time_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
+        speedDirection_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -7520,6 +7548,10 @@ public final class Representations {
           to_bitField0_ |= 0x00000008;
         }
         result.time_ = time_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.speedDirection_ = speedDirection_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -7548,6 +7580,9 @@ public final class Representations {
         if (other.hasTime()) {
           setTime(other.getTime());
         }
+        if (other.hasSpeedDirection()) {
+          setSpeedDirection(other.getSpeedDirection());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -7566,6 +7601,10 @@ public final class Representations {
           return false;
         }
         if (!hasTime()) {
+          
+          return false;
+        }
+        if (!hasSpeedDirection()) {
           
           return false;
         }
@@ -7621,6 +7660,11 @@ public final class Representations {
             case 32: {
               bitField0_ |= 0x00000008;
               time_ = input.readUInt32();
+              break;
+            }
+            case 41: {
+              bitField0_ |= 0x00000010;
+              speedDirection_ = input.readDouble();
               break;
             }
           }
@@ -7778,6 +7822,27 @@ public final class Representations {
       public Builder clearTime() {
         bitField0_ = (bitField0_ & ~0x00000008);
         time_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required double speedDirection = 5;
+      private double speedDirection_ ;
+      public boolean hasSpeedDirection() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public double getSpeedDirection() {
+        return speedDirection_;
+      }
+      public Builder setSpeedDirection(double value) {
+        bitField0_ |= 0x00000010;
+        speedDirection_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSpeedDirection() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        speedDirection_ = 0D;
         onChanged();
         return this;
       }
@@ -14324,42 +14389,42 @@ public final class Representations {
       "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D" +
       "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n" +
       "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes" +
-      "sages.DoubleVector2\"o\n\022StepControlReques" +
-      "t\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022" +
-      "%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022\014" +
-      "\n\004time\030\004 \002(\r\"\223\001\n\013WalkRequest\022\022\n\ncoordina" +
-      "te\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 " +
-      "\002(\0132\025.naothmessages.Pose2D\0226\n\013stepContro" +
-      "l\030\004 \001(\0132!.naothmessages.StepControlReque",
-      "st\"{\n\013KickRequest\022/\n\tkickPoint\030\001 \002(\0132\034.n" +
-      "aothmessages.DoubleVector3\022\025\n\rkickDirect" +
-      "ion\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKic" +
-      "k\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n" +
-      "\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkReque" +
-      "st\030\004 \001(\0132\032.naothmessages.WalkRequest\022\026\n\016" +
-      "starndardStand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(" +
-      "\0132\032.naothmessages.KickRequest\022\023\n\013standHe" +
-      "ight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(" +
-      "\0132\037.naothmessages.FieldLineSegment\0222\n\rin",
-      "tersections\030\002 \003(\0132\033.naothmessages.Inters" +
-      "ection\0228\n\022middleCircleCenter\030\003 \001(\0132\034.nao" +
-      "thmessages.DoubleVector2\"5\n\007FSRData\022\r\n\005f" +
-      "orce\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"" +
-      "9\n\021StepControlStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014" +
-      "moveableFoot\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004t" +
-      "ime\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrent" +
-      "Motion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022curr" +
-      "entMotionState\030\005 \002(\r\0224\n\025plannedMotionLef" +
-      "tFoot\030\006 \002(\0132\025.naothmessages.Pose2D\0225\n\026pl",
-      "annedMotionRightFoot\030\007 \002(\0132\025.naothmessag" +
-      "es.Pose2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.na" +
-      "othmessages.Pose2D\022;\n\021stepControlStatus\030" +
-      "\t \001(\0132 .naothmessages.StepControlStatus\"" +
-      "3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothmes" +
-      "sages.Pose2D\"M\n\017CalibrationData\022:\n\024inert" +
-      "ialSensorOffset\030\001 \001(\0132\034.naothmessages.Do" +
-      "ubleVector2B)\n\'de.hu_berlin.informatik.k" +
-      "i.nao.messages"
+      "sages.DoubleVector2\"\207\001\n\022StepControlReque" +
+      "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010" +
+      "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022" +
+      "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\223\001" +
+      "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha" +
+      "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess" +
+      "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth",
+      "messages.StepControlRequest\"{\n\013KickReque" +
+      "st\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Do" +
+      "ubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010ki" +
+      "ckFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMot" +
+      "ionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006" +
+      "forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naot" +
+      "hmessages.WalkRequest\022\026\n\016starndardStand\030" +
+      "\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessag" +
+      "es.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013" +
+      "LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessag",
+      "es.FieldLineSegment\0222\n\rintersections\030\002 \003" +
+      "(\0132\033.naothmessages.Intersection\0228\n\022middl" +
+      "eCircleCenter\030\003 \001(\0132\034.naothmessages.Doub" +
+      "leVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004d" +
+      "ata\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlS" +
+      "tatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 " +
+      "\002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nla" +
+      "stMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n" +
+      "\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionState\030" +
+      "\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.n",
+      "aothmessages.Pose2D\0225\n\026plannedMotionRigh" +
+      "tFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pl" +
+      "annedMotionHip\030\010 \002(\0132\025.naothmessages.Pos" +
+      "e2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothme" +
+      "ssages.StepControlStatus\"3\n\014OdometryData" +
+      "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n" +
+      "\017CalibrationData\022:\n\024inertialSensorOffset" +
+      "\030\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'" +
+      "de.hu_berlin.informatik.ki.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14443,7 +14508,7 @@ public final class Representations {
           internal_static_naothmessages_StepControlRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_StepControlRequest_descriptor,
-              new java.lang.String[] { "StepID", "MoveLeftFoot", "Target", "Time", },
+              new java.lang.String[] { "StepID", "MoveLeftFoot", "Target", "Time", "SpeedDirection", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder.class);
           internal_static_naothmessages_WalkRequest_descriptor =

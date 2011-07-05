@@ -1337,6 +1337,13 @@ class StepControlRequest : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 time() const;
   inline void set_time(::google::protobuf::uint32 value);
   
+  // required double speedDirection = 5;
+  inline bool has_speeddirection() const;
+  inline void clear_speeddirection();
+  static const int kSpeedDirectionFieldNumber = 5;
+  inline double speeddirection() const;
+  inline void set_speeddirection(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.StepControlRequest)
  private:
   inline void set_has_stepid();
@@ -1347,16 +1354,19 @@ class StepControlRequest : public ::google::protobuf::Message {
   inline void clear_has_target();
   inline void set_has_time();
   inline void clear_has_time();
+  inline void set_has_speeddirection();
+  inline void clear_has_speeddirection();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::uint32 stepid_;
   bool moveleftfoot_;
   ::naothmessages::Pose2D* target_;
+  double speeddirection_;
   ::google::protobuf::uint32 time_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3701,6 +3711,28 @@ inline ::google::protobuf::uint32 StepControlRequest::time() const {
 inline void StepControlRequest::set_time(::google::protobuf::uint32 value) {
   set_has_time();
   time_ = value;
+}
+
+// required double speedDirection = 5;
+inline bool StepControlRequest::has_speeddirection() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void StepControlRequest::set_has_speeddirection() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void StepControlRequest::clear_has_speeddirection() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void StepControlRequest::clear_speeddirection() {
+  speeddirection_ = 0;
+  clear_has_speeddirection();
+}
+inline double StepControlRequest::speeddirection() const {
+  return speeddirection_;
+}
+inline void StepControlRequest::set_speeddirection(double value) {
+  set_has_speeddirection();
+  speeddirection_ = value;
 }
 
 // -------------------------------------------------------------------

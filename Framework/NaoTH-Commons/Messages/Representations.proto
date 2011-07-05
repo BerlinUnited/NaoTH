@@ -99,6 +99,7 @@ message StepControlRequest
   required bool moveLeftFoot = 2;
   required Pose2D target = 3;
   required uint32 time = 4;
+  required double speedDirection = 5;
 }
 
 message WalkRequest {

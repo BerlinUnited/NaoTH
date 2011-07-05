@@ -54,6 +54,7 @@ public:
     bool moveLeftFoot; // it should also match
     Pose2D target; // in coordinate
     unsigned int time; // in ms
+    double speedDirection;
   };
 
   // indicates speed and stability, in range [0, 1]
@@ -74,7 +75,8 @@ public:
     {
       stream << "step control: "<< stepControl.stepID <<" "
              << (stepControl.moveLeftFoot?"L":"R")<<" "<<stepControl.time
-             <<"\n step target: "<< stepControl.target<<"\n";
+             <<"\n step target: "<< stepControl.target<<"\n"
+             <<"speed direction:"<< Math::toDegrees(stepControl.speedDirection)<<"\n";
     }
   }//end print
   

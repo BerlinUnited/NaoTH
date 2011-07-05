@@ -260,11 +260,12 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(HeadMotionRequest));
   StepControlRequest_descriptor_ = file->message_type(9);
-  static const int StepControlRequest_offsets_[4] = {
+  static const int StepControlRequest_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, stepid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, moveleftfoot_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, target_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, speeddirection_),
   };
   StepControlRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -583,42 +584,42 @@ void protobuf_AddDesc_Representations_2eproto() {
     "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
     "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n"
     "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes"
-    "sages.DoubleVector2\"o\n\022StepControlReques"
-    "t\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022"
-    "%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022\014"
-    "\n\004time\030\004 \002(\r\"\223\001\n\013WalkRequest\022\022\n\ncoordina"
-    "te\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 "
-    "\002(\0132\025.naothmessages.Pose2D\0226\n\013stepContro"
-    "l\030\004 \001(\0132!.naothmessages.StepControlReque"
-    "st\"{\n\013KickRequest\022/\n\tkickPoint\030\001 \002(\0132\034.n"
-    "aothmessages.DoubleVector3\022\025\n\rkickDirect"
-    "ion\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKic"
-    "k\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n"
-    "\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkReque"
-    "st\030\004 \001(\0132\032.naothmessages.WalkRequest\022\026\n\016"
-    "starndardStand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001("
-    "\0132\032.naothmessages.KickRequest\022\023\n\013standHe"
-    "ight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003("
-    "\0132\037.naothmessages.FieldLineSegment\0222\n\rin"
-    "tersections\030\002 \003(\0132\033.naothmessages.Inters"
-    "ection\0228\n\022middleCircleCenter\030\003 \001(\0132\034.nao"
-    "thmessages.DoubleVector2\"5\n\007FSRData\022\r\n\005f"
-    "orce\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\""
-    "9\n\021StepControlStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014"
-    "moveableFoot\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004t"
-    "ime\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrent"
-    "Motion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022curr"
-    "entMotionState\030\005 \002(\r\0224\n\025plannedMotionLef"
-    "tFoot\030\006 \002(\0132\025.naothmessages.Pose2D\0225\n\026pl"
-    "annedMotionRightFoot\030\007 \002(\0132\025.naothmessag"
-    "es.Pose2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.na"
-    "othmessages.Pose2D\022;\n\021stepControlStatus\030"
-    "\t \001(\0132 .naothmessages.StepControlStatus\""
-    "3\n\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothmes"
-    "sages.Pose2D\"M\n\017CalibrationData\022:\n\024inert"
-    "ialSensorOffset\030\001 \001(\0132\034.naothmessages.Do"
-    "ubleVector2B)\n\'de.hu_berlin.informatik.k"
-    "i.nao.messages", 3134);
+    "sages.DoubleVector2\"\207\001\n\022StepControlReque"
+    "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010"
+    "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022"
+    "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\223\001"
+    "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha"
+    "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess"
+    "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth"
+    "messages.StepControlRequest\"{\n\013KickReque"
+    "st\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Do"
+    "ubleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010ki"
+    "ckFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMot"
+    "ionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006"
+    "forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naot"
+    "hmessages.WalkRequest\022\026\n\016starndardStand\030"
+    "\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessag"
+    "es.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013"
+    "LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessag"
+    "es.FieldLineSegment\0222\n\rintersections\030\002 \003"
+    "(\0132\033.naothmessages.Intersection\0228\n\022middl"
+    "eCircleCenter\030\003 \001(\0132\034.naothmessages.Doub"
+    "leVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004d"
+    "ata\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlS"
+    "tatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 "
+    "\002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nla"
+    "stMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n"
+    "\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionState\030"
+    "\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.n"
+    "aothmessages.Pose2D\0225\n\026plannedMotionRigh"
+    "tFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pl"
+    "annedMotionHip\030\010 \002(\0132\025.naothmessages.Pos"
+    "e2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothme"
+    "ssages.StepControlStatus\"3\n\014OdometryData"
+    "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n"
+    "\017CalibrationData\022:\n\024inertialSensorOffset"
+    "\030\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'"
+    "de.hu_berlin.informatik.ki.nao.messages", 3159);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -4232,6 +4233,7 @@ const int StepControlRequest::kStepIDFieldNumber;
 const int StepControlRequest::kMoveLeftFootFieldNumber;
 const int StepControlRequest::kTargetFieldNumber;
 const int StepControlRequest::kTimeFieldNumber;
+const int StepControlRequest::kSpeedDirectionFieldNumber;
 #endif  // !_MSC_VER
 
 StepControlRequest::StepControlRequest()
@@ -4255,6 +4257,7 @@ void StepControlRequest::SharedCtor() {
   moveleftfoot_ = false;
   target_ = NULL;
   time_ = 0u;
+  speeddirection_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4296,6 +4299,7 @@ void StepControlRequest::Clear() {
       if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
     }
     time_ = 0u;
+    speeddirection_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -4364,6 +4368,22 @@ bool StepControlRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(41)) goto parse_speedDirection;
+        break;
+      }
+      
+      // required double speedDirection = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_speedDirection:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &speeddirection_)));
+          set_has_speeddirection();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4407,6 +4427,11 @@ void StepControlRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->time(), output);
   }
   
+  // required double speedDirection = 5;
+  if (has_speeddirection()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->speeddirection(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4435,6 +4460,11 @@ void StepControlRequest::SerializeWithCachedSizes(
   // required uint32 time = 4;
   if (has_time()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->time(), target);
+  }
+  
+  // required double speedDirection = 5;
+  if (has_speeddirection()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->speeddirection(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4472,6 +4502,11 @@ int StepControlRequest::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->time());
+    }
+    
+    // required double speedDirection = 5;
+    if (has_speeddirection()) {
+      total_size += 1 + 8;
     }
     
   }
@@ -4513,6 +4548,9 @@ void StepControlRequest::MergeFrom(const StepControlRequest& from) {
     if (from.has_time()) {
       set_time(from.time());
     }
+    if (from.has_speeddirection()) {
+      set_speeddirection(from.speeddirection());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -4530,7 +4568,7 @@ void StepControlRequest::CopyFrom(const StepControlRequest& from) {
 }
 
 bool StepControlRequest::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
   
   if (has_target()) {
     if (!this->target().IsInitialized()) return false;
@@ -4544,6 +4582,7 @@ void StepControlRequest::Swap(StepControlRequest* other) {
     std::swap(moveleftfoot_, other->moveleftfoot_);
     std::swap(target_, other->target_);
     std::swap(time_, other->time_);
+    std::swap(speeddirection_, other->speeddirection_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

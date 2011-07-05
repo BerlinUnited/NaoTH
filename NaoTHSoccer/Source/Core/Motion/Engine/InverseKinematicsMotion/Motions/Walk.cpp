@@ -227,11 +227,12 @@ void Walk::manageSteps(const WalkRequest& req)
     if ( stepCtr && req.stepControl.stepID == theStepID )
     {
       // step control
-      cout<<"step ctr @ "<<theStepID<<endl;
       step.footStep = theFootStepPlanner.controlStep(planningStep.footStep, req);
       updateParameters(step);
       step.samplesSingleSupport = max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
       step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
+      step.stepControlling = true;
+      step.speedDirection = req.stepControl.speedDirection;
     }
     else
     {
@@ -316,14 +317,29 @@ CoMFeetPose Walk::executeStep()
       }
     }
 
-    *liftFoot = FootTrajectorGenerator::genTrajectory(exeFootStep.footBegin(),
-                                                      exeFootStep.footEnd(),
-                                                      executingStep.executingCycle,
-                                                      executingStep.samplesDoubleSupport,
-                                                      executingStep.samplesSingleSupport,
-                                                      executingStep.extendDoubleSupport,
-                                                      theWalkParameters.stepHeight, 0, 0, 0,
-                                                      theWalkParameters.curveFactor);
+    if ( executingStep.stepControlling )
+    {
+      *liftFoot = FootTrajectorGenerator::stepControl(exeFootStep.footBegin(),
+                                                        exeFootStep.footEnd(),
+                                                        executingStep.executingCycle,
+                                                        executingStep.samplesDoubleSupport,
+                                                        executingStep.samplesSingleSupport,
+                                                        executingStep.extendDoubleSupport,
+                                                        theWalkParameters.stepHeight, 0, 0, 0,
+                                                        theWalkParameters.curveFactor,
+                                                        executingStep.speedDirection);
+    }
+    else
+    {
+      *liftFoot = FootTrajectorGenerator::genTrajectory(exeFootStep.footBegin(),
+                                                        exeFootStep.footEnd(),
+                                                        executingStep.executingCycle,
+                                                        executingStep.samplesDoubleSupport,
+                                                        executingStep.samplesSingleSupport,
+                                                        executingStep.extendDoubleSupport,
+                                                        theWalkParameters.stepHeight, 0, 0, 0,
+                                                        theWalkParameters.curveFactor);
+    }
   }
 
   result.com.translation = com;
