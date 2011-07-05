@@ -110,7 +110,7 @@ void ParticleFilterBallLocator::execute()
 
 void ParticleFilterBallLocator::updateByBallPercept(SampleSet& sampleSet)
 {
-  unsigned int maxNumberOfParticles = 20;
+  //unsigned int maxNumberOfParticles = 20;
 
   const double seenDistance = getBallPercept().bearingBasedOffsetOnField.abs();
   const double seenAngle = getBallPercept().bearingBasedOffsetOnField.angle();
@@ -174,7 +174,7 @@ ParticleFilterBallLocator::Sample ParticleFilterBallLocator::generateNewSample()
 
 void ParticleFilterBallLocator::motionUpdate(SampleSet& sampleSet, bool noise)
 {
-  double motionNoiseDistance = 10;
+  //double motionNoiseDistance = 10;
   const Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
   // time elapsed sinse last execution
   const double timeDelta = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
