@@ -59,7 +59,7 @@ class LineDetector: private LineDetectorBase
 {
 public:
   LineDetector();
-  ~LineDetector(){}
+  ~LineDetector(){};
 
   void execute();
  
@@ -86,7 +86,7 @@ private:
   void analyzeEndPoints();
 
   /** scan helpers */
-  void scanAlongLine(Vector2<int>& linePoint, const Vector2<double>& direction, ColorClasses::Color markColor);
+  void scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor);
   void scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor);
 
   int cameraBrighness;

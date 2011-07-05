@@ -138,24 +138,17 @@ void LineDetector::execute()
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
 
-      Vector2<double> direction = linePercept.lineInImage.segment.getDirection();
-      Vector2<double> normal(-direction.y, direction.x);
+      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
+      //d.rotate(Math::pi_2 - line.angle);
 
-      Vector2<double> shiftLeft = normal * -linePercept.lineInImage.thickness / 2;
-      Vector2<double> shiftRight = normal * linePercept.lineInImage.thickness / 2;
-
-      Vector2<double> lowerLeft = linePercept.lineInImage.segment.begin() + shiftLeft;
-      Vector2<double> upperLeft = linePercept.lineInImage.segment.begin() + shiftRight;
-      Vector2<double> lowerRight = linePercept.lineInImage.segment.end() + shiftLeft;
-      Vector2<double> upperRight = linePercept.lineInImage.segment.end() + shiftRight;
-
-      LINE_PX(ColorClasses::green, (int) lowerLeft.x, (int) lowerLeft.y, (int) lowerRight.x, (int) lowerRight.y);
-      LINE_PX(ColorClasses::green, (int) lowerLeft.x, (int) lowerLeft.y, (int) upperLeft.x, (int) upperLeft.y);
-      LINE_PX(ColorClasses::green, (int) upperLeft.x, (int) upperLeft.y, (int) upperRight.x, (int) upperRight.y);
-      LINE_PX(ColorClasses::green, (int) lowerRight.x, (int) lowerRight.y, (int) upperRight.x, (int) upperRight.y);
-
-      CIRCLE_PX(ColorClasses::yellow, (int)linePercept.lineInImage.segment.begin().x, (int)linePercept.lineInImage.segment.begin().y, linePercept.lineInImage.thickness / 2);
-      CIRCLE_PX(ColorClasses::yellow, (int)linePercept.lineInImage.segment.end().x, (int)linePercept.lineInImage.segment.end().y, linePercept.lineInImage.thickness / 2);
+      Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
+      Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
+      Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
+      Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
+      LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
+      LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
+      LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
+      LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
 
       LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
     }//end for
@@ -432,26 +425,35 @@ void LineDetector::expandLines()
     }
     Math::LineSegment line = segmentOne.segment;
 
-    Vector2<double> direction = line.getDirection();
-    Vector2<double> normal(-direction.y, direction.x);
-
-    Vector2<double> shift = normal * segmentOne.thickness * 0.4;
-
-    Vector2<int> lineOnePointUpper(line.end() + shift);
-
+    Vector2<int> lineOnePointUpper
+    (
+      (int) line.end().x, 
+      (int) (line.end().y + floor(segmentOne.thickness / 3))
+    );
     Vector2<int> lineOnePointMiddle(line.end());
-    Vector2<int> lineOnePointLower(line.end() - shift);
+    Vector2<int> lineOnePointLower
+    (
+      (int) line.end().x, 
+      (int) (line.end().y - floor(segmentOne.thickness / 3))
+    );
     
-    Vector2<int> lineTwoPointUpper(line.begin() + shift);
-
+    Vector2<int> lineTwoPointUpper
+    (
+      (int) line.begin().x, 
+      (int) (line.begin().y + floor(segmentOne.thickness / 3))
+    );
     Vector2<int> lineTwoPointMiddle(line.begin());
-    Vector2<int> lineTwoPointLower(line.begin() - shift);
+    Vector2<int> lineTwoPointLower
+    (
+      (int) line.begin().x, 
+      (int) (line.begin().y - floor(segmentOne.thickness / 3))
+    );
     
-//    Vector2<double> direction = line.end() - line.begin();
+    Vector2<int> direction = line.end() - line.begin();
     ColorClasses::Color color = expandLines?ColorClasses::pink:ColorClasses::numOfColors;
 
     // TODO: do we need the double line scan?
-    if(segmentOne.thickness <= 3)
+    if(true || segmentOne.thickness <= 3)
     {
       scanAlongLine(lineOnePointMiddle, direction, color);
       scanAlongLine(lineTwoPointMiddle, -direction, color);
@@ -466,23 +468,10 @@ void LineDetector::expandLines()
       scanAlongLine(lineTwoPointLower, -direction, color);
 
       // estimate the center
-      if(lineOnePointUpper.abs2() > lineOnePointLower.abs2())
-      {
-        lineOnePointMiddle = lineOnePointLower + shift;
-      }
-      else
-      {
-        lineOnePointMiddle = lineOnePointUpper - shift;
-      }
-
-      if(lineTwoPointUpper.abs2() > lineTwoPointLower.abs2())
-      {
-        lineTwoPointMiddle = lineTwoPointLower + shift;
-      }
-      else
-      {
-        lineTwoPointMiddle = lineTwoPointUpper - shift;
-      }
+      lineTwoPointMiddle.x = lineTwoPointUpper.x;
+      lineTwoPointMiddle.y = (lineTwoPointUpper.y + lineTwoPointLower.y) / 2;
+      lineOnePointMiddle.x = lineOnePointUpper.x;
+      lineOnePointMiddle.y = (lineOnePointUpper.y + lineOnePointLower.y) / 2;
     }
 
     // set new segment
@@ -490,7 +479,8 @@ void LineDetector::expandLines()
   }//end for
 }//end expandLines
 
-inline void LineDetector::scanAlongLine(Vector2<int>& linePoint, const Vector2<double>& direction, ColorClasses::Color markColor)
+
+inline void LineDetector::scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor)
 {
   BresenhamLineScan scanLine(linePoint, direction, getImage().cameraInfo);
   scanAlongLine(linePoint, scanLine, markColor);
@@ -926,8 +916,7 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
   //lineSegments.reserve(lineClusters.size());
 
   // distance between scanlines
-  double deltaX = (double)(getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);
-  double deltaY = 4 * (double)(getImage().cameraInfo.resolutionHeight - 1) / (SCANLINE_COUNT);
+  double delta_x = (double)(getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);
 
   for(unsigned int i = 0; i < lineClusters.size(); i++ )
   {
@@ -940,10 +929,9 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
     double length = lineVector.abs();
     // 0 < weight <= 1
     // weight == 1, only if the segment has an edgel on every scannline
-    double weightX = (deltaX * cluster.count) / length;
-    double weightY = (deltaY * cluster.count) / length;
+    double weight = (delta_x*cluster.count)/length;
 
-    if(cluster.count >= MIN_NUMBER_OF_EDGELS_LINE_SEGMENT && cluster.thickness >= 1.0 && ((weightX > 0.5  && !cluster.vertical) || (weightY > 0.5 && cluster.vertical)))
+    if(cluster.count > 1 && cluster.thickness > 1 && weight > 0.5)
     {
       LinePercept::LineSegmentImage lineSegment;
 
@@ -952,29 +940,7 @@ void LineDetector::clusterEdgels(const vector<Edgel>& edgelList)
       lineSegment.angle = lineVector.angle();
       lineSegment.valid = true;
       lineSegments.push_back(lineSegment);
-//      cout << "good" << endl;
     }
-    else
-    {
-//      cout << "bad" << endl;
-    }
-
-//    cout << "count=" << cluster.count << endl;
-//    cout << "weightX=" << weightX << endl;
-//    cout << "weightY=" << weightY << endl;
-//    cout << "vertical=" << (int) cluster.vertical << endl;
-//    cout << "beginThickness=" << cluster.beginThickness << endl;
-//    cout << "endThickness=" << cluster.endThickness << endl;
-//    cout << "thickness=" << cluster.thickness << endl;
-//    cout << "thicknessChange=" << cluster.thicknessChange << endl;
-//    cout << "beginAngle=" << cluster.beginAngle << endl;
-//    cout << "beginAngleChange=" << cluster.beginAngleChange << endl;
-//    cout << "beginAngle2angle=" << fabs(cluster.beginAngle - cluster.angle) << endl;
-//    cout << "endAngle=" << cluster.endAngle << endl;
-//    cout << "endAngleChange=" << cluster.endAngleChange << endl;
-//    cout << "endAngle2angle=" << fabs(cluster.endAngle - cluster.angle) << endl;
-//    cout << "angle=" << cluster.angle << endl;
-//    cout << "angleChange=" << cluster.angleChange << endl;
   }//end for
 
 }//end clusterEdgels

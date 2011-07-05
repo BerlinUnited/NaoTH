@@ -51,100 +51,20 @@ public:
   void execute();
 
 private:
-  class ScanLineState
-  {
-  public:
-    unsigned int scanLineID;
-    unsigned int lineEdgelCount;
-    unsigned int greenCount;
-    unsigned int noGreenSeen;
-    unsigned int whiteCount;
-    unsigned int skyblueCount;
-    unsigned int yellowCount;
 
-    double lastPixelBrightDiffs[4];
-
-    bool greenFound;
-    bool noGreenFound;
-
-    Vector2<int> lastGreenPoint;
-    Vector2<int> lastWhitePoint;
-    Vector2<int> lastYellowPoint;
-    Vector2<int> lastSkyBluePoint;
-
-    ScanLineEdgelPercept::EndPoint endPoint;
-
-    ScanLineState()
-    {
-      Vector2<int> start(0,0);
-      reset(start, 0);
-    }
-
-    void reset(const Vector2<int>& start,unsigned int scanLineId)
-    {
-      greenCount = 0;
-      noGreenSeen = 0;
-      whiteCount = 0;
-      skyblueCount = 0;
-      yellowCount = 0;
-
-      scanLineID = scanLineId;
-      endPoint.posInImage = start;
-      endPoint.color = ColorClasses::none;
-      endPoint.ScanLineID = scanLineId;
-
-      lineEdgelCount = 0;
-      greenFound = false;
-      noGreenFound = false;
-
-      lastGreenPoint = start;
-      lastWhitePoint = start;
-      lastYellowPoint = start;
-      lastSkyBluePoint = start;
-
-      for(int i = 0; i < 4; i++)
-      {
-        lastPixelBrightDiffs[i] = 0.0;
-      }
-    }
-
-    void addBrightDiff(double diff)
-    {
-      lastPixelBrightDiffs[3] = lastPixelBrightDiffs[2];
-      lastPixelBrightDiffs[2] = lastPixelBrightDiffs[1];
-      lastPixelBrightDiffs[1] = lastPixelBrightDiffs[0];
-      lastPixelBrightDiffs[0] = diff;
-    }
-
-    double getSlope()
-    {
-      return lastPixelBrightDiffs[0];
-      //return ((double)(lastPixelBrightDiffs[3] +  2 * (lastPixelBrightDiffs[2] + lastPixelBrightDiffs[1]) + lastPixelBrightDiffs[0])) / 6;
-    }
-
-
-  };
+  void integrated_edgel_detection();
+  void iterative_edgel_detection();
 
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
   unsigned int edgelGrayThresholdLevel;
 
-  ScanLineState scanlineStates[SCANLINE_COUNT];
-
-  void integrated_edgel_detection();
+  Edgel getEdgel(const Vector2<int>& start, const Vector2<int>& end);
   ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end);
 
-  void iterative_edgel_detection();
-  Edgel getEdgel(const Vector2<int>& start, const Vector2<int>& end, ScanLineState& scanLineState);
-  void getScanlineEndPoint(ScanLineState& scanLineState);
-
   double getPointsAngle(Vector2<int>& point);
-  void evaluateEdgelThickness(Edgel& edgel);
-
   double calculateMeanAngle(double angle1,double  angle2);
 
-
-  void drawDebug();
 };
 #endif	/* SCANLINEEDGELDETECTOR_H */
 
