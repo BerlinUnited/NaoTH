@@ -81,7 +81,7 @@ public class BehaviorViewer extends AbstractDialog
   
   
   private final String fileWriteCommandName = "file::write";
-  private final String behaviorPath = "Config/behavior/behavior-ic.dat";
+  private final String behaviorPath = "Config/behavior-ic.dat";
   private final String setAgentCommand = "behavior:set_agent";
   private final String setAgentCommandParam = "agent";
 
@@ -1067,11 +1067,7 @@ public class BehaviorViewer extends AbstractDialog
       @Override
       public void handleResponse(byte[] result, Command originalCommand)
       {
-        if(originalCommand.getName().equals(fileWriteCommandName) &&
-           originalCommand.getArguments().size() >= 1 &&
-           originalCommand.getArguments().containsKey("path") &&
-           originalCommand.getArguments().get("path").toString().equals(behaviorPath)
-           )
+        if(originalCommand.getName().equals(fileWriteCommandName))
         {
           sendCommand(reloadBehaviorCommand);
           JOptionPane.showMessageDialog(thisFinal,
