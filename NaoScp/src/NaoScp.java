@@ -111,6 +111,11 @@ public class NaoScp extends javax.swing.JFrame
   {
     return "/home/nao/naoqi/lib/naoqi";
   }
+  
+  public String binPath()
+  {
+    return "/home/nao/bin/";
+  }
 
   public String localDeployRootPath()
   {
@@ -427,6 +432,8 @@ public class NaoScp extends javax.swing.JFrame
         currentDeployDir.mkdirs();
         File localLibPath = new File(localDeployOutPath(i) + libnaoPath());
         localLibPath.mkdirs();
+        File localBinPath = new File(localDeployOutPath(i) + binPath());
+        localBinPath.mkdirs();
 
         if(copyLib.isSelected())
         {
@@ -449,7 +456,7 @@ public class NaoScp extends javax.swing.JFrame
           }
           
           File localExe = new File(
-          localDeployOutPath(i) + libnaoPath() + "/naoth");
+          localDeployOutPath(i) + binPath() + "/naoth");
           if(localExe.exists())
           {
             localExe.delete();
@@ -457,7 +464,7 @@ public class NaoScp extends javax.swing.JFrame
           
 
           copyFiles(new File(localLibnaothPath() + "/libnaoth.so"), localLib);
-          copyFiles(new File(localLibnaothPath() + "/nao"), localExe);
+          copyFiles(new File(localLibnaothPath() + "/naoth"), localExe);
         }
 
         if(copyConfig.isSelected())
@@ -634,7 +641,7 @@ public class NaoScp extends javax.swing.JFrame
     String inString = readFile(localConfigPath() + "/scheme.cfg");
     if("".equals(inString))
     {
-      inString = "SPL_Adlershof";
+      inString = "Nao";
     }
     jSchemeBox.setSelectedItem(inString);
 
@@ -1624,12 +1631,21 @@ public class NaoScp extends javax.swing.JFrame
               new FileOutputStream(localDeployInPath(Number, iNaoByte) + "/libnaoth.so"),
               new MyProgressMonitor(progressBar)
             );
+            
             c.get
             (
               remoteRootPath(Number) + libnaoPath() + "/comment.cfg",
               new FileOutputStream(localDeployInPath(Number, iNaoByte) + "/comment.cfg"),
               new MyProgressMonitor(progressBar)
             );
+            actionInfo("get naoth (exe)");
+            c.get
+            (
+              remoteRootPath(Number) + binPath() + "/naoth",
+              new FileOutputStream(localDeployInPath(Number, iNaoByte) + "/naoth"),
+              new MyProgressMonitor(progressBar)
+            );
+            
           }
         }
         catch(Exception e)
@@ -1749,6 +1765,9 @@ public class NaoScp extends javax.swing.JFrame
 
         String localLibPath = localDeployOutPath(Number) + libnaoPath() + "/";
         String remoteLibPath = remoteRootPath(Number) + libnaoPath() + "/";
+        
+        String localBinPath = localDeployOutPath(Number) + binPath() + "/";
+        String remoteBinPath = remoteRootPath(Number) + binPath() + "/";
 
         String localConfigPath = localDeployOutPath(Number) + configPath();
         String remoteConfigPath = remoteRootPath(Number) + configPath();
@@ -1800,26 +1819,36 @@ public class NaoScp extends javax.swing.JFrame
           }//end try
 
           actionInfo("put libnaoth.so");
-
           c.put
             (
               localLibPath + "libnaoth.so",
               remoteLibPath + "libnaoth.so",
               new MyProgressMonitor(progressBar)
             );
-
-            try
+          try
+          {
+            c.rm(remoteRootPath(Number) + binPath() + "/naoth");
+          }
+          catch(SftpException ex)
+          {
+            // if the file is not there its ok
+            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
             {
-              c.put
-                (
-                  localLibPath + "comment.cfg",
-                  remoteLibPath + "comment.cfg",
-                  new MyProgressMonitor(progressBar)
-                );
+              throw ex;
             }
-            catch(Exception ex)
-            {
-            }//end try
+          }//end try
+
+          actionInfo("put naoth (exe)");
+
+          c.put
+            (
+              localBinPath + "naoth",
+              remoteBinPath + "naoth",
+              new MyProgressMonitor(progressBar)
+            );
+          // 770
+          c.chmod(504, remoteBinPath + "naoth");
+
         }
         
         if(!jBackupBox.getSelectedItem().equals(jBackupBox.getItemAt(0)))

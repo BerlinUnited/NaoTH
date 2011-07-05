@@ -212,7 +212,7 @@ void SimpleMotionBehaviorControl::testMotion()
   MODIFY("StepControl.time",stepTime);
   MODIFY("StepControl.speedDirection",speedDirection);
     getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
-    getMotionRequest().walkRequest.stepControl.time = stepTime;
+    getMotionRequest().walkRequest.stepControl.time = (unsigned int)stepTime;
     getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
   }
     );

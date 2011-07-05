@@ -641,7 +641,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   oldSampleSet.normalize();
 
   // resample 10% of particles
-  int numberOfPartiklesToResample = 1;//(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
+  int numberOfPartiklesToResample = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
   
   //numberOfPartiklesToResample = (int)pp;
 
@@ -690,6 +690,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   }//end for
 
 
+  // sensor resetting by whole goal
   if(n < oldSampleSet.numberOfParticles && getSensingGoalModel().someGoalWasSeen)
   {
     Pose2D pose;
@@ -932,17 +933,6 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   // calculate if sensor data is available
   bool sensorDataAvailable = false;
   
-
-  /*
-  DEBUG_REQUEST("MCSL:use_lines_constraints",
-    if(!thePerceptualConstraints.linesConstraints.empty())
-    {
-      sensorDataAvailable = true;
-    }
-  );
-  */
-
-
   // goals
   if(parameters.updateByGoals)
   {
@@ -1010,17 +1000,6 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     {
       updateByOldPose(sampleSet);
     }
-
-    // experimental
-    //updateByLinesConstraints();
-    
-    /*
-    DEBUG_REQUEST("MCSL:use_lines_constraints",
-      STOPWATCH_START("MonteCarloSelfLocator ~ updateByLinesConstraints");
-      updateByLinesConstraints();
-      STOPWATCH_STOP("MonteCarloSelfLocator ~ updateByLinesConstraints");
-    );
-    */
   }//end if
 
 
