@@ -17,11 +17,13 @@ class FootStepPlanner
 public:
   FootStepPlanner();
   
-  void updateParameters(const IKParameters& parameters, double character);
+  void updateParameters(const IKParameters& parameters);
 
   FootStep firstStep(const InverseKinematic::FeetPose& pose,const WalkRequest& req);
 
   FootStep nextStep(const FootStep& lastStep,const WalkRequest& req);
+
+  FootStep controlStep(const FootStep& lastStep,const WalkRequest& req);
   
 private:
   Pose2D calculateStep(const FootStep& lastStep,const WalkRequest& req);
@@ -29,9 +31,9 @@ private:
   /**
    * @param step: the step in WalkRequest::Hip
    */
-  FootStep nextStep(const FootStep& lastStep, Pose2D step);
+  FootStep nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req);
 
-  void restrictStepSize(Pose2D& step, const FootStep& lastStep) const;
+  void restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const;
   
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
   

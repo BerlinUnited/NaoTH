@@ -93,10 +93,21 @@ message HeadMotionRequest {
   optional DoubleVector2 targetPointOnTheGround = 9;
 }
 
+message StepControlRequest
+{
+  required uint32 stepID = 1;
+  required bool moveLeftFoot = 2;
+  required Pose2D target = 3;
+  required uint32 time = 4;
+  required double speedDirection = 5;
+}
+
 message WalkRequest {
   required uint32 coordinate = 1;
   required double character = 2;
   required Pose2D target = 3;
+  optional StepControlRequest stepControl = 4;
+  required Pose2D offset = 5;
 }
 
 message KickRequest {
@@ -131,6 +142,12 @@ message FSRData {
 }
 
 // TODO: this representation should not be in naoth-comm */
+message StepControlStatus
+{
+  required uint32 stepID = 1;
+  required uint32 moveableFoot =2;
+}
+
 message MotionStatus 
 {
   required uint32 time = 1;
@@ -141,6 +158,7 @@ message MotionStatus
   required Pose2D plannedMotionLeftFoot = 6;
   required Pose2D plannedMotionRightFoot = 7;
   required Pose2D plannedMotionHip = 8;
+  optional StepControlStatus stepControlStatus = 9;
 }
 
 message OdometryData

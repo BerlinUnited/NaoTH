@@ -14,16 +14,13 @@ FootStepPlanner::FootStepPlanner()
 {
 }
 
-void FootStepPlanner::updateParameters(const IKParameters& parameters, double character)
+void FootStepPlanner::updateParameters(const IKParameters& parameters)
 {
-  // scale the character: [0, 1] --> [0.3, 1]
-  character = 0.7*character + 0.3;
-
-  theMaxTurnInner = Math::fromDegrees(parameters.walk.maxTurnInner) * character;
-  theMaxStepTurn = Math::fromDegrees(parameters.walk.maxStepTurn) * character;
-  theMaxStepLength = parameters.walk.maxStepLength * character;
-  theMaxStepLengthBack = parameters.walk.maxStepLengthBack * character;
-  theMaxStepWidth = parameters.walk.maxStepWidth * character;
+  theMaxTurnInner = Math::fromDegrees(parameters.walk.maxTurnInner);
+  theMaxStepTurn = Math::fromDegrees(parameters.walk.maxStepTurn);
+  theMaxStepLength = parameters.walk.maxStepLength;
+  theMaxStepLengthBack = parameters.walk.maxStepLengthBack;
+  theMaxStepWidth = parameters.walk.maxStepWidth;
   
   theFootOffsetY = NaoInfo::HipOffsetY + parameters.footOffsetY;
   
@@ -67,8 +64,23 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, const WalkRequest& 
   else
   {
     Pose2D step = calculateStep(lastStep, req);
-    return nextStep(lastStep, step);
+    return nextStep(lastStep, step, req);
   }
+}
+FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkRequest& req)
+{
+  WalkRequest myReq = req;
+  myReq.target = req.stepControl.target;//HACK
+  Pose2D step = calculateStep(lastStep, myReq);
+  restrictStepSize(step, lastStep, req.character);
+
+  FeetPose newFeetStepBegin = lastStep.end();
+  FootStep newStep(newFeetStepBegin, (req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT) );
+  addStep(newStep, step);
+  theLastStepSize = step;
+
+  ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
+  return newStep;
 }
 
 Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest& req)
@@ -118,19 +130,32 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
   return step;
 }
 
-FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step)
+FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, const WalkRequest& req)
 {
   ASSERT(step.rotation <= Math::pi);
   ASSERT(step.rotation > -Math::pi);
   
-  restrictStepSize(step, lastStep);
+  restrictStepSize(step, lastStep, req.character);
   restrictStepChange(step, theLastStepSize);
+  theLastStepSize = step;
 
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, static_cast<FootStep::Foot>(-lastStep.liftingFoot()) );
+
+  // add offset
+  switch(newStep.liftingFoot())
+  {
+  case FootStep::RIGHT:
+    step -= req.offset;
+    break;
+  case FootStep::LEFT:
+    step += req.offset;
+    break;
+  default: ASSERT(false);
+    break;
+  }
+
   addStep(newStep, step);
-  theLastStepSize = step;
-  
   ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
   return newStep;
 }
@@ -173,11 +198,14 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const
   }
 }
 
-void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) const
+void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const
 {
-  double maxTurn = theMaxStepTurn;
+  // scale the character: [0, 1] --> [0.3, 1]
+  character = 0.7*character + 0.3;
+
+  double maxTurn = theMaxStepTurn * character;
   
-  double maxLen = sqrt(theMaxStepLength * theMaxStepLength + theMaxStepWidth * theMaxStepWidth);
+  double maxLen = sqrt(theMaxStepLength * theMaxStepLength + theMaxStepWidth * theMaxStepWidth) * character;
   
   if (maxLen > 1)
   {
@@ -190,21 +218,23 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) c
   // limit the rotation
   step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);
 
-  double maxStepLenth = theMaxStepLength;
+  double maxStepLength = theMaxStepLength * character;
+  double maxStepLengthBack = theMaxStepLengthBack * character;
+  double maxStepWidth = theMaxStepWidth * character;
   if ( step.translation.x < 0 )
   {
-    maxStepLenth = theMaxStepLengthBack;
+    maxStepLength = maxStepLengthBack;
   }
 
-  if ( maxStepLenth > 0.5  && theMaxStepWidth > 0.5 )
+  if ( maxStepLength > 0.5  && maxStepWidth > 0.5 )
   {
     // restrict the step size in an ellipse
     double alpha = step.translation.angle();
     double cosa = cos(alpha);
     double sina = sin(alpha);
 
-    const double maxStepLength2 = pow(maxStepLenth, 2);
-    const double maxStepWidth2 = pow(theMaxStepWidth, 2);
+    const double maxStepLength2 = pow(maxStepLength, 2);
+    const double maxStepWidth2 = pow(maxStepWidth, 2);
     double length = sqrt((maxStepLength2 * maxStepWidth2) / (maxStepLength2 * pow(sina, 2) + maxStepWidth2 * pow(cosa, 2)));
     if ( step.translation.abs2() > pow(length, 2) )
     {
@@ -212,33 +242,33 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep) c
       step.translation.y = length * sina;
     }
 
-    ASSERT( step.translation.x > -theMaxStepLengthBack - 1e-5 );
-    ASSERT( step.translation.x < theMaxStepLength + 1e-5 );
-    ASSERT( fabs(step.translation.y) < theMaxStepWidth + 1e-5 );
+    ASSERT( step.translation.x > -maxStepLengthBack - 1e-5 );
+    ASSERT( step.translation.x < maxStepLength + 1e-5 );
+    ASSERT( fabs(step.translation.y) < maxStepWidth + 1e-5 );
   }
   else
   {
-    if (step.translation.x < -theMaxStepLengthBack)
+    if (step.translation.x < -maxStepLengthBack)
     {
-      step.translation.x = -theMaxStepLengthBack;
+      step.translation.x = -maxStepLengthBack;
     }
-    else if (step.translation.x > theMaxStepLength )
+    else if (step.translation.x > maxStepLength )
     {
-      step.translation.x = theMaxStepLength;
+      step.translation.x = maxStepLength;
     }
     
     if (theMaxStepWidth > numeric_limits<double>::epsilon())
-      step.translation.y = Math::clamp(step.translation.y, -theMaxStepWidth, theMaxStepWidth);
+      step.translation.y = Math::clamp(step.translation.y, -maxStepWidth, maxStepWidth);
     else
       step.translation.y = 0;
 
-    ASSERT( fabs(step.translation.x) <= theMaxStepLength );
-    ASSERT( fabs(step.translation.y) <= theMaxStepWidth );
+    ASSERT( fabs(step.translation.x) <= maxStepLength );
+    ASSERT( fabs(step.translation.y) <= maxStepWidth );
   }
 
-  if ( theMaxStepTurn > Math::fromDegrees(1.0) )
+  if ( maxTurn > Math::fromDegrees(1.0) )
   {
-    step.translation *= cos( step.rotation/theMaxStepTurn * Math::pi / 2);
+    step.translation *= cos( step.rotation/maxTurn * Math::pi / 2);
   }
 }
 

@@ -13,6 +13,8 @@
 using namespace InverseKinematic;
 using namespace naoth;
 
+unsigned int Walk::theStepID = 0;
+
 Walk::Walk()
 :IKMotion(motion::walk),
 theWalkParameters(theParameters.walk),
@@ -167,6 +169,12 @@ void Walk::plan(const MotionRequest& motionRequest)
   }
 }
 
+void Walk::addStep(const Step& step)
+{
+  stepBuffer.push_back(step);
+  theStepID++;
+}
+
 void Walk::manageSteps(const WalkRequest& req)
 {
   if ( stepBuffer.empty() )
@@ -181,8 +189,9 @@ void Walk::manageSteps(const WalkRequest& req)
     int prepareStep = theEngine.controlZMPstart(currentZMP);
     zeroStep.numberOfCyclePerFootStep = prepareStep;
     zeroStep.planningCycle = prepareStep;
-    stepBuffer.push_back(zeroStep);
-    theFootStepPlanner.updateParameters(theParameters, req.character);
+
+    addStep(zeroStep);
+    theFootStepPlanner.updateParameters(theParameters);
 
     // set the stiffness for walking
     for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
@@ -197,10 +206,41 @@ void Walk::manageSteps(const WalkRequest& req)
     // this step is planned completely
     // new foot step
     Step step;
-    step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-    theFootStepPlanner.updateParameters(theParameters, req.character);
-    updateParameters(step);
-    stepBuffer.push_back(step);
+    bool stepCtr = false;
+    switch (stepBuffer.back().footStep.liftingFoot())
+    {
+    case FootStep::NONE:
+      stepCtr = true;
+      break;
+    case FootStep::LEFT:
+      stepCtr = !req.stepControl.moveLeftFoot;
+      break;
+    case FootStep::RIGHT:
+      stepCtr = req.stepControl.moveLeftFoot;
+      break;
+    default: ASSERT(false);
+      break;
+    }
+
+    theFootStepPlanner.updateParameters(theParameters);
+
+    if ( stepCtr && req.stepControl.stepID == theStepID )
+    {
+      // step control
+      step.footStep = theFootStepPlanner.controlStep(planningStep.footStep, req);
+      updateParameters(step);
+      step.samplesSingleSupport = max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
+      step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
+      step.stepControlling = true;
+      step.speedDirection = req.stepControl.speedDirection;
+    }
+    else
+    {
+      step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+      updateParameters(step);
+    }
+
+    addStep(step);
   }
 }
 
@@ -277,14 +317,29 @@ CoMFeetPose Walk::executeStep()
       }
     }
 
-    *liftFoot = FootTrajectorGenerator::genTrajectory(exeFootStep.footBegin(),
-                                                      exeFootStep.footEnd(),
-                                                      executingStep.executingCycle,
-                                                      executingStep.samplesDoubleSupport,
-                                                      executingStep.samplesSingleSupport,
-                                                      executingStep.extendDoubleSupport,
-                                                      theWalkParameters.stepHeight, 0, 0, 0,
-                                                      theWalkParameters.curveFactor);
+    if ( executingStep.stepControlling )
+    {
+      *liftFoot = FootTrajectorGenerator::stepControl(exeFootStep.footBegin(),
+                                                        exeFootStep.footEnd(),
+                                                        executingStep.executingCycle,
+                                                        executingStep.samplesDoubleSupport,
+                                                        executingStep.samplesSingleSupport,
+                                                        executingStep.extendDoubleSupport,
+                                                        theWalkParameters.stepHeight, 0, 0, 0,
+                                                        theWalkParameters.curveFactor,
+                                                        executingStep.speedDirection);
+    }
+    else
+    {
+      *liftFoot = FootTrajectorGenerator::genTrajectory(exeFootStep.footBegin(),
+                                                        exeFootStep.footEnd(),
+                                                        executingStep.executingCycle,
+                                                        executingStep.samplesDoubleSupport,
+                                                        executingStep.samplesSingleSupport,
+                                                        executingStep.extendDoubleSupport,
+                                                        theWalkParameters.stepHeight, 0, 0, 0,
+                                                        theWalkParameters.curveFactor);
+    }
   }
 
   result.com.translation = com;
@@ -511,6 +566,31 @@ void Walk::updateMotionStatus(MotionStatus& motionStatus)
     motionStatus.plannedMotion.hip = reduceDimen(plannedHip);
     motionStatus.plannedMotion.lFoot =  reduceDimen(plannedlFoot);
     motionStatus.plannedMotion.rFoot = reduceDimen(plannedrFoot);
+  }
+
+  // step control
+  motionStatus.stepControl.stepID = theStepID;
+  if ( stepBuffer.empty() )
+  {
+    motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::BOTH;
+  }
+  else
+  {
+    FootStep::Foot lastMovingFoot = stepBuffer.back().footStep.liftingFoot();
+    switch(lastMovingFoot)
+    {
+    case FootStep::NONE:
+      motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::BOTH;
+      break;
+    case FootStep::LEFT:
+      motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::RIGHT;
+      break;
+    case FootStep::RIGHT:
+      motionStatus.stepControl.moveableFoot = MotionStatus::StepControlStatus::LEFT;
+      break;
+    default: ASSERT(false);
+      break;
+    }
   }
 }
 

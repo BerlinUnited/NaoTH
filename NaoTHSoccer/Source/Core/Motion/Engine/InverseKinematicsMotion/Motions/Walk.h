@@ -23,7 +23,9 @@ public:
 private:
   struct Step {
 
-    Step():planningCycle(0),executingCycle(0),lifted(false),extendDoubleSupport(0){}
+    Step():planningCycle(0),executingCycle(0),lifted(false),extendDoubleSupport(0),
+      stepControlling(false),speedDirection(0)
+    {}
 
     int planningCycle;
     int executingCycle;
@@ -36,6 +38,10 @@ private:
     int samplesSingleSupport;
     int extendDoubleSupport;
     int numberOfCyclePerFootStep;
+
+    // only for step control
+    bool stepControlling;
+    double speedDirection;
   };
 
   bool FSRProtection();
@@ -68,7 +74,11 @@ private:
   
   Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
 
+  void addStep(const Step& step);
+
 private:
+  static unsigned int theStepID; // use for step control
+
   const IKParameters::Walk& theWalkParameters;
   
   InverseKinematic::CoMFeetPose theCoMFeetPose;
