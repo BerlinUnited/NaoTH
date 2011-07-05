@@ -40,7 +40,7 @@
  * Throw a error message and then exit
  * @param msg The debug message
  */
-#define THROW(msg) { std::cerr<<msg<<std::endl; ASSERT(false); }
+#define THROW(msg) { std::cerr<<msg<<std::endl; GT_TRACE(msg); Trace::getInstance().dump(); assert(false); }
 
 #else //DEBUG
 /* ((void)0) - that's a do-nothing statement */
