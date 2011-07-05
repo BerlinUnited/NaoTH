@@ -122,6 +122,7 @@ void SimpleMotionBehaviorControl::testHead()
 void SimpleMotionBehaviorControl::testMotion() 
 {
   getMotionRequest().walkRequest.target = Pose2D();
+  getMotionRequest().walkRequest.character = 0.5;
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand", 
     getMotionRequest().id = motion::stand; 
@@ -209,6 +210,7 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
     getMotionRequest().walkRequest.stepControl.time = stepTime;
     getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
+    getMotionRequest().walkRequest.character = 1;
   }
     );
 

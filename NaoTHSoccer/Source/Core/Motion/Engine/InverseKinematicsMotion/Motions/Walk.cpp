@@ -191,7 +191,7 @@ void Walk::manageSteps(const WalkRequest& req)
     zeroStep.planningCycle = prepareStep;
 
     addStep(zeroStep);
-    theFootStepPlanner.updateParameters(theParameters, req.character);
+    theFootStepPlanner.updateParameters(theParameters);
 
     // set the stiffness for walking
     for( int i=JointData::RShoulderRoll; i<JointData::numOfJoint; i++)
@@ -222,7 +222,7 @@ void Walk::manageSteps(const WalkRequest& req)
       break;
     }
 
-    theFootStepPlanner.updateParameters(theParameters, req.character);
+    theFootStepPlanner.updateParameters(theParameters);
 
     if ( stepCtr && req.stepControl.stepID == theStepID )
     {
