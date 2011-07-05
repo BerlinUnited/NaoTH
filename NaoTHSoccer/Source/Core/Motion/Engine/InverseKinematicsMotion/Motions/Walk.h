@@ -23,7 +23,9 @@ public:
 private:
   struct Step {
 
-    Step():planningCycle(0),executingCycle(0),lifted(false),extendDoubleSupport(0),
+    Step():planningCycle(0),executingCycle(0),lifted(false),
+      character(-1),
+      extendDoubleSupport(0),
       stepControlling(false),speedDirection(0)
     {}
 
@@ -31,6 +33,7 @@ private:
     int executingCycle;
     bool lifted;
     FootStep footStep;
+    double character;
     // parameters
     // calcualted parameters of walk
     double bodyPitchOffset;
@@ -58,7 +61,7 @@ private:
   
   bool canStop() const;
   
-  void updateParameters(Step& step) const;
+  void updateParameters(Step& step, double character) const;
 
   void calculateError();
 

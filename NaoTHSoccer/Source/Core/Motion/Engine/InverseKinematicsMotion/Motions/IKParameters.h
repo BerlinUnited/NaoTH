@@ -26,10 +26,12 @@ public:
     double stiffness;
     double comHeight;
     double ZMPOffsetY;
+    double ZMPOffsetYByCharacter;
     
     double singleSupportTime;
     double doubleSupportTime;
     double maxExtendDoubleSupportTime;
+    double extendDoubleSupportTimeByCharacter;
     
     double stepHeight;
     double curveFactor;
