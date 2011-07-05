@@ -84,7 +84,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // walk style
   for(int i = 0; i < num_of_styles; i++)
   {
-    string str("motion.walk.style");
+    string str("motion.walk.style.");
     str.append(getWalkStyleName((WalkStyle)i));
     engine.registerEnumElement("motion.walk.style", str.c_str(), i);
   }//end for

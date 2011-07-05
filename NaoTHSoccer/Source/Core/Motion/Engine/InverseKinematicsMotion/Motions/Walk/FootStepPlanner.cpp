@@ -100,7 +100,6 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
     stepCoord.translate(0, theFootOffsetY);
     break;
   default:
-    ASSERT(false);
     break;
   }//end switch
 
@@ -200,8 +199,8 @@ FootStep FootStepPlanner::firstStep(const InverseKinematic::FeetPose& pose,const
 
 void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep, double character) const
 {
-  // scale the character: [0, 1] --> [0.3, 1]
-  character = 0.7*character + 0.3;
+  // scale the character: [0, 1] --> [0.5, 1]
+  character = 0.5*character + 0.5;
 
   double maxTurn = theMaxStepTurn * character;
   
