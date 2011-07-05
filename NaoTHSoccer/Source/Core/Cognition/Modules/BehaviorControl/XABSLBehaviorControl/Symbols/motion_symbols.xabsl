@@ -199,5 +199,18 @@ namespace motion_symbols("Motion Symbols") {
   };
   enum motion.walk.style output motion.walk.style;
 
+  /** step control */
+  enum motion.walk.step_control.foot
+  {
+    left,
+    right,
+    none
+  };
+  enum motion.walk.step_control.foot output motion.walk.step_control.foot;
+  float output motion.walk.step_control.target.x [mm];
+  float output motion.walk.step_control.target.y [mm];
+  float output motion.walk.step_control.target.rot [deg];
+  float output motion.walk.step_control.time [ms];
+  float output motion.walk.step_control.speed_direction [deg];
  }
   

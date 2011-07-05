@@ -62,7 +62,10 @@ public:
     relativeToRightFootAa(0.0),
     isAvoidObstacle(false),
 
-    walkStyle(normal)
+    walkStyle(normal),
+    stepControlFoot(none),
+    stepControlRequestTime(0),
+    stepControlRequestSpeedDirection(0)
   {
     theInstance = this;
   };
@@ -172,6 +175,19 @@ private:
 
   WalkStyle walkStyle;
 
+  enum StepControlFoot
+  {
+    left,
+    right,
+    none
+  };
+
+  static string getStepControlFootName(StepControlFoot i);
+
+  StepControlFoot stepControlFoot;
+  double stepControlRequestTime;
+  Pose2D stepControlRequestTarget;
+  double stepControlRequestSpeedDirection;
 };//end class MotionSymbols
 
 #endif // __MotionSymbols_H_

@@ -102,6 +102,20 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("motion.walk.stop_with_stand",&motionRequest.standardStand);
   engine.registerDecimalOutputSymbol("motion.standHeight",&motionRequest.standHeight);
 
+  // step control
+  for(int i = 0; i <= none; i++)
+  {
+    string str("motion.walk.step_control.foot");
+    str.append(getStepControlFootName((StepControlFoot)i));
+    engine.registerEnumElement("motion.walk.step_control.foot", str.c_str(), i);
+  }//end for
+  engine.registerEnumeratedOutputSymbol("motion.walk.step_control.foot", "motion.walk.step_control.foot", (int*)&stepControlFoot);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.target.x", &stepControlRequestTarget.translation.x);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.target.y", &stepControlRequestTarget.translation.y);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.target.rot", &stepControlRequestTarget.rotation);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.time", &stepControlRequestTime);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.speed_direction", &stepControlRequestSpeedDirection);
+
   // motion status
   engine.registerEnumeratedInputSymbol("executed_motion.type","motion.type", &getMotionStatusId);
   engine.registerDecimalInputSymbol("executed_motion.time", &getMotionStatusTime);
@@ -199,6 +213,18 @@ void MotionSymbols::execute()
           break;
         default: ASSERT(false); break;
       }
+    }
+
+    // step control
+    if (stepControlFoot !=  none)
+    {
+      WalkRequest::StepControlRequest& req = theInstance->motionRequest.walkRequest.stepControl;
+      req.stepID = theInstance->motionStatus.stepControl.stepID;
+      req.target.translation = theInstance->stepControlRequestTarget.translation;
+      req.target.rotation = Math::fromDegrees(theInstance->stepControlRequestTarget.rotation);
+      req.time = theInstance->stepControlRequestTime;
+      req.speedDirection = Math::fromDegrees(theInstance->stepControlRequestSpeedDirection);
+      req.moveLeftFoot = (stepControlFoot == left);
     }
 }//end update
 
@@ -433,6 +459,18 @@ string MotionSymbols::getWalkStyleName(WalkStyle i)
   case stable: return "stable"; break;
   case normal: return "normal"; break;
   case fast: return "fast"; break;
+  default: ASSERT(false); break;
+  }
+  return "unknown";
+}
+
+string MotionSymbols::getStepControlFootName(StepControlFoot i)
+{
+  switch(i)
+  {
+  case left: return "left"; break;
+  case right: return "right"; break;
+  case none: return "none"; break;
   default: ASSERT(false); break;
   }
   return "unknown";
