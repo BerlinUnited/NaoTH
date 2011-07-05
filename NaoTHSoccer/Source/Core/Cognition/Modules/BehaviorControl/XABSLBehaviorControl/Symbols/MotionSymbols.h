@@ -77,7 +77,8 @@ public:
   {
     stable,
     normal,
-    fast
+    fast,
+    num_of_styles
   };
 
   static string getWalkStyleName(WalkStyle i);

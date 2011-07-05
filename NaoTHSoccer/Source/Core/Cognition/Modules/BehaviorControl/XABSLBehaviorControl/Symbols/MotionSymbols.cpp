@@ -82,7 +82,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("motion.walk_speed.rot", &setWalkSpeedRot, &getWalkSpeedRot);
 
   // walk style
-  for(int i = 0; i <= motion::num_of_motions; i++)
+  for(int i = 0; i < num_of_styles; i++)
   {
     string str("motion.walk.style");
     str.append(getWalkStyleName((WalkStyle)i));
@@ -197,6 +197,7 @@ void MotionSymbols::execute()
         case fast:
           theInstance->motionRequest.walkRequest.character = 1;
           break;
+        default: ASSERT(false); break;
       }
     }
 }//end update
