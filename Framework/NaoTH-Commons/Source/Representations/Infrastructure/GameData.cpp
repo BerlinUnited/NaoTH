@@ -13,7 +13,7 @@ using namespace naoth;
 GameData::GameData()
   :valid(false),
     frameNumber(0),
-    gameState(numOfGameState),
+    gameState(initial),
     timeWhenGameStateChanged(0),
     penaltyState(none),
     msecsTillUnpenalised(0),
