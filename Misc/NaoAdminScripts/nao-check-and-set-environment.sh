@@ -10,7 +10,7 @@ verify_aldir ()
   fi
   if  [ ! -f $AL_DIR/bin/naoqi-bin ]
   then
-        echo "WARN: I was unable to find naoqi/bin/naoqi-bin in AL_DIR - the path is probably invalid" 
+        echo "WARN: I was unable to find bin/naoqi-bin in AL_DIR - the path is probably invalid" 
   fi 
 }
 
@@ -22,7 +22,7 @@ verify_alcross ()
         echo "  * AL_CROSS has not been set, using default path '$DEFAULT_AL_CROSS'"
         export AL_CROSS=$DEFAULT_AL_CROSS
   fi
-  if  [ ! -d $AL_CROSS/staging/usr/lib ]
+  if  [ ! -d $AL_CROSS/staging/geode-linux/usr/lib ]
   then
         echo "WARN: I was unable to find staging/usr/lib in AL_CROSS - the path is probably invalid" 
   fi
