@@ -210,7 +210,6 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
     getMotionRequest().walkRequest.stepControl.time = stepTime;
     getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
-    getMotionRequest().walkRequest.character = 1;
   }
     );
 
@@ -219,6 +218,7 @@ void SimpleMotionBehaviorControl::testMotion()
   getMotionRequest().walkRequest.offset.rotation = Math::fromDegrees(offsetR);
   MODIFY("walk.offset.x", getMotionRequest().walkRequest.offset.translation.x);
   MODIFY("walk.offset.y", getMotionRequest().walkRequest.offset.translation.y);
+  MODIFY("walk.character", getMotionRequest().walkRequest.character);
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_front",
     getMotionRequest().id = motion::stand_up_from_front;
