@@ -190,5 +190,14 @@ namespace motion_symbols("Motion Symbols") {
    float input motion.head.yaw "deg";
    float input motion.head.speed;
 
+  /** walk style */
+  enum motion.walk.style
+  {
+    stable,
+    normal,
+    fast
+  };
+  enum motion.walk.style output motion.walk.style;
+
  }
   

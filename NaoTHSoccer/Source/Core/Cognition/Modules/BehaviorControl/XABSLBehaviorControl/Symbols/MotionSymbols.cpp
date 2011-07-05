@@ -81,6 +81,16 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("motion.walk_speed.y", &setWalkSpeedY, &getWalkSpeedY);
   engine.registerDecimalOutputSymbol("motion.walk_speed.rot", &setWalkSpeedRot, &getWalkSpeedRot);
 
+  // walk style
+  for(int i = 0; i <= motion::num_of_motions; i++)
+  {
+    string str("motion.walk.style");
+    str.append(getWalkStyleName((WalkStyle)i));
+    engine.registerEnumElement("motion.walk.style", str.c_str(), i);
+  }//end for
+  engine.registerEnumeratedOutputSymbol("motion.walk.style", "motion.walk.style", (int*)&walkStyle);
+
+
   // walk coordinates origin
   for(int i = 0; i < WalkRequest::numOfCoordinate; i++)
   {
@@ -172,6 +182,23 @@ void MotionSymbols::execute()
 
     headSpeed = Math::toDegrees(appHeadVelocity.abs());
     PLOT("AngleVelocity~Head", headSpeed);
+
+    // set walk character according walk style
+    if ( theInstance->motionRequest.id == motion::walk )
+    {
+      switch(walkStyle)
+      {
+        case stable:
+          theInstance->motionRequest.walkRequest.character = 0;
+          break;
+        case normal:
+          theInstance->motionRequest.walkRequest.character = 0.5;
+          break;
+        case fast:
+          theInstance->motionRequest.walkRequest.character = 1;
+          break;
+      }
+    }
 }//end update
 
 
@@ -396,4 +423,16 @@ double MotionSymbols::getHeadPitchAngle()
 double MotionSymbols::getHeadYawAngle()
 {
   return Math::toDegrees(theInstance->sensorJointData.position[JointData::HeadYaw]);
+}
+
+string MotionSymbols::getWalkStyleName(WalkStyle i)
+{
+  switch(i)
+  {
+  case stable: return "stable"; break;
+  case normal: return "normal"; break;
+  case fast: return "fast"; break;
+  default: ASSERT(false); break;
+  }
+  return "unknown";
 }

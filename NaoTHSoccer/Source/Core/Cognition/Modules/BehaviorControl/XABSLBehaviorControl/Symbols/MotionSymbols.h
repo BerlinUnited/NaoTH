@@ -60,7 +60,9 @@ public:
     relativeToRightFootYx(0.0),
     relativeToRightFootYy(0.0),
     relativeToRightFootAa(0.0),
-    isAvoidObstacle(false)
+    isAvoidObstacle(false),
+
+    walkStyle(normal)
   {
     theInstance = this;
   };
@@ -70,6 +72,15 @@ public:
   void registerSymbols(xabsl::Engine& engine);
   
   virtual void execute();
+
+  enum WalkStyle
+  {
+    stable,
+    normal,
+    fast
+  };
+
+  static string getWalkStyleName(WalkStyle i);
 
 private:
 
@@ -157,6 +168,8 @@ private:
   RingBuffer<HeadMotion, 10 > headMotionBuffer;
 
   double headSpeed;
+
+  WalkStyle walkStyle;
 
 };//end class MotionSymbols
 
