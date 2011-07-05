@@ -38,6 +38,11 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stepping", "walk with zero speed", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:step_control", "test step control", false);
 
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_normal", "normal walk", true);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_stable", "fast walk", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_fast", "stable walk", false);
+
+
   // key frame motion
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_back", "Set the motion request to 'stand_up_from_back'", false);
@@ -122,7 +127,6 @@ void SimpleMotionBehaviorControl::testHead()
 void SimpleMotionBehaviorControl::testMotion() 
 {
   getMotionRequest().walkRequest.target = Pose2D();
-  getMotionRequest().walkRequest.character = 0.5;
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand", 
     getMotionRequest().id = motion::stand;
@@ -212,6 +216,16 @@ void SimpleMotionBehaviorControl::testMotion()
     getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
   }
     );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_normal",
+              getMotionRequest().walkRequest.character = 0.5;
+  );
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_fast",
+              getMotionRequest().walkRequest.character = 1;
+  );
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_stable",
+              getMotionRequest().walkRequest.character = 0;
+  );
 
   double offsetR = 0;
   MODIFY("walk.offset.r", offsetR);

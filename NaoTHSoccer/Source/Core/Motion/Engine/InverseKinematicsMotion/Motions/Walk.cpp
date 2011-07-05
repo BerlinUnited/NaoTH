@@ -184,7 +184,7 @@ void Walk::manageSteps(const WalkRequest& req)
     currentZMP.localInLeftFoot();
     currentZMP.zmp.translation.z = theWalkParameters.comHeight;
     Step zeroStep;
-    updateParameters(zeroStep);
+    updateParameters(zeroStep, req.character);
     zeroStep.footStep = FootStep(currentZMP.feet, FootStep::NONE);
     int prepareStep = theEngine.controlZMPstart(currentZMP);
     zeroStep.numberOfCyclePerFootStep = prepareStep;
@@ -228,7 +228,7 @@ void Walk::manageSteps(const WalkRequest& req)
     {
       // step control
       step.footStep = theFootStepPlanner.controlStep(planningStep.footStep, req);
-      updateParameters(step);
+      updateParameters(step, req.character);
       step.samplesSingleSupport = max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
       step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
       step.stepControlling = true;
@@ -237,7 +237,7 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-      updateParameters(step);
+      updateParameters(step, req.character);
     }
 
     addStep(step);
@@ -248,7 +248,8 @@ void Walk::planStep()
 {
   Step& planningStep = stepBuffer.back();
   ASSERT(planningStep.planningCycle < planningStep.numberOfCyclePerFootStep);
-  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX, theWalkParameters.ZMPOffsetY);
+  double zmpOffset = theWalkParameters.ZMPOffsetY + theWalkParameters.ZMPOffsetYByCharacter * (1-planningStep.character);
+  Vector2d zmp = ZMPPlanner::simplest(planningStep.footStep, theParameters.hipOffsetX, zmpOffset);
   // TODO: change the height?
   theEngine.controlZMPpush(Vector3d(zmp.x, zmp.y, theWalkParameters.comHeight));
   planningStep.planningCycle++;
@@ -513,13 +514,23 @@ void Walk::stopWalkingWithoutStand()
   isStopping = true;
 }
 
-void Walk::updateParameters(Step& step) const
+void Walk::updateParameters(Step& step, double character) const
 {
+  ASSERT(character<=1);
+  ASSERT(character>=0);
+  step.character = character;
+
   const unsigned int basicTimeStep = theBlackBoard.theRobotInfo.basicTimeStep;
   
   step.bodyPitchOffset = Math::fromDegrees(theParameters.bodyPitchOffset);
   step.samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
   step.samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
+  int extendDoubleSupportByCharacter = max(0, (int)((theWalkParameters.extendDoubleSupportTimeByCharacter / basicTimeStep)
+                                                    *(1-character)));
+
+  ASSERT(extendDoubleSupportByCharacter < step.samplesSingleSupport);
+  step.samplesDoubleSupport += extendDoubleSupportByCharacter;
+  step.samplesSingleSupport -= extendDoubleSupportByCharacter;
   step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
 }
 

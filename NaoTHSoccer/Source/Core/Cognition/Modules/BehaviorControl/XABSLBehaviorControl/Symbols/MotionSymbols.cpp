@@ -81,6 +81,16 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalOutputSymbol("motion.walk_speed.y", &setWalkSpeedY, &getWalkSpeedY);
   engine.registerDecimalOutputSymbol("motion.walk_speed.rot", &setWalkSpeedRot, &getWalkSpeedRot);
 
+  // walk style
+  for(int i = 0; i < num_of_styles; i++)
+  {
+    string str("motion.walk.style.");
+    str.append(getWalkStyleName((WalkStyle)i));
+    engine.registerEnumElement("motion.walk.style", str.c_str(), i);
+  }//end for
+  engine.registerEnumeratedOutputSymbol("motion.walk.style", "motion.walk.style", (int*)&walkStyle);
+
+
   // walk coordinates origin
   for(int i = 0; i < WalkRequest::numOfCoordinate; i++)
   {
@@ -91,6 +101,20 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumeratedOutputSymbol("motion.walk.coordinate", "motion.walk.coordinate", (int*)&motionRequest.walkRequest.coordinate);
   engine.registerBooleanOutputSymbol("motion.walk.stop_with_stand",&motionRequest.standardStand);
   engine.registerDecimalOutputSymbol("motion.standHeight",&motionRequest.standHeight);
+
+  // step control
+  for(int i = 0; i <= none; i++)
+  {
+    string str("motion.walk.step_control.foot.");
+    str.append(getStepControlFootName((StepControlFoot)i));
+    engine.registerEnumElement("motion.walk.step_control.foot", str.c_str(), i);
+  }//end for
+  engine.registerEnumeratedOutputSymbol("motion.walk.step_control.foot", "motion.walk.step_control.foot", (int*)&stepControlFoot);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.target.x", &stepControlRequestTarget.translation.x);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.target.y", &stepControlRequestTarget.translation.y);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.target.rot", &stepControlRequestTarget.rotation);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.time", &stepControlRequestTime);
+  engine.registerDecimalOutputSymbol("motion.walk.step_control.speed_direction", &stepControlRequestSpeedDirection);
 
   // motion status
   engine.registerEnumeratedInputSymbol("executed_motion.type","motion.type", &getMotionStatusId);
@@ -172,6 +196,36 @@ void MotionSymbols::execute()
 
     headSpeed = Math::toDegrees(appHeadVelocity.abs());
     PLOT("AngleVelocity~Head", headSpeed);
+
+    // set walk character according walk style
+    if ( theInstance->motionRequest.id == motion::walk )
+    {
+      switch(walkStyle)
+      {
+        case stable:
+          theInstance->motionRequest.walkRequest.character = 0;
+          break;
+        case normal:
+          theInstance->motionRequest.walkRequest.character = 0.5;
+          break;
+        case fast:
+          theInstance->motionRequest.walkRequest.character = 1;
+          break;
+        default: ASSERT(false); break;
+      }
+    }
+
+    // step control
+    if (stepControlFoot !=  none)
+    {
+      WalkRequest::StepControlRequest& req = theInstance->motionRequest.walkRequest.stepControl;
+      req.stepID = theInstance->motionStatus.stepControl.stepID;
+      req.target.translation = theInstance->stepControlRequestTarget.translation;
+      req.target.rotation = Math::fromDegrees(theInstance->stepControlRequestTarget.rotation);
+      req.time = theInstance->stepControlRequestTime;
+      req.speedDirection = Math::fromDegrees(theInstance->stepControlRequestSpeedDirection);
+      req.moveLeftFoot = (stepControlFoot == left);
+    }
 }//end update
 
 
@@ -396,4 +450,28 @@ double MotionSymbols::getHeadPitchAngle()
 double MotionSymbols::getHeadYawAngle()
 {
   return Math::toDegrees(theInstance->sensorJointData.position[JointData::HeadYaw]);
+}
+
+string MotionSymbols::getWalkStyleName(WalkStyle i)
+{
+  switch(i)
+  {
+  case stable: return "stable"; break;
+  case normal: return "normal"; break;
+  case fast: return "fast"; break;
+  default: ASSERT(false); break;
+  }
+  return "unknown";
+}
+
+string MotionSymbols::getStepControlFootName(StepControlFoot i)
+{
+  switch(i)
+  {
+  case left: return "left"; break;
+  case right: return "right"; break;
+  case none: return "none"; break;
+  default: ASSERT(false); break;
+  }
+  return "unknown";
 }
