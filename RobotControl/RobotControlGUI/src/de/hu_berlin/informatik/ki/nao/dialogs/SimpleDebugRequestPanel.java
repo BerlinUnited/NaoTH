@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
@@ -41,6 +42,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   @InjectPlugin
   public DebugRequestManager dbgRequestManager;
   private CheckboxTree debugRequestTree;
+  private javax.swing.JScrollPane jScrollPaneCheckBoxTree;
 
   /** Creates new form DebugRequestPanel */
   public SimpleDebugRequestPanel()
@@ -108,8 +110,10 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   public void init()
   {
     debugRequestTree = new CheckboxTree();
-
-    add(debugRequestTree, BorderLayout.CENTER);
+    
+    jScrollPaneCheckBoxTree = new JScrollPane(debugRequestTree);
+    jScrollPaneCheckBoxTree.setAutoscrolls(true);
+    add(jScrollPaneCheckBoxTree, java.awt.BorderLayout.CENTER);
 
     debugRequestTree.addMouseListener(new MouseAdapter()
     {
