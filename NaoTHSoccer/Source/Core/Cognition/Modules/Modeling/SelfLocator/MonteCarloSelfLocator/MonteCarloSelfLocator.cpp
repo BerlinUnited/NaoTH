@@ -69,6 +69,9 @@ MonteCarloSelfLocator::MonteCarloSelfLocator()
 
   // draw estimated goal model
   DEBUG_REQUEST_REGISTER("MCSL:draw_SelfLocGoalModel", "draw the goal model based on self locator", false);
+
+
+  DEBUG_REQUEST_REGISTER("MCSL:plots", "enables the debug plots", false);
 }
 
 
@@ -373,7 +376,9 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
   }//end for
 
   shortestLine = shortestLine;
-  PLOT("MonteCarloSelfLocator:shortestLine", shortestLine);
+  DEBUG_REQUEST("MCSL:plots",
+    PLOT("MonteCarloSelfLocator:shortestLine", shortestLine);
+  );
 }//end updateByLinesTable
 
 
@@ -625,8 +630,10 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   w_fast += alpha_fast*(averageWeighting - w_fast);
 
   double pp = max(0.0, 1.0 - w_fast/w_slow);
-  PLOT("MonteCarloSelfLocator:pp", pp);
-  PLOT("MonteCarloSelfLocator:averageWeighting", averageWeighting);
+  DEBUG_REQUEST("MCSL:plots",
+    PLOT("MonteCarloSelfLocator:pp", pp);
+    PLOT("MonteCarloSelfLocator:averageWeighting", averageWeighting);
+  );
 
   // copy the samples 
   // TODO: use memcopy?
@@ -1103,7 +1110,9 @@ void MonteCarloSelfLocator::execute()
 
   // try to track the hypothesis
   int clusterSize = canopyClustering.cluster(getRobotPose().translation);
-  PLOT("MCSL:clusterSize", clusterSize);
+  DEBUG_REQUEST("MCSL:plots",
+    PLOT("MCSL:clusterSize", clusterSize);
+  );
   
   // TODO: find a beter place for it
   getRobotPose().isValid = true;

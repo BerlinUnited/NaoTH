@@ -8,6 +8,7 @@
 
 #include "NaoController.h"
 #include <PlatformInterface/Platform.h>
+#include <Tools/Debug/Stopwatch.h>
 
 #define TEAMCOMM_MAX_MSG_SIZE 4096
 
@@ -130,6 +131,7 @@ void NaoController::set(const SoundPlayData& data)
 
 void NaoController::getCognitionInput()
 {
+  STOPWATCH_START("getCognitionInput");
   if ( libNaothData.swapReading() )
   {
     libNaothDataReading = libNaothData.reading();
@@ -142,14 +144,17 @@ void NaoController::getCognitionInput()
 
   updateFrameInfo();
   NaoControllerBase<NaoController>::getCognitionInput();
+  STOPWATCH_STOP("getCognitionInput");
 }
   
 void NaoController::setCognitionOutput()
 {
+  STOPWATCH_START("setCognitionOutput");
   NaoControllerBase<NaoController>::setCognitionOutput();
   
   naothData.swapWriting();
   naothDataWriting = naothData.writing();
+  STOPWATCH_STOP("setCognitionOutput");
 }
 
 void NaoController::get(TeamMessageDataIn& data)

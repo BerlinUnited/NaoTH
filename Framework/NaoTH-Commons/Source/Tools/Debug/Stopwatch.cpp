@@ -8,9 +8,10 @@
 #include "Stopwatch.h"
 
 #include <glib.h>
-
 #include <sstream>
+
 #include "Tools/SynchronizedFileWriter.h"
+#include "Tools/NaoTime.h"
 
 using namespace std;
 
@@ -43,6 +44,11 @@ void Stopwatch::notifyStart(StopwatchItem& stopwatchItem)
   //g_debug("stopwatch START %s", stopwatchItem.name.c_str());
   stopwatchItem.isValid = false;
  
+  unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
+  stopwatchItem.start = timeInMicro;
+  stopwatchItem.stop = timeInMicro;
+
+  /*
   #ifdef WIN32
   LARGE_INTEGER highPerformanceTick;
   LARGE_INTEGER freq;
@@ -62,11 +68,17 @@ void Stopwatch::notifyStart(StopwatchItem& stopwatchItem)
     stopwatchItem.stop = timeInMicro;
   }
   #endif // WIN32
+  */
 }//end notifyStart
 
 
 void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
 {
+  unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
+  stopwatchItem.stop = timeInMicro;
+  stopwatchItem.isValid = true;
+
+  /*
   #ifdef WIN32
   LARGE_INTEGER highPerformanceTick;
   LARGE_INTEGER freq;
@@ -87,7 +99,7 @@ void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
     stopwatchItem.isValid = true;
   }
   #endif //WIN32
-
+  */
 
   // update the statistics of the item
   stopwatchItem.n++;
@@ -98,7 +110,7 @@ void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
   // c(n) = c(n-1) + (x_n - c(n-1))/n
   stopwatchItem.mean += (value - stopwatchItem.mean)/stopwatchItem.n;
   //g_debug("stopwatch STOP %s", stopwatchItem.name.c_str());
-  stopwatchItem.lastValue = stopwatchItem.stop - stopwatchItem.start;
+  stopwatchItem.lastValue = (unsigned int)(stopwatchItem.stop - stopwatchItem.start);
 
 }//end notifyStop
 
