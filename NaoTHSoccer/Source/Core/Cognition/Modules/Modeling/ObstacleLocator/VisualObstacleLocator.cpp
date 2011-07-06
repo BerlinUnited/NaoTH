@@ -149,7 +149,7 @@ void VisualObstacleLocator::updateByUltraSoundData()
 
   // update Grid based on rawdata? of ultrasound and the estimated projection of the ultrasound-detector-cone to the grid
   // for the "front" detector
-  double x0 = getUltraSoundReceiveData().rawdata * 1000.0;
+  //double x0 = getUltraSoundReceiveData().rawdata * 1000.0;
 // 
 //   int iPercept = (int)(x0/this->CELL_SIZE);
 // 

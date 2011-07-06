@@ -82,7 +82,8 @@ namespace motion_symbols("Motion Symbols") {
     empty,
     init,
     dead,
-    
+
+    sit,
     stand,
     walk,
     kick,
