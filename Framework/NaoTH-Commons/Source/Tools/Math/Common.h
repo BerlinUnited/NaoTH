@@ -130,6 +130,21 @@ namespace Math {
     return ndata;
   }//end normalize
 
+  /**
+  * reduce angle to [0..+pi[
+  * @param data angle coded in rad
+  * @return normalized angle coded in rad
+  */
+  inline double normalizePositive(double data)
+  {
+    double ndata = normalize(data);
+    if (ndata < 0)
+    {
+      ndata += pi;
+    }
+    return ndata;
+  }//end normalize
+
   /** 
    * This method normalizes an angle. This means that the resulting
    * angle lies between (-180, 180] degrees.
