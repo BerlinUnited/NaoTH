@@ -854,6 +854,9 @@ public class NaoScp extends javax.swing.JFrame
     c.append(jTeamCommPort.getText());
     c.append("\n");
     
+    c.append("interface=wlan0\n");
+    
+    /*
     c.append("wlan=");
     c.append(lblTeamCommWLAN.getText());
     c.append("\n");
@@ -861,6 +864,7 @@ public class NaoScp extends javax.swing.JFrame
     c.append("lan=");
     c.append(lblTeamCommLAN.getText());
     c.append("\n");
+    */
     
     try
     {
