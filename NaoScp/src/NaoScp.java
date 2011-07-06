@@ -517,7 +517,7 @@ public class NaoScp extends javax.swing.JFrame
     }
     catch (IOException ex)
     {
-      log("I/O Error in readFile- " + ex.toString());
+      log("I/O Error in readFile- " + fileName + "\n" + ex.toString());
     }
 
     return content.toString();

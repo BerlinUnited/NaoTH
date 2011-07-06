@@ -222,7 +222,7 @@ void MotionSymbols::execute()
       req.stepID = theInstance->motionStatus.stepControl.stepID;
       req.target.translation = theInstance->stepControlRequestTarget.translation;
       req.target.rotation = Math::fromDegrees(theInstance->stepControlRequestTarget.rotation);
-      req.time = theInstance->stepControlRequestTime;
+      req.time = (int)(theInstance->stepControlRequestTime);
       req.speedDirection = Math::fromDegrees(theInstance->stepControlRequestSpeedDirection);
       req.moveLeftFoot = (stepControlFoot == left);
     }
