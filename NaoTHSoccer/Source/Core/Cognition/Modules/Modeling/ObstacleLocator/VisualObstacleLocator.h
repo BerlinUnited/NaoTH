@@ -67,6 +67,10 @@ private:
   RingBuffer<Vector2<double>, 120 > buffer;
   RingBuffer<unsigned int, 120 > timeBuffer;
 
+  //
+  double maxValidDistance;
+  double minValidDistance;
+
 
 
 

@@ -6,7 +6,7 @@
  * Implementation of class RadarObstacleLocator
  */
 
-#include "VisualObstaclelocator.h"
+#include "VisualObstacleLocator.h"
 
 VisualObstacleLocator::VisualObstacleLocator()
 {
@@ -16,6 +16,9 @@ VisualObstacleLocator::VisualObstacleLocator()
   odometryDelta.translation.x = 0;
   odometryDelta.translation.y = 0;
   odometryDelta.rotation = 0;
+
+  minValidDistance = 0.15;
+  maxValidDistance = 0.7;
 
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
@@ -138,3 +141,27 @@ void VisualObstacleLocator::execute()
 
   */
 }//end execute
+
+void VisualObstacleLocator::updateByUltraSoundData()
+{
+  if(getUltraSoundReceiveData().rawdata >= maxValidDistance || getUltraSoundReceiveData().rawdata <= minValidDistance)
+    return; 
+
+  // update Grid based on rawdata? of ultrasound and the estimated projection of the ultrasound-detector-cone to the grid
+  // for the "front" detector
+  double x0 = getUltraSoundReceiveData().rawdata * 1000.0;
+// 
+//   int iPercept = (int)(x0/this->CELL_SIZE);
+// 
+//   for(int i=iPercept; i >= 0; i--){
+//     int y = (int)(i*tan(usOpeningAngle/2));
+//     for(int j=-y; j <= y; j++){
+//       int currentX = (int)((this->CELLS_X)/2+i); // add centre and round to nearest whole number
+//       int currentY = (int)((this->CELLS_Y)/2+j); // add centre and round to nearest whole number
+//       if(i==iPercept)
+//         grid.setUpdate(currentX,currentY, getFrameInfo().getTime(), 1);
+//       else
+//         grid.setUpdate(currentX,currentY, getFrameInfo().getTime(), -1);
+//     }
+//   }
+}
