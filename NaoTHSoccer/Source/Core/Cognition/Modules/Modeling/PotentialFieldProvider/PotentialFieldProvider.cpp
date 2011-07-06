@@ -164,9 +164,7 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<do
   Vector2<double> oppGoal = getGoalTarget(point, *oppGoalModel);
 
   // preview
-  Pose2D p(oppGoal.angle(), oppGoal.x, oppGoal.y);
-  p -= getMotionStatus().plannedMotion.hip;
-  oppGoal = p.translation;
+  oppGoal = getMotionStatus().plannedMotion.hip / oppGoal;
   // ----------
 
   /*
@@ -243,10 +241,9 @@ Vector2<double> PotentialFieldProvider::calculatePlayerPotentialField(const Vect
   const double d = 2000;
 
   // preview
-  Pose2D p(player.angle(), player.x, player.y);
-  p -= getMotionStatus().plannedMotion.hip;
+  Vector2d p = getMotionStatus().plannedMotion.hip / player;
 
-  Vector2<double> v = p.translation-ball;
+  Vector2<double> v = p-ball;
   double t = v.abs();
   if ( t >= d-100 ) return Vector2<double>();
 
