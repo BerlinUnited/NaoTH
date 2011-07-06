@@ -88,7 +88,7 @@ public:
   
   Vector2<int> returnFirstFreeCell(Vector2<int> start) const
   {
-    while (isOccupied(start) && start.y >= 0)
+    while (isOccupied(start) && (start.y - stepSize) >= 0)
     {
       start.y -= stepSize;
     }
