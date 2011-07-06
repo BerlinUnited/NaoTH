@@ -98,14 +98,12 @@ void XABSLBehaviorControl::execute()
   // ATTENTION: it has to be set before xabsl engine is executed!!!
   xabslTime = getFrameInfo().getTime();
 
-  // reset representations
-  getMotionRequest().reset();
-
   // execute the behavior
   if(theEngine != NULL && !theErrorHandler.errorsOccurred)
   {
     updateXABSLSymbols();
     theEngine->execute();
+    updateOutputSymbols();
     //cout << "test " << getMotionStatus().motionRequest << endl;
 
     // update the behavior status
@@ -228,6 +226,14 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theMotionSymbols->execute();
   }//end if
 }//end updateXABSLSymbols
+
+void XABSLBehaviorControl::updateOutputSymbols()
+{
+  if(theEngine != NULL)
+  {
+    theMotionSymbols->getModuleT()->updateOutputSymbols();
+  }
+}
 
 // ERROR HANDLER //
 

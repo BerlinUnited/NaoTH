@@ -171,6 +171,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
 
 void MotionSymbols::execute()
 {
+  getMotionRequest().reset();
+
      //Modell-Hack
    double curHeadPitch = sensorJointData.position[JointData::HeadPitch];
    double curHeadYaw   = sensorJointData.position[JointData::HeadYaw];
@@ -200,7 +202,10 @@ void MotionSymbols::execute()
 
     headSpeed = Math::toDegrees(appHeadVelocity.abs());
     PLOT("AngleVelocity~Head", headSpeed);
+} //end update
 
+void MotionSymbols::updateOutputSymbols()
+{
     // set walk character according walk style
     if ( theInstance->motionRequest.id == motion::walk )
     {
@@ -230,8 +235,7 @@ void MotionSymbols::execute()
       req.speedDirection = Math::fromDegrees(theInstance->stepControlRequestSpeedDirection);
       req.moveLeftFoot = (stepControlFoot == left);
     }
-}//end update
-
+}
 
 MotionSymbols* MotionSymbols::theInstance = NULL;
 

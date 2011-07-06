@@ -144,6 +144,9 @@ private:
   /** update symbols */
   void updateXABSLSymbols();
 
+  /** udpate output symbols */
+  void updateOutputSymbols();
+
   /** some debug drawings */
   void draw();
 

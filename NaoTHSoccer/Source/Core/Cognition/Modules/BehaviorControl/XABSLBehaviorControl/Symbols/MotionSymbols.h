@@ -76,6 +76,8 @@ public:
   
   virtual void execute();
 
+  void updateOutputSymbols();
+
   enum WalkStyle
   {
     stable,
