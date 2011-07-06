@@ -1,23 +1,27 @@
 /**
- * @file RadarObstacleLocator.h
+ * @file VisualObstacleLocator.h
  *
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * @author Kirill Yasinovskiy
  * Implementation of class RadarObstacleLocator
  */
 
-#include "RadarObstacleLocator.h"
+#include "VisualObstaclelocator.h"
 
-RadarObstacleLocator::RadarObstacleLocator()
+VisualObstacleLocator::VisualObstacleLocator()
 {
   angle_offset = 10.0 + 180.0;
   obstacleBuffer.reserve(18);
   onceExecuted = false;
+  odometryDelta.translation.x = 0;
+  odometryDelta.translation.y = 0;
+  odometryDelta.rotation = 0;
 
-  DEBUG_REQUEST_REGISTER("RadarObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("RadarObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
 }
 
-void RadarObstacleLocator::execute()
+void VisualObstacleLocator::execute()
 {
   if (!onceExecuted)
   {
@@ -30,18 +34,14 @@ void RadarObstacleLocator::execute()
   currentTime = getFrameInfo().getTime();
 
   //get current odometry delta
+  //collect the odometry data
   odometryDelta += (lastRobotOdometry - getOdometryData());
-  
   lastRobotOdometry = getOdometryData();
 
+  //just age the grid
   if ((currentTime - initialTime) >= 1000)
   {
     getRadarGrid().ageGrid();
-    getRadarGrid().updateGrid(odometryDelta);
-    initialTime = currentTime;
-    odometryDelta.translation.x = 0;
-    odometryDelta.translation.y = 0;
-    odometryDelta.rotation = 0;
   }
   
 
@@ -51,11 +51,10 @@ void RadarObstacleLocator::execute()
     buffer.removeFirst();
   }//end if
 
-
+  //set the radar grid
   for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
   {
     const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-
     if(point.posInImage.y > 10 && 
        point.posInImage.y < 200 && 
         (point.color == (int) ColorClasses::white ||
@@ -69,7 +68,15 @@ void RadarObstacleLocator::execute()
     }
   }//end for
 
-
+  //update the grid with odometry data
+  if ((currentTime - initialTime) >= 1000)
+  {
+    getRadarGrid().updateGrid(odometryDelta);
+    initialTime = currentTime;
+    odometryDelta.translation.x = 0;
+    odometryDelta.translation.y = 0;
+    odometryDelta.rotation = 0;
+  }
 
   Vector2<double> mean;
   for(int i = 0; i < buffer.getNumberOfEntries(); i++)
@@ -87,7 +94,7 @@ void RadarObstacleLocator::execute()
     getLocalObstacleModel().visualObstacleWasSeen = false;
   }
 
-  DEBUG_REQUEST("RadarObstacleLocator:drawObstacleBuffer",
+  DEBUG_REQUEST("VisualObstacleLocator:drawObstacleBuffer",
     FIELD_DRAWING_CONTEXT;
     PEN("999999", 10);
 
@@ -100,7 +107,7 @@ void RadarObstacleLocator::execute()
     CIRCLE(mean.x, mean.y, 50);
   );
 
-  DEBUG_REQUEST("RadarObstacleLocator:RadarGrid:drawGrid",
+  DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawGrid",
     getRadarGrid().drawFieldContext();
   );
 

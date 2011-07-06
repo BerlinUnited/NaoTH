@@ -1,12 +1,13 @@
 /**
- * @file RadarObstacleLocator.h
+ * @file VisualObstacleLocator.h
  *
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * @author Kirill Yasinovskiy
  * Declaration of class RadarObstacleLocator
  */
 
-#ifndef __RadarObstacleLocator_h_
-#define __RadarObstacleLocator_h_
+#ifndef _VisualObstacleLocator_h_
+#define _VisualObstacleLocator_h_
 
 #include "Cognition/Cognition.h"
 
@@ -21,7 +22,7 @@
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
-//#include "Representations/Infrastructure/UltraSoundData.h"
+#include "Representations/Infrastructure/UltraSoundData.h"
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
@@ -33,28 +34,28 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(RadarObstacleLocator)
+BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
-//  REQUIRE(UltraSoundReceiveData)
+  REQUIRE(UltraSoundReceiveData)
 
-//  PROVIDE(UltraSoundSendData)
+  PROVIDE(UltraSoundSendData)
   PROVIDE(LocalObstacleModel)
   PROVIDE(RadarGrid)
-END_DECLARE_MODULE(RadarObstacleLocator)
+END_DECLARE_MODULE(VisualObstacleLocator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class RadarObstacleLocator : private RadarObstacleLocatorBase
+class VisualObstacleLocator : private VisualObstacleLocatorBase
 {
 public:
-  RadarObstacleLocator();
+  VisualObstacleLocator();
 
-  ~RadarObstacleLocator(){};
+  ~VisualObstacleLocator(){};
 
   virtual void execute();
 
@@ -131,6 +132,9 @@ private:
     }
   };
 
+  inline void updateByUltraSoundData();
+
+
   std::vector<GroundPointBuffer> obstacleBuffer;
   double angle_offset;
 
@@ -148,6 +152,6 @@ private:
 
 };
 
-#endif //__RadarObstacleLocator_h_
+#endif //_VisualObstacleLocator_h_
 
 

@@ -97,15 +97,15 @@ private:
   //
   inline void cellPos(Vector2<int> point, Vector2<int>& cell);
   //
-  inline void setCells(BodyContour::Line line);
+  inline void setCells(BodyContour::Line line, BodyContour& bodyContour);
   //
   inline void initializeGrid();
   //
   inline void eraseGrid();
+
   
   CameraInfo ci;
   BodyParts bodyparts;
-  std::vector<Vector2<int> > imagePoints;
   int lineNumber;
 };// end class BodyContourProvider
 
