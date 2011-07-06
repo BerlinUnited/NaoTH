@@ -20,7 +20,7 @@
 #include "Representations/Infrastructure/LEDRequest.h"
 
 BEGIN_DECLARE_MODULE(LedSymbols)
-  PROVIDE(LEDRequest)
+  PROVIDE(BehaviorLEDRequest)
 END_DECLARE_MODULE(LedSymbols)
 
 class LedSymbols: public LedSymbolsBase
@@ -29,7 +29,7 @@ class LedSymbols: public LedSymbolsBase
 public:
   LedSymbols()
     :
-    ledRequest(getLEDRequest())
+    ledRequest(getBehaviorLEDRequest())
   {
     theInstance = this;
     lastREar = 0.0;

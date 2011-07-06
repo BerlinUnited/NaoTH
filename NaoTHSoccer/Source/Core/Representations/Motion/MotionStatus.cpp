@@ -24,6 +24,12 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   DataConversion::toMessage(representation.plannedMotion.lFoot, *message.mutable_plannedmotionleftfoot());
   DataConversion::toMessage(representation.plannedMotion.rFoot, *message.mutable_plannedmotionrightfoot());
   DataConversion::toMessage(representation.plannedMotion.hip, *message.mutable_plannedmotionhip());
+
+  // step control
+  naothmessages::StepControlStatus* stepControlStatus =  message.mutable_stepcontrolstatus();
+  stepControlStatus->set_stepid(representation.stepControl.stepID);
+  stepControlStatus->set_moveablefoot(representation.stepControl.moveableFoot);
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
@@ -42,4 +48,9 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
   DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
   DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
   DataConversion::fromMessage(message.plannedmotionhip(), representation.plannedMotion.hip);
+
+  // step control
+  const naothmessages::StepControlStatus& stepControlStatus =  message.stepcontrolstatus();
+  representation.stepControl.stepID = stepControlStatus.stepid();
+  representation.stepControl.moveableFoot = static_cast<MotionStatus::StepControlStatus::MoveableFoot>(stepControlStatus.moveablefoot());
 }

@@ -60,7 +60,12 @@ public:
     relativeToRightFootYx(0.0),
     relativeToRightFootYy(0.0),
     relativeToRightFootAa(0.0),
-    isAvoidObstacle(false)
+    isAvoidObstacle(false),
+
+    walkStyle(normal),
+    stepControlFoot(none),
+    stepControlRequestTime(0),
+    stepControlRequestSpeedDirection(0)
   {
     theInstance = this;
   };
@@ -70,6 +75,16 @@ public:
   void registerSymbols(xabsl::Engine& engine);
   
   virtual void execute();
+
+  enum WalkStyle
+  {
+    stable,
+    normal,
+    fast,
+    num_of_styles
+  };
+
+  static string getWalkStyleName(WalkStyle i);
 
 private:
 
@@ -158,6 +173,21 @@ private:
 
   double headSpeed;
 
+  WalkStyle walkStyle;
+
+  enum StepControlFoot
+  {
+    left,
+    right,
+    none
+  };
+
+  static string getStepControlFootName(StepControlFoot i);
+
+  StepControlFoot stepControlFoot;
+  double stepControlRequestTime;
+  Pose2D stepControlRequestTarget;
+  double stepControlRequestSpeedDirection;
 };//end class MotionSymbols
 
 #endif // __MotionSymbols_H_

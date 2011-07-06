@@ -36,6 +36,12 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:turn_right", "Set the motion request to 'turn_right'.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_forward", "Walk foraward as fast as possible", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stepping", "walk with zero speed", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:step_control", "test step control", false);
+
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_normal", "normal walk", true);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_stable", "fast walk", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:walk_fast", "stable walk", false);
+
 
   // key frame motion
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:stand_up_from_front", "Set the motion request to 'stand_up_from_front'", false);
@@ -123,7 +129,7 @@ void SimpleMotionBehaviorControl::testMotion()
   getMotionRequest().walkRequest.target = Pose2D();
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand", 
-    getMotionRequest().id = motion::stand; 
+    getMotionRequest().id = motion::stand;
   );
   
   getMotionRequest().standardStand = false;
@@ -178,6 +184,55 @@ void SimpleMotionBehaviorControl::testMotion()
       getMotionRequest().walkRequest.target = Pose2D();
       getMotionRequest().walkRequest.coordinate = WalkRequest::Hip;
     );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:step_control",
+   if ( getMotionStatus().stepControl.stepID % 5 == 0)
+  {
+    getMotionRequest().walkRequest.stepControl.stepID = getMotionStatus().stepControl.stepID;
+    switch(getMotionStatus().stepControl.moveableFoot)
+  {
+    case MotionStatus::StepControlStatus::LEFT:
+    case MotionStatus::StepControlStatus::BOTH:
+    {
+      getMotionRequest().walkRequest.stepControl.moveLeftFoot = true;
+      getMotionRequest().walkRequest.coordinate = WalkRequest::LFoot;
+      break;
+    }
+    case MotionStatus::StepControlStatus::RIGHT:
+    {
+      getMotionRequest().walkRequest.stepControl.moveLeftFoot = false;
+      getMotionRequest().walkRequest.coordinate = WalkRequest::RFoot;
+      break;
+    }
+    default: ASSERT(false);
+      break;
+    }
+  double stepTime = 1000;
+  double speedDirection = 0;
+  MODIFY("StepControl.time",stepTime);
+  MODIFY("StepControl.speedDirection",speedDirection);
+    getMotionRequest().walkRequest.stepControl.target = Pose2D(0, 100, 0);
+    getMotionRequest().walkRequest.stepControl.time = (unsigned int)stepTime;
+    getMotionRequest().walkRequest.stepControl.speedDirection = Math::fromDegrees(speedDirection);
+  }
+    );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_normal",
+              getMotionRequest().walkRequest.character = 0.5;
+  );
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_fast",
+              getMotionRequest().walkRequest.character = 1;
+  );
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:walk_stable",
+              getMotionRequest().walkRequest.character = 0;
+  );
+
+  double offsetR = 0;
+  MODIFY("walk.offset.r", offsetR);
+  getMotionRequest().walkRequest.offset.rotation = Math::fromDegrees(offsetR);
+  MODIFY("walk.offset.x", getMotionRequest().walkRequest.offset.translation.x);
+  MODIFY("walk.offset.y", getMotionRequest().walkRequest.offset.translation.y);
+  MODIFY("walk.character", getMotionRequest().walkRequest.character);
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:stand_up_from_front",
     getMotionRequest().id = motion::stand_up_from_front;

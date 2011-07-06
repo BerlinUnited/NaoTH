@@ -18,10 +18,13 @@
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Perception/CameraMatrix.h"
 
 #include "Representations/Modeling/BallModel.h"
 
+#include "PFBLParameters.h"
 #include "Tools/Math/Vector3.h"
+#include "Tools/DataStructures/RingBuffer.h"
 #include <vector>
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
@@ -34,6 +37,7 @@ BEGIN_DECLARE_MODULE(ParticleFilterBallLocator)
   REQUIRE(OdometryData)
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
+  REQUIRE(CameraMatrix)
 
   PROVIDE(BallModel)
 END_DECLARE_MODULE(ParticleFilterBallLocator)
@@ -63,16 +67,19 @@ private:
     bool moving;
   };
 
+  RingBuffer<BallPercept, 10> perceptBuffer;
   typedef std::vector<Sample> SampleSet;
 
   SampleSet theSampleSet;
   Pose2D lastRobotOdometry;
+  naoth::FrameInfo lastFrameInfo;
+  PFBLParameters parameters;
 
   void updateByBallPercept(SampleSet& sampleSet);
-  void updateByOdometry(SampleSet& sampleSet, bool noise) const;
+  void motionUpdate(SampleSet& sampleSet, bool noise);
 
   void resampleGT07(SampleSet& sampleSet, bool noise);
-
+  Sample generateNewSample();
 
   /** */
   double computeAngleWeighting(

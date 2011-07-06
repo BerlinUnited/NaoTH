@@ -120,11 +120,18 @@ void Motion::call()
   {
   case initial:
   {
+    theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
+    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
+    theBlackBoard.theMotionRequest.id = motion::init;
+
     if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
+        && !theBlackBoard.currentlyExecutedMotion->isStopped()
         && theBlackBoard.currentlyExecutedMotion->isFinish() )
     {
       state = running;
     }
+
+    break;
   }
   case running:
   {

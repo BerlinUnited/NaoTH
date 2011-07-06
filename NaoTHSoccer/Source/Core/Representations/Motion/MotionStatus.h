@@ -31,12 +31,27 @@ public:
     Pose2D rFoot;
   };
 
+  struct StepControlStatus
+  {
+    enum MoveableFoot
+    {
+      NONE,
+      LEFT,
+      RIGHT,
+      BOTH
+    };
+
+    unsigned int stepID; // the walk only accept request with this id
+    MoveableFoot moveableFoot; // which foot can be controlled
+  };
+
   /** constructor */
   MotionStatus()
   :
   time(0),
   lastMotion(motion::num_of_motions),
-  currentMotion(motion::num_of_motions)
+  currentMotion(motion::num_of_motions),
+  currentMotionState(motion::stopped)
   {
   }
 
@@ -48,6 +63,7 @@ public:
   motion::State currentMotionState;
   HeadMotionRequest::HeadMotionID headMotion;
   PlannedMotion plannedMotion;
+  StepControlStatus stepControl;
 
   virtual void print(ostream& stream) const
   {
@@ -59,6 +75,7 @@ public:
     stream << "hip = "<< plannedMotion.hip <<"\n";
     stream << "left foot = "<< plannedMotion.lFoot<<"\n";
     stream << "right foot = "<< plannedMotion.rFoot<<"\n";
+    stream << "step control = "<< stepControl.stepID << " " << stepControl.moveableFoot <<"\n";
   }//end print
 };
 

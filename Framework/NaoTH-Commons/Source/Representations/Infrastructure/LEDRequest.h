@@ -35,6 +35,13 @@ public:
 
 };
 
+class BehaviorLEDRequest : public LEDRequest
+{
+public:
+  virtual ~BehaviorLEDRequest() {}
+};
+
+
 class GameControllerLEDRequest : public LEDRequest
 {
 public:

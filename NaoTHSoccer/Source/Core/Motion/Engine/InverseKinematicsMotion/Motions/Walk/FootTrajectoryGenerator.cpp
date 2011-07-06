@@ -54,3 +54,60 @@ Pose3D FootTrajectorGenerator::genTrajectory(const Pose3D& oldFoot, const Pose3D
     return targetFoot;
   }
 }
+
+
+Pose3D FootTrajectorGenerator::stepControl(const Pose3D& oldFoot, const Pose3D& targetFoot,
+  double cycle, double samplesDoubleSupport, double samplesSingleSupport, double extendDoubleSupport,
+  double stepHeight, double footPitchOffset, double footYawOffset, double footRollOffset, double curveFactor,
+                                           double speedDirection)
+{
+  double doubleSupportEnd = samplesDoubleSupport / 2 + extendDoubleSupport;
+  double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
+  samplesSingleSupport -= extendDoubleSupport;
+
+  if (cycle <= doubleSupportEnd)
+  {
+    return oldFoot;
+  }
+  else if (cycle <= doubleSupportBegin)
+  {
+    double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
+    double xp = 1 / (1 + exp(-(t - 0.5) * curveFactor));
+    t = t * Math::pi - Math::pi_2;
+    double zp = (1 + cos(t * 2))*0.5;
+
+    // TODO: optmize
+    Pose3D speedTarget = targetFoot;
+    speedTarget.translate(cos(speedDirection)*30, sin(speedDirection)*30, 0);
+    vector<Vector2<double> > vecX;
+    vecX.push_back(Vector2<double>(0, oldFoot.translation.x));
+    vecX.push_back(Vector2<double>(1, targetFoot.translation.x));
+    vecX.push_back(Vector2<double>(1.1, speedTarget.translation.x));
+    CubicSpline theCubicSplineX;
+    theCubicSplineX.init(vecX);
+
+    vector<Vector2<double> > vecY;
+    vecY.push_back(Vector2<double>(0, oldFoot.translation.y));
+    vecY.push_back(Vector2<double>(1, targetFoot.translation.y));
+    vecY.push_back(Vector2<double>(1.1, speedTarget.translation.y));
+    CubicSpline theCubicSplineY;
+    theCubicSplineY.init(vecY);
+
+    Pose3D foot;
+    foot.translation.z = targetFoot.translation.z + zp*stepHeight;
+
+    foot.translation.x = theCubicSplineX.y(xp);
+    foot.translation.y = theCubicSplineY.y(xp);
+
+    foot.rotation = RotationMatrix::getRotationX(footRollOffset * zp);
+    foot.rotation.rotateY(Math::sgn(targetFoot.translation.x - oldFoot.translation.x) * footPitchOffset * zp);
+    RotationMatrix rot = RotationMatrix::interpolate(oldFoot.rotation, targetFoot.rotation, xp);
+    foot.rotation *= rot;
+
+    return foot;
+  }
+  else
+  {
+    return targetFoot;
+  }
+}

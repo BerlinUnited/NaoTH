@@ -46,6 +46,17 @@ public:
     }
   }//end getCoordinateName
   
+  struct StepControlRequest
+  {
+    StepControlRequest():stepID(-1), time(0){}
+
+    unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
+    bool moveLeftFoot; // it should also match
+    Pose2D target; // in coordinate
+    unsigned int time; // in ms
+    double speedDirection;
+  };
+
   // indicates speed and stability, in range [0, 1]
   // 0: stablest (slow)
   // 0.5: normal
@@ -53,12 +64,22 @@ public:
   double character;
   Coordinate coordinate;
   Pose2D target;
+  StepControlRequest stepControl;
+  Pose2D offset; // offset of relation between left foot and body
 
   void print(ostream& stream) const
   {
     stream << "target: " << target << endl;
     stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
     stream << "character: " << character <<endl;
+    stream << "offset: "<< offset << "\n";
+    if ( stepControl.stepID >= 0 )
+    {
+      stream << "step control: "<< stepControl.stepID <<" "
+             << (stepControl.moveLeftFoot?"L":"R")<<" "<<stepControl.time
+             <<"\n step target: "<< stepControl.target<<"\n"
+             <<"speed direction:"<< Math::toDegrees(stepControl.speedDirection)<<"\n";
+    }
   }//end print
   
 };

@@ -56,6 +56,7 @@
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
 #include "Modules/Modeling/BallLocator/ParticleFilterBallLocator/ParticleFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/GoalLocator/ActiveGoalLocator/ActiveGoalLocator.h"
 #include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
@@ -140,7 +141,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(ParticleFilterBallLocator);
+  REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(ActiveGoalLocator);
+  REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(RadarObstacleLocator);

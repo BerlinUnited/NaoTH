@@ -4,7 +4,13 @@
 *.ilk
 *.suo
 *.vcproj
+*.vcxproj
+*.vcxproj.filters
+premake4.exe
+*.opensdf
+*.sdf
 *.sln
+./NaoTHSoccer/Make/ipch
 ./Projects/XabslEditor
 .dep.inc
 private/

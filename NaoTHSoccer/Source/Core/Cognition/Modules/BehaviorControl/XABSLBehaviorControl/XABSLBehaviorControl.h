@@ -72,7 +72,6 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
 
   PROVIDE(MotionRequest)
   PROVIDE(BehaviorStatus)
-
 /*
   
   

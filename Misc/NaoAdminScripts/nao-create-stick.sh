@@ -220,7 +220,7 @@ echo "Setting Ethernet-Address on $ETH_ADDR and WLAN-Address on $WLAN_ADDR"
 sed -e 's/'ETH_ADDR'/'${ETH_ADDR}'/' -e 's/'ETH_NET'/'${ETH_PREFIX}0'/' -e 's/'ETH_GATE'/'${ETH_PREFIX}1'/' -e 's/'WLAN_ADDR'/'${WLAN_ADDR}'/' -e 's/'WLAN_NET'/'${WLAN_PREFIX}0'/' -e 's/'WLAN_GATE'/'${WLAN_PREFIX}1'/'   $NAOTH_BZR/Misc/NaoConfigFiles/etc/network/interfaces > $TMP_MOUNT_POINT/etc/network/interfaces
 
 echo "Copying staging area"
-cp -R $AL_CROSS/staging/usr/ $TMP_MOUNT_POINT/
+cp -R $NAO_CROSSCOMPILE/staging/usr/ $TMP_MOUNT_POINT/
 
     echo "put the stick into the nao, boot once and then run this script again without burning the image onto it"
 else # if burn
@@ -321,11 +321,11 @@ while [ TRUE ]
 do
 	echo "Please enter Player-number:"
 	read PLAYERNR
-	if [ $PLAYERNR != "" ] && [ $PLAYERNR -le 4 ] && [ $PLAYERNR -ge 0 ]
+	if [ $PLAYERNR != "" ] && [ $PLAYERNR -le 5 ] && [ $PLAYERNR -ge 0 ]
 	then
 		break
 	else
-		echo "Error: Please enter Number between 0 and 4"
+		echo "Error: Please enter Number between 0 and 5"
 	fi
 done
 
