@@ -70,6 +70,7 @@ private:
   //
   double maxValidDistance;
   double minValidDistance;
+  double usOpeningAngle;
 
 
 

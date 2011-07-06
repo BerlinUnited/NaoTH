@@ -17,11 +17,14 @@ VisualObstacleLocator::VisualObstacleLocator()
   odometryDelta.translation.y = 0;
   odometryDelta.rotation = 0;
 
+  //ultraSound params
   minValidDistance = 0.15;
   maxValidDistance = 0.7;
+  usOpeningAngle = Math::fromDegrees(30.0);
 
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawUltraSoundData", "draw the ultrasound Obstacles on the field", false);
 }
 
 void VisualObstacleLocator::execute()
@@ -70,6 +73,9 @@ void VisualObstacleLocator::execute()
       getRadarGrid().set(point.posOnField);
     }
   }//end for
+
+  //set the grid with ultrasound data
+  updateByUltraSoundData();
 
   //update the grid with odometry data
   if ((currentTime - initialTime) >= 1000)
@@ -144,24 +150,24 @@ void VisualObstacleLocator::execute()
 
 void VisualObstacleLocator::updateByUltraSoundData()
 {
-  if(getUltraSoundReceiveData().rawdata >= maxValidDistance || getUltraSoundReceiveData().rawdata <= minValidDistance)
+  if(getUltraSoundReceiveData().rawdata <= maxValidDistance || getUltraSoundReceiveData().rawdata >= minValidDistance)
     return; 
 
-  // update Grid based on rawdata? of ultrasound and the estimated projection of the ultrasound-detector-cone to the grid
-  // for the "front" detector
-  //double x0 = getUltraSoundReceiveData().rawdata * 1000.0;
-// 
-//   int iPercept = (int)(x0/this->CELL_SIZE);
-// 
-//   for(int i=iPercept; i >= 0; i--){
-//     int y = (int)(i*tan(usOpeningAngle/2));
-//     for(int j=-y; j <= y; j++){
-//       int currentX = (int)((this->CELLS_X)/2+i); // add centre and round to nearest whole number
-//       int currentY = (int)((this->CELLS_Y)/2+j); // add centre and round to nearest whole number
-//       if(i==iPercept)
-//         grid.setUpdate(currentX,currentY, getFrameInfo().getTime(), 1);
-//       else
-//         grid.setUpdate(currentX,currentY, getFrameInfo().getTime(), -1);
-//     }
-//   }
+  double distance = getUltraSoundReceiveData().rawdata;
+  Vector2d ultraSoundPoint1(distance, 0);
+  getRadarGrid().set(ultraSoundPoint1);
+
+  Vector2d ultraSoundPoint2(ultraSoundPoint1.x + distance*cos(usOpeningAngle), ultraSoundPoint1.y + distance*tan(usOpeningAngle));
+  getRadarGrid().set(ultraSoundPoint2);
+
+  Vector2d ultraSoundPoint3(ultraSoundPoint1.x + distance*cos(usOpeningAngle), ultraSoundPoint1.y - distance*tan(usOpeningAngle));
+  getRadarGrid().set(ultraSoundPoint3);
+
+  DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawUltraSoundData",
+    FIELD_DRAWING_CONTEXT;
+    PEN("fbfb00", 2);
+    LINE(0,0, ultraSoundPoint1.x, ultraSoundPoint1.y);
+    LINE(0,0, ultraSoundPoint2.x, ultraSoundPoint3.y);
+    LINE(0,0, ultraSoundPoint3.x, ultraSoundPoint3.y);
+  );
 }

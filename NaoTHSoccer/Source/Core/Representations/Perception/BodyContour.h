@@ -15,6 +15,7 @@
 #include "Tools/Math/Vector3.h"
 #include <vector>
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 
 /**
@@ -91,6 +92,7 @@ public:
     {
       start.y -= stepSize;
     }
+    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
     return start;
   }
 

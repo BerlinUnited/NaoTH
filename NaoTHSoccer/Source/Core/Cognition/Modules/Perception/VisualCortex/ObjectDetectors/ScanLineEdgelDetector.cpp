@@ -8,6 +8,7 @@
 #include "ScanLineEdgelDetector.h"
 
 #include "Tools/CameraGeometry.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 ScanLineEdgelDetector::ScanLineEdgelDetector()
 {
@@ -76,6 +77,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   for (;start.x < (int) getImage().cameraInfo.resolutionWidth;)
   {
     start = getBodyContour().returnFirstFreeCell(start);
+    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
     CameraGeometry::imagePixelToFieldCoord(
