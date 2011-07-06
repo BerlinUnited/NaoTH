@@ -34,7 +34,6 @@
 #include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/FieldPercept.h"
-#include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/ObjectPercept.h"
@@ -46,7 +45,6 @@ BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
-  REQUIRE(FieldColorPercept)
   REQUIRE(ColoredGrid)
   REQUIRE(FieldInfo)
   REQUIRE(ScanLineEdgelPercept)
@@ -61,7 +59,7 @@ class LineDetector: private LineDetectorBase
 {
 public:
   LineDetector();
-  ~LineDetector(){}
+  ~LineDetector(){};
 
   void execute();
  
@@ -69,7 +67,7 @@ private:
   vector<LinePercept::LineSegmentImage> lineSegments;
 
   /** estimate the line segments from edgels */
-  void clusterEdgels();
+  void clusterEdgels(const vector<Edgel>& edgelList);
 
   /** */
   void expandLines();
@@ -88,7 +86,7 @@ private:
   void analyzeEndPoints();
 
   /** scan helpers */
-  void scanAlongLine(Vector2<int>& linePoint, const Vector2<double>& direction, ColorClasses::Color markColor);
+  void scanAlongLine(Vector2<int>& linePoint, const Vector2<int>& direction, ColorClasses::Color markColor);
   void scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& scanLine, ColorClasses::Color markColor);
 
   int cameraBrighness;

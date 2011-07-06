@@ -24,8 +24,6 @@ public:
     :
     numOfSeenEdgels(0)
   {
-    scanLineValidEdgels.reserve(MAX_NUMBER_OF_SCANLINE_EDGELS);
-    scanLineNonValidEdgels.reserve(MAX_NUMBER_OF_SCANLINE_EDGELS);
   }
 
   class EndPoint
@@ -39,27 +37,17 @@ public:
   };
 
   unsigned int numOfSeenEdgels;
-  vector<Edgel> scanLineValidEdgels;
-  vector<Edgel> scanLineNonValidEdgels;
+  Edgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
 
   std::vector<EndPoint> endPoints;
 
   void add(const Edgel& edgel)
 	{
-    if(edgel.valid &&  scanLineValidEdgels.size() < MAX_NUMBER_OF_SCANLINE_EDGELS)
-    {
-      scanLineValidEdgels.push_back(edgel);
-      numOfSeenEdgels++;
-    }
-    else
-    {
-      if(!edgel.valid &&  scanLineNonValidEdgels.size() < MAX_NUMBER_OF_SCANLINE_EDGELS)
-      {
-        scanLineNonValidEdgels.push_back(edgel);
-        numOfSeenEdgels++;
-      }
-
-    }
+    if(numOfSeenEdgels < MAX_NUMBER_OF_SCANLINE_EDGELS)
+		{
+			scanLineEdgels[numOfSeenEdgels] = edgel;
+			numOfSeenEdgels++;
+		}//end if
 	}//end add
 
   /* reset percept */
@@ -67,28 +55,19 @@ public:
   {
     numOfSeenEdgels = 0;
     endPoints.clear();
-    scanLineValidEdgels.clear();
-    scanLineNonValidEdgels.clear();
   }//end reset
 
   virtual void print(ostream& stream) const
   {
-    stream << "ScanLine Edgels(" << numOfSeenEdgels << " found):" << endl << "------" << endl;
-    for(unsigned int i = 0; i < scanLineValidEdgels.size(); i++)
+    stream << "ScanLine Edgels:" << endl << "------" << endl;
+    for(unsigned int i = 0; i < numOfSeenEdgels; i++)
     {
-      stream << "Edgel (valid)" << i << endl;
-      stream << "  Begin = " << scanLineValidEdgels[i].begin << " angle = " << scanLineValidEdgels[i].begin_angle << endl;
-      stream << "  Center = " << scanLineValidEdgels[i].center << " angle = " << scanLineValidEdgels[i].center_angle << endl;
-      stream << "  End = " << scanLineValidEdgels[i].end << " angle = " << scanLineValidEdgels[i].end_angle << endl;
-      stream << "  ScanLine = " << scanLineValidEdgels[i].ScanLineID << " run = " << scanLineValidEdgels[i].runID << endl;
-    }
-    for(unsigned int i = 0; i < scanLineNonValidEdgels.size(); i++)
-    {
-      stream << "Edgel (invalid)" << i << endl;
-      stream << "  Begin = " << scanLineNonValidEdgels[i].begin << " angle = " << scanLineNonValidEdgels[i].begin_angle << endl;
-      stream << "  Center = " << scanLineNonValidEdgels[i].center << " angle = " << scanLineNonValidEdgels[i].center_angle << endl;
-      stream << "  End = " << scanLineNonValidEdgels[i].end << " angle = " << scanLineNonValidEdgels[i].end_angle << endl;
-      stream << "  ScanLine = " << scanLineNonValidEdgels[i].ScanLineID << " run = " << scanLineNonValidEdgels[i].runID << endl;
+      stream << "Edgel " << i << endl;
+      stream << "  Begin = " << scanLineEdgels[i].begin << " angle = " << scanLineEdgels[i].begin_angle << endl;
+      stream << "  Center = " << scanLineEdgels[i].center << " angle = " << scanLineEdgels[i].center_angle << endl;
+      stream << "  End = " << scanLineEdgels[i].end << " angle = " << scanLineEdgels[i].end_angle << endl;
+      stream << "  ScanLine = " << scanLineEdgels[i].ScanLineID << " run = " << scanLineEdgels[i].runID << endl;
+      stream << "  is valid = " << (scanLineEdgels[i].valid ? "true" : "false") << endl;
     }
   }//end print
 };
