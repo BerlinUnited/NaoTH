@@ -1,5 +1,9 @@
 #include "Representations/Infrastructure/UltraSoundData.h"
 
+#include "Messages/Representations.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
+
 using namespace naoth;
 
 UltraSoundData::UltraSoundData()
@@ -45,6 +49,48 @@ UltraSoundReceiveData::~UltraSoundReceiveData()
 {
 
 }
+
+
+
+void Serializer<UltraSoundReceiveData>::deserialize(std::istream& stream, UltraSoundReceiveData& representation)
+{
+  naothmessages::UltraSoundReceiveData message;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  message.ParseFromZeroCopyStream(&buf);
+
+  representation.ultraSoundTimeStep = message.ultrasoundtimestep();
+  representation.rawdata = message.rawdata();
+
+  ASSERT(message.dataleft_size() == message.dataright_size());
+
+  for(int i = 0; i < message.dataleft_size(); i++)
+  {
+    representation.dataLeft[i] = message.dataleft(i);
+    representation.dataRight[i] = message.dataright(i);
+  }//end for
+}//end deserialize
+
+
+void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& representation, std::ostream& stream)
+{
+  naothmessages::UltraSoundReceiveData message;
+  
+  message.set_ultrasoundtimestep(representation.ultraSoundTimeStep);
+  message.set_rawdata(representation.rawdata);
+
+  for(int i = 0; i < representation.numOfIRSend; i++)
+  {
+    message.add_dataleft(representation.dataLeft[i]);
+    message.add_dataright(representation.dataRight[i]);
+  }//end for
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  message.SerializePartialToZeroCopyStream(&buf);
+}//end serialize
+
+
+
+
 
 UltraSoundSendData::UltraSoundSendData()
 {

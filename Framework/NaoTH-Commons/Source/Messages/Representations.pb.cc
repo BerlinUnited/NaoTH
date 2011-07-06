@@ -30,6 +30,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* SensorJointData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   SensorJointData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* UltraSoundReceiveData_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  UltraSoundReceiveData_reflection_ = NULL;
 const ::google::protobuf::Descriptor* CameraMatrix_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CameraMatrix_reflection_ = NULL;
@@ -167,7 +170,25 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SensorJointData));
-  CameraMatrix_descriptor_ = file->message_type(4);
+  UltraSoundReceiveData_descriptor_ = file->message_type(4);
+  static const int UltraSoundReceiveData_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, ultrasoundtimestep_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, rawdata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, dataleft_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, dataright_),
+  };
+  UltraSoundReceiveData_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      UltraSoundReceiveData_descriptor_,
+      UltraSoundReceiveData::default_instance_,
+      UltraSoundReceiveData_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(UltraSoundReceiveData));
+  CameraMatrix_descriptor_ = file->message_type(5);
   static const int CameraMatrix_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrix, pose_),
   };
@@ -182,7 +203,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraMatrix));
-  FrameInfo_descriptor_ = file->message_type(5);
+  FrameInfo_descriptor_ = file->message_type(6);
   static const int FrameInfo_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, framenumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, time_),
@@ -198,7 +219,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FrameInfo));
-  BallPercept_descriptor_ = file->message_type(6);
+  BallPercept_descriptor_ = file->message_type(7);
   static const int BallPercept_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallPercept, ballwasseen_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallPercept, centerinimage_),
@@ -218,7 +239,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BallPercept));
-  GoalPercept_descriptor_ = file->message_type(7);
+  GoalPercept_descriptor_ = file->message_type(8);
   static const int GoalPercept_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GoalPercept, angletoseengoal_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GoalPercept, goalcentroid_),
@@ -236,7 +257,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GoalPercept));
-  HeadMotionRequest_descriptor_ = file->message_type(8);
+  HeadMotionRequest_descriptor_ = file->message_type(9);
   static const int HeadMotionRequest_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, cameraid_),
@@ -259,7 +280,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(HeadMotionRequest));
-  StepControlRequest_descriptor_ = file->message_type(9);
+  StepControlRequest_descriptor_ = file->message_type(10);
   static const int StepControlRequest_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, stepid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, moveleftfoot_),
@@ -278,7 +299,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StepControlRequest));
-  WalkRequest_descriptor_ = file->message_type(10);
+  WalkRequest_descriptor_ = file->message_type(11);
   static const int WalkRequest_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, coordinate_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, character_),
@@ -297,7 +318,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(WalkRequest));
-  KickRequest_descriptor_ = file->message_type(11);
+  KickRequest_descriptor_ = file->message_type(12);
   static const int KickRequest_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickpoint_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickdirection_),
@@ -315,7 +336,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(KickRequest));
-  MotionRequest_descriptor_ = file->message_type(12);
+  MotionRequest_descriptor_ = file->message_type(13);
   static const int MotionRequest_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, time_),
@@ -336,7 +357,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionRequest));
-  LinePercept_descriptor_ = file->message_type(13);
+  LinePercept_descriptor_ = file->message_type(14);
   static const int LinePercept_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, lines_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, intersections_),
@@ -353,7 +374,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LinePercept));
-  FSRData_descriptor_ = file->message_type(14);
+  FSRData_descriptor_ = file->message_type(15);
   static const int FSRData_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, force_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, data_),
@@ -370,7 +391,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
-  StepControlStatus_descriptor_ = file->message_type(15);
+  StepControlStatus_descriptor_ = file->message_type(16);
   static const int StepControlStatus_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, stepid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, moveablefoot_),
@@ -386,7 +407,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StepControlStatus));
-  MotionStatus_descriptor_ = file->message_type(16);
+  MotionStatus_descriptor_ = file->message_type(17);
   static const int MotionStatus_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
@@ -409,7 +430,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionStatus));
-  OdometryData_descriptor_ = file->message_type(17);
+  OdometryData_descriptor_ = file->message_type(18);
   static const int OdometryData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, pose_),
   };
@@ -424,7 +445,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OdometryData));
-  CalibrationData_descriptor_ = file->message_type(18);
+  CalibrationData_descriptor_ = file->message_type(19);
   static const int CalibrationData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, inertialsensoroffset_),
   };
@@ -459,6 +480,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     JointData_descriptor_, &JointData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     SensorJointData_descriptor_, &SensorJointData::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    UltraSoundReceiveData_descriptor_, &UltraSoundReceiveData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CameraMatrix_descriptor_, &CameraMatrix::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -502,6 +525,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete JointData_reflection_;
   delete SensorJointData::default_instance_;
   delete SensorJointData_reflection_;
+  delete UltraSoundReceiveData::default_instance_;
+  delete UltraSoundReceiveData_reflection_;
   delete CameraMatrix::default_instance_;
   delete CameraMatrix_reflection_;
   delete FrameInfo::default_instance_;
@@ -561,73 +586,77 @@ void protobuf_AddDesc_Representations_2eproto() {
     "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso"
     "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
     "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
-    "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n"
-    "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr"
-    "ameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002"
-    "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022"
-    "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D"
-    "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb"
-    "allColor\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031"
-    "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm"
-    "essages.DoubleVector2\022:\n\030frameInfoWhenBa"
-    "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf"
-    "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001"
-    "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages"
-    ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001("
-    "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost"
-    "\"\240\003\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca"
-    "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001("
-    "\0132\034.naothmessages.DoubleVector2\0228\n\022targe"
-    "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub"
-    "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013"
-    "2\034.naothmessages.DoubleVector3\0222\n\014search"
-    "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto"
-    "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
-    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n"
-    "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes"
-    "sages.DoubleVector2\"\207\001\n\022StepControlReque"
-    "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010"
-    "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022"
-    "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001"
-    "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha"
-    "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess"
-    "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth"
-    "messages.StepControlRequest\022%\n\006offset\030\005 "
-    "\002(\0132\025.naothmessages.Pose2D\"{\n\013KickReques"
-    "t\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Dou"
-    "bleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kic"
-    "kFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMoti"
-    "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f"
-    "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth"
-    "messages.WalkRequest\022\026\n\016starndardStand\030\005"
-    " \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessage"
-    "s.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013L"
-    "inePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessage"
-    "s.FieldLineSegment\0222\n\rintersections\030\002 \003("
-    "\0132\033.naothmessages.Intersection\0228\n\022middle"
-    "CircleCenter\030\003 \001(\0132\034.naothmessages.Doubl"
-    "eVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004da"
-    "ta\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlSt"
-    "atus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002"
-    "(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlas"
-    "tMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\n"
-    "headMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005"
-    " \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.na"
-    "othmessages.Pose2D\0225\n\026plannedMotionRight"
-    "Foot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pla"
-    "nnedMotionHip\030\010 \002(\0132\025.naothmessages.Pose"
-    "2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothmes"
-    "sages.StepControlStatus\"3\n\014OdometryData\022"
-    "#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017"
-    "CalibrationData\022:\n\024inertialSensorOffset\030"
-    "\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'d"
-    "e.hu_berlin.informatik.ki.nao.messages", 3198);
+    "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei"
+    "veData\022\032\n\022ultraSoundTimeStep\030\001 \002(\r\022\017\n\007ra"
+    "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig"
+    "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025"
+    ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr"
+    "ameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPe"
+    "rcept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInIm"
+    "age\030\002 \001(\0132\034.naothmessages.DoubleVector2\022"
+    "\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001("
+    "\0162\024.naothmessages.Color\022\?\n\031bearingBasedO"
+    "ffsetOnField\030\005 \001(\0132\034.naothmessages.Doubl"
+    "eVector2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001"
+    "(\0132\030.naothmessages.FrameInfo\"\234\001\n\013GoalPer"
+    "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen"
+    "troid\030\002 \001(\0132\034.naothmessages.DoubleVector"
+    "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003"
+    "(\0132\027.naothmessages.GoalPost\"\240\003\n\021HeadMoti"
+    "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022"
+    "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess"
+    "ages.DoubleVector2\0228\n\022targetPointInImage"
+    "\030\004 \001(\0132\034.naothmessages.DoubleVector2\022;\n\025"
+    "targetPointInTheWorld\030\005 \001(\0132\034.naothmessa"
+    "ges.DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132"
+    "\034.naothmessages.DoubleVector3\0220\n\nsearchS"
+    "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022"
+    "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO"
+    "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV"
+    "ector2\"\207\001\n\022StepControlRequest\022\016\n\006stepID\030"
+    "\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022%\n\006target\030\003 "
+    "\002(\0132\025.naothmessages.Pose2D\022\014\n\004time\030\004 \002(\r"
+    "\022\026\n\016speedDirection\030\005 \002(\001\"\272\001\n\013WalkRequest"
+    "\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022"
+    "%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\0226"
+    "\n\013stepControl\030\004 \001(\0132!.naothmessages.Step"
+    "ControlRequest\022%\n\006offset\030\005 \002(\0132\025.naothme"
+    "ssages.Pose2D\"{\n\013KickRequest\022/\n\tkickPoin"
+    "t\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\025\n"
+    "\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022"
+    "\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002"
+    "id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/"
+    "\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Walk"
+    "Request\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickR"
+    "equest\030\006 \001(\0132\032.naothmessages.KickRequest"
+    "\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n"
+    "\005lines\030\001 \003(\0132\037.naothmessages.FieldLineSe"
+    "gment\0222\n\rintersections\030\002 \003(\0132\033.naothmess"
+    "ages.Intersection\0228\n\022middleCircleCenter\030"
+    "\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n\007F"
+    "SRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005v"
+    "alid\030\003 \003(\010\"9\n\021StepControlStatus\022\016\n\006stepI"
+    "D\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n\014Motion"
+    "Status\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r"
+    "\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 "
+    "\002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plann"
+    "edMotionLeftFoot\030\006 \002(\0132\025.naothmessages.P"
+    "ose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025."
+    "naothmessages.Pose2D\022/\n\020plannedMotionHip"
+    "\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021stepCon"
+    "trolStatus\030\t \001(\0132 .naothmessages.StepCon"
+    "trolStatus\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\013"
+    "2\025.naothmessages.Pose2D\"M\n\017CalibrationDa"
+    "ta\022:\n\024inertialSensorOffset\030\001 \001(\0132\034.naoth"
+    "messages.DoubleVector2B)\n\'de.hu_berlin.i"
+    "nformatik.ki.nao.messages", 3305);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
   CameraInfo::default_instance_ = new CameraInfo();
   JointData::default_instance_ = new JointData();
   SensorJointData::default_instance_ = new SensorJointData();
+  UltraSoundReceiveData::default_instance_ = new UltraSoundReceiveData();
   CameraMatrix::default_instance_ = new CameraMatrix();
   FrameInfo::default_instance_ = new FrameInfo();
   BallPercept::default_instance_ = new BallPercept();
@@ -647,6 +676,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   CameraInfo::default_instance_->InitAsDefaultInstance();
   JointData::default_instance_->InitAsDefaultInstance();
   SensorJointData::default_instance_->InitAsDefaultInstance();
+  UltraSoundReceiveData::default_instance_->InitAsDefaultInstance();
   CameraMatrix::default_instance_->InitAsDefaultInstance();
   FrameInfo::default_instance_->InitAsDefaultInstance();
   BallPercept::default_instance_->InitAsDefaultInstance();
@@ -2411,6 +2441,342 @@ void SensorJointData::Swap(SensorJointData* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = SensorJointData_descriptor_;
   metadata.reflection = SensorJointData_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int UltraSoundReceiveData::kUltraSoundTimeStepFieldNumber;
+const int UltraSoundReceiveData::kRawdataFieldNumber;
+const int UltraSoundReceiveData::kDataLeftFieldNumber;
+const int UltraSoundReceiveData::kDataRightFieldNumber;
+#endif  // !_MSC_VER
+
+UltraSoundReceiveData::UltraSoundReceiveData()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void UltraSoundReceiveData::InitAsDefaultInstance() {
+}
+
+UltraSoundReceiveData::UltraSoundReceiveData(const UltraSoundReceiveData& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void UltraSoundReceiveData::SharedCtor() {
+  _cached_size_ = 0;
+  ultrasoundtimestep_ = 0u;
+  rawdata_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+UltraSoundReceiveData::~UltraSoundReceiveData() {
+  SharedDtor();
+}
+
+void UltraSoundReceiveData::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void UltraSoundReceiveData::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* UltraSoundReceiveData::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return UltraSoundReceiveData_descriptor_;
+}
+
+const UltraSoundReceiveData& UltraSoundReceiveData::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+UltraSoundReceiveData* UltraSoundReceiveData::default_instance_ = NULL;
+
+UltraSoundReceiveData* UltraSoundReceiveData::New() const {
+  return new UltraSoundReceiveData;
+}
+
+void UltraSoundReceiveData::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    ultrasoundtimestep_ = 0u;
+    rawdata_ = 0;
+  }
+  dataleft_.Clear();
+  dataright_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool UltraSoundReceiveData::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint32 ultraSoundTimeStep = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &ultrasoundtimestep_)));
+          set_has_ultrasoundtimestep();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(17)) goto parse_rawdata;
+        break;
+      }
+      
+      // required double rawdata = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_rawdata:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &rawdata_)));
+          set_has_rawdata();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_dataLeft;
+        break;
+      }
+      
+      // repeated double dataLeft = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_dataLeft:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 25, input, this->mutable_dataleft())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, this->mutable_dataleft())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_dataLeft;
+        if (input->ExpectTag(33)) goto parse_dataRight;
+        break;
+      }
+      
+      // repeated double dataRight = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_dataRight:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 33, input, this->mutable_dataright())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, this->mutable_dataright())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(33)) goto parse_dataRight;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void UltraSoundReceiveData::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required uint32 ultraSoundTimeStep = 1;
+  if (has_ultrasoundtimestep()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->ultrasoundtimestep(), output);
+  }
+  
+  // required double rawdata = 2;
+  if (has_rawdata()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->rawdata(), output);
+  }
+  
+  // repeated double dataLeft = 3;
+  for (int i = 0; i < this->dataleft_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(
+      3, this->dataleft(i), output);
+  }
+  
+  // repeated double dataRight = 4;
+  for (int i = 0; i < this->dataright_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(
+      4, this->dataright(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* UltraSoundReceiveData::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required uint32 ultraSoundTimeStep = 1;
+  if (has_ultrasoundtimestep()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->ultrasoundtimestep(), target);
+  }
+  
+  // required double rawdata = 2;
+  if (has_rawdata()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->rawdata(), target);
+  }
+  
+  // repeated double dataLeft = 3;
+  for (int i = 0; i < this->dataleft_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteDoubleToArray(3, this->dataleft(i), target);
+  }
+  
+  // repeated double dataRight = 4;
+  for (int i = 0; i < this->dataright_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteDoubleToArray(4, this->dataright(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int UltraSoundReceiveData::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required uint32 ultraSoundTimeStep = 1;
+    if (has_ultrasoundtimestep()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->ultrasoundtimestep());
+    }
+    
+    // required double rawdata = 2;
+    if (has_rawdata()) {
+      total_size += 1 + 8;
+    }
+    
+  }
+  // repeated double dataLeft = 3;
+  {
+    int data_size = 0;
+    data_size = 8 * this->dataleft_size();
+    total_size += 1 * this->dataleft_size() + data_size;
+  }
+  
+  // repeated double dataRight = 4;
+  {
+    int data_size = 0;
+    data_size = 8 * this->dataright_size();
+    total_size += 1 * this->dataright_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void UltraSoundReceiveData::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const UltraSoundReceiveData* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const UltraSoundReceiveData*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void UltraSoundReceiveData::MergeFrom(const UltraSoundReceiveData& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  dataleft_.MergeFrom(from.dataleft_);
+  dataright_.MergeFrom(from.dataright_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_ultrasoundtimestep()) {
+      set_ultrasoundtimestep(from.ultrasoundtimestep());
+    }
+    if (from.has_rawdata()) {
+      set_rawdata(from.rawdata());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void UltraSoundReceiveData::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void UltraSoundReceiveData::CopyFrom(const UltraSoundReceiveData& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool UltraSoundReceiveData::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  return true;
+}
+
+void UltraSoundReceiveData::Swap(UltraSoundReceiveData* other) {
+  if (other != this) {
+    std::swap(ultrasoundtimestep_, other->ultrasoundtimestep_);
+    std::swap(rawdata_, other->rawdata_);
+    dataleft_.Swap(&other->dataleft_);
+    dataright_.Swap(&other->dataright_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata UltraSoundReceiveData::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = UltraSoundReceiveData_descriptor_;
+  metadata.reflection = UltraSoundReceiveData_reflection_;
   return metadata;
 }
 
