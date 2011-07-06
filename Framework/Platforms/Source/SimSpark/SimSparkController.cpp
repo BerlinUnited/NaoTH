@@ -383,8 +383,15 @@ void SimSparkController::act()
 {
   // send command
   g_mutex_lock(theActDataMutex);
-  theSocket << theActData.str() << theSync << send;
-  theActData.str("");
+  try{
+    theSocket << theActData.str() << theSync << send;
+    theActData.str("");
+  }
+  catch(std::runtime_error& exp)
+  {
+    cerr<<"can not send data to server, because of "<<exp.what()<<endl;
+  }
+
   g_mutex_unlock(theActDataMutex);
 }
 
@@ -421,10 +428,13 @@ void SimSparkController::getMotionInput()
 void SimSparkController::setMotionOutput()
 {
   PlatformInterface<SimSparkController>::setMotionOutput();
+
+  g_mutex_lock(theActDataMutex);
   say();
   autoBeam();
   jointControl();
   theActData << theSync;
+  g_mutex_unlock(theActDataMutex);
 }
 
 void SimSparkController::getCognitionInput()
