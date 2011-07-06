@@ -248,7 +248,7 @@ fi
 ####################################
 echo "Removing needless services..."
 
-FILES="openntpd avahi-daemon lighttpd connman vsftpd udhcpc logread boot-progress checkpart rmnologin naopathe nao.fcgi"
+FILES="naoth openntpd avahi-daemon lighttpd connman vsftpd udhcpc logread boot-progress checkpart rmnologin naopathe nao.fcgi"
 #getty 
 
 for R in $ALLRC; do

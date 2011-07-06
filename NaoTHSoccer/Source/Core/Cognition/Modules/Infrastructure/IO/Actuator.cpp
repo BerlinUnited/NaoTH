@@ -41,6 +41,7 @@ void Actuator::execute()
   // data to motion
   stringstream hmmsg;
   Serializer<HeadMotionRequest>::serialize(getHeadMotionRequest(), hmmsg);
+  GT_TRACE("Actuator:execute():writing theHeadMotionRequest");
   theHeadMotionRequestWriter->write(hmmsg.str());
   
 
@@ -49,5 +50,8 @@ void Actuator::execute()
 
   stringstream mrmsg;
   Serializer<MotionRequest>::serialize(getMotionRequest(), mrmsg);
+  GT_TRACE("Actuator:execute():writing theMotionRequest");
   theMotionRequestWriter->write(mrmsg.str());
+
+  GT_TRACE("Actuator:execute() end");
 }//end execute

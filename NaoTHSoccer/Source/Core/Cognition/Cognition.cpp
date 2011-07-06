@@ -227,6 +227,8 @@ void Cognition::call()
 
   STOPWATCH_START("CognitionExecute");
 
+
+  GT_TRACE("beginning to iterate over all modules");
   // execute all modules
   list<string>::const_iterator iter;
   for (iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
@@ -236,14 +238,17 @@ void Cognition::call()
     if (module != NULL && module->isEnabled())
     {
       std::string name(*iter);
-      //g_debug("executing %s", name.c_str());
+
+      stringstream s;
+      s << "executing " << name;
+      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
       STOPWATCH_START_GENERIC(name);
       module->execute();
       STOPWATCH_START_GENERIC(name);
     }//end if
   }//end for all modules
   
-
+  G_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 
