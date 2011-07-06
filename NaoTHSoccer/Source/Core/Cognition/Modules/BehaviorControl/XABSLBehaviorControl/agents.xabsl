@@ -51,7 +51,7 @@ include "Options/Skills/go_to_point.xabsl";
 include "Options/Skills/go_to_point_facing_opp_goal.xabsl";
 include "Options/Skills/go_to_point_stop_on_obstacle.xabsl";
 include "Options/Skills/go_to_point_with_lokalize.xabsl";
-include "Options/Skills/recover_from_penalty.xabsl";
+include "Options/Skills/after_penalized_state.xabsl";
 include "Options/Skills/dribble.xabsl";
 include "Options/Skills/dribble_spl.xabsl";
 include "Options/Skills/kick_to.xabsl";
@@ -109,6 +109,8 @@ include "Options/Soccer/Strategy/SPL_Strategy/play_with_check_fall_down.xabsl";
 include "Options/Soccer/Strategy/SPL_Strategy/initial_ready_set_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/SPL_Strategy/decide_ready_position.xabsl";
+include "Options/Soccer/Strategy/SPL_Strategy/decide_offence_position.xabsl";
+include "Options/Soccer/Strategy/SPL_Strategy/decide_defence_position.xabsl";
 include "Options/Soccer/Strategy/SPL_Strategy/goto_ready_position.xabsl";
 
 // Simulation 3D Set Pieces
