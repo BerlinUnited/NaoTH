@@ -14,6 +14,7 @@
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include <Tools/Debug/Stopwatch.h>
+#include <Tools/Debug/Trace.h>
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/NaoTime.h"
 
@@ -248,7 +249,7 @@ void Cognition::call()
     }//end if
   }//end for all modules
   
-  G_TRACE("end module iteration");
+  GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 
