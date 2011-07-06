@@ -9,6 +9,8 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/TeamMessage.h"
+#include "Representations/Modeling/BodyState.h"
+#include "Representations/Motion/MotionStatus.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(FrameInfo)
@@ -16,6 +18,8 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(RobotInfo)
   REQUIRE(RobotPose)
   REQUIRE(BallModel)
+  REQUIRE(BodyState)
+  REQUIRE(MotionStatus)
 
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
