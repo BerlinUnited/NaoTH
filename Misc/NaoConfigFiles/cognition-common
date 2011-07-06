@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd /home/nao/naoqi/
+/home/nao/bin/naoth &
+echo "$!" > /tmp/cognition.pid
+

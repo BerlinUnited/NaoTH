@@ -1,20 +1,48 @@
 #!/bin/bash
 
+PID="/tmp/cognition.pid"
+
 case "$1" in
   start)
+    if [ -f "$PID" ]; then
+      OLDPID=`cat /tmp/cognition.pid`
+      echo "old pid is $OLDPID"
+      kill -0 $OLDPID
+      if [ "$?" -eq 0 ]; then
+        echo "NaoTH cognition already started, use stop first"
+        exit 1
+      else
+        echo "removing stalled $PID"
+        rm "$PID"
+      fi
+    fi
+
     echo "starting naoth cognition process"
+    cd /home/nao/naoqi/
+
     if [ nao = `whoami` ]; then
-      cd /home/nao/naoqi/ && (nohup /home/nao/bin/naoth 2>&1 | logger &)
+      nohup /etc/init.d/cognition-common 2>&1 | logger &
     else
-      su -c 'cd /home/nao/naoqi/ && (nohup /home/nao/bin/naoth 2>&1 | logger &)' nao
+      su -c 'nohup /etc/init.d/cognition-common 2>&1 | logger &' nao
     fi
     ;;
   stop)
-    echo "killing all naoth cognition processes"
-    killall naoth
+    if [ ! -f "$PID" ]; then
+      echo "NaoTH Cognition not started"
+      exit 2
+    fi
+    OLDPID=`cat /tmp/cognition.pid`
+    echo "killing naoth cognition processes $OLDPID"
+    kill $OLDPID
+    rm $PID
+
+    ;;
+  restart)
+    $0 stop
+    $0 start
     ;;
   *)
-    echo "Usage: /etc/init.d/naoqi {start|stop}"
+    echo "Usage: /etc/init.d/naoqi {start|stop|restart}"
     exit 1
     ;;
 

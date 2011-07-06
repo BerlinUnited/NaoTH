@@ -109,8 +109,6 @@ private:
   static double getCameraBufferFailedCount();
   bool resetingCamera;
   bool isCameraReseting;
-  void resetCamera(bool b);
-
   static double getInertialSensorX();
   static double getInertialSensorY();
 };

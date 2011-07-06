@@ -84,8 +84,6 @@ void SensorSymbols::execute()
     forceGetCameraSettingsOldValue = false;
   }
   */
-
-  resetCamera(resetingCamera);
 }//end update
 
 double SensorSymbols::getIRButtonNumber()
@@ -154,30 +152,12 @@ double SensorSymbols::getCameraBufferFailedCount()
   return (theInstance->image.possibleImageStuck)?1:0;
 }
 
-void SensorSymbols::resetCamera(bool b)
+double SensorSymbols::getInertialSensorX()
 {
-  if (isCameraReseting != b)
-  {
-    stringstream answer;
-    map<string, string> args;
-    if (b)
-    {
-      args["on"] = "";
-    } else
-    {
-      args["off"] = "";
-    }
-    DebugRequest::getInstance().executeDebugCommand("V4lCameraHandler:reset_camera", args, answer);
-    isCameraReseting = b;
-  }
+  return Math::toDegrees(theInstance->inertialSensorData.data.x);
 }
 
-  double SensorSymbols::getInertialSensorX()
-  {
-    return Math::toDegrees(theInstance->inertialSensorData.data.x);
-  }
-
-  double SensorSymbols::getInertialSensorY()
-  {
-    return Math::toDegrees(theInstance->inertialSensorData.data.y);
-  }
+double SensorSymbols::getInertialSensorY()
+{
+  return Math::toDegrees(theInstance->inertialSensorData.data.y);
+}

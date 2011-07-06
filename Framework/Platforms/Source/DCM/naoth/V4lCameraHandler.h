@@ -71,19 +71,15 @@ public:
 
   virtual ~V4lCameraHandler();
 
-  void resetCamera(Image& theImage);
-  void resetCamera2BlockingMode(Image& theImage);
-  void resetCamera2NonBlockingMode(Image& theImage);
-
-
 private:
 
   int xioctl(int fd, int request, void* arg);
   bool hasIOError(int errOccured, int errNo, bool exitByIOError);
   void initIDMapping();
-  void fastCameraSelection(CameraInfo::CameraID camId);
+  void initialCameraSelection(CameraInfo::CameraID camId);
   void openDevice(bool blockingMode);
   void initDevice();
+  void initI2C();
   void initMMap();
   void initUP(unsigned int buffer_size);
   void initRead(unsigned int buffer_size);
@@ -122,6 +118,9 @@ private:
   /** The camera file descriptor */
   int fd;
 
+  /** The camera adapter file descriptor */
+  int fdAdapter;
+
   /** Image buffers (v4l2) */
   struct buffer* buffers;
   /** Buffer number counter */
@@ -144,7 +143,6 @@ private:
   CameraInfo::CameraID currentCamera;
 
   unsigned int noBufferChangeCount;
-  unsigned int resetCameraCount;
 
 };
 

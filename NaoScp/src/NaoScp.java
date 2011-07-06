@@ -1873,7 +1873,10 @@ public class NaoScp extends javax.swing.JFrame
         {
           File localConfigFiles = new File(localConfigPath);
 
-          rmDirSftp(c, remoteRootPath(Number) + configPath());
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/general");
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/robots");
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/scheme");
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/private");
 
           // create if it is not existing
           String remooteConfigDst = remoteConfigPath;

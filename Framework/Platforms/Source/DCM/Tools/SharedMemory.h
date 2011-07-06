@@ -33,7 +33,7 @@ private:
     volatile bool swappingReady;
     
     T data[3]; // buffers, one for writing, on for reading, and one for swapping
-  };
+  }; // end class Memory
   
 public:
   SharedMemory()

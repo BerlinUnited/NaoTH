@@ -29,7 +29,8 @@ DEFAULT_WLAN_NET="192.168.13."
 DEFAULT_WLAN_SSID="NAONET"
 DEFAULT_WLAN_PASSWORD="a1b0a1b0a1"
 
-RC="rcS.d rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d"
+ALLRC="rcS.d rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d"
+RUNRC="rc5.d"
 
 # Getting Information and checking
 
@@ -188,7 +189,7 @@ rm $TMP_MOUNT_POINT/etc/wpa_supplicant.conf.backup
 echo "adding /etc/init.d/wpa_supplicant"
 cp -f $NAOTH_BZR/Misc/NaoConfigFiles/wpa_supplicant $TMP_MOUNT_POINT/etc/init.d/wpa_supplicant
 chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/wpa_supplicant
-for R in $RC; do
+for R in $RUNRC; do
     ln -sf ../init.d/wpa_supplicant $TMP_MOUNT_POINT/etc/$R/S99wpa_supplicant
 done
 
@@ -250,7 +251,7 @@ echo "Removing needless services..."
 FILES="openntpd avahi-daemon lighttpd connman vsftpd udhcpc logread boot-progress checkpart rmnologin naopathe nao.fcgi"
 #getty 
 
-for R in $RC; do
+for R in $ALLRC; do
   for F in $FILES; do
     rm -f $TMP_MOUNT_POINT/etc/$R/*$F*
   done
@@ -258,10 +259,14 @@ done
 
 ####################################
 
+echo "adding /etc/init.d/cognition-common"
+cp -f $NAOTH_BZR/Misc/NaoConfigFiles/cognition-common $TMP_MOUNT_POINT/etc/init.d/cognition-common
+chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/cognition-common
+
 echo "adding /etc/init.d/naoth"
 cp -f $NAOTH_BZR/Misc/NaoConfigFiles/naoth $TMP_MOUNT_POINT/etc/init.d/naoth
 chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/naoth
-for R in $RC; do
+for R in $RUNRC; do
     ln -sf ../init.d/naoth $TMP_MOUNT_POINT/etc/$R/S99naoth
 done
 
