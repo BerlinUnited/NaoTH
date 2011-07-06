@@ -148,7 +148,9 @@ protected:
 private:
   bool connect(const std::string& host, int port);
 
-  bool updateSensors();
+  bool getSensorData(std::string& data);
+
+  bool updateSensors(std::string& msg);
 
   int parseString(char* data, std::string& value);
   int parseInt(char* data, int& value);
@@ -192,6 +194,10 @@ public:
 
   void cognitionLoop();
 
+  void senseLoop();
+
+  void actLoop();
+
   virtual void getMotionInput();
 
   virtual void setMotionOutput();
@@ -200,6 +206,8 @@ public:
 
   virtual void setCognitionOutput();
 
+  virtual void callCognition();
+
 private:
   // members for threads
   GMutex*  theCognitionInputMutex;
@@ -207,6 +215,22 @@ private:
   GCond* theCognitionInputCond;
   double maxJointAbsSpeed;
   bool exiting;
+
+  //
+  unsigned int theLastActTime;
+  unsigned int theLastSenseTime;
+  unsigned int theNextActTime;
+  void calculateNextActTime();
+  GCond* theTimeCond;
+  GMutex* theTimeMutex;
+
+  std::string theSensorData;
+  GMutex* theSensorDataMutex;
+  GCond* theSensorDataCond;
+
+  GMutex*  theActDataMutex;
+  std::stringstream theActData;
+  void act();
 };
 
 #endif	/* _SIMSPARKCONTROLLER_H */
