@@ -33,6 +33,7 @@ void VisualObstacleLocator::execute()
   {
     //set initial time
     initialTime = getFrameInfo().getTime();
+    lastRobotOdometry = getOdometryData();
     onceExecuted = true;
   }
 
@@ -40,9 +41,9 @@ void VisualObstacleLocator::execute()
   currentTime = getFrameInfo().getTime();
 
   //get current odometry delta
-  //collect the odometry data
-  odometryDelta += (lastRobotOdometry - getOdometryData());
-  lastRobotOdometry = getOdometryData();
+  
+  //odometryDelta += (lastRobotOdometry - getOdometryData());
+  
 
   //just age the grid
   if ((currentTime - initialTime) >= 1000)
@@ -80,8 +81,10 @@ void VisualObstacleLocator::execute()
   //update the grid with odometry data
   if ((currentTime - initialTime) >= 1000)
   {
+    odometryDelta = lastRobotOdometry - getOdometryData();
     getRadarGrid().updateGrid(odometryDelta);
     initialTime = currentTime;
+    lastRobotOdometry = getOdometryData();
     odometryDelta.translation.x = 0;
     odometryDelta.translation.y = 0;
     odometryDelta.rotation = 0;
@@ -150,24 +153,25 @@ void VisualObstacleLocator::execute()
 
 void VisualObstacleLocator::updateByUltraSoundData()
 {
-  if(getUltraSoundReceiveData().rawdata <= maxValidDistance || getUltraSoundReceiveData().rawdata >= minValidDistance)
-    return; 
+  std::cout << getUltraSoundReceiveData().rawdata << endl;
+  if(getUltraSoundReceiveData().rawdata <= maxValidDistance && getUltraSoundReceiveData().rawdata >= minValidDistance)
+  {
+    double distance = getUltraSoundReceiveData().rawdata*1000;
+    Vector2d ultraSoundPoint1(distance, 0);
+    getRadarGrid().set(ultraSoundPoint1);
 
-  double distance = getUltraSoundReceiveData().rawdata;
-  Vector2d ultraSoundPoint1(distance, 0);
-  getRadarGrid().set(ultraSoundPoint1);
+    Vector2d ultraSoundPoint2(distance*cos(usOpeningAngle/2), ultraSoundPoint1.y + distance*tan(usOpeningAngle/2));
+    getRadarGrid().set(ultraSoundPoint2);
 
-  Vector2d ultraSoundPoint2(ultraSoundPoint1.x + distance*cos(usOpeningAngle), ultraSoundPoint1.y + distance*tan(usOpeningAngle));
-  getRadarGrid().set(ultraSoundPoint2);
+    Vector2d ultraSoundPoint3(distance*cos(usOpeningAngle/2), ultraSoundPoint1.y - distance*tan(usOpeningAngle/2));
+    getRadarGrid().set(ultraSoundPoint3);
 
-  Vector2d ultraSoundPoint3(ultraSoundPoint1.x + distance*cos(usOpeningAngle), ultraSoundPoint1.y - distance*tan(usOpeningAngle));
-  getRadarGrid().set(ultraSoundPoint3);
-
-  DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawUltraSoundData",
-    FIELD_DRAWING_CONTEXT;
+    DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawUltraSoundData",
+      FIELD_DRAWING_CONTEXT;
     PEN("fbfb00", 2);
     LINE(0,0, ultraSoundPoint1.x, ultraSoundPoint1.y);
     LINE(0,0, ultraSoundPoint2.x, ultraSoundPoint3.y);
     LINE(0,0, ultraSoundPoint3.x, ultraSoundPoint3.y);
-  );
+    );
+  }
 }
