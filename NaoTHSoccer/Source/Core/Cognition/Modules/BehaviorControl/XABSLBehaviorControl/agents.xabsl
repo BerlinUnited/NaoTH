@@ -48,6 +48,7 @@ include "Options/Skills/stand_up.xabsl";
 include "Options/Skills/turn_to_goal.xabsl";
 include "Options/Skills/find_goal.xabsl";
 include "Options/Skills/go_to_point.xabsl";
+include "Options/Skills/go_to_point_and_facing_to.xabsl";
 include "Options/Skills/go_to_point_facing_opp_goal.xabsl";
 include "Options/Skills/go_to_point_stop_on_obstacle.xabsl";
 include "Options/Skills/go_to_point_with_lokalize.xabsl";

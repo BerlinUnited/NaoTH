@@ -3,11 +3,28 @@ option go_to_strategy_position {
 
   initial target state go_to_strategy_position {
     decision {
-      stay;
+      if ( ball.distance < 2500 )
+        goto go_to_strategy_position_and_face_ball;
+      else
+        stay;
     }
     action {
-      // go to formation position and face to ball
+      // go to formation position and face to ball in final state
       go_to_point(x=soccer_strategy.formation.x, y=soccer_strategy.formation.y,
+        rot=atan2(y=ball.position.field.y-robot_pose.planned.y, x=ball.position.field.x-robot_pose.planned.x));
+    }
+  }
+
+  state go_to_strategy_position_and_face_ball {
+    decision {
+      if ( ball.distance > 3000 )
+        goto go_to_strategy_position;
+      else
+        stay;
+    }
+    action {
+      // go to formation position and face to ball all the time
+      go_to_point_and_facing_to(x=soccer_strategy.formation.x, y=soccer_strategy.formation.y,
         rot=atan2(y=ball.position.field.y-robot_pose.planned.y, x=ball.position.field.x-robot_pose.planned.x));
     }
   }
