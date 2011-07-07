@@ -56,12 +56,12 @@ solution "NaoTHSoccer"
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
-    flags { "Symbols", "FatalWarnings" }
+    flags { "Symbols" }
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "Symbols", "FatalWarnings" }
-      
+    flags { "Optimize", "Symbols" }
+         
   configuration{"Native"}
     includedirs {
       "../../Extern/include/",

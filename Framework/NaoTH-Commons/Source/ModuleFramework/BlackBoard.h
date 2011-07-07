@@ -147,7 +147,7 @@ public:
       std::cerr << "Representation not existing: " 
                 << name << " of type " << typeid(T).name() 
                 << "is not registred and cannot be created." << std::endl;
-      ASSERT(false);
+      assert(false);
     }//end if
 
 
@@ -162,7 +162,7 @@ public:
       std::cerr << "Representation type mismatch: " 
                 << name << " is registered as " << data->getTypeName() 
                 << ", but " << typeid(T).name() << " is requested." << std::endl;
-      ASSERT(false);
+      assert(false);
     }//end if
 
     return **typedData;

@@ -48,13 +48,13 @@ protected:
 
   BlackBoard& getBlackBoard()
   {
-    ASSERT(theBlackBoard != NULL);
+    assert(theBlackBoard != NULL);
     return *theBlackBoard;
   }
 
   const BlackBoard& getBlackBoard() const
   {
-    ASSERT(theBlackBoard != NULL);
+    assert(theBlackBoard != NULL);
     return *theBlackBoard;
   }
 };
