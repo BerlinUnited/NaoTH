@@ -23,13 +23,12 @@
 
 #include "Representations/Motion/Request/KickRequest.h"
 
-ReachibilityGrid* IKDynamicKickMotion::_basicReachibilityGrid = new ReachibilityGrid();
+ReachibilityGrid IKDynamicKickMotion::basicReachibilityGrid;
 
 IKDynamicKickMotion::IKDynamicKickMotion()
   :
   IKMotion(motion::kick),
   reachibilityGrid(basicReachibilityGrid),
-	basicReachibilityGrid(*_basicReachibilityGrid),
   theParameters(theEngine.getParameters().kick),
   numberOfPreKickSteps(0),
   theKickingFoot(KickRequest::right), // right foot by default

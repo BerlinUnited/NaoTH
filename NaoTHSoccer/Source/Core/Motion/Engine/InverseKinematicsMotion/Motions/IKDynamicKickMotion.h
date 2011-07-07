@@ -117,8 +117,7 @@ class IKDynamicKickMotion: public IKMotion
 private:
   // local transformated reachability grid
   // TODO: make it global?
-	static ReachibilityGrid* _basicReachibilityGrid;
-  ReachibilityGrid& basicReachibilityGrid;
+  static ReachibilityGrid basicReachibilityGrid;
   TransformedReachibilityGrid reachibilityGrid;
 
   const IKParameters::KickParameters& theParameters;
