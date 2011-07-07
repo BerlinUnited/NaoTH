@@ -126,7 +126,7 @@ StopwatchItem& Stopwatch::getStopwatchReference(const std::string& stopWatchName
 }//end getStopwatchReference
 
 
-void Stopwatch::dump()
+void Stopwatch::dump(std::string name)
 {
   stringstream outputStream;
   
@@ -146,5 +146,11 @@ void Stopwatch::dump()
   }//end while
 
   // write to file
-  SynchronizedFileWriter::saveStreamToFile(outputStream, string("Config/stopwatch.dump"));
+  std::stringstream s;
+  if(name != "")
+  {
+    s << name << ".";
+  }
+  s << "stopwatch.dump";
+  SynchronizedFileWriter::saveStreamToFile(outputStream, s.str());
 }//end dump

@@ -9,11 +9,12 @@
 #include "NaoMotionController.h"
 #include <PlatformInterface/Platform.h>
 #include "Tools/IPCData.h"
+#include <unistd.h>
 
 using namespace naoth;
 
 NaoMotionController::NaoMotionController()
-  : lastTimeChestButtonNotPressed(0), shutdownRequested(false)
+  : lastTimeChestButtonNotPressed(0), shutdownRequested(false), shutdownBlinker(true)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -84,19 +85,11 @@ void NaoMotionController::getMotionInput()
     }
     if((theFrameInfo.getTime() - lastTimeChestButtonNotPressed) > 3000)
     {
-            std::cout << "REQUEST SHUTDOWN" << std::endl;
-      if((*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::LeftFootLeft])
-         || (*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::LeftFootRight])
-         || (*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::RightFootLeft])
-         || (*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::RightFootRight]))
-      {
-        system("shutdown -r now");
-      }
-      else
-      {
-        system("shutdown -h now");
-      }
       shutdownRequested = true;
+
+      std::cerr << "request shutdown: halt" << std::endl;
+      system("shutdown -h now");
+
     }
   }
 }
@@ -121,10 +114,24 @@ void NaoMotionController::setMotionOutput()
 
   if(shutdownRequested)
   {
+    if(theFrameInfo.getFrameNumber() % 10 == 0)
+    {
+      shutdownBlinker = !shutdownBlinker;
+    }
+
     LEDData overrrideLEDData;
-    overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
-    overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
-    overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+    if(shutdownBlinker)
+    {
+      overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
+      overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
+      overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
+    }
+    else
+    {
+      overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::RED] = 0.2;
+      overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
+      overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 0.2;
+    }
     theDCMHandler.setLED(overrrideLEDData);
   }
 

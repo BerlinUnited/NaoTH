@@ -88,7 +88,7 @@ public:
   StopwatchItem& getStopwatchReference(const std::string& stopWatchName);
 
   /** */
-  void dump();
+  void dump(std::string name = "");
 
   std::map<std::string, StopwatchItem> stopwatches;
 };

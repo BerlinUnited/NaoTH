@@ -3148,6 +3148,627 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.SensorJointData)
   }
   
+  public interface UltraSoundReceiveDataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required uint32 ultraSoundTimeStep = 1;
+    boolean hasUltraSoundTimeStep();
+    int getUltraSoundTimeStep();
+    
+    // required double rawdata = 2;
+    boolean hasRawdata();
+    double getRawdata();
+    
+    // repeated double dataLeft = 3;
+    java.util.List<java.lang.Double> getDataLeftList();
+    int getDataLeftCount();
+    double getDataLeft(int index);
+    
+    // repeated double dataRight = 4;
+    java.util.List<java.lang.Double> getDataRightList();
+    int getDataRightCount();
+    double getDataRight(int index);
+  }
+  public static final class UltraSoundReceiveData extends
+      com.google.protobuf.GeneratedMessage
+      implements UltraSoundReceiveDataOrBuilder {
+    // Use UltraSoundReceiveData.newBuilder() to construct.
+    private UltraSoundReceiveData(Builder builder) {
+      super(builder);
+    }
+    private UltraSoundReceiveData(boolean noInit) {}
+    
+    private static final UltraSoundReceiveData defaultInstance;
+    public static UltraSoundReceiveData getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public UltraSoundReceiveData getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_UltraSoundReceiveData_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_UltraSoundReceiveData_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required uint32 ultraSoundTimeStep = 1;
+    public static final int ULTRASOUNDTIMESTEP_FIELD_NUMBER = 1;
+    private int ultraSoundTimeStep_;
+    public boolean hasUltraSoundTimeStep() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getUltraSoundTimeStep() {
+      return ultraSoundTimeStep_;
+    }
+    
+    // required double rawdata = 2;
+    public static final int RAWDATA_FIELD_NUMBER = 2;
+    private double rawdata_;
+    public boolean hasRawdata() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public double getRawdata() {
+      return rawdata_;
+    }
+    
+    // repeated double dataLeft = 3;
+    public static final int DATALEFT_FIELD_NUMBER = 3;
+    private java.util.List<java.lang.Double> dataLeft_;
+    public java.util.List<java.lang.Double>
+        getDataLeftList() {
+      return dataLeft_;
+    }
+    public int getDataLeftCount() {
+      return dataLeft_.size();
+    }
+    public double getDataLeft(int index) {
+      return dataLeft_.get(index);
+    }
+    
+    // repeated double dataRight = 4;
+    public static final int DATARIGHT_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.Double> dataRight_;
+    public java.util.List<java.lang.Double>
+        getDataRightList() {
+      return dataRight_;
+    }
+    public int getDataRightCount() {
+      return dataRight_.size();
+    }
+    public double getDataRight(int index) {
+      return dataRight_.get(index);
+    }
+    
+    private void initFields() {
+      ultraSoundTimeStep_ = 0;
+      rawdata_ = 0D;
+      dataLeft_ = java.util.Collections.emptyList();;
+      dataRight_ = java.util.Collections.emptyList();;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasUltraSoundTimeStep()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasRawdata()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, ultraSoundTimeStep_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, rawdata_);
+      }
+      for (int i = 0; i < dataLeft_.size(); i++) {
+        output.writeDouble(3, dataLeft_.get(i));
+      }
+      for (int i = 0; i < dataRight_.size(); i++) {
+        output.writeDouble(4, dataRight_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, ultraSoundTimeStep_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, rawdata_);
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getDataLeftList().size();
+        size += dataSize;
+        size += 1 * getDataLeftList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getDataRightList().size();
+        size += dataSize;
+        size += 1 * getDataRightList().size();
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_UltraSoundReceiveData_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_UltraSoundReceiveData_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        ultraSoundTimeStep_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        rawdata_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        dataLeft_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        dataRight_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.getDescriptor();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData getDefaultInstanceForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.getDefaultInstance();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData build() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData buildPartial() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData result = new de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.ultraSoundTimeStep_ = ultraSoundTimeStep_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.rawdata_ = rawdata_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          dataLeft_ = java.util.Collections.unmodifiableList(dataLeft_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.dataLeft_ = dataLeft_;
+        if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          dataRight_ = java.util.Collections.unmodifiableList(dataRight_);
+          bitField0_ = (bitField0_ & ~0x00000008);
+        }
+        result.dataRight_ = dataRight_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData) {
+          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData other) {
+        if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.getDefaultInstance()) return this;
+        if (other.hasUltraSoundTimeStep()) {
+          setUltraSoundTimeStep(other.getUltraSoundTimeStep());
+        }
+        if (other.hasRawdata()) {
+          setRawdata(other.getRawdata());
+        }
+        if (!other.dataLeft_.isEmpty()) {
+          if (dataLeft_.isEmpty()) {
+            dataLeft_ = other.dataLeft_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureDataLeftIsMutable();
+            dataLeft_.addAll(other.dataLeft_);
+          }
+          onChanged();
+        }
+        if (!other.dataRight_.isEmpty()) {
+          if (dataRight_.isEmpty()) {
+            dataRight_ = other.dataRight_;
+            bitField0_ = (bitField0_ & ~0x00000008);
+          } else {
+            ensureDataRightIsMutable();
+            dataRight_.addAll(other.dataRight_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasUltraSoundTimeStep()) {
+          
+          return false;
+        }
+        if (!hasRawdata()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              ultraSoundTimeStep_ = input.readUInt32();
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              rawdata_ = input.readDouble();
+              break;
+            }
+            case 25: {
+              ensureDataLeftIsMutable();
+              dataLeft_.add(input.readDouble());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addDataLeft(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 33: {
+              ensureDataRightIsMutable();
+              dataRight_.add(input.readDouble());
+              break;
+            }
+            case 34: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addDataRight(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required uint32 ultraSoundTimeStep = 1;
+      private int ultraSoundTimeStep_ ;
+      public boolean hasUltraSoundTimeStep() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getUltraSoundTimeStep() {
+        return ultraSoundTimeStep_;
+      }
+      public Builder setUltraSoundTimeStep(int value) {
+        bitField0_ |= 0x00000001;
+        ultraSoundTimeStep_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUltraSoundTimeStep() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        ultraSoundTimeStep_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required double rawdata = 2;
+      private double rawdata_ ;
+      public boolean hasRawdata() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public double getRawdata() {
+        return rawdata_;
+      }
+      public Builder setRawdata(double value) {
+        bitField0_ |= 0x00000002;
+        rawdata_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearRawdata() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        rawdata_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // repeated double dataLeft = 3;
+      private java.util.List<java.lang.Double> dataLeft_ = java.util.Collections.emptyList();;
+      private void ensureDataLeftIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          dataLeft_ = new java.util.ArrayList<java.lang.Double>(dataLeft_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getDataLeftList() {
+        return java.util.Collections.unmodifiableList(dataLeft_);
+      }
+      public int getDataLeftCount() {
+        return dataLeft_.size();
+      }
+      public double getDataLeft(int index) {
+        return dataLeft_.get(index);
+      }
+      public Builder setDataLeft(
+          int index, double value) {
+        ensureDataLeftIsMutable();
+        dataLeft_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addDataLeft(double value) {
+        ensureDataLeftIsMutable();
+        dataLeft_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllDataLeft(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        ensureDataLeftIsMutable();
+        super.addAll(values, dataLeft_);
+        onChanged();
+        return this;
+      }
+      public Builder clearDataLeft() {
+        dataLeft_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        onChanged();
+        return this;
+      }
+      
+      // repeated double dataRight = 4;
+      private java.util.List<java.lang.Double> dataRight_ = java.util.Collections.emptyList();;
+      private void ensureDataRightIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          dataRight_ = new java.util.ArrayList<java.lang.Double>(dataRight_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      public java.util.List<java.lang.Double>
+          getDataRightList() {
+        return java.util.Collections.unmodifiableList(dataRight_);
+      }
+      public int getDataRightCount() {
+        return dataRight_.size();
+      }
+      public double getDataRight(int index) {
+        return dataRight_.get(index);
+      }
+      public Builder setDataRight(
+          int index, double value) {
+        ensureDataRightIsMutable();
+        dataRight_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addDataRight(double value) {
+        ensureDataRightIsMutable();
+        dataRight_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllDataRight(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        ensureDataRightIsMutable();
+        super.addAll(values, dataRight_);
+        onChanged();
+        return this;
+      }
+      public Builder clearDataRight() {
+        dataRight_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.UltraSoundReceiveData)
+    }
+    
+    static {
+      defaultInstance = new UltraSoundReceiveData(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.UltraSoundReceiveData)
+  }
+  
   public interface CameraMatrixOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -14422,6 +15043,11 @@ public final class Representations {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_SensorJointData_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_UltraSoundReceiveData_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_UltraSoundReceiveData_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_CameraMatrix_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -14524,67 +15150,70 @@ public final class Representations {
       "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso" +
       "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
       "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
-      "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n",
-      "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr" +
-      "ameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002" +
-      "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022" +
-      "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D" +
-      "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb" +
-      "allColor\030\004 \001(\0162\024.naothmessages.Color\022?\n\031" +
-      "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm" +
-      "essages.DoubleVector2\022:\n\030frameInfoWhenBa" +
-      "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf" +
-      "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001",
-      "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages" +
-      ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(" +
-      "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost" +
-      "\"\240\003\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
-      "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(" +
-      "\0132\034.naothmessages.DoubleVector2\0228\n\022targe" +
-      "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub" +
-      "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013" +
-      "2\034.naothmessages.DoubleVector3\0222\n\014search" +
-      "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto",
-      "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D" +
-      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n" +
-      "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes" +
-      "sages.DoubleVector2\"\207\001\n\022StepControlReque" +
-      "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010" +
-      "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022" +
-      "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001" +
-      "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha" +
-      "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess" +
-      "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth",
-      "messages.StepControlRequest\022%\n\006offset\030\005 " +
-      "\002(\0132\025.naothmessages.Pose2D\"{\n\013KickReques" +
-      "t\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Dou" +
-      "bleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kic" +
-      "kFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMoti" +
-      "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f" +
-      "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth" +
-      "messages.WalkRequest\022\026\n\016starndardStand\030\005" +
-      " \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessage" +
-      "s.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013L",
-      "inePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessage" +
-      "s.FieldLineSegment\0222\n\rintersections\030\002 \003(" +
-      "\0132\033.naothmessages.Intersection\0228\n\022middle" +
-      "CircleCenter\030\003 \001(\0132\034.naothmessages.Doubl" +
-      "eVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004da" +
-      "ta\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlSt" +
-      "atus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002" +
-      "(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlas" +
-      "tMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\n" +
-      "headMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005",
-      " \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.na" +
-      "othmessages.Pose2D\0225\n\026plannedMotionRight" +
-      "Foot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pla" +
-      "nnedMotionHip\030\010 \002(\0132\025.naothmessages.Pose" +
-      "2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothmes" +
-      "sages.StepControlStatus\"3\n\014OdometryData\022" +
-      "#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017" +
-      "CalibrationData\022:\n\024inertialSensorOffset\030" +
-      "\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'d" +
-      "e.hu_berlin.informatik.ki.nao.messages"
+      "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei",
+      "veData\022\032\n\022ultraSoundTimeStep\030\001 \002(\r\022\017\n\007ra" +
+      "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig" +
+      "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025" +
+      ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr" +
+      "ameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPe" +
+      "rcept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInIm" +
+      "age\030\002 \001(\0132\034.naothmessages.DoubleVector2\022" +
+      "\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(" +
+      "\0162\024.naothmessages.Color\022?\n\031bearingBasedO" +
+      "ffsetOnField\030\005 \001(\0132\034.naothmessages.Doubl",
+      "eVector2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001" +
+      "(\0132\030.naothmessages.FrameInfo\"\234\001\n\013GoalPer" +
+      "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen" +
+      "troid\030\002 \001(\0132\034.naothmessages.DoubleVector" +
+      "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003" +
+      "(\0132\027.naothmessages.GoalPost\"\240\003\n\021HeadMoti" +
+      "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022" +
+      "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess" +
+      "ages.DoubleVector2\0228\n\022targetPointInImage" +
+      "\030\004 \001(\0132\034.naothmessages.DoubleVector2\022;\n\025",
+      "targetPointInTheWorld\030\005 \001(\0132\034.naothmessa" +
+      "ges.DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132" +
+      "\034.naothmessages.DoubleVector3\0220\n\nsearchS" +
+      "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022" +
+      "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO" +
+      "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV" +
+      "ector2\"\207\001\n\022StepControlRequest\022\016\n\006stepID\030" +
+      "\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022%\n\006target\030\003 " +
+      "\002(\0132\025.naothmessages.Pose2D\022\014\n\004time\030\004 \002(\r" +
+      "\022\026\n\016speedDirection\030\005 \002(\001\"\272\001\n\013WalkRequest",
+      "\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022" +
+      "%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\0226" +
+      "\n\013stepControl\030\004 \001(\0132!.naothmessages.Step" +
+      "ControlRequest\022%\n\006offset\030\005 \002(\0132\025.naothme" +
+      "ssages.Pose2D\"{\n\013KickRequest\022/\n\tkickPoin" +
+      "t\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\025\n" +
+      "\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022" +
+      "\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002" +
+      "id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/" +
+      "\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Walk",
+      "Request\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickR" +
+      "equest\030\006 \001(\0132\032.naothmessages.KickRequest" +
+      "\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n" +
+      "\005lines\030\001 \003(\0132\037.naothmessages.FieldLineSe" +
+      "gment\0222\n\rintersections\030\002 \003(\0132\033.naothmess" +
+      "ages.Intersection\0228\n\022middleCircleCenter\030" +
+      "\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n\007F" +
+      "SRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005v" +
+      "alid\030\003 \003(\010\"9\n\021StepControlStatus\022\016\n\006stepI" +
+      "D\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n\014Motion",
+      "Status\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r" +
+      "\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 " +
+      "\002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plann" +
+      "edMotionLeftFoot\030\006 \002(\0132\025.naothmessages.P" +
+      "ose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025." +
+      "naothmessages.Pose2D\022/\n\020plannedMotionHip" +
+      "\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021stepCon" +
+      "trolStatus\030\t \001(\0132 .naothmessages.StepCon" +
+      "trolStatus\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\013" +
+      "2\025.naothmessages.Pose2D\"M\n\017CalibrationDa",
+      "ta\022:\n\024inertialSensorOffset\030\001 \001(\0132\034.naoth" +
+      "messages.DoubleVector2B)\n\'de.hu_berlin.i" +
+      "nformatik.ki.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -14623,8 +15252,16 @@ public final class Representations {
               new java.lang.String[] { "JointData", "Temperature", "ElectricCurrent", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.Builder.class);
-          internal_static_naothmessages_CameraMatrix_descriptor =
+          internal_static_naothmessages_UltraSoundReceiveData_descriptor =
             getDescriptor().getMessageTypes().get(4);
+          internal_static_naothmessages_UltraSoundReceiveData_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_UltraSoundReceiveData_descriptor,
+              new java.lang.String[] { "UltraSoundTimeStep", "Rawdata", "DataLeft", "DataRight", },
+              de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.class,
+              de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.Builder.class);
+          internal_static_naothmessages_CameraMatrix_descriptor =
+            getDescriptor().getMessageTypes().get(5);
           internal_static_naothmessages_CameraMatrix_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CameraMatrix_descriptor,
@@ -14632,7 +15269,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.Builder.class);
           internal_static_naothmessages_FrameInfo_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_naothmessages_FrameInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FrameInfo_descriptor,
@@ -14640,7 +15277,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.Builder.class);
           internal_static_naothmessages_BallPercept_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_naothmessages_BallPercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_BallPercept_descriptor,
@@ -14648,7 +15285,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.Builder.class);
           internal_static_naothmessages_GoalPercept_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_naothmessages_GoalPercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_GoalPercept_descriptor,
@@ -14656,7 +15293,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.Builder.class);
           internal_static_naothmessages_HeadMotionRequest_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(9);
           internal_static_naothmessages_HeadMotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_HeadMotionRequest_descriptor,
@@ -14664,7 +15301,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.Builder.class);
           internal_static_naothmessages_StepControlRequest_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(10);
           internal_static_naothmessages_StepControlRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_StepControlRequest_descriptor,
@@ -14672,7 +15309,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder.class);
           internal_static_naothmessages_WalkRequest_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(11);
           internal_static_naothmessages_WalkRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_WalkRequest_descriptor,
@@ -14680,7 +15317,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder.class);
           internal_static_naothmessages_KickRequest_descriptor =
-            getDescriptor().getMessageTypes().get(11);
+            getDescriptor().getMessageTypes().get(12);
           internal_static_naothmessages_KickRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_KickRequest_descriptor,
@@ -14688,7 +15325,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder.class);
           internal_static_naothmessages_MotionRequest_descriptor =
-            getDescriptor().getMessageTypes().get(12);
+            getDescriptor().getMessageTypes().get(13);
           internal_static_naothmessages_MotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionRequest_descriptor,
@@ -14696,7 +15333,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.Builder.class);
           internal_static_naothmessages_LinePercept_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(14);
           internal_static_naothmessages_LinePercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_LinePercept_descriptor,
@@ -14704,7 +15341,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.Builder.class);
           internal_static_naothmessages_FSRData_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(15);
           internal_static_naothmessages_FSRData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FSRData_descriptor,
@@ -14712,7 +15349,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.Builder.class);
           internal_static_naothmessages_StepControlStatus_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_naothmessages_StepControlStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_StepControlStatus_descriptor,
@@ -14720,7 +15357,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder.class);
           internal_static_naothmessages_MotionStatus_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_naothmessages_MotionStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionStatus_descriptor,
@@ -14728,7 +15365,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.Builder.class);
           internal_static_naothmessages_OdometryData_descriptor =
-            getDescriptor().getMessageTypes().get(17);
+            getDescriptor().getMessageTypes().get(18);
           internal_static_naothmessages_OdometryData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_OdometryData_descriptor,
@@ -14736,7 +15373,7 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.OdometryData.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.OdometryData.Builder.class);
           internal_static_naothmessages_CalibrationData_descriptor =
-            getDescriptor().getMessageTypes().get(18);
+            getDescriptor().getMessageTypes().get(19);
           internal_static_naothmessages_CalibrationData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CalibrationData_descriptor,

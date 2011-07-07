@@ -18,11 +18,12 @@ if [ -z $BUILD_PATH ]; then
 BUILD_PATH=${NAOTH_BZR}/NaoTHSoccer/Make
 fi
 
-DIST=${NAOTH_BZR}/NaoTHSoccer/dist/Nao/libnaoth.so
+DIST_MOTION=${NAOTH_BZR}/NaoTHSoccer/dist/Nao/libnaoth.so
+DIST_COGNITION=${NAOTH_BZR}/NaoTHSoccer/dist/Nao/naoth
 
 cd ${BUILD_PATH}
 echo "Compile..." && \
 premake4 --platform="Nao" gmake && make -R config=optdebugnao  -j $numcores && \
 echo "Copy libnaoth.so to 192.168.0.$naonr" && \
-scp $DIST nao@192.168.0.$naonr:/home/nao/naoqi/lib/naoqi/ \
+(scp $DIST_MOTION nao@10.0.0.$naonr:/home/nao/naoqi/lib/naoqi/ && scp $DIST_COGNITION nao@10.0.0.$naonr:/home/nao/bin/ ) \
 || (echo "Error occurred! [Press Enter to close terminal]"; exit -1) 
