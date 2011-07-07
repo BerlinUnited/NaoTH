@@ -29,7 +29,7 @@ premake.gcc.platforms.Nao =
 {
   cppflags = "-MMD",
   -- Winline was here
-  flags = "-m32 -march=geode -m3dnow --sysroot=" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/" ..
+  flags = "--param inline-unit-growth=400 -m32 -march=geode -m3dnow --sysroot=" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/" ..
    " -I" .. stageDir .. "/usr/include/" .. " -I" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/usr/include/" .. 
    " -I" .. crossDir .. "/i586-unknown-linux-gnu/include/c++/4.3.3/" .. 
    " -I" .. stageDir .. "/usr/include/glib-2.0/" ..
