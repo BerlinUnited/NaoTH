@@ -149,12 +149,13 @@ void VisualObstacleLocator::execute()
   );
 
   */
+
+  //check whether we have an obstacle
   getRadarGrid().checkValid();
 }//end execute
 
 void VisualObstacleLocator::updateByUltraSoundData()
 {
-  std::cout << getUltraSoundReceiveData().rawdata << endl;
   if(getUltraSoundReceiveData().rawdata <= maxValidDistance && getUltraSoundReceiveData().rawdata >= minValidDistance)
   {
     double distance = getUltraSoundReceiveData().rawdata*1000;

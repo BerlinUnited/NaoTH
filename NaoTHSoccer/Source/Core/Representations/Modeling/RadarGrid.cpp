@@ -22,22 +22,36 @@ RadarGrid::RadarGrid()
 angleResolution(20),
 center(0,0),
 nearUpdate(0.5),
-farUpdate(0.2)
+farUpdate(0.2),
+obstacleWasSeen(false)
 {
   MODIFY("RadarGrid:nearUpdate", nearUpdate);
   MODIFY("RadarGrid:farUpdate", farUpdate);
 }//end RadarGrid
 
-//get value
-Vector2<double> RadarGrid::get(double angle) const
+
+Vector2d RadarGrid::get(double angle) const
+
 {
   Vector2d temp;
   int position = this->getIndexByAngle(angle);
   newMap::const_iterator it = cells.find(position);
-  if(it != this->cells.end())
+  //check whether map is empty
+  if(!cells.empty())
   {
-    temp = it->second.value;
+    newMap::const_iterator it = cells.find(position);
+    //do we have a value?
+    if (it != cells.end())
+    {
+      temp = it->second.value;
+    }
+    else
+    {
+      temp.x = 0;
+      temp.y = 0;
+    }
   }
+  //container is empty
   else
   {
     temp.x = 0;
@@ -46,13 +60,6 @@ Vector2<double> RadarGrid::get(double angle) const
   return temp;
 }//end get()
 
-void RadarGrid::checkValid() {
-  if (!cells.empty()) {
-    obstacleWasSeen = true;
-  } else {
-    obstacleWasSeen = false;
-  }
-}
 
 //set the grid with value
 void RadarGrid::set(Vector2<double> value)
@@ -215,6 +222,19 @@ Vector2d RadarGrid::applyOdometry(Vector2d someValue, Pose2D& odometryDelta)
   return newCell;
 }
 
+void RadarGrid::checkValid()
+{
+  if (!this->cells.empty())
+  {
+    obstacleWasSeen = true;
+  }
+  else
+  {
+    obstacleWasSeen = false;
+  }
+}
+
+
 //draw radarGrid within FieldContext
 void RadarGrid::drawFieldContext()
 {
@@ -243,11 +263,6 @@ void RadarGrid::drawFieldContext()
     Vector2d rechtsEnd, linksEnd, centerEnd;
     centerEnd.x = CIT->second.value.x*cos(CIT->second.value.y);
     centerEnd.y = CIT->second.value.x*sin(CIT->second.value.y);
-
-   // linksEnd.x = CIT->second.value.x*cos(Math::fromDegrees(CIT->first*20-10));
-   // linksEnd.y = -CIT->second.value.x*sin(Math::fromDegrees(CIT->first*20-10));
-   // rechtsEnd.x = CIT->second.value.x*cos(Math::fromDegrees(CIT->first*20+10));
-   // rechtsEnd.y = -CIT->second.value.x*sin(Math::fromDegrees(CIT->first*20+10));
 
     LINE(this->center.x, this->center.y, centerEnd.x, centerEnd.y);
 
