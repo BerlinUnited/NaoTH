@@ -15,7 +15,7 @@ option play_9v9 {
       else
         goto striker;
     }
-    else if(team.calc_if_is_striker && fall_down_state == upright && ball.was_seen)
+    else if(team.calc_if_is_striker_by_time_to_ball && fall_down_state == upright && ball.was_seen)
     {
       if ( game.player_number <= 4 )
         goto defender;

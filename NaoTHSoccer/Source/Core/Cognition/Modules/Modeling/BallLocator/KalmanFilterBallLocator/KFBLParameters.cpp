@@ -9,6 +9,7 @@
 
 #include "KFBLParameters.h"
 #include "PlatformInterface/Platform.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 KFBLParameters::KFBLParameters()
   : ParameterList("KFBLParameters")
@@ -25,9 +26,11 @@ KFBLParameters::KFBLParameters()
 
   // load from the file after registering all parameters
   syncWithConfig();
+
+  DebugParameterList::getInstance().add(this);
 }
 
 KFBLParameters::~KFBLParameters()
 {
-  
+  DebugParameterList::getInstance().remove(this);
 }

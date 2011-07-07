@@ -26,5 +26,11 @@ void TeamCommReceiver::handleMessage(const string& data)
     TeamMessage::Data& content = getTeamMessage().data[num];
     content.frameInfo.setTime( getFrameInfo().getTime() );
     content.message = msg;
+
+    if ( msg.has_opponent() && msg.opponent().number() )
+    {
+      // mark this opponent is updated
+      getTeamMessage().lastFrameNumberHearOpp[msg.opponent().number()] = getFrameInfo().getFrameNumber();
+    }
   }
 }

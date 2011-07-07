@@ -33,6 +33,9 @@ public:
 
   std::map<unsigned int, Data> data;
 
+  // used for select opponent to send
+  map<unsigned int, unsigned int> lastFrameNumberHearOpp;
+
   virtual ~TeamMessage() {};
 
   virtual void print(std::ostream& stream) const

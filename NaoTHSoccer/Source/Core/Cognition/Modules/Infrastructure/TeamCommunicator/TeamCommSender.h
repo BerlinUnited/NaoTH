@@ -12,6 +12,8 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/PlayersModel.h"
+#include "Representations/Modeling/TeamMessage.h"
 
 BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(FrameInfo)
@@ -22,6 +24,8 @@ BEGIN_DECLARE_MODULE(TeamCommSender)
   REQUIRE(BodyState)
   REQUIRE(MotionStatus)
   REQUIRE(SoccerStrategy)
+  REQUIRE(PlayersModel)
+  REQUIRE(TeamMessage)
 
   PROVIDE(TeamMessageDataOut)
 END_DECLARE_MODULE(TeamCommSender)
@@ -38,6 +42,9 @@ private:
   unsigned int send_interval;
 
   void createMessage(naothmessages::TeamCommMessage& msg);
+
+  unsigned int selectSendOpp() const;
+  void addSendOppModel(unsigned int oppNum, naothmessages::TeamCommMessage& msg) const;
 };
 
 #endif // TEAMCOMMSENDER_H
