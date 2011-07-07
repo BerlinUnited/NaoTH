@@ -182,8 +182,9 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
+#ifdef NAO
   theStopwatchSender.execute();
-
+#endif
 }//end call
 
 void Motion::processSensorData()
