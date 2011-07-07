@@ -48,7 +48,7 @@ class FieldColorClassifier : public  FieldColorClassifierBase
 {
 public:
   FieldColorClassifier();
-  virtual ~FieldColorClassifier(){}
+  virtual ~FieldColorClassifier(){};
 
   /** executes the module */
   void execute();

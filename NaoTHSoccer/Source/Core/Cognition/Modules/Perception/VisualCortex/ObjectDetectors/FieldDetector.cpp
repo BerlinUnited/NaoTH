@@ -32,22 +32,9 @@ void FieldDetector::execute()
   {
     vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
 
-    int medY = 0;
-    Vector2<int> point;
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
-    {      
-      point = getScanLineEdgelPercept().endPoints[i].posInImage;
-      medY += point.y;
-    }
-    medY /= getScanLineEdgelPercept().endPoints.size();
-
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       points[i] = getScanLineEdgelPercept().endPoints[i].posInImage;
-      if(points[i].y < 0.6 * medY)
-      {
-        points[i].y = medY;
-      }
     }
 
     // move the outer points
