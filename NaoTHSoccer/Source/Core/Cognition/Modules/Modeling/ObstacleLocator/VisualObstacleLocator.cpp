@@ -149,6 +149,7 @@ void VisualObstacleLocator::execute()
   );
 
   */
+  getRadarGrid().checkValid();
 }//end execute
 
 void VisualObstacleLocator::updateByUltraSoundData()

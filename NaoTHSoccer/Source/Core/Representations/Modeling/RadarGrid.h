@@ -5,6 +5,9 @@
  * Created on 27. Juni 2011
  */
 
+#ifndef __RadarGrid_h_
+#define __RadarGrid_h_
+
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
@@ -23,11 +26,14 @@ public:
   //default destructor:
   virtual ~RadarGrid(){}
   
+  bool obstacleWasSeen;
 
   //some functions
   //get/set model
   void set(Vector2<double>);
-  void get(double angle, Vector2<double>& value);
+  Vector2<double> get(double angle) const;
+
+  void checkValid() ;
 
   //age the model
   void ageGrid();
@@ -83,5 +89,7 @@ private:
   Vector2d applyOdometry(Vector2d someValue, Pose2D& odometryDelta);
 
  
-  unsigned int getIndexByAngle(const double& angle);
+  unsigned int getIndexByAngle(const double& angle) const;
 };
+
+#endif// __RadarGrid_h_
