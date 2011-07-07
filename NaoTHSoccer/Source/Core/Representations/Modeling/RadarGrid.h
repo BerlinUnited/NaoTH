@@ -26,7 +26,6 @@ public:
   //default destructor:
   virtual ~RadarGrid(){}
 
-  bool obstacleWasSeen;
  
   //some functions
   //get/set model
@@ -87,6 +86,8 @@ private:
   //model update parameters
   double nearUpdate;
   double farUpdate;
+  bool obstacleWasSeen;
+
 
   Vector2d applyOdometry(Vector2d someValue, Pose2D& odometryDelta);
 
