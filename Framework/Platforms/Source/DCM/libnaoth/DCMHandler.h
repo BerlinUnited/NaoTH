@@ -90,7 +90,6 @@ class DCMHandler
     ALValue usSendCommands;
 
     string allSensorsList[numOfSensors];
-    float* sensorPtrs[numOfSensors];
 
   ALValue getFromALMemory(const string& path);
   
@@ -112,6 +111,7 @@ class DCMHandler
   void initAllSensorData();
 
 public:
+    float* sensorPtrs[numOfSensors];
     int time_delay;
 
     DCMHandler();

@@ -30,7 +30,7 @@ DEFAULT_WLAN_SSID="SPL-C"
 DEFAULT_WLAN_PASSWORD="a1b0a1b0a1"
 
 ALLRC="rcS.d rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d"
-RUNRC="rc5.d"
+RUNRC="rc5.d rcS.d"
 
 # Getting Information and checking
 
