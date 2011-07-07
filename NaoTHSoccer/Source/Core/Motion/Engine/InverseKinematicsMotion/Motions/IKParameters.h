@@ -102,6 +102,11 @@ public:
     double maxDistanceToRetract;
 
     bool enableStaticStabilizer;
+
+
+    double basicXRotationOffset;
+    double extendedXRotationOffset;
+    double rotationTime;
   } kick;
   
   IKParameters();
