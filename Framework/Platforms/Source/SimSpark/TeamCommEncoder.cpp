@@ -48,7 +48,7 @@ string TeamCommEncoder::encode(const string& data)
   ballOnField.y = Math::clamp(ballOnField.y, -maxSize.y, maxSize.y);
   anscii += encoder.encode(ballOnField, maxSize, 3);
 
-  anscii += encoder.encode(static_cast<unsigned int>(msg.isfallendown()), 1);
+  anscii += encoder.encode(msg.isfallendown()?1:-1, 1);
 
         /*
 
@@ -93,28 +93,31 @@ string TeamCommEncoder::encode(const string& data)
 string TeamCommEncoder::decode(const string& anscii)
 {
   unsigned int messageSize = anscii.size();
-  ASSERT(messageSize==13);
+  if ( messageSize == 13 )
+  {
+    naothmessages::TeamCommMessage msg;
+    msg.set_teamnumber( encoder.decodeUnsigned(anscii.substr(0, 1)) );
+    msg.set_playernumber( encoder.decodeUnsigned(anscii.substr(1, 1)) );
+    msg.set_ispenalized(false); // no penalize rule in SimSpark
+    msg.set_bodyid(DataConversion::toStr(msg.playernumber())); // the same as player number
+    msg.set_wasstriker(encoder.decodeUnsigned(anscii.substr(2, 1)) != 0);
 
-  if ( messageSize != 13 )
+    // robot pose
+    Pose2D pose = encoder.decodePose2D(anscii.substr(3, 4), maxSize, anglePiece);
+    DataConversion::toMessage(pose, *(msg.mutable_positiononfield()));
+
+    // ball
+    msg.set_timesinceballwasseen(encoder.decodeUnsigned(anscii.substr(7, 2))*60); // 60 is vision frame rate
+    Vector2d ballOnField = encoder.decodeVector2D(anscii.substr(9, 3), maxSize);
+    Vector2d ballLocal = pose.invert() * ballOnField;
+    DataConversion::toMessage(ballLocal, *(msg.mutable_ballposition()));
+    msg.set_isfallendown(encoder.decodeUnsigned(anscii.substr(12, 1)) > 0);
+
+    return msg.SerializeAsString();
+  }
+  else
+  {
+    THROW("msg ("<<anscii.size()<<" "<<") = "<< anscii);
     return "";
-
-  naothmessages::TeamCommMessage msg;
-  msg.set_teamnumber( encoder.decodeUnsigned(anscii.substr(0, 1)) );
-  msg.set_playernumber( encoder.decodeUnsigned(anscii.substr(1, 1)) );
-  msg.set_ispenalized(false); // no penalize rule in SimSpark
-  msg.set_bodyid(DataConversion::toStr(msg.playernumber())); // the same as player number
-  msg.set_wasstriker(encoder.decodeUnsigned(anscii.substr(2, 1)) != 0);
-
-  // robot pose
-  Pose2D pose = encoder.decodePose2D(anscii.substr(3, 4), maxSize, anglePiece);
-  DataConversion::toMessage(pose, *(msg.mutable_positiononfield()));
-
-  // ball
-  msg.set_timesinceballwasseen(encoder.decodeUnsigned(anscii.substr(7, 2))*60); // 60 is vision frame rate
-  Vector2d ballOnField = encoder.decodeVector2D(anscii.substr(9, 3), maxSize);
-  Vector2d ballLocal = pose.invert() * ballOnField;
-  DataConversion::toMessage(ballLocal, *(msg.mutable_ballposition()));
-  msg.set_isfallendown(encoder.decodeUnsigned(anscii.substr(12, 1)));
-
-  return msg.SerializeAsString();
+  }
 }
