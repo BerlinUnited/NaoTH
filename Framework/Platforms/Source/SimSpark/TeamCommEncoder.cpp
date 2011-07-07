@@ -52,31 +52,20 @@ string TeamCommEncoder::encode(const string& data)
 
   anscii += encoder.encode(static_cast<unsigned int>(msg.timetoball())/20, 2);
 
-        /*
+  // opponent
+  if ( msg.has_opponent() )
+  {
+    unsigned int num = msg.opponent().number();
+    Pose2D pose;
+    DataConversion::fromMessage(msg.opponent().poseonfield(), pose);
+    pose.translation.x = Math::clamp(pose.translation.x, -maxSize.x, maxSize.x);
+    pose.translation.y = Math::clamp(pose.translation.y, -maxSize.y, maxSize.y);
 
+    anscii += encoder.encode(num, 1);
+    anscii += encoder.encode(pose, maxSize, anglePiece, 4);
+  }
 
-          // ball
-
-
-          if (msg.has_ballposition())
-          {
-
-          }
-
-          if ( msg.has_opponent() )
-          {
-            unsigned int num = msg.opponent().number();
-            Pose2D pose(msg.opponent().poseonfield().rotation(),
-              msg.opponent().poseonfield().translation().x(),
-              msg.opponent().poseonfield().translation().y());
-            pose.translation.x = Math::clamp(pose.translation.x, -fieldSize.x, fieldSize.x);
-            pose.translation.y = Math::clamp(pose.translation.y, -fieldSize.y, fieldSize.y);
-
-            s += encoder.encode(num, 1);
-            s += encoder.encode(pose, fieldSize, anglePiece, 4);
-          }*/
-
-  ASSERT(anscii.size()==15);
+  ASSERT(anscii.size()==15 || anscii.size() == 20);
 
   return anscii;
 }
@@ -90,13 +79,14 @@ string TeamCommEncoder::encode(const string& data)
   9-11: ball on field
   12: is fallen down
   13-14: time to ball
+  15,16-19: opponent num, opponent pose
  */
 
 // from ASCII to protobuf
 string TeamCommEncoder::decode(const string& anscii)
 {
   unsigned int messageSize = anscii.size();
-  if ( messageSize == 15 )
+  if ( messageSize == 15 || messageSize == 20 )
   {
     naothmessages::TeamCommMessage msg;
     msg.set_teamnumber( encoder.decodeUnsigned(anscii.substr(0, 1)) );
@@ -117,6 +107,14 @@ string TeamCommEncoder::decode(const string& anscii)
     msg.set_isfallendown(encoder.decodeUnsigned(anscii.substr(12, 1)) > 0);
 
     msg.set_timetoball(encoder.decodeUnsigned(anscii.substr(13, 2))*20);
+
+    if ( messageSize == 20 )
+    {
+      msg.mutable_opponent()->set_number(encoder.decodeUnsigned(anscii.substr(15, 1)));
+      Pose2D pose = encoder.decodePose2D(anscii.substr(16,4), maxSize, anglePiece);
+      DataConversion::toMessage(pose, *(msg.mutable_opponent()->mutable_poseonfield()));
+    }
+
     return msg.SerializeAsString();
   }
   else
