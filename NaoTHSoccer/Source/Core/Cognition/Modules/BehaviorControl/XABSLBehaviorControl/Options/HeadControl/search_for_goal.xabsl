@@ -65,10 +65,11 @@ option search_for_goal
   {
     decision
     {
-      if (goal.opp.time_since_seen > 1000)        
-        goto search_for_goal;
-      else
+      if ((goal.own.time_since_seen < 1000 && @own) ||
+          (goal.opp.time_since_seen < 1000 && @opp))        
         stay;
+      else
+        goto search_for_goal;
     }
     action
     {

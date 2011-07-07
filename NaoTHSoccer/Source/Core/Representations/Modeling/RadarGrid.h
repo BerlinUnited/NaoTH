@@ -25,15 +25,16 @@ public:
   RadarGrid();
   //default destructor:
   virtual ~RadarGrid(){}
-  
-  bool obstacleWasSeen;
 
+  bool obstacleWasSeen;
+ 
   //some functions
   //get/set model
   void set(Vector2<double>);
-  Vector2<double> get(double angle) const;
 
-  void checkValid() ;
+  Vector2d get(double angle) const;
+
+  void checkValid();
 
   //age the model
   void ageGrid();
@@ -53,6 +54,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
+    stream << "Obstacle was seen: " << obstacleWasSeen << endl;
     newMap::const_iterator CIT = cells.begin();
     for (; CIT != cells.end(); ++CIT)
     {

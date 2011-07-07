@@ -113,8 +113,8 @@ double SoccerStrategyProvider::estimateTimeToBall() const
 {
   // the simplest case: this speed should get from motion
   const double stepTime = 140; //ms
-  const double speed = 95.0/stepTime; // mm/ms
-  const double turnSpeed = Math::fromDegrees(45) / stepTime;
+  const double speed = 90.0/stepTime; // mm/ms
+  const double turnSpeed = Math::fromDegrees(30) / stepTime;
 
 
   double t = getBallModel().positionPreview.abs() / speed;

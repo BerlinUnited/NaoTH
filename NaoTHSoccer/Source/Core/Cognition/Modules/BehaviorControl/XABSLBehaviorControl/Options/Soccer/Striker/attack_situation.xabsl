@@ -149,7 +149,9 @@ option attack_situation
 	  {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
       approach_ball_with_correct_foot(dist=170);
-      //turn_to_ball_with_foot(right=false);
+
+      //weve seen the ball shortly when we are here
+      head.control_mode = search_for_ball_force_model;
 	  }
 	}
 
@@ -173,7 +175,9 @@ option attack_situation
     {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
       approach_ball_with_correct_foot(dist=170);
-      //turn_to_ball_with_foot(right=true);
+
+      //weve seen the ball shortly when we are here
+      head.control_mode = search_for_ball_force_model;
     }
   }
 

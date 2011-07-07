@@ -45,6 +45,7 @@ option spl_playing_striker {
     {
       situation.abortable = true;
       ball_far_away_situation();
+      motion.walk.style = fast;
     }
   }
 

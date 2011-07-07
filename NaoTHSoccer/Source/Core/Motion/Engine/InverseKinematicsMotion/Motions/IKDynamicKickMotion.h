@@ -20,14 +20,21 @@ public:
   InverseKinematic::CoMFeetPose pose;
   unsigned int time;
 
+  double knee_pitch_offset;
+  double ankle_roll_offset;
+
   KickPose()
-    : time(0)
+    : time(0),
+      knee_pitch_offset(0.0),
+      ankle_roll_offset(0.0)
   {
   }
 
   KickPose(const InverseKinematic::CoMFeetPose& pose)
     : pose(pose),
-      time(0)
+      time(0),
+      knee_pitch_offset(0.0),
+      ankle_roll_offset(0.0)
   {
   }
 };
@@ -110,7 +117,7 @@ class IKDynamicKickMotion: public IKMotion
 private:
   // local transformated reachability grid
   // TODO: make it global?
-  ReachibilityGrid basicReachibilityGrid;
+  static ReachibilityGrid basicReachibilityGrid;
   TransformedReachibilityGrid reachibilityGrid;
 
   const IKParameters::KickParameters& theParameters;
@@ -152,7 +159,7 @@ private:
   bool isRequested(const MotionRequest& motionRequest) const;
   double getStandHeight() const;
   const KickPose& getCurrentPose() const;
-  const KickPose getStandPoseOnOneFoot();
+  const KickPose getStandPoseOnOneFoot(bool add_rotation);
   void localInStandFoot( KickPose& pose ) const;
   void stopKick();
 
