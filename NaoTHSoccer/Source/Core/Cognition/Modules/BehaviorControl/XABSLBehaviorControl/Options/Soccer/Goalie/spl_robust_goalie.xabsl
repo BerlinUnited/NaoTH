@@ -43,7 +43,7 @@ option spl_robust_goalie{
      else stay;
     }
     action{
-      head.control_mode = look_around;
+      head.control_mode = goalie_look_around;
       motion.type = stand;
     }
   } 
@@ -51,13 +51,13 @@ option spl_robust_goalie{
   //TODO delete when robot_pose.is_valid is supported!!
   initial state start_localize{
    decision{
-     else if (state_time > 8000)
+     else if (state_time > 5000)
        goto localize;
      else
        stay; 
    }
    action{
-      head.control_mode = look_around;
+      head.control_mode = goalie_look_around;
       motion.type = stand;
     }
   }

@@ -8,7 +8,7 @@ option clear_ball_far_away{
         stay;
     }
     action{
-      approach_ball_with_correct_foot(dist=180-20*random);
+      approach_ball_with_correct_foot(dist=170);
     }
   }
 
@@ -16,7 +16,7 @@ option clear_ball_far_away{
   //attack.direction > -75 && attack.direction < 75 is constraint by approach ball
   state clear_ball {
     decision{
-      if(obstacle.visual.was_seen){
+      if(false && obstacle.visual.was_seen){
         goto block_attacker;
       }else{
         goto prepare_kick;
