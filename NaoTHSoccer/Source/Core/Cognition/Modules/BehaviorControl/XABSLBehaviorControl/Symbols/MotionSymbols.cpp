@@ -93,7 +93,7 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // walk offset
   engine.registerDecimalOutputSymbol("motion.walk.offset.x", &motionRequest.walkRequest.offset.translation.x);
   engine.registerDecimalOutputSymbol("motion.walk.offset.y", &motionRequest.walkRequest.offset.translation.y);
-  engine.registerDecimalOutputSymbol("motion.walk.offset.rot", &motionRequest.walkRequest.offset.rotation);
+  engine.registerDecimalOutputSymbol("motion.walk.offset.rot", &setWalkOffsetRot, &getWalkOffsetRot);
 
   // walk coordinates origin
   for(int i = 0; i < WalkRequest::numOfCoordinate; i++)
@@ -256,6 +256,15 @@ double MotionSymbols::getMotionStatusTime(){ return theInstance->frameInfo.getTi
 void MotionSymbols::setCameraID(int value){ theInstance->headMotionRequest.cameraID = (CameraInfo::CameraID)value; }
 int MotionSymbols::getCameraID(){ return (int)(theInstance->headMotionRequest.cameraID); }
 
+void MotionSymbols::setWalkOffsetRot(double rot)
+{
+  theInstance->motionRequest.walkRequest.offset.rotation = Math::fromDegrees(rot);
+}
+
+double MotionSymbols::getWalkOffsetRot()
+{
+  return Math::toDegrees(theInstance->motionRequest.walkRequest.offset.rotation);
+}
 
 void MotionSymbols::setWalkSpeedRot(double rot)
 {
