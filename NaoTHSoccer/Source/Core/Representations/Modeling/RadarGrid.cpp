@@ -19,11 +19,11 @@
 //class constructor
 RadarGrid::RadarGrid()
   :
+obstacleWasSeen(false)
 angleResolution(20),
 center(0,0),
 nearUpdate(0.5),
-farUpdate(0.2),
-obstacleWasSeen(false)
+farUpdate(0.2)
 {
   MODIFY("RadarGrid:nearUpdate", nearUpdate);
   MODIFY("RadarGrid:farUpdate", farUpdate);
