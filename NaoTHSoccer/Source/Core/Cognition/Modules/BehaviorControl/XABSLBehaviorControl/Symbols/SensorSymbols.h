@@ -21,6 +21,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
+#include "Representations/Modeling/RadarGrid.h"
 #include "Representations/Infrastructure/Image.h"
 
 // tools
@@ -35,6 +36,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
   REQUIRE(LocalObstacleModel)
+  REQUIRE(RadarGrid)
   REQUIRE(Image)
 END_DECLARE_MODULE(SensorSymbols)
 
@@ -52,11 +54,13 @@ public:
     frameInfo(getFrameInfo()),
     bodyState(getBodyState()),
     obstacleModel(getLocalObstacleModel()),
+    radarGrid(getRadarGrid()),
     image(getImage())
   {
     theInstance = this;
     forceGetCameraSettings = false;
     forceGetCameraSettingsOldValue = false;
+    parameter_obstDistByAngle_angle = 0;
   }
 
   /** registers the symbols at an engine */
@@ -76,6 +80,7 @@ private:
   FrameInfo const& frameInfo;
   BodyState const& bodyState;
   LocalObstacleModel const& obstacleModel;
+  RadarGrid const& radarGrid;
   Image const& image;
 
 
@@ -101,6 +106,11 @@ private:
   static double simplePassRightSensor();
 
   static int getFallDownState();
+
+  //Radar Obstacle
+  static bool getIfObstacleSeen();
+  static double getObstDistByAngle();
+  double parameter_obstDistByAngle_angle;
 
   static double getTimeSinceObstacleWasSeen();
   static double getObstacleAngle();

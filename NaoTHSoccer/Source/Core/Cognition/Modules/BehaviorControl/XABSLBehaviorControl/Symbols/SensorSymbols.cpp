@@ -28,7 +28,6 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("platform.battery", &batteryData.charge);
 
-
   engine.registerEnumElement("fall_down_state", "fall_down_state.undefined", BodyState::undefined);
   engine.registerEnumElement("fall_down_state", "fall_down_state.upright", BodyState::upright);
   engine.registerEnumElement("fall_down_state", "fall_down_state.lying_on_front", BodyState::lying_on_front);
@@ -47,6 +46,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.visual.x", &obstacleModel.posVisualObstacle.x);
   engine.registerDecimalInputSymbol("obstacle.visual.y", &obstacleModel.posVisualObstacle.y);
 
+  //new radar obstacles
+  engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
+  engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);
+  engine.registerDecimalInputSymbolDecimalParameter("getObstDistByAngle", "getObstDistByAngle.angle", &parameter_obstDistByAngle_angle);
+
   /*engine.registerDecimalInputSymbol("obstacle.radial.direction_free", &getObstacleRadialDirection_free);
   engine.registerDecimalInputSymbolDecimalParameter("obstacle.radial.direction_free", "obstacle.radial.direction_free.deg", &directionParameter);
   engine.registerDecimalInputSymbol("obstacle.radial.passageway_free", &getObstacleRadialPassageway_free);
@@ -62,9 +66,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   resetingCamera = false;
 }//end registerSymbols
 
-
 SensorSymbols* SensorSymbols::theInstance = NULL;
-
 
 SensorSymbols::~SensorSymbols()
 {
@@ -94,6 +96,12 @@ double SensorSymbols::getIRButtonNumber()
 double SensorSymbols::getFrameNumber()
 {
   return (double) (theInstance->frameInfo.getFrameNumber());
+}
+
+double SensorSymbols::getObstDistByAngle()
+{
+  double angle = Math::fromDegrees(theInstance->parameter_obstDistByAngle_angle);
+  return theInstance->radarGrid.get(angle).x;
 }
 
 int SensorSymbols::getFallDownState()

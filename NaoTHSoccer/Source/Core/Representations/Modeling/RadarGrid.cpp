@@ -5,7 +5,6 @@
  * Created on 27. Juni 2011
  */
 
-
 #include "RadarGrid.h"
 
 //debugDrawings
@@ -30,11 +29,30 @@ farUpdate(0.2)
 }//end RadarGrid
 
 //get value
-void RadarGrid::get(double angle, Vector2<double>& value)
+Vector2<double> RadarGrid::get(double angle) const
 {
+  Vector2d temp;
   int position = this->getIndexByAngle(angle);
-  value = cells[position].value;
+  newMap::const_iterator it = cells.find(position);
+  if(it != this->cells.end())
+  {
+    temp = it->second.value;
+  }
+  else
+  {
+    temp.x = 0;
+    temp.y = 0;
+  }
+  return temp;
 }//end get()
+
+void RadarGrid::checkValid() {
+  if (!cells.empty()) {
+    obstacleWasSeen = true;
+  } else {
+    obstacleWasSeen = false;
+  }
+}
 
 //set the grid with value
 void RadarGrid::set(Vector2<double> value)
@@ -95,7 +113,7 @@ void RadarGrid::set(Vector2<double> value)
 
 
 //get index by angle
-unsigned int RadarGrid::getIndexByAngle(const double& angle)
+unsigned int RadarGrid::getIndexByAngle(const double& angle) const
 {
   double degreeAngle = Math::toDegrees(angle);
   double temp = 0;
