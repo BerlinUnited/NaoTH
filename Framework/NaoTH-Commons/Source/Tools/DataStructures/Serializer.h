@@ -11,7 +11,7 @@
 
 namespace naoth
 {  
-  
+
   /**
    * Serializer is the base class for all Serializers implementations
    */
@@ -27,24 +27,11 @@ namespace naoth
         // do nothing
         
       }
-      static void deserialize(const std::istream& stream, T& representation)
+      static void deserialize(std::istream& stream, T& representation)
       {
         #ifdef DEBUG
           std::cerr << "no deserizalizer for " << typeid(T).name() << std::endl; 
         #endif // DEBUG
-        // do nothing
-      }
-  };
-  
-  class StreamableSerializer
-  {
-    public:
-      static void serialize(const Streamable& representation, std::ostream& stream)
-      {
-        // do nothing
-      }
-      static void deserialize(const std::istream& stream, Streamable& representation)
-      {
         // do nothing
       }
   };

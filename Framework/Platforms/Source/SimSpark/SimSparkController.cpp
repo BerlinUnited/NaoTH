@@ -12,6 +12,8 @@
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
+#include <Tools/Debug/DebugRequest.h> // HACK: this is in NaoTH-Soccer!!!
+#include <Tools/NaoTime.h>
 
 using namespace std;
 
@@ -21,10 +23,11 @@ SimSparkController::SimSparkController()
   theImageSize(0),
   isNewImage(false),
   isNewVirtualVision(false),
-  theStepTime(0),
   theCameraId(0),
   theSenseTime(0),
-  theSyncMode(false)
+  theStepTime(0),
+  theSyncMode(false),
+  exiting(false)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -44,7 +47,6 @@ SimSparkController::SimSparkController()
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const MotorJointData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
-
 
   // init the name -- id maps
   theJointSensorNameMap.clear();
@@ -99,7 +101,14 @@ SimSparkController::SimSparkController()
   if (!g_thread_supported())
     g_thread_init(NULL);
   theCognitionInputMutex = g_mutex_new();
+  theCognitionOutputMutex = g_mutex_new();
   theCognitionInputCond = g_cond_new();
+
+  theTimeMutex = g_mutex_new();
+  theTimeCond = g_cond_new();
+  theSensorDataMutex = g_mutex_new();
+  theSensorDataCond = g_cond_new();
+  theActDataMutex = g_mutex_new();
 
   maxJointAbsSpeed = Math::fromDegrees(351.77);
 
@@ -116,8 +125,15 @@ SimSparkController::SimSparkController()
 SimSparkController::~SimSparkController()
 {
   g_mutex_free(theCognitionInputMutex);
+  g_mutex_free(theCognitionOutputMutex);
   g_cond_free(theCognitionInputCond);
-  
+
+  g_mutex_free(theTimeMutex);
+  g_cond_free(theTimeCond);
+  g_mutex_free(theSensorDataMutex);
+  g_cond_free(theSensorDataCond);
+  g_mutex_free(theActDataMutex);
+
   if (socket != NULL)
     g_socket_close(socket, NULL);
 
@@ -199,13 +215,15 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
 
   theSocket << "(scene rsg/agent/nao/nao.rsg)" << theSync << send;
   // wait the response
-  updateSensors();
+  getSensorData(theSensorData);
+  updateSensors(theSensorData);
   // initialize the teamname and number
   theSocket << "(init (teamname " << teamName << ")(unum " << num<< "))" << theSync << send;
   // wait the response
   while (theGameData.playerNumber == 0)
   {
-    updateSensors();
+    getSensorData(theSensorData);
+    updateSensors(theSensorData);
     theSocket << theSync << send;
   }
   // we should get the team index and player number now
@@ -220,8 +238,15 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
     debugPort = 5500 + theGameData.playerNumber;
   }
 
+  theDebugServer.start(debugPort, true);
+
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
-  //DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
+
+  DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
+
+  theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
+  theLastActTime = theLastSenseTime;
+  calculateNextActTime();
 
   return true;
 }
@@ -241,32 +266,53 @@ void SimSparkController::main()
 void SimSparkController::singleThreadMain()
 {
   cout << "SimSpark Controller runs in single thread" << endl;
-  while ( updateSensors() )
+  while ( getSensorData(theSensorData) )
   {
+    updateSensors(theSensorData);
     if ( isNewImage || isNewVirtualVision )
     {
       callCognition();
     }
     callMotion();
+    act();
   }//end while
 }//end main
 
 void SimSparkController::motionLoop()
 {
-  while ( updateSensors() )
-  {    
+  while ( !exiting )
+  {
+    g_mutex_lock(theSensorDataMutex);
+    g_cond_wait(theSensorDataCond, theSensorDataMutex);
+    string data = theSensorData;
+    theSensorData = "";
+    g_mutex_unlock(theSensorDataMutex);
+
+    updateSensors(data);
     callMotion();
   }
 }//end motionLoop
 
 void SimSparkController::cognitionLoop()
 {
-  while (true)
+  while (!exiting)
   {
     callCognition();
   }
 }//end cognitionLoop
 
+void SimSparkController::callCognition()
+{
+  if(cognitionCallback != NULL)
+  {
+    getCognitionInput();
+    if ( !exiting )
+    {
+      cognitionCallback->call();
+      setCognitionOutput();
+    }
+  }
+}//end callCognition
 
 void* motionLoopWrap(void* c)
 {
@@ -275,16 +321,97 @@ void* motionLoopWrap(void* c)
   return NULL;
 }//end motionLoopWrap
 
+void* senseLoopWrap(void* c)
+{
+  SimSparkController* ctr = static_cast<SimSparkController*> (c);
+  ctr->senseLoop();
+  return NULL;
+}
+
+void* actLoopWrap(void* c)
+{
+  SimSparkController* ctr = static_cast<SimSparkController*> (c);
+  ctr->actLoop();
+  return NULL;
+}
+
+void SimSparkController::senseLoop()
+{
+  while( true )
+  {
+    string data;
+    if ( !getSensorData(data) )
+    {
+      break;
+    }
+
+    g_mutex_lock(theSensorDataMutex);
+    if ( !theSensorData.empty() )
+    {
+      cerr<<"[Warning] the sensor data @ " << theLastSenseTime << " is dropped!"<<endl;
+    }
+    theSensorData = data;
+    g_mutex_unlock(theSensorDataMutex);
+    g_cond_signal(theTimeCond);
+    g_cond_signal(theSensorDataCond);
+  }
+
+  exiting = true;
+  g_cond_signal(theSensorDataCond); // tell motion to exit
+  g_cond_signal(theTimeCond); // tell act loop to exit
+  g_cond_signal(theCognitionInputCond); // tell cognition to exit
+}
+
+void SimSparkController::actLoop()
+{
+  while( !exiting ){
+    g_mutex_lock(theTimeMutex);
+    g_cond_wait(theTimeCond, theTimeMutex);
+    calculateNextActTime();
+    g_mutex_unlock(theTimeMutex);
+    unsigned int now = NaoTime::getNaoTimeInMilliSeconds();
+    if ( theNextActTime > now )
+    {
+      unsigned int t = theNextActTime - now;
+      usleep(t * 1000);
+    }
+    act();
+  }
+}
+
+void SimSparkController::act()
+{
+  // send command
+  g_mutex_lock(theActDataMutex);
+  try{
+    theSocket << theActData.str() << theSync << send;
+    theActData.str("");
+  }
+  catch(std::runtime_error& exp)
+  {
+    cerr<<"can not send data to server, because of "<<exp.what()<<endl;
+  }
+
+  g_mutex_unlock(theActDataMutex);
+}
+
 void SimSparkController::multiThreadsMain()
 {
   cout << "SimSpark Controller runs in multi-threads" << endl;
 
-  callMotion();
-
+  GThread* senseThread = g_thread_create(senseLoopWrap, this, true, NULL);
+  GThread* actThread = g_thread_create(actLoopWrap, this, true, NULL);
   GThread* motionThread = g_thread_create(motionLoopWrap, this, true, NULL);
+
+  ASSERT(senseThread != NULL);
+  ASSERT(actThread != NULL);
   ASSERT(motionThread != NULL);
 
   cognitionLoop();
+
+  g_thread_join(motionThread);
+  g_thread_join(actThread);
+  g_thread_join(senseThread);
 }//end multiThreadsMain
 
 void SimSparkController::getMotionInput()
@@ -301,32 +428,53 @@ void SimSparkController::getMotionInput()
 void SimSparkController::setMotionOutput()
 {
   PlatformInterface<SimSparkController>::setMotionOutput();
+
+  g_mutex_lock(theActDataMutex);
   say();
   autoBeam();
   jointControl();
-  theSocket << theSync <<send;
+  theActData << theSync;
+  g_mutex_unlock(theActDataMutex);
 }
 
 void SimSparkController::getCognitionInput()
 {
   g_mutex_lock(theCognitionInputMutex);
-  while (!isNewImage && !isNewVirtualVision)
+  while (!isNewImage && !isNewVirtualVision && !exiting )
   {
     g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
   }
+
   PlatformInterface<SimSparkController>::getCognitionInput();
   isNewVirtualVision = false;
   isNewImage = false;
   g_mutex_unlock(theCognitionInputMutex);
 }
 
-bool SimSparkController::updateSensors()
+void SimSparkController::setCognitionOutput()
+{
+  g_mutex_lock(theCognitionOutputMutex);
+  PlatformInterface<SimSparkController>::setCognitionOutput();
+  g_mutex_unlock(theCognitionOutputMutex);
+}
+
+bool SimSparkController::getSensorData(std::string& data)
+{
+  try {
+    theSocket >> data;
+    theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
+  }
+  catch (std::runtime_error& exp)
+  {
+    cerr<<"can not get data from server, because of "<<exp.what()<<endl;
+    return false;
+  }
+  return true;
+}
+
+bool SimSparkController::updateSensors(std::string& msg)
 {
   double lastSenseTime = theSenseTime;
-  string msg;
-  theSocket >> msg;
-
-  //cout << "Sensor data: " << msg << endl;
 
   pcont_t* pcont;
   sexp_t* sexp = NULL;
@@ -665,6 +813,7 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
 // Example message: "(GS (t 0.00) (pm BeforeKickOff))"
 bool SimSparkController::updateGameInfo(const sexp_t* sexp)
 {
+  const unsigned int half_time = 5 * 60 * 1000;
   bool ok = true;
   string name;
   while (sexp)
@@ -684,6 +833,15 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         {
           ASSERT(gameTime >= 0);
           theGameData.gameTime = static_cast<unsigned int>(gameTime)*1000;
+          theGameData.firstHalf = (theGameData.gameTime < half_time);
+          if ( theGameData.firstHalf )
+          {
+            theGameData.msecsRemaining = half_time - theGameData.gameTime;
+          }
+          else
+          {
+            theGameData.msecsRemaining = half_time*2 - theGameData.gameTime;
+          }
         }
       } else if ("pm" == name) // play mode
       {
@@ -730,7 +888,11 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
     sexp = sexp->next;
   }
 
-  if ( ok ) theGameData.frameNumber = theFrameInfo.getFrameNumber();
+  if ( ok )
+  {
+    theGameData.frameNumber = theFrameInfo.getFrameNumber();
+    theGameData.valid = true;
+  }
   return ok;
 }//end updateGameInfo
 
@@ -867,7 +1029,7 @@ bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
 
 void SimSparkController::get(FrameInfo& data)
 {
-  data = theFrameInfo;
+  data.setTime(theFrameInfo.getTime());
 }
 
 void SimSparkController::get(SensorJointData& data)
@@ -948,7 +1110,11 @@ void SimSparkController::get(VirtualVision& data)
 
 void SimSparkController::get(GameData& data)
 {
-  data = theGameData;
+  if ( theGameData.valid )
+  {
+    data = theGameData;
+    theGameData.valid = false;
+  }
 }
 
 void SimSparkController::updateInertialSensor()
@@ -1019,7 +1185,7 @@ void SimSparkController::jointControl()
     {
       v2 *= -1;
     }
-    theSocket << '(' << theJointMotorNameMap[(JointData::JointID)i] << ' '
+    theActData << '(' << theJointMotorNameMap[(JointData::JointID)i] << ' '
       << v2
       << ')';
   }
@@ -1060,18 +1226,24 @@ void SimSparkController::say()
   if ( ( static_cast<int>(floor(theSenseTime*1000/getBasicTimeStep()/2)) % theGameData.numOfPlayers) +1 != theGameData.playerNumber )
     return;
 
-  string& msg = theTeamMessageDataOut.data;
-  if (!msg.empty()){
-    if (msg.size()>20){
-      cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
-      return;
+  if ( g_mutex_trylock(theCognitionOutputMutex) )
+  {
+    string& msg = theTeamMessageDataOut.data;
+    if (!msg.empty()){
+      if (msg.size()<20)
+      {
+        if (msg != "")
+        {
+          theActData << ("(say "+msg+")");
+        }
+        msg.clear();
+      }
+      else
+      {
+        cerr<<"SimSparkController: can not say a message longer than 20 "<<endl;
+      }
     }
-    if (msg != "")
-    {
-      //      cout<<"Nr."<<static_cast<int>(thePlayerInfoInitializer.thePlayerInfo.playerNumber)<<" say @ "<<theSenseTime<<endl;
-      theSocket << ("(say "+msg+")");
-    }
-    msg.clear();
+    g_mutex_unlock(theCognitionOutputMutex);
   }
 }
 
@@ -1121,19 +1293,21 @@ bool SimSparkController::hear(const sexp_t* sexp)
 
 void SimSparkController::beam(const Vector3<double>& p)
 {
-    theSocket << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")" << theSync << send;
+    theActData << "(beam "<<p.x<<" "<<p.y<<" "<<p.z<<")";
 }
 
 void SimSparkController::autoBeam()
 {
 
-  //DEBUG_REQUEST("SimSparkController:beam", beam(););
+  bool beamRequest = false;
+  DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
 
-  if (theGameData.playMode == GameData::goal_own
+  if (beamRequest
+    || theGameData.playMode == GameData::goal_own
     || theGameData.playMode == GameData::goal_opp
     || theGameData.playMode == GameData::before_kick_off)
   {
-    if ( theFrameInfo.getTime() - theGameData.timeWhenPlayModeChanged < 1000 )
+    if ( beamRequest || theFrameInfo.getTime() - theGameData.timeWhenPlayModeChanged < 1000 )
     {
       const Configuration& cfg = Platform::getInstance().theConfiguration;
       string group = "PoseBeforeKickOff";
@@ -1202,12 +1376,32 @@ MessageQueue* SimSparkController::createMessageQueue(const std::string& name)
 
 void SimSparkController::get(TeamMessageDataIn& data)
 {
-  data = theTeamMessageDataIn;
+  data.data.clear();
+  for(vector<string>::const_iterator iter=theTeamMessageDataIn.data.begin();
+      iter!=theTeamMessageDataIn.data.end(); ++iter)
+  {
+    string msg = theTeamCommEncoder.decode(*iter);
+    if ( !msg.empty() )
+    {
+      data.data.push_back( msg );
+    }
+  }
   theTeamMessageDataIn.data.clear();
 }
 
 void SimSparkController::set(const TeamMessageDataOut& data)
 {
-  theTeamMessageDataOut = data;
+  if ( !data.data.empty() )
+  {
+    theTeamMessageDataOut.data = theTeamCommEncoder.encode(data.data);
+  }
 }
 
+void SimSparkController::calculateNextActTime()
+{
+   theNextActTime = theLastSenseTime + 10;
+   while(theLastActTime > theNextActTime)
+   {
+     theNextActTime += getBasicTimeStep();
+   }
+}

@@ -1,0 +1,66 @@
+/** */
+option turn_around_ball_face_goal
+{
+
+  initial state init {
+    decision {
+      if(goal.opp.time_since_seen < 3000 && ball.time_since_last_seen < 3000)
+      {
+        goto position;
+      }
+      else if(ball.time_since_last_seen < 3000)
+      {
+        goto look_for_goal;
+      }
+      else
+      {
+        goto see_the_ball;
+      }
+    }
+    action {
+    }
+  }
+
+  state look_for_goal {
+    decision{
+      if(state_time > 3000)
+        goto see_the_ball;
+      else
+        stay;
+    }
+    action 
+    {
+      move_around_ball(direction=((ball.time_since_last_seen < 200)? attack.direction: (attack.direction > 0?10:-10)), radius = 170);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state see_the_ball {
+    decision{
+      if(state_time > 1000)
+        goto position;
+      else
+        stay;
+    }
+    action 
+    {
+      //motion.type = stand;
+      move_around_ball(direction=((ball.time_since_last_seen < 200)? attack.direction: (attack.direction > 0?10:-10)), radius = 170);
+      head.control_mode = search_for_ball_force_model;
+    }
+  }
+ 
+ target state position {
+   decision{
+     if(state_time > 3000)
+       goto look_for_goal;
+     else
+       stay;
+   }
+    action 
+    {
+      move_around_ball(direction=((ball.time_since_last_seen < 200)? attack.direction: (attack.direction > 0?10:-10)), radius = 170);
+      head.control_mode = search_for_ball;
+    }
+  }
+}

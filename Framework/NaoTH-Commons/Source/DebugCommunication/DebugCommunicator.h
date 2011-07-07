@@ -65,14 +65,12 @@ public:
 
   bool isConnected();
 
-
-  bool fatalFail;
-
 private:
   GSocket* serverSocket;
   GSocket* connection;
 
   unsigned short port;
+  bool fatalFail;
 
   GError* internalSendMessage(const char* data, size_t size);
   GError* internalInit();

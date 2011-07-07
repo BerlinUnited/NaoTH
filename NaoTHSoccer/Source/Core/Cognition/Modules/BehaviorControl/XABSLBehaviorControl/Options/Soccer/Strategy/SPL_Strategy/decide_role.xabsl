@@ -1,0 +1,82 @@
+/** Behavior that is common to all players (goalie, striker, defender, ...) */
+option decide_role
+{
+
+  common decision 
+  {
+    /** Goalie */
+    if(game.player_number == 1) //&& team.members_alive_count >= 0) //become field player, when all others are "dead"
+    {
+      goto goalie;
+    }
+    /* fallback if everything else is broken */
+    else if( (team.members_alive_count <= 1) ||
+             (team.calc_if_is_striker && fall_down_state == upright))
+    {
+      if(state_time < 20000 &&
+         game.own_kickoff && !ball_was_outside_circle)
+        goto initial_striker;
+      else
+        goto striker;
+    }
+    else if(game.player_number == 3)
+    {
+      goto supporter;
+    }
+    else if(true)
+    {
+      goto defender;
+    }
+  }
+
+  state goalie
+  {
+    action
+    {
+      team.is_playing_as_striker = false;
+      ball_was_outside_circle = true;
+      spl_robust_goalie();
+    }
+  }
+
+  initial state striker
+  {
+    
+    action
+    {
+      team.is_playing_as_striker = true;
+      ball_was_outside_circle = true;
+      spl_playing_striker();
+      set_left_ear = platform.frameNumber % 10;
+    }
+  }
+
+  state defender
+  {
+    action
+    {
+      team.is_playing_as_striker = false;
+      ball_was_outside_circle = true;
+      spl_playing_defender();
+    }
+  }
+
+  state supporter
+  {
+    action
+    {
+      team.is_playing_as_striker = false;
+      ball_was_outside_circle = true;
+      spl_playing_supporter();
+    }
+  }
+
+  state initial_striker
+  {
+    action
+    {
+      initial_kick_off();
+    }
+  }
+  
+}

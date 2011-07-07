@@ -107,7 +107,7 @@ void GameController::execute()
   GameData::PlayMode oldPlayMode = getPlayerInfo().gameData.playMode;
 
   readButtons();
-  if ( getGameData().frameNumber == getFrameInfo().getFrameNumber() )
+  if ( getGameData().valid )
   {
     getPlayerInfo().gameData = getGameData();
   }

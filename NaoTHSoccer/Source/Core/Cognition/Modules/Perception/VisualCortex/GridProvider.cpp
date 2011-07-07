@@ -57,7 +57,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   {
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
 
-    Pixel pixel = getImage().get(point.x,point.y);
+    const Pixel& pixel = getImage().get(point.x,point.y);
     grey += pixel.y;
 
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
@@ -80,6 +80,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     }
     getColoredGrid().setColor(i, currentPixelColor);
     getHistogram().increaseValue(getColoredGrid().uniformGrid, i, currentPixelColor);
+    getHistogram().increaseChannelValue(pixel);
   }//end for
 
   getColoredGrid().valid = false;

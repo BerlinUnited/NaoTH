@@ -162,6 +162,7 @@ void WebotsController::init()
   }
 
   Platform::getInstance().init(this);
+  theDebugServer.start(port, true);
 }
 
 void WebotsController::main()
@@ -501,6 +502,11 @@ void WebotsController::set(const CameraSettingsRequest& data)
 void WebotsController::get(ButtonData& /*data*/)
 {
   // not support yet
+}
+
+void WebotsController::get(GameData& data)
+{
+
 }
 
 //void WebotsController::get(GPSData& data)

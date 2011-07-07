@@ -1,0 +1,62 @@
+/**  */
+option kick_ball
+{
+  float @direction [deg]; 
+
+  initial state kick
+  {
+    decision {
+      if(ball.y < 0)
+        goto kick_right;
+      else
+        goto kick_left;
+    }
+    action 
+    {
+    }
+  }
+
+  
+  state kick_left
+  {
+    decision {
+      if(action_done)
+        goto kick_finished;
+      else
+        stay;
+    }
+    action 
+    {
+      situation.abortable = false;
+      kick_ball_with_foot(direction = @direction, right = false);
+    }
+  }
+
+
+  state kick_right
+  {
+    decision {
+      if(action_done)
+        goto kick_finished;
+      else
+        stay;
+    }
+    action
+    {
+      situation.abortable = false;
+      kick_ball_with_foot(direction = @direction, right = true);
+    }
+  }
+
+  target state kick_finished
+  {
+    decision {
+      goto kick;
+    }
+    action 
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;    
+    }
+  }
+}

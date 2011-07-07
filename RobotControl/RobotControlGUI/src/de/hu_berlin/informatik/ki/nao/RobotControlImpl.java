@@ -10,6 +10,7 @@ import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.frontend.MissingDockableStrategy;
+import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
@@ -80,9 +81,16 @@ public class RobotControlImpl extends javax.swing.JFrame
     try
     {
       // set Look and Feel before adding all the components
-      //UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+      if("Linux".equals(System.getProperty("os.name")))
+      {
+        UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
+      }
+      else
+      {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      }
       //UIManager.setLookAndFeel(new GTKLookAndFeel());
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      
     }
     catch (Exception ex)
     {
@@ -403,9 +411,18 @@ public class RobotControlImpl extends javax.swing.JFrame
         try
         {
           pluginManager.addPluginsFrom(new URI("classpath://*"));
-          pluginManager.addPluginsFrom(new File("plugins/").toURI());
-          pluginManager.addPluginsFrom(new File(System.getProperty("user.home")
-            + "/.naoth/robotcontrol/plugins/").toURI());
+          File workingDirectoryPlugin = new File("plugins/");
+          if(workingDirectoryPlugin.isDirectory())
+          {
+            pluginManager.addPluginsFrom(workingDirectoryPlugin.toURI());
+          }
+          
+          File userHomePlugin = new File(System.getProperty("user.home")
+            + "/.naoth/robotcontrol/plugins/");
+          if(userHomePlugin.isDirectory())
+          {
+            pluginManager.addPluginsFrom(userHomePlugin.toURI());
+          }
           pluginManager.getPlugin(RobotControl.class).setVisible(true);
         }
         catch (URISyntaxException ex)
@@ -460,9 +477,12 @@ public class RobotControlImpl extends javax.swing.JFrame
       {
         config.load(new FileReader(fConfig));
       }
-      catch (IOException ex)
+      catch (Exception ex)
       {
         ex.printStackTrace();
+        JOptionPane.showMessageDialog(this,
+          "Config could not be loaded from "+fConfig, "WARNING",
+          JOptionPane.WARNING_MESSAGE);
       }
     }//end if
 

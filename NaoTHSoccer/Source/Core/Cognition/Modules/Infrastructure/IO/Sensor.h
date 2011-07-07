@@ -27,6 +27,10 @@
 #include <Representations/Infrastructure/GameData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/VirtualVision.h>
+#include <Representations/Infrastructure/DebugMessage.h>
+#include <Representations/Infrastructure/CalibrationData.h>
+
+#include <Representations/Perception/InertialPercept.h>
 
 #include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -60,6 +64,9 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(GameData)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
+  PROVIDE(DebugMessageIn)
+  PROVIDE(CalibrationData)
+  PROVIDE(InertialPercept)
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase
@@ -75,6 +82,7 @@ public:
 private:
   MessageReader* theMotionStatusReader;
   MessageReader* theOdometryDataReader;
+  MessageReader* theCalibrationDataReader;
 };
 
 #endif	/* _SENSOR_H */

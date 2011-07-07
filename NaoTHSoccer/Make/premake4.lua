@@ -75,7 +75,7 @@ solution "NaoTHSoccer"
   configuration {"Nao"}
     defines { "NAO" }
     targetdir "../dist/Nao"
-  
+
   -- additional defines for windows
   if(_OPTIONS["platform"] ~= "Nao" and _ACTION ~= "gmake") then
   configuration {"windows"}
@@ -83,10 +83,12 @@ solution "NaoTHSoccer"
     buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
+	links {"ws2_32"}
   end
   
   configuration {"linux"}
     buildoptions {"-fPIC"}
+    flags { "ExtraWarnings" }
       
   -- base
   dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"

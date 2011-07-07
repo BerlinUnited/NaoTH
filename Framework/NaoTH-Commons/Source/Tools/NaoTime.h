@@ -21,9 +21,19 @@ namespace naoth
 {
 class NaoTime 
 {
+  /**
+   *
+   */
   static unsigned long long getSystemTimeInMilliSeconds();
 
 public:
+
+  /**
+   *
+   */
+  static unsigned long long getSystemTimeInMicroSeconds();
+
+
   /*
    * return the time sinse the start of the controller
    */

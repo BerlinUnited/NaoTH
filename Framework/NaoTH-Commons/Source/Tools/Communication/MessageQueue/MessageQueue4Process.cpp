@@ -7,6 +7,7 @@
 
 #include "MessageQueue4Process.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Debug/Trace.h"
 #include <cstring>
 
 // only avaiable on Nao
@@ -36,15 +37,20 @@ void MessageQueue4Process::write(const std::string& msg)
 {
   if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
   {
+    g_socket_set_blocking(serverSocket, false); // just to make sure...
     writeSocket = g_socket_accept(serverSocket, NULL, NULL);
+
     if ( writeSocket!=NULL )
     {
+      g_socket_set_blocking(writeSocket, false);
       theWriteStream.init(writeSocket);
       cout<<"MessageQueue " << theName << " writing opened"<<endl;
     }
 
     if ( writeSocket==NULL || !g_socket_is_connected(writeSocket) )
+    {
       return;
+    }
   }
 
   try

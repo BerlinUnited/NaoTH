@@ -26,10 +26,12 @@ public:
     double stiffness;
     double comHeight;
     double ZMPOffsetY;
+    double ZMPOffsetYByCharacter;
     
     double singleSupportTime;
     double doubleSupportTime;
     double maxExtendDoubleSupportTime;
+    double extendDoubleSupportTimeByCharacter;
     
     double stepHeight;
     double curveFactor;
@@ -91,8 +93,8 @@ public:
     double kickSpeed;
     // wait a little before taking the foot back after the kick is executed
     double afterKickTime;
-    // the height of the hip
-    double hipHeight;
+    // offset of the hip height according to the default one
+    double hipHeightOffset;
 
     //
     double footRadius;
@@ -100,9 +102,16 @@ public:
     double maxDistanceToRetract;
 
     bool enableStaticStabilizer;
+
+
+    double basicXRotationOffset;
+    double extendedXRotationOffset;
+    double rotationTime;
   } kick;
   
   IKParameters();
+
+  virtual ~IKParameters();
 };
 
 #endif // __IK__PARAMETERS_H_

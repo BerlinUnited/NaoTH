@@ -12,10 +12,12 @@
 #include <set>
 #include <string>
 #include <list>
+#include <iterator>
 #include <vector>
 #include <limits>
 #include <ctime>
 #include <cstdlib>
+#include <iterator> 
 #include "Module.h"
 #include "BlackBoard.h"
 #include "ModuleCreator.h"
@@ -40,7 +42,7 @@ public:
    * with different names is alowed
    */
   template<class T>
-  ModuleCreator<T>* registerModule(std::string name)
+  ModuleCreator<T>* registerModule(std::string name, bool enable = false)
   {
     // module does not exist
     if(moduleExecutionMap.find(name) == moduleExecutionMap.end())
@@ -61,6 +63,8 @@ public:
                 << typeid(T).name() << " requested." << std::endl;
       assert(false);
     }//end if
+
+    typedModule->setEnabled(enable);
 
     return typedModule;
   }//end registerModule

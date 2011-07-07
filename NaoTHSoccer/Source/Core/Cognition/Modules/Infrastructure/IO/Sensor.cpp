@@ -3,6 +3,7 @@
  */
 
 #include "Sensor.h"
+#include <PlatformInterface/Platform.h>
 
 Sensor::Sensor():
 theMotionStatusReader(NULL),
@@ -16,6 +17,8 @@ Sensor::~Sensor()
     delete theMotionStatusReader;
   if (theOdometryDataReader != NULL)
     delete theOdometryDataReader;
+  if (theCalibrationDataReader != NULL)
+    delete theCalibrationDataReader;
 }
 
 
@@ -30,6 +33,9 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   robot.bodyNickName = platformInterface.getBodyNickName();
   robot.bodyID = platformInterface.getBodyID();
   robot.basicTimeStep = platformInterface.getBasicTimeStep();
+
+  // init player number, team number and etc.
+  getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
   REG_INPUT(AccelerometerData);
   REG_INPUT(BatteryData);
@@ -46,15 +52,18 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(FrameInfo);
   REG_INPUT(CurrentCameraSettings);
   REG_INPUT(VirtualVision);
+  REG_INPUT(DebugMessageIn);
   
   theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
   theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
+  theCalibrationDataReader = new MessageReader(platformInterface.getMessageQueue("CalibrationData"));
 }//end init
 
 
 void Sensor::execute()
 {
   // data from motion
+  GT_TRACE("!theMotionStatusReader->empty()");
   if ( !theMotionStatusReader->empty() )
   {
     string msg = theMotionStatusReader->read();
@@ -67,6 +76,7 @@ void Sensor::execute()
     Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
   }
   
+  GT_TRACE(" !theOdometryDataReader->empty()");
   if ( !theOdometryDataReader->empty() )
   {
     string msg = theOdometryDataReader->read();
@@ -78,6 +88,25 @@ void Sensor::execute()
     stringstream ss(msg);
     Serializer<OdometryData>::deserialize(ss, getOdometryData());
   }
+
+  GT_TRACE("!theCalibrationDataReader->empty()");
+  if ( !theCalibrationDataReader->empty() )
+  {
+    string msg = theCalibrationDataReader->read();
+    // drop old message
+    while ( !theCalibrationDataReader->empty() )
+    {
+      msg = theCalibrationDataReader->read();
+    }
+    stringstream ss(msg);
+    Serializer<CalibrationData>::deserialize(ss, getCalibrationData());
+  }
+
+
+  // add calibration to inertial sensor
+  getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
+
+  GT_TRACE("Sensor:execute() end");
 
 }//end execute
 

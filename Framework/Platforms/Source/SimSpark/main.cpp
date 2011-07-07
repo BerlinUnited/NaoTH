@@ -15,18 +15,10 @@
 
 using namespace std;
 
-void printUsage(char* name)
-{
-  cout << "NaoTH Simspark controller" << endl;
-  cout << "-------------------------" << endl;
-  cout << "http://www.naoteamhumboldt.de" << endl << endl;
-  cout << "Usage: "<<name<<" [teamname [playernumber [server [port]]]]" << endl << endl;
-}
-
 int main(int argc, char** argv)
 {
   g_type_init();
-  
+
   string teamName = "NaoTH";
   gchar* optTeamName = NULL;
   unsigned int num = 0; // zero means get a number from server
@@ -50,7 +42,7 @@ int main(int argc, char** argv)
   if (!g_option_context_parse (context, &argc, &argv, &error))
   {
     g_print ("option parsing failed: %s\n", error->message);
-    EXIT_FAILURE;
+    return EXIT_FAILURE;
   }
 
   if ( optTeamName != NULL )

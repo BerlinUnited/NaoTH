@@ -5799,6 +5799,11 @@ public final class Representations {
     // optional bool searchDirection = 8;
     boolean hasSearchDirection();
     boolean getSearchDirection();
+    
+    // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+    boolean hasTargetPointOnTheGround();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getTargetPointOnTheGround();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getTargetPointOnTheGroundOrBuilder();
   }
   public static final class HeadMotionRequest extends
       com.google.protobuf.GeneratedMessage
@@ -5924,6 +5929,19 @@ public final class Representations {
       return searchDirection_;
     }
     
+    // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+    public static final int TARGETPOINTONTHEGROUND_FIELD_NUMBER = 9;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 targetPointOnTheGround_;
+    public boolean hasTargetPointOnTheGround() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getTargetPointOnTheGround() {
+      return targetPointOnTheGround_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getTargetPointOnTheGroundOrBuilder() {
+      return targetPointOnTheGround_;
+    }
+    
     private void initFields() {
       id_ = 0;
       cameraID_ = 0;
@@ -5933,6 +5951,7 @@ public final class Representations {
       searchCenter_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       searchSize_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
       searchDirection_ = false;
+      targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5977,6 +5996,12 @@ public final class Representations {
           return false;
         }
       }
+      if (hasTargetPointOnTheGround()) {
+        if (!getTargetPointOnTheGround().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -6007,6 +6032,9 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeBool(8, searchDirection_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, targetPointOnTheGround_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -6048,6 +6076,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(8, searchDirection_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, targetPointOnTheGround_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6170,6 +6202,7 @@ public final class Representations {
           getTargetPointInTheWorldFieldBuilder();
           getSearchCenterFieldBuilder();
           getSearchSizeFieldBuilder();
+          getTargetPointOnTheGroundFieldBuilder();
         }
       }
       private static Builder create() {
@@ -6214,6 +6247,12 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000040);
         searchDirection_ = false;
         bitField0_ = (bitField0_ & ~0x00000080);
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          targetPointOnTheGroundBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -6304,6 +6343,14 @@ public final class Representations {
           to_bitField0_ |= 0x00000080;
         }
         result.searchDirection_ = searchDirection_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (targetPointOnTheGroundBuilder_ == null) {
+          result.targetPointOnTheGround_ = targetPointOnTheGround_;
+        } else {
+          result.targetPointOnTheGround_ = targetPointOnTheGroundBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -6344,6 +6391,9 @@ public final class Representations {
         if (other.hasSearchDirection()) {
           setSearchDirection(other.getSearchDirection());
         }
+        if (other.hasTargetPointOnTheGround()) {
+          mergeTargetPointOnTheGround(other.getTargetPointOnTheGround());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -6383,6 +6433,12 @@ public final class Representations {
         }
         if (hasSearchSize()) {
           if (!getSearchSize().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasTargetPointOnTheGround()) {
+          if (!getTargetPointOnTheGround().isInitialized()) {
             
             return false;
           }
@@ -6471,6 +6527,15 @@ public final class Representations {
             case 64: {
               bitField0_ |= 0x00000080;
               searchDirection_ = input.readBool();
+              break;
+            }
+            case 74: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasTargetPointOnTheGround()) {
+                subBuilder.mergeFrom(getTargetPointOnTheGround());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setTargetPointOnTheGround(subBuilder.buildPartial());
               break;
             }
           }
@@ -6992,6 +7057,96 @@ public final class Representations {
         return this;
       }
       
+      // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> targetPointOnTheGroundBuilder_;
+      public boolean hasTargetPointOnTheGround() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getTargetPointOnTheGround() {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          return targetPointOnTheGround_;
+        } else {
+          return targetPointOnTheGroundBuilder_.getMessage();
+        }
+      }
+      public Builder setTargetPointOnTheGround(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          targetPointOnTheGround_ = value;
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setTargetPointOnTheGround(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGround_ = builderForValue.build();
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeTargetPointOnTheGround(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              targetPointOnTheGround_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            targetPointOnTheGround_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(targetPointOnTheGround_).mergeFrom(value).buildPartial();
+          } else {
+            targetPointOnTheGround_ = value;
+          }
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearTargetPointOnTheGround() {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGround_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          targetPointOnTheGroundBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder getTargetPointOnTheGroundBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getTargetPointOnTheGroundFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getTargetPointOnTheGroundOrBuilder() {
+        if (targetPointOnTheGroundBuilder_ != null) {
+          return targetPointOnTheGroundBuilder_.getMessageOrBuilder();
+        } else {
+          return targetPointOnTheGround_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getTargetPointOnTheGroundFieldBuilder() {
+        if (targetPointOnTheGroundBuilder_ == null) {
+          targetPointOnTheGroundBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  targetPointOnTheGround_,
+                  getParentForChildren(),
+                  isClean());
+          targetPointOnTheGround_ = null;
+        }
+        return targetPointOnTheGroundBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:naothmessages.HeadMotionRequest)
     }
     
@@ -7003,6 +7158,706 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.HeadMotionRequest)
   }
   
+  public interface StepControlRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required uint32 stepID = 1;
+    boolean hasStepID();
+    int getStepID();
+    
+    // required bool moveLeftFoot = 2;
+    boolean hasMoveLeftFoot();
+    boolean getMoveLeftFoot();
+    
+    // required .naothmessages.Pose2D target = 3;
+    boolean hasTarget();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getTarget();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getTargetOrBuilder();
+    
+    // required uint32 time = 4;
+    boolean hasTime();
+    int getTime();
+    
+    // required double speedDirection = 5;
+    boolean hasSpeedDirection();
+    double getSpeedDirection();
+  }
+  public static final class StepControlRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements StepControlRequestOrBuilder {
+    // Use StepControlRequest.newBuilder() to construct.
+    private StepControlRequest(Builder builder) {
+      super(builder);
+    }
+    private StepControlRequest(boolean noInit) {}
+    
+    private static final StepControlRequest defaultInstance;
+    public static StepControlRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StepControlRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlRequest_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlRequest_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required uint32 stepID = 1;
+    public static final int STEPID_FIELD_NUMBER = 1;
+    private int stepID_;
+    public boolean hasStepID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getStepID() {
+      return stepID_;
+    }
+    
+    // required bool moveLeftFoot = 2;
+    public static final int MOVELEFTFOOT_FIELD_NUMBER = 2;
+    private boolean moveLeftFoot_;
+    public boolean hasMoveLeftFoot() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public boolean getMoveLeftFoot() {
+      return moveLeftFoot_;
+    }
+    
+    // required .naothmessages.Pose2D target = 3;
+    public static final int TARGET_FIELD_NUMBER = 3;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D target_;
+    public boolean hasTarget() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getTarget() {
+      return target_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getTargetOrBuilder() {
+      return target_;
+    }
+    
+    // required uint32 time = 4;
+    public static final int TIME_FIELD_NUMBER = 4;
+    private int time_;
+    public boolean hasTime() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public int getTime() {
+      return time_;
+    }
+    
+    // required double speedDirection = 5;
+    public static final int SPEEDDIRECTION_FIELD_NUMBER = 5;
+    private double speedDirection_;
+    public boolean hasSpeedDirection() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public double getSpeedDirection() {
+      return speedDirection_;
+    }
+    
+    private void initFields() {
+      stepID_ = 0;
+      moveLeftFoot_ = false;
+      target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      time_ = 0;
+      speedDirection_ = 0D;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasStepID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasMoveLeftFoot()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTarget()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTime()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSpeedDirection()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getTarget().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, stepID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, moveLeftFoot_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, target_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt32(4, time_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeDouble(5, speedDirection_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, stepID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, moveLeftFoot_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, target_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(4, time_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(5, speedDirection_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlRequest_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlRequest_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getTargetFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        stepID_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        moveLeftFoot_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (targetBuilder_ == null) {
+          target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+        } else {
+          targetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        time_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        speedDirection_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDescriptor();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest getDefaultInstanceForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest build() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest buildPartial() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest result = new de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.stepID_ = stepID_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.moveLeftFoot_ = moveLeftFoot_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (targetBuilder_ == null) {
+          result.target_ = target_;
+        } else {
+          result.target_ = targetBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.time_ = time_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.speedDirection_ = speedDirection_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest) {
+          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest other) {
+        if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance()) return this;
+        if (other.hasStepID()) {
+          setStepID(other.getStepID());
+        }
+        if (other.hasMoveLeftFoot()) {
+          setMoveLeftFoot(other.getMoveLeftFoot());
+        }
+        if (other.hasTarget()) {
+          mergeTarget(other.getTarget());
+        }
+        if (other.hasTime()) {
+          setTime(other.getTime());
+        }
+        if (other.hasSpeedDirection()) {
+          setSpeedDirection(other.getSpeedDirection());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasStepID()) {
+          
+          return false;
+        }
+        if (!hasMoveLeftFoot()) {
+          
+          return false;
+        }
+        if (!hasTarget()) {
+          
+          return false;
+        }
+        if (!hasTime()) {
+          
+          return false;
+        }
+        if (!hasSpeedDirection()) {
+          
+          return false;
+        }
+        if (!getTarget().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              stepID_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              moveLeftFoot_ = input.readBool();
+              break;
+            }
+            case 26: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder();
+              if (hasTarget()) {
+                subBuilder.mergeFrom(getTarget());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setTarget(subBuilder.buildPartial());
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              time_ = input.readUInt32();
+              break;
+            }
+            case 41: {
+              bitField0_ |= 0x00000010;
+              speedDirection_ = input.readDouble();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required uint32 stepID = 1;
+      private int stepID_ ;
+      public boolean hasStepID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getStepID() {
+        return stepID_;
+      }
+      public Builder setStepID(int value) {
+        bitField0_ |= 0x00000001;
+        stepID_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearStepID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        stepID_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required bool moveLeftFoot = 2;
+      private boolean moveLeftFoot_ ;
+      public boolean hasMoveLeftFoot() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public boolean getMoveLeftFoot() {
+        return moveLeftFoot_;
+      }
+      public Builder setMoveLeftFoot(boolean value) {
+        bitField0_ |= 0x00000002;
+        moveLeftFoot_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearMoveLeftFoot() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        moveLeftFoot_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // required .naothmessages.Pose2D target = 3;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> targetBuilder_;
+      public boolean hasTarget() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getTarget() {
+        if (targetBuilder_ == null) {
+          return target_;
+        } else {
+          return targetBuilder_.getMessage();
+        }
+      }
+      public Builder setTarget(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
+        if (targetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          target_ = value;
+          onChanged();
+        } else {
+          targetBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder setTarget(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder builderForValue) {
+        if (targetBuilder_ == null) {
+          target_ = builderForValue.build();
+          onChanged();
+        } else {
+          targetBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder mergeTarget(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
+        if (targetBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              target_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+            target_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(target_).mergeFrom(value).buildPartial();
+          } else {
+            target_ = value;
+          }
+          onChanged();
+        } else {
+          targetBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder clearTarget() {
+        if (targetBuilder_ == null) {
+          target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+          onChanged();
+        } else {
+          targetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder getTargetBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getTargetFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getTargetOrBuilder() {
+        if (targetBuilder_ != null) {
+          return targetBuilder_.getMessageOrBuilder();
+        } else {
+          return target_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> 
+          getTargetFieldBuilder() {
+        if (targetBuilder_ == null) {
+          targetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder>(
+                  target_,
+                  getParentForChildren(),
+                  isClean());
+          target_ = null;
+        }
+        return targetBuilder_;
+      }
+      
+      // required uint32 time = 4;
+      private int time_ ;
+      public boolean hasTime() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public int getTime() {
+        return time_;
+      }
+      public Builder setTime(int value) {
+        bitField0_ |= 0x00000008;
+        time_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTime() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        time_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required double speedDirection = 5;
+      private double speedDirection_ ;
+      public boolean hasSpeedDirection() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public double getSpeedDirection() {
+        return speedDirection_;
+      }
+      public Builder setSpeedDirection(double value) {
+        bitField0_ |= 0x00000010;
+        speedDirection_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSpeedDirection() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        speedDirection_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.StepControlRequest)
+    }
+    
+    static {
+      defaultInstance = new StepControlRequest(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.StepControlRequest)
+  }
+  
   public interface WalkRequestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -7010,10 +7865,24 @@ public final class Representations {
     boolean hasCoordinate();
     int getCoordinate();
     
+    // required double character = 2;
+    boolean hasCharacter();
+    double getCharacter();
+    
     // required .naothmessages.Pose2D target = 3;
     boolean hasTarget();
     de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getTarget();
     de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getTargetOrBuilder();
+    
+    // optional .naothmessages.StepControlRequest stepControl = 4;
+    boolean hasStepControl();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest getStepControl();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder getStepControlOrBuilder();
+    
+    // required .naothmessages.Pose2D offset = 5;
+    boolean hasOffset();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getOffset();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getOffsetOrBuilder();
   }
   public static final class WalkRequest extends
       com.google.protobuf.GeneratedMessage
@@ -7054,11 +7923,21 @@ public final class Representations {
       return coordinate_;
     }
     
+    // required double character = 2;
+    public static final int CHARACTER_FIELD_NUMBER = 2;
+    private double character_;
+    public boolean hasCharacter() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public double getCharacter() {
+      return character_;
+    }
+    
     // required .naothmessages.Pose2D target = 3;
     public static final int TARGET_FIELD_NUMBER = 3;
     private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D target_;
     public boolean hasTarget() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getTarget() {
       return target_;
@@ -7067,9 +7946,38 @@ public final class Representations {
       return target_;
     }
     
+    // optional .naothmessages.StepControlRequest stepControl = 4;
+    public static final int STEPCONTROL_FIELD_NUMBER = 4;
+    private de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest stepControl_;
+    public boolean hasStepControl() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest getStepControl() {
+      return stepControl_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder getStepControlOrBuilder() {
+      return stepControl_;
+    }
+    
+    // required .naothmessages.Pose2D offset = 5;
+    public static final int OFFSET_FIELD_NUMBER = 5;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D offset_;
+    public boolean hasOffset() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getOffset() {
+      return offset_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getOffsetOrBuilder() {
+      return offset_;
+    }
+    
     private void initFields() {
       coordinate_ = 0;
+      character_ = 0D;
       target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      stepControl_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance();
+      offset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7080,11 +7988,29 @@ public final class Representations {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasCharacter()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!hasTarget()) {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasOffset()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!getTarget().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasStepControl()) {
+        if (!getStepControl().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (!getOffset().isInitialized()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -7099,7 +8025,16 @@ public final class Representations {
         output.writeUInt32(1, coordinate_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, character_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeMessage(3, target_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(4, stepControl_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, offset_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -7116,7 +8051,19 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, character_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, target_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, stepControl_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, offset_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7235,6 +8182,8 @@ public final class Representations {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getTargetFieldBuilder();
+          getStepControlFieldBuilder();
+          getOffsetFieldBuilder();
         }
       }
       private static Builder create() {
@@ -7245,12 +8194,26 @@ public final class Representations {
         super.clear();
         coordinate_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
+        character_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (targetBuilder_ == null) {
           target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
         } else {
           targetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
+        if (stepControlBuilder_ == null) {
+          stepControl_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance();
+        } else {
+          stepControlBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (offsetBuilder_ == null) {
+          offset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+        } else {
+          offsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -7296,10 +8259,30 @@ public final class Representations {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
+        result.character_ = character_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
         if (targetBuilder_ == null) {
           result.target_ = target_;
         } else {
           result.target_ = targetBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        if (stepControlBuilder_ == null) {
+          result.stepControl_ = stepControl_;
+        } else {
+          result.stepControl_ = stepControlBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (offsetBuilder_ == null) {
+          result.offset_ = offset_;
+        } else {
+          result.offset_ = offsetBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -7320,8 +8303,17 @@ public final class Representations {
         if (other.hasCoordinate()) {
           setCoordinate(other.getCoordinate());
         }
+        if (other.hasCharacter()) {
+          setCharacter(other.getCharacter());
+        }
         if (other.hasTarget()) {
           mergeTarget(other.getTarget());
+        }
+        if (other.hasStepControl()) {
+          mergeStepControl(other.getStepControl());
+        }
+        if (other.hasOffset()) {
+          mergeOffset(other.getOffset());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -7332,11 +8324,29 @@ public final class Representations {
           
           return false;
         }
+        if (!hasCharacter()) {
+          
+          return false;
+        }
         if (!hasTarget()) {
           
           return false;
         }
+        if (!hasOffset()) {
+          
+          return false;
+        }
         if (!getTarget().isInitialized()) {
+          
+          return false;
+        }
+        if (hasStepControl()) {
+          if (!getStepControl().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (!getOffset().isInitialized()) {
           
           return false;
         }
@@ -7371,6 +8381,11 @@ public final class Representations {
               coordinate_ = input.readUInt32();
               break;
             }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              character_ = input.readDouble();
+              break;
+            }
             case 26: {
               de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder();
               if (hasTarget()) {
@@ -7378,6 +8393,24 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setTarget(subBuilder.buildPartial());
+              break;
+            }
+            case 34: {
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.newBuilder();
+              if (hasStepControl()) {
+                subBuilder.mergeFrom(getStepControl());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setStepControl(subBuilder.buildPartial());
+              break;
+            }
+            case 42: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder();
+              if (hasOffset()) {
+                subBuilder.mergeFrom(getOffset());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setOffset(subBuilder.buildPartial());
               break;
             }
           }
@@ -7407,12 +8440,33 @@ public final class Representations {
         return this;
       }
       
+      // required double character = 2;
+      private double character_ ;
+      public boolean hasCharacter() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public double getCharacter() {
+        return character_;
+      }
+      public Builder setCharacter(double value) {
+        bitField0_ |= 0x00000002;
+        character_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCharacter() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        character_ = 0D;
+        onChanged();
+        return this;
+      }
+      
       // required .naothmessages.Pose2D target = 3;
       private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D target_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> targetBuilder_;
       public boolean hasTarget() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getTarget() {
         if (targetBuilder_ == null) {
@@ -7431,7 +8485,7 @@ public final class Representations {
         } else {
           targetBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder setTarget(
@@ -7442,12 +8496,12 @@ public final class Representations {
         } else {
           targetBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder mergeTarget(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
         if (targetBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
               target_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
             target_ =
               de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(target_).mergeFrom(value).buildPartial();
@@ -7458,7 +8512,7 @@ public final class Representations {
         } else {
           targetBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         return this;
       }
       public Builder clearTarget() {
@@ -7468,11 +8522,11 @@ public final class Representations {
         } else {
           targetBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder getTargetBuilder() {
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000004;
         onChanged();
         return getTargetFieldBuilder().getBuilder();
       }
@@ -7497,6 +8551,186 @@ public final class Representations {
         return targetBuilder_;
       }
       
+      // optional .naothmessages.StepControlRequest stepControl = 4;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest stepControl_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder> stepControlBuilder_;
+      public boolean hasStepControl() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest getStepControl() {
+        if (stepControlBuilder_ == null) {
+          return stepControl_;
+        } else {
+          return stepControlBuilder_.getMessage();
+        }
+      }
+      public Builder setStepControl(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest value) {
+        if (stepControlBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          stepControl_ = value;
+          onChanged();
+        } else {
+          stepControlBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder setStepControl(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder builderForValue) {
+        if (stepControlBuilder_ == null) {
+          stepControl_ = builderForValue.build();
+          onChanged();
+        } else {
+          stepControlBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder mergeStepControl(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest value) {
+        if (stepControlBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              stepControl_ != de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance()) {
+            stepControl_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.newBuilder(stepControl_).mergeFrom(value).buildPartial();
+          } else {
+            stepControl_ = value;
+          }
+          onChanged();
+        } else {
+          stepControlBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      public Builder clearStepControl() {
+        if (stepControlBuilder_ == null) {
+          stepControl_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.getDefaultInstance();
+          onChanged();
+        } else {
+          stepControlBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder getStepControlBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getStepControlFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder getStepControlOrBuilder() {
+        if (stepControlBuilder_ != null) {
+          return stepControlBuilder_.getMessageOrBuilder();
+        } else {
+          return stepControl_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder> 
+          getStepControlFieldBuilder() {
+        if (stepControlBuilder_ == null) {
+          stepControlBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequestOrBuilder>(
+                  stepControl_,
+                  getParentForChildren(),
+                  isClean());
+          stepControl_ = null;
+        }
+        return stepControlBuilder_;
+      }
+      
+      // required .naothmessages.Pose2D offset = 5;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D offset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> offsetBuilder_;
+      public boolean hasOffset() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getOffset() {
+        if (offsetBuilder_ == null) {
+          return offset_;
+        } else {
+          return offsetBuilder_.getMessage();
+        }
+      }
+      public Builder setOffset(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
+        if (offsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          offset_ = value;
+          onChanged();
+        } else {
+          offsetBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder setOffset(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder builderForValue) {
+        if (offsetBuilder_ == null) {
+          offset_ = builderForValue.build();
+          onChanged();
+        } else {
+          offsetBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder mergeOffset(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
+        if (offsetBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              offset_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+            offset_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(offset_).mergeFrom(value).buildPartial();
+          } else {
+            offset_ = value;
+          }
+          onChanged();
+        } else {
+          offsetBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder clearOffset() {
+        if (offsetBuilder_ == null) {
+          offset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+          onChanged();
+        } else {
+          offsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder getOffsetBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getOffsetFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getOffsetOrBuilder() {
+        if (offsetBuilder_ != null) {
+          return offsetBuilder_.getMessageOrBuilder();
+        } else {
+          return offset_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> 
+          getOffsetFieldBuilder() {
+        if (offsetBuilder_ == null) {
+          offsetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder>(
+                  offset_,
+                  getParentForChildren(),
+                  isClean());
+          offset_ = null;
+        }
+        return offsetBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:naothmessages.WalkRequest)
     }
     
@@ -7506,6 +8740,641 @@ public final class Representations {
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.WalkRequest)
+  }
+  
+  public interface KickRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .naothmessages.DoubleVector3 kickPoint = 1;
+    boolean hasKickPoint();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getKickPoint();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder getKickPointOrBuilder();
+    
+    // required double kickDirection = 2;
+    boolean hasKickDirection();
+    double getKickDirection();
+    
+    // required int32 kickFoot = 3;
+    boolean hasKickFoot();
+    int getKickFoot();
+    
+    // required bool finishKick = 4;
+    boolean hasFinishKick();
+    boolean getFinishKick();
+  }
+  public static final class KickRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements KickRequestOrBuilder {
+    // Use KickRequest.newBuilder() to construct.
+    private KickRequest(Builder builder) {
+      super(builder);
+    }
+    private KickRequest(boolean noInit) {}
+    
+    private static final KickRequest defaultInstance;
+    public static KickRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public KickRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_KickRequest_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_KickRequest_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required .naothmessages.DoubleVector3 kickPoint = 1;
+    public static final int KICKPOINT_FIELD_NUMBER = 1;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 kickPoint_;
+    public boolean hasKickPoint() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getKickPoint() {
+      return kickPoint_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder getKickPointOrBuilder() {
+      return kickPoint_;
+    }
+    
+    // required double kickDirection = 2;
+    public static final int KICKDIRECTION_FIELD_NUMBER = 2;
+    private double kickDirection_;
+    public boolean hasKickDirection() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public double getKickDirection() {
+      return kickDirection_;
+    }
+    
+    // required int32 kickFoot = 3;
+    public static final int KICKFOOT_FIELD_NUMBER = 3;
+    private int kickFoot_;
+    public boolean hasKickFoot() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getKickFoot() {
+      return kickFoot_;
+    }
+    
+    // required bool finishKick = 4;
+    public static final int FINISHKICK_FIELD_NUMBER = 4;
+    private boolean finishKick_;
+    public boolean hasFinishKick() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public boolean getFinishKick() {
+      return finishKick_;
+    }
+    
+    private void initFields() {
+      kickPoint_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      kickDirection_ = 0D;
+      kickFoot_ = 0;
+      finishKick_ = false;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasKickPoint()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasKickDirection()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasKickFoot()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasFinishKick()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getKickPoint().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, kickPoint_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeDouble(2, kickDirection_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, kickFoot_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(4, finishKick_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, kickPoint_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(2, kickDirection_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, kickFoot_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, finishKick_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_KickRequest_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_KickRequest_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getKickPointFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (kickPointBuilder_ == null) {
+          kickPoint_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+        } else {
+          kickPointBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        kickDirection_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        kickFoot_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        finishKick_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDescriptor();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest getDefaultInstanceForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest build() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest buildPartial() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest result = new de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (kickPointBuilder_ == null) {
+          result.kickPoint_ = kickPoint_;
+        } else {
+          result.kickPoint_ = kickPointBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.kickDirection_ = kickDirection_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.kickFoot_ = kickFoot_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.finishKick_ = finishKick_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest) {
+          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest other) {
+        if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance()) return this;
+        if (other.hasKickPoint()) {
+          mergeKickPoint(other.getKickPoint());
+        }
+        if (other.hasKickDirection()) {
+          setKickDirection(other.getKickDirection());
+        }
+        if (other.hasKickFoot()) {
+          setKickFoot(other.getKickFoot());
+        }
+        if (other.hasFinishKick()) {
+          setFinishKick(other.getFinishKick());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasKickPoint()) {
+          
+          return false;
+        }
+        if (!hasKickDirection()) {
+          
+          return false;
+        }
+        if (!hasKickFoot()) {
+          
+          return false;
+        }
+        if (!hasFinishKick()) {
+          
+          return false;
+        }
+        if (!getKickPoint().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.newBuilder();
+              if (hasKickPoint()) {
+                subBuilder.mergeFrom(getKickPoint());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setKickPoint(subBuilder.buildPartial());
+              break;
+            }
+            case 17: {
+              bitField0_ |= 0x00000002;
+              kickDirection_ = input.readDouble();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              kickFoot_ = input.readInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              finishKick_ = input.readBool();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .naothmessages.DoubleVector3 kickPoint = 1;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 kickPoint_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder> kickPointBuilder_;
+      public boolean hasKickPoint() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 getKickPoint() {
+        if (kickPointBuilder_ == null) {
+          return kickPoint_;
+        } else {
+          return kickPointBuilder_.getMessage();
+        }
+      }
+      public Builder setKickPoint(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 value) {
+        if (kickPointBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          kickPoint_ = value;
+          onChanged();
+        } else {
+          kickPointBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setKickPoint(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (kickPointBuilder_ == null) {
+          kickPoint_ = builderForValue.build();
+          onChanged();
+        } else {
+          kickPointBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeKickPoint(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3 value) {
+        if (kickPointBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              kickPoint_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            kickPoint_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.newBuilder(kickPoint_).mergeFrom(value).buildPartial();
+          } else {
+            kickPoint_ = value;
+          }
+          onChanged();
+        } else {
+          kickPointBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearKickPoint() {
+        if (kickPointBuilder_ == null) {
+          kickPoint_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+          onChanged();
+        } else {
+          kickPointBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder getKickPointBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getKickPointFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder getKickPointOrBuilder() {
+        if (kickPointBuilder_ != null) {
+          return kickPointBuilder_.getMessageOrBuilder();
+        } else {
+          return kickPoint_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getKickPointFieldBuilder() {
+        if (kickPointBuilder_ == null) {
+          kickPointBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  kickPoint_,
+                  getParentForChildren(),
+                  isClean());
+          kickPoint_ = null;
+        }
+        return kickPointBuilder_;
+      }
+      
+      // required double kickDirection = 2;
+      private double kickDirection_ ;
+      public boolean hasKickDirection() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public double getKickDirection() {
+        return kickDirection_;
+      }
+      public Builder setKickDirection(double value) {
+        bitField0_ |= 0x00000002;
+        kickDirection_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearKickDirection() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        kickDirection_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // required int32 kickFoot = 3;
+      private int kickFoot_ ;
+      public boolean hasKickFoot() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getKickFoot() {
+        return kickFoot_;
+      }
+      public Builder setKickFoot(int value) {
+        bitField0_ |= 0x00000004;
+        kickFoot_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearKickFoot() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        kickFoot_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required bool finishKick = 4;
+      private boolean finishKick_ ;
+      public boolean hasFinishKick() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public boolean getFinishKick() {
+        return finishKick_;
+      }
+      public Builder setFinishKick(boolean value) {
+        bitField0_ |= 0x00000008;
+        finishKick_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFinishKick() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        finishKick_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.KickRequest)
+    }
+    
+    static {
+      defaultInstance = new KickRequest(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.KickRequest)
   }
   
   public interface MotionRequestOrBuilder
@@ -7531,6 +9400,15 @@ public final class Representations {
     // optional bool starndardStand = 5;
     boolean hasStarndardStand();
     boolean getStarndardStand();
+    
+    // optional .naothmessages.KickRequest kickRequest = 6;
+    boolean hasKickRequest();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest getKickRequest();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder getKickRequestOrBuilder();
+    
+    // optional double standHeight = 7;
+    boolean hasStandHeight();
+    double getStandHeight();
   }
   public static final class MotionRequest extends
       com.google.protobuf.GeneratedMessage
@@ -7614,12 +9492,37 @@ public final class Representations {
       return starndardStand_;
     }
     
+    // optional .naothmessages.KickRequest kickRequest = 6;
+    public static final int KICKREQUEST_FIELD_NUMBER = 6;
+    private de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest kickRequest_;
+    public boolean hasKickRequest() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest getKickRequest() {
+      return kickRequest_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder getKickRequestOrBuilder() {
+      return kickRequest_;
+    }
+    
+    // optional double standHeight = 7;
+    public static final int STANDHEIGHT_FIELD_NUMBER = 7;
+    private double standHeight_;
+    public boolean hasStandHeight() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    public double getStandHeight() {
+      return standHeight_;
+    }
+    
     private void initFields() {
       id_ = 0;
       time_ = 0;
       forced_ = false;
       walkRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.getDefaultInstance();
       starndardStand_ = false;
+      kickRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance();
+      standHeight_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7640,6 +9543,12 @@ public final class Representations {
       }
       if (hasWalkRequest()) {
         if (!getWalkRequest().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasKickRequest()) {
+        if (!getKickRequest().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -7665,6 +9574,12 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBool(5, starndardStand_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(6, kickRequest_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeDouble(7, standHeight_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -7694,6 +9609,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(5, starndardStand_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, kickRequest_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(7, standHeight_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7812,6 +9735,7 @@ public final class Representations {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getWalkRequestFieldBuilder();
+          getKickRequestFieldBuilder();
         }
       }
       private static Builder create() {
@@ -7834,6 +9758,14 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000008);
         starndardStand_ = false;
         bitField0_ = (bitField0_ & ~0x00000010);
+        if (kickRequestBuilder_ == null) {
+          kickRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance();
+        } else {
+          kickRequestBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        standHeight_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
       
@@ -7896,6 +9828,18 @@ public final class Representations {
           to_bitField0_ |= 0x00000010;
         }
         result.starndardStand_ = starndardStand_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        if (kickRequestBuilder_ == null) {
+          result.kickRequest_ = kickRequest_;
+        } else {
+          result.kickRequest_ = kickRequestBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.standHeight_ = standHeight_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -7927,6 +9871,12 @@ public final class Representations {
         if (other.hasStarndardStand()) {
           setStarndardStand(other.getStarndardStand());
         }
+        if (other.hasKickRequest()) {
+          mergeKickRequest(other.getKickRequest());
+        }
+        if (other.hasStandHeight()) {
+          setStandHeight(other.getStandHeight());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -7946,6 +9896,12 @@ public final class Representations {
         }
         if (hasWalkRequest()) {
           if (!getWalkRequest().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasKickRequest()) {
+          if (!getKickRequest().isInitialized()) {
             
             return false;
           }
@@ -8003,6 +9959,20 @@ public final class Representations {
             case 40: {
               bitField0_ |= 0x00000010;
               starndardStand_ = input.readBool();
+              break;
+            }
+            case 50: {
+              de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.newBuilder();
+              if (hasKickRequest()) {
+                subBuilder.mergeFrom(getKickRequest());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setKickRequest(subBuilder.buildPartial());
+              break;
+            }
+            case 57: {
+              bitField0_ |= 0x00000040;
+              standHeight_ = input.readDouble();
               break;
             }
           }
@@ -8181,6 +10151,117 @@ public final class Representations {
       public Builder clearStarndardStand() {
         bitField0_ = (bitField0_ & ~0x00000010);
         starndardStand_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // optional .naothmessages.KickRequest kickRequest = 6;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest kickRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder> kickRequestBuilder_;
+      public boolean hasKickRequest() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest getKickRequest() {
+        if (kickRequestBuilder_ == null) {
+          return kickRequest_;
+        } else {
+          return kickRequestBuilder_.getMessage();
+        }
+      }
+      public Builder setKickRequest(de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest value) {
+        if (kickRequestBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          kickRequest_ = value;
+          onChanged();
+        } else {
+          kickRequestBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      public Builder setKickRequest(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder builderForValue) {
+        if (kickRequestBuilder_ == null) {
+          kickRequest_ = builderForValue.build();
+          onChanged();
+        } else {
+          kickRequestBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      public Builder mergeKickRequest(de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest value) {
+        if (kickRequestBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+              kickRequest_ != de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance()) {
+            kickRequest_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.newBuilder(kickRequest_).mergeFrom(value).buildPartial();
+          } else {
+            kickRequest_ = value;
+          }
+          onChanged();
+        } else {
+          kickRequestBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      public Builder clearKickRequest() {
+        if (kickRequestBuilder_ == null) {
+          kickRequest_ = de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.getDefaultInstance();
+          onChanged();
+        } else {
+          kickRequestBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder getKickRequestBuilder() {
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return getKickRequestFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder getKickRequestOrBuilder() {
+        if (kickRequestBuilder_ != null) {
+          return kickRequestBuilder_.getMessageOrBuilder();
+        } else {
+          return kickRequest_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder> 
+          getKickRequestFieldBuilder() {
+        if (kickRequestBuilder_ == null) {
+          kickRequestBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest, de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequestOrBuilder>(
+                  kickRequest_,
+                  getParentForChildren(),
+                  isClean());
+          kickRequest_ = null;
+        }
+        return kickRequestBuilder_;
+      }
+      
+      // optional double standHeight = 7;
+      private double standHeight_ ;
+      public boolean hasStandHeight() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      public double getStandHeight() {
+        return standHeight_;
+      }
+      public Builder setStandHeight(double value) {
+        bitField0_ |= 0x00000040;
+        standHeight_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearStandHeight() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        standHeight_ = 0D;
         onChanged();
         return this;
       }
@@ -9795,6 +11876,417 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.FSRData)
   }
   
+  public interface StepControlStatusOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required uint32 stepID = 1;
+    boolean hasStepID();
+    int getStepID();
+    
+    // required uint32 moveableFoot = 2;
+    boolean hasMoveableFoot();
+    int getMoveableFoot();
+  }
+  public static final class StepControlStatus extends
+      com.google.protobuf.GeneratedMessage
+      implements StepControlStatusOrBuilder {
+    // Use StepControlStatus.newBuilder() to construct.
+    private StepControlStatus(Builder builder) {
+      super(builder);
+    }
+    private StepControlStatus(boolean noInit) {}
+    
+    private static final StepControlStatus defaultInstance;
+    public static StepControlStatus getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StepControlStatus getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlStatus_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlStatus_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required uint32 stepID = 1;
+    public static final int STEPID_FIELD_NUMBER = 1;
+    private int stepID_;
+    public boolean hasStepID() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getStepID() {
+      return stepID_;
+    }
+    
+    // required uint32 moveableFoot = 2;
+    public static final int MOVEABLEFOOT_FIELD_NUMBER = 2;
+    private int moveableFoot_;
+    public boolean hasMoveableFoot() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getMoveableFoot() {
+      return moveableFoot_;
+    }
+    
+    private void initFields() {
+      stepID_ = 0;
+      moveableFoot_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasStepID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasMoveableFoot()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, stepID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, moveableFoot_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, stepID_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, moveableFoot_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlStatus_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_StepControlStatus_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        stepID_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        moveableFoot_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDescriptor();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus getDefaultInstanceForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus build() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus buildPartial() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus result = new de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.stepID_ = stepID_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.moveableFoot_ = moveableFoot_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus) {
+          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus other) {
+        if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance()) return this;
+        if (other.hasStepID()) {
+          setStepID(other.getStepID());
+        }
+        if (other.hasMoveableFoot()) {
+          setMoveableFoot(other.getMoveableFoot());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasStepID()) {
+          
+          return false;
+        }
+        if (!hasMoveableFoot()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              stepID_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              moveableFoot_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required uint32 stepID = 1;
+      private int stepID_ ;
+      public boolean hasStepID() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getStepID() {
+        return stepID_;
+      }
+      public Builder setStepID(int value) {
+        bitField0_ |= 0x00000001;
+        stepID_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearStepID() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        stepID_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required uint32 moveableFoot = 2;
+      private int moveableFoot_ ;
+      public boolean hasMoveableFoot() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getMoveableFoot() {
+        return moveableFoot_;
+      }
+      public Builder setMoveableFoot(int value) {
+        bitField0_ |= 0x00000002;
+        moveableFoot_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearMoveableFoot() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        moveableFoot_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.StepControlStatus)
+    }
+    
+    static {
+      defaultInstance = new StepControlStatus(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.StepControlStatus)
+  }
+  
   public interface MotionStatusOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -9827,6 +12319,16 @@ public final class Representations {
     boolean hasPlannedMotionRightFoot();
     de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPlannedMotionRightFoot();
     de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPlannedMotionRightFootOrBuilder();
+    
+    // required .naothmessages.Pose2D plannedMotionHip = 8;
+    boolean hasPlannedMotionHip();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPlannedMotionHip();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPlannedMotionHipOrBuilder();
+    
+    // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+    boolean hasStepControlStatus();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus getStepControlStatus();
+    de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder getStepControlStatusOrBuilder();
   }
   public static final class MotionStatus extends
       com.google.protobuf.GeneratedMessage
@@ -9933,6 +12435,32 @@ public final class Representations {
       return plannedMotionRightFoot_;
     }
     
+    // required .naothmessages.Pose2D plannedMotionHip = 8;
+    public static final int PLANNEDMOTIONHIP_FIELD_NUMBER = 8;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D plannedMotionHip_;
+    public boolean hasPlannedMotionHip() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPlannedMotionHip() {
+      return plannedMotionHip_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPlannedMotionHipOrBuilder() {
+      return plannedMotionHip_;
+    }
+    
+    // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+    public static final int STEPCONTROLSTATUS_FIELD_NUMBER = 9;
+    private de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus stepControlStatus_;
+    public boolean hasStepControlStatus() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus getStepControlStatus() {
+      return stepControlStatus_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder getStepControlStatusOrBuilder() {
+      return stepControlStatus_;
+    }
+    
     private void initFields() {
       time_ = 0;
       lastMotion_ = 0;
@@ -9941,6 +12469,8 @@ public final class Representations {
       currentMotionState_ = 0;
       plannedMotionLeftFoot_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
       plannedMotionRightFoot_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      plannedMotionHip_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      stepControlStatus_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9975,6 +12505,10 @@ public final class Representations {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasPlannedMotionHip()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!getPlannedMotionLeftFoot().isInitialized()) {
         memoizedIsInitialized = 0;
         return false;
@@ -9982,6 +12516,16 @@ public final class Representations {
       if (!getPlannedMotionRightFoot().isInitialized()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      if (!getPlannedMotionHip().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (hasStepControlStatus()) {
+        if (!getStepControlStatus().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -10010,6 +12554,12 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeMessage(7, plannedMotionRightFoot_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeMessage(8, plannedMotionHip_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeMessage(9, stepControlStatus_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -10047,6 +12597,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(7, plannedMotionRightFoot_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, plannedMotionHip_);
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, stepControlStatus_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10166,6 +12724,8 @@ public final class Representations {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getPlannedMotionLeftFootFieldBuilder();
           getPlannedMotionRightFootFieldBuilder();
+          getPlannedMotionHipFieldBuilder();
+          getStepControlStatusFieldBuilder();
         }
       }
       private static Builder create() {
@@ -10196,6 +12756,18 @@ public final class Representations {
           plannedMotionRightFootBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000040);
+        if (plannedMotionHipBuilder_ == null) {
+          plannedMotionHip_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+        } else {
+          plannedMotionHipBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        if (stepControlStatusBuilder_ == null) {
+          stepControlStatus_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance();
+        } else {
+          stepControlStatusBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
         return this;
       }
       
@@ -10270,6 +12842,22 @@ public final class Representations {
         } else {
           result.plannedMotionRightFoot_ = plannedMotionRightFootBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        if (plannedMotionHipBuilder_ == null) {
+          result.plannedMotionHip_ = plannedMotionHip_;
+        } else {
+          result.plannedMotionHip_ = plannedMotionHipBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        if (stepControlStatusBuilder_ == null) {
+          result.stepControlStatus_ = stepControlStatus_;
+        } else {
+          result.stepControlStatus_ = stepControlStatusBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10307,6 +12895,12 @@ public final class Representations {
         if (other.hasPlannedMotionRightFoot()) {
           mergePlannedMotionRightFoot(other.getPlannedMotionRightFoot());
         }
+        if (other.hasPlannedMotionHip()) {
+          mergePlannedMotionHip(other.getPlannedMotionHip());
+        }
+        if (other.hasStepControlStatus()) {
+          mergeStepControlStatus(other.getStepControlStatus());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10340,6 +12934,10 @@ public final class Representations {
           
           return false;
         }
+        if (!hasPlannedMotionHip()) {
+          
+          return false;
+        }
         if (!getPlannedMotionLeftFoot().isInitialized()) {
           
           return false;
@@ -10347,6 +12945,16 @@ public final class Representations {
         if (!getPlannedMotionRightFoot().isInitialized()) {
           
           return false;
+        }
+        if (!getPlannedMotionHip().isInitialized()) {
+          
+          return false;
+        }
+        if (hasStepControlStatus()) {
+          if (!getStepControlStatus().isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -10415,6 +13023,24 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setPlannedMotionRightFoot(subBuilder.buildPartial());
+              break;
+            }
+            case 66: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder();
+              if (hasPlannedMotionHip()) {
+                subBuilder.mergeFrom(getPlannedMotionHip());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setPlannedMotionHip(subBuilder.buildPartial());
+              break;
+            }
+            case 74: {
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.newBuilder();
+              if (hasStepControlStatus()) {
+                subBuilder.mergeFrom(getStepControlStatus());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setStepControlStatus(subBuilder.buildPartial());
               break;
             }
           }
@@ -10706,6 +13332,186 @@ public final class Representations {
           plannedMotionRightFoot_ = null;
         }
         return plannedMotionRightFootBuilder_;
+      }
+      
+      // required .naothmessages.Pose2D plannedMotionHip = 8;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D plannedMotionHip_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> plannedMotionHipBuilder_;
+      public boolean hasPlannedMotionHip() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D getPlannedMotionHip() {
+        if (plannedMotionHipBuilder_ == null) {
+          return plannedMotionHip_;
+        } else {
+          return plannedMotionHipBuilder_.getMessage();
+        }
+      }
+      public Builder setPlannedMotionHip(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
+        if (plannedMotionHipBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          plannedMotionHip_ = value;
+          onChanged();
+        } else {
+          plannedMotionHipBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder setPlannedMotionHip(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder builderForValue) {
+        if (plannedMotionHipBuilder_ == null) {
+          plannedMotionHip_ = builderForValue.build();
+          onChanged();
+        } else {
+          plannedMotionHipBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder mergePlannedMotionHip(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D value) {
+        if (plannedMotionHipBuilder_ == null) {
+          if (((bitField0_ & 0x00000080) == 0x00000080) &&
+              plannedMotionHip_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance()) {
+            plannedMotionHip_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder(plannedMotionHip_).mergeFrom(value).buildPartial();
+          } else {
+            plannedMotionHip_ = value;
+          }
+          onChanged();
+        } else {
+          plannedMotionHipBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000080;
+        return this;
+      }
+      public Builder clearPlannedMotionHip() {
+        if (plannedMotionHipBuilder_ == null) {
+          plannedMotionHip_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.getDefaultInstance();
+          onChanged();
+        } else {
+          plannedMotionHipBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000080);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder getPlannedMotionHipBuilder() {
+        bitField0_ |= 0x00000080;
+        onChanged();
+        return getPlannedMotionHipFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder getPlannedMotionHipOrBuilder() {
+        if (plannedMotionHipBuilder_ != null) {
+          return plannedMotionHipBuilder_.getMessageOrBuilder();
+        } else {
+          return plannedMotionHip_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder> 
+          getPlannedMotionHipFieldBuilder() {
+        if (plannedMotionHipBuilder_ == null) {
+          plannedMotionHipBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2DOrBuilder>(
+                  plannedMotionHip_,
+                  getParentForChildren(),
+                  isClean());
+          plannedMotionHip_ = null;
+        }
+        return plannedMotionHipBuilder_;
+      }
+      
+      // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus stepControlStatus_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder> stepControlStatusBuilder_;
+      public boolean hasStepControlStatus() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus getStepControlStatus() {
+        if (stepControlStatusBuilder_ == null) {
+          return stepControlStatus_;
+        } else {
+          return stepControlStatusBuilder_.getMessage();
+        }
+      }
+      public Builder setStepControlStatus(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus value) {
+        if (stepControlStatusBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          stepControlStatus_ = value;
+          onChanged();
+        } else {
+          stepControlStatusBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder setStepControlStatus(
+          de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder builderForValue) {
+        if (stepControlStatusBuilder_ == null) {
+          stepControlStatus_ = builderForValue.build();
+          onChanged();
+        } else {
+          stepControlStatusBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder mergeStepControlStatus(de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus value) {
+        if (stepControlStatusBuilder_ == null) {
+          if (((bitField0_ & 0x00000100) == 0x00000100) &&
+              stepControlStatus_ != de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance()) {
+            stepControlStatus_ =
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.newBuilder(stepControlStatus_).mergeFrom(value).buildPartial();
+          } else {
+            stepControlStatus_ = value;
+          }
+          onChanged();
+        } else {
+          stepControlStatusBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000100;
+        return this;
+      }
+      public Builder clearStepControlStatus() {
+        if (stepControlStatusBuilder_ == null) {
+          stepControlStatus_ = de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.getDefaultInstance();
+          onChanged();
+        } else {
+          stepControlStatusBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000100);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder getStepControlStatusBuilder() {
+        bitField0_ |= 0x00000100;
+        onChanged();
+        return getStepControlStatusFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder getStepControlStatusOrBuilder() {
+        if (stepControlStatusBuilder_ != null) {
+          return stepControlStatusBuilder_.getMessageOrBuilder();
+        } else {
+          return stepControlStatus_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder> 
+          getStepControlStatusFieldBuilder() {
+        if (stepControlStatusBuilder_ == null) {
+          stepControlStatusBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder, de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatusOrBuilder>(
+                  stepControlStatus_,
+                  getParentForChildren(),
+                  isClean());
+          stepControlStatus_ = null;
+        }
+        return stepControlStatusBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.MotionStatus)
@@ -11159,6 +13965,442 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.OdometryData)
   }
   
+  public interface CalibrationDataOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+    boolean hasInertialSensorOffset();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getInertialSensorOffset();
+    de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder();
+  }
+  public static final class CalibrationData extends
+      com.google.protobuf.GeneratedMessage
+      implements CalibrationDataOrBuilder {
+    // Use CalibrationData.newBuilder() to construct.
+    private CalibrationData(Builder builder) {
+      super(builder);
+    }
+    private CalibrationData(boolean noInit) {}
+    
+    private static final CalibrationData defaultInstance;
+    public static CalibrationData getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public CalibrationData getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CalibrationData_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CalibrationData_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+    public static final int INERTIALSENSOROFFSET_FIELD_NUMBER = 1;
+    private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 inertialSensorOffset_;
+    public boolean hasInertialSensorOffset() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getInertialSensorOffset() {
+      return inertialSensorOffset_;
+    }
+    public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder() {
+      return inertialSensorOffset_;
+    }
+    
+    private void initFields() {
+      inertialSensorOffset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (hasInertialSensorOffset()) {
+        if (!getInertialSensorOffset().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, inertialSensorOffset_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, inertialSensorOffset_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationDataOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CalibrationData_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.internal_static_naothmessages_CalibrationData_fieldAccessorTable;
+      }
+      
+      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getInertialSensorOffsetFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (inertialSensorOffsetBuilder_ == null) {
+          inertialSensorOffset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          inertialSensorOffsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.getDescriptor();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData getDefaultInstanceForType() {
+        return de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.getDefaultInstance();
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData build() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData buildPartial() {
+        de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData result = new de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (inertialSensorOffsetBuilder_ == null) {
+          result.inertialSensorOffset_ = inertialSensorOffset_;
+        } else {
+          result.inertialSensorOffset_ = inertialSensorOffsetBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData) {
+          return mergeFrom((de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData other) {
+        if (other == de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.getDefaultInstance()) return this;
+        if (other.hasInertialSensorOffset()) {
+          mergeInertialSensorOffset(other.getInertialSensorOffset());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (hasInertialSensorOffset()) {
+          if (!getInertialSensorOffset().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasInertialSensorOffset()) {
+                subBuilder.mergeFrom(getInertialSensorOffset());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setInertialSensorOffset(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+      private de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 inertialSensorOffset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> inertialSensorOffsetBuilder_;
+      public boolean hasInertialSensorOffset() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 getInertialSensorOffset() {
+        if (inertialSensorOffsetBuilder_ == null) {
+          return inertialSensorOffset_;
+        } else {
+          return inertialSensorOffsetBuilder_.getMessage();
+        }
+      }
+      public Builder setInertialSensorOffset(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
+        if (inertialSensorOffsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          inertialSensorOffset_ = value;
+          onChanged();
+        } else {
+          inertialSensorOffsetBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setInertialSensorOffset(
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (inertialSensorOffsetBuilder_ == null) {
+          inertialSensorOffset_ = builderForValue.build();
+          onChanged();
+        } else {
+          inertialSensorOffsetBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeInertialSensorOffset(de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2 value) {
+        if (inertialSensorOffsetBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              inertialSensorOffset_ != de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            inertialSensorOffset_ =
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder(inertialSensorOffset_).mergeFrom(value).buildPartial();
+          } else {
+            inertialSensorOffset_ = value;
+          }
+          onChanged();
+        } else {
+          inertialSensorOffsetBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearInertialSensorOffset() {
+        if (inertialSensorOffsetBuilder_ == null) {
+          inertialSensorOffset_ = de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          inertialSensorOffsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder getInertialSensorOffsetBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getInertialSensorOffsetFieldBuilder().getBuilder();
+      }
+      public de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder() {
+        if (inertialSensorOffsetBuilder_ != null) {
+          return inertialSensorOffsetBuilder_.getMessageOrBuilder();
+        } else {
+          return inertialSensorOffset_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getInertialSensorOffsetFieldBuilder() {
+        if (inertialSensorOffsetBuilder_ == null) {
+          inertialSensorOffsetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.Builder, de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  inertialSensorOffset_,
+                  getParentForChildren(),
+                  isClean());
+          inertialSensorOffset_ = null;
+        }
+        return inertialSensorOffsetBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.CalibrationData)
+    }
+    
+    static {
+      defaultInstance = new CalibrationData(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.CalibrationData)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_Image_descriptor;
   private static
@@ -11205,10 +14447,20 @@ public final class Representations {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_HeadMotionRequest_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_StepControlRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_StepControlRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_WalkRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_WalkRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_KickRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_KickRequest_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_MotionRequest_descriptor;
   private static
@@ -11225,6 +14477,11 @@ public final class Representations {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_FSRData_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_StepControlStatus_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_StepControlStatus_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_MotionStatus_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -11234,6 +14491,11 @@ public final class Representations {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_OdometryData_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_CalibrationData_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_CalibrationData_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -11276,7 +14538,7 @@ public final class Representations {
       "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages" +
       ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001(" +
       "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost" +
-      "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
+      "\"\240\003\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca" +
       "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001(" +
       "\0132\034.naothmessages.DoubleVector2\0228\n\022targe" +
       "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub" +
@@ -11284,26 +14546,45 @@ public final class Representations {
       "2\034.naothmessages.DoubleVector3\0222\n\014search" +
       "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto",
       "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D" +
-      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"H\n" +
-      "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022%\n\006targ" +
-      "et\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMoti" +
+      "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\022<\n" +
+      "\026targetPointOnTheGround\030\t \001(\0132\034.naothmes" +
+      "sages.DoubleVector2\"\207\001\n\022StepControlReque" +
+      "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010" +
+      "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022" +
+      "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001" +
+      "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha" +
+      "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess" +
+      "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth",
+      "messages.StepControlRequest\022%\n\006offset\030\005 " +
+      "\002(\0132\025.naothmessages.Pose2D\"{\n\013KickReques" +
+      "t\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Dou" +
+      "bleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kic" +
+      "kFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMoti" +
       "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f" +
       "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth" +
       "messages.WalkRequest\022\026\n\016starndardStand\030\005" +
-      " \001(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.na" +
-      "othmessages.FieldLineSegment\0222\n\rintersec" +
-      "tions\030\002 \003(\0132\033.naothmessages.Intersection",
-      "\0228\n\022middleCircleCenter\030\003 \001(\0132\034.naothmess" +
-      "ages.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001" +
-      " \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\344\001\n\014Mo" +
-      "tionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002" +
-      " \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotio" +
-      "n\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025p" +
-      "lannedMotionLeftFoot\030\006 \002(\0132\025.naothmessag" +
-      "es.Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002(" +
-      "\0132\025.naothmessages.Pose2D\"3\n\014OdometryData" +
-      "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)\n",
-      "\'de.hu_berlin.informatik.ki.nao.messages"
+      " \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessage" +
+      "s.KickRequest\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013L",
+      "inePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessage" +
+      "s.FieldLineSegment\0222\n\rintersections\030\002 \003(" +
+      "\0132\033.naothmessages.Intersection\0228\n\022middle" +
+      "CircleCenter\030\003 \001(\0132\034.naothmessages.Doubl" +
+      "eVector2\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004da" +
+      "ta\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlSt" +
+      "atus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002" +
+      "(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlas" +
+      "tMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\n" +
+      "headMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005",
+      " \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.na" +
+      "othmessages.Pose2D\0225\n\026plannedMotionRight" +
+      "Foot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020pla" +
+      "nnedMotionHip\030\010 \002(\0132\025.naothmessages.Pose" +
+      "2D\022;\n\021stepControlStatus\030\t \001(\0132 .naothmes" +
+      "sages.StepControlStatus\"3\n\014OdometryData\022" +
+      "#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017" +
+      "CalibrationData\022:\n\024inertialSensorOffset\030" +
+      "\001 \001(\0132\034.naothmessages.DoubleVector2B)\n\'d" +
+      "e.hu_berlin.informatik.ki.nao.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11379,27 +14660,43 @@ public final class Representations {
           internal_static_naothmessages_HeadMotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_HeadMotionRequest_descriptor,
-              new java.lang.String[] { "Id", "CameraID", "TargetJointPosition", "TargetPointInImage", "TargetPointInTheWorld", "SearchCenter", "SearchSize", "SearchDirection", },
+              new java.lang.String[] { "Id", "CameraID", "TargetJointPosition", "TargetPointInImage", "TargetPointInTheWorld", "SearchCenter", "SearchSize", "SearchDirection", "TargetPointOnTheGround", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.Builder.class);
-          internal_static_naothmessages_WalkRequest_descriptor =
+          internal_static_naothmessages_StepControlRequest_descriptor =
             getDescriptor().getMessageTypes().get(9);
+          internal_static_naothmessages_StepControlRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_StepControlRequest_descriptor,
+              new java.lang.String[] { "StepID", "MoveLeftFoot", "Target", "Time", "SpeedDirection", },
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.class,
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.Builder.class);
+          internal_static_naothmessages_WalkRequest_descriptor =
+            getDescriptor().getMessageTypes().get(10);
           internal_static_naothmessages_WalkRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_WalkRequest_descriptor,
-              new java.lang.String[] { "Coordinate", "Target", },
+              new java.lang.String[] { "Coordinate", "Character", "Target", "StepControl", "Offset", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.Builder.class);
+          internal_static_naothmessages_KickRequest_descriptor =
+            getDescriptor().getMessageTypes().get(11);
+          internal_static_naothmessages_KickRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_KickRequest_descriptor,
+              new java.lang.String[] { "KickPoint", "KickDirection", "KickFoot", "FinishKick", },
+              de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.class,
+              de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.Builder.class);
           internal_static_naothmessages_MotionRequest_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(12);
           internal_static_naothmessages_MotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionRequest_descriptor,
-              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", },
+              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", "StandHeight", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.Builder.class);
           internal_static_naothmessages_LinePercept_descriptor =
-            getDescriptor().getMessageTypes().get(11);
+            getDescriptor().getMessageTypes().get(13);
           internal_static_naothmessages_LinePercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_LinePercept_descriptor,
@@ -11407,29 +14704,45 @@ public final class Representations {
               de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.Builder.class);
           internal_static_naothmessages_FSRData_descriptor =
-            getDescriptor().getMessageTypes().get(12);
+            getDescriptor().getMessageTypes().get(14);
           internal_static_naothmessages_FSRData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FSRData_descriptor,
               new java.lang.String[] { "Force", "Data", "Valid", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.Builder.class);
+          internal_static_naothmessages_StepControlStatus_descriptor =
+            getDescriptor().getMessageTypes().get(15);
+          internal_static_naothmessages_StepControlStatus_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_StepControlStatus_descriptor,
+              new java.lang.String[] { "StepID", "MoveableFoot", },
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.class,
+              de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.Builder.class);
           internal_static_naothmessages_MotionStatus_descriptor =
-            getDescriptor().getMessageTypes().get(13);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_naothmessages_MotionStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionStatus_descriptor,
-              new java.lang.String[] { "Time", "LastMotion", "CurrentMotion", "HeadMotion", "CurrentMotionState", "PlannedMotionLeftFoot", "PlannedMotionRightFoot", },
+              new java.lang.String[] { "Time", "LastMotion", "CurrentMotion", "HeadMotion", "CurrentMotionState", "PlannedMotionLeftFoot", "PlannedMotionRightFoot", "PlannedMotionHip", "StepControlStatus", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.Builder.class);
           internal_static_naothmessages_OdometryData_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_naothmessages_OdometryData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_OdometryData_descriptor,
               new java.lang.String[] { "Pose", },
               de.hu_berlin.informatik.ki.nao.messages.Representations.OdometryData.class,
               de.hu_berlin.informatik.ki.nao.messages.Representations.OdometryData.Builder.class);
+          internal_static_naothmessages_CalibrationData_descriptor =
+            getDescriptor().getMessageTypes().get(18);
+          internal_static_naothmessages_CalibrationData_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_CalibrationData_descriptor,
+              new java.lang.String[] { "InertialSensorOffset", },
+              de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.class,
+              de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.Builder.class);
           return null;
         }
       };

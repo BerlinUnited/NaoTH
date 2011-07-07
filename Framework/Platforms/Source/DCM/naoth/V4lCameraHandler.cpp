@@ -32,9 +32,9 @@ using namespace naoth;
 
 V4lCameraHandler::V4lCameraHandler()
 :
-  fd(-1), buffers(NULL),
-  actMethodIO(Num_of_MethodIO),
   selMethodIO(IO_MMAP),
+  actMethodIO(Num_of_MethodIO),
+  fd(-1), buffers(NULL),
 //  selMethodIO(IO_USERPTR),
 //  selMethodIO(IO_READ),
   n_buffers(0),
@@ -42,17 +42,11 @@ V4lCameraHandler::V4lCameraHandler()
   wasQueried(false),
   isCapturing(false)
 {
-  /*
-  DEBUG_REQUEST_REGISTER("V4lCameraHandler:set_blocking_mode", "...", false);
-  DEBUG_REQUEST_REGISTER("V4lCameraHandler:set_non_blocking_mode", "...", false);
-  DEBUG_REQUEST_REGISTER("V4lCameraHandler:reset_camera", "...", false);
-  DEBUG_REQUEST_REGISTER("V4lCameraHandler:reset_test","test reset camera behavior", false);
-   */
+
 }
 
 void V4lCameraHandler::init(std::string camDevice)
 {
-  resetCameraCount = 0;
 
   for(int i=0; i < CameraInfo::numOfCamera; i++)
   {
@@ -62,36 +56,24 @@ void V4lCameraHandler::init(std::string camDevice)
     }
   }
   cameraName = camDevice;
-  
-  // set to the default camera
-  //fastCameraSelection(CameraInfo::Bottom);
 
   // set our IDs
   initIDMapping();
 
-//  // FIXME: the camera has to be selected here!
-  fastCameraSelection(CameraInfo::Bottom);
-  //fastCameraSelection(CameraInfo::Top);
-  
+  initI2C();
+  // FIXME: the camera has to be selected here!
+  CameraInfo::CameraID camID = CameraInfo::Bottom;
+
+  initialCameraSelection(camID);
   // open the device
   openDevice(true);//in blocking mode
-//  openDevice(false);// in non blocking mode
-
   initDevice();
-
-  // FIXME: init the top camera
-  // init device for both cameras
-  //fastCameraSelection(CameraInfo::Top);
-  //initDevice();
-  
-  // allocate the internal camera buffers
-//  initMMap();
-
   internalUpdateCameraSettings();
-  
+  setFPS(30);
+
   // start capturing
   startCapturing();
-  setFPS(30);
+;
 }
 
 int V4lCameraHandler::xioctl(int fd, int request, void* arg)
@@ -146,47 +128,9 @@ void V4lCameraHandler::initIDMapping()
 
 }
 
-void V4lCameraHandler::fastCameraSelection(CameraInfo::CameraID camId)
+void V4lCameraHandler::initialCameraSelection(CameraInfo::CameraID camId)
 {
   std::cout << "FAST camera selection to " << camId << std::endl;
-  int i2cFd = open("/dev/i2c-0", O_RDWR);
-  ASSERT(i2cFd != -1);
-
-  int errorOccured = -1;
-  std::cout << "Selecting camera - Opening i2c bus ";
-  for(int i = 0; i < 20 && errorOccured < 0; i++)
-  {
-    errorOccured = ioctl(i2cFd, 0x703, 8);
-    if(errorOccured < 0 && (errno == EBUSY))
-    {
-      usleep(10);
-      std::cout << ".";
-    }
-    else
-    {
-      hasIOError(errorOccured, errno);
-    }
-  }
-  std::cout << std::endl;
-  hasIOError(errorOccured, errno);
-
-  errorOccured = -1;
-  std::cout << "Selecting camera - Reading i2c bus ";
-  for(int i = 0; i < 20 && errorOccured < 0; i++)
-  {
-    errorOccured = i2c_smbus_read_byte_data(i2cFd, 170);
-    if(errorOccured < 0 && (errno == EBUSY))
-    {
-      usleep(10);
-      std::cout << ".";
-    }
-    else
-    {
-      hasIOError(errorOccured, errno);
-    }
-  }
-  std::cout << std::endl;
-  hasIOError(errorOccured, errno);
 
   unsigned char cmd[2] = {2, 0}; // select lower camera by default
   if (camId == CameraInfo::Top)
@@ -194,26 +138,7 @@ void V4lCameraHandler::fastCameraSelection(CameraInfo::CameraID camId)
     // adjust to the top camera
     cmd[0] = 1;
   }
-
-  errorOccured = -1;
-  std::cout << "Selecting camera - Writing i2c bus ";
-  for(int i = 0; i < 20 && errorOccured < 0; i++)
-  {
-    errorOccured = i2c_smbus_write_block_data(i2cFd, 220, 1, cmd);
-    if(errorOccured < 0 && (errno == EBUSY))
-    {
-      usleep(10);
-      std::cout << ".";
-    }
-    else
-    {
-      hasIOError(errorOccured, errno);
-    }
-  }
-  std::cout << std::endl;
-  hasIOError(errorOccured, errno);
-
-  close(i2cFd);
+  VERIFY(i2c_smbus_write_block_data(fdAdapter, 220, 1, cmd) != -1);
 
   currentCamera = camId;
   currentSettings[camId].data[CameraSettings::CameraSelection] = camId;
@@ -273,6 +198,25 @@ void V4lCameraHandler::openDevice(bool blockingMode)
   }
 }
 
+void V4lCameraHandler::initI2C()
+{
+  fdAdapter = open("/dev/i2c-0", O_RDWR);
+  ASSERT(fdAdapter != -1);
+  VERIFY(ioctl(fdAdapter, 0x703, 8) == 0);
+  __s32 version = 0;
+  do
+  {
+    version = i2c_smbus_read_byte_data(fdAdapter, 170);
+    if(version == 0)
+    {
+      std::cout << "waiting until I2C is fully started" << std::endl;
+      sleep(1);
+    }
+  } while(version == 0);
+  std::cout << "VERSION OF NAO IS " << version << std::endl;
+  VERIFY(version >= 2); // at least Nao V3
+}
+
 void V4lCameraHandler::initDevice()
 {
   struct v4l2_capability cap;
@@ -325,7 +269,7 @@ void V4lCameraHandler::initDevice()
     case IO_USERPTR:
       VERIFY(cap.capabilities & V4L2_CAP_STREAMING);
       break;
-
+    default: ASSERT(false);
   }
 
   /* Select video input, video standard and tune here. */
@@ -364,59 +308,9 @@ void V4lCameraHandler::initDevice()
     case IO_USERPTR:
       initUP(fmt.fmt.pix.sizeimage);
       break;
+    default: ASSERT(false);
 	}
   actMethodIO = selMethodIO;
-}
-
-void V4lCameraHandler::resetCamera(Image& theImage)
-{
-  STOPWATCH_START("V4lCameraHandler:reset_camera");
-  std::cout << "V4lCameraHandler:reset_camera" << std::endl;
-  stopCapturing();
-  uninitDevice();
-  initDevice();
-  initMMap();
-//  internalUpdateCameraSettings();
-  internalSetCameraSettings(currentSettings[currentCamera]);
-  startCapturing();
-  STOPWATCH_STOP("V4lCameraHandler:reset_camera");
-  hadReset = true;
-}
-
-void V4lCameraHandler::resetCamera2BlockingMode(Image& theImage)
-{
-  STOPWATCH_START("V4lCameraHandler:set_blocking_mode");
-  std::cout << "V4lCameraHandler:set_blocking_mode" << std::endl;
-  stopCapturing();
-  uninitDevice();
-  closeDevice();
-  usleep(2000);
-  openDevice(true);
-  initDevice();
-  initMMap();
-//  internalUpdateCameraSettings();
-  internalSetCameraSettings(currentSettings[currentCamera]);
-  startCapturing();
-  STOPWATCH_STOP("V4lCameraHandler:set_blocking_mode");
-  hadReset = true;
-}
-
-void V4lCameraHandler::resetCamera2NonBlockingMode(Image& theImage)
-{
-  STOPWATCH_START("V4lCameraHandler:set_non_blocking_mode");
-  std::cout << "V4lCameraHandler:set_non_blocking_mode" << std::endl;
-  stopCapturing();
-  uninitDevice();
-  closeDevice();
-  usleep(2000);
-  openDevice(false);
-  initDevice();
-  initMMap();
-//  internalUpdateCameraSettings();
-  internalSetCameraSettings(currentSettings[currentCamera]);
-  startCapturing();
-  STOPWATCH_STOP("V4lCameraHandler:set_non_blocking_mode");
-  hadReset = true;
 }
 
 void V4lCameraHandler::initMMap()
@@ -689,7 +583,7 @@ int V4lCameraHandler::readFrameUP()
     }
     else
     {
-      for (int i = 0; i < n_buffers; ++i)
+      for (unsigned int i = 0; i < n_buffers; ++i)
       {
           cout << i << "usrptr = " << buf.m.userptr << ", bufptr = " << buffers[i].start << ", l = "<< buf.length << " / "<< buffers[i].length << endl;
         if (buf.m.userptr == (unsigned long) buffers[i].start && buf.length == buffers[i].length)
@@ -766,23 +660,13 @@ int V4lCameraHandler::readFrame()
 
     case IO_USERPTR:
       return readFrameUP();
+    default: ASSERT(false);
 	}
   return -1;
 }
 
 void V4lCameraHandler::get(Image& theImage)
 {
-  /*
-  DEBUG_REQUEST("V4lCameraHandler:set_blocking_mode",
-    resetCamera2BlockingMode(theImage);
-  );
-  DEBUG_REQUEST("V4lCameraHandler:set_non_blocking_mode",
-    resetCamera2NonBlockingMode(theImage);
-  );
-  DEBUG_REQUEST("V4lCameraHandler:reset_camera",
-    resetCamera(theImage);
-  );*/
-
   if(isCapturing)
   {
     if(hadReset)
@@ -799,11 +683,6 @@ void V4lCameraHandler::get(Image& theImage)
         theImage.bufferFailedCount++;
       }
     }
-
-    /*
-    DEBUG_REQUEST("V4lCameraHandler:reset_test",
-      theImage.bufferFailedCount = 10;
-      );*/
 
     //STOPWATCH_START("ImageRetrieve");
     int resultCode = readFrame();
@@ -883,6 +762,8 @@ void V4lCameraHandler::uninitDevice()
         free (buffers[i].start);
       }
       break;
+
+    default: ASSERT(false);
 	}
 	free (buffers);
 }
@@ -1054,11 +935,11 @@ void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
   // set camera settings for "old" camera
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
-    if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
-    {
-      setFPS(data.data[i]);
-    }
-    else if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
+//    if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
+//    {
+//      setFPS(data.data[i]);
+//    }
+    if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
     {
       std::cout << "Camera parameter "
         << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
@@ -1080,11 +961,12 @@ void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
     }
   }
 
-  
-  if (currentSettings[currentCamera].data[CameraSettings::CameraSelection] != data.data[CameraSettings::CameraSelection])
-  {
-    fastCameraSelection((CameraInfo::CameraID) data.data[CameraSettings::CameraSelection]);
-  }
+
+  // TODO: allow changing the camera selection
+//  if (currentSettings[currentCamera].data[CameraSettings::CameraSelection] != data.data[CameraSettings::CameraSelection])
+//  {
+//    fastCameraSelection((CameraInfo::CameraID) data.data[CameraSettings::CameraSelection]);
+//  }
 
 
 }
@@ -1131,6 +1013,8 @@ V4lCameraHandler::~V4lCameraHandler()
   stopCapturing();
   uninitDevice();
   closeDevice();
+
+  close(fdAdapter);
 }
 
 string V4lCameraHandler::getErrnoDescription(int err)

@@ -113,6 +113,11 @@ GString* DebugCommunicator::internalReadMessage(GError** err)
 
     gssize initialBytes = g_socket_receive_with_blocking(connection, (char*) &sizeOfMessage, 4, false, NULL, err);
 
+    if ( initialBytes==0 && (*err)==NULL )
+    {
+      throw "should return G_IO_ERROR_WOULD_BLOCK error";
+    }
+
     if(initialBytes == 4)
     {
       if(sizeOfMessage > 0)

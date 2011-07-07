@@ -8,6 +8,7 @@
 #include "ScanLineEdgelDetector.h"
 
 #include "Tools/CameraGeometry.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 ScanLineEdgelDetector::ScanLineEdgelDetector()
 {
@@ -68,14 +69,17 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   int scanLineID = 0;
 
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (SCANLINE_COUNT);
+
   Vector2<int> start(step / 2, getImage().cameraInfo.resolutionHeight - PIXEL_BORDER - 1);
   Vector2<int> end(step / 2, max((int) beginField.y - 10, 0) );
+  
 
-  for (; start.x < (int) getImage().cameraInfo.resolutionWidth; start.x += step)
+  for (;start.x < (int) getImage().cameraInfo.resolutionWidth;)
   {
+    start = getBodyContour().returnFirstFreeCell(start);
+    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
-
     CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
@@ -83,9 +87,10 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
       endPoint.posInImage.y, 
       0.0,
       endPoint.posOnField);
-
     getScanLineEdgelPercept().endPoints.push_back(endPoint);
     scanLineID++;
+    start.y = getImage().cameraInfo.resolutionHeight - PIXEL_BORDER - 1;
+    start.x += step;
   }//end for
 
 
@@ -163,6 +168,7 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
 
 void ScanLineEdgelDetector::iterative_edgel_detection()
 {
+  /*
   // TODO: fixit
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
   int resumedScanCount;
@@ -214,6 +220,7 @@ void ScanLineEdgelDetector::iterative_edgel_detection()
     }//end while
     scanLineID++;
   }//end for
+  */
 }//end execute
 
 
@@ -256,7 +263,8 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     const ColorClasses::Color thisPixelColor = getColorTable64().getColorClass(pixel);
 
     DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
-      int b_offset = thisPixelBrightness / 10;
+      //int b_offset = thisPixelBrightness / 10;
+      int b_offset = 0;
       POINT_PX(thisPixelColor, point.x + b_offset, point.y);
     );
 

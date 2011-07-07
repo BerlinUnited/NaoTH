@@ -11,11 +11,14 @@
 using namespace naoth;
 
 GameData::GameData()
-  :frameNumber(0),
-    gameState(numOfGameState),
+  :valid(false),
+    frameNumber(0),
+    gameState(initial),
     timeWhenGameStateChanged(0),
     penaltyState(none),
-    secsTillUnpenalised(0),
+    msecsTillUnpenalised(0),
+    msecsRemaining(600000),
+    firstHalf(true),
     playMode(numOfPlayMode),
     gameTime(0),
     timeWhenPlayModeChanged(0),
@@ -23,7 +26,6 @@ GameData::GameData()
     teamColor(numOfTeamColor),
     teamNumber(0),
     teamName("NaoTH"),
-    halfTime(0),
     numOfPlayers(0)
 {
 }
@@ -63,29 +65,31 @@ GameData::PlayMode GameData::playModeFromString(const std::string& name)
 }//end playModeFromString
 
 std::string GameData::playModeToString(GameData::PlayMode mode)
+{
+  switch(mode)
   {
-    switch(mode)
-    {
-      case before_kick_off: return "before_kick_off";
-      case kick_off_own: return "kick_off_own";
-      case kick_off_opp: return "kick_off_opp";
-      case play_on: return "play_on";
-      case kick_in_own: return "kick_in_own";
-      case kick_in_opp: return "kick_in_opp";
-      case corner_kick_own: return "corner_kick_own";
-      case corner_kick_opp: return "corner_kick_opp";
-      case goal_kick_own: return "goal_kick_own";
-      case goal_kick_opp: return "goal_kick_opp";
-      case offside_own: return "offside_own";
-      case offside_opp: return "offside_opp";
-      case game_over: return "game_over";
-      case goal_own: return "goal_own";
-      case goal_opp: return "goal_opp";
-      case free_kick_own: return "free_kick_own";
-      case free_kick_opp: return "free_kick_opp";
-      default: return "unknown";
-    }//end switch
-  }//end playModeToString
+  case before_kick_off: return "before_kick_off";
+  case kick_off_own: return "kick_off_own";
+  case kick_off_opp: return "kick_off_opp";
+  case play_on: return "play_on";
+  case kick_in_own: return "kick_in_own";
+  case kick_in_opp: return "kick_in_opp";
+  case corner_kick_own: return "corner_kick_own";
+  case corner_kick_opp: return "corner_kick_opp";
+  case goal_kick_own: return "goal_kick_own";
+  case goal_kick_opp: return "goal_kick_opp";
+  case offside_own: return "offside_own";
+  case offside_opp: return "offside_opp";
+  case game_over: return "game_over";
+  case goal_own: return "goal_own";
+  case goal_opp: return "goal_opp";
+  case free_kick_own: return "free_kick_own";
+  case free_kick_opp: return "free_kick_opp";
+  case penalty_kick_own: return "penalty_kick_own";
+  case penalty_kick_opp: return "penalty_kick_opp";
+  default: return "unknown";
+  }//end switch
+}//end playModeToString
 
 std::string GameData::teamColorToString(TeamColor teamColor)
 {
@@ -123,8 +127,10 @@ void GameData::print(ostream& stream) const
   stream << "gameState = " << gameStateToString(gameState) << " since "<< timeWhenGameStateChanged << "\n";
   if ( gameState == penalized )
   {
-    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << secsTillUnpenalised << "]\n";
+    stream << penaltyStateToString(penaltyState) << " [secsTillUnpenalised = " << msecsTillUnpenalised << "]\n";
   }
+  stream << (firstHalf?"first":"second") <<" half remains "<< msecsRemaining << "ms\n";
+  stream << "game time = "<< gameTime << "ms\n";
   stream << "PlayMode = " << playModeToString(playMode) << " since " << timeWhenPlayModeChanged <<"\n";
   stream << "playerNumber = " << playerNumber << "\n";
   stream << "teamColor = " << teamColorToString(teamColor) << "\n";
@@ -175,6 +181,8 @@ void GameData::loadFromCfg(Configuration& config)
     std::cerr << "No team number (TeamNumber) given" << std::endl;
     teamNumber = 0;
   }
+
+  valid = true;
 } // end loadPlayerInfoFromFile
 
 std::string GameData::penaltyStateToString(PenaltyState state)

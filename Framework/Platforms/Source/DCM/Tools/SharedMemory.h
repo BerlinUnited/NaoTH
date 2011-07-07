@@ -33,7 +33,7 @@ private:
     volatile bool swappingReady;
     
     T data[3]; // buffers, one for writing, on for reading, and one for swapping
-  };
+  }; // end class Memory
   
 public:
   SharedMemory()
@@ -71,7 +71,7 @@ public:
         return false;
       }
 
-      const size_t memSize = sizeof(Memory);
+      const int memSize = sizeof(Memory);
       bool newMemory = false;
       
       if ( shmStat.st_size == 0 )

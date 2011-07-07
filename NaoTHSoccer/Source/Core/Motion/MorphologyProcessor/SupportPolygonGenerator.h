@@ -19,7 +19,7 @@ public:
 
   SupportPolygonGenerator();
 
-  void init(double* fsr, Vector3<double>* fsrPos, Kinematics::Link* link);
+  void init(const double* fsr, const Vector3<double>* fsrPos, const Kinematics::Link* link);
 
   ~SupportPolygonGenerator();
 
@@ -31,6 +31,7 @@ public:
    * @param isLeft indicates which foot is tested, true means left foot, false means right foot
    */
   bool isFootSupportable(bool isLeft) const;
+
 /*
   virtual void executeDebugCommand(
             const std::string& command, const std::map<std::string, std::string>& arguments,
@@ -38,9 +39,9 @@ public:
   
 private:
 
-    double* theFSRData;
-    Vector3<double>* theFSRPos;
-    Kinematics::Link* theLink;
+    const double* theFSRData;
+    const Vector3<double>* theFSRPos;
+    const Kinematics::Link* theLink;
 
     FootTouchDetector theLeftFootTouchDetector;
     FootTouchDetector theRightFootTouchDetector;

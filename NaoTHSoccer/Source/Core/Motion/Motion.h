@@ -19,6 +19,11 @@
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
 
+#ifdef NAO
+#include <Representations/Infrastructure/DebugMessage.h>
+#include <Cognition/Modules/Infrastructure/Debug/StopwatchSender.h>
+#endif
+
 class Motion : public naoth::Callable
 {
 public:
@@ -58,6 +63,7 @@ private:
   // message from motion to cognition
   MessageWriter* theMotionStatusWriter;
   MessageWriter* theOdometryDataWriter;
+  MessageWriter* theCalibrationDataWriter;
   
   // message from cognition to motion
   MessageReader* theHeadMotionRequestReader;
@@ -69,8 +75,14 @@ private:
   {
     initial,
     running,
-    exiting,
+    exiting
   } state;
+
+#ifdef NAO
+  naoth::DebugMessageIn theDebugMessageIn;
+  naoth::DebugMessageOut theDebugMessageOut;
+  StopwatchSender theStopwatchSender;
+#endif
 };
 
 #endif	/* MOTION_H */

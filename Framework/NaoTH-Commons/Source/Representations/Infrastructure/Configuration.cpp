@@ -8,6 +8,8 @@
  */
 
 #include "Configuration.h"
+#include "Tools/DataConversion.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 #include <iostream>
 #include <fstream>
@@ -265,6 +267,11 @@ void Configuration::setString(const std::string& group, const std::string& key, 
   g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), value.c_str());
 }
 
+void Configuration::setDefault(const std::string& group, const std::string& key, const std::string& value)
+{
+  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), value.c_str());
+}
+
 std::string Configuration::getRawValue(const std::string& group, const std::string& key) const
 {
   GKeyFile* keyFile = chooseKeyFile(group, key);
@@ -295,6 +302,19 @@ void Configuration::setInt(const std::string& group, const std::string& key, int
   g_key_file_set_integer(privateKeyFile, group.c_str(), key.c_str(), value);
 }
 
+void Configuration::setDefault(const std::string& group, const std::string& key, int value)
+{
+  g_key_file_set_integer(publicKeyFile, group.c_str(), key.c_str(), value);
+}
+
+void Configuration::setDefault(const std::string& group, const std::string& key, unsigned int value)
+{
+  // todo check it!
+  int tmp = (int)value;
+  ASSERT(tmp > 0);
+  g_key_file_set_integer(publicKeyFile, group.c_str(), key.c_str(), tmp);
+}
+
 double Configuration::getDouble(const std::string& group, const std::string& key) const
 {
   GKeyFile* keyFile = chooseKeyFile(group, key);
@@ -303,7 +323,14 @@ double Configuration::getDouble(const std::string& group, const std::string& key
 
 void Configuration::setDouble(const std::string& group, const std::string& key, double value)
 {
-  g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
+  //g_key_file_set_double(privateKeyFile, group.c_str(), key.c_str(), value);
+  // the function above produce unecessary zeros
+  g_key_file_set_string(privateKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
+}
+
+void Configuration::setDefault(const std::string& group, const std::string& key, double value)
+{
+  g_key_file_set_string(publicKeyFile, group.c_str(), key.c_str(), DataConversion::toStr(value).c_str());
 }
 
 bool Configuration::getBool(const std::string& group, const std::string& key) const
@@ -317,3 +344,7 @@ void Configuration::setBool(const std::string& group, const std::string& key, bo
   g_key_file_set_boolean(privateKeyFile, group.c_str(), key.c_str(), value);
 }
 
+void Configuration::setDefault(const std::string& group, const std::string& key, bool value)
+{
+  g_key_file_set_boolean(publicKeyFile, group.c_str(), key.c_str(), value);
+}

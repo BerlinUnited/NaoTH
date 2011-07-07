@@ -10,6 +10,7 @@ if [ ! -d protobuf-2.4.1 ]; then
 
   tar xvzf ../downloads/protobuf-2.4.1.tar.gz
   cd protobuf-2.4.1
-  ./configure --prefix=$EXTERN_DIR && make && make install
+  ./configure --disable-shared --prefix=$EXTERN_DIR && make && make install
   cd ..
 fi
+

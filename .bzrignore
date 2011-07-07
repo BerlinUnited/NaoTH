@@ -4,7 +4,13 @@
 *.ilk
 *.suo
 *.vcproj
+*.vcxproj
+*.vcxproj.filters
+premake4.exe
+*.opensdf
+*.sdf
 *.sln
+./NaoTHSoccer/Make/ipch
 ./Projects/XabslEditor
 .dep.inc
 private/
@@ -61,3 +67,5 @@ build-impl.xml
 genfiles.properties
 doc
 Deploy
+NaoTHSoccer/Config/behavior-ic.dat
+Utils/Video2Log/video2log

@@ -56,6 +56,13 @@ message SensorJointData {
   repeated double electricCurrent = 3;
 }
 
+message UltraSoundReceiveData {
+  required uint32 ultraSoundTimeStep = 1;
+  required double rawdata = 2;
+  repeated double dataLeft = 3;
+  repeated double dataRight = 4;
+}
+
 message CameraMatrix {
   required Pose3D pose = 1;
 }
@@ -90,11 +97,31 @@ message HeadMotionRequest {
   optional DoubleVector3 searchCenter = 6;
   optional DoubleVector3 searchSize = 7;
   optional bool searchDirection = 8;
+  optional DoubleVector2 targetPointOnTheGround = 9;
+}
+
+message StepControlRequest
+{
+  required uint32 stepID = 1;
+  required bool moveLeftFoot = 2;
+  required Pose2D target = 3;
+  required uint32 time = 4;
+  required double speedDirection = 5;
 }
 
 message WalkRequest {
   required uint32 coordinate = 1;
+  required double character = 2;
   required Pose2D target = 3;
+  optional StepControlRequest stepControl = 4;
+  required Pose2D offset = 5;
+}
+
+message KickRequest {
+  required DoubleVector3 kickPoint = 1;
+  required double kickDirection = 2;
+  required int32 kickFoot = 3;
+  required bool finishKick = 4;
 }
 
 message MotionRequest {
@@ -103,6 +130,8 @@ message MotionRequest {
   required bool forced = 3;
   optional WalkRequest walkRequest = 4;
   optional bool starndardStand = 5;
+  optional KickRequest kickRequest = 6;
+  optional double standHeight = 7;
 }
 
 message LinePercept {
@@ -120,6 +149,12 @@ message FSRData {
 }
 
 // TODO: this representation should not be in naoth-comm */
+message StepControlStatus
+{
+  required uint32 stepID = 1;
+  required uint32 moveableFoot =2;
+}
+
 message MotionStatus 
 {
   required uint32 time = 1;
@@ -129,9 +164,16 @@ message MotionStatus
   required uint32 currentMotionState = 5;
   required Pose2D plannedMotionLeftFoot = 6;
   required Pose2D plannedMotionRightFoot = 7;
+  required Pose2D plannedMotionHip = 8;
+  optional StepControlStatus stepControlStatus = 9;
 }
 
 message OdometryData
 {
   required Pose2D pose = 1;
+}
+
+message CalibrationData
+{
+  optional DoubleVector2 inertialSensorOffset = 1;
 }

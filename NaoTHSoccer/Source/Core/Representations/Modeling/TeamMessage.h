@@ -8,12 +8,15 @@
 #ifndef _TEAMMESSAGE_H
 #define	_TEAMMESSAGE_H
 
-#include <Tools/Math/Vector2.h>
-#include <Messages/Messages.pb.h>
-#include <Tools/DataStructures/Printable.h>
-#include <Representations/Infrastructure/FrameInfo.h>
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/Math/Vector2.h"
 
-class TeamMessage : public Printable
+#include "Representations/Infrastructure/GameData.h"
+#include "Representations/Infrastructure/FrameInfo.h"
+
+#include "Messages/Messages.pb.h"
+
+class TeamMessage : public naoth::Printable
 {
 public:
 

@@ -214,7 +214,7 @@ SensorJointData::SensorJointData()
 
 void SensorJointData::print(ostream& stream) const
 {
-  stream << "Joint [pos(deg), hardness, temperature,current]" << endl;
+  stream << "Joint [pos(deg), stiffness, temperature,current]" << endl;
   stream << "------------------------" << endl;
   for (int i = 0; i < numOfJoint; i++) 
   {
@@ -242,7 +242,7 @@ MotorJointData::~MotorJointData()
 
 void MotorJointData::print(ostream& stream) const
 {
-  stream << "Joint [pos, hardness]" << endl;
+  stream << "Joint [pos, stiffness]" << endl;
   stream << "------------------------" << endl;
   for (int i = 0; i < numOfJoint; i++) {
     stream << getJointName((JointData::JointID) i) << "[" << position[i] << ", " << stiffness[i] << "]" << endl;

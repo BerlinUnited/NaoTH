@@ -1,0 +1,3409 @@
+
+
+-------- Grammar --------
+
+rule 1 xtc: __initial_comment __top_level
+rule 2 __initial_comment: INITIAL_COMMENT
+rule 3 __initial_comment: 
+rule 4 __top_level: include __top_level
+rule 5 __top_level: option
+rule 6 __top_level: agents
+rule 7 __top_level: namespace
+rule 8 __top_level: 
+rule 9 agents: agent agents
+rule 10 agents: agent
+rule 11 include: INCLUDE STRING ";"
+rule 12 @1: 
+rule 13 namespace: __doc_comment NAMESPACE IDENTIFIER "(" STRING ")" "{" @1 __inner_namespace "}"
+rule 14 __inner_namespace: __inner_namespace const
+rule 15 __inner_namespace: __inner_namespace symbol_declaration
+rule 16 __inner_namespace: __inner_namespace enum_symbol_declaration
+rule 17 __inner_namespace: __inner_namespace behavior_declaration
+rule 18 __inner_namespace: 
+rule 19 @2: 
+rule 20 behavior_declaration: __doc_comment BEHAVIOR IDENTIFIER "{" @2 __parameter_declarations "}"
+rule 21 @3: 
+rule 22 symbol_declaration: __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER __range __measure @3 symbol_parameter_declarations ";"
+rule 23 __input_output_internal: INPUT
+rule 24 __input_output_internal: OUTPUT
+rule 25 __input_output_internal: INTERNAL
+rule 26 __input_output_internal: 
+rule 27 enum_symbol_declaration: __doc_comment bool_or_float_or_enum __input_output_internal "{" enum_elements "}" ";"
+rule 28 enum_elements: IDENTIFIER __enum_elements
+rule 29 __enum_elements: __enum_elements "," IDENTIFIER
+rule 30 __enum_elements: 
+rule 31 __minus: "-"
+rule 32 __minus: 
+rule 33 bool_or_float_or_enum: BOOL
+rule 34 bool_or_float_or_enum: FLOAT
+rule 35 bool_or_float_or_enum: ENUM IDENTIFIER
+rule 36 bool_or_float_or_enum: 
+rule 37 const: __doc_comment __float CONST IDENTIFIER "=" __minus NUMBER __measure ";"
+rule 38 __float: FLOAT
+rule 39 __float: 
+rule 40 agent: __doc_comment AGENT IDENTIFIER "(" STRING "," IDENTIFIER ")" ";"
+rule 41 @4: 
+rule 42 option: __doc_comment OPTION IDENTIFIER "{" @4 __parameter_declarations __common_declarations state_declarations "}"
+rule 43 symbol_parameter_declarations: "(" __parameter_declarations ")"
+rule 44 symbol_parameter_declarations: 
+rule 45 __parameter_declarations: __parameter_declarations parameter_declaration
+rule 46 __parameter_declarations: 
+rule 47 parameter_declaration: __doc_comment bool_or_float_or_enum IDENTIFIER __range __measure ";"
+rule 48 __range: RANGE
+rule 49 __range: 
+rule 50 __measure: STRING
+rule 51 __measure: 
+rule 52 state_declarations: state_declaration __state_declarations
+rule 53 __state_declarations: __state_declarations state_declaration
+rule 54 __state_declarations: 
+rule 55 @5: 
+rule 56 state_declaration: __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+rule 57 cooperative: CAPACITY NUMBER
+rule 58 cooperative: SYNCHRONIZED NUMBER
+rule 59 cooperative: SYNCHRONIZED
+rule 60 cooperative: 
+rule 61 __output_symbol_assignments_or_subsequent_declarations: __output_symbol_assignments_or_subsequent_declarations output_symbol_assignment
+rule 62 __output_symbol_assignments_or_subsequent_declarations: __output_symbol_assignments_or_subsequent_declarations subsequent_declaration
+rule 63 __output_symbol_assignments_or_subsequent_declarations: 
+rule 64 @6: 
+rule 65 output_symbol_assignment: IDENTIFIER @6 "=" exp ";"
+rule 66 __doc_comment: DOC_COMMENT
+rule 67 __doc_comment: 
+rule 68 __initial: INITIAL
+rule 69 __initial: 
+rule 70 __target: TARGET
+rule 71 __target: 
+rule 72 @7: 
+rule 73 subsequent_declaration: IDENTIFIER __option_or_behavior "(" @7 __set_parameter_list ")" ";"
+rule 74 __option_or_behavior: OPTION
+rule 75 __option_or_behavior: BEHAVIOR
+rule 76 __option_or_behavior: 
+rule 77 __set_parameter_list: set_parameter __set_parameter_list_end
+rule 78 __set_parameter_list: 
+rule 79 __set_parameter_list_end: "," __set_parameter_list
+rule 80 __set_parameter_list_end: 
+rule 81 @8: 
+rule 82 set_parameter: IDENTIFIER @8 "=" exp
+rule 83 __with_parameter_list: with_parameter __with_parameter_list_end
+rule 84 __with_parameter_list: 
+rule 85 __with_parameter_list_end: "," __with_parameter_list
+rule 86 __with_parameter_list_end: 
+rule 87 @9: 
+rule 88 with_parameter: IDENTIFIER @9 "=" exp
+rule 89 exp: "!" exp
+rule 90 @10: 
+rule 91 exp: exp "+" @10 exp
+rule 92 @11: 
+rule 93 exp: exp "-" @11 exp
+rule 94 @12: 
+rule 95 exp: exp "*" @12 exp
+rule 96 @13: 
+rule 97 exp: exp "/" @13 exp
+rule 98 @14: 
+rule 99 exp: exp "%" @14 exp
+rule 100 @15: 
+rule 101 exp: exp NEQ @15 exp
+rule 102 @16: 
+rule 103 exp: exp EQ @16 exp
+rule 104 @17: 
+rule 105 exp: exp "<" @17 exp
+rule 106 @18: 
+rule 107 exp: exp LE @18 exp
+rule 108 @19: 
+rule 109 exp: exp ">" @19 exp
+rule 110 @20: 
+rule 111 exp: exp GE @20 exp
+rule 112 @21: 
+rule 113 exp: exp AND @21 exp
+rule 114 @22: 
+rule 115 exp: exp OR @22 exp
+rule 116 exp: exp "?" exp ":" exp
+rule 117 exp: "(" exp ")"
+rule 118 exp: "-" exp
+rule 119 exp: NUMBER
+rule 120 exp: TRUE
+rule 121 exp: FALSE
+rule 122 exp: function
+rule 123 exp: IDENTIFIER
+rule 124 exp: TOSX
+rule 125 exp: TOOX
+rule 126 exp: SORTS
+rule 127 exp: CONFLICT
+rule 128 @23: 
+rule 129 function: IDENTIFIER @23 "(" __with_parameter_list ")"
+rule 130 __common_declarations: COMMON DECISION __common_decision_tree COMMON ACTION __common_action
+rule 131 __common_declarations: COMMON DECISION __common_decision_tree
+rule 132 __common_declarations: COMMON ACTION __common_action
+rule 133 __common_declarations: 
+rule 134 __common_action: "{" __output_symbol_assignments_or_subsequent_declarations "}"
+rule 135 __common_action: 
+rule 136 __common_decision_tree: "{" cdtree "}"
+rule 137 __common_decision_tree: 
+rule 138 cdtree: "{" cdtree "}"
+rule 139 cdtree: __doc_comment IF "(" exp ")" dtree __cdtree_elseif_decisions
+rule 140 __cdtree_elseif_decisions: __doc_comment ELSE cdtree
+rule 141 __cdtree_elseif_decisions: 
+rule 142 decision_tree: DECISION "{" dtree "}"
+rule 143 decision_tree: DECISION "{" __doc_comment ELSE dtree "}"
+rule 144 decision_tree: 
+rule 145 dtree: "{" dtree "}"
+rule 146 dtree: transition
+rule 147 dtree: __doc_comment IF "(" exp ")" dtree __doc_comment ELSE dtree
+rule 148 transition: TTS IDENTIFIER ";"
+rule 149 transition: STAY ";"
+
+------- Symbols -------
+
+**Nonterminals, with rules where they appear
+
+  $start (69)
+    on right: 
+    on left : 
+  xtc (70)
+    on right: 
+    on left : 1
+  __initial_comment (71)
+    on right: 1
+    on left : 2 3
+  __top_level (72)
+    on right: 1 4
+    on left : 4 5 6 7 8
+  include (73)
+    on right: 4
+    on left : 11
+  option (74)
+    on right: 5
+    on left : 42
+  agents (75)
+    on right: 6 9
+    on left : 9 10
+  namespace (76)
+    on right: 7
+    on left : 13
+  agent (77)
+    on right: 9 10
+    on left : 40
+  __doc_comment (78)
+    on right: 13 20 22 27 37 40 42 47 139 140 143 147
+    on left : 66 67
+  __inner_namespace (79)
+    on right: 13 14 15 16 17
+    on left : 14 15 16 17 18
+  @1 (80)
+    on right: 13
+    on left : 12
+  const (81)
+    on right: 14
+    on left : 37
+  symbol_declaration (82)
+    on right: 15
+    on left : 22
+  enum_symbol_declaration (83)
+    on right: 16
+    on left : 27
+  behavior_declaration (84)
+    on right: 17
+    on left : 20
+  __parameter_declarations (85)
+    on right: 20 42 43 45
+    on left : 45 46
+  @2 (86)
+    on right: 20
+    on left : 19
+  bool_or_float_or_enum (87)
+    on right: 22 27 47
+    on left : 33 34 35 36
+  __input_output_internal (88)
+    on right: 22 27
+    on left : 23 24 25 26
+  __range (89)
+    on right: 22 47
+    on left : 48 49
+  __measure (90)
+    on right: 22 37 47
+    on left : 50 51
+  symbol_parameter_declarations (91)
+    on right: 22
+    on left : 43 44
+  @3 (92)
+    on right: 22
+    on left : 21
+  enum_elements (93)
+    on right: 27
+    on left : 28
+  __enum_elements (94)
+    on right: 28 29
+    on left : 29 30
+  __minus (95)
+    on right: 37
+    on left : 31 32
+  __float (96)
+    on right: 37
+    on left : 38 39
+  __common_declarations (97)
+    on right: 42
+    on left : 130 131 132 133
+  state_declarations (98)
+    on right: 42
+    on left : 52
+  @4 (99)
+    on right: 42
+    on left : 41
+  parameter_declaration (100)
+    on right: 45
+    on left : 47
+  state_declaration (101)
+    on right: 52 53
+    on left : 56
+  __state_declarations (102)
+    on right: 52 53
+    on left : 53 54
+  __initial (103)
+    on right: 56
+    on left : 68 69
+  __target (104)
+    on right: 56
+    on left : 70 71
+  cooperative (105)
+    on right: 56
+    on left : 57 58 59 60
+  decision_tree (106)
+    on right: 56
+    on left : 142 143 144
+  __output_symbol_assignments_or_subsequent_declarations (107)
+    on right: 56 61 62 134
+    on left : 61 62 63
+  @5 (108)
+    on right: 56
+    on left : 55
+  output_symbol_assignment (109)
+    on right: 61
+    on left : 65
+  subsequent_declaration (110)
+    on right: 62
+    on left : 73
+  exp (111)
+    on right: 65 82 88 89 91 93 95 97 99 101 103 105 107 109 111 113 115 116 117 118 139 147
+    on left : 89 91 93 95 97 99 101 103 105 107 109 111 113 115 116 117 118 119 120 121 122 123 124 125 126 127
+  @6 (112)
+    on right: 65
+    on left : 64
+  __option_or_behavior (113)
+    on right: 73
+    on left : 74 75 76
+  __set_parameter_list (114)
+    on right: 73 79
+    on left : 77 78
+  @7 (115)
+    on right: 73
+    on left : 72
+  set_parameter (116)
+    on right: 77
+    on left : 82
+  __set_parameter_list_end (117)
+    on right: 77
+    on left : 79 80
+  @8 (118)
+    on right: 82
+    on left : 81
+  __with_parameter_list (119)
+    on right: 85 129
+    on left : 83 84
+  with_parameter (120)
+    on right: 83
+    on left : 88
+  __with_parameter_list_end (121)
+    on right: 83
+    on left : 85 86
+  @9 (122)
+    on right: 88
+    on left : 87
+  function (123)
+    on right: 122
+    on left : 129
+  @10 (124)
+    on right: 91
+    on left : 90
+  @11 (125)
+    on right: 93
+    on left : 92
+  @12 (126)
+    on right: 95
+    on left : 94
+  @13 (127)
+    on right: 97
+    on left : 96
+  @14 (128)
+    on right: 99
+    on left : 98
+  @15 (129)
+    on right: 101
+    on left : 100
+  @16 (130)
+    on right: 103
+    on left : 102
+  @17 (131)
+    on right: 105
+    on left : 104
+  @18 (132)
+    on right: 107
+    on left : 106
+  @19 (133)
+    on right: 109
+    on left : 108
+  @20 (134)
+    on right: 111
+    on left : 110
+  @21 (135)
+    on right: 113
+    on left : 112
+  @22 (136)
+    on right: 115
+    on left : 114
+  @23 (137)
+    on right: 129
+    on left : 128
+  __common_decision_tree (138)
+    on right: 130 131
+    on left : 136 137
+  __common_action (139)
+    on right: 130 132
+    on left : 134 135
+  cdtree (140)
+    on right: 136 138 140
+    on left : 138 139
+  dtree (141)
+    on right: 139 142 143 145 147
+    on left : 145 146 147
+  __cdtree_elseif_decisions (142)
+    on right: 139
+    on left : 140 141
+  transition (143)
+    on right: 146
+    on left : 148 149
+
+**Terminals, with rules where they appear
+
+  $end (0) 
+  error (1) 
+  UMINUS (2) 
+  "!" (3) 89
+  "*" (4) 95
+  "/" (5) 97
+  "%" (6) 99
+  "+" (7) 91
+  "-" (8) 31 93 118
+  "<" (9) 105
+  ">" (10) 109
+  LE (11) 107
+  GE (12) 111
+  EQ (13) 103
+  NEQ (14) 101
+  AND (15) 113
+  OR (16) 115
+  "?" (17) 116
+  ":" (18) 116
+  ACTION (19) 56 130 132
+  NUMBER (20) 37 57 58 119
+  TRUE (21) 120
+  FALSE (22) 121
+  STRING (23) 11 13 40 50
+  RANGE (24) 48
+  INTERNAL (25) 25
+  IDENTIFIER (26) 13 20 22 28 29 35 37 40 42 47 56 65 73 82 88 123 129 148
+  DOC_COMMENT (27) 66
+  INITIAL_COMMENT (28) 2
+  OPTION (29) 42 74
+  STATE (30) 56
+  COMMON (31) 130 131 132
+  DECISION (32) 130 131 142 143
+  TTS (33) 148
+  STAY (34) 149
+  DT (35) 
+  CDT (36) 
+  IF (37) 139 147
+  ELSE (38) 140 143 147
+  TOOX (39) 125
+  TOSX (40) 124
+  SORTS (41) 126
+  INITIAL (42) 68
+  TARGET (43) 70
+  AGENT (44) 40
+  FUNCTION (45) 
+  ENUM (46) 35
+  INPUT (47) 23
+  OUTPUT (48) 24
+  BOOL (49) 33
+  FLOAT (50) 34 38
+  CONST (51) 37
+  NAMESPACE (52) 13
+  BEHAVIOR (53) 20 75
+  INCLUDE (54) 11
+  SYNCHRONIZED (55) 58 59
+  CAPACITY (56) 57
+  CONFLICT (57) 127
+  "{" (58) 13 20 27 42 56 134 136 138 142 143 145
+  "}" (59) 13 20 27 42 56 134 136 138 142 143 145
+  "(" (60) 13 40 43 73 117 129 139 147
+  ")" (61) 13 40 43 73 117 129 139 147
+  "|" (62) 
+  "," (63) 29 40 79 85
+  ";" (64) 11 22 27 37 40 47 65 73 148 149
+  "<=" (65) 
+  ">=" (66) 
+  "==" (67) 
+  "=" (68) 37 65 82 88
+
+--------- State ---------
+
+state 0
+
+
+  INITIAL_COMMENT  shift, and go to state 3
+  $default      reduce using rule 3 (__initial_comment)
+
+  xtc           go to state 1
+  __initial_comment  go to state 2
+
+state 1
+
+
+  $end          shift, and go to state 4
+
+
+state 2
+
+   1) xtc : __initial_comment _ __top_level
+
+  DOC_COMMENT   shift, and go to state 7
+  INCLUDE       shift, and go to state 12
+  $end          reduce using rule 8 (__top_level)
+  $default      reduce using rule 67 (__doc_comment)
+
+  agent         go to state 5
+  __doc_comment  go to state 6
+  __top_level   go to state 8
+  include       go to state 9
+  option        go to state 10
+  agents        go to state 11
+  namespace     go to state 13
+
+state 3
+
+   2) __initial_comment : INITIAL_COMMENT _
+
+  $default      reduce using rule 2 (__initial_comment)
+
+
+state 4
+
+
+  $end          shift, and go to state 14
+
+
+state 5
+
+   9) agents : agent _ agents
+  10) agents : agent _
+
+  DOC_COMMENT   shift, and go to state 7
+  AGENT         reduce using rule 67 (__doc_comment)
+  $default      reduce using rule 10 (agents)
+
+  agent         go to state 5
+  __doc_comment  go to state 15
+  agents        go to state 16
+
+state 6
+
+  13) namespace : __doc_comment _ NAMESPACE IDENTIFIER "(" STRING ")" "{" @1 __inner_namespace "}"
+  40) agent : __doc_comment _ AGENT IDENTIFIER "(" STRING "," IDENTIFIER ")" ";"
+  42) option : __doc_comment _ OPTION IDENTIFIER "{" @4 __parameter_declarations __common_declarations state_declarations "}"
+
+  OPTION        shift, and go to state 18
+  AGENT         shift, and go to state 17
+  NAMESPACE     shift, and go to state 19
+
+
+state 7
+
+  66) __doc_comment : DOC_COMMENT _
+
+  $default      reduce using rule 66 (__doc_comment)
+
+
+state 8
+
+   1) xtc : __initial_comment __top_level _
+
+  $default      reduce using rule 1 (xtc)
+
+
+state 9
+
+   4) __top_level : include _ __top_level
+
+  DOC_COMMENT   shift, and go to state 7
+  INCLUDE       shift, and go to state 12
+  $end          reduce using rule 8 (__top_level)
+  $default      reduce using rule 67 (__doc_comment)
+
+  agent         go to state 5
+  __doc_comment  go to state 6
+  __top_level   go to state 20
+  include       go to state 9
+  option        go to state 10
+  agents        go to state 11
+  namespace     go to state 13
+
+state 10
+
+   5) __top_level : option _
+
+  $default      reduce using rule 5 (__top_level)
+
+
+state 11
+
+   6) __top_level : agents _
+
+  $default      reduce using rule 6 (__top_level)
+
+
+state 12
+
+  11) include : INCLUDE _ STRING ";"
+
+  STRING        shift, and go to state 21
+
+
+state 13
+
+   7) __top_level : namespace _
+
+  $default      reduce using rule 7 (__top_level)
+
+
+state 14
+
+
+  $default      accept
+
+
+state 15
+
+  40) agent : __doc_comment _ AGENT IDENTIFIER "(" STRING "," IDENTIFIER ")" ";"
+
+  AGENT         shift, and go to state 17
+
+
+state 16
+
+   9) agents : agent agents _
+
+  $default      reduce using rule 9 (agents)
+
+
+state 17
+
+  40) agent : __doc_comment AGENT _ IDENTIFIER "(" STRING "," IDENTIFIER ")" ";"
+
+  IDENTIFIER    shift, and go to state 22
+
+
+state 18
+
+  42) option : __doc_comment OPTION _ IDENTIFIER "{" @4 __parameter_declarations __common_declarations state_declarations "}"
+
+  IDENTIFIER    shift, and go to state 23
+
+
+state 19
+
+  13) namespace : __doc_comment NAMESPACE _ IDENTIFIER "(" STRING ")" "{" @1 __inner_namespace "}"
+
+  IDENTIFIER    shift, and go to state 24
+
+
+state 20
+
+   4) __top_level : include __top_level _
+
+  $default      reduce using rule 4 (__top_level)
+
+
+state 21
+
+  11) include : INCLUDE STRING _ ";"
+
+  ";"           shift, and go to state 25
+
+
+state 22
+
+  40) agent : __doc_comment AGENT IDENTIFIER _ "(" STRING "," IDENTIFIER ")" ";"
+
+  "("           shift, and go to state 26
+
+
+state 23
+
+  42) option : __doc_comment OPTION IDENTIFIER _ "{" @4 __parameter_declarations __common_declarations state_declarations "}"
+
+  "{"           shift, and go to state 27
+
+
+state 24
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER _ "(" STRING ")" "{" @1 __inner_namespace "}"
+
+  "("           shift, and go to state 28
+
+
+state 25
+
+  11) include : INCLUDE STRING ";" _
+
+  $default      reduce using rule 11 (include)
+
+
+state 26
+
+  40) agent : __doc_comment AGENT IDENTIFIER "(" _ STRING "," IDENTIFIER ")" ";"
+
+  STRING        shift, and go to state 29
+
+
+state 27
+
+  42) option : __doc_comment OPTION IDENTIFIER "{" _ @4 __parameter_declarations __common_declarations state_declarations "}"
+
+  $default      reduce using rule 41 (@4)
+
+  @4            go to state 30
+
+state 28
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" _ STRING ")" "{" @1 __inner_namespace "}"
+
+  STRING        shift, and go to state 31
+
+
+state 29
+
+  40) agent : __doc_comment AGENT IDENTIFIER "(" STRING _ "," IDENTIFIER ")" ";"
+
+  ","           shift, and go to state 32
+
+
+state 30
+
+  42) option : __doc_comment OPTION IDENTIFIER "{" @4 _ __parameter_declarations __common_declarations state_declarations "}"
+
+  $default      reduce using rule 46 (__parameter_declarations)
+
+  __parameter_declarations  go to state 33
+
+state 31
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" STRING _ ")" "{" @1 __inner_namespace "}"
+
+  ")"           shift, and go to state 34
+
+
+state 32
+
+  40) agent : __doc_comment AGENT IDENTIFIER "(" STRING "," _ IDENTIFIER ")" ";"
+
+  IDENTIFIER    shift, and go to state 35
+
+
+state 33
+
+  42) option : __doc_comment OPTION IDENTIFIER "{" @4 __parameter_declarations _ __common_declarations state_declarations "}"
+  45) __parameter_declarations : __parameter_declarations _ parameter_declaration
+
+  DOC_COMMENT   shift, and go to state 7
+  COMMON        shift, and go to state 38
+  STATE         reduce using rule 133 (__common_declarations)
+  INITIAL       reduce using rule 133 (__common_declarations)
+  TARGET        reduce using rule 133 (__common_declarations)
+  $default      reduce using rule 67 (__doc_comment)
+
+  parameter_declaration  go to state 37
+  __doc_comment  go to state 36
+  __common_declarations  go to state 39
+
+state 34
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" STRING ")" _ "{" @1 __inner_namespace "}"
+
+  "{"           shift, and go to state 40
+
+
+state 35
+
+  40) agent : __doc_comment AGENT IDENTIFIER "(" STRING "," IDENTIFIER _ ")" ";"
+
+  ")"           shift, and go to state 41
+
+
+state 36
+
+  47) parameter_declaration : __doc_comment _ bool_or_float_or_enum IDENTIFIER __range __measure ";"
+
+  ENUM          shift, and go to state 42
+  BOOL          shift, and go to state 43
+  FLOAT         shift, and go to state 44
+  $default      reduce using rule 36 (bool_or_float_or_enum)
+
+  bool_or_float_or_enum  go to state 45
+
+state 37
+
+  45) __parameter_declarations : __parameter_declarations parameter_declaration _
+
+  $default      reduce using rule 45 (__parameter_declarations)
+
+
+state 38
+
+ 130) __common_declarations : COMMON _ DECISION __common_decision_tree COMMON ACTION __common_action
+ 131) __common_declarations : COMMON _ DECISION __common_decision_tree
+ 132) __common_declarations : COMMON _ ACTION __common_action
+
+  ACTION        shift, and go to state 46
+  DECISION      shift, and go to state 47
+
+
+state 39
+
+  42) option : __doc_comment OPTION IDENTIFIER "{" @4 __parameter_declarations __common_declarations _ state_declarations "}"
+
+  INITIAL       shift, and go to state 50
+  $default      reduce using rule 69 (__initial)
+
+  state_declaration  go to state 48
+  __initial     go to state 49
+  state_declarations  go to state 51
+
+state 40
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" STRING ")" "{" _ @1 __inner_namespace "}"
+
+  $default      reduce using rule 12 (@1)
+
+  @1            go to state 52
+
+state 41
+
+  40) agent : __doc_comment AGENT IDENTIFIER "(" STRING "," IDENTIFIER ")" _ ";"
+
+  ";"           shift, and go to state 53
+
+
+state 42
+
+  35) bool_or_float_or_enum : ENUM _ IDENTIFIER
+
+  IDENTIFIER    shift, and go to state 54
+
+
+state 43
+
+  33) bool_or_float_or_enum : BOOL _
+
+  $default      reduce using rule 33 (bool_or_float_or_enum)
+
+
+state 44
+
+  34) bool_or_float_or_enum : FLOAT _
+
+  $default      reduce using rule 34 (bool_or_float_or_enum)
+
+
+state 45
+
+  47) parameter_declaration : __doc_comment bool_or_float_or_enum _ IDENTIFIER __range __measure ";"
+
+  IDENTIFIER    shift, and go to state 55
+
+
+state 46
+
+ 132) __common_declarations : COMMON ACTION _ __common_action
+
+  "{"           shift, and go to state 56
+  $default      reduce using rule 135 (__common_action)
+
+  __common_action  go to state 57
+
+state 47
+
+ 130) __common_declarations : COMMON DECISION _ __common_decision_tree COMMON ACTION __common_action
+ 131) __common_declarations : COMMON DECISION _ __common_decision_tree
+
+  "{"           shift, and go to state 58
+  $default      reduce using rule 137 (__common_decision_tree)
+
+  __common_decision_tree  go to state 59
+
+state 48
+
+  52) state_declarations : state_declaration _ __state_declarations
+
+  $default      reduce using rule 54 (__state_declarations)
+
+  __state_declarations  go to state 60
+
+state 49
+
+  56) state_declaration : __initial _ __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  TARGET        shift, and go to state 62
+  $default      reduce using rule 71 (__target)
+
+  __target      go to state 61
+
+state 50
+
+  68) __initial : INITIAL _
+
+  $default      reduce using rule 68 (__initial)
+
+
+state 51
+
+  42) option : __doc_comment OPTION IDENTIFIER "{" @4 __parameter_declarations __common_declarations state_declarations _ "}"
+
+  "}"           shift, and go to state 63
+
+
+state 52
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" STRING ")" "{" @1 _ __inner_namespace "}"
+
+  $default      reduce using rule 18 (__inner_namespace)
+
+  __inner_namespace  go to state 64
+
+state 53
+
+  40) agent : __doc_comment AGENT IDENTIFIER "(" STRING "," IDENTIFIER ")" ";" _
+
+  $default      reduce using rule 40 (agent)
+
+
+state 54
+
+  35) bool_or_float_or_enum : ENUM IDENTIFIER _
+
+  $default      reduce using rule 35 (bool_or_float_or_enum)
+
+
+state 55
+
+  47) parameter_declaration : __doc_comment bool_or_float_or_enum IDENTIFIER _ __range __measure ";"
+
+  RANGE         shift, and go to state 66
+  $default      reduce using rule 49 (__range)
+
+  __range       go to state 65
+
+state 56
+
+ 134) __common_action : "{" _ __output_symbol_assignments_or_subsequent_declarations "}"
+
+  $default      reduce using rule 63 (__output_symbol_assignments_or_subsequent_declarations)
+
+  __output_symbol_assignments_or_subsequent_declarations  go to state 67
+
+state 57
+
+ 132) __common_declarations : COMMON ACTION __common_action _
+
+  $default      reduce using rule 132 (__common_declarations)
+
+
+state 58
+
+ 136) __common_decision_tree : "{" _ cdtree "}"
+
+  DOC_COMMENT   shift, and go to state 7
+  "{"           shift, and go to state 69
+  $default      reduce using rule 67 (__doc_comment)
+
+  __doc_comment  go to state 68
+  cdtree        go to state 70
+
+state 59
+
+ 130) __common_declarations : COMMON DECISION __common_decision_tree _ COMMON ACTION __common_action
+ 131) __common_declarations : COMMON DECISION __common_decision_tree _
+
+  COMMON        shift, and go to state 71
+  $default      reduce using rule 131 (__common_declarations)
+
+
+state 60
+
+  52) state_declarations : state_declaration __state_declarations _
+  53) __state_declarations : __state_declarations _ state_declaration
+
+  INITIAL       shift, and go to state 50
+  "}"           reduce using rule 52 (state_declarations)
+  $default      reduce using rule 69 (__initial)
+
+  state_declaration  go to state 72
+  __initial     go to state 49
+
+state 61
+
+  56) state_declaration : __initial __target _ STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  STATE         shift, and go to state 73
+
+
+state 62
+
+  70) __target : TARGET _
+
+  $default      reduce using rule 70 (__target)
+
+
+state 63
+
+  42) option : __doc_comment OPTION IDENTIFIER "{" @4 __parameter_declarations __common_declarations state_declarations "}" _
+
+  $default      reduce using rule 42 (option)
+
+
+state 64
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" STRING ")" "{" @1 __inner_namespace _ "}"
+  14) __inner_namespace : __inner_namespace _ const
+  15) __inner_namespace : __inner_namespace _ symbol_declaration
+  16) __inner_namespace : __inner_namespace _ enum_symbol_declaration
+  17) __inner_namespace : __inner_namespace _ behavior_declaration
+
+  DOC_COMMENT   shift, and go to state 7
+  "}"           shift, and go to state 76
+  $default      reduce using rule 67 (__doc_comment)
+
+  __doc_comment  go to state 74
+  const         go to state 75
+  symbol_declaration  go to state 77
+  enum_symbol_declaration  go to state 78
+  behavior_declaration  go to state 79
+
+state 65
+
+  47) parameter_declaration : __doc_comment bool_or_float_or_enum IDENTIFIER __range _ __measure ";"
+
+  STRING        shift, and go to state 80
+  $default      reduce using rule 51 (__measure)
+
+  __measure     go to state 81
+
+state 66
+
+  48) __range : RANGE _
+
+  $default      reduce using rule 48 (__range)
+
+
+state 67
+
+  61) __output_symbol_assignments_or_subsequent_declarations : __output_symbol_assignments_or_subsequent_declarations _ output_symbol_assignment
+  62) __output_symbol_assignments_or_subsequent_declarations : __output_symbol_assignments_or_subsequent_declarations _ subsequent_declaration
+ 134) __common_action : "{" __output_symbol_assignments_or_subsequent_declarations _ "}"
+
+  IDENTIFIER    shift, and go to state 84
+  "}"           shift, and go to state 83
+
+  subsequent_declaration  go to state 82
+  output_symbol_assignment  go to state 85
+
+state 68
+
+ 139) cdtree : __doc_comment _ IF "(" exp ")" dtree __cdtree_elseif_decisions
+
+  IF            shift, and go to state 86
+
+
+state 69
+
+ 138) cdtree : "{" _ cdtree "}"
+
+  DOC_COMMENT   shift, and go to state 7
+  "{"           shift, and go to state 69
+  $default      reduce using rule 67 (__doc_comment)
+
+  __doc_comment  go to state 68
+  cdtree        go to state 87
+
+state 70
+
+ 136) __common_decision_tree : "{" cdtree _ "}"
+
+  "}"           shift, and go to state 88
+
+
+state 71
+
+ 130) __common_declarations : COMMON DECISION __common_decision_tree COMMON _ ACTION __common_action
+
+  ACTION        shift, and go to state 89
+
+
+state 72
+
+  53) __state_declarations : __state_declarations state_declaration _
+
+  $default      reduce using rule 53 (__state_declarations)
+
+
+state 73
+
+  56) state_declaration : __initial __target STATE _ IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  IDENTIFIER    shift, and go to state 90
+
+
+state 74
+
+  20) behavior_declaration : __doc_comment _ BEHAVIOR IDENTIFIER "{" @2 __parameter_declarations "}"
+  22) symbol_declaration : __doc_comment _ bool_or_float_or_enum __input_output_internal IDENTIFIER __range __measure @3 symbol_parameter_declarations ";"
+  27) enum_symbol_declaration : __doc_comment _ bool_or_float_or_enum __input_output_internal "{" enum_elements "}" ";"
+  37) const : __doc_comment _ __float CONST IDENTIFIER "=" __minus NUMBER __measure ";"
+
+  ENUM          shift, and go to state 42
+  BOOL          shift, and go to state 43
+  FLOAT         shift, and go to state 91
+  BEHAVIOR      shift, and go to state 93
+  CONST         reduce using rule 39 (__float)
+  $default      reduce using rule 36 (bool_or_float_or_enum)
+
+  __float       go to state 92
+  bool_or_float_or_enum  go to state 94
+
+state 75
+
+  14) __inner_namespace : __inner_namespace const _
+
+  $default      reduce using rule 14 (__inner_namespace)
+
+
+state 76
+
+  13) namespace : __doc_comment NAMESPACE IDENTIFIER "(" STRING ")" "{" @1 __inner_namespace "}" _
+
+  $default      reduce using rule 13 (namespace)
+
+
+state 77
+
+  15) __inner_namespace : __inner_namespace symbol_declaration _
+
+  $default      reduce using rule 15 (__inner_namespace)
+
+
+state 78
+
+  16) __inner_namespace : __inner_namespace enum_symbol_declaration _
+
+  $default      reduce using rule 16 (__inner_namespace)
+
+
+state 79
+
+  17) __inner_namespace : __inner_namespace behavior_declaration _
+
+  $default      reduce using rule 17 (__inner_namespace)
+
+
+state 80
+
+  50) __measure : STRING _
+
+  $default      reduce using rule 50 (__measure)
+
+
+state 81
+
+  47) parameter_declaration : __doc_comment bool_or_float_or_enum IDENTIFIER __range __measure _ ";"
+
+  ";"           shift, and go to state 95
+
+
+state 82
+
+  62) __output_symbol_assignments_or_subsequent_declarations : __output_symbol_assignments_or_subsequent_declarations subsequent_declaration _
+
+  $default      reduce using rule 62 (__output_symbol_assignments_or_subsequent_declarations)
+
+
+state 83
+
+ 134) __common_action : "{" __output_symbol_assignments_or_subsequent_declarations "}" _
+
+  $default      reduce using rule 134 (__common_action)
+
+
+state 84
+
+  65) output_symbol_assignment : IDENTIFIER _ @6 "=" exp ";"
+  73) subsequent_declaration : IDENTIFIER _ __option_or_behavior "(" @7 __set_parameter_list ")" ";"
+
+  OPTION        shift, and go to state 98
+  BEHAVIOR      shift, and go to state 99
+  "("           reduce using rule 76 (__option_or_behavior)
+  $default      reduce using rule 64 (@6)
+
+  @6            go to state 96
+  __option_or_behavior  go to state 97
+
+state 85
+
+  61) __output_symbol_assignments_or_subsequent_declarations : __output_symbol_assignments_or_subsequent_declarations output_symbol_assignment _
+
+  $default      reduce using rule 61 (__output_symbol_assignments_or_subsequent_declarations)
+
+
+state 86
+
+ 139) cdtree : __doc_comment IF _ "(" exp ")" dtree __cdtree_elseif_decisions
+
+  "("           shift, and go to state 100
+
+
+state 87
+
+ 138) cdtree : "{" cdtree _ "}"
+
+  "}"           shift, and go to state 101
+
+
+state 88
+
+ 136) __common_decision_tree : "{" cdtree "}" _
+
+  $default      reduce using rule 136 (__common_decision_tree)
+
+
+state 89
+
+ 130) __common_declarations : COMMON DECISION __common_decision_tree COMMON ACTION _ __common_action
+
+  "{"           shift, and go to state 56
+  $default      reduce using rule 135 (__common_action)
+
+  __common_action  go to state 102
+
+state 90
+
+  56) state_declaration : __initial __target STATE IDENTIFIER _ cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  SYNCHRONIZED  shift, and go to state 103
+  CAPACITY      shift, and go to state 104
+  $default      reduce using rule 60 (cooperative)
+
+  cooperative   go to state 105
+
+state 91
+
+  34) bool_or_float_or_enum : FLOAT _
+  38) __float : FLOAT _
+
+  CONST         reduce using rule 38 (__float)
+  $default      reduce using rule 34 (bool_or_float_or_enum)
+
+
+state 92
+
+  37) const : __doc_comment __float _ CONST IDENTIFIER "=" __minus NUMBER __measure ";"
+
+  CONST         shift, and go to state 106
+
+
+state 93
+
+  20) behavior_declaration : __doc_comment BEHAVIOR _ IDENTIFIER "{" @2 __parameter_declarations "}"
+
+  IDENTIFIER    shift, and go to state 107
+
+
+state 94
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum _ __input_output_internal IDENTIFIER __range __measure @3 symbol_parameter_declarations ";"
+  27) enum_symbol_declaration : __doc_comment bool_or_float_or_enum _ __input_output_internal "{" enum_elements "}" ";"
+
+  INTERNAL      shift, and go to state 109
+  INPUT         shift, and go to state 110
+  OUTPUT        shift, and go to state 111
+  $default      reduce using rule 26 (__input_output_internal)
+
+  __input_output_internal  go to state 108
+
+state 95
+
+  47) parameter_declaration : __doc_comment bool_or_float_or_enum IDENTIFIER __range __measure ";" _
+
+  $default      reduce using rule 47 (parameter_declaration)
+
+
+state 96
+
+  65) output_symbol_assignment : IDENTIFIER @6 _ "=" exp ";"
+
+  "="           shift, and go to state 112
+
+
+state 97
+
+  73) subsequent_declaration : IDENTIFIER __option_or_behavior _ "(" @7 __set_parameter_list ")" ";"
+
+  "("           shift, and go to state 113
+
+
+state 98
+
+  74) __option_or_behavior : OPTION _
+
+  $default      reduce using rule 74 (__option_or_behavior)
+
+
+state 99
+
+  75) __option_or_behavior : BEHAVIOR _
+
+  $default      reduce using rule 75 (__option_or_behavior)
+
+
+state 100
+
+ 139) cdtree : __doc_comment IF "(" _ exp ")" dtree __cdtree_elseif_decisions
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 115
+  function      go to state 117
+
+state 101
+
+ 138) cdtree : "{" cdtree "}" _
+
+  $default      reduce using rule 138 (cdtree)
+
+
+state 102
+
+ 130) __common_declarations : COMMON DECISION __common_decision_tree COMMON ACTION __common_action _
+
+  $default      reduce using rule 130 (__common_declarations)
+
+
+state 103
+
+  58) cooperative : SYNCHRONIZED _ NUMBER
+  59) cooperative : SYNCHRONIZED _
+
+  NUMBER        shift, and go to state 127
+  $default      reduce using rule 59 (cooperative)
+
+
+state 104
+
+  57) cooperative : CAPACITY _ NUMBER
+
+  NUMBER        shift, and go to state 128
+
+
+state 105
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative _ "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  "{"           shift, and go to state 129
+
+
+state 106
+
+  37) const : __doc_comment __float CONST _ IDENTIFIER "=" __minus NUMBER __measure ";"
+
+  IDENTIFIER    shift, and go to state 130
+
+
+state 107
+
+  20) behavior_declaration : __doc_comment BEHAVIOR IDENTIFIER _ "{" @2 __parameter_declarations "}"
+
+  "{"           shift, and go to state 131
+
+
+state 108
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal _ IDENTIFIER __range __measure @3 symbol_parameter_declarations ";"
+  27) enum_symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal _ "{" enum_elements "}" ";"
+
+  IDENTIFIER    shift, and go to state 133
+  "{"           shift, and go to state 132
+
+
+state 109
+
+  25) __input_output_internal : INTERNAL _
+
+  $default      reduce using rule 25 (__input_output_internal)
+
+
+state 110
+
+  23) __input_output_internal : INPUT _
+
+  $default      reduce using rule 23 (__input_output_internal)
+
+
+state 111
+
+  24) __input_output_internal : OUTPUT _
+
+  $default      reduce using rule 24 (__input_output_internal)
+
+
+state 112
+
+  65) output_symbol_assignment : IDENTIFIER @6 "=" _ exp ";"
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 134
+  function      go to state 117
+
+state 113
+
+  73) subsequent_declaration : IDENTIFIER __option_or_behavior "(" _ @7 __set_parameter_list ")" ";"
+
+  $default      reduce using rule 72 (@7)
+
+  @7            go to state 135
+
+state 114
+
+ 121) exp : FALSE _
+
+  $default      reduce using rule 121 (exp)
+
+
+state 115
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+ 139) cdtree : __doc_comment IF "(" exp _ ")" dtree __cdtree_elseif_decisions
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  ")"           shift, and go to state 144
+
+
+state 116
+
+ 127) exp : CONFLICT _
+
+  $default      reduce using rule 127 (exp)
+
+
+state 117
+
+ 122) exp : function _
+
+  $default      reduce using rule 122 (exp)
+
+
+state 118
+
+  89) exp : "!" _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 151
+  function      go to state 117
+
+state 119
+
+ 123) exp : IDENTIFIER _
+ 129) function : IDENTIFIER _ @23 "(" __with_parameter_list ")"
+
+  "("           reduce using rule 128 (@23)
+  $default      reduce using rule 123 (exp)
+
+  @23           go to state 152
+
+state 120
+
+ 117) exp : "(" _ exp ")"
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 153
+  function      go to state 117
+
+state 121
+
+ 125) exp : TOOX _
+
+  $default      reduce using rule 125 (exp)
+
+
+state 122
+
+ 124) exp : TOSX _
+
+  $default      reduce using rule 124 (exp)
+
+
+state 123
+
+ 126) exp : SORTS _
+
+  $default      reduce using rule 126 (exp)
+
+
+state 124
+
+ 118) exp : "-" _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 154
+  function      go to state 117
+
+state 125
+
+ 119) exp : NUMBER _
+
+  $default      reduce using rule 119 (exp)
+
+
+state 126
+
+ 120) exp : TRUE _
+
+  $default      reduce using rule 120 (exp)
+
+
+state 127
+
+  58) cooperative : SYNCHRONIZED NUMBER _
+
+  $default      reduce using rule 58 (cooperative)
+
+
+state 128
+
+  57) cooperative : CAPACITY NUMBER _
+
+  $default      reduce using rule 57 (cooperative)
+
+
+state 129
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" _ @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  $default      reduce using rule 55 (@5)
+
+  @5            go to state 155
+
+state 130
+
+  37) const : __doc_comment __float CONST IDENTIFIER _ "=" __minus NUMBER __measure ";"
+
+  "="           shift, and go to state 156
+
+
+state 131
+
+  20) behavior_declaration : __doc_comment BEHAVIOR IDENTIFIER "{" _ @2 __parameter_declarations "}"
+
+  $default      reduce using rule 19 (@2)
+
+  @2            go to state 157
+
+state 132
+
+  27) enum_symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal "{" _ enum_elements "}" ";"
+
+  IDENTIFIER    shift, and go to state 158
+
+  enum_elements  go to state 159
+
+state 133
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER _ __range __measure @3 symbol_parameter_declarations ";"
+
+  RANGE         shift, and go to state 66
+  $default      reduce using rule 49 (__range)
+
+  __range       go to state 160
+
+state 134
+
+  65) output_symbol_assignment : IDENTIFIER @6 "=" exp _ ";"
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  ";"           shift, and go to state 161
+
+
+state 135
+
+  73) subsequent_declaration : IDENTIFIER __option_or_behavior "(" @7 _ __set_parameter_list ")" ";"
+
+  IDENTIFIER    shift, and go to state 162
+  $default      reduce using rule 78 (__set_parameter_list)
+
+  __set_parameter_list  go to state 163
+  set_parameter  go to state 164
+
+state 136
+
+ 107) exp : exp LE _ @18 exp
+
+  $default      reduce using rule 106 (@18)
+
+  @18           go to state 165
+
+state 137
+
+ 111) exp : exp GE _ @20 exp
+
+  $default      reduce using rule 110 (@20)
+
+  @20           go to state 166
+
+state 138
+
+ 103) exp : exp EQ _ @16 exp
+
+  $default      reduce using rule 102 (@16)
+
+  @16           go to state 167
+
+state 139
+
+ 101) exp : exp NEQ _ @15 exp
+
+  $default      reduce using rule 100 (@15)
+
+  @15           go to state 168
+
+state 140
+
+ 113) exp : exp AND _ @21 exp
+
+  $default      reduce using rule 112 (@21)
+
+  @21           go to state 169
+
+state 141
+
+  95) exp : exp "*" _ @12 exp
+
+  $default      reduce using rule 94 (@12)
+
+  @12           go to state 170
+
+state 142
+
+ 115) exp : exp OR _ @22 exp
+
+  $default      reduce using rule 114 (@22)
+
+  @22           go to state 171
+
+state 143
+
+  97) exp : exp "/" _ @13 exp
+
+  $default      reduce using rule 96 (@13)
+
+  @13           go to state 172
+
+state 144
+
+ 139) cdtree : __doc_comment IF "(" exp ")" _ dtree __cdtree_elseif_decisions
+
+  DOC_COMMENT   shift, and go to state 7
+  TTS           shift, and go to state 173
+  STAY          shift, and go to state 175
+  "{"           shift, and go to state 177
+  $default      reduce using rule 67 (__doc_comment)
+
+  transition    go to state 174
+  __doc_comment  go to state 176
+  dtree         go to state 178
+
+state 145
+
+ 116) exp : exp "?" _ exp ":" exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 179
+  function      go to state 117
+
+state 146
+
+  99) exp : exp "%" _ @14 exp
+
+  $default      reduce using rule 98 (@14)
+
+  @14           go to state 180
+
+state 147
+
+  91) exp : exp "+" _ @10 exp
+
+  $default      reduce using rule 90 (@10)
+
+  @10           go to state 181
+
+state 148
+
+  93) exp : exp "-" _ @11 exp
+
+  $default      reduce using rule 92 (@11)
+
+  @11           go to state 182
+
+state 149
+
+ 105) exp : exp "<" _ @17 exp
+
+  $default      reduce using rule 104 (@17)
+
+  @17           go to state 183
+
+state 150
+
+ 109) exp : exp ">" _ @19 exp
+
+  $default      reduce using rule 108 (@19)
+
+  @19           go to state 184
+
+state 151
+
+  89) exp : "!" exp _
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  $default      reduce using rule 89 (exp)
+
+
+state 152
+
+ 129) function : IDENTIFIER @23 _ "(" __with_parameter_list ")"
+
+  "("           shift, and go to state 185
+
+
+state 153
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+ 117) exp : "(" exp _ ")"
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  ")"           shift, and go to state 186
+
+
+state 154
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+ 118) exp : "-" exp _
+
+  $default      reduce using rule 118 (exp)
+
+
+state 155
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 _ decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  DECISION      shift, and go to state 188
+  $default      reduce using rule 144 (decision_tree)
+
+  decision_tree  go to state 187
+
+state 156
+
+  37) const : __doc_comment __float CONST IDENTIFIER "=" _ __minus NUMBER __measure ";"
+
+  "-"           shift, and go to state 190
+  $default      reduce using rule 32 (__minus)
+
+  __minus       go to state 189
+
+state 157
+
+  20) behavior_declaration : __doc_comment BEHAVIOR IDENTIFIER "{" @2 _ __parameter_declarations "}"
+
+  $default      reduce using rule 46 (__parameter_declarations)
+
+  __parameter_declarations  go to state 191
+
+state 158
+
+  28) enum_elements : IDENTIFIER _ __enum_elements
+
+  $default      reduce using rule 30 (__enum_elements)
+
+  __enum_elements  go to state 192
+
+state 159
+
+  27) enum_symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal "{" enum_elements _ "}" ";"
+
+  "}"           shift, and go to state 193
+
+
+state 160
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER __range _ __measure @3 symbol_parameter_declarations ";"
+
+  STRING        shift, and go to state 80
+  $default      reduce using rule 51 (__measure)
+
+  __measure     go to state 194
+
+state 161
+
+  65) output_symbol_assignment : IDENTIFIER @6 "=" exp ";" _
+
+  $default      reduce using rule 65 (output_symbol_assignment)
+
+
+state 162
+
+  82) set_parameter : IDENTIFIER _ @8 "=" exp
+
+  $default      reduce using rule 81 (@8)
+
+  @8            go to state 195
+
+state 163
+
+  73) subsequent_declaration : IDENTIFIER __option_or_behavior "(" @7 __set_parameter_list _ ")" ";"
+
+  ")"           shift, and go to state 196
+
+
+state 164
+
+  77) __set_parameter_list : set_parameter _ __set_parameter_list_end
+
+  ","           shift, and go to state 198
+  $default      reduce using rule 80 (__set_parameter_list_end)
+
+  __set_parameter_list_end  go to state 197
+
+state 165
+
+ 107) exp : exp LE @18 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 199
+  function      go to state 117
+
+state 166
+
+ 111) exp : exp GE @20 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 200
+  function      go to state 117
+
+state 167
+
+ 103) exp : exp EQ @16 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 201
+  function      go to state 117
+
+state 168
+
+ 101) exp : exp NEQ @15 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 202
+  function      go to state 117
+
+state 169
+
+ 113) exp : exp AND @21 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 203
+  function      go to state 117
+
+state 170
+
+  95) exp : exp "*" @12 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 204
+  function      go to state 117
+
+state 171
+
+ 115) exp : exp OR @22 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 205
+  function      go to state 117
+
+state 172
+
+  97) exp : exp "/" @13 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 206
+  function      go to state 117
+
+state 173
+
+ 148) transition : TTS _ IDENTIFIER ";"
+
+  IDENTIFIER    shift, and go to state 207
+
+
+state 174
+
+ 146) dtree : transition _
+
+  $default      reduce using rule 146 (dtree)
+
+
+state 175
+
+ 149) transition : STAY _ ";"
+
+  ";"           shift, and go to state 208
+
+
+state 176
+
+ 147) dtree : __doc_comment _ IF "(" exp ")" dtree __doc_comment ELSE dtree
+
+  IF            shift, and go to state 209
+
+
+state 177
+
+ 145) dtree : "{" _ dtree "}"
+
+  DOC_COMMENT   shift, and go to state 7
+  TTS           shift, and go to state 173
+  STAY          shift, and go to state 175
+  "{"           shift, and go to state 177
+  $default      reduce using rule 67 (__doc_comment)
+
+  transition    go to state 174
+  __doc_comment  go to state 176
+  dtree         go to state 210
+
+state 178
+
+ 139) cdtree : __doc_comment IF "(" exp ")" dtree _ __cdtree_elseif_decisions
+
+  DOC_COMMENT   shift, and go to state 7
+  "}"           reduce using rule 141 (__cdtree_elseif_decisions)
+  $default      reduce using rule 67 (__doc_comment)
+
+  __doc_comment  go to state 211
+  __cdtree_elseif_decisions  go to state 212
+
+state 179
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+ 116) exp : exp "?" exp _ ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  ":"           shift, and go to state 213
+
+
+state 180
+
+  99) exp : exp "%" @14 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 214
+  function      go to state 117
+
+state 181
+
+  91) exp : exp "+" @10 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 215
+  function      go to state 117
+
+state 182
+
+  93) exp : exp "-" @11 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 216
+  function      go to state 117
+
+state 183
+
+ 105) exp : exp "<" @17 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 217
+  function      go to state 117
+
+state 184
+
+ 109) exp : exp ">" @19 _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 218
+  function      go to state 117
+
+state 185
+
+ 129) function : IDENTIFIER @23 "(" _ __with_parameter_list ")"
+
+  IDENTIFIER    shift, and go to state 219
+  $default      reduce using rule 84 (__with_parameter_list)
+
+  __with_parameter_list  go to state 220
+  with_parameter  go to state 221
+
+state 186
+
+ 117) exp : "(" exp ")" _
+
+  $default      reduce using rule 117 (exp)
+
+
+state 187
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree _ ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  ACTION        shift, and go to state 222
+
+
+state 188
+
+ 142) decision_tree : DECISION _ "{" dtree "}"
+ 143) decision_tree : DECISION _ "{" __doc_comment ELSE dtree "}"
+
+  "{"           shift, and go to state 223
+
+
+state 189
+
+  37) const : __doc_comment __float CONST IDENTIFIER "=" __minus _ NUMBER __measure ";"
+
+  NUMBER        shift, and go to state 224
+
+
+state 190
+
+  31) __minus : "-" _
+
+  $default      reduce using rule 31 (__minus)
+
+
+state 191
+
+  20) behavior_declaration : __doc_comment BEHAVIOR IDENTIFIER "{" @2 __parameter_declarations _ "}"
+  45) __parameter_declarations : __parameter_declarations _ parameter_declaration
+
+  DOC_COMMENT   shift, and go to state 7
+  "}"           shift, and go to state 225
+  $default      reduce using rule 67 (__doc_comment)
+
+  parameter_declaration  go to state 37
+  __doc_comment  go to state 36
+
+state 192
+
+  28) enum_elements : IDENTIFIER __enum_elements _
+  29) __enum_elements : __enum_elements _ "," IDENTIFIER
+
+  ","           shift, and go to state 226
+  $default      reduce using rule 28 (enum_elements)
+
+
+state 193
+
+  27) enum_symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal "{" enum_elements "}" _ ";"
+
+  ";"           shift, and go to state 227
+
+
+state 194
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER __range __measure _ @3 symbol_parameter_declarations ";"
+
+  $default      reduce using rule 21 (@3)
+
+  @3            go to state 228
+
+state 195
+
+  82) set_parameter : IDENTIFIER @8 _ "=" exp
+
+  "="           shift, and go to state 229
+
+
+state 196
+
+  73) subsequent_declaration : IDENTIFIER __option_or_behavior "(" @7 __set_parameter_list ")" _ ";"
+
+  ";"           shift, and go to state 230
+
+
+state 197
+
+  77) __set_parameter_list : set_parameter __set_parameter_list_end _
+
+  $default      reduce using rule 77 (__set_parameter_list)
+
+
+state 198
+
+  79) __set_parameter_list_end : "," _ __set_parameter_list
+
+  IDENTIFIER    shift, and go to state 162
+  $default      reduce using rule 78 (__set_parameter_list)
+
+  __set_parameter_list  go to state 231
+  set_parameter  go to state 164
+
+state 199
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 107) exp : exp LE @18 exp _
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           error
+  ">"           error
+  LE            error
+  GE            error
+  EQ            error
+  NEQ           error
+  $default      reduce using rule 107 (exp)
+
+
+state 200
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 111) exp : exp GE @20 exp _
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           error
+  ">"           error
+  LE            error
+  GE            error
+  EQ            error
+  NEQ           error
+  $default      reduce using rule 111 (exp)
+
+
+state 201
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 103) exp : exp EQ @16 exp _
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           error
+  ">"           error
+  LE            error
+  GE            error
+  EQ            error
+  NEQ           error
+  $default      reduce using rule 103 (exp)
+
+
+state 202
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 101) exp : exp NEQ @15 exp _
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           error
+  ">"           error
+  LE            error
+  GE            error
+  EQ            error
+  NEQ           error
+  $default      reduce using rule 101 (exp)
+
+
+state 203
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 113) exp : exp AND @21 exp _
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  $default      reduce using rule 113 (exp)
+
+
+state 204
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  95) exp : exp "*" @12 exp _
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  $default      reduce using rule 95 (exp)
+
+
+state 205
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 115) exp : exp OR @22 exp _
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  $default      reduce using rule 115 (exp)
+
+
+state 206
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  97) exp : exp "/" @13 exp _
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  $default      reduce using rule 97 (exp)
+
+
+state 207
+
+ 148) transition : TTS IDENTIFIER _ ";"
+
+  ";"           shift, and go to state 232
+
+
+state 208
+
+ 149) transition : STAY ";" _
+
+  $default      reduce using rule 149 (transition)
+
+
+state 209
+
+ 147) dtree : __doc_comment IF _ "(" exp ")" dtree __doc_comment ELSE dtree
+
+  "("           shift, and go to state 233
+
+
+state 210
+
+ 145) dtree : "{" dtree _ "}"
+
+  "}"           shift, and go to state 234
+
+
+state 211
+
+ 140) __cdtree_elseif_decisions : __doc_comment _ ELSE cdtree
+
+  ELSE          shift, and go to state 235
+
+
+state 212
+
+ 139) cdtree : __doc_comment IF "(" exp ")" dtree __cdtree_elseif_decisions _
+
+  $default      reduce using rule 139 (cdtree)
+
+
+state 213
+
+ 116) exp : exp "?" exp ":" _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 236
+  function      go to state 117
+
+state 214
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+  99) exp : exp "%" @14 exp _
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  $default      reduce using rule 99 (exp)
+
+
+state 215
+
+  91) exp : exp _ "+" @10 exp
+  91) exp : exp "+" @10 exp _
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  $default      reduce using rule 91 (exp)
+
+
+state 216
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  93) exp : exp "-" @11 exp _
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  $default      reduce using rule 93 (exp)
+
+
+state 217
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 105) exp : exp "<" @17 exp _
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           error
+  ">"           error
+  LE            error
+  GE            error
+  EQ            error
+  NEQ           error
+  $default      reduce using rule 105 (exp)
+
+
+state 218
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 109) exp : exp ">" @19 exp _
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           error
+  ">"           error
+  LE            error
+  GE            error
+  EQ            error
+  NEQ           error
+  $default      reduce using rule 109 (exp)
+
+
+state 219
+
+  88) with_parameter : IDENTIFIER _ @9 "=" exp
+
+  $default      reduce using rule 87 (@9)
+
+  @9            go to state 237
+
+state 220
+
+ 129) function : IDENTIFIER @23 "(" __with_parameter_list _ ")"
+
+  ")"           shift, and go to state 238
+
+
+state 221
+
+  83) __with_parameter_list : with_parameter _ __with_parameter_list_end
+
+  ","           shift, and go to state 240
+  $default      reduce using rule 86 (__with_parameter_list_end)
+
+  __with_parameter_list_end  go to state 239
+
+state 222
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION _ "{" __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  "{"           shift, and go to state 241
+
+
+state 223
+
+ 142) decision_tree : DECISION "{" _ dtree "}"
+ 143) decision_tree : DECISION "{" _ __doc_comment ELSE dtree "}"
+
+  DOC_COMMENT   shift, and go to state 7
+  TTS           shift, and go to state 173
+  STAY          shift, and go to state 175
+  "{"           shift, and go to state 177
+  $default      reduce using rule 67 (__doc_comment)
+
+  transition    go to state 174
+  __doc_comment  go to state 242
+  dtree         go to state 243
+
+state 224
+
+  37) const : __doc_comment __float CONST IDENTIFIER "=" __minus NUMBER _ __measure ";"
+
+  STRING        shift, and go to state 80
+  $default      reduce using rule 51 (__measure)
+
+  __measure     go to state 244
+
+state 225
+
+  20) behavior_declaration : __doc_comment BEHAVIOR IDENTIFIER "{" @2 __parameter_declarations "}" _
+
+  $default      reduce using rule 20 (behavior_declaration)
+
+
+state 226
+
+  29) __enum_elements : __enum_elements "," _ IDENTIFIER
+
+  IDENTIFIER    shift, and go to state 245
+
+
+state 227
+
+  27) enum_symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal "{" enum_elements "}" ";" _
+
+  $default      reduce using rule 27 (enum_symbol_declaration)
+
+
+state 228
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER __range __measure @3 _ symbol_parameter_declarations ";"
+
+  "("           shift, and go to state 247
+  $default      reduce using rule 44 (symbol_parameter_declarations)
+
+  symbol_parameter_declarations  go to state 246
+
+state 229
+
+  82) set_parameter : IDENTIFIER @8 "=" _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 248
+  function      go to state 117
+
+state 230
+
+  73) subsequent_declaration : IDENTIFIER __option_or_behavior "(" @7 __set_parameter_list ")" ";" _
+
+  $default      reduce using rule 73 (subsequent_declaration)
+
+
+state 231
+
+  79) __set_parameter_list_end : "," __set_parameter_list _
+
+  $default      reduce using rule 79 (__set_parameter_list_end)
+
+
+state 232
+
+ 148) transition : TTS IDENTIFIER ";" _
+
+  $default      reduce using rule 148 (transition)
+
+
+state 233
+
+ 147) dtree : __doc_comment IF "(" _ exp ")" dtree __doc_comment ELSE dtree
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 249
+  function      go to state 117
+
+state 234
+
+ 145) dtree : "{" dtree "}" _
+
+  $default      reduce using rule 145 (dtree)
+
+
+state 235
+
+ 140) __cdtree_elseif_decisions : __doc_comment ELSE _ cdtree
+
+  DOC_COMMENT   shift, and go to state 7
+  "{"           shift, and go to state 69
+  $default      reduce using rule 67 (__doc_comment)
+
+  __doc_comment  go to state 68
+  cdtree        go to state 250
+
+state 236
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+ 116) exp : exp "?" exp ":" exp _
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           error
+  $default      reduce using rule 116 (exp)
+
+
+state 237
+
+  88) with_parameter : IDENTIFIER @9 _ "=" exp
+
+  "="           shift, and go to state 251
+
+
+state 238
+
+ 129) function : IDENTIFIER @23 "(" __with_parameter_list ")" _
+
+  $default      reduce using rule 129 (function)
+
+
+state 239
+
+  83) __with_parameter_list : with_parameter __with_parameter_list_end _
+
+  $default      reduce using rule 83 (__with_parameter_list)
+
+
+state 240
+
+  85) __with_parameter_list_end : "," _ __with_parameter_list
+
+  IDENTIFIER    shift, and go to state 219
+  $default      reduce using rule 84 (__with_parameter_list)
+
+  __with_parameter_list  go to state 252
+  with_parameter  go to state 221
+
+state 241
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" _ __output_symbol_assignments_or_subsequent_declarations "}" "}"
+
+  $default      reduce using rule 63 (__output_symbol_assignments_or_subsequent_declarations)
+
+  __output_symbol_assignments_or_subsequent_declarations  go to state 253
+
+state 242
+
+ 143) decision_tree : DECISION "{" __doc_comment _ ELSE dtree "}"
+ 147) dtree : __doc_comment _ IF "(" exp ")" dtree __doc_comment ELSE dtree
+
+  IF            shift, and go to state 209
+  ELSE          shift, and go to state 254
+
+
+state 243
+
+ 142) decision_tree : DECISION "{" dtree _ "}"
+
+  "}"           shift, and go to state 255
+
+
+state 244
+
+  37) const : __doc_comment __float CONST IDENTIFIER "=" __minus NUMBER __measure _ ";"
+
+  ";"           shift, and go to state 256
+
+
+state 245
+
+  29) __enum_elements : __enum_elements "," IDENTIFIER _
+
+  $default      reduce using rule 29 (__enum_elements)
+
+
+state 246
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER __range __measure @3 symbol_parameter_declarations _ ";"
+
+  ";"           shift, and go to state 257
+
+
+state 247
+
+  43) symbol_parameter_declarations : "(" _ __parameter_declarations ")"
+
+  $default      reduce using rule 46 (__parameter_declarations)
+
+  __parameter_declarations  go to state 258
+
+state 248
+
+  82) set_parameter : IDENTIFIER @8 "=" exp _
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  $default      reduce using rule 82 (set_parameter)
+
+
+state 249
+
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+ 147) dtree : __doc_comment IF "(" exp _ ")" dtree __doc_comment ELSE dtree
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  ")"           shift, and go to state 259
+
+
+state 250
+
+ 140) __cdtree_elseif_decisions : __doc_comment ELSE cdtree _
+
+  $default      reduce using rule 140 (__cdtree_elseif_decisions)
+
+
+state 251
+
+  88) with_parameter : IDENTIFIER @9 "=" _ exp
+
+  "!"           shift, and go to state 118
+  "-"           shift, and go to state 124
+  NUMBER        shift, and go to state 125
+  TRUE          shift, and go to state 126
+  FALSE         shift, and go to state 114
+  IDENTIFIER    shift, and go to state 119
+  TOOX          shift, and go to state 121
+  TOSX          shift, and go to state 122
+  SORTS         shift, and go to state 123
+  CONFLICT      shift, and go to state 116
+  "("           shift, and go to state 120
+
+  exp           go to state 260
+  function      go to state 117
+
+state 252
+
+  85) __with_parameter_list_end : "," __with_parameter_list _
+
+  $default      reduce using rule 85 (__with_parameter_list_end)
+
+
+state 253
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations _ "}" "}"
+  61) __output_symbol_assignments_or_subsequent_declarations : __output_symbol_assignments_or_subsequent_declarations _ output_symbol_assignment
+  62) __output_symbol_assignments_or_subsequent_declarations : __output_symbol_assignments_or_subsequent_declarations _ subsequent_declaration
+
+  IDENTIFIER    shift, and go to state 84
+  "}"           shift, and go to state 261
+
+  subsequent_declaration  go to state 82
+  output_symbol_assignment  go to state 85
+
+state 254
+
+ 143) decision_tree : DECISION "{" __doc_comment ELSE _ dtree "}"
+
+  DOC_COMMENT   shift, and go to state 7
+  TTS           shift, and go to state 173
+  STAY          shift, and go to state 175
+  "{"           shift, and go to state 177
+  $default      reduce using rule 67 (__doc_comment)
+
+  transition    go to state 174
+  __doc_comment  go to state 176
+  dtree         go to state 262
+
+state 255
+
+ 142) decision_tree : DECISION "{" dtree "}" _
+
+  $default      reduce using rule 142 (decision_tree)
+
+
+state 256
+
+  37) const : __doc_comment __float CONST IDENTIFIER "=" __minus NUMBER __measure ";" _
+
+  $default      reduce using rule 37 (const)
+
+
+state 257
+
+  22) symbol_declaration : __doc_comment bool_or_float_or_enum __input_output_internal IDENTIFIER __range __measure @3 symbol_parameter_declarations ";" _
+
+  $default      reduce using rule 22 (symbol_declaration)
+
+
+state 258
+
+  43) symbol_parameter_declarations : "(" __parameter_declarations _ ")"
+  45) __parameter_declarations : __parameter_declarations _ parameter_declaration
+
+  DOC_COMMENT   shift, and go to state 7
+  ")"           shift, and go to state 263
+  $default      reduce using rule 67 (__doc_comment)
+
+  parameter_declaration  go to state 37
+  __doc_comment  go to state 36
+
+state 259
+
+ 147) dtree : __doc_comment IF "(" exp ")" _ dtree __doc_comment ELSE dtree
+
+  DOC_COMMENT   shift, and go to state 7
+  TTS           shift, and go to state 173
+  STAY          shift, and go to state 175
+  "{"           shift, and go to state 177
+  $default      reduce using rule 67 (__doc_comment)
+
+  transition    go to state 174
+  __doc_comment  go to state 176
+  dtree         go to state 264
+
+state 260
+
+  88) with_parameter : IDENTIFIER @9 "=" exp _
+  91) exp : exp _ "+" @10 exp
+  93) exp : exp _ "-" @11 exp
+  95) exp : exp _ "*" @12 exp
+  97) exp : exp _ "/" @13 exp
+  99) exp : exp _ "%" @14 exp
+ 101) exp : exp _ NEQ @15 exp
+ 103) exp : exp _ EQ @16 exp
+ 105) exp : exp _ "<" @17 exp
+ 107) exp : exp _ LE @18 exp
+ 109) exp : exp _ ">" @19 exp
+ 111) exp : exp _ GE @20 exp
+ 113) exp : exp _ AND @21 exp
+ 115) exp : exp _ OR @22 exp
+ 116) exp : exp _ "?" exp ":" exp
+
+  "*"           shift, and go to state 141
+  "/"           shift, and go to state 143
+  "%"           shift, and go to state 146
+  "+"           shift, and go to state 147
+  "-"           shift, and go to state 148
+  "<"           shift, and go to state 149
+  ">"           shift, and go to state 150
+  LE            shift, and go to state 136
+  GE            shift, and go to state 137
+  EQ            shift, and go to state 138
+  NEQ           shift, and go to state 139
+  AND           shift, and go to state 140
+  OR            shift, and go to state 142
+  "?"           shift, and go to state 145
+  $default      reduce using rule 88 (with_parameter)
+
+
+state 261
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" _ "}"
+
+  "}"           shift, and go to state 265
+
+
+state 262
+
+ 143) decision_tree : DECISION "{" __doc_comment ELSE dtree _ "}"
+
+  "}"           shift, and go to state 266
+
+
+state 263
+
+  43) symbol_parameter_declarations : "(" __parameter_declarations ")" _
+
+  $default      reduce using rule 43 (symbol_parameter_declarations)
+
+
+state 264
+
+ 147) dtree : __doc_comment IF "(" exp ")" dtree _ __doc_comment ELSE dtree
+
+  DOC_COMMENT   shift, and go to state 7
+  $default      reduce using rule 67 (__doc_comment)
+
+  __doc_comment  go to state 267
+
+state 265
+
+  56) state_declaration : __initial __target STATE IDENTIFIER cooperative "{" @5 decision_tree ACTION "{" __output_symbol_assignments_or_subsequent_declarations "}" "}" _
+
+  $default      reduce using rule 56 (state_declaration)
+
+
+state 266
+
+ 143) decision_tree : DECISION "{" __doc_comment ELSE dtree "}" _
+
+  $default      reduce using rule 143 (decision_tree)
+
+
+state 267
+
+ 147) dtree : __doc_comment IF "(" exp ")" dtree __doc_comment _ ELSE dtree
+
+  ELSE          shift, and go to state 268
+
+
+state 268
+
+ 147) dtree : __doc_comment IF "(" exp ")" dtree __doc_comment ELSE _ dtree
+
+  DOC_COMMENT   shift, and go to state 7
+  TTS           shift, and go to state 173
+  STAY          shift, and go to state 175
+  "{"           shift, and go to state 177
+  $default      reduce using rule 67 (__doc_comment)
+
+  transition    go to state 174
+  __doc_comment  go to state 176
+  dtree         go to state 269
+
+state 269
+
+ 147) dtree : __doc_comment IF "(" exp ")" dtree __doc_comment ELSE dtree _
+
+  $default      reduce using rule 147 (dtree)
+

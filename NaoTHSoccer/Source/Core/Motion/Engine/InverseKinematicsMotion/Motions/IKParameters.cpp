@@ -6,6 +6,7 @@
 */
 
 #include "IKParameters.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 
 IKParameters::IKParameters()
@@ -22,9 +23,11 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.stiffness) = 0.7;
   PARAMETER_REGISTER(walk.comHeight) = 260;
   PARAMETER_REGISTER(walk.ZMPOffsetY) = 5;
+  PARAMETER_REGISTER(walk.ZMPOffsetYByCharacter) = 0;
   PARAMETER_REGISTER(walk.singleSupportTime) = 300;
   PARAMETER_REGISTER(walk.doubleSupportTime) = 40;
   PARAMETER_REGISTER(walk.maxExtendDoubleSupportTime) = 20;
+  PARAMETER_REGISTER(walk.extendDoubleSupportTimeByCharacter) = 0;
   PARAMETER_REGISTER(walk.stepHeight) = 10;
   PARAMETER_REGISTER(walk.curveFactor) = 7;
   PARAMETER_REGISTER(walk.maxTurnInner) = 10;
@@ -62,11 +65,21 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.stopTime) = 1500;
   PARAMETER_REGISTER(kick.kickSpeed) = 1;
   PARAMETER_REGISTER(kick.afterKickTime) = 500;
-  PARAMETER_REGISTER(kick.hipHeight) = 210;
+  PARAMETER_REGISTER(kick.hipHeightOffset) = -10;
   PARAMETER_REGISTER(kick.footRadius) = 40;
   PARAMETER_REGISTER(kick.maxDistanceToRetract) = 200;
   PARAMETER_REGISTER(kick.enableStaticStabilizer) = true;
 
+  PARAMETER_REGISTER(kick.basicXRotationOffset) = 3;
+  PARAMETER_REGISTER(kick.extendedXRotationOffset) = 7;
+  PARAMETER_REGISTER(kick.rotationTime) = 300;
 
-  loadFromConfig();
+  syncWithConfig();
+
+  DebugParameterList::getInstance().add(this);
+}
+
+IKParameters::~IKParameters()
+{
+  DebugParameterList::getInstance().remove(this);
 }

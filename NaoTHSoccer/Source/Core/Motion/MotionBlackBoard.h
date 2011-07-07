@@ -24,6 +24,7 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 
 #include "Representations/Perception/InertialPercept.h"
+#include "Representations/Infrastructure/CalibrationData.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
@@ -66,6 +67,8 @@ public:
   naoth::MotorJointData theLastMotorJointData;
   naoth::SensorJointData theSensorJointData;
   naoth::LEDData theLEDData;
+
+  CalibrationData theCalibrationData;
   
   // SerialSensorData theSerialSensorData;
   // SerialSensorDataRequest theSerialSensorDataRequest;

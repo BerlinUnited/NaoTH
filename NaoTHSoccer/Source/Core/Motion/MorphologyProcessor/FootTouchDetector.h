@@ -18,7 +18,7 @@ public:
   ~FootTouchDetector();
 
   /** set the FSR data pointer, and try to load parameters from string */
-  void init(double* fsr, const std::string& cfg);
+  void init(const double* fsr, const std::string& cfg);
 
   /** save the parameters to string */
   void save(std::string& cfg) const;
@@ -30,7 +30,7 @@ public:
   void calibrate(bool isTouch);
 
 private:
-  double* fsrData; // pointer to current FSR data
+  const double* fsrData; // pointer to current FSR data
   LinearClassifier<4> theLinearClassifier;
 
   // training set

@@ -1,0 +1,46 @@
+/** Playing as defender/supporter */
+option spl_playing_defender {
+
+  initial state ball_not_seen {
+    decision{
+			if ( last_state_was_penalized )
+			  goto go_to_default_position; // return from penalty
+			else if(action_done)
+			  goto defending;
+			else if(state_time > 30000) // can not find ball!!
+		    goto go_to_default_position;
+			else
+        stay;
+    }
+    action {
+      ball_not_seen_situation();
+    }
+  }
+
+  state defending {
+    decision{
+      if( action_done && ball.time_since_last_seen > 5000 )
+        goto ball_not_seen;
+      else
+        stay;
+    }
+      action {
+        spl_simple_defender();
+      }
+  }
+
+  state go_to_default_position {
+    decision {
+      if ( ball.was_seen )
+        goto defending;
+      else if ( action_done || state_time > 30000 )
+        goto ball_not_seen;
+      else
+        stay;
+    }
+    action {
+      go_to_point(x=field.xPosOwnGroundline*0.5, y=0, rot=0);
+      head.control_mode = smart_search;
+    }
+  }
+}

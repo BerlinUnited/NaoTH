@@ -33,6 +33,8 @@ public:
 
   bool isStopped() const {return currentState == motion::stopped; }
 
+  virtual bool isFinish() const { return isStopped(); }
+
   motion::MotionID getId() const { return theId; }
   
   std::string getName() const { return motion::getName(theId); } 
@@ -41,7 +43,9 @@ public:
 
 protected:
   /** set the stiffness with max changes */
-  bool setStiffness(double* hardness, double delta);
+  bool setStiffness(double* hardness, double delta,
+                    naoth::JointData::JointID begin=naoth::JointData::HeadPitch,
+                    naoth::JointData::JointID end=naoth::JointData::numOfJoint);
 };
 
 class EmptyMotion: public AbstractMotion

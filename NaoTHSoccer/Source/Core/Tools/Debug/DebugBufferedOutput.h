@@ -38,44 +38,44 @@ public:
 
   void addPlot(std::string name, double value)
   {
-    if(g_mutex_trylock(plotsMutex) == 0)
+    if( g_mutex_trylock(plotsMutex) )
     {
       naothmessages::PlotItem* item = plots.add_plots();
-      g_mutex_unlock(plotsMutex);
 
       item->set_type(naothmessages::PlotItem_PlotType_Default);
       item->set_name(name);
       item->set_x(naoth::NaoTime::getNaoTimeInMilliSeconds());
       item->set_y(value);
+      g_mutex_unlock(plotsMutex);
     }
   }//end addPlot
 
   void addPlot2D(std::string name, double x, double y)
   {
-    if(g_mutex_trylock(plotsMutex) == 0)
+    if(g_mutex_trylock(plotsMutex) )
     {
       naothmessages::PlotItem* item = plots.add_plots();
-      g_mutex_unlock(plotsMutex);
 
       item->set_type(naothmessages::PlotItem_PlotType_Plot2D);
       item->set_name(name);
       item->set_x(x);
       item->set_y(y);
+      g_mutex_unlock(plotsMutex);
     }
   }//end addPlot2D
 
   void addPlotOrigin2D(std::string name, double x, double y, double rotation)
   {
-    if(g_mutex_trylock(plotsMutex) == 0)
+    if(g_mutex_trylock(plotsMutex))
     {
       naothmessages::PlotItem* item = plots.add_plots();
-      g_mutex_unlock(plotsMutex);
 
       item->set_type(naothmessages::PlotItem_PlotType_Origin2D);
       item->set_name(name);
       item->set_x(x);
       item->set_y(y);
       item->set_rotation(rotation);
+      g_mutex_unlock(plotsMutex);
     }
   }
 

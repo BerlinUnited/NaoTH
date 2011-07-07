@@ -19,6 +19,8 @@ public:
 
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
   
+  virtual bool isFinish() const { return initStatus == InitialPoseReady || initStatus == Finish; }
+
 private:
   enum StatusID
   {

@@ -30,6 +30,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* SensorJointData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   SensorJointData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* UltraSoundReceiveData_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  UltraSoundReceiveData_reflection_ = NULL;
 const ::google::protobuf::Descriptor* CameraMatrix_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CameraMatrix_reflection_ = NULL;
@@ -45,9 +48,15 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* HeadMotionRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   HeadMotionRequest_reflection_ = NULL;
+const ::google::protobuf::Descriptor* StepControlRequest_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  StepControlRequest_reflection_ = NULL;
 const ::google::protobuf::Descriptor* WalkRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   WalkRequest_reflection_ = NULL;
+const ::google::protobuf::Descriptor* KickRequest_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  KickRequest_reflection_ = NULL;
 const ::google::protobuf::Descriptor* MotionRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   MotionRequest_reflection_ = NULL;
@@ -57,12 +66,18 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* FSRData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   FSRData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* StepControlStatus_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  StepControlStatus_reflection_ = NULL;
 const ::google::protobuf::Descriptor* MotionStatus_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   MotionStatus_reflection_ = NULL;
 const ::google::protobuf::Descriptor* OdometryData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   OdometryData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* CalibrationData_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  CalibrationData_reflection_ = NULL;
 
 }  // namespace
 
@@ -155,7 +170,25 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SensorJointData));
-  CameraMatrix_descriptor_ = file->message_type(4);
+  UltraSoundReceiveData_descriptor_ = file->message_type(4);
+  static const int UltraSoundReceiveData_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, ultrasoundtimestep_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, rawdata_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, dataleft_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, dataright_),
+  };
+  UltraSoundReceiveData_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      UltraSoundReceiveData_descriptor_,
+      UltraSoundReceiveData::default_instance_,
+      UltraSoundReceiveData_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UltraSoundReceiveData, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(UltraSoundReceiveData));
+  CameraMatrix_descriptor_ = file->message_type(5);
   static const int CameraMatrix_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrix, pose_),
   };
@@ -170,7 +203,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CameraMatrix));
-  FrameInfo_descriptor_ = file->message_type(5);
+  FrameInfo_descriptor_ = file->message_type(6);
   static const int FrameInfo_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, framenumber_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FrameInfo, time_),
@@ -186,7 +219,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FrameInfo));
-  BallPercept_descriptor_ = file->message_type(6);
+  BallPercept_descriptor_ = file->message_type(7);
   static const int BallPercept_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallPercept, ballwasseen_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BallPercept, centerinimage_),
@@ -206,7 +239,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BallPercept));
-  GoalPercept_descriptor_ = file->message_type(7);
+  GoalPercept_descriptor_ = file->message_type(8);
   static const int GoalPercept_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GoalPercept, angletoseengoal_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GoalPercept, goalcentroid_),
@@ -224,8 +257,8 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GoalPercept));
-  HeadMotionRequest_descriptor_ = file->message_type(8);
-  static const int HeadMotionRequest_offsets_[8] = {
+  HeadMotionRequest_descriptor_ = file->message_type(9);
+  static const int HeadMotionRequest_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, cameraid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, targetjointposition_),
@@ -234,6 +267,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchcenter_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchsize_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchdirection_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, targetpointontheground_),
   };
   HeadMotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -246,10 +280,32 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(HeadMotionRequest));
-  WalkRequest_descriptor_ = file->message_type(9);
-  static const int WalkRequest_offsets_[2] = {
+  StepControlRequest_descriptor_ = file->message_type(10);
+  static const int StepControlRequest_offsets_[5] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, stepid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, moveleftfoot_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, target_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, speeddirection_),
+  };
+  StepControlRequest_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      StepControlRequest_descriptor_,
+      StepControlRequest::default_instance_,
+      StepControlRequest_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlRequest, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(StepControlRequest));
+  WalkRequest_descriptor_ = file->message_type(11);
+  static const int WalkRequest_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, coordinate_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, character_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, target_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, stepcontrol_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(WalkRequest, offset_),
   };
   WalkRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -262,13 +318,33 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(WalkRequest));
-  MotionRequest_descriptor_ = file->message_type(10);
-  static const int MotionRequest_offsets_[5] = {
+  KickRequest_descriptor_ = file->message_type(12);
+  static const int KickRequest_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickpoint_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickdirection_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, kickfoot_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, finishkick_),
+  };
+  KickRequest_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      KickRequest_descriptor_,
+      KickRequest::default_instance_,
+      KickRequest_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(KickRequest, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(KickRequest));
+  MotionRequest_descriptor_ = file->message_type(13);
+  static const int MotionRequest_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, forced_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, walkrequest_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, starndardstand_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, kickrequest_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, standheight_),
   };
   MotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -281,7 +357,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionRequest));
-  LinePercept_descriptor_ = file->message_type(11);
+  LinePercept_descriptor_ = file->message_type(14);
   static const int LinePercept_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, lines_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, intersections_),
@@ -298,7 +374,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LinePercept));
-  FSRData_descriptor_ = file->message_type(12);
+  FSRData_descriptor_ = file->message_type(15);
   static const int FSRData_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, force_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, data_),
@@ -315,8 +391,24 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
-  MotionStatus_descriptor_ = file->message_type(13);
-  static const int MotionStatus_offsets_[7] = {
+  StepControlStatus_descriptor_ = file->message_type(16);
+  static const int StepControlStatus_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, stepid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, moveablefoot_),
+  };
+  StepControlStatus_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      StepControlStatus_descriptor_,
+      StepControlStatus::default_instance_,
+      StepControlStatus_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(StepControlStatus));
+  MotionStatus_descriptor_ = file->message_type(17);
+  static const int MotionStatus_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, currentmotion_),
@@ -324,6 +416,8 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, currentmotionstate_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, plannedmotionleftfoot_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, plannedmotionrightfoot_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, plannedmotionhip_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, stepcontrolstatus_),
   };
   MotionStatus_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -336,7 +430,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionStatus));
-  OdometryData_descriptor_ = file->message_type(14);
+  OdometryData_descriptor_ = file->message_type(18);
   static const int OdometryData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, pose_),
   };
@@ -351,6 +445,21 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OdometryData));
+  CalibrationData_descriptor_ = file->message_type(19);
+  static const int CalibrationData_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, inertialsensoroffset_),
+  };
+  CalibrationData_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      CalibrationData_descriptor_,
+      CalibrationData::default_instance_,
+      CalibrationData_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(CalibrationData));
 }
 
 namespace {
@@ -372,6 +481,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     SensorJointData_descriptor_, &SensorJointData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    UltraSoundReceiveData_descriptor_, &UltraSoundReceiveData::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CameraMatrix_descriptor_, &CameraMatrix::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     FrameInfo_descriptor_, &FrameInfo::default_instance());
@@ -382,7 +493,11 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     HeadMotionRequest_descriptor_, &HeadMotionRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    StepControlRequest_descriptor_, &StepControlRequest::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     WalkRequest_descriptor_, &WalkRequest::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    KickRequest_descriptor_, &KickRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     MotionRequest_descriptor_, &MotionRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -390,9 +505,13 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     FSRData_descriptor_, &FSRData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    StepControlStatus_descriptor_, &StepControlStatus::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     MotionStatus_descriptor_, &MotionStatus::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     OdometryData_descriptor_, &OdometryData::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    CalibrationData_descriptor_, &CalibrationData::default_instance());
 }
 
 }  // namespace
@@ -406,6 +525,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete JointData_reflection_;
   delete SensorJointData::default_instance_;
   delete SensorJointData_reflection_;
+  delete UltraSoundReceiveData::default_instance_;
+  delete UltraSoundReceiveData_reflection_;
   delete CameraMatrix::default_instance_;
   delete CameraMatrix_reflection_;
   delete FrameInfo::default_instance_;
@@ -416,18 +537,26 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete GoalPercept_reflection_;
   delete HeadMotionRequest::default_instance_;
   delete HeadMotionRequest_reflection_;
+  delete StepControlRequest::default_instance_;
+  delete StepControlRequest_reflection_;
   delete WalkRequest::default_instance_;
   delete WalkRequest_reflection_;
+  delete KickRequest::default_instance_;
+  delete KickRequest_reflection_;
   delete MotionRequest::default_instance_;
   delete MotionRequest_reflection_;
   delete LinePercept::default_instance_;
   delete LinePercept_reflection_;
   delete FSRData::default_instance_;
   delete FSRData_reflection_;
+  delete StepControlStatus::default_instance_;
+  delete StepControlStatus_reflection_;
   delete MotionStatus::default_instance_;
   delete MotionStatus_reflection_;
   delete OdometryData::default_instance_;
   delete OdometryData_reflection_;
+  delete CalibrationData::default_instance_;
+  delete CalibrationData_reflection_;
 }
 
 void protobuf_AddDesc_Representations_2eproto() {
@@ -457,80 +586,112 @@ void protobuf_AddDesc_Representations_2eproto() {
     "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso"
     "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
     "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
-    "electricCurrent\030\003 \003(\001\"3\n\014CameraMatrix\022#\n"
-    "\004pose\030\001 \002(\0132\025.naothmessages.Pose3D\".\n\tFr"
-    "ameInfo\022\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002"
-    "(\r\"\224\002\n\013BallPercept\022\023\n\013ballWasSeen\030\001 \001(\010\022"
-    "3\n\rcenterInImage\030\002 \001(\0132\034.naothmessages.D"
-    "oubleVector2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tb"
-    "allColor\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031"
-    "bearingBasedOffsetOnField\030\005 \001(\0132\034.naothm"
-    "essages.DoubleVector2\022:\n\030frameInfoWhenBa"
-    "llWasSeen\030\006 \001(\0132\030.naothmessages.FrameInf"
-    "o\"\234\001\n\013GoalPercept\022\027\n\017angleToSeenGoal\030\001 \001"
-    "(\001\0222\n\014goalCentroid\030\002 \001(\0132\034.naothmessages"
-    ".DoubleVector3\022\031\n\021numberOfSeenPosts\030\003 \001("
-    "\005\022%\n\004post\030\004 \003(\0132\027.naothmessages.GoalPost"
-    "\"\342\002\n\021HeadMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010ca"
-    "meraID\030\002 \002(\r\0229\n\023targetJointPosition\030\003 \001("
-    "\0132\034.naothmessages.DoubleVector2\0228\n\022targe"
-    "tPointInImage\030\004 \001(\0132\034.naothmessages.Doub"
-    "leVector2\022;\n\025targetPointInTheWorld\030\005 \001(\013"
-    "2\034.naothmessages.DoubleVector3\0222\n\014search"
-    "Center\030\006 \001(\0132\034.naothmessages.DoubleVecto"
-    "r3\0220\n\nsearchSize\030\007 \001(\0132\034.naothmessages.D"
-    "oubleVector3\022\027\n\017searchDirection\030\010 \001(\010\"H\n"
-    "\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022%\n\006targ"
-    "et\030\003 \002(\0132\025.naothmessages.Pose2D\"\202\001\n\rMoti"
-    "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f"
-    "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth"
-    "messages.WalkRequest\022\026\n\016starndardStand\030\005"
-    " \001(\010\"\253\001\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.na"
-    "othmessages.FieldLineSegment\0222\n\rintersec"
-    "tions\030\002 \003(\0132\033.naothmessages.Intersection"
-    "\0228\n\022middleCircleCenter\030\003 \001(\0132\034.naothmess"
-    "ages.DoubleVector2\"5\n\007FSRData\022\r\n\005force\030\001"
-    " \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"\344\001\n\014Mo"
-    "tionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002"
-    " \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotio"
-    "n\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025p"
-    "lannedMotionLeftFoot\030\006 \002(\0132\025.naothmessag"
-    "es.Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002("
-    "\0132\025.naothmessages.Pose2D\"3\n\014OdometryData"
-    "\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2DB)\n"
-    "\'de.hu_berlin.informatik.ki.nao.messages", 2440);
+    "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei"
+    "veData\022\032\n\022ultraSoundTimeStep\030\001 \002(\r\022\017\n\007ra"
+    "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig"
+    "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025"
+    ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr"
+    "ameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPe"
+    "rcept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInIm"
+    "age\030\002 \001(\0132\034.naothmessages.DoubleVector2\022"
+    "\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001("
+    "\0162\024.naothmessages.Color\022\?\n\031bearingBasedO"
+    "ffsetOnField\030\005 \001(\0132\034.naothmessages.Doubl"
+    "eVector2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001"
+    "(\0132\030.naothmessages.FrameInfo\"\234\001\n\013GoalPer"
+    "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen"
+    "troid\030\002 \001(\0132\034.naothmessages.DoubleVector"
+    "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003"
+    "(\0132\027.naothmessages.GoalPost\"\240\003\n\021HeadMoti"
+    "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022"
+    "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess"
+    "ages.DoubleVector2\0228\n\022targetPointInImage"
+    "\030\004 \001(\0132\034.naothmessages.DoubleVector2\022;\n\025"
+    "targetPointInTheWorld\030\005 \001(\0132\034.naothmessa"
+    "ges.DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132"
+    "\034.naothmessages.DoubleVector3\0220\n\nsearchS"
+    "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022"
+    "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO"
+    "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV"
+    "ector2\"\207\001\n\022StepControlRequest\022\016\n\006stepID\030"
+    "\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022%\n\006target\030\003 "
+    "\002(\0132\025.naothmessages.Pose2D\022\014\n\004time\030\004 \002(\r"
+    "\022\026\n\016speedDirection\030\005 \002(\001\"\272\001\n\013WalkRequest"
+    "\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022"
+    "%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\0226"
+    "\n\013stepControl\030\004 \001(\0132!.naothmessages.Step"
+    "ControlRequest\022%\n\006offset\030\005 \002(\0132\025.naothme"
+    "ssages.Pose2D\"{\n\013KickRequest\022/\n\tkickPoin"
+    "t\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\025\n"
+    "\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022"
+    "\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002"
+    "id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/"
+    "\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Walk"
+    "Request\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickR"
+    "equest\030\006 \001(\0132\032.naothmessages.KickRequest"
+    "\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n"
+    "\005lines\030\001 \003(\0132\037.naothmessages.FieldLineSe"
+    "gment\0222\n\rintersections\030\002 \003(\0132\033.naothmess"
+    "ages.Intersection\0228\n\022middleCircleCenter\030"
+    "\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n\007F"
+    "SRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005v"
+    "alid\030\003 \003(\010\"9\n\021StepControlStatus\022\016\n\006stepI"
+    "D\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n\014Motion"
+    "Status\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r"
+    "\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 "
+    "\002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plann"
+    "edMotionLeftFoot\030\006 \002(\0132\025.naothmessages.P"
+    "ose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025."
+    "naothmessages.Pose2D\022/\n\020plannedMotionHip"
+    "\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021stepCon"
+    "trolStatus\030\t \001(\0132 .naothmessages.StepCon"
+    "trolStatus\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\013"
+    "2\025.naothmessages.Pose2D\"M\n\017CalibrationDa"
+    "ta\022:\n\024inertialSensorOffset\030\001 \001(\0132\034.naoth"
+    "messages.DoubleVector2B)\n\'de.hu_berlin.i"
+    "nformatik.ki.nao.messages", 3305);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
   CameraInfo::default_instance_ = new CameraInfo();
   JointData::default_instance_ = new JointData();
   SensorJointData::default_instance_ = new SensorJointData();
+  UltraSoundReceiveData::default_instance_ = new UltraSoundReceiveData();
   CameraMatrix::default_instance_ = new CameraMatrix();
   FrameInfo::default_instance_ = new FrameInfo();
   BallPercept::default_instance_ = new BallPercept();
   GoalPercept::default_instance_ = new GoalPercept();
   HeadMotionRequest::default_instance_ = new HeadMotionRequest();
+  StepControlRequest::default_instance_ = new StepControlRequest();
   WalkRequest::default_instance_ = new WalkRequest();
+  KickRequest::default_instance_ = new KickRequest();
   MotionRequest::default_instance_ = new MotionRequest();
   LinePercept::default_instance_ = new LinePercept();
   FSRData::default_instance_ = new FSRData();
+  StepControlStatus::default_instance_ = new StepControlStatus();
   MotionStatus::default_instance_ = new MotionStatus();
   OdometryData::default_instance_ = new OdometryData();
+  CalibrationData::default_instance_ = new CalibrationData();
   Image::default_instance_->InitAsDefaultInstance();
   CameraInfo::default_instance_->InitAsDefaultInstance();
   JointData::default_instance_->InitAsDefaultInstance();
   SensorJointData::default_instance_->InitAsDefaultInstance();
+  UltraSoundReceiveData::default_instance_->InitAsDefaultInstance();
   CameraMatrix::default_instance_->InitAsDefaultInstance();
   FrameInfo::default_instance_->InitAsDefaultInstance();
   BallPercept::default_instance_->InitAsDefaultInstance();
   GoalPercept::default_instance_->InitAsDefaultInstance();
   HeadMotionRequest::default_instance_->InitAsDefaultInstance();
+  StepControlRequest::default_instance_->InitAsDefaultInstance();
   WalkRequest::default_instance_->InitAsDefaultInstance();
+  KickRequest::default_instance_->InitAsDefaultInstance();
   MotionRequest::default_instance_->InitAsDefaultInstance();
   LinePercept::default_instance_->InitAsDefaultInstance();
   FSRData::default_instance_->InitAsDefaultInstance();
+  StepControlStatus::default_instance_->InitAsDefaultInstance();
   MotionStatus::default_instance_->InitAsDefaultInstance();
   OdometryData::default_instance_->InitAsDefaultInstance();
+  CalibrationData::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Representations_2eproto);
 }
 
@@ -2287,6 +2448,342 @@ void SensorJointData::Swap(SensorJointData* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int UltraSoundReceiveData::kUltraSoundTimeStepFieldNumber;
+const int UltraSoundReceiveData::kRawdataFieldNumber;
+const int UltraSoundReceiveData::kDataLeftFieldNumber;
+const int UltraSoundReceiveData::kDataRightFieldNumber;
+#endif  // !_MSC_VER
+
+UltraSoundReceiveData::UltraSoundReceiveData()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void UltraSoundReceiveData::InitAsDefaultInstance() {
+}
+
+UltraSoundReceiveData::UltraSoundReceiveData(const UltraSoundReceiveData& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void UltraSoundReceiveData::SharedCtor() {
+  _cached_size_ = 0;
+  ultrasoundtimestep_ = 0u;
+  rawdata_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+UltraSoundReceiveData::~UltraSoundReceiveData() {
+  SharedDtor();
+}
+
+void UltraSoundReceiveData::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void UltraSoundReceiveData::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* UltraSoundReceiveData::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return UltraSoundReceiveData_descriptor_;
+}
+
+const UltraSoundReceiveData& UltraSoundReceiveData::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+UltraSoundReceiveData* UltraSoundReceiveData::default_instance_ = NULL;
+
+UltraSoundReceiveData* UltraSoundReceiveData::New() const {
+  return new UltraSoundReceiveData;
+}
+
+void UltraSoundReceiveData::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    ultrasoundtimestep_ = 0u;
+    rawdata_ = 0;
+  }
+  dataleft_.Clear();
+  dataright_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool UltraSoundReceiveData::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint32 ultraSoundTimeStep = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &ultrasoundtimestep_)));
+          set_has_ultrasoundtimestep();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(17)) goto parse_rawdata;
+        break;
+      }
+      
+      // required double rawdata = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_rawdata:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &rawdata_)));
+          set_has_rawdata();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_dataLeft;
+        break;
+      }
+      
+      // repeated double dataLeft = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_dataLeft:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 25, input, this->mutable_dataleft())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, this->mutable_dataleft())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(25)) goto parse_dataLeft;
+        if (input->ExpectTag(33)) goto parse_dataRight;
+        break;
+      }
+      
+      // repeated double dataRight = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_dataRight:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 1, 33, input, this->mutable_dataright())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, this->mutable_dataright())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(33)) goto parse_dataRight;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void UltraSoundReceiveData::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required uint32 ultraSoundTimeStep = 1;
+  if (has_ultrasoundtimestep()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->ultrasoundtimestep(), output);
+  }
+  
+  // required double rawdata = 2;
+  if (has_rawdata()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->rawdata(), output);
+  }
+  
+  // repeated double dataLeft = 3;
+  for (int i = 0; i < this->dataleft_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(
+      3, this->dataleft(i), output);
+  }
+  
+  // repeated double dataRight = 4;
+  for (int i = 0; i < this->dataright_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(
+      4, this->dataright(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* UltraSoundReceiveData::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required uint32 ultraSoundTimeStep = 1;
+  if (has_ultrasoundtimestep()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->ultrasoundtimestep(), target);
+  }
+  
+  // required double rawdata = 2;
+  if (has_rawdata()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->rawdata(), target);
+  }
+  
+  // repeated double dataLeft = 3;
+  for (int i = 0; i < this->dataleft_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteDoubleToArray(3, this->dataleft(i), target);
+  }
+  
+  // repeated double dataRight = 4;
+  for (int i = 0; i < this->dataright_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteDoubleToArray(4, this->dataright(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int UltraSoundReceiveData::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required uint32 ultraSoundTimeStep = 1;
+    if (has_ultrasoundtimestep()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->ultrasoundtimestep());
+    }
+    
+    // required double rawdata = 2;
+    if (has_rawdata()) {
+      total_size += 1 + 8;
+    }
+    
+  }
+  // repeated double dataLeft = 3;
+  {
+    int data_size = 0;
+    data_size = 8 * this->dataleft_size();
+    total_size += 1 * this->dataleft_size() + data_size;
+  }
+  
+  // repeated double dataRight = 4;
+  {
+    int data_size = 0;
+    data_size = 8 * this->dataright_size();
+    total_size += 1 * this->dataright_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void UltraSoundReceiveData::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const UltraSoundReceiveData* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const UltraSoundReceiveData*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void UltraSoundReceiveData::MergeFrom(const UltraSoundReceiveData& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  dataleft_.MergeFrom(from.dataleft_);
+  dataright_.MergeFrom(from.dataright_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_ultrasoundtimestep()) {
+      set_ultrasoundtimestep(from.ultrasoundtimestep());
+    }
+    if (from.has_rawdata()) {
+      set_rawdata(from.rawdata());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void UltraSoundReceiveData::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void UltraSoundReceiveData::CopyFrom(const UltraSoundReceiveData& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool UltraSoundReceiveData::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  return true;
+}
+
+void UltraSoundReceiveData::Swap(UltraSoundReceiveData* other) {
+  if (other != this) {
+    std::swap(ultrasoundtimestep_, other->ultrasoundtimestep_);
+    std::swap(rawdata_, other->rawdata_);
+    dataleft_.Swap(&other->dataleft_);
+    dataright_.Swap(&other->dataright_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata UltraSoundReceiveData::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = UltraSoundReceiveData_descriptor_;
+  metadata.reflection = UltraSoundReceiveData_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int CameraMatrix::kPoseFieldNumber;
 #endif  // !_MSC_VER
 
@@ -3528,6 +4025,7 @@ const int HeadMotionRequest::kTargetPointInTheWorldFieldNumber;
 const int HeadMotionRequest::kSearchCenterFieldNumber;
 const int HeadMotionRequest::kSearchSizeFieldNumber;
 const int HeadMotionRequest::kSearchDirectionFieldNumber;
+const int HeadMotionRequest::kTargetPointOnTheGroundFieldNumber;
 #endif  // !_MSC_VER
 
 HeadMotionRequest::HeadMotionRequest()
@@ -3541,6 +4039,7 @@ void HeadMotionRequest::InitAsDefaultInstance() {
   targetpointintheworld_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
   searchcenter_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
   searchsize_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
+  targetpointontheground_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
 }
 
 HeadMotionRequest::HeadMotionRequest(const HeadMotionRequest& from)
@@ -3559,6 +4058,7 @@ void HeadMotionRequest::SharedCtor() {
   searchcenter_ = NULL;
   searchsize_ = NULL;
   searchdirection_ = false;
+  targetpointontheground_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -3573,6 +4073,7 @@ void HeadMotionRequest::SharedDtor() {
     delete targetpointintheworld_;
     delete searchcenter_;
     delete searchsize_;
+    delete targetpointontheground_;
   }
 }
 
@@ -3616,6 +4117,11 @@ void HeadMotionRequest::Clear() {
       if (searchsize_ != NULL) searchsize_->::naothmessages::DoubleVector3::Clear();
     }
     searchdirection_ = false;
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (has_targetpointontheground()) {
+      if (targetpointontheground_ != NULL) targetpointontheground_->::naothmessages::DoubleVector2::Clear();
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -3740,6 +4246,20 @@ bool HeadMotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(74)) goto parse_targetPointOnTheGround;
+        break;
+      }
+      
+      // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_targetPointOnTheGround:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_targetpointontheground()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -3807,6 +4327,12 @@ void HeadMotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->searchdirection(), output);
   }
   
+  // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+  if (has_targetpointontheground()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      9, this->targetpointontheground(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3863,6 +4389,13 @@ void HeadMotionRequest::SerializeWithCachedSizes(
   // optional bool searchDirection = 8;
   if (has_searchdirection()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->searchdirection(), target);
+  }
+  
+  // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+  if (has_targetpointontheground()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        9, this->targetpointontheground(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3931,6 +4464,15 @@ int HeadMotionRequest::ByteSize() const {
     }
     
   }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional .naothmessages.DoubleVector2 targetPointOnTheGround = 9;
+    if (has_targetpointontheground()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->targetpointontheground());
+    }
+    
+  }
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -3982,6 +4524,11 @@ void HeadMotionRequest::MergeFrom(const HeadMotionRequest& from) {
       set_searchdirection(from.searchdirection());
     }
   }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_targetpointontheground()) {
+      mutable_targetpointontheground()->::naothmessages::DoubleVector2::MergeFrom(from.targetpointontheground());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -4015,6 +4562,9 @@ bool HeadMotionRequest::IsInitialized() const {
   if (has_searchsize()) {
     if (!this->searchsize().IsInitialized()) return false;
   }
+  if (has_targetpointontheground()) {
+    if (!this->targetpointontheground().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -4028,6 +4578,7 @@ void HeadMotionRequest::Swap(HeadMotionRequest* other) {
     std::swap(searchcenter_, other->searchcenter_);
     std::swap(searchsize_, other->searchsize_);
     std::swap(searchdirection_, other->searchdirection_);
+    std::swap(targetpointontheground_, other->targetpointontheground_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -4046,8 +4597,383 @@ void HeadMotionRequest::Swap(HeadMotionRequest* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int StepControlRequest::kStepIDFieldNumber;
+const int StepControlRequest::kMoveLeftFootFieldNumber;
+const int StepControlRequest::kTargetFieldNumber;
+const int StepControlRequest::kTimeFieldNumber;
+const int StepControlRequest::kSpeedDirectionFieldNumber;
+#endif  // !_MSC_VER
+
+StepControlRequest::StepControlRequest()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void StepControlRequest::InitAsDefaultInstance() {
+  target_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+}
+
+StepControlRequest::StepControlRequest(const StepControlRequest& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void StepControlRequest::SharedCtor() {
+  _cached_size_ = 0;
+  stepid_ = 0u;
+  moveleftfoot_ = false;
+  target_ = NULL;
+  time_ = 0u;
+  speeddirection_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+StepControlRequest::~StepControlRequest() {
+  SharedDtor();
+}
+
+void StepControlRequest::SharedDtor() {
+  if (this != default_instance_) {
+    delete target_;
+  }
+}
+
+void StepControlRequest::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* StepControlRequest::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return StepControlRequest_descriptor_;
+}
+
+const StepControlRequest& StepControlRequest::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+StepControlRequest* StepControlRequest::default_instance_ = NULL;
+
+StepControlRequest* StepControlRequest::New() const {
+  return new StepControlRequest;
+}
+
+void StepControlRequest::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    stepid_ = 0u;
+    moveleftfoot_ = false;
+    if (has_target()) {
+      if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
+    }
+    time_ = 0u;
+    speeddirection_ = 0;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool StepControlRequest::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint32 stepID = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &stepid_)));
+          set_has_stepid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_moveLeftFoot;
+        break;
+      }
+      
+      // required bool moveLeftFoot = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_moveLeftFoot:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &moveleftfoot_)));
+          set_has_moveleftfoot();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(26)) goto parse_target;
+        break;
+      }
+      
+      // required .naothmessages.Pose2D target = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_target:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_target()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_time;
+        break;
+      }
+      
+      // required uint32 time = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_time:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &time_)));
+          set_has_time();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(41)) goto parse_speedDirection;
+        break;
+      }
+      
+      // required double speedDirection = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_speedDirection:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &speeddirection_)));
+          set_has_speeddirection();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void StepControlRequest::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required uint32 stepID = 1;
+  if (has_stepid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->stepid(), output);
+  }
+  
+  // required bool moveLeftFoot = 2;
+  if (has_moveleftfoot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->moveleftfoot(), output);
+  }
+  
+  // required .naothmessages.Pose2D target = 3;
+  if (has_target()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, this->target(), output);
+  }
+  
+  // required uint32 time = 4;
+  if (has_time()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->time(), output);
+  }
+  
+  // required double speedDirection = 5;
+  if (has_speeddirection()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->speeddirection(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* StepControlRequest::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required uint32 stepID = 1;
+  if (has_stepid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->stepid(), target);
+  }
+  
+  // required bool moveLeftFoot = 2;
+  if (has_moveleftfoot()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->moveleftfoot(), target);
+  }
+  
+  // required .naothmessages.Pose2D target = 3;
+  if (has_target()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        3, this->target(), target);
+  }
+  
+  // required uint32 time = 4;
+  if (has_time()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->time(), target);
+  }
+  
+  // required double speedDirection = 5;
+  if (has_speeddirection()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->speeddirection(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int StepControlRequest::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required uint32 stepID = 1;
+    if (has_stepid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->stepid());
+    }
+    
+    // required bool moveLeftFoot = 2;
+    if (has_moveleftfoot()) {
+      total_size += 1 + 1;
+    }
+    
+    // required .naothmessages.Pose2D target = 3;
+    if (has_target()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->target());
+    }
+    
+    // required uint32 time = 4;
+    if (has_time()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->time());
+    }
+    
+    // required double speedDirection = 5;
+    if (has_speeddirection()) {
+      total_size += 1 + 8;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void StepControlRequest::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const StepControlRequest* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const StepControlRequest*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void StepControlRequest::MergeFrom(const StepControlRequest& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_stepid()) {
+      set_stepid(from.stepid());
+    }
+    if (from.has_moveleftfoot()) {
+      set_moveleftfoot(from.moveleftfoot());
+    }
+    if (from.has_target()) {
+      mutable_target()->::naothmessages::Pose2D::MergeFrom(from.target());
+    }
+    if (from.has_time()) {
+      set_time(from.time());
+    }
+    if (from.has_speeddirection()) {
+      set_speeddirection(from.speeddirection());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void StepControlRequest::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void StepControlRequest::CopyFrom(const StepControlRequest& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool StepControlRequest::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000001f) != 0x0000001f) return false;
+  
+  if (has_target()) {
+    if (!this->target().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void StepControlRequest::Swap(StepControlRequest* other) {
+  if (other != this) {
+    std::swap(stepid_, other->stepid_);
+    std::swap(moveleftfoot_, other->moveleftfoot_);
+    std::swap(target_, other->target_);
+    std::swap(time_, other->time_);
+    std::swap(speeddirection_, other->speeddirection_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata StepControlRequest::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = StepControlRequest_descriptor_;
+  metadata.reflection = StepControlRequest_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int WalkRequest::kCoordinateFieldNumber;
+const int WalkRequest::kCharacterFieldNumber;
 const int WalkRequest::kTargetFieldNumber;
+const int WalkRequest::kStepControlFieldNumber;
+const int WalkRequest::kOffsetFieldNumber;
 #endif  // !_MSC_VER
 
 WalkRequest::WalkRequest()
@@ -4057,6 +4983,8 @@ WalkRequest::WalkRequest()
 
 void WalkRequest::InitAsDefaultInstance() {
   target_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+  stepcontrol_ = const_cast< ::naothmessages::StepControlRequest*>(&::naothmessages::StepControlRequest::default_instance());
+  offset_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
 }
 
 WalkRequest::WalkRequest(const WalkRequest& from)
@@ -4068,7 +4996,10 @@ WalkRequest::WalkRequest(const WalkRequest& from)
 void WalkRequest::SharedCtor() {
   _cached_size_ = 0;
   coordinate_ = 0u;
+  character_ = 0;
   target_ = NULL;
+  stepcontrol_ = NULL;
+  offset_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4079,6 +5010,8 @@ WalkRequest::~WalkRequest() {
 void WalkRequest::SharedDtor() {
   if (this != default_instance_) {
     delete target_;
+    delete stepcontrol_;
+    delete offset_;
   }
 }
 
@@ -4105,8 +5038,15 @@ WalkRequest* WalkRequest::New() const {
 void WalkRequest::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     coordinate_ = 0u;
+    character_ = 0;
     if (has_target()) {
       if (target_ != NULL) target_->::naothmessages::Pose2D::Clear();
+    }
+    if (has_stepcontrol()) {
+      if (stepcontrol_ != NULL) stepcontrol_->::naothmessages::StepControlRequest::Clear();
+    }
+    if (has_offset()) {
+      if (offset_ != NULL) offset_->::naothmessages::Pose2D::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -4130,6 +5070,22 @@ bool WalkRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(17)) goto parse_character;
+        break;
+      }
+      
+      // required double character = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_character:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &character_)));
+          set_has_character();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectTag(26)) goto parse_target;
         break;
       }
@@ -4141,6 +5097,34 @@ bool WalkRequest::MergePartialFromCodedStream(
          parse_target:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_target()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_stepControl;
+        break;
+      }
+      
+      // optional .naothmessages.StepControlRequest stepControl = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_stepControl:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_stepcontrol()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(42)) goto parse_offset;
+        break;
+      }
+      
+      // required .naothmessages.Pose2D offset = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_offset:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_offset()));
         } else {
           goto handle_uninterpreted;
         }
@@ -4171,10 +5155,27 @@ void WalkRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->coordinate(), output);
   }
   
+  // required double character = 2;
+  if (has_character()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->character(), output);
+  }
+  
   // required .naothmessages.Pose2D target = 3;
   if (has_target()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       3, this->target(), output);
+  }
+  
+  // optional .naothmessages.StepControlRequest stepControl = 4;
+  if (has_stepcontrol()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->stepcontrol(), output);
+  }
+  
+  // required .naothmessages.Pose2D offset = 5;
+  if (has_offset()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, this->offset(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -4190,11 +5191,30 @@ void WalkRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->coordinate(), target);
   }
   
+  // required double character = 2;
+  if (has_character()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->character(), target);
+  }
+  
   // required .naothmessages.Pose2D target = 3;
   if (has_target()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         3, this->target(), target);
+  }
+  
+  // optional .naothmessages.StepControlRequest stepControl = 4;
+  if (has_stepcontrol()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        4, this->stepcontrol(), target);
+  }
+  
+  // required .naothmessages.Pose2D offset = 5;
+  if (has_offset()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        5, this->offset(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4215,11 +5235,30 @@ int WalkRequest::ByteSize() const {
           this->coordinate());
     }
     
+    // required double character = 2;
+    if (has_character()) {
+      total_size += 1 + 8;
+    }
+    
     // required .naothmessages.Pose2D target = 3;
     if (has_target()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->target());
+    }
+    
+    // optional .naothmessages.StepControlRequest stepControl = 4;
+    if (has_stepcontrol()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->stepcontrol());
+    }
+    
+    // required .naothmessages.Pose2D offset = 5;
+    if (has_offset()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->offset());
     }
     
   }
@@ -4252,8 +5291,17 @@ void WalkRequest::MergeFrom(const WalkRequest& from) {
     if (from.has_coordinate()) {
       set_coordinate(from.coordinate());
     }
+    if (from.has_character()) {
+      set_character(from.character());
+    }
     if (from.has_target()) {
       mutable_target()->::naothmessages::Pose2D::MergeFrom(from.target());
+    }
+    if (from.has_stepcontrol()) {
+      mutable_stepcontrol()->::naothmessages::StepControlRequest::MergeFrom(from.stepcontrol());
+    }
+    if (from.has_offset()) {
+      mutable_offset()->::naothmessages::Pose2D::MergeFrom(from.offset());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -4272,10 +5320,16 @@ void WalkRequest::CopyFrom(const WalkRequest& from) {
 }
 
 bool WalkRequest::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000017) != 0x00000017) return false;
   
   if (has_target()) {
     if (!this->target().IsInitialized()) return false;
+  }
+  if (has_stepcontrol()) {
+    if (!this->stepcontrol().IsInitialized()) return false;
+  }
+  if (has_offset()) {
+    if (!this->offset().IsInitialized()) return false;
   }
   return true;
 }
@@ -4283,7 +5337,10 @@ bool WalkRequest::IsInitialized() const {
 void WalkRequest::Swap(WalkRequest* other) {
   if (other != this) {
     std::swap(coordinate_, other->coordinate_);
+    std::swap(character_, other->character_);
     std::swap(target_, other->target_);
+    std::swap(stepcontrol_, other->stepcontrol_);
+    std::swap(offset_, other->offset_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -4302,11 +5359,345 @@ void WalkRequest::Swap(WalkRequest* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int KickRequest::kKickPointFieldNumber;
+const int KickRequest::kKickDirectionFieldNumber;
+const int KickRequest::kKickFootFieldNumber;
+const int KickRequest::kFinishKickFieldNumber;
+#endif  // !_MSC_VER
+
+KickRequest::KickRequest()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void KickRequest::InitAsDefaultInstance() {
+  kickpoint_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
+}
+
+KickRequest::KickRequest(const KickRequest& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void KickRequest::SharedCtor() {
+  _cached_size_ = 0;
+  kickpoint_ = NULL;
+  kickdirection_ = 0;
+  kickfoot_ = 0;
+  finishkick_ = false;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+KickRequest::~KickRequest() {
+  SharedDtor();
+}
+
+void KickRequest::SharedDtor() {
+  if (this != default_instance_) {
+    delete kickpoint_;
+  }
+}
+
+void KickRequest::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* KickRequest::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return KickRequest_descriptor_;
+}
+
+const KickRequest& KickRequest::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+KickRequest* KickRequest::default_instance_ = NULL;
+
+KickRequest* KickRequest::New() const {
+  return new KickRequest;
+}
+
+void KickRequest::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_kickpoint()) {
+      if (kickpoint_ != NULL) kickpoint_->::naothmessages::DoubleVector3::Clear();
+    }
+    kickdirection_ = 0;
+    kickfoot_ = 0;
+    finishkick_ = false;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool KickRequest::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.DoubleVector3 kickPoint = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_kickpoint()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(17)) goto parse_kickDirection;
+        break;
+      }
+      
+      // required double kickDirection = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_kickDirection:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &kickdirection_)));
+          set_has_kickdirection();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_kickFoot;
+        break;
+      }
+      
+      // required int32 kickFoot = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_kickFoot:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &kickfoot_)));
+          set_has_kickfoot();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_finishKick;
+        break;
+      }
+      
+      // required bool finishKick = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_finishKick:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &finishkick_)));
+          set_has_finishkick();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void KickRequest::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required .naothmessages.DoubleVector3 kickPoint = 1;
+  if (has_kickpoint()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->kickpoint(), output);
+  }
+  
+  // required double kickDirection = 2;
+  if (has_kickdirection()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->kickdirection(), output);
+  }
+  
+  // required int32 kickFoot = 3;
+  if (has_kickfoot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->kickfoot(), output);
+  }
+  
+  // required bool finishKick = 4;
+  if (has_finishkick()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->finishkick(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* KickRequest::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .naothmessages.DoubleVector3 kickPoint = 1;
+  if (has_kickpoint()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->kickpoint(), target);
+  }
+  
+  // required double kickDirection = 2;
+  if (has_kickdirection()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->kickdirection(), target);
+  }
+  
+  // required int32 kickFoot = 3;
+  if (has_kickfoot()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->kickfoot(), target);
+  }
+  
+  // required bool finishKick = 4;
+  if (has_finishkick()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->finishkick(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int KickRequest::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .naothmessages.DoubleVector3 kickPoint = 1;
+    if (has_kickpoint()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->kickpoint());
+    }
+    
+    // required double kickDirection = 2;
+    if (has_kickdirection()) {
+      total_size += 1 + 8;
+    }
+    
+    // required int32 kickFoot = 3;
+    if (has_kickfoot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->kickfoot());
+    }
+    
+    // required bool finishKick = 4;
+    if (has_finishkick()) {
+      total_size += 1 + 1;
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void KickRequest::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const KickRequest* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const KickRequest*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void KickRequest::MergeFrom(const KickRequest& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_kickpoint()) {
+      mutable_kickpoint()->::naothmessages::DoubleVector3::MergeFrom(from.kickpoint());
+    }
+    if (from.has_kickdirection()) {
+      set_kickdirection(from.kickdirection());
+    }
+    if (from.has_kickfoot()) {
+      set_kickfoot(from.kickfoot());
+    }
+    if (from.has_finishkick()) {
+      set_finishkick(from.finishkick());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void KickRequest::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void KickRequest::CopyFrom(const KickRequest& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool KickRequest::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  
+  if (has_kickpoint()) {
+    if (!this->kickpoint().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void KickRequest::Swap(KickRequest* other) {
+  if (other != this) {
+    std::swap(kickpoint_, other->kickpoint_);
+    std::swap(kickdirection_, other->kickdirection_);
+    std::swap(kickfoot_, other->kickfoot_);
+    std::swap(finishkick_, other->finishkick_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata KickRequest::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = KickRequest_descriptor_;
+  metadata.reflection = KickRequest_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int MotionRequest::kIdFieldNumber;
 const int MotionRequest::kTimeFieldNumber;
 const int MotionRequest::kForcedFieldNumber;
 const int MotionRequest::kWalkRequestFieldNumber;
 const int MotionRequest::kStarndardStandFieldNumber;
+const int MotionRequest::kKickRequestFieldNumber;
+const int MotionRequest::kStandHeightFieldNumber;
 #endif  // !_MSC_VER
 
 MotionRequest::MotionRequest()
@@ -4316,6 +5707,7 @@ MotionRequest::MotionRequest()
 
 void MotionRequest::InitAsDefaultInstance() {
   walkrequest_ = const_cast< ::naothmessages::WalkRequest*>(&::naothmessages::WalkRequest::default_instance());
+  kickrequest_ = const_cast< ::naothmessages::KickRequest*>(&::naothmessages::KickRequest::default_instance());
 }
 
 MotionRequest::MotionRequest(const MotionRequest& from)
@@ -4331,6 +5723,8 @@ void MotionRequest::SharedCtor() {
   forced_ = false;
   walkrequest_ = NULL;
   starndardstand_ = false;
+  kickrequest_ = NULL;
+  standheight_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4341,6 +5735,7 @@ MotionRequest::~MotionRequest() {
 void MotionRequest::SharedDtor() {
   if (this != default_instance_) {
     delete walkrequest_;
+    delete kickrequest_;
   }
 }
 
@@ -4373,6 +5768,10 @@ void MotionRequest::Clear() {
       if (walkrequest_ != NULL) walkrequest_->::naothmessages::WalkRequest::Clear();
     }
     starndardstand_ = false;
+    if (has_kickrequest()) {
+      if (kickrequest_ != NULL) kickrequest_->::naothmessages::KickRequest::Clear();
+    }
+    standheight_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -4457,6 +5856,36 @@ bool MotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(50)) goto parse_kickRequest;
+        break;
+      }
+      
+      // optional .naothmessages.KickRequest kickRequest = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_kickRequest:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_kickrequest()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(57)) goto parse_standHeight;
+        break;
+      }
+      
+      // optional double standHeight = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_standHeight:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &standheight_)));
+          set_has_standheight();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4505,6 +5934,17 @@ void MotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->starndardstand(), output);
   }
   
+  // optional .naothmessages.KickRequest kickRequest = 6;
+  if (has_kickrequest()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, this->kickrequest(), output);
+  }
+  
+  // optional double standHeight = 7;
+  if (has_standheight()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->standheight(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4538,6 +5978,18 @@ void MotionRequest::SerializeWithCachedSizes(
   // optional bool starndardStand = 5;
   if (has_starndardstand()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->starndardstand(), target);
+  }
+  
+  // optional .naothmessages.KickRequest kickRequest = 6;
+  if (has_kickrequest()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        6, this->kickrequest(), target);
+  }
+  
+  // optional double standHeight = 7;
+  if (has_standheight()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->standheight(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4582,6 +6034,18 @@ int MotionRequest::ByteSize() const {
       total_size += 1 + 1;
     }
     
+    // optional .naothmessages.KickRequest kickRequest = 6;
+    if (has_kickrequest()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->kickrequest());
+    }
+    
+    // optional double standHeight = 7;
+    if (has_standheight()) {
+      total_size += 1 + 8;
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -4624,6 +6088,12 @@ void MotionRequest::MergeFrom(const MotionRequest& from) {
     if (from.has_starndardstand()) {
       set_starndardstand(from.starndardstand());
     }
+    if (from.has_kickrequest()) {
+      mutable_kickrequest()->::naothmessages::KickRequest::MergeFrom(from.kickrequest());
+    }
+    if (from.has_standheight()) {
+      set_standheight(from.standheight());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -4646,6 +6116,9 @@ bool MotionRequest::IsInitialized() const {
   if (has_walkrequest()) {
     if (!this->walkrequest().IsInitialized()) return false;
   }
+  if (has_kickrequest()) {
+    if (!this->kickrequest().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -4656,6 +6129,8 @@ void MotionRequest::Swap(MotionRequest* other) {
     std::swap(forced_, other->forced_);
     std::swap(walkrequest_, other->walkrequest_);
     std::swap(starndardstand_, other->starndardstand_);
+    std::swap(kickrequest_, other->kickrequest_);
+    std::swap(standheight_, other->standheight_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -5273,6 +6748,254 @@ void FSRData::Swap(FSRData* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int StepControlStatus::kStepIDFieldNumber;
+const int StepControlStatus::kMoveableFootFieldNumber;
+#endif  // !_MSC_VER
+
+StepControlStatus::StepControlStatus()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void StepControlStatus::InitAsDefaultInstance() {
+}
+
+StepControlStatus::StepControlStatus(const StepControlStatus& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void StepControlStatus::SharedCtor() {
+  _cached_size_ = 0;
+  stepid_ = 0u;
+  moveablefoot_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+StepControlStatus::~StepControlStatus() {
+  SharedDtor();
+}
+
+void StepControlStatus::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void StepControlStatus::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* StepControlStatus::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return StepControlStatus_descriptor_;
+}
+
+const StepControlStatus& StepControlStatus::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+StepControlStatus* StepControlStatus::default_instance_ = NULL;
+
+StepControlStatus* StepControlStatus::New() const {
+  return new StepControlStatus;
+}
+
+void StepControlStatus::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    stepid_ = 0u;
+    moveablefoot_ = 0u;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool StepControlStatus::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint32 stepID = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &stepid_)));
+          set_has_stepid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_moveableFoot;
+        break;
+      }
+      
+      // required uint32 moveableFoot = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_moveableFoot:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &moveablefoot_)));
+          set_has_moveablefoot();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void StepControlStatus::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required uint32 stepID = 1;
+  if (has_stepid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->stepid(), output);
+  }
+  
+  // required uint32 moveableFoot = 2;
+  if (has_moveablefoot()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->moveablefoot(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* StepControlStatus::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required uint32 stepID = 1;
+  if (has_stepid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->stepid(), target);
+  }
+  
+  // required uint32 moveableFoot = 2;
+  if (has_moveablefoot()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->moveablefoot(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int StepControlStatus::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required uint32 stepID = 1;
+    if (has_stepid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->stepid());
+    }
+    
+    // required uint32 moveableFoot = 2;
+    if (has_moveablefoot()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->moveablefoot());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void StepControlStatus::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const StepControlStatus* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const StepControlStatus*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void StepControlStatus::MergeFrom(const StepControlStatus& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_stepid()) {
+      set_stepid(from.stepid());
+    }
+    if (from.has_moveablefoot()) {
+      set_moveablefoot(from.moveablefoot());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void StepControlStatus::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void StepControlStatus::CopyFrom(const StepControlStatus& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool StepControlStatus::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  return true;
+}
+
+void StepControlStatus::Swap(StepControlStatus* other) {
+  if (other != this) {
+    std::swap(stepid_, other->stepid_);
+    std::swap(moveablefoot_, other->moveablefoot_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata StepControlStatus::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = StepControlStatus_descriptor_;
+  metadata.reflection = StepControlStatus_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int MotionStatus::kTimeFieldNumber;
 const int MotionStatus::kLastMotionFieldNumber;
 const int MotionStatus::kCurrentMotionFieldNumber;
@@ -5280,6 +7003,8 @@ const int MotionStatus::kHeadMotionFieldNumber;
 const int MotionStatus::kCurrentMotionStateFieldNumber;
 const int MotionStatus::kPlannedMotionLeftFootFieldNumber;
 const int MotionStatus::kPlannedMotionRightFootFieldNumber;
+const int MotionStatus::kPlannedMotionHipFieldNumber;
+const int MotionStatus::kStepControlStatusFieldNumber;
 #endif  // !_MSC_VER
 
 MotionStatus::MotionStatus()
@@ -5290,6 +7015,8 @@ MotionStatus::MotionStatus()
 void MotionStatus::InitAsDefaultInstance() {
   plannedmotionleftfoot_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
   plannedmotionrightfoot_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+  plannedmotionhip_ = const_cast< ::naothmessages::Pose2D*>(&::naothmessages::Pose2D::default_instance());
+  stepcontrolstatus_ = const_cast< ::naothmessages::StepControlStatus*>(&::naothmessages::StepControlStatus::default_instance());
 }
 
 MotionStatus::MotionStatus(const MotionStatus& from)
@@ -5307,6 +7034,8 @@ void MotionStatus::SharedCtor() {
   currentmotionstate_ = 0u;
   plannedmotionleftfoot_ = NULL;
   plannedmotionrightfoot_ = NULL;
+  plannedmotionhip_ = NULL;
+  stepcontrolstatus_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5318,6 +7047,8 @@ void MotionStatus::SharedDtor() {
   if (this != default_instance_) {
     delete plannedmotionleftfoot_;
     delete plannedmotionrightfoot_;
+    delete plannedmotionhip_;
+    delete stepcontrolstatus_;
   }
 }
 
@@ -5353,6 +7084,14 @@ void MotionStatus::Clear() {
     }
     if (has_plannedmotionrightfoot()) {
       if (plannedmotionrightfoot_ != NULL) plannedmotionrightfoot_->::naothmessages::Pose2D::Clear();
+    }
+    if (has_plannedmotionhip()) {
+      if (plannedmotionhip_ != NULL) plannedmotionhip_->::naothmessages::Pose2D::Clear();
+    }
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (has_stepcontrolstatus()) {
+      if (stepcontrolstatus_ != NULL) stepcontrolstatus_->::naothmessages::StepControlStatus::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -5468,6 +7207,34 @@ bool MotionStatus::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(66)) goto parse_plannedMotionHip;
+        break;
+      }
+      
+      // required .naothmessages.Pose2D plannedMotionHip = 8;
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_plannedMotionHip:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_plannedmotionhip()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(74)) goto parse_stepControlStatus;
+        break;
+      }
+      
+      // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+      case 9: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_stepControlStatus:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_stepcontrolstatus()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -5527,6 +7294,18 @@ void MotionStatus::SerializeWithCachedSizes(
       7, this->plannedmotionrightfoot(), output);
   }
   
+  // required .naothmessages.Pose2D plannedMotionHip = 8;
+  if (has_plannedmotionhip()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      8, this->plannedmotionhip(), output);
+  }
+  
+  // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+  if (has_stepcontrolstatus()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      9, this->stepcontrolstatus(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -5572,6 +7351,20 @@ void MotionStatus::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         7, this->plannedmotionrightfoot(), target);
+  }
+  
+  // required .naothmessages.Pose2D plannedMotionHip = 8;
+  if (has_plannedmotionhip()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        8, this->plannedmotionhip(), target);
+  }
+  
+  // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+  if (has_stepcontrolstatus()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        9, this->stepcontrolstatus(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -5634,6 +7427,22 @@ int MotionStatus::ByteSize() const {
           this->plannedmotionrightfoot());
     }
     
+    // required .naothmessages.Pose2D plannedMotionHip = 8;
+    if (has_plannedmotionhip()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->plannedmotionhip());
+    }
+    
+  }
+  if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    // optional .naothmessages.StepControlStatus stepControlStatus = 9;
+    if (has_stepcontrolstatus()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->stepcontrolstatus());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -5682,6 +7491,14 @@ void MotionStatus::MergeFrom(const MotionStatus& from) {
     if (from.has_plannedmotionrightfoot()) {
       mutable_plannedmotionrightfoot()->::naothmessages::Pose2D::MergeFrom(from.plannedmotionrightfoot());
     }
+    if (from.has_plannedmotionhip()) {
+      mutable_plannedmotionhip()->::naothmessages::Pose2D::MergeFrom(from.plannedmotionhip());
+    }
+  }
+  if (from._has_bits_[8 / 32] & (0xffu << (8 % 32))) {
+    if (from.has_stepcontrolstatus()) {
+      mutable_stepcontrolstatus()->::naothmessages::StepControlStatus::MergeFrom(from.stepcontrolstatus());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -5699,13 +7516,19 @@ void MotionStatus::CopyFrom(const MotionStatus& from) {
 }
 
 bool MotionStatus::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000007f) != 0x0000007f) return false;
+  if ((_has_bits_[0] & 0x000000ff) != 0x000000ff) return false;
   
   if (has_plannedmotionleftfoot()) {
     if (!this->plannedmotionleftfoot().IsInitialized()) return false;
   }
   if (has_plannedmotionrightfoot()) {
     if (!this->plannedmotionrightfoot().IsInitialized()) return false;
+  }
+  if (has_plannedmotionhip()) {
+    if (!this->plannedmotionhip().IsInitialized()) return false;
+  }
+  if (has_stepcontrolstatus()) {
+    if (!this->stepcontrolstatus().IsInitialized()) return false;
   }
   return true;
 }
@@ -5719,6 +7542,8 @@ void MotionStatus::Swap(MotionStatus* other) {
     std::swap(currentmotionstate_, other->currentmotionstate_);
     std::swap(plannedmotionleftfoot_, other->plannedmotionleftfoot_);
     std::swap(plannedmotionrightfoot_, other->plannedmotionrightfoot_);
+    std::swap(plannedmotionhip_, other->plannedmotionhip_);
+    std::swap(stepcontrolstatus_, other->stepcontrolstatus_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -5946,6 +7771,221 @@ void OdometryData::Swap(OdometryData* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = OdometryData_descriptor_;
   metadata.reflection = OdometryData_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int CalibrationData::kInertialSensorOffsetFieldNumber;
+#endif  // !_MSC_VER
+
+CalibrationData::CalibrationData()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void CalibrationData::InitAsDefaultInstance() {
+  inertialsensoroffset_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+}
+
+CalibrationData::CalibrationData(const CalibrationData& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void CalibrationData::SharedCtor() {
+  _cached_size_ = 0;
+  inertialsensoroffset_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+CalibrationData::~CalibrationData() {
+  SharedDtor();
+}
+
+void CalibrationData::SharedDtor() {
+  if (this != default_instance_) {
+    delete inertialsensoroffset_;
+  }
+}
+
+void CalibrationData::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* CalibrationData::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return CalibrationData_descriptor_;
+}
+
+const CalibrationData& CalibrationData::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+CalibrationData* CalibrationData::default_instance_ = NULL;
+
+CalibrationData* CalibrationData::New() const {
+  return new CalibrationData;
+}
+
+void CalibrationData::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_inertialsensoroffset()) {
+      if (inertialsensoroffset_ != NULL) inertialsensoroffset_->::naothmessages::DoubleVector2::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool CalibrationData::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_inertialsensoroffset()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void CalibrationData::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+  if (has_inertialsensoroffset()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->inertialsensoroffset(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* CalibrationData::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+  if (has_inertialsensoroffset()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->inertialsensoroffset(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int CalibrationData::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional .naothmessages.DoubleVector2 inertialSensorOffset = 1;
+    if (has_inertialsensoroffset()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->inertialsensoroffset());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void CalibrationData::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const CalibrationData* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const CalibrationData*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void CalibrationData::MergeFrom(const CalibrationData& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_inertialsensoroffset()) {
+      mutable_inertialsensoroffset()->::naothmessages::DoubleVector2::MergeFrom(from.inertialsensoroffset());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void CalibrationData::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void CalibrationData::CopyFrom(const CalibrationData& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CalibrationData::IsInitialized() const {
+  
+  if (has_inertialsensoroffset()) {
+    if (!this->inertialsensoroffset().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void CalibrationData::Swap(CalibrationData* other) {
+  if (other != this) {
+    std::swap(inertialsensoroffset_, other->inertialsensoroffset_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata CalibrationData::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = CalibrationData_descriptor_;
+  metadata.reflection = CalibrationData_reflection_;
   return metadata;
 }
 

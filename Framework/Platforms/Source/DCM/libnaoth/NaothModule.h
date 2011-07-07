@@ -50,13 +50,15 @@ class NaothModule : public ALModule
     bool innerTest();
     
     virtual void init();
-    virtual void exit( );
+    virtual void exit();
 
     void motionCallbackPre();
     void motionCallbackPost();
 
 private:
-
+    // Used for sync with the DCM
+    ProcessSignalConnection fDCMPreProcessConnection;
+    ProcessSignalConnection fDCMPostProcessConnection;
 };
 
 } // end namespace naoth

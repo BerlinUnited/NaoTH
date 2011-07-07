@@ -19,10 +19,13 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(LEDSetter)
-  REQUIRE(GameControllerLEDRequest)
-  REQUIRE(FrameInfo)
 
-  PROVIDE(LEDData)
+REQUIRE(GameControllerLEDRequest)
+REQUIRE(BehaviorLEDRequest)
+REQUIRE(FrameInfo)
+
+PROVIDE(LEDData)
+
 END_DECLARE_MODULE(LEDSetter)
 
 class LEDSetter : public LEDSetterBase
@@ -34,7 +37,8 @@ public:
   virtual void execute();
 private:
 
-  void copyData(const LEDRequest& data);
+  void copyMonoLEDData(const LEDRequest& data, int from, int to);
+  void copyMultiLEDData(const LEDRequest& data, int from, int to);
 };
 
 #endif	/* _LEDSETTER_H */

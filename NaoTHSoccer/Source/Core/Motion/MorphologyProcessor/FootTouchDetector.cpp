@@ -17,7 +17,7 @@ FootTouchDetector::~FootTouchDetector()
 {
 }
 
-void FootTouchDetector::init(double* fsr, const string& cfg)
+void FootTouchDetector::init(const double* fsr, const string& cfg)
 {
   fsrData = fsr;
   touchTrainSet.clear();

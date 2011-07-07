@@ -10,6 +10,7 @@
 #include "NaoTHAssert.h"
 #include <sstream>
 #include "Tools/SynchronizedFileWriter.h"
+#include "Tools/NaoTime.h"
 #include <string.h>
 
 //static Trace* trace = 0;
@@ -38,7 +39,9 @@ void Trace::dump()
   sstream << *this;
 
   // write to file
-  SynchronizedFileWriter::saveStreamToFile(sstream, string("Config/trace.dump"));
+  std::stringstream dumpName;
+  dumpName << "Config/trace.dump." << naoth::NaoTime::getSystemTimeInMicroSeconds();
+  SynchronizedFileWriter::saveStreamToFile(sstream, dumpName.str());
 }//end dump
 
  

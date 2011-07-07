@@ -71,6 +71,8 @@ public:
     goal_opp,
     free_kick_own,
     free_kick_opp,
+    penalty_kick_own,
+    penalty_kick_opp,
     numOfPlayMode
   };
 
@@ -93,12 +95,15 @@ public:
   GameData();
 
 public:
+  bool valid;
   unsigned int frameNumber; // indicates when it is updated
 
   GameState gameState;
   unsigned int timeWhenGameStateChanged;
   PenaltyState penaltyState;
-  unsigned int secsTillUnpenalised;
+  unsigned int msecsTillUnpenalised;
+  unsigned int msecsRemaining; // time (million seconds) remain in half game
+  bool firstHalf; // indicates if it is in first half game
 
   PlayMode playMode;
   unsigned int gameTime; // in ms
@@ -119,9 +124,6 @@ public:
 
   /** the name of the team */
   std::string teamName;
-
-  //TODO: what is it?
-  double halfTime;
 
   /** number of player per team */
   unsigned int numOfPlayers;

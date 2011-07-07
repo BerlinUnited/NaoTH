@@ -8,12 +8,16 @@
 
 #include "NaoController.h"
 #include <PlatformInterface/Platform.h>
+#include <Tools/Debug/Stopwatch.h>
+
+#define TEAMCOMM_MAX_MSG_SIZE 4096
 
 using namespace naoth;
 
 NaoController::NaoController()
 :theSoundHandler(NULL),
-theTeamComm(NULL)
+theBroadCaster(NULL),
+theBroadCastListener(NULL)
 {
   // read the value from file
   ifstream is(staticMemberPath.c_str());
@@ -60,10 +64,26 @@ theTeamComm(NULL)
   theSoundHandler = new SoundControl();
 
   std::cout<< "Init TeamComm"<<endl;
-  theTeamComm = new TeamCommunicator();
+  naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+  string interfaceName = "wlan0";
+  if(config.hasKey("teamcomm", "interface"))
+  {
+    interfaceName = config.getString("teamcomm", "interface");
+  }
+
+  unsigned int port = 10700;
+  if(config.hasKey("teamcomm", "port"))
+  {
+    port = config.getInt("teamcomm", "port");
+  }
+
+  theBroadCaster = new BroadCaster(interfaceName, port);
+  theBroadCastListener = new BroadCastListener(port, TEAMCOMM_MAX_MSG_SIZE);
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
+
+  theDebugServer.start(5401, true);
 }
 
 NaoController::~NaoController()
@@ -73,9 +93,14 @@ NaoController::~NaoController()
     delete theSoundHandler;
   }
 
-  if ( theTeamComm != NULL)
+  if ( theBroadCaster != NULL)
   {
-    delete theTeamComm;
+    delete theBroadCaster;
+  }
+
+  if ( theBroadCastListener != NULL )
+  {
+    delete theBroadCastListener;
   }
 
   if ( theGameController != NULL )
@@ -106,6 +131,7 @@ void NaoController::set(const SoundPlayData& data)
 
 void NaoController::getCognitionInput()
 {
+  STOPWATCH_START("getCognitionInput");
   if ( libNaothData.swapReading() )
   {
     libNaothDataReading = libNaothData.reading();
@@ -118,31 +144,46 @@ void NaoController::getCognitionInput()
 
   updateFrameInfo();
   NaoControllerBase<NaoController>::getCognitionInput();
+  STOPWATCH_STOP("getCognitionInput");
 }
   
 void NaoController::setCognitionOutput()
 {
+  STOPWATCH_START("setCognitionOutput");
   NaoControllerBase<NaoController>::setCognitionOutput();
   
   naothData.swapWriting();
   naothDataWriting = naothData.writing();
+  STOPWATCH_STOP("setCognitionOutput");
 }
 
 void NaoController::get(TeamMessageDataIn& data)
 {
-  theTeamComm->receive(data.data);
+  theBroadCastListener->receive(data.data);
 }
 
 void NaoController::set(const TeamMessageDataOut& data)
 {
-  theTeamComm->send(data.data);
+  if ( data.data.size() <= TEAMCOMM_MAX_MSG_SIZE )
+  {
+    theBroadCaster->send(data.data);
+  }
+  else
+  {
+    cerr<<"NaoController: TeamMessageDataOut is too big "<<data.data.size()<<endl;
+  }
 }
 
 void NaoController::get(GameData& data)
 {
   if ( theGameController->get(data, theFrameInfo.getTime()) )
   {
+    data.valid = true;
     data.frameNumber = theFrameInfo.getFrameNumber();
+  }
+  else
+  {
+    data.valid = false;
   }
 }
 

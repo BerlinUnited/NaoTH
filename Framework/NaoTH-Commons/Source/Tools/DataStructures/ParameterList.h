@@ -18,7 +18,6 @@ class ParameterList
 public:
   ParameterList(const std::string& parentClassName);
 
-
   bool& registerParameter(const std::string& name, bool& parameter);
   unsigned int& registerParameter(const std::string& name, unsigned int& parameter);
   int& registerParameter(const std::string& name, int& parameter);
@@ -28,8 +27,10 @@ public:
   // change some key characters, e.g. []
   std::string covertName(std::string name);
 
-  void loadFromConfig();
+  void syncWithConfig();
   void saveToConfig();
+
+  const std::string& getName() const { return parentClassName; }
 
 private:
   std::string parentClassName;

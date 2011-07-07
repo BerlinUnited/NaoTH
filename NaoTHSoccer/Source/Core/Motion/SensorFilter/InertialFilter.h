@@ -13,18 +13,20 @@
 class InertialFilter
 {
 public:
-  InertialFilter(const MotionBlackBoard& bb);
+  InertialFilter(const MotionBlackBoard& bb, Vector2d& offset);
 
-  InertialPercept filte();
+  InertialPercept filter();
 
 private:
   void calibrate();
+
+  bool intentionallyMoving();
 
 private:
   const MotionBlackBoard& theBlackBoard;
   const naoth::InertialSensorData& sensorData;
 
-  Vector2d theOffset;
+  Vector2d& theOffset;
   Vector2d theNewOffset;
   unsigned int calibrateNum;
   const double max_offet;

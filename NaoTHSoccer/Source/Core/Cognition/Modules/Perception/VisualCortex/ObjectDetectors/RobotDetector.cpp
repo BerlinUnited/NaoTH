@@ -531,9 +531,13 @@ if(borderPointFound) //if a point was found ...
 
 //check whether a point is in the image
 inline bool RobotDetector::pixelInSearchArea(Vector2<int>& pixel)
-  {
-  return searchArea.isInside(pixel);
-  }//end pixelInImage
+{
+//   return searchArea.isInside(pixel);
+  return ((pixel.x >= 0 && pixel.x <= (int)resolutionWidth)
+    &&(pixel.y >= 0 && pixel.y <= (int)resolutionHeight));
+}//end pixelInImage
+
+
 
 
 inline bool RobotDetector::isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor)

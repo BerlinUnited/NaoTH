@@ -9,13 +9,14 @@
 
 #include <PlatformInterface/Platform.h>
 
-#include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include <Tools/Debug/Stopwatch.h>
+#include <Tools/Debug/Trace.h>
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/NaoTime.h"
 
 
 // list the modules and representations on the blackboard
@@ -36,30 +37,51 @@
 #include "Modules/Infrastructure/LEDSetter/LEDSetter.h"
 #include "Modules/Infrastructure/Debug/Debug.h"
 #include "Modules/Infrastructure/Debug/DebugExecutor.h"
-#include "Modules/Infrastructure/Debug/ParameterListDebugLoader.h"
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
-#include "Modules/Infrastructure/TeamComm/SimSparkTeamComm/SimSparkTeamComm.h"
-#include "Modules/Infrastructure/TeamComm/TeamCommunicator/TeamCommunicator.h"
+#include "Modules/Infrastructure/Debug/RoboViz.h"
+#include "Modules/Infrastructure/Debug/CameraDebug.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
+#include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
-//#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
+#include "Modules/Perception/PerceptProjector/PerceptProjector.h"
+#include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
-#include "Modules/Modeling/BallLocator/ParticleFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/ParticleFilterBallLocator/ParticleFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/KalmanFilterBallLocator/KalmanFilterBallLocator.h"
+#include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
+#include "Modules/Modeling/GoalLocator/ActiveGoalLocator/ActiveGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
+#include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
+#include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
+#include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
+#include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
+
+#include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
+#include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
+#include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
 
+// Experiment
+#include "Modules/Experiment/Evolution/Evolution.h"
+
+
+// tools
+#include "Tools/NaoTime.h"
 
 using namespace std;
 
@@ -109,34 +131,55 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // -- BEGIN MODULES --
 
   // infrastructure
-  REGISTER_MODULE(TeamCommunicator);
-  REGISTER_MODULE(SimSparkTeamComm);
+  REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
-  //REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
+  REGISTER_MODULE(PerceptProjector);
+  REGISTER_MODULE(PerceptionsVisualization);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(ParticleFilterBallLocator);
+  REGISTER_MODULE(KalmanFilterBallLocator);
+  REGISTER_MODULE(ActiveGoalLocator);
+  REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  REGISTER_MODULE(VisualObstacleLocator);
+  REGISTER_MODULE(MonteCarloSelfLocator);
+  REGISTER_MODULE(TeamBallLocator);
+  REGISTER_MODULE(PlayersLocator);
+
+  REGISTER_MODULE(PotentialFieldProvider);
+  REGISTER_MODULE(AttentionAnalyzer);
+
+  REGISTER_MODULE(SoccerStrategyProvider);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
+  REGISTER_MODULE(XABSLBehaviorControl);
+
+  // experiment
+  REGISTER_MODULE(Evolution);
+
+  // infrastructure
+  REGISTER_MODULE(TeamCommSender);
 
   // debug
   REGISTER_MODULE(LEDSetter);
   REGISTER_MODULE(Debug);
-  REGISTER_MODULE(ParameterListDebugLoader);
+  REGISTER_MODULE(RoboViz);
   REGISTER_MODULE(StopwatchSender);
   REGISTER_MODULE(DebugExecutor);
+  REGISTER_MODULE(CameraDebug);
 
   // -- END MODULES --
 
@@ -172,11 +215,24 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   //calculateExecutionList();
 
   g_message("Cognition register end");
+
+  Stopwatch::getInstance().notifyStart(stopwatch);
 }//end init
 
 
 void Cognition::call()
-{  
+{
+  // BEGIN cognition frame rate measuring
+  Stopwatch::getInstance().notifyStop(stopwatch);
+  Stopwatch::getInstance().notifyStart(stopwatch);
+  PLOT("_CognitionCycle", stopwatch.lastValue);
+  // END cognition frame rate measuring
+
+
+  STOPWATCH_START("CognitionExecute");
+
+
+  GT_TRACE("beginning to iterate over all modules");
   // execute all modules
   list<string>::const_iterator iter;
   for (iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
@@ -186,13 +242,19 @@ void Cognition::call()
     if (module != NULL && module->isEnabled())
     {
       std::string name(*iter);
-      //g_debug("executing %s", name.c_str());
+
+      stringstream s;
+      s << "executing " << name;
+      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
       STOPWATCH_START_GENERIC(name);
       module->execute();
       STOPWATCH_START_GENERIC(name);
     }//end if
   }//end for all modules
   
+  GT_TRACE("end module iteration");
+  STOPWATCH_STOP("CognitionExecute");
+
 
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Debug ~ Init");
@@ -201,7 +263,6 @@ void Cognition::call()
   DebugImageDrawings::getInstance().reset();
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
-  
 }//end call
 
 

@@ -74,6 +74,7 @@ public class ParameterPanel extends AbstractDialog
   private void initComponents() {
 
     jToolBar1 = new javax.swing.JToolBar();
+    jToggleButtonList = new javax.swing.JToggleButton();
     cbParameterId = new javax.swing.JComboBox();
     jToggleButtonRefresh = new javax.swing.JToggleButton();
     jButtonSend = new javax.swing.JButton();
@@ -82,8 +83,17 @@ public class ParameterPanel extends AbstractDialog
 
     jToolBar1.setRollover(true);
 
-    cbParameterId.setEditable(true);
-    cbParameterId.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FieldInfo", "CameraSettings" }));
+    jToggleButtonList.setText("list");
+    jToggleButtonList.setFocusable(false);
+    jToggleButtonList.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jToggleButtonList.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jToggleButtonList.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jToggleButtonListActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(jToggleButtonList);
+
     cbParameterId.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         cbParameterIdActionPerformed(evt);
@@ -91,7 +101,7 @@ public class ParameterPanel extends AbstractDialog
     });
     jToolBar1.add(cbParameterId);
 
-    jToggleButtonRefresh.setText("Refresh");
+    jToggleButtonRefresh.setText("Get");
     jToggleButtonRefresh.setFocusable(false);
     jToggleButtonRefresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     jToggleButtonRefresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -136,7 +146,7 @@ public class ParameterPanel extends AbstractDialog
 private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
   if (jToggleButtonRefresh.isSelected())
   {
-    refresh();
+    getParameterList();
   }
 }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
 
@@ -148,7 +158,7 @@ private void sendParameters()
 {
   if (parent.checkConnected())
   {
-    Command cmd = new Command(this.cbParameterId.getSelectedItem().toString() + ":set");
+    Command cmd = new Command("ParameterList:"+cbParameterId.getSelectedItem().toString() + ":set");
 
     String text = this.jTextArea.getText();
 
@@ -171,6 +181,8 @@ private void sendParameters()
       }
     }
     sendCommand(cmd);
+    
+    listParameters();
   }
   else
   {
@@ -180,19 +192,36 @@ private void sendParameters()
 
 private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbParameterIdActionPerformed
 {//GEN-HEADEREND:event_cbParameterIdActionPerformed
-
-  if ("comboBoxChanged".equals(evt.getActionCommand()))
-  {
-    refresh();
-  }
+    getParameterList();
 }//GEN-LAST:event_cbParameterIdActionPerformed
 
-  private void refresh()
+private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jToggleButtonListActionPerformed
+{//GEN-HEADEREND:event_jToggleButtonListActionPerformed
+  listParameters();
+}//GEN-LAST:event_jToggleButtonListActionPerformed
+
+private void listParameters()
+{
+  if (parent.checkConnected())
+    {
+      Command cmd = new Command("ParameterList:list");
+      sendCommand(cmd);
+    }
+    else
+    {
+      jToggleButtonList.setSelected(false);
+    }
+}
+
+  private void getParameterList()
   {
     if (parent.checkConnected())
     {
-      Command cmd = new Command(cbParameterId.getSelectedItem().toString() + ":list");
-      sendCommand(cmd);
+      if (cbParameterId.getSelectedItem() != null)
+      {
+        Command cmd = new Command("ParameterList:" + cbParameterId.getSelectedItem().toString() + ":get");
+        sendCommand(cmd);
+      }
     }
     else
     {
@@ -206,6 +235,7 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
     parent.getMessageServer().executeSingleCommand(this, command);
   }
 
+  @Override
   public void handleResponse(byte[] result, Command originalCommand)
   {
     String strResult = new String(result);
@@ -217,48 +247,25 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
     }
     else
     {
-      if (originalCommand.getName().compareTo(cbParameterId.getSelectedItem().toString() + ":list") == 0)
+      if (originalCommand.getName().compareTo("ParameterList:list") == 0)
       {
-        this.jTextArea.setText(strResult);
-        jToggleButtonRefresh.setSelected(false);
+        cbParameterId.removeAllItems();
+        String[] parameterLists = strResult.split("\n");
+        for (String parameterList : parameterLists)
+        {
+          cbParameterId.addItem(parameterList);
+        }
+        jToggleButtonList.setSelected(false);
       }
-      else
+      else if (originalCommand.getName().compareTo("ParameterList:"+cbParameterId.getSelectedItem().toString() + ":get") == 0)
       {
-//        if (originalCommand.getName().compareTo(cbParameterId.getSelectedItem().toString() + ":store") == 0)
-//        {
-//          int n = strResult.indexOf("\n");
-//          if (0 != n)
-//          {
-//            String filename = defaultConfigureFilePath + "/" + (new String(result, 0, n));
-//            n = n + 1;
-//            String content = new String(result, n, result.length - n);
-//
-//            try
-//            {
-//              FileWriter fileWriter = new FileWriter(filename, false);
-//              fileWriter.write(content);
-//              fileWriter.close();
-//              JOptionPane.showMessageDialog(this,
-//                filename + " saved!", "Parameters List", JOptionPane.INFORMATION_MESSAGE);
-//            }
-//            catch (IOException ex)
-//            {
-//              JOptionPane.showMessageDialog(this,
-//                ex.toString(), "Parameters List", JOptionPane.ERROR_MESSAGE);
-//            }
-//          }
-//          else
-//          {
-//            JOptionPane.showMessageDialog(this, cbParameterId.getSelectedItem().toString() + " doesn't have configure file",
-//              "Parameters List", JOptionPane.ERROR_MESSAGE);
-//          }
-//        }
-
-        refresh();
+        jTextArea.setText(strResult);
+        jToggleButtonRefresh.setSelected(false);
       }
     }
   }//end handleResponse
 
+  @Override
   public void handleError(int code)
   {
     jToggleButtonRefresh.setSelected(false);
@@ -266,11 +273,13 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
               "Error occured, code " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
   }//end handleError
 
+  @Override
   public Command getCurrentCommand()
   {
     return commandToExecute;
   }
 
+  @Override
   public void dispose()
   {
     System.out.println("Dispose is not implemented for: " + this.getClass().getName());
@@ -280,6 +289,7 @@ private void cbParameterIdActionPerformed(java.awt.event.ActionEvent evt)//GEN-F
   private javax.swing.JButton jButtonSend;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea jTextArea;
+  private javax.swing.JToggleButton jToggleButtonList;
   private javax.swing.JToggleButton jToggleButtonRefresh;
   private javax.swing.JToolBar jToolBar1;
   // End of variables declaration//GEN-END:variables

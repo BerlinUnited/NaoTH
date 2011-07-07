@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <PlatformInterface/Platform.h>
 #include <sys/socket.h>
-#include "Tools/MacAddr.h"
+#include "Tools/Communication/NetAddr.h"
 
 using namespace naoth;
 
@@ -18,7 +18,7 @@ SPLGameController::SPLGameController()
     socket(NULL),
     broadcastAddress(NULL),
     socketThread(NULL),
-    dataUpdated(false),
+    lastGetTime(0),
     dataMutex(NULL),
     returnDataMutex(NULL)
 {
@@ -70,7 +70,7 @@ GError* SPLGameController::bindAndListen(unsigned int port)
   g_object_unref(inetAddress);
   g_object_unref(socketAddress);
 
-  string broadcastAddr = getBroadcastAddr("wlan0");
+  string broadcastAddr = NetAddr::getBroadcastAddr("wlan0");
   GInetAddress* address = g_inet_address_new_from_string(broadcastAddr.c_str());
   broadcastAddress = g_inet_socket_address_new(address, port);
   g_object_unref(address);
@@ -83,18 +83,27 @@ bool SPLGameController::get(GameData& gameData, unsigned int time)
   bool ok = false;
   if ( g_mutex_trylock(dataMutex) )
   {
-    if ( dataUpdated )
+    if ( data.valid )
     {
+      if ( data.gameState == GameData::playing
+          || data.gameState == GameData::penalized )
+      {
+        data.gameTime += (time - lastGetTime);
+      }
+
       if ( gameData.gameState != data.gameState )
       {
         data.timeWhenGameStateChanged = time;
       }
+
       if ( gameData.playMode != data.playMode )
       {
         data.timeWhenPlayModeChanged = time;
       }
+
       gameData = data;
-      dataUpdated = false;
+      data.valid = false;
+      lastGetTime = time;
       ok = true;
     }
     g_mutex_unlock(dataMutex);
@@ -162,14 +171,27 @@ bool SPLGameController::update()
       }
 
       data.numOfPlayers = dataIn.playersPerTeam;
+      data.msecsRemaining = dataIn.secsRemaining * 1000;
+      data.firstHalf = (dataIn.firstHalf == 1);
 
-      if ( data.gameState == GameData::initial
-          || data.gameState == GameData::ready
-          || data.gameState == GameData::set
-          || data.gameState == GameData::playing )
+      if ( dataIn.secondaryState == STATE2_NORMAL )
       {
-        //TODO: check more conditions (time, etc.)
-        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+        if ( data.gameState == GameData::initial
+            || data.gameState == GameData::ready
+            || data.gameState == GameData::set
+            || data.gameState == GameData::playing )
+        {
+          //TODO: check more conditions (time, etc.)
+          data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::kick_off_own : GameData::kick_off_opp;
+        }
+      }
+      else if ( dataIn.secondaryState == STATE2_PENALTYSHOOT )
+      {
+        data.playMode = (dataIn.kickOffTeam == teamInfoIndex) ? GameData::penalty_kick_own : GameData::penalty_kick_opp;
+      }
+      else if ( dataIn.secondaryState == STATE2_OVERTIME )
+      {
+        data.playMode = GameData::game_over;
       }
 
       unsigned char playerNumberForGameController = data.playerNumber - 1; // gamecontroller starts counting at 0
@@ -179,7 +201,7 @@ bool SPLGameController::update()
         RobotInfo rinfo =
             dataIn.teams[teamInfoIndex].players[playerNumberForGameController];
         data.penaltyState = (GameData::PenaltyState)rinfo.penalty;
-        data.secsTillUnpenalised = rinfo.secsTillUnpenalised;
+        data.msecsTillUnpenalised = rinfo.secsTillUnpenalised * 1000;
         if (rinfo.penalty != PENALTY_NONE)
         {
           data.gameState = GameData::penalized;
@@ -249,7 +271,7 @@ void SPLGameController::socketLoop()
       g_mutex_lock(dataMutex);
       if ( update() )
       {
-        dataUpdated = true;
+        data.valid = true;
       }
       g_mutex_unlock(dataMutex);
 

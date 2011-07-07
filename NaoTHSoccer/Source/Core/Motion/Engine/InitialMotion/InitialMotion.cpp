@@ -79,7 +79,6 @@ void InitialMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*
       break;
 
     case InitialPoseReady:
-      currentState = motion::waiting;
       freeJoint(motionRequest.id == getId());
       break;
 

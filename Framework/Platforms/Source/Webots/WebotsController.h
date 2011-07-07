@@ -47,6 +47,7 @@ void gps_euler(const float *matrix, float *euler);
 #include "Representations/Infrastructure/SoundData.h"
 #include "Representations/Infrastructure/ButtonData.h"
 #include "Representations/Infrastructure/BatteryData.h"
+#include <Representations/Infrastructure/GameData.h>
 
 using namespace std;
 
@@ -119,6 +120,8 @@ namespace naoth
     {
       // TODO
     };
+
+    void get(GameData& data);
 
     //void get(GPSData& data);
 

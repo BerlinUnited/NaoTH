@@ -13,12 +13,13 @@
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/Stopwatch.h>
+#include "Tools/Debug/DebugParameterList.h"
 
 #include <PlatformInterface/Platform.h>
 
 #include <Tools/SynchronizedFileWriter.h>
 
-Debug::Debug() : cognitionLogger("log")
+Debug::Debug() : cognitionLogger("CognitionLog")
 {   
   DEBUG_REQUEST_REGISTER("debug:request:test", "testing the debug requests", false);
   
@@ -46,10 +47,18 @@ Debug::Debug() : cognitionLogger("log")
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:CoM", "Show the robot's center of mass in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Ball", "Show the ball in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
+
+  REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
+
+  // parameter list
+  DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));
 }
 
 void Debug::execute()
 {
+
+  cognitionLogger.log(getFrameInfo().getFrameNumber());
+
   // draw 3d only when 3d viewer is active
   if (DebugDrawings3D::getInstance().isActive())
   {
@@ -86,7 +95,7 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       if (cIter != arguments.end() )
       {
         const string& str = cIter->second;
-        int tmp = str.size();
+        //int tmp = str.size();
         if(SynchronizedFileWriter::saveStringToFile(str, fileName))
           outstream << fileName << " successfull written.";
         else
@@ -165,6 +174,8 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 
 Debug::~Debug()
 {
+  // parameter list
+  DebugParameterList::getInstance().remove(&(getCameraSettingsRequest()));
 }
 
 void Debug::draw3D()

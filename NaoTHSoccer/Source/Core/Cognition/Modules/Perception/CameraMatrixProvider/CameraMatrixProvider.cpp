@@ -53,7 +53,7 @@ void CameraMatrixProvider::execute()
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     getAccelerometerData(),
-    getInertialSensorData(),
+    getInertialPercept(),
     getKinematicChain(),
     theFSRPos,
     deltaTime);

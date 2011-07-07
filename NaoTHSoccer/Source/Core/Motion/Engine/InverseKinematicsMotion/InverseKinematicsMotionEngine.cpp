@@ -298,7 +298,11 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
 int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
 {
   // if it is not ready, it should be empty
-  ASSERT( thePreviewController.count() == 0 );
+  //ASSERT( thePreviewController.count() == 0 );
+  // TODO: clear it because of the motion can be forced to finish immediately...
+  // the idea of keep buffer is to switch zmp control between different motions,
+  // such as walk and kick, then maybe we should check if zmp control is used every cycle and etc.
+  thePreviewController.clear();
 
   CoMFeetPose currentCoMPose = getCurrentCoMFeetPose();
   currentCoMPose.localInLeftFoot();

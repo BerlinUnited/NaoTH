@@ -1,0 +1,182 @@
+/** Playing as goalie */
+option spl_playing_goalie {
+
+common decision
+{
+  if(robot_pose.x > field.xPosOwnPenaltyArea + 250)
+  {
+    goto go_back;
+  }
+}
+
+/*
+  initial state block {
+    decision
+    {
+      stay;
+      //else if(!ball.was_seen ||  abs(value=ball.distance) > 500)
+      //{
+      //  goto stand;
+      //}
+      //else
+      //{
+      //  stay;
+      //}
+    }
+    action {
+      head.control_mode = search_for_ball;
+      block_middle_down();
+    }
+  }
+*/
+
+  state guard {
+	  decision {
+      else if(state_time < 3000)
+        stay; //added team.calc_if_is_striker - so goali kicks if everybody is far away
+      else if(ball.time_since_last_seen > 3000 || ball.x > field.xPosOpponentGroundline + 100)
+      {
+        goto ball_far_away;
+      }
+      else if(ball.was_seen && ball.distance < 600)
+      {
+        goto stabilize_before_clear;
+      }
+      /* ball is moving in our direction and is near enough */
+	    else if(
+          ball.time_since_last_seen < 3000
+          && ball.speed.x < -250  &&  ball.position.field.x < 100
+          && abs(value=ball.angle) < 60 
+          //&& abs(value=ball.future.y) < 500
+          //&& ball.future.x < 0 // ball is behind me 
+          )
+      {
+        goto block;
+      }
+      else
+      {
+        stay;
+      }
+	  }
+	  action {
+      set_right_ear = 9;
+    
+      motion.type = walk;
+      motion.walk_speed.y =
+        robot_pose.y < field.yPosLeftGoal - 250
+        && robot_pose.y > field.yPosLeftGoal + 250        
+       ? ball.y : 0;
+       
+      motion.walk_speed.x = 0;
+      motion.walk_speed.rot = ball.angle; 
+      
+      head.control_mode = smart_search;
+      head.smart_search.rate = 0.2;
+	  }
+  }
+
+  initial state ball_far_away {
+    decision {
+      else if(ball.time_since_last_seen < 1000 && ball.position.field.x < 1000 && ball.speed.x < -300)
+      {
+        goto block;
+      }
+      else if(ball.was_seen && ball.distance < field.xPosOpponentGroundline - 100)
+      {
+        goto guard;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      set_right_ear = 0;
+      go_to_point_stop_on_obstacle(x=field.xPosOwnGroundline+100, y=0, rot=0);
+      
+      head.control_mode = smart_search;
+      head.smart_search.rate = 0.8;
+    }
+  }
+
+  state block {
+    decision {
+/*      if(
+        ball.time_since_last_seen < 3000
+        && abs(value=ball.speed) < 50 
+        && ball.distance < 700)
+      {
+        goto clear;
+      }
+*/
+      else if(state_time > 7000)
+      {
+        goto guard;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      block_middle_down_small();
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state stabilize_before_clear
+  {
+    decision {
+      // stand 1 second before kick
+      else if(executed_motion.type == stand && executed_motion.time > 1000)
+        goto clear;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state go_back {
+    decision {
+      else if(robot_pose.x < field.xPosOwnPenaltyArea - 100)
+      {
+        goto guard;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      head.control_mode =search_for_goal;
+      set_right_ear = (state_time / 200) % 10;
+      go_to_point_stop_on_obstacle(x=field.xPosOwnPenaltyArea-300, y=field.yPosRightGoal, rot=0);
+    }
+  }
+
+  state clear {
+	  decision {
+	    else if(action_done)
+      {
+        goto guard;
+      }
+      else
+      {
+        stay;
+      }
+	  }
+	  action {
+
+      team.is_playing_as_striker = true;  //anybody else won't be striker  
+      head.control_mode = smart_search;
+      head.smart_search.rate = 0.1;
+      
+      clear_ball();
+
+	  }
+  }
+
+}

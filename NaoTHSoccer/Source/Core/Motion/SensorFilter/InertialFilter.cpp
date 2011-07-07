@@ -7,15 +7,18 @@
 
 #include "InertialFilter.h"
 
-InertialFilter::InertialFilter(const MotionBlackBoard& bb):
+using namespace naoth;
+
+InertialFilter::InertialFilter(const MotionBlackBoard& bb, Vector2d& offset):
   theBlackBoard(bb),
   sensorData(bb.theInertialSensorData),
+  theOffset(offset),
   calibrateNum(0),
   max_offet(Math::fromDegrees(6))
 {
 }
 
-InertialPercept InertialFilter::filte()
+InertialPercept InertialFilter::filter()
 {
   calibrate();
 
@@ -28,7 +31,7 @@ InertialPercept InertialFilter::filte()
 void InertialFilter::calibrate()
 {
   if ( theBlackBoard.theMotionStatus.currentMotion == motion::stand
-      && theBlackBoard.theMotionStatus.currentMotionState == motion::waiting )
+      && !intentionallyMoving() )
   {
     // stand and not moving
     if ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE) )
@@ -56,6 +59,23 @@ void InertialFilter::calibrate()
     }
   }
 
-
   calibrateNum = 0;
+}
+
+// check all request joints' speed, return true if all joints are almost not moving
+bool InertialFilter::intentionallyMoving()
+{
+  const double* jointSpeed = theBlackBoard.theMotorJointData.dp;
+  const double* stiffness = theBlackBoard.theMotorJointData.stiffness;
+  const double min_speed = Math::fromDegrees(1); // degree per second
+  const double min_stiffness = 0.05;
+  for( int i=0; i<JointData::numOfJoint; i++)
+  {
+    if ( stiffness[i] > min_stiffness && abs(jointSpeed[i]) > min_speed )
+    {
+      return true;
+    }
+  }
+
+  return false;
 }

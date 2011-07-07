@@ -18,6 +18,7 @@
 #include <Messages/Representations.pb.h>
 
 #include "Tools/Math/Common.h"
+#include "PlatformInterface/Platform.h"
 
 using namespace std;
 using namespace naoth;
@@ -39,7 +40,7 @@ compatibleMode(compatibleMode),
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
-  registerInput<UltraSoundReceiveData>(*this); 
+  registerInput<UltraSoundReceiveData>(*this);
 
   // percepts
   registerInput<CameraMatrix>(*this); 
@@ -68,11 +69,11 @@ void Simulator::init()
   }//end for
   std::cout << "-----------------------------------------" << std::endl;
 
-  // needed to generate the the frame info if not available
-  noFrameInfo = includedRepresentations.find("FrameInfo") == includedRepresentations.end();
+  //noFrameInfo = includedRepresentations.find("FrameInfo") == includedRepresentations.end();
   lastFrameTime = 0;
   startFrameTime = CYCLE_TIME;
 
+  theDebugServer.start(5401, true);
 }//end init
 
 void Simulator::printHelp()
@@ -349,7 +350,7 @@ void Simulator::executeCurrentFrame()
     size_t dataSize = 0;
     logFile.read((char*) &dataSize, 4);
 
-    unsigned int posBeforeRead = logFile.tellg();
+    unsigned int posBeforeRead = (unsigned int)logFile.tellg();
 
     bool found = false;
 
@@ -375,7 +376,7 @@ void Simulator::executeCurrentFrame()
     if(found)
     {
       // check how much data was read
-      unsigned int posAfterRead = logFile.tellg();
+      unsigned int posAfterRead = (unsigned int)logFile.tellg();
       unsigned int diffAfterBefore = posAfterRead - posBeforeRead;
       if(diffAfterBefore < dataSize)
       {
@@ -403,7 +404,7 @@ void Simulator::executeCurrentFrame()
   }
   
   adjust_frame_time();
-  
+    
   // execute
   callCognition();
   callMotion();
@@ -417,7 +418,6 @@ void Simulator::executeCurrentFrame()
 
 void Simulator::adjust_frame_time()
 {
-  return;
   // HACK: adjust the timestamp: 
   // the time should contineously increase even if the logfile is played backwards (!)
   static unsigned int current_time = 0;
@@ -530,6 +530,8 @@ void Simulator::printCurrentLineInfo()
 
 void Simulator::parseFile()
 {
+  noFrameInfo = false;
+
   frames.clear();
   includedRepresentations.clear();
 
@@ -544,6 +546,8 @@ void Simulator::parseFile()
 
   unsigned int lastFrameNumber = 0;
   bool firstFrame = true;
+
+  std::set<std::string> perFrameIncluded;
 
   while(!logFile.fail() && !logFile.eof())
   {
@@ -561,6 +565,7 @@ void Simulator::parseFile()
     }
 
     includedRepresentations.insert(currentName);
+    perFrameIncluded.insert(currentName);
 
     size_t currentSize = 0;
     logFile.read((char*) &currentSize, 4);
@@ -593,6 +598,15 @@ void Simulator::parseFile()
       // add new frame
       frames.push_back(currentFrameNumber);
       frameNumber2PosStart[currentFrameNumber] = currentPos;
+
+      // needed to generate the the frame info if not available in one single frame
+      if(perFrameIncluded.find("FrameInfo") == perFrameIncluded.end())
+      {
+        noFrameInfo = true;
+        std::cout << "automated FrameInfo generation" << std::endl;
+      }
+
+      perFrameIncluded.clear();
 
       lastFrameNumber = currentFrameNumber;
     }//end if

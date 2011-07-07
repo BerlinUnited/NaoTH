@@ -1,0 +1,49 @@
+option passing_play_with_check_fall_down 
+{  
+
+  common decision {
+    if(fall_down_state != upright)
+      goto stand_up;
+  }
+
+  initial state playing {
+    action 
+    {
+      sound.request = (state_time == 0) ? playing : off;
+      decide_passing_challenge_role();
+      last_state_was_penalized = false;
+    }
+  }
+
+
+
+  state stand_up
+  {
+    decision
+    {
+      else if(action_done)
+        goto calibrate;
+      else
+        stay;
+    }
+    action 
+    {
+      stand_up();
+    }
+  }
+
+  state calibrate
+  {
+    decision
+    {
+      else if(action_done)
+        goto playing;
+      else
+        stay;
+    }
+    action
+    {
+      calibrate_intertial();
+    }
+  }
+}

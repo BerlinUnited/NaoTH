@@ -43,11 +43,6 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ):
 
 NaothModule::~NaothModule()
 {
-  theModule = NULL;
-  if ( theMotion != NULL )
-    delete theMotion;
-  if ( theContorller != NULL )
-    delete theContorller;
 }
 
 bool NaothModule::innerTest() 
@@ -79,8 +74,8 @@ void NaothModule::init()
   cout << "Registering Motion" << endl;
   theContorller->registerCallbacks(theMotion,(DummyCallable*)NULL);
   
-  getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
-  getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
+  fDCMPreProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
+  fDCMPostProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "NaothModule:init finished!" << endl;
 }
@@ -109,6 +104,16 @@ void NaothModule::exit()
   {
     usleep(100000);
   }
-  
+
+  // Remove the call back connection
+  fDCMPreProcessConnection.disconnect();
+  fDCMPostProcessConnection.disconnect();
+
+  theModule = NULL;
+  if ( theMotion != NULL )
+    delete theMotion;
+  if ( theContorller != NULL )
+    delete theContorller;
+
   cout << "NaoTH exit is finished" << endl;
 }

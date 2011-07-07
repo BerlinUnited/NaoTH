@@ -20,14 +20,21 @@ public:
   InverseKinematic::CoMFeetPose pose;
   unsigned int time;
 
+  double knee_pitch_offset;
+  double ankle_roll_offset;
+
   KickPose()
-    : time(0)
+    : time(0),
+      knee_pitch_offset(0.0),
+      ankle_roll_offset(0.0)
   {
   }
 
   KickPose(const InverseKinematic::CoMFeetPose& pose)
     : pose(pose),
-      time(0)
+      time(0),
+      knee_pitch_offset(0.0),
+      ankle_roll_offset(0.0)
   {
   }
 };
@@ -110,7 +117,7 @@ class IKDynamicKickMotion: public IKMotion
 private:
   // local transformated reachability grid
   // TODO: make it global?
-  ReachibilityGrid basicReachibilityGrid;
+  static ReachibilityGrid basicReachibilityGrid;
   TransformedReachibilityGrid reachibilityGrid;
 
   const IKParameters::KickParameters& theParameters;
@@ -138,6 +145,7 @@ private:
   KickState oldKickState;
   bool action_done;
   unsigned int state_start_time;
+  unsigned int state_frame_count;
 
   void action_prepare();
   void action_retract(const Pose3D& kickPose);
@@ -149,13 +157,20 @@ private:
 
   // returns the state of the last element in the trajectory
   bool isRequested(const MotionRequest& motionRequest) const;
-  //IKMEState currentTrajectoryState() const;
-  //IKMEState preKickState() const;
-  //IKMEState initialState() const;
-  void stopKick();
-  inline double getStandHeight() const;
+  double getStandHeight() const;
+  const KickPose& getCurrentPose() const;
+  const KickPose getStandPoseOnOneFoot(bool add_rotation);
   void localInStandFoot( KickPose& pose ) const;
+  void stopKick();
 
+
+  // foot accessors
+  Pose3D& getKickingFoot( KickPose& kickPose ) const;
+  const Pose3D& getKickingFoot( const KickPose& kickPose ) const;
+  Pose3D& getStandFoot( KickPose& kickPose ) const;
+  const Pose3D& getStandFoot( const KickPose& kickPose ) const;
+
+  
 
   // tool methods
   Vector3<double> adjustKickPoseForKickDirection(const Pose3D& orgKickPoint) const;

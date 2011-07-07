@@ -43,7 +43,8 @@ void GyrometerData::print(ostream& stream) const
 {
   for(int i = 0; i < numOfGyrometer; i++)
   {
-    stream << getGyrometerName((GyrometerID)i) << " = " << data[i]  << endl;
+    stream << getGyrometerName((GyrometerID)i) << " : " << data[i] << " radian/s ("
+              << rawData[i] <<")\n";
   }//end for
 }//end print
 

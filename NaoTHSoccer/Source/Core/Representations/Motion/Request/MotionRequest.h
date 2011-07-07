@@ -27,12 +27,13 @@ class MotionRequest : public naoth::Printable {
 public:
 
   /** constructor */
-  MotionRequest() :
-  time(0),
-  id(motion::init),
-  forced(false),
-  standHeight(-1),
-  standardStand(true)
+  MotionRequest() 
+    :
+    time(0),
+    id(motion::init),
+    forced(false),
+    standHeight(-1),
+    standardStand(true)
   {
   }
 
@@ -56,13 +57,15 @@ public:
 
   bool standardStand;
 
-  void reset() {
+  void reset() 
+  {
     forced = false;
     id = motion::empty;
     standHeight = -1;
   }//end reset
 
-  virtual void print(ostream& stream) const {
+  virtual void print(ostream& stream) const 
+  {
     stream << "time = " << time << '\n';
     stream << "MotionID = " << motion::getName(id) << endl;
     stream << "standardStand = " << standardStand <<endl;
@@ -72,6 +75,9 @@ public:
         break;
       case motion::kick:
         kickRequest.print(stream);
+        break;
+      case motion::stand:
+        stream << "stand height = "<<standHeight<<"\n";
         break;
       default:
         break;

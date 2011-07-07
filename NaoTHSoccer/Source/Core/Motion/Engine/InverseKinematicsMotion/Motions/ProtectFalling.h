@@ -29,7 +29,7 @@ public:
       return;
     }
 
-    if ( currentState == motion::unknow )
+    if ( currentState == motion::stopped )
     {
       // remember the pose
       keepPose = theEngine.getCurrentHipFeetPose();

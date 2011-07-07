@@ -23,13 +23,14 @@ DEFAULT_IMAGE="$NAO_IMAGE_DIR/nao-system-image-robocup-1.10.37-nao-geode-2011041
 DEFAULT_IMAGE_BURN="n"
 
 #ethernet
-DEFAULT_ETH_NET="192.168.0."
+DEFAULT_ETH_NET="10.0.0."
 
 DEFAULT_WLAN_NET="192.168.13."
-DEFAULT_WLAN_SSID="NAONET"
+DEFAULT_WLAN_SSID="SPL-C"
 DEFAULT_WLAN_PASSWORD="a1b0a1b0a1"
 
-RC="rcS.d rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d"
+ALLRC="rcS.d rc0.d rc1.d rc2.d rc3.d rc4.d rc5.d rc6.d"
+RUNRC="rc5.d"
 
 # Getting Information and checking
 
@@ -188,7 +189,7 @@ rm $TMP_MOUNT_POINT/etc/wpa_supplicant.conf.backup
 echo "adding /etc/init.d/wpa_supplicant"
 cp -f $NAOTH_BZR/Misc/NaoConfigFiles/wpa_supplicant $TMP_MOUNT_POINT/etc/init.d/wpa_supplicant
 chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/wpa_supplicant
-for R in $RC; do
+for R in $RUNRC; do
     ln -sf ../init.d/wpa_supplicant $TMP_MOUNT_POINT/etc/$R/S99wpa_supplicant
 done
 
@@ -220,7 +221,7 @@ echo "Setting Ethernet-Address on $ETH_ADDR and WLAN-Address on $WLAN_ADDR"
 sed -e 's/'ETH_ADDR'/'${ETH_ADDR}'/' -e 's/'ETH_NET'/'${ETH_PREFIX}0'/' -e 's/'ETH_GATE'/'${ETH_PREFIX}1'/' -e 's/'WLAN_ADDR'/'${WLAN_ADDR}'/' -e 's/'WLAN_NET'/'${WLAN_PREFIX}0'/' -e 's/'WLAN_GATE'/'${WLAN_PREFIX}1'/'   $NAOTH_BZR/Misc/NaoConfigFiles/etc/network/interfaces > $TMP_MOUNT_POINT/etc/network/interfaces
 
 echo "Copying staging area"
-cp -R $AL_CROSS/staging/usr/ $TMP_MOUNT_POINT/
+cp -R $NAO_CROSSCOMPILE/staging/usr/ $TMP_MOUNT_POINT/
 
     echo "put the stick into the nao, boot once and then run this script again without burning the image onto it"
 else # if burn
@@ -247,10 +248,10 @@ fi
 ####################################
 echo "Removing needless services..."
 
-FILES="openntpd avahi-daemon lighttpd connman vsftpd udhcpc logread boot-progress checkpart rmnologin naopathe nao.fcgi"
+FILES="naoth openntpd avahi-daemon lighttpd connman vsftpd udhcpc logread boot-progress checkpart rmnologin naopathe nao.fcgi"
 #getty 
 
-for R in $RC; do
+for R in $ALLRC; do
   for F in $FILES; do
     rm -f $TMP_MOUNT_POINT/etc/$R/*$F*
   done
@@ -258,10 +259,14 @@ done
 
 ####################################
 
+echo "adding /etc/init.d/cognition-common"
+cp -f $NAOTH_BZR/Misc/NaoConfigFiles/cognition-common $TMP_MOUNT_POINT/etc/init.d/cognition-common
+chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/cognition-common
+
 echo "adding /etc/init.d/naoth"
 cp -f $NAOTH_BZR/Misc/NaoConfigFiles/naoth $TMP_MOUNT_POINT/etc/init.d/naoth
 chmod ugo+x $TMP_MOUNT_POINT/etc/init.d/naoth
-for R in $RC; do
+for R in $RUNRC; do
     ln -sf ../init.d/naoth $TMP_MOUNT_POINT/etc/$R/S99naoth
 done
 
@@ -321,11 +326,11 @@ while [ TRUE ]
 do
 	echo "Please enter Player-number:"
 	read PLAYERNR
-	if [ $PLAYERNR != "" ] && [ $PLAYERNR -le 4 ] && [ $PLAYERNR -ge 0 ]
+	if [ $PLAYERNR != "" ] && [ $PLAYERNR -le 5 ] && [ $PLAYERNR -ge 0 ]
 	then
 		break
 	else
-		echo "Error: Please enter Number between 0 and 4"
+		echo "Error: Please enter Number between 0 and 5"
 	fi
 done
 

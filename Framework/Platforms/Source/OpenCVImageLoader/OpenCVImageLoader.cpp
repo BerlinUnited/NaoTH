@@ -42,6 +42,9 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
   allFiles.reserve(1000);
   currentPos = 0;
   imageLoaded = false;
+
+  theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
+  theDebugServer.start(5401, true);
 }
 
 void OpenCVImageLoader::main()
@@ -164,6 +167,9 @@ void OpenCVImageLoader::executeCognition()
     cout << "cognition: just executing new cycle" << endl;
     callCognition();
     callMotion();
+    // HACK: set the frame number...
+    // in fact we don't have to update if every time
+    theGameData.frameNumber = currentFrame;
   }
   else
   {

@@ -23,6 +23,13 @@ void Serializer<MotionStatus>::serialize(const MotionStatus& representation, std
   message.set_currentmotionstate(representation.currentMotionState);
   DataConversion::toMessage(representation.plannedMotion.lFoot, *message.mutable_plannedmotionleftfoot());
   DataConversion::toMessage(representation.plannedMotion.rFoot, *message.mutable_plannedmotionrightfoot());
+  DataConversion::toMessage(representation.plannedMotion.hip, *message.mutable_plannedmotionhip());
+
+  // step control
+  naothmessages::StepControlStatus* stepControlStatus =  message.mutable_stepcontrolstatus();
+  stepControlStatus->set_stepid(representation.stepControl.stepID);
+  stepControlStatus->set_moveablefoot(representation.stepControl.moveableFoot);
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
@@ -31,13 +38,24 @@ void Serializer<MotionStatus>::deserialize(std::istream& stream, MotionStatus& r
 {
   naothmessages::MotionStatus message;
   google::protobuf::io::IstreamInputStream buf(&stream);
-  ASSERT(message.ParseFromZeroCopyStream(&buf));
-  
-  representation.time = message.time();
-  representation.lastMotion = static_cast<motion::MotionID>(message.lastmotion());
-  representation.currentMotion = static_cast<motion::MotionID>(message.currentmotion());
-  representation.headMotion = static_cast<HeadMotionRequest::HeadMotionID>(message.headmotion());
-  representation.currentMotionState = static_cast<motion::State>(message.currentmotionstate());
-  DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
-  DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
+  if(message.ParseFromZeroCopyStream(&buf))
+  {
+    representation.time = message.time();
+    representation.lastMotion = static_cast<motion::MotionID>(message.lastmotion());
+    representation.currentMotion = static_cast<motion::MotionID>(message.currentmotion());
+    representation.headMotion = static_cast<HeadMotionRequest::HeadMotionID>(message.headmotion());
+    representation.currentMotionState = static_cast<motion::State>(message.currentmotionstate());
+    DataConversion::fromMessage(message.plannedmotionleftfoot(), representation.plannedMotion.lFoot);
+    DataConversion::fromMessage(message.plannedmotionrightfoot(), representation.plannedMotion.rFoot);
+    DataConversion::fromMessage(message.plannedmotionhip(), representation.plannedMotion.hip);
+
+    // step control
+    const naothmessages::StepControlStatus& stepControlStatus =  message.stepcontrolstatus();
+    representation.stepControl.stepID = stepControlStatus.stepid();
+    representation.stepControl.moveableFoot = static_cast<MotionStatus::StepControlStatus::MoveableFoot>(stepControlStatus.moveablefoot());
+  }
+  else
+  {
+    THROW("Serializer<MotionStatus>::deserialize failed");
+  }
 }

@@ -37,7 +37,7 @@ public:
   {
     // get length
     istream_in.seekg(0, std::ios::end);
-    int length = istream_in.tellg();
+    int length = (int)istream_in.tellg();
     istream_in.seekg(0, std::ios::beg);
 
     // allocate memory:

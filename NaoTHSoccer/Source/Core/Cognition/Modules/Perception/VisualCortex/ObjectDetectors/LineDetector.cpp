@@ -12,6 +12,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/Stopwatch.h"
 
 
@@ -30,6 +31,7 @@ LineDetector::LineDetector()
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:expand_lines", "mark the pixels touched during the line extension", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:estimate_corners", "...", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:draw_closest_line", "Red: estimated orthogonal point; Blue: closest point of line", false);
   
   // not finished ...
   DEBUG_REQUEST_REGISTER("ImageProcessor:LineDetector:mark_circle", "mark the middle circle in the image", false);
@@ -160,6 +162,92 @@ void LineDetector::execute()
       CIRCLE_PX(ColorClasses::red, (int) intersection.getPos().x, (int) intersection.getPos().y, 5);
     }//end for
   );
+
+
+  //////////////////////////////////////////////////////////
+  // Provide Symbols for the closest line
+  //////////////////////////////////////////////////////////
+
+  //Math::LineSegment closestHorLine, closestVerLine;
+  Vector2<double> projOfClosestLine, projOfClosestLineOnSegment;
+  Math::LineSegment closestLine;
+  double closestLineLength = 0;
+  
+  double minObserveLineLength = 10;
+  MODIFY("LineDetector:minObserveLineLength", minObserveLineLength);
+
+  bool firstIteration = true;
+
+  getLinePercept().lineWasSeen = false;
+
+  for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+  {
+    const Math::LineSegment& line = getLinePercept().lines[i].lineOnField;
+
+    //not part of circle and big enough
+    if (getLinePercept().lines[i].type != LinePercept::C && minObserveLineLength < line.getLength()) {
+
+      Vector2<double> zeroPoint;
+      zeroPoint.x = 0;
+      zeroPoint.y = 0;
+      Vector2<double> projection, projectionOnSegment;
+
+      //TODO make a special line projection
+      double t = line.project(zeroPoint);
+      projection          = line.Line::point(t);
+      projectionOnSegment = line.point(t);
+
+
+      /////////////////////initial
+      if (firstIteration) {
+        projOfClosestLine = projection;
+        projOfClosestLineOnSegment = projectionOnSegment;
+        closestLine = line;
+        closestLineLength = line.getLength();
+      }
+
+      /////////
+      //just take lines in front of me
+
+      if (projection.abs() < projOfClosestLine.abs()) {
+        projOfClosestLine = projection;
+        projOfClosestLineOnSegment = projectionOnSegment;
+        closestLine = line;
+        closestLineLength = line.getLength();
+      }
+
+      getLinePercept().lineWasSeen = true;
+
+      firstIteration = false;
+    }//if type and length
+  }//end for
+
+
+  if(getLinePercept().lineWasSeen == true)
+  {
+    getLinePercept().frameInfoWhenLineWasSeen = getFrameInfo();
+
+    DEBUG_REQUEST("ImageProcessor:LineDetector:draw_closest_line",
+
+        FIELD_DRAWING_CONTEXT;
+        PEN("0000FF", 20);
+
+        Vector2<double> begin = closestLine.begin();
+        Vector2<double> end   = closestLine.end();
+
+        LINE(begin.x, begin.y, end.x, end.y);
+
+        PEN("FF0000", 20);
+        CIRCLE(projOfClosestLine.x, projOfClosestLine.y, 10);
+
+        PEN("0000FF", 40);
+        CIRCLE(projOfClosestLineOnSegment.x, projOfClosestLineOnSegment.y, 40);
+    );
+  }
+
+  getLinePercept().estOrthPointOfClosestLine  = projOfClosestLine;
+  getLinePercept().closestPointOfClosestLine  = projOfClosestLineOnSegment;
+  getLinePercept().closestLineSeenLength      = closestLineLength;
 
 }//end execute
 

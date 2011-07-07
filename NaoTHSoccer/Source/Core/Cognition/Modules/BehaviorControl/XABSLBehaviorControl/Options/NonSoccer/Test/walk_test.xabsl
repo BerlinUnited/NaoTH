@@ -1,0 +1,76 @@
+/** behavior for testing the walk */
+option walk_test {
+
+ initial state stand {
+    decision {
+      if (ball.was_seen)
+        goto walk_to_ball_with_left_foot;
+      else
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 180;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = false;
+      
+      head.control_mode = search_for_ball;
+      //head_control();
+    }
+  }
+
+  state walk_to_ball_with_left_foot {
+    decision {
+      if (ball.time_since_last_seen > 2000)
+        goto stand;
+      else if(abs(value=relativeToLeftFootX(x=ball.percept.x, y=ball.percept.y)-200)<40
+      && abs(value=relativeToLeftFootY(x=ball.percept.x, y=ball.percept.y)+150)<40
+      && abs(value=relativeToLeftFootA(a=atan2(y=motion.walk_speed.y, x=motion.walk_speed.x+200)))<10)
+        goto finish;
+      else
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = relativeToLeftFootX(x=ball.percept.x, y=ball.percept.y)-200;
+      motion.walk_speed.y = relativeToLeftFootY(x=ball.percept.x, y=ball.percept.y)+150;
+      motion.walk_speed.rot = relativeToLeftFootA(a=atan2(y=motion.walk_speed.y, x=motion.walk_speed.x+200));
+      motion.walk.coordinate = left_foot;
+      motion.walk.stop_with_stand = false;
+      
+      head.control_mode = search_for_ball;
+      //head_control();
+    }
+  }
+
+  state turn_around_ball {
+    decision{
+      stay;
+    }
+    action{
+      motion.type = walk;
+      motion.walk_speed.x = relativeToRightFootX(x=ball.percept.x, y=ball.percept.y) - 200;
+      motion.walk_speed.y = relativeToRightFootY(x=ball.percept.x, y=ball.percept.y)+0;
+      motion.walk_speed.rot = relativeToRightFootA(a=atan2(y=motion.walk_speed.y, x=motion.walk_speed.x+200));
+      motion.walk_speed.y = -200;
+      motion.walk.coordinate = right_foot;
+      
+      head.control_mode = search_for_ball;
+      //head_control();
+    }
+  }
+
+  target state finish {
+    decision {
+      if ( state_time > 5000)
+        goto stand;
+      else
+        stay;
+    }
+    action{
+    motion.type = unknown;// do nothing
+    }
+  }
+}
