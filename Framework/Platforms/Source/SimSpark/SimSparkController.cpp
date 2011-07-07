@@ -228,6 +228,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   }
   // we should get the team index and player number now
 
+#ifdef DEBUG
   // calculate debug communicaiton port
   unsigned short debugPort = 5401;
   if (theGameData.teamColor == GameData::blue )
@@ -239,6 +240,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   }
 
   theDebugServer.start(debugPort, true);
+#endif
 
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
 
