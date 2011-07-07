@@ -373,7 +373,11 @@ void SimSparkController::actLoop()
     if ( theNextActTime > now )
     {
       unsigned int t = theNextActTime - now;
+#ifdef WIN32
+      Sleep(t);
+#else
       usleep(t * 1000);
+#endif
     }
     act();
   }
