@@ -50,12 +50,14 @@ string TeamCommEncoder::encode(const string& data)
 
   anscii += encoder.encode(msg.isfallendown()?1:-1, 1);
 
+  anscii += encoder.encode(static_cast<unsigned int>(msg.timetoball())/20, 2);
+
         /*
 
 
           // ball
 
-          s += encoder.encode(static_cast<unsigned int> (msg.timetoball())/20, 2);
+
           if (msg.has_ballposition())
           {
 
@@ -74,7 +76,7 @@ string TeamCommEncoder::encode(const string& data)
             s += encoder.encode(pose, fieldSize, anglePiece, 4);
           }*/
 
-  ASSERT(anscii.size()==13);
+  ASSERT(anscii.size()==15);
 
   return anscii;
 }
@@ -87,13 +89,14 @@ string TeamCommEncoder::encode(const string& data)
   7-8: time ball was seen
   9-11: ball on field
   12: is fallen down
+  13-14: time to ball
  */
 
 // from ASCII to protobuf
 string TeamCommEncoder::decode(const string& anscii)
 {
   unsigned int messageSize = anscii.size();
-  if ( messageSize == 13 )
+  if ( messageSize == 15 )
   {
     naothmessages::TeamCommMessage msg;
     msg.set_teamnumber( encoder.decodeUnsigned(anscii.substr(0, 1)) );
@@ -113,11 +116,12 @@ string TeamCommEncoder::decode(const string& anscii)
     DataConversion::toMessage(ballLocal, *(msg.mutable_ballposition()));
     msg.set_isfallendown(encoder.decodeUnsigned(anscii.substr(12, 1)) > 0);
 
+    msg.set_timetoball(encoder.decodeUnsigned(anscii.substr(13, 2))*20);
     return msg.SerializeAsString();
   }
   else
   {
-    THROW("msg ("<<anscii.size()<<" "<<") = "<< anscii);
+    //THROW("msg ("<<anscii.size()<<" "<<") = "<< anscii);
     return "";
   }
 }

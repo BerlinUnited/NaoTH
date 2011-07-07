@@ -1380,7 +1380,11 @@ void SimSparkController::get(TeamMessageDataIn& data)
   for(vector<string>::const_iterator iter=theTeamMessageDataIn.data.begin();
       iter!=theTeamMessageDataIn.data.end(); ++iter)
   {
-    data.data.push_back( theTeamCommEncoder.decode(*iter) );
+    string msg = theTeamCommEncoder.decode(*iter);
+    if ( !msg.empty() )
+    {
+      data.data.push_back( msg );
+    }
   }
   theTeamMessageDataIn.data.clear();
 }
