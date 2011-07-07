@@ -5,6 +5,7 @@
  */
 #include "StopwatchSender.h"
 
+#include <Tools/Debug/DebugBufferedOutput.h>
 #include "Cognition/DebugCommandServer.h"
 #include <Tools/Debug/Stopwatch.h>
 #include "Messages/Messages.pb.h"
@@ -20,7 +21,16 @@ StopwatchSender::StopwatchSender()
 
 void StopwatchSender::execute()
 {
-  
+  std::map<std::string, StopwatchItem>& stopwatches = Stopwatch::getInstance().stopwatches;
+  std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
+  while (it != stopwatches.end())
+  {
+    const StopwatchItem& item =it->second;
+    std::stringstream s;
+    s << "SW:" << item.name;
+    PLOT(s.str(), item.lastValue);
+    it++;
+  }//end while
 }
 
 void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)

@@ -181,6 +181,9 @@ void Motion::call()
   STOPWATCH_START("Motion:postProcess");
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
+
+  theStopwatchSender.execute();
+
 }//end call
 
 void Motion::processSensorData()
