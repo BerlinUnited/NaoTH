@@ -58,8 +58,8 @@ public:
   {
   }
 
-  inline T& getData() const { ASSERT(data != NULL); return *data; }
-//  inline const T& getData() const { ASSERT(data != NULL); return *data; }
+  inline T& getData() const { assert(data != NULL); return *data; }
+//  inline const T& getData() const { assert(data != NULL); return *data; }
 
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
@@ -240,7 +240,7 @@ protected:
 
     inline TYPE_WHAT& getData() const
     {
-      ASSERT(data->data != NULL);
+      assert(data->data != NULL);
       return *(data->data);
     }
   };
