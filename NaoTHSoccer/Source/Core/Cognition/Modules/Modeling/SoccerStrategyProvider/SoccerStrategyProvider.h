@@ -71,7 +71,9 @@ protected:
   
   double estimateTimeToBall() const;
 
-  bool isSomeoneBetweenBallAndMe() const;
+  double estimateTimeToPoint(const Vector2d& p) const;
+
+  bool isSomeoneBetweenMeAndPoint(const Vector2d& p) const;
 
 private:
   FormationParameters theFormationParameters;
