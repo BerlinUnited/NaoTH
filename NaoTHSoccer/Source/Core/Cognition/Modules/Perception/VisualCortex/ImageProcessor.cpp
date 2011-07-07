@@ -35,6 +35,9 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
+  theHistogramFieldDetector = registerModule<HistogramFieldDetector>("HistogramFieldDetector");
+  theHistogramFieldDetector->setEnabled(true);
+
   theBodyContourProvider = registerModule<BodyContourProvider>("BodyContourProvider");
   theBodyContourProvider->setEnabled(true);
 
@@ -68,6 +71,10 @@ void ImageProcessor::execute()
   getScanLineEdgelPercept().reset();
   getLinePercept().reset();
   getPlayersPercept().reset();
+
+  STOPWATCH_START("HistogramFieldDetector");
+  theHistogramFieldDetector->execute();
+  STOPWATCH_STOP("HistogramFieldDetector");
 
   STOPWATCH_START("BodyContourProvider");
   theBodyContourProvider->execute();

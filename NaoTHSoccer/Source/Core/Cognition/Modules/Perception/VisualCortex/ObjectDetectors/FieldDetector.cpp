@@ -15,7 +15,7 @@
 
 FieldDetector::FieldDetector()
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
 }
 
 
@@ -27,7 +27,6 @@ FieldDetector::~FieldDetector()
 void FieldDetector::execute()
 {
   getFieldPercept().reset();
-
   if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
     vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
@@ -50,15 +49,19 @@ void FieldDetector::execute()
 
     // create the polygon
     FieldPercept::FieldPoly fieldPoly;
+
     for(unsigned int i = 0; i < result.size(); i++)
     {
       fieldPoly.add(result[i]);
     }
 
-    getFieldPercept().add(fieldPoly, getFieldPercept().getFullFieldRect());
-    getFieldPercept().setValid(true);
+    getFieldPercept().setPoly(fieldPoly);
+    if(fieldPoly.getArea() >= 11200)
+    {
+      getFieldPercept().setValid(true);
+    }
 
-    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field",
+    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
       int idx = result.size()-1;
       for(unsigned int i = 0; i < result.size(); i++)
       {

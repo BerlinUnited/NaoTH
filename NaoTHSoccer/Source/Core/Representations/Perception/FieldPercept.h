@@ -27,14 +27,9 @@ public:
   typedef Math::Polygon<20> FieldPoly;
 
 private:
-  struct Field
-  {
-    FieldPoly polygon;
-    FieldRect rectangle;
-    double area;
-  };
+  FieldPoly fieldPoly;
+  FieldRect fieldRect;
 
-  vector<Field> fields;
   bool valid;
   Vector2<int> dimension;
 
@@ -66,11 +61,7 @@ public:
     dimension.x = 1;
     dimension.y = 1;
     generateDefaultField();
-    fields.reserve(MAX_FIELD_COUNT);
     reset();
-
-    // the whole image is fiel by default
-    add(fullFieldPoly, fullFieldRect);
   }
 
   ~FieldPercept(){}
@@ -92,11 +83,6 @@ public:
     generateDefaultField();
   }
 
-  unsigned int count() const
-  {
-    return fields.size();
-  }
-
   bool isValid() const
   {
     return valid;
@@ -107,12 +93,11 @@ public:
     valid = flag;
   }
 
-
   const FieldPoly& getLargestValidPoly(const Math::LineSegment& horizon) const
   {
     if(isValid())
     {
-      return getLargestPoly(horizon);
+      return getPoly();
     }
     return getFullFieldPoly();
   }//end getLargestValidPoly
@@ -121,16 +106,17 @@ public:
   {
     if(isValid())
     {
-      return getLargestRect(horizon);
+      return getRect();
     }
     return getFullFieldRect();
   }//end getLargestValidRect
 
-  bool isPolyUnderHorizon(unsigned int idx, const Math::LineSegment& horizon) const
+  bool isRectUnderHorizon(const Math::LineSegment& horizon) const
   {
-    for(int i = 0; i < fields[idx].rectangle.length; i++)
+    cout << endl << "llR " << fieldRect.getArea() << endl;
+    for(int i = 0; i < fieldRect.length; i++)
     {
-      if(horizon.begin().y < fields[idx].rectangle[i].y || horizon.end().y < fields[idx].rectangle[i].y )
+      if(horizon.begin().y < fieldRect[i].y && horizon.end().y < fieldRect[i].y )
       {
         return false;
       }
@@ -138,11 +124,11 @@ public:
     return true;
   }//end isPolyUnderHorizont
 
-  bool isRectUnderHorizon(unsigned int idx, const Math::LineSegment& horizon) const
+  bool isPolyUnderHorizon(const Math::LineSegment& horizon) const
   {
-    for(int i = 0; i < fields[idx].polygon.length; i++)
+    for(int i = 0; i < fieldPoly.length; i++)
     {
-      if(horizon.begin().y < fields[idx].polygon[i].y || horizon.end().y < fields[idx].polygon[i].y )
+      if(horizon.begin().y < fieldPoly[i].y || horizon.end().y < fieldPoly[i].y )
       {
         return false;
       }
@@ -150,96 +136,38 @@ public:
     return true;
   }//end isRectUnderHorizont
 
-  const FieldPoly& getLargestPoly(const Math::LineSegment& horizon) const
+  const FieldPoly& getPoly() const
   {
-    if(count() > 0)
-    {
-      double maxArea = 0.0;
-      unsigned int index = 0;
-      for(unsigned int i = 0; i < count(); i++)
-      {
-        if(maxArea <= fields[i].area && isPolyUnderHorizon(i, horizon))
-        {
-          maxArea = fields[i].area;
-          index = i;
-        }
-      }
-      return fields[index].polygon;
-    }
-    return getFullFieldPoly();
+    return fieldPoly;
   }//end getLargestPoly
 
-  const FieldRect& getLargestRect(const Math::LineSegment& horizon) const
+  const FieldRect& getRect() const
   {
-    if(count() > 0)
-    {
-      double maxArea = 0.0;
-      unsigned int index = 0;
-      for(unsigned int i = 0; i < count(); i++)
-      {
-        if(maxArea <= fields[i].area && isRectUnderHorizon(i, horizon))
-        {
-          maxArea = fields[i].area;
-          index = i;
-        }
-      }
-      return fields[index].rectangle;
-    }
-    return getFullFieldRect();
+    return fieldRect;
   }//end getLargestRect
 
-  const FieldPoly& getPoly(unsigned int index) const
-  {
-    if(index < count())
-    {
-      return fields[index].polygon;
-    }
-    return getFullFieldPoly();
-  }//end getPoly
-
-  const FieldRect& getRect(unsigned int index) const
-  {
-    if(index < count())
-    {
-      return fields[index].rectangle;
-    }
-    return getFullFieldRect();
-  }//end getRect
-
-
-  bool add(const FieldPoly& newField, const FieldRect& newFieldRect)
+  void setPoly(const FieldPoly& newField)
 	{
-    if( fields.size() < MAX_FIELD_COUNT )
-    {
-      Field field;
-      field.rectangle = newFieldRect;
-      field.polygon = newField;
-      field.area = newField.getArea();
-      fields.push_back(field);
-      return true;
-    }
-    return false;
+    fieldPoly = newField;
+	}//end add
+
+  void setRect(const FieldRect& newFieldRect)
+	{
+    fieldRect = newFieldRect;
 	}//end add
 
   /* reset percept */
   void reset()
   {
-    fields.clear();
     valid = false;
   }//end reset
 
   virtual void print(ostream& stream) const
   {
-    stream << "number of seen fields = " << count() << "/" << MAX_FIELD_COUNT << endl;
     stream << " valid: " << (valid ? "true" : "false") << endl;
-    for(unsigned int i = 0; i < count(); i++)
-    {
-      int len = fields[i].polygon.length;
-
-      stream << "Field " << (i + 1) << ":" << endl;
-      stream << " Area: " << fields[i].area << endl;
-      stream << " Vertex Count: " << len << endl;
-    }
+    stream << " Rect Area: " << fieldRect.getArea() << endl;
+    stream << " Poly Area: " << fieldPoly.getArea() << endl;
+    stream << " Poly Vertex Count: " << fieldPoly.length << endl;
   }//end print
 
 };
