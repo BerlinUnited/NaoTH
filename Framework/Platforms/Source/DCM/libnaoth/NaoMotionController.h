@@ -42,6 +42,8 @@ public:
 
 private:
   DCMHandler theDCMHandler;
+  unsigned int lastTimeChestButtonNotPressed;
+  bool shutdownRequested;
 };
 
 } // end namespace naoth
