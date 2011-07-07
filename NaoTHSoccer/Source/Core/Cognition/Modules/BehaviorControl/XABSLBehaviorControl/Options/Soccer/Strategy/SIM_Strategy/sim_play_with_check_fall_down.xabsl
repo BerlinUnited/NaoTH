@@ -25,7 +25,7 @@ option sim_play_with_check_fall_down
     action 
     {
       stand_up();
-      //team.is_playing_as_striker = false;
+      team.is_playing_as_striker = false;
     }
   }
 
