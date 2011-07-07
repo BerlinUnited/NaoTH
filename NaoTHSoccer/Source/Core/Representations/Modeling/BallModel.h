@@ -60,7 +60,7 @@ public:
 
   void setFrameInfoWhenBallWasSeen(const naoth::FrameInfo& frameInfo)
   {
-    if(frameInfo.getFrameNumber() + 1 != frameInfoWhenBallWasSeen.getFrameNumber())
+    if(frameInfo.getFrameNumber() != frameInfoWhenBallWasSeen.getFrameNumber()+1)
       _timeBallIsSeen = 0;
     else
     {
