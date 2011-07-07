@@ -29,15 +29,19 @@ void FootStepPlanner::updateParameters(const IKParameters& parameters)
   theMaxChangeY = theMaxStepWidth * parameters.walk.maxStepChange;
 }
 
-void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
+void FootStepPlanner::addStep(FootStep& footStep, Pose2D step, const Pose2D& offset) const
 {
   Pose3D& footEnd = footStep.footEnd();
   footEnd = footStep.supFoot();
-  
+
   switch ( footStep.liftingFoot() )
   {
     case FootStep::RIGHT:
     {
+      footEnd.rotateZ(-offset.rotation);
+      footEnd.translate(-offset.translation.x, -offset.translation.y, 0);
+      step -= offset;
+
       // calculate footstep for the RIGHT foot
       footEnd.translate(step.translation.x, -theFootOffsetY + min(0.0, step.translation.y), 0);
       footEnd.rotateZ(min(theMaxTurnInner, step.rotation));
@@ -46,6 +50,10 @@ void FootStepPlanner::addStep(FootStep& footStep, const Pose2D& step) const
     }
     case FootStep::LEFT:
     {
+      footEnd.rotateZ(offset.rotation);
+      footEnd.translate(offset.translation.x, offset.translation.y, 0);
+      step += offset;
+
       footEnd.translate(step.translation.x, theFootOffsetY + max(0.0, step.translation.y), 0);
       footEnd.rotateZ(max(-theMaxTurnInner, step.rotation));
       footEnd.translate(0, theFootOffsetY, 0);
@@ -76,7 +84,7 @@ FootStep FootStepPlanner::controlStep(const FootStep& lastStep, const WalkReques
 
   FeetPose newFeetStepBegin = lastStep.end();
   FootStep newStep(newFeetStepBegin, (req.stepControl.moveLeftFoot?FootStep::LEFT:FootStep::RIGHT) );
-  addStep(newStep, step);
+  addStep(newStep, step, req.offset);
   theLastStepSize = step;
 
   ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
@@ -94,11 +102,17 @@ Pose2D FootStepPlanner::calculateStep(const FootStep& lastStep,const WalkRequest
   Pose2D stepCoord = reduceDimen(supFoot);
   switch (lastStep.liftingFoot()) {
   case FootStep::LEFT:
+  {
+    stepCoord -= req.offset;
     stepCoord.translate(0, -theFootOffsetY);
     break;
+  }
   case FootStep::RIGHT:
+  {
+    stepCoord += req.offset;
     stepCoord.translate(0, theFootOffsetY);
     break;
+  }
   default:
     break;
   }//end switch
@@ -139,22 +153,14 @@ FootStep FootStepPlanner::nextStep(const FootStep& lastStep, Pose2D step, const 
   theLastStepSize = step;
 
   FeetPose newFeetStepBegin = lastStep.end();
-  FootStep newStep(newFeetStepBegin, static_cast<FootStep::Foot>(-lastStep.liftingFoot()) );
+  FootStep::Foot liftingFoot = static_cast<FootStep::Foot>(-lastStep.liftingFoot());
 
-  // add offset
-  switch(newStep.liftingFoot())
-  {
-  case FootStep::RIGHT:
-    step -= req.offset;
-    break;
-  case FootStep::LEFT:
-    step += req.offset;
-    break;
-  default: ASSERT(false);
-    break;
-  }
+  Pose3D offset;
+  offset.translation = Vector3d(-req.offset.translation.x, -req.offset.translation.y, 0);
+  offset.rotation = RotationMatrix::getRotationZ(-req.offset.rotation);
 
-  addStep(newStep, step);
+  FootStep newStep(newFeetStepBegin, liftingFoot );
+  addStep(newStep, step, req.offset);
   ASSERT(newStep.liftingFoot() == FootStep::LEFT || newStep.liftingFoot() == FootStep::RIGHT );
   return newStep;
 }
