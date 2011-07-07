@@ -50,9 +50,6 @@ void TeamCommSender::createMessage(naothmessages::TeamCommMessage &msg)
     || getMotionStatus().currentMotion == motion::stand_up_from_back
     || getMotionStatus().currentMotion == motion::stand_up_from_front);
 
-  // TODO: set ball and pose info in teamcomm message
-  /*
-  msg.set_timetoball(theSoccerStrategy.timeToBall);
-*/
+  msg.set_timetoball(getSoccerStrategy().timeToBall);
 }
 
