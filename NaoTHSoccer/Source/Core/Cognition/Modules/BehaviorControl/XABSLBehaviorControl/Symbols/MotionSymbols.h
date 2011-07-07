@@ -76,6 +76,8 @@ public:
   
   virtual void execute();
 
+  void updateOutputSymbols();
+
   enum WalkStyle
   {
     stable,
@@ -117,12 +119,14 @@ private:
   static void setCameraID(int value);
   static int getCameraID();
 
+  static void setWalkOffsetRot(double rot);
   static void setWalkSpeedRot(double rot);
   static void setWalkSpeedY(double x);
   static void setWalkSpeedX(double y);
   static void setKickDirection(double alpha);
 
 
+  static double getWalkOffsetRot();
   static double getWalkSpeedRot();
   static double getWalkSpeedX();
   static double getWalkSpeedY();

@@ -37,7 +37,7 @@ private:
   
   void restrictStepChange(Pose2D& step, const Pose2D& lastStep) const;
   
-  void addStep(FootStep& footStep, const Pose2D& step) const;
+  void addStep(FootStep& footStep, Pose2D step, const Pose2D& offset) const;
   
 private:
   Pose2D theLastStepSize;

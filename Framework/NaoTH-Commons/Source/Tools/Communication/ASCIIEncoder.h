@@ -24,6 +24,7 @@ private:
   char single_quote_char;
   char left_brace_char;
   char right_brace_char;
+  char back_slash_char;
   int encode_base;
 
 public:
@@ -36,7 +37,8 @@ public:
     single_quote_char = '\'';
     left_brace_char = '(';
     right_brace_char = ')';
-    encode_base = max_char - min_char - 4 + 1;
+    back_slash_char = '\\';
+    encode_base = max_char - min_char - 5 + 1;
   }
 
   std::string encode(unsigned int data, size_t size) const
@@ -49,6 +51,7 @@ public:
     if (c >= single_quote_char) c++;
     if (c >= left_brace_char) c++;
     if (c >= right_brace_char) c++;
+    if (c >= back_slash_char) c++;
 
     std::string s;
     if (size > 1)
@@ -68,6 +71,7 @@ public:
     if (c > left_brace_char) c--;
     if (c > single_quote_char) c--;
     if (c > double_quote_char) c--;
+    if (c > back_slash_char) c--;
     int n = c - min_char;
 
     if (size > 1) {

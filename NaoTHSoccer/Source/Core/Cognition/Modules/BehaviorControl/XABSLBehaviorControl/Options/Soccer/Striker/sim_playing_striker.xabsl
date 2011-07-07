@@ -29,10 +29,10 @@ option sim_playing_striker {
         goto stand_by;
       }
       //HACK: the kick is too weak
-      else if ( goal.opp.distance < 3000 && goal.opp.distance > 1500 && abs(value=goal.opp.angle) < 30)
-      {
-        goto shoot;
-      }
+      //else if ( goal.opp.distance < 3000 && goal.opp.distance > 1500 && abs(value=goal.opp.angle) < 30)
+      //{
+      //  goto shoot;
+      //}
       else
         stay;
     }

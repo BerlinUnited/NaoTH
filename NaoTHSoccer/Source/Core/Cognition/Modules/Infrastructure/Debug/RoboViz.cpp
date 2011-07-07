@@ -425,6 +425,8 @@ void RoboViz::execute()
     drawBallAndAttackDir();
   }
 
+  drawTimeToBall();
+
   swapBuffers(getRobotInfo().bodyNickName);
   theBroadCaster->send(drawCommands);
 }
@@ -458,12 +460,15 @@ void RoboViz::drawMotionRequest()
   {
   case motion::walk:
   {
-    Pose3D pose;
-    pose.rotation = RotationMatrix::getRotationZ(getRobotPose().rotation) * getKinematicChain().theLinks[KinematicChain::Torso].R;
-    pose.translation = Vector3d(getRobotPose().translation.x, getRobotPose().translation.y, 1);
-    Vector3d start = pose.translation;
-    pose.translate(mq.walkRequest.target.translation.x, mq.walkRequest.target.translation.y, 0);
-    drawLine(start, pose.translation, 3, Vector3<unsigned char>(0,255,255), name+".Walk");
+    Pose2D pose = getRobotPose();
+    pose += getMotionStatus().plannedMotion.hip;
+    drawSphere(Vector3d(pose.translation.x, pose.translation.y,0),
+               100, Vector3<unsigned char>(0,255,255), name+".Walk");
+    Vector2d start = pose.translation;
+    pose.translate(mq.walkRequest.target.translation.x, mq.walkRequest.target.translation.y);
+    drawLine(Vector3d(start.x, start.y, 1),
+             Vector3d(pose.translation.x, pose.translation.y, 1),
+             3, Vector3<unsigned char>(0,255,255), name+".Walk");
     break;
   }
   default: break;
@@ -478,13 +483,23 @@ void RoboViz::drawBallAndAttackDir()
   Vector3d ball(ballOnField.x, ballOnField.y, getFieldInfo().ballRadius);
   drawSphere(ball, (float)getFieldInfo().ballRadius, color, getRobotInfo().bodyNickName + ".ball");
 
-  Vector2d ballPerceptOnField = getRobotPose() * getBallPercept().bearingBasedOffsetOnField;
-  ball = Vector3d(ballPerceptOnField.x, ballPerceptOnField.y, getFieldInfo().ballRadius);
-  drawSphere(ball, (float)getFieldInfo().ballRadius, Vector3<unsigned char>(255,0,0), getRobotInfo().bodyNickName + ".ball");
+  //Vector2d ballPerceptOnField = getRobotPose() * getBallPercept().bearingBasedOffsetOnField;
+  //ball = Vector3d(ballPerceptOnField.x, ballPerceptOnField.y, getFieldInfo().ballRadius);
+  //drawSphere(ball, (float)getFieldInfo().ballRadius, Vector3<unsigned char>(255,0,0), getRobotInfo().bodyNickName + ".ball");
 
   double dir = getRobotPose().rotation + getSoccerStrategy().attackDirection.angle();
   Vector3d atc(ball.x+cos(dir)*1000, ball.y+sin(dir)*1000, ball.z);
   drawLine(ball, atc, 1, color, getRobotInfo().bodyNickName + ".attackDirection");
+}
+
+void RoboViz::drawTimeToBall()
+{
+  Vector3d b(getRobotPose().translation.x, getRobotPose().translation.y, 600);
+  double len = Math::clamp(10000 - getSoccerStrategy().timeToBall, 0.0, 10000.0);
+  Vector3d e(b);
+  e.z += len/10;
+  unsigned int red = Math::clamp(static_cast<int>(len / 10000 * 255), 0, 255);
+  drawLine(b, e, 3, Vector3<unsigned char>(red,255-red,0), getRobotInfo().bodyNickName + ".timeToBall");
 }
 
 void RoboViz::test()

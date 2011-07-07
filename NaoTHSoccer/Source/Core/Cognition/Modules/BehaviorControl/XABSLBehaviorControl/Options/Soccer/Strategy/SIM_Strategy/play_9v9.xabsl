@@ -40,6 +40,7 @@ option play_9v9 {
   {
     action
     {
+      motion.walk.style = fast;
       team.is_playing_as_striker = false;
       sim_playing_supporter();
     }
@@ -50,6 +51,7 @@ option play_9v9 {
     
     action
     {
+      motion.walk.style = fast;
       sim_playing_striker();
     }
   }
@@ -58,6 +60,7 @@ option play_9v9 {
   {
     action
     {
+      motion.walk.style = fast;
       team.is_playing_as_striker = true;// note: stricker is the one who goes to ball
       sim_playing_defender();
     }
@@ -67,6 +70,7 @@ option play_9v9 {
   {
     action
     {
+      motion.walk.style = fast;
       team.is_playing_as_striker = false;
       sim_playing_goalie();
     }
@@ -76,6 +80,7 @@ option play_9v9 {
   {
     action
     {
+      motion.walk.style = fast;
       team.is_playing_as_striker = false;
       sim_playing_penalty_goalie();
     }

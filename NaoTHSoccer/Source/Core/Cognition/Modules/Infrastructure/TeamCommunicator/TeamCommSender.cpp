@@ -46,16 +46,10 @@ void TeamCommSender::createMessage(naothmessages::TeamCommMessage &msg)
   // robot pose
   DataConversion::toMessage(getRobotPose(), *(msg.mutable_positiononfield()));
 
-  // TODO: set falldown state in teamcomm message
-  /*
-  msg.set_isfallendown(theBodyState.fall_down_state != BodyState::upright
-    || theMotionStatus.currentMotion == MotionRequestID::stand_up_from_back
-    || theMotionStatus.currentMotion == MotionRequestID::stand_up_from_front);
-  */
+  msg.set_isfallendown(getBodyState().fall_down_state != BodyState::upright
+    || getMotionStatus().currentMotion == motion::stand_up_from_back
+    || getMotionStatus().currentMotion == motion::stand_up_from_front);
 
-  // TODO: set ball and pose info in teamcomm message
-  /*
-  msg.set_timetoball(theSoccerStrategy.timeToBall);
-*/
+  msg.set_timetoball(getSoccerStrategy().timeToBall);
 }
 

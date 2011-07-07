@@ -1,0 +1,57 @@
+/** Go to a specific position on the field, and keep the facing direction */
+option go_to_point_and_facing_to
+{
+  
+  /** x position of the point to walk to on the field */
+  float @x; //[-3700..3700] "mm";
+
+  /** y position of the point to walk to on the field */
+  float @y; // [-2700..2700] "mm";
+
+  /** absolute rotation on field */
+  float @rot; // -180...180 "deg";
+
+  initial state go_to
+  {
+    decision
+    {
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) < 30
+          && abs(value=robot_pose.planned.rotation - @rot) < 10 )
+        goto stop;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = normalize(angle=atan2(y = @y - robot_pose.planned.y, x = @x - robot_pose.planned.x) - robot_pose.planned.rotation);
+      motion.walk_speed.x = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * cos(angle=motion.walk_speed.rot);
+      motion.walk_speed.y = vector.abs(x = @x - robot_pose.planned.x, y = @y - robot_pose.planned.y) * sin(angle=motion.walk_speed.rot);
+      motion.walk_speed.rot = normalize(angle=(@rot - robot_pose.planned.rotation));
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+    }
+
+  }
+
+  target state stop
+  {
+    decision
+    {
+      if ( vector.abs(x=robot_pose.planned.x - @x, y=robot_pose.planned.y - @y) > 250 
+        || abs(value = robot_pose.planned.rotation - @rot) > 15
+          )
+        goto go_to;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+    
+}

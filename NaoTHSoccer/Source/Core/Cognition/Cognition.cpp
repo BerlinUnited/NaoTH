@@ -66,6 +66,7 @@
 #include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
+#include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
 
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
@@ -154,10 +155,12 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(TeamBallLocator);
-  REGISTER_MODULE(SoccerStrategyProvider);
+  REGISTER_MODULE(PlayersLocator);
 
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(AttentionAnalyzer);
+
+  REGISTER_MODULE(SoccerStrategyProvider);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);

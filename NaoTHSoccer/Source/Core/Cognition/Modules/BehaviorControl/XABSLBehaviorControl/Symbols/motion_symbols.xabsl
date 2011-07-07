@@ -200,6 +200,11 @@ namespace motion_symbols("Motion Symbols") {
   };
   enum motion.walk.style output motion.walk.style;
 
+  /** walk offset */
+  float output motion.walk.offset.x [mm];
+  float output motion.walk.offset.y [mm];
+  float output motion.walk.offset.rot [mm];
+
   /** step control */
   enum motion.walk.step_control.foot
   {
