@@ -5,12 +5,17 @@
  * Created on 27. Juni 2011
  */
 
+#ifndef __RadarGrid_h_
+#define __RadarGrid_h_
+
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
 #include <Tools/DataStructures/Printable.h>
 
 #include <vector>
+#include <map>
+#include <list>
 
 
 class RadarGrid: public naoth::Printable
@@ -21,11 +26,14 @@ public:
   //default destructor:
   virtual ~RadarGrid(){}
   
+  bool obstacleWasSeen;
 
   //some functions
   //get/set model
   void set(Vector2<double>);
-  void get(double angle, Vector2<double>& value);
+  Vector2<double> get(double angle) const;
+
+  void checkValid() ;
 
   //age the model
   void ageGrid();
@@ -33,28 +41,22 @@ public:
   //update the model:
   //apply the odometry data, erase old values
   void updateGrid(Pose2D& odometryDelta);
-  Vector2<double> applyOdometry(int& index, Pose2D& odometryDelta);
 
 
   //set model params:
-  void setCenter(Vector2<double>& newCenter){this->center = newCenter;} 
-  void setFarUpdate(double& newFarUpdate){this->nearUpdate = newFarUpdate;} 
-  void setNearUpdate(double& setNearUpdate){this->farUpdate = setNearUpdate;} 
+  void setCenter(Vector2<double>& newCenter){this->center = newCenter;}
+  void setFarUpdate(double& newFarUpdate){this->nearUpdate = newFarUpdate;}
+  void setNearUpdate(double& setNearUpdate){this->farUpdate = setNearUpdate;}
 
   void drawFieldContext();
   void drawImageContext();
 
-  //reset cell
-  void resetCell(int& index);
-
   virtual void print(std::ostream& stream) const
   {
-    //int i = 0;
-    //std::vector<double>::const_iterator RGI = values.begin();
-    //for (; RGI != values.end(); ++RGI)
-    for (int i = 0; i < 18; ++i)
+    newMap::const_iterator CIT = cells.begin();
+    for (; CIT != cells.end(); ++CIT)
     {
-      stream << "ValueNr.: " << i << " value: " << values[i].value << endl;
+      stream << "ValueNr.: " << CIT->first << " value: " << CIT->second.value << endl;
     }
   }//end print
 
@@ -67,24 +69,27 @@ private:
     //in polar coordinates system
     //value.x = distance;
     //value.y = angle
-    Vector2<double> value;
+    Vector2d value;
     //age of the cell
     //in some entities
     int age;
   };
 
-  //values of the grid
-  //std::vector<double> values;
-  std::vector<Cell> values;
+  //new version: now we are using map
+  typedef std::map<unsigned int, Cell> newMap;
+  newMap cells;
 
   //center of the grid
   Vector2<double> center;
 
-  Pose2D offset;
-
   //model update parameters
   double nearUpdate;
   double farUpdate;
+
+  Vector2d applyOdometry(Vector2d someValue, Pose2D& odometryDelta);
+
  
-  int getIndexByAngle(const double& angle);
+  unsigned int getIndexByAngle(const double& angle) const;
 };
+
+#endif// __RadarGrid_h_

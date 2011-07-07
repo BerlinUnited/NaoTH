@@ -63,6 +63,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
 void Sensor::execute()
 {
   // data from motion
+  GT_TRACE("!theMotionStatusReader->empty()");
   if ( !theMotionStatusReader->empty() )
   {
     string msg = theMotionStatusReader->read();
@@ -75,6 +76,7 @@ void Sensor::execute()
     Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
   }
   
+  GT_TRACE(" !theOdometryDataReader->empty()");
   if ( !theOdometryDataReader->empty() )
   {
     string msg = theOdometryDataReader->read();
@@ -87,6 +89,7 @@ void Sensor::execute()
     Serializer<OdometryData>::deserialize(ss, getOdometryData());
   }
 
+  GT_TRACE("!theCalibrationDataReader->empty()");
   if ( !theCalibrationDataReader->empty() )
   {
     string msg = theCalibrationDataReader->read();
@@ -99,8 +102,11 @@ void Sensor::execute()
     Serializer<CalibrationData>::deserialize(ss, getCalibrationData());
   }
 
+
   // add calibration to inertial sensor
   getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
+
+  GT_TRACE("Sensor:execute() end");
 
 }//end execute
 

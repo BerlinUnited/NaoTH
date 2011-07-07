@@ -11,6 +11,7 @@
 #include <ostream>
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
@@ -62,6 +63,15 @@ namespace naoth
     virtual void print(std::ostream& stream) const;
 
     unsigned int mode;
+  };
+
+
+  template<>
+  class Serializer<UltraSoundReceiveData>
+  {
+  public:
+    static void serialize(const UltraSoundReceiveData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, UltraSoundReceiveData& representation);
   };
 }
 

@@ -16,6 +16,7 @@
 #include <DebugCommunication/DebugCommandExecutor.h>
 
 #include "Tools/Packages/PackageLoader.h"
+#include <Tools/Debug/Stopwatch.h>
 
 class Cognition : public naoth::Callable, public ModuleManager, public DebugCommandExecutor
 {
@@ -33,6 +34,7 @@ public:
 
 private:
   PackageLoader packageLoader;
+  StopwatchItem stopwatch;
 
   void printRepresentation(std::ostream &outstream, const std::string& name, bool binary)
   {

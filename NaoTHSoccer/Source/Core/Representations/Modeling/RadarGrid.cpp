@@ -5,7 +5,6 @@
  * Created on 27. Juni 2011
  */
 
-
 #include "RadarGrid.h"
 
 //debugDrawings
@@ -25,23 +24,35 @@ center(0,0),
 nearUpdate(0.5),
 farUpdate(0.2)
 {
-  values.resize(18);
-  for (int i = 0; i < 18; ++i)
-  {
-    this->values[i].value.x = 0;
-    this->values[i].value.y = 0;
-    this->values[i].age = 0;
-  }
   MODIFY("RadarGrid:nearUpdate", nearUpdate);
   MODIFY("RadarGrid:farUpdate", farUpdate);
 }//end RadarGrid
 
 //get value
-void RadarGrid::get(double angle, Vector2<double>& value)
+Vector2<double> RadarGrid::get(double angle) const
 {
+  Vector2d temp;
   int position = this->getIndexByAngle(angle);
-  value = this->values[position].value;
+  newMap::const_iterator it = cells.find(position);
+  if(it != this->cells.end())
+  {
+    temp = it->second.value;
+  }
+  else
+  {
+    temp.x = 0;
+    temp.y = 0;
+  }
+  return temp;
 }//end get()
+
+void RadarGrid::checkValid() {
+  if (!cells.empty()) {
+    obstacleWasSeen = true;
+  } else {
+    obstacleWasSeen = false;
+  }
+}
 
 //set the grid with value
 void RadarGrid::set(Vector2<double> value)
@@ -52,48 +63,57 @@ void RadarGrid::set(Vector2<double> value)
   //estimate distance
   double newDist = value.abs();
 
+  //we don't interested in distant obstacles...
+  if (newDist >= 1500)
+  {
+    return;
+  }
+
   int position = this->getIndexByAngle(newAngle);
 
   //store the old values
-  double oldDist = this->values[position].value.x;
-  double oldAngle = this->values[position].value.y;
-
-  //do we have a value?
-  if (oldDist == 0)
+  newMap::iterator it = cells.find(position);
+  //the value with key wasn't found:
+  //we have no pair with tis key value
+  if (it == cells.end())
   {
-    this->values[position].value.x = newDist;
-    this->values[position].value.y = newAngle;
-    this->values[position].age = 3;
+    std::pair<unsigned int, Cell> temp;
+    temp.first = this->getIndexByAngle(newAngle);
+    temp.second.value.x = value.abs();
+    temp.second.value.y = value.angle();
+    cells.insert(temp);
   }
-  //yes, we do -> update the value
+  //we've found the pair with this key value
   else
   {
+    double oldDist = it->second.value.x;
+    double oldAngle = it->second.value.y;
     //if the new point lies closer that the old one
     if (oldDist >= newDist)
     {
-      this->values[position].value.x -= (oldDist - newDist)*nearUpdate;
+      it->second.value.x -= (oldDist - newDist)*nearUpdate;
     }
     //else
     else
     {
-      this->values[position].value.x += (newDist - oldDist)*farUpdate;
+      it->second.value.x += (newDist - oldDist)*farUpdate;
     }
     if (abs(oldAngle) >= abs(newAngle))
     {
-      this->values[position].value.y -= (oldAngle - newAngle)*nearUpdate;
+      it->second.value.y -= (oldAngle - newAngle)*nearUpdate;
     }
     //else
     else
     {
-      this->values[position].value.x += (newAngle - oldAngle)*farUpdate;
+      it->second.value.y += (newAngle - oldAngle)*farUpdate;
     }//end else
-    this->values[position].age = 3;
+    it->second.age = 3;
   }//end else
 }//end set()
 
 
 //get index by angle
-int RadarGrid::getIndexByAngle(const double& angle)
+unsigned int RadarGrid::getIndexByAngle(const double& angle) const
 {
   double degreeAngle = Math::toDegrees(angle);
   double temp = 0;
@@ -117,64 +137,81 @@ int RadarGrid::getIndexByAngle(const double& angle)
 
 void RadarGrid::ageGrid()
 {
-  for (int i = 0; i < 18; i++)
+  newMap::iterator CIT = cells.begin();
+  for (; CIT != cells.end(); ++CIT)
   {
-    if(this->values[i].age > 0)
+    if(CIT->second.age > 0)
     {
-      this->values[i].age--;
+      CIT->second.age--;
     }//end if
   }//end for
 }//end ageGrid
-
-void RadarGrid::resetCell(int& index)
-{
-  this->values[index].value.x = 0;
-  this->values[index].value.y = 0;
-  this->values[index].age = 0;
-}
 
 //update the model:
 //apply the odometry data, erase old values
 void RadarGrid::updateGrid(Pose2D& odometryDelta)
 {
-  std::vector<Cell> newValues;
-  newValues.resize(18);
-  for (int i = 0; i < 18; i++)
+  //erase old values
+  newMap::iterator CITB = cells.begin();
+  newMap::iterator CITE = cells.end();
+  for (; CITB != CITE;)
   {
     //erase all values that are older then 1
-    if (this->values[i].age <= 0)
+    if (CITB->second.age <= 0)
     {
-      resetCell(i);
-      newValues[i] = this->values[i];
-    }
-    else if (this->values[i].age <= 2)
-    {
-      Vector2<double> temp;
-      temp = applyOdometry(i, odometryDelta);
-      newValues[getIndexByAngle(temp.y)].value = temp;
-      newValues[getIndexByAngle(temp.y)].age = this->values[i].age;
-    }
+      cells.erase(CITB++);
+    }//end if
     else
     {
-      newValues[i] = this->values[i];
+      CITB++;
     }
   }//end for
-  values = newValues;
-}
+  //so, we have no old values in the map,
+  //let's update the map with odometry data
 
-Vector2<double> RadarGrid::applyOdometry(int& index, Pose2D& odometryDelta)
+  //if (!cells.empty())
+  //{
+    CITB = cells.begin();
+    CITE = cells.end();
+    //iterate through all map values
+    newMap newCells;
+    for (; CITB != CITE;)
+    {
+      //if the value wasn't updated in last cognition
+      //cycle
+      if (CITB->second.age <= 2)
+      {
+        Cell newCell;
+        newCell.value = CITB->second.value;
+        //update with odometry
+        newCell.value = applyOdometry(newCell.value, odometryDelta);
+        newCell.age = CITB->second.age;
+        std::pair<unsigned int, Cell> newPair(getIndexByAngle(newCell.value.y), newCell);
+        cells.erase(CITB++);
+        newCells.insert(std::pair<unsigned int, Cell>(getIndexByAngle(newCell.value.y), newCell));
+      }
+      else
+      {
+        CITB++;
+      }
+    }//end for
+    //insert new values in old map
+    cells.insert(newCells.begin(), newCells.end());
+  //}
+}//end updateGrid
+
+Vector2d RadarGrid::applyOdometry(Vector2d someValue, Pose2D& odometryDelta)
 {
-  Vector2<double> newCell;
+  Vector2d newCell;
   //take the value and translate
   //to Cartesian coordinates
-  Vector2<double> temp;
-  temp.x = this->values[index].value.x*cos(this->values[index].value.y);
-  temp.y = this->values[index].value.x*sin(this->values[index].value.y);
+  newCell.x = someValue.x*cos(someValue.y);
+  newCell.y = someValue.x*sin(someValue.y);
   //apply odometry translation
-  temp = odometryDelta * temp;
+  newCell = odometryDelta * newCell;
   //translate to polar coordinates and
-  newCell.x = temp.abs();
-  newCell.y = temp.angle();
+  newCell.x = newCell.abs();
+  newCell.y = newCell.angle();
   return newCell;
 }
 
@@ -199,22 +236,38 @@ void RadarGrid::drawFieldContext()
   }
   //draw grid values
   Vector2<double> temp2(0,0);
-  for (int i = 0; i < 18; ++i)
+  newMap::iterator CIT = cells.begin();
+  for (; CIT != cells.end(); CIT++)
   {
     PEN("FF0000", 6);
-    Vector2<double> rechtsEnd, linksEnd;
+    Vector2d rechtsEnd, linksEnd, centerEnd;
+    centerEnd.x = CIT->second.value.x*cos(CIT->second.value.y);
+    centerEnd.y = CIT->second.value.x*sin(CIT->second.value.y);
 
-    linksEnd.x = values[i].value.x*cos(Math::fromDegrees(i*20-10));
-    linksEnd.y = -values[i].value.x*sin(Math::fromDegrees(i*20-10));
-    rechtsEnd.x = values[i].value.x*cos(Math::fromDegrees(i*20+10));
-    rechtsEnd.y = -values[i].value.x*sin(Math::fromDegrees(i*20+10));
+   // linksEnd.x = CIT->second.value.x*cos(Math::fromDegrees(CIT->first*20-10));
+   // linksEnd.y = -CIT->second.value.x*sin(Math::fromDegrees(CIT->first*20-10));
+   // rechtsEnd.x = CIT->second.value.x*cos(Math::fromDegrees(CIT->first*20+10));
+   // rechtsEnd.y = -CIT->second.value.x*sin(Math::fromDegrees(CIT->first*20+10));
+
+    LINE(this->center.x, this->center.y, centerEnd.x, centerEnd.y);
 
     LINE(linksEnd.x, linksEnd.y, rechtsEnd.x, rechtsEnd.y);
     LINE(this->center.x, this->center.y, rechtsEnd.x, rechtsEnd.y);
     LINE(this->center.x, this->center.y, linksEnd.x, linksEnd.y);
 
-    PEN("FFFF00", 20);
-    CIRCLE(values[i].value.x*cos(values[i].value.y), values[i].value.x*sin(values[i].value.y), 20);
+    if (CIT->second.age == 3)
+    {
+      PEN("ff00ff", 20);
+    }
+    else if (CIT->second.age == 2)
+    {
+      PEN("970097", 20);
+    }
+    else
+    {
+      PEN("470047", 20);
+    }
+    CIRCLE(CIT->second.value.x*cos(CIT->second.value.y), CIT->second.value.x*sin(CIT->second.value.y), 20);
   }
 }//end drawFieldContext
 

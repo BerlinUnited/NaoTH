@@ -1,28 +1,39 @@
 /**
- * @file RadarObstacleLocator.h
+ * @file VisualObstacleLocator.h
  *
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+ * @author Kirill Yasinovskiy
  * Implementation of class RadarObstacleLocator
  */
 
-#include "RadarObstacleLocator.h"
+#include "VisualObstacleLocator.h"
 
-RadarObstacleLocator::RadarObstacleLocator()
+VisualObstacleLocator::VisualObstacleLocator()
 {
   angle_offset = 10.0 + 180.0;
   obstacleBuffer.reserve(18);
   onceExecuted = false;
+  odometryDelta.translation.x = 0;
+  odometryDelta.translation.y = 0;
+  odometryDelta.rotation = 0;
 
-  DEBUG_REQUEST_REGISTER("RadarObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("RadarObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
+  //ultraSound params
+  minValidDistance = 0.15;
+  maxValidDistance = 0.7;
+  usOpeningAngle = Math::fromDegrees(30.0);
+
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawUltraSoundData", "draw the ultrasound Obstacles on the field", false);
 }
 
-void RadarObstacleLocator::execute()
+void VisualObstacleLocator::execute()
 {
   if (!onceExecuted)
   {
     //set initial time
     initialTime = getFrameInfo().getTime();
+    lastRobotOdometry = getOdometryData();
     onceExecuted = true;
   }
 
@@ -30,18 +41,14 @@ void RadarObstacleLocator::execute()
   currentTime = getFrameInfo().getTime();
 
   //get current odometry delta
-  odometryDelta += (lastRobotOdometry - getOdometryData());
   
-  lastRobotOdometry = getOdometryData();
+  //odometryDelta += (lastRobotOdometry - getOdometryData());
+  
 
+  //just age the grid
   if ((currentTime - initialTime) >= 1000)
   {
     getRadarGrid().ageGrid();
-    getRadarGrid().updateGrid(odometryDelta);
-    initialTime = currentTime;
-    odometryDelta.translation.x = 0;
-    odometryDelta.translation.y = 0;
-    odometryDelta.rotation = 0;
   }
   
 
@@ -51,11 +58,10 @@ void RadarObstacleLocator::execute()
     buffer.removeFirst();
   }//end if
 
-
+  //set the radar grid
   for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
   {
     const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-
     if(point.posInImage.y > 10 && 
        point.posInImage.y < 200 && 
         (point.color == (int) ColorClasses::white ||
@@ -69,7 +75,20 @@ void RadarObstacleLocator::execute()
     }
   }//end for
 
+  //set the grid with ultrasound data
+  updateByUltraSoundData();
 
+  //update the grid with odometry data
+  if ((currentTime - initialTime) >= 1000)
+  {
+    odometryDelta = lastRobotOdometry - getOdometryData();
+    getRadarGrid().updateGrid(odometryDelta);
+    initialTime = currentTime;
+    lastRobotOdometry = getOdometryData();
+    odometryDelta.translation.x = 0;
+    odometryDelta.translation.y = 0;
+    odometryDelta.rotation = 0;
+  }
 
   Vector2<double> mean;
   for(int i = 0; i < buffer.getNumberOfEntries(); i++)
@@ -87,7 +106,7 @@ void RadarObstacleLocator::execute()
     getLocalObstacleModel().visualObstacleWasSeen = false;
   }
 
-  DEBUG_REQUEST("RadarObstacleLocator:drawObstacleBuffer",
+  DEBUG_REQUEST("VisualObstacleLocator:drawObstacleBuffer",
     FIELD_DRAWING_CONTEXT;
     PEN("999999", 10);
 
@@ -100,7 +119,7 @@ void RadarObstacleLocator::execute()
     CIRCLE(mean.x, mean.y, 50);
   );
 
-  DEBUG_REQUEST("RadarObstacleLocator:RadarGrid:drawGrid",
+  DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawGrid",
     getRadarGrid().drawFieldContext();
   );
 
@@ -130,4 +149,30 @@ void RadarObstacleLocator::execute()
   );
 
   */
+  getRadarGrid().checkValid();
 }//end execute
+
+void VisualObstacleLocator::updateByUltraSoundData()
+{
+  std::cout << getUltraSoundReceiveData().rawdata << endl;
+  if(getUltraSoundReceiveData().rawdata <= maxValidDistance && getUltraSoundReceiveData().rawdata >= minValidDistance)
+  {
+    double distance = getUltraSoundReceiveData().rawdata*1000;
+    Vector2d ultraSoundPoint1(distance, 0);
+    getRadarGrid().set(ultraSoundPoint1);
+
+    Vector2d ultraSoundPoint2(distance*cos(usOpeningAngle/2), ultraSoundPoint1.y + distance*tan(usOpeningAngle/2));
+    getRadarGrid().set(ultraSoundPoint2);
+
+    Vector2d ultraSoundPoint3(distance*cos(usOpeningAngle/2), ultraSoundPoint1.y - distance*tan(usOpeningAngle/2));
+    getRadarGrid().set(ultraSoundPoint3);
+
+    DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawUltraSoundData",
+      FIELD_DRAWING_CONTEXT;
+    PEN("fbfb00", 2);
+    LINE(0,0, ultraSoundPoint1.x, ultraSoundPoint1.y);
+    LINE(0,0, ultraSoundPoint2.x, ultraSoundPoint3.y);
+    LINE(0,0, ultraSoundPoint3.x, ultraSoundPoint3.y);
+    );
+  }
+}

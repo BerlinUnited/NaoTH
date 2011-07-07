@@ -40,9 +40,9 @@ public:
   /** name of the stopwatch (the same as used as key in te map)*/
   std::string name;
   /** starting time in micro-seconds */
-  unsigned int start;
+  unsigned long long start;
   /** stopping time in micro-seconds */
-  unsigned int stop;
+  unsigned long long stop;
   /** true if the data (stop - start) is valid */
   bool isValid;
 

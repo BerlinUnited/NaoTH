@@ -2,6 +2,8 @@
 #include <cassert>
 #include <glib.h>
 
+#include <Tools/Debug/NaoTHAssert.h>
+
 SocketStream::SocketStream()
 : mRecvdLen(0),socket(NULL)
 {
@@ -41,7 +43,16 @@ void SocketStream::send(const std::string& msg) throw(std::runtime_error)
   if(g_socket_is_connected(socket))
   {
     GError* err = NULL;
-    g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err);
+
+#ifdef NAO
+    ASSERT(g_socket_get_blocking(socket) == false);
+#endif
+
+    int sendBytes = g_socket_send(socket, msg.c_str(), msg.size(), NULL, &err);
+    if(sendBytes < 1)
+    {
+      std::cerr << "ERROR in SocketStream send: sendBytes=" << sendBytes << std::endl;
+    }
     if(err)
     {
       std::string errMsg = err->message;

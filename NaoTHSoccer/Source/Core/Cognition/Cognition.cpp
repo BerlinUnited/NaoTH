@@ -9,13 +9,14 @@
 
 #include <PlatformInterface/Platform.h>
 
-#include <Tools/Debug/Stopwatch.h>
 #include <Tools/Debug/DebugImageDrawings.h>
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include <Tools/Debug/Stopwatch.h>
+#include <Tools/Debug/Trace.h>
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/NaoTime.h"
 
 
 // list the modules and representations on the blackboard
@@ -62,7 +63,7 @@
 #include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
-#include "Modules/Modeling/ObstacleLocator/RadarObstacleLocator.h"
+#include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
@@ -77,6 +78,10 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
+
+
+// tools
+#include "Tools/NaoTime.h"
 
 using namespace std;
 
@@ -147,7 +152,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
-  REGISTER_MODULE(RadarObstacleLocator);
+  REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
@@ -210,11 +215,24 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   //calculateExecutionList();
 
   g_message("Cognition register end");
+
+  Stopwatch::getInstance().notifyStart(stopwatch);
 }//end init
 
 
 void Cognition::call()
-{  
+{
+  // BEGIN cognition frame rate measuring
+  Stopwatch::getInstance().notifyStop(stopwatch);
+  Stopwatch::getInstance().notifyStart(stopwatch);
+  PLOT("_CognitionCycle", stopwatch.lastValue);
+  // END cognition frame rate measuring
+
+
+  STOPWATCH_START("CognitionExecute");
+
+
+  GT_TRACE("beginning to iterate over all modules");
   // execute all modules
   list<string>::const_iterator iter;
   for (iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
@@ -224,13 +242,19 @@ void Cognition::call()
     if (module != NULL && module->isEnabled())
     {
       std::string name(*iter);
-      //g_debug("executing %s", name.c_str());
+
+      stringstream s;
+      s << "executing " << name;
+      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
       STOPWATCH_START_GENERIC(name);
       module->execute();
       STOPWATCH_START_GENERIC(name);
     }//end if
   }//end for all modules
   
+  GT_TRACE("end module iteration");
+  STOPWATCH_STOP("CognitionExecute");
+
 
   // HACK: reset all the debug stuff before executing the modules
   STOPWATCH_START("Debug ~ Init");
@@ -239,7 +263,6 @@ void Cognition::call()
   DebugImageDrawings::getInstance().reset();
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
-  
 }//end call
 
 

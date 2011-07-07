@@ -1,12 +1,12 @@
 /**
- * @file ObstacleLocator.h
+ * @file UltraSoundObstacleLocator.h
  *
  * @author <a href="mailto:kaptur@informatik.hu-berlin.de">Christian Kaptur</a>
  * Declaration of class ObstacleLocator
  */
 
-#ifndef __ObstacleLocator_h_
-#define __ObstacleLocator_h_
+#ifndef _UltraSoundObstacleLocator_h_
+#define _UltraSoundObstacleLocator_h_
 
 // debug
 #include "Tools/Debug/DebugRequest.h"
@@ -32,7 +32,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(ObstacleLocator)
+BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
@@ -40,16 +40,16 @@ BEGIN_DECLARE_MODULE(ObstacleLocator)
 
   PROVIDE(UltraSoundSendData)
   PROVIDE(LocalObstacleModel)
-END_DECLARE_MODULE(ObstacleLocator)
+END_DECLARE_MODULE(UltraSoundObstacleLocator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class ObstacleLocator : private ObstacleLocatorBase
+class UltraSoundObstacleLocator : private UltraSoundObstacleLocatorBase
 {
 public:
-  ObstacleLocator();
+  UltraSoundObstacleLocator();
 
-  ~ObstacleLocator()
+  ~UltraSoundObstacleLocator()
   {
   };
 
@@ -258,6 +258,6 @@ private:
 	//virtual void calculatePoints();?
 };
 
-#endif //__ObstacleLocator_h_
+#endif //_UltraSoundObstacleLocator_h_
 
 

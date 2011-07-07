@@ -114,7 +114,9 @@ void Motion::call()
   STOPWATCH_START("MotionExecute");
   
   // process sensor data
+  STOPWATCH_START("Motion:processSensorData");
   processSensorData();
+  STOPWATCH_STOP("Motion:processSensorData");
   
   switch (state)
   {
@@ -176,7 +178,9 @@ void Motion::call()
 
   STOPWATCH_STOP("MotionExecute");
   
+  STOPWATCH_START("Motion:postProcess");
   postProcess();
+  STOPWATCH_STOP("Motion:postProcess");
 }//end call
 
 void Motion::processSensorData()
