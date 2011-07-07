@@ -63,7 +63,9 @@ class RoboViz: public RoboVizBase
 
   void drawMotionRequest();
 
-  void drawBallAndAttackDir();
+  void drawBall();
+
+  void drawAttackDir();
 
   void drawTimeToBall();
 

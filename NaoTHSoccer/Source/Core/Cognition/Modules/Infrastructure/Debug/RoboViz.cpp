@@ -422,7 +422,8 @@ void RoboViz::execute()
 
   if ( getPlayerInfo().isPlayingStriker )
   {
-    drawBallAndAttackDir();
+    drawBall();
+    drawAttackDir();
   }
 
   drawTimeToBall();
@@ -475,17 +476,40 @@ void RoboViz::drawMotionRequest()
   }
 }
 
-void RoboViz::drawBallAndAttackDir()
+void RoboViz::drawBall()
 {
+  // ball model
+  /*
   Vector2d ballOnField = getRobotPose() * getBallModel().position;
   Vector3<unsigned char> color;
   ColorClasses::colorClassToRGB(getFieldInfo().ballColor, color.x, color.y, color.z);
   Vector3d ball(ballOnField.x, ballOnField.y, getFieldInfo().ballRadius);
   drawSphere(ball, (float)getFieldInfo().ballRadius, color, getRobotInfo().bodyNickName + ".ball");
+  */
 
-  //Vector2d ballPerceptOnField = getRobotPose() * getBallPercept().bearingBasedOffsetOnField;
-  //ball = Vector3d(ballPerceptOnField.x, ballPerceptOnField.y, getFieldInfo().ballRadius);
-  //drawSphere(ball, (float)getFieldInfo().ballRadius, Vector3<unsigned char>(255,0,0), getRobotInfo().bodyNickName + ".ball");
+  // percept
+  /*
+  Vector2d ballPerceptOnField = getRobotPose() * getBallPercept().bearingBasedOffsetOnField;
+  ball = Vector3d(ballPerceptOnField.x, ballPerceptOnField.y, getFieldInfo().ballRadius);
+  drawSphere(ball, (float)getFieldInfo().ballRadius, Vector3<unsigned char>(255,0,0), getRobotInfo().bodyNickName + ".ball");
+  */
+
+  // future ball
+  for( int i=1; i<= BALLMODEL_MAX_FUTURE_SECONDS; i++)
+  {
+    const Vector2d& fBall = getBallModel().futurePosition[i];
+    Vector2d fBallOnField = getRobotPose() * fBall;
+    Vector3<unsigned char> color = Vector3d(1,1,1)* 255;//Math::clamp( static_cast<unsigned int>(i / (double)BALLMODEL_MAX_FUTURE_SECONDS * 255), 0u, 255u );
+    drawPoint(Vector3d(fBallOnField.x, fBallOnField.y, 5), 5, color, getRobotInfo().bodyNickName + ".ball.future");
+  }
+}
+
+void RoboViz::drawAttackDir()
+{
+  Vector2d ballOnField = getRobotPose() * getBallModel().position;
+  Vector3<unsigned char> color;
+  ColorClasses::colorClassToRGB(getFieldInfo().ballColor, color.x, color.y, color.z);
+  Vector3d ball(ballOnField.x, ballOnField.y, getFieldInfo().ballRadius);
 
   double dir = getRobotPose().rotation + getSoccerStrategy().attackDirection.angle();
   Vector3d atc(ball.x+cos(dir)*1000, ball.y+sin(dir)*1000, ball.z);
