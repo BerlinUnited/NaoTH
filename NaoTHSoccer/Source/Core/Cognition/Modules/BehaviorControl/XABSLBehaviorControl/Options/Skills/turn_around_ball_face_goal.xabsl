@@ -8,9 +8,13 @@ option turn_around_ball_face_goal
       {
         goto position;
       }
-      else
+      else if(ball.time_since_last_seen < 3000)
       {
         goto look_for_goal;
+      }
+      else
+      {
+        goto see_the_ball;
       }
     }
     action {

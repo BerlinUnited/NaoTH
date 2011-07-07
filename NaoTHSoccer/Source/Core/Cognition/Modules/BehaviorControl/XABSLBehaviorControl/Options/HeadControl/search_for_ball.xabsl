@@ -5,7 +5,7 @@ option search_for_ball
   
   initial state start_search {
   decision {
-    if(ball.time_since_last_seen < 1000 || @force_ball_model_check) //TODO
+    if(ball.time_since_last_seen < 3000 || @force_ball_model_check) //TODO
       goto try_to_look_at_the_old_ball;
     else
       goto search_for_ball;
@@ -20,7 +20,7 @@ option search_for_ball
     {
       if (state_time > 5000)
         goto search_for_ball;
-      else 
+      else
         stay;
     }
     action

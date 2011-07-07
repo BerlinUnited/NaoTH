@@ -20,7 +20,9 @@ AttentionAnalyzer::AttentionAnalyzer()
 {
   // init the map
   //createMapOfInterest();
-  createRadialMapOfInterest();
+
+  createRadialMapOfInterest(mapOfInterest,250,1250,500);
+	createRadialMapOfInterest(closeMapOfInterest,250,600,100);
 
   DEBUG_REQUEST_REGISTER("AttentionAnalyzer:drawMapOfInterest", "Plot the map of interest on the field.", false);
   DEBUG_REQUEST_REGISTER("AttentionAnalyzer:plot_focus_trace", "Plots the trace of the point of the attention.", false);
@@ -67,7 +69,7 @@ void AttentionAnalyzer::execute()
   getAttentionModel().mostInterestingPoint = nextPoint.position;
   
   DEBUG_REQUEST("AttentionAnalyzer:drawMapOfInterest",
-    drawMapOfInterest();
+    drawMapOfInterest(mapOfInterest);
     drawImageProjection();
   );
 
@@ -149,13 +151,19 @@ bool AttentionAnalyzer::isSeen(const Vector2<double> point)
 }//end isSeen
 
 
-void AttentionAnalyzer::createRadialMapOfInterest()
+void AttentionAnalyzer::createRadialMapOfInterest(
+	std::list<PointOfInterest>& moi,
+	double minDistance,
+	double maxDistance,
+	double distance_step
+	)
 {
-  int shift = 0;
-  double minDistance = 150;
-  double maxDistance = 600;
-  double distance_step = 100;
+  
+  //double minDistance = 250;
+  //double maxDistance = 600;
+  //double distance_step = 100;
 
+	int shift = 0;
   double alpha_step = Math::pi2/12;
 
   for(double d = minDistance; d <= maxDistance; d += distance_step)
@@ -168,7 +176,7 @@ void AttentionAnalyzer::createRadialMapOfInterest()
       tmp.position.x = d;
       tmp.position.rotate(alpha + 0.5*alpha_step*shift);
 
-      mapOfInterest.push_back(tmp);
+      moi.push_back(tmp);
     }//end for
   }//end for
 }//end createMapOfInterest
@@ -206,12 +214,12 @@ void AttentionAnalyzer::createMapOfInterest()
   mapOfInterest.push_back(PointOfInterest(Vector2<double>(-200.0, -200.0)));
 }//end createMapOfInterest
 
-void AttentionAnalyzer::drawMapOfInterest()
+void AttentionAnalyzer::drawMapOfInterest(const std::list<PointOfInterest>& moi) const
 {
   FIELD_DRAWING_CONTEXT;
 
-  std::list<PointOfInterest>::iterator iter;
-  for(iter = mapOfInterest.begin(); iter != mapOfInterest.end(); ++iter)
+  std::list<PointOfInterest>::const_iterator iter;
+  for(iter = moi.begin(); iter != moi.end(); ++iter)
   {
     PEN(DebugDrawings::Color(1.0,0.0,0.0,iter->weight), 10);
 
