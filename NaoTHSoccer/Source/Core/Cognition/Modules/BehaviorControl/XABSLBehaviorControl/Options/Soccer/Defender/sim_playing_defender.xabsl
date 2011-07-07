@@ -45,7 +45,7 @@ option sim_playing_defender {
         goto block_goal;
       }
       else if ( players.opp_closest_to_ball.time_since_last_seen > 100
-      || players.opp_closest_to_ball.distance_to_ball > ball.distance + 500 )
+      || players.opp_closest_to_ball.distance_to_ball > ball.distance )
       {
         goto clear_ball;
       }
