@@ -74,6 +74,12 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.extendedXRotationOffset) = 7;
   PARAMETER_REGISTER(kick.rotationTime) = 300;
 
+	PARAMETER_REGISTER(kick.knee_pitch_offset);
+	PARAMETER_REGISTER(kick.ankle_roll_offset);
+
+	PARAMETER_REGISTER(kick.shiftOffsetYLeft);
+	PARAMETER_REGISTER(kick.shiftOffsetYRight);
+
   syncWithConfig();
 
   DebugParameterList::getInstance().add(this);

@@ -141,7 +141,7 @@ option attack_situation
            random > 0.5)
           goto dribble_left;
         else
-          goto dribble_left; // dribble_right;//
+          goto stabilize_before_kick; // dribble_right;//
       }
       else stay;
 	  }
