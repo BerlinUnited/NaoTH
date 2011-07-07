@@ -9,8 +9,7 @@ option playing_penalty_goalie_with_dive {
         stay;
     }
     action {
-      motion.type = stand;
-      motion.standHeight = 200;
+      motion.type = sit;
       head.control_mode = search_for_ball;
     }
   }
@@ -23,8 +22,7 @@ option playing_penalty_goalie_with_dive {
         stay;
     }
     action {
-      motion.type = stand;
-      motion.standHeight = 200;
+      motion.type = sit;
       head.control_mode = search_for_ball;
     }
   }
@@ -42,8 +40,7 @@ option playing_penalty_goalie_with_dive {
 	        stay;	   
 	  }
 	  action {
-	    motion.type = stand;
-	    motion.standHeight = 200;
+	    motion.type = sit;
 	    //head.control_mode = search_for_ball;
 	    head.control_mode = none;
 	    head.motion_type = look_at_world_point;
@@ -84,14 +81,14 @@ option playing_penalty_goalie_with_dive {
 
   state diveRight {
     decision {
-      if (executed_motion.type == goalie_sit_n_dive_right_test)
+      if (executed_motion.type == goalie_sit_n_dive_right)
         goto wait;
       else 
         stay;
     }
     action {
       motion.execute_immediately = true;
-      motion.type = goalie_sit_n_dive_right_test;
+      motion.type = goalie_sit_n_dive_right;
       head.control_mode = search_for_ball;
     }
   }

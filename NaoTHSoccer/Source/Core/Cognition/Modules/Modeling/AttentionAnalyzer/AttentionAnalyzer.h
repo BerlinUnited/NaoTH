@@ -61,14 +61,20 @@ private:
   };
 
   std::list<PointOfInterest> mapOfInterest;
+	std::list<PointOfInterest> closeMapOfInterest;
 
   bool isSeen(const Vector2<double> point);
   void createMapOfInterest();
-  void createRadialMapOfInterest();
+
+  void createRadialMapOfInterest(
+		std::list<PointOfInterest>& moi,
+		double minDistance,
+		double maxDistance,
+		double distance_step);
 
   int compare(const PointOfInterest& one, const PointOfInterest& two);
 
-  void drawMapOfInterest();
+  void drawMapOfInterest(const std::list<PointOfInterest>& moi) const;
   void drawImageProjection();
 
   OdometryData lastRobotOdometry;

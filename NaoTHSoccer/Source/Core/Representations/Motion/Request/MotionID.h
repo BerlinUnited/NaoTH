@@ -21,9 +21,9 @@ namespace motion
     empty,
     init,
     dead,
-    sit,
     
     /* inverse kinematic */
+    sit,
     stand,
     
     walk,

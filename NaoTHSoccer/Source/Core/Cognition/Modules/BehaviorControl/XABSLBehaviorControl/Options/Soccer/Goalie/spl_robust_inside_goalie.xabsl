@@ -19,7 +19,7 @@ initial state go_to_strategy_point{
       }
      }
      action {
-      head.control_mode = look_around;
+      head.control_mode = goalie_look_around;
       go_to_absolute_point(rotation=0, x=-2800, y=0);
      }
 }
@@ -61,7 +61,7 @@ target state check_situation {
   action {
     team.is_playing_as_striker = false;
     motion.type = stand;
-    head.control_mode = look_around;
+    head.control_mode = goalie_look_around;
   }
 }
 

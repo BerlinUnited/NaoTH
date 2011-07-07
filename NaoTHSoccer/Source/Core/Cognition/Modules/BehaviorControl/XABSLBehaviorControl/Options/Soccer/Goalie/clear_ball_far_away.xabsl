@@ -89,7 +89,7 @@ option clear_ball_far_away{
     }
     action{
       motion.type = stand;
-      head.control_mode = look_around;
+      head.control_mode = goalie_look_around;
     }
   }
 

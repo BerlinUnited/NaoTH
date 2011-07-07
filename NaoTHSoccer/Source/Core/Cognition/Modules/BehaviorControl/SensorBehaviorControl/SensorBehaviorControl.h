@@ -42,7 +42,7 @@ class SensorBehaviorControl: public SensorBehaviorControlBase
 {
 public:
   SensorBehaviorControl();
-  ~SensorBehaviorControl(){};
+  ~SensorBehaviorControl(){}
 
   virtual void execute();
 

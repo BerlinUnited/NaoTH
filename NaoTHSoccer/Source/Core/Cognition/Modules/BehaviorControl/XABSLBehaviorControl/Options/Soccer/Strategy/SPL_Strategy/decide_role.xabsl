@@ -10,7 +10,7 @@ option decide_role
       goto goalie;
     }
     /* fallback if everything else is broken */
-    else if( (team.members_alive_count == 0) ||
+    else if( (team.members_alive_count <= 1) ||
              (team.calc_if_is_striker && fall_down_state == upright))
     {
       if(state_time < 20000 &&

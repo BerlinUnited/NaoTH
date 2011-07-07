@@ -56,6 +56,13 @@ message SensorJointData {
   repeated double electricCurrent = 3;
 }
 
+message UltraSoundReceiveData {
+  required uint32 ultraSoundTimeStep = 1;
+  required double rawdata = 2;
+  repeated double dataLeft = 3;
+  repeated double dataRight = 4;
+}
+
 message CameraMatrix {
   required Pose3D pose = 1;
 }

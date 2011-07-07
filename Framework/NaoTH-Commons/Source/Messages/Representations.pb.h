@@ -37,6 +37,7 @@ class Image;
 class CameraInfo;
 class JointData;
 class SensorJointData;
+class UltraSoundReceiveData;
 class CameraMatrix;
 class FrameInfo;
 class BallPercept;
@@ -657,6 +658,124 @@ class SensorJointData : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static SensorJointData* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class UltraSoundReceiveData : public ::google::protobuf::Message {
+ public:
+  UltraSoundReceiveData();
+  virtual ~UltraSoundReceiveData();
+  
+  UltraSoundReceiveData(const UltraSoundReceiveData& from);
+  
+  inline UltraSoundReceiveData& operator=(const UltraSoundReceiveData& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const UltraSoundReceiveData& default_instance();
+  
+  void Swap(UltraSoundReceiveData* other);
+  
+  // implements Message ----------------------------------------------
+  
+  UltraSoundReceiveData* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const UltraSoundReceiveData& from);
+  void MergeFrom(const UltraSoundReceiveData& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required uint32 ultraSoundTimeStep = 1;
+  inline bool has_ultrasoundtimestep() const;
+  inline void clear_ultrasoundtimestep();
+  static const int kUltraSoundTimeStepFieldNumber = 1;
+  inline ::google::protobuf::uint32 ultrasoundtimestep() const;
+  inline void set_ultrasoundtimestep(::google::protobuf::uint32 value);
+  
+  // required double rawdata = 2;
+  inline bool has_rawdata() const;
+  inline void clear_rawdata();
+  static const int kRawdataFieldNumber = 2;
+  inline double rawdata() const;
+  inline void set_rawdata(double value);
+  
+  // repeated double dataLeft = 3;
+  inline int dataleft_size() const;
+  inline void clear_dataleft();
+  static const int kDataLeftFieldNumber = 3;
+  inline double dataleft(int index) const;
+  inline void set_dataleft(int index, double value);
+  inline void add_dataleft(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      dataleft() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_dataleft();
+  
+  // repeated double dataRight = 4;
+  inline int dataright_size() const;
+  inline void clear_dataright();
+  static const int kDataRightFieldNumber = 4;
+  inline double dataright(int index) const;
+  inline void set_dataright(int index, double value);
+  inline void add_dataright(double value);
+  inline const ::google::protobuf::RepeatedField< double >&
+      dataright() const;
+  inline ::google::protobuf::RepeatedField< double >*
+      mutable_dataright();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.UltraSoundReceiveData)
+ private:
+  inline void set_has_ultrasoundtimestep();
+  inline void clear_has_ultrasoundtimestep();
+  inline void set_has_rawdata();
+  inline void clear_has_rawdata();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  double rawdata_;
+  ::google::protobuf::RepeatedField< double > dataleft_;
+  ::google::protobuf::RepeatedField< double > dataright_;
+  ::google::protobuf::uint32 ultrasoundtimestep_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static UltraSoundReceiveData* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -3038,6 +3157,104 @@ SensorJointData::electriccurrent() const {
 inline ::google::protobuf::RepeatedField< double >*
 SensorJointData::mutable_electriccurrent() {
   return &electriccurrent_;
+}
+
+// -------------------------------------------------------------------
+
+// UltraSoundReceiveData
+
+// required uint32 ultraSoundTimeStep = 1;
+inline bool UltraSoundReceiveData::has_ultrasoundtimestep() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void UltraSoundReceiveData::set_has_ultrasoundtimestep() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void UltraSoundReceiveData::clear_has_ultrasoundtimestep() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void UltraSoundReceiveData::clear_ultrasoundtimestep() {
+  ultrasoundtimestep_ = 0u;
+  clear_has_ultrasoundtimestep();
+}
+inline ::google::protobuf::uint32 UltraSoundReceiveData::ultrasoundtimestep() const {
+  return ultrasoundtimestep_;
+}
+inline void UltraSoundReceiveData::set_ultrasoundtimestep(::google::protobuf::uint32 value) {
+  set_has_ultrasoundtimestep();
+  ultrasoundtimestep_ = value;
+}
+
+// required double rawdata = 2;
+inline bool UltraSoundReceiveData::has_rawdata() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void UltraSoundReceiveData::set_has_rawdata() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void UltraSoundReceiveData::clear_has_rawdata() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void UltraSoundReceiveData::clear_rawdata() {
+  rawdata_ = 0;
+  clear_has_rawdata();
+}
+inline double UltraSoundReceiveData::rawdata() const {
+  return rawdata_;
+}
+inline void UltraSoundReceiveData::set_rawdata(double value) {
+  set_has_rawdata();
+  rawdata_ = value;
+}
+
+// repeated double dataLeft = 3;
+inline int UltraSoundReceiveData::dataleft_size() const {
+  return dataleft_.size();
+}
+inline void UltraSoundReceiveData::clear_dataleft() {
+  dataleft_.Clear();
+}
+inline double UltraSoundReceiveData::dataleft(int index) const {
+  return dataleft_.Get(index);
+}
+inline void UltraSoundReceiveData::set_dataleft(int index, double value) {
+  dataleft_.Set(index, value);
+}
+inline void UltraSoundReceiveData::add_dataleft(double value) {
+  dataleft_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< double >&
+UltraSoundReceiveData::dataleft() const {
+  return dataleft_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+UltraSoundReceiveData::mutable_dataleft() {
+  return &dataleft_;
+}
+
+// repeated double dataRight = 4;
+inline int UltraSoundReceiveData::dataright_size() const {
+  return dataright_.size();
+}
+inline void UltraSoundReceiveData::clear_dataright() {
+  dataright_.Clear();
+}
+inline double UltraSoundReceiveData::dataright(int index) const {
+  return dataright_.Get(index);
+}
+inline void UltraSoundReceiveData::set_dataright(int index, double value) {
+  dataright_.Set(index, value);
+}
+inline void UltraSoundReceiveData::add_dataright(double value) {
+  dataright_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< double >&
+UltraSoundReceiveData::dataright() const {
+  return dataright_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+UltraSoundReceiveData::mutable_dataright() {
+  return &dataright_;
 }
 
 // -------------------------------------------------------------------

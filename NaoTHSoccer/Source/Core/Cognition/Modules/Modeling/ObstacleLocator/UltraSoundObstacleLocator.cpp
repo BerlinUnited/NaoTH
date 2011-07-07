@@ -10,9 +10,9 @@
 //#include "Tools/Math/Pose2D.h"
 
 
-#include "ObstacleLocator.h"
+#include "UltraSoundObstacleLocator.h"
 
-ObstacleLocator::ObstacleLocator()
+UltraSoundObstacleLocator::UltraSoundObstacleLocator()
 {
   lastTimeObstacleWasSeen = 0;
   ageThreshold = 5000; // 5 seconds
@@ -20,14 +20,14 @@ ObstacleLocator::ObstacleLocator()
   lastRobotOdometry = getOdometryData();
   grid.init(ageThreshold, getFrameInfo());
 
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:drawObstacleBufferNumbers", "draw the values of modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:setMode_0", "left Transmitter left Receiver", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:setMode_1", "left Transmitter right Receiver", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:setMode_2", "right Transmitter left Receiver", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:setMode_3", "right Transmitter right Receiver", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:setMode_4", "left and right Transmitter and Receiver in two captures with one command", false);
-  DEBUG_REQUEST_REGISTER("ObstacleLocator:setMode_12", "left and right Transmitter and Receiver in two captures with one command and two transmitters at same time", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBufferNumbers", "draw the values of modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_0", "left Transmitter left Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_1", "left Transmitter right Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_2", "right Transmitter left Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_3", "right Transmitter right Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_4", "left and right Transmitter and Receiver in two captures with one command", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_12", "left and right Transmitter and Receiver in two captures with one command and two transmitters at same time", false);
 
   maxValidDistance = 0.80f;
   minValidDistance = 0.15f;
@@ -42,7 +42,7 @@ ObstacleLocator::ObstacleLocator()
 //  DEBUG_REQUEST_REGISTER("ObstacleLocator:drawPost", "draw the modelled Obstacle on the field", false);
 }
 
-void ObstacleLocator::execute()
+void UltraSoundObstacleLocator::execute()
 {
   getLocalObstacleModel().obstacles.clear();
   getLocalObstacleModel().someObstacleWasSeen = false;
@@ -73,22 +73,22 @@ void ObstacleLocator::execute()
   // Use mode 1 for now
   unsigned int mode = 1;
 
-  DEBUG_REQUEST("ObstacleLocator:setMode_0",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_0",
     mode = 0;
   );
-  DEBUG_REQUEST("ObstacleLocator:setMode_2",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_2",
     mode = 2;
   );
-  DEBUG_REQUEST("ObstacleLocator:setMode_3",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_3",
     mode = 3;
   );
-  DEBUG_REQUEST("ObstacleLocator:setMode_4",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_4",
     mode = 4;
   );
-  DEBUG_REQUEST("ObstacleLocator:setMode_12",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_12",
     mode = 12;
   );
-  DEBUG_REQUEST("ObstacleLocator:setMode_1",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_1",
     mode = 1;
   );
 
@@ -100,7 +100,7 @@ void ObstacleLocator::execute()
 
 }//end execute
 
-void ObstacleLocator::updateGrid()
+void UltraSoundObstacleLocator::updateGrid()
 {
   // ignore rawdata if not viable
   if(getUltraSoundReceiveData().rawdata >= maxValidDistance || getUltraSoundReceiveData().rawdata <= minValidDistance)
@@ -138,7 +138,7 @@ void ObstacleLocator::updateGrid()
     }
 } //end ageGrid*/
 
-void ObstacleLocator::ageBuffer()
+void UltraSoundObstacleLocator::ageBuffer()
 {
   if(obstacleBuffer.getNumberOfEntries() > 0 && 
     static_cast<unsigned int>(getFrameInfo().getTimeSince(obstacleBuffer.first().frameInfoObstacleWasSeen.getTime())) > ageThreshold)
@@ -147,7 +147,7 @@ void ObstacleLocator::ageBuffer()
   } 
 }
 
-void ObstacleLocator::updateBuffer()
+void UltraSoundObstacleLocator::updateBuffer()
 {
   // add obstacle if rawdata implies it
   if(getUltraSoundReceiveData().rawdata < maxValidDistance && getUltraSoundReceiveData().rawdata > minValidDistance)
@@ -183,10 +183,10 @@ void ObstacleLocator::updateBuffer()
 } //end updateBuffer
 
 
-void ObstacleLocator::drawObstacleModel()
+void UltraSoundObstacleLocator::drawObstacleModel()
 {
   // Inits
-  DEBUG_REQUEST("ObstacleLocator:drawObstacleBuffer",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacleBuffer",
     FIELD_DRAWING_CONTEXT;
     DebugDrawings::Color color(ColorClasses::blue);
     color[DebugDrawings::Color::alpha] = 1.0;
@@ -247,10 +247,10 @@ void ObstacleLocator::drawObstacleModel()
   );
 } //end drawObstacleMode
 
-void ObstacleLocator::drawObstacleModelNumbers()
+void UltraSoundObstacleLocator::drawObstacleModelNumbers()
 {
   // Inits
-  DEBUG_REQUEST("ObstacleLocator:drawObstacleBufferNumbers",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacleBufferNumbers",
     FIELD_DRAWING_CONTEXT;
     
     // draw grid
@@ -271,7 +271,7 @@ void ObstacleLocator::drawObstacleModelNumbers()
   );
 } //end drawObstacleModelNumbers
 
-void ObstacleLocator::provideToLocalObstacleModel()
+void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 {
   if(obstacleBuffer.getNumberOfEntries() > 10)
   {
@@ -321,7 +321,7 @@ void ObstacleLocator::provideToLocalObstacleModel()
 
 } //end provideToLocalObstacleModel
 
-Vector2<double> ObstacleLocator::getMean()
+Vector2<double> UltraSoundObstacleLocator::getMean()
 {
   Vector2<double> mean;
   for(int i = 0; i < obstacleBuffer.getNumberOfEntries(); i++)
@@ -332,7 +332,7 @@ Vector2<double> ObstacleLocator::getMean()
   return mean / ((double)obstacleBuffer.getNumberOfEntries());
 }//end getMean
 
-Vector2<double> ObstacleLocator::getMinimum()
+Vector2<double> UltraSoundObstacleLocator::getMinimum()
 {
   Vector2<double> min;
   min = obstacleBuffer[0].position;
@@ -347,7 +347,7 @@ Vector2<double> ObstacleLocator::getMinimum()
 
 // considers both minimum and mean to approximate the actual obstacle
 // the minimum is weighted stronger
-Vector2<double> ObstacleLocator::getDampedMinimum()
+Vector2<double> UltraSoundObstacleLocator::getDampedMinimum()
 {
   double weight_min = 0.7;
   double weight_mean = 0.3; // weights should add up to 1!
@@ -365,7 +365,7 @@ Vector2<double> ObstacleLocator::getDampedMinimum()
   return (min*weight_min + mean*weight_mean);
 }//end getDampedMin
 
-void ObstacleLocator::updateByOdometry(const Pose2D& odometryDelta)
+void UltraSoundObstacleLocator::updateByOdometry(const Pose2D& odometryDelta)
 {
   // updateByOdometry for buffer
   for(int i = 0; i < obstacleBuffer.getNumberOfEntries(); i++)

@@ -517,7 +517,7 @@ public class NaoScp extends javax.swing.JFrame
     }
     catch (IOException ex)
     {
-      log("I/O Error in readFile- " + ex.toString());
+      log("I/O Error in readFile- " + fileName + "\n" + ex.toString());
     }
 
     return content.toString();
@@ -854,6 +854,9 @@ public class NaoScp extends javax.swing.JFrame
     c.append(jTeamCommPort.getText());
     c.append("\n");
     
+    c.append("interface=wlan0\n");
+    
+    /*
     c.append("wlan=");
     c.append(lblTeamCommWLAN.getText());
     c.append("\n");
@@ -861,6 +864,7 @@ public class NaoScp extends javax.swing.JFrame
     c.append("lan=");
     c.append(lblTeamCommLAN.getText());
     c.append("\n");
+    */
     
     try
     {
@@ -1873,7 +1877,10 @@ public class NaoScp extends javax.swing.JFrame
         {
           File localConfigFiles = new File(localConfigPath);
 
-          rmDirSftp(c, remoteRootPath(Number) + configPath());
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/general");
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/robots");
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/scheme");
+          rmDirSftp(c, remoteRootPath(Number) + configPath() + "/private");
 
           // create if it is not existing
           String remooteConfigDst = remoteConfigPath;

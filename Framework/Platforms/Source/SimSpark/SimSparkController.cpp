@@ -1230,7 +1230,7 @@ void SimSparkController::say()
   {
     string& msg = theTeamMessageDataOut.data;
     if (!msg.empty()){
-      if (msg.size()<20)
+      if (msg.size()<=20)
       {
         if (msg != "")
         {

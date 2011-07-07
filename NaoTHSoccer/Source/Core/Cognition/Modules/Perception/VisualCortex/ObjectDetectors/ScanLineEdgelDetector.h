@@ -37,7 +37,6 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
   REQUIRE(BodyContour)
-
   PROVIDE(ScanLineEdgelPercept)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
 

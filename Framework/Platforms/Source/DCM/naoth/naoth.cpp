@@ -14,12 +14,29 @@
 
 using namespace naoth;
 
+void got_signal(int)
+{
+  // do something
+  std::cout << "catched signal" << std::endl;
+  Trace::getInstance().dump();
+  exit(3);
+}
+
 int main(int argc, char *argv[])
 {
   // init glib
   g_type_init();
   if (!g_thread_supported())
     g_thread_init(NULL);
+
+
+  // react on "kill"
+  struct sigaction sa;
+  memset( &sa, 0, sizeof(sa) );
+  sa.sa_handler = got_signal;
+  sigfillset(&sa.sa_mask);
+  //sigaction(SIGINT,&sa,NULL);
+  sigaction(SIGTERM,&sa,NULL);
   
   NaoController theController;
   Cognition theCognition;

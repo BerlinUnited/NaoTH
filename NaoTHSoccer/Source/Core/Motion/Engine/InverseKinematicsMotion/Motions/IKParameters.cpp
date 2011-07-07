@@ -70,6 +70,9 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.maxDistanceToRetract) = 200;
   PARAMETER_REGISTER(kick.enableStaticStabilizer) = true;
 
+  PARAMETER_REGISTER(kick.basicXRotationOffset) = 3;
+  PARAMETER_REGISTER(kick.extendedXRotationOffset) = 7;
+  PARAMETER_REGISTER(kick.rotationTime) = 300;
 
   syncWithConfig();
 

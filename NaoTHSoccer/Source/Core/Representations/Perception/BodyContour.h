@@ -15,6 +15,7 @@
 #include "Tools/Math/Vector3.h"
 #include <vector>
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 
 /**
@@ -87,10 +88,11 @@ public:
   
   Vector2<int> returnFirstFreeCell(Vector2<int> start) const
   {
-    while (isOccupied(start) && start.y >= 0)
+    while (isOccupied(start) && (start.y - stepSize) >= 0)
     {
       start.y -= stepSize;
     }
+    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
     return start;
   }
 

@@ -97,7 +97,6 @@ BodyContourProvider::BodyContourProvider()
 void BodyContourProvider::execute()
 {
   getBodyContour().lines.clear();
-  imagePoints.clear();
   eraseGrid();
   getBodyContour().grid.resize(getBodyContour().xDensity);
   for (int i = 0; i < getBodyContour().xDensity; i++)
@@ -315,7 +314,7 @@ inline void BodyContourProvider::cellPos(Vector2<int> point, Vector2<int>& cell)
 }
 
 // TODO: Comment
-inline void BodyContourProvider::setCells(BodyContour::Line line)
+inline void BodyContourProvider::setCells(BodyContour::Line line, BodyContour& bodyContour)
 {
   Vector2<int> firstCell, secondCell;
   cellPos(line, firstCell, secondCell);
@@ -340,10 +339,10 @@ inline void BodyContourProvider::setCells(BodyContour::Line line)
     }
     x = p1x;
     y = p1y;
-    while (y < getBodyContour().yDensity)
+    while (y < bodyContour.yDensity)
     {
-      getBodyContour().grid[x][y].lineNumbers = lineNumber;
-      getBodyContour().grid[x][y].occupied = true;
+      bodyContour.grid[x][y].lineNumbers = lineNumber;
+      bodyContour.grid[x][y].occupied = true;
       y++;
     }
     return;
@@ -355,10 +354,10 @@ inline void BodyContourProvider::setCells(BodyContour::Line line)
     y = p1y;
     for (int j = x; j <= p2x; j++)
     {
-      for (int i = y; i < getBodyContour().yDensity; i++)
+      for (int i = y; i < bodyContour.yDensity; i++)
       {
-        getBodyContour().grid[j][i].lineNumbers = lineNumber;
-        getBodyContour().grid[j][i].occupied = true;
+        bodyContour.grid[j][i].lineNumbers = lineNumber;
+        bodyContour.grid[j][i].occupied = true;
       }
     }
     return;
@@ -379,12 +378,12 @@ inline void BodyContourProvider::setCells(BodyContour::Line line)
       y = p1y;
       for (int a = x; a <= p2x; a++)
       {
-        getBodyContour().grid[a][y].lineNumbers = lineNumber;
-        getBodyContour().grid[a][y].occupied = true;
-        for (int c = y+1; c < getBodyContour().yDensity; c++)
+        bodyContour.grid[a][y].lineNumbers = lineNumber;
+        bodyContour.grid[a][y].occupied = true;
+        for (int c = y+1; c < bodyContour.yDensity; c++)
         {
-          getBodyContour().grid[a][c].lineNumbers = lineNumber;
-          getBodyContour().grid[a][c].occupied = true;
+          bodyContour.grid[a][c].lineNumbers = lineNumber;
+          bodyContour.grid[a][c].occupied = true;
         }
         if (F <= 0)
         {
@@ -406,12 +405,12 @@ inline void BodyContourProvider::setCells(BodyContour::Line line)
       x = p1x;
       while (y <= p2y)
       {
-        getBodyContour().grid[x][y].lineNumbers = lineNumber;
-        getBodyContour().grid[x][y].occupied = true;
-        for (int c = y+1; c < getBodyContour().yDensity; c++)
+        bodyContour.grid[x][y].lineNumbers = lineNumber;
+        bodyContour.grid[x][y].occupied = true;
+        for (int c = y+1; c < bodyContour.yDensity; c++)
         {
-          getBodyContour().grid[x][c].lineNumbers = lineNumber;
-          getBodyContour().grid[x][c].occupied = true;
+          bodyContour.grid[x][c].lineNumbers = lineNumber;
+          bodyContour.grid[x][c].occupied = true;
         }
         if (F <= 0)
         {
@@ -436,12 +435,12 @@ inline void BodyContourProvider::setCells(BodyContour::Line line)
       y = p1y;
       while (x <= p2x)
       {
-        getBodyContour().grid[x][y].lineNumbers = lineNumber;
-        getBodyContour().grid[x][y].occupied = true;
-        for (int c = y+1; c < getBodyContour().yDensity; c++)
+        bodyContour.grid[x][y].lineNumbers = lineNumber;
+        bodyContour.grid[x][y].occupied = true;
+        for (int c = y+1; c < bodyContour.yDensity; c++)
         {
-          getBodyContour().grid[x][c].lineNumbers = lineNumber;
-          getBodyContour().grid[x][c].occupied = true;
+          bodyContour.grid[x][c].lineNumbers = lineNumber;
+          bodyContour.grid[x][c].occupied = true;
         }
         if (F <= 0)
         {
@@ -464,12 +463,12 @@ inline void BodyContourProvider::setCells(BodyContour::Line line)
       x = p1x;
       while (y >= p2y)
       {
-        getBodyContour().grid[x][y].lineNumbers = lineNumber;
-        getBodyContour().grid[x][y].occupied = true;
-        for (int c = y+1; c < getBodyContour().yDensity; c++)
+        bodyContour.grid[x][y].lineNumbers = lineNumber;
+        bodyContour.grid[x][y].occupied = true;
+        for (int c = y+1; c < bodyContour.yDensity; c++)
         {
-          getBodyContour().grid[x][c].lineNumbers = lineNumber;
-          getBodyContour().grid[x][c].occupied = true;
+          bodyContour.grid[x][c].lineNumbers = lineNumber;
+          bodyContour.grid[x][c].occupied = true;
         }
         if (F <= 0)
         {
@@ -495,10 +494,10 @@ inline void BodyContourProvider::pushLine(BodyContour::Line line, BodyContour& b
   bool cell1occ, cell2occ;
   cellPos(line.p1, cell1);
   cellPos(line.p2, cell2);
-  cell1Line = getBodyContour().grid[cell1.x][cell1.y].lineNumbers;
-  cell1occ = getBodyContour().grid[cell1.x][cell1.y].occupied;
-  cell2Line = getBodyContour().grid[cell2.x][cell2.y].lineNumbers;
-  cell2occ = getBodyContour().grid[cell2.x][cell2.y].occupied;
+  cell1Line = bodyContour.grid[cell1.x][cell1.y].lineNumbers;
+  cell1occ = bodyContour.grid[cell1.x][cell1.y].occupied;
+  cell2Line = bodyContour.grid[cell2.x][cell2.y].lineNumbers;
+  cell2occ = bodyContour.grid[cell2.x][cell2.y].occupied;
   if (cell1occ)
   {
     point1Line = bodyContour.lines[cell1Line].id;
@@ -522,7 +521,7 @@ inline void BodyContourProvider::pushLine(BodyContour::Line line, BodyContour& b
   else
   {
     bodyContour.lines.push_back(line);
-    setCells(line);
+    setCells(line, bodyContour);
     lineNumber++;
   }
 }
@@ -573,13 +572,15 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
         {
           Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, segment, pointOne, pointTwo);
           BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
-          pushLine(BodyContour::Line(tempLine2.p1, tempLine.p2, lineNumber, id), bodyContour);
+          BodyContour::Line line2(tempLine2.p1, tempLine.p2, lineNumber, id);
+          pushLine(line2, bodyContour);
         }
         else
         {
           Geometry::getIntersectionPointsOfLineAndRectangle(frameUpperLeft, frameLowerRight, segment, pointOne, pointTwo);
           BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
-          pushLine(BodyContour::Line(tempLine.p1, tempLine2.p2, lineNumber, id), bodyContour);
+          BodyContour::Line line2(tempLine.p1, tempLine2.p2, lineNumber, id);
+          pushLine(line2, bodyContour);
         }
       }//end else
     }//end if
