@@ -65,6 +65,8 @@ class RoboViz: public RoboVizBase
 
   void drawBallAndAttackDir();
 
+  void drawTimeToBall();
+
   // test functions
   void test();
   void testStaticShapes();

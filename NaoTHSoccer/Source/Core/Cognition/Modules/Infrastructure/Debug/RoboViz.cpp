@@ -425,6 +425,8 @@ void RoboViz::execute()
     drawBallAndAttackDir();
   }
 
+  drawTimeToBall();
+
   swapBuffers(getRobotInfo().bodyNickName);
   theBroadCaster->send(drawCommands);
 }
@@ -488,6 +490,16 @@ void RoboViz::drawBallAndAttackDir()
   double dir = getRobotPose().rotation + getSoccerStrategy().attackDirection.angle();
   Vector3d atc(ball.x+cos(dir)*1000, ball.y+sin(dir)*1000, ball.z);
   drawLine(ball, atc, 1, color, getRobotInfo().bodyNickName + ".attackDirection");
+}
+
+void RoboViz::drawTimeToBall()
+{
+  Vector3d b(getRobotPose().translation.x, getRobotPose().translation.y, 600);
+  double len = Math::clamp(10000 - getSoccerStrategy().timeToBall, 0.0, 10000.0);
+  Vector3d e(b);
+  e.z += len/10;
+  unsigned int red = Math::clamp(static_cast<int>(len / 10000 * 255), 0, 255);
+  drawLine(b, e, 3, Vector3<unsigned char>(red,255-red,0), getRobotInfo().bodyNickName + ".timeToBall");
 }
 
 void RoboViz::test()
