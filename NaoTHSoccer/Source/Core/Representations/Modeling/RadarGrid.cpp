@@ -46,6 +46,7 @@ Vector2d RadarGrid::get(double angle) const
       temp = it->second.value;
     }
     else
+
     {
       temp.x = 0;
       temp.y = 0;
@@ -62,7 +63,7 @@ Vector2d RadarGrid::get(double angle) const
 
 
 //set the grid with value
-void RadarGrid::set(Vector2<double> value)
+void RadarGrid::set(Vector2<double> value, unsigned int tStamp)
 {
   //translate to polar coordinate system
   //estimate the angle
@@ -71,23 +72,25 @@ void RadarGrid::set(Vector2<double> value)
   double newDist = value.abs();
 
   //we don't interested in distant obstacles...
-  if (newDist >= 1500)
+  if (newDist >= 1500 || newDist == 0)
   {
     return;
   }
 
+  //get the cluster index
   int position = this->getIndexByAngle(newAngle);
 
   //store the old values
   newMap::iterator it = cells.find(position);
   //the value with key wasn't found:
-  //we have no pair with tis key value
+  //we have no pair with this key value
   if (it == cells.end())
   {
     std::pair<unsigned int, Cell> temp;
     temp.first = this->getIndexByAngle(newAngle);
     temp.second.value.x = value.abs();
     temp.second.value.y = value.angle();
+    temp.second.age = 1;
     cells.insert(temp);
   }
   //we've found the pair with this key value
@@ -99,12 +102,12 @@ void RadarGrid::set(Vector2<double> value)
     if (oldDist >= newDist)
     {
       it->second.value.x -= (oldDist - newDist)*nearUpdate;
-    }
+    }//end if
     //else
     else
     {
       it->second.value.x += (newDist - oldDist)*farUpdate;
-    }
+    }//end else
     if (abs(oldAngle) >= abs(newAngle))
     {
       it->second.value.y -= (oldAngle - newAngle)*nearUpdate;
@@ -114,7 +117,14 @@ void RadarGrid::set(Vector2<double> value)
     {
       it->second.value.y += (newAngle - oldAngle)*farUpdate;
     }//end else
-    it->second.age = 3;
+    if (it->second.timeStamp > tStamp)
+    {
+      it->second.age++;
+    }
+    if (it->second.age >= 3)
+    {
+      it->second.age = 3;
+    }//end if
   }//end else
 }//end set()
 

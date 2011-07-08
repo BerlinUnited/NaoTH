@@ -30,7 +30,7 @@ public:
  
   //some functions
   //get/set model
-  void set(Vector2<double>);
+  void set(Vector2<double>, unsigned int tStamp);
 
   Vector2d get(double angle) const;
 
@@ -75,6 +75,8 @@ private:
     //age of the cell
     //in some entities
     int age;
+    //time stamp of the cluster
+    unsigned int timeStamp;
   };
 
   //new version: now we are using map

@@ -72,7 +72,8 @@ private:
   double minValidDistance;
   double usOpeningAngle;
 
-
+  double agingThreshold;
+  double odometryThreshold;
 
 
   class GroundPoint

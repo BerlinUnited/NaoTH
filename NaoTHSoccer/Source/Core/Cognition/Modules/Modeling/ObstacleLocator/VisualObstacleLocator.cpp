@@ -7,24 +7,35 @@
  */
 
 #include "VisualObstacleLocator.h"
+#include "Tools/Debug/DebugModify.h"
 
 VisualObstacleLocator::VisualObstacleLocator()
 {
   angle_offset = 10.0 + 180.0;
   obstacleBuffer.reserve(18);
   onceExecuted = false;
-  odometryDelta.translation.x = 0;
-  odometryDelta.translation.y = 0;
-  odometryDelta.rotation = 0;
+//   odometryDelta.translation.x = 0;
+//   odometryDelta.translation.y = 0;
+//   odometryDelta.rotation = 0;
 
   //ultraSound params
   minValidDistance = 0.15;
-  maxValidDistance = 0.7;
+  maxValidDistance = 0.6;
   usOpeningAngle = Math::fromDegrees(30.0);
+
+  agingThreshold = 100;
+  odometryThreshold = 500;
 
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawUltraSoundData", "draw the ultrasound Obstacles on the field", false);
+
+  MODIFY("VisualObstacleLocator:agingThreshold", agingThreshold);
+  MODIFY("VisualObstacleLocator:odometryThreshold", odometryThreshold);
+
+  MODIFY("VisualObstacleLocator:USMinValidDistance", minValidDistance);
+  MODIFY("VisualObstacleLocator:USMaxValidDistance", maxValidDistance);
+
 }
 
 void VisualObstacleLocator::execute()
@@ -46,7 +57,7 @@ void VisualObstacleLocator::execute()
   
 
   //just age the grid
-  if ((currentTime - initialTime) >= 1000)
+  if ((currentTime - initialTime) >= agingThreshold)
   {
     getRadarGrid().ageGrid();
   }
@@ -71,7 +82,7 @@ void VisualObstacleLocator::execute()
     {
       buffer.add(point.posOnField);
       timeBuffer.add(getFrameInfo().getTime());
-      getRadarGrid().set(point.posOnField);
+      getRadarGrid().set(point.posOnField, currentTime);
     }
   }//end for
 
@@ -79,7 +90,7 @@ void VisualObstacleLocator::execute()
   updateByUltraSoundData();
 
   //update the grid with odometry data
-  if ((currentTime - initialTime) >= 1000)
+  if ((currentTime - initialTime) >= odometryThreshold)
   {
     odometryDelta = lastRobotOdometry - getOdometryData();
     getRadarGrid().updateGrid(odometryDelta);
@@ -149,7 +160,6 @@ void VisualObstacleLocator::execute()
   );
 
   */
-
   //check whether we have an obstacle
   getRadarGrid().checkValid();
 }//end execute
@@ -160,13 +170,13 @@ void VisualObstacleLocator::updateByUltraSoundData()
   {
     double distance = getUltraSoundReceiveData().rawdata*1000;
     Vector2d ultraSoundPoint1(distance, 0);
-    getRadarGrid().set(ultraSoundPoint1);
+    getRadarGrid().set(ultraSoundPoint1, currentTime);
 
     Vector2d ultraSoundPoint2(distance*cos(usOpeningAngle/2), ultraSoundPoint1.y + distance*tan(usOpeningAngle/2));
-    getRadarGrid().set(ultraSoundPoint2);
+    getRadarGrid().set(ultraSoundPoint2, currentTime);
 
     Vector2d ultraSoundPoint3(distance*cos(usOpeningAngle/2), ultraSoundPoint1.y - distance*tan(usOpeningAngle/2));
-    getRadarGrid().set(ultraSoundPoint3);
+    getRadarGrid().set(ultraSoundPoint3, currentTime);
 
     DEBUG_REQUEST("VisualObstacleLocator:RadarGrid:drawUltraSoundData",
       FIELD_DRAWING_CONTEXT;
