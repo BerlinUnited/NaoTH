@@ -1,4 +1,4 @@
-/** Playing as penalty goalie */
+/**Playing as penalty goalie */
 option playing_penalty_goalie_with_dive {
 
   initial state make_ready {
@@ -14,28 +14,52 @@ option playing_penalty_goalie_with_dive {
     }
   }
 
+  state search_for_ball_attention {
+   decision {
+    if (ball.was_seen)
+      goto critical_ball;
+    else
+      stay;
+   }
+   action {
+      motion.type = sit;
+      head.control_mode = search_for_ball;
+   }
+  }
+
   state search_for_ball {
     decision {
       if (ball.was_seen)
         goto critical_ball;
+      else if (state_time > 4000)
+        goto search_for_ball_attention;
       else 
         stay;
     }
     action {
       motion.type = sit;
-      head.control_mode = search_for_ball;
+      //head.control_mode = search_for_ball;
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = 2000;
+      head.point_in_world.y = 0;
+      head.point_in_world.z = 0; // radius of the ball
     }
   }
 
 	state critical_ball {
 	  decision {//state_time, da ansonsten ball gesehen (aufstehen) aber nicht fixiert                                                                                                     //15
 	     //ball fast and directly to the goalie
-	     if (state_time > 1000 && ball.time_seen > 1000 && motion.head.speed > 20 && abs(value=motion.head.yaw) < 5 && motion.head.pitch > -12)
+	     if (state_time > 1000 && /*ball.time_seen > 1000 &&*/ motion.head.speed > 20 && abs(value=motion.head.yaw) < 5 && motion.head.pitch > -25)
 	       goto blockBall; //diese abfrage in common auslagern!
-	     else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.yaw > 9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
+	     else if (state_time > 1000 && /*ball.time_seen > 1000 &&*/ motion.head.yaw > 9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
 	       goto diveLeft;
-	     else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.yaw < -9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
-	       goto diveRight;  
+	     else if (state_time > 1000 && /*ball.time_seen > 1000 &&*/ motion.head.yaw < -9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
+	       goto diveRight;
+       else if (state_time > 1000 && /*ball.time_seen > 1000 &&*/ motion.head.yaw > 4 && motion.head.pitch > -37 && motion.head.pitch < -30 && motion.head.speed > 12) //percept jumps, then headspead 9!!!
+         goto diveLeft;  
+       else if (state_time > 1000 && /*ball.time_seen > 1000 &&*/ motion.head.yaw < -4 && motion.head.pitch > -37 && motion.head.pitch < -30 && motion.head.speed > 12) //percept jumps, then headspead 9!!!
+         goto diveRight;  
 	     else 
 	        stay;	   
 	  }

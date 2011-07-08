@@ -1,4 +1,4 @@
-option spl_robust_inside_goalie{
+option spl_robust_inside_goalie {
 
 /*common decision
 {
@@ -9,7 +9,7 @@ option spl_robust_inside_goalie{
 state clear_ball {   
    decision {
        if (action_done 
-           || (ball.distance > 1000 && ball.time_since_last_seen < 1000)
+           || (ball.distance > 1800 && ball.time_since_last_seen < 1000)
            || (ball.time_since_last_seen > 2000)) 
        {
          goto go_to_strategy_point;
@@ -43,7 +43,7 @@ initial state go_to_strategy_point{
 
 state rotate_to_ball {
   decision {
-     if (action_done || !ball.was_seen) {
+     if (action_done || ball.time_since_last_seen < 1500) {
        goto check_situation;
      } else {
         stay;
@@ -51,7 +51,7 @@ state rotate_to_ball {
   }
   action {
     team.is_playing_as_striker = false;
-    head.control_mode = search_for_ball;
+    head.control_mode = search_for_ball_force_model;
     go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0);
   }
 }

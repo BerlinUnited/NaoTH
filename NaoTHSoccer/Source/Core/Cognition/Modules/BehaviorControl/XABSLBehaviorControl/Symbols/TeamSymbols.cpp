@@ -68,7 +68,7 @@ bool TeamSymbols::calculateIfStriker()
   double shortestDistance = theInstance->fieldInfo.xFieldLength;
   unsigned int playerNearestToBall = 0; //nobody near to ball
 
-  //if someone is striker, leave! Goali can be striker (while f.e. clearing ball)
+  //if someone is striker, leave! Goalie can be striker (while f.e. clearing ball)
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
     i != tm.data.end(); ++i)
   {
@@ -85,8 +85,8 @@ bool TeamSymbols::calculateIfStriker()
     }
   }//end for
 
-  // all team members except goali!! otherwise goali is nearest and all tinks he is striker, but he won't clear ball
-  //should check who has best position to goal etc.
+  // all team members except goalie!! otherwise goalie is nearest and all thinks he is striker, but he won't clear ball
+  //should check who has best position to goal etc.guitloö penner
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
     i != tm.data.end(); ++i)
   {
