@@ -10,7 +10,7 @@ option critical_ball {
           || executed_motion.type == goalie_sit_n_dive_left)
           //|| executed_motion.type == goalie_sit_block)
       goto wait;             //2000
-    else if((ball.distance > 5000 || ball.time_since_last_seen > 2000) && executed_motion.type != goalie_sit_block)
+    else if((ball.distance > 3500 || ball.time_since_last_seen > 2000) && executed_motion.type != goalie_sit_block)
       goto not_critical;
   }
 
@@ -26,7 +26,6 @@ option critical_ball {
       head.control_mode = search_for_ball;
       motion.type = goalie_sit_block;
     }
-
   }
 
   state diveLeft {
@@ -104,18 +103,32 @@ initial state check_if_clearable {
 
 state critical_ball {
   decision {//state_time, da ansonsten ball gesehen (aufstehen) aber nicht fixiert                                                                                                     //15
-    else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.speed > 20 && abs(value=motion.head.yaw) < 5 && motion.head.pitch > -12)
-       goto blockBall; //diese abfrage in common auslagern!
-       else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.yaw > 9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
-         goto diveLeft;
-       else if (state_time > 1000 && ball.time_seen > 1000 && motion.head.yaw < -9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
-         goto diveRight;
-     else if (abs(value=ball.angle) > 15) //20 degree caused by go_to_relative_point(rotation=ball.angle, x=0, y=0); in rotate____
-       goto rotate_to_critical_ball;
-     else if (ball.time_seen > 1000 && motion.head.speed < 5 && ball.distance < 1500)
-       goto check_if_clearable;
-     else 
-        stay;     
+    else if (abs(value=attack.direction) < 50) {
+      
+	     if (state_time > 1000  && motion.head.speed > 20 && abs(value=motion.head.yaw) < 5 && motion.head.pitch > -12)
+	       goto blockBall; //diese abfrage in common auslagern!
+	     else if (state_time > 1000 && motion.head.yaw > 9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
+	         goto diveLeft;
+	     else if (state_time > 1000 && motion.head.yaw < -9 && motion.head.pitch > -25 && motion.head.speed > 17)//  && abs(value=robot_pose.rotation) < 10)// && abs(value=ball.angle) PREVIEW < 10 && abs(value=robot_pose.rotation) < 15) hat nicht gestimmt
+	         goto diveRight;
+	     else if (motion.head.speed < 5 && ball.distance < 1500)
+	       goto check_if_clearable;
+	     else if (abs(value=ball.angle) > 14) //test naoDevils 15!!
+	       goto rotate_to_critical_ball;
+	     /*go_to_strategy_point caused by go_to_strategy_point */
+	     else if (abs(value=robot_pose.y) > 550)
+	       goto not_critical;
+	     else 
+	       stay;    
+     } else { 
+    
+	     if (state_time > 1000 && ball.time_seen > 1000 && motion.head.speed > 20 && abs(value=motion.head.yaw) < 5 && motion.head.pitch > 0)
+	       goto blockBall; //diese abfrage in common auslagern!
+       else if (motion.head.speed < 5 && ball.distance < 1500)
+         goto check_if_clearable;
+	     else
+	       stay;
+	   }
   }
   action {
     motion.type = sit;
@@ -137,7 +150,7 @@ state rotate_to_critical_ball {
      }
   }
   action {
-    head.control_mode = search_for_ball_force_model;
+    head.control_mode = search_for_ball;
     go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0);
   }
 }

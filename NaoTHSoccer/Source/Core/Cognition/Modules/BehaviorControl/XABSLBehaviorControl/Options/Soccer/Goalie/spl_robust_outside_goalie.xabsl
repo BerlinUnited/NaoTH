@@ -13,6 +13,7 @@ option spl_robust_outside_goalie{
 	         stay;
 	     }
 	     action {
+         team.is_playing_as_striker = false;
 	       go_to_absolute_point(rotation=0, x=-2600, y=0);
          head.control_mode = search_for_ball;
 	     }
