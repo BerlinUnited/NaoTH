@@ -19,7 +19,7 @@ option passing_execute_pass
       }
     }
     action {
-      approach_ball_with_correct_foot(dist=200);
+      approach_ball_with_correct_foot(dist=200, want_to_turn_after_approach=false);
     }
   }
 

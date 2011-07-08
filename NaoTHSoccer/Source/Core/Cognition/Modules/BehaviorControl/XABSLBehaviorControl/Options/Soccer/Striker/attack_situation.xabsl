@@ -42,11 +42,10 @@ option attack_situation
   {
     decision {
       // start kick towards the goal
-      if(( (attack.direction > 0 && abs(value=attack.direction) < 60 ) ||
-          abs(value=attack.direction) < 15 )) // angle was reached
+      if(abs(value=attack.direction) < 85) // angle was reached
       {
 
-        if(goal.opp.time_since_seen < 15000)
+        if(goal.opp.time_since_seen < 25000)
         {
 	        if(attack.direction > 0)
 	        {
@@ -138,7 +137,7 @@ option attack_situation
         if(//goal.opp.time_since_seen < 10000 && 
            (
             (abs(value=attack.direction) < 15) ||
-            (abs(value=attack.direction) < 45 && goal.opp.distance > 1000)
+            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)
            ) &&
            random > 0.5)
           goto dribble_left;
@@ -150,7 +149,7 @@ option attack_situation
 	  action 
 	  {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot(dist=170);
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
 
       //weve seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
@@ -165,7 +164,7 @@ option attack_situation
       {
         if(//goal.opp.time_since_seen < 10000 && 
            ((abs(value=attack.direction) < 15) ||
-            (abs(value=attack.direction) < 45 && goal.opp.distance > 1000)
+            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)
            )&&
            //goal.opp.distance > 1000 && 
            random > 0.5)
@@ -178,7 +177,7 @@ option attack_situation
     action 
     {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot(dist=170);
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
 
       //weve seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
@@ -195,7 +194,7 @@ option attack_situation
     }
     action 
     {
-      approach_ball_with_correct_foot(dist=170-20*random);
+      approach_ball_with_correct_foot(dist=170-20*random, want_to_turn_after_approach=false);
       //turn_to_ball_with_foot(right=true);
     }
   }
@@ -263,7 +262,7 @@ option attack_situation
     }
     action {
       // should execute stand
-      approach_ball_with_correct_foot(dist=170);
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
       head.control_mode = search_for_ball;
       motion.type = stand;
     }
