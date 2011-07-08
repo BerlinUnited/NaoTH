@@ -46,7 +46,7 @@ option search_ball
     }
     action
     {
-      motion.type = walk;
+      motion.type = stand;
       
       motion.walk_speed.x = -10; // mm
       motion.walk_speed.y = 0; // mm
