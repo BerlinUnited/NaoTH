@@ -30,6 +30,7 @@ option after_penalized_state
     }
     action{
       go_to_relative_point(rotation=0, x=50, y=0);
+      head.control_mode = search_for_goal;
     }
   }
 
