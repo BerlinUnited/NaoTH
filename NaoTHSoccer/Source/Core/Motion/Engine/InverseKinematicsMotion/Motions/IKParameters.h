@@ -44,6 +44,7 @@ public:
     double maxStepChange; // (0 - 1]
     
     bool enableFSRProtection;
+    unsigned int minFSRProtectionCount;
     
     int maxUnsupportedCount;
     int maxWaitLandingCount; // <0 means wait for ever until landing

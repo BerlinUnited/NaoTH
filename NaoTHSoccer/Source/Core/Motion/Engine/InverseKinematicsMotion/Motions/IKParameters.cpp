@@ -37,6 +37,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxStepWidth) = 50;
   PARAMETER_REGISTER(walk.maxStepChange) = 0.5;
   PARAMETER_REGISTER(walk.enableFSRProtection) = true;
+  PARAMETER_REGISTER(walk.minFSRProtectionCount) = 0;
   PARAMETER_REGISTER(walk.maxUnsupportedCount) = 0;
   PARAMETER_REGISTER(walk.maxWaitLandingCount) = 20;
   PARAMETER_REGISTER(walk.leftHipRollSingleSupFactor) = 0.4;

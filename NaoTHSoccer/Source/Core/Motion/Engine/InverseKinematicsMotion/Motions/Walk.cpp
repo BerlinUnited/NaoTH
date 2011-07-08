@@ -73,16 +73,21 @@ bool Walk::FSRProtection()
   // both feet should on the ground, e.g canStop
   // TODO: check current of leg joints
   // ==> stop walking
+
+  static unsigned int noTouchCount = 0;
+
   if ( theWalkParameters.enableFSRProtection &&
     theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
       && !isStopping && canStop() )
   {
-    return true;
+    noTouchCount ++;
   }
   else
   {
-    return false;
+    noTouchCount = 0;
   }
+
+  return noTouchCount > theWalkParameters.minFSRProtectionCount;
 }
 
 bool Walk::waitLanding()
@@ -180,6 +185,7 @@ void Walk::manageSteps(const WalkRequest& req)
   if ( stepBuffer.empty() )
   {
     cout<<"walk start"<<endl;
+    theCoMFeetPose = theEngine.getCurrentCoMFeetPose();
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
     currentZMP.localInLeftFoot();
     currentZMP.zmp.translation.z = theWalkParameters.comHeight;
@@ -237,6 +243,8 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
+      if ( !isStopping)
+        adaptStepSize(step.footStep);
       updateParameters(step, req.character);
     }
 
@@ -614,4 +622,35 @@ Pose3D Walk::calculateStableCoMByFeet(FeetPose feet, double pitch) const
   com.translation = (feet.left.translation + feet.right.translation) * 0.5;
   com.translation.z = theWalkParameters.comHeight;
   return com;
+}
+
+void Walk::adaptStepSize(FootStep& step) const
+{
+  Vector3<double> comRef, comObs;
+
+  if ( theCoMFeetPose.feet.left.translation.z > theCoMFeetPose.feet.right.translation.z )
+  {
+    comRef = theCoMFeetPose.feet.right.invert() * theCoMFeetPose.com.translation;
+    const Pose3D& foot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
+    comObs = foot.invert() * theBlackBoard.theKinematicChain.CoM;
+  }
+  else
+  {
+    comRef = theCoMFeetPose.feet.left.invert() * theCoMFeetPose.com.translation;
+    const Pose3D& foot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
+    comObs = foot.invert() * theBlackBoard.theKinematicChain.CoM;
+  }
+
+  Vector3<double> comErr = comRef - comObs;
+
+//  PLOT("comErr.x",comErr.x);
+//  PLOT("comErr.y",comErr.y);
+
+  double k = -1;
+  MODIFY("adaptStepSizeK", k);
+
+  Vector3d comErrG = step.supFoot().rotation * comErr;
+
+  step.footEnd().translation.x += (comErrG.x * k);
+  step.footEnd().translation.y += (comErrG.y * k);
 }

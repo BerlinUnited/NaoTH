@@ -79,6 +79,8 @@ private:
 
   void addStep(const Step& step);
 
+  void adaptStepSize(FootStep& step) const;
+
 private:
   static unsigned int theStepID; // use for step control
 
