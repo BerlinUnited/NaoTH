@@ -30,7 +30,7 @@ option turn_around_ball_face_goal
     }
     action 
     {
-      move_around_ball(direction=((ball.time_since_last_seen < 200)? attack.direction: (attack.direction > 0?10:-10)), radius = 170);
+      move_around_ball(direction=attack.direction, radius = 170);
       head.control_mode = search_for_goal;
     }
   }
@@ -45,7 +45,7 @@ option turn_around_ball_face_goal
     action 
     {
       //motion.type = stand;
-      move_around_ball(direction=((ball.time_since_last_seen < 200)? attack.direction: (attack.direction > 0?10:-10)), radius = 170);
+      move_around_ball(direction=attack.direction, radius = 170);
       head.control_mode = search_for_ball_force_model;
     }
   }
