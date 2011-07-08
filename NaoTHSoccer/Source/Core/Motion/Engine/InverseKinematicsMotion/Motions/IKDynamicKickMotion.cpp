@@ -128,6 +128,8 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
+    theEngine.autoArms(c, theMotorJointData.position);
+
     // some direct offsets
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LKneePitch:JointData::RKneePitch] += currentPose.knee_pitch_offset;
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;
