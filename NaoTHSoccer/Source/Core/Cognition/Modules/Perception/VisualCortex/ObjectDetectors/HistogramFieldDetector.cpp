@@ -32,7 +32,8 @@ void HistogramFieldDetector::execute()
 
   //if die enclosured area of the polygon/rectangle is lower than 11200 squarepixels the area is to small
   //TODO: this could be an topic of some kind of learning
-  if(largestAreaRectangle.getArea() >= 11200)
+//  if(largestAreaRectangle.getArea() >= 11200)
+  if(largestAreaRectangle.getArea() >= 5600)
   {
     getFieldPercept().setValid(true);
   }

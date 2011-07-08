@@ -45,10 +45,10 @@ public:
     maxWeightedIndexY = 255;
     maxWeightedIndexCb = 255;
     maxWeightedIndexCr = 255;
-  };
+  }
 
   ~FieldColorPercept()
-  {};
+  {}
 
   bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
@@ -58,12 +58,12 @@ public:
         abs((int)(cb  - distCb) < (int) maxWeightedIndexCb) &&
         abs((int)(yy  - distY) < (int) maxWeightedIndexY)
       );
-  }
+  }//end isFieldColor
 
   bool isFieldColor(const Pixel& pixel) const
   {
     return isFieldColor(pixel.y, pixel.u, pixel.v);
-  }
+  }//end isFieldColor
 
 
   bool isOnlyFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr, const ColorClasses::Color& color) const
@@ -76,12 +76,12 @@ public:
         color != ColorClasses::skyblue &&
         color != ColorClasses::yellow
       );
-  }
+  }//end isOnlyFieldColor
 
   bool isOnlyFieldColor(const Pixel& pixel, const ColorClasses::Color& color) const
   {
     return isOnlyFieldColor(pixel.y, pixel.u, pixel.v, color);
-  }
+  }//end isOnlyFieldColor
 
   virtual void print(ostream& stream) const
   {
