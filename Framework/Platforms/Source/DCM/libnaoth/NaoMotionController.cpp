@@ -13,7 +13,6 @@
 using namespace naoth;
 
 NaoMotionController::NaoMotionController()
-  : lastTimeChestButtonNotPressed(0), shutdownRequested(false)
 {
   // register input
   registerInput<AccelerometerData>(*this);
@@ -74,31 +73,6 @@ void NaoMotionController::getMotionInput()
   libNaothDataReading = libNaothDataWriting;
   libNaothData.swapWriting();
   NaoControllerBase<NaoMotionController>::getMotionInput();
-
-  // check if chest button was pressed as shutdown request
-  if(!shutdownRequested)
-  {
-    if(*(theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::Chest]) == 0.0f)
-    {
-      lastTimeChestButtonNotPressed = theFrameInfo.getTime();
-    }
-    if((theFrameInfo.getTime() - lastTimeChestButtonNotPressed) > 3000)
-    {
-            std::cout << "REQUEST SHUTDOWN" << std::endl;
-      if((*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::LeftFootLeft])
-         || (*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::LeftFootRight])
-         || (*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::RightFootLeft])
-         || (*theDCMHandler.sensorPtrs[theButtonDataIndex + ButtonData::RightFootRight]))
-      {
-        system("shutdown -r now");
-      }
-      else
-      {
-        system("shutdown -h now");
-      }
-      shutdownRequested = true;
-    }
-  }
 }
 
 void NaoMotionController::setMotionOutput()
@@ -110,22 +84,9 @@ void NaoMotionController::setMotionOutput()
     const NaothData* naothDataReading = naothData.reading();
 
 
-    if(!shutdownRequested)
-    {
-      theDCMHandler.setLED(naothDataReading->lEDData());
-    }
+    theDCMHandler.setLED(naothDataReading->lEDData());
     theDCMHandler.setIRSend(naothDataReading->iRSendData());
     theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
-  }
-
-
-  if(shutdownRequested)
-  {
-    LEDData overrrideLEDData;
-    overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::RED] = 1.0;
-    overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::GREEN] = 0.0;
-    overrrideLEDData.theMultiLED[LEDData::ChestButton][LEDData::BLUE] = 1.0;
-    theDCMHandler.setLED(overrrideLEDData);
   }
 
 }
