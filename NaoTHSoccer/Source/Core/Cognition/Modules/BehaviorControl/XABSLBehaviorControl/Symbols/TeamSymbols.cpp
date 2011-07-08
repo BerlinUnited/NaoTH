@@ -173,7 +173,9 @@ bool TeamSymbols::calculateIfTheLast()
 
     if ((fn - messageData.frameInfo.getFrameNumber()) < 100 && // alive?
         !messageData.message.ispenalized() && // not penalized?
-        !messageData.message.wasstriker() )
+        !messageData.message.wasstriker() &&
+        number != 1 // no goalie
+        )
     {
       Vector2<double> robotpos;
       robotpos.x = messageData.message.positiononfield().translation().x();

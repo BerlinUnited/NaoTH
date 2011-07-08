@@ -26,10 +26,6 @@ option play_9v9 {
     {
       goto goalie;
     }
-    //else if(team.calc_if_is_the_last)
-    //{
-    //  goto defender;
-    //}
     else if (true)
     {
       goto supporter;
