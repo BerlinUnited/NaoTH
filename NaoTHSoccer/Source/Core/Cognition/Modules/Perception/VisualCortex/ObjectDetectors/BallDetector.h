@@ -42,7 +42,7 @@ BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(ColoredGrid)
   REQUIRE(ColorTable64)
   REQUIRE(CameraMatrix)
-//  REQUIRE(FieldPercept)
+  REQUIRE(FieldPercept)
 //  REQUIRE(BlobPercept)
   REQUIRE(FieldInfo)
 

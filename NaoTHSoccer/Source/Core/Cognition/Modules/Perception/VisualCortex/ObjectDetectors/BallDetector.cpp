@@ -58,8 +58,8 @@ void BallDetector::execute()
 
   BlobList blobList;
   WholeArea wholeImageArea;
-  theBlobFinder.execute(blobList, connectedColors, wholeImageArea);
-  //theBlobFinder.execute(connectedColors, getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon));
+  //theBlobFinder.execute(blobList, connectedColors, wholeImageArea);
+  theBlobFinder.execute(blobList, connectedColors, getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon));
 
   //search for ball if orange blobs were found
   if(blobList.blobNumber > 0)
