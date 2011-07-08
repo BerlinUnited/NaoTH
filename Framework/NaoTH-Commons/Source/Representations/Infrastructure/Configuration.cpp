@@ -311,7 +311,7 @@ void Configuration::setDefault(const std::string& group, const std::string& key,
 {
   // todo check it!
   int tmp = (int)value;
-  ASSERT(tmp > 0);
+  //ASSERT(tmp > 0);
   g_key_file_set_integer(publicKeyFile, group.c_str(), key.c_str(), tmp);
 }
 
