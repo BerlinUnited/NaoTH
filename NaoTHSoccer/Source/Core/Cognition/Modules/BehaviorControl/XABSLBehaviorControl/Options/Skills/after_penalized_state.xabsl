@@ -8,7 +8,7 @@ option after_penalized_state
 	  decision {
 		  if(state_time > 20000){
 		    goto completely_lost;
-		  }else if( (robot_pose.x > -1000 && robot_pose.x < 1000) && ((robot_pose.y > -2300 && robot_pose.y < -1700) || (robot_pose.y > 1700 && robot_pose.y < 2300)) ){
+		  }else if( (state_time > 2000 && (goal.opp.was_seen || goal.own.was_seen)) ){
 		    goto finished;
 		  }else{
 		    stay;
@@ -29,7 +29,7 @@ option after_penalized_state
       }
     }
     action{
-      go_to_relative_point(rotation=0, x=50, y=0);
+      go_to_relative_point(rotation=0, x=500, y=0);
       head.control_mode = search_for_goal;
     }
   }
