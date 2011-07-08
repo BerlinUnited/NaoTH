@@ -19,10 +19,10 @@
 AttentionAnalyzer::AttentionAnalyzer()
 {
   // init the map
-  //createMapOfInterest();
+  createMapOfInterest();
 
-  createRadialMapOfInterest(mapOfInterest,250,1250,500);
-	createRadialMapOfInterest(closeMapOfInterest,250,600,100);
+  //createRadialMapOfInterest(mapOfInterest,250,1250,500);
+	//createRadialMapOfInterest(closeMapOfInterest,250,600,100);
 
   DEBUG_REQUEST_REGISTER("AttentionAnalyzer:drawMapOfInterest", "Plot the map of interest on the field.", false);
   DEBUG_REQUEST_REGISTER("AttentionAnalyzer:plot_focus_trace", "Plots the trace of the point of the attention.", false);
@@ -185,7 +185,7 @@ void AttentionAnalyzer::createRadialMapOfInterest(
 void AttentionAnalyzer::createMapOfInterest()
 {
   double distanceSteps = 3.0;
-  double maxDistance = 1500.0;
+  double maxDistance = 1200.0;
 
   for(double x = -distanceSteps; x <= distanceSteps; x++)
   {
@@ -213,6 +213,7 @@ void AttentionAnalyzer::createMapOfInterest()
   mapOfInterest.push_back(PointOfInterest(Vector2<double>(-200.0, 200.0)));
   mapOfInterest.push_back(PointOfInterest(Vector2<double>(-200.0, -200.0)));
 }//end createMapOfInterest
+
 
 void AttentionAnalyzer::drawMapOfInterest(const std::list<PointOfInterest>& moi) const
 {
