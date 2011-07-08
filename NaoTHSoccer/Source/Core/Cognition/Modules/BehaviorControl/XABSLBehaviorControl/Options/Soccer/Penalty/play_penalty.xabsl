@@ -18,6 +18,8 @@ option play_penalty
         
       motion.type = stand;
       head.control_mode = stay_as_forced;
+      motion.walk.step_control.foot = none;
+      
       penalty_set_penalized_play();
       
       // control head movement according to value of head.control_mode

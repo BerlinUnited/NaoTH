@@ -20,6 +20,7 @@ option spl_play_soccer {
       sensor.camera.reset = false;
       motion.standHeight = -1;
       motion.walk.style = normal;
+      motion.walk.step_control.foot = none;
 
       initial_ready_set_play();
       

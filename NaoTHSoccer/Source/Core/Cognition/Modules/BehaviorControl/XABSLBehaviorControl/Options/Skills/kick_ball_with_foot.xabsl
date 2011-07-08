@@ -21,7 +21,7 @@ option kick_ball_with_foot
   state adjust_kick_left
   {
     decision {
-      if(executed_motion.type == kick)
+      if(executed_motion.type == kick && state_time > 5000)
         goto kick_left;
       else
         stay;
@@ -44,7 +44,7 @@ option kick_ball_with_foot
   state adjust_kick_right
   {
     decision {
-      if(executed_motion.type == kick )
+      if(executed_motion.type == kick  && state_time > 5000)
         goto kick_right;
       else
         stay;

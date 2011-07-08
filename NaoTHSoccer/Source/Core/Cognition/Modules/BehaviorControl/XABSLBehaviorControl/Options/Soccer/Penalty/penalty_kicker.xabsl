@@ -30,6 +30,7 @@ option penalty_kicker
     {
       go_to_ball_cool(distance = 170, right_foot=true);
       head.control_mode = search_for_ball;
+      motion.walk.style = (ball.distance < 500)?stable:normal;
     }
   }
   
@@ -68,7 +69,7 @@ option penalty_kicker
     }
     action
     {
-      kick_ball_with_foot(direction = -5, right = true);
+      kick_ball_with_foot(direction = 0, right = true);
       head.control_mode = search_for_ball;
     }
   }

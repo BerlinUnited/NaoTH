@@ -10,7 +10,7 @@ option attack_situation
     decision {
       if(action_done)
         goto position;
-      else if (obstacle.visual.was_seen && obstacle.ultrasound.time_since_seen < 2000 && obstacle.ultrasound.distance < 350)
+      else if (false && obstacle.radar.was_seen && getObstDistByAngle(angle=0) < 350)
       {
         goto avoid_obstacle;
       }
@@ -72,10 +72,10 @@ option attack_situation
         }
       }
       // obstacle in front: kick side
-      /*else if(false && obstacle.ultrasound.time_since_seen < 1000 && obstacle.ultrasound.distance < 350)
+      else if(false && obstacle.radar.was_seen && getObstDistByAngle(angle=0) < 350)
       {
         goto turn_to_ball_for_clear; // dribble
-      }*/
+      }
       else
         stay;
     }
@@ -135,9 +135,11 @@ option attack_situation
 	  {
       if(action_done)
       {
-        if(goal.opp.time_since_seen < 10000 && 
-           abs(value=attack.direction) < 15 &&
-           goal.opp.distance > 1000 && 
+        if(//goal.opp.time_since_seen < 10000 && 
+           (
+            (abs(value=attack.direction) < 15) ||
+            (abs(value=attack.direction) < 45 && goal.opp.distance > 1000)
+           ) &&
            random > 0.5)
           goto dribble_left;
         else
@@ -161,9 +163,11 @@ option attack_situation
     {
       if(action_done)
       {
-        if(goal.opp.time_since_seen < 10000 && 
-           abs(value=attack.direction) < 15 &&
-           goal.opp.distance > 1000 && 
+        if(//goal.opp.time_since_seen < 10000 && 
+           ((abs(value=attack.direction) < 15) ||
+            (abs(value=attack.direction) < 45 && goal.opp.distance > 1000)
+           )&&
+           //goal.opp.distance > 1000 && 
            random > 0.5)
 	        goto dribble_right;
         else
@@ -215,7 +219,7 @@ option attack_situation
   {
     decision
     {
-      if(action_done)
+      if(state_time > 3000)
         goto stabilize_after_kick;
       else
         stay;
@@ -224,9 +228,24 @@ option attack_situation
     {
       situation.abortable = false;
       // kick left or right
-      kick_ball(direction=(ball.y < 0)?90:-90);
+      //kick_ball(direction=(ball.y < 0)?90:-90);
+
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.step_control.foot = (ball.preview.y < 0)?left:right;
+      motion.walk.step_control.target.x = ball.preview.x;
+      motion.walk.step_control.target.y = ball.preview.y;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = (ball.preview.y < 0)?-90:90;
+      motion.walk.step_control.time = 500;
+      motion.walk.style = fast;
     }
   }
+
+  
 
   state stabilize_before_kick
   {
