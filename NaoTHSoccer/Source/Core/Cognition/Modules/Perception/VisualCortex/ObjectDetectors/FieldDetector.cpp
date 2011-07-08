@@ -26,7 +26,6 @@ FieldDetector::~FieldDetector()
 
 void FieldDetector::execute()
 {
-  getFieldPercept().reset();
   if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
     vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
@@ -55,11 +54,16 @@ void FieldDetector::execute()
       fieldPoly.add(result[i]);
     }
 
-    getFieldPercept().setPoly(fieldPoly);
-    if(fieldPoly.getArea() >= 11200)
+    getFieldPercept().setPoly(fieldPoly, getCameraMatrix().horizon);
+    if(fieldPoly.getArea() >= 5600)
     {
       getFieldPercept().setValid(true);
     }
+    else
+    {
+      getFieldPercept().setValid(false);
+    }
+
 
     DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
       int idx = result.size()-1;

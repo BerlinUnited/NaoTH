@@ -39,12 +39,14 @@ private:
 
   void generateDefaultField()
   {
+    fullFieldRect.clear();
     // create default field rect in image (the whole image) 
     fullFieldRect.add(Vector2<int>(0, 0));
     fullFieldRect.add(Vector2<int>(0, dimension.y - 1));
     fullFieldRect.add(Vector2<int>(dimension.x - 1, dimension.y - 1));
     fullFieldRect.add(Vector2<int>(dimension.x - 1, 0));
 
+    fullFieldPoly.clear();
     // create default field poly in image (the whole image)
     // basicaly the same as rect
     fullFieldPoly.add(Vector2<int>(0, 0));
@@ -58,8 +60,8 @@ public:
   FieldPercept()
   {
     //be sure the first initiated field is {0,0,0,0} and not {0,0,-1,-1}
-    dimension.x = 1;
-    dimension.y = 1;
+    dimension.x = 2;
+    dimension.y = 2;
     generateDefaultField();
     reset();
   }
@@ -93,7 +95,7 @@ public:
     valid = flag;
   }
 
-  const FieldPoly& getLargestValidPoly(const Math::LineSegment& horizon) const
+  const FieldPoly& getLargestValidPoly() const
   {
     if(isValid())
     {
@@ -102,7 +104,13 @@ public:
     return getFullFieldPoly();
   }//end getLargestValidPoly
 
-  const FieldRect& getLargestValidRect(const Math::LineSegment& horizon) const
+  //HACK: left for compatibility
+  const FieldPoly& getLargestValidPoly(const Math::LineSegment& horizon) const
+  {
+     return getLargestValidPoly();
+  }//end getLargestValidPoly
+
+  const FieldRect& getLargestValidRect() const
   {
     if(isValid())
     {
@@ -111,29 +119,42 @@ public:
     return getFullFieldRect();
   }//end getLargestValidRect
 
-  bool isRectUnderHorizon(const Math::LineSegment& horizon) const
+  //HACK: left for compatibility
+  const FieldRect& getLargestValidRect(const Math::LineSegment& horizon) const
   {
-    cout << endl << "llR " << fieldRect.getArea() << endl;
+    return getLargestValidRect();
+  }//end getLargestValidRect
+
+  void checkRectIsUnderHorizon(const Math::LineSegment& horizon)
+  {
     for(int i = 0; i < fieldRect.length; i++)
     {
-      if(horizon.begin().y < fieldRect[i].y && horizon.end().y < fieldRect[i].y )
+      if(horizon.begin().y >= fieldRect[i].y)
       {
-        return false;
+        fieldRect[i].y = Math::clamp((int) horizon.begin().y + 1, 0, dimension.y - 1);
+      }
+
+      if(horizon.end().y >= fieldRect[i].y )
+      {
+        fieldRect[i].y = Math::clamp((int) horizon.end().y + 1, 0, dimension.y - 1);
       }
     }
-    return true;
   }//end isPolyUnderHorizont
 
-  bool isPolyUnderHorizon(const Math::LineSegment& horizon) const
+  void checkPolyIsUnderHorizon(const Math::LineSegment& horizon)
   {
     for(int i = 0; i < fieldPoly.length; i++)
     {
-      if(horizon.begin().y < fieldPoly[i].y || horizon.end().y < fieldPoly[i].y )
+      if(horizon.begin().y >= fieldPoly[i].y)
       {
-        return false;
+        fieldPoly[i].y = Math::clamp((int) horizon.begin().y + 1, 0, dimension.y - 1);
+      }
+
+      if(horizon.end().y >= fieldPoly[i].y )
+      {
+        fieldPoly[i].y = Math::clamp((int) horizon.end().y + 1, 0, dimension.y - 1);
       }
     }
-    return true;
   }//end isRectUnderHorizont
 
   const FieldPoly& getPoly() const
@@ -146,14 +167,16 @@ public:
     return fieldRect;
   }//end getLargestRect
 
-  void setPoly(const FieldPoly& newField)
+  void setPoly(const FieldPoly& newField, const Math::LineSegment& horizon)
 	{
     fieldPoly = newField;
+    checkPolyIsUnderHorizon(horizon);
 	}//end add
 
-  void setRect(const FieldRect& newFieldRect)
+  void setRect(const FieldRect& newFieldRect, const Math::LineSegment& horizon)
 	{
     fieldRect = newFieldRect;
+    checkRectIsUnderHorizon(horizon);
 	}//end add
 
   /* reset percept */

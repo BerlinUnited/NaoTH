@@ -347,16 +347,6 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       noGreenSeen++;
     }
 
-    // scanline outside field / obstacle / check
-    if 
-    (
-      (lineBeginFound && noGreenSeen > MAX_POSSIBLE_LINE_THICKNESS) || // within a line
-      (!lineBeginFound && noGreenSeen > 20 && noGreenSeen > 2 * whiteCount)// on the ground
-    )
-    {
-      break;
-    }
-
     // calculate the mean green value
     if (greenCount > 5)
     {

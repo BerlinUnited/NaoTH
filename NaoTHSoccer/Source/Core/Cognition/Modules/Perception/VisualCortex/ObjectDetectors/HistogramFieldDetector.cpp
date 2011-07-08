@@ -28,26 +28,24 @@ void HistogramFieldDetector::execute()
 
   getFieldRectFromHistogram(min, max);
 
-  getFieldPercept().setRect(largestAreaRectangle);
+  getFieldPercept().setRect(largestAreaRectangle, getCameraMatrix().horizon);
 
   //if die enclosured area of the polygon/rectangle is lower than 11200 squarepixels the area is to small
   //TODO: this could be an topic of some kind of learning
-  if(largestAreaRectangle.getArea() >= 11200)
+  if(largestAreaRectangle.getArea() >= 5600)
   {
     getFieldPercept().setValid(true);
   }
-
   DEBUG_REQUEST( "ImageProcessor:HistogramFieldDetector:mark_rectangle",
     ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
-
-    RECT_PX
-    (
-        color,
-        getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0].x,
-        getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0].y,
-        getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[2].x,
-        getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[2].y
-    );
+      RECT_PX
+      (
+          color,
+          getFieldPercept().getLargestValidRect().points[0].x,
+          getFieldPercept().getLargestValidRect().points[0].y,
+          getFieldPercept().getLargestValidRect().points[2].x,
+          getFieldPercept().getLargestValidRect().points[2].y
+      );
   );
 }//end execute
 
