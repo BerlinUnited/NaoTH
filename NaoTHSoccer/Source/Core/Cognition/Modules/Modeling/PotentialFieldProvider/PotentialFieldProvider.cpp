@@ -23,6 +23,7 @@ PotentialFieldProvider::PotentialFieldProvider()
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_ball_approach_field:local", "...", false);
 
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection", "", false);
 }
 
 
@@ -30,6 +31,22 @@ void PotentialFieldProvider::execute()
 {
   Vector2<double> p = calculatePotentialField(getBallModel().positionPreview);
   getSoccerStrategy().attackDirection = p;
+
+
+  DEBUG_REQUEST("PotentialFieldProvider:attackDirection",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FFFFFF", 20);
+
+    Vector2<double> targetDir = getSoccerStrategy().attackDirection;
+    targetDir.normalize(200);
+
+    ARROW(
+          getBallModel().positionPreview.x,
+          getBallModel().positionPreview.y,
+          getBallModel().positionPreview.x + targetDir.x,
+          getBallModel().positionPreview.y + targetDir.y
+          );
+  );
 
 
   DEBUG_REQUEST("PotentialFieldProvider:draw_potential_field:local",

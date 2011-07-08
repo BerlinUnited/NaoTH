@@ -1,36 +1,18 @@
 option spl_robust_inside_goalie{
- 
- common decision
-  {
-    if(ball.distance < 1000 && ball.time_since_last_seen < 1000)
-      goto clear_ball;
-  }
-  
-initial state go_to_strategy_point{
-     decision {
-       else if (action_done)
-        goto check_situation;
-       else if (robot_pose.x > -3000    && robot_pose.x < -2600 &&
-           robot_pose.y <   500    && robot_pose.y > -500 &&
-           robot_pose.rotation < 5 && robot_pose.rotation > -5){
-           goto check_situation;
-      }else{
-        stay;
-      }
-     }
-     action {
-      head.control_mode = goalie_look_around;
-      go_to_absolute_point(rotation=0, x=-2800, y=0);
-     }
-}
 
-state  clear_ball {   
+/*common decision
+{
+  if (ball.time_seen > 1000 && ball.distance < 1000)
+    goto clear_ball;
+}*/
+
+state clear_ball {   
    decision {
-       else if (action_done 
+       if (action_done 
            || (ball.distance > 1000 && ball.time_since_last_seen < 1000)
            || (ball.time_since_last_seen > 2000)) 
        {
-         goto check_situation;
+         goto go_to_strategy_point;
        }
        else stay;
      }
@@ -39,19 +21,56 @@ state  clear_ball {
        clear_ball_far_away();
      }
 }
+  
+initial state go_to_strategy_point{
+     decision {
+       if (action_done)
+        goto check_situation;
+       else if (robot_pose.planned.x > -3000    && robot_pose.planned.x < -2600 &&
+           robot_pose.planned.y <   500    && robot_pose.planned.y > -500 &&
+           robot_pose.planned.rotation < 5 && robot_pose.planned.rotation > -5){
+           goto check_situation;
+      }else{
+        stay;
+      }
+     }
+     action {
+      team.is_playing_as_striker = false;
+      head.control_mode = goalie_look_around;
+      go_to_absolute_point(rotation=0, x=-2800, y=0);
+     }
+}
+
+state rotate_to_ball {
+  decision {
+     if (action_done || !ball.was_seen) {
+       goto check_situation;
+     } else {
+        stay;
+     }
+  }
+  action {
+    team.is_playing_as_striker = false;
+    head.control_mode = search_for_ball;
+    go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0);
+  }
+}
 
 target state check_situation {
   decision {
-    else if ((ball.distance < 2000             && ball.time_since_last_seen < 2000)) {  
+   if (ball.time_since_last_seen < 1000 && abs(value=ball.angle) > 15) //20 degree caused by go_to_relative_point(rotation=ball.angle, x=0, y=0); in rotate____
+       goto rotate_to_ball;
+   else if ((ball.distance < 3000 && ball.time_since_last_seen < 1000)) {  
             // || (ball.team.position.abs() < 2000  && ball.team.time_since_last_update < 2000)) {
       goto critical_ball;
     }
   //only go to strategy point if the robot is localized wrong 
   // and is already searching around for more than 5 seconds
-    else if (state_time < 5000 ||
-           (robot_pose.x > -3200   && robot_pose.x < -2400 &&
-           robot_pose.y <   700    && robot_pose.y > -700 &&
-           robot_pose.rotation < 5 && robot_pose.rotation > -5) )
+  //vorher: state_time < 5000 || vielleicht wichtig!?
+  //ohne bewegung auf team.ball hoeren und gucken.
+    else if (robot_pose.planned.x > -3200   && robot_pose.planned.x < -2400 &&
+           robot_pose.planned.y <   700    && robot_pose.planned.y > -700 &&
+           robot_pose.planned.rotation < 5 && robot_pose.planned.rotation > -5) 
     {
       stay;  
     }else{
@@ -67,13 +86,14 @@ target state check_situation {
 
 state critical_ball {
   decision {
-     else if (action_done) {
+     if (action_done) {
        goto check_situation;
      } else {
         stay;
      }
   }
   action {
+    team.is_playing_as_striker = false;
     critical_ball();
   }
 

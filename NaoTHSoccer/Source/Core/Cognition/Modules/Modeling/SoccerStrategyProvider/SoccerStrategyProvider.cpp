@@ -111,17 +111,91 @@ Vector2<double> SoccerStrategyProvider::calculateForamtion() const
 
 double SoccerStrategyProvider::estimateTimeToBall() const
 {
+  for( int i=0; i<BALLMODEL_MAX_FUTURE_SECONDS; i++)
+  {
+    double t = estimateTimeToPoint(getBallModel().futurePosition[i]);
+    if ( t < i )
+    {
+      return t; // we can catch the ball
+    }
+  }
+  return estimateTimeToPoint(getBallModel().futurePosition[BALLMODEL_MAX_FUTURE_SECONDS]);
+}
+
+double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
+{
   // the simplest case: this speed should get from motion
   const double stepTime = 140; //ms
   const double speed = 90.0/stepTime; // mm/ms
   const double turnSpeed = Math::fromDegrees(30) / stepTime;
 
 
-  double t = getBallModel().positionPreview.abs() / speed;
-  t += abs(getBallModel().positionPreview.angle()) / turnSpeed;
+  double t = p.abs() / speed;
+  t += abs(p.angle()) / turnSpeed;
 
   if ( getBodyState().fall_down_state != BodyState::upright )
     t += 3000; // stand up time
 
+  if ( isSomeoneBetweenMeAndPoint(p) )
+    t += 3000;
+
   return t;
+}
+
+bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
+{
+  const double dist = p.abs();
+  const double dir = p.angle();
+
+  unsigned int myNum = getPlayerInfo().gameData.playerNumber;
+  const PlayersModel& players = getPlayersModel();
+  unsigned int currentFrameNumber = getFrameInfo().getFrameNumber();
+
+  const double radiusOfRobot = 550;
+  // teammates
+  for( vector<PlayersModel::Player>::const_iterator iter=players.teammates.begin();
+    iter!=players.teammates.end(); ++iter)
+  {
+    if ( iter->number == myNum ) continue;
+
+    if ( iter->frameInfoWhenWasSeen.getFrameNumber() != currentFrameNumber ) continue;
+
+    double d = iter->pose.translation.abs();
+    if ( d < dist )
+    {
+      double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
+      if (abs(ang) < Math::pi_2)
+      {
+        double blockRadius = abs(d * tan(ang));
+        if (blockRadius < radiusOfRobot)
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  // opponents
+  for( vector<PlayersModel::Player>::const_iterator iter=players.opponents.begin();
+    iter!=players.opponents.end(); ++iter)
+  {
+    if ( iter->frameInfoWhenWasSeen.getFrameNumber() != currentFrameNumber ) continue;
+
+    double d = iter->pose.translation.abs();
+    if (d < dist)
+    {
+      double ang = Math::normalizeAngle(iter->pose.translation.angle() - dir);
+      if (abs(ang) < Math::pi_2)
+      {
+        double blockRadius = abs(d * tan(ang));
+        if (blockRadius < radiusOfRobot)
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  // todo: consider goals
+  return false;
 }

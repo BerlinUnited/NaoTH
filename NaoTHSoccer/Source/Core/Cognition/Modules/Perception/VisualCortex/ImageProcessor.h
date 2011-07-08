@@ -19,6 +19,7 @@
 #include "Tools/ImageProcessing/Histogram.h"
 
 // submodules
+#include "ObjectDetectors/HistogramFieldDetector.h"
 #include "ObjectDetectors/ScanLineEdgelDetector.h"
 #include "ObjectDetectors/FieldDetector.h"
 #include "ObjectDetectors/BallDetector.h"
@@ -61,11 +62,12 @@ class ImageProcessor: private ImageProcessorBase, private ModuleManager
 {
 public:
   ImageProcessor();
-  ~ImageProcessor(){};
+  ~ImageProcessor(){}
 
   virtual void execute();
 
 private:
+  ModuleCreator<HistogramFieldDetector>* theHistogramFieldDetector;
   ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
   ModuleCreator<BodyContourProvider>* theBodyContourProvider;
   ModuleCreator<FieldDetector>* theFieldDetector;

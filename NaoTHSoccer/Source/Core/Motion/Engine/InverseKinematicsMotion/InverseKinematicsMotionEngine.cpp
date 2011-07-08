@@ -258,7 +258,8 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
 
   if ( isWorking )
   {
-    double height = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].p.z;
+    double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;
+        //theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].p.z;
     hip.translate(0, 0, -height);
     hip.rotateX(chestRotationStabilizerValue.x);
     hip.rotateY(chestRotationStabilizerValue.y);

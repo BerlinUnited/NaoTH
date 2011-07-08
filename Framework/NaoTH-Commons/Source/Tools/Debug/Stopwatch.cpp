@@ -48,27 +48,6 @@ void Stopwatch::notifyStart(StopwatchItem& stopwatchItem)
   stopwatchItem.start = timeInMicro;
   stopwatchItem.stop = timeInMicro;
 
-  /*
-  #ifdef WIN32
-  LARGE_INTEGER highPerformanceTick;
-  LARGE_INTEGER freq;
-  if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq))
-  {
-    double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
-    unsigned long timeInMicro = (unsigned long) (inSeconds * 1000000.0);
-    stopwatchItem.start = timeInMicro;
-    stopwatchItem.stop = timeInMicro;
-  }
-  #else
-  struct timeval t;
-  if(gettimeofday(&t, NULL) == 0)
-  {
-    unsigned int timeInMicro = t.tv_sec * 1000000 + t.tv_usec;
-    stopwatchItem.start = timeInMicro;
-    stopwatchItem.stop = timeInMicro;
-  }
-  #endif // WIN32
-  */
 }//end notifyStart
 
 
@@ -77,29 +56,6 @@ void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
   unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
   stopwatchItem.stop = timeInMicro;
   stopwatchItem.isValid = true;
-
-  /*
-  #ifdef WIN32
-  LARGE_INTEGER highPerformanceTick;
-  LARGE_INTEGER freq;
-  if(QueryPerformanceCounter(&highPerformanceTick) && QueryPerformanceFrequency(&freq))
-  {
-    double inSeconds = ((double) highPerformanceTick.LowPart) / ((double) freq.LowPart);
-    unsigned long timeInMicro = (unsigned long) (inSeconds * 1000000.0);
-    stopwatchItem.stop = timeInMicro;
-    stopwatchItem.isValid = true;
-  }
-  
-  #else
-  struct timeval t;
-  if(gettimeofday(&t, NULL) == 0)
-  {
-    unsigned int timeInMicro = t.tv_sec * 1000000 + t.tv_usec;
-    stopwatchItem.stop = timeInMicro;
-    stopwatchItem.isValid = true;
-  }
-  #endif //WIN32
-  */
 
   // update the statistics of the item
   stopwatchItem.n++;
@@ -126,7 +82,7 @@ StopwatchItem& Stopwatch::getStopwatchReference(const std::string& stopWatchName
 }//end getStopwatchReference
 
 
-void Stopwatch::dump()
+void Stopwatch::dump(std::string name)
 {
   stringstream outputStream;
   
@@ -146,5 +102,11 @@ void Stopwatch::dump()
   }//end while
 
   // write to file
-  SynchronizedFileWriter::saveStreamToFile(outputStream, string("Config/stopwatch.dump"));
+  std::stringstream s;
+  if(name != "")
+  {
+    s << name << ".";
+  }
+  s << "stopwatch.dump";
+  SynchronizedFileWriter::saveStreamToFile(outputStream, s.str());
 }//end dump

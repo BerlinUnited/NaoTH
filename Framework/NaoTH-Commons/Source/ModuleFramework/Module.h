@@ -44,7 +44,9 @@ private:
   const std::string getName() const { return name; }
   std::string name;
 
-protected:
+// HACK: should not be public, but inline access from StaticProvidingRegistrator
+// needs
+public:
   //HACK: remove it, here schouldn't be any object data
   T* data;
 
@@ -56,8 +58,8 @@ public:
   {
   }
 
-  inline T& getData() const { ASSERT(data != NULL); return *data; }
-//  inline const T& getData() const { ASSERT(data != NULL); return *data; }
+  inline T& getData() const { assert(data != NULL); return *data; }
+//  inline const T& getData() const { assert(data != NULL); return *data; }
 
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
@@ -231,14 +233,15 @@ protected:
       data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_providing_registry)[name];
     }
 
-    TYPE_WHAT& get(BlackBoard& blackBoard) const
+    inline TYPE_WHAT& get(BlackBoard& blackBoard) const
     {
       return *(data->get(blackBoard));
     }
 
-    TYPE_WHAT& getData() const
+    inline TYPE_WHAT& getData() const
     {
-      return data->getData();
+      assert(data->data != NULL);
+      return *(data->data);
     }
   };
 };

@@ -19,13 +19,13 @@ option decide_role
       else
         goto striker;
     }
-    else if(game.player_number == 3)
+    else if(team.calc_if_is_the_last)
     {
-      goto supporter;
+      goto defender;
     }
     else if(true)
     {
-      goto defender;
+      goto supporter;
     }
   }
 

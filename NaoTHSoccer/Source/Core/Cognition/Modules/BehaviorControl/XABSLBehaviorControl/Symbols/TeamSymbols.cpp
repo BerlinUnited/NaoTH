@@ -18,6 +18,7 @@ void TeamSymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("team.members_alive_count", &getTeamMembersAliveCount);
   engine.registerBooleanInputSymbol("team.calc_if_is_striker", &calculateIfStriker);
+  engine.registerBooleanInputSymbol("team.calc_if_is_striker_by_time_to_ball", &calculateIfStrikerByTimeToBall);
   engine.registerBooleanOutputSymbol("team.is_playing_as_striker",&setWasStriker, &getWasStriker);
   engine.registerBooleanInputSymbol("team.calc_if_is_the_last", &calculateIfTheLast);
 }//end registerSymbols
@@ -172,7 +173,9 @@ bool TeamSymbols::calculateIfTheLast()
 
     if ((fn - messageData.frameInfo.getFrameNumber()) < 100 && // alive?
         !messageData.message.ispenalized() && // not penalized?
-        !messageData.message.wasstriker() )
+        !messageData.message.wasstriker() &&
+        number != 1 // no goalie
+        )
     {
       Vector2<double> robotpos;
       robotpos.x = messageData.message.positiononfield().translation().x();

@@ -256,7 +256,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
   //updateByLinesTableNew();
 
   PEN("FF00FF", 10);
-  for(unsigned int lp=0; lp < getLinePercept().lines.size(); lp++)
+  for(unsigned int lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
   {
     // dont use the lines which are parts of the circle 
     // when the circle itself was detected

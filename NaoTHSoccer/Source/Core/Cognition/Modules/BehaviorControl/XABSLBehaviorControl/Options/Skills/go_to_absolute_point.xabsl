@@ -17,10 +17,10 @@ option go_to_absolute_point{
       else
         stay;
     }
-    action{
-      go_to_relative_point(rotation=@rotation-robot_pose.rotation, 
-                           x=locator.field_to_relative.x(x=@x, y=@y), 
-                           y=locator.field_to_relative.y(x=@x, y=@y));
+    action {
+      go_to_relative_point(rotation=@rotation-robot_pose.planned.rotation, 
+                           x=odometry.preview.x(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)),
+                           y=odometry.preview.y(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) );
     }
   }
   
@@ -32,9 +32,9 @@ option go_to_absolute_point{
         goto go_to;
     }
    action{
-      go_to_relative_point(rotation=@rotation-robot_pose.rotation, 
-                           x=locator.field_to_relative.x(x=@x, y=@y), 
-                           y=locator.field_to_relative.y(x=@x, y=@y));
+      go_to_relative_point(rotation=@rotation-robot_pose.planned.rotation, 
+                           x=odometry.preview.x(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)),
+                           y=odometry.preview.y(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) );
     }
   }
 }

@@ -19,7 +19,11 @@ void got_signal(int)
   // do something
   std::cout << "catched signal" << std::endl;
   Trace::getInstance().dump();
-  exit(3);
+  Stopwatch::getInstance().dump("cognition");
+
+  sync();
+
+  exit(0);
 }
 
 int main(int argc, char *argv[])

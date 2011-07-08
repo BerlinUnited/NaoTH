@@ -210,15 +210,15 @@ void FootStepPlanner::restrictStepSize(Pose2D& step, const FootStep& lastStep, d
 
   double maxTurn = theMaxStepTurn * character;
   
-  double maxLen = sqrt(theMaxStepLength * theMaxStepLength + theMaxStepWidth * theMaxStepWidth) * character;
-  
+  /*double maxLen = sqrt(theMaxStepLength * theMaxStepLength + theMaxStepWidth * theMaxStepWidth) * character;
+
   if (maxLen > 1)
   {
     Pose3D lastHip = lastStep.supFoot();
     lastHip.translate(0, static_cast<int>(lastStep.liftingFoot())*theFootOffsetY*2, 0);
     double lastStepLen = (lastStep.footEnd().translation - lastHip.translation).abs();
-    maxTurn = theMaxStepTurn * Math::clamp(1 - lastStepLen / maxLen, 0.5, 1.0);
-  }
+    maxTurn *= Math::clamp(1 - lastStepLen / maxLen, 0.5, 1.0);
+  }*/
 
   // limit the rotation
   step.rotation = Math::clamp(step.rotation, -maxTurn, maxTurn);

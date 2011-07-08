@@ -3,22 +3,25 @@ option approach_ball_with_correct_foot {
 
  float @dist [mm];
 
+ bool @want_to_turn_after_approach;
+
  initial state approach_ball 
  {
    decision
    {
-     if(abs(value=attack.direction) < 70) // no turn needed
-     {
-       if(attack.direction > 0) //attack.approaching_with_right_foot)
-         goto approach_ball_right;
-       else
-         goto approach_ball_left;
-     }else // need to turn around ball
+     if(abs(value=attack.direction) > 70 && @want_to_turn_after_approach) // need to turn around ball
      {
        if(attack.direction > 0) //attack.approaching_with_right_foot)
          goto approach_ball_left;
        else
          goto approach_ball_right;
+     }
+     else // no turn needed
+     {
+       if(attack.direction > 0) //attack.approaching_with_right_foot)
+         goto approach_ball_right;
+       else
+         goto approach_ball_left;
      }
    }
    action 

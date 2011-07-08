@@ -15,7 +15,7 @@
 
 FieldDetector::FieldDetector()
 {
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field", "mark polygonal boundary of the detected field on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);
 }
 
 
@@ -26,8 +26,6 @@ FieldDetector::~FieldDetector()
 
 void FieldDetector::execute()
 {
-  getFieldPercept().reset();
-
   if(getScanLineEdgelPercept().endPoints.size() > 0)
   {
     vector<Vector2<int> > points(getScanLineEdgelPercept().endPoints.size());
@@ -50,19 +48,29 @@ void FieldDetector::execute()
 
     // create the polygon
     FieldPercept::FieldPoly fieldPoly;
+
     for(unsigned int i = 0; i < result.size(); i++)
     {
       fieldPoly.add(result[i]);
     }
 
-    getFieldPercept().add(fieldPoly, getFieldPercept().getFullFieldRect());
-    getFieldPercept().setValid(true);
+    getFieldPercept().setPoly(fieldPoly, getCameraMatrix().horizon);
+    if(fieldPoly.getArea() >= 5600)
+    {
+      getFieldPercept().setValid(true);
+    }
+    else
+    {
+      getFieldPercept().setValid(false);
+    }
 
-    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field",
+
+    DEBUG_REQUEST( "ImageProcessor:FieldDetector:mark_field_polygon",
       int idx = result.size()-1;
+      ColorClasses::Color color = getFieldPercept().isValid() ? ColorClasses::green : ColorClasses::red;
       for(unsigned int i = 0; i < result.size(); i++)
       {
-        LINE_PX(ColorClasses::green, result[idx].x, result[idx].y, result[i].x, result[i].y);
+        LINE_PX(color, result[idx].x, result[idx].y, result[i].x, result[i].y);
         idx = i;
       }
     );

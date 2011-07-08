@@ -5,7 +5,9 @@ option search_for_ball
   
   initial state start_search {
   decision {
-    if(ball.time_since_last_seen < 3000 || @force_ball_model_check) //TODO
+    if((ball.time_since_last_seen < 3000 || 
+       @force_ball_model_check) && 
+       abs(value=ball.angle) < 85)
       goto try_to_look_at_the_old_ball;
     else
       goto search_for_ball;
@@ -18,7 +20,7 @@ option search_for_ball
   {
     decision
     {
-      if (state_time > 5000)
+      if (state_time > 2000)
         goto search_for_ball;
       else
         stay;
@@ -40,6 +42,11 @@ option search_for_ball
     {
       if (ball.was_seen)
         goto look_at_ball_percept;
+      else if( state_time > 3000 && 
+        (ball.time_since_last_seen < 15000 || 
+         @force_ball_model_check) &&
+       abs(value=ball.angle) < 85)
+       goto try_to_look_at_the_old_ball;
       //else if( head.executed_motion_type != search )
        //goto search_for_ball_near;
       else

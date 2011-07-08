@@ -327,10 +327,12 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     if(thisPixelColor == ColorClasses::green || thisPixelColor == ColorClasses::orange) // ignore the ball
     {
       noGreenSeen = 0;
+      if(thisPixelColor == ColorClasses::green && 0.2 * point.abs() < greenCount)
+      {
+        greenValue += thisPixelBrightness;
+        lastGreenPoint = point;
+      }
       greenCount++;
-      greenValue += thisPixelBrightness;
-      lastGreenPoint = point;
-
       whiteCount = 0;
       skyblueCount = 0;
       yellowCount = 0;
@@ -345,16 +347,6 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       greenCount = 0;
       greenValue = 0;
       noGreenSeen++;
-    }
-
-    // scanline outside field / obstacle / check
-    if 
-    (
-      (lineBeginFound && noGreenSeen > MAX_POSSIBLE_LINE_THICKNESS) || // within a line
-      (!lineBeginFound && noGreenSeen > 20 && noGreenSeen > 2 * whiteCount)// on the ground
-    )
-    {
-      break;
     }
 
     // calculate the mean green value

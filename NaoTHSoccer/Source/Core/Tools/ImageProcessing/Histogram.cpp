@@ -31,7 +31,8 @@ Histogram::Histogram()
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:1_Cb_color_channel", "draw X axis histogram of the U (Cb) color channel", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:2_Cr_color_channel", "draw X axis histogram of the V (Cr) color channel", false);
-  //  init();
+
+  init();
 }
 
 void Histogram::init()

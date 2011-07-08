@@ -128,9 +128,11 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
+    theEngine.autoArms(c, theMotorJointData.position);
+
     // some direct offsets
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LKneePitch:JointData::RKneePitch] += currentPose.knee_pitch_offset;
-    //theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;
+    theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;
 	}//end if
   
 	for (int i = 0; i < JointData::numOfJoint; i++)
@@ -360,8 +362,10 @@ const KickPose IKDynamicKickMotion::getStandPoseOnOneFoot(bool add_rotation)
   KickPose standPose = getStandPose(getStandHeight());
   const Pose3D& standFoot = getStandFoot(standPose);
 
+	double offset = (theKickingFoot == KickRequest::left)?theParameters.shiftOffsetYRight:theParameters.shiftOffsetYLeft;
+	
   // shift the body
-  standPose.pose.com.translate(Vector3<double>(0, standFoot.translation.y, 0));
+  standPose.pose.com.translate(Vector3<double>(0, standFoot.translation.y + offset, 0));
 
 
   double rotationX = theKickingFoot*Math::fromDegrees(theParameters.basicXRotationOffset);
@@ -371,7 +375,6 @@ const KickPose IKDynamicKickMotion::getStandPoseOnOneFoot(bool add_rotation)
   }
   standPose.pose.com.rotation = RotationMatrix::getRotationX(rotationX);
 
-  
 
   return standPose;
 }//end getStandPoseOnOneFoot
@@ -443,10 +446,13 @@ void IKDynamicKickMotion::action_retract(const Pose3D& kickPose)
   const Pose3D& currentFootPose = (theKickingFoot == KickRequest::left)?p.pose.feet.left: p.pose.feet.right;
   //double v = theParameters.kickSpeed; // mm/ms = m/s
   Vector3<double> d = -(currentFootPose.translation);
-  p.knee_pitch_offset = Math::clamp(d.x/100*Math::fromDegrees(45.0), 0.0, Math::fromDegrees(45.0));
+	double max_kpo = Math::fromDegrees(theParameters.knee_pitch_offset);
+  p.knee_pitch_offset = Math::clamp(d.x/100*max_kpo, 0.0, max_kpo);
   
-	Vector3<double> dir = -(kickPose.translation - preparePose.translation);
-	p.ankle_roll_offset = Math::clamp(dir.y/60*Math::fromDegrees(90.0), 0.0, Math::fromDegrees(90.0));
+	
+	Vector3<double> dir = -(kickPose.translation - currentFootPose.translation);
+	double max_aro = Math::fromDegrees(theParameters.ankle_roll_offset);
+	p.ankle_roll_offset = dir.y/60*max_aro;
 	}
 
 

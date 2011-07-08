@@ -16,6 +16,7 @@ option avoid_obstacle_spl {
     action
     {
       move_around_ball(direction=atan2(y=obstacle.visual.y, x=obstacle.visual.x), radius=250);
+      head.control_mode = search_for_ball;
     }
   }
 
