@@ -2,24 +2,37 @@
 
 option initial_kick_off {
 
-  initial state dribble_out_of_circle
+  initial state approach_ball
+  {
+    decision {
+      if(action_done)
+        goto dribble_out_of_circle;
+      else if(ball.position.field.x > (field.centerCircleRadius + 100))
+        goto outside_circle;
+      else
+        stay;
+    }
+    action {
+      // error: x=40, y=40, a=20 => dist < 180+60 = 240
+      approach_ball_with_correct_foot_ckeck_goal(dist=180-20*random);
+    }
+  }
+  
+  state dribble_out_of_circle
   {
     decision
     {
-      if(ball.position.field.x > (field.centerCircleRadius + 100))
-      {
-        goto outside_circle;
-      }
+      if(action_done)
+        goto approach_ball;
       else
-      {
         stay;
-      }
     }
     action
     {
       set_left_eye = red_green;
       set_right_eye = red_green;
-      dribble(direction=ball.angle);
+      //dribble(direction=ball.angle);
+      dribble_spl();
     }
   }
 

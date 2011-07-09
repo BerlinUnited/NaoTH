@@ -55,7 +55,7 @@ option attack_situation
         }
       }
       // obstacle in front: kick side
-      else if(false && obstacle.radar.was_seen && getObstDistByAngle(angle=0) < 350)
+      else if(obstacle.ultrasound.distance < 350 && obstacle.ultrasound.time_since_seen < 1000)
       {
         goto turn_to_ball_for_clear; // dribble
       }
@@ -103,7 +103,10 @@ option attack_situation
       if(action_done)
       {
         if(((abs(value=attack.direction) < 15) ||
-            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)) &&
+        
+            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)
+            
+           ) &&
            random > 0.5)
           goto dribble;
         else
@@ -126,7 +129,7 @@ option attack_situation
     decision 
     {
       if(action_done)
-        goto stabilize_before_clear_kick;
+        goto clear_kick;
       else 
         stay;
     }
@@ -168,9 +171,9 @@ option attack_situation
       //kick_ball(direction=(ball.y < 0)?90:-90);
 
       motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 0;
+      motion.walk_speed.x = 50;
+      motion.walk_speed.y = 50*((attack.direction > 0)?1:-1);
+      motion.walk_speed.rot = atan2(y=ball.preview.y, x=ball.preview.x);
       motion.walk.coordinate = hip;
       motion.walk.step_control.foot = (ball.preview.y < 0)?left:right;
       motion.walk.step_control.target.x = ball.preview.x;
