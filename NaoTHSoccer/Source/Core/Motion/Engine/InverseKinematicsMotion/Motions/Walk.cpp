@@ -80,18 +80,19 @@ bool Walk::FSRProtection()
   static unsigned int noTouchCount = 0;
 
   if ( theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
-      && noTouchCount < theWalkParameters.minFSRProtectionCount )
+      && noTouchCount <= theWalkParameters.minFSRProtectionCount )
   {
     noTouchCount ++;
   }
-  else
+  else if ( theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE
+           && noTouchCount > 0 )
   {
-    noTouchCount = 0;
+    noTouchCount --;
   }
 
   if ( !isStopping && canStop() )
   {
-    return noTouchCount >= theWalkParameters.minFSRProtectionCount;
+    return noTouchCount > theWalkParameters.minFSRProtectionCount;
   }
   else
   {
