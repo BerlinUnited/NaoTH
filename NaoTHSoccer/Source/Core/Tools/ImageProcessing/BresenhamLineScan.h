@@ -24,6 +24,15 @@
 class BresenhamLineScan
 {
 public:
+
+	/**
+	 * Constructs a scanline through the two points. numberOfPixels can be used.
+   * Default Contructor for use in array and so on
+	 * @param start The start point of the line segment.
+	 * @param end The end point of the line segment.
+	 */
+  BresenhamLineScan();
+
 	/** 
 	 * Constructs a scanline through the two points. numberOfPixels can be used.
 	 * @param start The start point of the line segment.

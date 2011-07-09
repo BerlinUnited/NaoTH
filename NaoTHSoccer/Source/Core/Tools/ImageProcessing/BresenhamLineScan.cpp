@@ -17,6 +17,12 @@
 
 using namespace naoth;
 
+BresenhamLineScan::BresenhamLineScan()
+{
+  double dir = Math::pi_2;
+  setup(dir);
+}
+
 BresenhamLineScan::BresenhamLineScan(const Vector2<int>& start, const Vector2<int>& end)
 {
   setup(start, end);

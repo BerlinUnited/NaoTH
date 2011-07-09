@@ -553,8 +553,8 @@ double ScanLineEdgelDetector::getPointsAngle(Vector2<int>& point)
     {
       x = point.x + offsetX;
       y = point.y + offsetY;
-      Math::clamp(x, 1, (signed int)getImage().cameraInfo.resolutionWidth-1);
-      Math::clamp(y, 1, (signed int)getImage().cameraInfo.resolutionHeight-1);
+      x = Math::clamp(x, 1, (signed int)getImage().cameraInfo.resolutionWidth-1);
+      y = Math::clamp(y, 1, (signed int)getImage().cameraInfo.resolutionHeight-1);
       Pixel pixel = getImage().get(x,y);
       pixelEnvironment[offsetX+1][offsetY+1] = pixel.y;
     }//end for offsetY

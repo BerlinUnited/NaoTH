@@ -56,13 +56,15 @@ solution "NaoTHSoccer"
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
-    flags { "Symbols", "FatalWarnings" }
+--    flags { "Symbols", "FatalWarnings" ,"ExtraWarnings"}
+    flags { "Symbols", "ExtraWarnings"}
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "FatalWarnings" }
-         
-  configuration{"Native"}
+--    flags { "Optimize", "FatalWarnings" ,"ExtraWarnings"}
+    flags { "OptimizeSpeed", "ExtraWarnings"}
+      
+ configuration{"Native"}
     includedirs {
       "../../Extern/include/",
       "../../Extern/include/glib-2.0/",

@@ -62,6 +62,7 @@ project "Webots"
 	  "gobject-2.0",
 	  "gmodule-2.0",
 	  "gthread-2.0",
+	  "pthread",
 	  "protobuf"}
     
     targetname "nao_team_0"

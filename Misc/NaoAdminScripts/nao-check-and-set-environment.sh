@@ -16,7 +16,7 @@ verify_aldir ()
 
 verify_alcross () 
 {
-  DEFAULT_NAO_CROSSCOMPILE="$HOME/Roboter/Aldebaran/crosscompiletoolchain"
+  DEFAULT_NAO_CROSSCOMPILE="/home/claas/Roboter/Aldebaran/crosscompiletoolchain"
   if  [ "$NAO_CROSSCOMPILE" == "" ]
   then
         echo "  * NAO_CROSSCOMPILE has not been set, using default path '$DEFAULT_NAO_CROSSCOMPILE'"
@@ -29,7 +29,7 @@ verify_alcross ()
 }
 verify_naothsvn() 
 {
-  DEFAULT_NAOTH_BZR="$HOME/workspace/Projekte/NaoTH-2011"
+  DEFAULT_NAOTH_BZR="/home/claas/workspace/Projekte/NaoTH-2011"
   if  [ "$NAOTH_BZR" == "" ]
   then
         echo "  * NAOTH_BZR has not been set, using default path '$DEFAULT_NAOTH_BZR'"
