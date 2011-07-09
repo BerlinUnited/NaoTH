@@ -602,8 +602,11 @@ void Simulator::parseFile()
       // needed to generate the the frame info if not available in one single frame
       if(perFrameIncluded.find("FrameInfo") == perFrameIncluded.end())
       {
+        if(!noFrameInfo)
+        {
+          std::cout << "automated FrameInfo generation" << std::endl;
+        }
         noFrameInfo = true;
-        std::cout << "automated FrameInfo generation" << std::endl;
       }
 
       perFrameIncluded.clear();
