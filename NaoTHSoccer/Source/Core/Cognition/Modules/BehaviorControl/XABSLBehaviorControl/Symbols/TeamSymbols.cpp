@@ -86,7 +86,7 @@ bool TeamSymbols::calculateIfStriker()
   }//end for
 
   // all team members except goalie!! otherwise goalie is nearest and all thinks he is striker, but he won't clear ball
-  //should check who has best position to goal etc.guitloö penner
+  //should check who has best position to goal etc.
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
     i != tm.data.end(); ++i)
   {
