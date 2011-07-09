@@ -142,7 +142,8 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     }
     }
 
-    c.hip.translation += theEngine.balanceCoM(lastReqCoM, supFoot);
+    Vector3d adjust = theEngine.balanceCoM(lastReqCoM, supFoot);
+    c.hip.translation.y += adjust.y;
     lastCoMPose = currentPose.pose;
 
     if(theParameters.enableStaticStabilizer && theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE)
