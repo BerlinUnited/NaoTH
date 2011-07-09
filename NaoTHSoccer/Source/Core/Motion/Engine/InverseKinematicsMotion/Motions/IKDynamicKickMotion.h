@@ -127,6 +127,7 @@ private:
 
   KickRequest::KickFootID theKickingFoot;
 
+  InverseKinematic::CoMFeetPose lastCoMPose;
   KickPose currentPose;
   Trajectory<IKDynamicKickMotion,KickPose> trajectory;
  

@@ -93,6 +93,10 @@ public:
   
   void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[naoth::JointData::numOfJoint]);
 
+  Vector3<double> sensorCoMIn(KinematicChain::LinkID link) const;
+
+  Vector3<double> balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
+
 private:
 
   const MotionBlackBoard& theBlackBoard;

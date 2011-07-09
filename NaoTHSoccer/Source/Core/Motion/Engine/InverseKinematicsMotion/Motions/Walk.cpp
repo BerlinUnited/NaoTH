@@ -69,6 +69,9 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
 bool Walk::FSRProtection()
 {
+  if ( !theWalkParameters.enableFSRProtection )
+    return false;
+
   // no foot on the ground,
   // both feet should on the ground, e.g canStop
   // TODO: check current of leg joints
@@ -76,18 +79,25 @@ bool Walk::FSRProtection()
 
   static unsigned int noTouchCount = 0;
 
-  if ( theWalkParameters.enableFSRProtection &&
-    theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
-      && !isStopping && canStop() )
+  if ( theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE
+      && noTouchCount <= theWalkParameters.minFSRProtectionCount )
   {
     noTouchCount ++;
   }
-  else
+  else if ( theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE
+           && noTouchCount > 0 )
   {
-    noTouchCount = 0;
+    noTouchCount --;
   }
 
-  return noTouchCount > theWalkParameters.minFSRProtectionCount;
+  if ( !isStopping && canStop() )
+  {
+    return noTouchCount > theWalkParameters.minFSRProtectionCount;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool Walk::waitLanding()
