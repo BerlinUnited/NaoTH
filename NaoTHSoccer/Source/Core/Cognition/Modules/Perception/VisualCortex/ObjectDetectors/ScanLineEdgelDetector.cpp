@@ -327,7 +327,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     if(thisPixelColor == ColorClasses::green || thisPixelColor == ColorClasses::orange) // ignore the ball
     {
       noGreenSeen = 0;
-      if(thisPixelColor == ColorClasses::green && 0.2 * point.abs() < greenCount)
+      if(thisPixelColor == ColorClasses::green /* && 0.2 * point.abs() < greenCount */)
       {
         greenValue += thisPixelBrightness;
         lastGreenPoint = point;
