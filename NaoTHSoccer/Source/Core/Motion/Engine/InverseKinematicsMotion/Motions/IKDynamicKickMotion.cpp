@@ -83,6 +83,7 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
   if (currentState != motion::running)
   {
     currentPose.pose = theEngine.getCurrentCoMFeetPose();
+    lastCoMPose = currentPose.pose;
     localInStandFoot(currentPose);
   }
 
@@ -120,6 +121,29 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     
     // calculate the chest
     InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(currentPose.pose);
+
+    KinematicChain::LinkID supFoot = KinematicChain::numOfLinks;
+    Vector3d lastReqCoM;
+    switch(theKickingFoot)
+    {
+    case KickRequest::right:
+    {
+      supFoot = KinematicChain::LFoot;
+      lastReqCoM = lastCoMPose.feet.left.invert() * lastCoMPose.com.translation;
+      c.localInLeftFoot();
+      break;
+    }
+    case KickRequest::left:
+    {
+      supFoot = KinematicChain::RFoot;
+      lastReqCoM = lastCoMPose.feet.right.invert() * lastCoMPose.com.translation;
+      c.localInRightFoot();
+      break;
+    }
+    }
+
+    c.hip.translation += theEngine.balanceCoM(lastReqCoM, supFoot);
+    lastCoMPose = currentPose.pose;
 
     if(theParameters.enableStaticStabilizer && theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE)
     {

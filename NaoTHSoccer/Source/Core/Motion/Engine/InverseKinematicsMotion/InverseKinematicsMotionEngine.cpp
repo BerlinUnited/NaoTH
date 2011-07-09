@@ -9,6 +9,7 @@
 
 #include "InverseKinematicsMotionEngine.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
+#include "Tools/Debug/DebugModify.h"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -439,3 +440,34 @@ void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&p
   }
   //----------------------------------------------
 }//end autoArms
+
+Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(KinematicChain::LinkID link) const
+{
+  return theBlackBoard.theKinematicChain.theLinks[link].M.invert() * theBlackBoard.theKinematicChain.CoM;
+}
+
+// compares expected com and com from sensors
+// @return adjust applyed to hip
+Vector3<double> InverseKinematicsMotionEngine::balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const
+{
+  ASSERT(link==KinematicChain::LFoot || link==KinematicChain::RFoot );
+  Vector3d sensorCoM = sensorCoMIn(link);
+  sensorCoM.z += NaoInfo::FootHeight;
+
+  Vector3d e = lastReqCoM - sensorCoM;
+
+  double k = 1;
+  double threshold = 3;
+  MODIFY("balanceCoMK", k);
+  MODIFY("balanceCoMT", threshold);
+
+  Vector3<double> u;
+  for( int i=0; i<3; i++)
+  {
+    if (abs(e[i]) > threshold)
+    {
+      u[i] = e[i] - Math::sgn(e[i]) * threshold;
+    }
+  }
+  return u*k;
+}
