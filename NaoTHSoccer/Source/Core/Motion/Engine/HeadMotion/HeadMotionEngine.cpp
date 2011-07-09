@@ -168,7 +168,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
 {
   static Vector2<double> last_requested_change;
 
-  double max_velocity_deg_in_second = 90.0;
+  double max_velocity_deg_in_second = 180.0;
   //TODO
   //MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
   double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
