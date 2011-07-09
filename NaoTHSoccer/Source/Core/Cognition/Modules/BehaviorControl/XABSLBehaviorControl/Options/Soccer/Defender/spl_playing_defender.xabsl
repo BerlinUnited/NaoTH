@@ -33,14 +33,14 @@ option spl_playing_defender {
     decision {
       if ( ball.was_seen )
         goto defending;
-      else if ( action_done || state_time > 30000 )
+      else if ( action_done || state_time > 30000)
         goto ball_not_seen;
       else
         stay;
     }
     action {
-      go_to_point(x=field.xPosOwnGroundline*0.5, y=0, rot=0);
-      head.control_mode = smart_search;
+       decide_strategy_position();
+       head.control_mode = smart_search;
     }
   }
 }

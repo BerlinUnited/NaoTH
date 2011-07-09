@@ -8,8 +8,8 @@ option after_penalized_state
 	  decision {
 		  if(state_time > 20000){
 		    goto completely_lost;
-		  }else if( (state_time > 2000 && (goal.opp.was_seen || goal.own.was_seen)) ){
-		    goto finished;
+		  }else if( goal.opp.was_seen || goal.own.was_seen ){
+		    goto look_at_the_goal;
 		  }else{
 		    stay;
       }
@@ -20,6 +20,22 @@ option after_penalized_state
     }
   }
 
+  state look_at_the_goal
+  {
+    decision{
+    if(state_time > 18000)
+      goto completely_lost;
+    else if ( state_time > 2000 && (goal.opp.was_seen || goal.own.was_seen) )
+      goto finished;
+    else
+      stay;
+    }
+    action{
+      head.control_mode = search_for_goal;
+      motion.type = stand;
+    }
+  }
+    
   state completely_lost{
     decision {
       if(action_done || goal.opp.was_seen || goal.own.was_seen || state_time > 15000){
