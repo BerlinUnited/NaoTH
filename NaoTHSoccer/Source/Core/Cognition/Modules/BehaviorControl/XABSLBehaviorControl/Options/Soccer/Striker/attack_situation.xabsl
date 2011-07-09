@@ -102,15 +102,12 @@ option attack_situation
 	  {
       if(action_done)
       {
-        if(//goal.opp.time_since_seen < 10000 && 
-           (
-            (abs(value=attack.direction) < 15) ||
-            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)
-           ) &&
+        if(((abs(value=attack.direction) < 15) ||
+            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)) &&
            random > 0.5)
-          goto dribble_left;
+          goto dribble;
         else
-          goto stabilize_before_kick; // dribble_right;//
+          goto stabilize_before_kick;
       }
       else stay;
 	  }
@@ -130,7 +127,8 @@ option attack_situation
     {
       if(action_done)
         goto stabilize_before_clear_kick;
-      else stay;
+      else 
+        stay;
     }
     action 
     {
@@ -239,24 +237,7 @@ option attack_situation
     }
   }
 
-  state dribble_right {
-    decision
-    {
-      if ( action_done )
-        goto approach_ball;
-      else
-        stay;
-    }
-    action
-    {
-      situation.abortable = true;
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-      dribble_spl();
-    }
-  }
-
-  state dribble_left {
+  state dribble {
     decision
     {
       if ( action_done )
