@@ -34,7 +34,7 @@ public:
   }
 
   void get(Image& data);
-
+  
   void get(CurrentCameraSettings& data);
 
   void get(TeamMessageDataIn& data);

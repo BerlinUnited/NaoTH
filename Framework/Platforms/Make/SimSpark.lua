@@ -32,7 +32,6 @@ project "SimSpark"
 	"gobject-2.0",
 	"gmodule-2.0",
 	"gthread-2.0",
-	"pthread",
 	"protobuf"}
 
   targetname "naoth-simspark"
