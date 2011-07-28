@@ -42,7 +42,8 @@ option attack_situation
   {
     decision {
       // start kick towards the goal
-      if(abs(value=attack.direction) < 85) // angle was reached
+      if(abs(value=attack.direction) < 25 || 
+         (abs(value=attack.direction) < 85 && goal.opp.distance < 1500)) // angle was reached
       {
 
         if(goal.opp.time_since_seen < 25000)
@@ -102,12 +103,12 @@ option attack_situation
 	  {
       if(action_done)
       {
-        if(((abs(value=attack.direction) < 15) ||
+        if((((abs(value=attack.direction) < 15) ||
         
             (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)
             
            ) &&
-           random > 0.5)
+           random > 0.5) || goal.opp.distance > 2000)
           goto dribble;
         else
           goto stabilize_before_kick;
@@ -221,6 +222,11 @@ option attack_situation
     {
       situation.abortable = false;
       kick_ball(direction= attack.direction);
+
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -235,7 +241,10 @@ option attack_situation
     action
     {
       situation.abortable = false;
-      head.control_mode = search_for_ball;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
       motion.type = stand;
     }
   }
