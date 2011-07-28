@@ -8,6 +8,10 @@ solution "TestArchitecture"
   
   if os.is("windows") then
 	defines {"WIN32", "NOMINMAX"}
+    buildoptions {"/wd4351", -- disable warning: "...new behavior: elements of array..."
+				  "/wd4996", -- disable warning: "...deprecated..."
+				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
+	links {"ws2_32"}
   end
 
   includedirs {
@@ -27,4 +31,4 @@ solution "TestArchitecture"
   
   -- add projects
   dofile "TestArchitecture.lua"
-  dofile "../../Framework/NaoTH-Tools/Make/NaoTHTools.lua"
+  dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
