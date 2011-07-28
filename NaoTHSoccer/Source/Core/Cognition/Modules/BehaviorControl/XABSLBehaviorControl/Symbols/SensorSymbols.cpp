@@ -62,6 +62,10 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   
   engine.registerDecimalInputSymbol("sensor.camera.buffer_failed_count", &getCameraBufferFailedCount);
   engine.registerBooleanOutputSymbol("sensor.camera.reset", &resetingCamera);
+
+	engine.registerBooleanInputSymbol("button.bumper.pressed.left", &getBumberLeftPressed);
+	
+
   isCameraReseting = false;
   resetingCamera = false;
 }//end registerSymbols
@@ -87,6 +91,13 @@ void SensorSymbols::execute()
   }
   */
 }//end update
+
+
+bool SensorSymbols::getBumberLeftPressed()
+{
+	return (theInstance->getButtonData().eventCounter[ButtonData::LeftFootLeft] > 0) ||
+				 (theInstance->getButtonData().eventCounter[ButtonData::LeftFootRight] > 0);
+}
 
 double SensorSymbols::getIRButtonNumber()
 {

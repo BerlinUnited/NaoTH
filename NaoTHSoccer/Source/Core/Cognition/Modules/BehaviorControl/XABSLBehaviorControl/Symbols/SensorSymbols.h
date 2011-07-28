@@ -24,6 +24,8 @@
 #include "Representations/Modeling/RadarGrid.h"
 #include "Representations/Infrastructure/Image.h"
 
+#include <Representations/Infrastructure/ButtonData.h>
+
 // tools
 #include "Tools/Math/Common.h"
 
@@ -38,6 +40,8 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(LocalObstacleModel)
   REQUIRE(RadarGrid)
   REQUIRE(Image)
+
+	REQUIRE(ButtonData)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -121,6 +125,8 @@ private:
   bool isCameraReseting;
   static double getInertialSensorX();
   static double getInertialSensorY();
+
+	static bool getBumberLeftPressed();
 };
 
 #endif	/* _SENSORSYMBOLS_H */

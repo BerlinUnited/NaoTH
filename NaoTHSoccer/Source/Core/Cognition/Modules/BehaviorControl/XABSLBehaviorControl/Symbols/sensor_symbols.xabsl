@@ -67,5 +67,7 @@ namespace sensor("Sensor Symbols") {
   /** the count indicates failed buffer of camera */
   float input sensor.camera.buffer_failed_count;
   bool output sensor.camera.reset;
+
+  bool input button.bumper.pressed.left;
 }
   

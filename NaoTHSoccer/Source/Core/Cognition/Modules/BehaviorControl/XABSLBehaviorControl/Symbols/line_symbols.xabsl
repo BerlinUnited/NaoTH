@@ -17,5 +17,8 @@ namespace line_symbols("Line Symbols") {
   float input line.closest.distance [mm];
   float input line.closest.closestPoint.angle [deg];
   float input line.closest.length [mm];
+
+  float input line.closest.projection.x;
+  float input line.closest.projection.y;
 }
   

@@ -1,0 +1,165 @@
+option play_open_challenge_2011
+{
+
+  initial state search_ball
+  {
+    decision
+    {
+      if(ball.was_seen && state_time > 3000)
+        goto approach_ball;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state approach_ball
+  {
+    decision
+    {
+      if(action_done)
+        goto turn_to_line;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_cool(distance = 200, right_foot=true);
+      head.control_mode = search_for_ball;
+      motion.walk.style = (ball.distance < 500)?stable:normal;
+    }
+  }
+
+  state turn_to_line
+  {
+    decision
+    {
+      if(abs(value=atan2(
+          y=odometry.preview.y(x=line.closest.projection.x, y=line.closest.projection.y), 
+          x=odometry.preview.x(x=line.closest.projection.x, y=line.closest.projection.y))) < 10)
+        goto stabilize_before_kick;
+      else
+        stay;
+    }
+    action
+    {
+      move_around_ball(direction=
+	      atan2(
+	        y=odometry.preview.y(x=line.closest.projection.x, y=line.closest.projection.y), 
+	        x=odometry.preview.x(x=line.closest.projection.x, y=line.closest.projection.y)),
+        radius = 180);
+      
+      head.control_mode = search_for_ball;
+      motion.walk.style = normal;
+    }
+  }
+  
+
+  state stabilize_before_kick
+  {
+    decision {
+      // stand 1 second before kick
+      if(executed_motion.type == stand && state_time > 1000)
+        goto adjust_kick_right;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+
+  state adjust_kick_right
+  {
+    decision {
+      if(button.bumper.pressed.left || state_time > 60000)
+        goto adjust_kick_right_wait;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+    
+      motion.type = kick;
+      motion.kick.foot = right;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = 
+        atan2(
+          y=line.closest.projection.y, 
+          x=line.closest.projection.x);
+      motion.kick.finish = false; // don't kick, just adjsust
+    }
+  }
+
+  state adjust_kick_right_wait
+  {
+    decision {
+      if(state_time > 3000)
+        goto finish_kick;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+    
+      motion.type = kick;
+      motion.kick.foot = right;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = 
+        atan2(
+          y=line.closest.projection.y, 
+          x=line.closest.projection.x);
+      motion.kick.finish = false; // don't kick, just adjsust
+    }
+  }
+
+
+  state finish_kick
+  {
+    decision {
+      if(executed_motion.type == kick && state_time > 1000)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+      
+      motion.type = kick;
+      motion.kick.foot = right;
+      motion.kick.point.x = ball.x;
+      motion.kick.point.y = ball.y;
+      motion.kick.point.z = ball.radius;
+      motion.kick.direction = 
+        atan2(
+          y=line.closest.projection.y, 
+          x=line.closest.projection.x);
+      motion.kick.finish = true; // don't kick, just adjsust
+    }
+  }
+
+  state stand
+  {
+    decision {
+      stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+  
+}

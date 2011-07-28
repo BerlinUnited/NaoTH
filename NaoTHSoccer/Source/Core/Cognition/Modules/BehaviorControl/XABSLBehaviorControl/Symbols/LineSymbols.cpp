@@ -8,6 +8,9 @@
 #include "LineSymbols.h"
 #include "Tools/Math/Common.h"
 
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+
 void LineSymbols::registerSymbols(xabsl::Engine& engine)
 {
 
@@ -28,12 +31,44 @@ void LineSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("line.closest.closestPoint.angle", &getAngleToEstOrthPoint);
   engine.registerDecimalInputSymbol("line.closest.length", &linePercept.closestLineSeenLength);
 
+
+	engine.registerDecimalInputSymbol("line.closest.projection.x", &linePointsBufferMean.x);
+  engine.registerDecimalInputSymbol("line.closest.projection.y", &linePointsBufferMean.y);
+
+
+	DEBUG_REQUEST_REGISTER("LineSymbols:linePointsBuffer", "...", false);
 }//end registerSymbols
 
 LineSymbols* LineSymbols::theInstance = NULL;
 
 void LineSymbols::execute()
 {
+	Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+	for(int i = 0; i < linePointsBuffer.getNumberOfEntries(); i++)
+	{
+		linePointsBuffer[i] = odometryDelta*linePointsBuffer[i];
+	}
+
+	if(getLinePercept().lineWasSeen)
+	{
+		linePointsBuffer.add(linePercept.estOrthPointOfClosestLine);
+	}
+
+	if(linePointsBuffer.getNumberOfEntries() > 0)
+	{
+		linePointsBufferMean = linePointsBuffer.getAverage();
+	}
+
+	lastRobotOdometry = getOdometryData();
+
+	DEBUG_REQUEST("LineSymbols:linePointsBuffer",
+    for(int i = 0; i < linePointsBuffer.getNumberOfEntries(); i++)
+		{
+			FIELD_DRAWING_CONTEXT;
+			PEN("FF0000", 1);
+			FILLOVAL(linePointsBuffer[i].x, linePointsBuffer[i].y, 10, 10);
+		}
+  );
 }
 
 double LineSymbols::getLineTimeSinceLastSeen()

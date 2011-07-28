@@ -14,10 +14,14 @@
 // representations
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Modeling/OdometryData.h"
+
+#include "Tools/DataStructures/RingBufferWithSum.h"
 
 BEGIN_DECLARE_MODULE(LineSymbols)
   REQUIRE(LinePercept)
   REQUIRE(FrameInfo)
+	REQUIRE(OdometryData)
 END_DECLARE_MODULE(LineSymbols)
 
 class LineSymbols: public LineSymbolsBase
@@ -50,6 +54,12 @@ private:
   // representations
   const LinePercept& linePercept;
   const naoth::FrameInfo& frameInfo;
+
+
+	// small filter for the line points
+	RingBufferWithSum<Vector2<double>, 10> linePointsBuffer;
+	Vector2<double> linePointsBufferMean;
+	Pose2D lastRobotOdometry;
 
 };//end class LineSymbols
 

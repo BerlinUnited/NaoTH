@@ -160,6 +160,7 @@ include "Options/NonSoccer/Test/dribble_test.xabsl";
 include "Options/NonSoccer/Demo/ir_demo.xabsl";
 include "Options/NonSoccer/Test/ir_walk_tests.xabsl";
 include "Options/NonSoccer/Demo/skill_demo.xabsl";
+include "Options/NonSoccer/Demo/play_open_challenge_2011.xabsl";
 
 // Challenges RoboCup 2009
 include "Options/Challenge/Passing/playing_passing_challenge_passer.xabsl";
