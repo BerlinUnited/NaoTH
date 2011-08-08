@@ -20,7 +20,7 @@
 
 
 // list the modules and representations on the blackboard
-#include "DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 #include "Messages/Messages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 

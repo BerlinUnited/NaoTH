@@ -7,8 +7,8 @@
 #include "Tools/Math/Pose3D.h"
 
 #include "DebugDrawings3D.h"
-#include "Cognition/Modules/Infrastructure/Debug/Debug.h"
-#include "Cognition/DebugCommandServer.h"
+//#include "Cognition/Modules/Infrastructure/Debug/Debug.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 DebugDrawings3D::DebugDrawings3D()
 {

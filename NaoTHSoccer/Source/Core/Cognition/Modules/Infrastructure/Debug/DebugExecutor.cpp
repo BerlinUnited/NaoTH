@@ -17,7 +17,7 @@ void DebugExecutor::execute()
       iter != getDebugMessageIn().messages.end(); ++iter)
   {
     std::stringstream answer;
-    DebugCommandServer::getInstance().handleCommand(iter->command, iter->arguments, answer);
+    DebugCommandManager::getInstance().handleCommand(iter->command, iter->arguments, answer);
     getDebugMessageOut().answers.push_back(answer.str());
   }//end for
 }//end execute

@@ -9,7 +9,7 @@
 #include "Tools/NaoInfo.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/DataConversion.h"
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 using namespace std;
 
@@ -175,7 +175,7 @@ void GAWalk::updateFitness(double fitness)
       args[g->first] = DataConversion::toStr(j.gene[g->first]);
   }
   stringstream answer;
-  DebugCommandServer::getInstance().handleCommand("ParameterList:IKParameters:set", args, answer);
+  DebugCommandManager::getInstance().handleCommand("ParameterList:IKParameters:set", args, answer);
 }
 
 void GAWalk::reset()

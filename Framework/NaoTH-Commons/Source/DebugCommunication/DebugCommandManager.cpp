@@ -1,23 +1,23 @@
 /* 
- * File:   DebugCommandServer.cpp
+ * File:   DebugCommandManager.cpp
  * Author: thomas
  * 
  * Created on 12. November 2010, 09:50
  */
 
-#include "DebugCommandServer.h"
+#include "DebugCommandManager.h"
 
-DebugCommandServer::DebugCommandServer()
+DebugCommandManager::DebugCommandManager()
 {
   registerCommand("help", "list available commands or get the description of a specific command", this);
 }
 
 
-DebugCommandServer::~DebugCommandServer()
+DebugCommandManager::~DebugCommandManager()
 {
 }
 
-void DebugCommandServer::handleCommand(  
+void DebugCommandManager::handleCommand(  
   const std::string& command, 
   const std::map<std::string, std::string>& arguments, 
   std::ostream& answer)
@@ -32,7 +32,7 @@ void DebugCommandServer::handleCommand(
   }
 }//end handleCommand
 
-bool DebugCommandServer::registerCommand(
+bool DebugCommandManager::registerCommand(
   const std::string& command, 
   const std::string& description,
   DebugCommandExecutor* executor)
@@ -49,7 +49,7 @@ bool DebugCommandServer::registerCommand(
 }//end registerCommand
 
 
-void DebugCommandServer::objectDestructed(DebugCommandExecutor* object)
+void DebugCommandManager::objectDestructed(DebugCommandExecutor* object)
 {
   std::list<std::string> registeredKeys;
 
@@ -74,7 +74,7 @@ void DebugCommandServer::objectDestructed(DebugCommandExecutor* object)
 }//end objectDestructed
 
 
-void DebugCommandServer::executeDebugCommand(
+void DebugCommandManager::executeDebugCommand(
   const std::string& command, 
   const std::map<std::string, std::string>& arguments,
   std::ostream& out)

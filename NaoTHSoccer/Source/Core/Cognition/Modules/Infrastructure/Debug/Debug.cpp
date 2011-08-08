@@ -8,7 +8,7 @@
 #include "Debug.h"
 
 #include "Tools/Debug/DebugRequest.h"
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>

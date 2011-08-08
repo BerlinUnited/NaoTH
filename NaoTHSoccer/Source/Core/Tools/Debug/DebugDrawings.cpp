@@ -6,7 +6,7 @@
 //
 
 #include "DebugDrawings.h"
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 
 DebugDrawings::DebugDrawings() : debugDrawingsOut(&bufferOne)

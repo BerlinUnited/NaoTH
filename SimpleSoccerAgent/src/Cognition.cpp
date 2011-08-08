@@ -45,8 +45,8 @@ void Cognition::perception()
   
 
   // update if the robot is upright or lying on the ground
-  if ( fabs(theInertialSensorData.data[InertialSensorData::X]) < Math::fromDegrees(45) &&
-       fabs(theInertialSensorData.data[InertialSensorData::Y]) < Math::fromDegrees(45) )
+	if ( fabs(theInertialSensorData.data.x) < Math::fromDegrees(45) &&
+       fabs(theInertialSensorData.data.y) < Math::fromDegrees(45) )
     robotIsUpright = true;
   else
     robotIsUpright = false;
@@ -76,9 +76,9 @@ void Cognition::detect_ball_in_image()
   Vector2<int> pixel;
 
   // scan the whole image
-  for(pixel.x = 0; pixel.x < theImage.cameraInfo.resolutionWidth; pixel.x+=2)
+  for(pixel.x = 0; pixel.x < (int)theImage.cameraInfo.resolutionWidth; pixel.x+=2)
   {
-    for(pixel.y = 0; pixel.y < theImage.cameraInfo.resolutionHeight; pixel.y+=2)
+    for(pixel.y = 0; pixel.y < (int)theImage.cameraInfo.resolutionHeight; pixel.y+=2)
     {
       // get the color values of pixel (in YUV)
       Pixel p = theImage.get(pixel.x, pixel.y);
@@ -86,10 +86,10 @@ void Cognition::detect_ball_in_image()
       // convert to RGB
       naoth::ColorModelConversions::fromYCbCrToRGB(
         p.y, p.u, p.v,
-        p.r, p.g, p.b);
+        p.a, p.b, p.c);
 
       // check for orange
-      if(p.r > 220 && p.g > 200 && p.b < 90)
+      if(p.a > 220 && p.b > 200 && p.c < 90)
       {
         // sum all the orange pixels
         orange_sum += pixel;
@@ -115,7 +115,7 @@ void Cognition::decide()
 {
   if (!robotIsUpright)
   {
-    if (theInertialSensorData.data[InertialSensorData::Y] > 0)
+    if (theInertialSensorData.data.y > 0)
       BlackBoard::getInstance().theMotionRequest.id = MotionRequest::stand_up_from_front;
     else
       BlackBoard::getInstance().theMotionRequest.id = MotionRequest::stand_up_from_back;

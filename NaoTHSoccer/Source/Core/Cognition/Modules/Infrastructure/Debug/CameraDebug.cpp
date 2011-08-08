@@ -6,7 +6,7 @@
 */
 
 #include "CameraDebug.h"
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 #include "Tools/Debug/DebugParameterList.h"
 #include "PlatformInterface/Platform.h"

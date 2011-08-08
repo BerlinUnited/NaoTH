@@ -7,7 +7,7 @@
  */
 
 #include "DebugParameterList.h"
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 #include "PlatformInterface/Platform.h"
 
 using namespace std;

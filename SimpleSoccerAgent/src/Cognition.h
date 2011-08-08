@@ -27,7 +27,7 @@
 
 // infrastructure
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Infrastructure/SimSparkGameInfo.h>
+#include <Representations/Infrastructure/GameData.h>
 
 //
 #include "BlackBoard.h"
@@ -55,7 +55,7 @@ public:
     platformInterface.registerCognitionInput(theImage);
 
     platformInterface.registerCognitionInput(theFrameInfo);
-    platformInterface.registerCognitionInput(theSimSparkGameInfo);
+    platformInterface.registerCognitionInput(theGameInfo);
     std::cout << "Cognition register end" << std::endl;
   }//end init
 
@@ -81,7 +81,7 @@ private:
   naoth::Image theImage;
 
   naoth::FrameInfo theFrameInfo;
-  SimSparkGameInfo theSimSparkGameInfo;
+  naoth::GameData theGameInfo;
 
 
   bool robotIsUpright;

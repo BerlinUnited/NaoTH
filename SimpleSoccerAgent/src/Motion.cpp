@@ -35,7 +35,7 @@ theTimeStep(20)
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theMotorJointData.hardness[i] = 1.0;
+    theMotorJointData.stiffness[i] = 1.0;
   }
 }
 

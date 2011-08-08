@@ -16,7 +16,7 @@
 #include "Tools/Debug/Stopwatch.h"
 
 #ifdef NAO
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
@@ -254,7 +254,7 @@ void Motion::postProcess()
       iter != theDebugMessageIn.messages.end(); ++iter)
   {
     std::stringstream answer;
-    DebugCommandServer::getInstance().handleCommand(iter->command, iter->arguments, answer);
+    DebugCommandManager::getInstance().handleCommand(iter->command, iter->arguments, answer);
     theDebugMessageOut.answers.push_back(answer.str());
   }
 

@@ -6,7 +6,7 @@
 //
 
 #include "DebugModify.h"
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 using namespace naoth;
 

@@ -9,7 +9,7 @@
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
 #include <Representations/Infrastructure/DebugMessage.h>
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 using namespace naoth;
 

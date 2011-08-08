@@ -7,7 +7,7 @@
 
 #include "DebugRequest.h"
 
-#include "Cognition/DebugCommandServer.h"
+#include <DebugCommunication/DebugCommandManager.h>
 
 #include <Tools/Debug/NaoTHAssert.h>
 
@@ -66,7 +66,7 @@ void DebugRequest::registerRequest(const std::string& name, const std::string& d
     d = d.append(name);
     d = d.append(" [on|off|status]");
 
-    if(DebugCommandServer::getInstance().registerCommand(name, d, this))
+    if(DebugCommandManager::getInstance().registerCommand(name, d, this))
     {
       requestMap[name] = defaultValue;
       descriptionMap[name] = description;

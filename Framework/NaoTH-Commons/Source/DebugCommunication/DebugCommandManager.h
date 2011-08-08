@@ -1,28 +1,28 @@
 /* 
- * File:   DebugCommandServer.h
+ * File:   DebugCommandManager.h
  * Author: thomas
  *
  * Created on 12. November 2010, 09:50
  */
 
-#ifndef DebugCommandServer_H
-#define	DebugCommandServer_H
+#ifndef DebugCommandManager_H
+#define	DebugCommandManager_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
-#include <DebugCommunication/DebugCommandExecutor.h>
+#include "DebugCommandExecutor.h"
 #include <string>
 #include <iostream>
 
-class DebugCommandServer 
+class DebugCommandManager 
   : 
   public DebugCommandExecutor,
-  public naoth::Singleton<DebugCommandServer>, 
+  public naoth::Singleton<DebugCommandManager>, 
   public DestructionListener<DebugCommandExecutor>
 {
 public:
-  DebugCommandServer();
-  virtual ~DebugCommandServer();
+  DebugCommandManager();
+  virtual ~DebugCommandManager();
 
   /**
    *
@@ -69,10 +69,10 @@ private:
 #ifdef DEBUG
 /** register a command only in DEBUG mode */
 #define REGISTER_DEBUG_COMMAND(command, description, executor) \
-DebugCommandServer::getInstance().registerCommand(command, description, executor);
+DebugCommandManager::getInstance().registerCommand(command, description, executor);
 #else //DEBUG
 #define REGISTER_DEBUG_COMMAND(command, description, executor) {}
 #endif //DEBUG
 
-#endif	/* DebugCommandServer_H */
+#endif	/* DebugCommandManager_H */
 
