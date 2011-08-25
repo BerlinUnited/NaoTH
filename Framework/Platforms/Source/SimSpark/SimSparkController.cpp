@@ -1191,6 +1191,7 @@ void SimSparkController::jointControl()
     {
       v2 *= -1;
     }
+
     theActData << '(' << theJointMotorNameMap[(JointData::JointID)i] << ' '
       << v2
       << ')';

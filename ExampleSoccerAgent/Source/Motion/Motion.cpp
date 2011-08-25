@@ -77,7 +77,14 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 
 void Motion::call()
 {
-  const MotionRequest::MotionID& theRequest = theBlackBoard.theMotionRequest.id;
+  while ( !theMotionRequestReader->empty() )
+  {
+    string msg = theMotionRequestReader->read();
+    stringstream ss(msg);
+    Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
+  }
+
+  MotionRequest::MotionID theRequest = theBlackBoard.theMotionRequest.id;
   if ( activeKeyFrame.empty() )
   {
     activeKeyFrame = theKeyFrame[theRequest];
@@ -88,7 +95,8 @@ void Motion::call()
   double dt = theTimeStep/frame.time;
   for(int i=0; i<JointData::numOfJoint; i++)
   {
-    theBlackBoard.theMotorJointData.position[i] = (1.0-dt)*theBlackBoard.theMotorJointData.position[i] + dt*frame.position[i];
+    theBlackBoard.theMotorJointData.position[i]
+        = (1.0-dt)*theBlackBoard.theMotorJointData.position[i] + dt*frame.position[i];
   }
 
   frame.time -= theTimeStep;
@@ -96,7 +104,6 @@ void Motion::call()
   {
     activeKeyFrame.pop_front();
   }
-
 }//end call
 
 Motion::~Motion()
@@ -128,6 +135,7 @@ std::list<Motion::KeyFrame> Motion::loadKeyFrames(const std::string& filename)
 std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf)
 {
   in >> kf.time;
+
   for(int i=0; i<JointData::numOfJoint; i++)
   {
     in >> kf.position[i];

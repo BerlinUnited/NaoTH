@@ -8,6 +8,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #include <Messages/Representations.pb.h>
+#include <Tools/NaoTime.h>
 
 using namespace naoth;
 
@@ -15,6 +16,10 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
 {
   naothmessages::MotionRequest message;
   message.set_id(representation.id);
+
+  message.set_forced(false);
+  message.set_time(naoth::NaoTime::getNaoTimeInMilliSeconds());
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);
 }
