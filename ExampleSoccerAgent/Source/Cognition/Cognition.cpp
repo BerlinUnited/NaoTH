@@ -151,3 +151,11 @@ void Cognition::call()
   GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 }//end call
+
+void Cognition::executeDebugCommand(const std::string &command,
+                                    const std::map<std::string,
+                                    std::string> &arguments,
+                                    std::ostream &outstream)
+{
+
+}

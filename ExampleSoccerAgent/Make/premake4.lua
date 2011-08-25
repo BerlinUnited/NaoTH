@@ -37,7 +37,11 @@ solution "ExampleSoccerAgent"
 	flags { "Symbols" }
 
   -- define the core
-  CORE_PATH = path.getabsolute("../Source/")
+  CORE_PATH = {
+    path.getabsolute("../Source/Cognition"),
+    path.getabsolute("../Source/Motion"),
+    path.getabsolute("../Source/")
+  }
   CORE = "ExampleSoccerAgent"
   
   dofile (naoth_path.framework .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")

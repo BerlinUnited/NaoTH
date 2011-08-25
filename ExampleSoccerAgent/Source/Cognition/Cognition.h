@@ -27,6 +27,10 @@ public:
 
   void init(naoth::PlatformInterfaceBase& platformInterface);
 
+  virtual void executeDebugCommand(
+    const std::string& command, const std::map<std::string,std::string>& arguments,
+    std::ostream &outstream);
+
 private:
   StopwatchItem stopwatch;
 };
