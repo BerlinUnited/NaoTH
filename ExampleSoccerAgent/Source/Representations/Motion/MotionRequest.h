@@ -1,35 +1,63 @@
 /**
  * @file MotionRequest.h
  *
- * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
- * @breief this is a very simplemotion request
+ * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * Definition of the class MotionRequest
  */
 
-#ifndef MotionRequest_H
-#define	MotionRequest_H
+#ifndef __MotionRequest_h_
+#define __MotionRequest_h_
 
-class MotionRequest
+#include <string>
+#include <Tools/DataStructures/Serializer.h>
+#include <Tools/DataStructures/Printable.h>
+
+/**
+ * This describes the MotionRequest
+ */
+class MotionRequest : public naoth::Printable
 {
 public:
 
+  /** constructor */
   MotionRequest()
-    :
-    id(stand)
   {
   }
 
-  enum RequestID
-  {
-    stand,
-    walk_forward,
-    turn_left,
-    stand_up_from_front,
-    stand_up_from_back,
-    numOfRequestID
-  };
+  ~MotionRequest() {
+  }
 
-  RequestID id;
+  enum MotionID
+    {
+      stand,
+      walk_forward,
+      turn_left,
+      stand_up_from_front,
+      stand_up_from_back,
+      numOfMotionID
+    };
+
+  /** id of the motion to be executed */
+  MotionID id;
+
+  virtual void print(ostream& stream) const
+  {
+    stream << "motionID: " << (int) id;
+  }
+
 };
 
-#endif	/* MotionRequest_H */
+namespace naoth
+{
+  template<>
+  class Serializer<MotionRequest>
+  {
+  public:
+    static void serialize(const MotionRequest& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, MotionRequest& representation);
+  };
+}
+
+#endif // __MotionRequest_h_
+
 

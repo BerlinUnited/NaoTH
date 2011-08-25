@@ -22,8 +22,9 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include "Representations/Motion/MotionRequest.h"
 
-#include "BlackBoard.h"
+#include "MotionBlackBoard.h"
 
 class Motion : public naoth::Callable
 {
@@ -33,23 +34,7 @@ public:
   virtual ~Motion();
 
   /** */
-  void init(naoth::PlatformDataInterface& platformInterface)
-  {
-    std::cout << "Motion register start" << std::endl;
-    
-    //
-    platformInterface.registerMotionInput(theSensorJointData);
-    platformInterface.registerMotionInput(theFrameInfo);
-    platformInterface.registerMotionInput(theInertialSensorData);
-    platformInterface.registerMotionInput(theFSRData);
-    platformInterface.registerMotionInput(theAccelerometerData);
-    platformInterface.registerMotionInput(theGyrometerData);
-
-    //
-    platformInterface.registerMotionOutput(theMotorJointData);
-    
-    std::cout << "Motion register end" << std::endl;
-  }//end init
+  void init(naoth::PlatformInterfaceBase& platformInterface);
 
   virtual void call();
 
@@ -65,20 +50,15 @@ public:
   std::list<KeyFrame> loadKeyFrames(const std::string& filename);
 
 private:
+  MotionBlackBoard& theBlackBoard;
+
   int theTimeStep;
 
-  std::list<KeyFrame> theKeyFrame[MotionRequest::numOfRequestID];
+  std::list<KeyFrame> theKeyFrame[MotionRequest::numOfMotionID];
 
   std::list<KeyFrame> activeKeyFrame;
 
-  //
-  naoth::SensorJointData theSensorJointData;
-  naoth::MotorJointData theMotorJointData;
-  naoth::FrameInfo theFrameInfo;
-  naoth::InertialSensorData theInertialSensorData;
-  naoth::FSRData theFSRData;
-  naoth::AccelerometerData theAccelerometerData;
-  naoth::GyrometerData theGyrometerData;
+  MessageReader* theMotionRequestReader;
 };
 
 std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf);

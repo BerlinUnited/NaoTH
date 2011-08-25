@@ -30,7 +30,6 @@
 #include "Infrastructure/Debug/Debug.h"
 
 // Perception
-#include "Perception/CameraMatrixProvider/CameraMatrixProvider.h"
 #include "Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 
 // Modeling
@@ -78,7 +77,6 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // -- BEGIN MODULES --
 
   // perception
-  REGISTER_MODULE(CameraMatrixProvider);
   REGISTER_MODULE(VirtualVisionProcessor);
 
   // modeling

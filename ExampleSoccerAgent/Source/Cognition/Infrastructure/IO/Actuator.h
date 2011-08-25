@@ -16,21 +16,16 @@
 #include <Representations/Infrastructure/SoundData.h>
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include <Representations/Infrastructure/DebugMessage.h>
-
-#include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Representations/Motion/MotionStatus.h"
-#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionRequest.h"
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Actuator)
-  REQUIRE(HeadMotionRequest)
   REQUIRE(CameraSettingsRequest)
   REQUIRE(LEDData)
   REQUIRE(IRSendData)
   REQUIRE(UltraSoundSendData)
   REQUIRE(SoundPlayData)
-  REQUIRE(MotionStatus)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
 
@@ -49,7 +44,6 @@ public:
   void init(naoth::PlatformInterfaceBase& platformInterface);
   
 private:
-  MessageWriter* theHeadMotionRequestWriter;
   MessageWriter* theMotionRequestWriter;
 };
 

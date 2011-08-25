@@ -16,7 +16,6 @@
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/JointData.h"
-#include "Representations/Motion/MotionStatus.h"
 
 #include "Tools/Math/Matrix2x2.h"
 #include "Tools/Math/Line.h"
@@ -24,23 +23,22 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(KalmanFilterBallLocator)
+BEGIN_DECLARE_MODULE(SimpleBallLocator)
   REQUIRE(BallPercept)
   REQUIRE(FrameInfo)
   REQUIRE(OdometryData)
-  REQUIRE(MotionStatus)
   PROVIDE(BallModel)
-END_DECLARE_MODULE(KalmanFilterBallLocator)
+END_DECLARE_MODULE(SimpleBallLocator)
 
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class KalmanFilterBallLocator : private KalmanFilterBallLocatorBase
+class SimpleBallLocator : private SimpleBallLocatorBase
 {
 
 public:
-  KalmanFilterBallLocator();
-  ~KalmanFilterBallLocator(){};
+  SimpleBallLocator();
+  ~SimpleBallLocator(){}
 
   virtual void execute();
 

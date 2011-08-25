@@ -16,26 +16,18 @@
 
 // representations
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Infrastructure/FieldInfo.h"
-#include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Perception/BallPercept.h"
 
-#include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Representations/Motion/Request/MotionRequest.h"
-#include "Representations/Motion/MotionStatus.h"
 #include "Representations/Infrastructure/SoundData.h"
+#include "Representations/Motion/MotionRequest.h"
 
 BEGIN_DECLARE_MODULE(SensorBehaviorControl)
   REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)
 
   REQUIRE(BallPercept)
-  REQUIRE(KinematicChain)
-  REQUIRE(MotionStatus)
 
-  PROVIDE(HeadMotionRequest)
-  PROVIDE(MotionRequest)
   PROVIDE(SoundPlayData)
+  PROVIDE(MotionRequest)
 END_DECLARE_MODULE(SensorBehaviorControl)
 
 class SensorBehaviorControl: public SensorBehaviorControlBase
@@ -48,7 +40,6 @@ public:
 
 private:
   void testBehavior();
-  void kickExercise();
 
   FrameInfo lastPlayerFrameInfo;
 };//end class ImageProcessor

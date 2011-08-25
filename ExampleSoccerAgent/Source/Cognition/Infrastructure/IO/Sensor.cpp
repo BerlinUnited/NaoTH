@@ -6,15 +6,12 @@
 #include <PlatformInterface/Platform.h>
 
 Sensor::Sensor():
-theMotionStatusReader(NULL),
 theOdometryDataReader(NULL)
 {
 }
 
 Sensor::~Sensor()
 {
-  if (theMotionStatusReader != NULL)
-    delete theMotionStatusReader;
   if (theOdometryDataReader != NULL)
     delete theOdometryDataReader;
 }
@@ -52,8 +49,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(VirtualVision);
   REG_INPUT(DebugMessageIn);
   
-	// communication channels with motion
-  theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
+  // communication channels with motion
   theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
 }//end init
 
@@ -61,19 +57,6 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
 // read the incoming data from the motion
 void Sensor::execute()
 {
-  // data from motion
-  GT_TRACE("!theMotionStatusReader->empty()");
-  if ( !theMotionStatusReader->empty() )
-  {
-    string msg = theMotionStatusReader->read();
-    // drop old message, TODO: use them!
-    while ( !theMotionStatusReader->empty() )
-    {
-      msg = theMotionStatusReader->read();
-    }
-    stringstream ss(msg);
-    Serializer<MotionStatus>::deserialize(ss, getMotionStatus());
-  }
   
   GT_TRACE(" !theOdometryDataReader->empty()");
   if ( !theOdometryDataReader->empty() )
@@ -86,19 +69,6 @@ void Sensor::execute()
     }
     stringstream ss(msg);
     Serializer<OdometryData>::deserialize(ss, getOdometryData());
-  }
-
-  GT_TRACE("!theCalibrationDataReader->empty()");
-  if ( !theCalibrationDataReader->empty() )
-  {
-    string msg = theCalibrationDataReader->read();
-    // drop old message
-    while ( !theCalibrationDataReader->empty() )
-    {
-      msg = theCalibrationDataReader->read();
-    }
-    stringstream ss(msg);
-    Serializer<CalibrationData>::deserialize(ss, getCalibrationData());
   }
 
   GT_TRACE("Sensor:execute() end");

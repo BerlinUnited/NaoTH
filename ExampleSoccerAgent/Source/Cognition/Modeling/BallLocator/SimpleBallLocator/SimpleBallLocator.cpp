@@ -11,8 +11,6 @@
 #include "Tools/Debug/DebugRequest.h"
 
 SimpleBallLocator::SimpleBallLocator()
-  : 
-  modelIsValid(false)
 {
 
 }
