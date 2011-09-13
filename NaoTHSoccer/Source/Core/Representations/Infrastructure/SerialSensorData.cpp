@@ -150,39 +150,39 @@ void SerialSensorData::fromDataStream(istream& is)
 }//end fromDataStream
 
 const vector<int>& SerialSensorData::getBoardIDs() const {
-	return ids;
+  return ids;
 }
 
 /**
- *	Returns the maximum value of all force sensors.
+ *  Returns the maximum value of all force sensors.
  */
 double SerialSensorData::getMaxForce() const {
-	// TODO: also return negativ values if necessary.
-	double maxForce = -1000.0;
-	for (unsigned int i = 0; i < forces.size(); i++) {
-		double curForce = forces[i][1];
-	// TODO: determine sensor IDs dynamically.
+  // TODO: also return negativ values if necessary.
+  double maxForce = -1000.0;
+  for (unsigned int i = 0; i < forces.size(); i++) {
+    double curForce = forces[i][1];
+  // TODO: determine sensor IDs dynamically.
     if(ids[i] == 8 || ids[i] == 10)
-		  maxForce = max(maxForce, curForce);
-	}
-	return maxForce;
+      maxForce = max(maxForce, curForce);
+  }
+  return maxForce;
 }//end getMaxForce
 
 /**
- *	Returns the force of the force-sensor with the given board ID,
+ *  Returns the force of the force-sensor with the given board ID,
  *  or -1000 if there is no sensor with the given board ID.
  */
 double SerialSensorData::getForce(int id) const {
-	// get the correct index for the force-array
-	int index = -1;
-	for(unsigned int i = 0; i < ids.size(); i++) {
-		if (ids[i] == id) {
-			index = i;
-		}
-	}
+  // get the correct index for the force-array
+  int index = -1;
+  for(unsigned int i = 0; i < ids.size(); i++) {
+    if (ids[i] == id) {
+      index = i;
+    }
+  }
 
-	// if an index was found, return the data, else return -1000
-	if(index >= 0) {
+  // if an index was found, return the data, else return -1000
+  if(index >= 0) {
     double result = forces[index][1];
     // apply offsets to the sensor values
     if (id == 8) {
@@ -190,10 +190,10 @@ double SerialSensorData::getForce(int id) const {
     } else if (id == 10) {
       result += -0.778;
     }
-		return result;
-	} else {
-		return -1000.0;
-	}
+    return result;
+  } else {
+    return -1000.0;
+  }
 }
 
 /**
@@ -201,27 +201,27 @@ double SerialSensorData::getForce(int id) const {
  * If there is no sensor with the given ID the vector (-1000, -1000, -1000) is returned.
  */
 Vector3<double> SerialSensorData::getAccVector(int id) const {
-	// get the correct index for the accels-array
-	int index = -1;
-	for(unsigned int i = 0; i < ids.size(); i++) {
-		if (ids[i] == id) {
-			index = i;
-		}
-	}
+  // get the correct index for the accels-array
+  int index = -1;
+  for(unsigned int i = 0; i < ids.size(); i++) {
+    if (ids[i] == id) {
+      index = i;
+    }
+  }
 
-	// create a default vector
-	Vector3<double> result;
-	result.x = -1000.0;
-	result.y = -1000.0;
-	result.z = -1000.0;
+  // create a default vector
+  Vector3<double> result;
+  result.x = -1000.0;
+  result.y = -1000.0;
+  result.z = -1000.0;
 
-	// if an index was found, return the data, else return the default vector
-	if(index >= 0) {
-		result.x = accels[index][0];
-		result.y = accels[index][1];
-		result.z = accels[index][2];
-	}
-	return result;
+  // if an index was found, return the data, else return the default vector
+  if(index >= 0) {
+    result.x = accels[index][0];
+    result.y = accels[index][1];
+    result.z = accels[index][2];
+  }
+  return result;
 }
 
 

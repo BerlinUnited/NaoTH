@@ -6,7 +6,7 @@
 */
 
 #ifndef _LINEARCLASSIFIER_H
-#define	_LINEARCLASSIFIER_H
+#define  _LINEARCLASSIFIER_H
 
 #include <iostream>
 #include <vector>
@@ -140,5 +140,5 @@ std::ostream & operator <<(std::ostream& ost, const LinearClassifier<SIZE>& lc) 
     return ost;
 }
 
-#endif	/* _LINEARCLASSIFIER_H */
+#endif  /* _LINEARCLASSIFIER_H */
 

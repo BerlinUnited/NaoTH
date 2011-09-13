@@ -6,7 +6,7 @@
 */
 
 #ifndef _ZMP_PLANNER_H
-#define	_ZMP_PLANNER_H
+#define  _ZMP_PLANNER_H
 
 #include "FootStep.h"
 

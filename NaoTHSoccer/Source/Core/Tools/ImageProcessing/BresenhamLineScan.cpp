@@ -57,65 +57,65 @@ BresenhamLineScan::BresenhamLineScan(const Math::Line& line, const CameraInfo& c
 
 void BresenhamLineScan::setup(const Vector2<int>& diff)
 {
-	int dx = diff.x;
-	int dy = diff.y;
-	int incX = ((dx>0) ? 1:-1);
-	int incY = ((dy>0) ? 1:-1);
-	int absDx(abs(dx));
-	int absDy(abs(dy));
-	alongX = (absDy < absDx);
-	if(alongX)
-	{
-		baseError = -absDx;
-		delta = 2*absDy;
-		standardOffset.x = incX;
-		standardOffset.y = 0;
-		correctionOffset.x = 0;
-		correctionOffset.y = incY;
-		numberOfPixels = absDx;
-	}
-	else
-	{
-		baseError = -absDy;
-		delta = 2*absDx;
-		standardOffset.x = 0;
-		standardOffset.y = incY;
-		correctionOffset.x = incX;
-		correctionOffset.y = 0;
-		numberOfPixels = absDy;
-	}
-	resetError = 2*baseError;
-	error = baseError;				//added, for lines != 45 degrees
+  int dx = diff.x;
+  int dy = diff.y;
+  int incX = ((dx>0) ? 1:-1);
+  int incY = ((dy>0) ? 1:-1);
+  int absDx(abs(dx));
+  int absDy(abs(dy));
+  alongX = (absDy < absDx);
+  if(alongX)
+  {
+    baseError = -absDx;
+    delta = 2*absDy;
+    standardOffset.x = incX;
+    standardOffset.y = 0;
+    correctionOffset.x = 0;
+    correctionOffset.y = incY;
+    numberOfPixels = absDx;
+  }
+  else
+  {
+    baseError = -absDy;
+    delta = 2*absDx;
+    standardOffset.x = 0;
+    standardOffset.y = incY;
+    correctionOffset.x = incX;
+    correctionOffset.y = 0;
+    numberOfPixels = absDy;
+  }
+  resetError = 2*baseError;
+  error = baseError;        //added, for lines != 45 degrees
   pixelCount = 0;
 }//end setup
 
 void BresenhamLineScan::setup(const Vector2<int>& start, const Vector2<int>& end)
 {
-	setup(end-start);
+  setup(end-start);
 }
 
 void BresenhamLineScan::setup(const double& direction)
 {
-	setup(Vector2<int>(static_cast<int>(cos(direction)*1024.0), static_cast<int>(sin(direction)*1024.0)));
+  setup(Vector2<int>(static_cast<int>(cos(direction)*1024.0), static_cast<int>(sin(direction)*1024.0)));
 }
 
 void BresenhamLineScan::setup(const Vector2<double>& direction)
 {
-	setup(Vector2<int>(static_cast<int>(direction.x*1024.0), static_cast<int>(direction.y*1024.0)));
+  setup(Vector2<int>(static_cast<int>(direction.x*1024.0), static_cast<int>(direction.y*1024.0)));
 }
 
 void BresenhamLineScan::setup(const Vector2<int>& start, const double& direction, const CameraInfo& cameraInfo)
 {
-	// Create a line through the point start with the given direction
-	Math::Line line(Pose2D(direction, start));
+  // Create a line through the point start with the given direction
+  Math::Line line(Pose2D(direction, start));
 
   setup(line, cameraInfo);
 }
 
 void BresenhamLineScan::setup(const Vector2<int>& start, const Vector2<double>& direction, const CameraInfo& cameraInfo)
 {
-	// Create a line through the point start with the given direction
-	Math::Line line(start, direction);
+  // Create a line through the point start with the given direction
+  Math::Line line(start, direction);
 
   setup(line, cameraInfo);
 }

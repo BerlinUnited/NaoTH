@@ -6,7 +6,7 @@
  */
 
 #ifndef FOOTTRAJECTORYGENERATOR_H
-#define	FOOTTRAJECTORYGENERATOR_H
+#define  FOOTTRAJECTORYGENERATOR_H
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/CubicSpline.h"
@@ -25,5 +25,5 @@ public:
 };
 
 
-#endif	/* FOOTTRAJECTORYGENERATOR_H */
+#endif  /* FOOTTRAJECTORYGENERATOR_H */
 

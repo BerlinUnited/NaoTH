@@ -6,7 +6,7 @@
  */
 
 #ifndef _SIMSPARK_GAME_INFO_H
-#define	_SIMSPARK_GAME_INFO_H
+#define  _SIMSPARK_GAME_INFO_H
 
 #include <Representations/Infrastructure/GameData.h>
 #include <string>
@@ -46,5 +46,5 @@ public:
   static naoth::GameData::PlayMode covertPlayMode(PlayMode pm, naoth::GameData::TeamColor team);
 };
 
-#endif	/* _SIMSPARK_GAME_INFO_H */
+#endif  /* _SIMSPARK_GAME_INFO_H */
 

@@ -52,23 +52,23 @@ public:
   /**
   * copied from GT07
   * Function does the transformation from 2d field coordinates
-	* to coordinates relative to the robot.
+  * to coordinates relative to the robot.
   * @param robotPose current Robot Pose.
   * @param fieldCoord absolute field coordinates of a position
   * @return Returns the positon in relative coordinates
   */
-	static Vector2<double> fieldCoordToRelative(const Pose2D& robotPose, const Vector2<double>& fieldCoord);
+  static Vector2<double> fieldCoordToRelative(const Pose2D& robotPose, const Vector2<double>& fieldCoord);
 
 
   /**
   * copied from GT07
   * Function does the transformation from 2d relative robot coordinates
-	* to absolute field coordinates.
+  * to absolute field coordinates.
   * @param rp current Robot Pose.
   * @param relativeCoord relative coordinates of a position (relative to robot)
   * @return Returns the positon in absolute coordinates
   */
-	static Vector2<double> relativeToFieldCoord(const Pose2D& robotPose, const Vector2<double>& relativeCoord);
+  static Vector2<double> relativeToFieldCoord(const Pose2D& robotPose, const Vector2<double>& relativeCoord);
 
 
   /**

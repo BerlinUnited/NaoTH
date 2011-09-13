@@ -6,7 +6,7 @@
  */
 
 #ifndef _WEBOTSCONTROLLER_H
-#define	_WEBOTSCONTROLLER_H
+#define  _WEBOTSCONTROLLER_H
 
 #include <webots/robot.h>
 #include <webots/camera.h>
@@ -149,5 +149,5 @@ namespace naoth
   };
 }
 
-#endif	/* _WEBOTSCONTROLLER_H */
+#endif  /* _WEBOTSCONTROLLER_H */
 

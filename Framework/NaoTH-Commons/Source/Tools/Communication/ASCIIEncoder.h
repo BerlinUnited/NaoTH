@@ -8,7 +8,7 @@
  */
 
 #ifndef _ASCIIENCODER_H
-#define	_ASCIIENCODER_H
+#define  _ASCIIENCODER_H
 
 #include <limits>
 #include <string>
@@ -210,5 +210,5 @@ public:
   }
 };
 
-#endif	/* _ASCIIENCODER_H */
+#endif  /* _ASCIIENCODER_H */
 

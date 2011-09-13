@@ -6,7 +6,7 @@
  */
 
 #ifndef DEBUGSERVER_H
-#define	DEBUGSERVER_H
+#define  DEBUGSERVER_H
 
 #include <glib.h>
 #include <libb64/decode.h>
@@ -53,5 +53,5 @@ private:
   void clearBothQueues();
 };
 
-#endif	/* DEBUGSERVER_H */
+#endif  /* DEBUGSERVER_H */
 

@@ -6,7 +6,7 @@
  */
 
 #ifndef _PLATFORMINTERCHANGEABLE_H
-#define	_PLATFORMINTERCHANGEABLE_H
+#define  _PLATFORMINTERCHANGEABLE_H
 
 namespace naoth
 {
@@ -32,5 +32,5 @@ namespace naoth
 
   };
 }
-#endif	/* _PLATFORMINTERCHANGEABLE_H */
+#endif  /* _PLATFORMINTERCHANGEABLE_H */
 

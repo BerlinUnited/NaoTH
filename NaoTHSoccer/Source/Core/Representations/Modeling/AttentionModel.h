@@ -5,7 +5,7 @@
  */
 
 #ifndef _AttentionModel_H
-#define	_AttentionModel_H
+#define  _AttentionModel_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
@@ -30,5 +30,5 @@ public:
 };
 
 
-#endif	/* _AttentionModel_H */
+#endif  /* _AttentionModel_H */
 

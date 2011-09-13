@@ -6,7 +6,7 @@
  */
 
 #ifndef _IRDATA_H
-#define	_IRDATA_H
+#define  _IRDATA_H
 
 #include <string>
 
@@ -77,5 +77,5 @@ namespace naoth
     virtual void print(ostream& stream) const;
   };
 }
-#endif	/* _IRDATA_H */
+#endif  /* _IRDATA_H */
 

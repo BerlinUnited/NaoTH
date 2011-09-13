@@ -45,5 +45,5 @@ namespace naoth
   };
 }
 
-#endif	/* _BUTTONDATA_H */
+#endif  /* _BUTTONDATA_H */
 

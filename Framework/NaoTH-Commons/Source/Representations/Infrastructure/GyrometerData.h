@@ -6,7 +6,7 @@
  */
 
 #ifndef _GYROMETERDATA_H
-#define	_GYROMETERDATA_H
+#define  _GYROMETERDATA_H
 
 #include <string>
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -52,5 +52,5 @@ namespace naoth
   };
   
 }
-#endif	/* _GYROMETERDATA_H */
+#endif  /* _GYROMETERDATA_H */
 

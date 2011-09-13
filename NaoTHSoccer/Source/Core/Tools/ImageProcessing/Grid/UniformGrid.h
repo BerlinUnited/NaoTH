@@ -10,7 +10,7 @@
 class UniformGrid: public Grid
 {
 public:
-	UniformGrid(unsigned int imageWidth, unsigned int imageHeight, unsigned int gridWidth, unsigned int gridHeight)
+  UniformGrid(unsigned int imageWidth, unsigned int imageHeight, unsigned int gridWidth, unsigned int gridHeight)
     : 
     Grid(gridWidth*gridHeight),
     width(gridWidth),
@@ -28,8 +28,8 @@ public:
   virtual ~UniformGrid(){}
 
   // dimensions of the grid
-	const unsigned int width;
-	const unsigned int height;
+  const unsigned int width;
+  const unsigned int height;
 
 
   inline void addPoint(const Vector2<int>& point, unsigned int gridX, unsigned int gridY)

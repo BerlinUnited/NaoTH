@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMBALLMODEL_H
-#define	_TEAMBALLMODEL_H
+#define  _TEAMBALLMODEL_H
 
 class TeamBallModel
 {
@@ -33,4 +33,4 @@ public:
 
 //REPRESENTATION_INTERFACE(TeamBallModel);
 
-#endif	/* _TEAMBALLMODEL_H */
+#endif  /* _TEAMBALLMODEL_H */

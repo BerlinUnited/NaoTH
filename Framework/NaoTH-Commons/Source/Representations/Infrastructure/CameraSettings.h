@@ -6,7 +6,7 @@
  */
 
 #ifndef _CAMERASETTINGS_H
-#define	_CAMERASETTINGS_H
+#define  _CAMERASETTINGS_H
 
 #include <string>
 
@@ -79,5 +79,5 @@ namespace naoth
   };
 }
 
-#endif	/* _CAMERASETTINGS_H */
+#endif  /* _CAMERASETTINGS_H */
 

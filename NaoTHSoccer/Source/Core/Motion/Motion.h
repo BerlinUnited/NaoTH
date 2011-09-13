@@ -7,7 +7,7 @@
  */
 
 #ifndef MOTION_H
-#define	MOTION_H
+#define  MOTION_H
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
@@ -85,5 +85,5 @@ private:
 #endif
 };
 
-#endif	/* MOTION_H */
+#endif  /* MOTION_H */
 

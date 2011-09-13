@@ -3,7 +3,7 @@
  */
 
 #ifndef _GPSDATA_H
-#define	_GPSDATA_H
+#define  _GPSDATA_H
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/DataStructures/Printable.h"
@@ -26,5 +26,5 @@ public:
 };
 }
 
-#endif	/* _GPSDATA_H */
+#endif  /* _GPSDATA_H */
 

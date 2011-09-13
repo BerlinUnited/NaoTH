@@ -6,7 +6,7 @@
 */
 
 #ifndef _LINK_H
-#define	_LINK_H
+#define  _LINK_H
 
 #include "Tools/Math/Pose3D.h"
 
@@ -85,5 +85,5 @@ public:
 
 }  // namespace Kinematics
 
-#endif	/* _LINK_H */
+#endif  /* _LINK_H */
 

@@ -6,7 +6,7 @@
  */
 
 #ifndef _BEHAVIORSTATUS_H
-#define	_BEHAVIORSTATUS_H
+#define  _BEHAVIORSTATUS_H
 
 //#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
@@ -32,5 +32,5 @@ public:
   naothmessages::BehaviorStatus status;
 
 };
-#endif	/* _BEHAVIORSTATUS_H */
+#endif  /* _BEHAVIORSTATUS_H */
 

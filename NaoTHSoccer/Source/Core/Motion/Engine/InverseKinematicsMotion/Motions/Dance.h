@@ -7,7 +7,7 @@
  */
 
 #ifndef DANCE_H
-#define	DANCE_H
+#define  DANCE_H
 
 #include "IKMotion.h"
 
@@ -94,5 +94,5 @@ private:
   InverseKinematic::CoMFeetPose p; // the basic pose
 };
 
-#endif	/* DANCE_H */
+#endif  /* DANCE_H */
 

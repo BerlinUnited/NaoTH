@@ -6,7 +6,7 @@
  */
 
 #ifndef _FIELDPERCEPT_H
-#define	_FIELDPERCEPT_H
+#define  _FIELDPERCEPT_H
 
 #include <vector>
 
@@ -168,16 +168,16 @@ public:
   }//end getLargestRect
 
   void setPoly(const FieldPoly& newField, const Math::LineSegment& horizon)
-	{
+  {
     fieldPoly = newField;
     checkPolyIsUnderHorizon(horizon);
-	}//end add
+  }//end add
 
   void setRect(const FieldRect& newFieldRect, const Math::LineSegment& horizon)
-	{
+  {
     fieldRect = newFieldRect;
     checkRectIsUnderHorizon(horizon);
-	}//end add
+  }//end add
 
   /* reset percept */
   void reset()
@@ -206,5 +206,5 @@ namespace naoth
   };
 }
 
-#endif	/* _FIELDPERCEPT_H */
+#endif  /* _FIELDPERCEPT_H */
 

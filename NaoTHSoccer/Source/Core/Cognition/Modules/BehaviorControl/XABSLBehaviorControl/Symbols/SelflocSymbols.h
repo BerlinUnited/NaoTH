@@ -34,8 +34,8 @@ class SelflocSymbols: public SelflocSymbolsBase
 {
 
 public:
-	SelflocSymbols()
-	:
+  SelflocSymbols()
+  :
     robotPose(getRobotPose()),
     selfLocGoalModel(getSelfLocGoalModel()),
     playerInfo(getPlayerInfo()),

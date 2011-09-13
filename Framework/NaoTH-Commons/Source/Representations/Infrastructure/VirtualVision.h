@@ -7,7 +7,7 @@
  */
 
 #ifndef _VIRTUALVISION_H
-#define	_VIRTUALVISION_H
+#define  _VIRTUALVISION_H
 
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/Printable.h"
@@ -39,5 +39,5 @@ namespace naoth
   };
 }
 
-#endif	/* _VIRTUALVISION_H */
+#endif  /* _VIRTUALVISION_H */
 

@@ -79,7 +79,7 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
   {
     dbgString.str("");
     dbgString << "ImageProcessor:Histogram:x:" << ColorClasses::getColorName( (ColorClasses::Color) color);
-    DEBUG_REQUEST_SLOW(dbgString.str(),
+    DEBUG_REQUEST_GENERIC(dbgString.str(),
       drawXHist = true;
       Vector2<int> last(cameraInfo.resolutionWidth - (xHistogram[color][0] * 1), 0);
       for(unsigned int y = 1; y < (grid.height * 1); y += 1)
@@ -99,7 +99,7 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
 
     dbgString.str("");
     dbgString << "ImageProcessor:Histogram:y:" << ColorClasses::getColorName((ColorClasses::Color) color);
-    DEBUG_REQUEST_SLOW(dbgString.str(),
+    DEBUG_REQUEST_GENERIC(dbgString.str(),
       drawYHist = true;
       Vector2<int> last(0, cameraInfo.resolutionHeight - (yHistogram[color][0] * 1) );
       for(unsigned int x = 1; x < (grid.width * 1); x += 1)

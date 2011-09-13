@@ -6,7 +6,7 @@
 */
 
 #ifndef _XabslFileInputSource_H
-#define	_XabslFileInputSource_H
+#define  _XabslFileInputSource_H
 
 #include <XabslEngine/XabslTools.h>
 #include <fstream>
@@ -31,4 +31,4 @@ private:
   std::ifstream inFile;
 };
 
-#endif	/* _XabslFileInputSource_H */
+#endif  /* _XabslFileInputSource_H */

@@ -102,7 +102,7 @@ template <class V, int maxSize> class RingBuffer
       int j = current - i;
       j %= n;
       if (j < 0) j += n;
-			buffer[j] = v;
+      buffer[j] = v;
    }
 
     /**

@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMSYMBOLS_H
-#define	_TEAMSYMBOLS_H
+#define  _TEAMSYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -80,4 +80,4 @@ private:
   static bool calculateIfTheLast();
 };
 
-#endif	/* _TEAMSYMBOLS_H */
+#endif  /* _TEAMSYMBOLS_H */

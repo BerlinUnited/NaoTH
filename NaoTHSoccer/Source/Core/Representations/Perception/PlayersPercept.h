@@ -61,9 +61,9 @@ public:
   FrameInfo theFrameInfo;
 
   void addPlayer(const Player& player)
-	{
+  {
     playersList.push_back(player);
-	}//end add
+  }//end add
 
   /* reset percept */
   void reset()

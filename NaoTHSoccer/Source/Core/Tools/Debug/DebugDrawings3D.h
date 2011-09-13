@@ -3,7 +3,7 @@
  */
 
 #ifndef _DEBUGDRAWINGS3D_H
-#define	_DEBUGDRAWINGS3D_H
+#define  _DEBUGDRAWINGS3D_H
 
 #include "Tools/DataStructures/Singleton.h"
 #include <Tools/ColorClasses.h>
@@ -88,5 +88,5 @@ private:
 #define LINE_3D(...) ((void)0)
 #define TEXT_3D(...) ((void)0)
 #endif //DEBUG
-#endif	/* _DEBUGDRAWINGS3D_H */
+#endif  /* _DEBUGDRAWINGS3D_H */
 

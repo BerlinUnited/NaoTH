@@ -61,16 +61,16 @@ private:
   };
 
   std::list<PointOfInterest> mapOfInterest;
-	std::list<PointOfInterest> closeMapOfInterest;
+  std::list<PointOfInterest> closeMapOfInterest;
 
   bool isSeen(const Vector2<double> point);
   void createMapOfInterest();
 
   void createRadialMapOfInterest(
-		std::list<PointOfInterest>& moi,
-		double minDistance,
-		double maxDistance,
-		double distance_step);
+    std::list<PointOfInterest>& moi,
+    double minDistance,
+    double maxDistance,
+    double distance_step);
 
   int compare(const PointOfInterest& one, const PointOfInterest& two);
 

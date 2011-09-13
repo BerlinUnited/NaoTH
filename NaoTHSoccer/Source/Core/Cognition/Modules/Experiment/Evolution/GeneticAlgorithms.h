@@ -5,7 +5,7 @@
  */
 
 #ifndef _GENETICALGORITHMS_H
-#define	_GENETICALGORITHMS_H
+#define  _GENETICALGORITHMS_H
 
 #include <map>
 #include <vector>
@@ -73,5 +73,5 @@ protected:
 
 std::ostream& operator <<(std::ostream& ost, const GeneticAlgorithms::Individual& v);
 
-#endif	/* _GENETICALGORITHMS_H */
+#endif  /* _GENETICALGORITHMS_H */
 

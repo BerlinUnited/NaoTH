@@ -6,7 +6,7 @@
 //
 
 #ifndef _DEBUGCOMMANDEXECUTOR_H
-#define	_DEBUGCOMMANDEXECUTOR_H
+#define  _DEBUGCOMMANDEXECUTOR_H
 
 #include <map>
 #include <ostream>
@@ -28,5 +28,5 @@ public:
 };
 
 
-#endif	/* _DEBUGCOMMANDEXECUTOR_H */
+#endif  /* _DEBUGCOMMANDEXECUTOR_H */
 

@@ -6,7 +6,7 @@
 */
 
 #ifndef _SUPPORTPOLYGONGENERATOR_H
-#define	_SUPPORTPOLYGONGENERATOR_H
+#define  _SUPPORTPOLYGONGENERATOR_H
 
 #include <Representations/Infrastructure/FSRData.h>
 #include "Representations/Modeling/SupportPolygon.h"
@@ -48,5 +48,5 @@ private:
 };
 
 
-#endif	/* _SUPPORTPOLYGONGENERATOR_H */
+#endif  /* _SUPPORTPOLYGONGENERATOR_H */
 

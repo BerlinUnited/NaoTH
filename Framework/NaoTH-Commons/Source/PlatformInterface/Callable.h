@@ -6,7 +6,7 @@
  */
 
 #ifndef CALLABLE_H
-#define	CALLABLE_H
+#define  CALLABLE_H
 
 namespace naoth
 {
@@ -25,5 +25,5 @@ namespace naoth
   };
 }
 
-#endif	/* CALLABLE_H */
+#endif  /* CALLABLE_H */
 

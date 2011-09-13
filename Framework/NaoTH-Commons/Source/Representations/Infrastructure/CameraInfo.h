@@ -6,7 +6,7 @@
  */
 
 #ifndef _CAMERAINFO_H
-#define	_CAMERAINFO_H
+#define  _CAMERAINFO_H
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"
@@ -134,5 +134,5 @@ namespace naoth
   
 }
 
-#endif	/* _CAMERAINFO_H */
+#endif  /* _CAMERAINFO_H */
 

@@ -24,6 +24,6 @@ class GridCreator
   public:
     // generiert ein uniformes quadratisches Gitter mit gridWidth Spalten und gridHeight Zeilen
     static void createUniformGrid(UniformGrid& uniformGrid, const int imageWidth, const int imageHeight, const int gridWidth, const int gridHeight);
-	  static void createProbabilisticGrid(Grid& grid, const int imageWidth, const int imageHeight,  const int sampleNumber);
+    static void createProbabilisticGrid(Grid& grid, const int imageWidth, const int imageHeight,  const int sampleNumber);
 };
 #endif// __GridCreator_h_

@@ -24,7 +24,7 @@
 BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
   REQUIRE(BallPercept)
   REQUIRE(FieldInfo)
-	REQUIRE(AttentionModel)
+  REQUIRE(AttentionModel)
   REQUIRE(MotionStatus)
 
   PROVIDE(HeadMotionRequest)

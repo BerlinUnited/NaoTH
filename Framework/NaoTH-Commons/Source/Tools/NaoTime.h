@@ -7,7 +7,7 @@
 */
 
 #ifndef _NAOTIME_H
-#define	_NAOTIME_H
+#define  _NAOTIME_H
 
 #ifdef WIN32
 #include <windows.h>
@@ -49,5 +49,5 @@ public:
   static const unsigned long long long_million = 1000000;
 };
 }// end namespace naoth
-#endif	/* _NAOTIME_H */
+#endif  /* _NAOTIME_H */
 

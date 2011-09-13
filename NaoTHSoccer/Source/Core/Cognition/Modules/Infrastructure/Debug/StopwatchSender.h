@@ -5,7 +5,7 @@
  */
 
 #ifndef STOPWATCHSENDER_H
-#define	STOPWATCHSENDER_H
+#define  STOPWATCHSENDER_H
 
 #include <map>
 
@@ -39,5 +39,5 @@ private:
   std::map<std::string, ParameterList*> paramlists;
 };
 
-#endif	/* STOPWATCHSENDER_H */
+#endif  /* STOPWATCHSENDER_H */
 

@@ -7,7 +7,7 @@
  */
 
 #ifndef _SIMSPARKCONTROLLER_H
-#define	_SIMSPARKCONTROLLER_H
+#define  _SIMSPARKCONTROLLER_H
 
 
 #include <glib.h>
@@ -233,5 +233,5 @@ private:
   void act();
 };
 
-#endif	/* _SIMSPARKCONTROLLER_H */
+#endif  /* _SIMSPARKCONTROLLER_H */
 

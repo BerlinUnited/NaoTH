@@ -4,7 +4,7 @@
  */
 
 #ifndef _PLATFORM_H
-#define	_PLATFORM_H
+#define  _PLATFORM_H
 
 #include <string>
 #include <iostream>
@@ -82,5 +82,5 @@ namespace naoth
 
   };
 }
-#endif	/* _PLATFORM_H */
+#endif  /* _PLATFORM_H */
 

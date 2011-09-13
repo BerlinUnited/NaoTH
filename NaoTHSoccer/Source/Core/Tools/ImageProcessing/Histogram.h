@@ -6,7 +6,7 @@
  */
 
 #ifndef _Histogram_H
-#define	_Histogram_H
+#define  _Histogram_H
 
 #include <sstream>
 
@@ -56,5 +56,5 @@ class Histogram: public naoth::Printable
 };
 
 
-#endif	/* _Histogram_H */
+#endif  /* _Histogram_H */
 

@@ -6,7 +6,7 @@
  */
 
 #ifndef _LOGFILEENTRY_H
-#define	_LOGFILEENTRY_H
+#define  _LOGFILEENTRY_H
 
 #include <string>
 #include <sstream>
@@ -25,5 +25,5 @@ public:
   
 };
 
-#endif	/* _LOGFILEENTRY_H */
+#endif  /* _LOGFILEENTRY_H */
 

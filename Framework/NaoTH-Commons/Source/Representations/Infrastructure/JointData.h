@@ -6,7 +6,7 @@
  */
 
 #ifndef _JOINTDATA_H
-#define	_JOINTDATA_H
+#define  _JOINTDATA_H
 
 #include <string>
 
@@ -119,5 +119,5 @@ class JointData
   };
 }
 
-#endif	/* _JOINTDATA_H */
+#endif  /* _JOINTDATA_H */
 

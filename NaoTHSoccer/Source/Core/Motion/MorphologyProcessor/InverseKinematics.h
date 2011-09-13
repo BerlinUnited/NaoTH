@@ -7,7 +7,7 @@
 */
 
 #ifndef _INVERSEKINEMATICS_H
-#define	_INVERSEKINEMATICS_H
+#define  _INVERSEKINEMATICS_H
 
 #include <Tools/Math/Matrix_nxn.h>
 #include <Tools/Math/Pose3D.h>
@@ -222,4 +222,4 @@ public:
 };
 
 } // namespace Kinematics
-#endif	/* _INVERSEKINEMATICS_H */
+#endif  /* _INVERSEKINEMATICS_H */

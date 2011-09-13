@@ -95,7 +95,7 @@ bool TeamSymbols::calculateIfStriker()
 
     if(number == 1) continue; // goalie is not considered
   
-		double time_bonus = messageData.message.wasstriker()?4000.0:0.0;
+    double time_bonus = messageData.message.wasstriker()?4000.0:0.0;
 
     if(
         theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 1000 && // its fresh

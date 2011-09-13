@@ -22,14 +22,14 @@ public:
     ScanLineID(0)
   {}
 
-	Vector2<int> center;
-	double center_angle;
-	Vector2<int> begin;
-	double begin_angle;
-	Vector2<int> end;
-	double end_angle;
+  Vector2<int> center;
+  double center_angle;
+  Vector2<int> begin;
+  double begin_angle;
+  Vector2<int> end;
+  double end_angle;
 
-	bool valid;
+  bool valid;
   unsigned int runID;
   unsigned int ScanLineID;
 };

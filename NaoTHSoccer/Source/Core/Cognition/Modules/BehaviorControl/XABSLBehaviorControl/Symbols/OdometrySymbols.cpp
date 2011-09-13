@@ -51,7 +51,7 @@ void OdometrySymbols::execute()
 
 double OdometrySymbols::getOdometry_x()
 {
-	return theInstance->odometryData.translation.x;
+  return theInstance->odometryData.translation.x;
 }//end get x translation
 
 double OdometrySymbols::getOdometry_y()
@@ -61,16 +61,16 @@ double OdometrySymbols::getOdometry_y()
 
 double OdometrySymbols::getOdometry_angle()
 {
-	return theInstance->odometryData.rotation;
+  return theInstance->odometryData.rotation;
 }//end get rotation
 
 double OdometrySymbols::getOdometryPreview_x()
 {
-	return (theInstance->motionStatus.plannedMotion.hip/theInstance->previewParameter).x;
+  return (theInstance->motionStatus.plannedMotion.hip/theInstance->previewParameter).x;
 }//end get getOdometryPreview_x
 
 double OdometrySymbols::getOdometryPreview_y()
 {
-	return (theInstance->motionStatus.plannedMotion.hip/theInstance->previewParameter).y;
+  return (theInstance->motionStatus.plannedMotion.hip/theInstance->previewParameter).y;
 }//end get getOdometryPreview_y
 

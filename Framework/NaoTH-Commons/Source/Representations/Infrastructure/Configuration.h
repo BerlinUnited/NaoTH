@@ -8,7 +8,7 @@
  */
 
 #ifndef CONFIGURATION_H
-#define	CONFIGURATION_H
+#define  CONFIGURATION_H
 
 #include <string>
 #include <set>
@@ -120,5 +120,5 @@ namespace naoth
   };
 }
 
-#endif	/* CONFIGURATION_H */
+#endif  /* CONFIGURATION_H */
 

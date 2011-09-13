@@ -67,7 +67,7 @@ bool XabslFileInputSource::readString(char* destination, int maxLength)
 void XabslFileInputSource::skipComments()
 {
   char c = inFile.peek();
-	while (c == '/' || c == '\n' || c == '#')
+  while (c == '/' || c == '\n' || c == '#')
   {
     inFile.ignore(256, '\n');
     c = inFile.peek();
@@ -77,7 +77,7 @@ void XabslFileInputSource::skipComments()
 void XabslFileInputSource::skipWhiteSpace()
 {
   char c = inFile.peek();
-	while (c == ' ' || c == '\t' || c == '\n' || c == '\r')
+  while (c == ' ' || c == '\t' || c == '\n' || c == '\r')
   {
     inFile.ignore(1);
     c = inFile.peek();

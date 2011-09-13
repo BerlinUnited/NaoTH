@@ -224,7 +224,7 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theBallSymbols->execute();
     theOdometrySymbols->execute();
     theMotionSymbols->execute();
-		theLineSymbols->execute();
+    theLineSymbols->execute();
   }//end if
 }//end updateXABSLSymbols
 

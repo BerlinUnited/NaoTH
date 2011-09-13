@@ -33,5 +33,5 @@ public:
   void execute();
 };
 
-#endif	/* __FieldDetector_H_ */
+#endif  /* __FieldDetector_H_ */
 

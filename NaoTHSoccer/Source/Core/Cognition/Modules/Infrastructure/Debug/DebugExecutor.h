@@ -4,7 +4,7 @@
  */
 
 #ifndef __DebugExecutor_h__
-#define	__DebugExecutor_h__
+#define  __DebugExecutor_h__
 
 #include <ModuleFramework/Module.h>
 #include <PlatformInterface/PlatformInterface.h>
@@ -27,5 +27,5 @@ public:
   virtual void execute();
 };
 
-#endif	/* __DebugExecutor_h__ */
+#endif  /* __DebugExecutor_h__ */
 

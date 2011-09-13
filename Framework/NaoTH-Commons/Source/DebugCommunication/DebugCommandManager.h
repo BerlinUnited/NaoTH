@@ -6,7 +6,7 @@
  */
 
 #ifndef DebugCommandManager_H
-#define	DebugCommandManager_H
+#define  DebugCommandManager_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataStructures/DestructureSentinel.h>
@@ -74,5 +74,5 @@ DebugCommandManager::getInstance().registerCommand(command, description, executo
 #define REGISTER_DEBUG_COMMAND(command, description, executor) {}
 #endif //DEBUG
 
-#endif	/* DebugCommandManager_H */
+#endif  /* DebugCommandManager_H */
 

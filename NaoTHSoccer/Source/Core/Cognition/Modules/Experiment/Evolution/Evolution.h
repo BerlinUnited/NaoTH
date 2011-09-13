@@ -5,7 +5,7 @@
  */
 
 #ifndef _EVOLUTION_H
-#define	_EVOLUTION_H
+#define  _EVOLUTION_H
 
 #include "Cognition/Cognition.h"
 #include "GeneticAlgorithms.h"
@@ -41,5 +41,5 @@ private:
   GeneticAlgorithms* ga;
 };
 
-#endif	/* _EVOLUTION_H */
+#endif  /* _EVOLUTION_H */
 

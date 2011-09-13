@@ -6,7 +6,7 @@
  */
 
 #ifndef DEBUG_H
-#define	DEBUG_H
+#define  DEBUG_H
 
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -69,5 +69,5 @@ private:
   void drawRobot3D(const Pose3D& robotPose);
 };
 
-#endif	/* DEBUG_H */
+#endif  /* DEBUG_H */
 

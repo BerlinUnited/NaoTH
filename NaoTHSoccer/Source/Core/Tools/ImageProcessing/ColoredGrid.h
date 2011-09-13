@@ -158,14 +158,14 @@ public:
 
       colorPointsIndex[color][numberOfColorPoints[color]] = numberOfGridPoints;
       numberOfColorPoints[color]++;
-	     
+       
       // punkt in die das reduzierte bild eintragen (nach koordinaten sortiert)
       int dx = point.x/(RobotInfo::getInstance().theCameraInfo.resolutionWidth/NX);
       int dy = point.y/(RobotInfo::getInstance().theCameraInfo.resolutionHeight/NY);
       classifiedImage[dx][dy] = color;
       classifiedImageIndex[dx][dy] = numberOfGridPoints;
 
-	    numberOfGridPoints++;
+      numberOfGridPoints++;
     }//end if
   }//end addPoint
 */

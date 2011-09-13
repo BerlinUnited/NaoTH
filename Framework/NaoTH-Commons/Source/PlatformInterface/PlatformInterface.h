@@ -4,7 +4,7 @@
  */
 
 #ifndef _PLATFORMINTERFACE_H
-#define	_PLATFORMINTERFACE_H
+#define  _PLATFORMINTERFACE_H
 
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
@@ -362,5 +362,5 @@ namespace naoth
   };//end class PlatformInterface
 }
 
-#endif	/* _PLATFORMINTERFACE_H */
+#endif  /* _PLATFORMINTERFACE_H */
 

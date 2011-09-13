@@ -6,7 +6,7 @@
  */
 
 #ifndef _LEDREQUEST_H
-#define	_LEDREQUEST_H
+#define  _LEDREQUEST_H
 
 #include "Representations/Infrastructure/LEDData.h"
 #include "Tools/DataStructures/Printable.h"
@@ -49,5 +49,5 @@ public:
 };
 
 
-#endif	/* _LEDREQUEST_H */
+#endif  /* _LEDREQUEST_H */
 

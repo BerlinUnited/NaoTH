@@ -6,7 +6,7 @@
  */
 
 #ifndef FIELDCOLORPERCEPT_H
-#define	FIELDCOLORPERCEPT_H
+#define  FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
 //#include <Tools/DataStructures/Serializer.h>
@@ -99,5 +99,5 @@ public:
 };
 
 
-#endif	/* FIELDCOLORPERCEPT_H */
+#endif  /* FIELDCOLORPERCEPT_H */
 

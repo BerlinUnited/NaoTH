@@ -6,7 +6,7 @@
 //
 
 #ifndef _DebugModify_H
-#define	_DebugModify_H
+#define  _DebugModify_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataConversion.h>
@@ -88,5 +88,5 @@ private:
 #endif // DEBUG
 
 
-#endif	/* _DebugModify_H */
+#endif  /* _DebugModify_H */
 

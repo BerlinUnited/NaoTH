@@ -28,8 +28,8 @@ union Pixel
 };
 
 struct Point {
-	unsigned int x;
-	unsigned int y;
+  unsigned int x;
+  unsigned int y;
 };
 
 #endif

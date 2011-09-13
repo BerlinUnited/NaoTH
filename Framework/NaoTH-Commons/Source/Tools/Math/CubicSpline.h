@@ -6,7 +6,7 @@
  */
 
 #ifndef CUBICSPLINE_H
-#define	CUBICSPLINE_H
+#define  CUBICSPLINE_H
 
 #include <vector>
 #include "Vector2.h"
@@ -80,5 +80,5 @@ private:
   vector<double> theZ;
 };
 
-#endif	/* CUBICSPLINE_H */
+#endif  /* CUBICSPLINE_H */
 

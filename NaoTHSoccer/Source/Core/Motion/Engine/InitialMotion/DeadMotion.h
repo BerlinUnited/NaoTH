@@ -6,7 +6,7 @@
 */
 
 #ifndef _DEADMOTION_H
-#define	_DEADMOTION_H
+#define  _DEADMOTION_H
 
 #include "Motion/AbstractMotion.h"
 
@@ -26,5 +26,5 @@ private:
   double freeStiffness[naoth::JointData::numOfJoint];
 };
 
-#endif	/* _DEADMOTION_H */
+#endif  /* _DEADMOTION_H */
 

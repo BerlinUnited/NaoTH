@@ -12,7 +12,7 @@
 */
 
 #ifndef _StandMotion_H
-#define	_StandMotion_H
+#define  _StandMotion_H
 
 #include "IKMotion.h"
 
@@ -140,5 +140,5 @@ private:
   double stiffness;
 };
 
-#endif	/* _StandMotion_H */
+#endif  /* _StandMotion_H */
 

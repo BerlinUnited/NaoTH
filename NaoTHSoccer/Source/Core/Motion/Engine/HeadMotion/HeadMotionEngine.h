@@ -8,7 +8,7 @@
  */
 
 #ifndef _HEADMOTIONENGINE_H
-#define	_HEADMOTIONENGINE_H
+#define  _HEADMOTIONENGINE_H
 
 #include <Tools/Math/Vector2.h>
 #include "Motion/MotionBlackBoard.h"
@@ -54,5 +54,5 @@ private:
   Vector3<double> g(double yaw, double pitch, const Vector3<double>& pointInWorld);
 };
 
-#endif	/* _HEADMOTIONENGINE_H */
+#endif  /* _HEADMOTIONENGINE_H */
 

@@ -5,7 +5,7 @@
 */
 
 #ifndef _SIT_H
-#define	_SIT_H
+#define  _SIT_H
 
 #include "Motion/AbstractMotion.h"
 
@@ -37,5 +37,5 @@ private:
   double freeStiffness[naoth::JointData::numOfJoint];
 };
 
-#endif	/* SIT_H */
+#endif  /* SIT_H */
 

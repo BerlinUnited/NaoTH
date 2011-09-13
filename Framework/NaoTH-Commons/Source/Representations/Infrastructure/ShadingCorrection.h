@@ -6,7 +6,7 @@
  */
 
 #ifndef _ShadingCorrection_H
-#define	_ShadingCorrection_H
+#define  _ShadingCorrection_H
 
 #include <string>
 #include "Representations/Infrastructure/CameraInfo.h"
@@ -39,4 +39,4 @@ namespace naoth
   };
 }
 
-#endif	/* _ShadingCorrection_H */
+#endif  /* _ShadingCorrection_H */

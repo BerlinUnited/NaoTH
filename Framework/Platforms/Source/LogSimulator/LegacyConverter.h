@@ -6,7 +6,7 @@
  */
 
 #ifndef _LEGACYCONVERTER_H
-#define	_LEGACYCONVERTER_H
+#define  _LEGACYCONVERTER_H
 
 #include <iostream>
 
@@ -146,5 +146,5 @@ public:
 
 };
 
-#endif	/* _LEGACYCONVERTER_H */
+#endif  /* _LEGACYCONVERTER_H */
 

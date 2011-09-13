@@ -6,7 +6,7 @@
  */
 
 #ifndef _INERTIALSENSORDATA_H
-#define	_INERTIALSENSORDATA_H
+#define  _INERTIALSENSORDATA_H
 
 #include <string>
 
@@ -40,5 +40,5 @@ namespace naoth
   
 }
 
-#endif	/* _INERTIALSENSORDATA_H */
+#endif  /* _INERTIALSENSORDATA_H */
 

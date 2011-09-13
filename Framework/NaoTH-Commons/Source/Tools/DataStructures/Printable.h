@@ -6,7 +6,7 @@
  */
 
 #ifndef _PRINTABLE_H
-#define	_PRINTABLE_H
+#define  _PRINTABLE_H
 
 #include <ostream>
 
@@ -37,5 +37,5 @@ namespace naoth
   };
 }
 
-#endif	/* _PRINTABLE_H */
+#endif  /* _PRINTABLE_H */
 

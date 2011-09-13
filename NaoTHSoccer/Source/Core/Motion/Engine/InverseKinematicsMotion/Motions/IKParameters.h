@@ -109,12 +109,12 @@ public:
     double extendedXRotationOffset;
     double rotationTime;
 
-		double knee_pitch_offset;
-		double ankle_roll_offset;
+    double knee_pitch_offset;
+    double ankle_roll_offset;
 
-		// 
+    // 
     double shiftOffsetYLeft;
-		double shiftOffsetYRight;
+    double shiftOffsetYRight;
   } kick;
   
   IKParameters();

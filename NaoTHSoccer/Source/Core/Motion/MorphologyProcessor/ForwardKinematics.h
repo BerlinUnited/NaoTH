@@ -6,7 +6,7 @@
 */
 
 #ifndef _FORWARDKINEMATICS_H
-#define	_FORWARDKINEMATICS_H
+#define  _FORWARDKINEMATICS_H
 
 #include <Tools/Math/Matrix.h>
 #include <Tools/Math/Vector3.h>
@@ -79,5 +79,5 @@ private:
 };
 
 } // namespace Kinematics
-#endif	/* _FORWARDKINEMATICS_H */
+#endif  /* _FORWARDKINEMATICS_H */
 

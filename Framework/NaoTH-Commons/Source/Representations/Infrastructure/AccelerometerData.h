@@ -6,7 +6,7 @@
  */
 
 #ifndef _ACCELEROMETERDATA_H
-#define	_ACCELEROMETERDATA_H
+#define  _ACCELEROMETERDATA_H
 
 #include <string>
 #include "Tools/DataStructures/Printable.h"
@@ -51,5 +51,5 @@ namespace naoth
   };
   
 }
-#endif	/* _ACCELEROMETERDATA_H */
+#endif  /* _ACCELEROMETERDATA_H */
 

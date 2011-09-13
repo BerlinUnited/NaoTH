@@ -7,7 +7,7 @@
 
 
 #ifndef _LEDSETTER_H
-#define	_LEDSETTER_H
+#define  _LEDSETTER_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
@@ -41,5 +41,5 @@ private:
   void copyMultiLEDData(const LEDRequest& data, int from, int to);
 };
 
-#endif	/* _LEDSETTER_H */
+#endif  /* _LEDSETTER_H */
 

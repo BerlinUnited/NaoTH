@@ -6,7 +6,7 @@
  */
 
 #ifndef _SENSORSYMBOLS_H
-#define	_SENSORSYMBOLS_H
+#define  _SENSORSYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -41,7 +41,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(RadarGrid)
   REQUIRE(Image)
 
-	REQUIRE(ButtonData)
+  REQUIRE(ButtonData)
 END_DECLARE_MODULE(SensorSymbols)
 
 class SensorSymbols: public SensorSymbolsBase
@@ -126,8 +126,8 @@ private:
   static double getInertialSensorX();
   static double getInertialSensorY();
 
-	static bool getBumberLeftPressed();
+  static bool getBumberLeftPressed();
 };
 
-#endif	/* _SENSORSYMBOLS_H */
+#endif  /* _SENSORSYMBOLS_H */
 

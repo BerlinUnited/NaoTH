@@ -6,7 +6,7 @@
 */
 
 #ifndef _FOOTSTEP_H
-#define	_FOOTSTEP_H
+#define  _FOOTSTEP_H
 
 #include <Tools/Math/Pose2D.h>
 #include "../IKPose.h"
@@ -121,5 +121,5 @@ private:
    Pose3D theFootBegin, theFootEnd, theSupFoot;
 };
 
-#endif	/* _FOOTSTEP_H */
+#endif  /* _FOOTSTEP_H */
 

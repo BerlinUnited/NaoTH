@@ -6,7 +6,7 @@
  */
 
 #ifndef _DEBUGCOMMUNICATOR_H
-#define	_DEBUGCOMMUNICATOR_H
+#define  _DEBUGCOMMUNICATOR_H
 
 #include <gio/gio.h>
 
@@ -77,5 +77,5 @@ private:
   GString* internalReadMessage(GError** err);
 };
 
-#endif	/* _DEBUGCOMMUNICATOR_H */
+#endif  /* _DEBUGCOMMUNICATOR_H */
 

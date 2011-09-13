@@ -94,10 +94,10 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
       whiteCount++;
       otherCount = 0;
     }
-	else
-	{
-		  if(otherCount > 2)
-		  {
+  else
+  {
+      if(otherCount > 2)
+      {
         if( (actMax.y - actMin.y) >= (max.y - min.y) )
         {
           min.y = actMin.y;
@@ -106,7 +106,7 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
         }
         actMin.y = -1;
         actMax.y = -1;
-		  }
+      }
       otherCount++;
     }
   }

@@ -31,7 +31,7 @@ public:
 
   // HACK: remove the constants
   const static unsigned int HACK_MAX_WIDTH = 640;
-	// HACK: remove the constants
+  // HACK: remove the constants
   const static unsigned int HACK_MAX_HEIGHT = 480;
 
   const unsigned int maxNumberOfPoints;

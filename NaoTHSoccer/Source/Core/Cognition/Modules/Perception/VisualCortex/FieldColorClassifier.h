@@ -6,7 +6,7 @@
  */
 
 #ifndef FIELDCOLORCLASSIFIER_H
-#define	FIELDCOLORCLASSIFIER_H
+#define  FIELDCOLORCLASSIFIER_H
 
 #include <ModuleFramework/Module.h>
 
@@ -67,5 +67,5 @@ private:
 
 };
 
-#endif	/* FIELDCOLORCLASSIFIER_H */
+#endif  /* FIELDCOLORCLASSIFIER_H */
 

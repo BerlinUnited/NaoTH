@@ -79,7 +79,7 @@ protected:
       stream << "nothing" << '\n';
     }
   };// end class BodyParts
-	
+  
 private:
   
   // add a line to BodyContour:

@@ -27,7 +27,7 @@
 #include "Representations/Perception/BodyContour.h"
 
 #ifndef SCANLINEEDGELDETECTOR_H
-#define	SCANLINEEDGELDETECTOR_H
+#define  SCANLINEEDGELDETECTOR_H
 
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
@@ -65,5 +65,5 @@ private:
   double calculateMeanAngle(double angle1,double  angle2);
 
 };
-#endif	/* SCANLINEEDGELDETECTOR_H */
+#endif  /* SCANLINEEDGELDETECTOR_H */
 

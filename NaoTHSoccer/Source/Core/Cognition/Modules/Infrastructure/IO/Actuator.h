@@ -3,7 +3,7 @@
  */
 
 #ifndef _ACTUATOR_H
-#define	_ACTUATOR_H
+#define  _ACTUATOR_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
@@ -53,5 +53,5 @@ private:
   MessageWriter* theMotionRequestWriter;
 };
 
-#endif	/* _ACTUACTOR_H */
+#endif  /* _ACTUACTOR_H */
 

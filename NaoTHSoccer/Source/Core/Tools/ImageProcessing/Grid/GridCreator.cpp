@@ -8,8 +8,8 @@ void GridCreator::createProbabilisticGrid(Grid& grid, const int imageWidth, cons
   for (int i = 0; i < sampleNumber; i++)
   {
     x = Math::random(imageWidth);
-	  y = Math::random(imageHeight);
-	  grid.addPoint(Vector2<int>(x, y));
+    y = Math::random(imageHeight);
+    grid.addPoint(Vector2<int>(x, y));
   }
 }//end createProbabilisticGrid
 

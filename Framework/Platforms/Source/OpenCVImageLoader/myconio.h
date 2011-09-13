@@ -7,9 +7,9 @@
 
 #ifndef WIN32
 #ifndef _MYCONIO_H
-#define	_MYCONIO_H
+#define  _MYCONIO_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C"
 {
 #endif
@@ -60,9 +60,9 @@ int getch()
 }
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* _MYCONIO_H */
+#endif  /* _MYCONIO_H */
 #endif  /* WIN32 */

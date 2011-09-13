@@ -6,7 +6,7 @@
  */
 
 #ifndef _LEDDATA_H
-#define	_LEDDATA_H
+#define  _LEDDATA_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -90,5 +90,5 @@ namespace naoth
   };
 }
 
-#endif	/* _LEDDATA_H */
+#endif  /* _LEDDATA_H */
 

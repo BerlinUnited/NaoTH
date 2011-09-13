@@ -6,7 +6,7 @@
 */
 
 #ifndef _FOOT_STEP_PLANNER_H
-#define	_FOOT_STEP_PLANNER_H
+#define  _FOOT_STEP_PLANNER_H
 
 #include "FootStep.h"
 #include "../IKParameters.h"

@@ -6,7 +6,7 @@
 */
 
 #ifndef _KINEMATICCHAIN_H
-#define	_KINEMATICCHAIN_H
+#define  _KINEMATICCHAIN_H
 
 #include "Tools/Kinematics/Link.h"
 #include "Representations/Infrastructure/JointData.h"
@@ -78,4 +78,4 @@ private:
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);
 
-#endif	/* _KINEMATICCHAIN_H */
+#endif  /* _KINEMATICCHAIN_H */

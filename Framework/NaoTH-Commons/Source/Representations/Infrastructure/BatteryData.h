@@ -1,6 +1,6 @@
 
 #ifndef _BATTERY_DATA_H
-#define	_BATTERY_DATA_H
+#define  _BATTERY_DATA_H
 
 #include <string>
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -20,5 +20,5 @@ namespace naoth
   };
 }
 
-#endif	/* _BATTERY_DATA_H */
+#endif  /* _BATTERY_DATA_H */
 

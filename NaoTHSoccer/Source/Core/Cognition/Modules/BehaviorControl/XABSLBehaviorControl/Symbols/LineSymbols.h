@@ -21,7 +21,7 @@
 BEGIN_DECLARE_MODULE(LineSymbols)
   REQUIRE(LinePercept)
   REQUIRE(FrameInfo)
-	REQUIRE(OdometryData)
+  REQUIRE(OdometryData)
 END_DECLARE_MODULE(LineSymbols)
 
 class LineSymbols: public LineSymbolsBase
@@ -56,10 +56,10 @@ private:
   const naoth::FrameInfo& frameInfo;
 
 
-	// small filter for the line points
-	RingBufferWithSum<Vector2<double>, 10> linePointsBuffer;
-	Vector2<double> linePointsBufferMean;
-	Pose2D lastRobotOdometry;
+  // small filter for the line points
+  RingBufferWithSum<Vector2<double>, 10> linePointsBuffer;
+  Vector2<double> linePointsBufferMean;
+  Pose2D lastRobotOdometry;
 
 };//end class LineSymbols
 

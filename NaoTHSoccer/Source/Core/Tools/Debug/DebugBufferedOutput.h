@@ -6,7 +6,7 @@
 //
 
 #ifndef _DebugBufferedOutput_H
-#define	_DebugBufferedOutput_H
+#define  _DebugBufferedOutput_H
 
 #include <cstring>
 #include <sstream>
@@ -107,5 +107,5 @@ private:
 #define ORIGIN2D(id,x,y,rotation) ((void)0)
 #endif //DEBUG
 
-#endif	/* _DebugBufferedOutput_H */
+#endif  /* _DebugBufferedOutput_H */
 

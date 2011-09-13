@@ -6,7 +6,7 @@
  */
 
 #ifndef _BUMPERDATA_H
-#define	_BUMPERDATA_H
+#define  _BUMPERDATA_H
 
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
@@ -42,4 +42,4 @@ namespace naoth
   };
 }
 
-#endif	/* _BUMPERDATA_H */
+#endif  /* _BUMPERDATA_H */

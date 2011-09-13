@@ -6,7 +6,7 @@
  */
 
 #ifndef _MOTIONBLACKBOARD_H
-#define	_MOTIONBLACKBOARD_H
+#define  _MOTIONBLACKBOARD_H
 
 
 //#include "PlatformInterface/PlatformInterchangeable.h"
@@ -85,5 +85,5 @@ public:
   AbstractMotion* currentlyExecutedMotion;
 };
 
-#endif	/* _MOTIONBLACKBOARD_H */
+#endif  /* _MOTIONBLACKBOARD_H */
 

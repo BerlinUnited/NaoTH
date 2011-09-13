@@ -19,7 +19,7 @@ using namespace std;
 
 double GeneticAlgorithms::transmit(double father, const double mother)
 {
-	return (Math::random(-1.0,1.0)>0)?father:mother;
+  return (Math::random(-1.0,1.0)>0)?father:mother;
 }
 
 double GeneticAlgorithms::crossover(double father, double mother)

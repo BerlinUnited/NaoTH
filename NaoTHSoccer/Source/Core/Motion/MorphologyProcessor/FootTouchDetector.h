@@ -6,7 +6,7 @@
 */
 
 #ifndef _FOOTTOUCHDETECTOR_H
-#define	_FOOTTOUCHDETECTOR_H
+#define  _FOOTTOUCHDETECTOR_H
 
 #include "Tools/LinearClassifier.h"
 #include <Representations/Infrastructure/FSRData.h>
@@ -38,5 +38,5 @@ private:
   std::vector<Vector_n<double,4> > unTouchTrainSet;
 };
 
-#endif	/* _FOOTTOUCHDETECTOR_H */
+#endif  /* _FOOTTOUCHDETECTOR_H */
 

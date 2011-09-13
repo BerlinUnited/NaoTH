@@ -158,12 +158,12 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     // some direct offsets
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LKneePitch:JointData::RKneePitch] += currentPose.knee_pitch_offset;
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;
-	}//end if
+  }//end if
   
-	for (int i = 0; i < JointData::numOfJoint; i++)
-	{
-		theMotorJointData.stiffness[i] = 1.0;
-	}
+  for (int i = 0; i < JointData::numOfJoint; i++)
+  {
+    theMotorJointData.stiffness[i] = 1.0;
+  }
 }//end execute
 
 
@@ -387,8 +387,8 @@ const KickPose IKDynamicKickMotion::getStandPoseOnOneFoot(bool add_rotation)
   KickPose standPose = getStandPose(getStandHeight());
   const Pose3D& standFoot = getStandFoot(standPose);
 
-	double offset = (theKickingFoot == KickRequest::left)?theParameters.shiftOffsetYRight:theParameters.shiftOffsetYLeft;
-	
+  double offset = (theKickingFoot == KickRequest::left)?theParameters.shiftOffsetYRight:theParameters.shiftOffsetYLeft;
+  
   // shift the body
   standPose.pose.com.translate(Vector3<double>(0, standFoot.translation.y + offset, 0));
 
@@ -471,14 +471,14 @@ void IKDynamicKickMotion::action_retract(const Pose3D& kickPose)
   const Pose3D& currentFootPose = (theKickingFoot == KickRequest::left)?p.pose.feet.left: p.pose.feet.right;
   //double v = theParameters.kickSpeed; // mm/ms = m/s
   Vector3<double> d = -(currentFootPose.translation);
-	double max_kpo = Math::fromDegrees(theParameters.knee_pitch_offset);
+  double max_kpo = Math::fromDegrees(theParameters.knee_pitch_offset);
   p.knee_pitch_offset = Math::clamp(d.x/100*max_kpo, 0.0, max_kpo);
   
-	
-	Vector3<double> dir = -(kickPose.translation - currentFootPose.translation);
-	double max_aro = Math::fromDegrees(theParameters.ankle_roll_offset);
-	p.ankle_roll_offset = dir.y/60*max_aro;
-	}
+  
+  Vector3<double> dir = -(kickPose.translation - currentFootPose.translation);
+  double max_aro = Math::fromDegrees(theParameters.ankle_roll_offset);
+  p.ankle_roll_offset = dir.y/60*max_aro;
+  }
 
 
 
@@ -532,7 +532,7 @@ void IKDynamicKickMotion::action_execute(const Pose3D& kickPose)
   kickFoot.translation = currentFootPose.translation;
   
 
-	const KickPose& kp = getCurrentPose();
+  const KickPose& kp = getCurrentPose();
   double ankle_roll_offset_start = kp.ankle_roll_offset;
   double knee_pitch_offset_start = kp.knee_pitch_offset;
 
@@ -548,7 +548,7 @@ void IKDynamicKickMotion::action_execute(const Pose3D& kickPose)
     }
     else
     {
-			double dt = ((t_end-t)/t_end);
+      double dt = ((t_end-t)/t_end);
       p.ankle_roll_offset = ankle_roll_offset_start*dt;
       p.knee_pitch_offset = knee_pitch_offset_start*dt;
     }

@@ -104,46 +104,46 @@ public:
   vector<Edgel> scanLineEdgels;
 
   void addLine(const FieldLine& line)
-	{
+  {
     if(numOfSeenLines < MAXNUMBEROFLINES)
-		{
+    {
       if(numOfSeenLines == 0)
       {
         lineWasSeen = true;
       }
-			lines[numOfSeenLines] = line;
-			numOfSeenLines++;
-			numOfSeenObjects++;
-		}//end if
-	}//end add
+      lines[numOfSeenLines] = line;
+      numOfSeenLines++;
+      numOfSeenObjects++;
+    }//end if
+  }//end add
 
   void addObstacle(const Obstacle& obstacle)
-	{
+  {
     if(numOfSeenObstacles < MAXNUMBEROFLINES)
-		{
+    {
       if(numOfSeenObstacles == 0)
       {
         obstacleWasSeen = true;
       }
-			obstacles[numOfSeenObstacles] = obstacle;
-			numOfSeenObstacles++;
-			numOfSeenObjects++;
-		}//end if
-	}//end add
+      obstacles[numOfSeenObstacles] = obstacle;
+      numOfSeenObstacles++;
+      numOfSeenObjects++;
+    }//end if
+  }//end add
 
   void addBall(const Ball& ball)
-	{
+  {
     if(numOfSeenBalls < MAXNUMBEROFLINES)
-		{
+    {
       if(numOfSeenBalls == 0)
       {
         ballWasSeen = true;
       }
-			balls[numOfSeenBalls] = ball;
-			numOfSeenBalls++;
-			numOfSeenObjects++;
-		}//end if
-	}//end add
+      balls[numOfSeenBalls] = ball;
+      numOfSeenBalls++;
+      numOfSeenObjects++;
+    }//end if
+  }//end add
 
   /* reset percept */
   void reset()

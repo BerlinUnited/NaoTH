@@ -6,7 +6,7 @@
 //
 
 #ifndef _DebugImageDrawings_H
-#define	_DebugImageDrawings_H
+#define  _DebugImageDrawings_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/ImageProcessing/ImageDrawings.h>
@@ -102,5 +102,4 @@ private:
 #define POINT_PX(color,x,y) ((void)0)
 #endif //DEBUG
 
-#endif	/* _DebugImageDrawings_H */
-
+#endif  /* _DebugImageDrawings_H */

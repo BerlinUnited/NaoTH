@@ -7,7 +7,7 @@
 */
 
 #ifndef _DATACONVERSION_H
-#define	_DATACONVERSION_H
+#define  _DATACONVERSION_H
 
 #include <cstring>
 #include <sstream>
@@ -52,6 +52,6 @@ namespace DataConversion
 
 } // namespace naoth
 
-#endif	/* _DATACONVERSION_H */
+#endif  /* _DATACONVERSION_H */
 
 

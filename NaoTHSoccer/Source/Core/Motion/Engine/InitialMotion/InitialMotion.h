@@ -6,7 +6,7 @@
 */
 
 #ifndef _INITIALMOTION_H
-#define	_INITIALMOTION_H
+#define  _INITIALMOTION_H
 
 #include "Motion/AbstractMotion.h"
 
@@ -51,5 +51,5 @@ private:
   double freeStiffness[naoth::JointData::numOfJoint];
 };
 
-#endif	/* _INITIALMOTION_H */
+#endif  /* _INITIALMOTION_H */
 

@@ -6,7 +6,7 @@
  */
 
 #ifndef _INITIALMOTIONFACTORY_H
-#define	_INITIALMOTIONFACTORY_H
+#define  _INITIALMOTIONFACTORY_H
 
 #include "Motion/Engine/MotionFactory.h"
 
@@ -22,5 +22,5 @@ private:
   AbstractMotion* currentMotion;
 };
 
-#endif	/* _INITIALMOTIONFACTORY_H */
+#endif  /* _INITIALMOTIONFACTORY_H */
 

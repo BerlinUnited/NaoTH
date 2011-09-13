@@ -6,7 +6,7 @@
  */
 
 #ifndef _STOPWATCH_H
-#define	_STOPWATCH_H
+#define  _STOPWATCH_H
 
 #include <map>
 #include <cstring>
@@ -111,5 +111,5 @@ public:
 //#define STOPWATCH_STOP_GENERIC(name) /* */
 //#endif // DEBUG
 
-#endif	/* _STOPWATCH_H */
+#endif  /* _STOPWATCH_H */
 

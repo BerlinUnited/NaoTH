@@ -26,11 +26,11 @@ using namespace naoth;
 class SpiderScan
 {
 public:
-	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64);
-	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor);
-	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors);
-	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor);
-	SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors);
+  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64);
+  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor);
+  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors);
+  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor);
+  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors);
   void init();
 
   class Scans

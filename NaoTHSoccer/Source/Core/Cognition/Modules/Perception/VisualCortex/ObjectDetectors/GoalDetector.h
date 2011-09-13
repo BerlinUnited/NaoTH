@@ -49,7 +49,7 @@ class GoalDetector: public GoalDetectorBase
 {
 
 public:
-	GoalDetector();
+  GoalDetector();
   ~GoalDetector(){};
 
   void execute();
@@ -123,12 +123,12 @@ private:
 
     Blob(const Math::Polygon<8>& v, bool greenPoint) : vertices(v), greenPointFound(greenPoint) {};
 
-	  Math::Polygon<8> vertices;
-	  bool greenPointFound;
+    Math::Polygon<8> vertices;
+    bool greenPointFound;
 
-	  void add(Vector2<int>& point) { vertices.add(point); }
-	  double getArea() { return vertices.getArea(); }
-	  const Vector2<int>& getClosestPoint(const Vector2<int>& reference) { return vertices.getClosestPoint(reference); }
+    void add(Vector2<int>& point) { vertices.add(point); }
+    double getArea() { return vertices.getArea(); }
+    const Vector2<int>& getClosestPoint(const Vector2<int>& reference) { return vertices.getClosestPoint(reference); }
 
   };//end class Blob
 

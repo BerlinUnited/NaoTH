@@ -6,7 +6,7 @@
 //
 
 #ifndef _DebugDrawings_H
-#define	_DebugDrawings_H
+#define  _DebugDrawings_H
 
 #include <cstring>
 #include <sstream>
@@ -276,5 +276,5 @@ ostream& operator<<(ostream& stream, const DebugDrawings::Color& color);
 #define ROBOT(x,y,rotation) ((void)0)
 #endif //DEBUG
 
-#endif	/* _DebugDrawings_H */
+#endif  /* _DebugDrawings_H */
 

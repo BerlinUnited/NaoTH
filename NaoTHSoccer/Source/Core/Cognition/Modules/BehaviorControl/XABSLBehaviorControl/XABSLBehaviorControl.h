@@ -6,7 +6,7 @@
  */
 
 #ifndef _XABSLBehaviorControl_H
-#define	_XABSLBehaviorControl_H
+#define  _XABSLBehaviorControl_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -212,4 +212,4 @@ template<class T> const unsigned int* EngineFactory<T>::timestamp = NULL;
 
 }//end namespace xabsl
 
-#endif	/* _XABSLBehaviorControl_H */
+#endif  /* _XABSLBehaviorControl_H */

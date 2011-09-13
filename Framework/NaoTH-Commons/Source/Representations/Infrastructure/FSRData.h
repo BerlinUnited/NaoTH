@@ -7,7 +7,7 @@
  */
 
 #ifndef _FSRDATA_H
-#define	_FSRDATA_H
+#define  _FSRDATA_H
 
 #include <string>
 
@@ -70,5 +70,5 @@ namespace naoth
 
 }//end namespace naoth
 
-#endif	/* _FSRDATA_H */
+#endif  /* _FSRDATA_H */
 

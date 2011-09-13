@@ -6,7 +6,7 @@
 */
 
 #ifndef PREVIEWCONTROLLER_H
-#define	PREVIEWCONTROLLER_H
+#define  PREVIEWCONTROLLER_H
 
 #include <list>
 
@@ -70,5 +70,5 @@ private:
 
 std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);
 
-#endif	/* PREVIEWCONTROLLER_H */
+#endif  /* PREVIEWCONTROLLER_H */
 

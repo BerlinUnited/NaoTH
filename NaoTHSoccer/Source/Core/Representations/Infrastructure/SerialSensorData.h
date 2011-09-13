@@ -6,7 +6,7 @@
  */
 
 #ifndef _SERIALSENSORDATA_H
-#define	_SERIALSENSORDATA_H
+#define  _SERIALSENSORDATA_H
 
 #include "Tools/DataStructures/Streamable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -58,5 +58,5 @@ public:
 };
 
 
-#endif	/* _SERIALSENSORDATA_H */
+#endif  /* _SERIALSENSORDATA_H */
 

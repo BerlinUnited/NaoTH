@@ -6,7 +6,7 @@
 */
 
 #ifndef SOCCERSTRATEGY_H
-#define	SOCCERSTRATEGY_H
+#define  SOCCERSTRATEGY_H
 
 #include "Tools/Math/Vector2.h"
 
@@ -32,5 +32,5 @@ public:
 };
 
 
-#endif	/* SOCCERSTRATEGY_H */
+#endif  /* SOCCERSTRATEGY_H */
 

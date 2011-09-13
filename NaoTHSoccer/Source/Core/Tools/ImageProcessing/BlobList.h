@@ -6,7 +6,7 @@
  */
 
 #ifndef _BlobList_H
-#define	_BlobList_H
+#define  _BlobList_H
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Moments2.h>
@@ -93,5 +93,5 @@ public:
 
 };//end class BlobPercept
 
-#endif	/* _BlobList_H */
+#endif  /* _BlobList_H */
 

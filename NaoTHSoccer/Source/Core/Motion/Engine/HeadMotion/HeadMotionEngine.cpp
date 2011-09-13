@@ -293,7 +293,7 @@ void HeadMotionEngine::lookAtWorldPointSimple(const Vector3<double>& target)
 {
   Vector3<double> vector = target - theBlackBoard.theCameraMatrix.translation;
 
-	//camera height for nao -535 for webcam -370
+  //camera height for nao -535 for webcam -370
   //double neckHeigth = theBlackBoard.theCameraMatrix.translation.z;
 
   double yaw = atan2(vector.y, vector.x);

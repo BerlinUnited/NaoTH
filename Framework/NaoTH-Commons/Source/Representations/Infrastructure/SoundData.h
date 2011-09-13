@@ -6,7 +6,7 @@
  */
 
 #ifndef _SOUNDDATA_H
-#define	_SOUNDDATA_H
+#define  _SOUNDDATA_H
 
 #include <string>
 #include <iostream>
@@ -78,5 +78,5 @@ namespace naoth
   };
 }
 
-#endif	/* _SOUNDDATA_H */
+#endif  /* _SOUNDDATA_H */
 

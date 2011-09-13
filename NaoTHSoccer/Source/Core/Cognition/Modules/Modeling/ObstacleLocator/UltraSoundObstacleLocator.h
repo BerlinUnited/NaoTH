@@ -236,26 +236,26 @@ private:
   double maxValidDistance; /* max distance that is concidered valid */
   double minValidDistance; /* min distance that is concidered valid */
 
-	unsigned int ageThreshold; /* max age of the considered data */
+  unsigned int ageThreshold; /* max age of the considered data */
   double usOpeningAngle; // opening angle of the ultrasound detector (in radians)
 
-	// unsigned int callCounter;
-	// unsigned int calcEveryCall;
+  // unsigned int callCounter;
+  // unsigned int calcEveryCall;
 
   // Functionality
   Vector2<double> getMean();
   Vector2<double> getMinimum();
   Vector2<double> getDampedMinimum();
 
-	void updateBuffer();
-	void ageBuffer();
+  void updateBuffer();
+  void ageBuffer();
   void updateGrid();
-	void ageGrid();
+  void ageGrid();
   void provideToLocalObstacleModel();
-  void updateByOdometry(const Pose2D& odometryDelta);	
+  void updateByOdometry(const Pose2D& odometryDelta);  
   void drawObstacleModel();
   void drawObstacleModelNumbers();
-	//virtual void calculatePoints();?
+  //virtual void calculatePoints();?
 };
 
 #endif //_UltraSoundObstacleLocator_h_

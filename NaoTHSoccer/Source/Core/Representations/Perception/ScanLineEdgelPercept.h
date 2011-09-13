@@ -42,13 +42,13 @@ public:
   std::vector<EndPoint> endPoints;
 
   void add(const Edgel& edgel)
-	{
+  {
     if(numOfSeenEdgels < MAX_NUMBER_OF_SCANLINE_EDGELS)
-		{
-			scanLineEdgels[numOfSeenEdgels] = edgel;
-			numOfSeenEdgels++;
-		}//end if
-	}//end add
+    {
+      scanLineEdgels[numOfSeenEdgels] = edgel;
+      numOfSeenEdgels++;
+    }//end if
+  }//end add
 
   /* reset percept */
   void reset()

@@ -6,7 +6,7 @@
  */
 
 #ifndef _ULTRASOUNDDATA_H
-#define	_ULTRASOUNDDATA_H
+#define  _ULTRASOUNDDATA_H
 
 #include <ostream>
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -75,5 +75,5 @@ namespace naoth
   };
 }
 
-#endif	/* _ULTRASOUNDDATA_H */
+#endif  /* _ULTRASOUNDDATA_H */
 
