@@ -3,7 +3,7 @@
  */
 
 #ifndef _LOGFILE_H
-#define	_LOGFILE_H
+#define  _LOGFILE_H
 
 #include <set>
 #include <map>
@@ -29,9 +29,12 @@ public:
    */
   template<class T> void addRepresentation(const T* representation, std::string name)
   {
-    streamables[name] = representation;
-    serializers[name] = new naoth::SerializerWrapper<T>();
-  }
+    if(streamables.find(name) == streamables.end())
+    {
+      streamables[name] = representation;
+      serializers[name] = new naoth::SerializerWrapper<T>();
+    }
+  }//end addRepresentation
 
   void log(unsigned int frameNum);
 
@@ -54,5 +57,5 @@ private:
   bool activatedOnce;
 };
 
-#endif	/* _LOGFILE_H */
+#endif  /* _LOGFILE_H */
 

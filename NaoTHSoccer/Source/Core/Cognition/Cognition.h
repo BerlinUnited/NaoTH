@@ -6,7 +6,7 @@
  */
 
 #ifndef COGNITION_H
-#define	COGNITION_H
+#define  COGNITION_H
 
 #include <iostream>
 
@@ -17,6 +17,25 @@
 
 #include "Tools/Packages/PackageLoader.h"
 #include <Tools/Debug/Stopwatch.h>
+
+#include "Tools/Debug/Logger.h"
+
+namespace naoth
+{
+  template<>
+  class Serializer<Representation>
+  {
+  public:
+    static void serialize(const Representation& representation, std::ostream& stream)
+    {
+      representation.serialize(stream);
+    }
+    static void deserialize(std::istream& stream, Representation& representation)
+    {
+      representation.deserialize(stream);
+    }
+  };
+}
 
 class Cognition : public naoth::Callable, public ModuleManager, public DebugCommandExecutor
 {
@@ -35,6 +54,21 @@ public:
 private:
   PackageLoader packageLoader;
   StopwatchItem stopwatch;
+  Logger cognitionLogger;
+
+
+  void registerLogableRepresentationList()
+  {
+    const BlackBoard& blackBoard = getBlackBoard();
+    BlackBoard::Registry::const_iterator iter;
+
+    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
+    {
+      const Representation& theRepresentation = iter->second->getRepresentation();
+      cognitionLogger.addRepresentation(&theRepresentation, iter->first);
+    }
+  }//end registerLogableRepresentationList
+
 
   void printRepresentation(std::ostream &outstream, const std::string& name, bool binary)
   {
@@ -72,5 +106,5 @@ private:
   }//end printRepresentationList
 };
 
-#endif	/* COGNITION_H */
+#endif  /* COGNITION_H */
 

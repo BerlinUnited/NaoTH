@@ -86,6 +86,7 @@
 using namespace std;
 
 Cognition::Cognition()
+  : cognitionLogger("CognitionLog")
 {
   REGISTER_DEBUG_COMMAND("modules:list",
     "return the list of registered modules with provided and required representations", this);
@@ -98,6 +99,8 @@ Cognition::Cognition()
   REGISTER_DEBUG_COMMAND("representation:list", "Stream out the list of all registered representations", this);
   REGISTER_DEBUG_COMMAND("representation:get", "Stream out all the representations listet", this);
   REGISTER_DEBUG_COMMAND("representation:getbinary", "Stream out serialized represenation", this);
+
+  REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 }
 
 Cognition::~Cognition()
@@ -188,7 +191,6 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   actuator->setEnabled(true);
   actuator->getModuleT()->init(platformInterface);
 
-
   // loat external modules
   //packageLoader.loadPackages("Packages/", *this);
   
@@ -211,6 +213,8 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
     }
   }//end for
   
+  registerLogableRepresentationList();
+
   // auto-generate the execution list
   //calculateExecutionList();
 
@@ -248,12 +252,16 @@ void Cognition::call()
       Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
       STOPWATCH_START_GENERIC(name);
       module->execute();
-      STOPWATCH_START_GENERIC(name);
+      STOPWATCH_STOP_GENERIC(name);
     }//end if
   }//end for all modules
   
   GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
+
+  static int k = 0;
+  // log
+  cognitionLogger.log(k++);
 
 
   // HACK: reset all the debug stuff before executing the modules

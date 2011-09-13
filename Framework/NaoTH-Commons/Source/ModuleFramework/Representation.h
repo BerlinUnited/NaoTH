@@ -74,6 +74,11 @@ public:
     // use representation name as fallback
     stream << name;
   }//end print
+
+
+
+  virtual void serialize(std::ostream& stream) const = 0;
+  virtual void deserialize(std::istream& stream) = 0;
 };
 
 /**

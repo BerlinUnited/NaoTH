@@ -6,10 +6,11 @@
  */
 
 #ifndef DATAHOLDER_H
-#define	DATAHOLDER_H
+#define  DATAHOLDER_H
 
 #include "Representation.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 using namespace naoth;
 
@@ -49,8 +50,18 @@ public:
       stream << getName();
     }
   }//end print
+
+  void serialize(std::ostream& stream) const
+  {
+    Serializer<T>::serialize(data, stream);
+  }
+
+  void deserialize(std::istream& stream)
+  {
+    Serializer<T>::deserialize(stream, data);
+  }
 };
 
 
-#endif	/* DATAHOLDER_H */
+#endif  /* DATAHOLDER_H */
 

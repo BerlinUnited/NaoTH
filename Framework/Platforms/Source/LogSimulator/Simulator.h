@@ -6,7 +6,7 @@
  */
 
 #ifndef _SIMULATOR_H
-#define	_SIMULATOR_H
+#define  _SIMULATOR_H
 
 #include <stdlib.h>
 #include <iostream>
@@ -33,11 +33,11 @@
 #include <Representations/Infrastructure/GameData.h>
 
 //
-#include <Representations/Perception/CameraMatrix.h>
+
 
 #include "PlatformInterface/PlatformInterface.h"
 #include "Tools/DataStructures/Streamable.h"
-
+#include <Tools/Debug/DebugRequest.h>
 #include <ModuleFramework/Module.h>
 
 #define CYCLE_TIME 20
@@ -45,19 +45,55 @@
 using namespace naoth;
 
 
-#define LOG_REPRESENTATION_PROVIDER(representationName)\
-  BEGIN_DECLARE_MODULE(representationName##LogProvider)\
-    PROVIDE(representationName)\
-  END_DECLARE_MODULE(representationName##LogProvider)\
-  class representationName##LogProvider: public representationName##LogProviderBase\
-  {\
-  public:\
-    void init(naoth::PlatformInterfaceBase& platformInterface)\
-    {\
-      platformInterface.registerCognitionInput(get##representationName());\
-    }\
-    void execute(){}\
-  };
+class LogProvider: public Module
+{
+private:
+  std::map<std::string, std::string>* representations;
+
+public:
+  LogProvider() : Module("LogProvider"), representations(NULL) {}
+
+  
+
+  void init(std::map<std::string, std::string>& rep, std::set<std::string>& includedRepresentations)
+  {
+    representations = &rep;
+    std::set<std::string>::iterator iter;
+
+    for(iter = includedRepresentations.begin(); iter != includedRepresentations.end(); ++iter)
+    {
+      if(*iter != "")
+      {
+        DEBUG_REQUEST_REGISTER("LogProvider:"+(*iter), "", true);
+      }
+    }//end for
+
+    //DEBUG_REQUEST_REGISTER("FrameInfo", "", false);
+  }//end init
+
+
+  void execute()
+  {
+    BlackBoard& blackBoard = getBlackBoard();
+    BlackBoard::Registry::iterator iter;
+
+    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
+    {
+      Representation& theRepresentation = iter->second->getRepresentation();
+      const std::string& name = iter->first;
+
+      // look if there is a logged data for this representation
+      std::map<std::string, std::string>::const_iterator iter = representations->find(name); 
+      if(iter != representations->end() && iter->first != "FrameInfo" && iter->first != "")
+      {
+        DEBUG_REQUEST_GENERIC("LogProvider:"+(iter->first),
+          std::stringstream stream(iter->second);
+          theRepresentation.deserialize(stream);
+          );
+      }//end if
+    }//end for
+  }//end execute
+};
 
 
 class Simulator : public PlatformInterface<Simulator>
@@ -85,9 +121,15 @@ public:
   template<class T> void generalGet(T& data, std::string name) const;
 
   /////////////////////// get ///////////////////////
-  #define SIM_GET(rep) virtual void get(rep& data) const {generalGet(data,#rep);}
-  virtual void get(unsigned int& /*timestamp*/){};
+  #define SIM_GET(rep) void get(rep& data) const {generalGet(data,#rep);}
+  
+  template<class T> void get(T& /*data*/) const {}
+  template<class T> void set(T& /*data*/){}
 
+  SIM_GET(FrameInfo);
+  void get(unsigned int& /*timestamp*/) const {}
+
+  /*
   SIM_GET(FrameInfo);
   SIM_GET(SensorJointData);
   SIM_GET(AccelerometerData);
@@ -101,28 +143,29 @@ public:
   SIM_GET(ButtonData);
   SIM_GET(BatteryData);
   SIM_GET(UltraSoundReceiveData);
-
-  SIM_GET(CameraMatrix);
-
-  LOG_REPRESENTATION_PROVIDER(CameraMatrix);
-
+  */
 
   /////////////////////// set ///////////////////////
-  virtual void set(const MotorJointData& /*data*/){};
-
-  virtual void set(const CameraSettingsRequest& /*data*/){};
-
-  virtual void set(const LEDData& /*data*/){};
-
-  virtual void set(const IRSendData& /*data*/){};
-
-  virtual void set(const UltraSoundSendData& /*data*/){};
-
-  virtual void set(const SoundData& /*data*/){};
+  //virtual void set(const MotorJointData& /*data*/){};
+  //virtual void set(const CameraSettingsRequest& /*data*/){};
+  //virtual void set(const LEDData& /*data*/){};
+  //virtual void set(const IRSendData& /*data*/){};
+  //virtual void set(const UltraSoundSendData& /*data*/){};
+  //virtual void set(const SoundData& /*data*/){};
 
   /////////////////////// init ///////////////////////
   virtual void init();
   
+  std::map<std::string, std::string>& getRepresentations()
+  {
+    return representations;
+  }
+
+  std::set<std::string>& getIncludedRepresentations()
+  {
+    return includedRepresentations;
+  }
+
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name);
 
@@ -172,6 +215,6 @@ private:
   bool backendMode;
 };
 
-#endif	/* _SIMULATOR_H */
+#endif  /* _SIMULATOR_H */
 
 

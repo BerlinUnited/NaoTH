@@ -12,7 +12,7 @@
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
-#include <Tools/Debug/DebugRequest.h> // HACK: this is in NaoTH-Soccer!!!
+#include <Tools/Debug/DebugRequest.h>
 #include <Tools/NaoTime.h>
 
 using namespace std;

@@ -42,8 +42,6 @@ compatibleMode(compatibleMode),
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
 
-  // percepts
-  registerInput<CameraMatrix>(*this); 
   
   logFile.open(filePath, ios::in | ios::binary);
 

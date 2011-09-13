@@ -6,7 +6,7 @@
 //
 
 #ifndef _DEBUGREQUEST_H
-#define	_DEBUGREQUEST_H
+#define  _DEBUGREQUEST_H
 
 #include <cstring>
 #include <map>
@@ -52,7 +52,7 @@ private:
   /** Execute the code depending wether the request with this name is active, fast version */
   #define DEBUG_REQUEST(name, code) { static const bool& _debug_request_is_active_ = DebugRequest::getInstance().getValueReference(name); if(_debug_request_is_active_){code}} ((void)0)
   /** Execute the code depending wether the request with this name is active */
-  #define DEBUG_REQUEST_SLOW(name, code) { if(DebugRequest::getInstance().getValueReference(name)){code}} ((void)0)
+  #define DEBUG_REQUEST_GENERIC(name, code) { if(DebugRequest::getInstance().getValueReference(name)){code}} ((void)0)
   /** Execute the code depending wether the request with this name is active, slow version (for carefull use in loops)*/
   #define DEBUG_REQUEST_IF_ACTIVE(name, code) { static const bool& _debug_request_is_active_ = DebugRequest::getInstance().getValueReference(name); if(_debug_request_is_active_){code}} ((void)0)
   /** Register debug request. Will do nothing if already known. */
@@ -64,12 +64,12 @@ private:
 #else
   /* ((void)0) - that's a do-nothing statement */
   #define DEBUG_REQUEST(name, code) ((void)0)
-  #define DEBUG_REQUEST_SLOW(name, code) ((void)0)
+  #define DEBUG_REQUEST_GENERIC(name, code) ((void)0)
   #define DEBUG_REQUEST_REGISTER(name, description, isActiveByDefault) ((void)0)
   #define DEBUG_REQUEST_ON_DEACTIVE(name, code) ((void)0)
   #define DEBUG_REQUEST_OR_RELEASE(name, code) {code} ((void)0)
 #endif // DEBUG
 
 
-#endif	/* _DEBUGREQUEST_H */
+#endif  /* _DEBUGREQUEST_H */
 
