@@ -63,6 +63,12 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* LinePercept_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   LinePercept_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ScanLineEndPoint_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ScanLineEndPoint_reflection_ = NULL;
+const ::google::protobuf::Descriptor* ScanLineEdgelPercept_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  ScanLineEdgelPercept_reflection_ = NULL;
 const ::google::protobuf::Descriptor* FSRData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   FSRData_reflection_ = NULL;
@@ -374,7 +380,40 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LinePercept));
-  FSRData_descriptor_ = file->message_type(15);
+  ScanLineEndPoint_descriptor_ = file->message_type(15);
+  static const int ScanLineEndPoint_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, posinimage_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, posonfield_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, color_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, scanlineid_),
+  };
+  ScanLineEndPoint_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ScanLineEndPoint_descriptor_,
+      ScanLineEndPoint::default_instance_,
+      ScanLineEndPoint_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ScanLineEndPoint));
+  ScanLineEdgelPercept_descriptor_ = file->message_type(16);
+  static const int ScanLineEdgelPercept_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, endpoints_),
+  };
+  ScanLineEdgelPercept_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      ScanLineEdgelPercept_descriptor_,
+      ScanLineEdgelPercept::default_instance_,
+      ScanLineEdgelPercept_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(ScanLineEdgelPercept));
+  FSRData_descriptor_ = file->message_type(17);
   static const int FSRData_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, force_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, data_),
@@ -391,7 +430,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
-  StepControlStatus_descriptor_ = file->message_type(16);
+  StepControlStatus_descriptor_ = file->message_type(18);
   static const int StepControlStatus_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, stepid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, moveablefoot_),
@@ -407,7 +446,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StepControlStatus));
-  MotionStatus_descriptor_ = file->message_type(17);
+  MotionStatus_descriptor_ = file->message_type(19);
   static const int MotionStatus_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
@@ -430,7 +469,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionStatus));
-  OdometryData_descriptor_ = file->message_type(18);
+  OdometryData_descriptor_ = file->message_type(20);
   static const int OdometryData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, pose_),
   };
@@ -445,7 +484,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OdometryData));
-  CalibrationData_descriptor_ = file->message_type(19);
+  CalibrationData_descriptor_ = file->message_type(21);
   static const int CalibrationData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, inertialsensoroffset_),
   };
@@ -503,6 +542,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     LinePercept_descriptor_, &LinePercept::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ScanLineEndPoint_descriptor_, &ScanLineEndPoint::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    ScanLineEdgelPercept_descriptor_, &ScanLineEdgelPercept::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     FSRData_descriptor_, &FSRData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     StepControlStatus_descriptor_, &StepControlStatus::default_instance());
@@ -547,6 +590,10 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete MotionRequest_reflection_;
   delete LinePercept::default_instance_;
   delete LinePercept_reflection_;
+  delete ScanLineEndPoint::default_instance_;
+  delete ScanLineEndPoint_reflection_;
+  delete ScanLineEdgelPercept::default_instance_;
+  delete ScanLineEdgelPercept_reflection_;
   delete FSRData::default_instance_;
   delete FSRData_reflection_;
   delete StepControlStatus::default_instance_;
@@ -633,23 +680,29 @@ void protobuf_AddDesc_Representations_2eproto() {
     "\005lines\030\001 \003(\0132\037.naothmessages.FieldLineSe"
     "gment\0222\n\rintersections\030\002 \003(\0132\033.naothmess"
     "ages.Intersection\0228\n\022middleCircleCenter\030"
-    "\003 \001(\0132\034.naothmessages.DoubleVector2\"5\n\007F"
-    "SRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005v"
-    "alid\030\003 \003(\010\"9\n\021StepControlStatus\022\016\n\006stepI"
-    "D\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n\014Motion"
-    "Status\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r"
-    "\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion\030\004 "
-    "\002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025plann"
-    "edMotionLeftFoot\030\006 \002(\0132\025.naothmessages.P"
-    "ose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\0132\025."
-    "naothmessages.Pose2D\022/\n\020plannedMotionHip"
-    "\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021stepCon"
-    "trolStatus\030\t \001(\0132 .naothmessages.StepCon"
-    "trolStatus\"3\n\014OdometryData\022#\n\004pose\030\001 \002(\013"
-    "2\025.naothmessages.Pose2D\"M\n\017CalibrationDa"
-    "ta\022:\n\024inertialSensorOffset\030\001 \001(\0132\034.naoth"
-    "messages.DoubleVector2B)\n\'de.hu_berlin.i"
-    "nformatik.ki.nao.messages", 3305);
+    "\003 \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020"
+    "ScanLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.n"
+    "aothmessages.IntVector2\0220\n\nposOnField\030\002 "
+    "\002(\0132\034.naothmessages.DoubleVector2\022#\n\005col"
+    "or\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLi"
+    "neID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\ten"
+    "dPoints\030\002 \003(\0132\037.naothmessages.ScanLineEn"
+    "dPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data"
+    "\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStat"
+    "us\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r"
+    "\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastM"
+    "otion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nhe"
+    "adMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002"
+    "(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naot"
+    "hmessages.Pose2D\0225\n\026plannedMotionRightFo"
+    "ot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020plann"
+    "edMotionHip\030\010 \002(\0132\025.naothmessages.Pose2D"
+    "\022;\n\021stepControlStatus\030\t \001(\0132 .naothmessa"
+    "ges.StepControlStatus\"3\n\014OdometryData\022#\n"
+    "\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017Ca"
+    "librationData\022:\n\024inertialSensorOffset\030\001 "
+    "\001(\0132\034.naothmessages.DoubleVector2B)\n\'de."
+    "hu_berlin.informatik.ki.nao.messages", 3556);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -667,6 +720,8 @@ void protobuf_AddDesc_Representations_2eproto() {
   KickRequest::default_instance_ = new KickRequest();
   MotionRequest::default_instance_ = new MotionRequest();
   LinePercept::default_instance_ = new LinePercept();
+  ScanLineEndPoint::default_instance_ = new ScanLineEndPoint();
+  ScanLineEdgelPercept::default_instance_ = new ScanLineEdgelPercept();
   FSRData::default_instance_ = new FSRData();
   StepControlStatus::default_instance_ = new StepControlStatus();
   MotionStatus::default_instance_ = new MotionStatus();
@@ -687,6 +742,8 @@ void protobuf_AddDesc_Representations_2eproto() {
   KickRequest::default_instance_->InitAsDefaultInstance();
   MotionRequest::default_instance_->InitAsDefaultInstance();
   LinePercept::default_instance_->InitAsDefaultInstance();
+  ScanLineEndPoint::default_instance_->InitAsDefaultInstance();
+  ScanLineEdgelPercept::default_instance_->InitAsDefaultInstance();
   FSRData::default_instance_->InitAsDefaultInstance();
   StepControlStatus::default_instance_->InitAsDefaultInstance();
   MotionStatus::default_instance_->InitAsDefaultInstance();
@@ -6444,6 +6501,561 @@ void LinePercept::Swap(LinePercept* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = LinePercept_descriptor_;
   metadata.reflection = LinePercept_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int ScanLineEndPoint::kPosInImageFieldNumber;
+const int ScanLineEndPoint::kPosOnFieldFieldNumber;
+const int ScanLineEndPoint::kColorFieldNumber;
+const int ScanLineEndPoint::kScanLineIDFieldNumber;
+#endif  // !_MSC_VER
+
+ScanLineEndPoint::ScanLineEndPoint()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void ScanLineEndPoint::InitAsDefaultInstance() {
+  posinimage_ = const_cast< ::naothmessages::IntVector2*>(&::naothmessages::IntVector2::default_instance());
+  posonfield_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+}
+
+ScanLineEndPoint::ScanLineEndPoint(const ScanLineEndPoint& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void ScanLineEndPoint::SharedCtor() {
+  _cached_size_ = 0;
+  posinimage_ = NULL;
+  posonfield_ = NULL;
+  color_ = 0;
+  scanlineid_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ScanLineEndPoint::~ScanLineEndPoint() {
+  SharedDtor();
+}
+
+void ScanLineEndPoint::SharedDtor() {
+  if (this != default_instance_) {
+    delete posinimage_;
+    delete posonfield_;
+  }
+}
+
+void ScanLineEndPoint::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ScanLineEndPoint::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ScanLineEndPoint_descriptor_;
+}
+
+const ScanLineEndPoint& ScanLineEndPoint::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+ScanLineEndPoint* ScanLineEndPoint::default_instance_ = NULL;
+
+ScanLineEndPoint* ScanLineEndPoint::New() const {
+  return new ScanLineEndPoint;
+}
+
+void ScanLineEndPoint::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_posinimage()) {
+      if (posinimage_ != NULL) posinimage_->::naothmessages::IntVector2::Clear();
+    }
+    if (has_posonfield()) {
+      if (posonfield_ != NULL) posonfield_->::naothmessages::DoubleVector2::Clear();
+    }
+    color_ = 0;
+    scanlineid_ = 0u;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ScanLineEndPoint::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.IntVector2 posInImage = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_posinimage()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_posOnField;
+        break;
+      }
+      
+      // required .naothmessages.DoubleVector2 posOnField = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_posOnField:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_posonfield()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_color;
+        break;
+      }
+      
+      // required .naothmessages.Color color = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_color:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (naothmessages::Color_IsValid(value)) {
+            set_color(static_cast< naothmessages::Color >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(3, value);
+          }
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_ScanLineID;
+        break;
+      }
+      
+      // required uint32 ScanLineID = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_ScanLineID:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &scanlineid_)));
+          set_has_scanlineid();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void ScanLineEndPoint::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required .naothmessages.IntVector2 posInImage = 1;
+  if (has_posinimage()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->posinimage(), output);
+  }
+  
+  // required .naothmessages.DoubleVector2 posOnField = 2;
+  if (has_posonfield()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->posonfield(), output);
+  }
+  
+  // required .naothmessages.Color color = 3;
+  if (has_color()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      3, this->color(), output);
+  }
+  
+  // required uint32 ScanLineID = 4;
+  if (has_scanlineid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->scanlineid(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* ScanLineEndPoint::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .naothmessages.IntVector2 posInImage = 1;
+  if (has_posinimage()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->posinimage(), target);
+  }
+  
+  // required .naothmessages.DoubleVector2 posOnField = 2;
+  if (has_posonfield()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->posonfield(), target);
+  }
+  
+  // required .naothmessages.Color color = 3;
+  if (has_color()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      3, this->color(), target);
+  }
+  
+  // required uint32 ScanLineID = 4;
+  if (has_scanlineid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->scanlineid(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int ScanLineEndPoint::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .naothmessages.IntVector2 posInImage = 1;
+    if (has_posinimage()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->posinimage());
+    }
+    
+    // required .naothmessages.DoubleVector2 posOnField = 2;
+    if (has_posonfield()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->posonfield());
+    }
+    
+    // required .naothmessages.Color color = 3;
+    if (has_color()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->color());
+    }
+    
+    // required uint32 ScanLineID = 4;
+    if (has_scanlineid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->scanlineid());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ScanLineEndPoint::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ScanLineEndPoint* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ScanLineEndPoint*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ScanLineEndPoint::MergeFrom(const ScanLineEndPoint& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_posinimage()) {
+      mutable_posinimage()->::naothmessages::IntVector2::MergeFrom(from.posinimage());
+    }
+    if (from.has_posonfield()) {
+      mutable_posonfield()->::naothmessages::DoubleVector2::MergeFrom(from.posonfield());
+    }
+    if (from.has_color()) {
+      set_color(from.color());
+    }
+    if (from.has_scanlineid()) {
+      set_scanlineid(from.scanlineid());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ScanLineEndPoint::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ScanLineEndPoint::CopyFrom(const ScanLineEndPoint& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ScanLineEndPoint::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  
+  if (has_posinimage()) {
+    if (!this->posinimage().IsInitialized()) return false;
+  }
+  if (has_posonfield()) {
+    if (!this->posonfield().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void ScanLineEndPoint::Swap(ScanLineEndPoint* other) {
+  if (other != this) {
+    std::swap(posinimage_, other->posinimage_);
+    std::swap(posonfield_, other->posonfield_);
+    std::swap(color_, other->color_);
+    std::swap(scanlineid_, other->scanlineid_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ScanLineEndPoint::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ScanLineEndPoint_descriptor_;
+  metadata.reflection = ScanLineEndPoint_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int ScanLineEdgelPercept::kEndPointsFieldNumber;
+#endif  // !_MSC_VER
+
+ScanLineEdgelPercept::ScanLineEdgelPercept()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void ScanLineEdgelPercept::InitAsDefaultInstance() {
+}
+
+ScanLineEdgelPercept::ScanLineEdgelPercept(const ScanLineEdgelPercept& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void ScanLineEdgelPercept::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+ScanLineEdgelPercept::~ScanLineEdgelPercept() {
+  SharedDtor();
+}
+
+void ScanLineEdgelPercept::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void ScanLineEdgelPercept::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ScanLineEdgelPercept::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return ScanLineEdgelPercept_descriptor_;
+}
+
+const ScanLineEdgelPercept& ScanLineEdgelPercept::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+ScanLineEdgelPercept* ScanLineEdgelPercept::default_instance_ = NULL;
+
+ScanLineEdgelPercept* ScanLineEdgelPercept::New() const {
+  return new ScanLineEdgelPercept;
+}
+
+void ScanLineEdgelPercept::Clear() {
+  endpoints_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool ScanLineEdgelPercept::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_endPoints:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_endpoints()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_endPoints;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void ScanLineEdgelPercept::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
+  for (int i = 0; i < this->endpoints_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->endpoints(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* ScanLineEdgelPercept::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
+  for (int i = 0; i < this->endpoints_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->endpoints(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int ScanLineEdgelPercept::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
+  total_size += 1 * this->endpoints_size();
+  for (int i = 0; i < this->endpoints_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->endpoints(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ScanLineEdgelPercept::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const ScanLineEdgelPercept* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const ScanLineEdgelPercept*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void ScanLineEdgelPercept::MergeFrom(const ScanLineEdgelPercept& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  endpoints_.MergeFrom(from.endpoints_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void ScanLineEdgelPercept::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ScanLineEdgelPercept::CopyFrom(const ScanLineEdgelPercept& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ScanLineEdgelPercept::IsInitialized() const {
+  
+  for (int i = 0; i < endpoints_size(); i++) {
+    if (!this->endpoints(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void ScanLineEdgelPercept::Swap(ScanLineEdgelPercept* other) {
+  if (other != this) {
+    endpoints_.Swap(&other->endpoints_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata ScanLineEdgelPercept::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = ScanLineEdgelPercept_descriptor_;
+  metadata.reflection = ScanLineEdgelPercept_reflection_;
   return metadata;
 }
 

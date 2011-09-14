@@ -137,10 +137,21 @@ message MotionRequest {
 message LinePercept {
   repeated FieldLineSegment lines = 1;
   repeated Intersection intersections = 2;
-
   optional DoubleVector2 middleCircleCenter = 3;
 }
 
+message ScanLineEndPoint {
+  required IntVector2 posInImage = 1;
+  required DoubleVector2 posOnField = 2;
+  required Color color = 3;
+  required uint32 ScanLineID = 4;
+}
+
+message ScanLineEdgelPercept {
+// TODO
+//  repeated Edgel scanLineEdgels = 1;
+  repeated ScanLineEndPoint endPoints = 2;
+}
 
 message FSRData {
   repeated double force = 1;

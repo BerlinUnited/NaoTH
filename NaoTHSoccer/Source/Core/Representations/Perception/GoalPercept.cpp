@@ -15,31 +15,46 @@ void Serializer<GoalPercept>::serialize(const GoalPercept& representation, std::
 {
   naothmessages::GoalPercept g;
     
+	// angleToSeenGoal
   g.set_angletoseengoal(representation.angleToSeenGoal);
   
+	// goalCentroid
   g.mutable_goalcentroid()->set_x(representation.goalCentroid.x);
   g.mutable_goalcentroid()->set_y(representation.goalCentroid.y);
   g.mutable_goalcentroid()->set_z(representation.goalCentroid.z);
 
+	// numberOfSeenPosts
   g.set_numberofseenposts(representation.numberOfSeenPosts);
 
+	// post
   for(unsigned int i=0; i < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
   {
     naothmessages::GoalPost* p = g.add_post();
-    p->mutable_basepoint()->set_x(representation.post[i].basePoint.x);
-    p->mutable_basepoint()->set_y(representation.post[i].basePoint.y);
+		const GoalPercept::GoalPost& post = representation.post[i];
 
-    p->mutable_position()->set_x(representation.post[i].position.x);
-    p->mutable_position()->set_y(representation.post[i].position.y);
+		// basePoint
+    p->mutable_basepoint()->set_x(post.basePoint.x);
+    p->mutable_basepoint()->set_y(post.basePoint.y);
 
-    p->set_color((naothmessages::Color) representation.post[i].color);
+		// topPoint
+		// TODO
 
-    p->set_type((naothmessages::GoalPost_PostType) representation.post[i].type);
+		// color
+		p->set_color((naothmessages::Color) post.color);
 
-    p->set_positionreliable(representation.post[i].positionReliable);
+		// type
+    p->set_type((naothmessages::GoalPost_PostType) post.type);
 
-    p->set_seenheight(representation.post[i].seenHeight);
-  }
+		// positionReliable
+    p->set_positionreliable(post.positionReliable);
+
+		// seenHeight
+    p->set_seenheight(post.seenHeight);
+
+		// position
+    p->mutable_position()->set_x(post.position.x);
+    p->mutable_position()->set_y(post.position.y);
+  }//end for
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   g.SerializeToZeroCopyStream(&buf);
@@ -51,38 +66,58 @@ void Serializer<GoalPercept>::deserialize(std::istream& stream, GoalPercept& rep
   // clear the percept befor reading from stream
   representation.reset();
 
+	// deserialize
   naothmessages::GoalPercept g;
   google::protobuf::io::IstreamInputStream buf(&stream);
   g.ParseFromZeroCopyStream(&buf);
 
+	// angleToSeenGoal
   if(g.has_angletoseengoal())
   {
     representation.angleToSeenGoal = g.angletoseengoal();
   }
+
+	// goalCentroid
   if(g.has_goalcentroid())
   {
     representation.goalCentroid.x = g.goalcentroid().x();
     representation.goalCentroid.y = g.goalcentroid().y();
     representation.goalCentroid.z = g.goalcentroid().z();
   }
+
+	// numberOfSeenPosts
   if(g.has_numberofseenposts())
   {
     representation.numberOfSeenPosts = g.numberofseenposts();
   }
+
+	// post
   for(unsigned int i=0; i < (unsigned int)g.post_size() && i < representation.numberOfSeenPosts && i < representation.MAXNUMBEROFPOSTS; i++)
   {
-    representation.post[i].basePoint.x = g.post(i).basepoint().x();
-    representation.post[i].basePoint.y = g.post(i).basepoint().y();
+		const naothmessages::GoalPost& p = g.post(i);
+		GoalPercept::GoalPost& post = representation.post[i];
 
-    representation.post[i].position.x = g.post(i).position().x();
-    representation.post[i].position.y = g.post(i).position().y();
+		// basePoint
+    post.basePoint.x = p.basepoint().x();
+    post.basePoint.y = p.basepoint().y();
 
-    representation.post[i].color = (ColorClasses::Color) g.post(i).color();
+    // topPoint
+		// TODO
 
-    representation.post[i].type = (GoalPercept::GoalPost::PostType) g.post(i).type();
+		// color
+    post.color = (ColorClasses::Color) p.color();
 
-    representation.post[i].positionReliable = g.post(i).positionreliable();
+		// type
+    post.type = (GoalPercept::GoalPost::PostType) p.type();
 
-    representation.post[i].seenHeight = g.post(i).seenheight();
-  }
+		// positionReliable
+    post.positionReliable = p.positionreliable();
+
+		// seenHeight
+    post.seenHeight = p.seenheight();
+
+		// position
+		post.position.x = p.position().x();
+    post.position.y = p.position().y();
+  }//end for
 }//end deserialize

@@ -48,6 +48,8 @@ class WalkRequest;
 class KickRequest;
 class MotionRequest;
 class LinePercept;
+class ScanLineEndPoint;
+class ScanLineEdgelPercept;
 class FSRData;
 class StepControlStatus;
 class MotionStatus;
@@ -1984,6 +1986,205 @@ class LinePercept : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static LinePercept* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ScanLineEndPoint : public ::google::protobuf::Message {
+ public:
+  ScanLineEndPoint();
+  virtual ~ScanLineEndPoint();
+  
+  ScanLineEndPoint(const ScanLineEndPoint& from);
+  
+  inline ScanLineEndPoint& operator=(const ScanLineEndPoint& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ScanLineEndPoint& default_instance();
+  
+  void Swap(ScanLineEndPoint* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ScanLineEndPoint* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ScanLineEndPoint& from);
+  void MergeFrom(const ScanLineEndPoint& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required .naothmessages.IntVector2 posInImage = 1;
+  inline bool has_posinimage() const;
+  inline void clear_posinimage();
+  static const int kPosInImageFieldNumber = 1;
+  inline const ::naothmessages::IntVector2& posinimage() const;
+  inline ::naothmessages::IntVector2* mutable_posinimage();
+  inline ::naothmessages::IntVector2* release_posinimage();
+  
+  // required .naothmessages.DoubleVector2 posOnField = 2;
+  inline bool has_posonfield() const;
+  inline void clear_posonfield();
+  static const int kPosOnFieldFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& posonfield() const;
+  inline ::naothmessages::DoubleVector2* mutable_posonfield();
+  inline ::naothmessages::DoubleVector2* release_posonfield();
+  
+  // required .naothmessages.Color color = 3;
+  inline bool has_color() const;
+  inline void clear_color();
+  static const int kColorFieldNumber = 3;
+  inline naothmessages::Color color() const;
+  inline void set_color(naothmessages::Color value);
+  
+  // required uint32 ScanLineID = 4;
+  inline bool has_scanlineid() const;
+  inline void clear_scanlineid();
+  static const int kScanLineIDFieldNumber = 4;
+  inline ::google::protobuf::uint32 scanlineid() const;
+  inline void set_scanlineid(::google::protobuf::uint32 value);
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.ScanLineEndPoint)
+ private:
+  inline void set_has_posinimage();
+  inline void clear_has_posinimage();
+  inline void set_has_posonfield();
+  inline void clear_has_posonfield();
+  inline void set_has_color();
+  inline void clear_has_color();
+  inline void set_has_scanlineid();
+  inline void clear_has_scanlineid();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::IntVector2* posinimage_;
+  ::naothmessages::DoubleVector2* posonfield_;
+  int color_;
+  ::google::protobuf::uint32 scanlineid_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ScanLineEndPoint* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class ScanLineEdgelPercept : public ::google::protobuf::Message {
+ public:
+  ScanLineEdgelPercept();
+  virtual ~ScanLineEdgelPercept();
+  
+  ScanLineEdgelPercept(const ScanLineEdgelPercept& from);
+  
+  inline ScanLineEdgelPercept& operator=(const ScanLineEdgelPercept& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ScanLineEdgelPercept& default_instance();
+  
+  void Swap(ScanLineEdgelPercept* other);
+  
+  // implements Message ----------------------------------------------
+  
+  ScanLineEdgelPercept* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const ScanLineEdgelPercept& from);
+  void MergeFrom(const ScanLineEdgelPercept& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated .naothmessages.ScanLineEndPoint endPoints = 2;
+  inline int endpoints_size() const;
+  inline void clear_endpoints();
+  static const int kEndPointsFieldNumber = 2;
+  inline const ::naothmessages::ScanLineEndPoint& endpoints(int index) const;
+  inline ::naothmessages::ScanLineEndPoint* mutable_endpoints(int index);
+  inline ::naothmessages::ScanLineEndPoint* add_endpoints();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint >&
+      endpoints() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint >*
+      mutable_endpoints();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.ScanLineEdgelPercept)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint > endpoints_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static ScanLineEdgelPercept* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -4450,6 +4651,142 @@ inline ::naothmessages::DoubleVector2* LinePercept::release_middlecirclecenter()
   ::naothmessages::DoubleVector2* temp = middlecirclecenter_;
   middlecirclecenter_ = NULL;
   return temp;
+}
+
+// -------------------------------------------------------------------
+
+// ScanLineEndPoint
+
+// required .naothmessages.IntVector2 posInImage = 1;
+inline bool ScanLineEndPoint::has_posinimage() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ScanLineEndPoint::set_has_posinimage() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ScanLineEndPoint::clear_has_posinimage() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ScanLineEndPoint::clear_posinimage() {
+  if (posinimage_ != NULL) posinimage_->::naothmessages::IntVector2::Clear();
+  clear_has_posinimage();
+}
+inline const ::naothmessages::IntVector2& ScanLineEndPoint::posinimage() const {
+  return posinimage_ != NULL ? *posinimage_ : *default_instance_->posinimage_;
+}
+inline ::naothmessages::IntVector2* ScanLineEndPoint::mutable_posinimage() {
+  set_has_posinimage();
+  if (posinimage_ == NULL) posinimage_ = new ::naothmessages::IntVector2;
+  return posinimage_;
+}
+inline ::naothmessages::IntVector2* ScanLineEndPoint::release_posinimage() {
+  clear_has_posinimage();
+  ::naothmessages::IntVector2* temp = posinimage_;
+  posinimage_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.DoubleVector2 posOnField = 2;
+inline bool ScanLineEndPoint::has_posonfield() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ScanLineEndPoint::set_has_posonfield() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ScanLineEndPoint::clear_has_posonfield() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ScanLineEndPoint::clear_posonfield() {
+  if (posonfield_ != NULL) posonfield_->::naothmessages::DoubleVector2::Clear();
+  clear_has_posonfield();
+}
+inline const ::naothmessages::DoubleVector2& ScanLineEndPoint::posonfield() const {
+  return posonfield_ != NULL ? *posonfield_ : *default_instance_->posonfield_;
+}
+inline ::naothmessages::DoubleVector2* ScanLineEndPoint::mutable_posonfield() {
+  set_has_posonfield();
+  if (posonfield_ == NULL) posonfield_ = new ::naothmessages::DoubleVector2;
+  return posonfield_;
+}
+inline ::naothmessages::DoubleVector2* ScanLineEndPoint::release_posonfield() {
+  clear_has_posonfield();
+  ::naothmessages::DoubleVector2* temp = posonfield_;
+  posonfield_ = NULL;
+  return temp;
+}
+
+// required .naothmessages.Color color = 3;
+inline bool ScanLineEndPoint::has_color() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void ScanLineEndPoint::set_has_color() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void ScanLineEndPoint::clear_has_color() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void ScanLineEndPoint::clear_color() {
+  color_ = 0;
+  clear_has_color();
+}
+inline naothmessages::Color ScanLineEndPoint::color() const {
+  return static_cast< naothmessages::Color >(color_);
+}
+inline void ScanLineEndPoint::set_color(naothmessages::Color value) {
+  GOOGLE_DCHECK(naothmessages::Color_IsValid(value));
+  set_has_color();
+  color_ = value;
+}
+
+// required uint32 ScanLineID = 4;
+inline bool ScanLineEndPoint::has_scanlineid() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ScanLineEndPoint::set_has_scanlineid() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ScanLineEndPoint::clear_has_scanlineid() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ScanLineEndPoint::clear_scanlineid() {
+  scanlineid_ = 0u;
+  clear_has_scanlineid();
+}
+inline ::google::protobuf::uint32 ScanLineEndPoint::scanlineid() const {
+  return scanlineid_;
+}
+inline void ScanLineEndPoint::set_scanlineid(::google::protobuf::uint32 value) {
+  set_has_scanlineid();
+  scanlineid_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ScanLineEdgelPercept
+
+// repeated .naothmessages.ScanLineEndPoint endPoints = 2;
+inline int ScanLineEdgelPercept::endpoints_size() const {
+  return endpoints_.size();
+}
+inline void ScanLineEdgelPercept::clear_endpoints() {
+  endpoints_.Clear();
+}
+inline const ::naothmessages::ScanLineEndPoint& ScanLineEdgelPercept::endpoints(int index) const {
+  return endpoints_.Get(index);
+}
+inline ::naothmessages::ScanLineEndPoint* ScanLineEdgelPercept::mutable_endpoints(int index) {
+  return endpoints_.Mutable(index);
+}
+inline ::naothmessages::ScanLineEndPoint* ScanLineEdgelPercept::add_endpoints() {
+  return endpoints_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint >&
+ScanLineEdgelPercept::endpoints() const {
+  return endpoints_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::ScanLineEndPoint >*
+ScanLineEdgelPercept::mutable_endpoints() {
+  return &endpoints_;
 }
 
 // -------------------------------------------------------------------

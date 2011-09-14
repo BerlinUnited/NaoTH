@@ -76,7 +76,7 @@ public:
   };//end class GoalPost
 
 
-
+public:
   /* maximum number of posts */
   const static unsigned int MAXNUMBEROFPOSTS = 6;
 
@@ -86,6 +86,16 @@ public:
   /* estimated position of the goal-centroid relative to the robot */
   Vector3<double> goalCentroid;
 
+
+private:
+  /* number of seen posts */
+  unsigned int numberOfSeenPosts;
+
+  /* array of recognized posts in arbitrary order */
+  GoalPost post[MAXNUMBEROFPOSTS];
+
+
+public:
 
   void add(const Vector2<int>& basePoint, const Vector2<double>& position, GoalPost::PostType type, ColorClasses::Color color, bool reliable)
   {
@@ -133,19 +143,14 @@ public:
     }//end for
   }//end print
 
+
   //////////////////////////////////////
   // getters
   unsigned int getNumberOfSeenPosts() const { return numberOfSeenPosts; }
   const GoalPost& getPost(unsigned int i) const { ASSERT(i < numberOfSeenPosts); return post[i]; }
 
+
 private:
-  /* number of seen posts */
-  unsigned int numberOfSeenPosts;
-
-  /* array of recognized posts in arbitrary order */
-  GoalPost post[MAXNUMBEROFPOSTS];
-
-
   friend class naoth::Serializer<GoalPercept>;
 };//end GoalPercept
 

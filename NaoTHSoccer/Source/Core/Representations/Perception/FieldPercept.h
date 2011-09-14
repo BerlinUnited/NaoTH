@@ -6,7 +6,7 @@
  */
 
 #ifndef _FIELDPERCEPT_H
-#define  _FIELDPERCEPT_H
+#define _FIELDPERCEPT_H
 
 #include <vector>
 
@@ -15,10 +15,6 @@
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
-#include "Representations/Infrastructure/FrameInfo.h"
-
-
-#define MAX_FIELD_COUNT 4
 
 class FieldPercept : public naoth::Printable
 {
@@ -206,5 +202,5 @@ namespace naoth
   };
 }
 
-#endif  /* _FIELDPERCEPT_H */
+#endif /* _FIELDPERCEPT_H */
 
