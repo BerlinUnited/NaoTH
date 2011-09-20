@@ -86,7 +86,6 @@
 using namespace std;
 
 Cognition::Cognition()
-  : cognitionLogger("CognitionLog")
 {
   REGISTER_DEBUG_COMMAND("modules:list",
     "return the list of registered modules with provided and required representations", this);
@@ -100,7 +99,6 @@ Cognition::Cognition()
   REGISTER_DEBUG_COMMAND("representation:get", "Stream out all the representations listet", this);
   REGISTER_DEBUG_COMMAND("representation:getbinary", "Stream out serialized represenation", this);
 
-  REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 }
 
 Cognition::~Cognition()
@@ -212,8 +210,6 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
       g_message("activating module %s", (*name).c_str());
     }
   }//end for
-  
-  registerLogableRepresentationList();
 
   // auto-generate the execution list
   //calculateExecutionList();
@@ -258,10 +254,6 @@ void Cognition::call()
   
   GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
-
-  static int k = 0;
-  // log
-  cognitionLogger.log(k++);
 
 
   // HACK: reset all the debug stuff before executing the modules

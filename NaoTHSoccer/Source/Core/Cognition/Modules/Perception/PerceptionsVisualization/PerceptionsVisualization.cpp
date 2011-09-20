@@ -121,11 +121,30 @@ void PerceptionsVisualization::execute()
       }
       TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
     }//end for
+
+    // circle
+    const Vector2<double>& center = getLinePercept().middleCircleCenter;
+    PEN("FFFFFF99", 10);
+    CIRCLE(center.x, center.y, 50);
+    PEN("FFFFFF99", 50);
+    CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+
+    if(getLinePercept().middleCircleOrientationWasSeen)
+    {
+      const Vector2<double> direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
+      LINE(
+        center.x + direction.x,
+        center.y + direction.y,
+        center.x - direction.x,
+        center.y - direction.y
+        );
+    }//end if
   ); // end line_percept on field
 
 
   DEBUG_REQUEST("PerceptionsVisualization:image:line_percept",
-    //mark lines
+    IMAGE_DRAWING_CONTEXT;
+    // mark lines
     for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
     {
       const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
@@ -143,8 +162,40 @@ void PerceptionsVisualization::execute()
       LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
 
       LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
+
+      PEN("009900", 1);
+      LINE(lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
+      LINE(lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
+      LINE(upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
+      LINE(lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
     }//end for
-  );
+
+    for(unsigned int i=0; i < getLinePercept().intersections.size(); i++)
+    {
+      //mark intersection on the field
+      ColorClasses::Color color = (ColorClasses::Color) getLinePercept().intersections[i].getType();
+      const Vector2<double>& intersectionPoint = getLinePercept().intersections[i].getPos();
+      CIRCLE_PX(color, (int)(intersectionPoint.x+0.5), (int)(intersectionPoint.y+0.5), 5);
+
+
+      PEN(ColorClasses::colorClassToHex(color), 1); 
+      CIRCLE(intersectionPoint.x, intersectionPoint.y, 5);
+
+      string type = "N";
+      switch(getLinePercept().intersections[i].getType())
+      {
+        case Math::Intersection::C: type="C"; break;
+        case Math::Intersection::T: type="T"; break;
+        case Math::Intersection::L: type="L"; break;
+        case Math::Intersection::E: type="E"; break;
+        case Math::Intersection::X: type="X"; break;
+        default: break;
+      }
+
+      PEN(ColorClasses::colorClassToHex(color), 0.1); 
+      TEXT_DRAWING(intersectionPoint.x + 10, intersectionPoint.y + 10, type);
+    }//end for
+  ); // end line_percept in image
 
 
 

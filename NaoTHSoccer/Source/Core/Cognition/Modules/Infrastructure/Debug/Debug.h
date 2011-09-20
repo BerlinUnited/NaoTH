@@ -67,6 +67,19 @@ private:
 
   void draw3D();
   void drawRobot3D(const Pose3D& robotPose);
+
+
+  void registerLogableRepresentationList()
+  {
+    const BlackBoard& blackBoard = getBlackBoard();
+    BlackBoard::Registry::const_iterator iter;
+
+    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
+    {
+      const Representation& theRepresentation = iter->second->getRepresentation();
+      cognitionLogger.addRepresentation(&theRepresentation, iter->first);
+    }
+  }//end registerLogableRepresentationList
 };
 
 #endif  /* DEBUG_H */

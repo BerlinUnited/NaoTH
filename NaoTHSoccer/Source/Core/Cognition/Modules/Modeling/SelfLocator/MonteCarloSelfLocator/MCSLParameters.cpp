@@ -47,6 +47,9 @@ MCSLParameters::MCSLParameters()
   PARAMETER_REGISTER(updateByCenterCircle) = 1;
   PARAMETER_REGISTER(updateByFlags) = 0;
 
+  PARAMETER_REGISTER(treatFallDown) = 0;
+  PARAMETER_REGISTER(treatLiftUp) = 0;
+
   // load from the file after registering all parameters
   syncWithConfig();
 

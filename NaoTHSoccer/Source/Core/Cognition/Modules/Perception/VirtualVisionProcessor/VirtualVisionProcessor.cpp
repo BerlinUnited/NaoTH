@@ -538,7 +538,7 @@ void VirtualVisionProcessor::addLine(const Vector3<double>& pol0, const Vector3<
   //line.begin = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, bP);
   //line.end = CameraGeometry::relativePointToImage(theCameraMatrix, Platform::getInstance().theCameraInfo, eP);
   line.lineOnField = Math::LineSegment(bPos, ePos);
-  line.valid = true;
+//  line.valid = true;
 
   getLinePercept().lines.push_back(line);
 }//end addLine

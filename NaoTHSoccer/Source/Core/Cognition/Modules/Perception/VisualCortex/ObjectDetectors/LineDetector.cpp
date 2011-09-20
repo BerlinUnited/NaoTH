@@ -225,7 +225,7 @@ void LineDetector::execute()
 
   if(getLinePercept().lineWasSeen == true)
   {
-    getLinePercept().frameInfoWhenLineWasSeen = getFrameInfo();
+//    getLinePercept().frameInfoWhenLineWasSeen = getFrameInfo();
 
     DEBUG_REQUEST("ImageProcessor:LineDetector:draw_closest_line",
 
@@ -270,7 +270,6 @@ void LineDetector::setLinePercepts()
       LinePercept::FieldLineSegment fieldLineSegment;
 
       fieldLineSegment.lineInImage = line;
-      fieldLineSegment.valid = line.valid;
       fieldLineSegment.type = line.type;
 
       // TODO: set seen_id
@@ -560,10 +559,15 @@ void LineDetector::estimateCorners()
       Vector2<int> lineOnePoint(lineOne.segment.point(tOneL));
       Vector2<int> lineTwoPoint(lineTwo.segment.point(tTwoL));
 
-      // project the intersection on te ground
-      // TODO: do it somewhere else
-      LinePercept::Intersection intersection(getCameraMatrix(), getImage().cameraInfo, point);
+      // projection of the intersection point
+      Vector2<double> pointProjection;
+      CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(), 
+        getImage().cameraInfo, point.x, point.y, 0.0, pointProjection);
 
+      // create the intersection
+      LinePercept::Intersection intersection(point);
+      intersection.setPosOnField(pointProjection);
 
       // needed later ...
       double tOne = Math::clamp(tOneL, 0.0, lineOne.segment.getLength());

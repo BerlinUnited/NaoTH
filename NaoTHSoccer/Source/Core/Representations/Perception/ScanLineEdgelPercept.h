@@ -36,12 +36,12 @@ public:
     unsigned int ScanLineID;
   };
 
-	/** */
+  /** */
   unsigned int numOfSeenEdgels;
-	/** */
+  /** */
   Edgel scanLineEdgels[MAX_NUMBER_OF_SCANLINE_EDGELS];
 
-	/** */
+  /** */
   std::vector<EndPoint> endPoints;
 
 

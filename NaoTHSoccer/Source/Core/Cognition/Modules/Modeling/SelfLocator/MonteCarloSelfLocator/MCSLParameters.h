@@ -55,6 +55,10 @@ public:
   double updateByCenterCircle;
   double updateByFlags;
 
+  // special situations
+  double treatFallDown;
+  double treatLiftUp;
+
   virtual void print(std::ostream& stream) const {}
 
 };

@@ -15,8 +15,6 @@
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/DataStructures/Serializer.h>
 
-#include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
 
@@ -41,6 +39,9 @@ public:
     unknown_id
   };
 
+  /**
+   The class LineSegmentImage describes a segment of a line in the image coordinates.
+  */
   class LineSegmentImage
   {
   public:
@@ -62,6 +63,7 @@ public:
     /** the type of the line estimated in image */
     LineType type;
 
+    // what do we need it for?
     bool valid;
   };
 
@@ -72,90 +74,19 @@ public:
     public:
       FieldLineSegment()
         :
-        valid(false),
+        //valid(false),
         seen_id(unknown_id)
       {}
 
-/*
-      void fillProtobuf(naothmessages::FieldLineSegment* segment) const
-      {
-        segment->mutable_lineinimage()->mutable_base()->set_x(base.x);
-        segment->mutable_lineinimage()->mutable_base()->set_y(base.y);
-        segment->mutable_lineinimage()->mutable_direction()->set_x(direction.x);
-        segment->mutable_lineinimage()->mutable_direction()->set_y(direction.y);
-        segment->mutable_lineinimage()->set_length(length);
-
-        segment->mutable_lineonfield()->mutable_base()->set_x(lineOnField.getBase().x);
-        segment->mutable_lineonfield()->mutable_base()->set_y(lineOnField.getBase().y);
-        segment->mutable_lineonfield()->mutable_direction()->set_x(lineOnField.getDirection().x);
-        segment->mutable_lineonfield()->mutable_direction()->set_y(lineOnField.getDirection().y);
-        segment->mutable_lineonfield()->set_length(lineOnField.getLength());
-
-        segment->set_angle(angle);
-        segment->set_beginextendcount(beginExtendCount);
-        segment->set_endextendcount(endExtendCount);
-        segment->set_slope(slope);
-        segment->set_thickness(thickness);
-        segment->set_valid(valid);
-      }//end fillProtobuf
-
-      void readFromProtobuf(const naothmessages::FieldLineSegment* segment)
-      {
-        if(segment->has_lineinimage())
-        {
-          base.x = segment->lineinimage().base().x();
-          base.y = segment->lineinimage().base().y();
-          direction.x = segment->lineinimage().direction().x();
-          direction.y = segment->lineinimage().direction().y();
-        }
-
-        if(segment->has_lineonfield())
-        {
-          Vector2<double> onFieldBase;
-          onFieldBase.x = segment->lineonfield().base().x();
-          onFieldBase.y = segment->lineonfield().base().y();
-
-          Vector2<double> onFieldDirection;
-          onFieldDirection.x = segment->lineonfield().direction().x();
-          onFieldDirection.y = segment->lineonfield().direction().y();
-
-          double length = segment->lineonfield().length();
-          lineOnField = LineSegment(onFieldBase,onFieldBase+onFieldDirection*length);
-        }
-
-        if(segment->has_angle())
-          angle = segment->angle();
-
-        if(segment->has_beginextendcount() && segment->has_endextendcount())
-        {
-          beginExtendCount = segment->beginextendcount();
-          endExtendCount = segment->endextendcount();
-        }
-
-        if(segment->has_slope())
-          slope = segment->slope();
-
-        if(segment->has_thickness())
-          thickness = segment->thickness();
-
-        if(segment->has_valid())
-          valid = segment->valid();
-      }//end readFromProtobuf
-*/
-
       // TODO: when exactly is a line segment valid?
-      bool valid; 
-
-      /** mark if this segment apears to be a part of the middle circle */
-      // bool partOfCircle;
+      //bool valid; 
 
       // TODO: is the type filled properly?
-      /** if yes, we don't need "partOfCircle" */
+      /** the type of the detected line */
       LineType type;
 
       /** estimated id of the line, e.g., center line, goal line etc. */
       LineID seen_id;
-
 
       /** the line detected in the image (pixel coordinates) */
       LineSegmentImage lineInImage;
@@ -165,8 +96,9 @@ public:
   };//end class FieldLineSegment
 
 
-  // TODO: 
-  // currently used only in 3DSim to represent the seen corners
+  /** 
+    currently used only in 3DSim to represent the seen corners.
+  */
   class Flag
   {
   public:
@@ -186,18 +118,18 @@ public:
   public:
 
     Intersection()
+      : type(Math::Intersection::unknown)
     {
-      type = Math::Intersection::unknown;
     }
 
-    Intersection(const CameraMatrix& cameraMatrix, const naoth::CameraInfo& cameraInfo, const Vector2<double>& pos)
+    Intersection(const Vector2<double>& pos)
       :
+      type(Math::Intersection::unknown),
       pos(pos)
     {
-      type = Math::Intersection::unknown;
-      CameraGeometry::imagePixelToFieldCoord(cameraMatrix, cameraInfo, pos.x, pos.y, 0.0, posOnField);
     }
 
+    
     void setSegments(int segOne, int segTwo)
     {
       segmentIndices[0] = segOne;
@@ -212,97 +144,24 @@ public:
       segmentsDistanceToIntersection[1] = distTwo;
     }
 
-    Vector2<unsigned int>& getSegmentIndices()
-    {
-      return segmentIndices;
-    }
+    void setType(Math::Intersection::IntersectionType typeToSet){ type = typeToSet; }
+    void setPosOnField(const Vector2<double>& p) { posOnField = p; }
+    void setPosInImage(const Vector2<unsigned int>& p) { pos = p; }
+    
 
-    Vector2<double>& getSegmentsDistancesToIntersection()
-    {
-      return segmentsDistanceToIntersection;
-    }
+    // getters
+    Math::Intersection::IntersectionType getType() const { return type; }
+    const Vector2<unsigned int>& getSegmentIndices() const { return segmentIndices; }
+    const Vector2<double>& getSegmentsDistancesToIntersection() const { return segmentsDistanceToIntersection; }
+    const Vector2<double>& getPos() const { return pos; }
+    const Vector2<double>& getPosOnField() const { return posOnField; }
 
-    void setPosOnField(const Vector2<double>& p)
-    {
-      posOnField = p;
-    }
-
-    void setPosInImage(const Vector2<unsigned int>& p)
-    {
-      pos = p;
-    }
-
-    void setType(Math::Intersection::IntersectionType typeToSet)
-    {
-      type = typeToSet;
-    }
-
-    Math::Intersection::IntersectionType getType() const
-    {
-      return type;
-    }
-
-    const Vector2<double>& getPos() const
-    {
-      return pos;
-    }
-
-    const Vector2<double>& getPosOnField() const
-    {
-      return posOnField;
-    }
-/*
-    void fillProtobuf(naothmessages::Intersection* intersection) const
-    {
-      intersection->set_type((naothmessages::Intersection_IntersectionType) type);
-      intersection->mutable_posinimage()->set_x(pos.x);
-      intersection->mutable_posinimage()->set_y(pos.y);
-      intersection->mutable_posonfield()->set_x(posOnField.x);
-      intersection->mutable_posonfield()->set_y(posOnField.y);
-
-      intersection->set_segmentoneindex(segmentIndices[0]);
-      intersection->set_segmenttwoindex(segmentIndices[1]);
-      intersection->set_segmentonedistance(segmentsDistanceToIntersection[0]);
-      intersection->set_segmenttwodistance(segmentsDistanceToIntersection[1]);
-    }
-
-    void readFromProtobuf(const naothmessages::Intersection* intersection)
-    {
-      if(intersection->has_type())
-        type = (Math::Intersection::IntersectionType) intersection->type();
-
-      if(intersection->has_posinimage())
-      {
-        pos.x = intersection->posinimage().x();
-        pos.y = intersection->posinimage().y();
-      }
-
-      if(intersection->has_posonfield())
-      {
-        posOnField.x = intersection->posonfield().x();
-        posOnField.y = intersection->posonfield().y();
-      }
-
-      if(intersection->has_segmentoneindex() && intersection->has_segmenttwoindex())
-      {
-        segmentIndices[0] = intersection->segmentoneindex();
-        segmentIndices[1] = intersection->segmenttwoindex();
-      }
-
-      if(intersection->has_segmentonedistance() && intersection->has_segmenttwodistance())
-      {
-        segmentsDistanceToIntersection[0] = intersection->segmentonedistance();
-        segmentsDistanceToIntersection[1] = intersection->segmenttwodistance();
-      }
-    }
-*/
   private:
     Math::Intersection::IntersectionType type;
     Vector2<unsigned int> segmentIndices;
     Vector2<double> segmentsDistanceToIntersection;
     Vector2<double> pos;
     Vector2<double> posOnField;
-
   };
 
   const static int INITIAL_NUMBER_OF_LINES = 11;
@@ -322,13 +181,17 @@ public:
 
 
   // representationc for the closest line
+  // TODO: this calculations can be made sowhere else
   double closestLineSeenLength;
   Vector2<double> closestPoint;
   Vector2<double> estOrthPointOfClosestLine;
   Vector2<double> closestPointOfClosestLine;
 
   // a line was seen
+  // TODO: do we need it? (lines.empty() also does the job)
   bool lineWasSeen;
+
+  // TODO: do we need it?
   naoth::FrameInfo frameInfoWhenLineWasSeen;
 
 
@@ -363,13 +226,12 @@ public:
       const FieldLineSegment& line = lines[i];
       stream 
         << "== Line " << i << " == " << endl
-        << "valid = " << (line.valid ? "true" : "false")  << endl
         << "lineInImage = (" << line.lineInImage.segment.begin() << ") -- (" << line.lineInImage.segment.end() << ")" << endl
         << "lineOnField = (" << line.lineOnField.begin() << ") -- (" << line.lineOnField.end() << ")" << endl
         << "thickness = (" << line.lineInImage.thickness << ")" << endl
         << "angle = (" << line.lineInImage.angle << ")" << endl
       ;
-    }
+    }//end for
 
     cout<<"\n";
     for(unsigned int i=0; i<flags.size(); i++)
@@ -379,73 +241,9 @@ public:
         << "seenPosOnField = " << flags[i].seenPosOnField << endl
         << "absolutePosOnField = " << flags[i].absolutePosOnField << endl
         ;
-    }
+    }//end for
   }//end print
 
-  /*
-  virtual void toDataStream(ostream& stream) const
-  {
-    naothmessages::LinePercept p;
-
-    for(size_t i=0; i < lines.size(); i++)
-    {
-      naothmessages::FieldLineSegment* newLineSegment = p.add_lines();
-      lines[i].fillProtobuf(newLineSegment);
-    }
-
-    for(size_t i=0; i < intersections.size(); i++)
-    {
-      naothmessages::Intersection* newIntersection = p.add_intersections();
-      intersections[i].fillProtobuf(newIntersection);
-    }
-
-    if(middleCircleWasSeen)
-    {
-      p.mutable_middlecirclecenter()->set_x(middleCircleCenter.x);
-      p.mutable_middlecirclecenter()->set_y(middleCircleCenter.y);
-    }
-    else
-    {
-      p.clear_middlecirclecenter();
-    }
-
-    google::protobuf::io::OstreamOutputStreamLite buf(&stream);
-    p.SerializeToZeroCopyStream(&buf);
-  }
-
-  virtual void fromDataStream(istream& stream)
-  {
-    // reset the percept befor copy from stream
-    this->reset();
-
-    naothmessages::LinePercept p;
-    google::protobuf::io::IstreamInputStreamLite buf(&stream);
-    p.ParsePartialFromZeroCopyStream(&buf);
-
-    for(int i=0; i < p.lines_size(); i++)
-    {
-      FieldLineSegment line;
-      line.readFromProtobuf(&p.lines(i));
-      lines.push_back(line);
-    }
-
-    for(int i=0; i < p.intersections_size(); i++)
-    {
-      Intersection intersection;
-      intersection.readFromProtobuf(&p.intersections(i));
-      intersections.push_back(intersection);
-    }
-
-    middleCircleWasSeen = false;
-    if(p.has_middlecirclecenter())
-    {
-      middleCircleWasSeen = true;
-      middleCircleCenter.x = p.middlecirclecenter().x();
-      middleCircleCenter.y = p.middlecirclecenter().y();
-    }
-
-  }
-*/
 };
 
 namespace naoth

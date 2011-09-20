@@ -34,6 +34,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("colortable:file_path",
     "return the path of the currentelly loaded colortable (needed by ColorTableTool", this);
 
+  /*
   cognitionLogger.addRepresentation(&(getImage()), "Image");
   cognitionLogger.addRepresentation(&(getSensorJointData()), "SensorJointData");
   cognitionLogger.addRepresentation(&(getInertialSensorData()), "InertialSensorData");
@@ -41,6 +42,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   cognitionLogger.addRepresentation(&getGyrometerData(), "GyrometerData");
   cognitionLogger.addRepresentation(&(getFSRData()), "FSRData");
   cognitionLogger.addRepresentation(&(getFrameInfo()), "FrameInfo");
+  */
+  registerLogableRepresentationList();
 
   // 3d drawings
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:Body", "Show the robot body in the 3D viewer.", true);
@@ -48,7 +51,7 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   DEBUG_REQUEST_REGISTER("3DViewer:Ball", "Show the ball in the 3D viewer.", true);
   DEBUG_REQUEST_REGISTER("3DViewer:Global", "Draw objects in global coordinate, i.e. the selflocator is used.", false);
 
-  //REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
+  REGISTER_DEBUG_COMMAND(cognitionLogger.getCommand(), cognitionLogger.getDescription(), &cognitionLogger);
 
   // parameter list
   DebugParameterList::getInstance().add(&(getCameraSettingsRequest()));

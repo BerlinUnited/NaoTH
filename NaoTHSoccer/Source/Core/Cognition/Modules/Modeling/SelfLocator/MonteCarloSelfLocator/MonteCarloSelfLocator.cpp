@@ -1023,12 +1023,11 @@ void MonteCarloSelfLocator::execute()
     return;
   );
 
-  static bool lastFootChoiceValid = true;
-
-  // don't update if the body state is not valid
-  if(getBodyState().fall_down_state != BodyState::upright ||
+  // treat the situation when the robot fell down
+  if(parameters.treatFallDown && (
+     getBodyState().fall_down_state != BodyState::upright ||
      getMotionStatus().currentMotion == motion::stand_up_from_back ||
-     getMotionStatus().currentMotion == motion::stand_up_from_front) // robot is not upright
+     getMotionStatus().currentMotion == motion::stand_up_from_front)) // robot is not upright
   {
     // apply faling down noise
     updateFallDown(theSampleSet);
@@ -1037,32 +1036,25 @@ void MonteCarloSelfLocator::execute()
       drawPosition();
     );
     return;
-  }
-  else
-  {
-    if(!getBodyState().standByLeftFoot && !getBodyState().standByRightFoot) // no foot is on the ground
-    {
-      if(lastFootChoiceValid)
-        lastFootChoiceValid = false;
-      else
-      {
-        // we lose the ground contact for more then 1s
-        if(getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000)
-        { 
-          resetSampleSet(theSampleSet);
-        }
-        // HACK
-        DEBUG_REQUEST("MCSL:draw_position",
-          drawPosition();
-        );
-        return;
-      }
-    }
-    else
-    {
-      lastFootChoiceValid = true;
-    }
   }//end if
+  
+
+  // treat the situation when the robot has been lifted from the ground
+  // (keednapped)
+  if(parameters.treatLiftUp && (
+     !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
+      getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
+  {
+    resetSampleSet(theSampleSet);
+
+    // HACK
+    DEBUG_REQUEST("MCSL:draw_position",
+      drawPosition();
+    );
+    return;
+  }//end if
+
+
 
 
   // reset
@@ -1164,8 +1156,6 @@ void MonteCarloSelfLocator::execute()
 
   getRobotPose() = newPose;
   getSelfLocGoalModel().update(getPlayerInfo().gameData.teamColor, getRobotPose(), getFieldInfo());
-   
-
 
   /************************************
    * execude some debug requests (drawings)

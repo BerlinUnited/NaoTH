@@ -54,22 +54,7 @@ public:
 private:
   PackageLoader packageLoader;
   StopwatchItem stopwatch;
-  Logger cognitionLogger;
-
-
-  void registerLogableRepresentationList()
-  {
-    const BlackBoard& blackBoard = getBlackBoard();
-    BlackBoard::Registry::const_iterator iter;
-
-    for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
-    {
-      const Representation& theRepresentation = iter->second->getRepresentation();
-      cognitionLogger.addRepresentation(&theRepresentation, iter->first);
-    }
-  }//end registerLogableRepresentationList
-
-
+  
   void printRepresentation(std::ostream &outstream, const std::string& name, bool binary)
   {
     const BlackBoard& blackBoard = getBlackBoard();
