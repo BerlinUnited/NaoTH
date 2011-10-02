@@ -67,11 +67,13 @@ public:
     char c = data[size - 1];
     ASSERT(c >= min_char);
     ASSERT(c <= max_char);
+    // reverse order compared to encode (!)
+    if (c > back_slash_char) c--;
     if (c > right_brace_char) c--;
     if (c > left_brace_char) c--;
     if (c > single_quote_char) c--;
     if (c > double_quote_char) c--;
-    if (c > back_slash_char) c--;
+    
     int n = c - min_char;
 
     if (size > 1) {
