@@ -355,7 +355,7 @@ void BallDetector::regionGrowExpandArea(
     Vector2<int> currentPoint = open.front();
     open.pop();
 
-    bool currentPointIsBoundary = false;
+    //bool currentPointIsBoundary = false;
 
     // (pixelIndex)
     //get the GRID coordinates of pixel
@@ -366,7 +366,7 @@ void BallDetector::regionGrowExpandArea(
     
     if(getColorTable64().getColorClass(pixel) != color)
     {
-      currentPointIsBoundary = true;
+//      currentPointIsBoundary = true;
       DEBUG_REQUEST("ImageProcessor:BallDetector:mark_ball_blob",
         POINT_PX(ColorClasses::red,
               (unsigned int)(currentPoint.x),
@@ -391,7 +391,7 @@ void BallDetector::regionGrowExpandArea(
     // add the pixel to the blob
     //blobCreator.addPoint(currentPoint);
     
-    bool currentPointIsImageBoundary = false;
+//    bool currentPointIsImageBoundary = false;
     //check the neighboring pixels
     for(int i = 0; i < 8; i++)
     {
@@ -406,7 +406,7 @@ void BallDetector::regionGrowExpandArea(
         open.push(neighborPixel);
       }else
       {
-        currentPointIsImageBoundary = true;
+//        currentPointIsImageBoundary = true;
       }
     }//end for
 

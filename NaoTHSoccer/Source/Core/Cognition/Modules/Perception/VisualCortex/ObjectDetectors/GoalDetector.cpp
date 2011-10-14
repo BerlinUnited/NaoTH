@@ -476,7 +476,7 @@ int GoalDetector::scanForCandidates(
     Pixel pixel = getImage().get(point.x, point.y);
     ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
 
-    double angleBegin = 0;
+//    double angleBegin = 0;
 //    double angleEnd = 0;
     
     /*
@@ -491,10 +491,10 @@ int GoalDetector::scanForCandidates(
         currentPixelColor == ColorClasses::yellow )
     {
       // first point of goal color
-      if(numOfPoints == 0)
-      {
-        angleBegin = getPointsAngle(point);
-      }
+//      if(numOfPoints == 0)
+//      {
+//        angleBegin = getPointsAngle(point);
+//      }
 
       runSum += point;
       numOfPoints++;

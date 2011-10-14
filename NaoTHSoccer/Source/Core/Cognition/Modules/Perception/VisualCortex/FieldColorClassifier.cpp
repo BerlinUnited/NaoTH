@@ -485,10 +485,10 @@ void FieldColorClassifier::runDebugRequests(int weightedMeanY, int meanY)
 //  );
 
   DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:set_in_image",
-    Pixel greenPix;
-    greenPix.y = getFieldColorPercept().maxWeightedIndexY;
-    greenPix.u = getFieldColorPercept().maxWeightedIndexCb;
-    greenPix.v = getFieldColorPercept().maxWeightedIndexCr;
+//    Pixel greenPix;
+//    greenPix.y = getFieldColorPercept().maxWeightedIndexY;
+//    greenPix.u = getFieldColorPercept().maxWeightedIndexCb;
+//    greenPix.v = getFieldColorPercept().maxWeightedIndexCr;
 
     for(int x = 0; x < imageWidth; x++)
     {

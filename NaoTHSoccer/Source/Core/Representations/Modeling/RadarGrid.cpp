@@ -35,7 +35,7 @@ Vector2d RadarGrid::get(double angle) const
 {
   Vector2d temp;
   int position = this->getIndexByAngle(angle);
-  newMap::const_iterator it = cells.find(position);
+
   //check whether map is empty
   if(!cells.empty())
   {

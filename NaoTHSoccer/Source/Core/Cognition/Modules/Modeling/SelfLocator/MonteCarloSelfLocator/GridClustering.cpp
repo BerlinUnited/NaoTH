@@ -27,8 +27,8 @@ void GridClustering::cluster(double xPosOpponentGroundline, double yPosLeftSidel
     addPointToGrid(shiftedFieldGrid, sampleSet[j].translation, xPosOpponentGroundline, yPosLeftSideline);
   }//end for
 
-  Vector2<int> bestCell = fieldGrid.findBestCell();
-  Vector2<int> bestCellShifted = shiftedFieldGrid.findBestCell();
+  //Vector2<int> bestCell = fieldGrid.findBestCell();
+  //Vector2<int> bestCellShifted = shiftedFieldGrid.findBestCell();
 
 }//end cluster
 

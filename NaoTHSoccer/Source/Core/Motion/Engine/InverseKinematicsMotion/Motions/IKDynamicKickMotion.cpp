@@ -515,7 +515,7 @@ void IKDynamicKickMotion::action_execute(const Pose3D& kickPose)
   //kickFoot.translation = kickPose.translation;
   
 
-  Pose3D currentPose = (theKickingFoot == KickRequest::left)?trajectory.back().pose.feet.left: trajectory.back().pose.feet.right;
+//  Pose3D currentPose = (theKickingFoot == KickRequest::left)?trajectory.back().pose.feet.left: trajectory.back().pose.feet.right;
 
   const Pose3D& currentFootPose = (theKickingFoot == KickRequest::left)?trajectory.back().pose.feet.left: trajectory.back().pose.feet.right;
 

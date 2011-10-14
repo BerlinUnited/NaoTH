@@ -236,11 +236,11 @@ double InverseKinematics::calculateLowerNaoLegJointsAnalyticaly(bool leftLeg, Po
   
   const double maxlen = NaoInfo::ThighLength + NaoInfo::TibiaLength;
   double kneeAng = 0;
-  double error = 0;
+  //double error = 0;
   if (C >= maxlen )
   {
     //cerr << "InverseKinematics can not reach this pose! length=" << C << endl;
-    error = C - maxlen;
+//    error = C - maxlen;
     C = maxlen;
     r.normalize(C);
     target.translation = pelvis.b - target.rotation * r;

@@ -369,7 +369,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       PEN("FF0000", 20);
       Vector2<double> p = getFieldInfo().fieldLinesTable.getLines()[maxIdx].begin();
       Vector2<double> q = getFieldInfo().fieldLinesTable.getLines()[maxIdx].end();
-      Vector2<double> r = (p+q)*0.5;
+      //Vector2<double> r = (p+q)*0.5;
       LINE(p.x, p.y, q.x, q.y);
     );
 

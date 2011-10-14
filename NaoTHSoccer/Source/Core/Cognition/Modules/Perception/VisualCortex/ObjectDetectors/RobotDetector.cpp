@@ -195,7 +195,7 @@ inline void RobotDetector::findBlobs()
   DEBUG_REQUEST("ImageProcessor:RobotDetector:draw_blobs",
     for (int i = 0; i < redBlobs.blobNumber; i++)
     {
-      Vector2<int> c = redBlobs.blobs[i].centerOfMass;
+//      Vector2<int> c = redBlobs.blobs[i].centerOfMass;
       Vector2<int>& p1 = redBlobs.blobs[i].upperLeft;
       Vector2<int>& p2 = redBlobs.blobs[i].lowerRight;
       RECT_PX(ColorClasses::red, p1.x, p1.y, p2.x, p2.y);
@@ -203,7 +203,7 @@ inline void RobotDetector::findBlobs()
 
     for (int i = 0; i < blueBlobs.blobNumber; i++)
     {
-      Vector2<int> c = blueBlobs.blobs[i].centerOfMass;
+//      Vector2<int> c = blueBlobs.blobs[i].centerOfMass;
       Vector2<int>& p1 = blueBlobs.blobs[i].upperLeft;
       Vector2<int>& p2 = blueBlobs.blobs[i].lowerRight;
       RECT_PX(ColorClasses::blue, p1.x, p1.y, p2.x, p2.y);
