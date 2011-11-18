@@ -1,8 +1,9 @@
-INPUT=Framework/NaoTH-Commons/Source/ Framework/Platforms/Source/ NaoTHSoccer/Source/
-FILE_PATTERNS=*.cpp *.h
+INPUT=Framework/NaoTH-Commons/Source/ Framework/Platforms/Source/ NaoTHSoccer/Source/ doc/doxygen/
+FILE_PATTERNS=*.cpp *.h *.dox *.lua
 RECURSIVE=YES
 EXTRACT_ALL = YES
 EXTRACT_PRIVATE        = YES
+INLINE_SOURCES = YES
 
 OUTPUT_DIRECTORY = doc
 

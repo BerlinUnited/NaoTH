@@ -65,7 +65,7 @@ SimpleSoccerAgent/nbproject/Package-Default.bash
 RobotControl/RobotControlGUI/plugins/
 build-impl.xml
 genfiles.properties
-doc
+doc/html/
 Deploy
 NaoTHSoccer/Config/behavior-ic.dat
 Utils/Video2Log/video2log
