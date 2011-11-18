@@ -1,0 +1,21 @@
+/* Position message
+**
+** Representation of a position
+*/
+
+package de.fumanoids.message;
+
+message Position {
+	enum PositionType {
+		IMAGE     = 0;
+		RELATIVE  = 1;
+		POLAR     = 2;
+		ABSOLUTE  = 3;
+	}
+	required PositionType positionType = 1;
+	
+	optional int32 x      = 2 [ default = 0 ];
+	optional int32 y      = 3 [ default = 0 ];
+	optional int32 r      = 4 [ default = 0 ];
+	optional int32 theta  = 5 [ default = 0 ]; 
+}

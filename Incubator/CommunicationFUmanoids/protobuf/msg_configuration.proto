@@ -1,0 +1,125 @@
+/* FUmanoid Protocol Buffer definition for configuration file
+**
+** Configuration options are simple key:value pairs that are currently set up via a registration
+** operation in the corresponding source code files. This gives the flexibility to support a 
+** varying amount of options, making adding or removing options quite easy.
+**
+** Initial ideas to use a protobuf file for storing the configuration had the keys as actual
+** protobuf fields. Obviously this would negate the flexibility to add/remove options (keys)
+** easily in one place, as now this would have to be done both in the source and in the proto
+** file.
+**
+** Instead, we are going to use a very simple proto file that contains a set of definitions
+** of the keys, as well as values for these keys.
+*/
+
+package de.fumanoids.message;
+
+
+import "msg_fumanoid.proto";
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* 
+** A configuration option may have an integer or string value, possibly something
+** else which we can then add here.
+*/
+
+message ConfigurationValue {
+	optional int32      value_int   = 10;
+	optional string     value_str   = 11;
+	optional bool       value_bool  = 12;
+	optional float      value_float = 13;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* 
+** 
+*/ 
+
+message ConfigurationOption {
+	// value type definition (used below)
+	enum ValueType {
+		INTEGER = 10;
+		STRING  = 11;
+		BOOLEAN = 12;
+		FLOAT   = 13;
+	}
+
+	// key (name of option)
+	required string key = 1;
+
+	// data type of configuration value (int, string, etc)
+	required ValueType type = 2;
+
+	// description (informational purposes)
+	required string description = 3;
+	
+	// value
+	required ConfigurationValue value = 4;
+	
+	// default value
+	optional ConfigurationValue defaultValue = 5;
+	
+	// whether a value is set (true) or not (false)
+	optional bool used = 6 [ default = false ];
+	
+	// whether this is a valid option (true) or whether it is obsolete (false) 
+	optional bool valid = 7 [ default = true ];
+	
+	// timestamp
+	optional int64 timeStamp = 8 [ default = 0    ];
+	
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* 
+** The configuration consists of a set of options or subsections. Subsections are configurations.
+*/ 
+
+message Configuration {
+	repeated Configuration       sections  = 1;
+	repeated ConfigurationOption options   = 2;
+
+	optional string              name      = 3;
+	optional bool                valid     = 4 [ default = true ];
+	optional int64               timeStamp = 5 [ default = 0    ];
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+** ConfigurationRequest is the message that is passed between robot and FUremote
+** to exchange configurations.
+*/
+
+message ConfigurationRequest {
+	// configuration exchange
+	optional Configuration       configuration        = 1; // configuration
+	optional bool                configurationRequest = 2; // request to send configuration
+
+	// from server to client
+	optional bool                setConfiguration     = 3; // request to set configuration
+	optional bool                saveConfiguration    = 4; // request to save configuration
+
+	// from client to server (acknowledgments)
+	optional bool                configurationWasSet   = 5; // information that configuration was set
+	optional bool                configurationWasSaved = 6; // information that configuration was saved
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+** Extend Message to contain configuration options
+*/
+
+extend Message {
+	optional ConfigurationRequest configurationRequest = 101;
+}

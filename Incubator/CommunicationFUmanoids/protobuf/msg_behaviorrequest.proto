@@ -1,0 +1,22 @@
+package de.fumanoids.message;
+
+
+import "msg_fumanoid.proto";
+
+message BehaviorRequest {
+	repeated string availableAgents = 1;
+
+	// request to send out all available agents of the robot
+	optional bool sendAvailableAgents = 2 [default = false];
+
+	// set xabslAgent
+	message SetterXabslAgent {
+		optional string agentName = 1;
+	}
+	optional SetterXabslAgent setterXabslAgent = 3;
+}
+
+
+extend Message {
+    optional BehaviorRequest behaviorRequest = 102;
+}

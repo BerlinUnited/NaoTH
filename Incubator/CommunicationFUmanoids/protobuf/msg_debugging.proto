@@ -1,0 +1,51 @@
+/* FUmanoid Debugging
+**
+**
+*/
+
+package de.fumanoids.message;
+
+import "msg_worldmodel.proto";
+import "msg_fumanoid.proto";
+
+message Debugging {
+	
+	message OptionText {
+		optional string option  = 1;
+		optional string payload = 2;
+	}
+
+	message OptionWM {
+		optional string     option     = 1 [ deprecated = true ];
+		optional WorldModel worldmodel = 2 [ deprecated = true ];
+	}
+
+	message OptionPlotter {
+		optional string option = 1;
+		optional string series = 2;
+		optional double x      = 3;
+		optional double y      = 4;
+	}
+
+	message OptionTable {
+		optional string option  = 1;
+		optional string key     = 2;
+		optional string payload = 3;
+	}
+
+	optional OptionText    optionText    = 1;
+	optional OptionWM      optionWM      = 2 [ deprecated = true ];
+	optional OptionPlotter optionPlotter = 3;
+	optional OptionTable   optionTable   = 4;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+** Extend Message to contain debug infos
+*/
+
+extend Message {
+	optional Debugging             debugging         = 11;
+}

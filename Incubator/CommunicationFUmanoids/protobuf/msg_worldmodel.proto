@@ -1,0 +1,174 @@
+/* World Model message
+** 
+** Information about the world as perceived by this robot.
+*/
+
+package de.fumanoids.message;
+
+import "msg_position.proto";
+import "msg_behaviorinformation.proto";
+
+message WorldModel {
+	optional int64               time                   = 1;
+
+	message Robot {
+		required int32           ID                     = 1;
+		required uint32          teamID                 = 2;
+		required Position        myAbsPos               = 3;
+		optional uint32          batteryInfo            = 4;
+		required int32           orientation            = 5;
+		optional bool            standing               = 6;
+
+		required int32           pitch                  = 7;
+		required int32           roll                   = 8;
+
+		required int32           belief                 = 9;
+		required int64           lastseen               = 10;
+
+		optional uint32          motionID               = 11;
+		optional uint32          motionData             = 15;
+
+		optional uint32          behaviorID             = 12;
+		optional uint32          behaviorData           = 16;
+
+		optional uint32          forwardSpeed           = 19;
+		optional uint32          sidewaySpeed           = 20;
+		optional uint32          rotation               = 21;
+
+		optional ROLE            activeRole             = 22 [default = ROLE_NONE];
+
+		optional STRATEGY        activeStrategy         = 23 [default = STRATEGY_NONE];
+
+		optional ROBOTSTATE      robotState             = 24 [default = ROBOTSTATE_INIT];
+
+		optional string          activeXabslAgent       = 25 [default = "----"];
+
+		optional float           walkerFrameRate        = 26;
+		optional float           visionFrameRate        = 27;
+
+
+		// -----------------------------
+		// DO NOT USE THE FOLLOWING DATA
+		// -----------------------------
+		optional uint32          roleIDDecprecated      = 13 [deprecated = true]; // Do NOT use
+		optional uint32          roleDataDeprecated     = 17 [deprecated = true]; // Do NOT use
+
+		optional uint32          strategyIDDeprecated   = 14 [deprecated = true]; // Do NOT use
+		optional uint32          strategyDataDeprecated = 18 [deprecated = true]; // Do NOT use
+	}
+
+	//myself
+	required Robot               mySelf                 = 2;
+
+	//ball
+	enum BallPosState {
+		DISMISSED = 0;
+		ESTIMATED = 1;
+		WHISTLED = 2;
+		SEEN = 3;
+	}
+
+	message Ball {
+		required Position        absPosVision           = 1;
+		required int32           orientation            = 2;
+		required int64           lastSeen               = 3;
+		required int32           belief                 = 4;
+		optional Position        relPosVision           = 5;
+		optional Position        middlePosAbs           = 6;
+		optional Position        speedVectorAbs         = 7;
+		optional BallPosState    posState               = 8 [default = DISMISSED];
+		optional int64           timeSinceLastSeen      = 9;
+		optional Position        teamAbs                = 10;
+		optional int64           teamLastSeen           = 11;
+		optional Position        posRel                 = 12;
+		optional Position        posAbs                 = 13;
+		optional int64           posLastSeen            = 14;
+	}
+	optional Ball                ball                   = 4;
+
+	//gamestate
+	enum GameState {
+		GAME_STOPPED = 0;
+		GAME_READY   = 1;
+		GAME_SET     = 2;
+		GAME_STARTED = 3;
+	}
+	enum KickOffMode {
+		KICKOFF_NONE     = 0;
+		KICKOFF_REGULAR  = 1;
+		KICKOFF_PENALTY  = 2;
+		KICKOFF_FREE     = 3;
+	}	
+	enum KickOffSide {
+		KICKOFFSIDE_OPPONENT = 0;
+		KICKOFFSIDE_ME       = 1;
+	}
+	enum GoalColor {
+		GoalBlue = 0;
+		GoalYellow = 1;
+	}
+	enum Color {
+		Cyan = 6;
+		Magenta = 7;
+	}
+	optional GameState           gameState              = 5;
+	optional KickOffMode         kickOffMode            = 6;
+	optional KickOffSide         kickOffSide            = 7;
+	optional bool                competition            = 8;
+	optional Color               teamColor              = 9;
+	optional GoalColor           oppGoal                = 10;
+	optional int64               gameTime               = 11;
+	
+	//obstacles
+	message Obstacle {
+		optional Position        absPosVision           = 1;
+		optional int32           width                  = 2;
+		optional Position        relPosVision           = 3;
+	}
+	
+	repeated Obstacle            obstaclesTeam          = 12;
+	repeated Obstacle            obstaclesEnemy         = 13;
+	repeated Obstacle            obstaclesUnknown       = 14;
+
+    //relative positions of fix wmes
+	message FixWME {
+		required Position        posRelVision           = 1;
+		required int32           belief                 = 2;
+		required int64           lastseen               = 3;
+	}
+	optional FixWME              circlePosRel           = 15;
+	optional FixWME              ybyPosRel              = 16;
+	optional FixWME              bybPosRel              = 17;
+	optional FixWME              blueGoalMidPosRel      = 18;
+	optional FixWME              blueGoalLeftPosRel     = 19;
+	optional FixWME              blueGoalRightPosRel    = 20;
+	optional FixWME              yellowGoalMidPosRel    = 21;
+	optional FixWME              yellowGoalLeftPosRel   = 22;
+	optional FixWME              yellowGoalRightPosRel  = 23;
+	
+	optional Position            oppGoalShotLeft        = 24;
+	optional Position            oppGoalShotRight       = 25;
+	optional Position            oppGoalShotBest        = 26;
+	optional Position            oppGoalShotLargest     = 27;
+	optional Position            oppGoalShotRandom      = 28;
+	
+	optional int64               timeonline             = 31;
+	
+	optional bool                shotAtOurGoal          = 32;
+
+
+	enum MsgSourceType {
+		FROM_ROBOT = 0;
+		FROM_SIMULATOR = 1;
+	}
+
+
+	// -----------------------------
+	// DO NOT USE THE FOLLOWING DATA
+	// -----------------------------
+
+	// the foll
+	repeated Robot               team_deprecated           = 3 [deprecated = true];     // not needed
+	optional MsgSourceType       deprecated_source         = 30 [default = FROM_ROBOT]; // replaced by custom package
+	optional bool                deprecated_simulatorInput = 29 [deprecated = true];    // replaced by custom package
+}
