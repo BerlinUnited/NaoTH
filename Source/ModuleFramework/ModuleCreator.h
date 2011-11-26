@@ -10,6 +10,9 @@
 
 #include "BlackBoardInterface.h"
 
+namespace crf
+{
+
 class Module;
 
 /**
@@ -122,4 +125,6 @@ public:
     return static_cast<V*>(theInstance);
   }//end getModule
 };
+
+}//crf
 #endif //__ModuleCreator_h__

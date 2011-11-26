@@ -26,6 +26,9 @@
 
 using namespace std;
 
+namespace crf
+{
+
 class ModuleManager: virtual public BlackBoardInterface
 {
 public:
@@ -225,5 +228,7 @@ private:
   }//end countExecutionListErrors
   
 };
+
+}//crf
 
 #endif //__ModuleManager_h_

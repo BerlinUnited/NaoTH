@@ -7,6 +7,8 @@
 
 #include "ModuleManager.h"
 
+using namespace crf;
+
 void ModuleManager::calculateExecutionList()
 {
 

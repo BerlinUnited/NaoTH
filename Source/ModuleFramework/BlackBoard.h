@@ -49,6 +49,10 @@
 //#include "Tools/Debug/NaoTHAssert.h"
 #include "Representation.h"
 
+
+namespace crf
+{
+
 /**
  *
  */
@@ -218,5 +222,7 @@ public:
   }//end getRepresentation
 
 };
+
+}// crf
 
 #endif //__BlackBoard_h_

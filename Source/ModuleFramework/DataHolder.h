@@ -9,10 +9,12 @@
 #define __DataHolder_h_
 
 #include "Representation.h"
-#include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/Serializer.h"
+#include "Tools/Printable.h"
+#include "Tools/Serializer.h"
 
-using namespace naoth;
+
+namespace crf
+{
 
 /**
  * Connects a arbitrary class with Representation
@@ -62,6 +64,7 @@ public:
   }
 };
 
+}//crf
 
 #endif  /* __DataHolder_h_ */
 

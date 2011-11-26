@@ -11,8 +11,11 @@
 #define __BlackBoardInterface_h_
 
 #include "BlackBoard.h"
-//#include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Debug/Assert.h"
 #include <iostream>
+
+namespace crf
+{
 
 class BlackBoardInterface
 {
@@ -48,15 +51,17 @@ protected:
 
   BlackBoard& getBlackBoard()
   {
-    assert(theBlackBoard != NULL);
+    ASSERT(theBlackBoard != NULL);
     return *theBlackBoard;
   }
 
   const BlackBoard& getBlackBoard() const
   {
-    assert(theBlackBoard != NULL);
+    ASSERT(theBlackBoard != NULL);
     return *theBlackBoard;
   }
 };
+
+}//crf
 
 #endif //__BlackBoardInterface_h_

@@ -19,6 +19,9 @@
 
 using namespace std;
 
+namespace crf
+{
+
 class Representation;
 
 /**
@@ -353,7 +356,7 @@ RepresentationMap* StaticRegistry<T>::static_recycling_registry = new Representa
 
 #define BEGIN_DECLARE_MODULE(moduleName) \
   class moduleName##Base: \
-    protected Module, private StaticRegistry<moduleName##Base> \
+    protected crf::Module, private crf::StaticRegistry<moduleName##Base> \
   {
 
 
@@ -436,4 +439,6 @@ RepresentationMap* StaticRegistry<T>::static_recycling_registry = new Representa
     } \
   };
    
+}//crf
+
 #endif //__Module_h_

@@ -1,10 +1,12 @@
 #include "Printable.h"
 
-namespace naoth
+namespace crf
 {
-  ostream& operator<<(ostream& stream, const Printable& printable)
-  {
-    printable.print(stream);
-    return stream;
-  }
+
+ostream& operator<<(ostream& stream, const Printable& printable)
+{
+  printable.print(stream);
+  return stream;
 }
+
+}//crf

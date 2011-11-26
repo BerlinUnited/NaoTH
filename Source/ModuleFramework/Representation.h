@@ -14,10 +14,13 @@
 #include <list>
 
 #include "Tools/Debug/Assert.h"
-#include "Tools/DataStructures/Printable.h"
+#include "Tools/Printable.h"
 
 using namespace std;
-using namespace naoth;
+
+
+namespace crf
+{
 
 class Module;
 
@@ -100,5 +103,7 @@ public:
  * @return The stream.
  */ 
 //ostream& operator<<(ostream& stream, const Representation& representation);
+
+}//crf
 
 #endif //__Representation_h_
