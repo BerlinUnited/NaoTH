@@ -132,10 +132,14 @@ public:
   
 protected:
 
+  /**
+   * Calculate the execution list automatically from the dependencies
+   */
   void calculateExecutionList();
 
-  virtual string getSensorModuleName() { return "Sensor";}
-  virtual string getActuatorModuleName() { return "Actuator";}
+  
+  virtual string getSensorModuleName() { return "Sensor"; }
+  virtual string getActuatorModuleName() { return "Actuator"; }
 
 private:
   template<class T>
@@ -218,7 +222,7 @@ private:
     }
     
     return errors;
-  }
+  }//end countExecutionListErrors
   
 };
 

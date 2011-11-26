@@ -5,11 +5,12 @@
  * Created on 8. Oktober 2010, 12:12
  */
 
-#ifndef DATAHOLDER_H
-#define	DATAHOLDER_H
+#ifndef __DataHolder_h_
+#define __DataHolder_h_
 
 #include "Representation.h"
-#include "Printable.h"
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/Serializer.h"
 
 using namespace naoth;
 
@@ -35,22 +36,32 @@ public:
   /** 
    * wrap the print, fromDataStream and toDataStream of the data member 
    */
-//  virtual void print(ostream& stream) const
-//  {
-//    const T* asPointer =&data;
-//    const Printable* asPrintable = dynamic_cast<const Printable*>(asPointer);
-//    if(asPrintable != NULL)
-//    {
-//      stream << *asPrintable;
-//    }
-//    else
-//    {
-//      // use representation by default
-//      stream << getName();
-//    }
-//  }//end print
+  virtual void print(ostream& stream) const
+  {
+    const T* asPointer =&data;
+    const Printable* asPrintable = dynamic_cast<const Printable*>(asPointer);
+    if(asPrintable != NULL)
+    {
+      stream << *asPrintable;
+    }
+    else
+    {
+      // use representation by default
+      stream << getName();
+    }
+  }//end print
+
+  void serialize(std::ostream& stream) const
+  {
+    Serializer<T>::serialize(data, stream);
+  }
+
+  void deserialize(std::istream& stream)
+  {
+    Serializer<T>::deserialize(stream, data);
+  }
 };
 
 
-#endif	/* DATAHOLDER_H */
+#endif  /* __DataHolder_h_ */
 

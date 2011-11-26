@@ -13,8 +13,8 @@
 #include <iostream>
 #include <list>
 
-//#include "Tools/Debug/NaoTHAssert.h"
-#include "Printable.h"
+#include "Tools/Debug/Assert.h"
+#include "Tools/DataStructures/Printable.h"
 
 using namespace std;
 using namespace naoth;
@@ -86,6 +86,11 @@ public:
     // use representation name as fallback
     stream << name;
   }//end print
+
+
+
+  virtual void serialize(std::ostream& stream) const = 0;
+  virtual void deserialize(std::istream& stream) = 0;
 };
 
 /**

@@ -65,6 +65,7 @@ public:
     virtual const std::string getTypeName() const = 0;
     virtual const std::string getName() const = 0;
     virtual const Representation& getRepresentation() const = 0;
+    virtual Representation& getRepresentation() = 0;
 
     virtual ~BlackBoardData() {}
   };//end class BlackBoardData
@@ -102,6 +103,7 @@ private:
     virtual const std::string getTypeName() const { return typeid(T).name(); }
     virtual const std::string getName() const { return name; }
     virtual const Representation& getRepresentation() const { return instance; }
+    virtual Representation& getRepresentation() { return instance; }
   };
 
 
@@ -126,6 +128,14 @@ public:
    *
    */
   const Registry& getRegistry() const
+  {
+    return registry;
+  }
+
+  /**
+   *
+   */
+  Registry& getRegistry()
   {
     return registry;
   }

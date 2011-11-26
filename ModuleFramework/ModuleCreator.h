@@ -21,9 +21,9 @@ class AbstractModuleCreator
 {
 public:
   virtual void setEnabled(bool value) = 0;
-  virtual bool isEnabled() = 0;
+  virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
-  virtual Module* getModule() = 0;
+  virtual Module* getModule() const = 0;
   virtual ~AbstractModuleCreator() {};
 };
 
@@ -78,7 +78,7 @@ public:
   }
 
 
-  bool isEnabled()
+  bool isEnabled() const
   {
     return theInstance != NULL;
   }//end isEnabled
@@ -109,7 +109,7 @@ public:
     }//end if
   }//end execute
 
-  Module* getModule()
+  Module* getModule() const
   {
     assert(isEnabled());
     // todo: check, the class V is not necessary a module

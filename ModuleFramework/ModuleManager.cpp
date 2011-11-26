@@ -96,4 +96,4 @@ void ModuleManager::calculateExecutionList()
   }
   cout << "-------------------------------" << endl;
   cout << endl;
-}//end calculateExecutionListNew
+}//end calculateExecutionList
