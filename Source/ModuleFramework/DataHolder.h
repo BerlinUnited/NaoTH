@@ -52,7 +52,7 @@ public:
       stream << getName();
     }
   }//end print
-
+  /*
   void serialize(std::ostream& stream) const
   {
     Serializer<T>::serialize(data, stream);
@@ -61,6 +61,16 @@ public:
   void deserialize(std::istream& stream)
   {
     Serializer<T>::deserialize(stream, data);
+  }
+  */
+  void serialize(crf::BaseMessage& msg) const
+  {
+    Serializer<T>::serialize(data, msg);
+  }
+
+  void deserialize(crf::BaseMessage& msg)
+  {
+    Serializer<T>::deserialize(msg, data);
   }
 };
 

@@ -16,6 +16,8 @@
 #include "Tools/Debug/Assert.h"
 #include "Tools/Printable.h"
 
+#include "Messages/base.pb.h"
+
 using namespace std;
 
 
@@ -90,10 +92,13 @@ public:
     stream << name;
   }//end print
 
-
-
+  /*
   virtual void serialize(std::ostream& stream) const = 0;
   virtual void deserialize(std::istream& stream) = 0;
+  */
+
+  virtual void serialize(crf::BaseMessage& msg) const = 0;
+  virtual void deserialize(crf::BaseMessage& msg) = 0;
 };
 
 /**
