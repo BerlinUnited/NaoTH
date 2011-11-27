@@ -24,8 +24,6 @@
 #include "BlackBoard.h"
 #include "ModuleCreator.h"
 
-using namespace std;
-
 namespace crf
 {
 

@@ -46,7 +46,7 @@
 #include <typeinfo>
 #include <assert.h>
 
-//#include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/Debug/Assert.h"
 #include "Representation.h"
 
 
@@ -162,7 +162,7 @@ public:
       std::cerr << "Representation not existing: " 
                 << name << " of type " << typeid(T).name() 
                 << "is not registred and cannot be created." << std::endl;
-      assert(false);
+      ASSERT(false);
     }//end if
 
 
@@ -177,7 +177,7 @@ public:
       std::cerr << "Representation type mismatch: " 
                 << name << " is registered as " << data->getTypeName() 
                 << ", but " << typeid(T).name() << " is requested." << std::endl;
-      assert(false);
+      ASSERT(false);
     }//end if
 
     return **typedData;
@@ -215,7 +215,7 @@ public:
       std::cerr << "Representation type mismatch: " 
                 << name << " is registered as " << data->getTypeName() 
                 << ", but " << typeid(T).name() << " is requested." << std::endl;
-      assert(false);
+      ASSERT(false);
     }//end if
 
     return **typedData;

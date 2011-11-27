@@ -18,8 +18,6 @@
 
 #include "Messages/base.pb.h"
 
-using namespace std;
-
 
 namespace crf
 {

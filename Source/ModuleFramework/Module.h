@@ -17,8 +17,6 @@
 #include <list>
 
 
-using namespace std;
-
 namespace crf
 {
 
