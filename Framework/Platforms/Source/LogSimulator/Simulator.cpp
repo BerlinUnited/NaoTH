@@ -424,7 +424,8 @@ void Simulator::adjust_frame_time()
   unsigned int time_delta = CYCLE_TIME;
   
   // if no FrameInfo was logged set it manually
-  if(noFrameInfo)
+  if(representations.find("FrameInfo") == representations.end() ||
+     representations["FrameInfo"].empty())
   {
     f.set_framenumber(*currentFrame);
     lastFrameTime = 0;
@@ -441,7 +442,7 @@ void Simulator::adjust_frame_time()
       time_delta = abs((int)frameTime - (int)lastFrameTime);
     }//end if
 
-    // remember the last logged time
+    // remember the last time
     lastFrameTime = frameTime;
   }
 
@@ -451,7 +452,13 @@ void Simulator::adjust_frame_time()
   }
   current_time += time_delta;
   
+  //
   f.set_time(current_time);
+
+  if(!f.has_framenumber())
+  {
+    f.set_framenumber(*currentFrame);
+  }
 
   // write the result back
   string result = f.SerializeAsString();
@@ -528,7 +535,7 @@ void Simulator::printCurrentLineInfo()
 
 void Simulator::parseFile()
 {
-  noFrameInfo = false;
+  //noFrameInfo = false;
 
   frames.clear();
   includedRepresentations.clear();
@@ -598,6 +605,7 @@ void Simulator::parseFile()
       frameNumber2PosStart[currentFrameNumber] = currentPos;
 
       // needed to generate the the frame info if not available in one single frame
+      /*
       if(perFrameIncluded.find("FrameInfo") == perFrameIncluded.end())
       {
         if(!noFrameInfo)
@@ -606,6 +614,7 @@ void Simulator::parseFile()
         }
         noFrameInfo = true;
       }
+      */
 
       perFrameIncluded.clear();
 

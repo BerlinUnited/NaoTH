@@ -194,9 +194,10 @@ protected:
     TypedRegistrationInterface<TYPE_WHAT>* data;
 
   public:
-    StaticRequiringRegistrator(){}
+    StaticRequiringRegistrator() : data(NULL){}
 
     StaticRequiringRegistrator(const std::string& name)
+      : data(NULL)
     {
       // TODO: check the type
       if(static_requiring_registry->find(name) == static_requiring_registry->end())
@@ -220,9 +221,10 @@ protected:
     TypedRegistrationInterface<TYPE_WHAT>* data;
 
   public:
-    StaticProvidingRegistrator(){}
+    StaticProvidingRegistrator(): data(NULL) {}
 
     StaticProvidingRegistrator(const std::string& name)
+      : data(NULL)
     {
       // TODO: check the type
       if(static_providing_registry->find(name) == static_providing_registry->end())

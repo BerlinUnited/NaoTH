@@ -5,8 +5,8 @@
  * Created on 8. Oktober 2010, 12:12
  */
 
-#ifndef DATAHOLDER_H
-#define  DATAHOLDER_H
+#ifndef __DataHolder_h_
+#define __DataHolder_h_
 
 #include "Representation.h"
 #include "Tools/DataStructures/Printable.h"
@@ -63,5 +63,5 @@ public:
 };
 
 
-#endif  /* DATAHOLDER_H */
+#endif  /* __DataHolder_h_ */
 

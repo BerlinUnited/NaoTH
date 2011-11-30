@@ -18,6 +18,8 @@
 #include <ctime>
 #include <cstdlib>
 #include <iterator> 
+#include <algorithm>
+
 #include "Module.h"
 #include "BlackBoard.h"
 #include "ModuleCreator.h"
@@ -74,7 +76,7 @@ public:
     return moduleExecutionList;
   }//end getExecutionList
 
-protected:
+//protected:
 
   /**
    * enables or disables the module 'moduleName'
@@ -108,16 +110,100 @@ protected:
     return NULL;
   }//end getModule
 
+  /**
+   *
+   */
+  const AbstractModuleCreator* getModule(const string& name) const
+  {
+    map<string, AbstractModuleCreator* >::const_iterator iter = moduleExecutionMap.find(name);
+    if(iter != moduleExecutionMap.end())
+    {
+      return iter->second;
+    }
+
+    // TODO: assert?
+    return NULL;
+  }//end getModule
 
   const list<string>& getExecutionList()
   {
     return moduleExecutionList;
   }//end getExecutionList
   
+protected:
+
+  void calculateExecutionList()
+  {
+    
+    bool changed = true;
+    list<string>::iterator start=moduleExecutionList.begin();
+    const int maxAttempts = moduleExecutionList.size()*10;
+    int iterations = 0;
+
+    while(changed && iterations < maxAttempts)
+    {
+      changed = false;
+      iterations++;
+
+
+      for(list<string>::iterator it1=start; it1 != moduleExecutionList.end(); it1++)
+      {
+        start = it1;
+        if(!moduleExecutionMap[*it1]->isEnabled()) continue;
+        Module* m1 = moduleExecutionMap[*it1]->getModule();
+
+        for(list<string>::iterator it2=it1; it2 != moduleExecutionList.end(); it2++)
+        {
+          if(!moduleExecutionMap[*it2]->isEnabled()) continue;
+          Module* m2 = moduleExecutionMap[*it2]->getModule();
+
+          for(std::list<Representation*>::const_iterator itReq = m1->getRequiredRepresentations().begin();
+            itReq != m1->getRequiredRepresentations().end(); itReq++)
+          {
+            std::string repName = (*itReq)->getName();
+            for(std::list<Representation*>::const_iterator r = m2->getProvidedRepresentations().begin();
+              r != m2->getProvidedRepresentations().end(); ++r)
+            {
+              if((*r)->getName() == repName)
+              {
+                std::swap(*it1, *it2);
+                changed = true;
+                break;
+              }
+            }//end for
+            if(changed) break;
+          }//end for
+          if(changed) break;
+        }//end for
+        if(changed) break;
+      }//end for
+
+    }//end while
+
+    if(iterations >= maxAttempts)
+    {
+      std::cerr << "WARNING: maximal number of iterations reached." << std::endl;
+    }//end if
+
+
+    // print execution list
+    cout << "automatic module execution list" << endl;
+    cout << "-------------------------------" << endl;
+    for(list<string>::const_iterator itExec = moduleExecutionList.begin(); 
+      itExec != moduleExecutionList.end(); itExec++
+    )
+    {
+      cout << *itExec << endl;
+    }
+    cout << "-------------------------------" << endl;
+    cout << endl;
+  }//end calculateExecutionListNew
+
+
   /**
    * Calculate the execution list automatically from the dependencies
    */
-  void calculateExecutionList()
+  void calculateExecutionListOld()
   {
     map<string,string> providerForRepresentation;
     map<string, list<string> > required;
@@ -147,17 +233,17 @@ protected:
             std::cerr << "ERROR: " << repName << " provided by both " << providerForRepresentation[repName]
               << " and " << it->first;
           }
-        }
+        }//end for
         
         for(std::list<Representation*>::const_iterator itReq = m->getRequiredRepresentations().begin();
           itReq != m->getRequiredRepresentations().end(); itReq++)
         {
           std::string repName = (*itReq)->getName();
           required[it->first].push_back(repName);
-        }
+        }//end for
         
       } // if module enabled
-    }
+    }//end for
     
     // solve this constraint problem
     vector<string> oldExecutionList(moduleExecutionList.begin(), moduleExecutionList.end());

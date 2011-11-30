@@ -132,7 +132,7 @@ message Intersection {
   }
 
   optional DoubleVector2 posInImage = 1;
-  optional DoubleVector2  posOnField = 2;
+  optional DoubleVector2 posOnField = 2;
 
   optional IntersectionType type = 3;
   optional uint32 segmentOneIndex = 6;
