@@ -1,0 +1,44 @@
+/* Checklist
+** 
+** This is the internal format of the checklist
+**
+*/
+
+package de.fumanoids.message;
+
+// tuple of robot ID and assigned role
+message ChecklistItem {
+	enum Type {
+		WALKER              =  1;
+		FOOTCONTACTS        =  2;
+		STANDUP_FW          =  3;
+		STANDUP_BW          =  4;
+		LEFT_KICK           =  5;
+		RIGHT_KICK          =  6;
+		CENTER              =  7;
+		FEETSPACE           =  8;
+		GYRO                =  9;
+		ROTARY_PLATES       = 10;
+		SCREWS              = 11;
+		CABLES              = 12;
+		TEAMMARKERS         = 13;
+		CAMCENTER           = 14;
+		COLORCALIBRATION    = 15;
+		FOOTPRESSURE        = 16;
+		COORDINATE_ORIGIN   = 17;
+		KICKPOSITION        = 18;
+		IDLE                = 19;
+		XABSL				= 20;
+	}
+
+	required Type     type        = 1;
+	required uint64   lastChecked = 2;
+	required string   username    = 3;
+}
+
+
+// container for the assigned roles
+message Checklist {
+    repeated ChecklistItem items = 1;
+}
+

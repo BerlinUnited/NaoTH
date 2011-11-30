@@ -1,0 +1,82 @@
+package de.fumanoids.message;
+
+import "msg_fumanoid.proto";
+
+message BallModel {
+
+	enum POSSTATE {
+		DISMISSED = 1;
+		ESTIMATED = 2;
+		WHISTLED = 3;
+		SEEN = 4;
+	}
+
+	required POSSTATE posstate = 1;
+
+	enum OPPGOAL {
+		BLUE = 1;
+		YELLOW = 2;
+	}
+
+	required OPPGOAL oppgoal = 2;
+
+	enum balltype {
+		POSABSVISION = 1;
+		POSABS = 2;
+		POSABSTEAMMATE = 3;
+		POSABSKMF = 4;
+		POSABSBALLVEKTOR = 5;
+		POSABSREAL = 6;
+		POSRELVISION = 7;
+		POSRELKMF = 8;
+		POSRELREAL = 9;
+		POSREL = 10;
+		POSRELBALLVEKTOR = 11;
+		POSRELBALLVEKTOR_ABSCOORDS = 12;
+		POSABSVISION_PREDICT = 13;
+		POSABSTEAM_PREDICT = 14;
+	}
+
+	enum linetype {
+		BALLVECABS = 1;
+		BALLVECREL = 2;
+		BALLVECREL_ABSCOORDS = 3;
+		VECABS_POSSIBLEVEC = 4;
+		BALLVECABS_EXTENDED = 5;
+	}
+
+	message position {
+		required int32 x = 1;
+		required int32 y = 2;
+		optional int32 angle = 3;
+	}
+
+	message ball {
+		required position pos = 1;
+		required balltype type = 2;
+		optional int32 fixity = 3;
+	}
+
+	repeated ball ballpos = 3;
+	optional position mypos = 4;
+
+	message  field {
+		required int32 x = 1;
+		required int32 y = 2;
+		optional int32 value = 3;
+	}
+
+	repeated field ballprobmask = 5;
+
+	message line {
+		required position start = 1;
+		required position end = 2;
+		required linetype type = 3;
+	}
+
+	repeated line vector = 6;
+}
+
+extend Message {
+	optional BallModel ballModel = 109;
+}

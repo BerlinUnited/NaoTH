@@ -1,0 +1,52 @@
+/* FUmanoid Debugging Commands
+**
+**
+*/
+
+package de.fumanoids.message;
+
+import "msg_fumanoid.proto";
+
+message DebuggingCommands {
+
+	enum DebuggingOptionType {
+		TEXT    = 1;
+		WM      = 2; // deprecated
+		PLOTTER = 3;
+		TABLE   = 4;
+	}
+
+	message DebuggingOption {
+		optional string name = 1;
+		optional DebuggingOptionType type = 2;
+		optional bool enabled = 3;
+	}
+	
+	message OptionPush {
+		repeated DebuggingOption options = 1;
+	}
+	
+	message OptionEnable {
+		repeated string options = 1;
+	}
+	
+	message OptionDisable {
+		repeated string options = 1;
+	}
+	
+	optional OptionPush    optionPush    = 1;
+	optional bool          optionPull    = 2;
+	optional OptionEnable  optionEnable  = 3;
+	optional OptionDisable optionDisable = 4;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/*
+** Extend Message to contain debugging commands
+*/
+
+extend Message {
+	optional DebuggingCommands     debuggingCommands = 12;
+}

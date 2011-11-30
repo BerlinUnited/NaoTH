@@ -1,0 +1,35 @@
+/* Symbol message
+** 
+** Definition of a symbol (name -> value[, value[, value ...]])
+*/
+
+package de.fumanoids.message;
+
+message Symbol {
+	// name of the symbol
+	required string name = 1;
+
+	// optionally we can provide a timestamp
+	optional uint64 time = 2;
+
+	message Value {
+		enum Type {
+			INT    = 0;
+			DOUBLE = 1;
+			BOOL   = 2;
+			STRING = 3;
+		}
+
+		required Type    type         = 1;
+		optional string  string_value = 2;
+		optional int32   int_value    = 3 [ default = 0     ]; 
+		optional double  double_value = 4 [ default = 0     ];
+		optional bool    bool_value   = 5 [ default = false ];
+	}
+
+	repeated Value val = 3;
+}
+
+message Symbols {
+	repeated Symbol symbol = 1;
+}

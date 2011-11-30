@@ -1,0 +1,70 @@
+package de.fumanoids.message;
+
+
+import "msg_fumanoid.proto";
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+message RemoteControlRequest {
+
+	optional bool walkerStart = 1;
+	optional bool walkerStop  = 2;
+
+	enum WalkingMode {
+		DEFAULT = 1; // standard
+		AVOIDOBSTACLE = 2; // walk with activated obstacle avoidance
+		// and more ...
+	}
+
+	message WalkerSpeed {
+		optional sint32 forwardSpeed     = 1;
+		optional sint32 sidewardSpeed    = 2;
+		optional sint32 rotationSpeed    = 3;
+		optional sint32 footDrift        = 4;
+		optional WalkingMode walkingMode = 5;
+	}
+	optional WalkerSpeed walkerSpeed = 3;
+
+	message RobotPose2009 {
+		// upper body
+		optional int32 MOTOR_HEAD_TURN             =  2;
+
+		optional int32 MOTOR_LEFT_ARM_PITCH        =  3;
+		optional int32 MOTOR_RIGHT_ARM_PITCH       =  4;
+
+		optional int32 MOTOR_LEFT_ARM_ROLL         =  5;
+		optional int32 MOTOR_RIGHT_ARM_ROLL        =  6;
+
+		optional int32 MOTOR_LEFT_ELBOW            =  7;
+		optional int32 MOTOR_RIGHT_ELBOW           =  8;
+
+		// legs
+		optional int32 MOTOR_LEFT_HIP_YAW          =  9;
+		optional int32 MOTOR_RIGHT_HIP_YAW         = 10;
+
+		optional int32 MOTOR_LEFT_HIP_ROLL         = 11;
+		optional int32 MOTOR_RIGHT_HIP_ROLL        = 12;
+
+		optional int32 MOTOR_LEFT_HIP_PITCH        = 13;
+		optional int32 MOTOR_RIGHT_HIP_PITCH       = 14;
+
+		optional int32 MOTOR_LEFT_KNEE_TOP         = 15;
+		optional int32 MOTOR_RIGHT_KNEE_TOP        = 16;
+
+		optional int32 MOTOR_LEFT_KNEE_BOTTOM      = 17;
+		optional int32 MOTOR_RIGHT_KNEE_BOTTOM     = 18;
+
+		optional int32 MOTOR_LEFT_FOOT_PITCH       = 19;
+		optional int32 MOTOR_RIGHT_FOOT_PITCH      = 20;
+
+		optional int32 MOTOR_LEFT_FOOT_ROLL        = 21;
+		optional int32 MOTOR_RIGHT_FOOT_ROLL       = 22;
+	}
+	optional RobotPose2009 setRobotPose2009 = 16;
+
+}
+
+extend Message {
+	optional RemoteControlRequest remoteControlRequest = 103;
+}

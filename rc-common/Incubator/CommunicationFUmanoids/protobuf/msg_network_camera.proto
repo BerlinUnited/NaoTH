@@ -1,0 +1,141 @@
+/*
+** Messages for communication between a network camera and FUmanoid
+**
+*/
+
+package camera.message;
+
+import "msg_calibration.proto";
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/**
+ **
+ */
+
+enum CameraSetting {
+	CAMERA_SETTING_OFFSET_X        = 1;
+	CAMERA_SETTING_OFFSET_Y        = 2;
+	CAMERA_SETTING_WIDTH           = 3;
+	CAMERA_SETTING_HEIGHT          = 4;
+	CAMERA_SETTING_EXPOSURE        = 5;
+	CAMERA_SETTING_GAIN            = 6;
+	CAMERA_SETTING_GAIN_R          = 7;
+	CAMERA_SETTING_GAIN_G          = 8;
+	CAMERA_SETTING_GAIN_B          = 9;
+	CAMERA_SETTING_CENTER_X        = 10;
+	CAMERA_SETTING_CENTER_Y        = 11;
+	CAMERA_SETTING_CENTER_R        = 12;
+	CAMERA_SETTING_ROTATE_IMAGE    = 13;
+}
+
+message CameraParameter {
+	required CameraSetting settingType  = 1;
+	required int32         settingValue = 2;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/**
+ **
+ */
+
+message LogMessage {
+	enum LogMessageType {
+		LOG_ERROR     = 0;
+		LOG_WARNING   = 1;
+		LOG_INFO      = 2;
+		LOG_DEBUG     = 3;
+	}
+
+	required string          logMessage = 1;
+	required LogMessageType  logType    = 2;
+	optional string          logName    = 3;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/**
+ **
+ */
+
+enum ImageType {
+	TYPE_BAYER           = 1;
+	TYPE_BAYER_CENTER    = 2;
+	TYPE_RGB             = 3;
+}
+
+
+message Image {
+	required ImageType       imageType = 1;
+	required bytes           imageData = 2;
+	required int32           width     = 3;
+	required int32           height    = 4;
+	required int32           rowPitch  = 5;
+
+	optional int32           pitch     = 21;
+	optional int32           roll      = 22;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/**
+ **
+ */
+
+message ImagePackage {
+	optional Image         image  = 1;
+//	optional EdgeInfos     edges  = 2;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/**
+ **
+ */
+
+message CameraPackage {
+	optional ImagePackage    image        = 1;
+	optional LogMessage      log          = 2;
+
+	repeated CameraParameter parameters   = 3;
+}
+
+
+
+
+
+
+/*------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------*/
+
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/**
+ ** CameraRequest is a package sent from the client to the camera.
+ */
+
+message CameraRequest {
+	repeated CameraParameter parameters       = 1;
+
+	message CmdWhiteBalance {
+		required int32    offsetX  = 1;
+		required int32    offsetY  = 2;
+		required int32    width    = 3;
+		required int32    height   = 4;
+	}
+
+	optional CmdWhiteBalance              whiteBalance     = 2;
+	optional de.fumanoids.message.LUT     lut              = 3;
+	optional bool                         retrieveParams   = 4;
+	optional bool                         shutdown         = 5;
+}

@@ -1,0 +1,69 @@
+/* FUmanoid Protocol Buffer definition for image transmission
+**
+** 
+*/
+
+package de.fumanoids.message;
+
+import "msg_calibration.proto";
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* image format 
+**
+*/
+
+enum ImageFormat {
+	YUV422_IMAGE = 1;
+	BAYER_IMAGE  = 2;
+	RGB_IMAGE    = 3;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* image data
+** 
+*/ 
+
+message ImageData {
+	required ImageFormat format        = 1;
+	required bytes       data          = 2;
+	required bool        compressed    = 3 [ default = false ];
+	
+	required int32       width         = 4;
+	required int32       height        = 5;
+
+	optional bool        original      = 6;
+	optional bool        enhanced      = 7;
+}
+
+
+/*------------------------------------------------------------------------------------------------*/
+
+/* 
+** 
+*/ 
+
+message Image {
+	optional int32     robotID   = 1;
+	optional int64     time      = 2;
+	repeated ImageData imageData = 3;
+	
+	message ImageCenter {
+		required int32 x = 1;
+		required int32 y = 2;
+		required int32 r = 3;
+	}
+
+	optional ImageCenter center    = 4;
+	optional int32       pitch     = 5;
+	optional int32       roll      = 6 [ default=-1 ];
+	optional int32       headAngle = 7 [ default=-1 ];
+	optional int32       eyeHeight = 8 [ default=-1 ];
+	optional int32       horizon   = 9 [ default=-1 ];
+	optional string      camName   = 10;
+
+	optional CameraSettings camSettings = 11;
+}

@@ -1,0 +1,36 @@
+/* FUmanoid Protocol Buffer definition
+**
+** Main container class.
+**
+*/
+
+package de.fumanoids.message;
+
+import "msg_symbols.proto";
+import "msg_worldmodel.proto";
+import "msg_xabsl.proto";
+import "msg_captaincommands.proto";
+
+
+message Message {
+	required int32                 robotID         = 1 [ default = -1 ];
+
+	optional BehaviorStatus        behaviourStatus = 2;
+	optional BehaviorInformation   behaviourInfo   = 9;
+
+	optional Symbols               symbols         = 3;
+	optional WorldModel            worldModel      = 4;
+	optional CaptainCommands       captainCommands = 6;
+
+	/*
+	** !!! DO NOT ADD ADDITIONAL FIELDS TO THIS MESSAGE !!!
+	**       IF YOU NEED TO ADD DATA, USE AN EXTENSION.
+	**
+	**     see: `bin/next_ext.py <pbdir>`
+	*/
+
+	extensions 5;
+	extensions 7 to 8;
+	extensions 10 to 99;
+	extensions 101 to max;
+}
