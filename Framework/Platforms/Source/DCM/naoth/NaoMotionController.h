@@ -9,7 +9,6 @@
 #ifndef _NAO_MOTION_CONTROLLER_H
 #define	_NAO_MOTION_CONTROLLER_H
 
-#include "DCMHandler.h"
 #include "Tools/NaoControllerBase.h"
 
 namespace naoth
@@ -28,9 +27,7 @@ public:
 
   void set(const LEDData& data);
 
-  /////////////////////// init ///////////////////////
-  void init(ALPtr<ALBroker> pB);
-  
+
   virtual void getMotionInput();
   
   virtual void setMotionOutput();
@@ -40,8 +37,6 @@ public:
   /////////////////////// set ///////////////////////
   virtual void set(const MotorJointData& data);
 
-private:
-  DCMHandler theDCMHandler;
 };
 
 } // end namespace naoth

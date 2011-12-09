@@ -15,9 +15,10 @@
 using namespace naoth;
 
 NaoController::NaoController()
-:theSoundHandler(NULL),
-theBroadCaster(NULL),
-theBroadCastListener(NULL)
+  :
+  theSoundHandler(NULL),
+  theBroadCaster(NULL),
+  theBroadCastListener(NULL)
 {
   // read the value from file
   ifstream is(staticMemberPath.c_str());

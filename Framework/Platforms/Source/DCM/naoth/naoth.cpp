@@ -5,10 +5,14 @@
  *
  */
 
-#include "NaoController.h"
 #include "PlatformInterface/Platform.h"
+#include "NaoController.h"
+#include "NaoMotionController.h"
+
 #include "Cognition.h"
+#include "Motion.h"
 #include "Tools/DummpyCallable.h"
+
 #include <glib.h>
 #include <glib-object.h>
 
@@ -26,6 +30,39 @@ void got_signal(int)
   exit(0);
 }
 
+
+void* cognitionThreadCallback(void* ref)
+{
+  NaoController theController;
+  Cognition theCognition;
+  theController.registerCallbacks((DummyCallable*)NULL, &theCognition);
+  
+  while(true)
+  {
+    theController.callCognition();
+    //usleep(100000);
+  }
+
+  return NULL;
+}//end cognitionThreadCallback
+
+
+void* motionThreadCallback(void* ref)
+{
+  NaoMotionController theController;
+  Motion theMotion;
+  theController.registerCallbacks(&theMotion, (DummyCallable*)NULL);
+  
+  while(true)
+  {
+    theController.callMotion();
+    //usleep(100000);
+  }
+
+  return NULL;
+}//end motionThreadCallback
+
+
 int main(int argc, char *argv[])
 {
   // init glib
@@ -42,15 +79,32 @@ int main(int argc, char *argv[])
   //sigaction(SIGINT,&sa,NULL);
   sigaction(SIGTERM,&sa,NULL);
   
-  NaoController theController;
-  Cognition theCognition;
-  theController.registerCallbacks((DummyCallable*)NULL, &theCognition);
-  
-  while(true)
+
+  GError* err = NULL;
+
+  GThread* motionThread = g_thread_create(motionThreadCallback, NULL, true, &err);
+  if(err)
   {
-    theController.callCognition();
-    //usleep(100000);
+    g_warning("Could not create motion thread: %s", err->message);
   }
-  
+
+  GThread* cognitionThread = g_thread_create(cognitionThreadCallback, NULL, true, &err);
+  if(err)
+  {
+    g_warning("Could not create cognition thread: %s", err->message);
+  }
+
+
+
+  if(motionThread != NULL)
+  {
+    g_thread_join(motionThread);
+  }
+
+  if(cognitionThread != NULL)
+  {
+    g_thread_join(cognitionThread);
+  }
+
   return 0;
 }

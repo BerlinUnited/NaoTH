@@ -14,6 +14,13 @@ using namespace naoth;
 
 NaoMotionController::NaoMotionController()
 {
+  // read the value from file
+  ifstream is(staticMemberPath.c_str());
+  ASSERT(is.good());
+  is>>theBodyID>>theBodyNickName;
+  cout<<"bodyID: "<<theBodyID<<endl;
+  cout<<"bodyNickName: "<<theBodyNickName<<endl;
+
   // register input
   registerInput<AccelerometerData>(*this);
   registerInput<FrameInfo>(*this);
@@ -30,6 +37,10 @@ NaoMotionController::NaoMotionController()
   registerOutput<const LEDData>(*this);
   registerOutput<const MotorJointData>(*this);
 
+  std::cout << "Init Platform" << endl;
+  Platform::getInstance().init(this);
+
+
   theDebugServer.start(6401, true);
 }
 
@@ -37,41 +48,20 @@ NaoMotionController::~NaoMotionController()
 {
 }
 
-void NaoMotionController::init(ALPtr<ALBroker> pB)
-{ 
-  std::cout << "Init DCMHandler" << endl;
-  theDCMHandler.init(pB);
-  
-  // save the body ID
-  theBodyID = theDCMHandler.getBodyID();
-  std::cout << "bodyID: "<< theBodyID << endl;
-  
-  // save the nick name
-  theBodyNickName = theDCMHandler.getBodyNickName();
-  std::cout << "nickName: "<< theBodyNickName << endl;
-
-  // save the value to file
-  ofstream os(staticMemberPath.c_str());
-  ASSERT(os.good());
-  os<<theBodyID<<"\n"<<theBodyNickName<<endl;
-
-  std::cout << "Init Platform" << endl;
-  Platform::getInstance().init(this);
-}
 
 void NaoMotionController::set(const MotorJointData& data)
 {
   libNaothData.writing()->theMotorJointData = data;
-  theDCMHandler.setAllMotorData(data);
+  //theDCMHandler.setAllMotorData(data);
 }
 
 void NaoMotionController::getMotionInput()
 {
   updateFrameInfo();
-  LibNaothData* libNaothDataWriting = libNaothData.writing();
-  theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
-  libNaothDataReading = libNaothDataWriting;
-  libNaothData.swapWriting();
+  //LibNaothData* libNaothDataWriting = libNaothData.writing();
+  //theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
+  //libNaothDataReading = libNaothDataWriting;
+  //libNaothData.swapWriting();
   NaoControllerBase<NaoMotionController>::getMotionInput();
 }
 
@@ -84,15 +74,15 @@ void NaoMotionController::setMotionOutput()
     const NaothData* naothDataReading = naothData.reading();
 
 
-    theDCMHandler.setLED(naothDataReading->lEDData());
-    theDCMHandler.setIRSend(naothDataReading->iRSendData());
-    theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
+    //theDCMHandler.setLED(naothDataReading->lEDData());
+    //theDCMHandler.setIRSend(naothDataReading->iRSendData());
+    //theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
   }
 
 }
 
 void NaoMotionController::set(const LEDData& data)
 {
-  theDCMHandler.setLED(data);
+  //theDCMHandler.setLED(data);
 }
 

@@ -8,10 +8,12 @@
 #ifndef _NAOTHMODULE_H
 #define	_NAOTHMODULE_H
 
-#include "Motion.h"
-#include "NaoMotionController.h"
+//#include "Motion.h"
+//#include "NaoMotionController.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Tools/NaoTime.h"
+#include "Tools/IPCData.h"
+#include "DCMHandler.h"
 
 using namespace AL;
 using namespace std;
@@ -26,8 +28,8 @@ class NaothModule : public ALModule
 
     ALPtr<ALBroker> pBroker;
 
-    NaoMotionController* theContorller;
-    Motion* theMotion;
+    //NaoMotionController* theContorller;
+    //Motion* theMotion;
   
   public:
     
@@ -59,6 +61,13 @@ private:
     // Used for sync with the DCM
     ProcessSignalConnection fDCMPreProcessConnection;
     ProcessSignalConnection fDCMPostProcessConnection;
+
+    DCMHandler theDCMHandler;
+
+    const LibNaothData* libNaothDataReading;
+  
+    SharedMemory<LibNaothData> libNaothData;
+    SharedMemory<NaothData> naothData;
 };
 
 } // end namespace naoth

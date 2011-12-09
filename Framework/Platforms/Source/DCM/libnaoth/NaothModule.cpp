@@ -6,9 +6,9 @@
 * Implementation of NaothModule
 */
 #include "NaothModule.h"
-#include "PlatformInterface/Platform.h"
+//#include "PlatformInterface/Platform.h"
 #include "libnaoth.h"
-#include "Tools/DummpyCallable.h"
+//#include "Tools/DummpyCallable.h"
 
 using namespace naoth;
 
@@ -28,9 +28,9 @@ inline static void motion_wrapper_post()
 
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ): 
   ALModule(pB, pName ),
-  pBroker(pB),
-  theContorller(NULL),
-  theMotion(NULL)
+  pBroker(pB)//,
+  //theContorller(NULL),
+  //theMotion(NULL)
 {
   theModule = this;
   
@@ -61,9 +61,30 @@ std::string NaothModule::version()
 
 void NaothModule::init()
 {
-  if (!g_thread_supported())
-    g_thread_init(NULL);
+  //if (!g_thread_supported())
+  //  g_thread_init(NULL);
+
+
+  std::cout << "Init DCMHandler" << endl;
+  theDCMHandler.init(pBroker);
   
+  // save the body ID
+  string theBodyID = theDCMHandler.getBodyID();
+  std::cout << "bodyID: "<< theBodyID << endl;
+  
+  // save the nick name
+  string theBodyNickName = theDCMHandler.getBodyNickName();
+  std::cout << "nickName: "<< theBodyNickName << endl;
+
+  // save the value to file
+  // FIXME: fixed path "Config/nao.info"
+  string staticMemberPath("Config/nao.info");
+  ofstream os(staticMemberPath.c_str());
+  ASSERT(os.good());
+  os<<theBodyID<<"\n"<<theBodyNickName<<endl;
+  os.close();
+
+  /*
   cout << "Initializing Controller" << endl;
   theContorller = new NaoMotionController();
   theContorller->init(pBroker);
@@ -73,7 +94,7 @@ void NaothModule::init()
   
   cout << "Registering Motion" << endl;
   theContorller->registerCallbacks(theMotion,(DummyCallable*)NULL);
-  
+  */
   fDCMPreProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
   fDCMPostProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
@@ -85,14 +106,20 @@ void NaothModule::motionCallbackPre()
   // we are at the moment shortly before the DCM commands are send to the
   // USB bus, so put the motion execute stuff here
   //theContorller->callMotion();
-  theMotion->call();
-  theContorller->setMotionOutput();
+  //theMotion->call();
+  //theContorller->setMotionOutput();
+
 }
 
 void NaothModule::motionCallbackPost()
 {
   // right behind the sensor update from the DCM
-  theContorller->getMotionInput();
+  //theContorller->getMotionInput();
+
+  LibNaothData* libNaothDataWriting = libNaothData.writing();
+  theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
+  libNaothDataReading = libNaothDataWriting;
+  libNaothData.swapWriting();
 }
 
 void NaothModule::exit()
@@ -100,20 +127,21 @@ void NaothModule::exit()
   cout << "NaoTH is exiting ..."<<endl;
   
   // stop motion
+  /*
   while ( !theMotion->exit() )
   {
     usleep(100000);
   }
+  */
 
   // Remove the call back connection
   fDCMPreProcessConnection.disconnect();
   fDCMPostProcessConnection.disconnect();
 
   theModule = NULL;
-  if ( theMotion != NULL )
-    delete theMotion;
-  if ( theContorller != NULL )
-    delete theContorller;
-
+  /*
+  delete theMotion;
+  delete theContorller;
+  */
   cout << "NaoTH exit is finished" << endl;
 }
