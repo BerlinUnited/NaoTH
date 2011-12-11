@@ -8,6 +8,8 @@
 #include "PlatformInterface/Platform.h"
 #include "NaoController.h"
 #include "NaoMotionController.h"
+#include "DebugCommunication/DebugServer.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 #include "Cognition.h"
 #include "Motion.h"
@@ -30,13 +32,15 @@ void got_signal(int)
   exit(0);
 }
 
+DebugServer* theDebugServer;
 
 void* cognitionThreadCallback(void* ref)
 {
   NaoController theController;
   Cognition theCognition;
   theController.registerCallbacks((DummyCallable*)NULL, &theCognition);
-  
+  theController.setDebugServer(theDebugServer);
+
   while(true)
   {
     theController.callCognition();
@@ -52,10 +56,24 @@ void* motionThreadCallback(void* ref)
   NaoMotionController theController;
   Motion theMotion;
   theController.registerCallbacks(&theMotion, (DummyCallable*)NULL);
+  theController.setDebugServer(theDebugServer);
   
+  // open semaphore
+  sem_t* sem = SEM_FAILED;
+  if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
+  {
+    perror("libnaoth: sem_open");
+  }
+  StopwatchItem stopwatch;
+
   while(true)
   {
     theController.callMotion();
+    
+    sem_wait(sem);
+    Stopwatch::getInstance().notifyStop(stopwatch);
+    Stopwatch::getInstance().notifyStart(stopwatch);
+    PLOT("_MotionCycle", stopwatch.lastValue);
     //usleep(100000);
   }
 
@@ -80,13 +98,28 @@ int main(int argc, char *argv[])
   sigaction(SIGTERM,&sa,NULL);
   
 
+  theDebugServer = new DebugServer();
+  theDebugServer->start(5401, true);
+
   GError* err = NULL;
 
+  pthread_t handle;
+  pthread_create(&handle, 0, motionThreadCallback, NULL);
+
+  sched_param param;
+  param.sched_priority = 50;
+  pthread_setschedparam(handle, SCHED_FIFO, &param);
+
+  /*
   GThread* motionThread = g_thread_create(motionThreadCallback, NULL, true, &err);
   if(err)
   {
     g_warning("Could not create motion thread: %s", err->message);
   }
+  g_thread_set_priority(motionThread, G_THREAD_PRIORITY_HIGH);
+  */
+  
+
 
   GThread* cognitionThread = g_thread_create(cognitionThreadCallback, NULL, true, &err);
   if(err)
@@ -94,12 +127,11 @@ int main(int argc, char *argv[])
     g_warning("Could not create cognition thread: %s", err->message);
   }
 
-
-
+  /*
   if(motionThread != NULL)
   {
     g_thread_join(motionThread);
-  }
+  }*/
 
   if(cognitionThread != NULL)
   {
@@ -107,4 +139,4 @@ int main(int argc, char *argv[])
   }
 
   return 0;
-}
+}//end main

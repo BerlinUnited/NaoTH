@@ -32,65 +32,68 @@ namespace naoth
  
 class DCMHandler
 {
-  private:
-    ALPtr<ALBroker> pBroker;
-    ALPtr<ALMemoryProxy> al_memory;
-    ALMemoryFastAccess al_memoryfast;
-    DCMProxy * al_dcmproxy;
+private:
+  ALPtr<ALBroker> pBroker;
+  ALPtr<ALMemoryProxy> al_memory;
+  ALMemoryFastAccess al_memoryfast;
+  DCMProxy * al_dcmproxy;
     
-    //Joints
-    string DCMPath_MotorJointHardness[JointData::numOfJoint];
-    string DCMPath_MotorJointPosition[JointData::numOfJoint];
-    string DCMPath_SensorJointPosition[JointData::numOfJoint];
-    string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
-    string DCMPath_SensorJointTemperature[JointData::numOfJoint];
+  //Joints
+  string DCMPath_MotorJointHardness[JointData::numOfJoint];
+  string DCMPath_MotorJointPosition[JointData::numOfJoint];
+  string DCMPath_SensorJointPosition[JointData::numOfJoint];
+  string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
+  string DCMPath_SensorJointTemperature[JointData::numOfJoint];
     
 
-    //LED
-    string DCMPath_MonoLED[LEDData::numOfMonoLED];
-    string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
+  //LED
+  string DCMPath_MonoLED[LEDData::numOfMonoLED];
+  string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
 
-    //FSR
-    string DCMPath_FSR[FSRData::numOfFSR];
+  //FSR
+  string DCMPath_FSR[FSRData::numOfFSR];
 
-    //Accelerometer
-    string DCMPath_Accelerometer[AccelerometerData::numOfAccelerometer];
+  //Accelerometer
+  string DCMPath_Accelerometer[3];
 
-    //Gyrometer
-    string DCMPath_Gyrometer[GyrometerData::numOfGyrometer+1];
+  //Gyrometer
+  string DCMPath_Gyrometer[2+1];
 
-    //Inertial Sensors
-    string DCMPath_InertialSensor[2];
+  //Inertial Sensors
+  string DCMPath_InertialSensor[2];
 
-    //Buttons
-    string DCMPath_Button[ButtonData::numOfButtons];
+  //Buttons
+  string DCMPath_Button[ButtonData::numOfButtons];
 
-    //IR
-    string DCMPath_IRSend[IRSendData::numOfIRSend];
-    string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
+  //IR
+  string DCMPath_IRSend[IRSendData::numOfIRSend];
+  string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
     
-    //UltraSound
-    string DCMPath_UltraSoundReceive;
-    string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfIRSend];
-    string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
-    string DCMPath_UltraSoundSend;
+  //UltraSound
+  string DCMPath_UltraSoundReceive;
+  string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfIRSend];
+  string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
+  string DCMPath_UltraSoundSend;
 
-    //Body-ID
-    string DCMPath_BodyId;
-    string DCMPath_BodyNickName;
+  //Body-ID
+  string DCMPath_BodyId;
+  string DCMPath_BodyNickName;
 
-    //Battery
-    string DCMPath_BatteryCharge;
+  //Battery
+  string DCMPath_BatteryCharge;
 
-     //DCMCommand-Structures
-    ALValue allMotorPositionCommands;
-    ALValue allMotorHardnessCommands;
-    ALValue ledCommands;
-    ALValue irCommands;
-    ALValue usSendCommands;
+  // 
+  string allSensorsList[numOfSensors];
 
-    string allSensorsList[numOfSensors];
 
+  //DCMCommand-Structures
+  ALValue allMotorPositionCommands;
+  ALValue allMotorHardnessCommands;
+  ALValue ledCommands;
+  ALValue irCommands;
+  ALValue usSendCommands;
+
+    
   ALValue getFromALMemory(const string& path);
   
   void sendToDCM(const string path,const double value,const int timestamp);

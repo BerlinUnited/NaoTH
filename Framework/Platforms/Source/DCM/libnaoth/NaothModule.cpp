@@ -3,14 +3,14 @@
 *
 * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
 * Implementation of NaothModule
 */
 #include "NaothModule.h"
-//#include "PlatformInterface/Platform.h"
 #include "libnaoth.h"
-//#include "Tools/DummpyCallable.h"
 
 using namespace naoth;
+
 
 static NaothModule* theModule = NULL;
 
@@ -26,16 +26,18 @@ inline static void motion_wrapper_post()
     theModule->motionCallbackPost();
 }
 
-NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName ): 
-  ALModule(pB, pName ),
-  pBroker(pB)//,
-  //theContorller(NULL),
-  //theMotion(NULL)
+
+NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
+  : 
+  ALModule(pB, pName),
+  pBroker(pB),
+  sem(SEM_FAILED)
 {
   theModule = this;
-  
- // Describe the module here
+
+  // Describe the module here
   setModuleDescription( "Naoth-controlunit of the robot" );
+  
   // Define callable methods with there description
   functionName( "init", "NaothModule",  "Initialize Controller" );
   BIND_METHOD( NaothModule::init );
@@ -61,10 +63,6 @@ std::string NaothModule::version()
 
 void NaothModule::init()
 {
-  //if (!g_thread_supported())
-  //  g_thread_init(NULL);
-
-
   std::cout << "Init DCMHandler" << endl;
   theDCMHandler.init(pBroker);
   
@@ -84,22 +82,29 @@ void NaothModule::init()
   os<<theBodyID<<"\n"<<theBodyNickName<<endl;
   os.close();
 
-  /*
-  cout << "Initializing Controller" << endl;
-  theContorller = new NaoMotionController();
-  theContorller->init(pBroker);
 
-  cout << "Creating Motion" << endl;
-  theMotion = new Motion();
-  
-  cout << "Registering Motion" << endl;
-  theContorller->registerCallbacks(theMotion,(DummyCallable*)NULL);
-  */
+  // init shared memory
+  const std::string naoCommandDataPath = "/nao_command_data";
+  const std::string naoSensorDataPath = "/nao_sensor_data";
+  std::cout << "Opening Shared Memory: "<<naoCommandDataPath<<std::endl;
+  naoCommandData.open(naoCommandDataPath);
+  std::cout<< "Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
+  naoSensorData.open(naoSensorDataPath);
+
+
+  // open semaphore
+  if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
+  {
+    perror("libnaoth: sem_open");
+  }
+
+  // connect to DCM
   fDCMPreProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
   fDCMPostProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
   cout << "NaothModule:init finished!" << endl;
-}
+}//end init
+
 
 void NaothModule::motionCallbackPre()
 {
@@ -108,24 +113,72 @@ void NaothModule::motionCallbackPre()
   //theContorller->callMotion();
   //theMotion->call();
   //theContorller->setMotionOutput();
+  static long long oldFrame = 0;
+  // get the data from the shared memory and put them to the DCM
+  if ( naoCommandData.swapReading() )
+  {
+    const NaoCommandData* commandData = naoCommandData.reading();
+    
+    if(oldFrame+1 != commandData->motorJointData().frame)
+      fprintf(stderr, "---.\n");
+    oldFrame = commandData->motorJointData().frame;
 
-}
+    theDCMHandler.setAllMotorData(commandData->motorJointData());
+    //theDCMHandler.setLED(naothDataReading->lEDData());
+    //theDCMHandler.setIRSend(naothDataReading->iRSendData());
+    //theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
+  }
+  else
+  {
+    fprintf(stderr, "libnaoth: dropped comand data.\n");
+  }
+}//end motionCallbackPre
+
 
 void NaothModule::motionCallbackPost()
 {
-  // right behind the sensor update from the DCM
-  //theContorller->getMotionInput();
+  NaoSensorData* sensorData = naoSensorData.writing();
 
-  LibNaothData* libNaothDataWriting = libNaothData.writing();
-  theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
-  libNaothDataReading = libNaothDataWriting;
-  libNaothData.swapWriting();
-}
+  // read the sensory data from DCM to the shared memory
+  theDCMHandler.readSensorData(sensorData->timeStamp, sensorData->sensorsValue);
+  // 
+  naoSensorData.swapWriting();
+
+
+  // raise the semaphore
+  if(sem != SEM_FAILED)
+  {
+    int sval;
+    if(sem_getvalue(sem, &sval) == 0)
+    {
+      if(sval < 1)
+      {
+        sem_post(sem);
+        //frameDrops = 0;
+      }
+      else
+      {
+        //if(frameDrops == 0)
+          fprintf(stderr, "libnaoth: dropped sensor data.\n");
+        //frameDrops++;
+      }
+    }//end if
+  }//end if
+
+}//end motionCallbackPost
+
 
 void NaothModule::exit()
 {
   cout << "NaoTH is exiting ..."<<endl;
   
+  // close semaphore
+  if(sem != SEM_FAILED)
+  {
+    sem_close(sem);
+    sem = SEM_FAILED;
+  }
+
   // stop motion
   /*
   while ( !theMotion->exit() )
@@ -138,10 +191,5 @@ void NaothModule::exit()
   fDCMPreProcessConnection.disconnect();
   fDCMPostProcessConnection.disconnect();
 
-  theModule = NULL;
-  /*
-  delete theMotion;
-  delete theContorller;
-  */
   cout << "NaoTH exit is finished" << endl;
-}
+}//end exit

@@ -22,22 +22,17 @@ namespace naoth
   class AccelerometerData : public Printable, public PlatformInterchangeable, public Streamable
   {
   public:
-    enum AccelerometerID
-    {
-      X,
-      Y,
-      Z,
-      numOfAccelerometer
-    };
-    double data[numOfAccelerometer];
-    double rawData[numOfAccelerometer];
+    // normalized to m/s^2
+    Vector3<double> data;
+
+    // raw data read from sensors
+    Vector3<double> rawData;
+
 
     AccelerometerData();
     ~AccelerometerData();
 
     Vector3<double> getAcceleration() const;
-
-    static string getAccelerometerName(AccelerometerID acc);
 
     virtual void print(ostream& stream) const;
   };

@@ -18,7 +18,8 @@ NaoController::NaoController()
   :
   theSoundHandler(NULL),
   theBroadCaster(NULL),
-  theBroadCastListener(NULL)
+  theBroadCastListener(NULL),
+  theDebugServer(NULL)
 {
   // read the value from file
   ifstream is(staticMemberPath.c_str());
@@ -27,7 +28,7 @@ NaoController::NaoController()
   cout<<"bodyID: "<<theBodyID<<endl;
   cout<<"bodyNickName: "<<theBodyNickName<<endl;
 
-  naothDataWriting = naothData.writing();
+  naoCommandDataWriting = naoCommandData.writing();
   
   // register input
   registerInput<AccelerometerData>(*this);
@@ -55,6 +56,11 @@ NaoController::NaoController()
   registerOutput<const TeamMessageDataOut>(*this);
   registerOutput<const GameReturnData>(*this);
   
+  // debug
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<const DebugMessageOut>(*this);
+
+
   cout<<"Init Platform"<<endl;
   Platform::getInstance().init(this);
   
@@ -83,8 +89,6 @@ NaoController::NaoController()
 
   std::cout<< "Init SPLGameController"<<endl;
   theGameController = new SPLGameController();
-
-  theDebugServer.start(5401, true);
 }
 
 NaoController::~NaoController()
@@ -132,6 +136,7 @@ void NaoController::set(const SoundPlayData& data)
 
 void NaoController::getCognitionInput()
 {
+  /*
   STOPWATCH_START("getCognitionInput");
   if ( libNaothData.swapReading() )
   {
@@ -146,16 +151,19 @@ void NaoController::getCognitionInput()
   updateFrameInfo();
   NaoControllerBase<NaoController>::getCognitionInput();
   STOPWATCH_STOP("getCognitionInput");
+  */
 }
   
 void NaoController::setCognitionOutput()
 {
+  /*
   STOPWATCH_START("setCognitionOutput");
   NaoControllerBase<NaoController>::setCognitionOutput();
   
   naothData.swapWriting();
   naothDataWriting = naothData.writing();
   STOPWATCH_STOP("setCognitionOutput");
+  */
 }
 
 void NaoController::get(TeamMessageDataIn& data)

@@ -13,6 +13,8 @@
 using namespace naoth;
 
 NaoMotionController::NaoMotionController()
+  :
+  theDebugServer(NULL)
 {
   // read the value from file
   ifstream is(staticMemberPath.c_str());
@@ -20,6 +22,8 @@ NaoMotionController::NaoMotionController()
   is>>theBodyID>>theBodyNickName;
   cout<<"bodyID: "<<theBodyID<<endl;
   cout<<"bodyNickName: "<<theBodyNickName<<endl;
+
+  //naothDataWriting = naothData.writing();
 
   // register input
   registerInput<AccelerometerData>(*this);
@@ -37,11 +41,12 @@ NaoMotionController::NaoMotionController()
   registerOutput<const LEDData>(*this);
   registerOutput<const MotorJointData>(*this);
 
+  // debug
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<const DebugMessageOut>(*this);
+
   std::cout << "Init Platform" << endl;
   Platform::getInstance().init(this);
-
-
-  theDebugServer.start(6401, true);
 }
 
 NaoMotionController::~NaoMotionController()
@@ -51,22 +56,38 @@ NaoMotionController::~NaoMotionController()
 
 void NaoMotionController::set(const MotorJointData& data)
 {
-  libNaothData.writing()->theMotorJointData = data;
+  // HACK
+  ((MotorJointData*)(&data))->frame++;
+  naoCommandData.writing()->set(data);
   //theDCMHandler.setAllMotorData(data);
 }
 
 void NaoMotionController::getMotionInput()
 {
+  if ( naoSensorData.swapReading() )
+  {
+    sensorDataReading = naoSensorData.reading();
+  }
+  else
+  {
+    // didn't get new sensor data
+    sensorDataReading = NULL;
+  }
+
   updateFrameInfo();
+  NaoControllerBase<NaoMotionController>::getMotionInput();
+
+  //updateFrameInfo();
   //LibNaothData* libNaothDataWriting = libNaothData.writing();
   //theDCMHandler.readSensorData(libNaothDataWriting->timeStamp, libNaothDataWriting->sensorsValue);
   //libNaothDataReading = libNaothDataWriting;
   //libNaothData.swapWriting();
-  NaoControllerBase<NaoMotionController>::getMotionInput();
-}
+  //NaoControllerBase<NaoMotionController>::getMotionInput();
+}//end getMotionInput
 
 void NaoMotionController::setMotionOutput()
 {
+  /*
   NaoControllerBase<NaoMotionController>::setMotionOutput();
 
   if ( naothData.swapReading() )
@@ -78,8 +99,12 @@ void NaoMotionController::setMotionOutput()
     //theDCMHandler.setIRSend(naothDataReading->iRSendData());
     //theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
   }
+  */
 
-}
+  NaoControllerBase<NaoMotionController>::setMotionOutput();
+  
+  naoCommandData.swapWriting();
+}//end setMotionOutput
 
 void NaoMotionController::set(const LEDData& data)
 {

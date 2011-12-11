@@ -23,17 +23,20 @@ template<class PlatformType>
 class NaoControllerBase : public PlatformInterface<PlatformType>
 {
 public:
-  NaoControllerBase():PlatformInterface<PlatformType>("Nao", 10),libNaothDataReading(NULL)
+  NaoControllerBase()
+    :
+    PlatformInterface<PlatformType>("Nao", 10),
+    sensorDataReading(NULL)
   {
     staticMemberPath = Platform::getInstance().theConfigDirectory+"nao.info";
 
     // init shared memory
-    const std::string libnaothpath = "/libnaoth";
-    const std::string naothpath = "/naoth";
-    std::cout << "Opening Shared Memory: "<<libnaothpath<<std::endl;
-    libNaothData.open(libnaothpath);
-    std::cout<< "Opening Shared Memory: "<<naothpath<<std::endl;
-    naothData.open(naothpath);
+    const std::string naoCommandDataPath = "/nao_command_data";
+    const std::string naoSensorDataPath = "/nao_sensor_data";
+    std::cout << "Opening Shared Memory: "<<naoCommandDataPath<<std::endl;
+    naoCommandData.open(naoCommandDataPath);
+    std::cout<< "Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
+    naoSensorData.open(naoSensorDataPath);
   }
 
   virtual string getBodyID() const { return theBodyID; }
@@ -42,25 +45,25 @@ public:
   
   void get(FrameInfo& data) { data = theFrameInfo; }
   
-  void get(unsigned int& timestamp) { if (libNaothDataReading!=NULL) timestamp = libNaothDataReading->timeStamp; }
+  void get(unsigned int& timestamp) { if (sensorDataReading!=NULL) timestamp = sensorDataReading->timeStamp; }
 
-  void get(SensorJointData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(SensorJointData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(AccelerometerData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(AccelerometerData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(GyrometerData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(GyrometerData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(FSRData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(FSRData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(InertialSensorData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(InertialSensorData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(IRReceiveData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(IRReceiveData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(ButtonData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(ButtonData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(BatteryData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(BatteryData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
-  void get(UltraSoundReceiveData& data) { if (libNaothDataReading!=NULL) libNaothDataReading->get(data); }
+  void get(UltraSoundReceiveData& data) { if (sensorDataReading!=NULL) sensorDataReading->get(data); }
 
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name)
@@ -74,10 +77,14 @@ protected:
   }
 
 protected:
-  const LibNaothData* libNaothDataReading;
+  const NaoSensorData* sensorDataReading;
   
-  SharedMemory<LibNaothData> libNaothData;
-  SharedMemory<NaothData> naothData;
+  // DCM --> NaoController
+  SharedMemory<NaoSensorData> naoSensorData;
+
+  // NaoController --> DCM
+  SharedMemory<NaoCommandData> naoCommandData;
+  
   FrameInfo theFrameInfo;
 
   std::string staticMemberPath;

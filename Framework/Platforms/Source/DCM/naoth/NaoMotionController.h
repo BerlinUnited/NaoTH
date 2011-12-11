@@ -10,6 +10,7 @@
 #define	_NAO_MOTION_CONTROLLER_H
 
 #include "Tools/NaoControllerBase.h"
+#include "DebugCommunication/DebugServer.h"
 
 namespace naoth
 {
@@ -28,15 +29,39 @@ public:
   void set(const LEDData& data);
 
 
+
   virtual void getMotionInput();
   
   virtual void setMotionOutput();
+
+
+  void get(DebugMessageIn& data)
+  {
+    if(theDebugServer == NULL) return;
+    theDebugServer->getDebugMessageIn(data);
+  }
+
+  void set(const DebugMessageOut& data)
+  {
+    if(theDebugServer == NULL) return;
+    if(data.answers.size() > 0)
+      theDebugServer->setDebugMessageOut(data);
+  }
+
+  void setDebugServer(DebugServer* server)
+  {
+    theDebugServer = server;
+  }
 
 public:
 
   /////////////////////// set ///////////////////////
   virtual void set(const MotorJointData& data);
 
+private:
+  //NaothData* naothDataWriting;
+
+  DebugServer* theDebugServer;
 };
 
 } // end namespace naoth

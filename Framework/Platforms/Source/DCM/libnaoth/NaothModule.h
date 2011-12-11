@@ -8,8 +8,6 @@
 #ifndef _NAOTHMODULE_H
 #define	_NAOTHMODULE_H
 
-//#include "Motion.h"
-//#include "NaoMotionController.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Tools/NaoTime.h"
 #include "Tools/IPCData.h"
@@ -23,51 +21,51 @@ namespace naoth
 
 class NaothModule : public ALModule
 {
-  private:
-    //std::string controllerName;
+public:
+    
+  /**
+    * Default Constructor.
+    */
+  NaothModule(ALPtr<ALBroker> pBroker, const std::string& pName );
+    
+  /**
+    * Destructor.
+    */
+  virtual ~NaothModule();
+    
+  /**
+    * version
+    * @return The version number of ALLeds
+    */
+  std::string version();
+    
+  bool innerTest();
+    
+  virtual void init();
+  virtual void exit();
 
-    ALPtr<ALBroker> pBroker;
-
-    //NaoMotionController* theContorller;
-    //Motion* theMotion;
-  
-  public:
-    
-    /**
-     * Default Constructor.
-     */
-    NaothModule(ALPtr<ALBroker> pBroker, const std::string& pName );
-    
-    /**
-     * Destructor.
-     */
-    virtual ~NaothModule();
-    
-    /**
-     * version
-     * @return The version number of ALLeds
-     */
-    std::string version();
-    
-    bool innerTest();
-    
-    virtual void init();
-    virtual void exit();
-
-    void motionCallbackPre();
-    void motionCallbackPost();
+  void motionCallbackPre();
+  void motionCallbackPost();
 
 private:
-    // Used for sync with the DCM
-    ProcessSignalConnection fDCMPreProcessConnection;
-    ProcessSignalConnection fDCMPostProcessConnection;
+  //
+  ALPtr<ALBroker> pBroker;
 
-    DCMHandler theDCMHandler;
+  // Used for sync with the DCM
+  ProcessSignalConnection fDCMPreProcessConnection;
+  ProcessSignalConnection fDCMPostProcessConnection;
 
-    const LibNaothData* libNaothDataReading;
-  
-    SharedMemory<LibNaothData> libNaothData;
-    SharedMemory<NaothData> naothData;
+  // interface for the interaction with the DCM
+  DCMHandler theDCMHandler;
+
+  // DCM --> NaoController
+  SharedMemory<NaoSensorData> naoSensorData;
+
+  // NaoController --> DCM
+  SharedMemory<NaoCommandData> naoCommandData;
+
+  // syncronize with NaoController
+  sem_t* sem;
 };
 
 } // end namespace naoth

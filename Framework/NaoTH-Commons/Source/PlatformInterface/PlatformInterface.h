@@ -9,7 +9,7 @@
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
-#include "DebugCommunication/DebugServer.h"
+//#include "DebugCommunication/DebugServer.h"
 
 #include <map>
 #include <list>
@@ -221,23 +221,6 @@ namespace naoth
       : PlatformInterfaceBase(name, basicTimeStep)
     {
       cout<<"NaoTH "<<getName()<<" starting..."<<endl;
-
-      registerInput<DebugMessageIn>(*this);
-
-      registerOutput<const DebugMessageOut>(*this);
-    }
-
-    DebugServer theDebugServer;
-
-    void get(DebugMessageIn& data)
-    {
-      theDebugServer.getDebugMessageIn(data);
-    }
-
-    void set(const DebugMessageOut& data)
-    {
-      if(data.answers.size() > 0)
-        theDebugServer.setDebugMessageOut(data);
     }
 
   //////////////////// GET/SET Actions /////////////////////

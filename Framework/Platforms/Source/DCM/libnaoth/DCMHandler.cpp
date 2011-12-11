@@ -26,25 +26,31 @@ void DCMHandler::init(ALPtr<ALBroker> pB)
   }
 
   //Generate all strings for interaction
-  initFSR();
+
+   // init sensors
   initSensorJoint();
-  initMotorJoint();
-  initLED();
+  initFSR();
   initAccelerometer();
   initGyrometer();
   initInertialSensor();
-  initButton();
   initIRReceive();
-  initIRSend();
+  initButton();
   initUltraSoundReceive();
+
+  // init actuators
+  initMotorJoint();
+  initLED();
+  initIRSend();
   initUltraSoundSend();
+
 
   DCMPath_BodyId = "Device/DeviceList/ChestBoard/BodyId";
   DCMPath_BodyNickName = "Device/DeviceList/ChestBoard/BodyNickName";
   DCMPath_BatteryCharge = "Device/SubDeviceList/Battery/Charge/Sensor/Value";
 
   initAllSensorData();
-}
+}//end init
+
 
 string DCMHandler::getBodyID()
 {
@@ -71,7 +77,7 @@ ALValue DCMHandler::getFromALMemory(const string& path)
     std::cerr << "Failed to get Information from: " << e.toString() << endl;
   }
   return value;
-}
+}//end getFromALMemory
 
 /*
  * function for sending a single value to DCM
@@ -95,22 +101,12 @@ inline void DCMHandler::sendToDCM(const string path,const double value,const int
   {
     std::cerr << "Failed to set " << path << ": " << e.toString() << endl;
   }
-}
+}//end sendToDCM
 
-//fsr
-void DCMHandler::initFSR()
-{
-  DCMPath_FSR[FSRData::LFsrFL] = "Device/SubDeviceList/LFoot/FSR/FrontLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::LFsrFR] = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
-  DCMPath_FSR[FSRData::LFsrBL] = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::LFsrBR] = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrFL] = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrFR] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrBL] = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
-  DCMPath_FSR[FSRData::RFsrBR] = "Device/SubDeviceList/RFoot/FSR/RearRight/Sensor/Value";
-}
 
-//SensorJoint
+//////////////////////////// BEGIN CREATE SENSOR PATHS ////////////////////////////
+
+// SensorJoint
 void DCMHandler::initSensorJoint()
 {
   for(int i=0;i<JointData::numOfJoint;i++)
@@ -124,9 +120,197 @@ void DCMHandler::initSensorJoint()
     DCMPath_SensorJointTemperature[(JointData::JointID) i] =
       "Device/SubDeviceList/" + JointData::getJointName((JointData::JointID) i) + "/Temperature/Sensor/Value";
   }
-}
+}//end initSensorJoint
 
-//MotorJoint
+
+// fsr
+void DCMHandler::initFSR()
+{
+  DCMPath_FSR[FSRData::LFsrFL] = "Device/SubDeviceList/LFoot/FSR/FrontLeft/Sensor/Value";
+  DCMPath_FSR[FSRData::LFsrFR] = "Device/SubDeviceList/LFoot/FSR/FrontRight/Sensor/Value";
+  DCMPath_FSR[FSRData::LFsrBL] = "Device/SubDeviceList/LFoot/FSR/RearLeft/Sensor/Value";
+  DCMPath_FSR[FSRData::LFsrBR] = "Device/SubDeviceList/LFoot/FSR/RearRight/Sensor/Value";
+  DCMPath_FSR[FSRData::RFsrFL] = "Device/SubDeviceList/RFoot/FSR/FrontLeft/Sensor/Value";
+  DCMPath_FSR[FSRData::RFsrFR] = "Device/SubDeviceList/RFoot/FSR/FrontRight/Sensor/Value";
+  DCMPath_FSR[FSRData::RFsrBL] = "Device/SubDeviceList/RFoot/FSR/RearLeft/Sensor/Value";
+  DCMPath_FSR[FSRData::RFsrBR] = "Device/SubDeviceList/RFoot/FSR/RearRight/Sensor/Value";
+}//end initFSR
+
+
+void DCMHandler::initAccelerometer()
+{
+  DCMPath_Accelerometer[0] = "Device/SubDeviceList/InertialSensor/AccX/Sensor/Value";
+  DCMPath_Accelerometer[1] = "Device/SubDeviceList/InertialSensor/AccY/Sensor/Value";
+  DCMPath_Accelerometer[2] = "Device/SubDeviceList/InertialSensor/AccZ/Sensor/Value";
+}//end initAccelerometer
+
+void DCMHandler::initGyrometer()
+{
+  DCMPath_Gyrometer[0] = "Device/SubDeviceList/InertialSensor/GyrX/Sensor/Value";
+  DCMPath_Gyrometer[1] = "Device/SubDeviceList/InertialSensor/GyrY/Sensor/Value";
+  DCMPath_Gyrometer[3] = "Device/SubDeviceList/InertialSensor/GyrRef/Sensor/Value";
+}//end initGyrometer
+
+void DCMHandler::initInertialSensor()
+{
+  DCMPath_InertialSensor[0] = "Device/SubDeviceList/InertialSensor/AngleX/Sensor/Value";
+  DCMPath_InertialSensor[1] = "Device/SubDeviceList/InertialSensor/AngleY/Sensor/Value";
+}//end initInertialSensor
+
+void DCMHandler::initIRReceive()
+{
+  DCMPath_IRReceive[IRReceiveData::LeftBeacon] =  "Device/SubDeviceList/IR/BeaconCode/Left/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte1] = "Device/SubDeviceList/IR/RobotCode/Left/Byte1/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte2] = "Device/SubDeviceList/IR/RobotCode/Left/Byte2/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte3] = "Device/SubDeviceList/IR/RobotCode/Left/Byte3/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftByte4] = "Device/SubDeviceList/IR/RobotCode/Left/Byte4/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftRCByte1] = "Device/SubDeviceList/IR/RC5Code/Left/Byte1/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::LeftRCByte2] = "Device/SubDeviceList/IR/RC5Code/Left/Byte2/Sensor/Value";
+
+  DCMPath_IRReceive[IRReceiveData::RightBeacon] =  "Device/SubDeviceList/IR/BeaconCode/Right/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::RightByte1] = "Device/SubDeviceList/IR/RobotCode/Right/Byte1/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::RightByte2] = "Device/SubDeviceList/IR/RobotCode/Right/Byte2/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::RightByte3] = "Device/SubDeviceList/IR/RobotCode/Right/Byte3/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::RightByte4] = "Device/SubDeviceList/IR/RobotCode/Right/Byte4/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::RightRCByte1] = "Device/SubDeviceList/IR/RC5Code/Right/Byte1/Sensor/Value";
+  DCMPath_IRReceive[IRReceiveData::RightRCByte2] = "Device/SubDeviceList/IR/RC5Code/Right/Byte2/Sensor/Value";
+}//end initIRReceive
+
+void DCMHandler::initButton()
+{
+  DCMPath_Button[ButtonData::Chest] = "Device/SubDeviceList/ChestBoard/Button/Sensor/Value";
+  DCMPath_Button[ButtonData::LeftFootLeft] = "Device/SubDeviceList/LFoot/Bumper/Left/Sensor/Value";
+  DCMPath_Button[ButtonData::LeftFootRight] = "Device/SubDeviceList/LFoot/Bumper/Right/Sensor/Value";
+  DCMPath_Button[ButtonData::RightFootLeft] = "Device/SubDeviceList/RFoot/Bumper/Left/Sensor/Value";
+  DCMPath_Button[ButtonData::RightFootRight] = "Device/SubDeviceList/RFoot/Bumper/Right/Sensor/Value";
+}//end initButton
+
+
+void DCMHandler::initUltraSoundReceive()
+{
+  DCMPath_UltraSoundReceive = "Device/SubDeviceList/US/Sensor/Value";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_1] = "Device/SubDeviceList/US/Left/Sensor/Value1";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_2] = "Device/SubDeviceList/US/Left/Sensor/Value2";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_3] = "Device/SubDeviceList/US/Left/Sensor/Value3";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_4] = "Device/SubDeviceList/US/Left/Sensor/Value4";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_5] = "Device/SubDeviceList/US/Left/Sensor/Value5";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_6] = "Device/SubDeviceList/US/Left/Sensor/Value6";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_7] = "Device/SubDeviceList/US/Left/Sensor/Value7";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_8] = "Device/SubDeviceList/US/Left/Sensor/Value8";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_9] = "Device/SubDeviceList/US/Left/Sensor/Value9";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_1] = "Device/SubDeviceList/US/Right/Sensor/Value1";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_2] = "Device/SubDeviceList/US/Right/Sensor/Value2";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_3] = "Device/SubDeviceList/US/Right/Sensor/Value3";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_4] = "Device/SubDeviceList/US/Right/Sensor/Value4";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_5] = "Device/SubDeviceList/US/Right/Sensor/Value5";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_6] = "Device/SubDeviceList/US/Right/Sensor/Value6";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_7] = "Device/SubDeviceList/US/Right/Sensor/Value7";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_8] = "Device/SubDeviceList/US/Right/Sensor/Value8";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_9] = "Device/SubDeviceList/US/Right/Sensor/Value9";
+}//end initUltraSoundReceive
+
+
+// create an array containing all sensors
+void DCMHandler::initAllSensorData()
+{
+  unsigned int currentIndex=0;
+
+  //SensorJointData
+  ASSERT(theSensorJointDataIndex == currentIndex);
+  for(int i=0;i<JointData::RHipYawPitch;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
+    allSensorsList[currentIndex++] = DCMPath_SensorJointTemperature[i];
+    allSensorsList[currentIndex++] = DCMPath_SensorJointPosition[i];
+    allSensorsList[currentIndex++] = DCMPath_MotorJointHardness[i];
+  }
+  // avoid the LHipYawPitch
+  for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
+    allSensorsList[currentIndex++] = DCMPath_SensorJointTemperature[i];
+    allSensorsList[currentIndex++] = DCMPath_SensorJointPosition[i];
+    allSensorsList[currentIndex++] = DCMPath_MotorJointHardness[i];
+  }
+
+  //FSRData
+  ASSERT(theFSRDataIndex == currentIndex);
+  for(int i=0;i<FSRData::numOfFSR;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_FSR[i];
+  }
+
+  //AccelerometerData
+  ASSERT(theAccelerometerDataIndex == currentIndex);
+  for(int i=0;i<3;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_Accelerometer[i];
+  }
+
+  //GyrometerData
+  ASSERT(theGyrometerDataIndex == currentIndex);
+  for(int i=0;i<3;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_Gyrometer[i];
+  }
+
+  //InertialSensorsData
+  ASSERT(theInertialSensorDataIndex == currentIndex);
+  for(int i=0;i<2;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_InertialSensor[i];
+  }
+
+  //IRReceiveData
+  ASSERT(theIRReceiveDataIndex == currentIndex);
+  for(int i=0;i<IRReceiveData::numOfIRReceive;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_IRReceive[i];
+  }
+
+  //ButtonData
+  ASSERT(theButtonDataIndex == currentIndex);
+  for(int i=0;i<ButtonData::numOfButtons;i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_Button[i];
+  }
+
+  //UltraSoundReceiveData
+  ASSERT(theUltraSoundReceiveDataIndex == currentIndex);
+  allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive; 
+  for(int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  {
+    allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveLeft[i];
+    allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveRight[i];
+  }
+
+  ASSERT(thBatteryDataIdex == currentIndex);
+  allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
+
+  //connect variables
+  //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
+  for(unsigned int i=0; i<numOfSensors; i++)
+  {
+    sensorPtrs[i] = (float*)al_memoryfast.getDataPtr(pBroker, allSensorsList[i], false);
+  }
+}//end initAllSensorData
+
+
+void DCMHandler::readSensorData(unsigned int& timeStamp, float* dest)
+{
+  timeStamp = al_dcmproxy->getTime(time_delay);
+
+  for(unsigned int i=0; i<numOfSensors; i++)
+  {
+    dest[i] = *(sensorPtrs[i]);
+  }
+}//end readSensorData
+
+//////////////////////////// END CREATE SENSOR PATHS ////////////////////////////
+
+
+
+// MotorJoint
 void DCMHandler::initMotorJoint()
 {
   for(int i=0;i<JointData::numOfJoint;i++)
@@ -201,14 +385,16 @@ void DCMHandler::initMotorJoint()
   catch(ALError e) {
     std::cerr << "Failed to init MotorJointAlias: " << e.toString() << endl;
   }
-}
+}//end initMotorJoint
+
 
 void DCMHandler::setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData)
 {
   unsigned int timestamp = al_dcmproxy->getTime(time_delay);
   sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->stiffness[jointID],timestamp);
   sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],timestamp);
-}
+}//end setSingleMotorData
+
 
 void DCMHandler::setAllMotorData(const MotorJointData& mjd)
 {
@@ -236,7 +422,8 @@ void DCMHandler::setAllMotorData(const MotorJointData& mjd)
   catch(ALError e) {
     std::cerr << "Failed to set AllMotorJoints: " << e.toString() << endl;
   }
-}
+}//end setAllMotorData
+
 
 //LED
 void DCMHandler::initLED()
@@ -371,7 +558,8 @@ void DCMHandler::initLED()
     ledCommands[5][i+2].arraySetSize(1);
     ledCommands[5][i+2][0] = 0.0;
   }
-}
+}//end initLED
+
 
 void DCMHandler::setLED(const LEDData& data)
 {
@@ -396,62 +584,9 @@ void DCMHandler::setLED(const LEDData& data)
   catch(ALError e) {
     std::cerr << "Failed to set LEDs: " << e.toString() << endl;
   }
-}
+}//end setLED
 
-void DCMHandler::initAccelerometer()
-{
-  for(int i=0;i<AccelerometerData::numOfAccelerometer;i++)
-  {
-    DCMPath_Accelerometer[i] = "Device/SubDeviceList/InertialSensor/Acc"
-                                + AccelerometerData::getAccelerometerName((AccelerometerData::AccelerometerID) i)
-                                + "/Sensor/Value";
-  }
-}
 
-void DCMHandler::initGyrometer()
-{
-  for(int i=0;i<GyrometerData::numOfGyrometer;i++)
-  {
-    DCMPath_Gyrometer[i] = "Device/SubDeviceList/InertialSensor/Gyr"
-                           + GyrometerData::getGyrometerName((GyrometerData::GyrometerID) i)
-                           + "/Sensor/Value";
-  }
-  DCMPath_Gyrometer[GyrometerData::numOfGyrometer] = "Device/SubDeviceList/InertialSensor/GyrRef/Sensor/Value";
-}
-
-void DCMHandler::initInertialSensor()
-{
-  DCMPath_InertialSensor[0] = "Device/SubDeviceList/InertialSensor/AngleX/Sensor/Value";
-  DCMPath_InertialSensor[1] = "Device/SubDeviceList/InertialSensor/AngleY/Sensor/Value";
-}
-
-void DCMHandler::initButton()
-{
-  DCMPath_Button[ButtonData::Chest] = "Device/SubDeviceList/ChestBoard/Button/Sensor/Value";
-  DCMPath_Button[ButtonData::LeftFootLeft] = "Device/SubDeviceList/LFoot/Bumper/Left/Sensor/Value";
-  DCMPath_Button[ButtonData::LeftFootRight] = "Device/SubDeviceList/LFoot/Bumper/Right/Sensor/Value";
-  DCMPath_Button[ButtonData::RightFootLeft] = "Device/SubDeviceList/RFoot/Bumper/Left/Sensor/Value";
-  DCMPath_Button[ButtonData::RightFootRight] = "Device/SubDeviceList/RFoot/Bumper/Right/Sensor/Value";
-}
-
-void DCMHandler::initIRReceive()
-{
-  DCMPath_IRReceive[IRReceiveData::LeftBeacon] =  "Device/SubDeviceList/IR/BeaconCode/Left/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte1] = "Device/SubDeviceList/IR/RobotCode/Left/Byte1/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte2] = "Device/SubDeviceList/IR/RobotCode/Left/Byte2/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte3] = "Device/SubDeviceList/IR/RobotCode/Left/Byte3/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftByte4] = "Device/SubDeviceList/IR/RobotCode/Left/Byte4/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftRCByte1] = "Device/SubDeviceList/IR/RC5Code/Left/Byte1/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::LeftRCByte2] = "Device/SubDeviceList/IR/RC5Code/Left/Byte2/Sensor/Value";
-
-  DCMPath_IRReceive[IRReceiveData::RightBeacon] =  "Device/SubDeviceList/IR/BeaconCode/Right/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::RightByte1] = "Device/SubDeviceList/IR/RobotCode/Right/Byte1/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::RightByte2] = "Device/SubDeviceList/IR/RobotCode/Right/Byte2/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::RightByte3] = "Device/SubDeviceList/IR/RobotCode/Right/Byte3/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::RightByte4] = "Device/SubDeviceList/IR/RobotCode/Right/Byte4/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::RightRCByte1] = "Device/SubDeviceList/IR/RC5Code/Right/Byte1/Sensor/Value";
-  DCMPath_IRReceive[IRReceiveData::RightRCByte2] = "Device/SubDeviceList/IR/RC5Code/Right/Byte2/Sensor/Value";
-}
 
 void DCMHandler::initIRSend()
 {
@@ -495,7 +630,7 @@ void DCMHandler::initIRSend()
     irCommands[5][i].arraySetSize(1);
     irCommands[5][i][0] = 0.0;
   }
-}
+}//end initIRSend
 
 void DCMHandler::setIRSend(const IRSendData& data)
 {
@@ -514,65 +649,44 @@ void DCMHandler::setIRSend(const IRSendData& data)
   catch(ALError e) {
     std::cerr << "Failed to set IR: " << e.toString() << endl;
   }
-}
+}//end setIRSend
 
-void DCMHandler::initUltraSoundReceive()
-{
-  DCMPath_UltraSoundReceive = "Device/SubDeviceList/US/Sensor/Value";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_1] = "Device/SubDeviceList/US/Left/Sensor/Value1";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_2] = "Device/SubDeviceList/US/Left/Sensor/Value2";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_3] = "Device/SubDeviceList/US/Left/Sensor/Value3";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_4] = "Device/SubDeviceList/US/Left/Sensor/Value4";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_5] = "Device/SubDeviceList/US/Left/Sensor/Value5";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_6] = "Device/SubDeviceList/US/Left/Sensor/Value6";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_7] = "Device/SubDeviceList/US/Left/Sensor/Value7";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_8] = "Device/SubDeviceList/US/Left/Sensor/Value8";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_9] = "Device/SubDeviceList/US/Left/Sensor/Value9";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_1] = "Device/SubDeviceList/US/Right/Sensor/Value1";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_2] = "Device/SubDeviceList/US/Right/Sensor/Value2";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_3] = "Device/SubDeviceList/US/Right/Sensor/Value3";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_4] = "Device/SubDeviceList/US/Right/Sensor/Value4";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_5] = "Device/SubDeviceList/US/Right/Sensor/Value5";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_6] = "Device/SubDeviceList/US/Right/Sensor/Value6";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_7] = "Device/SubDeviceList/US/Right/Sensor/Value7";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_8] = "Device/SubDeviceList/US/Right/Sensor/Value8";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_9] = "Device/SubDeviceList/US/Right/Sensor/Value9";
-}
 
 void DCMHandler::initUltraSoundSend()
 {
-   DCMPath_UltraSoundSend = "Device/SubDeviceList/US/Actuator/Value";
+  DCMPath_UltraSoundSend = "Device/SubDeviceList/US/Actuator/Value";
 
-   try
+  try
   {
     ALValue aliasCommand;
     aliasCommand.arraySetSize(2);
 
-    //AllMotorJoints
+    // create alias
     aliasCommand[0] = string("USSend");
     aliasCommand[1].arraySetSize(1);
     aliasCommand[1][0] = DCMPath_UltraSoundSend;
 
     al_dcmproxy->createAlias(aliasCommand);
+
+    // prepare the request
+    usSendCommands.arraySetSize(6);
+    usSendCommands[0] = string("USSend");
+    usSendCommands[1] = string("Merge");
+    usSendCommands[2] = string("time-separate");
+    usSendCommands[3] = 0;
+    usSendCommands[4].arraySetSize(1);
+    usSendCommands[4][0] = 0;
+    usSendCommands[5].arraySetSize(1);
+  
+    usSendCommands[5][0].arraySetSize(1);
+    usSendCommands[5][0][0] = 0.0;
   }
   catch(ALError e)
   {
     std::cerr << "Failed to create UltraSound-Alias: " << e.toString() << endl;
   }
+}//end initUltraSoundSend
 
-  usSendCommands.arraySetSize(6);
-  usSendCommands[0] = string("USSend");
-  usSendCommands[1] = string("Merge");
-  usSendCommands[2] = string("time-separate");
-  usSendCommands[3] = 0;
-  usSendCommands[4].arraySetSize(1);
-  usSendCommands[4][0] = 0;
-  usSendCommands[5].arraySetSize(1);
-  
-  usSendCommands[5][0].arraySetSize(1);
-  usSendCommands[5][0][0] = 0.0;
-  
-}
 
 void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
 {
@@ -586,98 +700,5 @@ void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
   catch(ALError e) {
     std::cerr << "Failed to set UltraSound: " << e.toString() << endl;
   }
-}
+}//end setUltraSoundSend
 
-void DCMHandler::initAllSensorData()
-{
-  unsigned int currentIndex=0;
-
-  //SensorJointData
-  ASSERT(theSensorJointDataIndex == currentIndex);
-  for(int i=0;i<JointData::RHipYawPitch;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
-    allSensorsList[currentIndex++] = DCMPath_SensorJointTemperature[i];
-    allSensorsList[currentIndex++] = DCMPath_SensorJointPosition[i];
-    allSensorsList[currentIndex++] = DCMPath_MotorJointHardness[i];
-  }
-
-  for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
-    allSensorsList[currentIndex++] = DCMPath_SensorJointTemperature[i];
-    allSensorsList[currentIndex++] = DCMPath_SensorJointPosition[i];
-    allSensorsList[currentIndex++] = DCMPath_MotorJointHardness[i];
-  }
-
-  //FSRData
-  ASSERT(theFSRDataIndex == currentIndex);
-  for(int i=0;i<FSRData::numOfFSR;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_FSR[i];
-  }
-
-  //AccelerometerData
-  ASSERT(theAccelerometerDataIndex == currentIndex);
-  for(int i=0;i<AccelerometerData::numOfAccelerometer;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_Accelerometer[i];
-  }
-
-  //GyrometerData
-  ASSERT(theGyrometerDataIndex == currentIndex);
-  for(int i=0;i<GyrometerData::numOfGyrometer+1;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_Gyrometer[i];
-  }
-
-  //InertialSensorsData
-  ASSERT(theInertialSensorDataIndex == currentIndex);
-  for(int i=0;i<2;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_InertialSensor[i];
-  }
-
-  //IRReceiveData
-  ASSERT(theIRReceiveDataIndex == currentIndex);
-  for(int i=0;i<IRReceiveData::numOfIRReceive;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_IRReceive[i];
-  }
-
-  //ButtonData
-  ASSERT(theButtonDataIndex == currentIndex);
-  for(int i=0;i<ButtonData::numOfButtons;i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_Button[i];
-  }
-
-  //UltraSoundReceiveData
-  ASSERT(theUltraSoundReceiveDataIndex == currentIndex);
-  allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive; 
-  for(int i = 0; i < UltraSoundData::numOfIRSend; i++)
-  {
-    allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveLeft[i];
-    allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveRight[i];
-  }
-
-  ASSERT(thBatteryDataIdex == currentIndex);
-  allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
-
-  //connect variables
-  //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);
-  for(unsigned int i=0; i<numOfSensors; i++)
-  {
-    sensorPtrs[i] = (float*)al_memoryfast.getDataPtr(pBroker, allSensorsList[i], false);
-  }
-}
-
-void DCMHandler::readSensorData(unsigned int& timeStamp, float* dest)
-{
-  timeStamp = al_dcmproxy->getTime(time_delay);
-
-  for(unsigned int i=0; i<numOfSensors; i++)
-  {
-    dest[i] = *(sensorPtrs[i]);
-  }
-}

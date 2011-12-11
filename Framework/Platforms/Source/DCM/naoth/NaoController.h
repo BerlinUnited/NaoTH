@@ -17,6 +17,7 @@
 #include "Tools/NaoControllerBase.h"
 #include "Representations/Infrastructure/TeamMessageData.h"
 #include "Representations/Infrastructure/GameData.h"
+#include "DebugCommunication/DebugServer.h"
 
 namespace naoth
 {
@@ -41,16 +42,16 @@ public:
 
   void get(GameData& data);
   
-  void get(MotorJointData& data) { libNaothDataReading->get(data); }
+  void get(MotorJointData& data) { /*libNaothDataReading->get(data);*/ }
 
   /////////////////////// set ///////////////////////
   void set(const CameraSettingsRequest& data);
 
-  void set(const LEDData& data) { naothDataWriting->set(data); }
+  void set(const LEDData& data) { naoCommandDataWriting->set(data); }
 
-  void set(const IRSendData& data) { naothDataWriting->set(data); }
+  void set(const IRSendData& data) { naoCommandDataWriting->set(data); }
 
-  void set(const UltraSoundSendData& data) { naothDataWriting->set(data); }
+  void set(const UltraSoundSendData& data) { naoCommandDataWriting->set(data); }
 
   void set(const SoundPlayData& data);
 
@@ -62,13 +63,37 @@ public:
   
   virtual void setCognitionOutput();
 
+
+  
+
+  void get(DebugMessageIn& data)
+  {
+    if(theDebugServer == NULL) return;
+    theDebugServer->getDebugMessageIn(data);
+  }
+
+  void set(const DebugMessageOut& data)
+  {
+    if(theDebugServer == NULL) return;
+    if(data.answers.size() > 0)
+      theDebugServer->setDebugMessageOut(data);
+  }
+
+  void setDebugServer(DebugServer* server)
+  {
+    theDebugServer = server;
+  }
+
+
 private:
   V4lCameraHandler theCameraHandler;
   SoundControl *theSoundHandler;
-  NaothData* naothDataWriting;
+  NaoCommandData* naoCommandDataWriting;
   BroadCaster* theBroadCaster;
   BroadCastListener* theBroadCastListener;
   SPLGameController* theGameController;
+
+  DebugServer* theDebugServer;
 };
 
 } // end namespace naoth

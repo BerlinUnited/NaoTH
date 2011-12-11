@@ -13,6 +13,7 @@
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Serializer.h"
+#include "Tools/Math/Vector2.h"
 
 using namespace std;
 
@@ -22,23 +23,15 @@ namespace naoth
   class GyrometerData : public PlatformInterchangeable, public Printable, public Streamable
   {
   public:
-    enum GyrometerID
-    {
-      X,
-      Y,
-      numOfGyrometer
-    };
-
-    double data[numOfGyrometer];
-    double rawData[numOfGyrometer+1];
-    double rawZero[numOfGyrometer];
+    double ref;
+    Vector2<double> data;
+    Vector2<double> rawData;
+    Vector2<double> rawZero;
 
     GyrometerData();
     ~GyrometerData();
 
     void calibrate();
-
-    static string getGyrometerName(GyrometerID gyro);
 
     virtual void print(ostream& stream) const;
   };
