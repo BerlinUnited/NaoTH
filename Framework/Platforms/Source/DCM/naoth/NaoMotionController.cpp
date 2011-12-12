@@ -56,8 +56,6 @@ NaoMotionController::~NaoMotionController()
 
 void NaoMotionController::set(const MotorJointData& data)
 {
-  // HACK
-  ((MotorJointData*)(&data))->frame++;
   naoCommandData.writing()->set(data);
   //theDCMHandler.setAllMotorData(data);
 }

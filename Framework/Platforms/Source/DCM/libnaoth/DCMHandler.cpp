@@ -13,8 +13,6 @@ void DCMHandler::init(ALPtr<ALBroker> pB)
 {  
   pBroker = pB;
 
-  time_delay = 0;
-
   //connect to DCM
   try
   {
@@ -60,6 +58,11 @@ string DCMHandler::getBodyID()
 string DCMHandler::getBodyNickName()
 {
   return getFromALMemory(DCMPath_BodyNickName);
+}
+
+int DCMHandler::getTime(unsigned int time_delay)
+{
+  return al_dcmproxy->getTime(time_delay);
 }
 
 /*
@@ -148,7 +151,7 @@ void DCMHandler::initGyrometer()
 {
   DCMPath_Gyrometer[0] = "Device/SubDeviceList/InertialSensor/GyrX/Sensor/Value";
   DCMPath_Gyrometer[1] = "Device/SubDeviceList/InertialSensor/GyrY/Sensor/Value";
-  DCMPath_Gyrometer[3] = "Device/SubDeviceList/InertialSensor/GyrRef/Sensor/Value";
+  DCMPath_Gyrometer[2] = "Device/SubDeviceList/InertialSensor/GyrRef/Sensor/Value";
 }//end initGyrometer
 
 void DCMHandler::initInertialSensor()
@@ -296,9 +299,9 @@ void DCMHandler::initAllSensorData()
 }//end initAllSensorData
 
 
-void DCMHandler::readSensorData(unsigned int& timeStamp, float* dest)
+void DCMHandler::readSensorData(float* dest)
 {
-  timeStamp = al_dcmproxy->getTime(time_delay);
+  //timeStamp = al_dcmproxy->getTime(time_delay);
 
   for(unsigned int i=0; i<numOfSensors; i++)
   {
@@ -388,41 +391,62 @@ void DCMHandler::initMotorJoint()
 }//end initMotorJoint
 
 
-void DCMHandler::setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData)
+void DCMHandler::setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime)
 {
-  unsigned int timestamp = al_dcmproxy->getTime(time_delay);
-  sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->stiffness[jointID],timestamp);
-  sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],timestamp);
+  //unsigned int timestamp = al_dcmproxy->getTime(time_delay);
+  sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->stiffness[jointID],dcmTime);
+  sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],dcmTime);
 }//end setSingleMotorData
 
 
-void DCMHandler::setAllMotorData(const MotorJointData& mjd)
+void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
 {
-  int currentAbsDelay = al_dcmproxy->getTime(time_delay);
-  allMotorPositionCommands[4][0] = currentAbsDelay;
-  allMotorHardnessCommands[4][0] = currentAbsDelay;
+  //int currentAbsDelay = al_dcmproxy->getTime(time_delay);
+  allMotorPositionCommands[4][0] = dcmTime;
 
   //MotorJoints
   for(int i=0;i<JointData::RHipYawPitch;i++)
   {
-    allMotorHardnessCommands[5][i][0] = mjd.stiffness[i];
     allMotorPositionCommands[5][i][0] = mjd.position[i];
   }
   for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
   {
-    allMotorHardnessCommands[5][i-1][0] = mjd.stiffness[i];
     allMotorPositionCommands[5][i-1][0] = mjd.position[i];
   }
 
   try
   {
     al_dcmproxy->setAlias(allMotorPositionCommands);
+  }
+  catch(ALError e) {
+    std::cerr << "Failed to set AllPositionData: " << e.toString() << endl;
+  }
+}//end setAllPositionData
+
+
+void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
+{
+  //int currentAbsDelay = al_dcmproxy->getTime(time_delay);
+  allMotorHardnessCommands[4][0] = dcmTime;
+
+  //MotorJoints
+  for(int i=0;i<JointData::RHipYawPitch;i++)
+  {
+    allMotorHardnessCommands[5][i][0] = mjd.stiffness[i];
+  }
+  for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
+  {
+    allMotorHardnessCommands[5][i-1][0] = mjd.stiffness[i];
+  }
+
+  try
+  {
     al_dcmproxy->setAlias(allMotorHardnessCommands);
   }
   catch(ALError e) {
-    std::cerr << "Failed to set AllMotorJoints: " << e.toString() << endl;
+    std::cerr << "Failed to set AllHardnessData: " << e.toString() << endl;
   }
-}//end setAllMotorData
+}//end setAllHardnessData
 
 
 //LED
@@ -561,11 +585,11 @@ void DCMHandler::initLED()
 }//end initLED
 
 
-void DCMHandler::setLED(const LEDData& data)
+void DCMHandler::setLED(const LEDData& data, int dcmTime)
 {
   if ( !data.change ) return;
   
-  ledCommands[4][0] = al_dcmproxy->getTime(time_delay);
+  ledCommands[4][0] = dcmTime; //al_dcmproxy->getTime(time_delay);
 
   for(int i=0;i<LEDData::numOfMonoLED;i++)
   {
@@ -632,11 +656,11 @@ void DCMHandler::initIRSend()
   }
 }//end initIRSend
 
-void DCMHandler::setIRSend(const IRSendData& data)
+void DCMHandler::setIRSend(const IRSendData& data, int dcmTime)
 {
   if ( !data.changed ) return;
   
-  irCommands[4][0] = al_dcmproxy->getTime(time_delay);
+  irCommands[4][0] = dcmTime; //al_dcmproxy->getTime(time_delay);
 
   for(int i=0;i<IRSendData::numOfIRSend;i++)
   {
@@ -688,9 +712,9 @@ void DCMHandler::initUltraSoundSend()
 }//end initUltraSoundSend
 
 
-void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data)
+void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
 {
-  usSendCommands[4][0] = al_dcmproxy->getTime(time_delay);
+  usSendCommands[4][0] = dcmTime; //al_dcmproxy->getTime(time_delay);
   usSendCommands[5][0][0] = static_cast<double>(data.mode);
 
   try

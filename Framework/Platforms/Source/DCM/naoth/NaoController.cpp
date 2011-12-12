@@ -136,8 +136,9 @@ void NaoController::set(const SoundPlayData& data)
 
 void NaoController::getCognitionInput()
 {
-  /*
+  
   STOPWATCH_START("getCognitionInput");
+  /*
   if ( libNaothData.swapReading() )
   {
     libNaothDataReading = libNaothData.reading();
@@ -147,23 +148,23 @@ void NaoController::getCognitionInput()
     // didn't get new sensor data
     libNaothDataReading = NULL;
   }
-
+  */
   updateFrameInfo();
   NaoControllerBase<NaoController>::getCognitionInput();
   STOPWATCH_STOP("getCognitionInput");
-  */
+  
 }
   
 void NaoController::setCognitionOutput()
 {
-  /*
+  
   STOPWATCH_START("setCognitionOutput");
   NaoControllerBase<NaoController>::setCognitionOutput();
-  
+  /*
   naothData.swapWriting();
   naothDataWriting = naothData.writing();
-  STOPWATCH_STOP("setCognitionOutput");
   */
+  STOPWATCH_STOP("setCognitionOutput");
 }
 
 void NaoController::get(TeamMessageDataIn& data)

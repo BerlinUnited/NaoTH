@@ -58,6 +58,11 @@ private:
   // interface for the interaction with the DCM
   DCMHandler theDCMHandler;
 
+  // Current dcm time, updated at each onPostProcess call.
+  int dcmTime;
+  // the offset between the system time and the dcm time
+  int timeOffset;
+
   // DCM --> NaoController
   SharedMemory<NaoSensorData> naoSensorData;
 

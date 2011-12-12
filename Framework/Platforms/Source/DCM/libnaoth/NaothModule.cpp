@@ -8,6 +8,7 @@
 */
 #include "NaothModule.h"
 #include "libnaoth.h"
+#include "Tools/NaoTime.h"
 
 using namespace naoth;
 
@@ -31,6 +32,8 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
   : 
   ALModule(pB, pName),
   pBroker(pB),
+  dcmTime(0),
+  timeOffset(0),
   sem(SEM_FAILED)
 {
   theModule = this;
@@ -65,6 +68,10 @@ void NaothModule::init()
 {
   std::cout << "Init DCMHandler" << endl;
   theDCMHandler.init(pBroker);
+
+  unsigned int delta = 0;
+  dcmTime = theDCMHandler.getTime(delta);
+  timeOffset = dcmTime - NaoTime::getNaoTimeInMilliSeconds();
   
   // save the body ID
   string theBodyID = theDCMHandler.getBodyID();
@@ -113,20 +120,20 @@ void NaothModule::motionCallbackPre()
   //theContorller->callMotion();
   //theMotion->call();
   //theContorller->setMotionOutput();
-  static long long oldFrame = 0;
+
   // get the data from the shared memory and put them to the DCM
   if ( naoCommandData.swapReading() )
   {
     const NaoCommandData* commandData = naoCommandData.reading();
-    
-    if(oldFrame+1 != commandData->motorJointData().frame)
-      fprintf(stderr, "---.\n");
-    oldFrame = commandData->motorJointData().frame;
+    // update the dcm time
+    dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
 
-    theDCMHandler.setAllMotorData(commandData->motorJointData());
-    //theDCMHandler.setLED(naothDataReading->lEDData());
-    //theDCMHandler.setIRSend(naothDataReading->iRSendData());
-    //theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData());
+    theDCMHandler.setAllPositionData(commandData->motorJointData(), dcmTime);
+    theDCMHandler.setAllHardnessData(commandData->motorJointData(), dcmTime);
+
+    //theDCMHandler.setLED(naothDataReading->lEDData(), dcmTime);
+    //theDCMHandler.setIRSend(naothDataReading->iRSendData(), dcmTime);
+    //theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData(), dcmTime);
   }
   else
   {
@@ -139,8 +146,11 @@ void NaothModule::motionCallbackPost()
 {
   NaoSensorData* sensorData = naoSensorData.writing();
 
+  sensorData->timeStamp = dcmTime;
+
   // read the sensory data from DCM to the shared memory
-  theDCMHandler.readSensorData(sensorData->timeStamp, sensorData->sensorsValue);
+  theDCMHandler.readSensorData(sensorData->sensorsValue);
+  
   // 
   naoSensorData.swapWriting();
 

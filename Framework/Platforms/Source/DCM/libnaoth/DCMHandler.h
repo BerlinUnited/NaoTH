@@ -115,7 +115,6 @@ private:
 
 public:
     float* sensorPtrs[numOfSensors];
-    int time_delay;
 
     DCMHandler();
     ~DCMHandler();
@@ -123,21 +122,24 @@ public:
 
     string getBodyID();
     string getBodyNickName();
+    int getTime(unsigned int time_delay);
 
     // read sensor data from AL memory
-    void readSensorData(unsigned int& timeStamp, float* dest);
+    void readSensorData(float* dest);
     
-    void set(const LEDData& data);
-    void set(const IRSendData& data);
-    void set(const UltraSoundSendData& data);
+    //void set(const LEDData& data);
+    //void set(const IRSendData& data);
+    //void set(const UltraSoundSendData& data);
 
-    void setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData);
-    void setAllMotorData(const MotorJointData& mjd);
+    void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
     
-    void setLED(const LEDData& data);
+    void setAllPositionData(const MotorJointData& mjd, int dcmTime);
+    void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
 
-    void setIRSend(const IRSendData& theIRSendData);
-    void setUltraSoundSend(const UltraSoundSendData& data);
+    void setLED(const LEDData& data, int dcmTime);
+
+    void setIRSend(const IRSendData& theIRSendData, int dcmTime);
+    void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
 };
 
 } // end namespace naoth
