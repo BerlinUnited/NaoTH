@@ -16,7 +16,7 @@ void CalibrationBehaviorControl::execute()
   MotionRequest& motionRequest = getMotionRequest();
   LEDRequest& ledRequest = getBehaviorLEDRequest();
 
-  getMotionRequest().calibrate_foot_touch_detector = false;
+  getMotionRequest().calibrateFootTouchDetector = false;
   getHeadMotionRequest().id = HeadMotionRequest::look_straight_ahead;
 
   for(int i=0; i < LEDData::numOfMonoLED; i++)
@@ -167,5 +167,5 @@ void CalibrationBehaviorControl::calibrateFSRTouch()
   getMotionRequest().walkRequest.target.translation.y = 0;
   getMotionRequest().walkRequest.target.rotation = 0;
 
-  getMotionRequest().calibrate_foot_touch_detector = true;
+  getMotionRequest().calibrateFootTouchDetector = true;
 }
