@@ -16,12 +16,12 @@ using namespace naoth;
 unsigned int Walk::theStepID = 0;
 
 Walk::Walk()
-:IKMotion(motion::walk),
-theWalkParameters(theParameters.walk),
-theWaitLandingCount(0),
-theUnsupportedCount(0),
-isStopping(false),
-stoppingStepFinished(false)
+  :IKMotion(motion::walk),
+  theWalkParameters(theParameters.walk),
+  theWaitLandingCount(0),
+  theUnsupportedCount(0),
+  isStopping(false),
+  stoppingStepFinished(false)
 {
 }
   

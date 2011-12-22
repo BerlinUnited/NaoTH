@@ -33,6 +33,7 @@ public:
     id(motion::init),
     forced(false),
     standHeight(-1),
+    calibrate_foot_touch_detector(false),
     standardStand(true)
   {
   }
@@ -54,6 +55,9 @@ public:
   // hich of the hip when "stand" is requested
   // if the value is < 0, then the default value is used 
   double standHeight;
+
+  // 
+  bool calibrate_foot_touch_detector;
 
   bool standardStand;
 

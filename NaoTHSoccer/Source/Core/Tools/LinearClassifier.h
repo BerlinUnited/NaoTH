@@ -30,7 +30,7 @@ public:
         return ret;
     }
 
-    /* train the classifier by perception algorithm
+    /* train the classifier by perceptron algorithm
      * @param positiveTrainSet: the positive train set
      * @param negativeTrainSet: the negative train set
      */

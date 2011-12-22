@@ -13,7 +13,9 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "FootTouchDetector.h"
 
-class SupportPolygonGenerator//: public DebugCommandExecutor
+#include <DebugCommunication/DebugCommandExecutor.h>
+
+class SupportPolygonGenerator: public DebugCommandExecutor
 {
 public:
 
@@ -32,10 +34,10 @@ public:
    */
   bool isFootSupportable(bool isLeft) const;
 
-/*
+
   virtual void executeDebugCommand(
             const std::string& command, const std::map<std::string, std::string>& arguments,
-            std::stringstream &outstream);*/
+            std::ostream &outstream);
   
 private:
 

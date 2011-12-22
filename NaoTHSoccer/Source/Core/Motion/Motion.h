@@ -15,6 +15,7 @@
 #include "AbstractMotion.h"
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
+#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "SensorFilter/InertialFilter.h"
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
@@ -56,6 +57,7 @@ private:
   InertialFilter theInertialFilter;
   SupportPolygonGenerator theSupportPolygonGenerator;
   OdometryCalculator theOdometryCalculator;
+  FootTouchCalibrator theFootTouchCalibrator;
   
   HeadMotionEngine theHeadMotionEngine;
   std::list<MotionFactory*> theMotionFactories;

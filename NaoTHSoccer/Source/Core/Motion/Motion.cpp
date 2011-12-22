@@ -24,12 +24,15 @@
 
 using namespace naoth;
 
-Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
-theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
-theMotionStatusWriter(NULL),
-theOdometryDataWriter(NULL),
-theHeadMotionRequestReader(NULL),
-theMotionRequestReader(NULL),
+Motion::Motion()
+  :
+  theBlackBoard(MotionBlackBoard::getInstance()),
+  theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
+  theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon),
+  theMotionStatusWriter(NULL),
+  theOdometryDataWriter(NULL),
+  theHeadMotionRequestReader(NULL),
+  theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
   state(initial)
 {
@@ -175,6 +178,11 @@ void Motion::call()
   ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
+
+
+  // calibrate the foot touch detector
+  if(theBlackBoard.theMotionRequest.calibrate_foot_touch_detector)
+    theFootTouchCalibrator.execute();
 
   STOPWATCH_STOP("MotionExecute");
   
