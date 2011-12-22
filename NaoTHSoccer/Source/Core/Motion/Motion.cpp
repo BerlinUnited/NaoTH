@@ -181,7 +181,7 @@ void Motion::call()
 
 
   // calibrate the foot touch detector
-  if(theBlackBoard.theMotionRequest.calibrate_foot_touch_detector)
+  if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
 
   STOPWATCH_STOP("MotionExecute");

@@ -16,6 +16,7 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
   message.set_forced(representation.forced);
   message.set_time(representation.time);
   message.set_starndardstand(representation.standardStand);
+  message.set_calibratefoottouchdetector(representation.calibrateFootTouchDetector);
   switch (representation.id)
   {
   case motion::walk:
@@ -44,6 +45,10 @@ void Serializer<MotionRequest>::deserialize(std::istream& stream, MotionRequest&
   representation.forced = message.forced();
   representation.time = message.time();
   representation.standardStand = message.starndardstand();
+  if(message.has_calibratefoottouchdetector())
+  {
+    representation.calibrateFootTouchDetector = message.calibratefoottouchdetector();
+  }
   if ( message.has_walkrequest() )
   {
     Serializer<WalkRequest>::deserialize(&(message.walkrequest()), representation.walkRequest);
