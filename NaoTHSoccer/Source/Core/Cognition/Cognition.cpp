@@ -75,6 +75,7 @@
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
@@ -166,6 +167,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
+  REGISTER_MODULE(CalibrationBehaviorControl);
   REGISTER_MODULE(XABSLBehaviorControl);
 
   // experiment

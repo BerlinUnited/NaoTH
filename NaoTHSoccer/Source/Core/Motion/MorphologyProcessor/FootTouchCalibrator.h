@@ -57,8 +57,8 @@ public:
     // predict
     Vector2<double> p;
 
-    bool leftFootSupportable = theSupportPolygon.isLeftFootSupportable();
-    bool rightFootSupportable = theSupportPolygon.isRightFootSupportable();
+//    bool leftFootSupportable = theSupportPolygon.isLeftFootSupportable();
+//    bool rightFootSupportable = theSupportPolygon.isRightFootSupportable();
 
     switch(theMotionStatus.stepControl.moveableFoot)
     {
