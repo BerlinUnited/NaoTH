@@ -57,6 +57,7 @@ SimpleSoccerAgent/nbproject/Package-Default.bash
 *.project
 *.config
 *.creator
+*.creator.user.2.3pre1
 *.files
 *.includes
 *.make

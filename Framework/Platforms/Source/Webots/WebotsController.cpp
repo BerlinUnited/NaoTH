@@ -435,11 +435,11 @@ void WebotsController::set(const MotorJointData& data)
 
 void WebotsController::set(const LEDData& data)
 {
-  int value = 0;
+  //int value = 0;
   //EarLeft
   for (int i = LEDData::EarLeft0; i <= LEDData::EarLeft324; i++) {
     if (data.theMonoLED[i] > 0.0) {
-      value = (int) (255 * data.theMonoLED[i]);
+      //value = (int) (255 * data.theMonoLED[i]);
       wb_led_set(leds[WebotsController::EarLeft], 0xff);
       break;
     }
@@ -448,7 +448,7 @@ void WebotsController::set(const LEDData& data)
   //EarRight
   for (int i = LEDData::EarRight0; i <= LEDData::EarRight324; i++) {
     if (data.theMonoLED[i] > 0.0) {
-      value = (int) (255 * data.theMonoLED[i]);
+      //value = (int) (255 * data.theMonoLED[i]);
       wb_led_set(leds[WebotsController::EarRight], 0xff);
       break;
     }
