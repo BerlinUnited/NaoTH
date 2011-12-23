@@ -5,7 +5,7 @@
 CalibrationBehaviorControl::CalibrationBehaviorControl()
   : lastChestButtonEventCounter(0), state(wait)
 {
-  DEBUG_REQUEST_REGISTER("CalibrationBehaviorControl:restart", "Restart the calibration process", false);
+  DEBUG_REQUEST_REGISTER("CalibrationBehaviorControl:inertial", "Restart the calibration process", false);
   DEBUG_REQUEST_REGISTER("CalibrationBehaviorControl:end", "End the calibration process", false);
   DEBUG_REQUEST_REGISTER("CalibrationBehaviorControl:fsrTouch", "Force FSR calibration", false);
 }
@@ -24,7 +24,7 @@ void CalibrationBehaviorControl::execute()
     ledRequest.request.theMonoLED[i] = 0.0;
   }
 
-  DEBUG_REQUEST("CalibrationBehaviorControl:restart",
+  DEBUG_REQUEST("CalibrationBehaviorControl:inertial",
     state = inertial;
     stateChanged = getFrameInfo();
   );
