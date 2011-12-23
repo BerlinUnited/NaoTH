@@ -15,8 +15,9 @@
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 #include "Tools/Debug/Stopwatch.h"
 
-#ifdef NAO
 #include <DebugCommunication/DebugCommandManager.h>
+
+#ifdef NAO
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
@@ -34,7 +35,8 @@ Motion::Motion()
   theHeadMotionRequestReader(NULL),
   theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
-  state(initial)
+  state(initial),
+  motionLogger("MotionLog")
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -43,6 +45,20 @@ Motion::Motion()
   theMotionFactories.push_back(new InitialMotionFactory());
   theMotionFactories.push_back(new InverseKinematicsMotionFactory());
   theMotionFactories.push_back(new KeyFrameMotionEngine());
+
+
+  REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
+
+  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(theBlackBoard.the##R), #R);
+
+  ADD_LOGGER(FrameInfo);
+  ADD_LOGGER(SensorJointData);
+  ADD_LOGGER(MotorJointData);
+  ADD_LOGGER(InertialSensorData);
+  ADD_LOGGER(AccelerometerData);
+  ADD_LOGGER(GyrometerData);
+  ADD_LOGGER(FSRData);
+  ADD_LOGGER(MotionRequest);
 }
 
 Motion::~Motion()
@@ -115,7 +131,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 void Motion::call()
 {
   STOPWATCH_START("MotionExecute");
-  
+
   // process sensor data
   STOPWATCH_START("Motion:processSensorData");
   processSensorData();
@@ -228,6 +244,8 @@ void Motion::processSensorData()
 
 void Motion::postProcess()
 {
+  motionLogger.log(theBlackBoard.theFrameInfo.getFrameNumber());
+
   MotorJointData& mjd = theBlackBoard.theMotorJointData;
   double basicStepInS = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 

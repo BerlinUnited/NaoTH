@@ -19,6 +19,7 @@
 #include "SensorFilter/InertialFilter.h"
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
+#include "Tools/Debug/Logger.h"
 
 #ifdef NAO
 #include <Representations/Infrastructure/DebugMessage.h>
@@ -80,6 +81,7 @@ private:
     exiting
   } state;
 
+  Logger motionLogger;
 #ifdef NAO
   naoth::DebugMessageIn theDebugMessageIn;
   naoth::DebugMessageOut theDebugMessageOut;
