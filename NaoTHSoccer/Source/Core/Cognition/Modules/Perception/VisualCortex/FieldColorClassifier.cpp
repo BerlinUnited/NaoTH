@@ -289,6 +289,8 @@ void FieldColorClassifier::execute()
     getFieldColorPercept().maxWeightedIndexCr = maxWeightedIndexCr;
   }
 
+  getFieldColorPercept().lastUpdated = getFrameInfo();
+
   runDebugRequests((int)weightedMeanY, (int)meanFieldY);
 }
 

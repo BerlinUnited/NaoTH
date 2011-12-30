@@ -16,13 +16,13 @@
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
 
   PROVIDE(ColoredGrid)
   PROVIDE(Histogram)

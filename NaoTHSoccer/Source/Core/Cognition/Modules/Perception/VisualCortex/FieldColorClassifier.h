@@ -23,6 +23,7 @@
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 // Debug
 #include "Tools/Debug/DebugRequest.h"
@@ -36,9 +37,9 @@ BEGIN_DECLARE_MODULE(FieldColorClassifier)
 REQUIRE(ColoredGrid)
 REQUIRE(Histogram)
 REQUIRE(Image)
+REQUIRE(FrameInfo)
 
 PROVIDE(FieldColorPercept)
-REQUIRE(ColorTable64)
 END_DECLARE_MODULE(FieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -48,7 +49,7 @@ class FieldColorClassifier : public  FieldColorClassifierBase
 {
 public:
   FieldColorClassifier();
-  virtual ~FieldColorClassifier(){};
+  virtual ~FieldColorClassifier(){}
 
   /** executes the module */
   void execute();

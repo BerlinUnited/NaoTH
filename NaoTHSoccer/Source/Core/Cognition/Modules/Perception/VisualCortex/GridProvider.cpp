@@ -60,7 +60,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     const Pixel& pixel = getImage().get(point.x,point.y);
     grey += pixel.y;
 
-    ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
     if(currentPixelColor == ColorClasses::none)
     {
       getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;

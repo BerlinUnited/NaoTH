@@ -9,6 +9,7 @@
 #define  FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 //#include <Tools/DataStructures/Serializer.h>
 
 #define MAX_FIELD_COLOR_Y_CHANNEL_DIST 108
@@ -19,6 +20,8 @@
 #define MIN_FIELD_COLOR_Cr_CHANNEL_DIST 8
 #define MIN_FIELD_COLOR_Y_LEVEL 20
 #define MAX_FIELD_COLOR_Y_LEVEL 224
+
+using namespace naoth;
 
 class FieldColorPercept : public naoth::Printable
 {
@@ -33,6 +36,7 @@ public:
   unsigned int maxWeightedIndexY;
   unsigned int maxWeightedIndexCb;
   unsigned int maxWeightedIndexCr;
+  FrameInfo lastUpdated;
 
   FieldColorPercept()
   {
@@ -45,10 +49,10 @@ public:
     maxWeightedIndexY = 255;
     maxWeightedIndexCb = 255;
     maxWeightedIndexCr = 255;
-  };
+  }
 
   ~FieldColorPercept()
-  {};
+  {}
 
   bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {

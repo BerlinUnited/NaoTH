@@ -267,7 +267,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   {
     const Pixel pixel = getImage().get(point.x,point.y);
     const int thisPixelBrightness = pixel.y;
-    const ColorClasses::Color thisPixelColor = getColorTable64().getColorClass(pixel);
+    const ColorClasses::Color thisPixelColor = getColorClassificationModel().getColorClass(pixel);
 
     DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
       //int b_offset = thisPixelBrightness / 10;
@@ -456,7 +456,7 @@ Edgel ScanLineEdgelDetector::getEdgel(const Vector2<int>& start, const Vector2<i
 
     Pixel pixel = getImage().get(point.x,point.y);
     thisPixelBrightness = pixel.y;
-    thisPixelColor = getColorTable64().getColorClass(pixel);
+    thisPixelColor = getColorClassificationModel().getColorClass(pixel);
 
     DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
       POINT_PX(thisPixelColor, point.x, point.y);
