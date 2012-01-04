@@ -12,6 +12,7 @@
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
+#include "Engine/ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 #include "Tools/Debug/Stopwatch.h"
 
@@ -29,7 +30,7 @@ Motion::Motion()
   :
   theBlackBoard(MotionBlackBoard::getInstance()),
   theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
-  theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon),
+  theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
   theMotionStatusWriter(NULL),
   theOdometryDataWriter(NULL),
   theHeadMotionRequestReader(NULL),
@@ -45,6 +46,7 @@ Motion::Motion()
   theMotionFactories.push_back(new InitialMotionFactory());
   theMotionFactories.push_back(new InverseKinematicsMotionFactory());
   theMotionFactories.push_back(new KeyFrameMotionEngine());
+  theMotionFactories.push_back(new ParallelKinematicMotionFactory());
 
 
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);

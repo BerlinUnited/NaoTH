@@ -10,6 +10,7 @@
 
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/SupportPolygon.h"
+#include "Representations/Modeling/KinematicChain.h"
 #include <Representations/Infrastructure/FSRData.h>
 #include "FootTouchDetector.h"
 #include "Tools/DataStructures/RingBufferWithSum.h"
@@ -24,6 +25,7 @@ private:
   const naoth::FSRData& theFSRData;
   const MotionStatus& theMotionStatus;
   const SupportPolygon& theSupportPolygon;
+  const KinematicChain& theKinematicChain;
 
   FootTouchDetector theLeftFootTouchDetector;
   FootTouchDetector theRightFootTouchDetector;
@@ -31,11 +33,12 @@ private:
   RingBufferWithSum<Vector2<double>,100> predictionBuffer;
 
 public:
-  FootTouchCalibrator(const naoth::FSRData& theFSRData, const MotionStatus& theMotionStatus, const SupportPolygon& theSupportPolygon)
+  FootTouchCalibrator(const naoth::FSRData& theFSRData, const MotionStatus& theMotionStatus, const SupportPolygon& theSupportPolygon, const KinematicChain& theKinematicChain)
     :
     theFSRData(theFSRData),
     theMotionStatus(theMotionStatus),
-    theSupportPolygon(theSupportPolygon)
+    theSupportPolygon(theSupportPolygon),
+    theKinematicChain(theKinematicChain)
   {
     string leftFootTouchDetectorCfg("1 1 1 1 -5");
     string rightFootTouchDetectorCfg("1 1 1 1 -5");
@@ -54,43 +57,33 @@ public:
 
   void execute()
   {
+    double leftFootHeight = theKinematicChain.theLinks[KinematicChain::LFoot].p.z;
+    double rightFootHeight = theKinematicChain.theLinks[KinematicChain::RFoot].p.z;
+
+    bool leftFootTouch = false;
+    bool rightFootTouch = false;
+
+    rightFootTouch = !(rightFootHeight > leftFootHeight + 5);
+    leftFootTouch = !(leftFootHeight > rightFootHeight + 5);
+
     // predict
     Vector2<double> p;
+    p[0] = theRightFootTouchDetector.isTouch();
+    p[1] = theLeftFootTouchDetector.isTouch();
 
-//    bool leftFootSupportable = theSupportPolygon.isLeftFootSupportable();
-//    bool rightFootSupportable = theSupportPolygon.isRightFootSupportable();
 
-    switch(theMotionStatus.stepControl.moveableFoot)
-    {
-      // left foot lifted
-      case MotionStatus::MotionStatus::StepControlStatus::RIGHT: 
-        //theLeftFootTouchDetector.calibrate(false);
-        theRightFootTouchDetector.calibrate(true);
-        p[1] = theSupportPolygon.isRightFootSupportable();
-        break;
-
-      // right foot lifted
-      case MotionStatus::MotionStatus::StepControlStatus::LEFT: 
-        theLeftFootTouchDetector.calibrate(true);
-        //theRightFootTouchDetector.calibrate(false);
-        p[0] = theSupportPolygon.isLeftFootSupportable();
-        break;
-
-      // both are on the ground
-      default: 
-        theLeftFootTouchDetector.calibrate(true);
-        theRightFootTouchDetector.calibrate(true);
-        p[0] = theSupportPolygon.isLeftFootSupportable();
-        p[1] = theSupportPolygon.isRightFootSupportable();
-        break;
-    }//end switch
+    theRightFootTouchDetector.calibrate(rightFootTouch);
+    theLeftFootTouchDetector.calibrate(leftFootTouch);
 
     predictionBuffer.add(p);
     
     Vector2<double> mean = predictionBuffer.getAverage();
 
-    PLOT("FootTouchCalibrator:mean:X", mean.x);
-    PLOT("FootTouchCalibrator:mean:Y", mean.y);
+    PLOT("FootTouchCalibrator:target:left", leftFootTouch);
+    PLOT("FootTouchCalibrator:prediction:left", p[1]);
+
+    //PLOT("FootTouchCalibrator:mean:right", mean.x);
+    PLOT("FootTouchCalibrator:mean:left", mean.y);
   }//end execute
 
 };

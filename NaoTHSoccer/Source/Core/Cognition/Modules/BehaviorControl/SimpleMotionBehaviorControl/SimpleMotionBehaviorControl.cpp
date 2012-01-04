@@ -58,6 +58,10 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
+
+
+  DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion::parallel_dance", "parallel dance test", false);
+  DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_stepper", "parallel stepper test", false);
 }
 
 void SimpleMotionBehaviorControl::execute() 
@@ -264,6 +268,14 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:protect_falling",
     getMotionRequest().id = motion::protect_falling;
+  );
+
+  DEBUG_REQUEST("ParallelKinematicMotionEngine:motion::parallel_dance",
+    getMotionRequest().id = motion::parallel_dance;
+  );
+
+  DEBUG_REQUEST("ParallelKinematicMotionEngine:motion::parallel_stepper",
+    getMotionRequest().id = motion::parallel_stepper;
   );
           
 }//end testMotion
