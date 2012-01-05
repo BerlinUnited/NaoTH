@@ -46,7 +46,7 @@ void ParallelStepper::execute(const MotionRequest& motionRequest, MotionStatus& 
   if (speed > max_shift_speed + speed_step) speed -= speed_step;
 
   // increase the current time
-  double s = speed*theBlackBoard.theRobotInfo.basicTimeStep;
+  double s = speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
   t += Math::fromDegrees(s);
 
 

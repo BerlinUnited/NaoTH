@@ -47,7 +47,7 @@ void ParallelDance::execute(const MotionRequest& motionRequest, MotionStatus& /*
   if (speed > max_dance_speed + speed_step) speed -= speed_step;
 
   // increase the current time
-  double s = speed*theBlackBoard.theRobotInfo.basicTimeStep;
+  double s = speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
   t += Math::fromDegrees(s);
 
   double alpha_z = 0.8;

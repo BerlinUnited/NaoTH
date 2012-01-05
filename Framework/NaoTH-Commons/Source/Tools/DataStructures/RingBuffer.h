@@ -133,9 +133,18 @@ template <class V, int maxSize> class RingBuffer
       numberOfEntries = 0; 
     }
 
-    int getNumberOfEntries() const
+    inline int getNumberOfEntries() const
     {
       return numberOfEntries;
+    }
+
+    /**
+    * Returns the maximum entry count.
+    * \return The maximum entry count.
+    */
+    inline int getMaxEntries() const
+    {
+      return maxSize;
     }
 
     void setMaxSize(int newMaxSize) {assert(newMaxSize <= maxSize); n = newMaxSize; init();}
