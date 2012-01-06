@@ -17,7 +17,7 @@
 
 inline int scanline(
              const Image& theImage,
-             const ColorTable64& theColorTable64,
+             const ColorClassifier& theColorClassifier,
              const ColorClasses::Color& searchColor,
              const Vector2<int>& start,
              Vector2<int>& end,
@@ -31,7 +31,7 @@ inline int scanline(
   {
     scan.getNext(end);
     Pixel pixel = theImage.get(end.x,end.y);
-    ColorClasses::Color currentPixelColor = theColorTable64.getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = theColorClassifier.getColorClass(pixel);
     if(end.x >= 0 && (unsigned int)end.x < theImage.cameraInfo.resolutionWidth
       && end.y >= 0 && (unsigned int)end.y < theImage.cameraInfo.resolutionHeight)
     {

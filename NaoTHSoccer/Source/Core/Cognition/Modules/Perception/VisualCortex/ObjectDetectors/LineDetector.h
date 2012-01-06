@@ -38,10 +38,12 @@
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/ObjectPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
@@ -91,6 +93,11 @@ private:
 
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
+
+  const ColorClassifier& getColorTable64() const
+  {
+    return getColorClassificationModel();
+  }
 };//end class LineDetector
 
 #endif // __LineDetector_H_

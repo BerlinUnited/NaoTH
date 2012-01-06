@@ -23,6 +23,7 @@
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
@@ -36,7 +37,8 @@
 
 BEGIN_DECLARE_MODULE(HistogramFieldDetector)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
   REQUIRE(ColoredGrid)
   REQUIRE(Histogram)
@@ -59,6 +61,10 @@ private:
   ColorClasses::Color fieldColor;
   ColorClasses::Color lineColor;
 
+  const ColorClassifier& getColorTable64() const
+  {
+    return getColorClassificationModel();
+  }
 };//end class HistogramFieldDetector
 
 

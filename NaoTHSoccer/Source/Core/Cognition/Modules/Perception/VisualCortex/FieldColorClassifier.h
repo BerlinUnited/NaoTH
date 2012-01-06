@@ -34,12 +34,12 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifier)
-REQUIRE(ColoredGrid)
-REQUIRE(Histogram)
-REQUIRE(Image)
-REQUIRE(FrameInfo)
+  REQUIRE(ColoredGrid)
+  REQUIRE(Histogram)
+  REQUIRE(Image)
+  REQUIRE(FrameInfo)
 
-PROVIDE(FieldColorPercept)
+  PROVIDE(FieldColorPercept)
 END_DECLARE_MODULE(FieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

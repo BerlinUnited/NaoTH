@@ -40,12 +40,14 @@
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 
 #include <sstream>
 
 BEGIN_DECLARE_MODULE(ImageProcessor)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
@@ -77,6 +79,11 @@ private:
   
   ModuleCreator<LineDetector>* theLineDetector;
   ModuleCreator<GoalDetector>* theGoalDetector;
+
+  const ColorClassifier& getColorTable64() const
+  {
+    return getColorClassificationModel();
+  }
 };//end class ImageProcessor
 
 #endif // __ImageProcessor_H_
