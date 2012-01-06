@@ -23,10 +23,10 @@
 #include <PlatformInterface/Platform.h>
 
 // Debug
-//#include "Tools/Debug/DebugBufferedOutput.h"
-//#include "Tools/Debug/DebugDrawings.h"
-//#include "Tools/Debug/DebugRequest.h"
-//#include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
@@ -40,8 +40,8 @@ HeadMotionEngine::HeadMotionEngine()
     theMotionStatus(MotionBlackBoard::getInstance().theMotionStatus)
   {
     theKinematicChain.init(theJointData);
-  //TODO
-    //DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
+
+    DEBUG_REQUEST_REGISTER("HeadMotionEngine:draw_search_points_on_field", "draw the projected search points on the field", false);
   }
 
 void HeadMotionEngine::execute()
@@ -166,16 +166,12 @@ void HeadMotionEngine::gotoAngle(const Vector2<double>& target)
 
 void HeadMotionEngine::moveByAngle(const Vector2<double>& target) 
 {
-  static Vector2<double> last_requested_change;
-
-  double max_velocity_deg_in_second = 180.0;
-  //TODO
-  //MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
+  double max_velocity_deg_in_second = 90;
+  MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
   double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 
   double stiffness = 0.7;
-  //TODO
-  //MODIFY("HeadMotionEngine:gotoAngle:hardness", hardness);
+  MODIFY("HeadMotionEngine:gotoAngle:hardness", stiffness);
 
   // current position
   Vector2<double> headPos(
@@ -193,27 +189,52 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   }
 
 
+
+
   // limit the acceleration
-  Vector2<double> acceleration = update-last_requested_change;
-  //TODO
-  //PLOT("HeadMotionEngine:acc_x", acceleration.x);
-  //PLOT("HeadMotionEngine:acc_y", acceleration.y);
+  //static Vector2<double> position(headPos);
+  /*
+  static Vector2<double> position(headPos);
+  static Vector2<double> velocity;
+  
+  double delta_t = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  Vector2<double> new_position = position + velocity*delta_t;
+  Vector2<double> new_velocity = velocity + acceleration*delta_t;
+  
+
+  //Vector2<double> acceleration = update-last_requested_change;
+  PLOT("HeadMotionEngine:acc_x", acceleration.x);
+  PLOT("HeadMotionEngine:acc_y", acceleration.y);
+  
   double maxAcceleration = 1.0;
-  //MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
-  if (acceleration.abs() > maxAcceleration)
+  MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
+  if (new_acceleration.abs() > maxAcceleration)
   {
-    acceleration = acceleration.normalize(maxAcceleration);
+    new_acceleration = new_acceleration.normalize(maxAcceleration);
   }
-  update = last_requested_change + acceleration;
 
+  // update the state
+  velocity = new_velocity;
+  acceleration = new_acceleration;
 
-  headPos += update;
+  // apply changes
+  headPos += velocity;
+  */
 
-  last_requested_change = update;
+  // little filter
+  double maxAcceleration = 0.1;
+  MODIFY("HeadMotionEngine:gotoAngle:maxAcceleration", maxAcceleration);
+  static Vector2<double> velocity;
 
+  velocity = velocity*(1.0-maxAcceleration) + update*maxAcceleration;
+
+  headPos += velocity;
+
+  // set the stiffness
   theMotorJointData.stiffness[JointData::HeadYaw] = stiffness;
   theMotorJointData.stiffness[JointData::HeadPitch] = stiffness;
 
+  // set the joints
   theMotorJointData.position[JointData::HeadYaw] = headPos.x;
   theMotorJointData.position[JointData::HeadPitch] = headPos.y;
 }//end moveByAngle
@@ -395,8 +416,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
 
   // maximum ground speed for head motion
   double max_speed = 1000.0; // 1m/s
-  //TODO
-  //MODIFY("HeadMotionEngine:trajectoryHeadMove:max_speed", max_speed);
+  MODIFY("HeadMotionEngine:trajectoryHeadMove:max_speed", max_speed);
 
   // return value
   // is true if the end of the trajectory is reached
@@ -449,14 +469,11 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
     Vector3<double> lookTo = points[nextMotionState] * s + points[headMotionState] * (1-s);
     lookAtWorldPoint(lookTo);
 
-  //TODO
-  /*
     DEBUG_REQUEST("HeadMotionEngine:draw_search_points_on_field",
       FIELD_DRAWING_CONTEXT;
       PEN("FF0000", 20);
       CIRCLE(lookTo.x, lookTo.y, 30);
     );
-  */
   }
 
 /*

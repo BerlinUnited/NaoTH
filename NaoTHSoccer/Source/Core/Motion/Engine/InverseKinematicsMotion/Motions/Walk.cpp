@@ -54,7 +54,8 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
-    theEngine.autoArms(c, theMotorJointData.position);
+    //theEngine.autoArms(c, theMotorJointData.position);
+    theEngine.gotoArms(c, theMotorJointData.position);
 
     // force the hip joint
     if (theMotorJointData.position[JointData::LHipRoll] < 0)
@@ -102,6 +103,9 @@ bool Walk::FSRProtection()
 
 bool Walk::waitLanding()
 {
+  if ( !theWalkParameters.enableWaitLanding )
+    return false;
+
   if ( currentState != motion::running
       || theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE )
   {

@@ -97,6 +97,8 @@ public:
 
   Vector3<double> balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
 
+  void gotoArms(const InverseKinematic::HipFeetPose& currentPose, double (&position)[naoth::JointData::numOfJoint]);
+
 private:
 
   const MotionBlackBoard& theBlackBoard;
