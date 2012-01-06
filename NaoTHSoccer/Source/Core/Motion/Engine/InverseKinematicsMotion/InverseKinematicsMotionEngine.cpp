@@ -218,9 +218,14 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   {
     cerr<<"Warning: can not control CoM @ "<<bestError<<endl;
   }
+
+  if( i == max_iter )
+  {
+    cerr<<"Warning: maximum iterations reached @ "<<bestError<<endl;
+  }
   
   return result;
-}
+}//end controlCenterOfMass
 
 bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
 {
@@ -267,7 +272,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
     hip.translate(0, 0, height);
   }
   return isWorking;
-}
+}//end rotationStabilize
 
 void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFeetPose& p)
 {

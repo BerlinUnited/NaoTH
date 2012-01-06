@@ -20,6 +20,7 @@ public:
   
   struct Stand {
     double speed;
+    bool enableStabilization;
   } stand;
 
   struct Walk {

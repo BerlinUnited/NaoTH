@@ -18,6 +18,7 @@ IKParameters::IKParameters()
   
   // stand parameter
   PARAMETER_REGISTER(stand.speed) = 0.04;
+  PARAMETER_REGISTER(stand.enableStabilization) = false;
   
   // walk parameter
   PARAMETER_REGISTER(walk.stiffness) = 0.7;
