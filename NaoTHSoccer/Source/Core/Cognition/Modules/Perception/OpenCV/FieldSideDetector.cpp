@@ -6,9 +6,10 @@
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include <DebugCommunication/DebugCommandManager.h>
+#include <PlatformInterface/Platform.h>
 
 FieldSideDetector::FieldSideDetector()
-  : dtreeTrained(false)
+  : dtreeTrained(false), modelFileName("fieldsidedtree.yml")
 {
   DEBUG_REQUEST_REGISTER("FieldSideDetector:scanlines", "Show the scanlines", false);
   DEBUG_REQUEST_REGISTER("FieldSideDetector:own_goal", "Record own goal", false);
@@ -21,6 +22,16 @@ FieldSideDetector::FieldSideDetector()
 
   trainInput = cv::Mat::zeros(0, 6, CV_32FC1);
   trainOutput = cv::Mat::zeros(0, 1, CV_32SC1);
+
+  // load initial training model
+  std::ifstream fModel;
+  fModel.open((Platform::getInstance().theConfigDirectory + "/" +  modelFileName).c_str());
+  if(fModel.is_open())
+  {
+    fModel.close();
+    dtree.load((Platform::getInstance().theConfigDirectory + "/" +  modelFileName).c_str());
+    dtreeTrained = true;
+  }
 }
 
 void FieldSideDetector::execute()
@@ -164,9 +175,20 @@ void FieldSideDetector::executeDebugCommand(const std::string &command,
     else
     {
       cv::Mat varType = cv::Mat::ones(0,0,CV_8UC1);
-      dtree.train(trainInput, CV_ROW_SAMPLE, trainOutput, cv::Mat(), cv::Mat(), varType);
-      dtreeTrained = true;
-      outstream << "trained" << std::endl;
+      try
+      {
+        dtree.train(trainInput, CV_ROW_SAMPLE, trainOutput, cv::Mat(), cv::Mat(), varType);
+        dtreeTrained = true;
+        outstream << "trained" << std::endl;
+
+        // save
+        dtree.save((Platform::getInstance().theConfigDirectory + "/" +  modelFileName).c_str());
+        outstream << "saved model" << std::endl;
+      }
+      catch(cv::Exception ex)
+      {
+        outstream << "exception occured: " << ex.err << std::endl;
+      }
     }
   }
   else if(command == "clear_fieldside")

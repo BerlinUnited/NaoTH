@@ -36,6 +36,7 @@ class FieldSideDetector : public FieldSideDetectorBase, DebugCommandExecutor
 
     CvDTree dtree;
     bool dtreeTrained;
+    std::string modelFileName;
 };
 
 #endif // FIELDSIDEDETECTOR_H
