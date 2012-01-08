@@ -6,6 +6,7 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include <Representations/Perception/GoalPercept.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include <Representations/Perception/FieldSidePercept.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
@@ -14,6 +15,8 @@ BEGIN_DECLARE_MODULE(FieldSideDetector)
   REQUIRE(GoalPercept)
   REQUIRE(Image)
   REQUIRE(CameraMatrix)
+
+  PROVIDE(FieldSidePercept)
 END_DECLARE_MODULE(FieldSideDetector)
 
 class FieldSideDetector : public FieldSideDetectorBase, DebugCommandExecutor
@@ -32,6 +35,7 @@ class FieldSideDetector : public FieldSideDetectorBase, DebugCommandExecutor
     cv::Mat trainOutput;
 
     CvDTree dtree;
+    bool dtreeTrained;
 };
 
 #endif // FIELDSIDEDETECTOR_H

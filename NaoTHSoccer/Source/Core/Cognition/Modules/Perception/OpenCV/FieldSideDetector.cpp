@@ -8,6 +8,7 @@
 #include <DebugCommunication/DebugCommandManager.h>
 
 FieldSideDetector::FieldSideDetector()
+  : dtreeTrained(false)
 {
   DEBUG_REQUEST_REGISTER("FieldSideDetector:scanlines", "Show the scanlines", false);
   DEBUG_REQUEST_REGISTER("FieldSideDetector:own_goal", "Record own goal", false);
@@ -24,6 +25,8 @@ FieldSideDetector::FieldSideDetector()
 
 void FieldSideDetector::execute()
 {
+  getFieldSidePercept().facedFieldSide = FieldSidePercept::unknown;
+
   const GoalPercept& goalPercept = getGoalPercept();
 
   if(goalPercept.getNumberOfSeenPosts() > 1)
@@ -119,15 +122,31 @@ void FieldSideDetector::execute()
           trainInput.push_back(currentFeature);
         );
       }
-      DEBUG_REQUEST("FieldSideDetector:show_classification_result",
-        CvDTreeNode* node = dtree.predict(currentFeature);
-        int class_idx = node->class_idx;
 
-        ColorClasses::Color c = class_idx == 0 ? ColorClasses::blue : ColorClasses::pink;
-        RECT_PX(c, 0, 0, 20, 20);
-        LINE_PX(c, 0,0, 20, 20);
-        LINE_PX(c, 0, 20, 20, 0);
-      );
+      if(dtreeTrained)
+      {
+        CvDTreeNode* node = dtree.predict(currentFeature);
+        if(node != NULL)
+        {
+          int class_idx = node->class_idx;
+
+          if(class_idx == 0)
+          {
+            getFieldSidePercept().facedFieldSide = FieldSidePercept::own;
+          }
+          else if(class_idx == 1)
+          {
+            getFieldSidePercept().facedFieldSide = FieldSidePercept::opponent;
+          }
+
+          DEBUG_REQUEST("FieldSideDetector:show_classification_result",
+            ColorClasses::Color c = class_idx == 0 ? ColorClasses::blue : ColorClasses::pink;
+            RECT_PX(c, 0, 0, 20, 20);
+            LINE_PX(c, 0,0, 20, 20);
+            LINE_PX(c, 0, 20, 20, 0);
+          );
+        } // end if node not null
+      } // end if trained once
     } // end if top points over horizon
   } // end if goalPercepts has more than 1 post
 }
@@ -146,6 +165,7 @@ void FieldSideDetector::executeDebugCommand(const std::string &command,
     {
       cv::Mat varType = cv::Mat::ones(0,0,CV_8UC1);
       dtree.train(trainInput, CV_ROW_SAMPLE, trainOutput, cv::Mat(), cv::Mat(), varType);
+      dtreeTrained = true;
       outstream << "trained" << std::endl;
     }
   }
