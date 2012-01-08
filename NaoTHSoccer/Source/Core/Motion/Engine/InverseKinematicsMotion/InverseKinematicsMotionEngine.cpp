@@ -10,6 +10,7 @@
 #include "InverseKinematicsMotionEngine.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -227,6 +228,30 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   return result;
 }//end controlCenterOfMass
 
+
+void InverseKinematicsMotionEngine::neuralStabilize(double (&position)[naoth::JointData::numOfJoint])
+{
+  double weightX = 0.0;
+  double weightY = 0.0;
+
+  double inputX = theBlackBoard.theInertialPercept.data.x*getParameters().walk.stabilizeNeuralXWin;
+  weightX = tanh(inputX*getParameters().walk.stabilizeNeuralXWin)*getParameters().walk.stabilizeNeuralXWout;
+
+
+  double inputY = theBlackBoard.theInertialPercept.data.y;
+  weightY = tanh(inputY*getParameters().walk.stabilizeNeuralYWin)*getParameters().walk.stabilizeNeuralYWout;
+
+
+  // X axis
+  position[JointData::RHipRoll] += weightX;
+  position[JointData::LHipRoll] += weightX;
+
+  // Y axis
+  position[JointData::RHipPitch] += weightY;
+  position[JointData::LHipPitch] += weightY;
+}//end neuralStabilize
+
+
 bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
 {
   // disable stablization slowly when no foot is on the ground
@@ -238,6 +263,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
     rotationStabilizeFactor += switchingRate;
 
   rotationStabilizeFactor = Math::clamp(rotationStabilizeFactor, 0.0, 1.0);
+  PLOT("rotationStabilizeFactor", rotationStabilizeFactor);
 
   Vector2d r;
   r.x = hip.rotation.getXAngle();
@@ -262,6 +288,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
     }
   }
 
+  PLOT("isWorking", isWorking);
   if ( isWorking )
   {
     double height = NaoInfo::ThighLength + NaoInfo::TibiaLength + NaoInfo::FootHeight;

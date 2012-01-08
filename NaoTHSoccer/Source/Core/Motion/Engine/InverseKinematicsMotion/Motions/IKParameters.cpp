@@ -44,6 +44,14 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxWaitLandingCount) = 20;
   PARAMETER_REGISTER(walk.leftHipRollSingleSupFactor) = 0.4;
   PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.4;
+  PARAMETER_REGISTER(walk.rotationStabilize) = true;
+
+  PARAMETER_REGISTER(walk.stabilizeNeural) = true;
+  PARAMETER_REGISTER(walk.stabilizeNeuralXWin) = 0.0;
+  PARAMETER_REGISTER(walk.stabilizeNeuralXWout) = 0.0;
+  PARAMETER_REGISTER(walk.stabilizeNeuralYWin) = 0.0;
+  PARAMETER_REGISTER(walk.stabilizeNeuralYWout) = 0.0;
+
   PARAMETER_REGISTER(walk.useArm) = false;
 
   // rotation stabilize parameter

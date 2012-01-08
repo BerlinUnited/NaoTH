@@ -85,6 +85,8 @@ public:
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
 
+    //theEngine.neuralStabilize(theMotorJointData.position);
+
     turnOffStiffnessWhenJointIsOutOfRange();
     currentState = motion::running;
   }//end execute

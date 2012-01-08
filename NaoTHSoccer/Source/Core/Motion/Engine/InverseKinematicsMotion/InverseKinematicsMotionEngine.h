@@ -82,6 +82,9 @@ public:
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
+
+  void neuralStabilize(double (&position)[naoth::JointData::numOfJoint]);
+
   /**
    * @return if stabilizer is working
    */

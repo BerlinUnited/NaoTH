@@ -54,6 +54,14 @@ public:
     double leftHipRollSingleSupFactor;
     double rightHipRollSingleSupFactor;
 
+    bool rotationStabilize;
+
+    bool stabilizeNeural;
+    double stabilizeNeuralXWin;
+    double stabilizeNeuralXWout;
+    double stabilizeNeuralYWin;
+    double stabilizeNeuralYWout;
+
     bool useArm;
   } walk;
 
