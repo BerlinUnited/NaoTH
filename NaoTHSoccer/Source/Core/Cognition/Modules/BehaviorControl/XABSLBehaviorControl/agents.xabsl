@@ -156,6 +156,7 @@ include "Options/NonSoccer/Test/skill_test.xabsl";
 include "Options/NonSoccer/Test/ultrasound_test.xabsl";
 include "Options/NonSoccer/Test/ultrasound_rawtest.xabsl";
 include "Options/NonSoccer/Test/dribble_test.xabsl";
+include "Options/NonSoccer/Test/walk_test.xabsl";
 
 include "Options/NonSoccer/Demo/ir_demo.xabsl";
 include "Options/NonSoccer/Test/ir_walk_tests.xabsl";
@@ -203,3 +204,4 @@ agent ultrasound_test("UltraSoundTest", ultrasound_test);
 agent ultrasound_rawtest("UltraSoundRawTest", ultrasound_rawtest);
 /** dribble test */
 agent dribble_test("DribbleTest", dribble_test);
+agent walk_test("WalkTest", walk_test);
