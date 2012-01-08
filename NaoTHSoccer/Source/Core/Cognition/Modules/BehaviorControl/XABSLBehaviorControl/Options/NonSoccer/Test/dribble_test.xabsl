@@ -23,7 +23,14 @@ option dribble_test {
       {
         goto search_ball;
       }
-      else if(action_done)
+      //else if(action_done)
+      else if (ball.was_seen
+              && state_time > 500 // don't kick continuously
+              && action_done
+              //&& abs(value=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) < 20
+              //&& abs(value=ball.right_foot.preview.x - 170 * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 40
+              //&& abs(value=ball.right_foot.preview.y - 170 * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 40
+              )
        {
          goto kick_ball;
        }
@@ -34,7 +41,16 @@ option dribble_test {
       head.control_mode = search_for_ball;
       head_control();
       
-      go_to_ball_cool(right_foot=true, distance=170);
+      //go_to_ball_cool(right_foot=true, distance=170);
+
+      
+      go_to_relative_point(rotation = atan2(y = ball.preview.y, x = ball.preview.x), 
+                           x = ball.preview.x - 170 * cos(angle=atan2(y = ball.preview.y, x = ball.preview.x)), 
+                           y = ball.preview.y - 170 * sin(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+      
       motion.walk.step_control.foot = none;
       motion.walk.style = normal;
     }
@@ -59,13 +75,13 @@ option dribble_test {
       head_control();
 
       motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 0;
+      //motion.walk_speed.x = 0;
+      //motion.walk_speed.y = 0;
+      //motion.walk_speed.rot = 0;
       motion.walk.coordinate = right_foot;
       motion.walk.step_control.foot = right;
       motion.walk.step_control.target.x = ball.right_foot.preview.x+100;
-      motion.walk.step_control.target.y = ball.right_foot.preview.y;
+      motion.walk.step_control.target.y = ball.right_foot.preview.y+50;
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = 90;
       motion.walk.step_control.time = 500;
