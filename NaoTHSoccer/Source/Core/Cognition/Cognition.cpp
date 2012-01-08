@@ -43,6 +43,7 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
+#include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
@@ -53,6 +54,8 @@
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptProjector/PerceptProjector.h"
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
+#include "Modules/Perception/OpenCV/FieldSideDetector.h"
+#include "Modules/Perception/OpenCV/OpenCVDebug.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -79,7 +82,6 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
-
 
 // tools
 #include "Tools/NaoTime.h"
@@ -135,6 +137,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
+  REGISTER_MODULE(OpenCVImageProvider);
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
@@ -144,7 +147,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptProjector);
+  REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(PerceptionsVisualization);
+  REGISTER_MODULE(OpenCVDebug);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);

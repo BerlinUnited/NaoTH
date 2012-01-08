@@ -83,6 +83,10 @@ project "naoth"
 	 "gobject-2.0",
 	 "protobuf", 
 	 "asound",
+         "opencv_core",
+         "opencv_imgproc",
+         "opencv_highgui",
+         "opencv_ml"
 	 -- "rttools"
       }
 

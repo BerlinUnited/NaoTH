@@ -13,6 +13,7 @@
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
 #include <Tools/Debug/DebugRequest.h>
+#include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/NaoTime.h>
 
 using namespace std;
@@ -245,6 +246,7 @@ bool SimSparkController::init(const std::string& teamName, unsigned int num, con
   cout << "NaoTH Simpark initialization successful: " << teamName << " " << theGameData.playerNumber << endl;
 
   DEBUG_REQUEST_REGISTER("SimSparkController:beam", "beam to start pose", false);
+  REGISTER_DEBUG_COMMAND("beam", "beam to given pose", this);
 
   theLastSenseTime = NaoTime::getNaoTimeInMilliSeconds();
   theLastActTime = theLastSenseTime;
@@ -279,6 +281,34 @@ void SimSparkController::singleThreadMain()
     act();
   }//end while
 }//end main
+
+void SimSparkController::executeDebugCommand(const std::string &command, const std::map<std::string, std::string> &arguments, std::ostream &outstream)
+{
+  if(command == "beam")
+  {
+    Vector3d pose;
+    if(arguments.find("x") != arguments.end() && arguments.find("y") != arguments.end())
+    {
+      pose.x = atof(arguments.find("x")->second.c_str());
+      pose.y = atof(arguments.find("y")->second.c_str());
+      if(arguments.find("r") != arguments.end())
+      {
+        pose.z = atof(arguments.find("r")->second.c_str());
+      }
+      else
+      {
+        pose.z = 0;
+      }
+      beam(pose);
+      outstream << "beamed to (" << pose.x << "," << pose.y << "," << pose.z << ")" << std::endl;
+    }
+    else
+    {
+      outstream << "required parameter x or y missing (r is optional)" << std::endl;
+    }
+
+  }
+}
 
 void SimSparkController::motionLoop()
 {
@@ -601,6 +631,7 @@ int SimSparkController::paseImage(char* data)
   // get the name: IMG
   std::string name;
   c += parseString(&data[c], name);
+
   if(name != "IMG") return 0;
   
   // s

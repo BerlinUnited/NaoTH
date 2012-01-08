@@ -40,13 +40,14 @@
 
 #include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
+#include <DebugCommunication/DebugCommandExecutor.h>
 
 #include "sfsexp/SexpParser.h"
 #include "libb64/decode.h"
 
 using namespace naoth;
 
-class SimSparkController : public PlatformInterface<SimSparkController>
+class SimSparkController : public PlatformInterface<SimSparkController>, DebugCommandExecutor
 {
 private:
   GSocket* socket;
@@ -101,6 +102,10 @@ public:
   bool init(const std::string& teamName, unsigned int num, const std::string& server, unsigned int port, bool sync);
 
   void main();
+
+  virtual void executeDebugCommand(
+    const std::string& command, const std::map<std::string,std::string>& arguments,
+    std::ostream &outstream);
 
 public:
   void get(FrameInfo& data);

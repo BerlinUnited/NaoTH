@@ -27,6 +27,10 @@ echo "Installing Google Test"
 echo "Installing Google Mock"
 . ../install_scripts/gmock.sh
 
+echo "Installing OpenCV"
+. ../install_scripts/opencv.sh
+
+
 # get out of the extracted directory
 cd ..
 
