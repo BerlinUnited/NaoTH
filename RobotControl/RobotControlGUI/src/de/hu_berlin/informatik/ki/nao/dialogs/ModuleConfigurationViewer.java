@@ -199,11 +199,11 @@ public class ModuleConfigurationViewer extends AbstractDialog
       try
       {
         FileWriter fileWriter = new FileWriter(selectedFile, false);
-        
+        fileWriter.write("[modules]\n");
         for(Component comp: moduleConfigPanel.getComponents())
         {
           JCheckBox box = (JCheckBox)comp;
-          String str = (box.isSelected()?"":"#")+box.getText() + ";";
+          String str = box.getText() + "=" + (box.isSelected()?"true":"false");
           fileWriter.write(str + "\n");
           //System.out.println(str);
         }//end for

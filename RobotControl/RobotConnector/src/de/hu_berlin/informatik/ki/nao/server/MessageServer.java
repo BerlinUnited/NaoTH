@@ -54,7 +54,7 @@ public class MessageServer
   public final static String STRING_ENCODING = "ISO-8859-15";
   private SocketChannel serverSocket;
   private Thread senderThread;
-  private long updateIntervall = 60;
+  private long updateIntervall = 10;
   private InetSocketAddress address;
   private List<CommandSender> listeners;
   private List<SingleExecEntry> singleExec;
@@ -277,7 +277,7 @@ public class MessageServer
             pollAnswers();
             // HACK: prevent deadlock on single core machines
             // ...for Thomas to fix :)
-            Thread.sleep(1);
+            Thread.sleep(5);
           }
           long stopTime = System.currentTimeMillis();
           long diff = updateIntervall - (stopTime-startTime);
