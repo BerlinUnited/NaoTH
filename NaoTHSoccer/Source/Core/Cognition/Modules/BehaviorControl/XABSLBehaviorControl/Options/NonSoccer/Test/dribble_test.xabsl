@@ -50,9 +50,6 @@ option dribble_test {
       
       motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = false;
-
-      motion.walk.offset.y = 10;
-      motion.walk.offset.rot = 30;
       
       motion.walk.step_control.foot = none;
       motion.walk.style = normal;
