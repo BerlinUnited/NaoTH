@@ -16,9 +16,9 @@
 #define BALL_IDX_CB 80.0
 #define BALL_IDX_CR 200.0
 
-#define BALL_DIST_Y 80.0
-#define BALL_DIST_CB 48.0
-#define BALL_DIST_CR 48.0
+#define BALL_DIST_Y 140.0
+#define BALL_DIST_CB 42.0
+#define BALL_DIST_CR 56.0
 
 
 
@@ -145,7 +145,7 @@ public:
     return
     (
       (
-        yy < 223.0 * meanY / 128
+        yy < 240.0 * meanY / 128
         &&
         yy >= 127.0 * meanY / 128
         &&
@@ -153,7 +153,7 @@ public:
       )
       ||
       (
-        yy > 32.0 * meanY / 128
+        yy > 8.0 * meanY / 128
         &&
         yy < 127.0 * meanY / 128
         &&
