@@ -60,6 +60,13 @@ void GoalDetector::execute()
   Candidate candidates[maxNumberOfCandidates];
   int numberOfCandidates = scanForCandidates(p1, p2, candidates);
   
+  // fallback: try to scan along the center of the image
+  if(numberOfCandidates == 0)
+  {
+    Vector2<double> c1(0,getImage().cameraInfo.opticalCenterY);
+    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.opticalCenterY);
+    numberOfCandidates = scanForCandidates(c1, c2, candidates);
+  }//end if
 
   // estimate the post base points
   vector<GoalPercept::GoalPost> postvector;
@@ -227,8 +234,7 @@ void GoalDetector::execute()
             getImage().cameraInfo,
             centroid.x,
             centroid.y,
-            Vector3<double>(3000.0, 0.0, 450.0));
-
+            3000.0);
 
     DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
       CIRCLE_PX(ColorClasses::red, (int)centroid.x, (int)centroid.y, 5);

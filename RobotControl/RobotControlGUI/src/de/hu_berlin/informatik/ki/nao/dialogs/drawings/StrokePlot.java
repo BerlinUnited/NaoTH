@@ -91,6 +91,10 @@ public class StrokePlot implements Drawable {
   public Collection<Stroke> getStrokes() {
     return this.plotStrokeMap.values();
   }//end getStrokes
+  
+  public void clear() {
+    this.plotStrokeMap.clear();
+  }//end clear
 
   public void setRotation(double rotation) {
     this.rotation = rotation;

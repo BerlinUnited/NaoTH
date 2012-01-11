@@ -1,12 +1,5 @@
-/* 
- * File:   FieldColorClassifier.h
- * Author: claas
- *
- * Created on 15. März 2011, 15:56
- */
-
-#ifndef FIELDCOLORCLASSIFIER_H
-#define  FIELDCOLORCLASSIFIER_H
+#ifndef BASECOLORCLASSIFIER_H
+#define BASECOLORCLASSIFIER_H
 
 #include <ModuleFramework/Module.h>
 
@@ -20,6 +13,7 @@
 // Tools
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
@@ -34,41 +28,41 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(FieldColorClassifier)
+BEGIN_DECLARE_MODULE(BaseColorClassifier)
   REQUIRE(ColoredGrid)
   REQUIRE(Histogram)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
-  REQUIRE(BaseColorRegionPercept)
 
-  PROVIDE(FieldColorPercept)
-END_DECLARE_MODULE(FieldColorClassifier)
+  PROVIDE(BaseColorRegionPercept)
+END_DECLARE_MODULE(BaseColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
 
-class FieldColorClassifier : public  FieldColorClassifierBase
+class BaseColorClassifier : public  BaseColorClassifierBase
 {
 public:
-  FieldColorClassifier();
-  virtual ~FieldColorClassifier(){}
+  BaseColorClassifier();
+  virtual ~BaseColorClassifier(){}
 
   /** executes the module */
   void execute();
 
 private:
+  double adaptationRate;
 
-  double weightedSmoothedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
+  RingBufferWithSum<double, 100> meanY;
+  RingBufferWithSum<double, 100> meanCb;
+  RingBufferWithSum<double, 100> meanCr;
 
-  double smoothRungeKutta4(const unsigned int& idx, double* valueArray);
+  double lastMeanY;
+  double lastMeanCb;
+  double lastMeanCr;
 
-  void runDebugRequests(int weigthedMeanY, int meanY);
+
+  void runDebugRequests();
 
 };
 
-#endif  /* FIELDCOLORCLASSIFIER_H */
-
+#endif // BASECOLORCLASSIFIER_H

@@ -28,4 +28,13 @@ void ColorProvider::execute()
   {
     getColorClassificationModel().invalidateFieldColorPercept();
   }
+
+  if(getBaseColorRegionPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber())
+  {
+    getColorClassificationModel().setBaseColorRegionPercept(getBaseColorRegionPercept());
+  }
+  else
+  {
+    getColorClassificationModel().invalidateBaseColorRegionPercept();
+  }
 }//end execute

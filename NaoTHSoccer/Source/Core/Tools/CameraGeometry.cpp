@@ -112,12 +112,10 @@ Vector3<double> CameraGeometry::imagePixelToWorld(const CameraMatrix& cameraMatr
                                             const CameraInfo& cameraInfo,
                                             const double imgX,
                                             const double imgY,
-                                            const Vector3<double>& pointInWorld)
+                                            const double distance)
 {
   Vector3<double> w = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
-  Vector3<double> v = pointInWorld - cameraMatrix.translation;
-
-  return w * (w * v.normalize());
+  return cameraMatrix.translation + w.normalize(distance);
 }//end imagePixelToWorld
 
 void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,

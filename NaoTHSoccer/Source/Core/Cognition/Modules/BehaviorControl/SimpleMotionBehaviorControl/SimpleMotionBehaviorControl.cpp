@@ -129,6 +129,16 @@ void SimpleMotionBehaviorControl::testHead()
     getHeadMotionRequest().targetPointOnTheGround = getAttentionModel().mostInterestingPoint;
   );
 
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_at_ball_modell",
+    if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
+    {
+      getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
+      getHeadMotionRequest().targetPointInTheWorld.x = getBallModel().positionPreview.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = getBallModel().positionPreview.y;
+      getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
+    }
+  );
 }//end testHead
 
 

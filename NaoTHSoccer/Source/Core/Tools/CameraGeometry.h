@@ -81,7 +81,7 @@ public:
                                             const naoth::CameraInfo& cameraInfo,
                                             const double imgX,
                                             const double imgY,
-                                            const Vector3<double>& pointInWorld);
+                                            const double distance);
   
   /**
    * Calculates the Artificial Horizon by CameraMatrix and returns the two horizone
