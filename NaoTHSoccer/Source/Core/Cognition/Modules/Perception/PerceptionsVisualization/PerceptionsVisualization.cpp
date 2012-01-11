@@ -123,21 +123,24 @@ void PerceptionsVisualization::execute()
     }//end for
 
     // circle
-    const Vector2<double>& center = getLinePercept().middleCircleCenter;
-    PEN("FFFFFF99", 10);
-    CIRCLE(center.x, center.y, 50);
-    PEN("FFFFFF99", 50);
-    CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
-
-    if(getLinePercept().middleCircleOrientationWasSeen)
+    if(getLinePercept().middleCircleWasSeen)
     {
-      const Vector2<double> direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
-      LINE(
-        center.x + direction.x,
-        center.y + direction.y,
-        center.x - direction.x,
-        center.y - direction.y
-        );
+      const Vector2<double>& center = getLinePercept().middleCircleCenter;
+      PEN("FFFFFF99", 10);
+      CIRCLE(center.x, center.y, 50);
+      PEN("FFFFFF99", 50);
+      CIRCLE(center.x, center.y, getFieldInfo().centerCircleRadius - 25);
+
+      if(getLinePercept().middleCircleOrientationWasSeen)
+      {
+        const Vector2<double> direction = getLinePercept().middleCircleOrientation*(getFieldInfo().centerCircleRadius+100);
+        LINE(
+          center.x + direction.x,
+          center.y + direction.y,
+          center.x - direction.x,
+          center.y - direction.y
+          );
+      }//end if
     }//end if
   ); // end line_percept on field
 
