@@ -12,7 +12,9 @@
 #include <ModuleFramework/Module.h>
 
 // representations
+#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Perception/BallPercept.h"
+#include "Representations/Modeling/BallModel.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
@@ -22,7 +24,9 @@
 #include "Representations/Modeling/AttentionModel.h"
 
 BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
+  REQUIRE(FrameInfo)
   REQUIRE(BallPercept)
+  REQUIRE(BallModel)
   REQUIRE(FieldInfo)
   REQUIRE(AttentionModel)
   REQUIRE(MotionStatus)
