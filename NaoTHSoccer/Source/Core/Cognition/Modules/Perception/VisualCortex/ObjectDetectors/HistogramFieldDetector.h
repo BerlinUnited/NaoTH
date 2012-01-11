@@ -20,13 +20,13 @@
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
-#include "Tools/ImageProcessing/Histogram.h"
-#include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
 #include "Tools/ImageProcessing/SpiderScan.h"
+#include "Tools/ImageProcessing/ColoredGrid.h"
+#include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/BresenhamLineScan.h"
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"

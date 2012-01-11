@@ -65,7 +65,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     red += pixel.u;
     blue += pixel.v;
 
-    ColorClasses::Color currentPixelColor = simpleColorClassifier.getColorClass(pixel);// = getColorClassificationModel().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);//simpleColorClassifier.getColorClass(pixel);// = getColorClassificationModel().getColorClass(pixel);
     if(currentPixelColor == ColorClasses::none)
     {
       getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;
@@ -84,7 +84,10 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
       getColoredGrid().percentOfKnownColors += getColoredGrid().singlePointRate;
     }
     getColoredGrid().setColor(i, currentPixelColor);
-    getHistogram().increaseValue(getColoredGrid().uniformGrid, i, currentPixelColor);
+    if(currentPixelColor != ColorClasses::none)
+    {
+      getHistogram().increaseValue(getColoredGrid().uniformGrid, i, currentPixelColor);
+    }
     getHistogram().increaseChannelValue(getBaseColorRegionPercept(), pixel);
   }//end for
 

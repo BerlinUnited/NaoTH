@@ -235,12 +235,6 @@ void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, con
 {
   unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
 
-  if(bPercept.isYellow(pixel))
-  {
-    colorChannelHistogramGoal[0][pixel.y / factor]++;
-    colorChannelHistogramGoal[1][pixel.u / factor]++;
-    colorChannelHistogramGoal[2][pixel.v / factor]++;
-  }
 
   if(bPercept.isRedOrOrangeOrPink(pixel))
   {
@@ -248,7 +242,14 @@ void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, con
     colorChannelHistogramBall[1][pixel.u / factor]++;
     colorChannelHistogramBall[2][pixel.v / factor]++;
   }
-
+  else
+  if(bPercept.isYellow(pixel))
+  {
+    colorChannelHistogramGoal[0][pixel.y / factor]++;
+    colorChannelHistogramGoal[1][pixel.u / factor]++;
+    colorChannelHistogramGoal[2][pixel.v / factor]++;
+  }
+  else
   if(bPercept.isGreenOrBlue(pixel))
   {
     colorChannelHistogramField[0][pixel.y / factor]++;
