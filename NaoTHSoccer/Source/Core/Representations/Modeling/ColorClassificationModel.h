@@ -44,6 +44,10 @@ protected:
       {
         return ColorClasses::yellow;
       }
+      else if(baseColorRegionPercept.isWhite(a, b ,c))
+      {
+        return ColorClasses::white;
+      }
     }
     else
     {
@@ -72,11 +76,14 @@ protected:
 private :
 
   ColorTable64 colorTable;
-  FieldColorPercept fieldColorPercept;
-  BaseColorRegionPercept baseColorRegionPercept;
 
   bool fieldColorPerceptValid;
+  FieldColorPercept fieldDummy;
+  FieldColorPercept& fieldColorPercept;
+
   bool baseColorRegionPerceptValid;
+  BaseColorRegionPercept baseDummy;
+  BaseColorRegionPercept& baseColorRegionPercept;
 };
 
 #endif // COLORCLASSIFICATIONMODEL_H

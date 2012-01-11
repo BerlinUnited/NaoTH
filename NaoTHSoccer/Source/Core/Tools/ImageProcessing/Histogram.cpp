@@ -256,6 +256,13 @@ void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, con
     colorChannelHistogramField[1][pixel.u / factor]++;
     colorChannelHistogramField[2][pixel.v / factor]++;
   }
+  else
+  if(bPercept.isWhite(pixel))
+  {
+    colorChannelHistogramLine[0][pixel.y / factor]++;
+    colorChannelHistogramLine[1][pixel.u / factor]++;
+    colorChannelHistogramLine[2][pixel.v / factor]++;
+  }
   colorChannelIsUptodate  = true;
 }
 

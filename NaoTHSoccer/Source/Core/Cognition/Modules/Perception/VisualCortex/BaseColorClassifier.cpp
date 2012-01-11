@@ -4,6 +4,7 @@ BaseColorClassifier::BaseColorClassifier()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_ball_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_image", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_lines_in_image", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:ball_y", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:ball_cb", " ", false);
@@ -60,6 +61,13 @@ void BaseColorClassifier::execute()
   double maxGoalCb = 0.0;
   double maxGoalCr = 0.0;
 
+  unsigned int maxLineIndexY = 0.0;
+  unsigned int maxLineIndexCb = 0.0;
+  unsigned int maxLineIndexCr = 0.0;
+  double maxLineY = 0.0;
+  double maxLineCb = 0.0;
+  double maxLineCr = 0.0;
+
   MODIFY("BaseColorClassifier:adaptationRate", adaptationRate);
 
   MODIFY("BaseColorClassifier:distBallY", getBaseColorRegionPercept().distBallY);
@@ -77,6 +85,14 @@ void BaseColorClassifier::execute()
   MODIFY("BaseColorClassifier:goalIndexY", getBaseColorRegionPercept().goalIndexY);
   MODIFY("BaseColorClassifier:goalIndexCb", getBaseColorRegionPercept().goalIndexCb);
   MODIFY("BaseColorClassifier:goalIndexCr", getBaseColorRegionPercept().goalIndexCr);
+
+  MODIFY("BaseColorClassifier:distLineY", getBaseColorRegionPercept().distLineY);
+  MODIFY("BaseColorClassifier:distLineCb", getBaseColorRegionPercept().distLineCb);
+  MODIFY("BaseColorClassifier:distLineCr", getBaseColorRegionPercept().distLineCr);
+
+  MODIFY("BaseColorClassifier:lineIndexY", getBaseColorRegionPercept().lineIndexY);
+  MODIFY("BaseColorClassifier:lineIndexCb", getBaseColorRegionPercept().lineIndexCb);
+  MODIFY("BaseColorClassifier:lineIndexCr", getBaseColorRegionPercept().lineIndexCr);
 
   for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
@@ -111,6 +127,22 @@ void BaseColorClassifier::execute()
       maxGoalCr = getHistogram().colorChannelHistogramGoal[2][i];
       maxGoalIndexCr = i;
     }
+
+    if(maxLineY < getHistogram().colorChannelHistogramLine[0][i])
+    {
+      maxLineY = getHistogram().colorChannelHistogramLine[0][i];
+      maxLineIndexY = i;
+    }
+    if(maxLineCb < getHistogram().colorChannelHistogramLine[1][i])
+    {
+      maxLineCb = getHistogram().colorChannelHistogramLine[1][i];
+      maxLineIndexCb = i;
+    }
+    if(maxLineCr < getHistogram().colorChannelHistogramLine[2][i])
+    {
+      maxLineCr = getHistogram().colorChannelHistogramLine[2][i];
+      maxLineIndexCr = i;
+    }
   }
 
   if(fabs(maxBallIndexY - BALL_IDX_Y) < getBaseColorRegionPercept().diffY / 2)
@@ -143,6 +175,22 @@ void BaseColorClassifier::execute()
   {
     getBaseColorRegionPercept().goalIndexCr =
       (1 - adaptationRate) * getBaseColorRegionPercept().goalIndexCr + adaptationRate * maxGoalIndexCr;
+  }
+
+  if(fabs(maxLineIndexY - LINE_IDX_CR) < getBaseColorRegionPercept().diffY / 2)
+  {
+    getBaseColorRegionPercept().lineIndexY =
+      (1 - adaptationRate) * getBaseColorRegionPercept().lineIndexY + adaptationRate * maxLineIndexY;
+  }
+  if(fabs(maxLineIndexCb - LINE_IDX_CR) < getBaseColorRegionPercept().diffCb / 2)
+  {
+    getBaseColorRegionPercept().lineIndexCb =
+      (1 - adaptationRate) * getBaseColorRegionPercept().lineIndexCb + adaptationRate * maxLineIndexCb;
+  }
+  if(fabs(maxLineIndexCr - LINE_IDX_CR) < getBaseColorRegionPercept().diffCr / 2)
+  {
+    getBaseColorRegionPercept().lineIndexCr =
+      (1 - adaptationRate) * getBaseColorRegionPercept().lineIndexCr + adaptationRate * maxLineIndexCr;
   }
 
   getBaseColorRegionPercept().lastUpdated = getFrameInfo();
@@ -180,6 +228,22 @@ void BaseColorClassifier::runDebugRequests()
         if(getBaseColorRegionPercept().isYellow(pixel))
         {
           POINT_PX(ColorClasses::yellow, x, y);
+        }
+
+      }
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:set_lines_in_image",
+    for(int x = 0; x < imageWidth; x++)
+    {
+      for(int y = 0; y < imageHeight; y++)
+      {
+        const Pixel& pixel = getImage().get(x, y);
+
+        if(getBaseColorRegionPercept().isWhite(pixel))
+        {
+          POINT_PX(ColorClasses::black, x, y);
         }
 
       }
