@@ -11,7 +11,7 @@ public class FieldDrawing implements Drawable
 {
 
   private Color leftGoalColor = new Color(0.9f, 0.9f, 0f, 1f);
-  private Color rightGoalColor = Color.blue;
+  private Color rightGoalColor = leftGoalColor;//Color.blue;
   private Color fieldColor = new Color(0f, 0.8f, 0f, 0.5f);
   private Color lineColor = Color.white;
 
@@ -31,55 +31,84 @@ public class FieldDrawing implements Drawable
 
   private void drawSPLField(Graphics2D g2d)
   {
+    // FieldInfo
+    int xFieldLength = 7400;
+    int yFieldLength = 5400;
+    int xLength = 6000;
+    int yLength = 4000;
+
+    int xPosOpponentPenaltyArea = 2400;
+    int yPosLeftPenaltyArea = 1100;
+    int xCrossOffset = 1800;
+
+    int centerCircleRadius = 600;
+    int fieldLinesWidth = 50;
+    int goalWidth = 1400;
+    int goalHeight = 800;
+    int goalpostRadius = 50;
+    int crossSize = 100;
+      
+    // some precalculations
+    int halfLine = fieldLinesWidth/2;
+    int xLengthHalf = xLength/2;
+    int yLengthHalf = yLength/2;
+    int xCrossPos = xLengthHalf - xCrossOffset;
+    int yGoalPostPos = goalWidth/2;
+    int goalDepth = 400;
+    
     // draw gree pane
     g2d.setColor(fieldColor);
-    g2d.fillRect(-3700, -2700, 7400, 5400);
+    g2d.fillRect(-xFieldLength/2, -yFieldLength/2, xFieldLength, yFieldLength);
 
     // draw lines
     g2d.setColor(lineColor);
-    g2d.setStroke(new BasicStroke(50f)); // line width 50mm
+    g2d.setStroke(new BasicStroke(fieldLinesWidth)); // line width
 
-    g2d.drawLine(-3025, -2025, 3025, -2025); // bottom side line
-    g2d.drawLine(-3025, 2025, 3025, 2025); // top side line
-    g2d.drawLine(-3025, -2025, -3025, 2025); // left side line
-    g2d.drawLine(3025, -2025, 3025, 2025); // right side line
-    g2d.drawLine(0, -2025, 0, 2025); // center line
+    // outer boundary
+    g2d.drawLine(-xLengthHalf, -yLengthHalf,  xLengthHalf, -yLengthHalf); // bottom side line
+    g2d.drawLine(-xLengthHalf,  yLengthHalf,  xLengthHalf,  yLengthHalf); // top side line
+    g2d.drawLine(-xLengthHalf, -yLengthHalf, -xLengthHalf,  yLengthHalf); // left side line
+    g2d.drawLine( xLengthHalf, -yLengthHalf,  xLengthHalf,  yLengthHalf); // right side line
+    g2d.drawLine(           0, -yLengthHalf,            0,  yLengthHalf); // center line
 
-    g2d.drawLine(-2400, -1525, -2400, 1525); // blue front goal line
-    g2d.drawLine(-3000, -1525, -2400, -1525); // blue bottom goal line
-    g2d.drawLine(-3000, 1525, -2400, 1525); // blue top goal line
+    // blue penalty area
+    g2d.drawLine(-xPosOpponentPenaltyArea, -yPosLeftPenaltyArea, -xPosOpponentPenaltyArea, yPosLeftPenaltyArea); // blue front goal line
+    g2d.drawLine(-xLengthHalf, -yPosLeftPenaltyArea, -xPosOpponentPenaltyArea, -yPosLeftPenaltyArea); // blue bottom goal line
+    g2d.drawLine(-xLengthHalf, yPosLeftPenaltyArea, -xPosOpponentPenaltyArea, yPosLeftPenaltyArea); // blue top goal line
 
-    g2d.drawLine(2400, -1525, 2400, 1525); // yellow front goal line
-    g2d.drawLine(3000, -1525, 2400, -1525); // yellow bottom goal line
-    g2d.drawLine(3000, 1525, 2400, 1525); // yellow top goal line
+    // yellow penalty area
+    g2d.drawLine(xPosOpponentPenaltyArea, -yPosLeftPenaltyArea, xPosOpponentPenaltyArea, yPosLeftPenaltyArea); // yellow front goal line
+    g2d.drawLine(xLengthHalf, -yPosLeftPenaltyArea, xPosOpponentPenaltyArea, -yPosLeftPenaltyArea); // yellow bottom goal line
+    g2d.drawLine(xLengthHalf, yPosLeftPenaltyArea, xPosOpponentPenaltyArea, yPosLeftPenaltyArea); // yellow top goal line
 
     // draw center circle
-    g2d.drawOval(-600, -600, 1200, 1200);
+    g2d.drawOval(-centerCircleRadius, -centerCircleRadius, centerCircleRadius*2, centerCircleRadius*2);
 
     // draw crosses
-    g2d.drawLine(-1125, 0, -1225, 0);
-    g2d.drawLine(-1175, -50, -1175, 50);
-    g2d.drawLine(1125, 0, 1225, 0);
-    g2d.drawLine(1175, -50, 1175, 50);
+    g2d.drawLine(-xCrossPos-crossSize/2, 0, -xCrossPos+crossSize/2, 0);
+    g2d.drawLine(-xCrossPos, -crossSize/2, -xCrossPos, crossSize/2);
+    
+    g2d.drawLine(xCrossPos-crossSize/2, 0, xCrossPos+crossSize/2, 0);
+    g2d.drawLine(xCrossPos, -crossSize/2, xCrossPos, crossSize/2);
 
     g2d.setStroke(new BasicStroke(50.0f));
     // draw left goal
     g2d.setColor(leftGoalColor);
-    g2d.drawLine(-3425, -700, -3025, -700);
-    g2d.drawLine(-3425, 700, -3025, 700);
-    g2d.drawLine(-3425, -700, -3425, 700);
+    g2d.drawLine(-xLengthHalf-goalDepth, -yGoalPostPos, -xLengthHalf, -yGoalPostPos);
+    g2d.drawLine(-xLengthHalf-goalDepth,  yGoalPostPos, -xLengthHalf,  yGoalPostPos);
+    g2d.drawLine(-xLengthHalf-goalDepth, -yGoalPostPos, -xLengthHalf-goalDepth,  yGoalPostPos);
     // goal post
-    g2d.fillOval(-3075, 650, 100, 100);
-    g2d.fillOval(-3075, -750, 100, 100);
+    g2d.fillOval(-xLengthHalf-goalpostRadius, yGoalPostPos-goalpostRadius, goalpostRadius*2, goalpostRadius*2);
+    g2d.fillOval(-xLengthHalf-goalpostRadius, -yGoalPostPos-goalpostRadius, goalpostRadius*2, goalpostRadius*2);
 
     // draw right goal
     g2d.setColor(rightGoalColor);
-    g2d.drawLine(3425, -700, 3025, -700);
-    g2d.drawLine(3425, 700, 3025, 700);
-    g2d.drawLine(3425, -700, 3425, 700);
+    g2d.drawLine(xLengthHalf+goalDepth, -yGoalPostPos, xLengthHalf, -yGoalPostPos);
+    g2d.drawLine(xLengthHalf+goalDepth,  yGoalPostPos, xLengthHalf,  yGoalPostPos);
+    g2d.drawLine(xLengthHalf+goalDepth, -yGoalPostPos, xLengthHalf+goalDepth,  yGoalPostPos);
     // goal post
-    g2d.fillOval(2975, 650, 100, 100);
-    g2d.fillOval(2975, -750, 100, 100);
+    g2d.fillOval(xLengthHalf-goalpostRadius, yGoalPostPos-goalpostRadius, goalpostRadius*2, goalpostRadius*2);
+    g2d.fillOval(xLengthHalf-goalpostRadius, -yGoalPostPos-goalpostRadius, goalpostRadius*2, goalpostRadius*2);
 
   }//end draw
 
