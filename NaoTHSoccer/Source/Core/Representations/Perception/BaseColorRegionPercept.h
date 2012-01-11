@@ -17,8 +17,8 @@
 #define BALL_IDX_CR 200.0
 
 #define BALL_DIST_Y 140.0
-#define BALL_DIST_CB 42.0
-#define BALL_DIST_CR 56.0
+#define BALL_DIST_CB 48.0
+#define BALL_DIST_CR 32.0
 
 
 
