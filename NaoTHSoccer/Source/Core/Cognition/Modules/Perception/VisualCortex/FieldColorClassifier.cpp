@@ -152,8 +152,8 @@ void FieldColorClassifier::execute()
         pixel.y < MAX_FIELD_COLOR_Y_LEVEL
 //        &&
 //        !getBlackAndWhitePercept().isWhite(pixel)
-        &&
-        getBaseColorRegionPercept().isGreenOrBlue(pixel)
+//        &&
+//        getBaseColorRegionPercept().isGreenOrBlue(pixel)
       )
       {
         weightedHistY[pixel.y]++;

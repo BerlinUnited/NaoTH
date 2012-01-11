@@ -227,6 +227,12 @@ public:
     stream << "meanY: " << meanY << endl;
     stream << "meanCb: " << meanCb << endl;
     stream << "meanCr: " << meanCr << endl;
+    stream << "ballIndexY: " << ballIndexY << endl;
+    stream << "ballIndexCb: " << ballIndexCb << endl;
+    stream << "ballIndexCr: " << ballIndexCr << endl;
+    stream << "distBallY: " << distBallY << endl;
+    stream << "distBallCb: " << distBallCb << endl;
+    stream << "distBallCr: " << distBallCr << endl;
     stream << "goalIndexY: " << goalIndexY << endl;
     stream << "goalIndexCb: " << goalIndexCb << endl;
     stream << "goalIndexCr: " << goalIndexCr << endl;

@@ -63,12 +63,20 @@ void BaseColorClassifier::execute()
   MODIFY("BaseColorClassifier:adaptationRate", adaptationRate);
 
   MODIFY("BaseColorClassifier:distBallY", getBaseColorRegionPercept().distBallY);
-  MODIFY("BaseColorClassifier:distBallCb", getBaseColorRegionPercept().distBallCb);
+  MODIFY("BaseColorClassifier:distBallCb", getBaseColorRegionPercept().distBallCb); 
   MODIFY("BaseColorClassifier:distBallCr", getBaseColorRegionPercept().distBallCr);
+
+  MODIFY("BaseColorClassifier:ballIndexY", getBaseColorRegionPercept().ballIndexY);
+  MODIFY("BaseColorClassifier:ballIndexCb", getBaseColorRegionPercept().ballIndexCb);
+  MODIFY("BaseColorClassifier:ballIndexCr", getBaseColorRegionPercept().ballIndexCr);
 
   MODIFY("BaseColorClassifier:distGoalY", getBaseColorRegionPercept().distGoalY);
   MODIFY("BaseColorClassifier:distGoalCb", getBaseColorRegionPercept().distGoalCb);
   MODIFY("BaseColorClassifier:distGoalCr", getBaseColorRegionPercept().distGoalCr);
+
+  MODIFY("BaseColorClassifier:goalIndexY", getBaseColorRegionPercept().goalIndexY);
+  MODIFY("BaseColorClassifier:goalIndexCb", getBaseColorRegionPercept().goalIndexCb);
+  MODIFY("BaseColorClassifier:goalIndexCr", getBaseColorRegionPercept().goalIndexCr);
 
   for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
