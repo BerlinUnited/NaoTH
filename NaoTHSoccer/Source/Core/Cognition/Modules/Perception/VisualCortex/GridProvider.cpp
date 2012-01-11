@@ -19,6 +19,7 @@ GridProvider::GridProvider()
   DEBUG_REQUEST_REGISTER("ImageProcessor:show_classified_image", "draw the image represented by uniformGrid", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:enable_debug", "Enables the debug output for the histogram", false);
+  lastTime = getFrameInfo().getTime();
 }
 
 
@@ -52,6 +53,8 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   getHistogram().init();
 
   double grey = 0;
+  double red = 0;
+  double blue = 0;
 
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
@@ -59,8 +62,10 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 
     const Pixel& pixel = getImage().get(point.x,point.y);
     grey += pixel.y;
+    red += pixel.u;
+    blue += pixel.v;
 
-    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = simpleColorClassifier.getColorClass(pixel);// = getColorClassificationModel().getColorClass(pixel);
     if(currentPixelColor == ColorClasses::none)
     {
       getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;
@@ -80,7 +85,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     }
     getColoredGrid().setColor(i, currentPixelColor);
     getHistogram().increaseValue(getColoredGrid().uniformGrid, i, currentPixelColor);
-    getHistogram().increaseChannelValue(pixel);
+    getHistogram().increaseChannelValue(getBaseColorRegionPercept(), pixel);
   }//end for
 
   getColoredGrid().valid = false;
@@ -89,7 +94,11 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     getColoredGrid().valid = true;
   }
 
-  getColoredGrid().meanBrightness = grey / (getColoredGrid().uniformGrid.height * getColoredGrid().uniformGrid.width);
+  double ImgArea = getColoredGrid().uniformGrid.height * getColoredGrid().uniformGrid.width;
+
+  getColoredGrid().meanBrightness = grey / ImgArea;
+  getColoredGrid().meanRed = red / ImgArea;
+  getColoredGrid().meanBlue = blue / ImgArea;
 
   STOPWATCH_STOP("Histogram+ColoredGrid");
   

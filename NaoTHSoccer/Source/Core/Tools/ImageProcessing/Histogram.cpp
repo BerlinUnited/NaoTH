@@ -37,28 +37,36 @@ Histogram::Histogram()
 
 void Histogram::init()
 {
-  for(int color = 0; color < ColorClasses::numOfColors; color++)
-  {
-    // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    for(unsigned int x = 0; x < UniformGrid::HACK_MAX_WIDTH; x++)
-    {
-      yHistogram[color][x] = 0;
-    }
-    // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    for(unsigned int y = 0; y < UniformGrid::HACK_MAX_HEIGHT; y++)
-    {
-      xHistogram[color][y] = 0;
-    }
-  }
+  colorChannelIsUptodate = false;
 
-  for(int value = 0; value < COLOR_CHANNEL_VALUE_COUNT; value++)
-  {
-    for(int channel = 0; channel < 3; channel++)
-    {
-      colorChannelHistogram[channel][value] = 0;
-    }
-  }
+  memset(&xHistogram, 0, sizeof(xHistogram));
+  memset(&yHistogram, 0, sizeof(xHistogram));
+  memset(&colorChannelHistogramField, 0, sizeof(colorChannelHistogramField));
+  memset(&colorChannelHistogramLine, 0, sizeof(colorChannelHistogramLine));
+  memset(&colorChannelHistogramGoal, 0, sizeof(colorChannelHistogramGoal));
+  memset(&colorChannelHistogramBall, 0, sizeof(colorChannelHistogramBall));
 
+//  for(int color = 0; color < ColorClasses::numOfColors; color++)
+//  {
+//    // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
+//    for(unsigned int x = 0; x < UniformGrid::HACK_MAX_WIDTH; x++)
+//    {
+//      yHistogram[color][x] = 0;
+//    }
+//    // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
+//    for(unsigned int y = 0; y < UniformGrid::HACK_MAX_HEIGHT; y++)
+//    {
+//      xHistogram[color][y] = 0;
+//    }
+//  }
+
+//  for(int value = 0; value < COLOR_CHANNEL_VALUE_COUNT; value++)
+//  {
+//    for(int channel = 0; channel < 3; channel++)
+//    {
+//      colorChannelHistogram[channel][value] = 0;
+//    }
+//  }
 
 
 }//end init
@@ -120,7 +128,7 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
 
   DEBUG_REQUEST("ImageProcessor:Histogram:0_Y_color_channel",
     drawChannelHist = true;
-    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[0][0], 0, (int)cameraInfo.resolutionHeight) );
+    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[0][0], 0, (int)cameraInfo.resolutionHeight) );
     for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
     {
       LINE_PX
@@ -129,16 +137,16 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
         last.x,
         last.y,
         x,
-        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[0][x], 0, (int)cameraInfo.resolutionHeight)
+        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[0][x], 0, (int)cameraInfo.resolutionHeight)
       );
       last.x = x;
-      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[0][x], 0, (int)cameraInfo.resolutionHeight);
+      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[0][x], 0, (int)cameraInfo.resolutionHeight);
     }
   );
 
   DEBUG_REQUEST("ImageProcessor:Histogram:1_Cb_color_channel",
     drawChannelHist = true;
-    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[1][0], 0, (int)cameraInfo.resolutionHeight));
+    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[1][0], 0, (int)cameraInfo.resolutionHeight));
     for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
     {
       LINE_PX
@@ -147,16 +155,16 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
         last.x,
         last.y,
         x,
-        Math::clamp((int)cameraInfo.resolutionHeight - (int)  colorChannelHistogram[1][x], 0, (int)cameraInfo.resolutionHeight)
+        Math::clamp((int)cameraInfo.resolutionHeight - (int)  colorChannelHistogramField[1][x], 0, (int)cameraInfo.resolutionHeight)
       );
       last.x = x;
-      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[1][x], 0, (int)cameraInfo.resolutionHeight);
+      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[1][x], 0, (int)cameraInfo.resolutionHeight);
     }
   );
 
   DEBUG_REQUEST("ImageProcessor:Histogram:2_Cr_color_channel",
     drawChannelHist = true;
-    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[2][0], 0, (int)cameraInfo.resolutionHeight));
+    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[2][0], 0, (int)cameraInfo.resolutionHeight));
     for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
     {
       LINE_PX
@@ -165,10 +173,10 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
         last.x,
         last.y,
         x,
-        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[2][x], 0, (int)cameraInfo.resolutionHeight)
+        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[2][x], 0, (int)cameraInfo.resolutionHeight)
       );
       last.x = x;
-      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogram[2][x], 0, (int)cameraInfo.resolutionHeight);
+      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[2][x], 0, (int)cameraInfo.resolutionHeight);
     }
   );
 
@@ -222,13 +230,32 @@ void Histogram::increaseValue(const UniformGrid& grid, const int& pixelIndex, co
     yHistogram[color][pixel.x]++;
 }//end increaseValue
 
-void Histogram::increaseChannelValue(const Pixel& pixel)
+
+void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, const Pixel& pixel)
 {
   unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
 
-  colorChannelHistogram[0][pixel.y / factor]++;
-  colorChannelHistogram[1][pixel.u / factor]++;
-  colorChannelHistogram[2][pixel.v / factor]++;
+  if(bPercept.isYellow(pixel))
+  {
+    colorChannelHistogramGoal[0][pixel.y / factor]++;
+    colorChannelHistogramGoal[1][pixel.u / factor]++;
+    colorChannelHistogramGoal[2][pixel.v / factor]++;
+  }
+
+  if(bPercept.isRedOrOrangeOrPink(pixel))
+  {
+    colorChannelHistogramBall[0][pixel.y / factor]++;
+    colorChannelHistogramBall[1][pixel.u / factor]++;
+    colorChannelHistogramBall[2][pixel.v / factor]++;
+  }
+
+  if(bPercept.isGreenOrBlue(pixel))
+  {
+    colorChannelHistogramField[0][pixel.y / factor]++;
+    colorChannelHistogramField[1][pixel.u / factor]++;
+    colorChannelHistogramField[2][pixel.v / factor]++;
+  }
+  colorChannelIsUptodate  = true;
 }
 
 void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)

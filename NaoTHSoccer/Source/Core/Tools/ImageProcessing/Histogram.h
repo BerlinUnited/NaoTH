@@ -22,6 +22,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Perception/BaseColorRegionPercept.h"
 
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/DataStructures/Printable.h"
@@ -32,8 +33,7 @@ class Histogram: public naoth::Printable
 {
  public:
     Histogram();
-    ~Histogram()
-    {};
+    ~Histogram(){}
 
     void init();
     void execute();
@@ -42,7 +42,7 @@ class Histogram: public naoth::Printable
     void increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color);
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
 
-    void increaseChannelValue(const Pixel& pixel);
+    void increaseChannelValue(const BaseColorRegionPercept& bwPercept, const Pixel& pixel);
 
 
     void showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const;
@@ -52,7 +52,12 @@ class Histogram: public naoth::Printable
     // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
     unsigned int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
     unsigned int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
-    unsigned int colorChannelHistogram[3][COLOR_CHANNEL_VALUE_COUNT];
+    unsigned int colorChannelHistogramField[3][COLOR_CHANNEL_VALUE_COUNT];
+    unsigned int colorChannelHistogramLine[3][COLOR_CHANNEL_VALUE_COUNT];
+    unsigned int colorChannelHistogramGoal[3][COLOR_CHANNEL_VALUE_COUNT];
+    unsigned int colorChannelHistogramBall[3][COLOR_CHANNEL_VALUE_COUNT];
+    unsigned int colorChannelIsUptodate;
+
 };
 
 
