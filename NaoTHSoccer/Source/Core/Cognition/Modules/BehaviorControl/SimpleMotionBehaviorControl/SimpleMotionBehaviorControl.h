@@ -14,6 +14,7 @@
 // representations
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Perception/BallPercept.h"
+#include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 
@@ -30,6 +31,7 @@ BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
   REQUIRE(FieldInfo)
   REQUIRE(AttentionModel)
   REQUIRE(MotionStatus)
+  REQUIRE(PlayersPercept)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
