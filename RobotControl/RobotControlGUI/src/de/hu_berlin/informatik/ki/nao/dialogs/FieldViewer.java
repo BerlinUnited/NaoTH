@@ -114,6 +114,7 @@ public class FieldViewer extends AbstractDialog
         btToggleSimspark = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
+        btTrace = new javax.swing.JCheckBox();
         jSlider1 = new javax.swing.JSlider();
         drawingPanel = new javax.swing.JPanel();
         fieldCanvas = new de.hu_berlin.informatik.ki.nao.dialogs.panels.DynamicCanvasPanel();
@@ -128,7 +129,7 @@ public class FieldViewer extends AbstractDialog
 
         jToolBar1.setRollover(true);
 
-        btReceiveDrawings.setText("Receive Drawings");
+        btReceiveDrawings.setText("Receive");
         btReceiveDrawings.setFocusable(false);
         btReceiveDrawings.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btReceiveDrawings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -139,7 +140,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btReceiveDrawings);
 
-        btReceiveTeamCommDrawings.setText("Receive TeamComm");
+        btReceiveTeamCommDrawings.setText("TeamComm");
         btReceiveTeamCommDrawings.setFocusable(false);
         btReceiveTeamCommDrawings.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btReceiveTeamCommDrawings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -232,7 +233,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btAntializing);
 
-        btCollectDrawings.setText("Collect Drawings");
+        btCollectDrawings.setText("Collect");
         btCollectDrawings.setFocusable(false);
         btCollectDrawings.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         btCollectDrawings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -242,6 +243,12 @@ public class FieldViewer extends AbstractDialog
             }
         });
         jToolBar1.add(btCollectDrawings);
+
+        btTrace.setText("Trace");
+        btTrace.setFocusable(false);
+        btTrace.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        btTrace.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(btTrace);
 
         jSlider1.setMaximum(255);
         jSlider1.setValue(247);
@@ -413,9 +420,8 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jSlider1StateChanged
 
     private void btCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCleanActionPerformed
-        this.fieldCanvas.getDrawingList().clear();
         this.strokePlot.clear();
-        this.fieldCanvas.addDrawing(backgroundDrawing);
+        resetView();
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btCleanActionPerformed
 
@@ -425,7 +431,18 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     btReceiveDrawings.setSelected(false);
     debugDrawingManager.removeListener(this);
   }
+  
+  void resetView()
+  {
+    this.fieldCanvas.getDrawingList().clear();
+    this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
+    if(btTrace.isSelected())
+        this.fieldCanvas.getDrawingList().add(this.strokePlot);
+    if(imageDrawing != null)
+        this.fieldCanvas.getDrawingList().add(imageDrawing);
+  }//end clearView
 
+  
   @Override
   public void newObjectReceived(DrawingsContainer objectList)
   {
@@ -433,11 +450,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     {
       if(!this.btCollectDrawings.isSelected())
       {
-        this.fieldCanvas.getDrawingList().clear();
-        this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
-        this.fieldCanvas.getDrawingList().add(this.strokePlot);
-        if(imageDrawing != null)
-          this.fieldCanvas.getDrawingList().add(imageDrawing);
+        resetView();
       }
       DrawingCollection drawingCollection = objectList.get(DrawingOnField.class);
       if(drawingCollection != null)
@@ -547,6 +560,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JToggleButton btReceiveTeamCommDrawings;
     private javax.swing.JButton btSwitchGoals;
     private javax.swing.JToggleButton btToggleSimspark;
+    private javax.swing.JCheckBox btTrace;
     private javax.swing.JPanel drawingPanel;
     private de.hu_berlin.informatik.ki.nao.dialogs.panels.DynamicCanvasPanel fieldCanvas;
     private javax.swing.JMenuItem jMenuItemExport;

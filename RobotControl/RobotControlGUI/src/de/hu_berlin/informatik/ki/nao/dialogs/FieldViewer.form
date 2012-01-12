@@ -58,7 +58,7 @@
       <SubComponents>
         <Component class="javax.swing.JToggleButton" name="btReceiveDrawings">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Receive Drawings"/>
+            <Property name="text" type="java.lang.String" value="Receive"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -69,7 +69,7 @@
         </Component>
         <Component class="javax.swing.JToggleButton" name="btReceiveTeamCommDrawings">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Receive TeamComm"/>
+            <Property name="text" type="java.lang.String" value="TeamComm"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -172,7 +172,7 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="btCollectDrawings">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Collect Drawings"/>
+            <Property name="text" type="java.lang.String" value="Collect"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="4"/>
             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -180,6 +180,14 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btCollectDrawingsActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="btTrace">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Trace"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="4"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JSlider" name="jSlider1">
           <Properties>
