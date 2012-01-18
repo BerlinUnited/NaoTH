@@ -102,7 +102,6 @@ Cognition::Cognition()
   REGISTER_DEBUG_COMMAND("representation:list", "Stream out the list of all registered representations", this);
   REGISTER_DEBUG_COMMAND("representation:get", "Stream out all the representations listet", this);
   REGISTER_DEBUG_COMMAND("representation:getbinary", "Stream out serialized represenation", this);
-
 }
 
 Cognition::~Cognition()

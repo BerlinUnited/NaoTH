@@ -14,6 +14,23 @@
 
 using namespace naoth;
 
+namespace naoth
+{
+  template<>
+  class Serializer<Representation>
+  {
+  public:
+    static void serialize(const Representation& representation, std::ostream& stream)
+    {
+      representation.serialize(stream);
+    }
+    static void deserialize(std::istream& stream, Representation& representation)
+    {
+      representation.deserialize(stream);
+    }
+  };
+}
+
 /**
  * Connects a arbitrary class with Representation
  */
