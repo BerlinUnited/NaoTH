@@ -59,7 +59,7 @@ public class DialogRegistry
           @Override
           public void actionPerformed(ActionEvent e)
           {
-            dockDialog(dialog);
+            dockDialog(dialog, true);
           }
         });
         menu.insert(newItem, -(insertPoint+1));
@@ -83,7 +83,7 @@ public class DialogRegistry
   }//end createView
 
   
-  public void dockDialog(Dialog dialog)
+  public void dockDialog(Dialog dialog, boolean smart_place)
   {
 
     String dialogName = dialog.getDisplayName();
@@ -95,7 +95,16 @@ public class DialogRegistry
     if(existing == null)
     {
       Dockable newDockable = createView(dialogName, dialog);
-      station.drop(newDockable);
+      
+      
+      if(!smart_place || station.getDockableCount() == 0)
+          station.drop(newDockable);
+      else if (station.getFrontDockable() != null)
+        station.drop(newDockable, station.getDockableProperty(station.getFrontDockable(), newDockable));
+      else
+        station.drop(newDockable, station.getDockableProperty(station.getDockable(0), newDockable));
+    
+    
     }
     else
     {

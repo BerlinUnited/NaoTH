@@ -10,12 +10,12 @@ import bibliothek.gui.DockFrontend;
 import bibliothek.gui.Dockable;
 import bibliothek.gui.dock.SplitDockStation;
 import bibliothek.gui.dock.frontend.MissingDockableStrategy;
+import bibliothek.gui.dock.station.split.SplitDockGrid;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import de.hu_berlin.informatik.ki.nao.interfaces.ByteRateUpdateHandler;
 import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
-import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -41,6 +41,7 @@ import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.util.JSPFProperties;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -74,46 +75,49 @@ public class RobotControlImpl extends javax.swing.JFrame
     
     try
     {
-      // set Look and Feel before adding all the components
-      if("Linux".equals(System.getProperty("os.name")))
-      {
         UIManager.setLookAndFeel(new PlasticXPLookAndFeel());
-      }
-      else
-      {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      }
-      //UIManager.setLookAndFeel(new GTKLookAndFeel());
-      
     }
     catch (Exception ex)
     {
       Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
     initComponents();
 
-    messageServer = new MessageServer(this);
+    
+    // create the frontend and set some properties
     frontend = new DockFrontend(this);
     frontend.getController().setTheme(new EclipseTheme());
-    SplitDockStation station = new SplitDockStation();
-    frontend.addRoot("split", station);
     frontend.setShowHideAction(true);
     frontend.setMissingDockableStrategy(MissingDockableStrategy.DISCARD_ALL);
     
-    this.connectionDialog = new ConnectionDialog(this, this);
+    // Let's create a DockStation for our Dockables
+    SplitDockStation station = new SplitDockStation();
+    // add the station to the frame
+    this.add(station);
+    frontend.addRoot("split", station);
+
+    // set up a list of all dialogs
     dialogRegistry = new DialogRegistry(this, dialogsMenu, frontend, station);
 
+    // load the layout
+    readLayoutFromFile();
+    
+    
+    
     // icon
     Image icon = Toolkit.getDefaultToolkit().getImage(
       this.getClass().getResource("res/RobotControlLogo128.png"));
     setIconImage(icon);
-
-    this.getContentPane().add(station, BorderLayout.CENTER);
-
-    readLayoutFromFile();
-
+    
+    
+    this.messageServer = new MessageServer(this);
+    
+    // connection dialog
+    this.connectionDialog = new ConnectionDialog(this, this);
     disconnectMenuItem.setEnabled(false);
-  }
+  }//end constructor
+  
   
   @PluginLoaded
   public void registerDialog(final Dialog dialog)
@@ -128,13 +132,13 @@ public class RobotControlImpl extends javax.swing.JFrame
       {
         if(s.trim().equals(dialog.getDisplayName()))
         {
-          dialogRegistry.dockDialog(dialog);
+          dialogRegistry.dockDialog(dialog, false);
           loadLayout();
           break;
         }
       }
-    }
-  }
+    }//end if
+  }//end registerDialog
 
   @Override
   public boolean checkConnected()
@@ -358,14 +362,31 @@ public class RobotControlImpl extends javax.swing.JFrame
 
     private void resetLayoutMenuItemActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_resetLayoutMenuItemActionPerformed
     {//GEN-HEADEREND:event_resetLayoutMenuItemActionPerformed
+      
+      List<Dockable> dockables =  frontend.listDockables();
+      SplitDockGrid grid = new SplitDockGrid();
 
+      // stack all
+      for(Dockable d : dockables)
+      {
+        if(d.getTitleText().startsWith("Debug Request"))
+            grid.addDockable( 2, 0, 1, 1, d );
+        else
+            grid.addDockable( 0, 0, 2, 1, d );
+        //frontend.remove(d);
+      }
+
+      ((SplitDockStation)frontend.getRoot("split")).dropTree(grid.toTree());
+        
+      /*  
       doNotSaveLayoutOnClose = true;
       if(layoutFile.exists() && layoutFile.isFile() && layoutFile.canWrite())
       {
         layoutFile.delete();
+        
         JOptionPane.showMessageDialog(null, "You need to restart RobotControl now.");
       }//end if
-      
+      */
     }//GEN-LAST:event_resetLayoutMenuItemActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt)//GEN-FIRST:event_formWindowClosing
@@ -392,25 +413,41 @@ public class RobotControlImpl extends javax.swing.JFrame
       @Override
       public void run()
       {
-        PluginManager pluginManager = PluginManagerFactory.createPluginManager();
+        final JSPFProperties props = new JSPFProperties();
+        props.setProperty(PluginManager.class, "cache.enabled", "true");
+        props.setProperty(PluginManager.class, "cache.mode",    "stong"); //optional
+        props.setProperty(PluginManager.class, "cache.file",    "robot-control.jspf.cache"); 
+        
+        PluginManager pluginManager = PluginManagerFactory.createPluginManager(props);
+
         try
         {
+          //
           pluginManager.addPluginsFrom(new URI("classpath://*"));
+          
+          //
           File workingDirectoryPlugin = new File("plugins/");
           if(workingDirectoryPlugin.isDirectory())
           {
             pluginManager.addPluginsFrom(workingDirectoryPlugin.toURI());
           }
           
+          //
           File userHomePlugin = new File(System.getProperty("user.home")
             + "/.naoth/robotcontrol/plugins/");
           if(userHomePlugin.isDirectory())
           {
             pluginManager.addPluginsFrom(userHomePlugin.toURI());
           }
+          
+          // load the robot control itself
           pluginManager.getPlugin(RobotControl.class).setVisible(true);
         }
         catch (URISyntaxException ex)
+        {
+          Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (Exception ex)
         {
           Logger.getLogger(RobotControlImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -479,11 +516,13 @@ public class RobotControlImpl extends javax.swing.JFrame
     messageServer.disconnect();
 
     // remember open dialogs
+    
     List<Dockable> dockables =  frontend.listDockables();
     Set<String> dockablesAsstring = new HashSet<String>();
     for(Dockable d : dockables)
     {
-      dockablesAsstring.add(d.getTitleText());
+      if(!frontend.isHidden(d))
+        dockablesAsstring.add(d.getTitleText());
     }
     getConfig().put("dialogs", StringUtils.join(dockablesAsstring, ","));
     // save configuration to file
