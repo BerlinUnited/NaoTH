@@ -5,7 +5,7 @@ package de.hu_berlin.informatik.ki.nao.dialogs;
 
 import com.sun.j3d.exp.swing.JCanvas3D;
 import de.hu_berlin.informatik.ki.nao.AbstractDialog;
-import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.DialogPlugin;
 import de.hu_berlin.informatik.ki.nao.Helper;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.dataformats.JanusImage;
@@ -36,21 +36,25 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
-@PluginImplementation
+//@PluginImplementation
 public class ThreeDimensionViewer extends AbstractDialog
-        implements ObjectListener<Scene>, Dialog
+        implements ObjectListener<Scene>
 {
-
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public ThreeDimensionSceneManager threeDimensionSceneManager;
-  @InjectPlugin
-  public ImageManager imageManager;
-
+    
+  
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<ThreeDimensionViewer>
+  {
+      @InjectPlugin
+      public static RobotControl parent;
+      @InjectPlugin
+      public static ThreeDimensionSceneManager threeDimensionSceneManager;
+      @InjectPlugin
+      public static ImageManager imageManager;
+  }//end Plugin
+  
   
   private VirtualWorld vw;
   private JCanvas3D canvas;
@@ -191,16 +195,16 @@ public class ThreeDimensionViewer extends AbstractDialog
   {//GEN-HEADEREND:event_jToggleButtonUpdateActionPerformed
     if (jToggleButtonUpdate.isSelected())
     {
-      if (parent.checkConnected())
+      if (Plugin.parent.checkConnected())
       {
-        this.threeDimensionSceneManager.addListener(this);
+        Plugin.threeDimensionSceneManager.addListener(this);
       } else
       {
         jToggleButtonUpdate.setSelected(false);
       }
     } else
     {
-      this.threeDimensionSceneManager.removeListener(this);
+      Plugin.threeDimensionSceneManager.removeListener(this);
     }
   }//GEN-LAST:event_jToggleButtonUpdateActionPerformed
 
@@ -211,7 +215,7 @@ public class ThreeDimensionViewer extends AbstractDialog
       return;
     }
 
-    if (!parent.checkConnected())
+    if (!Plugin.parent.checkConnected())
     {
       jToggleButtonGetColorTable.setSelected(false);
       return;
@@ -225,7 +229,7 @@ public class ThreeDimensionViewer extends AbstractDialog
 
     final ThreeDimensionViewer thisFinal = this;
     // get the color table from robot
-    parent.getMessageServer().executeSingleCommand(new CommandSender()
+    Plugin.parent.getMessageServer().executeSingleCommand(new CommandSender()
     {
 
       @Override
@@ -264,21 +268,21 @@ public class ThreeDimensionViewer extends AbstractDialog
   {//GEN-HEADEREND:event_jCheckBoxImageActionPerformed
     if (jCheckBoxImage.isSelected())
     {
-      if (parent.checkConnected())
+      if (Plugin.parent.checkConnected())
       {
-        this.imageManager.addListener(imageListener);
+        Plugin.imageManager.addListener(imageListener);
       } else
       {
         jCheckBoxImage.setSelected(false);
       }
     } else
     {
-      this.imageManager.removeListener(imageListener);
+      Plugin.imageManager.removeListener(imageListener);
       image = null;
     }
   }//GEN-LAST:event_jCheckBoxImageActionPerformed
 
-  @Init
+  @Override
   public void init()
   {
     if (!java3dAvailable)
@@ -330,17 +334,11 @@ public class ThreeDimensionViewer extends AbstractDialog
       public void errorOccured(String cause)
       {
         jCheckBoxImage.setSelected(false);
-        ThreeDimensionViewer.this.imageManager.removeListener(imageListener);
+        ThreeDimensionViewer.Plugin.imageManager.removeListener(imageListener);
         image = null;
         Helper.handleException(cause, null);
       }
     };
-  }
-
-  @Override
-  public JPanel getPanel()
-  {
-    return this;
   }
 
   private void createViewBranch(Vector3f homeViewPos)
@@ -405,13 +403,15 @@ public class ThreeDimensionViewer extends AbstractDialog
   public void errorOccured(String cause)
   {
     jToggleButtonUpdate.setSelected(false);
-    this.threeDimensionSceneManager.removeListener(this);
+    Plugin.threeDimensionSceneManager.removeListener(this);
 //    Helper.handleException(cause, null);
   }
 
   @Override
   public void dispose()
   {
-    System.out.println("Dispose is not implemented for: " + this.getClass().getName());
+    Plugin.threeDimensionSceneManager.removeListener(this);
+    Plugin.imageManager.removeListener(imageListener);
+    //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
   }//end dispose
 }

@@ -11,11 +11,13 @@ import javax.swing.JPanel;
  *
  * @author thomas
  */
-public abstract class AbstractDialog extends JPanel implements Dialog
+public class AbstractDialog extends JPanel implements Dialog
 {
-
   @Override
-  public abstract JPanel getPanel();
+  public JPanel getPanel()
+  {
+      return this;
+  }
 
   @Override
   public String getDisplayName()
@@ -28,5 +30,10 @@ public abstract class AbstractDialog extends JPanel implements Dialog
   {
     // do nothing per default
   }
+  
+  public void init()
+  {
+      
+  }
 
-}
+}//end AbstractDialog

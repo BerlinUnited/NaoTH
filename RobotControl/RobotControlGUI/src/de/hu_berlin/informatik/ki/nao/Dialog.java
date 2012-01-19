@@ -12,7 +12,7 @@ import net.xeoh.plugins.base.Plugin;
  * Interface for all dialogs
  * @author thomas
  */
-public interface Dialog extends  Plugin
+public interface Dialog extends Plugin
 {
   
   /**
