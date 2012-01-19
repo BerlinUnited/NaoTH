@@ -12,14 +12,14 @@ import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
 import bibliothek.gui.dock.action.actions.SimpleButtonAction;
-import bibliothek.gui.dock.station.stack.StackDockProperty;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 /**
  *
@@ -28,13 +28,15 @@ import javax.swing.JMenuItem;
 public class DialogRegistry
 {
 
+  private Frame parent = null;
   private JMenu menu;
   private DockStation station;
   private DockFrontend frontend;
   private ArrayList<String> allDialogNames;
 
-  public DialogRegistry(JMenu menu, DockFrontend frontend, DockStation station)
+  public DialogRegistry(Frame parent, JMenu menu, DockFrontend frontend, DockStation station)
   {
+    this.parent = parent;
     this.menu = menu;
     this.station = station;
     this.frontend = frontend;
@@ -64,8 +66,7 @@ public class DialogRegistry
         allDialogNames.add(-(insertPoint+1), dialogName);
       }
     }
-  
-  }
+  }//end registerDialog
 
   private Dockable createView(String text, final Dialog dialog)
   {
@@ -75,12 +76,13 @@ public class DialogRegistry
     frontend.setHideable(result, true);
 
     DefaultDockActionSource actions = new DefaultDockActionSource( new LocationHint( LocationHint.DOCKABLE, LocationHint.LEFT ));
-    actions.add(new ExampleAction());
+    actions.add(new HelpAction(this.parent, text));
     result.setActionOffers(actions);
 
     return result;
-  }
+  }//end createView
 
+  
   public void dockDialog(Dialog dialog)
   {
 
@@ -102,21 +104,39 @@ public class DialogRegistry
     }
   }//dock Dialog
 
-  public class ExampleAction extends SimpleButtonAction
+  public class HelpAction extends SimpleButtonAction
   {
-    public ExampleAction()
+    private String text = null;
+    private HelpDialog dlg = null;
+    
+    public HelpAction(Frame parent, String title)
     {
-      setText("Run...");
-      //setIcon(new ImageIcon());
+      //setText("Run...");
+      setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Help16.gif")));
       setTooltip("show ");
+      //this.setAccelerator(KeyStroke.getKeyStroke("pressed F1"));
+      this.setAccelerator(KeyStroke.getKeyStroke("control pressed H"));
+      
+      
+      this.text = Helper.getResourceAsString("/de/hu_berlin/informatik/ki/nao/dialogs/"+title+".html");
+      if(this.text == null)
+        this.text = "For this dialog is no help avaliable.";
+
+      this.dlg = new HelpDialog(parent, true, text);
+      this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+      this.dlg.setTitle(title);
+      this.dlg.setModal(false);
+      //this.dlg.setAlwaysOnTop(true);
+      this.dlg.setVisible(false);
     }
 
     @Override
     public void action(Dockable dockable)
     {
-      System.out.println("kabum");
+      this.dlg.showHelp();
+      //System.out.println("kabum");
     }
-  }
+  }//end HelpAction
   
 
 }//end class DialogRegistry

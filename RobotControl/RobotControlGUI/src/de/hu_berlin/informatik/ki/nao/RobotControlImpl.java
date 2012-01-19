@@ -16,11 +16,9 @@ import de.hu_berlin.informatik.ki.nao.server.ConnectionDialog;
 import de.hu_berlin.informatik.ki.nao.server.IMessageServerParent;
 import de.hu_berlin.informatik.ki.nao.server.MessageServer;
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -37,10 +35,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -60,8 +55,7 @@ public class RobotControlImpl extends javax.swing.JFrame
 
   private final String configlocation = System.getProperty("user.home")
     + "/.naoth/robotcontrol/";
-  private File layoutFile =
-    new File(configlocation + "layout.dat");
+  private File layoutFile = new File(configlocation + "layout.dat");
 
   private DockFrontend frontend;
   private DialogRegistry dialogRegistry;
@@ -107,7 +101,7 @@ public class RobotControlImpl extends javax.swing.JFrame
     frontend.setMissingDockableStrategy(MissingDockableStrategy.DISCARD_ALL);
     
     this.connectionDialog = new ConnectionDialog(this, this);
-    dialogRegistry = new DialogRegistry(dialogsMenu, frontend, station);
+    dialogRegistry = new DialogRegistry(this, dialogsMenu, frontend, station);
 
     // icon
     Image icon = Toolkit.getDefaultToolkit().getImage(
@@ -163,15 +157,6 @@ public class RobotControlImpl extends javax.swing.JFrame
     return messageServer.isConnected();
   }//end checkConnected
 
-  
-  private void attachHelpDialog(JComponent component, ShowHelpAction action)
-  {
-    KeyStroke strokeH = KeyStroke.getKeyStroke("control pressed H");
-    KeyStroke strokeF1 = KeyStroke.getKeyStroke("pressed F1");
-
-    component.registerKeyboardAction(action, strokeH, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-    component.registerKeyboardAction(action, strokeF1, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-  }//end attachHelpDialog
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -479,7 +464,7 @@ public class RobotControlImpl extends javax.swing.JFrame
       }
       catch (Exception ex)
       {
-        ex.printStackTrace();
+        ex.printStackTrace(System.err);
         JOptionPane.showMessageDialog(this,
           "Config could not be loaded from "+fConfig, "WARNING",
           JOptionPane.WARNING_MESSAGE);
@@ -553,44 +538,4 @@ public class RobotControlImpl extends javax.swing.JFrame
   {
     lblSentBytesS.setText(String.format("Sent KB/s: %4.2f", rate));
   }
-
-
-  class ShowHelpAction extends AbstractAction
-  {
-    private String title = null;
-    private Frame parent = null;
-    private String text = null;
-    private HelpDialog dlg = null;
-
-    public ShowHelpAction(Frame parent, String title)
-    {
-      this.title = title;
-      this.parent = parent;
-
-      this.text = Helper.getResourceAsString("/de/hu_berlin/informatik/ki/nao/dialogs/"+title+".html");
-      if(this.text == null)
-        this.text = "For this dialog is no help avaliable.";
-
-      this.dlg = new HelpDialog(parent, true, text);
-      this.dlg.setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
-      this.dlg.setTitle(title);
-      this.dlg.setModal(false);
-      //this.dlg.setAlwaysOnTop(true);
-      this.dlg.setVisible(false);
-    }//end ShowHelpAction
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      // move only if the dialog is invisible
-      if(!this.dlg.isVisible())
-      {
-        Point location = parent.getLocation();
-        location.translate(100, 100);
-        this.dlg.setLocation(location);
-      }//end if
-
-      this.dlg.setVisible(true);
-    }//end actionPerformed
-  }//end class ShowHelpAction
-
 }

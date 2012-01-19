@@ -11,6 +11,8 @@
 
 package de.hu_berlin.informatik.ki.nao;
 
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -23,10 +25,14 @@ import javax.swing.KeyStroke;
  */
 public class HelpDialog extends javax.swing.JDialog {
 
+    private Frame parent = null;
+    
     /** Creates new form HelpDialog */
     public HelpDialog(java.awt.Frame parent, boolean modal, String helpText) {
         super(parent, modal);
         initComponents();
+        
+        this.parent = parent;
         
         this.helpPanel.setText(helpText);
 
@@ -41,6 +47,18 @@ public class HelpDialog extends javax.swing.JDialog {
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         this.getRootPane().registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
+    
+    public void showHelp()
+    {
+      if(!this.isVisible())
+      {
+        Point location = this.parent.getLocation();
+        location.translate(100, 100);
+        this.setLocation(location);
+      }//end if
+
+      this.setVisible(true);
+    }//end show
 
     /** This method is called from within the constructor to
      * initialize the form.
