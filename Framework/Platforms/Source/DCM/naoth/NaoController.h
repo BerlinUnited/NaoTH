@@ -9,7 +9,8 @@
 #ifndef _NAOCONTROLLER_H
 #define	_NAOCONTROLLER_H
 
-#include "SoundControl.h"
+//#include "SoundControl.h"
+#include "Representations/Infrastructure/SoundData.h"
 #include "V4lCameraHandler.h"
 #include "Tools/Communication/Broadcast/BroadCaster.h"
 #include "Tools/Communication/Broadcast/BroadCastListener.h"
@@ -64,7 +65,7 @@ public:
 
 private:
   V4lCameraHandler theCameraHandler;
-  SoundControl *theSoundHandler;
+//  SoundControl *theSoundHandler;
   NaothData* naothDataWriting;
   BroadCaster* theBroadCaster;
   BroadCastListener* theBroadCastListener;
