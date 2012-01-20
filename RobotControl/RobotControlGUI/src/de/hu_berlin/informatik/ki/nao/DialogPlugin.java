@@ -43,9 +43,19 @@ public class DialogPlugin<T extends AbstractDialog>
 
     @Override
     public void dispose() {
-        create().dispose();
-    }
+        if(instance != null)
+        {
+            instance.dispose();
+        }
+    }//end dispose
 
+    @Override
+    public void destroy() {
+        dispose();
+        instance = null;
+    }//end dispose
+    
+    
     @Override
     public JPanel getPanel() {
         return create().getPanel();

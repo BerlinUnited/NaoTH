@@ -31,6 +31,13 @@ public class AbstractDialog extends JPanel implements Dialog
     // do nothing per default
   }
   
+  @Override
+  public void destroy()
+  {
+    // do nothing per default
+  }
+  
+  
   public void init()
   {
       

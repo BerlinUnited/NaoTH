@@ -8,6 +8,7 @@ package de.hu_berlin.informatik.ki.nao.dialogs;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.hu_berlin.informatik.ki.nao.AbstractDialog;
 import de.hu_berlin.informatik.ki.nao.Dialog;
+import de.hu_berlin.informatik.ki.nao.DialogPlugin;
 import de.hu_berlin.informatik.ki.nao.RobotControl;
 import de.hu_berlin.informatik.ki.nao.manager.DebugDrawingManager;
 import de.hu_berlin.informatik.ki.nao.manager.GenericManagerFactory;
@@ -56,14 +57,13 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
  * @author  Heinrich Mellmann
  */
-@PluginImplementation
+
 public class BehaviorViewer extends AbstractDialog
   implements
   ObjectListener<byte[]>,
@@ -71,15 +71,18 @@ public class BehaviorViewer extends AbstractDialog
   TreeExpansionListener
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public GenericManagerFactory genericManagerFactory;
-  @InjectPlugin
-  public DebugDrawingManager debugDrawingManager;
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<BehaviorViewer>
+  {
+      @InjectPlugin
+      public static RobotControl parent;
+      @InjectPlugin
+      public static GenericManagerFactory genericManagerFactory;
+      @InjectPlugin
+      public static DebugDrawingManager debugDrawingManager;
+  }//end Plugin
+  
 
-  
-  
   private final String fileWriteCommandName = "file::write";
   private final String behaviorPath = "Config/behavior-ic.dat";
   private final String setAgentCommand = "behavior:set_agent";
@@ -152,12 +155,6 @@ public class BehaviorViewer extends AbstractDialog
     
     createNewTree(null);
   }
-
-  @Init
-  public void init()
-  {
-    
-  }//end init
 
 
   private void createNewTree(DefaultMutableTreeNode root)
@@ -232,7 +229,7 @@ public class BehaviorViewer extends AbstractDialog
   {
     btReceiveExecutionPath.setSelected(false);
     sendCommand(disableUpdateBehaviorStatusCommand);
-    genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
+    Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
     //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
 
     JOptionPane.showMessageDialog(null,
@@ -313,7 +310,7 @@ public class BehaviorViewer extends AbstractDialog
   {
     if(frame != null)
     {
-      StringBuffer watchBuffer = new StringBuffer();
+      StringBuilder watchBuffer = new StringBuilder();
       
       // input and output symbols
       StringBuffer inputBuffer = new StringBuffer();
@@ -355,13 +352,13 @@ public class BehaviorViewer extends AbstractDialog
       if(inputBuffer.length() > 0)
       {
         watchBuffer.append("-- input symbols --\n");
-        watchBuffer.append(inputBuffer + "\n");
+        watchBuffer.append(inputBuffer).append("\n");
       }
 
       if(outputBuffer.length() > 0)
       {
         watchBuffer.append("-- output symbols --\n");
-        watchBuffer.append(outputBuffer + "\n");
+        watchBuffer.append(outputBuffer).append("\n");
       }
 
       this.symbolsWatchTextPanel.setText(watchBuffer.toString());
@@ -455,12 +452,12 @@ public class BehaviorViewer extends AbstractDialog
            .append("\n");
       }//end if
 
-      this.debugDrawingManager.handleResponse(msg.toString().getBytes(), null);
+      Plugin.debugDrawingManager.handleResponse(msg.toString().getBytes(), null);
       //this.parent.getDebugDrawingManager().handleResponse(msg.toString().getBytes(), null);
       
     }catch(Exception ex)
     {
-    ex.printStackTrace();
+        ex.printStackTrace();
     }
   }//end drawFrameOnField
 
@@ -883,12 +880,12 @@ public class BehaviorViewer extends AbstractDialog
   {//GEN-HEADEREND:event_btReceiveExecutionPathActionPerformed
     if(btReceiveExecutionPath.isSelected())
     {
-      if(parent.checkConnected())
+      if(Plugin.parent.checkConnected())
       {
         sendCommand(enableUpdateBehaviorStatusCommand);
         sendCommand(getListOfAgents);
         sendCommand(getAgentCommand);
-        this.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
+        Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
         //parent.getGenericManager(getExecutedBehaviorCommand).addListener(this);
       }
       else
@@ -899,14 +896,14 @@ public class BehaviorViewer extends AbstractDialog
     else
     {
       sendCommand(disableUpdateBehaviorStatusCommand);
-      this.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
+      Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
       //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
     }
 
 }//GEN-LAST:event_btReceiveExecutionPathActionPerformed
 
     private void btSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSendActionPerformed
-      String behavior = parent.getConfig().getProperty(behaviorConfKey, defaultBehavior);
+      String behavior = Plugin.parent.getConfig().getProperty(behaviorConfKey, defaultBehavior);
       JFileChooser fileChooser = new JFileChooser(behavior);
       fileChooser.setFileFilter(new ICDATFileFilter());
       fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -933,7 +930,7 @@ public class BehaviorViewer extends AbstractDialog
                   .addArg("content", buffer.toString());
           sendCommand(command);
           behavior = file.getPath();
-          parent.getConfig().setProperty(behaviorConfKey, behavior);
+          Plugin.parent.getConfig().setProperty(behaviorConfKey, behavior);
         }
         catch(IOException ex)
         {
@@ -1055,13 +1052,13 @@ public class BehaviorViewer extends AbstractDialog
 
   private void sendCommand(Command command)
   {
-    if( !parent.checkConnected() )
+    if( !Plugin.parent.checkConnected() )
       return;
 
     final Command commandToExecute = command;
     final BehaviorViewer thisFinal = this;
 
-    this.parent.getMessageServer().executeSingleCommand(new CommandSender()
+    Plugin.parent.getMessageServer().executeSingleCommand(new CommandSender()
     {
 
       @Override
@@ -1164,7 +1161,7 @@ public class BehaviorViewer extends AbstractDialog
         // default values for color and font
         Color color = Color.black;
         Font font = PLAIN_FONT;
-        StringBuffer text = new StringBuffer();
+        StringBuilder text = new StringBuilder();
 
         if(n.getUserObject() instanceof Messages.XABSLAction)
         {

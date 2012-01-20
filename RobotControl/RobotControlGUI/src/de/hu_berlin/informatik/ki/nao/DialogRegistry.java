@@ -12,11 +12,18 @@ import bibliothek.gui.dock.DefaultDockable;
 import bibliothek.gui.dock.action.DefaultDockActionSource;
 import bibliothek.gui.dock.action.LocationHint;
 import bibliothek.gui.dock.action.actions.SimpleButtonAction;
+import bibliothek.gui.dock.event.DockFrontendAdapter;
+import bibliothek.gui.dock.event.DockFrontendListener;
+import bibliothek.gui.dock.event.DockableSelectionEvent;
+import bibliothek.gui.dock.event.DockableSelectionListener;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
@@ -33,7 +40,10 @@ public class DialogRegistry
   private DockStation station;
   private DockFrontend frontend;
   private ArrayList<String> allDialogNames;
-
+  
+  
+  private TabKeyController tabKeyController = new TabKeyController();
+  
   public DialogRegistry(Frame parent, JMenu menu, DockFrontend frontend, DockStation station)
   {
     this.parent = parent;
@@ -41,6 +51,8 @@ public class DialogRegistry
     this.station = station;
     this.frontend = frontend;
     this.allDialogNames = new ArrayList<String>();
+    
+    this.tabKeyController.install(this.frontend);
   }
 
   public void registerDialog(final Dialog dialog)
@@ -70,15 +82,18 @@ public class DialogRegistry
 
   private Dockable createView(String text, final Dialog dialog)
   {
+    //
     DefaultDockable result = new DefaultDockable(dialog.getPanel(), text);
 
     frontend.addDockable(text, result);
     frontend.setHideable(result, true);
+    frontend.addFrontendListener(new DisposeListener(result, dialog));
 
     DefaultDockActionSource actions = new DefaultDockActionSource( new LocationHint( LocationHint.DOCKABLE, LocationHint.LEFT ));
     actions.add(new HelpAction(this.parent, text));
     result.setActionOffers(actions);
 
+    
     return result;
   }//end createView
 
@@ -147,5 +162,36 @@ public class DialogRegistry
     }
   }//end HelpAction
   
+  
+  
+  class DisposeListener extends DockFrontendAdapter
+  {
+    private Dialog dialog;
+    private Dockable observed;
+    
+    public DisposeListener(Dockable observed, Dialog dialog)
+    {
+        this.observed = observed;
+        this.dialog = dialog;
+    }
+      
+    @Override
+    public void shown( DockFrontend frontend, Dockable dockable ){
+        if( dockable == observed ){
+            
+        }
+    }
+
+    @Override
+    public void hidden( DockFrontend fronend, Dockable dockable ){
+        if( dockable == observed ){
+            dialog.dispose();
+            dialog.destroy();
+            frontend.remove(observed);
+            frontend.removeFrontendListener(this);
+        }
+    }
+  }//end class DisposeListener
+
 
 }//end class DialogRegistry
