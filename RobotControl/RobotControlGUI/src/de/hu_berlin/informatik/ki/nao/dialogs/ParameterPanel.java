@@ -12,14 +12,13 @@ import de.hu_berlin.informatik.ki.nao.server.CommandSender;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author  gxy
+ * @author  Heinrich Mellmann
  */
 @PluginImplementation
 public class ParameterPanel extends AbstractDialog
@@ -37,7 +36,7 @@ public class ParameterPanel extends AbstractDialog
   {
     initComponents();
 	
-	jTextArea.addKeyListener(new KeyAdapter()
+    jTextArea.addKeyListener(new KeyAdapter()
     {
 
       @Override
@@ -47,10 +46,14 @@ public class ParameterPanel extends AbstractDialog
         if (key == KeyEvent.VK_ENTER)
         {
           sendParameters();
+          
+          int k = jTextArea.getCaretPosition();
+          if(k > 0)
+            jTextArea.setCaretPosition(k-1);
         }
       }
     });
-  }
+  }//end constructor
 
   @Init
   public void init()
@@ -59,10 +62,6 @@ public class ParameterPanel extends AbstractDialog
 //      "/NaoController/";
   }
 
-  public JPanel getPanel()
-  {
-    return this;
-  }
 
   /** This method is called from within the constructor to
    * initialize the form.
@@ -179,10 +178,14 @@ private void sendParameters()
 
         cmd.addArg(key, value);
       }
-    }
+    }//end for
     sendCommand(cmd);
     
-    listParameters();
+    // update everything
+    //listParameters();
+    
+    // this is better, but less robust
+    getParameterList();
   }
   else
   {
@@ -202,7 +205,7 @@ private void jToggleButtonListActionPerformed(java.awt.event.ActionEvent evt)//G
 
 private void listParameters()
 {
-  if (parent.checkConnected())
+    if (parent.checkConnected())
     {
       Command cmd = new Command("ParameterList:list");
       sendCommand(cmd);
@@ -211,7 +214,7 @@ private void listParameters()
     {
       jToggleButtonList.setSelected(false);
     }
-}
+}//end listParameters
 
   private void getParameterList()
   {
@@ -249,17 +252,30 @@ private void listParameters()
     {
       if (originalCommand.getName().compareTo("ParameterList:list") == 0)
       {
+        String selectedList = null;
+        if(cbParameterId.getSelectedItem() != null)
+            selectedList = cbParameterId.getSelectedItem().toString();
+        
         cbParameterId.removeAllItems();
+        
         String[] parameterLists = strResult.split("\n");
         for (String parameterList : parameterLists)
         {
           cbParameterId.addItem(parameterList);
         }
+        
+        // try to set back the selection
+        if(selectedList != null)
+            cbParameterId.setSelectedItem(selectedList);
+        
         jToggleButtonList.setSelected(false);
       }
       else if (originalCommand.getName().compareTo("ParameterList:"+cbParameterId.getSelectedItem().toString() + ":get") == 0)
       {
+        // remember the carret
+        int k = jTextArea.getCaretPosition();
         jTextArea.setText(strResult);
+        jTextArea.setCaretPosition(k);
         jToggleButtonRefresh.setSelected(false);
       }
     }

@@ -945,6 +945,9 @@ public class BehaviorViewer extends AbstractDialog
       this.inputSymbolsBoxPanel.removeAll();
       this.outputSymbolsBoxPanel.removeAll();
 
+      if(this.framePrototype == null || this.framePrototype.symbolRegistry == null)
+          return;
+      
       for(String name: this.framePrototype.symbolRegistry.keySet())
       {
         JCheckBox checkBox = new JCheckBox(name);
