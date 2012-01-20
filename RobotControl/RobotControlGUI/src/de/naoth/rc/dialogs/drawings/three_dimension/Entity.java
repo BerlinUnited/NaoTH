@@ -16,7 +16,7 @@ import org.jdesktop.j3d.loaders.vrml97.VrmlLoader;
 public class Entity extends Drawable
 {
 
-  private static final String vrmlDir = "src/de/hu_berlin/informatik/ki/nao/res/vrml/";
+  private static final String vrmlDir = "src/de/naoth/rc/res/vrml/";
   private static final Loader loader = new VrmlLoader(Loader.LOAD_ALL);
   private static Map<String, BranchGroup> loadedEnities = new HashMap();
 

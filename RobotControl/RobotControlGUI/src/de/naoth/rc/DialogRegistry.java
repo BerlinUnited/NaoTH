@@ -142,7 +142,7 @@ public class DialogRegistry
       this.setAccelerator(KeyStroke.getKeyStroke("control pressed H"));
       
       
-      this.text = Helper.getResourceAsString("/de/hu_berlin/informatik/ki/nao/dialogs/"+title+".html");
+      this.text = Helper.getResourceAsString("/de/naoth/rc/dialogs/"+title+".html");
       if(this.text == null)
         this.text = "For this dialog is no help avaliable.";
 

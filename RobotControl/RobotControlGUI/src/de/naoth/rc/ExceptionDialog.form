@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -31,14 +31,14 @@
               <Component id="lblIcon" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="spDetails" alignment="1" pref="484" max="32767" attributes="0"/>
+                  <Component id="spDetails" alignment="1" pref="452" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="btDetails" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="337" max="32767" attributes="0"/>
+                      <EmptySpace pref="341" max="32767" attributes="0"/>
                       <Component id="btClose" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="lblCaption" alignment="0" pref="484" max="32767" attributes="0"/>
-                  <Component id="spMessage" alignment="0" pref="484" max="32767" attributes="0"/>
+                  <Component id="lblCaption" alignment="0" pref="452" max="32767" attributes="0"/>
+                  <Component id="spMessage" alignment="0" pref="452" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -72,7 +72,7 @@
     <Component class="javax.swing.JLabel" name="lblIcon">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/de/hu_berlin/informatik/ki/nao/res/warning32.png"/>
+          <Image iconType="3" name="/de/naoth/rc/res/warning32.png"/>
         </Property>
       </Properties>
     </Component>

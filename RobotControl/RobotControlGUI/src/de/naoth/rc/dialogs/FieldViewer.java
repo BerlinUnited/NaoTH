@@ -162,7 +162,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btClean);
 
-        btSwitchGoals.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hu_berlin/informatik/ki/nao/res/reload.png"))); // NOI18N
+        btSwitchGoals.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/reload.png"))); // NOI18N
         btSwitchGoals.setToolTipText("Switch Goals");
         btSwitchGoals.setFocusable(false);
         btSwitchGoals.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -174,7 +174,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btSwitchGoals);
 
-        btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hu_berlin/informatik/ki/nao/res/view_icon.png"))); // NOI18N
+        btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_icon.png"))); // NOI18N
         btImageProjection.setToolTipText("Image Projection");
         btImageProjection.setFocusable(false);
         btImageProjection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -186,7 +186,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btImageProjection);
 
-        btLocalView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hu_berlin/informatik/ki/nao/res/border_inside.png"))); // NOI18N
+        btLocalView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/border_inside.png"))); // NOI18N
         btLocalView.setToolTipText("Local View");
         btLocalView.setFocusable(false);
         btLocalView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -198,7 +198,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btLocalView);
 
-        btRadarView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hu_berlin/informatik/ki/nao/res/quick_restart.png"))); // NOI18N
+        btRadarView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/quick_restart.png"))); // NOI18N
         btRadarView.setToolTipText("Local View");
         btRadarView.setFocusable(false);
         btRadarView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -210,7 +210,7 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btRadarView);
 
-        btToggleSimspark.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/hu_berlin/informatik/ki/nao/res/view_right_p.png"))); // NOI18N
+        btToggleSimspark.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_right_p.png"))); // NOI18N
         btToggleSimspark.setToolTipText("Simspark Field Size");
         btToggleSimspark.setFocusable(false);
         btToggleSimspark.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

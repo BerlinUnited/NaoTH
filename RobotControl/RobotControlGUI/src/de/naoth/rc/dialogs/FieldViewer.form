@@ -92,7 +92,7 @@
         <Component class="javax.swing.JButton" name="btSwitchGoals">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/hu_berlin/informatik/ki/nao/res/reload.png"/>
+              <Image iconType="3" name="/de/naoth/rc/res/reload.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Switch Goals"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -106,7 +106,7 @@
         <Component class="javax.swing.JToggleButton" name="btImageProjection">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/hu_berlin/informatik/ki/nao/res/view_icon.png"/>
+              <Image iconType="3" name="/de/naoth/rc/res/view_icon.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Image Projection"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -120,7 +120,7 @@
         <Component class="javax.swing.JToggleButton" name="btLocalView">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/hu_berlin/informatik/ki/nao/res/border_inside.png"/>
+              <Image iconType="3" name="/de/naoth/rc/res/border_inside.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Local View"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -134,7 +134,7 @@
         <Component class="javax.swing.JToggleButton" name="btRadarView">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/hu_berlin/informatik/ki/nao/res/quick_restart.png"/>
+              <Image iconType="3" name="/de/naoth/rc/res/quick_restart.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Local View"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -148,7 +148,7 @@
         <Component class="javax.swing.JToggleButton" name="btToggleSimspark">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/de/hu_berlin/informatik/ki/nao/res/view_right_p.png"/>
+              <Image iconType="3" name="/de/naoth/rc/res/view_right_p.png"/>
             </Property>
             <Property name="toolTipText" type="java.lang.String" value="Simspark Field Size"/>
             <Property name="focusable" type="boolean" value="false"/>
