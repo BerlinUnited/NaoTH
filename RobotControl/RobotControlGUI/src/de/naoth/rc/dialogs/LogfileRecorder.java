@@ -14,7 +14,7 @@ import com.jcraft.jsch.SftpProgressMonitor;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.RobotControlImpl;
-import de.naoth.rc.scp.scp;
+import de.naoth.rc.scp.Scp;
 import de.naoth.rc.server.Command;
 import java.io.FileOutputStream;
 import java.io.File;
@@ -421,7 +421,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
   class Copier extends SwingWorker<Boolean, File> {
       String name;
       File store;
-      scp scp;
+      Scp scp;
       javax.swing.JProgressBar progress;
 
       public Copier(String name, File store, javax.swing.JProgressBar progress) {
@@ -436,7 +436,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
           FileOutputStream out = new FileOutputStream(this.store);
           SftpProgressMonitor monitor = new MyProgressMonitor();
 
-          scp = new scp(server.getAddress().getAddress().getHostAddress());
+          scp = new Scp(server.getAddress().getAddress().getHostAddress());
           scp.c.get(name, out, monitor);
 
           out.close();

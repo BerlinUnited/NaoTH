@@ -11,13 +11,13 @@ import java.util.Arrays;
  *
  * @author fh
  */
-public class scp {
+public class Scp {
 
   public ChannelSftp c;
   private Channel channel;
   private Session session;
 
-  public scp(String Ip) throws JSchException
+  public Scp(String Ip) throws JSchException
   {
       String userName = "nao";
       UserInfo ui = new MyUserInfo();
@@ -165,6 +165,7 @@ public class scp {
     {
     }
   }
+  
 
   public class MyUserInfo implements UserInfo
   {
