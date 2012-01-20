@@ -3,7 +3,7 @@ package de.hu_berlin.informatik.ki.nao.extendeddebugrequest;
 /**
  * 
  */
-import de.hu_berlin.informatik.ki.nao.dialogs.panels.NDTreeNode;
+import de.naoth.rc.dialogs.panels.NDTreeNode;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.CheckboxTree;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.DefaultCheckboxTreeCellRenderer;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingModel.CheckingMode;
