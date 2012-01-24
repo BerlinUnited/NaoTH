@@ -11,6 +11,7 @@
 
 #include "Tools/NaoControllerBase.h"
 #include "DebugCommunication/DebugServer.h"
+#include "Tools/DataStructures/SwapSpace.h"
 
 namespace naoth
 {
