@@ -17,6 +17,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <rttools/rtthread.h>
 
 using namespace naoth;
 
@@ -31,6 +32,18 @@ void got_signal(int)
 
   exit(0);
 }
+
+/*
+class TestThread : public RtThread
+{
+	public:
+    TestThread(){}
+    ~TestThread(){}
+    virtual void *execute(){}
+    virtual void postExecute(){}
+    virtual void preExecute(){}
+};
+*/
 
 DebugServer* theDebugServer;
 
@@ -87,7 +100,6 @@ int main(int argc, char *argv[])
   g_type_init();
   if (!g_thread_supported())
     g_thread_init(NULL);
-
 
   // react on "kill"
   struct sigaction sa;
