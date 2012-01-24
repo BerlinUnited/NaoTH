@@ -9,7 +9,7 @@
 #ifndef _VisualObstacleLocator_h_
 #define _VisualObstacleLocator_h_
 
-#include "Cognition/Cognition.h"
+#include <ModuleFramework/Module.h>
 
 // debug
 #include "Tools/Debug/DebugRequest.h"

@@ -5,7 +5,10 @@
  * Created on 14. März 2011, 14:22
  */
 
-#include "Cognition/Cognition.h"
+#ifndef _SCANLINEEDGELDETECTOR_H_
+#define _SCANLINEEDGELDETECTOR_H_
+
+#include <ModuleFramework/Module.h>
 
 #include "Tools/ColorClasses.h"
 #include "Tools/Math/Vector2.h"
@@ -25,10 +28,6 @@
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BodyContour.h"
-
-#ifndef SCANLINEEDGELDETECTOR_H
-#define  SCANLINEEDGELDETECTOR_H
-
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(Image)
@@ -65,5 +64,5 @@ private:
   double calculateMeanAngle(double angle1,double  angle2);
 
 };
-#endif  /* SCANLINEEDGELDETECTOR_H */
+#endif  /* _SCANLINEEDGELDETECTOR_H_ */
 

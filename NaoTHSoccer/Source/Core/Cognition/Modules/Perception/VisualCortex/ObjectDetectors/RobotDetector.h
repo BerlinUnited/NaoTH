@@ -8,6 +8,8 @@
 #ifndef _RobotDetector_h_
 #define _RobotDetector_h_
 
+#include <ModuleFramework/Module.h>
+
 #include <vector> 
 
 // Tools
@@ -27,10 +29,6 @@
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/BlobFinder.h"
 #include "Tools/ImageProcessing/BlobList.h"
-
-
-//Cognition
-#include "Cognition/Cognition.h"
 
 //Representations
 #include "Representations/Infrastructure/Image.h"

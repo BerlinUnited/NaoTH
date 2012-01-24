@@ -8,7 +8,7 @@
 #ifndef __KalmanFilterBallLocator_h_
 #define __KalmanFilterBallLocator_h_
 
-#include "Cognition/Cognition.h"
+#include <ModuleFramework/Module.h>
 
 // Representations
 #include "Representations/Perception/BallPercept.h"

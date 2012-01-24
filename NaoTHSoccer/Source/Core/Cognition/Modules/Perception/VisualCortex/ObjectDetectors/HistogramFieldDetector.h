@@ -8,9 +8,9 @@
 #ifndef __HistogramFieldDetector_H_
 #define __HistogramFieldDetector_H_
 
-#include <vector>
+#include <ModuleFramework/Module.h>
 
-#include "Cognition/Cognition.h"
+#include <vector>
 
 #include "Tools/ColorClasses.h"
 #include "Tools/Math/Vector2.h"

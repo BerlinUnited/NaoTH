@@ -10,11 +10,11 @@
 #ifndef _BodyContourProvider_h_
 #define _BodyContourProvider_h_
 
-#include "Cognition/Cognition.h"
+#include <ModuleFramework/Module.h>
+
 #include <vector>
 
 //Tools
-
 #include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
 
@@ -22,7 +22,6 @@
 //Debug
 
 //Representations
-
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Perception/CameraMatrix.h"
