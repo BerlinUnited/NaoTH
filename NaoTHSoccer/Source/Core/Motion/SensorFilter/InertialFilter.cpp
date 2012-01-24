@@ -34,7 +34,7 @@ void InertialFilter::calibrate()
       && !intentionallyMoving() )
   {
     // stand and not moving
-    if ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE) )
+    if ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) )
     {
       // both feet on the ground
       Pose3D foot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
@@ -55,16 +55,17 @@ void InertialFilter::calibrate()
           theOffset = theNewOffset;
         }
         return;
-      }
-    }
-  }
+      }//end if
+    }//end if
+  }//end if
 
   calibrateNum = 0;
-}
+}//end calibrate
 
 // check all request joints' speed, return true if all joints are almost not moving
 bool InertialFilter::intentionallyMoving()
 {
+  // check the joints
   const double* jointSpeed = theBlackBoard.theMotorJointData.dp;
   const double* stiffness = theBlackBoard.theMotorJointData.stiffness;
   const double min_speed = Math::fromDegrees(1); // degree per second
@@ -75,7 +76,11 @@ bool InertialFilter::intentionallyMoving()
     {
       return true;
     }
-  }
+  }//end for
+
+
+  // check the gyro
+
 
   return false;
-}
+}//end intentionallyMoving
