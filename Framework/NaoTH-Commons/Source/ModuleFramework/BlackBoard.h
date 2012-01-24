@@ -216,6 +216,20 @@ public:
     return **typedData;
   }//end getRepresentation
 
+
+  template<class T>
+  T& operator[] (const std::string& name)
+  {
+    return getRepresentation<T>(name);
+  }
+
+  template<class T>
+  const T& operator[] (const std::string& name) const
+  {
+    return getRepresentation<T>(name);
+  }
+
+
 };
 
 #endif //__BlackBoard_h_
