@@ -62,7 +62,10 @@ project "Webots"
 	  "gobject-2.0",
 	  "gmodule-2.0",
 	  "gthread-2.0",
-	  "protobuf"}
+	  "protobuf",
+          "opencv_core",
+          "opencv_ml"
+    }
     
     targetname "nao_team_0"
     targetdir "../nao_robocup/controllers/nao_team_0/"

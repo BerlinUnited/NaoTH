@@ -82,6 +82,9 @@ public:
   
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
+
+  void neuralStabilize(double (&position)[naoth::JointData::numOfJoint]);
+
   /**
    * @return if stabilizer is working
    */
@@ -96,6 +99,8 @@ public:
   Vector3<double> sensorCoMIn(KinematicChain::LinkID link) const;
 
   Vector3<double> balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
+
+  void gotoArms(const InverseKinematic::HipFeetPose& currentPose, double (&position)[naoth::JointData::numOfJoint]);
 
 private:
 

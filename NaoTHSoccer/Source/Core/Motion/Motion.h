@@ -15,9 +15,11 @@
 #include "AbstractMotion.h"
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
+#include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "SensorFilter/InertialFilter.h"
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
+#include "Tools/Debug/Logger.h"
 
 #ifdef NAO_OLD
 #include <Representations/Infrastructure/DebugMessage.h>
@@ -56,6 +58,7 @@ private:
   InertialFilter theInertialFilter;
   SupportPolygonGenerator theSupportPolygonGenerator;
   OdometryCalculator theOdometryCalculator;
+  FootTouchCalibrator theFootTouchCalibrator;
   
   HeadMotionEngine theHeadMotionEngine;
   std::list<MotionFactory*> theMotionFactories;
@@ -78,6 +81,7 @@ private:
     exiting
   } state;
 
+  Logger motionLogger;
 #ifdef NAO_OLD
   naoth::DebugMessageIn theDebugMessageIn;
   naoth::DebugMessageOut theDebugMessageOut;

@@ -132,6 +132,7 @@ message MotionRequest {
   optional bool starndardStand = 5;
   optional KickRequest kickRequest = 6;
   optional double standHeight = 7;
+  optional bool calibrateFootTouchDetector = 8;
 }
 
 message LinePercept {

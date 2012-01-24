@@ -343,7 +343,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(KickRequest));
   MotionRequest_descriptor_ = file->message_type(13);
-  static const int MotionRequest_offsets_[7] = {
+  static const int MotionRequest_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, forced_),
@@ -351,6 +351,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, starndardstand_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, kickrequest_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, standheight_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, calibratefoottouchdetector_),
   };
   MotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -671,38 +672,39 @@ void protobuf_AddDesc_Representations_2eproto() {
     "ssages.Pose2D\"{\n\013KickRequest\022/\n\tkickPoin"
     "t\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\025\n"
     "\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022"
-    "\n\nfinishKick\030\004 \002(\010\"\310\001\n\rMotionRequest\022\n\n\002"
+    "\n\nfinishKick\030\004 \002(\010\"\354\001\n\rMotionRequest\022\n\n\002"
     "id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/"
     "\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Walk"
     "Request\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickR"
     "equest\030\006 \001(\0132\032.naothmessages.KickRequest"
-    "\022\023\n\013standHeight\030\007 \001(\001\"\253\001\n\013LinePercept\022.\n"
-    "\005lines\030\001 \003(\0132\037.naothmessages.FieldLineSe"
-    "gment\0222\n\rintersections\030\002 \003(\0132\033.naothmess"
-    "ages.Intersection\0228\n\022middleCircleCenter\030"
-    "\003 \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020"
-    "ScanLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.n"
-    "aothmessages.IntVector2\0220\n\nposOnField\030\002 "
-    "\002(\0132\034.naothmessages.DoubleVector2\022#\n\005col"
-    "or\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLi"
-    "neID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\ten"
-    "dPoints\030\002 \003(\0132\037.naothmessages.ScanLineEn"
-    "dPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data"
-    "\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStat"
-    "us\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r"
-    "\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastM"
-    "otion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nhe"
-    "adMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002"
-    "(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naot"
-    "hmessages.Pose2D\0225\n\026plannedMotionRightFo"
-    "ot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020plann"
-    "edMotionHip\030\010 \002(\0132\025.naothmessages.Pose2D"
-    "\022;\n\021stepControlStatus\030\t \001(\0132 .naothmessa"
-    "ges.StepControlStatus\"3\n\014OdometryData\022#\n"
-    "\004pose\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017Ca"
-    "librationData\022:\n\024inertialSensorOffset\030\001 "
-    "\001(\0132\034.naothmessages.DoubleVector2B)\n\'de."
-    "hu_berlin.informatik.ki.nao.messages", 3556);
+    "\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrateFootTo"
+    "uchDetector\030\010 \001(\010\"\253\001\n\013LinePercept\022.\n\005lin"
+    "es\030\001 \003(\0132\037.naothmessages.FieldLineSegmen"
+    "t\0222\n\rintersections\030\002 \003(\0132\033.naothmessages"
+    ".Intersection\0228\n\022middleCircleCenter\030\003 \001("
+    "\0132\034.naothmessages.DoubleVector2\"\254\001\n\020Scan"
+    "LineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.naoth"
+    "messages.IntVector2\0220\n\nposOnField\030\002 \002(\0132"
+    "\034.naothmessages.DoubleVector2\022#\n\005color\030\003"
+    " \002(\0162\024.naothmessages.Color\022\022\n\nScanLineID"
+    "\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\tendPoi"
+    "nts\030\002 \003(\0132\037.naothmessages.ScanLineEndPoi"
+    "nt\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003"
+    "(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStatus\022\016"
+    "\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n"
+    "\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotio"
+    "n\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMo"
+    "tion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224"
+    "\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naothmes"
+    "sages.Pose2D\0225\n\026plannedMotionRightFoot\030\007"
+    " \002(\0132\025.naothmessages.Pose2D\022/\n\020plannedMo"
+    "tionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021"
+    "stepControlStatus\030\t \001(\0132 .naothmessages."
+    "StepControlStatus\"3\n\014OdometryData\022#\n\004pos"
+    "e\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017Calibr"
+    "ationData\022:\n\024inertialSensorOffset\030\001 \001(\0132"
+    "\034.naothmessages.DoubleVector2B)\n\'de.hu_b"
+    "erlin.informatik.ki.nao.messages", 3592);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -5755,6 +5757,7 @@ const int MotionRequest::kWalkRequestFieldNumber;
 const int MotionRequest::kStarndardStandFieldNumber;
 const int MotionRequest::kKickRequestFieldNumber;
 const int MotionRequest::kStandHeightFieldNumber;
+const int MotionRequest::kCalibrateFootTouchDetectorFieldNumber;
 #endif  // !_MSC_VER
 
 MotionRequest::MotionRequest()
@@ -5782,6 +5785,7 @@ void MotionRequest::SharedCtor() {
   starndardstand_ = false;
   kickrequest_ = NULL;
   standheight_ = 0;
+  calibratefoottouchdetector_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5829,6 +5833,7 @@ void MotionRequest::Clear() {
       if (kickrequest_ != NULL) kickrequest_->::naothmessages::KickRequest::Clear();
     }
     standheight_ = 0;
+    calibratefoottouchdetector_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -5943,6 +5948,22 @@ bool MotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(64)) goto parse_calibrateFootTouchDetector;
+        break;
+      }
+      
+      // optional bool calibrateFootTouchDetector = 8;
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_calibrateFootTouchDetector:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &calibratefoottouchdetector_)));
+          set_has_calibratefoottouchdetector();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -6002,6 +6023,11 @@ void MotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->standheight(), output);
   }
   
+  // optional bool calibrateFootTouchDetector = 8;
+  if (has_calibratefoottouchdetector()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(8, this->calibratefoottouchdetector(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -6047,6 +6073,11 @@ void MotionRequest::SerializeWithCachedSizes(
   // optional double standHeight = 7;
   if (has_standheight()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->standheight(), target);
+  }
+  
+  // optional bool calibrateFootTouchDetector = 8;
+  if (has_calibratefoottouchdetector()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(8, this->calibratefoottouchdetector(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -6103,6 +6134,11 @@ int MotionRequest::ByteSize() const {
       total_size += 1 + 8;
     }
     
+    // optional bool calibrateFootTouchDetector = 8;
+    if (has_calibratefoottouchdetector()) {
+      total_size += 1 + 1;
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -6151,6 +6187,9 @@ void MotionRequest::MergeFrom(const MotionRequest& from) {
     if (from.has_standheight()) {
       set_standheight(from.standheight());
     }
+    if (from.has_calibratefoottouchdetector()) {
+      set_calibratefoottouchdetector(from.calibratefoottouchdetector());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -6188,6 +6227,7 @@ void MotionRequest::Swap(MotionRequest* other) {
     std::swap(starndardstand_, other->starndardstand_);
     std::swap(kickrequest_, other->kickrequest_);
     std::swap(standheight_, other->standheight_);
+    std::swap(calibratefoottouchdetector_, other->calibratefoottouchdetector_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

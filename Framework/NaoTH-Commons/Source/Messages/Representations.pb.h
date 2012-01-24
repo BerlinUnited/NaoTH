@@ -1841,6 +1841,13 @@ class MotionRequest : public ::google::protobuf::Message {
   inline double standheight() const;
   inline void set_standheight(double value);
   
+  // optional bool calibrateFootTouchDetector = 8;
+  inline bool has_calibratefoottouchdetector() const;
+  inline void clear_calibratefoottouchdetector();
+  static const int kCalibrateFootTouchDetectorFieldNumber = 8;
+  inline bool calibratefoottouchdetector() const;
+  inline void set_calibratefoottouchdetector(bool value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1857,6 +1864,8 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_kickrequest();
   inline void set_has_standheight();
   inline void clear_has_standheight();
+  inline void set_has_calibratefoottouchdetector();
+  inline void clear_has_calibratefoottouchdetector();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1867,9 +1876,10 @@ class MotionRequest : public ::google::protobuf::Message {
   double standheight_;
   bool forced_;
   bool starndardstand_;
+  bool calibratefoottouchdetector_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -4568,6 +4578,28 @@ inline double MotionRequest::standheight() const {
 inline void MotionRequest::set_standheight(double value) {
   set_has_standheight();
   standheight_ = value;
+}
+
+// optional bool calibrateFootTouchDetector = 8;
+inline bool MotionRequest::has_calibratefoottouchdetector() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void MotionRequest::set_has_calibratefoottouchdetector() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void MotionRequest::clear_has_calibratefoottouchdetector() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void MotionRequest::clear_calibratefoottouchdetector() {
+  calibratefoottouchdetector_ = false;
+  clear_has_calibratefoottouchdetector();
+}
+inline bool MotionRequest::calibratefoottouchdetector() const {
+  return calibratefoottouchdetector_;
+}
+inline void MotionRequest::set_calibratefoottouchdetector(bool value) {
+  set_has_calibratefoottouchdetector();
+  calibratefoottouchdetector_ = value;
 }
 
 // -------------------------------------------------------------------

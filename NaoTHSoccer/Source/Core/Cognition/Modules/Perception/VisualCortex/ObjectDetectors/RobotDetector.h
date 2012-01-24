@@ -37,13 +37,15 @@
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 
 // Module-Declaration
 
 BEGIN_DECLARE_MODULE(RobotDetector)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept) 
   REQUIRE(ColoredGrid)
@@ -135,6 +137,11 @@ private:
   inline bool isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor);
   inline bool pixelInSearchArea(Vector2<int>& pixel);
 
+
+  const ColorClassifier& getColorTable64() const
+  {
+    return getColorClassificationModel();
+  }
 };
 
 #endif // RobotDetector_h_

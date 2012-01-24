@@ -19,6 +19,7 @@
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Tools/Math/Polygon.h"
 #include "Tools/Math/Moments2.h"
@@ -34,7 +35,8 @@
 BEGIN_DECLARE_MODULE(GoalDetector)
   REQUIRE(Image)
   REQUIRE(CameraMatrix)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(ColoredGrid)
 //  REQUIRE(FieldPercept)
   REQUIRE(FrameInfo)
@@ -131,6 +133,12 @@ private:
     const Vector2<int>& getClosestPoint(const Vector2<int>& reference) { return vertices.getClosestPoint(reference); }
 
   };//end class Blob
+
+
+  const ColorClassifier& getColorTable64() const
+  {
+    return getColorClassificationModel();
+  }
 
 };//end class GoalDetector
 

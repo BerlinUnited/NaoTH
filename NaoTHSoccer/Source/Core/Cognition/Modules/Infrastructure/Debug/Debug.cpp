@@ -147,9 +147,14 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     if (g_file_test(file.c_str(), G_FILE_TEST_EXISTS))
     {
       if (getColorTable64().loadFromFile(file))
+      {
+        getColorClassificationModel().setColorTable(getColorTable64());
         outstream << "colortable loaded";
+      }
       else
+      {
         outstream << "colortable cold not be loaded";
+      }
     }
     else
     {

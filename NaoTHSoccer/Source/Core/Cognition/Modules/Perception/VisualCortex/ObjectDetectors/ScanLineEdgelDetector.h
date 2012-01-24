@@ -22,7 +22,7 @@
 #include "Tools/ImageProcessing/Edgel.h"
 
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
@@ -31,7 +31,7 @@
 
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(Image)
-  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)

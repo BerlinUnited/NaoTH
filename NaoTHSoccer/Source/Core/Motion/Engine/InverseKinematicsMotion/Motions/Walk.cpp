@@ -9,6 +9,7 @@
 #include "Walk/ZMPPlanner.h"
 #include "Walk/FootTrajectoryGenerator.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -16,12 +17,12 @@ using namespace naoth;
 unsigned int Walk::theStepID = 0;
 
 Walk::Walk()
-:IKMotion(motion::walk),
-theWalkParameters(theParameters.walk),
-theWaitLandingCount(0),
-theUnsupportedCount(0),
-isStopping(false),
-stoppingStepFinished(false)
+  :IKMotion(motion::walk),
+  theWalkParameters(theParameters.walk),
+  theWaitLandingCount(0),
+  theUnsupportedCount(0),
+  isStopping(false),
+  stoppingStepFinished(false)
 {
 }
   
@@ -29,8 +30,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 {
   //calculateError();
 
-  bool protecting = FSRProtection();
-  if ( protecting )
+  if ( theWalkParameters.enableFSRProtection && FSRProtection() )
   {
     if ( !isStopped() )
     {
@@ -42,7 +42,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   }
   else
   {
-    if ( !waitLanding() )
+    if ( !theWalkParameters.enableWaitLanding || !waitLanding() )
     {
       plan(motionRequest);
       theCoMFeetPose = executeStep();
@@ -50,11 +50,16 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
     HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
 
-    theEngine.rotationStabilize(c.hip);
+    // apply online stabilization
+    if(theParameters.walk.rotationStabilize)
+      theEngine.rotationStabilize(c.hip);
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
-    theEngine.autoArms(c, theMotorJointData.position);
+    
+    // move arms
+    //theEngine.autoArms(c, theMotorJointData.position);
+    theEngine.gotoArms(c, theMotorJointData.position);
 
     // force the hip joint
     if (theMotorJointData.position[JointData::LHipRoll] < 0)
@@ -62,16 +67,36 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
     if (theMotorJointData.position[JointData::RHipRoll] > 0)
       theMotorJointData.position[JointData::RHipRoll] *= theWalkParameters.rightHipRollSingleSupFactor;
+
+    if(theParameters.walk.stabilizeNeural)
+      theEngine.neuralStabilize(theMotorJointData.position);
   }
 
+
+  // TODO: this is unfinished
+  // calculate the error
+  /*
+  const Pose3D& supportFootPoseModel = theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::LFoot].M;
+  Vector3<double> requested_com = theBlackBoard.theKinematicChainModel.CoM;
+  // in left foot
+  requested_com = supportFootPoseModel.invert()*requested_com;
+  
+  const Pose3D& supportFootPoseSensor = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
+  Vector3<double> observed_com = theBlackBoard.theKinematicChain.CoM;
+  // in left foot
+  observed_com = supportFootPoseSensor.invert()*observed_com;
+
+  double error = (requested_com - observed_com).abs2();
+  com_errors.add(error);
+
+  PLOT("com_errors",com_errors.getAverage());
+  */
+
   updateMotionStatus(motionStatus);
-}
+}//end execute
 
 bool Walk::FSRProtection()
 {
-  if ( !theWalkParameters.enableFSRProtection )
-    return false;
-
   // no foot on the ground,
   // both feet should on the ground, e.g canStop
   // TODO: check current of leg joints
@@ -98,7 +123,8 @@ bool Walk::FSRProtection()
   {
     return false;
   }
-}
+}//end FSRProtection
+
 
 bool Walk::waitLanding()
 {
@@ -142,7 +168,7 @@ bool Walk::waitLanding()
     theWaitLandingCount = 0;
     return false;
   }
-}
+}//end waitLanding
 
 bool Walk::canStop() const
 {
@@ -182,7 +208,7 @@ void Walk::plan(const MotionRequest& motionRequest)
       stopWalkingWithoutStand();
     }
   }
-}
+}//end plan
 
 void Walk::addStep(const Step& step)
 {

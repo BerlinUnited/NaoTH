@@ -28,7 +28,7 @@ public:
   /**
    * The method returns the basic time step in seconds
    */
-  double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
+  inline double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
 
 
   virtual void print(ostream& stream) const

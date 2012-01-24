@@ -71,7 +71,7 @@ public class NaoScp extends javax.swing.JFrame
     if(fhIsTesting)
     {
       remotePrefix = "/Users/robotest/deploy";
-      subnetField.setText("127.0.0");
+      subnetFieldLAN.setText("127.0.0");
       sshUser.setText("robotest");
       sshPassword.setText("robotest");
     }
@@ -159,27 +159,27 @@ public class NaoScp extends javax.swing.JFrame
       String sNaoThreeWlanIp = "";
       String sNaoFourWlanIp = "";
 
-      if(subnetField.getText().endsWith("."))
+      if(subnetFieldLAN.getText().endsWith("."))
       {
-        sNaoOneLanIp = subnetField.getText() + subnetLan.getText() + "." + naoByte1.getText();
-        sNaoTwoLanIp = subnetField.getText() + subnetLan.getText() + "." + naoByte2.getText();
-        sNaoThreeLanIp = subnetField.getText() + subnetLan.getText() + "." + naoByte3.getText();
-        sNaoFourLanIp = subnetField.getText() + subnetLan.getText() + "." + naoByte4.getText();
-        sNaoOneWlanIp = subnetField.getText() + subnetWlan.getText() + "." + naoByte1.getText();
-        sNaoTwoWlanIp = subnetField.getText() + subnetWlan.getText() + "." + naoByte2.getText();
-        sNaoThreeWlanIp = subnetField.getText() + subnetWlan.getText() + "." + naoByte3.getText();
-        sNaoFourWlanIp = subnetField.getText() + subnetWlan.getText() + "." + naoByte4.getText();
+        sNaoOneLanIp = subnetFieldLAN.getText() + naoByte1.getText();
+        sNaoTwoLanIp = subnetFieldLAN.getText() + naoByte2.getText();
+        sNaoThreeLanIp = subnetFieldLAN.getText() + naoByte3.getText();
+        sNaoFourLanIp = subnetFieldLAN.getText() + naoByte4.getText();
+        sNaoOneWlanIp = subnetFieldWLAN.getText() + naoByte1.getText();
+        sNaoTwoWlanIp = subnetFieldWLAN.getText() + naoByte2.getText();
+        sNaoThreeWlanIp = subnetFieldWLAN.getText() + naoByte3.getText();
+        sNaoFourWlanIp = subnetFieldWLAN.getText() +  naoByte4.getText();
       }
       else
       {
-        sNaoOneLanIp = subnetField.getText() + "." + subnetLan.getText() + "." + naoByte1.getText();
-        sNaoTwoLanIp = subnetField.getText() + "." + subnetLan.getText() + "." + naoByte2.getText();
-        sNaoThreeLanIp = subnetField.getText() + "." + subnetLan.getText() + "." + naoByte3.getText();
-        sNaoFourLanIp = subnetField.getText() + "." + subnetLan.getText() + "." + naoByte4.getText();
-        sNaoOneWlanIp = subnetField.getText() + "." + subnetWlan.getText() + "." + naoByte1.getText();
-        sNaoTwoWlanIp = subnetField.getText() + "." + subnetWlan.getText() + "." + naoByte2.getText();
-        sNaoThreeWlanIp = subnetField.getText() + "." + subnetWlan.getText() + "." + naoByte3.getText();
-        sNaoFourWlanIp = subnetField.getText() + "." + subnetWlan.getText() + "." + naoByte4.getText();
+        sNaoOneLanIp = subnetFieldLAN.getText() + "." + naoByte1.getText();
+        sNaoTwoLanIp = subnetFieldLAN.getText() + "." + naoByte2.getText();
+        sNaoThreeLanIp = subnetFieldLAN.getText() + "." + naoByte3.getText();
+        sNaoFourLanIp = subnetFieldLAN.getText() + "." + naoByte4.getText();
+        sNaoOneWlanIp = subnetFieldWLAN.getText() + "." + naoByte1.getText();
+        sNaoTwoWlanIp = subnetFieldWLAN.getText() + "." + naoByte2.getText();
+        sNaoThreeWlanIp = subnetFieldWLAN.getText() + "." + naoByte3.getText();
+        sNaoFourWlanIp = subnetFieldWLAN.getText() + "." + naoByte4.getText();
       }
 
       int iNaoByte1 = Integer.parseInt(naoByte1.getText());
@@ -363,9 +363,8 @@ public class NaoScp extends javax.swing.JFrame
       naoByte4.setEnabled(enable);
       sshPassword.setEnabled(enable);
       sshUser.setEnabled(enable);
-      subnetField.setEnabled(enable);
-      subnetLan.setEnabled(enable);
-      subnetWlan.setEnabled(enable);
+      subnetFieldLAN.setEnabled(enable);
+      subnetFieldWLAN.setEnabled(enable);
   }
 
 
@@ -453,20 +452,23 @@ public class NaoScp extends javax.swing.JFrame
           catch(IOException ioe)
           {
             log("I/O Error in prepareDeploy- " + ioe.toString());
-          }
-          
+          }          
+
+          copyFiles(new File(localLibnaothPath() + "/libnaoth.so"), localLib);
+        }
+        
+        if(copyExe.isSelected())
+        {
           File localExe = new File(
           localDeployOutPath(i) + binPath() + "/naoth");
           if(localExe.exists())
           {
             localExe.delete();
           }
-          
-
-          copyFiles(new File(localLibnaothPath() + "/libnaoth.so"), localLib);
+                    
           copyFiles(new File(localLibnaothPath() + "/naoth"), localExe);
         }
-
+        
         if(copyConfig.isSelected())
         {
           String myConfigPath = localDeployOutPath(i) + configPath();
@@ -591,6 +593,16 @@ public class NaoScp extends javax.swing.JFrame
             {
               entryAvaliable = true;
               entryTag += "L";
+            }
+        }
+
+        if(copyExe.isSelected())
+        {
+            File exeFile = new File(localDeployRootPath() + "/in/" + entry + "/naoth");
+            if(exeFile.exists() && exeFile.isFile())
+            {
+              entryAvaliable = true;
+              entryTag += "E";
             }
         }
 
@@ -921,7 +933,7 @@ public class NaoScp extends javax.swing.JFrame
     jLabel18 = new javax.swing.JLabel();
     jActionsPanel = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
-    subnetField = new javax.swing.JTextField();
+    subnetFieldLAN = new javax.swing.JTextField();
     jLabel6 = new javax.swing.JLabel();
     naoByte1 = new javax.swing.JTextField();
     jLabel7 = new javax.swing.JLabel();
@@ -933,14 +945,14 @@ public class NaoScp extends javax.swing.JFrame
     jSeparator1 = new javax.swing.JSeparator();
     jDirPathLabel = new javax.swing.JLabel();
     jLabel13 = new javax.swing.JLabel();
-    subnetLan = new javax.swing.JTextField();
     jLabel14 = new javax.swing.JLabel();
-    subnetWlan = new javax.swing.JTextField();
     jLabel15 = new javax.swing.JLabel();
     jBackupBox = new javax.swing.JComboBox();
     naoByte4 = new javax.swing.JTextField();
     jLabel17 = new javax.swing.JLabel();
     jLabel16 = new javax.swing.JLabel();
+    jLabel19 = new javax.swing.JLabel();
+    subnetFieldWLAN = new javax.swing.JTextField();
     jScrollPane1 = new javax.swing.JScrollPane();
     jLogWindow = new javax.swing.JTextArea();
     jCopyStatus = new javax.swing.JLabel();
@@ -952,6 +964,7 @@ public class NaoScp extends javax.swing.JFrame
     jScrollPane2 = new javax.swing.JScrollPane();
     jCommentTextArea = new javax.swing.JTextArea();
     cbRestartNaoth = new javax.swing.JCheckBox();
+    copyExe = new javax.swing.JCheckBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("NaoSCP");
@@ -1097,10 +1110,10 @@ public class NaoScp extends javax.swing.JFrame
 
     jLabel1.setText("SubNet");
 
-    subnetField.setText("192.168");
-    subnetField.addActionListener(new java.awt.event.ActionListener() {
+    subnetFieldLAN.setText("10.0.0");
+    subnetFieldLAN.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        subnetFieldActionPerformed(evt);
+        subnetFieldLANActionPerformed(evt);
       }
     });
 
@@ -1151,28 +1164,9 @@ public class NaoScp extends javax.swing.JFrame
     jDirPathLabel.setText("SET DIRECTORY :)");
     jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\NaoTH-2009\\Projects\\NaoController\")");
 
-    jLabel13.setText("LAN");
+    jLabel13.setText("LAN:");
 
-    subnetLan.setText("0");
-    subnetLan.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        subnetLanActionPerformed(evt);
-      }
-    });
-    subnetLan.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyReleased(java.awt.event.KeyEvent evt) {
-        subnetLanKeyReleased(evt);
-      }
-    });
-
-    jLabel14.setText("WLAN");
-
-    subnetWlan.setText("13");
-    subnetWlan.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyReleased(java.awt.event.KeyEvent evt) {
-        subnetWlanKeyReleased(evt);
-      }
-    });
+    jLabel14.setText("WLAN:");
 
     jLabel15.setText("Version to Upload:");
 
@@ -1194,6 +1188,15 @@ public class NaoScp extends javax.swing.JFrame
 
     jLabel16.setText("Comment:");
 
+    jLabel19.setText("SubNet");
+
+    subnetFieldWLAN.setText("192.168.13");
+    subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        subnetFieldWLANActionPerformed(evt);
+      }
+    });
+
     org.jdesktop.layout.GroupLayout jActionsPanelLayout = new org.jdesktop.layout.GroupLayout(jActionsPanel);
     jActionsPanel.setLayout(jActionsPanelLayout);
     jActionsPanelLayout.setHorizontalGroup(
@@ -1202,52 +1205,53 @@ public class NaoScp extends javax.swing.JFrame
         .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
           .add(jActionsPanelLayout.createSequentialGroup()
             .addContainerGap()
-            .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(jActionsPanelLayout.createSequentialGroup()
-                .add(jLabel1)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(subnetField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-              .add(jLabel15))
-            .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(jActionsPanelLayout.createSequentialGroup()
-                .add(25, 25, 25)
-                .add(jLabel13)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(subnetLan, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 20, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel14)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(subnetWlan, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(7, 7, 7)
-                .add(jLabel6)
-                .add(2, 2, 2)
-                .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                .add(2, 2, 2)
-                .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel8, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
-                .add(2, 2, 2)
-                .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 15, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(3, 3, 3)
-                .add(naoByte4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
-                .add(9, 9, 9))
-              .add(jActionsPanelLayout.createSequentialGroup()
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jBackupBox, 0, 457, Short.MAX_VALUE)))
-            .add(18, 18, 18)
-            .add(copyButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 76, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-          .add(org.jdesktop.layout.GroupLayout.TRAILING, jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
+            .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 689, Short.MAX_VALUE))
           .add(jActionsPanelLayout.createSequentialGroup()
             .add(jDirChooser)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE))
           .add(jActionsPanelLayout.createSequentialGroup()
             .add(496, 496, 496)
-            .add(jLabel16)))
+            .add(jLabel16))
+          .add(jActionsPanelLayout.createSequentialGroup()
+            .addContainerGap()
+            .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(jActionsPanelLayout.createSequentialGroup()
+                .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                  .add(jActionsPanelLayout.createSequentialGroup()
+                    .add(jLabel13)
+                    .add(27, 27, 27)
+                    .add(jLabel1))
+                  .add(jActionsPanelLayout.createSequentialGroup()
+                    .add(jLabel14)
+                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                    .add(jLabel19)))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                  .add(subnetFieldWLAN)
+                  .add(subnetFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
+                .add(24, 24, 24)
+                .add(jLabel6)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabel7)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabel8)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabel17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 15, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(18, 18, 18)
+                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
+              .add(jActionsPanelLayout.createSequentialGroup()
+                .add(jLabel15)
+                .add(18, 18, 18)
+                .add(jBackupBox, 0, 551, Short.MAX_VALUE)))))
         .addContainerGap())
     );
     jActionsPanelLayout.setVerticalGroup(
@@ -1256,28 +1260,31 @@ public class NaoScp extends javax.swing.JFrame
         .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
           .add(jActionsPanelLayout.createSequentialGroup()
             .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-              .add(jLabel13)
-              .add(subnetLan, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(jLabel14)
-              .add(subnetWlan, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(jLabel6)
-              .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(jLabel7)
-              .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(jLabel8)
               .add(jLabel1)
-              .add(subnetField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(jLabel17)
-              .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+              .add(subnetFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel13))
+            .add(14, 14, 14)
             .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-              .add(jLabel15)
-              .add(jBackupBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-            .add(8, 8, 8))
+              .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel19)
+              .add(jLabel14)))
           .add(jActionsPanelLayout.createSequentialGroup()
-            .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
+            .add(24, 24, 24)
+            .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel7)
+              .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel8)
+              .add(jLabel6)
+              .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel17)
+              .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        .add(18, 18, 18)
+        .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel15)
+          .add(jBackupBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
         .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
@@ -1344,6 +1351,14 @@ public class NaoScp extends javax.swing.JFrame
       }
     });
 
+    copyExe.setSelected(true);
+    copyExe.setText("copyNaoTH(exe)");
+    copyExe.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        copyExeItemStateChanged(evt);
+      }
+    });
+
     org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -1351,65 +1366,71 @@ public class NaoScp extends javax.swing.JFrame
       .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jLabel12)
-          .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-            .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
-              .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 482, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(layout.createSequentialGroup()
-                  .add(copyConfig)
-                  .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                  .add(copyLib)
-                  .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                  .add(cbRestartNaoth)))
+          .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+            .add(jLabel12)
+            .add(layout.createSequentialGroup()
+              .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 482, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
               .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-              .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                .add(layout.createSequentialGroup()
-                  .add(copyLogs)
-                  .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .add(noBackup))
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 219, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))))
+              .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 219, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .add(jActionsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .add(layout.createSequentialGroup()
+            .add(copyConfig)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(copyLib)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(copyExe)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
+            .add(cbRestartNaoth)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+            .add(copyLogs)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+            .add(noBackup)))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-          .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-          .add(jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)))
+          .add(layout.createSequentialGroup()
+            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 239, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(12, 12, 12))
+          .add(layout.createSequentialGroup()
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+              .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE))
+            .addContainerGap())))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(layout.createSequentialGroup()
-        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+        .add(jLabel12)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
           .add(layout.createSequentialGroup()
-            .add(jLabel12)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jActionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
-              .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-          .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(jCopyStatus)))
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+              .add(jScrollPane2)
+              .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+          .add(jScrollPane1))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
           .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
             .add(copyConfig)
             .add(copyLib)
-            .add(cbRestartNaoth)
             .add(copyLogs)
+            .add(cbRestartNaoth)
+            .add(copyExe)
             .add(noBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-          .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        .add(22, 22, 22))
+          .add(layout.createSequentialGroup()
+            .add(jCopyStatus)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+        .add(12, 12, 12))
     );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-    private void subnetFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldActionPerformed
+    private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldLANActionPerformed
       // TODO add your handling code here:
-    }//GEN-LAST:event_subnetFieldActionPerformed
+    }//GEN-LAST:event_subnetFieldLANActionPerformed
 
     private void copyLogsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyLogsActionPerformed
       // TODO add your handling code here:
@@ -1417,17 +1438,6 @@ public class NaoScp extends javax.swing.JFrame
 
     private void noBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noBackupActionPerformed
     }//GEN-LAST:event_noBackupActionPerformed
-
-    private void subnetLanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetLanActionPerformed
-      // TODO add your handling code here:
-    }//GEN-LAST:event_subnetLanActionPerformed
-
-    private void subnetWlanKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_subnetWlanKeyReleased
-    {//GEN-HEADEREND:event_subnetWlanKeyReleased
-      lblTeamCommWLAN.setText(subnetField.getText() + "." + subnetWlan.getText().
-        replaceAll("/[/D]*/", "") + ".255");
-      
-    }//GEN-LAST:event_subnetWlanKeyReleased
 
     private void jBackupBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jBackupBoxItemStateChanged
       
@@ -1468,19 +1478,19 @@ public class NaoScp extends javax.swing.JFrame
       // TODO add your handling code here:
     }//GEN-LAST:event_lblTeamCommLANActionPerformed
 
-    private void subnetLanKeyReleased(java.awt.event.KeyEvent evt)//GEN-FIRST:event_subnetLanKeyReleased
-    {//GEN-HEADEREND:event_subnetLanKeyReleased
-     
-            
-      lblTeamCommLAN.setText(subnetField.getText() + "." + subnetLan.getText().
-        replaceAll("/[/D]*/", "") + ".255");
-      
-    }//GEN-LAST:event_subnetLanKeyReleased
+    private void copyExeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_copyExeItemStateChanged
+      // TODO add your handling code here:
+    }//GEN-LAST:event_copyExeItemStateChanged
+
+    private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldWLANActionPerformed
+      // TODO add your handling code here:
+    }//GEN-LAST:event_subnetFieldWLANActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JCheckBox cbRestartNaoth;
   private javax.swing.JButton copyButton;
   private javax.swing.JCheckBox copyConfig;
+  private javax.swing.JCheckBox copyExe;
   private javax.swing.JCheckBox copyLib;
   private javax.swing.JCheckBox copyLogs;
   private javax.swing.JPanel jActionsPanel;
@@ -1501,6 +1511,7 @@ public class NaoScp extends javax.swing.JFrame
   private javax.swing.JLabel jLabel16;
   private javax.swing.JLabel jLabel17;
   private javax.swing.JLabel jLabel18;
+  private javax.swing.JLabel jLabel19;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
@@ -1527,9 +1538,8 @@ public class NaoScp extends javax.swing.JFrame
   private javax.swing.JProgressBar progressBar;
   private javax.swing.JPasswordField sshPassword;
   private javax.swing.JTextField sshUser;
-  private javax.swing.JTextField subnetField;
-  private javax.swing.JTextField subnetLan;
-  private javax.swing.JTextField subnetWlan;
+  private javax.swing.JTextField subnetFieldLAN;
+  private javax.swing.JTextField subnetFieldWLAN;
   // End of variables declaration//GEN-END:variables
 
   class Copier extends SwingWorker<Boolean, File>
@@ -1603,10 +1613,20 @@ public class NaoScp extends javax.swing.JFrame
             }
           }
 
+          if(copyExe.isSelected())
+          {
+            File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
+            if(!libFile.exists() || !libFile.isFile())
+            {
+              log("selected backup contains no libnaoth.so file");
+              copyLib.setSelected(false);
+            }
+          }
+
           if(copyConfig.isSelected())
           {
-            File configDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/Config/");
-            if(!configDir.exists() || !configDir.isDirectory())
+            File exeDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/naoth");
+            if(!exeDir.exists() || !exeDir.isDirectory())
             {
               log("selected backup contains no Config directory");
               copyConfig.setSelected(false);
@@ -1616,7 +1636,7 @@ public class NaoScp extends javax.swing.JFrame
 
         try
         {
-          if(copyLib.isSelected() || copyConfig.isSelected())
+          if(copyLib.isSelected() || copyExe.isSelected() || copyConfig.isSelected())
           {
             exceptionHelper = "mkdir local " + localDeployInPath(Number, iNaoByte);
             File backup = new File(localDeployInPath(Number, iNaoByte));
@@ -1642,6 +1662,10 @@ public class NaoScp extends javax.swing.JFrame
               new FileOutputStream(localDeployInPath(Number, iNaoByte) + "/comment.cfg"),
               new MyProgressMonitor(progressBar)
             );
+          }
+
+          if(copyExe.isSelected())
+          {
             actionInfo("get naoth (exe)");
             c.get
             (
@@ -1828,7 +1852,11 @@ public class NaoScp extends javax.swing.JFrame
               localLibPath + "libnaoth.so",
               remoteLibPath + "libnaoth.so",
               new MyProgressMonitor(progressBar)
-            );
+            );          
+        }
+
+        if(copyExe.isSelected())
+        {
           try
           {
             c.rm(remoteRootPath(Number) + binPath() + "/naoth");

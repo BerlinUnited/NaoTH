@@ -109,7 +109,9 @@ void CameraMatrixProvider::calibrate()
   // currently it is in test-mode, the correction parameter
   // are stored as static members of CameraMatrixCalculator
 
-  if (getGoalPercept().getNumberOfSeenPosts() < 2)
+  if (getGoalPercept().getNumberOfSeenPosts() < 2
+      || !getGoalPercept().getPost(0).positionReliable 
+      || !getGoalPercept().getPost(1).positionReliable)
     return;
 
   Vector2<double> offset;
@@ -186,10 +188,17 @@ double CameraMatrixProvider::projectionError(double offsetX, double offsetY)
       0.0,
       rightPosition);
 
-
+  
   double error = 
     (getFieldInfo().opponentGoalPostLeft  - leftPosition).abs() +
     (getFieldInfo().opponentGoalPostRight - rightPosition).abs();
+    
+
+  /*
+  double goal_width = (getFieldInfo().opponentGoalPostLeft-getFieldInfo().opponentGoalPostRight).abs2();
+  double seen_width = (leftPosition-rightPosition).abs2();
+  double error = Math::sqr(goal_width - seen_width);
+  */
 
   return error;
 }//end projectionError

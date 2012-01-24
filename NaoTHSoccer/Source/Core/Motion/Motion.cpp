@@ -12,11 +12,13 @@
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
+#include "Engine/ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 #include "Tools/Debug/Stopwatch.h"
 
-#ifdef NAO_OLD
 #include <DebugCommunication/DebugCommandManager.h>
+
+#ifdef NAO_OLD
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
@@ -24,14 +26,18 @@
 
 using namespace naoth;
 
-Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
+Motion::Motion()
+  :
+  theBlackBoard(MotionBlackBoard::getInstance()),
   theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
+  theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
   theMotionStatusWriter(NULL),
   theOdometryDataWriter(NULL),
   theHeadMotionRequestReader(NULL),
   theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
   state(initial),
+  motionLogger("MotionLog"),
   oldMotionRequestTime(0)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
@@ -41,6 +47,21 @@ Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
   theMotionFactories.push_back(new InitialMotionFactory());
   theMotionFactories.push_back(new InverseKinematicsMotionFactory());
   theMotionFactories.push_back(new KeyFrameMotionEngine());
+  theMotionFactories.push_back(new ParallelKinematicMotionFactory());
+
+
+  REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
+
+  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(theBlackBoard.the##R), #R);
+
+  ADD_LOGGER(FrameInfo);
+  ADD_LOGGER(SensorJointData);
+  ADD_LOGGER(MotorJointData);
+  ADD_LOGGER(InertialSensorData);
+  ADD_LOGGER(AccelerometerData);
+  ADD_LOGGER(GyrometerData);
+  ADD_LOGGER(FSRData);
+  ADD_LOGGER(MotionRequest);
 }
 
 Motion::~Motion()
@@ -123,7 +144,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 void Motion::call()
 {
   STOPWATCH_START("MotionExecute");
-  
+
   // process sensor data
   STOPWATCH_START("Motion:processSensorData");
   processSensorData();
@@ -199,6 +220,10 @@ void Motion::call()
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
 
+  // calibrate the foot touch detector
+  if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
+    theFootTouchCalibrator.execute();
+
   STOPWATCH_STOP("MotionExecute");
   
   STOPWATCH_START("Motion:postProcess");
@@ -244,6 +269,8 @@ void Motion::processSensorData()
 
 void Motion::postProcess()
 {
+  motionLogger.log(theBlackBoard.theFrameInfo.getFrameNumber());
+
   MotorJointData& mjd = theBlackBoard.theMotorJointData;
   double basicStepInS = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 

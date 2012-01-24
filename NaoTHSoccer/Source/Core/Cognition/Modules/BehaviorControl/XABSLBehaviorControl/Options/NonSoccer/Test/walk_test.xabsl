@@ -4,20 +4,71 @@ option walk_test {
  initial state stand {
     decision {
       if (ball.was_seen)
-        goto walk_to_ball_with_left_foot;
+        goto walk_to_ball_far_away;
       else
         stay;
     }
     action {
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 180;
-      motion.walk.coordinate = hip;
-      motion.walk.stop_with_stand = false;
+      motion.type = stand;
       
       head.control_mode = search_for_ball;
-      //head_control();
+      head_control();
+    }
+  }
+
+  state walk_to_ball_far_away {
+    decision {
+      if (ball.time_since_last_seen > 2000)
+        goto stand;
+      else if(vector.abs(x=ball.preview.x,y=ball.preview.y) < 270)
+        goto walk_to_ball_close;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      head_control();
+
+      go_to_relative_point(rotation = atan2(y = ball.preview.y, x = ball.preview.x), 
+                           x = ball.preview.x - 170 * cos(angle=atan2(y = ball.preview.y, x = ball.preview.x)), 
+                           y = ball.preview.y - 170 * sin(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+
+      motion.walk.offset.y = 0;
+      motion.walk.offset.rot = 0;
+      
+      motion.walk.step_control.foot = none;
+      motion.walk.style = normal;
+    }
+  }
+
+  state walk_to_ball_close {
+    decision {
+      if (ball.time_since_last_seen > 2000)
+        goto stand;
+      else if(vector.abs(x=ball.preview.x,y=ball.preview.y) > 300)
+        goto walk_to_ball_far_away;
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      head_control();
+
+      go_to_relative_point(rotation = atan2(y = ball.preview.y, x = ball.preview.x), 
+                           x = ball.preview.x + 300 * cos(angle=atan2(y = ball.preview.y, x = ball.preview.x)), 
+                           y = ball.preview.y + 300 * sin(angle=atan2(y = ball.preview.y, x = ball.preview.x)));
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+
+      motion.walk.offset.y = 0;
+      motion.walk.offset.rot = 20;
+      
+      motion.walk.step_control.foot = none;
+      motion.walk.style = normal;
     }
   }
 
@@ -70,7 +121,7 @@ option walk_test {
         stay;
     }
     action{
-    motion.type = unknown;// do nothing
+    motion.type = stand;// do nothing
     }
   }
 }

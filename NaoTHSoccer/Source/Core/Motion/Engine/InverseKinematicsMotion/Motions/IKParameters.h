@@ -20,6 +20,7 @@ public:
   
   struct Stand {
     double speed;
+    bool enableStabilization;
   } stand;
 
   struct Walk {
@@ -44,6 +45,7 @@ public:
     double maxStepChange; // (0 - 1]
     
     bool enableFSRProtection;
+    bool enableWaitLanding;
     unsigned int minFSRProtectionCount;
     
     int maxUnsupportedCount;
@@ -51,6 +53,16 @@ public:
 
     double leftHipRollSingleSupFactor;
     double rightHipRollSingleSupFactor;
+
+    bool rotationStabilize;
+
+    bool stabilizeNeural;
+    double stabilizeNeuralXWin;
+    double stabilizeNeuralXWout;
+    double stabilizeNeuralYWin;
+    double stabilizeNeuralYWout;
+
+    bool useArm;
   } walk;
 
   struct RotationStabilize {
@@ -59,7 +71,15 @@ public:
   } rotationStabilize;
 
   struct Arm {
+    // move shoulder according to interial sensor
+    double shoulderPitchInterialSensorRate;
+    double shoulderRollInterialSensorRate;
+
+    // the max joint speed in degree/second
     double maxSpeed;
+    bool alwaysEnabled;
+    bool kickEnabled;
+    bool walkEnabled;
   } arm;
 
   struct KickParameters {

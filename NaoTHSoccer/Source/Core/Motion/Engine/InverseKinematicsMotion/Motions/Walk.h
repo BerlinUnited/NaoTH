@@ -13,6 +13,8 @@
 #include "Walk/FootStepPlanner.h"
 #include <list>
 
+#include "Tools/DataStructures/RingBufferWithSum.h"
+
 class Walk: public IKMotion
 {
 public:
@@ -100,6 +102,10 @@ private:
   FootStepPlanner theFootStepPlanner;
 
   Vector3d theCoMErr;
+
+
+  // observe the com error
+  RingBufferWithSum<double, 100> com_errors;
 };
 
 #endif // _IK_MOTION_H_

@@ -42,18 +42,18 @@ namespace naoth
     * @param timeStamp A time stamp, usually in the past.
     * @return The number of ms passed since the given time stamp.
     */
-    int getTimeSince(unsigned timeStamp) const {return int(time - timeStamp);}
+    inline int getTimeSince(unsigned timeStamp) const {return int(time - timeStamp);}
 
     /**
     * The method returns the corrent time in seconds current frame time.
     */
-    double getTimeInSeconds() const {return static_cast<double>(time)/1000.0; }
+    inline double getTimeInSeconds() const {return static_cast<double>(time)/1000.0; }
 
-    unsigned int getTime() const { return time; }
+    inline unsigned int getTime() const { return time; }
 
-    unsigned int getFrameNumber() const { return frameNumber; }
+    inline unsigned int getFrameNumber() const { return frameNumber; }
 
-    unsigned int getStep() const { return step; }
+    inline unsigned int getStep() const { return step; }
 
     // TODO: there should be functionality in representations!!!
     void setTime(unsigned int t)

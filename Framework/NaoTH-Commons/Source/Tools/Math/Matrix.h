@@ -385,6 +385,16 @@ public:
   Matrix3x3<DATATYPE>(other)
   {
   }
+
+  /**
+   * Copy constructor.
+   *
+   * \param  other  The other matrix that is copied to this one
+   */
+  RotationMatrixT(const DATATYPE yaw, const DATATYPE pitch, const DATATYPE roll)
+  {
+    fromKardanRPY(yaw, pitch, roll);
+  }
   
   /**
    * RotationMatrix from RPY-angles.
@@ -398,7 +408,7 @@ public:
    * \attention  RPY-angles are not clearly defined!
    */
   RotationMatrixT& fromKardanRPY(const DATATYPE yaw, const DATATYPE pitch, const DATATYPE roll)
-{
+  {
         DATATYPE cy = cos(yaw);
         DATATYPE sy = sin(yaw);
         DATATYPE cp = cos(pitch);

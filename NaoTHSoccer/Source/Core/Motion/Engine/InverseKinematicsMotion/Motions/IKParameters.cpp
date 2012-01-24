@@ -18,6 +18,7 @@ IKParameters::IKParameters()
   
   // stand parameter
   PARAMETER_REGISTER(stand.speed) = 0.04;
+  PARAMETER_REGISTER(stand.enableStabilization) = false;
   
   // walk parameter
   PARAMETER_REGISTER(walk.stiffness) = 0.7;
@@ -37,11 +38,21 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxStepWidth) = 50;
   PARAMETER_REGISTER(walk.maxStepChange) = 0.5;
   PARAMETER_REGISTER(walk.enableFSRProtection) = true;
+  PARAMETER_REGISTER(walk.enableWaitLanding) = true;
   PARAMETER_REGISTER(walk.minFSRProtectionCount) = 0;
   PARAMETER_REGISTER(walk.maxUnsupportedCount) = 0;
   PARAMETER_REGISTER(walk.maxWaitLandingCount) = 20;
   PARAMETER_REGISTER(walk.leftHipRollSingleSupFactor) = 0.4;
   PARAMETER_REGISTER(walk.rightHipRollSingleSupFactor) = 0.4;
+  PARAMETER_REGISTER(walk.rotationStabilize) = true;
+
+  PARAMETER_REGISTER(walk.stabilizeNeural) = true;
+  PARAMETER_REGISTER(walk.stabilizeNeuralXWin) = 0.0;
+  PARAMETER_REGISTER(walk.stabilizeNeuralXWout) = 0.0;
+  PARAMETER_REGISTER(walk.stabilizeNeuralYWin) = 0.0;
+  PARAMETER_REGISTER(walk.stabilizeNeuralYWout) = 0.0;
+
+  PARAMETER_REGISTER(walk.useArm) = false;
 
   // rotation stabilize parameter
   PARAMETER_REGISTER(rotationStabilize.k.x) = -0.5;
@@ -50,7 +61,12 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(rotationStabilize.threshold.y) = 3;
 
   // arm parameter
+  PARAMETER_REGISTER(arm.shoulderPitchInterialSensorRate) = -10;
+  PARAMETER_REGISTER(arm.shoulderRollInterialSensorRate) = -10;
   PARAMETER_REGISTER(arm.maxSpeed) = 200;
+  PARAMETER_REGISTER(arm.alwaysEnabled)  = false;
+  PARAMETER_REGISTER(arm.kickEnabled) = true;
+  PARAMETER_REGISTER(arm.walkEnabled) = true;
 
   // kick parameter
   PARAMETER_REGISTER(kick.shiftSpeed) = 0.05;

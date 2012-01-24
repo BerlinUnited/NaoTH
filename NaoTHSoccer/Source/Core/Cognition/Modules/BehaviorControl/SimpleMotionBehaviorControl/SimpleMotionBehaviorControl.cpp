@@ -23,6 +23,7 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_ball_modell", "Search for ball if not seen", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_straight_ahead", "look straight ahead", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_attention_point", "look at attention point", false);
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:head:look_at_player", "look at a seen player", false);
 
   // test motion control
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:standard_stand", "stand as standard or not", true);
@@ -58,6 +59,10 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:init", "Set the robot init.", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:dance", "Let's dance", false);
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
+
+
+  DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_dance", "parallel dance test", false);
+  DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_stepper", "parallel stepper test", false);
 }
 
 void SimpleMotionBehaviorControl::execute() 
@@ -125,6 +130,38 @@ void SimpleMotionBehaviorControl::testHead()
     getHeadMotionRequest().targetPointOnTheGround = getAttentionModel().mostInterestingPoint;
   );
 
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_at_ball_modell",
+    if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
+    {
+      getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
+      getHeadMotionRequest().targetPointInTheWorld.x = getBallModel().positionPreview.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = getBallModel().positionPreview.y;
+      getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
+    }
+  );
+
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:head:look_at_player",
+    static Vector2<double> pos;
+    static GameData::TeamColor color = GameData::blue;
+    
+    if(!getPlayersPercept().playersList.empty())
+    {
+      getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
+      pos = getPlayersPercept().playersList.front().pose.translation;
+      color = getPlayersPercept().playersList.front().teamColor;
+      getHeadMotionRequest().targetPointInTheWorld.x = pos.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = pos.y;
+      getHeadMotionRequest().targetPointInTheWorld.z = 150.0;
+    }
+
+    FIELD_DRAWING_CONTEXT;
+    if(color == GameData::blue)
+        PEN("0000FF", 20);
+      else
+        PEN("FF0000", 20);
+    ROBOT(pos.x, pos.y, Math::pi);
+  );
 }//end testHead
 
 
@@ -264,6 +301,14 @@ void SimpleMotionBehaviorControl::testMotion()
 
   DEBUG_REQUEST("SimpleMotionBehaviorControl:motion:protect_falling",
     getMotionRequest().id = motion::protect_falling;
+  );
+
+  DEBUG_REQUEST("ParallelKinematicMotionEngine:motion:parallel_dance",
+    getMotionRequest().id = motion::parallel_dance;
+  );
+
+  DEBUG_REQUEST("ParallelKinematicMotionEngine:motion:parallel_stepper",
+    getMotionRequest().id = motion::parallel_stepper;
   );
           
 }//end testMotion

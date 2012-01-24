@@ -12,11 +12,20 @@
 
 // Representations
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
+#include "Representations/Perception/BaseColorRegionPercept.h"
+#include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(ColorProvider)
+  REQUIRE(FieldColorPercept)
+  REQUIRE(BaseColorRegionPercept)
+  REQUIRE(FrameInfo)
+
   PROVIDE(ColorTable64)
+  PROVIDE(ColorClassificationModel)
 END_DECLARE_MODULE(ColorProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

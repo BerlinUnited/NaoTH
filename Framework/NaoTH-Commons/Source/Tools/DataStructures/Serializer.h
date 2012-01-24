@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+//#define DEBUG_INFRASTRUCTURE
+
 namespace naoth
 {  
 

@@ -23,7 +23,7 @@ public:
   FootStep(){}
 
   FootStep(const InverseKinematic::FeetPose& feet, Foot liftingFoot):
-  theLiftingFoot(liftingFoot)
+    theLiftingFoot(liftingFoot)
   {
     switch(theLiftingFoot)
     {
@@ -115,10 +115,14 @@ public:
    const Pose3D& footEnd() const { return theFootEnd; }
    Pose3D& footEnd() { return theFootEnd; }
    const Pose3D& supFoot() const { return theSupFoot; }
+
+   const Pose2D& offset() const { return theOffset; }
+   Pose2D& offset() { return theOffset; }
    
 private:
    Foot theLiftingFoot;
    Pose3D theFootBegin, theFootEnd, theSupFoot;
+   Pose2D theOffset;
 };
 
 #endif  /* _FOOTSTEP_H */

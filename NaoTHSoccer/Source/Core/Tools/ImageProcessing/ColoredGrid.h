@@ -77,6 +77,8 @@ public:
   double percentOfUnknownColors;
   double percentOfKnownColors;
   double meanBrightness;
+  double meanBlue;
+  double meanRed;
 
   // the grid morphology
   UniformGrid uniformGrid;
@@ -192,6 +194,9 @@ public:
     }//end for
     percentOfUnknownColors = 0;
     percentOfKnownColors = 0;
+    meanBrightness = 127.0;
+    meanBlue = 127.0;
+    meanRed = 127.0;
     valid =  false;
 
     /*

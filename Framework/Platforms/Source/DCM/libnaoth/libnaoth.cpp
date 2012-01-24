@@ -24,8 +24,8 @@ extern "C"
 ALCALL int _createModule(ALPtr<ALBroker> pBroker )
 {      
   g_type_init();
-  
-  // init broker with the main broker instance 
+
+  // init broker with the main broker instance
   // from the parent executable
   ALBrokerManager::setInstance(pBroker->fBrokerManager.lock());
   ALBrokerManager::getInstance()->addBroker(pBroker);

@@ -43,9 +43,11 @@
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
+#include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+#include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
@@ -53,6 +55,8 @@
 #include "Modules/Perception/VirtualVisionProcessor/VirtualVisionProcessor.h"
 #include "Modules/Perception/PerceptProjector/PerceptProjector.h"
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
+#include "Modules/Perception/OpenCV/FieldSideDetector.h"
+#include "Modules/Perception/OpenCV/OpenCVDebug.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -75,10 +79,10 @@
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
+#include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
-
 
 // tools
 #include "Tools/NaoTime.h"
@@ -98,7 +102,6 @@ Cognition::Cognition()
   REGISTER_DEBUG_COMMAND("representation:list", "Stream out the list of all registered representations", this);
   REGISTER_DEBUG_COMMAND("representation:get", "Stream out all the representations listet", this);
   REGISTER_DEBUG_COMMAND("representation:getbinary", "Stream out serialized represenation", this);
-
 }
 
 Cognition::~Cognition()
@@ -134,16 +137,20 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // infrastructure
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
+  REGISTER_MODULE(OpenCVImageProvider);
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
+  REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptProjector);
+  REGISTER_MODULE(FieldSideDetector);
   REGISTER_MODULE(PerceptionsVisualization);
+  REGISTER_MODULE(OpenCVDebug);
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
@@ -166,6 +173,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
+  REGISTER_MODULE(CalibrationBehaviorControl);
   REGISTER_MODULE(XABSLBehaviorControl);
 
   // experiment

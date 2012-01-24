@@ -26,6 +26,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 //#include "Representations/Perception/BlobPercept.h"
 #include "Representations/Perception/FieldPercept.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BallPercept.h"
@@ -40,7 +41,8 @@
 BEGIN_DECLARE_MODULE(BallDetector)
   REQUIRE(Image)
   REQUIRE(ColoredGrid)
-  REQUIRE(ColorTable64)
+//  REQUIRE(ColorTable64)
+  REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
 //  REQUIRE(BlobPercept)
@@ -104,12 +106,12 @@ private:
   double calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z);
 
   const SimpleColorClassifier simpleColorClassifier;
-/*
+
   const ColorClassifier& getColorTable64() const
   {
-    return simpleColorClassifier;
+    return getColorClassificationModel();
   }
-*/
+
 };//end class BallDetector
 
 #endif // __BallDetector_H_

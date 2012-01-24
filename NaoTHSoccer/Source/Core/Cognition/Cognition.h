@@ -20,23 +20,6 @@
 
 #include "Tools/Debug/Logger.h"
 
-namespace naoth
-{
-  template<>
-  class Serializer<Representation>
-  {
-  public:
-    static void serialize(const Representation& representation, std::ostream& stream)
-    {
-      representation.serialize(stream);
-    }
-    static void deserialize(std::istream& stream, Representation& representation)
-    {
-      representation.deserialize(stream);
-    }
-  };
-}
-
 class Cognition : public naoth::Callable, public ModuleManager, public DebugCommandExecutor
 {
 public:

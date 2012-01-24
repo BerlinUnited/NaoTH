@@ -4,14 +4,14 @@
  * Created on 9. Mai 2008, 11:55
  */
 package de.hu_berlin.informatik.ki.nao.extendeddebugrequest;
-import de.hu_berlin.informatik.ki.nao.AbstractDialog;
-import de.hu_berlin.informatik.ki.nao.RobotControl;
-import de.hu_berlin.informatik.ki.nao.dialogs.panels.NDTreeNode;
-import de.hu_berlin.informatik.ki.nao.manager.DebugRequestManager;
-import de.hu_berlin.informatik.ki.nao.manager.ObjectListener;
-import de.hu_berlin.informatik.ki.nao.server.Command;
-import de.hu_berlin.informatik.ki.nao.server.CommandSender;
-import de.hu_berlin.informatik.ki.nao.server.MessageServer;
+import de.naoth.rc.AbstractDialog;
+import de.naoth.rc.RobotControl;
+import de.naoth.rc.dialogs.panels.NDTreeNode;
+import de.naoth.rc.manager.DebugRequestManager;
+import de.naoth.rc.manager.ObjectListener;
+import de.naoth.rc.server.Command;
+import de.naoth.rc.server.CommandSender;
+import de.naoth.rc.server.MessageServer;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingEvent;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingListener;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingModel.CheckingMode;

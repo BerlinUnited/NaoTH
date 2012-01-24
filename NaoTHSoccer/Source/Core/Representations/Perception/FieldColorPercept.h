@@ -9,16 +9,19 @@
 #define  FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 //#include <Tools/DataStructures/Serializer.h>
 
-#define MAX_FIELD_COLOR_Y_CHANNEL_DIST 108
-#define MAX_FIELD_COLOR_Cb_CHANNEL_DIST 25
-#define MAX_FIELD_COLOR_Cr_CHANNEL_DIST 25
+#define MAX_FIELD_COLOR_Y_CHANNEL_DIST 48
+#define MAX_FIELD_COLOR_Cb_CHANNEL_DIST 12
+#define MAX_FIELD_COLOR_Cr_CHANNEL_DIST 12
 #define MIN_FIELD_COLOR_Y_CHANNEL_DIST 20
-#define MIN_FIELD_COLOR_Cb_CHANNEL_DIST 8
-#define MIN_FIELD_COLOR_Cr_CHANNEL_DIST 8
+#define MIN_FIELD_COLOR_Cb_CHANNEL_DIST 2
+#define MIN_FIELD_COLOR_Cr_CHANNEL_DIST 2
 #define MIN_FIELD_COLOR_Y_LEVEL 20
 #define MAX_FIELD_COLOR_Y_LEVEL 224
+
+using namespace naoth;
 
 class FieldColorPercept : public naoth::Printable
 {
@@ -34,6 +37,11 @@ public:
   unsigned int maxWeightedIndexCb;
   unsigned int maxWeightedIndexCr;
 
+  double minWhite;
+  double maxBlack;
+
+  FrameInfo lastUpdated;
+
   FieldColorPercept()
   {
     distY = MAX_FIELD_COLOR_Y_CHANNEL_DIST;
@@ -42,21 +50,29 @@ public:
     maxWeightedY = 0.0;
     maxWeightedCb = 0.0;
     maxWeightedCr = 0.0;
-    maxWeightedIndexY = 255;
-    maxWeightedIndexCb = 255;
-    maxWeightedIndexCr = 255;
-  };
+    maxWeightedIndexY = 160;
+    maxWeightedIndexCb = 160;
+    maxWeightedIndexCr = 160;
+
+    minWhite = 0.0;
+    maxBlack = 0.0;
+
+  }
 
   ~FieldColorPercept()
-  {};
+  {}
 
   bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
     return
       (
-        abs((int)(cr  - distCr) < (int) maxWeightedIndexCr) &&
-        abs((int)(cb  - distCb) < (int) maxWeightedIndexCb) &&
+        abs((int)(cr  - distCr) < (int) maxWeightedIndexCr)
+        &&
+        abs((int)(cb  - distCb) < (int) maxWeightedIndexCb)
+        &&
         abs((int)(yy  - distY) < (int) maxWeightedIndexY)
+//        &&
+//        yy < minWhite
       );
   }
 

@@ -13,7 +13,9 @@
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Perception/BaseColorRegionPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 // Tools
 #include "Tools/Math/Vector2.h"
@@ -33,12 +35,13 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifier)
-REQUIRE(ColoredGrid)
-REQUIRE(Histogram)
-REQUIRE(Image)
+  REQUIRE(ColoredGrid)
+  REQUIRE(Histogram)
+  REQUIRE(Image)
+  REQUIRE(FrameInfo)
+  REQUIRE(BaseColorRegionPercept)
 
-PROVIDE(FieldColorPercept)
-REQUIRE(ColorTable64)
+  PROVIDE(FieldColorPercept)
 END_DECLARE_MODULE(FieldColorClassifier)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -48,7 +51,7 @@ class FieldColorClassifier : public  FieldColorClassifierBase
 {
 public:
   FieldColorClassifier();
-  virtual ~FieldColorClassifier(){};
+  virtual ~FieldColorClassifier(){}
 
   /** executes the module */
   void execute();

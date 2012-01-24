@@ -10,22 +10,23 @@
 #include "SupportPolygonGenerator.h"
 #include "PlatformInterface/Platform.h"
 
+#include <DebugCommunication/DebugCommandManager.h>
+
 using namespace naoth;
 
 SupportPolygonGenerator::SupportPolygonGenerator()
 {
   //TODO
-  //  REGISTER_DEBUG_COMMAND("CalibrateFootTouchDetector", "Calibrate Foot Touch Detector", this);
-
+  REGISTER_DEBUG_COMMAND("CalibrateFootTouchDetector", "Calibrate Foot Touch Detector", this);
 }
 
 void SupportPolygonGenerator::init(const double* fsr,
                                    const Vector3<double>* fsrPos,
                                    const Kinematics::Link* link)
 {
-    theFSRData = fsr;
-    theFSRPos = fsrPos;
-    theLink = link;
+  theFSRData = fsr;
+  theFSRPos = fsrPos;
+  theLink = link;
 
   string leftFootTouchDetectorCfg("1 1 1 1 -5");
   string rightFootTouchDetectorCfg("1 1 1 1 -5");
@@ -148,12 +149,12 @@ bool SupportPolygonGenerator::isFootSupportable(bool isLeft) const
 }
 
 //TODO
-/*
+
 void SupportPolygonGenerator::executeDebugCommand(
         const std::string& command, const std::map<std::string, std::string>& arguments,
-        std::stringstream& outstream)
+        std::ostream &outstream)
 {
-    if ("CalibrateFootTouchDetector" == command)
+/*    if ("CalibrateFootTouchDetector" == command)
     {
         bool touch = false;
         if ( arguments.find("touch") != arguments.end() ){
@@ -204,5 +205,6 @@ void SupportPolygonGenerator::executeDebugCommand(
             }
         }
     }
+    */
 }//end executeDebugCommand
-*/
+

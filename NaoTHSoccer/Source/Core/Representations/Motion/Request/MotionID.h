@@ -30,7 +30,10 @@ namespace motion
     kick,
     dance,
     protect_falling,
-    //SIT_STABLE,
+    
+    /* paralell kinematic */
+    parallel_stepper,
+    parallel_dance,
     
 
     /* motion net */
@@ -75,6 +78,9 @@ namespace motion
       case kick: return "kick";
       case dance: return "dance";
       case protect_falling: return "protect_falling";
+
+      case parallel_stepper: return "parallel_stepper";
+      case parallel_dance: return "parallel_dance";
       
       case stand_up_from_front: return "stand_up_from_front";
       case stand_up_from_back: return "stand_up_from_back";

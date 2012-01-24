@@ -30,7 +30,26 @@ public:
         return ret;
     }
 
-    /* train the classifier by perception algorithm
+
+    /* train the classifier by perceptron algorithm
+     * @param positiveTrainSet: the positive train set
+     * @param negativeTrainSet: the negative train set
+     */
+    void perceptronUpdate(Vector_n<double,SIZE> x, double alpha)
+    {
+      // both have the same sign; 
+      // if the prediction is correct, do not learn
+      if(classify(x)*alpha <= 0)
+      {
+        for (size_t i=0; i<SIZE; i++)
+        {
+          w[i] += alpha*x[i];
+        }
+      }//end if
+    }//end perceptronUpdate
+
+
+    /* train the classifier by perceptron algorithm
      * @param positiveTrainSet: the positive train set
      * @param negativeTrainSet: the negative train set
      */

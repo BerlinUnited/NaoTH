@@ -16,7 +16,7 @@ using namespace naoth;
 
 NaoController::NaoController()
   :
-  theSoundHandler(NULL),
+  //theSoundHandler(NULL),
   theBroadCaster(NULL),
   theBroadCastListener(NULL),
   theDebugServer(NULL)
@@ -52,7 +52,7 @@ NaoController::NaoController()
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
   registerOutput<const UltraSoundSendData>(*this);
-  registerOutput<const SoundPlayData>(*this);
+  //registerOutput<const SoundPlayData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
   registerOutput<const GameReturnData>(*this);
   
@@ -67,8 +67,8 @@ NaoController::NaoController()
   std::cout << "Init CameraHandler" << endl;
   theCameraHandler.init("/dev/video");
   
-  std::cout << "Init SoundHandler" <<endl;
-  theSoundHandler = new SoundControl();
+//  std::cout << "Init SoundHandler" <<endl;
+//  theSoundHandler = new SoundControl();
 
   std::cout<< "Init TeamComm"<<endl;
   naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
@@ -93,10 +93,10 @@ NaoController::NaoController()
 
 NaoController::~NaoController()
 {
-  if (theSoundHandler!=NULL)
-  {
-    delete theSoundHandler;
-  }
+//  if (theSoundHandler!=NULL)
+//  {
+//    delete theSoundHandler;
+//  }
 
   if ( theBroadCaster != NULL)
   {
@@ -131,7 +131,7 @@ void NaoController::get(CurrentCameraSettings& data)
 
 void NaoController::set(const SoundPlayData& data)
 {
-  theSoundHandler->setSoundData(data);
+//  theSoundHandler->setSoundData(data);
 }
 
 void NaoController::getCognitionInput()

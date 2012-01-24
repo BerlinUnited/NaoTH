@@ -23,6 +23,7 @@
 #include <Representations/Infrastructure/CameraSettings.h>
 
 #include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
@@ -46,6 +47,7 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(BallModel)
   
   PROVIDE(ColorTable64)
+  PROVIDE(ColorClassificationModel)
   PROVIDE(MotionRequest)
   PROVIDE(CameraSettingsRequest)
 END_DECLARE_MODULE(Debug)

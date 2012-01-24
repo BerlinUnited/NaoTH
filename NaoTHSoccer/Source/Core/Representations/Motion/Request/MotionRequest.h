@@ -33,6 +33,7 @@ public:
     id(motion::init),
     forced(false),
     standHeight(-1),
+    calibrateFootTouchDetector(false),
     standardStand(true)
   {
   }
@@ -51,9 +52,12 @@ public:
   KickRequest kickRequest;
   WalkRequest walkRequest;
 
-  // hich of the hip when "stand" is requested
+  // high of the hip when "stand" is requested
   // if the value is < 0, then the default value is used 
   double standHeight;
+
+  // 
+  bool calibrateFootTouchDetector;
 
   bool standardStand;
 
