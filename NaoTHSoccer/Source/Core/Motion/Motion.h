@@ -19,7 +19,7 @@
 #include "Engine/HeadMotion/HeadMotionEngine.h"
 #include "Engine/MotionFactory.h"
 
-#ifdef NAO
+#ifdef NAO_OLD
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Cognition/Modules/Infrastructure/Debug/StopwatchSender.h>
 #endif
@@ -78,11 +78,13 @@ private:
     exiting
   } state;
 
-#ifdef NAO
+#ifdef NAO_OLD
   naoth::DebugMessageIn theDebugMessageIn;
   naoth::DebugMessageOut theDebugMessageOut;
   StopwatchSender theStopwatchSender;
 #endif
+
+  unsigned int oldMotionRequestTime;
 };
 
 #endif  /* MOTION_H */

@@ -9,7 +9,7 @@
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
-//#include "DebugCommunication/DebugServer.h"
+#include "Tools/DataStructures/Serializer.h"
 
 #include <map>
 #include <list>
@@ -192,6 +192,7 @@ namespace naoth
         cerr << /*getName() <<*/ " doesn't provide Motion output: " << typeid(T).name() << endl;
       }
     }//end registerMotionOutput
+
   };//end class PlatformDataInterface
 
   class PlatformInterfaceBase: public PlatformBase, public PlatformDataInterface
@@ -201,6 +202,77 @@ namespace naoth
     : PlatformBase(name, basicTimeStep)
     {
     }
+
+  public:
+    template<class T, class ST>
+    void registerCognitionInputChanel(T& data) { cognitionInput.push_back(createInputChanelAction<T,ST>(data)); }
+    template<class T, class ST>
+    void registerMotionInputChanel(T& data) { motionInput.push_back(createInputChanelAction<T,ST>(data)); }
+    template<class T, class ST>
+    void registerCognitionOutputChanel(const T& data) { cognitionOutput.push_back(createOutputChanelAction<T,ST>(data)); }
+    template<class T, class ST>
+    void registerMotionOutputChanel(const T& data) { motionOutput.push_back(createOutputChanelAction<T,ST>(data)); }
+
+  protected:
+    template<class T, class ST>
+    AbstractAction* createOutputChanelAction(const T& data)
+    {
+      class OutputChanelAction: public AbstractAction
+      {
+        MessageWriter writer;
+        const T& data;
+      
+      public:
+        OutputChanelAction(MessageQueue* messageQueue, const T& data) 
+          : writer(messageQueue),
+            data(data)
+        {
+        }
+      
+        virtual void execute()
+        {
+          stringstream hmmsg;
+          ST::serialize(data, hmmsg);
+          writer.write(hmmsg.str());
+        }//end execute
+      };
+
+      return new OutputChanelAction(getMessageQueue(typeid(T).name()), data);
+    }//end createOutputChanelAction
+
+    template<class T, class ST>
+    AbstractAction* createInputChanelAction(T& data)
+    {
+      class InputChanelAction: public AbstractAction
+      {
+        MessageReader reader;
+        T& data;
+
+      public:
+        InputChanelAction(MessageQueue* messageQueue, T& data) 
+          : reader(messageQueue),
+            data(data)
+        {
+        }
+      
+        virtual void execute()
+        {
+          if ( !reader.empty() )
+          {
+            string msg = reader.read();
+            // drop old message
+            while ( !reader.empty() )
+            {
+              msg = reader.read();
+            }
+            stringstream ss(msg);
+            ST::deserialize(ss, data);
+          }//end if
+        }//end execute
+      };
+
+      return new InputChanelAction(getMessageQueue(typeid(T).name()), data);
+    }//end createInputChanelAction
   };
 
 

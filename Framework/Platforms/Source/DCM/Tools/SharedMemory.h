@@ -132,36 +132,34 @@ public:
   
   void swapWriting()
   {
-    if ( trylock() )
-    {
-      swap(theMemory->writing, theMemory->swapping);
-      theMemory->swappingReady = true;
-    }
+    lock();
+    swap(theMemory->writing, theMemory->swapping);
+    theMemory->swappingReady = true;
     unlock();
-  }
+  }//end swapWriting
 
   T* writing() { return &(theMemory->data[theMemory->writing]); }
   
   const T* reading() const { return &(theMemory->data[theMemory->reading]); }
   
   void close()
+  {
+    if ( !ready ) return;
+      
+    lock();
+    theMemory->numRef--;
+    if ( theMemory->numRef == 0 )
     {
-      if ( !ready ) return;
-      
-      lock();
-      theMemory->numRef--;
-      if ( theMemory->numRef == 0 )
-      {
-        shm_unlink(theName.c_str());
-        sem_unlink(theName.c_str());
-      }
-      else
-      {
-        unlock();
-      }
-      
-      ready = false;
+      shm_unlink(theName.c_str());
+      sem_unlink(theName.c_str());
     }
+    else
+    {
+      unlock();
+    }
+      
+    ready = false;
+  }
     
 protected:
     bool trylock() { return sem_trywait(sem) == 0; }

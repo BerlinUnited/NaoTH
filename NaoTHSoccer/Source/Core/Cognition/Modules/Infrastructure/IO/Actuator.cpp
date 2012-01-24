@@ -24,20 +24,28 @@ Actuator::~Actuator()
 
 void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
 {
-  REG_OUTPUT(CameraSettingsRequest);
   REG_OUTPUT(LEDData);
   REG_OUTPUT(IRSendData);
   REG_OUTPUT(UltraSoundSendData);
+
+  REG_OUTPUT(CameraSettingsRequest);
   REG_OUTPUT(SoundPlayData);
   REG_OUTPUT(TeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
   
-  theHeadMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("HeadMotionRequest"));
-  theMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("MotionRequest"));
+  platformInterface.registerCognitionOutputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
+  platformInterface.registerCognitionOutputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
+
+  //theHeadMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("HeadMotionRequest"));
+  //theMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("MotionRequest"));
 }//end init
 
 void Actuator::execute()
 {  
+  // HACK: copy the time to indicate which motion status this request ist depending on (needed by motion)
+  getMotionRequest().time = getMotionStatus().time;
+
+  /*
   // data to motion
   stringstream hmmsg;
   Serializer<HeadMotionRequest>::serialize(getHeadMotionRequest(), hmmsg);
@@ -45,13 +53,10 @@ void Actuator::execute()
   theHeadMotionRequestWriter->write(hmmsg.str());
   
 
-  // HACK: copy the time to indicate which motion status this request ist depending on (needed by motion)
-  getMotionRequest().time = getMotionStatus().time;
-
   stringstream mrmsg;
   Serializer<MotionRequest>::serialize(getMotionRequest(), mrmsg);
   GT_TRACE("Actuator:execute():writing theMotionRequest");
   theMotionRequestWriter->write(mrmsg.str());
-
+  */
   GT_TRACE("Actuator:execute() end");
 }//end execute

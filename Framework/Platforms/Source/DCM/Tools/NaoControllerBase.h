@@ -14,7 +14,7 @@
 #include "SharedMemory.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include "PlatformInterface/Platform.h"
-#include "Tools/Communication/MessageQueue/MessageQueue4Process.h"
+#include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Representations/Infrastructure/FrameInfo.h>
 
 namespace naoth
@@ -68,7 +68,7 @@ public:
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name)
   {
-    return new MessageQueue4Process(name);
+    return new MessageQueue4Threads(name);
   }
 
   void updateFrameInfo()

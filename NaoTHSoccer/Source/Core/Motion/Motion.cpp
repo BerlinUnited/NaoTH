@@ -15,7 +15,7 @@
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 #include "Tools/Debug/Stopwatch.h"
 
-#ifdef NAO
+#ifdef NAO_OLD
 #include <DebugCommunication/DebugCommandManager.h>
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings.h"
@@ -25,13 +25,14 @@
 using namespace naoth;
 
 Motion::Motion():theBlackBoard(MotionBlackBoard::getInstance()),
-theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
-theMotionStatusWriter(NULL),
-theOdometryDataWriter(NULL),
-theHeadMotionRequestReader(NULL),
-theMotionRequestReader(NULL),
+  theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
+  theMotionStatusWriter(NULL),
+  theOdometryDataWriter(NULL),
+  theHeadMotionRequestReader(NULL),
+  theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
-  state(initial)
+  state(initial),
+  oldMotionRequestTime(0)
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
@@ -91,18 +92,28 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(MotorJointData);
   REG_OUTPUT(LEDData);
 
-#ifdef NAO
+#ifdef NAO_OLD
   platformInterface.registerMotionInput(theDebugMessageIn);
   platformInterface.registerMotionOutput(theDebugMessageOut);
 #endif
   g_message("Motion register end");
   
+
+  platformInterface.registerMotionOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
+  platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
+  platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
+
+
+  platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
+  platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
+  /*
   theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
   theOdometryDataWriter = new MessageWriter(platformInterface.getMessageQueue("OdometryData"));
   theCalibrationDataWriter = new MessageWriter(platformInterface.getMessageQueue("CalibrationData"));
   
   theHeadMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("HeadMotionRequest"));
   theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
+  */
 
   selectMotion();// create init motion
   state = initial;
@@ -117,7 +128,7 @@ void Motion::call()
   STOPWATCH_START("Motion:processSensorData");
   processSensorData();
   STOPWATCH_STOP("Motion:processSensorData");
-  
+
   switch (state)
   {
   case initial:
@@ -137,8 +148,19 @@ void Motion::call()
   }
   case running:
   {
-    frameNumSinceLastMotionRequest++;
+    /*
+    if(theBlackBoard.theMotionRequest.time == oldMotionRequestTime)
+      frameNumSinceLastMotionRequest++;
+    else
+    {
+      frameNumSinceLastMotionRequest = 0;
+      oldMotionRequestTime = theBlackBoard.theMotionRequest.time;
+    }
+    */
+    frameNumSinceLastMotionRequest = 0;
+
     // get orders from cognition
+    /*
     while ( !theHeadMotionRequestReader->empty() )
     {
       string msg = theHeadMotionRequestReader->read();
@@ -153,6 +175,7 @@ void Motion::call()
       Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
       frameNumSinceLastMotionRequest = 0;
     }
+    */
 
     checkWarningState();
 
@@ -182,7 +205,7 @@ void Motion::call()
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
 
-#ifdef NAO
+#ifdef NAO_OLD
   theStopwatchSender.execute();
 #endif
 }//end call
@@ -233,22 +256,24 @@ void Motion::postProcess()
   mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
 
   // send message to cognition
-  stringstream msmsg;
-  Serializer<MotionStatus>::serialize(theBlackBoard.theMotionStatus, msmsg);
-  theMotionStatusWriter->write(msmsg.str());
-  
-  stringstream odmsg;
-  Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
-  theOdometryDataWriter->write(odmsg.str());
-
+  /*
   if ( frameNumSinceLastMotionRequest == 0 ) // cognition is running
   {
+    stringstream msmsg;
+    Serializer<MotionStatus>::serialize(theBlackBoard.theMotionStatus, msmsg);
+    theMotionStatusWriter->write(msmsg.str());
+  
+    stringstream odmsg;
+    Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
+    theOdometryDataWriter->write(odmsg.str());
+  
     stringstream cdmsg;
     Serializer<CalibrationData>::serialize(theBlackBoard.theCalibrationData, cdmsg);
     theCalibrationDataWriter->write(cdmsg.str());
-  }
+  }//end if
+  */
     
-#ifdef NAO
+#ifdef NAO_OLD
   theDebugMessageOut.answers.clear();
   for(std::list<DebugMessageIn::Message>::const_iterator iter = theDebugMessageIn.messages.begin();
       iter != theDebugMessageIn.messages.end(); ++iter)
