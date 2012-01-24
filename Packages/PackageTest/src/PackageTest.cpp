@@ -20,8 +20,8 @@ PackageTest::PackageTest()
 }
 
 void PackageTest::execute()
-{ 
-  std::cout << "Hello Test, time is:" << std::endl << getFrameInfo().time << std::endl;
+{
+  std::cout << "Hello Test, time is:" << std::endl << getFrameInfo().getTime() << std::endl;
 
   getColorTable64().setColorClass(ColorClasses::blue, 100, 100, 100);
   
