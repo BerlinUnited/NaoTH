@@ -27,6 +27,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include <Representations/Perception/FieldSidePercept.h>
 
 //
 #include "SampleSet.h"
@@ -37,6 +38,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
+  REQUIRE(FieldSidePercept)
   REQUIRE(GoalPercept)
   REQUIRE(SensingGoalModel)
   REQUIRE(LocalGoalModel)
@@ -71,6 +73,8 @@ private:
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
 
+  bool initialized;
+
   //GridClustering gridClustering;
   CanopyClustering<SampleSet> canopyClustering;
 
@@ -81,7 +85,7 @@ private:
     const Vector2<double>& posSeen, 
     const Vector2<double>& posReal) const;
 
-  bool isInsideCarpet(const Vector2<double> &p) const;
+  bool isInsideCarpet(const Vector2<double>& p) const;
 
   void sensorResetByGoals(SampleSet& sampleSet, int start, int number);
   void resample(SampleSet& sampleSet);

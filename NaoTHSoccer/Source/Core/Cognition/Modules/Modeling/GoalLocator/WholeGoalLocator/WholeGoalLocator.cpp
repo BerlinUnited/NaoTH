@@ -16,7 +16,7 @@ WholeGoalLocator::WholeGoalLocator()
 {
   DEBUG_REQUEST_REGISTER("WholeGoalLocator:drawPost", "draw the modelled post on the field", false);
   DEBUG_REQUEST_REGISTER("WholeGoalLocator:drawGoalModel", "draw the modelled goal on the field", false);
-  DEBUG_REQUEST_REGISTER("WholeGoalLocator:drawPostBuffer", "draw the collected goal post percepts", false);
+  DEBUG_REQUEST_REGISTER("WholeGoalLocator:drawRobotPose", "draw the robots position estimated by the goal", false);
 
   DEBUG_REQUEST_REGISTER("WholeGoalLocator:correct_the_goal_percept", "correct the camera matrix when the whole goal is seen", true);
 }
@@ -84,6 +84,15 @@ void WholeGoalLocator::execute()
     PEN("AAAA00", 50);
     CIRCLE(centerYellow.x, centerYellow.y, 50);
   );
+
+  DEBUG_REQUEST("WholeGoalLocator:drawRobotPose",
+    FIELD_DRAWING_CONTEXT;
+    PEN(ColorClasses::yellow, 50);
+    Pose2D pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
+    ROBOT(pose.translation.x,
+          pose.translation.y,
+          pose.rotation);
+  );
 }//end execute
 
 
@@ -136,27 +145,28 @@ void WholeGoalLocator::checkAndInsertSingleGoal(
   // both goal posts should have the same color...
   if(postLeft.color == ColorClasses::yellow && postRight.color == ColorClasses::yellow )
   {
-    // finally update model
-    getSensingGoalModel().yellowGoal.leftPost = postLeft.position;
-    getSensingGoalModel().yellowGoal.rightPost = postRight.position;
-    getSensingGoalModel().calculateBlueByYellow(getFieldInfo().xLength);
-    getSensingGoalModel().yellowGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
-  }
-  else if(postLeft.color == ColorClasses::skyblue && postRight.color == ColorClasses::skyblue)
-  {
-    // finally update model
-    getSensingGoalModel().blueGoal.leftPost = postLeft.position;
-    getSensingGoalModel().blueGoal.rightPost = postRight.position;
-    getSensingGoalModel().calculateYellowByBlue(getFieldInfo().xLength);
-    getSensingGoalModel().blueGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
-  }
-  else
-  {
-    // goal posts have different colors?!
-    return;
-  }
+    if(getFieldSidePercept().facedFieldSide == FieldSidePercept::own)
+    {
+      getSensingGoalModel().yellowGoal.leftPost = postLeft.position;
+      getSensingGoalModel().yellowGoal.rightPost = postRight.position;
+      getSensingGoalModel().calculateBlueByYellow(getFieldInfo().xLength);
+      getSensingGoalModel().yellowGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
+      getSensingGoalModel().someGoalWasSeen = true;
+    }
+    else if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent)
+    {
+      getSensingGoalModel().blueGoal.leftPost = postLeft.position;
+      getSensingGoalModel().blueGoal.rightPost = postRight.position;
+      getSensingGoalModel().calculateYellowByBlue(getFieldInfo().xLength);
+      getSensingGoalModel().blueGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
+      getSensingGoalModel().someGoalWasSeen = true;
+    }
+    else
+    {
+      // TODO: what?!
+    }
+  }//end if
 
-  getSensingGoalModel().someGoalWasSeen = true;
 }//end checkAndInsertSingleGoal
 
 
@@ -265,9 +275,30 @@ double WholeGoalLocator::projectionError(
       0.0,
       rightPosition);
 
+  
   double goal_width = (getFieldInfo().opponentGoalPostLeft-getFieldInfo().opponentGoalPostRight).abs2();
   double seen_width = (leftPosition-rightPosition).abs2();
   double error = Math::sqr(goal_width - seen_width);
+  
+
+  /*
+  //TODO: IN PROGRESS
+  // percived position
+  double rotation = (leftPosition-rightPosition).angle() - Math::pi_2;
+  rotation = Math::normalize(-rotation);
+
+  Vector2<double> posLeft = getFieldInfo().opponentGoalPostLeft - leftPosition.rotate(rotation);
+  Vector2<double> posRight = getFieldInfo().opponentGoalPostRight - rightPosition.rotate(rotation);
+
+  Pose2D pose;
+  pose.translation = (posLeft + posRight)*0.5;
+  pose.rotation = rotation;
+
+  //
+  double error = 
+    (getFieldInfo().opponentGoalPostLeft - pose*leftPosition).abs() +
+    (getFieldInfo().opponentGoalPostRight - pose*rightPosition).abs();
+  */
 
   return error;
 }//end projectionError

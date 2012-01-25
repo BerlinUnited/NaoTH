@@ -22,7 +22,8 @@
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
     //gridClustering(sampleSet),
-  canopyClustering(theSampleSet, parameters.thresholdCanopy)
+  canopyClustering(theSampleSet, parameters.thresholdCanopy),
+  initialized(false)
 {
   resetSampleSet(theSampleSet);
 
@@ -136,7 +137,7 @@ void MonteCarloSelfLocator::updateByOldPose(SampleSet& sampleSet) const
 
 
 void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
-{     
+{
   double sigmaDistance = parameters.sigmaDistanceGoalModel;
   double sigmaAngle = parameters.sigmaAngleGoalModel;
 
@@ -146,7 +147,7 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
     pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
   }else
   {
-    pose = getSensingGoalModel().calculatePose(ColorClasses::yellow, getFieldInfo());
+    pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
   }//end else
 
   updateByPose(sampleSet, pose, sigmaDistance, sigmaAngle);
@@ -182,11 +183,29 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
     const double seenDistance = seenPost.position.abs();
     const double seenAngle = seenPost.position.angle();
 
-    const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
+    // classify the seen goal
 
     Vector2<double> leftGoalPosition;
     Vector2<double> rightGoalPosition;
+    
+    if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
+        (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
+         fabs(getRobotPose().rotation + seenAngle) < Math::pi_2)
+      )
+    {
+      leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
+      rightGoalPosition = getFieldInfo().opponentGoalPostRight;
+    }
+    else
+    {
+      // own goals are switched (!)
+      leftGoalPosition = getFieldInfo().ownGoalPostRight;
+      rightGoalPosition = getFieldInfo().ownGoalPostLeft;
+    }
 
+    
+    /*
+    //const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
     if (seenPost.color == opponentGoalColor)
     {
       leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
@@ -197,7 +216,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
       leftGoalPosition = getFieldInfo().ownGoalPostRight;
       rightGoalPosition = getFieldInfo().ownGoalPostLeft;
     }//end else
-    
+    */
 
     for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)
     { 
@@ -524,7 +543,7 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
 
 }//end updateByFlags
 
-
+//TODO: not used yet
 void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, int number)
 {
   unsigned int n = start;
@@ -543,6 +562,7 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
       //const double seenDistance = seenPost.position.abs();
       //const double seenAngle = seenPost.position.angle();
 
+      /*
       const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
       if (seenPost.color == opponentGoalColor)
@@ -554,13 +574,28 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
         leftGoalPosition = getFieldInfo().ownGoalPostLeft;
         rightGoalPosition = getFieldInfo().ownGoalPostRight;
       }//end else  
+      */
 
+      if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
+        (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
+         fabs(getRobotPose().rotation + seenPost.position.angle()) < Math::pi_2)
+      )
+      {
+        leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
+        rightGoalPosition = getFieldInfo().opponentGoalPostRight;
+      }
+      else
+      {
+        // own goals are switched (!)
+        leftGoalPosition = getFieldInfo().ownGoalPostRight;
+        rightGoalPosition = getFieldInfo().ownGoalPostLeft;
+      }
 
       //
       //double rand_dist = seenDistance + Math::randomGauss()*500;
       //double rand_angle = Math::pi2 * Math::random() -Math::pi;
 
-      if(  true /*on field */)
+      if(  true /*on field */) // isInsideCarpet(pose.translation)
       {
         sampleSet[n].translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
         sampleSet[n].translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
@@ -604,7 +639,7 @@ bool MonteCarloSelfLocator::generateTemplateFromPosition(
 }//end generateTemplateFromPosition
 
 
-bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double> &p) const
+bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) const
 {
   return p.y > -getFieldInfo().yFieldLength/2.0 &&
          p.y <  getFieldInfo().yFieldLength/2.0 &&
@@ -623,8 +658,8 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   const double averageWeighting = totalWeighting / sampleSet.numberOfParticles;
   static double w_slow = averageWeighting;
   static double w_fast = averageWeighting;
-  double alpha_slow = 0.05;
-  double alpha_fast = 0.0505;
+  double alpha_slow = 0.0059;
+  double alpha_fast = 0.006;
 
   w_slow += alpha_slow*(averageWeighting - w_slow);
   w_fast += alpha_fast*(averageWeighting - w_fast);
@@ -703,15 +738,18 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
     Pose2D pose;
     if (getPlayerInfo().gameData.teamColor == GameData::red)
     {
-      pose = getLocalGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
+      pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
     }else
     {
-      pose = getLocalGoalModel().calculatePose(ColorClasses::yellow, getFieldInfo());
+      pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
     }//end else
 
-    sampleSet[n].translation = pose.translation;
-    sampleSet[n].rotation = pose.rotation;
-    n++;
+    if(isInsideCarpet(pose.translation))
+    {
+      sampleSet[n].translation = pose.translation;
+      sampleSet[n].rotation = pose.rotation;
+      n++;
+    }
   }//end if
 
 
@@ -734,7 +772,11 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
       Vector2<double> leftGoalPosition;
       Vector2<double> rightGoalPosition;
 
-      if (seenPost.color == opponentGoalColor)
+      //if (seenPost.color == opponentGoalColor)
+      if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
+        (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
+         fabs(getRobotPose().rotation + seenPost.position.angle()) < Math::pi_2)
+      )
       {
         leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
         rightGoalPosition = getFieldInfo().opponentGoalPostRight;
@@ -792,13 +834,17 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // WORK in progress
   if((maxDistanceError > 1000 || maxAngleError > Math::fromDegrees(30)) && getGoalPercept().getNumberOfSeenPosts() > 0)
   {
+    PLOT("MCSL:maxDistanceError",maxDistanceError);
+    PLOT("MCSL:maxAngleError",maxAngleError);
+
     // neue samples einstreuen (10 prozent)
     // TODO: draw with the probability of the goal percept
-    for(int i=0; i < numberOfPartiklesToResample; i++) {
+    for(int i=0; i < numberOfPartiklesToResample; i++) 
+    {
       if (n < sampleSet.numberOfParticles) 
       {
           // select a random post
-          int idx = Math::random(0, (int)getGoalPercept().getNumberOfSeenPosts());
+          int idx = Math::random((int)getGoalPercept().getNumberOfSeenPosts());
           const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(idx);
 
           const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
@@ -828,7 +874,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
           {
             sampleSet[n].translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
             sampleSet[n].translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
-            sampleSet[n].rotation = (Math::random()*2-1)*Math::pi;
+            sampleSet[n].rotation = Math::random(-Math::pi, Math::pi);
           }
         n++;
       }//end if
@@ -840,7 +886,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // (shouldn't happen)
   while (n < sampleSet.numberOfParticles) 
   {
-    int i = (int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
+    int i = Math::random(sampleSet.numberOfParticles);//(int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
     sampleSet[n] = sampleSet[i];
     n++;
   }//end while
@@ -936,7 +982,7 @@ inline double MonteCarloSelfLocator::computeDistanceWeighting(
 
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
-  
+
   // calculate if sensor data is available
   bool sensorDataAvailable = false;
   
@@ -1003,7 +1049,9 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   if(sensorDataAvailable)
   {
     // update by the old position in order to stabilize it
-    if(parameters.updateByOldPose > 0)
+    if(parameters.updateByOldPose > 0 && initialized && 
+      (getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo()).translation-
+      getRobotPose().translation).abs() < 700)
     {
       updateByOldPose(sampleSet);
     }
@@ -1017,6 +1065,9 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::execute()
 {
+
+  // HACK
+  initialized = initialized || getSensingGoalModel().someGoalWasSeen;
 
   DEBUG_REQUEST("MCSL:reset_samples",
     resetSampleSet(theSampleSet);
@@ -1131,7 +1182,11 @@ void MonteCarloSelfLocator::execute()
       getRobotPose().isValid = false;
   }//end if
 
+  // clear plot
+  if(!getRobotPose().isValid)
+  {
 
+  }
 
   /************************************
    * estimate new position and update the model
@@ -1256,13 +1311,15 @@ void MonteCarloSelfLocator::execute()
 
 void MonteCarloSelfLocator::resetSampleSet(SampleSet& sampleSet)
 {
+  initialized = false;
+
   double likelihood = 1.0/static_cast<double>(sampleSet.numberOfParticles);
   for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
   {
     Sample& sample = sampleSet[i];
     sample.translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
     sample.translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
-    sample.rotation = (Math::random()*2-1)*Math::pi;
+    sample.rotation = Math::random(-Math::pi,Math::pi);//(Math::random()*2-1)*Math::pi;
     sample.likelihood = likelihood;
   }//end for
 }//end resetSampleSet
