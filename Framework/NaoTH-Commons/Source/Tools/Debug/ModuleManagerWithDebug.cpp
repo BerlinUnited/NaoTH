@@ -6,6 +6,7 @@
 
 #include "ModuleManagerWithDebug.h"
 #include <DebugCommunication/DebugCommandManager.h>
+#include <PlatformInterface/Platform.h>
 
 // list the modules and representations on the blackboard
 #include "Messages/Messages.pb.h"
@@ -113,7 +114,6 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
   }
   else if( command == "modules:store" )
   {
-    /*
     naoth::Configuration& config = Platform::getInstance().theConfiguration;
     for(list<string>::const_iterator name=getExecutionList().begin();
       name != getExecutionList().end(); name++)
@@ -123,7 +123,6 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
 
     // write the config to file
     config.save();
-    */
     outstream << "modules saved to private/modules.cfg" << endl;
   }
   else if (command == "modules:set")
