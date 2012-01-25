@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   DataHolder.h
  * Author: thomas
  *
@@ -35,8 +35,8 @@ public:
   T& operator*(){ return data; }
   const T& operator*() const{ return data; }
 
-  /** 
-   * wrap the print, fromDataStream and toDataStream of the data member 
+  /**
+   * wrap the print, fromDataStream and toDataStream of the data member
    */
   virtual void print(ostream& stream) const
   {
@@ -63,12 +63,12 @@ public:
     Serializer<T>::deserialize(stream, data);
   }
   */
-  void serialize(crf::BaseMessage& msg) const
+  void serialize(crf::msg::BaseMessage& msg) const
   {
     Serializer<T>::serialize(data, msg);
   }
 
-  void deserialize(crf::BaseMessage& msg)
+  void deserialize(crf::msg::BaseMessage& msg)
   {
     Serializer<T>::deserialize(msg, data);
   }

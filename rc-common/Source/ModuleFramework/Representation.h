@@ -52,7 +52,7 @@ public:
   {
     provided.push_back(&module);
   }//end registerProvidingModule
-  
+
   void unregisterProvidingModule(const Module& module)
   {
     provided.remove(&module);
@@ -95,8 +95,8 @@ public:
   virtual void deserialize(std::istream& stream) = 0;
   */
 
-  virtual void serialize(crf::BaseMessage& msg) const = 0;
-  virtual void deserialize(crf::BaseMessage& msg) = 0;
+  virtual void serialize(crf::msg::BaseMessage& msg) const = 0;
+  virtual void deserialize(crf::msg::BaseMessage& msg) = 0;
 };
 
 /**
@@ -104,7 +104,7 @@ public:
  * @param stream The stream to write on.
  * @param image The Representation object.
  * @return The stream.
- */ 
+ */
 //ostream& operator<<(ostream& stream, const Representation& representation);
 
 }//crf
