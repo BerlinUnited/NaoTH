@@ -166,7 +166,33 @@ void HeadMotionEngine::gotoAngle(const Vector2<double>& target)
 
 void HeadMotionEngine::moveByAngle(const Vector2<double>& target) 
 {
+  double max_velocity_deg_in_second_fast = 60;
+  double max_velocity_deg_in_second_slow = 120;
+  double cutting_velocity = 40; // speed of the robot in mm/s
+
   double max_velocity_deg_in_second = 90;
+  // calculate depending on the walking speed
+  if(theBlackBoard.theMotionStatus.currentMotion == motion::walk)
+  {
+    double walking_speed = theBlackBoard.theMotionStatus.plannedMotion.hip.translation.abs();
+    
+    if(walking_speed > cutting_velocity)
+    {
+      max_velocity_deg_in_second = max_velocity_deg_in_second_slow;
+    }
+    else
+    {
+      double t = walking_speed/cutting_velocity;
+      max_velocity_deg_in_second = (1.0 - t)*max_velocity_deg_in_second_slow + t*max_velocity_deg_in_second_fast;
+    }
+  }
+  else
+  {
+    max_velocity_deg_in_second = max_velocity_deg_in_second_slow;
+  }
+
+
+  
   MODIFY("HeadMotionEngine:gotoAngle:max_velocity_deg_in_second", max_velocity_deg_in_second);
   double max_velocity = Math::fromDegrees(max_velocity_deg_in_second)*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 
@@ -366,6 +392,7 @@ void HeadMotionEngine::search()
   const Vector3<double>& center = theBlackBoard.theHeadMotionRequest.searchCenter;
   const Vector3<double>& size = theBlackBoard.theHeadMotionRequest.searchSize;
 
+
   points.push_back(Vector3<double>(center.x-size.x, center.y-size.y, center.z-size.z));
   points.push_back(Vector3<double>(center.x-size.x, center.y+size.y, center.z-size.z));
   points.push_back(Vector3<double>(center.x+size.x, center.y+size.y, center.z+size.z));
@@ -453,9 +480,10 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
 
   cycle++;
   int nextMotionState = (headMotionState+1)%MAXSTATE;
-  double s = cycle / ( (points[nextMotionState]-points[headMotionState]).abs() / (max_speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() ));
+  double dist = (points[nextMotionState]-points[headMotionState]).abs();
+  double s = (dist == 0)?1:cycle / ( dist / (max_speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() ));
 
-  if ( s > 1 )
+  if ( s >= 1 )
   {
     headMotionState = nextMotionState;
     cycle = 0;
@@ -463,6 +491,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
     {
         finished = true;
     }
+    std::cout << headMotionState << std::endl;
   }
   else
   {
