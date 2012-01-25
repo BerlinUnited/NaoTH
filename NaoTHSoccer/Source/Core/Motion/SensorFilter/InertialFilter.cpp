@@ -45,7 +45,7 @@ void InertialFilter::calibrate()
       && !intentionallyMoving() )
   {
     // stand and not moving
-    if ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE) )
+    if ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) )
     {
       // both feet on the ground
       Pose3D foot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
@@ -140,7 +140,7 @@ void InertialFilter::update_bhuman_like()
   // detect unstable stuff...
   bool unstable = theBlackBoard.theMotionStatus.currentMotion != motion::stand
     || intentionallyMoving()
-    || !( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE) );
+    || !( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) );
 
 
   // update cleanCollectionStartTime
