@@ -32,6 +32,56 @@ using namespace naoth;
 
 class BaseColorRegionPercept : public naoth::Printable
 {
+  class ColorBlob
+  {
+  private:
+    int minY;
+    int maxY;
+    int minCb;
+    int maxCb;
+    int minCr;
+    int maxCr;
+  public:
+    ColorBlob(
+      int minY,
+      int maxY,
+      int minCb,
+      int maxCb,
+      int minCr,
+      int maxCr
+      ) 
+        :
+      minY(minY),
+      maxY(maxY),
+      minCb(minCb),
+      maxCb(maxCb),
+      minCr(minCr),
+      maxCr(maxCr)
+    {
+    }
+
+    ColorBlob() 
+        :
+      minY(0),
+      maxY(0),
+      minCb(0),
+      maxCb(0),
+      minCr(0),
+      maxCr(0)
+    {
+    }
+
+    inline bool inside(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+    {
+      return minY > yy && yy < maxY
+          && minCb > cb && cb < maxCb
+          && minCr > cr && cr < maxCr;
+    }//end inside
+  };
+
+
+
+
 private:
   double dCb;
   double dCr;
@@ -56,6 +106,9 @@ public:
   double distGoalCb;
   double distGoalCr;
 
+  ColorBlob goalBlob;
+
+
   double ballIndexY;
   double ballIndexCb;
   double ballIndexCr;
@@ -63,6 +116,9 @@ public:
   double distBallY;
   double distBallCb;
   double distBallCr;
+
+  ColorBlob ballBlob;
+
 
   double lineIndexY;
   double lineIndexCb;
@@ -72,7 +128,41 @@ public:
   double distLineCb;
   double distLineCr;
 
+  ColorBlob lineBlob;
+
+
   FrameInfo lastUpdated;
+
+  void cretePercept()
+  {
+    goalBlob = ColorBlob(
+      meanY / 128 * goalIndexY - distGoalY,
+      meanY / 128 * goalIndexY + distGoalY,
+      meanCb / 128 * goalIndexCb - distGoalCb,
+      meanCb / 128 * goalIndexCb + distGoalCb,
+      meanCr / 128 * goalIndexCr - distGoalCr,
+      meanCr / 128 * goalIndexCr + distGoalCr
+      );
+
+    ballBlob = ColorBlob(
+      meanY / 128 * ballIndexY - distBallY,
+      meanY / 128 * ballIndexY + distBallY,
+      meanCb / 128 * ballIndexCb - distBallCb,
+      meanCb / 128 * ballIndexCb + distBallCb,
+      meanCr / 128 * ballIndexCr - distBallCr,
+      meanCr / 128 * ballIndexCr + distBallCr
+      );
+
+    lineBlob = ColorBlob(
+      meanY / 128 * lineIndexY - distLineY,
+      meanY / 128 * lineIndexY + distLineY,
+      meanCb / 128 * lineIndexCb - distLineCb,
+      meanCb / 128 * lineIndexCb + distLineCb,
+      meanCr / 128 * lineIndexCr - distLineCr,
+      meanCr / 128 * lineIndexCr + distLineCr
+      );
+  };
+
 
   BaseColorRegionPercept()
   {
@@ -116,8 +206,10 @@ public:
   ~BaseColorRegionPercept()
   {}
 
-  bool isYellow(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+  inline bool isYellow(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
+    return goalBlob.inside(yy,cb,cr);
+    /*
     return
     (
       yy > meanY / 128 * goalIndexY - distGoalY
@@ -132,16 +224,19 @@ public:
       &&
       cr < meanCr / 128 * goalIndexCr + distGoalCr
     );
+    */
   }
 
-  bool isYellow(const Pixel& pixel) const
+  inline bool isYellow(const Pixel& pixel) const
   {
-    return isYellow(pixel.y, pixel.u, pixel.v);
+    return goalBlob.inside(pixel.y, pixel.u, pixel.v);
+    //return isYellow(pixel.y, pixel.u, pixel.v);
   }
 
-  bool isRedOrOrangeOrPink(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+  inline bool isRedOrOrangeOrPink(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
-
+    return ballBlob.inside(yy,cb,cr);
+    /*
     return
     (
       yy > meanY / 128 * ballIndexY - distBallY
@@ -155,15 +250,16 @@ public:
       cr > meanCr / 128 * ballIndexCr - distBallCr
       &&
       cr < meanCr / 128 * ballIndexCr + distBallCr
-    );
+    );*/
   }
 
-  bool isRedOrOrangeOrPink(const Pixel& pixel) const
+  inline bool isRedOrOrangeOrPink(const Pixel& pixel) const
   {
-    return isRedOrOrangeOrPink(pixel.y, pixel.u, pixel.v);
+    ballBlob.inside(pixel.y, pixel.u, pixel.v);
+    //return isRedOrOrangeOrPink(pixel.y, pixel.u, pixel.v);
   }
 
-  bool isGreenOrBlue(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+  inline bool isGreenOrBlue(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
     return
     (
@@ -185,12 +281,12 @@ public:
     );
   }
 
-  bool isGreenOrBlue(const Pixel& pixel) const
+  inline bool isGreenOrBlue(const Pixel& pixel) const
   {
     return isGreenOrBlue(pixel.y, pixel.u, pixel.v);
   }
 
-  bool isGrayLevel(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+  inline bool isGrayLevel(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
     double fCb = meanY / 128;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
     double fCr = meanCr / 128;//dCr / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;//127.0;
@@ -238,13 +334,15 @@ public:
     );
   }
 
-  bool isGrayLevel(const Pixel& pixel) const
+  inline bool isGrayLevel(const Pixel& pixel) const
   {
     return isGrayLevel(pixel.y, pixel.u, pixel.v);
   }
 
-  bool isWhite(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+  inline bool isWhite(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
+    return lineBlob.inside(yy,cb,cr);
+    /*
     return
     (
       yy > meanY / 128 * lineIndexY - distLineY
@@ -258,12 +356,13 @@ public:
       cr > meanCr / 128 * lineIndexCr - distLineCr
       &&
       cr < meanCr / 128 * lineIndexCr + distLineCr
-    );
+    );*/
   }
 
-  bool isWhite(const Pixel& pixel) const
+  inline bool isWhite(const Pixel& pixel) const
   {
-    return isWhite(pixel.y, pixel.u, pixel.v);
+    return lineBlob.inside(pixel.y, pixel.u, pixel.v);
+    //return isWhite(pixel.y, pixel.u, pixel.v);
   }
 
   virtual void print(ostream& stream) const

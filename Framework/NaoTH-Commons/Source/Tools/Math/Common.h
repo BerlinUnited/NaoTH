@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <ctime>
+#include <assert.h>
 
 #ifdef WIN32 /* needed for _isnan */
 #include <float.h>
@@ -173,7 +174,7 @@ namespace Math {
   * @param n the number of possible return values (0 ... n-1)
   * @return The random number.
   */
-  inline int random(int n) { return ((int)(random()*n))%n; }
+  inline int random(int n) { assert(n > 0); return ((int)(random()*n))%n; }
 
 
   /** 

@@ -33,5 +33,5 @@ void ColorClassificationModel::invalidateBaseColorRegionPercept()
 void ColorClassificationModel::setBaseColorRegionPercept(const BaseColorRegionPercept &percept)
 {
   baseColorRegionPercept = percept;
-  fieldColorPerceptValid = true;
+  baseColorRegionPerceptValid = true;
 }

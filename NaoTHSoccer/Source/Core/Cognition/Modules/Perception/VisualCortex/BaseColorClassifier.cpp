@@ -196,7 +196,11 @@ void BaseColorClassifier::execute()
   getBaseColorRegionPercept().lastUpdated = getFrameInfo();
 
   runDebugRequests();
-}
+
+
+
+  getBaseColorRegionPercept().cretePercept();
+}//end execute
 
 void BaseColorClassifier::runDebugRequests()
 {
