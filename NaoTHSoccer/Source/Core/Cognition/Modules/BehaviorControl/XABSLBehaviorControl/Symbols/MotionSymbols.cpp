@@ -173,35 +173,38 @@ void MotionSymbols::execute()
 {
   getMotionRequest().reset();
 
-     //Modell-Hack
-   double curHeadPitch = sensorJointData.position[JointData::HeadPitch];
-   double curHeadYaw   = sensorJointData.position[JointData::HeadYaw];
+  // Modell-Hack
+  double curHeadPitch = sensorJointData.position[JointData::HeadPitch];
+  double curHeadYaw   = sensorJointData.position[JointData::HeadYaw];
+  double curTime      = frameInfo.getTimeInSeconds();
 
-   double curTime      = frameInfo.getTimeInSeconds();
+  if(headMotionBuffer.getNumberOfEntries() > 0)
+  {
+    //pick randomly one percept out of the buffer, the current information are not yet added to the buffer
+    int idx = Math::random(headMotionBuffer.getNumberOfEntries());
 
-   //pick randomly one percept out of the buffer, the current information are not yet added to the buffer
-   int idx = Math::random(headMotionBuffer.getNumberOfEntries());
+    double timeDelta = curTime - headMotionBuffer.getEntry(idx).time;
+    ASSERT(timeDelta > 0);
+    double appHeadYawSpeed = (curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
+    double appHeadPitchSpeed = (curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
 
-   double timeDelta = curTime - headMotionBuffer.getEntry(idx).time;
-   ASSERT(timeDelta > 0);
-   double appHeadYawSpeed = (curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
-   double appHeadPitchSpeed = (curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
-
-   double normAppHeadYawSpeed = Math::normalize(curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
-   double normAppHeadPitchSpeed = Math::normalize(curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
+    double normAppHeadYawSpeed = Math::normalize(curHeadYaw - headMotionBuffer.getEntry(idx).headYaw) / timeDelta;
+    double normAppHeadPitchSpeed = Math::normalize(curHeadPitch - headMotionBuffer.getEntry(idx).headPitch) / timeDelta;
 
 
-   Vector2<double> appHeadVelocity(appHeadYawSpeed, appHeadPitchSpeed);
-   Vector2<double> normAppHeadVelocity(normAppHeadYawSpeed, normAppHeadPitchSpeed);
-    //insertMotion
-    HeadMotion headMotion;
-    headMotion.time  = curTime;
-    headMotion.headPitch  = curHeadPitch;
-    headMotion.headYaw    = curHeadYaw;
-    headMotionBuffer.add(headMotion);
+    Vector2<double> appHeadVelocity(appHeadYawSpeed, appHeadPitchSpeed);
+    Vector2<double> normAppHeadVelocity(normAppHeadYawSpeed, normAppHeadPitchSpeed);
 
     headSpeed = Math::toDegrees(appHeadVelocity.abs());
     PLOT("AngleVelocity~Head", headSpeed);
+  }//end if
+
+  //insertMotion
+  HeadMotion headMotion;
+  headMotion.time      = curTime;
+  headMotion.headPitch = curHeadPitch;
+  headMotion.headYaw   = curHeadYaw;
+  headMotionBuffer.add(headMotion);
 } //end update
 
 void MotionSymbols::updateOutputSymbols()
