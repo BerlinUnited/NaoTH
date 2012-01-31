@@ -35,20 +35,20 @@ class BaseColorRegionPercept : public naoth::Printable
   class ColorBlob
   {
   private:
-    int minY;
-    int maxY;
-    int minCb;
-    int maxCb;
-    int minCr;
-    int maxCr;
+    unsigned int minY;
+    unsigned int maxY;
+    unsigned int minCb;
+    unsigned int maxCb;
+    unsigned int minCr;
+    unsigned int maxCr;
   public:
     ColorBlob(
-      int minY,
-      int maxY,
-      int minCb,
-      int maxCb,
-      int minCr,
-      int maxCr
+      unsigned int minY,
+      unsigned int maxY,
+      unsigned int minCb,
+      unsigned int maxCb,
+      unsigned int minCr,
+      unsigned int maxCr
       ) 
         :
       minY(minY),
@@ -136,30 +136,30 @@ public:
   void cretePercept()
   {
     goalBlob = ColorBlob(
-      meanY / 128 * goalIndexY - distGoalY,
-      meanY / 128 * goalIndexY + distGoalY,
-      meanCb / 128 * goalIndexCb - distGoalCb,
-      meanCb / 128 * goalIndexCb + distGoalCb,
-      meanCr / 128 * goalIndexCr - distGoalCr,
-      meanCr / 128 * goalIndexCr + distGoalCr
+      (unsigned int)(meanY / 128 * goalIndexY - distGoalY),
+      (unsigned int)(meanY / 128 * goalIndexY + distGoalY),
+      (unsigned int)(meanCb / 128 * goalIndexCb - distGoalCb),
+      (unsigned int)(meanCb / 128 * goalIndexCb + distGoalCb),
+      (unsigned int)(meanCr / 128 * goalIndexCr - distGoalCr),
+      (unsigned int)(meanCr / 128 * goalIndexCr + distGoalCr)
       );
 
     ballBlob = ColorBlob(
-      meanY / 128 * ballIndexY - distBallY,
-      meanY / 128 * ballIndexY + distBallY,
-      meanCb / 128 * ballIndexCb - distBallCb,
-      meanCb / 128 * ballIndexCb + distBallCb,
-      meanCr / 128 * ballIndexCr - distBallCr,
-      meanCr / 128 * ballIndexCr + distBallCr
+      (unsigned int)(meanY / 128 * ballIndexY - distBallY),
+      (unsigned int)(meanY / 128 * ballIndexY + distBallY),
+      (unsigned int)(meanCb / 128 * ballIndexCb - distBallCb),
+      (unsigned int)(meanCb / 128 * ballIndexCb + distBallCb),
+      (unsigned int)(meanCr / 128 * ballIndexCr - distBallCr),
+      (unsigned int)(meanCr / 128 * ballIndexCr + distBallCr)
       );
 
     lineBlob = ColorBlob(
-      meanY / 128 * lineIndexY - distLineY,
-      meanY / 128 * lineIndexY + distLineY,
-      meanCb / 128 * lineIndexCb - distLineCb,
-      meanCb / 128 * lineIndexCb + distLineCb,
-      meanCr / 128 * lineIndexCr - distLineCr,
-      meanCr / 128 * lineIndexCr + distLineCr
+      (unsigned int)(meanY / 128 * lineIndexY - distLineY),
+      (unsigned int)(meanY / 128 * lineIndexY + distLineY),
+      (unsigned int)(meanCb / 128 * lineIndexCb - distLineCb),
+      (unsigned int)(meanCb / 128 * lineIndexCb + distLineCb),
+      (unsigned int)(meanCr / 128 * lineIndexCr - distLineCr),
+      (unsigned int)(meanCr / 128 * lineIndexCr + distLineCr)
       );
   };
 
@@ -255,7 +255,7 @@ public:
 
   inline bool isRedOrOrangeOrPink(const Pixel& pixel) const
   {
-    ballBlob.inside(pixel.y, pixel.u, pixel.v);
+    return ballBlob.inside(pixel.y, pixel.u, pixel.v);
     //return isRedOrOrangeOrPink(pixel.y, pixel.u, pixel.v);
   }
 
