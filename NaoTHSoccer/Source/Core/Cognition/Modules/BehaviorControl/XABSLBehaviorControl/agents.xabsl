@@ -22,6 +22,7 @@ include "Symbols/line_symbols.xabsl";
 
 // HeadControl
 include "Options/HeadControl/search_for_goal.xabsl";
+include "Options/HeadControl/search_for_whole_goal.xabsl";
 include "Options/HeadControl/search_for_ball.xabsl";
 include "Options/HeadControl/look_around.xabsl";
 include "Options/HeadControl/goalie_look_around.xabsl";
