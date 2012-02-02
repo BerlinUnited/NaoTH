@@ -25,6 +25,8 @@
 #include "PlatformInterface/Platform.h"
 #include "Tools/ImageProcessing/ColorModelConversions.h"
 #include "Tools/Math/Common.h"
+#include "Tools/NaoTime.h"
+#include <Messages/Representations.pb.h>
 
 #include "OpenCVImageLoader.h"
 
@@ -37,7 +39,6 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
 {
   // register input
   directoryName = dirPath;
-  registerInput<Image>(*this);
   findFiles(dirPath);
   allFiles.reserve(1000);
   currentPos = 0;
@@ -45,6 +46,10 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
 
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
   theDebugServer.start(5401, true);
+  time = 0;
+
+  registerInput<FrameInfo>(*this);
+  registerInput<Image>(*this);
 }
 
 void OpenCVImageLoader::main()
@@ -97,6 +102,7 @@ void OpenCVImageLoader::makeStep()
   // execute
   if (result)
   {
+    time += getBasicTimeStep();
     callCognition();
     callMotion();
     imageLoaded = true;
@@ -106,6 +112,7 @@ void OpenCVImageLoader::makeStep()
     return;
   }
 }//end make
+
 
 void OpenCVImageLoader::stepBack()
 {
@@ -169,7 +176,7 @@ void OpenCVImageLoader::executeCognition()
     callMotion();
     // HACK: set the frame number...
     // in fact we don't have to update if every time
-    theGameData.frameNumber = currentFrame;
+    theGameData.frameNumber = time;
   }
   else
   {
@@ -249,6 +256,12 @@ void OpenCVImageLoader::get(Image& data)
     copyImage(data, loadedImage);
   }//if
 }//end get
+
+void OpenCVImageLoader::get(FrameInfo& data)
+{
+  data.setTime(time);
+}
+
 
 void OpenCVImageLoader::copyImage(Image& image, Mat mat)
 {

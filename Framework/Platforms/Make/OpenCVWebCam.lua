@@ -1,11 +1,11 @@
 local extern_dir = "../../../Extern"
 
 -- NaoTH controller for the webcam based "simulator"
-project "OpenCVImageLoader"
+project "OpenCVWebCam"
   kind "ConsoleApp"
   language "C++"
    
-  print("Generating files for OpenCVImageLoader")
+  print("Generating files for OpenCVWebCam")
   includedirs {
 	"../Source/",
 	CORE_PATH,
@@ -18,7 +18,7 @@ project "OpenCVImageLoader"
 	extern_dir .. "/include/opencv2/highgui/include/",
 	}
   
-  files{"../Source/OpenCVImageLoader/**.cpp","../Source/OpenCVImageLoader/**.h"}
+  files{"../Source/OpenCVWebCam/**.cpp","../Source/OpenCVWebCam/**.h"}
   
   links {CORE, "NaoTH-Commons",
 	  "glib-2.0",
@@ -33,9 +33,9 @@ project "OpenCVImageLoader"
 		  "opencv_highgui"
 	}
 	
-  targetname "OpenCVImageLoader"
+  targetname "OpenCVWebCam"
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 
-  -- END OpenCVImageLoader
+  -- END OpenCVWebCam
