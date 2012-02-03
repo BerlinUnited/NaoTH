@@ -4,7 +4,6 @@
 
 #include "Logger.h"
 #include <Tools/DataStructures/Serializer.h>
-#include <Representations/Infrastructure/GyrometerData.h>
 
 Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
 {
@@ -32,7 +31,7 @@ void Logger::executeDebugCommand(
   {
     handleCommand(iter->first, iter->second, outstream);
   }
-}
+}//end executeDebugCommand
 
 void Logger::handleCommand(const std::string& argName, const std::string& argValue, std::ostream& outstream)
 {
@@ -55,7 +54,7 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
         outstream << "activated logging for " << argValue;
         break;
       }
-    }
+    }//end for
   }
   else if ("deactivate" == argName) {
     for(std::set<std::string>::iterator iter=activeRepresentations.begin(); iter!=activeRepresentations.end(); ++iter)
@@ -66,7 +65,7 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
         outstream << "deactivated logging for " << argValue;
         break;
       }
-    }
+    }//end for
   }
   else if ("on" == argName) {
     activated = true;
@@ -89,7 +88,7 @@ void Logger::handleCommand(const std::string& argName, const std::string& argVal
   else{
     outstream << "Logger Error: unsupport argument: "<<argName;
   }
-}
+}//end handleCommand
 
 void Logger::log(unsigned int frameNum)
 {
@@ -107,7 +106,5 @@ void Logger::log(unsigned int frameNum)
       std::stringstream& stream = logfileManager.log(frameNum, itStreamables->first);
       serializers[*iter]->serialize(itStreamables->second, stream);
     }
-    
-  }
-
-}
+  }//end for
+}//end log

@@ -36,9 +36,9 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
+import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -114,6 +114,9 @@ public class BehaviorViewer extends AbstractDialog
 
   // max size of the buffer (25fps ~ 20s)
   private int maxNumberOfFrames = 500;
+  
+  
+  private BehaviorFrameListener behaviorFrameListener = new BehaviorFrameListener();
 
   /** Creates new form BehaviorViewer */
   public BehaviorViewer()
@@ -122,8 +125,8 @@ public class BehaviorViewer extends AbstractDialog
 
     initComponents();
 
-    this.frameList.setModel(new DefaultListModel());
-    this.frameList.addListSelectionListener(new BehaviorFrameListener());
+    this.frameList.setModel(new BehaviorFrameListModel()); // new DefaultListModel());
+    this.frameList.addListSelectionListener(behaviorFrameListener);
 
     this.frameList.setCellRenderer(new DefaultListCellRenderer() {
       final Color darkBlue = new Color(0.0f, 0.0f, 1.0f);
@@ -517,6 +520,7 @@ public class BehaviorViewer extends AbstractDialog
 
       this.activeActions = new ArrayList<Messages.XABSLAction>();
 
+      this.frameNumber = status.getFrameNumber();
       
       for(Messages.XABSLParameter p : status.getInputSymbolsList())
       {
@@ -552,17 +556,19 @@ public class BehaviorViewer extends AbstractDialog
       this.agent = status.getAgent();
     }//end constructor
     
-    public double[] inputSymbolValuesDecimal;
-    public boolean[] inputSymbolValuesBoolean;
-    public String[] inputSymbolValuesEnum;
+    public final double[] inputSymbolValuesDecimal;
+    public final boolean[] inputSymbolValuesBoolean;
+    public final String[] inputSymbolValuesEnum;
 
-    public double[] outputSymbolValuesDecimal;
-    public boolean[] outputSymbolValuesBoolean;
-    public String[] outputSymbolValuesEnum;
+    public final double[] outputSymbolValuesDecimal;
+    public final boolean[] outputSymbolValuesBoolean;
+    public final String[] outputSymbolValuesEnum;
 
-    public ArrayList<Messages.XABSLAction> activeActions;
-    public String agent;
+    public final ArrayList<Messages.XABSLAction> activeActions;
+    public final String agent;
 
+    public final int frameNumber;
+    
     public String getStringValue(SymbolId id)
     {
       if(id.io_type == SymbolId.IOType.input)
@@ -669,12 +675,39 @@ public class BehaviorViewer extends AbstractDialog
   }//end createPrototype
 
   
+  
+  public class BehaviorFrameListModel extends AbstractListModel 
+  {
+      public BehaviorFrameListModel() {
+      }
+
+      @Override
+      public Object getElementAt(int index) {
+        return behaviorBuffer.get(index).frameNumber;
+      }
+
+      @Override
+      public int getSize() {
+        return behaviorBuffer.size();
+      }
+
+      public void refresh()
+      {
+          fireContentsChanged(this, 0, getSize()-1);
+      }
+  }//end class BehaviorFrameListModel
+  
+  
+  
+  
   private void addFrame(Messages.BehaviorStatus status)
   {
+    //DefaultListModel listModel = ((DefaultListModel) this.frameList.getModel());
+    
     if(this.behaviorBuffer.size() >= maxNumberOfFrames)
     {
       this.behaviorBuffer.remove(0);
-      ((DefaultListModel) this.frameList.getModel()).remove(0);
+      //listModel.remove(0);
     }
 
     // create the prototype
@@ -690,10 +723,21 @@ public class BehaviorViewer extends AbstractDialog
       e.printStackTrace();
       return;
     }
-
-    ((DefaultListModel) this.frameList.getModel()).addElement(new Integer(status.getFrameNumber()));
- 
-    this.frameList.revalidate();
+   /*
+    listModel.addElement(new Integer(status.getFrameNumber()));
+    this.frameList.setSelectedIndex(listModel.getSize()-1);
+    this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
+    */
+    
+    //Select the new item and make it visible.
+    BehaviorFrameListModel listModel = ((BehaviorFrameListModel) this.frameList.getModel());
+    //this.frameList.setSelectedIndex(0);
+    
+    
+    listModel.refresh();
+    this.frameList.ensureIndexIsVisible(listModel.getSize()-1);
+    this.frameList.setSelectedIndex(listModel.getSize()-1);
+    //this.frameList.revalidate();
   }//end addFrame
 
   /** This method is called from within the constructor to
@@ -887,6 +931,7 @@ public class BehaviorViewer extends AbstractDialog
         sendCommand(getAgentCommand);
         Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
         //parent.getGenericManager(getExecutedBehaviorCommand).addListener(this);
+        this.frameList.removeListSelectionListener(behaviorFrameListener);
       }
       else
       {
@@ -895,6 +940,7 @@ public class BehaviorViewer extends AbstractDialog
     }
     else
     {
+      this.frameList.addListSelectionListener(behaviorFrameListener);
       sendCommand(disableUpdateBehaviorStatusCommand);
       Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
       //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);

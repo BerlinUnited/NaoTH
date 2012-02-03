@@ -61,7 +61,6 @@ END_DECLARE_MODULE(RobotDetector)
 #define MARKER_MIN_SIZE 30
 #define BLOB_MIN_MOMENT 3
 #define ABOVE_WHITE_RATIO 0.5f
-#define BELOW_WHITE_RATIO 0.5f
 #define GREEN_GROUND_RATIO 0.8f
 
 class RobotDetector: public RobotDetectorBase
@@ -74,6 +73,9 @@ public:
   virtual void execute();
 protected:
 private:
+  double BELOW_WHITE_RATIO;
+
+
   //variables
   bool redColors[ColorClasses::numOfColors];
   bool blueColors[ColorClasses::numOfColors];
@@ -124,7 +126,7 @@ private:
   inline void findBlobs();
   inline bool checkMarkerPoly(Marker& marker);
   inline bool evaluateMarkerEnvironment(Marker& marker);
-  inline void detectRobots();
+  inline void detectRobots(const std::vector<Marker>& markers);
 
   //help functions
   inline void estimateArea(Marker& marker);

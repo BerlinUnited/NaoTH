@@ -115,7 +115,9 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
 
 
     if(targetPose.time <= theBlackBoard.theRobotInfo.basicTimeStep)
+    {
       trajectory.pop_front();
+    }
     else
       targetPose.time -= theBlackBoard.theRobotInfo.basicTimeStep;
     
@@ -171,6 +173,9 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
 {
   const unsigned int state_time = theBlackBoard.theFrameInfo.getTimeSince(state_start_time);
 
+  // HACK:
+  bool retract_done = false;
+
   // decide the state change
   switch(kickState)
   {
@@ -190,14 +195,17 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
       break;
 
     case kick_retract:
-      if(!isRequested(motionRequest) && !motionRequest.kickRequest.finishKick &&
-         numberOfPreKickSteps >= theParameters.minNumberOfPreKickSteps)
+      retract_done = true;
+      if(!isRequested(motionRequest) && !motionRequest.kickRequest.finishKick
+         //&& numberOfPreKickSteps >= theParameters.minNumberOfPreKickSteps
+         )
       {
         kickState = kick_wrap_up;
       }
-      else if(motionRequest.kickRequest.finishKick &&
-              //currentTrajectoryState() == preKickState() &&
-              numberOfPreKickSteps >= theParameters.minNumberOfPreKickSteps)
+      else if(motionRequest.kickRequest.finishKick 
+              //&& currentTrajectoryState() == preKickState() 
+              //&& numberOfPreKickSteps >= theParameters.minNumberOfPreKickSteps
+              )
       {
         kickState = kick_execute;
       }
@@ -370,7 +378,17 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   switch(kickState)
   {
     case kick_prepare: action_prepare(); break;
-    case kick_retract: action_retract(kickPoseRequest); break;
+    case kick_retract: 
+      if(!retract_done) 
+        action_retract(kickPoseRequest); 
+      else
+        if(trajectory.size() < 2)
+        {
+          KickPose p = trajectory.back();
+          p.time = theBlackBoard.theRobotInfo.basicTimeStep;
+          trajectory.push_back(p);
+        }
+      break;
     case kick_execute: action_execute(kickPoseRequest); break;
     case kick_wrap_up: action_wrap_up(); break;
     default: THROW("Unexpected kick state.");
@@ -444,7 +462,7 @@ void IKDynamicKickMotion::action_retract(const Pose3D& kickPose)
 //  const double foot_front_offset = 60;
 //  preparePose.translation.x -= foot_front_offset;
 
-  if (trajectory.size() > 1) return;
+  //if (trajectory.size() > 1) return;
   
   // ATTENTION: rely on that p is localized in the stand foot 
   KickPose p = trajectory.back();
@@ -489,7 +507,7 @@ void IKDynamicKickMotion::action_retract(const Pose3D& kickPose)
     trajectory.push_back(p);
   }
 
-  if (trajectory.size() < 2)
+  //if (trajectory.size() < 2)
   {
     const Pose3D& currentFootPose = (theKickingFoot == KickRequest::left)?trajectory.back().pose.feet.left: trajectory.back().pose.feet.right;
     double v = theParameters.retractionSpeed; // mm/ms = m/s
@@ -822,8 +840,6 @@ Vector3<double> IKDynamicKickMotion::calculateTheLoadPoint(const Pose3D& kickPos
     FILLBOX(retractionPointWorld.x-5,retractionPointWorld.y-5,retractionPointWorld.x+5,retractionPointWorld.y+5);
   );
 
-  bool updated = true;
-
   Vector3<int> mask[27];
   int i = 0;
   for(int x = -1; x < 2; x++)
@@ -836,7 +852,9 @@ Vector3<double> IKDynamicKickMotion::calculateTheLoadPoint(const Pose3D& kickPos
   double avoidCollisionOffset = 50;
   MODIFY("IKDynamicKickMotion::avoidCollisionOffset", avoidCollisionOffset);
 
-  while(updated)
+  bool updated = true;
+  int iteration = 0;
+  while(updated && iteration++ < 24)
   {
     updated = false;
 
@@ -860,7 +878,7 @@ Vector3<double> IKDynamicKickMotion::calculateTheLoadPoint(const Pose3D& kickPos
           f0 = f_tmp;
           retractionPointGrid = neighbourGrid;
           retractionPointWorld = neighbourWorld;
-          //updated = true;
+          updated = true;
           //break;
         }
       }//end if
@@ -925,7 +943,8 @@ Vector3<double> IKDynamicKickMotion::calculateKickPointProjection(const Pose3D& 
   };
   
   bool updated = true;
-  while(updated)
+  int iteration = 0;
+  while(updated && iteration++ < 24)
   {
     updated = false;
 

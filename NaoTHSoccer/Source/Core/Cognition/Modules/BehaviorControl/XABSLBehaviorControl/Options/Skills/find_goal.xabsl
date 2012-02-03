@@ -7,7 +7,8 @@ option find_goal
     {
       if(state_time > 1500)
       {
-        if(abs(value=goal.opp.angle) > 15)
+        if(!goal.opp.was_seen && !goal.own.was_seen
+           || min(value0=abs(value=goal.opp.angle), value1=abs(value=goal.own.angle)) > 15)
           goto turn;
         else
           goto stand_finished;
@@ -26,7 +27,7 @@ option find_goal
   {
     decision
     {
-      if(abs(value=goal.opp.angle) > 15)
+      if(min(value0=abs(value=goal.opp.angle), value1=abs(value=goal.own.angle)) > 15)
         goto turn;
       else
         stay;
@@ -40,14 +41,14 @@ option find_goal
 
   state turn {
     decision {
-      if(abs(value=goal.opp.angle) < 10)
+      if(min(value0=abs(value=goal.opp.angle), value1=abs(value=goal.own.angle)) < 10)
         goto stand_finished;
       else
         stay;
     }
     action {
       motion.type = walk;
-      motion.walk_speed.rot = goal.opp.angle;
+      motion.walk_speed.rot = min(value0=abs(value=goal.opp.angle), value1=abs(value=goal.own.angle));
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 0;
       motion.walk.coordinate = hip;

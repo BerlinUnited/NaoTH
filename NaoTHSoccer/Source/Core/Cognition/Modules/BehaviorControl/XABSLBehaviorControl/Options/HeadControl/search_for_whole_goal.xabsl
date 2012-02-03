@@ -1,0 +1,75 @@
+/** Scan mode for looking at the goal/searching for the goal of the opponent*/
+option search_for_whole_goal 
+{
+  //we should include a parameter like owngoal=true/false
+
+  bool @own;
+  bool @opp;
+
+  initial state look_around {
+    decision {
+      if ((goal.own.whole.time_since_seen < 100 && @own)|| 
+          (goal.opp.whole.time_since_seen < 100 && @opp))
+        goto look_at_goal;
+      else if (state_time > 1500 &&
+          ((goal.own.was_seen && @own)|| 
+           (goal.opp.was_seen && @opp)))
+        goto look_at_goal_percept;
+      else
+        stay;
+    }
+    action {
+      head.camera.id = bottom;
+      head.motion_type = search;
+      head.search.center.x = 500;
+      head.search.center.y = 0;
+      head.search.center.z = 500;
+      head.search.size.x = 0;
+      head.search.size.y = 2000;
+      head.search.size.z = 0;
+    }
+  }
+
+  state look_at_goal_percept
+  {
+    decision
+    {
+      if((goal.own.whole.time_since_seen == 0 && @own) ||
+         (goal.opp.whole.time_since_seen == 0 && @opp))
+        goto look_at_goal;
+      else if(state_time > 1000)
+        goto look_around;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = goal.centroid.x;
+      head.point_in_world.y = goal.centroid.y;
+      head.point_in_world.z = goal.centroid.z;
+    }
+  }
+  
+  state look_at_goal
+  {
+    decision
+    {
+      if ((goal.own.whole.time_since_seen < 1000 && @own) ||
+          (goal.opp.whole.time_since_seen < 1000 && @opp))        
+        stay;
+      else
+        goto look_around;
+    }
+    action
+    {
+      head.camera.id = bottom;      
+      head.motion_type = look_at_world_point;      
+      head.point_in_world.x = goal.centroid.x;      
+      head.point_in_world.y = goal.centroid.y;      
+      head.point_in_world.z = goal.centroid.z;    
+    }
+  }
+
+}

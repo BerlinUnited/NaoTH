@@ -68,6 +68,7 @@ public:
   //get methods
   void get(Image& data);
   void get(GameData& data){ data = theGameData; }
+  void get(FrameInfo& data);
 
   
 protected:
@@ -82,7 +83,7 @@ private:
   unsigned int currentPos;
 
   GameData theGameData;
-  unsigned int currentFrame;
+  unsigned int time;
   bool imageLoaded;
 
   void copyImage(Image& image, Mat mat);
@@ -91,6 +92,8 @@ private:
 
   bool loadImage(Mat& mat);
   void makeStep();
+
+
 };
 
 

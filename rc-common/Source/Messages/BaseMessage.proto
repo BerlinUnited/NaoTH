@@ -1,4 +1,4 @@
-package crf;
+package crf.msg;
 
 message BaseMessage
 {

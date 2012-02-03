@@ -18,8 +18,8 @@
 
 using namespace std;
 
-SimSparkController::SimSparkController()
-: PlatformInterface<SimSparkController>("SimSpark", 20),
+SimSparkController::SimSparkController(const std::string& name)
+: PlatformInterface<SimSparkController>(name, 20),
   theImageData(NULL),
   theImageSize(0),
   isNewImage(false),

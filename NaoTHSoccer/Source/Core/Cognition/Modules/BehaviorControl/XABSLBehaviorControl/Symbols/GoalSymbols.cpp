@@ -12,14 +12,20 @@
 
 void GoalSymbols::registerSymbols(xabsl::Engine& engine)
 {
+  // a whole goal was seen
+  engine.registerDecimalInputSymbol("goal.own.whole.time_since_seen", &getTimeSinceWholeOwnGoalSeen);
+  engine.registerDecimalInputSymbol("goal.opp.whole.time_since_seen", &getTimeSinceWholeOppGoalSeen);
   
+  // at least one goal post was seen
   engine.registerDecimalInputSymbol("goal.opp.time_since_seen", &getTimeSinceOpponentGoalSeen);
+  engine.registerDecimalInputSymbol("goal.own.time_since_seen", &getTimeSinceOwnGoalSeen);
+
+
   //engine.registerDecimalInputSymbol("goal.opp.x", &getOpponentGoalX);
   //engine.registerDecimalInputSymbol("goal.opp.y", &getOpponentGoalY);
   //engine.registerDecimalInputSymbol("goal.opp.angle", &getAngleToOpponentGoal);
   //engine.registerDecimalInputSymbol("goal.opp.distance", &getDistanceToOpponentGoal);
 
-  engine.registerDecimalInputSymbol("goal.own.time_since_seen", &getTimeSinceOwnGoalSeen);
   //engine.registerDecimalInputSymbol("goal.own.x", &getOwnGoalX);
   //engine.registerDecimalInputSymbol("goal.own.y", &getOwnGoalY);
   //engine.registerDecimalInputSymbol("goal.own.angle", &getAngleToOwnGoal);
@@ -54,6 +60,22 @@ GoalSymbols* GoalSymbols::theInstance = NULL;
 void GoalSymbols::execute()
 {
 }
+
+
+double GoalSymbols::getTimeSinceWholeOwnGoalSeen()
+{
+  const naoth::GameData::TeamColor ownColor = theInstance->getPlayerInfo().gameData.teamColor;
+  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getTeamGoal(ownColor);
+  return (double) theInstance->frameInfo.getTimeSince(goal.frameInfoWhenGoalLastSeen.getTime());
+}//end getTimeSinceWholeOwnGoalSeen
+
+double GoalSymbols::getTimeSinceWholeOppGoalSeen()
+{
+  const naoth::GameData::TeamColor ownColor = theInstance->getPlayerInfo().gameData.teamColor;
+  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getTeamGoal(!ownColor);
+  return (double) theInstance->frameInfo.getTimeSince(goal.frameInfoWhenGoalLastSeen.getTime());
+}//end getTimeSinceWholeOppGoalSeen
+
 
 double GoalSymbols::getOpponentGoalX()
 {

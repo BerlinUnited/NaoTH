@@ -58,15 +58,15 @@ void FieldColorClassifier::execute()
 
   double modifyDist = maxDistY;
   MODIFY("FieldColorClassifier:maxDistY", modifyDist);
-  maxDistY = (unsigned int) modifyDist * getBaseColorRegionPercept().meanY / 128;
+  maxDistY = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanY) / 128;
 
   modifyDist = maxDistCb;
   MODIFY("FieldColorClassifier:maxDistCb", modifyDist);
-  maxDistCb = (unsigned int) modifyDist * getBaseColorRegionPercept().meanCb / 128;
+  maxDistCb = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanCb) / 128;
 
   modifyDist = maxDistCr;
   MODIFY("FieldColorClassifier:maxDistCr", modifyDist);
-  maxDistCr = (unsigned int) modifyDist * getBaseColorRegionPercept().meanCr / 128;
+  maxDistCr = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanCr) / 128;
 
   double maxWeightedY = 0.5 * getFieldColorPercept().maxWeightedY;
   unsigned int maxWeightedIndexY = getFieldColorPercept().maxWeightedIndexY;

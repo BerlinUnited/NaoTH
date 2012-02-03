@@ -98,9 +98,11 @@ solution "NaoTHSoccer"
     dofile "../../Framework/Platforms/Make/DCM.lua"
   else
     dofile "../../Framework/Platforms/Make/SimSpark.lua"
+	dofile "../../Framework/Platforms/Make/SPL_SimSpark.lua"
     dofile "../../Framework/Platforms/Make/Webots.lua"
     dofile "../../Framework/Platforms/Make/LogSimulator.lua"
 	dofile "../../Framework/Platforms/Make/OpenCVImageLoader.lua"
+	dofile "../../Framework/Platforms/Make/OpenCVWebCam.lua"
     dofile "Tests.lua"
     dofile "../../Framework/NaoTH-Commons/Make/Tests.lua"
   end

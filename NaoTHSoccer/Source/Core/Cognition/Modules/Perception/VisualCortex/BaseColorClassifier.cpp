@@ -47,23 +47,23 @@ void BaseColorClassifier::execute()
     lastMeanCr = getColoredGrid().meanRed;
   }
 
-  unsigned int maxBallIndexY = 0.0;
-  unsigned int maxBallIndexCb = 0.0;
-  unsigned int maxBallIndexCr = 0.0;
+  unsigned int maxBallIndexY = 0;
+  unsigned int maxBallIndexCb = 0;
+  unsigned int maxBallIndexCr = 0;
   double maxBallY = 0.0;
   double maxBallCb = 0.0;
   double maxBallCr = 0.0;
 
-  unsigned int maxGoalIndexY = 0.0;
-  unsigned int maxGoalIndexCb = 0.0;
-  unsigned int maxGoalIndexCr = 0.0;
+  unsigned int maxGoalIndexY = 0;
+  unsigned int maxGoalIndexCb = 0;
+  unsigned int maxGoalIndexCr = 0;
   double maxGoalY = 0.0;
   double maxGoalCb = 0.0;
   double maxGoalCr = 0.0;
 
-  unsigned int maxLineIndexY = 0.0;
-  unsigned int maxLineIndexCb = 0.0;
-  unsigned int maxLineIndexCr = 0.0;
+  unsigned int maxLineIndexY = 0;
+  unsigned int maxLineIndexCb = 0;
+  unsigned int maxLineIndexCr = 0;
   double maxLineY = 0.0;
   double maxLineCb = 0.0;
   double maxLineCr = 0.0;
@@ -196,7 +196,11 @@ void BaseColorClassifier::execute()
   getBaseColorRegionPercept().lastUpdated = getFrameInfo();
 
   runDebugRequests();
-}
+
+
+
+  getBaseColorRegionPercept().cretePercept();
+}//end execute
 
 void BaseColorClassifier::runDebugRequests()
 {

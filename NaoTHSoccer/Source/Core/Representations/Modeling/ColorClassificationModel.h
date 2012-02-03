@@ -7,25 +7,24 @@
 #include <Representations/Perception/BaseColorRegionPercept.h>
 
 #include "Tools/Math/Common.h"
-
-
+#include <Tools/DataStructures/Printable.h>
 #include "Tools/Debug/DebugModify.h"
 
 using namespace naoth;
 
-class ColorClassificationModel : public ColorClassifier
+class ColorClassificationModel : public ColorClassifier, public naoth::Printable
 {
 public:
   ColorClassificationModel();
 
-  virtual void setColorTable(const ColorTable64& ct);
-  virtual void setFieldColorPercept(const FieldColorPercept& percept);
-  virtual void invalidateFieldColorPercept();
-  virtual void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
-  virtual void invalidateBaseColorRegionPercept();
+  void setColorTable(const ColorTable64& ct);
+  void setFieldColorPercept(const FieldColorPercept& percept);
+  void invalidateFieldColorPercept();
+  void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
+  void invalidateBaseColorRegionPercept();
 
 protected:
-  virtual ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  inline ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
     // ball green
     if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(a, b, c))
@@ -73,6 +72,13 @@ protected:
     }
     return colorTable.getColorClass(a,b,c);
   }
+
+  virtual void print(ostream& stream) const
+  {
+    stream << "fieldColorPerceptValid: " << fieldColorPerceptValid << endl;
+    stream << "baseColorRegionPerceptValid: " << baseColorRegionPerceptValid << endl;
+  }
+
 private :
 
   ColorTable64 colorTable;

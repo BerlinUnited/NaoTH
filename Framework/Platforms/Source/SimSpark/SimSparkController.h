@@ -90,7 +90,7 @@ private:
   TeamCommEncoder theTeamCommEncoder;
 
 public:
-  SimSparkController();
+  SimSparkController(const std::string& name);
 
   virtual ~SimSparkController();
 

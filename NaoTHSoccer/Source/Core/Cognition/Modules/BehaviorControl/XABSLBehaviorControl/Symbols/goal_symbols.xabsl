@@ -1,8 +1,12 @@
     /** Symbols for accessing goal distance and angle */
 namespace goal_symbols("Goal Symbols") {
   
+
+  float input goal.own.whole.time_since_seen [ms];
+  float input goal.opp.whole.time_since_seen [ms];
+  
   // goal model
-  float input goal.opp.time_since_seen [mm];
+  float input goal.opp.time_since_seen [ms];
   
 
   // moved to selfloc_symbols
@@ -12,7 +16,7 @@ namespace goal_symbols("Goal Symbols") {
   //float input goal.opp.distance [mm];
 
 
-  float input goal.own.time_since_seen [mm];
+  float input goal.own.time_since_seen [ms];
 
   // moved to selfloc_symbols
   //float input goal.own.x [mm];

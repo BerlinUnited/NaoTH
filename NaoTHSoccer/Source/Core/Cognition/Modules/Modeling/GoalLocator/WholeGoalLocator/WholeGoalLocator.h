@@ -26,6 +26,8 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
+#include <Representations/Perception/FieldSidePercept.h>
+
 
 #include "PlatformInterface/Platform.h"
 
@@ -33,6 +35,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(WholeGoalLocator)
+  REQUIRE(FieldSidePercept)
   REQUIRE(GoalPercept)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)

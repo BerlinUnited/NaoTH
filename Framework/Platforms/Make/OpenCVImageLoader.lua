@@ -13,9 +13,9 @@ project "OpenCVImageLoader"
 	extern_dir .. "/include/",
 	extern_dir .. "/include/glib-2.0/",
 	extern_dir .. "/lib/glib-2.0/include/",
-	extern_dir .. "/include/OpenCV-2.2.0/modules/core/include/",
-	extern_dir .. "/include/OpenCV-2.2.0/modules/imgproc/include/",
-	extern_dir .. "/include/OpenCV-2.2.0/modules/highgui/include/",
+	extern_dir .. "/include/opencv2/core/include/",
+	extern_dir .. "/include/opencv2/imgproc/include/",
+	extern_dir .. "/include/opencv2/highgui/include/",
 	}
   
   files{"../Source/OpenCVImageLoader/**.cpp","../Source/OpenCVImageLoader/**.h"}
@@ -27,9 +27,10 @@ project "OpenCVImageLoader"
 	  "gmodule-2.0",
 	  "gthread-2.0",
 	  "protobuf",
-	  "opencv_core220d",
-	  "opencv_highgui220d",
-	  "opencv_imgproc220d"
+          "opencv_core",
+          "opencv_ml",
+		  "opencv_imgproc",
+		  "opencv_highgui"
 	}
 	
   targetname "OpenCVImageLoader"

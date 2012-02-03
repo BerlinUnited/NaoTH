@@ -13,7 +13,10 @@ option head_control
       goto search_for_ball_force_model;
     else if (head.control_mode == stay_as_forced)
       goto stay_as_forced;
+
     
+    else if (head.control_mode == search_for_whole_goal)
+      goto search_for_whole_goal;
     else if (head.control_mode == search_for_own_goal)
       goto search_for_own_goal;
     else if (head.control_mode == search_for_opp_goal)
@@ -82,6 +85,14 @@ option head_control
     action
     {
       search_for_goal(own = true, opp = true);
+    }
+  }
+
+  state search_for_whole_goal
+  {
+    action
+    {
+      search_for_whole_goal(own = true, opp = true);
     }
   }
   

@@ -18,6 +18,7 @@
 
 BEGIN_DECLARE_MODULE(GoalSymbols)
   REQUIRE(LocalGoalModel);
+  REQUIRE(SensingGoalModel);
   REQUIRE(GoalPercept);
   REQUIRE(PlayerInfo);
   REQUIRE(FrameInfo);
@@ -51,7 +52,13 @@ private:
   FrameInfo const& frameInfo;
 
   static GoalSymbols* theInstance;
+
+
   //get-method
+
+  static double getTimeSinceWholeOwnGoalSeen();
+  static double getTimeSinceWholeOppGoalSeen();
+
   static double getAngleToOpponentGoal();
   static double getDistanceToOpponentGoal();
   static double getOpponentGoalX();

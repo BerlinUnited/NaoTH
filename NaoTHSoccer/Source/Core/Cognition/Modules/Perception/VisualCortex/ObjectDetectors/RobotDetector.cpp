@@ -16,7 +16,8 @@
 #include "Tools/CameraGeometry.h"
 
 RobotDetector::RobotDetector()
-  : theBlobFinder(getColoredGrid())
+  : theBlobFinder(getColoredGrid()),
+    BELOW_WHITE_RATIO(0.5)
 {
   //initialize colors for blob finder
   //red:
@@ -47,6 +48,8 @@ RobotDetector::RobotDetector()
 
 void RobotDetector::execute()
 {  
+  MODIFY("RobotDetector:BELOW_WHITE_RATIO", BELOW_WHITE_RATIO);
+
   blueBlobs.reset();
   redBlobs.reset();
   getPlayersPercept().reset();
@@ -76,12 +79,13 @@ void RobotDetector::execute()
   );
   */
   detectRobotMarkers();
-  detectRobots();
+  detectRobots(blueMarkers);
+  detectRobots(redMarkers);
 }
 
-inline void RobotDetector::detectRobots()
+void RobotDetector::detectRobots(const std::vector<Marker>& markers)
 {
-  for (std::vector<Marker>::const_iterator  iter = blueMarkers.begin(); iter != blueMarkers.end(); ++iter)
+  for (std::vector<Marker>::const_iterator  iter = markers.begin(); iter != markers.end(); ++iter)
   {
     Marker marker = *iter;
     //if the marker's environment is "white enough"

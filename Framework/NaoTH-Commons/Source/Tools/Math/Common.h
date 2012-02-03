@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <ctime>
+#include <assert.h>
 
 #ifdef WIN32 /* needed for _isnan */
 #include <float.h>
@@ -173,7 +174,19 @@ namespace Math {
   * @param n the number of possible return values (0 ... n-1)
   * @return The random number.
   */
-  inline int random(int n) {return (int)(random()*n*0.999999);}
+  inline int random(int n) { assert(n > 0); return ((int)(random()*n))%n; }
+
+
+  /** 
+   * generate a random int value in [min, max]
+   * @param[in] min the min value of the random number
+   * @param[in] max the max value of the random number
+   * @return the random number
+   */
+  inline int random(int min, int max)
+  {
+    return min + random(max - min + 1);
+  }
 
   // TODO: is not working properly for int
   /** 

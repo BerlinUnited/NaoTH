@@ -60,13 +60,13 @@ void FieldSideDetector::execute()
       BresenhamLineScan scanLine0(postLeft.basePoint, postRight.topPoint);
       BresenhamLineScan scanLine1(postRight.basePoint, postLeft.topPoint);
 
-      double sumY_0 = 0.0;
-      double sumV_0 = 0.0;
-      double sumU_0 = 0.0;
+      float sumY_0 = 0.0f;
+      float sumV_0 = 0.0f;
+      float sumU_0 = 0.0f;
 
-      double sumY_1 = 0.0;
-      double sumV_1 = 0.0;
-      double sumU_1 = 0.0;
+      float sumY_1 = 0.0f;
+      float sumV_1 = 0.0f;
+      float sumU_1 = 0.0f;
 
       Vector2<int> p = postLeft.basePoint;
       for(int s=0; s < scanLine0.numberOfPixels; s++)
@@ -98,13 +98,13 @@ void FieldSideDetector::execute()
 
       if(scanLine0.numberOfPixels > 0 && scanLine1.numberOfPixels > 0)
       {
-        double meanY_0 = sumY_0 / (double) scanLine0.numberOfPixels;
-        double meanU_0 = sumU_0 / (double) scanLine0.numberOfPixels;
-        double meanV_0 = sumV_0 / (double) scanLine0.numberOfPixels;
+        float meanY_0 = sumY_0 / (float) scanLine0.numberOfPixels;
+        float meanU_0 = sumU_0 / (float) scanLine0.numberOfPixels;
+        float meanV_0 = sumV_0 / (float) scanLine0.numberOfPixels;
 
-        double meanY_1 = sumY_1 / (double) scanLine0.numberOfPixels;
-        double meanU_1 = sumU_1 / (double) scanLine1.numberOfPixels;
-        double meanV_1 = sumV_1 / (double) scanLine1.numberOfPixels;
+        float meanY_1 = sumY_1 / (float) scanLine0.numberOfPixels;
+        float meanU_1 = sumU_1 / (float) scanLine1.numberOfPixels;
+        float meanV_1 = sumV_1 / (float) scanLine1.numberOfPixels;
 
         currentFeature.at<float>(0,0) = meanY_0;
         currentFeature.at<float>(0,1) = meanU_0;
