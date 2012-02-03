@@ -6,7 +6,7 @@ project "SPL_SimSpark"
   language "C++"
 
   -- this is the only difference to SimSpark
-  defines{ "PLATFORM_NAME=\"SPL_SimSpark\"" }  
+  defines{ "PLATFORM_NAME=SPL_SimSpark" }  
   
   files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
   

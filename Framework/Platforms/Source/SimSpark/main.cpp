@@ -18,8 +18,10 @@ using namespace std;
 
 // allows for changing the platform name during the compilation
 #ifndef PLATFORM_NAME
-#define PLATFORM_NAME "SimSpark"
+#define PLATFORM_NAME SimSpark
 #endif
+
+#define MAKE_NAME(name) #name
 
 
 int main(int argc, char** argv)
@@ -64,7 +66,7 @@ int main(int argc, char** argv)
   }
   g_option_context_free(context);
   
-  SimSparkController theController(PLATFORM_NAME);
+  SimSparkController theController(MAKE_NAME(PLATFORM_NAME));
 
   if (!theController.init(teamName, num, server, port, sync))
   {
