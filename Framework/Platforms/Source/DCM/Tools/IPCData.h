@@ -65,6 +65,7 @@ namespace naoth
     const IRSendData& iRSendData() const { return theIRSendData; }
     const UltraSoundSendData& ultraSoundSendData() const { return theUltraSoundSendData; }
     const MotorJointData& motorJointData() const { return theMotorJointData; }
+
   private:
     LEDData theLEDData;
     IRSendData theIRSendData;

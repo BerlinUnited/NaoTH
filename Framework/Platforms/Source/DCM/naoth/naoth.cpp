@@ -5,10 +5,8 @@
  *
  */
 
-#include "PlatformInterface/Platform.h"
 #include "NaoController.h"
-#include "NaoMotionController.h"
-#include "DebugCommunication/DebugServer.h"
+
 #include "Tools/Debug/DebugBufferedOutput.h"
 
 #include "Cognition.h"
@@ -17,7 +15,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <rttools/rtthread.h>
+//#include <rttools/rtthread.h>
 
 using namespace naoth;
 
@@ -31,7 +29,7 @@ void got_signal(int)
   sync();
 
   exit(0);
-}
+}//end got_signal
 
 /*
 class TestThread : public RtThread
@@ -45,18 +43,13 @@ class TestThread : public RtThread
 };
 */
 
-DebugServer* theDebugServer;
-
 void* cognitionThreadCallback(void* ref)
 {
-  NaoController theController;
-  Cognition theCognition;
-  theController.registerCallbacks((DummyCallable*)NULL, &theCognition);
-  theController.setDebugServer(theDebugServer);
+  NaoController* theController = static_cast<NaoController*> (ref);
 
   while(true)
   {
-    theController.callCognition();
+    theController->callCognition();
     //usleep(100000);
   }
 
@@ -66,11 +59,8 @@ void* cognitionThreadCallback(void* ref)
 
 void* motionThreadCallback(void* ref)
 {
-  NaoMotionController theController;
-  Motion theMotion;
-  theController.registerCallbacks(&theMotion, (DummyCallable*)NULL);
-  theController.setDebugServer(theDebugServer);
-  
+  NaoController* theController = static_cast<NaoController*> (ref);
+
   // open semaphore
   sem_t* sem = SEM_FAILED;
   if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
@@ -79,9 +69,10 @@ void* motionThreadCallback(void* ref)
   }
   StopwatchItem stopwatch;
 
+
   while(true)
   {
-    theController.callMotion();
+    theController->callMotion();
     
     sem_wait(sem);
     Stopwatch::getInstance().notifyStop(stopwatch);
@@ -92,6 +83,7 @@ void* motionThreadCallback(void* ref)
 
   return NULL;
 }//end motionThreadCallback
+
 
 
 int main(int argc, char *argv[])
@@ -110,20 +102,25 @@ int main(int argc, char *argv[])
   sigaction(SIGTERM,&sa,NULL);
   
 
-  theDebugServer = new DebugServer();
-  theDebugServer->start(5401, true);
+  // create the controller
+  NaoController theController;
+  Cognition theCognition;
+  Motion theMotion;
+  theController.registerCallbacks(&theMotion, &theCognition);
 
-  GError* err = NULL;
 
-  pthread_t handle;
-  pthread_create(&handle, 0, motionThreadCallback, NULL);
+  // create the motion thread
+  // !!we use here a pthread directly, because glib doustn't support priorities
+  pthread_t motionThread;
+  pthread_create(&motionThread, 0, motionThreadCallback, NULL);
 
+  // set the pririty of the motion thread to 50
   sched_param param;
   param.sched_priority = 50;
-  pthread_setschedparam(handle, SCHED_FIFO, &param);
+  pthread_setschedparam(motionThread, SCHED_FIFO, &param);
 
   /*
-  GThread* motionThread = g_thread_create(motionThreadCallback, NULL, true, &err);
+  GThread* motionThread = g_thread_create(motionThreadCallback, &theController, true, &err);
   if(err)
   {
     g_warning("Could not create motion thread: %s", err->message);
@@ -132,18 +129,19 @@ int main(int argc, char *argv[])
   */
   
 
-
-  GThread* cognitionThread = g_thread_create(cognitionThreadCallback, NULL, true, &err);
+  GError* err = NULL;
+  GThread* cognitionThread = g_thread_create(cognitionThreadCallback, &theController, true, &err);
   if(err)
   {
     g_warning("Could not create cognition thread: %s", err->message);
   }
 
-  /*
-  if(motionThread != NULL)
+
+  //if(motionThread != NULL)
   {
-    g_thread_join(motionThread);
-  }*/
+    pthread_join(motionThread, NULL);
+    //g_thread_join(motionThread);
+  }
 
   if(cognitionThread != NULL)
   {

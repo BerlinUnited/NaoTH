@@ -80,12 +80,14 @@ GError* SPLGameController::bindAndListen(unsigned int port)
 
 bool SPLGameController::get(GameData& gameData, unsigned int time)
 {
-  bool ok = false;
+  gameData.valid = false;
+  bool ok = false; // TODO: do we need this ok?
+
   if ( g_mutex_trylock(dataMutex) )
   {
     if ( data.valid )
     {
-      if ( data.gameState == GameData::playing
+      if (   data.gameState == GameData::playing
           || data.gameState == GameData::penalized )
       {
         data.gameTime += (time - lastGetTime);
@@ -105,11 +107,13 @@ bool SPLGameController::get(GameData& gameData, unsigned int time)
       data.valid = false;
       lastGetTime = time;
       ok = true;
-    }
+
+    }//end if data.valid
     g_mutex_unlock(dataMutex);
-  }
+  }//end if trylock
+
   return ok;
-}
+}//end get gameData
 
 bool SPLGameController::update()
 {
