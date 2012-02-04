@@ -60,7 +60,11 @@ namespace naoth
     {
       step = t - time;
       time = t;
-      frameNumber++;
+    }
+
+    void setFrameNumber(unsigned int n)
+    {
+      frameNumber = n;
     }
 
     virtual void print(std::ostream& stream) const

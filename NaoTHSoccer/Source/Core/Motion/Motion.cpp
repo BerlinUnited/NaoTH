@@ -73,16 +73,11 @@ Motion::~Motion()
   }
   theMotionFactories.clear();
   
-  if (theMotionStatusWriter != NULL)
-    delete theMotionStatusWriter;
-  if (theOdometryDataWriter != NULL)
-    delete theOdometryDataWriter;
-  if (theHeadMotionRequestReader != NULL)
-    delete theHeadMotionRequestReader;
-  if (theMotionRequestReader != NULL)
-    delete theMotionRequestReader;
-  if (theCalibrationDataWriter != NULL)
-    delete theCalibrationDataWriter;
+  delete theMotionStatusWriter;
+  delete theOdometryDataWriter;
+  delete theHeadMotionRequestReader;
+  delete theMotionRequestReader;
+  delete theCalibrationDataWriter;
 }
 
 void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
@@ -124,17 +119,8 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
   platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
 
-
   platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
   platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
-  /*
-  theMotionStatusWriter = new MessageWriter(platformInterface.getMessageQueue("MotionStatus"));
-  theOdometryDataWriter = new MessageWriter(platformInterface.getMessageQueue("OdometryData"));
-  theCalibrationDataWriter = new MessageWriter(platformInterface.getMessageQueue("CalibrationData"));
-  
-  theHeadMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("HeadMotionRequest"));
-  theMotionRequestReader = new MessageReader(platformInterface.getMessageQueue("MotionRequest"));
-  */
 
   selectMotion();// create init motion
   state = initial;
@@ -169,37 +155,8 @@ void Motion::call()
   }
   case running:
   {
-    /*
-    if(theBlackBoard.theMotionRequest.time == oldMotionRequestTime)
-      frameNumSinceLastMotionRequest++;
-    else
-    {
-      frameNumSinceLastMotionRequest = 0;
-      oldMotionRequestTime = theBlackBoard.theMotionRequest.time;
-    }
-    */
     frameNumSinceLastMotionRequest = 0;
-
-    // get orders from cognition
-    /*
-    while ( !theHeadMotionRequestReader->empty() )
-    {
-      string msg = theHeadMotionRequestReader->read();
-      stringstream ss(msg);
-      Serializer<HeadMotionRequest>::deserialize(ss, theBlackBoard.theHeadMotionRequest);
-    }
-
-    while ( !theMotionRequestReader->empty() )
-    {
-      string msg = theMotionRequestReader->read();
-      stringstream ss(msg);
-      Serializer<MotionRequest>::deserialize(ss, theBlackBoard.theMotionRequest);
-      frameNumSinceLastMotionRequest = 0;
-    }
-    */
-
     checkWarningState();
-
     break;
   }
   case exiting:
@@ -209,7 +166,7 @@ void Motion::call()
     theBlackBoard.theMotionRequest.id = motion::init;
     break;
   }
-  }
+  }//end switch
 
   // execute head motion firstly
   theHeadMotionEngine.execute();
@@ -282,23 +239,6 @@ void Motion::postProcess()
   mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
 
-  // send message to cognition
-  /*
-  if ( frameNumSinceLastMotionRequest == 0 ) // cognition is running
-  {
-    stringstream msmsg;
-    Serializer<MotionStatus>::serialize(theBlackBoard.theMotionStatus, msmsg);
-    theMotionStatusWriter->write(msmsg.str());
-  
-    stringstream odmsg;
-    Serializer<OdometryData>::serialize(theBlackBoard.theOdometryData, odmsg);
-    theOdometryDataWriter->write(odmsg.str());
-  
-    stringstream cdmsg;
-    Serializer<CalibrationData>::serialize(theBlackBoard.theCalibrationData, cdmsg);
-    theCalibrationDataWriter->write(cdmsg.str());
-  }//end if
-  */
     
 #ifdef NAO_OLD
   theDebugMessageOut.answers.clear();
@@ -316,7 +256,7 @@ void Motion::postProcess()
   DebugDrawings3D::getInstance().update();
   STOPWATCH_STOP("Debug ~ Init");
 #endif
-}
+}//end postProcess
 
 void Motion::selectMotion()
 {
@@ -405,4 +345,4 @@ void Motion::checkWarningState()
   {
     theBlackBoard.theLEDData.change = false;
   }
-}
+}//end checkWarningState

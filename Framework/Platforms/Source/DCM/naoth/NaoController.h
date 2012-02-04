@@ -2,6 +2,7 @@
  * @file NaoController.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  * @breief Interface for the real robot for both cognition and motion
  *
  */
@@ -165,6 +166,10 @@ public:
 
     g_mutex_free(m_naoSensorData);
     g_mutex_free(m_naoCommandData);
+
+    // close the shared memory
+    naoSensorData.close();
+    naoCommandData.close();
   }
 
   virtual string getBodyID() const { return theBodyID; }
@@ -192,8 +197,8 @@ public:
   // gamecontroller stuff
   void get(GameData& data)
   {
-    if ( theGameController->get(data, theFrameInfo.getTime()) )
-      data.frameNumber = theFrameInfo.getFrameNumber();
+    theGameController->get(data, NaoTime::getNaoTimeInMilliSeconds());
+    //data.frameNumber = theFrameInfo.getFrameNumber();
   }//end set GameData
   void set(const GameReturnData& data) { theGameController->setReturnData(data); }
 
@@ -202,8 +207,13 @@ public:
   void set(const DebugMessageOut& data) { theDebugServer->setDebugMessageOut(data); }
 
   // time
-  void get(FrameInfo& data) { data = theFrameInfo; }
-  void get(unsigned int& timestamp)        { if (sensorDataReading!=NULL) timestamp = sensorDataReading->timeStamp; }
+  void get(FrameInfo& data)
+  {
+    data.setTime(NaoTime::getNaoTimeInMilliSeconds()); 
+    data.setFrameNumber(data.getFrameNumber()+1);
+  }
+
+  void get(unsigned int& timestamp) { if (sensorDataReading!=NULL) timestamp = sensorDataReading->timeStamp; }
 
   
 
@@ -250,7 +260,6 @@ public:
     else // didn't get new sensor data
       sensorDataReading = NULL;
 
-    updateFrameInfo();
     PlatformInterface<NaoController>::getMotionInput();
   }//end getMotionInput
 
@@ -267,7 +276,6 @@ public:
   virtual void getCognitionInput()
   {
     STOPWATCH_START("getCognitionInput");
-    updateFrameInfo();
     PlatformInterface<NaoController>::getCognitionInput();
     STOPWATCH_STOP("getCognitionInput");
   }//end getCognitionInput
@@ -287,13 +295,8 @@ protected:
     return new MessageQueue4Process(name);
   }
 
-  void updateFrameInfo()
-  {
-    theFrameInfo.setTime( NaoTime::getNaoTimeInMilliSeconds() );
-  }
-
 protected:
-  FrameInfo theFrameInfo;
+  //FrameInfo theFrameInfo;
 
   std::string staticMemberPath;
   std::string theBodyID;

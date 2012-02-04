@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
   // create the motion thread
   // !!we use here a pthread directly, because glib doustn't support priorities
   pthread_t motionThread;
-  pthread_create(&motionThread, 0, motionThreadCallback, NULL);
+  pthread_create(&motionThread, 0, motionThreadCallback, (void*)&theController);
 
   // set the pririty of the motion thread to 50
   sched_param param;
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
   
 
   GError* err = NULL;
-  GThread* cognitionThread = g_thread_create(cognitionThreadCallback, &theController, true, &err);
+  GThread* cognitionThread = g_thread_create(cognitionThreadCallback, (void*)&theController, true, &err);
   if(err)
   {
     g_warning("Could not create cognition thread: %s", err->message);

@@ -38,6 +38,9 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
   REG_INPUT(Image);
+  REG_INPUT(CurrentCameraSettings);
+  REG_INPUT(VirtualVision);
+  REG_INPUT(FrameInfo);
 
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
@@ -51,9 +54,6 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   
   REG_INPUT(TeamMessageDataIn);
   REG_INPUT(GameData);
-  REG_INPUT(FrameInfo);
-  REG_INPUT(CurrentCameraSettings);
-  REG_INPUT(VirtualVision);
   REG_INPUT(DebugMessageIn);
   
   platformInterface.registerCognitionInputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());

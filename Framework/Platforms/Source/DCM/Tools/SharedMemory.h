@@ -117,9 +117,7 @@ public:
   // return if get the new data
   bool swapReading()
   {
-    if ( !trylock() )
-      return false;
-
+    lock();
     const bool swappingReady = theMemory->swappingReady;
     if ( swappingReady )
     {

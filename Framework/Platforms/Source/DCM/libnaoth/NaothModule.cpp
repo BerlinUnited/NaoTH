@@ -31,6 +31,7 @@ inline static void motion_wrapper_post()
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
   : 
   ALModule(pB, pName),
+  state(IDLE),
   pBroker(pB),
   dcmTime(0),
   timeOffset(0),
@@ -117,9 +118,7 @@ void NaothModule::motionCallbackPre()
 {
   // we are at the moment shortly before the DCM commands are send to the
   // USB bus, so put the motion execute stuff here
-  //theContorller->callMotion();
-  //theMotion->call();
-  //theContorller->setMotionOutput();
+  static int drop_count = 1000;
 
   // get the data from the shared memory and put them to the DCM
   if ( naoCommandData.swapReading() )
@@ -131,19 +130,31 @@ void NaothModule::motionCallbackPre()
     theDCMHandler.setAllPositionData(commandData->motorJointData(), dcmTime);
     theDCMHandler.setAllHardnessData(commandData->motorJointData(), dcmTime);
 
-    //theDCMHandler.setLED(naothDataReading->lEDData(), dcmTime);
-    //theDCMHandler.setIRSend(naothDataReading->iRSendData(), dcmTime);
-    //theDCMHandler.setUltraSoundSend(naothDataReading->ultraSoundSendData(), dcmTime);
+    theDCMHandler.setLED(commandData->lEDData(), dcmTime);
+    theDCMHandler.setIRSend(commandData->iRSendData(), dcmTime);
+    theDCMHandler.setUltraSoundSend(commandData->ultraSoundSendData(), dcmTime);
+
+    drop_count = 0;
   }
   else
   {
-    fprintf(stderr, "libnaoth: dropped comand data.\n");
+    if(drop_count == 0)
+      fprintf(stderr, "libnaoth: dropped comand data.\n");
+    else if(drop_count == 10)
+      fprintf(stderr, "libnaoth: I think the core is dead.\n");
+    else if(drop_count > 10)
+      setWarningLED();
+
+    // don't count more than 11
+    drop_count += (drop_count < 11);
   }
 }//end motionCallbackPre
 
 
 void NaothModule::motionCallbackPost()
 {
+  static int drop_count = 1000;
+
   NaoSensorData* sensorData = naoSensorData.writing();
 
   sensorData->timeStamp = dcmTime;
@@ -155,7 +166,7 @@ void NaothModule::motionCallbackPost()
   naoSensorData.swapWriting();
 
 
-  // raise the semaphore
+  // raise the semaphore: triggers core
   if(sem != SEM_FAILED)
   {
     int sval;
@@ -164,14 +175,18 @@ void NaothModule::motionCallbackPost()
       if(sval < 1)
       {
         sem_post(sem);
-        //frameDrops = 0;
+        drop_count = 0;
       }
       else
       {
-        //if(frameDrops == 0)
+        if(drop_count == 0)
           fprintf(stderr, "libnaoth: dropped sensor data.\n");
-        //frameDrops++;
-      }
+        else if(drop_count == 10)
+          fprintf(stderr, "libnaoth: I think the core is dead.\n");
+    
+        // don't count more than 11
+        drop_count += (drop_count < 11);
+      }//end if
     }//end if
   }//end if
 
@@ -189,13 +204,9 @@ void NaothModule::exit()
     sem = SEM_FAILED;
   }
 
-  // stop motion
-  /*
-  while ( !theMotion->exit() )
-  {
-    usleep(100000);
-  }
-  */
+  // close the shared memory
+  naoSensorData.close();
+  naoCommandData.close();
 
   // Remove the call back connection
   fDCMPreProcessConnection.disconnect();
@@ -203,3 +214,29 @@ void NaothModule::exit()
 
   cout << "NaoTH exit is finished" << endl;
 }//end exit
+
+
+void NaothModule::setWarningLED()
+{
+  static naoth::LEDData theLEDData;
+  static int count = 0;
+  
+  theLEDData.change = true;
+
+  int begin = ((++count)/10)%10;
+  theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
+  theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
+  int end = (begin+2)%10;
+  theLEDData.theMonoLED[LEDData::EarRight0 + end] = 1;
+  theLEDData.theMonoLED[LEDData::EarLeft0 + end] = 1;
+
+  for(int i=0; i<LEDData::numOfMultiLED; i++)
+  {
+    theLEDData.theMultiLED[i][LEDData::RED] = 0;
+    theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
+    theLEDData.theMultiLED[i][LEDData::BLUE] = 1;
+  }//end for
+
+  theDCMHandler.setLED(theLEDData, dcmTime);
+}//end checkWarningState
+

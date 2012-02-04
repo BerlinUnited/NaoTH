@@ -48,6 +48,15 @@ public:
   void motionCallbackPost();
 
 private:
+  void setWarningLED();
+
+  enum State
+  {
+    IDLE,
+    WORKING
+  } state;
+
+private:
   //
   ALPtr<ALBroker> pBroker;
 

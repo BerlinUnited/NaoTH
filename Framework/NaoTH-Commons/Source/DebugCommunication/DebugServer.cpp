@@ -124,7 +124,7 @@ void DebugServer::receiveAll()
     }
     counter++;
   } while(msg != NULL && counter < 50);
-}
+}//end receiveAll
 
 void DebugServer::sendAll()
 {
@@ -134,8 +134,7 @@ void DebugServer::sendAll()
 
     if(answer != NULL)
     {
-      bool success = comm.sendMessage(answer->str, answer->len);
-      if(!success)
+      if(!comm.sendMessage(answer->str, answer->len))
       {
         g_warning("could not send message");
         disconnect();
@@ -143,8 +142,8 @@ void DebugServer::sendAll()
 
       g_string_free(answer, true);
     } // end if answer != NULL
-  }
-}
+  }//end whille
+}//end sendAll
 
 void DebugServer::disconnect()
 {
@@ -155,7 +154,7 @@ void DebugServer::disconnect()
 
   // all commands are "answered", disconnect
   comm.disconnect();
-}
+}//end disconnect
 
 
 void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
@@ -208,7 +207,7 @@ void DebugServer::setDebugMessageOut(const naoth::DebugMessageOut& buffer)
     GString* answer = g_string_new("");
     g_string_append_len(answer, iter->c_str(), iter->size());
     g_async_queue_push(answers, answer);
-  }//wnd while
+  }//end while
 
   // needed only in single threaded mode
   if(connectionThread == NULL && !comm.isConnected())
@@ -271,8 +270,7 @@ void DebugServer::clearBothQueues()
     GString* tmp = (GString*) g_async_queue_pop(answers);
     g_string_free(tmp, true);
   }
-
-}
+}//end clearBothQueues
 
 void* DebugServer::connection_thread_static(void* ref)
 {
