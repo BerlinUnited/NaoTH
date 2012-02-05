@@ -188,6 +188,7 @@ void WebotsController::main()
 void WebotsController::get(FrameInfo& data)
 {
   data.setTime(time);
+  data.setFrameNumber(data.getFrameNumber() + 1);
 }
 
 void WebotsController::get(SensorJointData& data)

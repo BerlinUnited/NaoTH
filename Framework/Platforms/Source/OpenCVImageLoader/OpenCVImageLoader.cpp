@@ -260,6 +260,7 @@ void OpenCVImageLoader::get(Image& data)
 void OpenCVImageLoader::get(FrameInfo& data)
 {
   data.setTime(time);
+  data.setFrameNumber(data.getFrameNumber() + 1);
 }
 
 
