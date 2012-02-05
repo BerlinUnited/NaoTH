@@ -767,7 +767,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
       const double seenDistance = seenPost.position.abs();
       const double seenAngle = seenPost.position.angle();
 
-      const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
+      //const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
 
       Vector2<double> leftGoalPosition;
       Vector2<double> rightGoalPosition;

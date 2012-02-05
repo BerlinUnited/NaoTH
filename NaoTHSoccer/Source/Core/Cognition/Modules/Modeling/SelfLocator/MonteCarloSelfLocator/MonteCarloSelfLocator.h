@@ -73,10 +73,10 @@ private:
   OdometryData lastRobotOdometry;
   SampleSet theSampleSet;
 
-  bool initialized;
-
   //GridClustering gridClustering;
   CanopyClustering<SampleSet> canopyClustering;
+
+  bool initialized;
 
   void resetSampleSet(SampleSet& sampleSet);
   
