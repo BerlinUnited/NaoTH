@@ -106,7 +106,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   platformInterface.registerMotionOutput(theBlackBoard.the##R)
 
   REG_OUTPUT(MotorJointData);
-  REG_OUTPUT(LEDData);
+  //REG_OUTPUT(LEDData);
 
 #ifdef NAO_OLD
   platformInterface.registerMotionInput(theDebugMessageIn);
@@ -156,7 +156,6 @@ void Motion::call()
   case running:
   {
     frameNumSinceLastMotionRequest = 0;
-    checkWarningState();
     break;
   }
   case exiting:
@@ -313,36 +312,3 @@ bool Motion::exit()
   return false;
 }//end exit
 
-void Motion::checkWarningState()
-{
-  // check if cognition is running
-  if ( frameNumSinceLastMotionRequest*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond() > 1 )
-  {
-    theBlackBoard.theMotionRequest.id = motion::init;
-    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-    if ( !theBlackBoard.theLEDData.change )
-    {
-      cerr<<"cognition is dead!"<<endl;
-    }
-    theBlackBoard.theLEDData.change = true;
-
-    LEDData& theLEDData = theBlackBoard.theLEDData;
-    int begin = int(frameNumSinceLastMotionRequest*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond()*10)%10;
-    theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
-    theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
-    int end = (begin+2)%10;
-    theLEDData.theMonoLED[LEDData::EarRight0 + end] = 1;
-    theLEDData.theMonoLED[LEDData::EarLeft0 + end] = 1;
-
-    for(int i=0; i<LEDData::numOfMultiLED; i++)
-    {
-      theLEDData.theMultiLED[i][LEDData::RED] = 0;
-      theLEDData.theMultiLED[i][LEDData::GREEN] = 0;
-      theLEDData.theMultiLED[i][LEDData::BLUE] = 1;
-    }
-  }
-  else
-  {
-    theBlackBoard.theLEDData.change = false;
-  }
-}//end checkWarningState

@@ -49,7 +49,10 @@ public:
     PlatformInterface<NaoController>("Nao", 10),
     sensorDataReading(NULL),
     m_naoSensorData(NULL),
-    m_naoCommandData(NULL),
+    m_naoCommandMotorJointData(NULL),
+    m_naoCommandUltraSoundSendData(NULL),
+    m_naoCommandIRSendData(NULL),
+    m_naoCommandLEDData(NULL),
     //theSoundHandler(NULL),
     theBroadCaster(NULL),
     theBroadCastListener(NULL),
@@ -58,10 +61,24 @@ public:
     staticMemberPath = Platform::getInstance().theConfigDirectory+"nao.info";
 
     // init shared memory
-    const std::string naoCommandDataPath = "/nao_command_data";
     const std::string naoSensorDataPath = "/nao_sensor_data";
-    std::cout << "Opening Shared Memory: " << naoCommandDataPath << std::endl;
-    naoCommandData.open(naoCommandDataPath);
+    //const std::string naoCommandDataPath = "/nao_command_data";
+    const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
+    const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
+    const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
+    const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
+
+    //std::cout << "Opening Shared Memory: " << naoCommandDataPath << std::endl;
+    //naoCommandData.open(naoCommandDataPath);
+    std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
+    naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
+    std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
+    naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
+    std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
+    naoCommandIRSendData.open(naoCommandIRSendDataPath);
+    std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
+    naoCommandLEDData.open(naoCommandLEDDataPath);
+
     std::cout << "Opening Shared Memory: " << naoSensorDataPath << std::endl;
     naoSensorData.open(naoSensorDataPath);
 
@@ -153,7 +170,10 @@ public:
 
 
     m_naoSensorData = g_mutex_new();
-    m_naoCommandData = g_mutex_new();
+    m_naoCommandMotorJointData = g_mutex_new();
+    m_naoCommandUltraSoundSendData = g_mutex_new();
+    m_naoCommandIRSendData = g_mutex_new();
+    m_naoCommandLEDData = g_mutex_new();
   }
 
   ~NaoController()
@@ -165,11 +185,17 @@ public:
     delete theDebugServer;
 
     g_mutex_free(m_naoSensorData);
-    g_mutex_free(m_naoCommandData);
+    g_mutex_free(m_naoCommandMotorJointData);
+    g_mutex_free(m_naoCommandUltraSoundSendData);
+    g_mutex_free(m_naoCommandIRSendData);
+    g_mutex_free(m_naoCommandLEDData);
 
     // close the shared memory
     naoSensorData.close();
-    naoCommandData.close();
+    naoCommandMotorJointData.close();
+    naoCommandUltraSoundSendData.close();
+    naoCommandIRSendData.close();
+    naoCommandLEDData.close();
   }
 
   virtual string getBodyID() const { return theBodyID; }
@@ -241,9 +267,10 @@ public:
 #define SET_TO_SHARED_MEMORY(TYPE) \
   void set(const TYPE& data)\
   { \
-    g_mutex_lock(m_naoCommandData); \
-    naoCommandData.writing()->set(data); \
-    g_mutex_unlock(m_naoCommandData); \
+    g_mutex_lock(m_naoCommand##TYPE); \
+    naoCommand##TYPE.writing()->set(data); \
+    naoCommand##TYPE.swapWriting(); \
+    g_mutex_unlock(m_naoCommand##TYPE); \
   }
   SET_TO_SHARED_MEMORY(MotorJointData)
   SET_TO_SHARED_MEMORY(LEDData)
@@ -269,7 +296,7 @@ public:
     PlatformInterface<NaoController>::setMotionOutput();
 
     // send the data to DCM
-    naoCommandData.swapWriting();
+    //naoCommandData.swapWriting();
   }//end setMotionOutput
 
 
@@ -305,14 +332,20 @@ protected:
 
   const NaoSensorData* sensorDataReading;
   GMutex* m_naoSensorData;
-  GMutex* m_naoCommandData;
+  GMutex* m_naoCommandMotorJointData;
+  GMutex* m_naoCommandUltraSoundSendData;
+  GMutex* m_naoCommandIRSendData;
+  GMutex* m_naoCommandLEDData;
   
   // DCM --> NaoController
   SharedMemory<NaoSensorData> naoSensorData;
 
   // NaoController --> DCM
-  SharedMemory<NaoCommandData> naoCommandData;
-
+  //SharedMemory<NaoCommandData> naoCommandData;
+  SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
+  SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
+  SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
+  SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
   //
   V4lCameraHandler theCameraHandler;

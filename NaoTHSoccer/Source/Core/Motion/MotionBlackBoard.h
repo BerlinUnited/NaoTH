@@ -66,7 +66,7 @@ public:
   naoth::MotorJointData theMotorJointData;
   naoth::MotorJointData theLastMotorJointData;
   naoth::SensorJointData theSensorJointData;
-  naoth::LEDData theLEDData;
+  //naoth::LEDData theLEDData;
 
   CalibrationData theCalibrationData;
   

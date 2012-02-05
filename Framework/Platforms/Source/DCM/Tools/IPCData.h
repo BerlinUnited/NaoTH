@@ -52,6 +52,17 @@ namespace naoth
   };
   
 
+  template<class T>
+  class Accessor
+  {
+  public:
+    inline void set(const T& other) { data = other; }
+    inline const T& get() const { return data; }
+  private:
+    T data;
+  };
+
+  /*
   // data written by naoth
   class NaoCommandData
   {
@@ -72,6 +83,7 @@ namespace naoth
     UltraSoundSendData theUltraSoundSendData;
     MotorJointData theMotorJointData;
   };
+  */
 }
 
 #endif // _IPC_DATA_H_

@@ -48,8 +48,6 @@ protected:
   
   void changeMotion(AbstractMotion* m);
 
-  void checkWarningState();
-  
 private:
   MotionBlackBoard& theBlackBoard;
 

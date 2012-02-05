@@ -92,12 +92,26 @@ void NaothModule::init()
 
 
   // init shared memory
-  const std::string naoCommandDataPath = "/nao_command_data";
+  //const std::string naoCommandDataPath = "/nao_command_data";
   const std::string naoSensorDataPath = "/nao_sensor_data";
-  std::cout << "Opening Shared Memory: "<<naoCommandDataPath<<std::endl;
-  naoCommandData.open(naoCommandDataPath);
+  //std::cout << "Opening Shared Memory: "<<naoCommandDataPath<<std::endl;
+  //naoCommandData.open(naoCommandDataPath);
   std::cout<< "Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
   naoSensorData.open(naoSensorDataPath);
+
+  const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
+  const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
+  const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
+  const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
+
+  std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
+  naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
+  std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
+  naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
+  std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
+  naoCommandIRSendData.open(naoCommandIRSendDataPath);
+  std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
+  naoCommandLEDData.open(naoCommandLEDDataPath);
 
 
   // open semaphore
@@ -116,23 +130,23 @@ void NaothModule::init()
 
 void NaothModule::motionCallbackPre()
 {
+  // update the dcm time
+  dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
+
   // we are at the moment shortly before the DCM commands are send to the
   // USB bus, so put the motion execute stuff here
   static int drop_count = 1000;
 
-  // get the data from the shared memory and put them to the DCM
-  if ( naoCommandData.swapReading() )
+
+  bool stiffness_set = false;
+
+  // get the MotorJointData from the shared memory and put them to the DCM
+  if ( naoCommandMotorJointData.swapReading() )
   {
-    const NaoCommandData* commandData = naoCommandData.reading();
-    // update the dcm time
-    dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
-
-    theDCMHandler.setAllPositionData(commandData->motorJointData(), dcmTime);
-    theDCMHandler.setAllHardnessData(commandData->motorJointData(), dcmTime);
-
-    theDCMHandler.setLED(commandData->lEDData(), dcmTime);
-    theDCMHandler.setIRSend(commandData->iRSendData(), dcmTime);
-    theDCMHandler.setUltraSoundSend(commandData->ultraSoundSendData(), dcmTime);
+    const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
+    
+    theDCMHandler.setAllPositionData(commandData->get(), dcmTime);
+    stiffness_set = theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
 
     drop_count = 0;
   }
@@ -147,7 +161,32 @@ void NaothModule::motionCallbackPre()
 
     // don't count more than 11
     drop_count += (drop_count < 11);
-  }
+  }//end else
+
+  bool us_set = false;
+
+  // get the UltraSoundSendData from the shared memory and put them to the DCM
+  if ( naoCommandUltraSoundSendData.swapReading() )
+  {
+    const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
+    us_set = theDCMHandler.setUltraSoundSendSmart(commandData->get(), dcmTime);
+  }//end if
+  
+  /*
+  if ( naoCommandIRSendData.swapReading() )
+  {
+    const Accessor<IRSendData>* commandData = naoCommandIRSendData.reading();
+    theDCMHandler.setIRSendData(commandData->get(), dcmTime);
+  }//end if
+  */
+
+  // get the LEDData from the shared memory and put them to the DCM
+  // don't set too many things at once
+  if(naoCommandLEDData.swapReading())
+  {
+    const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
+    theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+  }//end if
 }//end motionCallbackPre
 
 
@@ -206,7 +245,10 @@ void NaothModule::exit()
 
   // close the shared memory
   naoSensorData.close();
-  naoCommandData.close();
+  naoCommandMotorJointData.close();
+  naoCommandUltraSoundSendData.close();
+  naoCommandIRSendData.close();
+  naoCommandLEDData.close();
 
   // Remove the call back connection
   fDCMPreProcessConnection.disconnect();
@@ -237,6 +279,6 @@ void NaothModule::setWarningLED()
     theLEDData.theMultiLED[i][LEDData::BLUE] = 1;
   }//end for
 
-  theDCMHandler.setLED(theLEDData, dcmTime);
+  theDCMHandler.setSingleLED(theLEDData, dcmTime);
 }//end checkWarningState
 

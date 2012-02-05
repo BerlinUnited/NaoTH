@@ -4,6 +4,7 @@
 using namespace naoth;
 
 DCMHandler::DCMHandler()
+  : last_us_mode(0)
 {}
 
 DCMHandler::~DCMHandler()
@@ -38,6 +39,7 @@ void DCMHandler::init(ALPtr<ALBroker> pB)
   // init actuators
   initMotorJoint();
   initLED();
+  initSingleLED();
   initIRSend();
   initUltraSoundSend();
 
@@ -424,9 +426,27 @@ void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
 }//end setAllPositionData
 
 
+bool DCMHandler::setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime)
+{
+  // check if there are any changes
+  for(int i=0;i<JointData::numOfJoint;i++)
+  {
+    if(mjd.stiffness[i] != lastMotorJointData.stiffness[i])
+    {
+      // copy all
+      lastMotorJointData = mjd;
+      setAllHardnessData(mjd, dcmTime);
+      return true;
+    }//end if
+  }//end for
+
+  return false;
+}//end setAllHardnessDataSmart
+
+
+
 void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
 {
-  //int currentAbsDelay = al_dcmproxy->getTime(time_delay);
   allMotorHardnessCommands[4][0] = dcmTime;
 
   //MotorJoints
@@ -585,11 +605,85 @@ void DCMHandler::initLED()
 }//end initLED
 
 
+void DCMHandler::initSingleLED()
+{
+  singleLedCommand.arraySetSize(3);
+  singleLedCommand[1] = std::string("ClearAll");
+  singleLedCommand[2].arraySetSize(1);
+  singleLedCommand[2][0].arraySetSize(2);
+  singleLedCommand[2][0][1] = 0;
+}//end initSingleLED
+
+
+bool DCMHandler::setLEDSmart(const LEDData& data, int dcmTime)
+{
+  for(int i=0;i<LEDData::numOfMonoLED;i++)
+  {
+    if(lastLEDData.theMonoLED[i] != data.theMonoLED[i])
+    {
+      // copy all
+      lastLEDData = data;
+      setLED(data, dcmTime);
+      return true;
+    }
+  }//end for
+
+  for(int i=0;i<LEDData::numOfMultiLED;i++)
+  {
+    if( lastLEDData.theMultiLED[i][LEDData::RED]   != data.theMultiLED[i][LEDData::RED] ||
+        lastLEDData.theMultiLED[i][LEDData::GREEN] != data.theMultiLED[i][LEDData::GREEN] ||
+        lastLEDData.theMultiLED[i][LEDData::BLUE]  != data.theMultiLED[i][LEDData::BLUE])
+    {
+      // copy all
+      lastLEDData = data;
+      setLED(data, dcmTime);
+      return true;
+    }
+  }//end for
+
+  return false;
+}//end setLEDSmart
+
+void DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
+{
+  try
+  {
+    singleLedCommand[2][0][1] = dcmTime;
+
+    for(int i=0;i<LEDData::numOfMonoLED;i++)
+    {
+      if(lastLEDData.theMonoLED[i] != data.theMonoLED[i])
+      {
+        singleLedCommand[0] = DCMPath_MonoLED[i];
+        singleLedCommand[2][0][0] = lastLEDData.theMonoLED[i] = data.theMonoLED[i];
+        al_dcmproxy->set(singleLedCommand);
+      }//end if
+    }//end for
+
+
+    for(int i=0;i<LEDData::numOfMultiLED;i++)
+    {
+      for(int k=0;k<LEDData::numOfLEDColor;k++)
+      {
+        if(lastLEDData.theMultiLED[i][k] != data.theMultiLED[i][k])
+        {
+          singleLedCommand[0] = DCMPath_MultiLED[i][k];
+          singleLedCommand[2][0][0] = lastLEDData.theMultiLED[i][k] = data.theMultiLED[i][k];
+          al_dcmproxy->set(singleLedCommand);
+        }//end if
+      }//end for
+    }//end for
+
+  }
+  catch(ALError e) {
+    std::cerr << "Failed to set LEDs: " << e.toString() << endl;
+  }
+}//end setSingleLED
+
+
 void DCMHandler::setLED(const LEDData& data, int dcmTime)
 {
-  if ( !data.change ) return;
-  
-  ledCommands[4][0] = dcmTime; //al_dcmproxy->getTime(time_delay);
+  ledCommands[4][0] = dcmTime;
 
   for(int i=0;i<LEDData::numOfMonoLED;i++)
   {
@@ -660,7 +754,7 @@ void DCMHandler::setIRSend(const IRSendData& data, int dcmTime)
 {
   if ( !data.changed ) return;
   
-  irCommands[4][0] = dcmTime; //al_dcmproxy->getTime(time_delay);
+  irCommands[4][0] = dcmTime;
 
   for(int i=0;i<IRSendData::numOfIRSend;i++)
   {
@@ -712,9 +806,22 @@ void DCMHandler::initUltraSoundSend()
 }//end initUltraSoundSend
 
 
+bool DCMHandler::setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime)
+{
+  if(last_us_mode != data.mode)
+  {
+    last_us_mode = data.mode;
+    setUltraSoundSend(data, dcmTime);
+    return true;
+  }
+
+  return false;
+}//end setUltraSoundSendSmart
+
+
 void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
 {
-  usSendCommands[4][0] = dcmTime; //al_dcmproxy->getTime(time_delay);
+  usSendCommands[4][0] = dcmTime;
   usSendCommands[5][0][0] = static_cast<double>(data.mode);
 
   try

@@ -90,6 +90,7 @@ private:
   ALValue allMotorPositionCommands;
   ALValue allMotorHardnessCommands;
   ALValue ledCommands;
+  ALValue singleLedCommand;
   ALValue irCommands;
   ALValue usSendCommands;
 
@@ -102,6 +103,7 @@ private:
   void initSensorJoint();
   void initMotorJoint();
   void initLED();
+  void initSingleLED();
   void initAccelerometer();
   void initGyrometer();
   void initInertialSensor();
@@ -114,33 +116,44 @@ private:
   void initAllSensorData();
 
 public:
-    float* sensorPtrs[numOfSensors];
+  //
+  float* sensorPtrs[numOfSensors];
 
-    DCMHandler();
-    ~DCMHandler();
-    void init(ALPtr<ALBroker> pB);
+  //
+  MotorJointData lastMotorJointData;
+  unsigned int last_us_mode;
+  LEDData lastLEDData;
 
-    string getBodyID();
-    string getBodyNickName();
-    int getTime(unsigned int time_delay);
+  DCMHandler();
+  ~DCMHandler();
+  void init(ALPtr<ALBroker> pB);
 
-    // read sensor data from AL memory
-    void readSensorData(float* dest);
+  string getBodyID();
+  string getBodyNickName();
+  int getTime(unsigned int time_delay);
+
+  // read sensor data from AL memory
+  void readSensorData(float* dest);
     
-    //void set(const LEDData& data);
-    //void set(const IRSendData& data);
-    //void set(const UltraSoundSendData& data);
+  //void set(const LEDData& data);
+  //void set(const IRSendData& data);
+  //void set(const UltraSoundSendData& data);
 
-    void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
+  void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
     
-    void setAllPositionData(const MotorJointData& mjd, int dcmTime);
-    void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
+  void setAllPositionData(const MotorJointData& mjd, int dcmTime);
+  void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
 
-    void setLED(const LEDData& data, int dcmTime);
+  void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
+  void setLED(const LEDData& data, int dcmTime);
+  void setSingleLED(const LEDData& data, int dcmTime);
+  void setIRSend(const IRSendData& theIRSendData, int dcmTime);
 
-    void setIRSend(const IRSendData& theIRSendData, int dcmTime);
-    void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
-};
+  // smart set_methods
+  bool setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime);
+  bool setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime);
+  bool setLEDSmart(const LEDData& data, int dcmTime);
+};//end class DCMHandler
 
 } // end namespace naoth
 
