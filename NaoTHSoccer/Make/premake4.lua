@@ -86,9 +86,11 @@ solution "NaoTHSoccer"
 	links {"ws2_32"}
   end
   
-  configuration {"linux"}
+  -- configuration {"linux"}
+  if(_ACTION == "gmake") then
     buildoptions {"-fPIC"}
     flags { "ExtraWarnings" }
+  end
       
   -- base
   dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"

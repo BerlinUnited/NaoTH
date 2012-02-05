@@ -16,8 +16,8 @@
 #include "Tools/CameraGeometry.h"
 
 RobotDetector::RobotDetector()
-  : theBlobFinder(getColoredGrid()),
-    BELOW_WHITE_RATIO(0.5)
+  : BELOW_WHITE_RATIO(0.5),
+    theBlobFinder(getColoredGrid())
 {
   //initialize colors for blob finder
   //red:
