@@ -116,13 +116,14 @@ private:
   void initAllSensorData();
 
 public:
-  //
+  // 
   float* sensorPtrs[numOfSensors];
 
-  //
+  // remember last commands (needed by "smart" methods) 
   MotorJointData lastMotorJointData;
   unsigned int last_us_mode;
   LEDData lastLEDData;
+
 
   DCMHandler();
   ~DCMHandler();
@@ -143,6 +144,7 @@ public:
     
   void setAllPositionData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
+  void setAllHardnessData(double value, int dcmTime);
 
   void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
   void setLED(const LEDData& data, int dcmTime);

@@ -395,7 +395,6 @@ void DCMHandler::initMotorJoint()
 
 void DCMHandler::setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime)
 {
-  //unsigned int timestamp = al_dcmproxy->getTime(time_delay);
   sendToDCM(DCMPath_MotorJointHardness[jointID],theMotorJointData->stiffness[jointID],dcmTime);
   sendToDCM(DCMPath_MotorJointPosition[jointID],theMotorJointData->position[jointID],dcmTime);
 }//end setSingleMotorData
@@ -403,7 +402,6 @@ void DCMHandler::setSingleMotorData(const JointData::JointID jointID, const Moto
 
 void DCMHandler::setAllPositionData(const MotorJointData& mjd, int dcmTime)
 {
-  //int currentAbsDelay = al_dcmproxy->getTime(time_delay);
   allMotorPositionCommands[4][0] = dcmTime;
 
   //MotorJoints
@@ -469,89 +467,114 @@ void DCMHandler::setAllHardnessData(const MotorJointData& mjd, int dcmTime)
 }//end setAllHardnessData
 
 
+void DCMHandler::setAllHardnessData(double value, int dcmTime)
+{
+  allMotorHardnessCommands[4][0] = dcmTime;
+
+  //MotorJoints
+  for(int i=0;i<JointData::RHipYawPitch;i++)
+  {
+    allMotorHardnessCommands[5][i][0] = value;
+  }
+  for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
+  {
+    allMotorHardnessCommands[5][i-1][0] = value;
+  }
+
+  try
+  {
+    al_dcmproxy->setAlias(allMotorHardnessCommands);
+  }
+  catch(ALError e) {
+    std::cerr << "Failed to set AllHardnessData: " << e.toString() << endl;
+  }
+}//end setAllHardnessData
+
+
+
 //LED
 void DCMHandler::initLED()
 {
-  DCMPath_MonoLED[LEDData::EarLeft0] = "Device/SubDeviceList/Ears/Led/Left/0Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft36] = "Device/SubDeviceList/Ears/Led/Left/36Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft72] = "Device/SubDeviceList/Ears/Led/Left/72Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft108] = "Device/SubDeviceList/Ears/Led/Left/108Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft144] = "Device/SubDeviceList/Ears/Led/Left/144Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft180] = "Device/SubDeviceList/Ears/Led/Left/180Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft216] = "Device/SubDeviceList/Ears/Led/Left/216Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft252] = "Device/SubDeviceList/Ears/Led/Left/252Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft288] = "Device/SubDeviceList/Ears/Led/Left/288Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarLeft324] = "Device/SubDeviceList/Ears/Led/Left/324Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight0] = "Device/SubDeviceList/Ears/Led/Right/0Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight36] = "Device/SubDeviceList/Ears/Led/Right/36Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight72] = "Device/SubDeviceList/Ears/Led/Right/72Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight108] = "Device/SubDeviceList/Ears/Led/Right/108Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight144] = "Device/SubDeviceList/Ears/Led/Right/144Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight180] = "Device/SubDeviceList/Ears/Led/Right/180Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight216] = "Device/SubDeviceList/Ears/Led/Right/216Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight252] = "Device/SubDeviceList/Ears/Led/Right/252Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight288] = "Device/SubDeviceList/Ears/Led/Right/288Deg/Actuator/Value";
-  DCMPath_MonoLED[LEDData::EarRight324] = "Device/SubDeviceList/Ears/Led/Right/324Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft0] = "Ears/Led/Left/0Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft36] = "Ears/Led/Left/36Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft72] = "Ears/Led/Left/72Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft108] = "Ears/Led/Left/108Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft144] = "Ears/Led/Left/144Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft180] = "Ears/Led/Left/180Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft216] = "Ears/Led/Left/216Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft252] = "Ears/Led/Left/252Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft288] = "Ears/Led/Left/288Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarLeft324] = "Ears/Led/Left/324Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight0] = "Ears/Led/Right/0Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight36] = "Ears/Led/Right/36Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight72] = "Ears/Led/Right/72Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight108] = "Ears/Led/Right/108Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight144] = "Ears/Led/Right/144Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight180] = "Ears/Led/Right/180Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight216] = "Ears/Led/Right/216Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight252] = "Ears/Led/Right/252Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight288] = "Ears/Led/Right/288Deg/Actuator/Value";
+  DCMPath_MonoLED[LEDData::EarRight324] = "Ears/Led/Right/324Deg/Actuator/Value";
 
-  DCMPath_MultiLED[LEDData::FaceLeft0][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/0Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft0][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/0Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft0][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/0Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft45][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/45Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft45][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/45Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft45][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/45Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft90][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/90Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft90][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/90Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft90][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/90Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft135][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/135Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft135][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/135Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft135][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/135Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft180][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/180Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft180][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/180Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft180][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/180Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft225][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/225Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft225][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/225Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft225][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/225Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft270][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/270Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft270][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/270Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft270][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/270Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft315][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Left/315Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft315][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Left/315Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceLeft315][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Left/315Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft0][LEDData::RED] = "Face/Led/Red/Left/0Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft0][LEDData::GREEN] = "Face/Led/Green/Left/0Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft0][LEDData::BLUE] = "Face/Led/Blue/Left/0Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft45][LEDData::RED] = "Face/Led/Red/Left/45Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft45][LEDData::GREEN] = "Face/Led/Green/Left/45Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft45][LEDData::BLUE] = "Face/Led/Blue/Left/45Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft90][LEDData::RED] = "Face/Led/Red/Left/90Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft90][LEDData::GREEN] = "Face/Led/Green/Left/90Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft90][LEDData::BLUE] = "Face/Led/Blue/Left/90Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft135][LEDData::RED] = "Face/Led/Red/Left/135Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft135][LEDData::GREEN] = "Face/Led/Green/Left/135Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft135][LEDData::BLUE] = "Face/Led/Blue/Left/135Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft180][LEDData::RED] = "Face/Led/Red/Left/180Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft180][LEDData::GREEN] = "Face/Led/Green/Left/180Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft180][LEDData::BLUE] = "Face/Led/Blue/Left/180Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft225][LEDData::RED] = "Face/Led/Red/Left/225Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft225][LEDData::GREEN] = "Face/Led/Green/Left/225Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft225][LEDData::BLUE] = "Face/Led/Blue/Left/225Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft270][LEDData::RED] = "Face/Led/Red/Left/270Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft270][LEDData::GREEN] = "Face/Led/Green/Left/270Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft270][LEDData::BLUE] = "Face/Led/Blue/Left/270Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft315][LEDData::RED] = "Face/Led/Red/Left/315Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft315][LEDData::GREEN] = "Face/Led/Green/Left/315Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceLeft315][LEDData::BLUE] = "Face/Led/Blue/Left/315Deg/Actuator/Value";
 
-  DCMPath_MultiLED[LEDData::FaceRight0][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/0Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight0][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/0Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight0][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/0Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight45][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/45Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight45][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/45Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight45][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/45Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight90][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/90Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight90][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/90Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight90][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/90Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight135][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/135Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight135][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/135Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight135][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/135Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight180][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/180Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight180][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/180Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight180][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/180Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight225][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/225Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight225][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/225Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight225][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/225Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight270][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/270Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight270][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/270Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight270][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/270Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight315][LEDData::RED] = "Device/SubDeviceList/Face/Led/Red/Right/315Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight315][LEDData::GREEN] = "Device/SubDeviceList/Face/Led/Green/Right/315Deg/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FaceRight315][LEDData::BLUE] = "Device/SubDeviceList/Face/Led/Blue/Right/315Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight0][LEDData::RED] = "Face/Led/Red/Right/0Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight0][LEDData::GREEN] = "Face/Led/Green/Right/0Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight0][LEDData::BLUE] = "Face/Led/Blue/Right/0Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight45][LEDData::RED] = "Face/Led/Red/Right/45Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight45][LEDData::GREEN] = "Face/Led/Green/Right/45Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight45][LEDData::BLUE] = "Face/Led/Blue/Right/45Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight90][LEDData::RED] = "Face/Led/Red/Right/90Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight90][LEDData::GREEN] = "Face/Led/Green/Right/90Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight90][LEDData::BLUE] = "Face/Led/Blue/Right/90Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight135][LEDData::RED] = "Face/Led/Red/Right/135Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight135][LEDData::GREEN] = "Face/Led/Green/Right/135Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight135][LEDData::BLUE] = "Face/Led/Blue/Right/135Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight180][LEDData::RED] = "Face/Led/Red/Right/180Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight180][LEDData::GREEN] = "Face/Led/Green/Right/180Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight180][LEDData::BLUE] = "Face/Led/Blue/Right/180Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight225][LEDData::RED] = "Face/Led/Red/Right/225Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight225][LEDData::GREEN] = "Face/Led/Green/Right/225Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight225][LEDData::BLUE] = "Face/Led/Blue/Right/225Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight270][LEDData::RED] = "Face/Led/Red/Right/270Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight270][LEDData::GREEN] = "Face/Led/Green/Right/270Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight270][LEDData::BLUE] = "Face/Led/Blue/Right/270Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight315][LEDData::RED] = "Face/Led/Red/Right/315Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight315][LEDData::GREEN] = "Face/Led/Green/Right/315Deg/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FaceRight315][LEDData::BLUE] = "Face/Led/Blue/Right/315Deg/Actuator/Value";
 
-  DCMPath_MultiLED[LEDData::FootLeft][LEDData::RED] = "Device/SubDeviceList/LFoot/Led/Red/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FootLeft][LEDData::GREEN] = "Device/SubDeviceList/LFoot/Led/Green/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FootLeft][LEDData::BLUE] = "Device/SubDeviceList/LFoot/Led/Blue/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FootRight][LEDData::RED] = "Device/SubDeviceList/RFoot/Led/Red/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FootRight][LEDData::GREEN] = "Device/SubDeviceList/RFoot/Led/Green/Actuator/Value";
-  DCMPath_MultiLED[LEDData::FootRight][LEDData::BLUE] = "Device/SubDeviceList/RFoot/Led/Blue/Actuator/Value";
-  DCMPath_MultiLED[LEDData::ChestButton][LEDData::RED] = "Device/SubDeviceList/ChestBoard/Led/Red/Actuator/Value";
-  DCMPath_MultiLED[LEDData::ChestButton][LEDData::GREEN] = "Device/SubDeviceList/ChestBoard/Led/Green/Actuator/Value";
-  DCMPath_MultiLED[LEDData::ChestButton][LEDData::BLUE] = "Device/SubDeviceList/ChestBoard/Led/Blue/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FootLeft][LEDData::RED] = "LFoot/Led/Red/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FootLeft][LEDData::GREEN] = "LFoot/Led/Green/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FootLeft][LEDData::BLUE] = "LFoot/Led/Blue/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FootRight][LEDData::RED] = "RFoot/Led/Red/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FootRight][LEDData::GREEN] = "RFoot/Led/Green/Actuator/Value";
+  DCMPath_MultiLED[LEDData::FootRight][LEDData::BLUE] = "RFoot/Led/Blue/Actuator/Value";
+  DCMPath_MultiLED[LEDData::ChestButton][LEDData::RED] = "ChestBoard/Led/Red/Actuator/Value";
+  DCMPath_MultiLED[LEDData::ChestButton][LEDData::GREEN] = "ChestBoard/Led/Green/Actuator/Value";
+  DCMPath_MultiLED[LEDData::ChestButton][LEDData::BLUE] = "ChestBoard/Led/Blue/Actuator/Value";
 
   try
   {
@@ -608,10 +631,27 @@ void DCMHandler::initLED()
 void DCMHandler::initSingleLED()
 {
   singleLedCommand.arraySetSize(3);
-  singleLedCommand[1] = std::string("ClearAll");
+  singleLedCommand[1] = string("ClearAll");
   singleLedCommand[2].arraySetSize(1);
   singleLedCommand[2][0].arraySetSize(2);
   singleLedCommand[2][0][1] = 0;
+
+
+  // set all requests to invalide values
+  // this will force the function setSingleLED to set all 
+  // values at the first call
+  for(int i=0;i<LEDData::numOfMonoLED;i++)
+  {
+    lastLEDData.theMonoLED[i] = -1.0;
+  }//end for
+
+  for(int i=0;i<LEDData::numOfMultiLED;i++)
+  {
+    for(int k=0;k<LEDData::numOfLEDColor;k++)
+    {
+      lastLEDData.theMultiLED[i][k] = -1.0;
+    }//end for
+  }//end for
 }//end initSingleLED
 
 

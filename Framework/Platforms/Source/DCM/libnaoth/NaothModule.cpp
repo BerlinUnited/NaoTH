@@ -182,7 +182,7 @@ void NaothModule::motionCallbackPre()
 
   // get the LEDData from the shared memory and put them to the DCM
   // don't set too many things at once
-  if(naoCommandLEDData.swapReading())
+  if(!stiffness_set && !us_set && naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
     theDCMHandler.setSingleLED(commandData->get(), dcmTime);
@@ -249,6 +249,9 @@ void NaothModule::exit()
   naoCommandUltraSoundSendData.close();
   naoCommandIRSendData.close();
   naoCommandLEDData.close();
+
+  // set all stiffness to 0
+  theDCMHandler.setAllHardnessData(0.0, dcmTime);
 
   // Remove the call back connection
   fDCMPreProcessConnection.disconnect();
