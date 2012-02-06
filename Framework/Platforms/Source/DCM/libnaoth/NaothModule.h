@@ -2,15 +2,16 @@
 * @file NaothModule.cpp
 *
 * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Deklaration of NaothModule
 */
 
-#ifndef _NAOTHMODULE_H
-#define	_NAOTHMODULE_H
+#ifndef _NAOTHMODULE_H_
+#define _NAOTHMODULE_H_
 
-#include "Representations/Infrastructure/CameraInfo.h"
 #include "Tools/NaoTime.h"
 #include "Tools/IPCData.h"
+#include "Tools/BasicMotion.h"
 #include "DCMHandler.h"
 
 using namespace AL;
@@ -49,11 +50,12 @@ public:
 
 private:
   void setWarningLED();
+  bool runningEmergencyMotion();
 
   enum State
   {
-    IDLE,
-    WORKING
+    DISCONNECTED,
+    CONNECTED
   } state;
 
 private:
@@ -84,8 +86,14 @@ private:
 
   // syncronize with NaoController
   sem_t* sem;
+
+
+  // sitdown motion in case the Controller dies
+  bool command_data_available;
+  MotorJointData theMotorJointData;
+  BasicMotion* initialMotion;
 };
 
 } // end namespace naoth
 
-#endif	/* _NAOTHMODULE_H */
+#endif	/* _NAOTHMODULE_H_ */

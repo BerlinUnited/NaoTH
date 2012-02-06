@@ -31,11 +31,13 @@ inline static void motion_wrapper_post()
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
   : 
   ALModule(pB, pName),
-  state(IDLE),
+  state(DISCONNECTED),
   pBroker(pB),
   dcmTime(0),
   timeOffset(0),
-  sem(SEM_FAILED)
+  sem(SEM_FAILED),
+  command_data_available(false),
+  initialMotion(NULL)
 {
   theModule = this;
 
@@ -138,6 +140,14 @@ void NaothModule::motionCallbackPre()
   static int drop_count = 1000;
 
 
+  // what to do when the Controller is dead?
+  if(runningEmergencyMotion())
+  {
+    setWarningLED();
+    return;
+  }
+
+
   bool stiffness_set = false;
 
   // get the MotorJointData from the shared memory and put them to the DCM
@@ -149,15 +159,12 @@ void NaothModule::motionCallbackPre()
     stiffness_set = theDCMHandler.setAllHardnessDataSmart(commandData->get(), dcmTime);
 
     drop_count = 0;
+    command_data_available = true;
   }
   else
   {
     if(drop_count == 0)
       fprintf(stderr, "libnaoth: dropped comand data.\n");
-    else if(drop_count == 10)
-      fprintf(stderr, "libnaoth: I think the core is dead.\n");
-    else if(drop_count > 10)
-      setWarningLED();
 
     // don't count more than 11
     drop_count += (drop_count < 11);
@@ -214,15 +221,24 @@ void NaothModule::motionCallbackPost()
       if(sval < 1)
       {
         sem_post(sem);
+
+
+        if(state == DISCONNECTED)
+          fprintf(stderr, "libnaoth: I think the core is alive.\n");
+
         drop_count = 0;
+        state = CONNECTED;
       }
       else
       {
         if(drop_count == 0)
           fprintf(stderr, "libnaoth: dropped sensor data.\n");
         else if(drop_count == 10)
+        {
           fprintf(stderr, "libnaoth: I think the core is dead.\n");
-    
+          state = DISCONNECTED;
+        }
+
         // don't count more than 11
         drop_count += (drop_count < 11);
       }//end if
@@ -235,7 +251,7 @@ void NaothModule::motionCallbackPost()
 void NaothModule::exit()
 {
   cout << "NaoTH is exiting ..."<<endl;
-  
+
   // close semaphore
   if(sem != SEM_FAILED)
   {
@@ -266,8 +282,6 @@ void NaothModule::setWarningLED()
   static naoth::LEDData theLEDData;
   static int count = 0;
   
-  theLEDData.change = true;
-
   int begin = ((++count)/10)%10;
   theLEDData.theMonoLED[LEDData::EarRight0 + begin] = 0;
   theLEDData.theMonoLED[LEDData::EarLeft0 + begin] = 0;
@@ -284,4 +298,41 @@ void NaothModule::setWarningLED()
 
   theDCMHandler.setSingleLED(theLEDData, dcmTime);
 }//end checkWarningState
+
+
+bool NaothModule::runningEmergencyMotion()
+{
+  if(state == DISCONNECTED)
+  {
+    if(initialMotion == NULL)
+    {
+      if(command_data_available)
+      {
+        // take the last command data
+        const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
+        initialMotion = new BasicMotion(theMotorJointData, commandData->get());
+      }
+    }
+    else
+    {
+      initialMotion->execute();
+      theDCMHandler.setAllPositionData(theMotorJointData, dcmTime);
+      theDCMHandler.setAllHardnessDataSmart(theMotorJointData, dcmTime);
+    }//end if
+  }//end if
+
+
+  // after reconnect: wait until the init motion is finished
+  if(initialMotion != NULL)
+  {
+    if(state == CONNECTED && initialMotion->isFinish())
+    {
+      delete initialMotion;
+      initialMotion = NULL;
+    }
+  }//end if
+  
+  return initialMotion != NULL;
+}//end runningEmergencyMotion
+
 

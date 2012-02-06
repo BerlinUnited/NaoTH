@@ -4,7 +4,7 @@
 using namespace naoth;
 
 DCMHandler::DCMHandler()
-  : last_us_mode(0)
+  : last_us_mode(-1)
 {}
 
 DCMHandler::~DCMHandler()
