@@ -11,9 +11,9 @@
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstdio> /* For perror */
+#include <cstdio>            /* For perror */
 #include <semaphore.h>
-
+#include <cerrno>
 #include <string>
 
 #ifndef _SHARED_MEMORY_H_
@@ -110,14 +110,16 @@ public:
     }
 
   ~SharedMemory()
-    {
-      close();
-    }
+  {
+    close();
+  }
   
   // return if get the new data
   bool swapReading()
   {
-    lock();
+    if ( !trylock() )
+      return false;
+
     const bool swappingReady = theMemory->swappingReady;
     if ( swappingReady )
     {
@@ -130,9 +132,11 @@ public:
   
   void swapWriting()
   {
-    lock();
-    swap(theMemory->writing, theMemory->swapping);
-    theMemory->swappingReady = true;
+    if ( trylock() )
+    {
+      swap(theMemory->writing, theMemory->swapping);
+      theMemory->swappingReady = true;
+    }
     unlock();
   }//end swapWriting
 
@@ -161,9 +165,17 @@ public:
     
 protected:
     bool trylock() { return sem_trywait(sem) == 0; }
-    void lock() { sem_wait(sem); }
+    
+    void lock() 
+    {
+      if(sem_wait(sem) == -1)
+      {
+        std::cerr << "lock errno: " << errno << std::endl;
+      }
+    }//end lock
+
     void unlock() { sem_post(sem); }
-  
+
 private:
   std::string theName;
   int shmId;

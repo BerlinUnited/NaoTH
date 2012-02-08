@@ -37,7 +37,7 @@ namespace naoth
   class NaoSensorData
   {
   public:
-    unsigned int timeStamp;
+    unsigned long long timeStamp;
     float sensorsValue[numOfSensors];
     
     void get(SensorJointData& data) const;

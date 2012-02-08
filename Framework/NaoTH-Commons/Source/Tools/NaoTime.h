@@ -21,12 +21,11 @@ namespace naoth
 {
 class NaoTime 
 {
+public:
   /**
    *
    */
   static unsigned long long getSystemTimeInMilliSeconds();
-
-public:
 
   /**
    *

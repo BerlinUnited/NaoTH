@@ -16,7 +16,8 @@ class BasicMotion
 public:
   BasicMotion(
     naoth::MotorJointData& theMotorJointData,
-    const naoth::JointData& theStartJointData);
+    const naoth::JointData& theStartJointData,
+    const naoth::InertialSensorData& theInertialSensorData);
   
   ~BasicMotion(){}
 

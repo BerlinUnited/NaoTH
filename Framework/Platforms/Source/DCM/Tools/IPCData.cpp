@@ -8,6 +8,7 @@
 
 #include "IPCData.h"
 #include <cstring>
+#include "Tools/NaoTime.h"
 
 using namespace naoth;
 
@@ -35,6 +36,9 @@ void NaoSensorData::get(SensorJointData& data) const
   data.temperature[JointData::RHipYawPitch] = data.temperature[JointData::LHipYawPitch];
   data.position[JointData::RHipYawPitch] = data.position[JointData::LHipYawPitch];
   data.stiffness[JointData::RHipYawPitch] = data.stiffness[JointData::LHipYawPitch];
+
+  data.timestamp = (unsigned int)(timeStamp - NaoTime::startingTimeInMilliSeconds);
+
 }//end SensorJointData
 
 void NaoSensorData::get(FSRData& data) const
@@ -44,7 +48,7 @@ void NaoSensorData::get(FSRData& data) const
   {
     data.data[i] = sensorsValue[currentIndex++];
     // The value returned for each FSR is similar to Kg in NaoQi 1.3.17
-    data.force[i] = data.data[i] * 9.81; 
+    data.force[i] = data.data[i] * 9.81;
   }
 }//end FSRData
 

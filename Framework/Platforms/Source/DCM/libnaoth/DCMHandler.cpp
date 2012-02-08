@@ -215,6 +215,70 @@ void DCMHandler::initUltraSoundReceive()
 }//end initUltraSoundReceive
 
 
+void DCMHandler::initDeviceState()
+{
+  /*
+  "Device/DeviceList/ChestBoard/Ack",
+  "Device/DeviceList/ChestBoard/Nack",
+  "Device/DeviceList/ChestBoard/Error",
+  "Device/DeviceList/Battery/Ack",
+  "Device/DeviceList/Battery/Nack",
+  "Device/DeviceList/Battery/Error",
+  "Device/DeviceList/USBoard/Ack",
+  "Device/DeviceList/USBoard/Nack",
+  "Device/DeviceList/USBoard/Error",
+  "Device/DeviceList/InertialSensor/Ack",
+  "Device/DeviceList/InertialSensor/Nack",
+  "Device/DeviceList/InertialSensor/Error",
+  "Device/DeviceList/HeadBoard/Ack",
+  "Device/DeviceList/HeadBoard/Nack",
+  "Device/DeviceList/HeadBoard/Error",
+  "Device/DeviceList/EarLeds/Ack",
+  "Device/DeviceList/EarLeds/Nack",
+  "Device/DeviceList/EarLeds/Error",
+  "Device/DeviceList/FaceBoard/Ack",
+  "Device/DeviceList/FaceBoard/Nack",
+  "Device/DeviceList/FaceBoard/Error",
+  "Device/DeviceList/LeftShoulderBoard/Ack",
+  "Device/DeviceList/LeftShoulderBoard/Nack",
+  "Device/DeviceList/LeftShoulderBoard/Error",
+  "Device/DeviceList/LeftArmBoard/Ack",
+  "Device/DeviceList/LeftArmBoard/Nack",
+  "Device/DeviceList/LeftArmBoard/Error",
+  "Device/DeviceList/RightShoulderBoard/Ack",
+  "Device/DeviceList/RightShoulderBoard/Nack",
+  "Device/DeviceList/RightShoulderBoard/Error",
+  "Device/DeviceList/RightArmBoard/Ack",
+  "Device/DeviceList/RightArmBoard/Nack",
+  "Device/DeviceList/RightArmBoard/Error",
+  "Device/DeviceList/LeftHipBoard/Ack",
+  "Device/DeviceList/LeftHipBoard/Nack",
+  "Device/DeviceList/LeftHipBoard/Error",
+  "Device/DeviceList/LeftThighBoard/Ack",
+  "Device/DeviceList/LeftThighBoard/Nack",
+  "Device/DeviceList/LeftThighBoard/Error",
+  "Device/DeviceList/LeftShinBoard/Ack",
+  "Device/DeviceList/LeftShinBoard/Nack",
+  "Device/DeviceList/LeftShinBoard/Error",
+  "Device/DeviceList/LeftFootBoard/Ack",
+  "Device/DeviceList/LeftFootBoard/Nack",
+  "Device/DeviceList/LeftFootBoard/Error",
+  "Device/DeviceList/RightHipBoard/Ack",
+  "Device/DeviceList/RightHipBoard/Nack",
+  "Device/DeviceList/RightHipBoard/Error",
+  "Device/DeviceList/RightThighBoard/Ack",
+  "Device/DeviceList/RightThighBoard/Nack",
+  "Device/DeviceList/RightThighBoard/Error",
+  "Device/DeviceList/RightShinBoard/Ack",
+  "Device/DeviceList/RightShinBoard/Nack",
+  "Device/DeviceList/RightShinBoard/Error",
+  "Device/DeviceList/RightFootBoard/Ack",
+  "Device/DeviceList/RightFootBoard/Nack",
+  "Device/DeviceList/RightFootBoard/Error"
+  */
+}//end initDeviceState
+
+
 // create an array containing all sensors
 void DCMHandler::initAllSensorData()
 {
@@ -291,6 +355,9 @@ void DCMHandler::initAllSensorData()
 
   ASSERT(thBatteryDataIdex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_BatteryCharge;
+
+  // little senity check
+  assert(currentIndex == numOfSensors);
 
   //connect variables
   //al_memoryfast.ConnectToVariables(pBroker,allSensorsList,false);

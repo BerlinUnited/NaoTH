@@ -77,6 +77,8 @@ private:
   // DCM --> NaoController
   SharedMemory<NaoSensorData> naoSensorData;
 
+  SharedMemory<int> debugSM;
+
   // NaoController --> DCM
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
@@ -90,7 +92,9 @@ private:
 
   // sitdown motion in case the Controller dies
   bool command_data_available;
+  bool sensor_data_available;
   MotorJointData theMotorJointData;
+  InertialSensorData theInertialSensorData;
   BasicMotion* initialMotion;
 };
 

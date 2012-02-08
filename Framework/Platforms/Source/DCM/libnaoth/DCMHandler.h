@@ -82,6 +82,9 @@ private:
   //Battery
   string DCMPath_BatteryCharge;
 
+  //State of the devices
+  string DCMPath_DeviceState;
+
   // 
   string allSensorsList[numOfSensors];
 
@@ -112,6 +115,7 @@ private:
   void initIRReceive();
   void initUltraSoundReceive();
   void initUltraSoundSend();
+  void initDeviceState();
 
   void initAllSensorData();
 

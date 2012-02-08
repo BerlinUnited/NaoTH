@@ -9,6 +9,8 @@
 #include "NaothModule.h"
 #include "libnaoth.h"
 #include "Tools/NaoTime.h"
+#include <glib.h>
+#include <glib-object.h>
 
 using namespace naoth;
 
@@ -28,8 +30,34 @@ inline static void motion_wrapper_post()
 }
 
 
+// some low level debugging stuff
+int current_line = 0;
+int time_motionCallbackPre = 0;
+int time_motionCallbackPost = 0;
+
+//#define LNT current_line=__LINE__
+#define LNT (void)0
+
+void* debug_wrepper(void* ref)
+{
+  while(true)
+  {
+    int c = time_motionCallbackPre;
+    if(c > 500) // longer than 1ms
+      std::cout << "time_motionCallbackPre: " << c << std::endl;
+
+    c = time_motionCallbackPost;
+    if(c > 500) // longer than 1ms
+      std::cout << "time_motionCallbackPost: " << c << std::endl;
+
+    usleep(1000000);
+  }
+  return NULL;
+}//end debug_wrepper
+
+
 NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
-  : 
+  :
   ALModule(pB, pName),
   state(DISCONNECTED),
   pBroker(pB),
@@ -37,6 +65,7 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
   timeOffset(0),
   sem(SEM_FAILED),
   command_data_available(false),
+  sensor_data_available(false),
   initialMotion(NULL)
 {
   theModule = this;
@@ -47,6 +76,13 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
   // Define callable methods with there description
   functionName( "init", "NaothModule",  "Initialize Controller" );
   BIND_METHOD( NaothModule::init );
+
+  GError* err = NULL;
+  g_thread_create(debug_wrepper, 0, true, &err);
+  if(err)
+  {
+    g_warning("Could not create cognition thread: %s", err->message);
+  }
 }
 
 NaothModule::~NaothModule()
@@ -92,6 +128,13 @@ void NaothModule::init()
   os<<theBodyID<<"\n"<<theBodyNickName<<endl;
   os.close();
 
+  // open semaphore
+  if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
+  {
+    perror("libnaoth: sem_open");
+    ::exit(-1);
+  }
+
 
   // init shared memory
   //const std::string naoCommandDataPath = "/nao_command_data";
@@ -100,6 +143,8 @@ void NaothModule::init()
   //naoCommandData.open(naoCommandDataPath);
   std::cout<< "Opening Shared Memory: "<<naoSensorDataPath<<std::endl;
   naoSensorData.open(naoSensorDataPath);
+
+  debugSM.open("/debug_data");
 
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
   const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
@@ -116,12 +161,6 @@ void NaothModule::init()
   naoCommandLEDData.open(naoCommandLEDDataPath);
 
 
-  // open semaphore
-  if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
-  {
-    perror("libnaoth: sem_open");
-  }
-
   // connect to DCM
   fDCMPreProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
   fDCMPostProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
@@ -132,27 +171,30 @@ void NaothModule::init()
 
 void NaothModule::motionCallbackPre()
 {
+  long long start = NaoTime::getSystemTimeInMicroSeconds();
+  LNT;
+
   // update the dcm time
   dcmTime = NaoTime::getNaoTimeInMilliSeconds() + timeOffset;
 
   // we are at the moment shortly before the DCM commands are send to the
   // USB bus, so put the motion execute stuff here
-  static int drop_count = 1000;
+  static int drop_count = 10;
 
-
+  LNT;
   // what to do when the Controller is dead?
   if(runningEmergencyMotion())
   {
-    setWarningLED();
     return;
   }
-
+  LNT;
 
   bool stiffness_set = false;
 
   // get the MotorJointData from the shared memory and put them to the DCM
   if ( naoCommandMotorJointData.swapReading() )
   {
+    LNT;
     const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
     
     theDCMHandler.setAllPositionData(commandData->get(), dcmTime);
@@ -163,6 +205,7 @@ void NaothModule::motionCallbackPre()
   }
   else
   {
+    LNT;
     if(drop_count == 0)
       fprintf(stderr, "libnaoth: dropped comand data.\n");
 
@@ -172,6 +215,7 @@ void NaothModule::motionCallbackPre()
 
   bool us_set = false;
 
+  LNT;
   // get the UltraSoundSendData from the shared memory and put them to the DCM
   if ( naoCommandUltraSoundSendData.swapReading() )
   {
@@ -186,7 +230,7 @@ void NaothModule::motionCallbackPre()
     theDCMHandler.setIRSendData(commandData->get(), dcmTime);
   }//end if
   */
-
+  LNT;
   // get the LEDData from the shared memory and put them to the DCM
   // don't set too many things at once
   if(!stiffness_set && !us_set && naoCommandLEDData.swapReading())
@@ -194,35 +238,53 @@ void NaothModule::motionCallbackPre()
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
     theDCMHandler.setSingleLED(commandData->get(), dcmTime);
   }//end if
+
+
+  long long stop = NaoTime::getSystemTimeInMicroSeconds();
+  time_motionCallbackPre = (int)(stop - start);
 }//end motionCallbackPre
 
 
 void NaothModule::motionCallbackPost()
 {
-  static int drop_count = 1000;
+  long long start = NaoTime::getSystemTimeInMicroSeconds();
+  LNT;
+  static int drop_count = 10;
 
   NaoSensorData* sensorData = naoSensorData.writing();
 
-  sensorData->timeStamp = dcmTime;
+  // current system time (System time, not nao time (!))
+  sensorData->timeStamp = NaoTime::getSystemTimeInMilliSeconds();
 
   // read the sensory data from DCM to the shared memory
   theDCMHandler.readSensorData(sensorData->sensorsValue);
-  
+
+  // save the data for the emergency case
+  if(state == DISCONNECTED)
+  {
+    sensorData->get(theInertialSensorData);
+    sensor_data_available = true;
+  }
+
+  LNT;
   // 
   naoSensorData.swapWriting();
 
-
+  LNT;
   // raise the semaphore: triggers core
   if(sem != SEM_FAILED)
   {
+    LNT;
     int sval;
     if(sem_getvalue(sem, &sval) == 0)
     {
+      LNT;
       if(sval < 1)
       {
+        LNT;
         sem_post(sem);
 
-
+        LNT;
         if(state == DISCONNECTED)
           fprintf(stderr, "libnaoth: I think the core is alive.\n");
 
@@ -231,6 +293,7 @@ void NaothModule::motionCallbackPost()
       }
       else
       {
+        LNT;
         if(drop_count == 0)
           fprintf(stderr, "libnaoth: dropped sensor data.\n");
         else if(drop_count == 10)
@@ -242,9 +305,15 @@ void NaothModule::motionCallbackPost()
         // don't count more than 11
         drop_count += (drop_count < 11);
       }//end if
-    }//end if
+    }
+    else
+    {
+      fprintf(stderr, "libnaoth: I couldn't get value by sem_getvalue.\n");
+    }
   }//end if
 
+  long long stop = NaoTime::getSystemTimeInMicroSeconds();
+  time_motionCallbackPost = (int)(stop - start);
 }//end motionCallbackPost
 
 
@@ -304,31 +373,32 @@ bool NaothModule::runningEmergencyMotion()
 {
   if(state == DISCONNECTED)
   {
-    if(initialMotion == NULL)
+    LNT;
+    if(initialMotion == NULL && command_data_available)
     {
-      if(command_data_available)
-      {
-        // take the last command data
-        const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
-        initialMotion = new BasicMotion(theMotorJointData, commandData->get());
-      }
-    }
-    else
-    {
-      initialMotion->execute();
-      theDCMHandler.setAllPositionData(theMotorJointData, dcmTime);
-      theDCMHandler.setAllHardnessDataSmart(theMotorJointData, dcmTime);
+      // take the last command data
+      const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
+      initialMotion = new BasicMotion(theMotorJointData, commandData->get(), theInertialSensorData);
     }//end if
+
+    setWarningLED();
   }//end if
 
 
   // after reconnect: wait until the init motion is finished
   if(initialMotion != NULL)
   {
+    LNT;
     if(state == CONNECTED && initialMotion->isFinish())
     {
       delete initialMotion;
       initialMotion = NULL;
+    }
+    else
+    {
+      initialMotion->execute();
+      theDCMHandler.setAllPositionData(theMotorJointData, dcmTime);
+      theDCMHandler.setAllHardnessDataSmart(theMotorJointData, dcmTime);
     }
   }//end if
   

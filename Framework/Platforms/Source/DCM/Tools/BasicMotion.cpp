@@ -13,7 +13,8 @@ using namespace naoth;
 
 BasicMotion::BasicMotion(
   naoth::MotorJointData& theMotorJointData,
-  const naoth::JointData& theStartJointData)
+  const naoth::JointData& theStartJointData,
+  const naoth::InertialSensorData& theInertialSensorData)
   :
   initStatus(Init),
   init_time(3000.0),
@@ -72,8 +73,15 @@ BasicMotion::BasicMotion(
   double maxAngleSpeed = Math::pi_4; // radiant per second
   init_time = getDistance(theStartJointData, theInitJoints)/maxAngleSpeed*1000.0;
 
+
+  // the robot is in danger
+  const double dangerAngle = Math::fromDegrees(30);
+  bool inDanger = abs(theInertialSensorData.data.x) > dangerAngle
+               || abs(theInertialSensorData.data.y) > dangerAngle;
+
+
   // don't do anything
-  if(init_time < 300)
+  if(init_time < 300 || inDanger)
   {
     initStatus = InitialPoseReady;
   }
@@ -127,7 +135,6 @@ void BasicMotion::moveToInitialPose()
     movedTime = 0;
   }
 }//end moveToInitialPose
-
 
 bool BasicMotion::setStiffness(double* stiffness, double delta)
 {
