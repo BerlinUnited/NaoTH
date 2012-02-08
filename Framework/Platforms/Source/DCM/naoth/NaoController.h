@@ -15,6 +15,7 @@
 #include "PlatformInterface/PlatformInterface.h"
 #include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Process.h"
+#include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include "Tools/Debug/Stopwatch.h"
 
 
@@ -319,7 +320,8 @@ public:
 protected:
   virtual MessageQueue* createMessageQueue(const std::string& name)
   {
-    return new MessageQueue4Process(name);
+    return new MessageQueue4Threads();
+    //return new MessageQueue4Process(name);
   }
 
 protected:

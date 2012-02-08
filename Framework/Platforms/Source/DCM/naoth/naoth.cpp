@@ -43,6 +43,10 @@ class TestThread : public RtThread
 };
 */
 
+// a semaphore for sychronization with the DCM
+sem_t* dcm_sem = SEM_FAILED;
+
+
 void* cognitionThreadCallback(void* ref)
 {
   NaoController* theController = static_cast<NaoController*> (ref);
@@ -50,7 +54,6 @@ void* cognitionThreadCallback(void* ref)
   while(true)
   {
     theController->callCognition();
-    //usleep(100000);
   }
 
   return NULL;
@@ -61,25 +64,20 @@ void* motionThreadCallback(void* ref)
 {
   NaoController* theController = static_cast<NaoController*> (ref);
 
-  // open semaphore
-  sem_t* sem = SEM_FAILED;
-  if((sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
-  {
-    perror("libnaoth: sem_open");
-  }
   StopwatchItem stopwatch;
-
-
   while(true)
   {
     theController->callMotion();
     
-    sem_wait(sem);
+    if(sem_wait(dcm_sem) == -1)
+    {
+      cerr << "lock errno: " << errno << endl;
+    }
+
     Stopwatch::getInstance().notifyStop(stopwatch);
     Stopwatch::getInstance().notifyStart(stopwatch);
     PLOT("_MotionCycle", stopwatch.lastValue);
-    //usleep(100000);
-  }
+  }//end while
 
   return NULL;
 }//end motionThreadCallback
@@ -98,15 +96,28 @@ int main(int argc, char *argv[])
   memset( &sa, 0, sizeof(sa) );
   sa.sa_handler = got_signal;
   sigfillset(&sa.sa_mask);
-  //sigaction(SIGINT,&sa,NULL);
   sigaction(SIGTERM,&sa,NULL);
   
+
+  // O_CREAT - create a new semaphore if not existing
+  // open semaphore
+  if((dcm_sem = sem_open("motion_trigger", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)
+  {
+    perror("NaoController: sem_open");
+    exit(-1);
+  }
+
 
   // create the controller
   NaoController theController;
   Cognition theCognition;
   Motion theMotion;
   theController.registerCallbacks(&theMotion, &theCognition);
+
+
+  // waiting for the first rise of the semaphore
+  // bevore starting the threads
+  sem_wait(dcm_sem);
 
 
   // create the motion thread

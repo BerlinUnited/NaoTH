@@ -219,14 +219,21 @@ namespace naoth
     {
       class OutputChanelAction: public AbstractAction
       {
+        MessageQueue* messageQueue;
         MessageWriter writer;
         const T& data;
       
       public:
         OutputChanelAction(MessageQueue* messageQueue, const T& data) 
-          : writer(messageQueue),
+          : messageQueue(messageQueue),
+            writer(messageQueue),
             data(data)
         {
+        }
+
+        ~OutputChanelAction()
+        {
+          delete messageQueue;
         }
       
         virtual void execute()
@@ -245,14 +252,21 @@ namespace naoth
     {
       class InputChanelAction: public AbstractAction
       {
+        MessageQueue* messageQueue;
         MessageReader reader;
         T& data;
 
       public:
         InputChanelAction(MessageQueue* messageQueue, T& data) 
-          : reader(messageQueue),
+          : messageQueue(messageQueue),
+            reader(messageQueue),
             data(data)
         {
+        }
+
+        ~InputChanelAction()
+        {
+          delete messageQueue;
         }
       
         virtual void execute()
