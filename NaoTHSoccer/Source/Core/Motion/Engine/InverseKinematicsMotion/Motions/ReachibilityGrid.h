@@ -79,7 +79,7 @@ public:
     if(inputFileStream.fail())
     {
       // could not open reachability grid
-      cerr<<"ReachibilityGrid can not be load from "<<fileName<<endl;
+      cerr<<"ReachibilityGrid cannot be load from " << fileName << ". No Configs found. Do you call ../bin/naoth from ~/naoqi?" << endl;
       ASSERT(false);
       return false;
     }//end if
