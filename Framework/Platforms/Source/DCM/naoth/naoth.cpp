@@ -90,8 +90,13 @@ int main(int argc, char *argv[])
 
     std::cout << "=========================================="  << std::endl;
     std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
+
+    #ifdef BZR_REVISION
     std::cout << "Revision number: " << BZR_REVISION << std::endl;
+    #endif
+    #ifdef BZR_BRANCHINFO
     std::cout << "Branch info: " << BZR_BRANCHINFO << std::endl;
+    #endif
     std::cout << "==========================================\n"  << std::endl;
 
   // init glib

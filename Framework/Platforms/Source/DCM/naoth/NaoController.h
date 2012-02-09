@@ -83,10 +83,13 @@ public:
     std::cout << "Opening Shared Memory: " << naoSensorDataPath << std::endl;
     naoSensorData.open(naoSensorDataPath);
 
-
     // read the values from file
     ifstream is(staticMemberPath.c_str());
-    ASSERT(is.good());
+    //ASSERT(is.good());
+    if(!is.good()) {
+        THROW("is.good() failed. No Configs found. Do you call ../bin/naoth from ~/naoqi?");
+    }
+
     is >> theBodyID >> theBodyNickName;
     cout << "bodyID: " << theBodyID << endl;
     cout << "bodyNickName: " << theBodyNickName << endl;
