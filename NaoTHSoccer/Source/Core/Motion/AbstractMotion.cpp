@@ -47,4 +47,4 @@ bool AbstractMotion::setStiffness(double* stiffness, double delta, JointData::Jo
   }//end for
 
   return readyJointNum == (end - begin);
-}
+}//end setStiffness

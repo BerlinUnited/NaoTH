@@ -265,6 +265,10 @@ void NaothModule::motionCallbackPost()
     sensorData->get(theInertialSensorData);
     sensor_data_available = true;
   }
+  else
+  {
+    sensor_data_available = false;
+  }
 
   LNT;
   // 
@@ -374,7 +378,7 @@ bool NaothModule::runningEmergencyMotion()
   if(state == DISCONNECTED)
   {
     LNT;
-    if(initialMotion == NULL && command_data_available)
+    if(initialMotion == NULL && command_data_available && sensor_data_available)
     {
       // take the last command data
       const Accessor<MotorJointData>* commandData = naoCommandMotorJointData.reading();
