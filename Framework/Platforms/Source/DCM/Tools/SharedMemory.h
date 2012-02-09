@@ -11,9 +11,9 @@
 #include <fcntl.h>           /* For O_* constants */
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstdio> /* For perror */
+#include <cstdio>            /* For perror */
 #include <semaphore.h>
-
+#include <cerrno>
 #include <string>
 
 #ifndef _SHARED_MEMORY_H_
@@ -110,9 +110,9 @@ public:
     }
 
   ~SharedMemory()
-    {
-      close();
-    }
+  {
+    close();
+  }
   
   // return if get the new data
   bool swapReading()
@@ -138,36 +138,44 @@ public:
       theMemory->swappingReady = true;
     }
     unlock();
-  }
+  }//end swapWriting
 
   T* writing() { return &(theMemory->data[theMemory->writing]); }
   
   const T* reading() const { return &(theMemory->data[theMemory->reading]); }
   
   void close()
+  {
+    if ( !ready ) return;
+      
+    lock();
+    theMemory->numRef--;
+    if ( theMemory->numRef == 0 )
     {
-      if ( !ready ) return;
-      
-      lock();
-      theMemory->numRef--;
-      if ( theMemory->numRef == 0 )
-      {
-        shm_unlink(theName.c_str());
-        sem_unlink(theName.c_str());
-      }
-      else
-      {
-        unlock();
-      }
-      
-      ready = false;
+      shm_unlink(theName.c_str());
+      sem_unlink(theName.c_str());
     }
+    else
+    {
+      unlock();
+    }
+      
+    ready = false;
+  }
     
 protected:
     bool trylock() { return sem_trywait(sem) == 0; }
-    void lock() { sem_wait(sem); }
+    
+    void lock() 
+    {
+      if(sem_wait(sem) == -1)
+      {
+        std::cerr << "lock errno: " << errno << std::endl;
+      }
+    }//end lock
+
     void unlock() { sem_post(sem); }
-  
+
 private:
   std::string theName;
   int shmId;

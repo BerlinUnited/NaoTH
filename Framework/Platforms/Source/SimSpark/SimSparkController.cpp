@@ -1067,6 +1067,7 @@ bool SimSparkController::updateSee(const string& preName, const sexp_t* sexp)
 void SimSparkController::get(FrameInfo& data)
 {
   data.setTime(theFrameInfo.getTime());
+  data.setFrameNumber(data.getFrameNumber() + 1);
 }
 
 void SimSparkController::get(SensorJointData& data)

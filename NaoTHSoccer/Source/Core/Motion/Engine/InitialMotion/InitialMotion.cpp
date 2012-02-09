@@ -167,7 +167,7 @@ void InitialMotion::freeJoint(bool freely)
   }
   else
   {
-    if ( setStiffness(maxStiffness, stiffDelta*10) )
+    if ( setStiffness(maxStiffness, stiffDelta*2) )
     {
       initStatus = Finish;
     }

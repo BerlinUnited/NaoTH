@@ -13,7 +13,7 @@ extern "C++"
 #include <ModuleFramework/Module.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Core/Representations/Infrastructure/ColorTable64.h>
+#include <Representations/Infrastructure/ColorTable64.h>
 
 }
 

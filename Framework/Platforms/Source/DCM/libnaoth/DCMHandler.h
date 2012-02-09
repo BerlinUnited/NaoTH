@@ -32,65 +32,72 @@ namespace naoth
  
 class DCMHandler
 {
-  private:
-    ALPtr<ALBroker> pBroker;
-    ALPtr<ALMemoryProxy> al_memory;
-    ALMemoryFastAccess al_memoryfast;
-    DCMProxy * al_dcmproxy;
+private:
+  ALPtr<ALBroker> pBroker;
+  ALPtr<ALMemoryProxy> al_memory;
+  ALMemoryFastAccess al_memoryfast;
+  DCMProxy * al_dcmproxy;
     
-    //Joints
-    string DCMPath_MotorJointHardness[JointData::numOfJoint];
-    string DCMPath_MotorJointPosition[JointData::numOfJoint];
-    string DCMPath_SensorJointPosition[JointData::numOfJoint];
-    string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
-    string DCMPath_SensorJointTemperature[JointData::numOfJoint];
+  //Joints
+  string DCMPath_MotorJointHardness[JointData::numOfJoint];
+  string DCMPath_MotorJointPosition[JointData::numOfJoint];
+  string DCMPath_SensorJointPosition[JointData::numOfJoint];
+  string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
+  string DCMPath_SensorJointTemperature[JointData::numOfJoint];
     
 
-    //LED
-    string DCMPath_MonoLED[LEDData::numOfMonoLED];
-    string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
+  //LED
+  string DCMPath_MonoLED[LEDData::numOfMonoLED];
+  string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
 
-    //FSR
-    string DCMPath_FSR[FSRData::numOfFSR];
+  //FSR
+  string DCMPath_FSR[FSRData::numOfFSR];
 
-    //Accelerometer
-    string DCMPath_Accelerometer[AccelerometerData::numOfAccelerometer];
+  //Accelerometer
+  string DCMPath_Accelerometer[3];
 
-    //Gyrometer
-    string DCMPath_Gyrometer[GyrometerData::numOfGyrometer+1];
+  //Gyrometer
+  string DCMPath_Gyrometer[2+1];
 
-    //Inertial Sensors
-    string DCMPath_InertialSensor[2];
+  //Inertial Sensors
+  string DCMPath_InertialSensor[2];
 
-    //Buttons
-    string DCMPath_Button[ButtonData::numOfButtons];
+  //Buttons
+  string DCMPath_Button[ButtonData::numOfButtons];
 
-    //IR
-    string DCMPath_IRSend[IRSendData::numOfIRSend];
-    string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
+  //IR
+  string DCMPath_IRSend[IRSendData::numOfIRSend];
+  string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
     
-    //UltraSound
-    string DCMPath_UltraSoundReceive;
-    string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfIRSend];
-    string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
-    string DCMPath_UltraSoundSend;
+  //UltraSound
+  string DCMPath_UltraSoundReceive;
+  string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfIRSend];
+  string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
+  string DCMPath_UltraSoundSend;
 
-    //Body-ID
-    string DCMPath_BodyId;
-    string DCMPath_BodyNickName;
+  //Body-ID
+  string DCMPath_BodyId;
+  string DCMPath_BodyNickName;
 
-    //Battery
-    string DCMPath_BatteryCharge;
+  //Battery
+  string DCMPath_BatteryCharge;
 
-     //DCMCommand-Structures
-    ALValue allMotorPositionCommands;
-    ALValue allMotorHardnessCommands;
-    ALValue ledCommands;
-    ALValue irCommands;
-    ALValue usSendCommands;
+  //State of the devices
+  string DCMPath_DeviceState;
 
-    string allSensorsList[numOfSensors];
+  // 
+  string allSensorsList[numOfSensors];
 
+
+  //DCMCommand-Structures
+  ALValue allMotorPositionCommands;
+  ALValue allMotorHardnessCommands;
+  ALValue ledCommands;
+  ALValue singleLedCommand;
+  ALValue irCommands;
+  ALValue usSendCommands;
+
+    
   ALValue getFromALMemory(const string& path);
   
   void sendToDCM(const string path,const double value,const int timestamp);
@@ -99,6 +106,7 @@ class DCMHandler
   void initSensorJoint();
   void initMotorJoint();
   void initLED();
+  void initSingleLED();
   void initAccelerometer();
   void initGyrometer();
   void initInertialSensor();
@@ -107,35 +115,51 @@ class DCMHandler
   void initIRReceive();
   void initUltraSoundReceive();
   void initUltraSoundSend();
+  void initDeviceState();
 
   void initAllSensorData();
 
 public:
-    float* sensorPtrs[numOfSensors];
-    int time_delay;
+  // 
+  float* sensorPtrs[numOfSensors];
 
-    DCMHandler();
-    ~DCMHandler();
-    void init(ALPtr<ALBroker> pB);
+  // remember last commands (needed by "smart" methods) 
+  MotorJointData lastMotorJointData;
+  unsigned int last_us_mode;
+  LEDData lastLEDData;
 
-    string getBodyID();
-    string getBodyNickName();
 
-    // read sensor data from AL memory
-    void readSensorData(unsigned int& timeStamp, float* dest);
+  DCMHandler();
+  ~DCMHandler();
+  void init(ALPtr<ALBroker> pB);
+
+  string getBodyID();
+  string getBodyNickName();
+  int getTime(unsigned int time_delay);
+
+  // read sensor data from AL memory
+  void readSensorData(float* dest);
     
-    void set(const LEDData& data);
-    void set(const IRSendData& data);
-    void set(const UltraSoundSendData& data);
+  //void set(const LEDData& data);
+  //void set(const IRSendData& data);
+  //void set(const UltraSoundSendData& data);
 
-    void setSingleMotorData(const JointData::JointID jointID,const MotorJointData *theMotorJointData);
-    void setAllMotorData(const MotorJointData& mjd);
+  void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
     
-    void setLED(const LEDData& data);
+  void setAllPositionData(const MotorJointData& mjd, int dcmTime);
+  void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
+  void setAllHardnessData(double value, int dcmTime);
 
-    void setIRSend(const IRSendData& theIRSendData);
-    void setUltraSoundSend(const UltraSoundSendData& data);
-};
+  void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
+  void setLED(const LEDData& data, int dcmTime);
+  void setSingleLED(const LEDData& data, int dcmTime);
+  void setIRSend(const IRSendData& theIRSendData, int dcmTime);
+
+  // smart set_methods
+  bool setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime);
+  bool setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime);
+  bool setLEDSmart(const LEDData& data, int dcmTime);
+};//end class DCMHandler
 
 } // end namespace naoth
 

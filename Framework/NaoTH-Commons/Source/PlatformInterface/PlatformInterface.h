@@ -9,7 +9,7 @@
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
-#include "DebugCommunication/DebugServer.h"
+#include "Tools/DataStructures/Serializer.h"
 
 #include <map>
 #include <list>
@@ -192,6 +192,7 @@ namespace naoth
         cerr << /*getName() <<*/ " doesn't provide Motion output: " << typeid(T).name() << endl;
       }
     }//end registerMotionOutput
+
   };//end class PlatformDataInterface
 
   class PlatformInterfaceBase: public PlatformBase, public PlatformDataInterface
@@ -201,6 +202,91 @@ namespace naoth
     : PlatformBase(name, basicTimeStep)
     {
     }
+
+  public:
+    template<class T, class ST>
+    void registerCognitionInputChanel(T& data) { cognitionInput.push_back(createInputChanelAction<T,ST>(data)); }
+    template<class T, class ST>
+    void registerMotionInputChanel(T& data) { motionInput.push_back(createInputChanelAction<T,ST>(data)); }
+    template<class T, class ST>
+    void registerCognitionOutputChanel(const T& data) { cognitionOutput.push_back(createOutputChanelAction<T,ST>(data)); }
+    template<class T, class ST>
+    void registerMotionOutputChanel(const T& data) { motionOutput.push_back(createOutputChanelAction<T,ST>(data)); }
+
+  protected:
+    template<class T, class ST>
+    AbstractAction* createOutputChanelAction(const T& data)
+    {
+      class OutputChanelAction: public AbstractAction
+      {
+        MessageQueue* messageQueue;
+        MessageWriter writer;
+        const T& data;
+      
+      public:
+        OutputChanelAction(MessageQueue* messageQueue, const T& data) 
+          : messageQueue(messageQueue),
+            writer(messageQueue),
+            data(data)
+        {
+        }
+
+        ~OutputChanelAction()
+        {
+          delete messageQueue;
+        }
+      
+        virtual void execute()
+        {
+          stringstream hmmsg;
+          ST::serialize(data, hmmsg);
+          writer.write(hmmsg.str());
+        }//end execute
+      };
+
+      return new OutputChanelAction(getMessageQueue(typeid(T).name()), data);
+    }//end createOutputChanelAction
+
+    template<class T, class ST>
+    AbstractAction* createInputChanelAction(T& data)
+    {
+      class InputChanelAction: public AbstractAction
+      {
+        MessageQueue* messageQueue;
+        MessageReader reader;
+        T& data;
+
+      public:
+        InputChanelAction(MessageQueue* messageQueue, T& data) 
+          : messageQueue(messageQueue),
+            reader(messageQueue),
+            data(data)
+        {
+        }
+
+        ~InputChanelAction()
+        {
+          delete messageQueue;
+        }
+      
+        virtual void execute()
+        {
+          if ( !reader.empty() )
+          {
+            string msg = reader.read();
+            // drop old message
+            while ( !reader.empty() )
+            {
+              msg = reader.read();
+            }
+            stringstream ss(msg);
+            ST::deserialize(ss, data);
+          }//end if
+        }//end execute
+      };
+
+      return new InputChanelAction(getMessageQueue(typeid(T).name()), data);
+    }//end createInputChanelAction
   };
 
 
@@ -221,23 +307,6 @@ namespace naoth
       : PlatformInterfaceBase(name, basicTimeStep)
     {
       cout<<"NaoTH "<<getName()<<" starting..."<<endl;
-
-      registerInput<DebugMessageIn>(*this);
-
-      registerOutput<const DebugMessageOut>(*this);
-    }
-
-    DebugServer theDebugServer;
-
-    void get(DebugMessageIn& data)
-    {
-      theDebugServer.getDebugMessageIn(data);
-    }
-
-    void set(const DebugMessageOut& data)
-    {
-      if(data.answers.size() > 0)
-        theDebugServer.setDebugMessageOut(data);
     }
 
   //////////////////// GET/SET Actions /////////////////////

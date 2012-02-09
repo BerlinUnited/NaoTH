@@ -21,7 +21,7 @@
 #include "Engine/MotionFactory.h"
 #include "Tools/Debug/Logger.h"
 
-#ifdef NAO
+#ifdef NAO_OLD
 #include <Representations/Infrastructure/DebugMessage.h>
 #include <Cognition/Modules/Infrastructure/Debug/StopwatchSender.h>
 #endif
@@ -48,8 +48,6 @@ protected:
   
   void changeMotion(AbstractMotion* m);
 
-  void checkWarningState();
-  
 private:
   MotionBlackBoard& theBlackBoard;
 
@@ -82,11 +80,13 @@ private:
   } state;
 
   Logger motionLogger;
-#ifdef NAO
+#ifdef NAO_OLD
   naoth::DebugMessageIn theDebugMessageIn;
   naoth::DebugMessageOut theDebugMessageOut;
   StopwatchSender theStopwatchSender;
 #endif
+
+  unsigned int oldMotionRequestTime;
 };
 
 #endif  /* MOTION_H */

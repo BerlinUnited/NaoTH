@@ -25,23 +25,21 @@ namespace naoth
   const unsigned int theSensorJointDataIndex = 0;
   const unsigned int theFSRDataIndex = theSensorJointDataIndex + 4 * (JointData::numOfJoint - 1);
   const unsigned int theAccelerometerDataIndex = theFSRDataIndex + FSRData::numOfFSR;
-  const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + AccelerometerData::numOfAccelerometer;
-  const unsigned int theInertialSensorDataIndex = theGyrometerDataIndex + GyrometerData::numOfGyrometer + 1;
-  const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2;
+  const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + 3; // 3 Axes
+  const unsigned int theInertialSensorDataIndex = theGyrometerDataIndex + 2 + 1; // 2 axes + ref value
+  const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // 2 axes
   const unsigned int theButtonDataIndex = theIRReceiveDataIndex + IRReceiveData::numOfIRReceive;
   const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex + ButtonData::numOfButtons;
   const unsigned int thBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundData::numOfIRSend;
   const unsigned int numOfSensors = thBatteryDataIdex + 1;
   
   // data written by libnaoth
-  class LibNaothData
+  class NaoSensorData
   {
   public:
-    unsigned int timeStamp;
+    unsigned long long timeStamp;
     float sensorsValue[numOfSensors];
-    MotorJointData theMotorJointData;
     
-    void get(MotorJointData& data) const;
     void get(SensorJointData& data) const;
     void get(FSRData& data) const;
     void get(AccelerometerData& data) const;
@@ -53,22 +51,39 @@ namespace naoth
     void get(BatteryData& data) const;
   };
   
+
+  template<class T>
+  class Accessor
+  {
+  public:
+    inline void set(const T& other) { data = other; }
+    inline const T& get() const { return data; }
+  private:
+    T data;
+  };
+
+  /*
   // data written by naoth
-  class NaothData
+  class NaoCommandData
   {
   public:
     void set(const LEDData& data) { theLEDData = data; }
     void set(const IRSendData& data) { theIRSendData = data; }
     void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; }
+    void set(const MotorJointData& data){ theMotorJointData = data; }
     
     const LEDData& lEDData() const { return theLEDData; }
     const IRSendData& iRSendData() const { return theIRSendData; }
     const UltraSoundSendData& ultraSoundSendData() const { return theUltraSoundSendData; }
+    const MotorJointData& motorJointData() const { return theMotorJointData; }
+
   private:
     LEDData theLEDData;
     IRSendData theIRSendData;
     UltraSoundSendData theUltraSoundSendData;
+    MotorJointData theMotorJointData;
   };
+  */
 }
 
 #endif // _IPC_DATA_H_

@@ -10,9 +10,9 @@
 #ifndef __LineDetector_H_
 #define __LineDetector_H_
 
-#include <vector>
+#include <ModuleFramework/Module.h>
 
-#include "Cognition/Cognition.h"
+#include <vector>
 
 #include "Tools/Math/Line.h"
 #include "Tools/ColorClasses.h"

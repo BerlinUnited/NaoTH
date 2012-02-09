@@ -11,8 +11,8 @@
 
 void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 {
-  engine.registerDecimalInputSymbol("sensor.gyro.x", &gyrometerData.data[GyrometerData::X]);
-  engine.registerDecimalInputSymbol("sensor.gyro.y", &gyrometerData.data[GyrometerData::Y]);
+  engine.registerDecimalInputSymbol("sensor.gyro.x", &gyrometerData.data.x);
+  engine.registerDecimalInputSymbol("sensor.gyro.y", &gyrometerData.data.y);
 
   engine.registerDecimalInputSymbol("sensor.inertial.x", &getInertialSensorX);
   engine.registerDecimalInputSymbol("sensor.inertial.y", &getInertialSensorY);

@@ -13,7 +13,6 @@
 // debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include "Cognition/Cognition.h"
 
 #include "Tools/CameraGeometry.h"
 

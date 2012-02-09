@@ -37,31 +37,38 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   // init player number, team number and etc.
   getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
 
-  REG_INPUT(AccelerometerData);
-  REG_INPUT(BatteryData);
-  REG_INPUT(ButtonData);
-  REG_INPUT(GyrometerData);
-  REG_INPUT(IRReceiveData);
   REG_INPUT(Image);
+  REG_INPUT(CurrentCameraSettings);
+  REG_INPUT(VirtualVision);
+  REG_INPUT(FrameInfo);
+
+  REG_INPUT(AccelerometerData);
+  REG_INPUT(GyrometerData);
   REG_INPUT(InertialSensorData);
   REG_INPUT(FSRData);
   REG_INPUT(SensorJointData);
   REG_INPUT(UltraSoundReceiveData);
+  REG_INPUT(BatteryData);
+  REG_INPUT(ButtonData);
+  REG_INPUT(IRReceiveData);
+  
   REG_INPUT(TeamMessageDataIn);
   REG_INPUT(GameData);
-  REG_INPUT(FrameInfo);
-  REG_INPUT(CurrentCameraSettings);
-  REG_INPUT(VirtualVision);
   REG_INPUT(DebugMessageIn);
   
-  theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
-  theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
-  theCalibrationDataReader = new MessageReader(platformInterface.getMessageQueue("CalibrationData"));
+  platformInterface.registerCognitionInputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
+  platformInterface.registerCognitionInputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
+  platformInterface.registerCognitionInputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData());
+
+  //theMotionStatusReader = new MessageReader(platformInterface.getMessageQueue("MotionStatus"));
+  //theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
+  //theCalibrationDataReader = new MessageReader(platformInterface.getMessageQueue("CalibrationData"));
 }//end init
 
 
 void Sensor::execute()
 {
+  /*
   // data from motion
   GT_TRACE("!theMotionStatusReader->empty()");
   if ( !theMotionStatusReader->empty() )
@@ -101,7 +108,7 @@ void Sensor::execute()
     stringstream ss(msg);
     Serializer<CalibrationData>::deserialize(ss, getCalibrationData());
   }
-
+  */
 
   // add calibration to inertial sensor
   getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;

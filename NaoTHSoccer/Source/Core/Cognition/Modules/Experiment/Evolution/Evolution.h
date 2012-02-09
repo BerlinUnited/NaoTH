@@ -5,9 +5,10 @@
  */
 
 #ifndef _EVOLUTION_H
-#define  _EVOLUTION_H
+#define _EVOLUTION_H
 
-#include "Cognition/Cognition.h"
+#include <ModuleFramework/Module.h>
+
 #include "GeneticAlgorithms.h"
 #include "Representations/Infrastructure/VirtualVision.h"
 #include "Representations/Modeling/RobotPose.h"

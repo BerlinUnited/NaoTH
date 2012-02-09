@@ -18,7 +18,7 @@ time(0)
   registerInput<FrameInfo>(*this);
   registerInput<Image>(*this);
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
-  theDebugServer.start(5401, true);
+  //theDebugServer.start(5401, true);
 }
 
 void OpenCVWebCamController::init()

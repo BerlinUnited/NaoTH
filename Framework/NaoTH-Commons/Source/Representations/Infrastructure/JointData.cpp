@@ -190,19 +190,22 @@ bool JointData::isLegStiffnessOn() const
   return true;
 }
 
-void JointData::checkStiffness() const
+int JointData::checkStiffness() const
 {
   for(int i=0; i<JointData::numOfJoint; i++)
   {
     double v = stiffness[i];
     if ( v > 1 || v < -1 )
     {
-      THROW("Get ILLEGAL Stiffness: "<<getJointName(JointData::JointID(i))<<" = "<<v);
+      return i;
+      //THROW("Get ILLEGAL Stiffness: "<<getJointName(JointData::JointID(i))<<" = "<<v);
     }
   }
+  return -1;
 }
 
 SensorJointData::SensorJointData()
+  : timestamp(0)
 {
   for (int i = 0; i < numOfJoint; i++)
   {
@@ -214,6 +217,7 @@ SensorJointData::SensorJointData()
 
 void SensorJointData::print(ostream& stream) const
 {
+  stream << "Timestamp: " << timestamp << endl;
   stream << "Joint [pos(deg), stiffness, temperature,current]" << endl;
   stream << "------------------------" << endl;
   for (int i = 0; i < numOfJoint; i++) 

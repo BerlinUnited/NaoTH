@@ -82,7 +82,7 @@ class JointData
 
     bool isLegStiffnessOn() const;
     
-    void checkStiffness() const;
+    int checkStiffness() const;
 
   protected:
     double mirrorData(JointID joint) const;
@@ -96,6 +96,7 @@ class JointData
     ~SensorJointData();
     double temperature[numOfJoint];
     double electricCurrent[numOfJoint];
+    unsigned int timestamp;
 
     virtual void print(ostream& stream) const;
 
