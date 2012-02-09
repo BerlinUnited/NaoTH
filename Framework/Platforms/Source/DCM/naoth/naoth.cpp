@@ -23,6 +23,7 @@ void got_signal(int)
 {
   // do something
   std::cout << "catched signal" << std::endl;
+
   Trace::getInstance().dump();
   Stopwatch::getInstance().dump("cognition");
 
@@ -86,6 +87,13 @@ void* motionThreadCallback(void* ref)
 
 int main(int argc, char *argv[])
 {
+
+    std::cout << "=========================================="  << std::endl;
+    std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
+    std::cout << "Revision number: " << BZR_REVISION << std::endl;
+    std::cout << "Branch info: " << BZR_BRANCHINFO << std::endl;
+    std::cout << "==========================================\n"  << std::endl;
+
   // init glib
   g_type_init();
   if (!g_thread_supported())

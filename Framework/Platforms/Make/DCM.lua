@@ -61,6 +61,14 @@ project "naoth"
   
   print("Generating files for naoth")
 
+  f = io.popen ("bzr revno", "r");
+  defines{ "BZR_REVISION=" .. f:read("*l") } 
+  f:close ();
+
+  -- f = io.popen ("bzr info", "r");
+  -- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
+  -- f:close ();  
+
   libdirs { alDir .. "/lib/"}
 
   includedirs {
