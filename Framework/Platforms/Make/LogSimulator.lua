@@ -31,6 +31,9 @@ project "LogSimulator"
 	
   targetname "logsimulator"
   
+  configuration{'vs*'}
+	debugdir "$(SolutionDir).."
+  
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 

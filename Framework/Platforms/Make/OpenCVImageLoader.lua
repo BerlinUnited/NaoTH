@@ -20,20 +20,24 @@ project "OpenCVImageLoader"
   
   files{"../Source/OpenCVImageLoader/**.cpp","../Source/OpenCVImageLoader/**.h"}
   
-  links {CORE, "NaoTH-Commons",
-	  "glib-2.0",
-	  "gio-2.0",
-	  "gobject-2.0",
-	  "gmodule-2.0",
-	  "gthread-2.0",
-	  "protobuf",
-          "opencv_core",
-          "opencv_ml",
-		  "opencv_imgproc",
-		  "opencv_highgui"
+  links {CORE, 
+	"NaoTH-Commons",
+	"glib-2.0",
+	"gio-2.0",
+	"gobject-2.0",
+	"gmodule-2.0",
+	"gthread-2.0",
+	"protobuf",
+	"opencv_core",
+	"opencv_ml",
+	"opencv_imgproc",
+	"opencv_highgui"
 	}
 	
   targetname "OpenCVImageLoader"
+  
+  configuration{'vs*'}
+	debugdir "$(SolutionDir).."
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
