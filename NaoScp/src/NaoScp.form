@@ -41,7 +41,7 @@
                       <Component id="copyLib" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="copyExe" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="19" max="32767" attributes="0"/>
+                      <EmptySpace pref="43" max="32767" attributes="0"/>
                       <Component id="cbRestartNaoth" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="copyLogs" min="-2" max="-2" attributes="0"/>
@@ -382,12 +382,12 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="naoByte4" min="-2" pref="35" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="copyButton" pref="144" max="32767" attributes="1"/>
+                                  <Component id="copyButton" pref="152" max="32767" attributes="1"/>
                               </Group>
                               <Group type="102" attributes="0">
                                   <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jBackupBox" pref="551" max="32767" attributes="2"/>
+                                  <Component id="jBackupBox" pref="553" max="32767" attributes="2"/>
                               </Group>
                           </Group>
                       </Group>
@@ -522,7 +522,7 @@
         <Component class="javax.swing.JLabel" name="jDirPathLabel">
           <Properties>
             <Property name="horizontalAlignment" type="int" value="2"/>
-            <Property name="text" type="java.lang.String" value="SET DIRECTORY :)"/>
+            <Property name="text" type="java.lang.String" value="SET DIRECTORY ~ /path/to/NaoTH-2011-Repository/NaoTHSoccer"/>
             <Property name="toolTipText" type="java.lang.String" value="NaoController project directory (e.g., &quot;D:\NaoTH-2009\Projects\NaoController&quot;)"/>
           </Properties>
         </Component>

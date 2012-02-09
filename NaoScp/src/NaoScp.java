@@ -1161,7 +1161,7 @@ public class NaoScp extends javax.swing.JFrame
     });
 
     jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-    jDirPathLabel.setText("SET DIRECTORY :)");
+    jDirPathLabel.setText("SET DIRECTORY ~ /path/to/NaoTH-2011-Repository/NaoTHSoccer");
     jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\NaoTH-2009\\Projects\\NaoController\")");
 
     jLabel13.setText("LAN:");
@@ -1247,11 +1247,11 @@ public class NaoScp extends javax.swing.JFrame
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(18, 18, 18)
-                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
+                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
               .add(jActionsPanelLayout.createSequentialGroup()
                 .add(jLabel15)
                 .add(18, 18, 18)
-                .add(jBackupBox, 0, 551, Short.MAX_VALUE)))))
+                .add(jBackupBox, 0, 553, Short.MAX_VALUE)))))
         .addContainerGap())
     );
     jActionsPanelLayout.setVerticalGroup(
@@ -1379,7 +1379,7 @@ public class NaoScp extends javax.swing.JFrame
             .add(copyLib)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(copyExe)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 19, Short.MAX_VALUE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 43, Short.MAX_VALUE)
             .add(cbRestartNaoth)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
             .add(copyLogs)
