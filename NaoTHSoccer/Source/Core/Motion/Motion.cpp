@@ -194,7 +194,11 @@ void Motion::call()
 void Motion::processSensorData()
 {
   // check all joint stiffness
-  theBlackBoard.theSensorJointData.checkStiffness();
+  int i = theBlackBoard.theSensorJointData.checkStiffness();
+  if(i != -1)
+  {
+    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<theBlackBoard.theSensorJointData.stiffness[i]);
+  }
 
   theBlackBoard.theInertialPercept = theInertialFilter.filter();
   
@@ -231,7 +235,11 @@ void Motion::postProcess()
   double basicStepInS = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
 
 #ifdef DEBUG
-  mjd.checkStiffness();
+  int i = mjd.checkStiffness();
+  if(i != -1)
+  {
+    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<mjd.stiffness[i]);
+  }
 #endif
 
   mjd.clamp();
