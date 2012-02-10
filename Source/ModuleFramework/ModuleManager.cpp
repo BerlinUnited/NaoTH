@@ -123,7 +123,8 @@ void ModuleManager::calculateExecutionList()
     itExec != moduleExecutionList.end(); itExec++
   )
   {
-    cout << *itExec << endl;
+    if (moduleExecutionMap[*itExec]->isEnabled())
+      cout << *itExec << endl;
   }
   cout << "-------------------------------" << endl;
   cout << endl;
