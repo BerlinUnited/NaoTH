@@ -36,9 +36,6 @@ project "OpenCVWebCam"
 	
   targetname "OpenCVWebCam"
   
-  configuration{'vs*'}
-	debugdir "$(SolutionDir).."
-  
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 

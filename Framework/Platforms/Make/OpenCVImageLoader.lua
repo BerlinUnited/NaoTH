@@ -36,8 +36,6 @@ project "OpenCVImageLoader"
 	
   targetname "OpenCVImageLoader"
   
-  configuration{'vs*'}
-	debugdir "$(SolutionDir).."
   
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
