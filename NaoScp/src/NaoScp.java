@@ -60,7 +60,7 @@ public class NaoScp extends javax.swing.JFrame
       String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath());
       programPath = programPath.replace("file:", "");
       programPath = programPath.replace("/NaoScp/dist/NaoScp.jar!/NaoScp.class", "");
-      programPath = programPath.replace("/NaoScp/build/classes/NaoScp.class", "") + "/NaoController";
+      programPath = programPath.replace("/NaoScp/build/classes/NaoScp.class", "") + "/NaoTHSoccer";
       File ProgramDir = new File(programPath);
       if(ProgramDir.exists())
       {
