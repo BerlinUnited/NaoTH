@@ -3,6 +3,7 @@
 
 
 #include "PlatformInterface/PlatformInterface.h"
+//#include "DebugCommunication/DebugServer.h"
 
 // Representations
 #include "Representations/Infrastructure/JointData.h"
@@ -87,6 +88,21 @@ private:
 
   unsigned int frameLossCounter;
 
+private:
+  /*
+  DebugServer theDebugServer;
+public:
+  void get(DebugMessageIn& data)
+  {
+    theDebugServer.getDebugMessageIn(data);
+  }
+
+  void set(const DebugMessageOut& data)
+  {
+    if(data.answers.size() > 0)
+      theDebugServer.setDebugMessageOut(data);
+  }
+  */
 };
 
 #endif //#define _OpenCVWebCamController_H

@@ -31,7 +31,7 @@
 
 //platform:
 #include "PlatformInterface/PlatformInterface.h"
-
+#include "DebugCommunication/DebugServer.h"
 
 //opencv:
 #include <opencv2/core/core.hpp>
@@ -93,7 +93,19 @@ private:
   bool loadImage(Mat& mat);
   void makeStep();
 
+private:
+  DebugServer theDebugServer;
+public:
+  void get(DebugMessageIn& data)
+  {
+    theDebugServer.getDebugMessageIn(data);
+  }
 
+  void set(const DebugMessageOut& data)
+  {
+    if(data.answers.size() > 0)
+      theDebugServer.setDebugMessageOut(data);
+  }
 };
 
 

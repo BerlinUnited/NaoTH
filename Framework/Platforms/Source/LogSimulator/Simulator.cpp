@@ -28,8 +28,8 @@ Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode
 compatibleMode(compatibleMode),
   backendMode(backendMode)
 {
+  /*
   registerInput<AccelerometerData>(*this);
-  registerInput<FrameInfo>(*this);
   registerInput<SensorJointData>(*this);
   registerInput<Image>(*this);
   registerInput<FSRData>(*this);
@@ -41,7 +41,11 @@ compatibleMode(compatibleMode),
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
+  */
 
+  registerInput<FrameInfo>(*this);
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<DebugMessageOut>(*this);
   
   logFile.open(filePath, ios::in | ios::binary);
 

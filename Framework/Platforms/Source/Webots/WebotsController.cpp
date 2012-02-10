@@ -47,6 +47,10 @@ WebotsController::WebotsController()
   registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundData>(*this);
   registerOutput<const MotorJointData>(*this);
+
+  // debug
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<DebugMessageOut>(*this);
 }
 
 WebotsController::~WebotsController()
@@ -208,9 +212,9 @@ void WebotsController::get(SensorJointData& data)
 void WebotsController::get(AccelerometerData& data)
 {
   const double *webots_accelerometer = wb_accelerometer_get_values(accelerometer);
-  data.data[AccelerometerData::X] = webots_accelerometer[0];
-  data.data[AccelerometerData::Y] = webots_accelerometer[1];
-  data.data[AccelerometerData::Z] = webots_accelerometer[2];
+  data.data.x = webots_accelerometer[0];
+  data.data.y = webots_accelerometer[1];
+  data.data.z = webots_accelerometer[2];
 }
 
 /**
@@ -361,8 +365,8 @@ void WebotsController::copyImage(Image& image, const unsigned char *woriginal_im
 void WebotsController::get(GyrometerData& data)
 {
   const double *webots_gyro = wb_gyro_get_values(gyrometer);
-  data.data[GyrometerData::X] = webots_gyro[0];
-  data.data[GyrometerData::Y] = webots_gyro[1];
+  data.data.x = webots_gyro[0];
+  data.data.y = webots_gyro[1];
 }
 
 void WebotsController::get(FSRData& data)

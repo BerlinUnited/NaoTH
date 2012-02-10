@@ -30,6 +30,7 @@ void gps_euler(const float *matrix, float *euler);
 ///////////////
 
 #include "PlatformInterface/PlatformInterface.h"
+#include "DebugCommunication/DebugServer.h"
 
 // Representations
 #include "Representations/Infrastructure/JointData.h"
@@ -144,6 +145,20 @@ namespace naoth
     void copyImage(Image& image, const unsigned char *original_image);
     
     double currentStiffness[JointData::numOfJoint];
+
+  private:
+    DebugServer theDebugServer;
+  public:
+    void get(DebugMessageIn& data)
+    {
+      theDebugServer.getDebugMessageIn(data);
+    }
+
+    void set(const DebugMessageOut& data)
+    {
+      if(data.answers.size() > 0)
+        theDebugServer.setDebugMessageOut(data);
+    }
 
   //  REPRESENTATION_PROVIDER(GPSDataProvider, Cognition, GPSData);
   };

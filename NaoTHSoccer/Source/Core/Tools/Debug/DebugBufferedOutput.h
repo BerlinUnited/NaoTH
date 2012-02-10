@@ -19,6 +19,8 @@
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include <Messages/Messages.pb.h>
 
+#include "Tools/Debug/DebugRequest.h"
+
 using namespace std;
 
 class DebugBufferedOutput : public naoth::Singleton<DebugBufferedOutput>, public DebugCommandExecutor
@@ -36,7 +38,7 @@ public:
   
   void update();
 
-  void addPlot(std::string name, double value)
+  void addPlot(std::string name, double x, double y)
   {
     if( g_mutex_trylock(plotsMutex) )
     {
@@ -44,8 +46,8 @@ public:
 
       item->set_type(naothmessages::PlotItem_PlotType_Default);
       item->set_name(name);
-      item->set_x(naoth::NaoTime::getNaoTimeInMilliSeconds());
-      item->set_y(value);
+      item->set_x(x);
+      item->set_y(y);
       g_mutex_unlock(plotsMutex);
     }
   }//end addPlot
@@ -95,7 +97,8 @@ private:
 #ifdef DEBUG
 /** Debug output stream, usage like "DOUT("ball_pos:" << x << ", " << y */
 #define DOUT(arg) DebugBufferedOutput::getInstance().doutOut << arg
-#define PLOT(id,value) ASSERT(!Math::isInf(value)&&!Math::isNan(value)); DebugBufferedOutput::getInstance().addPlot(id,value)
+#define PLOT_REGISTER(name, description) DEBUG_REQUEST_REGISTER(name, description, false)
+#define PLOT(id,value) ASSERT(!Math::isInf(value)&&!Math::isNan(value)); DEBUG_REQUEST_SLOPPY("Plot:"#id, DebugBufferedOutput::getInstance().addPlot(id,naoth::NaoTime::getNaoTimeInMilliSeconds(),value); )
 #define PLOT2D(id,x,y) ASSERT(!Math::isInf(x)&&!Math::isNan(x)); ASSERT(!Math::isInf(y)&&!Math::isNan(y)); DebugBufferedOutput::getInstance().addPlot2D(id, x, y)
 /** set the origin of the 2D plot. It used for visualization of traces on the field etc. */
 #define ORIGIN2D(id,x,y,rotation) DebugBufferedOutput::getInstance().addPlotOrigin2D(id, x, y, rotation)

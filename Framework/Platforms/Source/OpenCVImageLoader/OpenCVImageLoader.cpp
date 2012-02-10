@@ -50,6 +50,10 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
 
   registerInput<FrameInfo>(*this);
   registerInput<Image>(*this);
+
+  // debug
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<DebugMessageOut>(*this);
 }
 
 void OpenCVImageLoader::main()

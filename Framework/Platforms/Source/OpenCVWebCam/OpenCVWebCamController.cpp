@@ -17,6 +17,12 @@ time(0)
 {
   registerInput<FrameInfo>(*this);
   registerInput<Image>(*this);
+
+  // debug
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<DebugMessageOut>(*this);
+
+
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
   //theDebugServer.start(5401, true);
 }

@@ -55,7 +55,7 @@ void DebugRequest::executeDebugCommand(
 }//end executeDebugCommand
 
 
-void DebugRequest::registerRequest(const std::string& name, const std::string& description, bool defaultValue = false)
+const bool& DebugRequest::registerRequest(const std::string& name, const std::string& description, bool defaultValue = false)
 {
   // only add if not known already
   if(requestMap.find(name) == requestMap.end())
@@ -72,6 +72,8 @@ void DebugRequest::registerRequest(const std::string& name, const std::string& d
       descriptionMap[name] = description;
     }
   }//end if
+
+  return requestMap.find(name)->second;
 }//end registerRequest
 
 

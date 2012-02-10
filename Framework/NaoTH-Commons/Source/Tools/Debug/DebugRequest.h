@@ -24,7 +24,7 @@ protected:
 public:
 
   /** Register debug request. Will do nothing if already known. */
-  void registerRequest(const std::string& name, const std::string& description, bool defaultValue);
+  const bool& registerRequest(const std::string& name, const std::string& description, bool defaultValue);
   
   //@Depricated and shouldn't be used
   //since access using this method is very slow
@@ -61,6 +61,8 @@ private:
   #define DEBUG_REQUEST_ON_DEACTIVE(name, code) { static const bool& _debug_request_is_active_ = DebugRequest::getInstance().getValueReference(name); static bool _old_debug_request_is_active_ = false; if(_debug_request_is_active_){_old_debug_request_is_active_=true;}else if (_old_debug_request_is_active_) {_old_debug_request_is_active_=false; code}} ((void)0)
   /** Will be executed like a debug request in DEBUG or always in  RELEASE*/
   #define DEBUG_REQUEST_OR_RELEASE(name, code) DEBUG_REQUEST(name, code)
+  /** needed by plot, don't use! */
+  #define DEBUG_REQUEST_SLOPPY(name, code) { static const bool& _debug_request_is_active_ = DebugRequest::getInstance().registerRequest(name, "", false); if(_debug_request_is_active_){code}} ((void)0)
 #else
   /* ((void)0) - that's a do-nothing statement */
   #define DEBUG_REQUEST(name, code) ((void)0)

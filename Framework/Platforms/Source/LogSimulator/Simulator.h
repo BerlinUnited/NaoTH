@@ -34,7 +34,7 @@
 
 //
 
-
+#include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include "Tools/DataStructures/Streamable.h"
 #include <Tools/Debug/DebugRequest.h>
@@ -124,7 +124,7 @@ public:
   #define SIM_GET(rep) void get(rep& data) const {generalGet(data,#rep);}
   
   template<class T> void get(T& /*data*/) const {}
-  template<class T> void set(T& /*data*/){}
+  template<class T> void set(const T& /*data*/){}
 
   SIM_GET(FrameInfo);
   void get(unsigned int& /*timestamp*/) const {}
@@ -213,6 +213,21 @@ private:
 
   // the flag for backend mode, which is used by LogfilePlayer of RobotControl
   bool backendMode;
+
+
+private:
+  DebugServer theDebugServer;
+public:
+  void get(DebugMessageIn& data)
+  {
+    theDebugServer.getDebugMessageIn(data);
+  }
+
+  void set(const DebugMessageOut& data)
+  {
+    if(data.answers.size() > 0)
+      theDebugServer.setDebugMessageOut(data);
+  }
 };
 
 #endif  /* _SIMULATOR_H */

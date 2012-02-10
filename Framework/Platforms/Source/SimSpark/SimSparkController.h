@@ -41,6 +41,7 @@
 #include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
+#include "DebugCommunication/DebugServer.h"
 
 #include "sfsexp/SexpParser.h"
 #include "libb64/decode.h"
@@ -236,6 +237,20 @@ private:
   GMutex*  theActDataMutex;
   std::stringstream theActData;
   void act();
+
+private:
+  DebugServer theDebugServer;
+public:
+  void get(DebugMessageIn& data)
+  {
+    theDebugServer.getDebugMessageIn(data);
+  }
+
+  void set(const DebugMessageOut& data)
+  {
+    if(data.answers.size() > 0)
+      theDebugServer.setDebugMessageOut(data);
+  }
 };
 
 #endif  /* _SIMSPARKCONTROLLER_H */

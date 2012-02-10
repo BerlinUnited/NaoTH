@@ -49,6 +49,10 @@ SimSparkController::SimSparkController(const std::string& name)
   registerOutput<const MotorJointData>(*this);
   registerOutput<const TeamMessageDataOut>(*this);
 
+  // debug
+  registerInput<DebugMessageIn>(*this);
+  registerOutput<DebugMessageOut>(*this);
+
   // init the name -- id maps
   theJointSensorNameMap.clear();
   theJointSensorNameMap["hj1"] = JointData::HeadYaw;
@@ -828,8 +832,8 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
     return false;
   }
 
-  double acc[3];
-  if (!SexpParser::parseGivenArrayValue(sexp->next, "a", 3, acc))
+  Vector3<double> acc;
+  if (!SexpParser::parseGivenArrayValue(sexp->next, "a", 3, &(acc.x)))
   {
     cerr << "can not get the Accelerometer data!\n";
     return false;
@@ -838,10 +842,7 @@ bool SimSparkController::updateAccelerometer(const sexp_t* sexp)
   swap(acc[0], acc[1]);
   acc[1] = -acc[1];
   double k = 0.1;
-  for (int i = 0; i < AccelerometerData::numOfAccelerometer; i++)
-  {
-    theAccelerometerData.data[i] = theAccelerometerData.data[i]*(1-k) + k*acc[i];
-  }
+  theAccelerometerData.data = theAccelerometerData.data*(1-k) + acc*k;
 
   return true;
 }//end updateAccelerometer
@@ -1158,23 +1159,23 @@ void SimSparkController::get(GameData& data)
 void SimSparkController::updateInertialSensor()
 {
   // calculate inertial sensor data by gyrometer
-  const double *gyrometer = theGyroData.data;
-  static double oldGyroX = gyrometer[0];
-  static double oldGyroY = gyrometer[1];
-  theInertialSensorData.data.x += ((gyrometer[0]+oldGyroX) * 0.5 * theStepTime);
-  theInertialSensorData.data.y += ((gyrometer[1]+oldGyroY) * 0.5 * theStepTime);
-  oldGyroX = gyrometer[0];
-  oldGyroY = gyrometer[1];
+  const Vector2<double>& gyrometer = theGyroData.data;
+  static double oldGyroX = gyrometer.x;
+  static double oldGyroY = gyrometer.y;
+  theInertialSensorData.data.x += ((gyrometer.x+oldGyroX) * 0.5 * theStepTime);
+  theInertialSensorData.data.y += ((gyrometer.y+oldGyroY) * 0.5 * theStepTime);
+  oldGyroX = gyrometer.x;
+  oldGyroY = gyrometer.y;
 
   // calculate intertial sensor data by accelerometer
-  const double *acc = theAccelerometerData.data;
-  double len = sqrt(Math::sqr(acc[0]) + Math::sqr(acc[1]) + Math::sqr(acc[2]));
+  const Vector3<double>& acc = theAccelerometerData.data;
+  double len = acc.abs();
 
   if (len > 2 && len < 30)
   {
-    double x = asin(acc[1] / len);
+    double x = asin(acc.y / len);
     double cx = cos(x);
-    double y = -atan2(acc[0] / Math::sgn(cx), acc[2] / Math::sgn(cx));
+    double y = -atan2(acc.x / Math::sgn(cx), acc.z / Math::sgn(cx));
 
     double k = 0.04;
 //    MODIFY("updateInertialSensor.k", k);
