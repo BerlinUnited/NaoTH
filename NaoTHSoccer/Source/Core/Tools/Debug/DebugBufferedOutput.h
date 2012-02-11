@@ -97,8 +97,8 @@ private:
 #ifdef DEBUG
 /** Debug output stream, usage like "DOUT("ball_pos:" << x << ", " << y */
 #define DOUT(arg) DebugBufferedOutput::getInstance().doutOut << arg
-#define PLOT_REGISTER(name, description) DEBUG_REQUEST_REGISTER(name, description, false)
-#define PLOT(id,value) ASSERT(!Math::isInf(value)&&!Math::isNan(value)); DEBUG_REQUEST_SLOPPY("Plot:"#id, DebugBufferedOutput::getInstance().addPlot(id,naoth::NaoTime::getNaoTimeInMilliSeconds(),value); )
+#define PLOT_GENERIC(id,x,y) { ASSERT(!Math::isInf(x)&&!Math::isNan(x)); ASSERT(!Math::isInf(y)&&!Math::isNan(y)); DebugBufferedOutput::getInstance().addPlot(id,x,y); }
+#define PLOT(id,value) ASSERT(!Math::isInf(value)&&!Math::isNan(value)); DEBUG_REQUEST_SLOPPY(string("Plot:")+string(id), DebugBufferedOutput::getInstance().addPlot(id,naoth::NaoTime::getNaoTimeInMilliSeconds(),value); )
 #define PLOT2D(id,x,y) ASSERT(!Math::isInf(x)&&!Math::isNan(x)); ASSERT(!Math::isInf(y)&&!Math::isNan(y)); DebugBufferedOutput::getInstance().addPlot2D(id, x, y)
 /** set the origin of the 2D plot. It used for visualization of traces on the field etc. */
 #define ORIGIN2D(id,x,y,rotation) DebugBufferedOutput::getInstance().addPlotOrigin2D(id, x, y, rotation)

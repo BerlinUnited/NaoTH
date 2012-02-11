@@ -16,7 +16,7 @@ StopwatchSender::StopwatchSender()
   REGISTER_DEBUG_COMMAND("stopwatch",
     "get values of all the stopwatches in microseconds", this);
 
-  //DEBUG_REQUEST_REGISTER("DataPlot:Stopwatch","Plot Stopwatches in ms (defined in Stopwatch.cpp)", false);
+  DEBUG_REQUEST_REGISTER("Plot:Stopwatch","Plot Stopwatches in ms (defined in Stopwatch.cpp)", false);
 }
 
 void StopwatchSender::execute()
@@ -26,12 +26,15 @@ void StopwatchSender::execute()
   while (it != stopwatches.end())
   {
     const StopwatchItem& item =it->second;
-    std::stringstream s;
-    s << "SW:" << item.name;
-    PLOT(s.str(), item.lastValue);
+    
+    DEBUG_REQUEST("Plot:Stopwatch",
+      std::stringstream s;
+      s << "SW:" << item.name;
+      PLOT_GENERIC(s.str(), getFrameInfo().getTime(), item.lastValue)
+      );
     it++;
   }//end while
-}
+}//end execute
 
 void StopwatchSender::executeDebugCommand(const std::string& command, const std::map<std::string,std::string>& arguments, std::ostream& outstream)
 {
@@ -57,7 +60,7 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
     google::protobuf::io::OstreamOutputStream buf(&outstream);
     all.SerializeToZeroCopyStream(&buf);
   }
-}
+}//end executeDebugCommand
 
 StopwatchSender::~StopwatchSender()
 {

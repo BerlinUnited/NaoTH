@@ -102,7 +102,7 @@ namespace Math {
    * @param angle code in rad
    * @return angle coded in degrees
    */
-  inline double toDegrees(double angle){return angle * 180.0 / pi;}
+  inline double toDegrees(double angle){return angle / pi_180;}
 
   /** 
    * Converts angle from degrees to rad.

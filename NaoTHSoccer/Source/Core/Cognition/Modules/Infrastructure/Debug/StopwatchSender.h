@@ -12,15 +12,15 @@
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-#include <DebugCommunication/DebugServer.h>
+#include <Tools/DataStructures/ParameterList.h>
 
-#include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/FrameInfo.h>
 //#include "Representations/Infrastructure/FieldInfo.h"
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(StopwatchSender)
-
+  REQUIRE(FrameInfo)
 END_DECLARE_MODULE(StopwatchSender)
 
 class StopwatchSender : public StopwatchSenderBase, public DebugCommandExecutor
