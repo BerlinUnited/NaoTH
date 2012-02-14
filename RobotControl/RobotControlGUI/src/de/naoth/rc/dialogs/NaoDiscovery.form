@@ -20,7 +20,7 @@
               <Component id="btConnect" min="-2" max="-2" attributes="1"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btInit" min="-2" max="-2" attributes="1"/>
-              <EmptySpace pref="309" max="32767" attributes="0"/>
+              <EmptySpace pref="314" max="32767" attributes="0"/>
           </Group>
           <Component id="jScrollPane1" alignment="0" pref="454" max="32767" attributes="0"/>
           <Component id="panelStatus" alignment="0" pref="454" max="32767" attributes="0"/>

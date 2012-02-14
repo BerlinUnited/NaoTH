@@ -22,11 +22,12 @@ project "LogSimulator"
 	  "gobject-2.0",
 	  "gmodule-2.0",
 	  "gthread-2.0",
+	  "pthread",
 	  "protobuf",
-          "opencv_core",
-          "opencv_ml",
-		  "opencv_highgui",
-		  "opencv_imgproc"
+	  "opencv_core",
+	  "opencv_ml",
+	  "opencv_highgui",
+	  "opencv_imgproc"
 	}
 	
   targetname "logsimulator"

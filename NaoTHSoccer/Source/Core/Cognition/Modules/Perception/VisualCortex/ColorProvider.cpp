@@ -15,6 +15,8 @@ ColorProvider::ColorProvider()
   const string colorTablePath = naoth::Platform::getInstance().theConfigDirectory + "/colortable.c64";
   getColorTable64().loadFromFile(colorTablePath);
   getColorClassificationModel().setColorTable(getColorTable64());
+  getColorClassificationModel().setFieldColorPercept(getFieldColorPercept());
+  getColorClassificationModel().setBaseColorRegionPercept(getBaseColorRegionPercept());
 }
 
 
@@ -22,7 +24,7 @@ void ColorProvider::execute()
 {
   if(getFieldColorPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber())
   {
-    getColorClassificationModel().setFieldColorPercept(getFieldColorPercept());
+    getColorClassificationModel().validateFieldColorPercept();
   }
   else
   {
@@ -31,7 +33,7 @@ void ColorProvider::execute()
 
   if(getBaseColorRegionPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber())
   {
-    getColorClassificationModel().setBaseColorRegionPercept(getBaseColorRegionPercept());
+    getColorClassificationModel().validateBaseColorRegionPercept();
   }
   else
   {

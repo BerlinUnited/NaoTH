@@ -1,0 +1,3 @@
+
+#config_eth0="ETH_ADDR netmask ETH_NETMASK brd ETH_BRD"
+#config_wlan0="WLAN_ADDR netmask WLAN_NETMASK brd WLAN_BRD"

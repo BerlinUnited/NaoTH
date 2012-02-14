@@ -32,14 +32,14 @@ project "SimSpark"
 	"gobject-2.0",
 	"gmodule-2.0",
 	"gthread-2.0",
-	"protobuf",
-        "opencv_core",
-        "opencv_ml"
-   }
+	"pthread",
+    "opencv_core",
+    "opencv_ml",
+	"protobuf"}
 
   targetname "naoth-simspark"
--- removed by fh :) Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
-  configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+-- removed by fh :)
+--  configuration {"linux"}
+--    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
 
 -- END SimSpark

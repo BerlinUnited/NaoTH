@@ -32,4 +32,51 @@ struct Point {
   unsigned int y;
 };
 
+union DoublePixel
+{
+  struct
+  {
+    /** Y, also known as Luma (Brightness) */
+    double y;
+    /** U, also known as Chroma blue (Cb)*/
+    double u;
+    /** V, also known as Chroma red (Cr) */
+    double v;
+  };
+
+  struct
+  {
+    double a;
+    double b;
+    double c;
+  };
+
+  double channels[3];
+
+};
+
+union IntPixel
+{
+  struct
+  {
+    /** Y, also known as Luma (Brightness) */
+    int y;
+    /** U, also known as Chroma blue (Cb)*/
+    int u;
+    /** V, also known as Chroma red (Cr) */
+    int v;
+  };
+
+  struct
+  {
+    int a;
+    int b;
+    int c;
+  };
+
+  short channels[3];
+
+};
+
+
 #endif

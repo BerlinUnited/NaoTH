@@ -20,6 +20,7 @@ DEFAULT_DEVICE="/dev/sdb"
 #DEFAULT_IMAGE="$NAO_IMAGE_DIR/opennao-robocup-1.8.16-nao-geode.ext3"
 #DEFAULT_IMAGE="$NAO_IMAGE_DIR/nao-system-image-robocup-1.10.10-nao-geode-20110111152911.rootfs.ext3"
 DEFAULT_IMAGE="$NAO_IMAGE_DIR/nao-system-image-robocup-1.10.37-nao-geode-20110418103858.rootfs.ext3"
+DEFAULT_IMAGE="$NAO_IMAGE_DIR/nao-system-image-robocup-1.10.52.ext3"
 DEFAULT_IMAGE_BURN="n"
 
 #ethernet
@@ -99,7 +100,7 @@ then
 #	    mkfs.ext3 -q "${DEVICE}1"
 	    echo "writing image to stick"
 	    #gzip -dc $IMAGE | dd of=$DEVICE bs=16k seek=1 conv=notrunc	|| 
-	    dd if=$IMAGE of=$DEVICE bs=16384 seek=1 conv=notrunc || exit 1
+#	    dd if=$IMAGE of=$DEVICE bs=16384 seek=1 conv=notrunc || exit 1
 	    echo "writing complete"
 	    
 #	    parted $DEVICE --script mklabel msdos

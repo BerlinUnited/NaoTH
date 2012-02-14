@@ -2,7 +2,7 @@
 
 verify_aldir () 
 {
-  DEFAULT_AL_DIR="/opt/aldebaran/info"
+  DEFAULT_AL_DIR="/opt/aldebaran/info/naoqi"
   if  [ "$AL_DIR" == "" ]
   then
         echo "  * AL_DIR has not been set, using default path '$DEFAULT_AL_DIR'"
@@ -16,7 +16,7 @@ verify_aldir ()
 
 verify_alcross () 
 {
-  DEFAULT_NAO_CROSSCOMPILE="$HOME/Roboter/Aldebaran/crosscompiletoolchain"
+  DEFAULT_NAO_CROSSCOMPILE="/home/claas/Roboter/Aldebaran/crosscompiletoolchain"
   if  [ "$NAO_CROSSCOMPILE" == "" ]
   then
         echo "  * NAO_CROSSCOMPILE has not been set, using default path '$DEFAULT_NAO_CROSSCOMPILE'"
@@ -29,7 +29,7 @@ verify_alcross ()
 }
 verify_naothsvn() 
 {
-  DEFAULT_NAOTH_BZR="$HOME/workspace/Projekte/NaoTH-2011"
+  DEFAULT_NAOTH_BZR="/home/claas/workspace/Projekte/NaoTH-2011"
   if  [ "$NAOTH_BZR" == "" ]
   then
         echo "  * NAOTH_BZR has not been set, using default path '$DEFAULT_NAOTH_BZR'"
@@ -56,7 +56,7 @@ verify_webotshome ()
 }
 verify_naoimagedir () 
 {
-  DEFAULT_NAO_IMAGE_DIR="$HOME/Roboter/Aldebaran/images"
+  DEFAULT_NAO_IMAGE_DIR="/home/claas/Roboter/Aldebaran/images"
   if  [ "$NAO_IMAGE_DIR" == "" ]
   then
         echo "  * NAO_IMAGE_DIR has not been set, using default path '$DEFAULT_NAO_IMAGE_DIR'"
@@ -81,3 +81,4 @@ echo "   WEBOTS_HOME is $WEBOTS_HOME"
 echo "   NAO_IMAGE_DIR is $NAO_IMAGE_DIR"
 
 
+ 

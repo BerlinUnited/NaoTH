@@ -24,6 +24,7 @@
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/FieldColorParameters.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
 
 // Debug
@@ -57,6 +58,7 @@ public:
   void execute();
 
 private:
+  FieldColorParameters fieldParams;
 
   double weightedSmoothedHistY[COLOR_CHANNEL_VALUE_COUNT];
   double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];

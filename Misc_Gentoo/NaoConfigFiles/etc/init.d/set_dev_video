@@ -1,0 +1,16 @@
+#!/sbin/runscript
+
+description="sets a link from /dev/video to /dev/video"
+
+depend(){
+  need localmount
+  before *
+}
+
+start(){
+    /bin/ln -fs /dev/video0 /dev/video
+}
+
+stop(){
+  echo "stop"
+}

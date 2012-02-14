@@ -12,8 +12,8 @@ OpenCVWebCamController::OpenCVWebCamController()
 :
 PlatformInterface("OpenCVWebCam",10),
 frameNumber(0),
-frameLossCounter(0),
-time(0)
+time(0),
+frameLossCounter(0)
 {
   registerInput<FrameInfo>(*this);
   registerInput<Image>(*this);

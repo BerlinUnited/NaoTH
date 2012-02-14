@@ -2,10 +2,11 @@
 
 ColorClassificationModel::ColorClassificationModel()
 :
+  colorTable(colorTableDummy),
   fieldColorPerceptValid(false),
-  fieldColorPercept(fieldDummy),
+  fieldColorPercept(fieldColorPerceptDummy),
   baseColorRegionPerceptValid(false),
-  baseColorRegionPercept(baseDummy)
+  baseColorRegionPercept(baseColorRegionPerceptDummy)
 {
 }
 
@@ -19,10 +20,14 @@ void ColorClassificationModel::invalidateFieldColorPercept()
   fieldColorPerceptValid = false;
 }
 
+void ColorClassificationModel::validateFieldColorPercept()
+{
+  fieldColorPerceptValid = true;
+}
+
 void ColorClassificationModel::setFieldColorPercept(const FieldColorPercept &percept)
 {
   fieldColorPercept = percept;
-  fieldColorPerceptValid = true;
 }
 
 void ColorClassificationModel::invalidateBaseColorRegionPercept()
@@ -30,8 +35,12 @@ void ColorClassificationModel::invalidateBaseColorRegionPercept()
   baseColorRegionPerceptValid = false;
 }
 
+void ColorClassificationModel::validateBaseColorRegionPercept()
+{
+  baseColorRegionPerceptValid = true;
+}
+
 void ColorClassificationModel::setBaseColorRegionPercept(const BaseColorRegionPercept &percept)
 {
   baseColorRegionPercept = percept;
-  baseColorRegionPerceptValid = true;
 }

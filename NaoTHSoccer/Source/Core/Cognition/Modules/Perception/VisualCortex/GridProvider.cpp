@@ -52,6 +52,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   getColoredGrid().reset();
   getHistogram().init();
 
+
   double grey = 0;
   double red = 0;
   double blue = 0;
@@ -65,7 +66,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     red += pixel.u;
     blue += pixel.v;
 
-    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);//simpleColorClassifier.getColorClass(pixel);// = getColorClassificationModel().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
     if(currentPixelColor == ColorClasses::none)
     {
       getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;

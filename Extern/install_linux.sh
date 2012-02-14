@@ -16,7 +16,7 @@ echo "Installing sfsexp library"
 . ../install_scripts/sfsexp.sh
 
 echo "Installing glib library"
-. ../install_scripts/glib.sh
+#. ../install_scripts/glib.sh
 
 echo "Installing protobuf"
 . ../install_scripts/protobuf.sh
@@ -28,7 +28,7 @@ echo "Installing Google Mock"
 . ../install_scripts/gmock.sh
 
 echo "Installing OpenCV"
-. ../install_scripts/opencv.sh
+#. ../install_scripts/opencv.sh
 
 
 # get out of the extracted directory
