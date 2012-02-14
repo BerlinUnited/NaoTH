@@ -18,6 +18,7 @@ class GoalPercept : public naoth::Printable
 public:
   GoalPercept()
     : 
+    angleToSeenGoal(0),
     numberOfSeenPosts(0)
   {}
 

@@ -363,6 +363,8 @@ public class SimpleValuePlotter  extends AbstractDialog
 
         // its necessary, otherwise we get an null pointer exception
         this.chart.enablePointHighlighting(false);
+        
+        this.panelList.removeAll();
       }//end synchronized
     }//GEN-LAST:event_btClearActionPerformed
 

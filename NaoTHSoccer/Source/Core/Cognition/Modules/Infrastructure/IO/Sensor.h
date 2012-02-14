@@ -78,11 +78,6 @@ public:
   virtual void execute();
 
   void init(naoth::PlatformInterfaceBase& platformInterface);
-  
-private:
-  MessageReader* theMotionStatusReader;
-  MessageReader* theOdometryDataReader;
-  MessageReader* theCalibrationDataReader;
 };
 
 #endif  /* _SENSOR_H */

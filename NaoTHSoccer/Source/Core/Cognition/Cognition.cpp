@@ -188,7 +188,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
   for(list<string>::const_iterator name=getExecutionList().begin();
-    name != getExecutionList().end(); name++)
+    name != getExecutionList().end(); ++name)
   {
     bool active = false;
     if(config.hasKey("modules", *name))
@@ -226,7 +226,7 @@ void Cognition::call()
   GT_TRACE("beginning to iterate over all modules");
   // execute all modules
   list<string>::const_iterator iter;
-  for (iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
+  for (iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
   {
     // get entry
     AbstractModuleCreator* module = getModule(*iter);

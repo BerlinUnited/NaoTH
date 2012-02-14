@@ -48,9 +48,6 @@ public:
 
   void init(naoth::PlatformInterfaceBase& platformInterface);
   
-private:
-  MessageWriter* theHeadMotionRequestWriter;
-  MessageWriter* theMotionRequestWriter;
 };
 
 #endif  /* _ACTUACTOR_H */
