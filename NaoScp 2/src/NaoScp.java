@@ -18,6 +18,10 @@
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.*;
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Container;
+import java.awt.Insets;
 import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
@@ -49,12 +53,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private HashMap<String, JTextField> networkConfigTags = new HashMap<String, JTextField>();
 
   private HashMap<Integer, JTextField> naoNumberFields = new HashMap<Integer, JTextField>();
-  private HashMap<Integer, Boolean> scriptDone = new HashMap<Integer, Boolean>();;
-  private HashMap<Integer, Boolean> copyDone = new HashMap<Integer, Boolean>();;
-  private HashMap<Integer, Boolean> hadCopyErrors = new HashMap<Integer, Boolean>();;
-  private HashMap<Integer, Boolean> hadScriptErrors = new HashMap<Integer, Boolean>();;
-  private HashMap<Integer, Boolean> hadErrors = new HashMap<Integer, Boolean>();;
-  private HashMap<Integer, Integer> iNaoBytes = new HashMap<Integer, Integer>();;
+  private HashMap<Integer, Boolean> scriptDone = new HashMap<Integer, Boolean>();
+  private HashMap<Integer, Boolean> copyDone = new HashMap<Integer, Boolean>();
+  private HashMap<Integer, Boolean> hadCopyErrors = new HashMap<Integer, Boolean>();
+  private HashMap<Integer, Boolean> hadScriptErrors = new HashMap<Integer, Boolean>();
+  private HashMap<Integer, Boolean> hadErrors = new HashMap<Integer, Boolean>();
+  private HashMap<Integer, Integer> iNaoBytes = new HashMap<Integer, Integer>();
   private HashMap<Integer, String> sNaoLanIps = new HashMap<Integer, String>();
   private HashMap<Integer, String> sNaoWLanIps = new HashMap<Integer, String>();
   
@@ -188,7 +192,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 //          }
           for(JmDNS j : jmdnsList)
           {
-            for (ServiceInfo info : j.list("_nao._tcp.local.", 1500))
+            for (ServiceInfo info : j.list("_nao._tcp.local.", 1000))
             {
               services.add(new NaoSshWrapper(info, j.getName() + "_nao" ));            
             }
@@ -368,7 +372,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
   private void readNetworkConfig() throws FileNotFoundException, IOException
   {
-    FileReader fReader = new FileReader(jDirPathLabel.getText() + "/../Misc_Gentoo/NaoConfigFiles/network.conf");        
+    FileReader fReader = new FileReader(localSetupScriptPath() + "/network.conf");        
     BufferedReader bReader = new BufferedReader(fReader);
 
     log("reading NaoConfigFiles/network.conf");
@@ -397,13 +401,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   
   private void writeNetworkConfig() throws IOException
   {
-    File file = new File(jDirPathLabel.getText() + "/../Misc_new/NaoConfigFiles/network.conf");        
+    File file = new File(localSetupScriptPath() + "/network.conf");        
     if(!file.isFile())
     {
       file.createNewFile();
     }
 
-    FileWriter fWriter = new FileWriter(jDirPathLabel.getText() + "/../Misc_new/NaoConfigFiles/network.conf");
+    FileWriter fWriter = new FileWriter(localSetupScriptPath() + "/network.conf");
 
     log("writing NaoConfigFiles/network.conf");
     if(subnetFieldLAN.getText().endsWith("."))
@@ -2625,115 +2629,190 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   
   abstract class sshWorker extends SwingWorker<Boolean, File>
   {
-      protected String Ip;
-      protected String sNaoNo;
-      protected String sNaoByte;
-      protected Session session;
+    protected String Ip;
+    protected String sNaoNo;
+    protected String sNaoByte;
+    protected Session session;
 
-      protected class MyUserInfo implements UserInfo
+    public class MyLogger implements com.jcraft.jsch.Logger 
+    {
+      HashMap<Integer, String> name = new HashMap<Integer, String>();
       {
+        name.put(new Integer(DEBUG), "DEBUG: ");
+        name.put(new Integer(INFO), "INFO: ");
+        name.put(new Integer(WARN), "WARN: ");
+        name.put(new Integer(ERROR), "ERROR: ");
+        name.put(new Integer(FATAL), "FATAL: ");
+      }
 
-        public String getPassword()
-        {
-          return sshPassword.getText();
-        }
+      public boolean isEnabled(int level)
+      {
+        return true;
+      }
 
-        public boolean promptYesNo(String str)
+      public void log(int level, String message)
+      {
+        System.err.print(name.get(new Integer(level)));
+        System.err.println(message);
+      }
+    }      
+
+    public class MyUserInfo implements UserInfo, UIKeyboardInteractive
+    {
+      public String getPassword()
+      { 
+        return passwd; 
+      }
+
+      public boolean promptYesNo(String str)
+      {
+        Object[] options={ "yes", "no" };
+        int foo=JOptionPane.showOptionDialog(null, 
+               str,
+               "Warning", 
+               JOptionPane.DEFAULT_OPTION, 
+               JOptionPane.WARNING_MESSAGE,
+               null, options, options[0]);
+         return foo==0;
+      }
+
+      String passwd;
+      JTextField passwordField=(JTextField)new JPasswordField(20);
+
+      public String getPassphrase()
+      { 
+        return null; 
+      }
+
+      public boolean promptPassphrase(String message)
+      { 
+        return true; 
+      }
+
+      public boolean promptPassword(String message)
+      {
+        Object[] ob = {passwordField}; 
+        int result = JOptionPane.showConfirmDialog(null, ob, message, JOptionPane.OK_CANCEL_OPTION);
+        if(result == JOptionPane.OK_OPTION)
         {
+          passwd = passwordField.getText();
           return true;
         }
-
-        public String getPassphrase()
-        {
-          return null;
-        }
-
-        public boolean promptPassphrase(String message)
-        {
-          return true;
-        }
-
-        public boolean promptPassword(String message)
-        {
-          return true;
-        }
-
-        public void showMessage(String message)
-        {
+        else
+        { 
+          return false; 
         }
       }
 
-      public sshWorker(String Ip, String sNaoNo, String sNaoByte)
+      public void showMessage(String message)
       {
-        this.Ip = Ip;
-        this.sNaoNo = sNaoNo;
-        this.sNaoByte = sNaoByte;
+        JOptionPane.showMessageDialog(null, message);
       }
 
-      protected boolean connect() throws JSchException
+      public String[] promptKeyboardInteractive
+      (
+        String destination,
+        String name,
+        String instruction,
+        String[] prompt,
+        boolean[] echo
+      )
       {
-        if(session == null || !session.isConnected())
+        return new String[]{sshPassword.getText()};
+      }
+    }
+         
+
+    public sshWorker(String Ip, String sNaoNo, String sNaoByte)
+    {
+      this.Ip = Ip;
+      this.sNaoNo = sNaoNo;
+      this.sNaoByte = sNaoByte;
+    }
+
+    protected boolean connect() throws JSchException
+    {
+      if(session == null || !session.isConnected())
+      {
+        actionInfo("Trying to connect to " + Ip);
+        session = naoSsh(Ip);
+      }
+      return session.isConnected();
+    }
+
+    protected boolean disconnect() throws JSchException
+    {
+      if(session != null && session.isConnected())
+      {
+        session.disconnect();
+      }
+      return !session.isConnected();
+    }
+
+    /**
+     * returns ssh-session object
+     * @param Ip robot ip
+     * @return session
+     * @throws com.jcraft.jsch.JSchException
+     */
+    protected Session naoSsh(String Ip) throws JSchException
+    {
+      UserInfo ui = new MyUserInfo();
+      java.util.Properties config = new java.util.Properties();
+      config.put("StrictHostKeyChecking", "no");
+      JSch.setLogger(new MyLogger());
+      JSch jsch = new JSch();
+
+      Session session = jsch.getSession(sshUser.getText(), Ip, 22);
+      session.setConfig(config);
+      session.setUserInfo(ui);
+      session.setPassword(sshPassword.getText());
+      session.connect();
+      return session;
+    }
+
+    public boolean testConnection()
+    {
+      try
+      {
+        InetAddress[] naoIps = InetAddress.getAllByName(Ip);
+        int idx = 0;
+        while(idx < naoIps.length)
         {
-          actionInfo("Trying to connect to " + Ip);
-          session = naoSsh(Ip);
-        }
-        return session.isConnected();
-      }
-
-      protected boolean disconnect() throws JSchException
-      {
-        if(session != null && session.isConnected())
-        {
-          session.disconnect();
-        }
-        return !session.isConnected();
-      }
-
-      /**
-       * returns ssh-session object
-       * @param Ip robot ip
-       * @return session
-       * @throws com.jcraft.jsch.JSchException
-       */
-      protected Session naoSsh(String Ip) throws JSchException
-      {
-        UserInfo ui = new MyUserInfo();
-        java.util.Properties config = new java.util.Properties();
-        config.put("StrictHostKeyChecking", "no");
-        JSch jsch = new JSch();
-        Session session = jsch.getSession(sshUser.getText(), Ip, 22);
-        session.setConfig(config);
-        session.setUserInfo(ui);
-        session.connect();
-        return session;
-      }
-
-      public boolean testConnection()
-      {
-        boolean state = false;
-        try
-        {
-          InetAddress naoIp = InetAddress.getByName(Ip);
-          actionInfo("Try to reach " + naoIp.getHostAddress());
-          if(naoIp.isReachable(2500))
+          actionInfo("Try to reach " + naoIps[idx].getHostAddress());
+          Ip = naoIps[idx].getHostAddress();
+          if(naoIps[idx].isReachable(2500))
           {
             Session session = naoSsh(Ip);
+            Thread.sleep(100);
             Channel channel = session.openChannel("sftp");
             channel.connect();
-            ChannelSftp c = (ChannelSftp) channel;
-            state = c.isConnected();
-            c.disconnect();
+            Thread.sleep(100);
+            if(channel.isConnected())
+            {
+              channel.disconnect();
+              Thread.sleep(100);
+              return true;
+            }
+            else
+            {
+              actionInfo(Ip + " could not open channel");
+            }
           }
           else
           {
             actionInfo(Ip + " unreachable");
           }
+          idx++;
         }
-        catch(Exception e)
-        {
-        }
-        return state;
       }
+      catch(Exception e)
+      {
+        actionInfo(e.toString());
+        return false;
+      }
+      return false;
+    }
       
     /**
      * rm -r via sftp
