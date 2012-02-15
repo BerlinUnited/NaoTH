@@ -55,7 +55,7 @@ namespace Math {
 #ifdef WIN32
     return !_finite(x);
 #else
-    return !finite(x);
+    return isinf(x);
 #endif
   }//end isInf
 

@@ -92,7 +92,7 @@ public:
     {
       start.y -= stepSize;
     }
-//    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
+    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
     return start;
   }
 

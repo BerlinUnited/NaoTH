@@ -20,10 +20,10 @@
 #include "PlatformInterface/Platform.h"
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
-:
-  //gridClustering(sampleSet),
-  initialized(false),
-  canopyClustering(theSampleSet, parameters.thresholdCanopy)
+  :
+    //gridClustering(sampleSet),
+  canopyClustering(theSampleSet, parameters.thresholdCanopy),
+  initialized(false)
 {
   resetSampleSet(theSampleSet);
 

@@ -3,7 +3,6 @@ local extern_dir = "../../../Extern"
 -- NaoTH controller for the webcam based "simulator"
 project "OpenCVImageLoader"
   kind "ConsoleApp"
-
   language "C++"
    
   print("Generating files for OpenCVImageLoader")

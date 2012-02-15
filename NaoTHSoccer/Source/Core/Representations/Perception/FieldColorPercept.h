@@ -9,11 +9,17 @@
 #define  FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
-#include <Tools/ImageProcessing/ImagePrimitives.h>
-#include <Tools/ImageProcessing/FieldColorParameters.h>
-
 #include <Representations/Infrastructure/FrameInfo.h>
+//#include <Tools/DataStructures/Serializer.h>
 
+#define MAX_FIELD_COLOR_Y_CHANNEL_DIST 48
+#define MAX_FIELD_COLOR_Cb_CHANNEL_DIST 12
+#define MAX_FIELD_COLOR_Cr_CHANNEL_DIST 12
+#define MIN_FIELD_COLOR_Y_CHANNEL_DIST 20
+#define MIN_FIELD_COLOR_Cb_CHANNEL_DIST 2
+#define MIN_FIELD_COLOR_Cr_CHANNEL_DIST 2
+#define MIN_FIELD_COLOR_Y_LEVEL 20
+#define MAX_FIELD_COLOR_Y_LEVEL 224
 
 using namespace naoth;
 
@@ -31,59 +37,52 @@ public:
   unsigned int maxWeightedIndexCb;
   unsigned int maxWeightedIndexCr;
 
+  double minWhite;
+  double maxBlack;
+
   FrameInfo lastUpdated;
 
   FieldColorPercept()
   {
+    distY = MAX_FIELD_COLOR_Y_CHANNEL_DIST;
+    distCb = MAX_FIELD_COLOR_Cb_CHANNEL_DIST;
+    distCr = MAX_FIELD_COLOR_Cr_CHANNEL_DIST;
     maxWeightedY = 0.0;
     maxWeightedCb = 0.0;
     maxWeightedCr = 0.0;
     maxWeightedIndexY = 160;
     maxWeightedIndexCb = 160;
     maxWeightedIndexCr = 160;
+
+    minWhite = 0.0;
+    maxBlack = 0.0;
+
   }
 
   ~FieldColorPercept()
   {}
 
-  void init(FieldColorParameters& params)
-  {
-    distY = params.fieldcolorDistMax.y;
-    distCb = params.fieldcolorDistMax.u;
-    distCr = params.fieldcolorDistMax.v;
-  }
-
-  inline bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
+  bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
     return
       (
-//        yy > theParameters.fieldColorMin.y
-//        &&
-//        yy < theParameters.fieldColorMax.y
-//        &&
-//        cb > theParameters.fieldColorMin.u
-//        &&
-//        cb < theParameters.fieldColorMax.u
-//        &&
-//        cr > theParameters.fieldColorMin.v
-//        &&
-//        cr < theParameters.fieldColorMax.v
-//        &&
-        abs((int) cr  - (int) maxWeightedIndexCr) < (int) distCr
-        &&          
-        abs((int) cb  - (int) maxWeightedIndexCb) < (int) distCb
+        abs((int)(cr  - distCr) < (int) maxWeightedIndexCr)
         &&
-        abs((int) yy  - (int) maxWeightedIndexY) < (int) distY
+        abs((int)(cb  - distCb) < (int) maxWeightedIndexCb)
+        &&
+        abs((int)(yy  - distY) < (int) maxWeightedIndexY)
+//        &&
+//        yy < minWhite
       );
   }
 
-  inline bool isFieldColor(const Pixel& pixel) const
+  bool isFieldColor(const Pixel& pixel) const
   {
     return isFieldColor(pixel.y, pixel.u, pixel.v);
   }
 
 
-  inline bool isOnlyFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr, const ColorClasses::Color& color) const
+  bool isOnlyFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr, const ColorClasses::Color& color) const
   {
     return
       (
@@ -95,12 +94,12 @@ public:
       );
   }
 
-  inline bool isOnlyFieldColor(const Pixel& pixel, const ColorClasses::Color& color) const
+  bool isOnlyFieldColor(const Pixel& pixel, const ColorClasses::Color& color) const
   {
     return isOnlyFieldColor(pixel.y, pixel.u, pixel.v, color);
   }
 
-  virtual inline void print(ostream& stream) const
+  virtual void print(ostream& stream) const
   {
     stream << "distance in Y channel = " << distY << endl;
     stream << "distance in Cb channel = " << distCb << endl;

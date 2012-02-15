@@ -63,32 +63,13 @@ solution "NaoTHSoccer"
     flags { "Optimize", "FatalWarnings" }
          
   configuration{"Native"}
-    if(_OPTIONS["platform"] ~= "Nao" and _ACTION == "gmake") then
-      print ("setting Native on Linux")
-      includedirs {
-        "/usr/include/glib-2.0/",
-        "/usr/lib/glib-2.0/include/",
-        "/usr/lib64/glib-2.0/include/",
-        "../../Extern/include/"
-        }
-        
-     libdirs {
-       "/usr/lib",
-       "/usr/lib64"
-     }
-    else
-      print ("setting Native on Windows")
-      includedirs {
+    includedirs {
       "../../Extern/include/",
       "../../Extern/include/glib-2.0/",
-      "../../Extern/lib/glib-2.0/include/"
-      }
-
-      libdirs {
-        "../../Extern/lib"
-      }
-    end
-    
+      "../../Extern/lib/glib-2.0/include/"}
+    libdirs {
+      "../../Extern/lib"
+    }
     targetdir "../dist/Native"
     
   configuration {"Nao"}
@@ -119,11 +100,11 @@ solution "NaoTHSoccer"
     dofile "../../Framework/Platforms/Make/DCM.lua"
   else
     dofile "../../Framework/Platforms/Make/SimSpark.lua"
-    dofile "../../Framework/Platforms/Make/SPL_SimSpark.lua"
+	dofile "../../Framework/Platforms/Make/SPL_SimSpark.lua"
     dofile "../../Framework/Platforms/Make/Webots.lua"
     dofile "../../Framework/Platforms/Make/LogSimulator.lua"
-    dofile "../../Framework/Platforms/Make/OpenCVImageLoader.lua"
-    dofile "../../Framework/Platforms/Make/OpenCVWebCam.lua"
+	dofile "../../Framework/Platforms/Make/OpenCVImageLoader.lua"
+	dofile "../../Framework/Platforms/Make/OpenCVWebCam.lua"
     dofile "Tests.lua"
     dofile "../../Framework/NaoTH-Commons/Make/Tests.lua"
   end

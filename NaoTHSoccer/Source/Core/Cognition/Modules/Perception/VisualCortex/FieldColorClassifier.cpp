@@ -15,6 +15,7 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:show_weighted_Y_histogram", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:show_weighted_Cb_histogram", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:show_weighted_Cr_histogram", " ", false);
+//  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:set_in_colortable", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:set_in_image", " ", false);
 
   memset(&weightedSmoothedHistY, 0, sizeof(weightedSmoothedHistY));
@@ -31,7 +32,7 @@ FieldColorClassifier::FieldColorClassifier()
 //    weightedHistCb[i] = 0.0;
 //    weightedHistCr[i] = 0.0;
 //  }
-  getFieldColorPercept().init(fieldParams);
+
 }
 
 void FieldColorClassifier::execute()
@@ -49,34 +50,34 @@ void FieldColorClassifier::execute()
   unsigned int distCb = (unsigned int)getFieldColorPercept().distCb;
   unsigned int distCr = (unsigned int)getFieldColorPercept().distCr;
 
-  unsigned int maxDistY = fieldParams.fieldcolorDistMax.y;
-  unsigned int maxDistCb = fieldParams.fieldcolorDistMax.u;
-  unsigned int maxDistCr = fieldParams.fieldcolorDistMax.v;
+  unsigned int maxDistY = MAX_FIELD_COLOR_Y_CHANNEL_DIST;
+  unsigned int maxDistCb = MAX_FIELD_COLOR_Cb_CHANNEL_DIST;
+  unsigned int maxDistCr = MAX_FIELD_COLOR_Cr_CHANNEL_DIST;
 
   unsigned int idx;
 
   double modifyDist = maxDistY;
   MODIFY("FieldColorClassifier:maxDistY", modifyDist);
-  maxDistY = (unsigned int) modifyDist * getBaseColorRegionPercept().meanImg.y / 128;
+  maxDistY = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanY) / 128;
 
   modifyDist = maxDistCb;
   MODIFY("FieldColorClassifier:maxDistCb", modifyDist);
-  maxDistCb = (unsigned int) modifyDist * getBaseColorRegionPercept().meanImg.u / 128;
+  maxDistCb = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanCb) / 128;
 
   modifyDist = maxDistCr;
   MODIFY("FieldColorClassifier:maxDistCr", modifyDist);
-  maxDistCr = (unsigned int) modifyDist * getBaseColorRegionPercept().meanImg.v / 128;
+  maxDistCr = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanCr) / 128;
 
   double maxWeightedY = 0.5 * getFieldColorPercept().maxWeightedY;
-  unsigned int maxWeightedIndexY = getFieldColorPercept().maxWeightedIndexY;// * getBaseColorRegionPercept().meanImage.y / 128;;
+  unsigned int maxWeightedIndexY = getFieldColorPercept().maxWeightedIndexY;
 
   double weightedMeanY = 0;
 
   double maxWeightedCb = 0.85 * getFieldColorPercept().maxWeightedCb;
-  unsigned int maxWeightedIndexCb = getFieldColorPercept().maxWeightedIndexCb;// * getBaseColorRegionPercept().meanImage.u / 128;;
+  unsigned int maxWeightedIndexCb = getFieldColorPercept().maxWeightedIndexCb;
 
   double maxWeightedCr = 0.85 * getFieldColorPercept().maxWeightedCr;
-  unsigned int maxWeightedIndexCr = getFieldColorPercept().maxWeightedIndexCr;// * getBaseColorRegionPercept().meanImage.v / 128;;
+  unsigned int maxWeightedIndexCr = getFieldColorPercept().maxWeightedIndexCr;
 
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
@@ -88,7 +89,8 @@ void FieldColorClassifier::execute()
     weightedHistCr[i] = wCr * (double) getHistogram().colorChannelHistogramField[2][i];
     //search for max Cr channel value with weight w
 
-    if(weightedHistCr[i] > maxWeightedCr)// && abs((int)i - (int)maxWeightedIndexCr) < (int)maxDistCr)
+    if
+    (weightedHistCr[i] > maxWeightedCr)
     {
       maxWeightedCr = weightedHistCr[i];
       maxWeightedIndexCr = i;
@@ -101,7 +103,7 @@ void FieldColorClassifier::execute()
   idx = maxWeightedIndexCr;
   while (idx > 0 && meanRegionBeginIndexCr == 0)
   {
-    if(weightedHistCr[idx] <= 0.5)//<= log(maxWeightedCr) || maxWeightedIndexCr - idx > maxDistCr)
+    if(weightedHistCr[idx] <= log(maxWeightedCr) / log(2.0) || maxWeightedIndexCr - idx > maxDistCr)
     {
       meanRegionBeginIndexCr = idx;
     }
@@ -111,7 +113,7 @@ void FieldColorClassifier::execute()
   idx = maxWeightedIndexCr;
   while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCr == 0)
   {
-    if(weightedHistCr[idx] <= 0.5)//<= log(maxWeightedCr) || idx - maxWeightedIndexCr > maxDistCr)
+    if(weightedHistCr[idx] <= log(maxWeightedCr) / log(2.0) || idx - maxWeightedIndexCr > maxDistCr)
     {
       meanRegionEndIndexCr = idx;
     }
@@ -120,7 +122,7 @@ void FieldColorClassifier::execute()
 
   if(meanRegionEndIndexCr > 0 && meanRegionBeginIndexCr > 0)
   {
-//    maxWeightedIndexCr = (maxWeightedIndexCr + meanRegionBeginIndexCr + meanRegionEndIndexCr + getFieldColorPercept().maxWeightedIndexCr) / 4;
+    maxWeightedIndexCr = (meanRegionBeginIndexCr + meanRegionEndIndexCr + getFieldColorPercept().maxWeightedIndexCr) / 3;
     distCr = (meanRegionEndIndexCr - meanRegionBeginIndexCr + maxDistCr + (unsigned int)getFieldColorPercept().distCr) / 4;
   }
 
@@ -138,24 +140,20 @@ void FieldColorClassifier::execute()
 
     if
     (
-      abs((int)pixel.v  - (int) maxWeightedIndexCr) < (int) distCr
+      abs((int)(pixel.v  - distCr ) < (int) maxWeightedIndexCr)
     )
     {
       if
       (
-        abs((int)pixel.u  - (int) maxWeightedIndexCb) < (int) distCb
+        abs((int)(pixel.u  - getFieldColorPercept().distCb ) <= (int) maxWeightedIndexCb)
+        &&
+        pixel.y > MIN_FIELD_COLOR_Y_LEVEL
+        &&
+        pixel.y < MAX_FIELD_COLOR_Y_LEVEL
 //        &&
-//        pixel.y >= getBaseColorRegionPercept().fieldBorderMinus.y
+//        !getBlackAndWhitePercept().isWhite(pixel)
 //        &&
-//        pixel.y <= getBaseColorRegionPercept().fieldBorderPlus.y
-//        &&
-//        pixel.u >= getBaseColorRegionPercept().fieldBorderMinus.u
-//        &&
-//        pixel.u <= getBaseColorRegionPercept().fieldBorderPlus.u
-//        &&
-//        pixel.v >= getBaseColorRegionPercept().fieldBorderMinus.v
-//        &&
-//        pixel.v <= getBaseColorRegionPercept().fieldBorderPlus.v
+//        getBaseColorRegionPercept().isGreenOrBlue(pixel)
       )
       {
         weightedHistY[pixel.y]++;
@@ -170,20 +168,18 @@ void FieldColorClassifier::execute()
 
   STOPWATCH_START("FieldColorClassifier:Y_filtering");
   meanFieldY /= meanFieldCountY;
-//  double factorDistY =  ((double) halfChannelWidth - fabs((double) halfChannelWidth - meanFieldY) ) / (double) halfChannelWidth;
+  double factorDistY =  ((double) halfChannelWidth - fabs((double) halfChannelWidth - meanFieldY) ) / (double) halfChannelWidth;
 
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
     double mCb = COLOR_CHANNEL_VALUE_COUNT - i;
     double wCb = mCb / (double) COLOR_CHANNEL_VALUE_COUNT;
     weightedHistCb[i] *= wCb;//= wCb * (double) getHistogram().colorChannelHistogramField[1][i];
-//    double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
-//    weightedSmoothedHistCb[i] = smoothWeightedCb;
-//    if(smoothWeightedCb > maxWeightedCb)// && abs((int)i - (int)maxWeightedIndexCb) < (int)maxDistCb)
-    if(weightedHistCb[i] > maxWeightedCb)
+    double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
+    weightedSmoothedHistCb[i] = smoothWeightedCb;
+    if(smoothWeightedCb > maxWeightedCb)
     {
-//      maxWeightedCb = smoothWeightedCb;
-      maxWeightedCb = weightedHistCb[i];
+      maxWeightedCb = smoothWeightedCb;
       maxWeightedIndexCb = i;
     }
 
@@ -193,10 +189,7 @@ void FieldColorClassifier::execute()
     double smoothWeightedY = smoothRungeKutta4(i, weightedHistY);
     weightedSmoothedHistY[i] = smoothWeightedY;
     //search for max Y channel value with weight w
-    if
-    (
-      weightedSmoothedHistY[i] > maxWeightedY
-    )// && abs((int)i - (int)maxWeightedIndexY) < (int)maxDistY)
+    if(weightedSmoothedHistY[i] > maxWeightedY)
     {
       maxWeightedY = weightedSmoothedHistY[i];
       maxWeightedIndexY = i;
@@ -209,7 +202,7 @@ void FieldColorClassifier::execute()
   idx = maxWeightedIndexY;
   while (idx > 0 && meanRegionBeginIndexY == 0)
   {
-    if(weightedSmoothedHistY[idx] <= 0.5)// /*log(maxWeightedY)*/ /*/ log(2.0)*/ || maxWeightedIndexY - idx >  factorDistY * maxDistY)
+    if(weightedSmoothedHistY[idx] <= log(maxWeightedY) / log(2.0) || maxWeightedIndexY - idx >  factorDistY * maxDistY)
     {
       meanRegionBeginIndexY = idx;
     }
@@ -219,47 +212,41 @@ void FieldColorClassifier::execute()
   idx = maxWeightedIndexY;
   while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexY == 0)// && idx < getFieldColorPercept().minWhite)
   {
-    if(weightedSmoothedHistY[idx] <= 0.5)// /* log(maxWeightedY)*/ /*/ log(2.0)*/ || idx - maxWeightedIndexY > factorDistY * maxDistY)
+    if(weightedSmoothedHistY[idx] <= log(maxWeightedY) / log(2.0) || idx - maxWeightedIndexY > factorDistY * maxDistY)
     {
       meanRegionEndIndexY = idx;
     }
     idx++;
   }
 
-  if(meanRegionEndIndexY > 0 && meanRegionBeginIndexY > 0)
-  {
-    maxWeightedIndexY = (maxWeightedIndexY + meanRegionBeginIndexY + meanRegionEndIndexY + getFieldColorPercept().maxWeightedIndexY) / 4;
-    distY =(meanRegionEndIndexY - meanRegionBeginIndexY ) / 2;//+ distY) / 3;
-  }
+    unsigned int meanRegionBeginIndexCb = 0;
+    unsigned int meanRegionEndIndexCb = 0;
 
-  unsigned int meanRegionBeginIndexCb = 0;
-  unsigned int meanRegionEndIndexCb = 0;
-
-  idx = maxWeightedIndexCb;
-  while (idx > 0 && meanRegionBeginIndexCb == 0)
-  {
-    if(weightedHistCb[idx] <= 0.5)//<= log(maxWeightedCb) || maxWeightedIndexCb - idx > maxDistCb)
+    idx = maxWeightedIndexCb;
+    while (idx > 0 && meanRegionBeginIndexCb == 0)
     {
-      meanRegionBeginIndexCb = idx;
+      if(weightedHistCb[idx] <= log(maxWeightedCb) / log(2.0) || maxWeightedIndexCb - idx > maxDistCb)
+      {
+        meanRegionBeginIndexCb = idx;
+      }
+      idx--;
     }
-    idx--;
-  }
 
-  idx = maxWeightedIndexCb;
-  while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCb == 0)
-  {
-    if(weightedHistCb[idx] <= 0.5)//<= log(maxWeightedCb) || idx - maxWeightedIndexCb > maxDistCb)
+    idx = maxWeightedIndexCb;
+    while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCb == 0)
     {
-      meanRegionEndIndexCb = idx;
+      if(weightedHistCb[idx] <= log(maxWeightedCb) / log(2.0) || idx - maxWeightedIndexCb > maxDistCb)
+      {
+        meanRegionEndIndexCb = idx;
+      }
+      idx++;
     }
-    idx++;
-  }
 
-  if(meanRegionEndIndexCb > 0 && meanRegionBeginIndexCb > 0)
-  {
-//    maxWeightedIndexCb = (maxWeightedIndexCb + meanRegionBeginIndexCb + meanRegionEndIndexCb + getFieldColorPercept().maxWeightedIndexCb) / 4;
-    distCb = (meanRegionEndIndexCb - meanRegionBeginIndexCb + +maxDistCb + distCb) / 4;
-  }
+    if(meanRegionEndIndexCb > 0 && meanRegionBeginIndexCb > 0)
+    {
+      maxWeightedIndexCb = (meanRegionBeginIndexCb + meanRegionEndIndexCb + getFieldColorPercept().maxWeightedIndexCb) / 3;
+      distCb = (meanRegionEndIndexCb - meanRegionBeginIndexCb + maxDistCb + (unsigned int)getFieldColorPercept().distCb) / 4;
+    }
 
   STOPWATCH_STOP("FieldColorClassifier:Y_filtering");
 
@@ -269,51 +256,76 @@ void FieldColorClassifier::execute()
     weightedHistCb[i] = weightedSmoothedHistCb[i];
   }
 
-//  double fY = (double) meanFieldY / 128;
-//  distY = (unsigned int) (distY * fY) + fieldParams.fieldColorMin.y;
-  if(distY < fieldParams.fieldColorMin.y)
+  if(meanRegionEndIndexY > 0 && meanRegionBeginIndexY > 0)
   {
-    distY = fieldParams.fieldColorMin.y;
+    maxWeightedIndexY = (meanRegionBeginIndexY + meanRegionEndIndexY + getFieldColorPercept().maxWeightedIndexY) / 3;
+    distY =(meanRegionEndIndexY - meanRegionBeginIndexY + maxDistY + (unsigned int)getFieldColorPercept().distY) / 4;
+  }
+
+  double fY = (double) meanFieldY / 128;
+  distY = (unsigned int) (distY * fY) + MIN_FIELD_COLOR_Y_CHANNEL_DIST;
+  if(distY < MIN_FIELD_COLOR_Y_CHANNEL_DIST)
+  {
+    distY = MIN_FIELD_COLOR_Y_CHANNEL_DIST;
   }
   if(distY > maxDistY)
   {
     distY = maxDistY;
   }
 
-//  double fCb = log((double) maxWeightedCb) / log(2.0) * 0.1;
-//  distCb += (unsigned int) (distCb * fCb);
-  if(distCb < fieldParams.fieldColorMin.u)
+  double fCb = log((double) maxWeightedCb) / log(2.0) * 0.1;
+  distCb += (unsigned int) (distCb * fCb);
+  if(distCb < MIN_FIELD_COLOR_Cb_CHANNEL_DIST)
   {
-    distCb = fieldParams.fieldColorMin.u;
+    distCb = MIN_FIELD_COLOR_Cb_CHANNEL_DIST;
   }
   if(distCb > maxDistCb)
   {
     distCb = maxDistCb;
   }
 
-//  double fCr = log((double) maxWeightedCr) / log(2.0) * 0.1;
-//  distCr += (unsigned int) (distCr * fCr);
-  if(distCr < fieldParams.fieldColorMin.v)
+  double fCr = log((double) maxWeightedCr) / log(2.0) * 0.1;
+  distCr += (unsigned int) (distCr * fCr);
+  if(distCr < MIN_FIELD_COLOR_Cr_CHANNEL_DIST)
   {
-    distCr = fieldParams.fieldColorMin.v;
+    distCr = MIN_FIELD_COLOR_Cr_CHANNEL_DIST;
   }
   if(distCr > maxDistCr)
   {
     distCr = maxDistCr;
   }
 
-  getFieldColorPercept().distY = distY;
-  getFieldColorPercept().distCb = distCb;
-  getFieldColorPercept().distCr = distCr;
-
-//  if(maxWeightedY > 3.0 && maxWeightedCb > 3.0 && maxWeightedCr > 3.0)
+  if(distY > 0)
   {
-    getFieldColorPercept().maxWeightedY = maxWeightedY;
-    getFieldColorPercept().maxWeightedIndexY = maxWeightedIndexY;
-    getFieldColorPercept().maxWeightedCb = maxWeightedCb;
-    getFieldColorPercept().maxWeightedIndexCb = maxWeightedIndexCb;
-    getFieldColorPercept().maxWeightedCr = maxWeightedCr;
-    getFieldColorPercept().maxWeightedIndexCr = maxWeightedIndexCr;
+    getFieldColorPercept().distY = distY;
+  }
+
+  if(distCb > 0)
+  {
+    getFieldColorPercept().distCb = distCb;
+  }
+
+  if(distCr > 0)
+  {
+    getFieldColorPercept().distCr = distCr;
+  }
+  if(maxWeightedY > 3.0 && maxWeightedCb > 3.0 && maxWeightedCr > 3.0)
+  {
+    //if(maxWeightedY > 2.0)
+    {
+      getFieldColorPercept().maxWeightedY = maxWeightedY;
+      getFieldColorPercept().maxWeightedIndexY = maxWeightedIndexY;
+    }
+    //if(maxWeightedCb > 2.0)
+    {
+      getFieldColorPercept().maxWeightedCb = maxWeightedCb;
+      getFieldColorPercept().maxWeightedIndexCb = maxWeightedIndexCb;
+    }
+    //if(maxWeightedCr > 2.0)
+    {
+      getFieldColorPercept().maxWeightedCr = maxWeightedCr;
+      getFieldColorPercept().maxWeightedIndexCr = maxWeightedIndexCr;
+    }
   }
   getFieldColorPercept().lastUpdated = getFrameInfo();
 
@@ -418,25 +430,25 @@ void FieldColorClassifier::runDebugRequests(int weightedMeanY, int meanY)
     LINE_PX
     (
       ColorClasses::white,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY - getFieldColorPercept().distY), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY - getFieldColorPercept().distY), 0, imageWidth),
       0,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY - getFieldColorPercept().distY), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY - getFieldColorPercept().distY), 0, imageWidth),
       imageHeight
     );
     LINE_PX
     (
       ColorClasses::gray,
-      Math::clamp((int) getFieldColorPercept().maxWeightedIndexY, 0, 255),
+      Math::clamp((int) getFieldColorPercept().maxWeightedIndexY, 0, imageWidth),
       imageHeight,
-      Math::clamp((int) getFieldColorPercept().maxWeightedIndexY, 0, 255),
+      Math::clamp((int) getFieldColorPercept().maxWeightedIndexY, 0, imageWidth),
       Math::clamp(imageHeight - (int) getFieldColorPercept().maxWeightedY, 0, imageHeight)
     );
     LINE_PX
     (
       ColorClasses::white,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY), 0, imageWidth),
       0,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY), 0, imageWidth),
       imageHeight
     );
   );
@@ -445,25 +457,25 @@ void FieldColorClassifier::runDebugRequests(int weightedMeanY, int meanY)
     LINE_PX
     (
       ColorClasses::blue,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb - getFieldColorPercept().distCb), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb - getFieldColorPercept().distCb), 0, imageWidth),
       0,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb - getFieldColorPercept().distCb), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb - getFieldColorPercept().distCb), 0, imageWidth),
       imageHeight
     );
     LINE_PX
     (
       ColorClasses::skyblue,
-      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCb, 0, 255),
+      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCb, 0, imageWidth),
       imageHeight,
-      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCb, 0, 255),
+      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCb, 0, imageWidth),
       Math::clamp(imageHeight - (int) getFieldColorPercept().maxWeightedCb, 0, imageHeight)
     );
     LINE_PX
     (
       ColorClasses::blue,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb + getFieldColorPercept().distCb), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb + getFieldColorPercept().distCb), 0, imageWidth),
       0,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb + getFieldColorPercept().distCb), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCb + getFieldColorPercept().distCb), 0, imageWidth),
       imageHeight
     );
   );
@@ -472,25 +484,25 @@ void FieldColorClassifier::runDebugRequests(int weightedMeanY, int meanY)
     LINE_PX
     (
       ColorClasses::red,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr - getFieldColorPercept().distCr), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr - getFieldColorPercept().distCr), 0, imageWidth),
       0,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr - getFieldColorPercept().distCr), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr - getFieldColorPercept().distCr), 0, imageWidth),
       imageHeight
     );
     LINE_PX
     (
       ColorClasses::orange,
-      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCr, 0, 255),
+      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCr, 0, imageWidth),
       imageHeight,
-      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCr, 0, 255),
+      Math::clamp((int) getFieldColorPercept().maxWeightedIndexCr, 0, imageWidth),
       Math::clamp(imageHeight - (int) getFieldColorPercept().maxWeightedCr, 0, imageHeight)
     );
     LINE_PX
     (
       ColorClasses::red,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr + getFieldColorPercept().distCr), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr + getFieldColorPercept().distCr), 0, imageWidth),
       0,
-      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr + getFieldColorPercept().distCr), 0, 255),
+      Math::clamp((int) (getFieldColorPercept().maxWeightedIndexCr + getFieldColorPercept().distCr), 0, imageWidth),
       imageHeight
     );
   );

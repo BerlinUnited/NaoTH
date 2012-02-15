@@ -17,13 +17,11 @@ class ColorClassificationModel : public ColorClassifier, public naoth::Printable
 public:
   ColorClassificationModel();
 
-  virtual void setColorTable(const ColorTable64& ct);
-  virtual void setFieldColorPercept(const FieldColorPercept& percept);
-  virtual void invalidateFieldColorPercept();
-  virtual void validateFieldColorPercept();
-  virtual void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
-  virtual void invalidateBaseColorRegionPercept();
-  virtual void validateBaseColorRegionPercept();
+  void setColorTable(const ColorTable64& ct);
+  void setFieldColorPercept(const FieldColorPercept& percept);
+  void invalidateFieldColorPercept();
+  void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
+  void invalidateBaseColorRegionPercept();
 
 protected:
   inline ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
@@ -41,40 +39,37 @@ protected:
       {
         return ColorClasses::orange;
       }
-
-      if(baseColorRegionPercept.isYellow(a, b ,c))
+      else if(baseColorRegionPercept.isYellow(a, b ,c))
       {
         return ColorClasses::yellow;
       }
-
-      if(baseColorRegionPercept.isWhite(a, b ,c))
+      else if(baseColorRegionPercept.isWhite(a, b ,c))
       {
         return ColorClasses::white;
       }
     }
-//    else
-//    {
-//      // ball color
-//      double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
-//      unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
+    else
+    {
+      // ball color
+      double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
+      unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
 
-//      double orange_thresh = 115;
-//      MODIFY("ColorClassificationModel:orange_thresh", orange_thresh);
-//      if(t > orange_thresh)
-//      {
-//        return ColorClasses::orange;
-//      }
+      double orange_thresh = 115;
+      MODIFY("ColorClassificationModel:orange_thresh", orange_thresh);
+      if(t > orange_thresh)
+      {
+        return ColorClasses::orange;
+      }
 
-//      double yb = c-b;
+      double yb = c-b;
 
-//      double yellow_thresh = 40;
-//      MODIFY("ColorClassificationModel:yellow_thresh", yellow_thresh);
-//      if(yb > yellow_thresh)
-//      {
-//        return ColorClasses::yellow;
-//      }
-//    }
-    //return ColorClasses::none;
+      double yellow_thresh = 40;
+      MODIFY("ColorClassificationModel:yellow_thresh", yellow_thresh);
+      if(yb > yellow_thresh)
+      {
+        return ColorClasses::yellow;
+      }
+    }
     return colorTable.getColorClass(a,b,c);
   }
 
@@ -86,15 +81,14 @@ protected:
 
 private :
 
-  ColorTable64 colorTableDummy;
-  ColorTable64& colorTable;
+  ColorTable64 colorTable;
 
   bool fieldColorPerceptValid;
-  FieldColorPercept fieldColorPerceptDummy;
+  FieldColorPercept fieldDummy;
   FieldColorPercept& fieldColorPercept;
 
   bool baseColorRegionPerceptValid;
-  BaseColorRegionPercept baseColorRegionPerceptDummy;
+  BaseColorRegionPercept baseDummy;
   BaseColorRegionPercept& baseColorRegionPercept;
 };
 

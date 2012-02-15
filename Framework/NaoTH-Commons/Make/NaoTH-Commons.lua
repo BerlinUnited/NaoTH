@@ -15,7 +15,3 @@ project "NaoTH-Commons"
     "../Source/**.c", 
     "../Source/**.h"
   }
-
-  links {
-    "pthread"
-  }

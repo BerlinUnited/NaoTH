@@ -215,8 +215,6 @@ public:
             << "Height = " << uniformGrid.height << endl
             << "Valid = " << (valid ? "true" : "false") << endl
             << "Mean Brightness = " << meanBrightness << endl
-            << "Mean Blue = " << meanBlue << endl
-            << "Mean Red = " << meanRed << endl
             << "Percent of known colors = " << percentOfKnownColors << endl
             << "Percent of unknown colors = " << percentOfUnknownColors << endl
             << "Rate of colors : " << endl;

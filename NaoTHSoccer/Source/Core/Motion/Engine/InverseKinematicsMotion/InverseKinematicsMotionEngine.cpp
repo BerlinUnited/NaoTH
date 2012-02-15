@@ -245,14 +245,10 @@ void InverseKinematicsMotionEngine::neuralStabilize(double (&position)[naoth::Jo
   // X axis
   position[JointData::RHipRoll] += weightX;
   position[JointData::LHipRoll] += weightX;
-  position[JointData::RAnkleRoll] -= weightX;
-  position[JointData::LAnkleRoll] -= weightX;
 
   // Y axis
   position[JointData::RHipPitch] += weightY;
   position[JointData::LHipPitch] += weightY;
-  position[JointData::RAnklePitch] -= weightY;
-  position[JointData::LAnklePitch] -= weightY;
 }//end neuralStabilize
 
 

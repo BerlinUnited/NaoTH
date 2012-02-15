@@ -752,7 +752,7 @@ void V4lCameraHandler::uninitDevice()
     case IO_MMAP:
       for (i = 0; i < n_buffers; ++i)
       {
-        VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
+        VERIFY(-1 != munmap(buffers[i].start, buffers[i].length))
       }
       break;
 
