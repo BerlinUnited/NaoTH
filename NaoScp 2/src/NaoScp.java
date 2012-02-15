@@ -2661,7 +2661,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       public String getPassword()
       { 
-        return passwd; 
+        return sshPassword.getText(); 
       }
 
       public boolean promptYesNo(String str)
