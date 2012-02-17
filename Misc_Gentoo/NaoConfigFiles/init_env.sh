@@ -98,30 +98,32 @@ else
 fi
 
 # check for link to our local lib directory
-if [ ! -d /usr/local ]
+if [ ! -d /home/nao/lib ]
 then
-    echo "creating missing directory /usr/local"
-    mkdir /usr/local
+    echo "setting library directory permissions"
+    mkdir /home/nao/lib
 fi
-if [ ! -h /usr/local/lib ]
+
+if [ -d /home/nao/lib ]
 then
-    echo "creating link to /home/nao/lib"
-    if [ ! -d /home/nao/lib ]
-    then
-	mkdir /home/nao/lib
-    fi
-    if [ -d /usr/local/lib ]
-    then
-	mv /usr/local/lib/* /home/nao/lib
-	rm -rf /usr/local/lib
-    fi
-    ln -s /home/nao/lib /usr/local/lib
+    chmod -R 755 /home/nao/lib
 fi
 
 # check for link to librt.so
 if [ ! -h /home/nao/lib/librt.so ]
 then
     ln -s /usr/librt.so.1 /home/nao/lib/librt.so
+fi
+
+# copy naoth-profile.sh
+if [ -f ./etc/profile.d/dbus-session.sh ]
+then
+    echo "copy dbus-session.sh"
+    cp -f ./etc/profile.d/dbus-session.sh /etc/profile.d/dbus-session.sh
+    chown root:root /etc/profile.d/dbus-session.sh
+    chmod 755 /etc/profile.d/dbus-session.sh
+else
+    echo "naoth-profile.sh is missing"
 fi
 
 

@@ -80,6 +80,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private boolean showDoneMsg = true;
   
   private String stagingLibDir;
+  private String setupPlayerNo;
   
   
   @SuppressWarnings("unchecked")
@@ -252,7 +253,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(UnsupportedEncodingException ueEx)
       {
-        log("could not determine current work directory\n" + ueEx.getMessage());
+        actionInfo("could not determine current work directory\n" + ueEx.getMessage());
       }
     }
 
@@ -396,7 +397,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     FileReader fReader = new FileReader(localSetupScriptPath() + "/network.conf");        
     BufferedReader bReader = new BufferedReader(fReader);
 
-    log("reading NaoConfigFiles/network.conf");
+    actionInfo("reading NaoConfigFiles/network.conf");
     String line = bReader.readLine();
     while(line != null)
     {
@@ -430,7 +431,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
     FileWriter fWriter = new FileWriter(localSetupScriptPath() + "/network.conf");
 
-    log("writing NaoConfigFiles/network.conf");
+    actionInfo("writing NaoConfigFiles/network.conf");
     if(subnetFieldLAN.getText().endsWith("."))
     {
       fWriter.write("LAN_IP=" + subnetFieldLAN.getText() + "\n");
@@ -471,7 +472,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
     catch(IOException ioEx)
     {
-      log("network config file not read and writeable");
+      actionInfo("network config file not read and writeable");
     }
     
   }
@@ -541,10 +542,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         if(showCopyDoneMsg)
         {
           showCopyDoneMsg = false;
+          showScriptDoneMsg = false;
           showDoneMsg = true;
         }
         else
         {
+          showScriptDoneMsg = true;
           showDoneMsg = false;
         }
       }
@@ -627,7 +630,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   public void haveError(int naoNo, String error)
   {
     hadErrors.put(naoNo, true);
-    log(error);
+    actionInfo(error);
   }
   
   public void haveCopyError(String sNaoNo, String error)
@@ -688,7 +691,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       resetBackupList();
       if(showDoneMsg)
       {
-        log("Copy + Scripts done");
+        actionInfo("Copy + Scripts done");
         JOptionPane.showMessageDialog(null, "Copy + Scripts done" + add);
         setFormEnabled(true);
       }
@@ -731,7 +734,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       resetBackupList();
       if(showScriptDoneMsg)
       {
-        log("Copy done");
+        actionInfo("Scripts done");
         JOptionPane.showMessageDialog(null, "Scripts done" + add);
         setFormEnabled(true);
       }
@@ -776,7 +779,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       resetBackupList();
       if(showCopyDoneMsg)
       {        
-        log("Scripts done");
+        actionInfo("Copy done");
         JOptionPane.showMessageDialog(null, "Copy done" + add);
         setFormEnabled(true);
       }
@@ -835,14 +838,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       if( ! deployOutDir.mkdirs())
       {
-        log("Error: Could not create deploy out directory");
+        actionInfo("Error: Could not create deploy out directory");
         return false;
       }
     }
 
     if( ! deployOutDir.canWrite())
     {
-      log("Error: Cant write to deploy out dir");
+      actionInfo("Error: Cant write to deploy out dir");
       return false;
     }
 
@@ -888,7 +891,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             }
             catch(IOException ioe)
             {
-              log("I/O Error in prepareDeploy- " + ioe.toString());
+              actionInfo("I/O Error in prepareDeploy- " + ioe.toString());
             }          
 
             copyFiles(new File(localLibnaothPath() + "/libnaoth.so"), localLib);
@@ -918,8 +921,9 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
             copyFiles(new File(localConfigPath()), myConfigDir);
             writePlayerCfg(new File(myConfigPath + "/private/player.cfg"), sNaoNo);
-            writeTeamcommCfg(new File(myConfigPath + "/private/teamcomm.cfg"), sNaoNo);
+            writeTeamcommCfg(new File(myConfigPath + "/private/teamcomm.cfg"));
             writeScheme(new File(myConfigPath + "/scheme.cfg"));
+            writeNaoInfo(new File(myConfigPath + "/nao.info"));
           }
         }
       }
@@ -945,14 +949,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       if( ! deployOutDir.mkdirs())
       {
-        log("Error: Could not create deploy out directory");
+        actionInfo("Error: Could not create deploy out directory");
         return false;
       }
     }
 
     if( ! deployOutDir.canWrite())
     {
-      log("Error: Cant write to deploy out dir");
+      actionInfo("Error: Cant write to deploy out dir");
       return false;
     }
 
@@ -1047,7 +1051,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(Exception e)
       {
-        log(e.toString());
+        actionInfo(e.toString());
       }
   }
   
@@ -1096,7 +1100,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(Exception e)
       {
-        log(e.toString());
+        actionInfo(e.toString());
       }
   }
   
@@ -1129,7 +1133,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
     catch (IOException ex)
     {
-      log("I/O Error in readFile- " + fileName + "\n" + ex.toString());
+      actionInfo("I/O Error in readFile- " + fileName + "\n" + ex.toString());
     }
 
     return content.toString();
@@ -1271,13 +1275,26 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   {
     this.initNetworkConfig();
     resetBackupList();
-
-    String inString = readFile(localConfigPath() + "/scheme.cfg");
-    if(inString.equals("Nao") || inString.equals(""))
+    
+    File f = new File(localConfigPath() + "/general/player.cfg");    
+    if(!f.isFile())
     {
-      inString = "Nao";
+      writePlayerCfg(f, "1");
     }
-    jSchemeBox.setSelectedItem(inString);
+    else
+    {
+      readPlayerCfg(f);
+    }
+    
+    f = new File(localConfigPath() + "/general/teamcomm.cfg");
+    if(!f.isFile())
+    {
+      writeTeamcommCfg(f);
+    }
+    else
+    {
+      readTeamCfg(f);
+    }
   }
 
 
@@ -1348,7 +1365,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private void log(String logtext)
   {
     jLogWindow.append(logtext + "\n");
-    jLogWindow.setCaretPosition(jLogWindow.getText().length() - 1);
+//    if(jLogWindow.getText().length() > 1)
+//    {
+//      jLogWindow.setCaretPosition(jLogWindow.getText().length() - 1);
+//    }
+    jLogWindow.updateUI();
     System.out.println(logtext);
   }//end log
 
@@ -1388,8 +1409,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       {
         if( ! dest.mkdirs())
         {
-          log(
-          "copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
+          actionInfo("copyFiles: Could not create direcotry: " + dest.getAbsolutePath() + ".");
           return;
         }
       }
@@ -1421,12 +1441,30 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       catch(IOException e)
       {
         e.printStackTrace();
-        log("copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
+        actionInfo("copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
         getAbsolutePath() + ".");
       }
     }
   }
 
+  /**
+   * Creates scheme.cfg with the scheme
+   * @param schemeCfg File
+   */
+  private void writeNaoInfo(File infoFile)
+  {    
+    try
+    {
+      BufferedWriter writer = new BufferedWriter(new FileWriter(infoFile));
+      writer.write("");
+      writer.close();
+    }
+    catch(IOException ioe)
+    {
+      actionInfo("I/O Error in writeNaoInfo- " + ioe.toString());
+    }
+  }
+  
   /**
    * Creates scheme.cfg with the scheme
    * @param schemeCfg File
@@ -1439,23 +1477,67 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       try
       {
-        BufferedWriter out = new BufferedWriter(new FileWriter(schemeCfg));
-        out.write(outString);
-        out.close();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(schemeCfg));
+        writer.write(outString);
+        writer.close();
       }
       catch(IOException ioe)
       {
-        log("I/O Error in writeScheme- " + ioe.toString());
+        actionInfo("I/O Error in writeScheme- " + ioe.toString());
       }
     }
   }
-
+  
+  private void readPlayerCfg(File configFile)
+  {
+    try
+    {
+      BufferedReader reader = new BufferedReader(new FileReader(configFile));
+      String line = reader.readLine();
+      while(line != null && !line.contains("[player]"))
+      {
+        line = reader.readLine();
+      }
+      line = reader.readLine();
+      while(line != null)
+      {
+        String value = null;
+        if(line.contains("TeamColor="))
+        {
+          value = line.replace("TeamColor=", "").trim();
+          for(int idx = 0; idx < jColorBox.getItemCount(); idx++)
+          {
+            if(value.equalsIgnoreCase(jColorBox.getItemAt(idx).toString()) )
+            {
+              jColorBox.setSelectedIndex(idx);
+              break;
+            }
+          }
+        }
+        else if(line.contains("TeamNumber="))
+        {
+          value = line.replace("TeamNumber=", "").trim();          
+          jTeamNumber.setText(value);
+        }        
+        line = reader.readLine();
+      }
+    }
+    catch(Exception e)
+    {
+      actionInfo(e.toString());
+    }
+  }
+  
   private void writePlayerCfg(File configFile, String playerNumber)
   {
+    if(playerNumber.equals("0"))
+    {
+      playerNumber = setupPlayerNo;
+    }
+    
     StringBuilder c = new StringBuilder();
     
-    c.append("[player]\n");
-    
+    c.append("[player]\n");    
     c.append("PlayerNumber=");
     c.append(playerNumber);
     c.append("\n");
@@ -1468,19 +1550,51 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     c.append(jColorBox.getSelectedItem());
     c.append("\n");
     
+    c.append("NumOfPlayer=");
+    c.append(String.valueOf(iNaoBytes.size() - 1));
+    c.append("\n");
+    
     try
     {
-      BufferedWriter out = new BufferedWriter(new FileWriter(configFile));
-      out.write(c.toString());
-      out.close();
+      BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
+      writer.write(c.toString());
+      writer.close();
     }
     catch(IOException ex)
     {
-      log("I/O Error in writePlayerCfg- " + ex.getMessage());
+      actionInfo("I/O Error in writePlayerCfg- " + ex.getMessage());
     }
   }
   
-  private void writeTeamcommCfg(File configFile, String playerNumber)
+  private void readTeamCfg(File configFile)
+  {
+    try
+    {
+      BufferedReader reader = new BufferedReader(new FileReader(configFile));
+      String line = reader.readLine();
+      while(line != null && !line.contains("[teamcomm]"))
+      {
+        line = reader.readLine();
+      }
+      line = reader.readLine();
+      while(line != null)
+      {
+        String value = null;
+        if(line.contains("port="))
+        {
+          value = line.replace("port=", "").trim();          
+          jTeamCommPort.setText(value);
+        }        
+        line = reader.readLine();
+      }
+    }
+    catch(Exception e)
+    {
+      actionInfo(e.toString());
+    }
+  }
+ 
+  private void writeTeamcommCfg(File configFile)
   {
     
     StringBuilder c = new StringBuilder();
@@ -1505,13 +1619,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     
     try
     {
-      BufferedWriter out = new BufferedWriter(new FileWriter(configFile));
-      out.write(c.toString());
-      out.close();
+      BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
+      writer.write(c.toString());
+      writer.close();
     }
     catch(IOException ex)
     {
-      log("I/O Error in writeTeamcommCfg- " + ex.getMessage());
+      actionInfo("I/O Error in writeTeamcommCfg- " + ex.getMessage());
     }
   }
   
@@ -1673,6 +1787,25 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       return sNaoByte;
     }
     
+    public String askForPlayerNumber()
+    {
+      String sPlayerNo = null;
+      int iPlayerNo = 0;
+      while(iPlayerNo >= iNaoBytes.size() || iPlayerNo < 1)
+      {
+        sPlayerNo = JOptionPane.showInputDialog("Enter Nao Number (1 - " + (iNaoBytes.size() - 1) + ")", "");
+        if(sPlayerNo == null)
+        {
+          break;
+        }
+        else
+        {
+          iPlayerNo = Integer.parseInt(sPlayerNo);
+        }
+      }
+      return sPlayerNo;
+    }
+    
     public ArrayList<String> getAdressList()
     {
       return this.addresses;
@@ -1681,7 +1814,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     
   private void initializeRobot()
   {
-    robotConfigPreparator preparator = new robotConfigPreparator();
     if(stagingLibDir == null)
     {
       haveError("0", "no valid CTC Staging Directory selected");
@@ -1689,14 +1821,21 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       return;
     }
     
+    robotConfigPreparator preparator = new robotConfigPreparator();
     String address = preparator.getDefaultAddress();
     ArrayList<String> addresses = preparator.getAdressList();
     String sNaoByte = null;
+    setupPlayerNo = null;
     if(address != null )
     {
       sNaoByte = preparator.askForNaoNumber();
-    }
-    if(address == null || sNaoByte == null || !prepareDeploy(true) || !prepareSetupDeploy(sNaoByte))
+      if(sNaoByte != null )
+      {
+        setupPlayerNo = preparator.askForPlayerNumber();
+      }
+    }    
+    
+    if(address == null || sNaoByte == null || setupPlayerNo == null || !prepareDeploy(true) || !prepareSetupDeploy(sNaoByte))
     {
       haveError("0","robot initialization aborted");
       allIsDone("0");
@@ -1752,7 +1891,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     String address = preparator.getDefaultAddress();
     ArrayList<String> addresses = preparator.getAdressList();
       
-    String sNaoByte = preparator.askForNaoNumber();
+    String sNaoByte = null;
+    if(address != null )
+    {
+      sNaoByte = preparator.askForNaoNumber();
+    }
     if(address == null || sNaoByte == null || !prepareSetupDeploy(sNaoByte))
     {
       haveError("0","robot network configuration aborted");
@@ -2030,36 +2173,35 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       .add(jActionsPanelLayout.createSequentialGroup()
         .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
           .add(jActionsPanelLayout.createSequentialGroup()
-            .addContainerGap()
-            .add(jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE))
-          .add(jActionsPanelLayout.createSequentialGroup()
             .add(jDirChooser)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 668, Short.MAX_VALUE))
+            .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE))
           .add(jActionsPanelLayout.createSequentialGroup()
             .addContainerGap()
-            .add(jLabel15)
-            .add(18, 18, 18)
-            .add(jBackupBox, 0, 554, Short.MAX_VALUE))
-          .add(jActionsPanelLayout.createSequentialGroup()
-            .addContainerGap()
-            .add(jLabel6)
-            .add(18, 18, 18)
-            .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(6, 6, 6)
-            .add(jLabel7)
-            .add(18, 18, 18)
-            .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(6, 6, 6)
-            .add(jLabel8)
-            .add(18, 18, 18)
-            .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(6, 6, 6)
-            .add(jLabel17)
-            .add(18, 18, 18)
-            .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(18, 18, 18)
-            .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)))
+            .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
+                .add(jLabel15)
+                .add(18, 18, 18)
+                .add(jBackupBox, 0, 540, Short.MAX_VALUE))
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
+                .add(jLabel6)
+                .add(18, 18, 18)
+                .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(6, 6, 6)
+                .add(jLabel7)
+                .add(18, 18, 18)
+                .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(6, 6, 6)
+                .add(jLabel8)
+                .add(18, 18, 18)
+                .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(6, 6, 6)
+                .add(jLabel17)
+                .add(18, 18, 18)
+                .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(18, 18, 18)
+                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)))))
         .addContainerGap())
     );
     jActionsPanelLayout.setVerticalGroup(
@@ -2081,7 +2223,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           .add(jLabel15)
           .add(jBackupBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-        .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
           .add(jDirChooser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 18, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -2222,13 +2364,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         .addContainerGap()
         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
           .add(jPanel1Layout.createSequentialGroup()
-            .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 186, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .add(jLabel16)))
-          .add(jActionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-          .add(jPanel1Layout.createSequentialGroup()
             .add(cbCopyConfig)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(cbCopyLib)
@@ -2239,8 +2374,16 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
             .add(cbCopyLogs)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-            .add(cbNoBackup)))
-        .addContainerGap(2, Short.MAX_VALUE))
+            .add(cbNoBackup))
+          .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+            .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanel, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1Layout.createSequentialGroup()
+              .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+              .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 186, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jLabel16)))))
+        .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -2566,7 +2709,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     });
 
-    jButtonSaveNetworkConfig.setText("Save Network Config");
+    jButtonSaveNetworkConfig.setText("Save As Default Config");
     jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButtonSaveNetworkConfigActionPerformed(evt);
@@ -2592,10 +2735,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-          .add(org.jdesktop.layout.GroupLayout.TRAILING, jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-          .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))
+          .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+          .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
         .add(19, 19, 19))
     );
     jPanel2Layout.setVerticalGroup(
@@ -2751,11 +2894,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
       try
       {
-        writeNetworkConfig();        
+        writeNetworkConfig();
+        writePlayerCfg(new File(localConfigPath() + "/general/player.cfg"), "1");
+        writeTeamcommCfg(new File(localConfigPath() + "/general/teamcomm.cfg"));
+        writeScheme(new File(localConfigPath() + "/scheme.cfg"));        
       }
       catch(IOException ex)
       {
-        log("Could'nt write network config file\n"  + ex.getMessage());
+        actionInfo("Could'nt write network config file\n"  + ex.getMessage());
       }
     }//GEN-LAST:event_jButtonSaveNetworkConfigActionPerformed
 
@@ -3160,7 +3306,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(Exception e)
       {
-        log("Exception in rmDirSftp: (" + dstDir + ")" + e.toString());
+        actionInfo("Exception in rmDirSftp: (" + dstDir + ")" + e.toString());
       }
     }
 
@@ -3211,7 +3357,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(Exception e)
       {
-        log("Exception in recursiveSftpGet: " + e.toString());
+        actionInfo("Exception in recursiveSftpGet: " + e.toString());
       }
     }
     /**
@@ -3265,7 +3411,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(Exception e)
       {
-        log("Exception in recursiveSftpGet: " + e.toString());
+        actionInfo("Exception in recursiveSftpGet: " + e.toString());
       }
     }
 
@@ -3294,7 +3440,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           }
           catch(Exception ex)
           {
-            log("mkdir exception (" + path + ")");
+            actionInfo("mkdir exception (" + path + ")");
             return false;
           }
         }
@@ -3377,17 +3523,17 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           }
           else
           {
-            log("remote directory does not exist and could not be created.");
+            actionInfo("remote directory does not exist and could not be created.");
           }              
         }
         else
         {
-          log("remote directory does not exist and could not be created.");
+          actionInfo("remote directory does not exist and could not be created.");
         }
       }
       catch(Exception e)
       {
-        log("Exception in recursiveSftpPut: " + e.getMessage());//.toString());
+        actionInfo("Exception in recursiveSftpPut: " + e.getMessage());//.toString());
       }
     }
   }
@@ -3461,7 +3607,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
         File localSetupScriptFiles = new File(localSetupScriptPath);
 
-        log(remoteRootPath(sNaoNo) + setupScriptPath());
         rmDirSftp(c, remoteRootPath(sNaoNo) + setupScriptPath());
 
         // create if it is not existing
@@ -3563,7 +3708,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
             if(!libFile.exists() || !libFile.isFile())
             {
-              log("selected backup contains no libnaoth.so file");
+              actionInfo("selected backup contains no libnaoth.so file");
               copyLib = false;
             }
           }
@@ -3573,7 +3718,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
             if(!libFile.exists() || !libFile.isFile())
             {
-              log("selected backup contains no libnaoth.so file");
+              actionInfo("selected backup contains no libnaoth.so file");
               copyExe = false;
             }
           }
@@ -3583,7 +3728,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             File exeDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/naoth");
             if(!exeDir.exists() || !exeDir.isDirectory())
             {
-              log("selected backup contains no Config directory");
+              actionInfo("selected backup contains no Config directory");
               copyConfig = false;
             }
           }
@@ -3730,11 +3875,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             if(libFile.exists() && libFile.isFile())
             {
               localLibPath = localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/";
-              log("writing libnaoth.so file from Backup " + jBackupBox.getSelectedItem() + " to Nao " + sNaoNo);
+              actionInfo("writing libnaoth.so file from Backup " + jBackupBox.getSelectedItem() + " to Nao " + sNaoNo);
             }
             else
             {
-              log("selected backup contains no libnaoth.so file " + localLibPath);
+              actionInfo("selected backup contains no libnaoth.so file " + localLibPath);
               copyLib = false;
             }
           }
@@ -3798,11 +3943,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             if(configDir.exists() && configDir.isDirectory())
             {
               localConfigPath = configDir.getAbsolutePath();
-              log("writing Config directory from Backup " + jBackupBox.getSelectedItem() + " to Nao " + sNaoNo);
+              actionInfo("writing Config directory from Backup " + jBackupBox.getSelectedItem() + " to Nao " + sNaoNo);
             }
             else
             {
-              log("selected backup contains no Config directory " + localConfigPath);
+              actionInfo("selected backup contains no Config directory " + localConfigPath);
               copyConfig = false;
             }
           }
@@ -4020,8 +4165,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       sshExecAndWaitForResponse("cd " + directory, "localhost|nao");
       sshExecAndWaitForResponse("chown root:root ./" + shellScript + " && chmod 744 ./" + shellScript + " && ./" + shellScript, "localhost|nao");
-//      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && reboot && exit", "localhost|nao");
-      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && exit", "localhost|nao");
+      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && reboot && exit", "localhost|nao");
+//      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && exit", "localhost|nao");
       sshExecAndWaitForResponse("exit", "logout");
 
       shell.disconnect();

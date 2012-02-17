@@ -1,5 +1,4 @@
-#!/bin/bash
-# ! #/sbin/runscript
+#!/sbin/runscript
 
 description=""
 
