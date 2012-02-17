@@ -31,6 +31,9 @@ public:
     Vector2<double> leftPost;
     Vector2<double> rightPost;
     FrameInfo frameInfoWhenGoalLastSeen;
+    
+    /* color of the goal */
+    ColorClasses::Color color;
 
     Vector2<double> calculateCenter() const
     {
@@ -39,20 +42,27 @@ public:
 
   };//end class Goal
 
-  Goal blueGoal;
-  Goal yellowGoal;
+  Goal goalOne;
+  Goal goalTwo;
 
-  const Goal& getTeamGoal(naoth::GameData::TeamColor teamColor) const;
-  Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
+  const Goal& getTeamGoal(double global_angle) const;
+  Goal& getTeamGoal(double global_angle);
+  const Goal& getOppGoal(double global_angle) const;
+  Goal& getOppGoal(double global_angle);
+
+
+  // TODO: deprecated?!
+  //const Goal& getTeamGoal(naoth::GameData::TeamColor teamColor) const;
+  //Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
 
   virtual void print(ostream& stream) const;
 
   void draw() const;
 
-  void calculateBlueByYellow(double xLength);
-  void calculateYellowByBlue(double xLength);
-  Pose2D calculatePose(ColorClasses::Color opponentGoalColor, const FieldInfo& fieldInfo) const;
+  static void calculateAnotherGoal(const GoalModel::Goal& one, GoalModel::Goal& another, double distance);
+  Pose2D calculatePose(double global_angle, const FieldInfo& fieldInfo) const;
 };//end class GoalModel
+
 
 /** goal model in robot's local coordinates based on pure observations of the goal posts */
 class LocalGoalModel : public GoalModel
@@ -79,7 +89,11 @@ public:
 class SelfLocGoalModel : public GoalModel
 {
 public:
-  void update(naoth::GameData::TeamColor ownColor, const Pose2D& robotPose, const FieldInfo& fieldInfo);
+  void update(const Pose2D& robotPose, const FieldInfo& fieldInfo);
+
+  // convention: goalOne is own, goalTwo is opponent
+  inline const Goal& getOppGoal() const { return goalOne; };
+  inline const Goal& getOwnGoal() const { return goalTwo; };
 };
 
 

@@ -11,6 +11,27 @@
 
 #include "GoalModel.h"
 
+const GoalModel::Goal& GoalModel::getTeamGoal(double global_angle) const
+{
+  
+}//end getTeamGoal
+
+GoalModel::Goal& GoalModel::getTeamGoal(double global_angle)
+{
+  
+}//end getTeamGoal
+
+const GoalModel::Goal& GoalModel::getOppGoal(double global_angle) const
+{
+  
+}//end getOppGoal
+
+GoalModel::Goal& GoalModel::getOppGoal(double global_angle)
+{
+  
+}//end getOppGoal
+
+/*
 const GoalModel::Goal& GoalModel::getTeamGoal(naoth::GameData::TeamColor teamColor) const
 {
   switch (teamColor)
@@ -42,30 +63,31 @@ GoalModel::Goal& GoalModel::getTeamGoal(naoth::GameData::TeamColor teamColor)
   }
   return blueGoal;
 }//end getTeamGoal
+*/
 
 void GoalModel::print(ostream& stream) const
 {
-  stream<<"== Blue Goal ==\n";
-  stream<<blueGoal.frameInfoWhenGoalLastSeen;
-  stream<<"LPost = "<<blueGoal.leftPost<<'\n';
-  stream<<"RPost = "<<blueGoal.rightPost<<'\n';
+  stream<<"== Goal One ==\n";
+  stream<<goalOne.frameInfoWhenGoalLastSeen;
+  stream<<"LPost = "<<goalOne.leftPost<<'\n';
+  stream<<"RPost = "<<goalOne.rightPost<<'\n';
 
-  stream<<"== Yellow Goal ==\n";
-  stream<<yellowGoal.frameInfoWhenGoalLastSeen;
-  stream<<"LPost = "<<yellowGoal.leftPost<<'\n';
-  stream<<"RPost = "<<yellowGoal.rightPost<<'\n';
+  stream<<"== Goal Two ==\n";
+  stream<<goalTwo.frameInfoWhenGoalLastSeen;
+  stream<<"LPost = "<<goalTwo.leftPost<<'\n';
+  stream<<"RPost = "<<goalTwo.rightPost<<'\n';
 }//end print
 
 void GoalModel::draw() const
 {
   FIELD_DRAWING_CONTEXT;
-  PEN("0000FF", 50);
-  CIRCLE(blueGoal.leftPost.x, blueGoal.leftPost.y, 50);
-  CIRCLE(blueGoal.rightPost.x, blueGoal.rightPost.y, 50);
-
   PEN("FFFF00", 50);
-  CIRCLE(yellowGoal.leftPost.x, yellowGoal.leftPost.y, 50);
-  CIRCLE(yellowGoal.rightPost.x, yellowGoal.rightPost.y, 50);
+  CIRCLE(goalOne.leftPost.x, goalOne.leftPost.y, 50);
+  CIRCLE(goalOne.rightPost.x, goalOne.rightPost.y, 50);
+
+  PEN("FF00FF", 50);
+  CIRCLE(goalTwo.leftPost.x, goalTwo.leftPost.y, 50);
+  CIRCLE(goalTwo.rightPost.x, goalTwo.rightPost.y, 50);
 }//end draw
 
 LocalGoalModel::LocalGoalModel() 
@@ -78,60 +100,32 @@ LocalGoalModel::LocalGoalModel()
 
 }
 
-void GoalModel::calculateBlueByYellow(double xLength)
+void GoalModel::calculateAnotherGoal(const GoalModel::Goal& one, GoalModel::Goal& another, double distance)
 {
-  Vector2<double> tmp = yellowGoal.rightPost;
-  tmp -= yellowGoal.leftPost;
-  tmp = tmp.normalize();
+  Vector2<double> normal = one.rightPost - one.leftPost;
+  normal.normalize(distance);
+  normal.rotateRight();
 
-  Vector2<double> tmp2(tmp.y, -tmp.x);
-  tmp2 *= xLength;
-  blueGoal.leftPost = yellowGoal.rightPost;
-  blueGoal.leftPost += tmp2;
+  another.leftPost = one.rightPost + normal;
+  another.rightPost = one.leftPost + normal;
+}//end calculateAnotherGoal
 
-  blueGoal.rightPost = yellowGoal.leftPost;
-  blueGoal.rightPost += tmp2;
-}//end calculateBlueByYellow
 
-void GoalModel::calculateYellowByBlue(double xLength)
+
+Pose2D GoalModel::calculatePose(double global_angle, const FieldInfo& fieldInfo) const
 {
-  Vector2<double> tmp = blueGoal.rightPost;
-  tmp -= blueGoal.leftPost;
-  tmp = tmp.normalize();
-  Vector2<double> tmp2(tmp.y, -tmp.x);
-  tmp2 *= xLength;
+  const Vector2<double>& leftOpponentGoalPosition = fieldInfo.opponentGoalPostLeft;
+  const Vector2<double>& rightOpponentGoalPosition = fieldInfo.opponentGoalPostRight;
 
-  yellowGoal.leftPost = blueGoal.rightPost;
-  yellowGoal.leftPost += tmp2;
+  Goal modeledOpponentGoal = getOppGoal(..);
 
-  yellowGoal.rightPost = blueGoal.leftPost;
-  yellowGoal.rightPost += tmp2;
-}//end calculateYellowByBlue
-
-
-Pose2D GoalModel::calculatePose(ColorClasses::Color opponentGoalColor, const FieldInfo& fieldInfo) const
-{
-  Vector2<double> leftOpponentGoalPosition(fieldInfo.xPosOpponentGoal, fieldInfo.yPosLeftGoalpost);
-  Vector2<double> rightOpponentGoalPosition(fieldInfo.xPosOpponentGoal, fieldInfo.yPosRightGoalpost);
-
-  Vector2<double> leftModeledOpponentGoalPosition;
-  Vector2<double> rightModeledOpponentGoalPosition;
-
-  if (opponentGoalColor == ColorClasses::skyblue)
-  {
-    leftModeledOpponentGoalPosition = blueGoal.leftPost;
-    rightModeledOpponentGoalPosition = blueGoal.rightPost;
-  }else
-  {
-    leftModeledOpponentGoalPosition = yellowGoal.leftPost;
-    rightModeledOpponentGoalPosition = yellowGoal.rightPost;
-  }//end else
-
-  double rotation = (leftModeledOpponentGoalPosition-rightModeledOpponentGoalPosition).angle() - Math::pi_2;
+  // TODO: make it nicer with Vector2 operations
+  double rotation = (modeledOpponentGoal.leftPost-modeledOpponentGoal.rightPost).angle() - Math::pi_2;
   rotation = Math::normalize(-rotation);
 
-  Vector2<double> posLeft = leftOpponentGoalPosition - leftModeledOpponentGoalPosition.rotate(rotation);
-  Vector2<double> posRight = rightOpponentGoalPosition - rightModeledOpponentGoalPosition.rotate(rotation);
+  // TODO: introduce const method Vector2<>.rotate()
+  Vector2<double> posLeft = leftOpponentGoalPosition - modeledOpponentGoal.leftPost.rotate(rotation);
+  Vector2<double> posRight = rightOpponentGoalPosition - modeledOpponentGoal.rightPost.rotate(rotation);
 
   Pose2D pose;
   pose.translation = (posLeft + posRight)*0.5;
@@ -139,6 +133,7 @@ Pose2D GoalModel::calculatePose(ColorClasses::Color opponentGoalColor, const Fie
 
   return pose;
 }//end calculatePosition
+
 
 void LocalGoalModel::print(ostream& stream) const
 {
@@ -149,11 +144,10 @@ void LocalGoalModel::print(ostream& stream) const
   GoalModel::print(stream);
 }//end print
 
-void SelfLocGoalModel::update(naoth::GameData::TeamColor ownColor, const Pose2D& robotPose, const FieldInfo& fieldInfo)
+void SelfLocGoalModel::update(const Pose2D& robotPose, const FieldInfo& fieldInfo)
 {
-
-  Goal& ownGoal = getTeamGoal(ownColor);
-  Goal& oppGoal = getTeamGoal(!ownColor);
+  Goal& ownGoal = goalOne; //getTeamGoal(ownColor);
+  Goal& oppGoal = goalTwo; //getTeamGoal(!ownColor);
 
   // transform the goal posts to the local coordinates according to the robotPose
   ownGoal.leftPost = robotPose/fieldInfo.ownGoalPostLeft;
