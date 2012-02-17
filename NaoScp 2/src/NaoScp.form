@@ -154,17 +154,17 @@
                           </Group>
                           <Component id="jActionsPanel" alignment="0" min="-2" max="-2" attributes="1"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="copyConfig" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbCopyConfig" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="copyLib" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="copyExe" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbCopyExe" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="cbRestartNaoth" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="copyLogs" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbCopyLogs" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="noBackup" min="-2" max="-2" attributes="0"/>
+                              <Component id="cbNoBackup" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace pref="2" max="32767" attributes="0"/>
@@ -187,12 +187,12 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="copyConfig" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="copyLib" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="copyExe" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbCopyConfig" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbCopyLib" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbCopyExe" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cbRestartNaoth" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="copyLogs" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="noBackup" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                          <Component id="cbCopyLogs" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbNoBackup" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                   </Group>
@@ -393,12 +393,12 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JCheckBox" name="copyLib">
+            <Component class="javax.swing.JCheckBox" name="cbCopyLib">
               <Properties>
                 <Property name="text" type="java.lang.String" value="copyLibNaoTH"/>
               </Properties>
               <Events>
-                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="copyLibItemStateChanged"/>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyLibItemStateChanged"/>
               </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="cbRestartNaoth">
@@ -410,22 +410,22 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbRestartNaothActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="copyConfig">
+            <Component class="javax.swing.JCheckBox" name="cbCopyConfig">
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="copyConfig"/>
               </Properties>
               <Events>
-                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="copyConfigItemStateChanged"/>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyConfigItemStateChanged"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="copyExe">
+            <Component class="javax.swing.JCheckBox" name="cbCopyExe">
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="copyNaoTH(exe)"/>
               </Properties>
               <Events>
-                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="copyExeItemStateChanged"/>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyExeItemStateChanged"/>
               </Events>
             </Component>
             <Container class="javax.swing.JPanel" name="jSettingsPanel">
@@ -524,6 +524,9 @@
                       </StringArray>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jSchemeBoxItemStateChanged"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="jButtonRefreshData">
                   <Properties>
@@ -535,12 +538,12 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JCheckBox" name="noBackup">
+            <Component class="javax.swing.JCheckBox" name="cbNoBackup">
               <Properties>
                 <Property name="text" type="java.lang.String" value="NO BACKUP"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="noBackupActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbNoBackupActionPerformed"/>
               </Events>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane2">
@@ -558,12 +561,12 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JCheckBox" name="copyLogs">
+            <Component class="javax.swing.JCheckBox" name="cbCopyLogs">
               <Properties>
                 <Property name="text" type="java.lang.String" value="copyLogs"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="copyLogsActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbCopyLogsActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel16">
@@ -765,11 +768,12 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="broadcastFieldLAN">
                   <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="text" type="java.lang.String" value="10.0.0.255"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldLANActionPerformed"/>
+                    <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldLANInputMethodTextChanged"/>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldLANKeyPressed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel14">
@@ -810,11 +814,16 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="broadcastFieldWLAN">
                   <Properties>
-                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="text" type="java.lang.String" value="192.168.13.255"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldWLANActionPerformed"/>
+                    <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldWLANInputMethodTextChanged"/>
+                    <EventHandler event="caretPositionChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="broadcastFieldWLANCaretPositionChanged"/>
+                    <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="broadcastFieldWLANPropertyChange"/>
+                    <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldWLANKeyTyped"/>
+                    <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="broadcastFieldWLANKeyPressed"/>
+                    <EventHandler event="vetoableChange" listener="java.beans.VetoableChangeListener" parameters="java.beans.PropertyChangeEvent" handler="broadcastFieldWLANVetoableChange"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -1004,6 +1013,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Initialize Robot System"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonInitRobotSystemActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="jButtonSaveNetworkConfig">
               <Properties>

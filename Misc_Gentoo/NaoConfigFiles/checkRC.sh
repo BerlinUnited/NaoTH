@@ -1,8 +1,6 @@
 #!/bin/bash
 
 rcList=$1
-#"set_dev_video=default connman=disable net.eth0=boot"
-# net.wlan0=boot naoth=default"
 runLevels="boot default disable"
 
 for rc in $rcList

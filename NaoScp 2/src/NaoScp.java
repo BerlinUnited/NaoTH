@@ -18,10 +18,6 @@
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.*;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Container;
-import java.awt.Insets;
 import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
@@ -70,6 +66,21 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private final TextFieldStreamer ts;
   private final OutputStream out;
   private String lastOut;
+  
+  private boolean copyConfig;
+  private boolean copyLib;
+  private boolean copyExe;
+  private boolean copyLogs;
+  private boolean copySysLibs;
+  private boolean restartNaoth;
+  private boolean noBackup;
+  
+  private boolean showCopyDoneMsg = false;
+  private boolean showScriptDoneMsg = false;
+  private boolean showDoneMsg = true;
+  
+  private String stagingLibDir;
+  
   
   @SuppressWarnings("unchecked")
   public NaoScp()
@@ -212,8 +223,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
     
     
-    this.noBackup.setVisible(debugVersion);
-    this.noBackup.setEnabled(debugVersion);
+    this.cbNoBackup.setVisible(debugVersion);
+    this.cbNoBackup.setEnabled(debugVersion);
     this.progressBar.setVisible(false);
     this.progressBar.setEnabled(false);
 
@@ -317,27 +328,37 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
   public String setupScriptPath()
   {
-    return "/home/nao/naoqi/naothSetup";
+    return homePath() + "/naoqi/naothSetup";
   }
 
   public String configPath()
   {
-    return "/home/nao/naoqi/Config";
+    return homePath() + "/naoqi/Config";
   }
 
   public String setupPath()
   {
-    return "/home/nao/naoqi/Config";
+    return homePath() + "/naoqi/Config";
   }
 
   public String libnaoPath()
   {
-    return "/home/nao/naoqi/lib/naoqi";
+    return homePath() + "/bin";
+  }
+  
+  public String naoqiPrefPath()
+  {
+    return homePath() + "/naoqi/preferences";
   }
   
   public String binPath()
   {
-    return "/home/nao/bin/";
+    return homePath() + "/bin";
+  }
+
+  public String homePath()
+  {
+    return "/home/nao";
   }
 
   public String localDeployRootPath()
@@ -497,10 +518,37 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
 
   }
-  
+    
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
 
       setFormEnabled(false);
+      
+      copyConfig = cbCopyConfig.isSelected();
+      copyLib = cbCopyLib.isSelected();
+      copyExe = cbCopyExe.isSelected();
+      copyLogs = cbCopyLogs.isSelected();
+      restartNaoth = cbRestartNaoth.isSelected();
+      noBackup = cbNoBackup.isSelected();
+      
+      
+      if(copyConfig || copyExe || copyLib || copyLogs)
+      {
+        showCopyDoneMsg = true;        
+      }
+      
+      if(restartNaoth)
+      {
+        if(showCopyDoneMsg)
+        {
+          showCopyDoneMsg = false;
+          showDoneMsg = true;
+        }
+        else
+        {
+          showDoneMsg = false;
+        }
+      }
+      
       jLogWindow.setText("");
 
       backupTimestamp = String.valueOf(System.currentTimeMillis());
@@ -534,6 +582,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             cLan.execute();
             while(!copyDone.get(naoNo))
             {}            
+            if(hadErrors.get(naoNo))
+            {
+              allIsDone(naoNo);
+              return;
+            }
             sshScriptRunner sLan = new sshScriptRunner(sNaoLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo), new String[] {"restartNaoTH"});
             sLan.execute();
             connected = true;
@@ -546,6 +599,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
               cWlan.execute();
               while(!copyDone.get(naoNo))
               {}            
+              if(hadErrors.get(naoNo))
+              {
+                allIsDone(naoNo);
+                return;
+              }
               sshScriptRunner sWlan = new sshScriptRunner(sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo), new String[] {"restartNaoTH"});
               sWlan.execute();
               connected = true;
@@ -555,18 +613,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         
         if(!connected)
         {
-//          log("Nao " + naoNo + " on LAN(" + sNaoLanIps.get(naoNo) + ") & WLAN(" + sNaoWLanIps.get(naoNo) + ") not reachable");
-          haveError(naoNo, "Nao " + naoNo + " on LAN(" + sNaoLanIps.get(naoNo) + ") & WLAN(" + sNaoWLanIps.get(naoNo) + ") not reachable");
-          allIsDone(naoNo);
-//          scriptIsDone(naoNo);
+          haveError(naoNo, "Nao " + naoNo + " on LAN(" + sNaoLanIps.get(naoNo) + ") & WLAN(" + sNaoWLanIps.get(naoNo) + ") not reachable");          
         }
-//        else
-//        {
-//          copyIsDone(naoNo);
-//        }
-        
+        allIsDone(naoNo);
       }
-
     }//GEN-LAST:event_copyButtonActionPerformed
 
   public void haveError(String sNaoNo, String error)
@@ -634,10 +684,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           }
         }
         add = add + " - please check Logs.";
-      }
-      setFormEnabled(true);
+      }      
       resetBackupList();
-      JOptionPane.showMessageDialog(null, "Copy + Scripts done" + add);
+      if(showDoneMsg)
+      {
+        log("Copy + Scripts done");
+        JOptionPane.showMessageDialog(null, "Copy + Scripts done" + add);
+        setFormEnabled(true);
+      }
     }
   }
   
@@ -674,9 +728,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         }
         add = add + " - please check Logs.";
       }
-      setFormEnabled(true);
       resetBackupList();
-      JOptionPane.showMessageDialog(null, "Scripts done" + add);
+      if(showScriptDoneMsg)
+      {
+        log("Copy done");
+        JOptionPane.showMessageDialog(null, "Scripts done" + add);
+        setFormEnabled(true);
+      }
     }
     return done;
   }  
@@ -714,9 +772,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         }
         add = add + " - please check Logs.";
       }
-      setFormEnabled(true);
+      
       resetBackupList();
-      JOptionPane.showMessageDialog(null, "Copy done" + add);
+      if(showCopyDoneMsg)
+      {        
+        log("Scripts done");
+        JOptionPane.showMessageDialog(null, "Copy done" + add);
+        setFormEnabled(true);
+      }
     }
     return done;
   }
@@ -752,12 +815,17 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   }
 
 
+  private boolean prepareDeploy()
+  {
+    return prepareDeploy(false);
+  }  
+  
   /**
    * Staging - prepares "deploy out dir" with the files to be copied to the robots
    * copies files, creates scheme.cfg, modifies other cfgs according to UI settings
    * @return
    */
-  private boolean prepareDeploy()
+  private boolean prepareDeploy(boolean init)
   {
     actionInfo("preparing deploy dir");
 
@@ -782,7 +850,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     
     for(Integer naoNo : iNaoBytes.keySet())
     {
-      if(naoNo > 0)
+      if((!init && naoNo > 0) || (init && naoNo == 0))
       {
         int iNaoByte = iNaoBytes.get(naoNo);
         String sNaoByte = String.valueOf(iNaoByte);
@@ -803,7 +871,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           File localBinPath = new File(localDeployOutPath(sNaoNo) + binPath());
           localBinPath.mkdirs();
 
-          if(copyLib.isSelected())
+          if(copyLib)
           {
             File localLib = new File(
             localDeployOutPath(sNaoNo) + libnaoPath() + "/libnaoth.so");
@@ -826,7 +894,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             copyFiles(new File(localLibnaothPath() + "/libnaoth.so"), localLib);
           }
 
-          if(copyExe.isSelected())
+          if(copyExe)
           {
             File localExe = new File(
             localDeployOutPath(sNaoNo) + binPath() + "/naoth");
@@ -838,7 +906,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             copyFiles(new File(localLibnaothPath() + "/naoth"), localExe);
           }
 
-          if(copyConfig.isSelected())
+          if(copyConfig)
           {
             String myConfigPath = localDeployOutPath(sNaoNo) + configPath();
             File myConfigDir = new File(myConfigPath);
@@ -895,18 +963,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     if(iNaoByte < 256 && iNaoByte > -1)
     {
       String sNaoNo = String.valueOf(naoNo);
-      String currentDeployPath = localDeployOutPath(sNaoNo);
-      File currentDeployDir = new File(currentDeployPath);
-
-      if(currentDeployDir.isDirectory())
-      {
-        deleteDir(currentDeployDir);
-      }
-
-      currentDeployDir.mkdirs();
 
       String mySetupScriptPath = localDeployOutPath(sNaoNo) + setupScriptPath();
       File mySetupScriptDir = new File(mySetupScriptPath);
+      if(mySetupScriptDir.isDirectory())
+      {
+        deleteDir(mySetupScriptDir);
+      }
       mySetupScriptDir.mkdirs();
 
       File mySetupScriptCheckRC = new File(mySetupScriptPath +"/checkRC.sh");        
@@ -915,6 +978,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       copyFiles(new File(localSetupScriptPath() + "/init_env.sh"), mySetupScriptInitEnv);
       File mySetupScriptInitNet = new File(mySetupScriptPath +"/init_net.sh");        
       copyFiles(new File(localSetupScriptPath() + "/init_net.sh"), mySetupScriptInitNet);
+      File myAutoloadIni = new File(mySetupScriptPath +"/autoload.ini");        
+      copyFiles(new File(localSetupScriptPath() + "/autoload.ini"), myAutoloadIni);
+            
+      File libRT = new File(stagingLibDir +"/usr/lib/librt.so");
+      if(libRT.exists())
+      {
+        libRT.delete();
+      }
 
       String mySetupPath = mySetupScriptPath + "/etc";
       File mySetupDir = new File(mySetupPath);
@@ -1034,7 +1105,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   {
     StringBuilder content = new StringBuilder();
 
-    try {
+    try 
+    {
       //use buffering, reading one line at a time
       //FileReader always assumes default encoding is OK!
       BufferedReader input =  new BufferedReader(new FileReader(fileName));
@@ -1076,7 +1148,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     String comment = "";
     if(jBackupBox.getItemCount() > 1)
     {
-      comment = readFile(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/comment.cfg");
+      File file = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/comment.cfg");
+      if(file.exists() && file.isFile())
+      {
+        comment = readFile(file.getPath());
+      }
     }
     jCommentTextArea.setText(comment);
   }
@@ -1121,7 +1197,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           entryTag += "M";
         }
 
-        if(copyConfig.isSelected())
+        if(copyConfig)
         {
             File configDir = new File(localDeployRootPath() + "/in/" + entry + "/Config/");
             if(configDir.exists() && configDir.isDirectory())
@@ -1131,7 +1207,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             }
         }
 
-        if(copyLib.isSelected())
+        if(copyLib)
         {
             File libFile = new File(localDeployRootPath() + "/in/" + entry + "/libnaoth.so");
             if(libFile.exists() && libFile.isFile())
@@ -1141,7 +1217,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             }
         }
 
-        if(copyExe.isSelected())
+        if(copyExe)
         {
             File exeFile = new File(localDeployRootPath() + "/in/" + entry + "/naoth");
             if(exeFile.exists() && exeFile.isFile())
@@ -1197,12 +1273,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     resetBackupList();
 
     String inString = readFile(localConfigPath() + "/scheme.cfg");
-    if("".equals(inString))
+    if(inString.equals("Nao") || inString.equals(""))
     {
       inString = "Nao";
     }
     jSchemeBox.setSelectedItem(inString);
-
   }
 
 
@@ -1252,6 +1327,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       if(files[i].isDirectory())
       {
         jSchemeBox.addItem(files[i].getName());
+        if(files[i].getName().equalsIgnoreCase("nao"))
+        {
+          jSchemeBox.setSelectedIndex(jSchemeBox.getItemCount() - 1);
+        }
       }
     }
     return true;
@@ -1475,143 +1554,255 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     return true;
   }
 
-  private void setRobotNetwork()
+  
+  private class robotConfigPreparator
   {
-    
-    for(Integer naoNo : copyDone.keySet())
+    private ArrayList<String> addresses;
+    String address;
+    robotConfigPreparator()
     {
-      if(naoNo > 0)
+      synchronized (naoModel)
       {
-        copyDone.put(naoNo, true);
-        scriptDone.put(naoNo, true);
-      }
-      hadCopyErrors.put(naoNo, false);
-      hadScriptErrors.put(naoNo, false);
-      hadErrors.put(naoNo, false);
-    }
-    copyDone.put(0, false);
-    scriptDone.put(0, false);
+        copyConfig = true;
+        copyLib = true;
+        copyExe = true;
+        copySysLibs = true;
+        copyLogs = false;
+        restartNaoth = false;
+        noBackup = true;
 
-    String sNaoNo = "0";
-    NaoSshWrapper w = null;
-    String address = null;
-    ArrayList<String> addresses = new ArrayList<String>();
-    synchronized (naoModel)
-    {
-      int i = lstNaos.getSelectedIndex();
-      lstNaos.clearSelection();
-      if (i >= 0)
-      {
-        w = (NaoSshWrapper) naoModel.get(i);
-        
-        if(w.getAddresses().length > 0)
+        setFormEnabled(false);
+
+        showCopyDoneMsg = false;
+        showScriptDoneMsg = false;
+        showDoneMsg = true;
+
+        for(Integer naoNo : copyDone.keySet())
         {
-          for(InetAddress addr : w.getAddresses())
+          if(naoNo > 0)
           {
-            if(addr instanceof Inet4Address)
+            copyDone.put(naoNo, true);
+            scriptDone.put(naoNo, true);
+          }
+          hadCopyErrors.put(naoNo, false);
+          hadScriptErrors.put(naoNo, false);
+          hadErrors.put(naoNo, false);
+        }
+        copyDone.put(0, false);
+        scriptDone.put(0, false);
+        backupTimestamp = String.valueOf(System.currentTimeMillis());
+
+        addresses = new ArrayList<String>();      
+        NaoSshWrapper w = null;
+        int i = lstNaos.getSelectedIndex();
+        lstNaos.clearSelection();
+        if (i >= 0)
+        {
+          w = (NaoSshWrapper) naoModel.get(i);
+
+          if(w.getAddresses().length > 0)
+          {
+            for(InetAddress addr : w.getAddresses())
             {
-              addresses.add(addr.getHostAddress());
-              log(addr.getHostAddress());
+              if(addr instanceof Inet4Address)
+              {
+                addresses.add(addr.getHostAddress());
+              }
+            }
+            address = w.getAddresses()[0].getHostAddress();
+          }
+          else
+          {
+            address = w.getDefaultHostAddress();
+          }
+
+          if(isIPV6Address(address))
+          {
+            if(address == null)
+            {
+              address = JOptionPane.showInputDialog("IPv6 addresses are not supported. Enter appropriate IPv4 address", "");             
+              while(address != null && !isIPV4Address(address))
+              {
+                address = JOptionPane.showInputDialog("Not a valid IPv4 address. Enter a valid one", "");             
+              }
             }
           }
-          address = w.getAddresses()[0].getHostAddress();
         }
         else
-        {
-          address = w.getDefaultHostAddress();
-        }
-        
-        if(isIPV6Address(address))
-        {
-          if(address == null)
+        {        
+          address = JOptionPane.showInputDialog("No IP selected. Enter an IPv4 address", "");
+          while(address != null && !isIPV4Address(address))
           {
-            address = JOptionPane.showInputDialog("IPv6 addresses are not supported. Enter appropriate IPv4 address", "");             
-            while(address != null && !isIPV4Address(address))
+            if(isIPV6Address(address))
+            {
+              address = JOptionPane.showInputDialog("IPv6 addresses are not supported. Enter appropriate IPv4 address", ""); 
+            }
+            else
             {
               address = JOptionPane.showInputDialog("Not a valid IPv4 address. Enter a valid one", "");             
             }
           }
         }
       }
-      else
-      {        
-        address = JOptionPane.showInputDialog("No IP selected. Enter an IPv4 address", "");
-        while(address != null && !isIPV4Address(address))
+    }
+    
+    public String getDefaultAddress()
+    {
+      sNaoLanIps.put(0, address);
+      sNaoWLanIps.put(0, address);
+      return address;
+    }
+    
+    public String askForNaoNumber()
+    {
+      String sNaoByte = null;
+      int iNaoByte = -1;
+      while(iNaoByte > 255 || iNaoByte < 0)
+      {
+        sNaoByte = JOptionPane.showInputDialog("Enter Nao Number (0-255)", "");
+        if(sNaoByte == null)
         {
-          if(isIPV6Address(address))
-          {
-            address = JOptionPane.showInputDialog("IPv6 addresses are not supported. Enter appropriate IPv4 address", ""); 
-          }
-          else
-          {
-            address = JOptionPane.showInputDialog("Not a valid IPv4 address. Enter a valid one", "");             
-          }
-        }
-      }
-      
-      if(address == null)
-      {
-//        log("aborting robot network configuration");
-        haveError(sNaoNo,"robot network configuration aborted");
-        allIsDone(sNaoNo);
-        return;
-      }
-        
-      String sNaoByte = JOptionPane.showInputDialog("Enter Nao Number", ""); 
-      if(sNaoByte == null)
-      {
-//        log("aborting robot network configuration");
-        haveError(sNaoNo,"robot network configuration aborted");
-        allIsDone(sNaoNo);
-        return;
-      }
-      backupTimestamp = String.valueOf(System.currentTimeMillis());
-      prepareSetupDeploy(sNaoByte);
-
-      boolean testOk = false;
-      sshCopier cLan = new sshCopier(address, sNaoNo, sNaoByte);
-      testOk = cLan.testConnection();
-      
-      if(!testOk && addresses.size() > 0 && !addresses.contains(address))
-      {
-        int idx = 0;
-        while(!testOk && idx < addresses.size())
-        {    
-          address = addresses.get(idx);
-          cLan = new sshCopier(address, sNaoNo, sNaoByte);
-          testOk = cLan.testConnection();
-          idx++;
-        }
-      }
-      
-      if(testOk)//cLan.testConnection())
-      {
-        cLan.execute();
-        while(!copyDone.get(0))
-        {
-//          Thread.sleep(50);
-        }
-//        copyDone.put(0, false);
-        sshScriptRunner sLan = new sshScriptRunner(address, sNaoNo, sNaoByte, new String[] {"setRobotNetworkConfig"});
-        if(sLan.testConnection())
-        {
-          sLan.execute();
+          break;
         }
         else
         {
-//          log("Nao " + sNaoNo +" not reachable, no script did run");
-          haveError(sNaoNo, "Nao " + sNaoNo + " not reachable, no script did run");
-          copyIsDone(sNaoNo);
+          iNaoByte = Integer.parseInt(sNaoByte);
+          iNaoBytes.put(0, iNaoByte);          
         }
+      }
+      return sNaoByte;
+    }
+    
+    public ArrayList<String> getAdressList()
+    {
+      return this.addresses;
+    }
+  }
+    
+  private void initializeRobot()
+  {
+    robotConfigPreparator preparator = new robotConfigPreparator();
+    if(stagingLibDir == null)
+    {
+      haveError("0", "no valid CTC Staging Directory selected");
+      allIsDone("0");
+      return;
+    }
+    
+    String address = preparator.getDefaultAddress();
+    ArrayList<String> addresses = preparator.getAdressList();
+    String sNaoByte = null;
+    if(address != null )
+    {
+      sNaoByte = preparator.askForNaoNumber();
+    }
+    if(address == null || sNaoByte == null || !prepareDeploy(true) || !prepareSetupDeploy(sNaoByte))
+    {
+      haveError("0","robot initialization aborted");
+      allIsDone("0");
+      return;
+    }
+
+    boolean testOk = false;
+    sshSetupCopier cLan = new sshSetupCopier(address, sNaoByte, "full");
+    testOk = cLan.testConnection();
+
+    if(!testOk && addresses.size() > 0 && !addresses.contains(address))
+    {
+      int idx = 0;
+      while(!testOk && idx < addresses.size())
+      {    
+        address = addresses.get(idx);
+        cLan = new sshSetupCopier(address, sNaoByte, "full");
+        testOk = cLan.testConnection();
+        idx++;
+      }
+    }
+    
+    if(testOk)
+    {
+      cLan.execute();
+      while(!copyDone.get(0))
+      {}
+      if(hadErrors.get(0))
+      {
+        allIsDone("0");
+        return;
+      }
+      sshScriptRunner sLan = new sshScriptRunner(address, "0", sNaoByte, new String[] {"initializeRobot"});
+      if(sLan.testConnection())
+      {
+        sLan.execute();
       }
       else
       {
-//        log("Nao " + sNaoNo +" not reachable, no setting up possible");
-        haveError(sNaoNo, "Nao " + sNaoNo + " not reachable, no setting up possible");
-        copyIsDone(sNaoNo);
+        haveError("0", "Nao (" + address + ") not reachable, no script did run");
       }
-        
     }
+    else
+    {
+      haveError("0", "Nao (" + address + ") not reachable, no setting up possible");
+    }
+    allIsDone("0");
+  }  
+  
+  private void setRobotNetwork()
+  {
+    robotConfigPreparator preparator = new robotConfigPreparator();
+    String address = preparator.getDefaultAddress();
+    ArrayList<String> addresses = preparator.getAdressList();
+      
+    String sNaoByte = preparator.askForNaoNumber();
+    if(address == null || sNaoByte == null || !prepareSetupDeploy(sNaoByte))
+    {
+      haveError("0","robot network configuration aborted");
+      allIsDone("0");
+      return;
+    }
+
+    boolean testOk = false;
+    sshSetupCopier cLan = new sshSetupCopier(address, sNaoByte, "network");
+    testOk = cLan.testConnection();
+
+    if(!testOk && addresses.size() > 0 && !addresses.contains(address))
+    {
+      int idx = 0;
+      while(!testOk && idx < addresses.size())
+      {    
+        address = addresses.get(idx);
+        cLan = new sshSetupCopier(address, sNaoByte, "network");
+        testOk = cLan.testConnection();
+        idx++;
+      }
+    }
+
+    if(testOk)
+    {
+      cLan.execute();
+      while(!copyDone.get(0))
+      {
+      }
+      if(hadCopyErrors.get(0))
+      {
+        allIsDone("0");
+        return;
+      }
+
+      sshScriptRunner sLan = new sshScriptRunner(address, "0", sNaoByte, new String[] {"setRobotNetworkConfig"});
+      if(sLan.testConnection())
+      {
+        sLan.execute();
+      }
+      else
+      {
+        haveError("0", "Nao (" + address + ") not reachable, no script did run");
+      }
+    }
+    else
+    {
+      haveError("0", "Nao (" + address + ") not reachable, no setting up possible");
+    }   
+    allIsDone("0");
   }
   
   private void updateLog(final String text) 
@@ -1625,10 +1816,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           if(text.length() > 0)
           {
             System.out.append(text);
-//            synchronized(out) 
-            { 
-              lastOut += text;
-            }
+            lastOut += text;
           }
         }  
       }
@@ -1674,10 +1862,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     jBackupBox = new javax.swing.JComboBox();
     naoByte4 = new javax.swing.JTextField();
     jLabel17 = new javax.swing.JLabel();
-    copyLib = new javax.swing.JCheckBox();
+    cbCopyLib = new javax.swing.JCheckBox();
     cbRestartNaoth = new javax.swing.JCheckBox();
-    copyConfig = new javax.swing.JCheckBox();
-    copyExe = new javax.swing.JCheckBox();
+    cbCopyConfig = new javax.swing.JCheckBox();
+    cbCopyExe = new javax.swing.JCheckBox();
     jSettingsPanel = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     jColorBox = new javax.swing.JComboBox();
@@ -1686,10 +1874,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     jLabel4 = new javax.swing.JLabel();
     jSchemeBox = new javax.swing.JComboBox();
     jButtonRefreshData = new javax.swing.JButton();
-    noBackup = new javax.swing.JCheckBox();
+    cbNoBackup = new javax.swing.JCheckBox();
     jScrollPane2 = new javax.swing.JScrollPane();
     jCommentTextArea = new javax.swing.JTextArea();
-    copyLogs = new javax.swing.JCheckBox();
+    cbCopyLogs = new javax.swing.JCheckBox();
     jLabel16 = new javax.swing.JLabel();
     jPanel2 = new javax.swing.JPanel();
     jSettingsPanel1 = new javax.swing.JPanel();
@@ -1901,10 +2089,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         .addContainerGap())
     );
 
-    copyLib.setText("copyLibNaoTH");
-    copyLib.addItemListener(new java.awt.event.ItemListener() {
+    cbCopyLib.setText("copyLibNaoTH");
+    cbCopyLib.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        copyLibItemStateChanged(evt);
+        cbCopyLibItemStateChanged(evt);
       }
     });
 
@@ -1920,19 +2108,19 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     });
 
-    copyConfig.setSelected(true);
-    copyConfig.setText("copyConfig");
-    copyConfig.addItemListener(new java.awt.event.ItemListener() {
+    cbCopyConfig.setSelected(true);
+    cbCopyConfig.setText("copyConfig");
+    cbCopyConfig.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        copyConfigItemStateChanged(evt);
+        cbCopyConfigItemStateChanged(evt);
       }
     });
 
-    copyExe.setSelected(true);
-    copyExe.setText("copyNaoTH(exe)");
-    copyExe.addItemListener(new java.awt.event.ItemListener() {
+    cbCopyExe.setSelected(true);
+    cbCopyExe.setText("copyNaoTH(exe)");
+    cbCopyExe.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        copyExeItemStateChanged(evt);
+        cbCopyExeItemStateChanged(evt);
       }
     });
 
@@ -1954,6 +2142,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     jLabel4.setText("Scheme:");
 
     jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
+    jSchemeBox.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        jSchemeBoxItemStateChanged(evt);
+      }
+    });
 
     jButtonRefreshData.setText("Refresh");
     jButtonRefreshData.addActionListener(new java.awt.event.ActionListener() {
@@ -2001,10 +2194,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         .addContainerGap())
     );
 
-    noBackup.setText("NO BACKUP");
-    noBackup.addActionListener(new java.awt.event.ActionListener() {
+    cbNoBackup.setText("NO BACKUP");
+    cbNoBackup.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        noBackupActionPerformed(evt);
+        cbNoBackupActionPerformed(evt);
       }
     });
 
@@ -2012,10 +2205,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     jCommentTextArea.setRows(4);
     jScrollPane2.setViewportView(jCommentTextArea);
 
-    copyLogs.setText("copyLogs");
-    copyLogs.addActionListener(new java.awt.event.ActionListener() {
+    cbCopyLogs.setText("copyLogs");
+    cbCopyLogs.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        copyLogsActionPerformed(evt);
+        cbCopyLogsActionPerformed(evt);
       }
     });
 
@@ -2036,17 +2229,17 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
               .add(jLabel16)))
           .add(jActionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
           .add(jPanel1Layout.createSequentialGroup()
-            .add(copyConfig)
+            .add(cbCopyConfig)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(copyLib)
+            .add(cbCopyLib)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(copyExe)
+            .add(cbCopyExe)
             .add(18, 18, 18)
             .add(cbRestartNaoth)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-            .add(copyLogs)
+            .add(cbCopyLogs)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-            .add(noBackup)))
+            .add(cbNoBackup)))
         .addContainerGap(2, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
@@ -2063,12 +2256,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-          .add(copyConfig)
-          .add(copyLib)
-          .add(copyExe)
+          .add(cbCopyConfig)
+          .add(cbCopyLib)
+          .add(cbCopyExe)
           .add(cbRestartNaoth)
-          .add(copyLogs)
-          .add(noBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+          .add(cbCopyLogs)
+          .add(cbNoBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
         .add(48, 48, 48))
     );
 
@@ -2101,11 +2294,22 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     });
 
-    broadcastFieldLAN.setEditable(false);
     broadcastFieldLAN.setText("10.0.0.255");
     broadcastFieldLAN.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         broadcastFieldLANActionPerformed(evt);
+      }
+    });
+    broadcastFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
+      public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+        broadcastFieldLANInputMethodTextChanged(evt);
+      }
+      public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+      }
+    });
+    broadcastFieldLAN.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyPressed(java.awt.event.KeyEvent evt) {
+        broadcastFieldLANKeyPressed(evt);
       }
     });
 
@@ -2131,11 +2335,36 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     });
 
-    broadcastFieldWLAN.setEditable(false);
     broadcastFieldWLAN.setText("192.168.13.255");
     broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         broadcastFieldWLANActionPerformed(evt);
+      }
+    });
+    broadcastFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
+      public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+        broadcastFieldWLANInputMethodTextChanged(evt);
+      }
+      public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+        broadcastFieldWLANCaretPositionChanged(evt);
+      }
+    });
+    broadcastFieldWLAN.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+      public void propertyChange(java.beans.PropertyChangeEvent evt) {
+        broadcastFieldWLANPropertyChange(evt);
+      }
+    });
+    broadcastFieldWLAN.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyTyped(java.awt.event.KeyEvent evt) {
+        broadcastFieldWLANKeyTyped(evt);
+      }
+      public void keyPressed(java.awt.event.KeyEvent evt) {
+        broadcastFieldWLANKeyPressed(evt);
+      }
+    });
+    broadcastFieldWLAN.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
+      public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
+        broadcastFieldWLANVetoableChange(evt);
       }
     });
 
@@ -2331,6 +2560,11 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     });
 
     jButtonInitRobotSystem.setText("Initialize Robot System");
+    jButtonInitRobotSystem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButtonInitRobotSystemActionPerformed(evt);
+      }
+    });
 
     jButtonSaveNetworkConfig.setText("Save Network Config");
     jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener() {
@@ -2429,12 +2663,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       // TODO add your handling code here:
     }//GEN-LAST:event_subnetFieldLANActionPerformed
 
-    private void copyLogsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyLogsActionPerformed
+    private void cbCopyLogsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbCopyLogsActionPerformed
       // TODO add your handling code here:
-}//GEN-LAST:event_copyLogsActionPerformed
+}//GEN-LAST:event_cbCopyLogsActionPerformed
 
-    private void noBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noBackupActionPerformed
-    }//GEN-LAST:event_noBackupActionPerformed
+    private void cbNoBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbNoBackupActionPerformed
+    }//GEN-LAST:event_cbNoBackupActionPerformed
 
     private void jBackupBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jBackupBoxItemStateChanged
       
@@ -2446,13 +2680,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     }//GEN-LAST:event_jBackupBoxItemStateChanged
 
-    private void copyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_copyConfigItemStateChanged
+    private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyConfigItemStateChanged
       resetBackupList();
-    }//GEN-LAST:event_copyConfigItemStateChanged
+    }//GEN-LAST:event_cbCopyConfigItemStateChanged
 
-    private void copyLibItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_copyLibItemStateChanged
+    private void cbCopyLibItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyLibItemStateChanged
       resetBackupList();
-    }//GEN-LAST:event_copyLibItemStateChanged
+    }//GEN-LAST:event_cbCopyLibItemStateChanged
 
     private void naoByte4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte4ActionPerformed
       // TODO add your handling code here:
@@ -2470,9 +2704,9 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         // TODO add your handling code here:
     }//GEN-LAST:event_cbRestartNaothActionPerformed
 
-    private void copyExeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_copyExeItemStateChanged
+    private void cbCopyExeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyExeItemStateChanged
       // TODO add your handling code here:
-    }//GEN-LAST:event_copyExeItemStateChanged
+    }//GEN-LAST:event_cbCopyExeItemStateChanged
 
     private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldWLANActionPerformed
       // TODO add your handling code here:
@@ -2491,7 +2725,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }//GEN-LAST:event_broadcastFieldLANActionPerformed
 
     private void broadcastFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastFieldWLANActionPerformed
-      // TODO add your handling code here:
+      lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
     }//GEN-LAST:event_broadcastFieldWLANActionPerformed
 
     private void lblTeamCommWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lblTeamCommWLANActionPerformed
@@ -2546,16 +2780,90 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     }//GEN-LAST:event_formWindowClosing
 
+    private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
+      
+      stagingLibDir = null;
+      File stdCtcDir = new File("/opt/aldebaran/info/crosscompile/staging");
+      
+      if(stdCtcDir.isDirectory())
+      {
+        stdCtcDir = new File("/opt/aldebaran/info/crosscompile/staging");
+      }
+      else
+      {
+        stdCtcDir = new File("./../../");
+      }      
+      
+      JFileChooser chooser = new JFileChooser();
+      chooser.setCurrentDirectory(stdCtcDir);
+      chooser.setDialogTitle("Select CTC Staging Directory");
+      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      chooser.setAcceptAllFileFilterUsed(false);
+      int ret = chooser.showOpenDialog(this);
+      
+      while(ret != JFileChooser.CANCEL_OPTION && stagingLibDir == null)
+      {
+        if(ret == JFileChooser.APPROVE_OPTION)
+        {
+          stagingLibDir = chooser.getSelectedFile().getPath();
+        }
+
+        if(stagingLibDir != null)
+        {
+          stagingLibDir += "/usr/lib";
+          File gioDir = new File(stagingLibDir + "/gio");
+          File glibDir = new File(stagingLibDir + "/glib-2.0");
+          if(!gioDir.isDirectory() || !glibDir.isDirectory())
+          {
+            stagingLibDir = null;
+            chooser.setDialogTitle("CTC Staging Directory seems to be wrong. Try again");
+            ret = chooser.showOpenDialog(this);
+          }
+        }
+      }            
+      initializeRobot();
+    }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
+
+    private void jSchemeBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jSchemeBoxItemStateChanged
+    }//GEN-LAST:event_jSchemeBoxItemStateChanged
+
+    private void broadcastFieldLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldLANInputMethodTextChanged
+    }//GEN-LAST:event_broadcastFieldLANInputMethodTextChanged
+
+    private void broadcastFieldWLANInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANInputMethodTextChanged
+    }//GEN-LAST:event_broadcastFieldWLANInputMethodTextChanged
+
+    private void broadcastFieldWLANPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_broadcastFieldWLANPropertyChange
+    }//GEN-LAST:event_broadcastFieldWLANPropertyChange
+
+    private void broadcastFieldWLANVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_broadcastFieldWLANVetoableChange
+    }//GEN-LAST:event_broadcastFieldWLANVetoableChange
+
+    private void broadcastFieldWLANCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_broadcastFieldWLANCaretPositionChanged
+    }//GEN-LAST:event_broadcastFieldWLANCaretPositionChanged
+
+    private void broadcastFieldWLANKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyTyped
+    }//GEN-LAST:event_broadcastFieldWLANKeyTyped
+
+    private void broadcastFieldWLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldWLANKeyPressed
+      lblTeamCommWLAN.setText(broadcastFieldWLAN.getText());
+    }//GEN-LAST:event_broadcastFieldWLANKeyPressed
+
+    private void broadcastFieldLANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_broadcastFieldLANKeyPressed
+      lblTeamCommLAN.setText(broadcastFieldLAN.getText());
+    }//GEN-LAST:event_broadcastFieldLANKeyPressed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField broadcastFieldLAN;
   private javax.swing.JTextField broadcastFieldWLAN;
+  private javax.swing.JCheckBox cbCopyConfig;
+  private javax.swing.JCheckBox cbCopyExe;
+  private javax.swing.JCheckBox cbCopyLib;
+  private javax.swing.JCheckBox cbCopyLogs;
+  private javax.swing.JCheckBox cbNoBackup;
   private javax.swing.JCheckBox cbRestartNaoth;
   private javax.swing.JTextField consoleIn;
   private javax.swing.JButton copyButton;
-  private javax.swing.JCheckBox copyConfig;
-  private javax.swing.JCheckBox copyExe;
-  private javax.swing.JCheckBox copyLib;
-  private javax.swing.JCheckBox copyLogs;
   private javax.swing.JPanel jActionsPanel;
   private javax.swing.JComboBox jBackupBox;
   private javax.swing.JButton jButtonInitRobotSystem;
@@ -2616,7 +2924,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private javax.swing.JTextField naoByte4;
   private javax.swing.JTextField netmaskFieldLAN;
   private javax.swing.JTextField netmaskFieldWLAN;
-  private javax.swing.JCheckBox noBackup;
   private javax.swing.JProgressBar progressBar;
   private javax.swing.JPasswordField sshPassword;
   private javax.swing.JPasswordField sshRootPassword;
@@ -2760,7 +3067,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       UserInfo ui = new MyUserInfo();
       java.util.Properties config = new java.util.Properties();
       config.put("StrictHostKeyChecking", "no");
-      JSch.setLogger(new MyLogger());
+//      JSch.setLogger(new MyLogger());
       JSch jsch = new JSch();
 
       Session session = jsch.getSession(sshUser.getText(), Ip, 22);
@@ -2962,6 +3269,39 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
     }
 
+    protected boolean recursiveSftpCheckPath(ChannelSftp c, File src, String dst)
+    {      
+      String[] splittedPath = dst.split("[/\\\\]");
+      String path = "";
+      int end = splittedPath.length;
+      if(src.isFile())
+      {
+        end --;
+      }
+
+      for(int p = 1; p < end; p++)
+      {
+        path += "/" + splittedPath[p];
+        try
+        {
+          SftpATTRS attrs = c.stat(path);
+        }
+        catch(Exception e)
+        {
+          try
+          {
+            c.mkdir(path);
+          }
+          catch(Exception ex)
+          {
+            log("mkdir exception (" + path + ")");
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    
     /**
      * recursive Put via sftp
      * @param c ChannelSftp Object
@@ -2970,65 +3310,79 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
      */
     protected void recursiveSftpPut(ChannelSftp c, File src, String dst)
     {
+      recursiveSftpPut(c, src, dst, null);
+    }
+    /**
+     * recursive Put via sftp
+     * @param c ChannelSftp Object
+     * @param src File Local Sources
+     * @param dst String Remote Destination
+     */
+    protected void recursiveSftpPut(ChannelSftp c, File src, String dst, MyProgressMonitor monitor)
+    {
       try
       {
-        File files[] = src.listFiles();
-        Arrays.sort(files);
-        for(int i = 0, n = files.length; i < n; i ++)
+        if(recursiveSftpCheckPath(c, src, dst) && src.isDirectory())
         {
-          if(files[i].isDirectory())
+          File files[] = src.listFiles();
+          Arrays.sort(files);
+          for(int i = 0, n = files.length; i < n; i ++)
           {
             String newdst = dst + "/" + files[i].getName();
-            
-            String[] splittedPath = newdst.split("[/\\\\]");
-            String path = "";
-            for(int p = 1; p < splittedPath.length; p++)
+            if(monitor != null)
             {
-              path += "/" + splittedPath[p];
-              try
+              recursiveSftpPut(c, files[i], newdst, monitor);
+            }
+            {
+              recursiveSftpPut(c, files[i], newdst);
+            }
+          }
+        }
+        else if(src.isFile())
+        {
+          actionInfo("put " + src.getName());
+          if(recursiveSftpCheckPath(c, src, dst))
+          {
+            try
+            {
+              c.rm(dst);
+            }
+            catch(SftpException ex)
+            {
+              // if the file is not there its ok
+              if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
               {
-                SftpATTRS attrs = c.stat(path);
+                throw ex;
               }
-              catch(Exception e)
+            }//end try
+            try
+            {
+              if(monitor != null)
               {
-                try
-                {
-                  c.mkdir(path);
-                }
-                catch(Exception ex)
-                {
-                  log("mkdir exception (" + path + ")");
-                }
+                c.put(src.getAbsolutePath(), dst, monitor);
+              }
+              else
+              {
+                c.put(src.getAbsolutePath(), dst);
               }
             }
-            recursiveSftpPut(c, files[i], newdst);
+            catch(SftpException ex)
+            {
+              // if the file is not there its ok
+              if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+              {
+                throw ex;
+              }
+            }//end try
           }
           else
           {
-            actionInfo("put " + files[i].getName());
-            String[] splittedPath = dst.split("[/\\\\]");
-            String path = "";
-            for(int p = 1; p < splittedPath.length; p++)
-            {
-              path += "/" + splittedPath[p];
-              try
-              {
-                SftpATTRS attrs = c.stat(path);
-              }
-              catch(Exception e)
-              {
-                try
-                {
-                  c.mkdir(path);
-                }
-                catch(Exception ex)
-                {
-                  log("mkdir exception (" + path + ")");
-                }
-              }
-            }
-            c.put(files[i].getAbsolutePath(), dst + "/" + files[i].getName());
-          }
+            log("remote directory does not exist and could not be created.");
+          }              
+        }
+        else
+        {
+          log("remote directory does not exist and could not be created.");
         }
       }
       catch(Exception e)
@@ -3038,6 +3392,103 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
   }
   
+  class sshSetupCopier extends sshCopier
+  {
+    private String mode;
+  
+    sshSetupCopier(String Ip, String sNaoNo, String mode)
+    {
+      super(Ip, "0", sNaoNo);
+      this.mode = mode;
+    }
+    
+    protected Boolean exec() throws JSchException, InterruptedException
+    {
+      boolean result = true;
+      result = result && writeNaoSetupFiles(session, sNaoNo);
+      if(result && mode.equals("full"))
+      {
+        Thread.sleep(500);
+        result = result && super.exec();
+      }
+      return result;
+    }
+
+    @Override
+    protected Boolean doInBackground()
+    {
+      try
+      {
+        if(connect())
+        {
+          boolean result = exec();
+          disconnect();
+          copyIsDone(sNaoNo);
+          return result;
+        }
+        else
+        {
+          haveCopyError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
+          copyIsDone(sNaoNo);
+          return false;
+        }      
+      }
+      catch(Exception e)
+      {
+        haveCopyError(sNaoNo, e.toString());
+        copyIsDone(sNaoNo);
+        return false;
+      }
+    }
+
+    /**
+     * copy new files to nao
+     *
+     * @param session jsch session
+     * @param sNaoNo nao number
+     */
+    protected boolean writeNaoSetupFiles(Session session, String sNaoNo)
+    {
+      actionInfo("initialization writing setup files part");
+      try
+      {
+        Channel channel = session.openChannel("sftp");
+        channel.connect();
+        ChannelSftp c = (ChannelSftp) channel;
+
+        String localSetupScriptPath = localDeployOutPath(sNaoNo) + setupScriptPath();
+        String remoteSetupScriptPath = remoteRootPath(sNaoNo) + setupScriptPath();
+
+        File localSetupScriptFiles = new File(localSetupScriptPath);
+
+        log(remoteRootPath(sNaoNo) + setupScriptPath());
+        rmDirSftp(c, remoteRootPath(sNaoNo) + setupScriptPath());
+
+        // create if it is not existing
+        String remoteSetupScriptDst = remoteSetupScriptPath;
+
+        recursiveSftpPut(c, localSetupScriptFiles, remoteSetupScriptDst);
+
+        
+        if(copySysLibs)
+        {
+          File localSysLibsFiles = new File(stagingLibDir);
+
+          String remoteSysLibsDst = homePath() + "/lib";
+
+          recursiveSftpPut(c, localSysLibsFiles, remoteSysLibsDst);
+        }
+        
+        channel.disconnect();
+      }
+      catch(Exception e)
+      {
+        haveCopyError(sNaoNo, "Exception in writeNaoSetupFiles (" + sNaoNo + "): " + e.toString());
+        return false;
+      }
+      return true;
+    }
+  }
   
   class sshCopier extends sshWorker
   {   
@@ -3051,51 +3502,47 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       super(Ip, sNaoNo, sNaoByte);
     }
 
+    private Boolean exec() throws JSchException
+    {
+      if(debugVersion && noBackup)
+      {
+        // NO BACKUP!!!
+        jLogWindow.setBackground(Color.pink);
+        minimalBackupNao(session, sNaoNo, sNaoByte);
+      }
+      else
+      {
+        jLogWindow.setBackground(Color.white);
+        backupNao(session, sNaoNo, sNaoByte);
+      }
+      
+      return writeNao(session, sNaoNo);
+    }
+    
     protected Boolean doInBackground()
     {
       try
       {
         if(connect())
         {
-          if(sNaoNo.equals("0"))
-          {
-            this.writeNaoSetupFiles(session, sNaoNo);
-//            actionInfo("Done with Nao Setup");
-          }
-          else
-          {
-            if(debugVersion && noBackup.isSelected())
-            {
-              // NO BACKUP!!!
-              jLogWindow.setBackground(Color.pink);
-              minimalBackupNao(session, sNaoNo, sNaoByte);
-            }
-            else
-            {
-              jLogWindow.setBackground(Color.white);
-              backupNao(session, sNaoNo, sNaoByte);
-            }
-            writeNao(session, sNaoNo);
-//            actionInfo("Done with Nao " + sNaoNo);
-          }
+          boolean result = exec();
           disconnect();
           copyIsDone(sNaoNo);
+          return result;
         }
         else
         {
-//          log("Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
           haveCopyError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
           copyIsDone(sNaoNo);
-        }
+          return false;
+        }      
       }
       catch(Exception e)
       {
-//        log(e.toString());
-        haveError(sNaoNo, e.toString());
+        haveCopyError(sNaoNo, e.toString());
         copyIsDone(sNaoNo);
         return false;
       }
-      return true;
     }
 
     protected void backupNao(Session session, String sNaNo, String sNaoByte)
@@ -3111,47 +3558,47 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         // copy a backup
         if(jBackupBox.getSelectedIndex() != 0)
         {
-          if(copyLib.isSelected())
+          if(copyLib)
           {
             File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
             if(!libFile.exists() || !libFile.isFile())
             {
               log("selected backup contains no libnaoth.so file");
-              copyLib.setSelected(false);
+              copyLib = false;
             }
           }
 
-          if(copyExe.isSelected())
+          if(copyExe)
           {
             File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
             if(!libFile.exists() || !libFile.isFile())
             {
               log("selected backup contains no libnaoth.so file");
-              copyLib.setSelected(false);
+              copyExe = false;
             }
           }
 
-          if(copyConfig.isSelected())
+          if(copyConfig)
           {
             File exeDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/naoth");
             if(!exeDir.exists() || !exeDir.isDirectory())
             {
               log("selected backup contains no Config directory");
-              copyConfig.setSelected(false);
+              copyConfig = false;
             }
           }
         }
 
         try
         {
-          if(copyLib.isSelected() || copyExe.isSelected() || copyConfig.isSelected())
+          if(copyLib || copyExe || copyConfig)
           {
             exceptionHelper = "mkdir local " + localDeployInPath(sNaNo, sNaoByte);
             File backup = new File(localDeployInPath(sNaNo, sNaoByte));
             backup.mkdirs();
           }
 
-          if(copyLib.isSelected())
+          if(copyLib)
           {
             actionInfo("get libnaoth.so");
 
@@ -3172,7 +3619,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             );
           }
 
-          if(copyExe.isSelected())
+          if(copyExe)
           {
             actionInfo("get naoth (exe)");
             c.get
@@ -3186,13 +3633,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         }
         catch(Exception e)
         {
-          actionInfo("Error - Nao " + sNaNo + ": " + e.toString());
-          log("Exception in backupNao (" + sNaNo + "): " + e.toString() + "(" + exceptionHelper + ")");
+          haveCopyError(sNaoNo, "Exception in backupNao (" + sNaNo + "): " + e.toString() + "(" + exceptionHelper + ")");
         }
 
         try
         {
-          if(copyConfig.isSelected())
+          if(copyConfig)
           {
             exceptionHelper = "get recursive from robot " + remoteRootPath(sNaNo) + configPath() + " to "
                             + localDeployInPath(sNaNo, sNaoByte) + "/Config";
@@ -3201,13 +3647,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         }
         catch(Exception e)
         {
-          actionInfo("Error - Nao " + String.valueOf(sNaNo) + ": " + e.toString());
-          log("Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
+          haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
         }
 
         try
         {
-          if(copyLogs.isSelected())
+          if(copyLogs)
           {
             exceptionHelper = "get recursive from robot " + remoteRootPath(sNaNo) + "/tmp/nao.log" + " to "
                             + localDeployInPath(sNaNo, sNaoByte) + "/nao.log";
@@ -3216,16 +3661,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         }
         catch(Exception e)
         {
-          actionInfo("Error - Nao " + String.valueOf(sNaNo) + ": " + e.toString());
-          log("Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
+          haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
         }
 
         channel.disconnect();
       }
       catch(Exception e)
       {
-        actionInfo("Error - Nao " + String.valueOf(sNaNo) + ": " + e.toString());
-        log("Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
+        haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
       }
     }
 
@@ -3251,8 +3694,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       }
       catch(Exception e)
       {
-        actionInfo("Error - Nao " + String.valueOf(sNaoNo) + ": " + e.toString());
-        log("Exception in backupNao (" + String.valueOf(sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
+        haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
       }
     }
 
@@ -3282,7 +3724,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
         if(!jBackupBox.getSelectedItem().equals(jBackupBox.getItemAt(0)))
         {
-          if(copyLib.isSelected())
+          if(copyLib)
           {
             File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
             if(libFile.exists() && libFile.isFile())
@@ -3293,16 +3735,16 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             else
             {
               log("selected backup contains no libnaoth.so file " + localLibPath);
-              copyLib.setSelected(false);
+              copyLib = false;
             }
           }
         }
 
-        if(copyLib.isSelected())
+        if(copyLib)
         {
           try
           {
-            c.rm(remoteRootPath(sNaoNo) + libnaoPath() + "libnaoth.so");
+            c.rm(remoteRootPath(sNaoNo) + libnaoPath() + "/libnaoth.so");
           }
           catch(SftpException ex)
           {
@@ -3315,7 +3757,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
           try
           {
-            c.rm(remoteRootPath(sNaoNo) + libnaoPath() + "comment.cfg");
+            c.rm(remoteRootPath(sNaoNo) + libnaoPath() + "/comment.cfg");
           }
           catch(SftpException ex)
           {
@@ -3325,17 +3767,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
               throw ex;
             }
           }//end try
-
-          actionInfo("put libnaoth.so");
-          c.put
-            (
-              localLibPath + "libnaoth.so",
-              remoteLibPath + "libnaoth.so",
-              new MyProgressMonitor(progressBar)
-            );          
+          recursiveSftpPut(c, new File(localBinPath + "libnaoth.so"), remoteLibPath + "libnaoth.so", new MyProgressMonitor(progressBar));
         }
 
-        if(copyExe.isSelected())
+        if(copyExe)
         {
           try
           {
@@ -3350,22 +3785,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             }
           }//end try
 
-          actionInfo("put naoth (exe)");
-
-          c.put
-            (
-              localBinPath + "naoth",
-              remoteBinPath + "naoth",
-              new MyProgressMonitor(progressBar)
-            );
-          // 770
+          recursiveSftpPut(c, new File(localLibPath + "naoth"), remoteBinPath + "naoth", new MyProgressMonitor(progressBar));
           c.chmod(504, remoteBinPath + "naoth");
 
         }
         
         if(!jBackupBox.getSelectedItem().equals(jBackupBox.getItemAt(0)))
         {
-          if(copyConfig.isSelected())
+          if(copyConfig)
           {
             File configDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/Config/");
             if(configDir.exists() && configDir.isDirectory())
@@ -3376,12 +3803,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             else
             {
               log("selected backup contains no Config directory " + localConfigPath);
-              copyConfig.setSelected(false);
+              copyConfig = false;
             }
           }
         }
 
-        if(copyConfig.isSelected())
+        if(copyConfig)
         {
           File localConfigFiles = new File(localConfigPath);
 
@@ -3394,55 +3821,18 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           String remooteConfigDst = remoteConfigPath;
           //c.mkdir(remooteConfigDst);
 
-          recursiveSftpPut(c, localConfigFiles, remooteConfigDst);
+          recursiveSftpPut(c, localConfigFiles, remooteConfigDst, new MyProgressMonitor(progressBar));
         }
         channel.disconnect();
       }
       catch(Exception e)
       {
-        log("Exception in writeNao (" + sNaoNo + "): " + e.toString());
+        haveCopyError(sNaoNo, "Exception in writeNao (" + sNaoNo + "): " + e.toString());
         return false;
       }
       return true;
     }    
     
-    /**
-     * copy new files to nao
-     *
-     * @param session jsch session
-     * @param sNaoNo nao number
-     */
-    protected boolean writeNaoSetupFiles(Session session, String sNaoNo)
-    {
-      actionInfo("initialization writing setup files part");
-      try
-      {
-        Channel channel = session.openChannel("sftp");
-        channel.connect();
-        ChannelSftp c = (ChannelSftp) channel;
-
-        String localSetupScriptPath = localDeployOutPath(sNaoNo) + setupScriptPath();
-        String remoteSetupScriptPath = remoteRootPath(sNaoNo) + setupScriptPath();
-
-        File localSetupScriptFiles = new File(localSetupScriptPath);
-
-        log(remoteRootPath(sNaoNo) + setupScriptPath());
-        rmDirSftp(c, remoteRootPath(sNaoNo) + setupScriptPath());
-
-        // create if it is not existing
-        String remoteSetupScriptDst = remoteSetupScriptPath;
-
-        recursiveSftpPut(c, localSetupScriptFiles, remoteSetupScriptDst);
-
-        channel.disconnect();
-      }
-      catch(Exception e)
-      {
-        log("Exception in writeNaoSetupFiles (" + sNaoNo + "): " + e.toString());
-        return false;
-      }
-      return true;
-    }
   }
 
   
@@ -3455,25 +3845,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       super(Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte));
       runList = scriptRunList;
-      
-//      try
-//      {
-//        // Get hostname by textual representation of IP address
-//        InetAddress addr = InetAddress.getByName("127.0.0.1");
-//
-//  //      // Get hostname by a byte array containing the IP address
-//  //      byte[] ipAddr = new byte[]{127, 0, 0, 1};
-//  //      addr = InetAddress.getByAddress(ipAddr);
-//
-//        // Get the host name
-//        String hostname = addr.getHostName();
-//        // Get canonical host name
-//        String hostnameCanonical = addr.getCanonicalHostName();
-//      }
-//      catch(UnknownHostException ex)
-//      {
-//        
-//      }
     }
 
     public sshScriptRunner(String Ip, String sNaoNo, String sNaoByte, String[] scriptRunList)
@@ -3498,31 +3869,24 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             {
               setRobotNetworkConfig(session, sNaoByte);              
             }
-            else if(runList[i].equalsIgnoreCase("initRobot"))
+            else if(runList[i].equalsIgnoreCase("initializeRobot"))
             {
-              
-              
-            }
-            else if(runList[i].equalsIgnoreCase("setRobotTeamComm"))
-            {
-              
-              
+              initializeRobot(session, sNaoByte);              
             }
           }
-//          actionInfo("Done with Nao " + sNaoNo);
           scriptIsDone(sNaoNo);
           disconnect();
         }
         else
         {
-          haveError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
+          haveScriptError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
           scriptIsDone(sNaoNo);
+          return false;
         }
       }
       catch(Exception e)
       {
-//        log(e.toString());
-        haveError(sNaoNo, e.toString());
+        haveScriptError(sNaoNo, e.toString());
         scriptIsDone(sNaoNo);
         return false;
       }
@@ -3535,12 +3899,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
      * @param session jsch session
      * @param sNaoNo nao number
      */
-    protected boolean restartNaoTH(Session session, String sNaoNo)
+    protected void restartNaoTH(Session session, String sNaoNo)
     {
       actionInfo("initialization writing part");
       try
       {
-         if (cbRestartNaoth.isSelected())
+         if (restartNaoth)
          {
             Channel cmd = session.openChannel("exec");
             
@@ -3566,7 +3930,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
                   {
                      break;
                   }
-                  //System.out.println(buffer);
                }
                if(cmd.isClosed()) 
                {
@@ -3585,12 +3948,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         catch(Exception e)
         {
           haveScriptError(sNaoNo, "Exception in restartNaoQi - Nao " + sNaoNo + ": " + e.toString());
-          scriptIsDone(sNaoNo);
-//          actionInfo("Error - Nao " + sNaoNo + ": " + e.toString());
-//          log("Exception in restartNaoQi (" + sNaoNo + ")");
-          return false;
+          return;
         }
-        return true;
     }
         
     private String sshExecAndWaitForResponse(String cmd, String waitFor) throws InterruptedException, IOException
@@ -3606,7 +3965,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           }
           ts.resetTriggered();
        }
-//       sshWaitForResponse(cmd);
        return sshWaitForResponse(waitFor);
        
     }
@@ -3638,57 +3996,77 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       return lastFound;
     }
     
+    private void runSetupShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
+    {
+      ChannelShell shell = (ChannelShell)session.openChannel("shell");
+      consoleIn.setText("");
+
+      ((ChannelShell)shell).setInputStream(ts);
+
+      ((ChannelShell)shell).setExtOutputStream(out);
+      ((ChannelShell)shell).setOutputStream(out);
+
+      lastOut = "";
+      shell.connect();
+
+      sshWaitForResponse("localhost|nao");
+      sshExecAndWaitForResponse("su", "Password:");
+      String response = sshExecAndWaitForResponse(sshRootPassword.getText(), "localhost|nao|Authentication|failure");
+      if(response.equals("Authentication") || response.equals("failure"))
+      {
+        haveScriptError(sNaoNo, "superuser password is wrong ");
+        shell.disconnect();
+        return;
+      }
+      sshExecAndWaitForResponse("cd " + directory, "localhost|nao");
+      sshExecAndWaitForResponse("chown root:root ./" + shellScript + " && chmod 744 ./" + shellScript + " && ./" + shellScript, "localhost|nao");
+//      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && reboot && exit", "localhost|nao");
+      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && exit", "localhost|nao");
+      sshExecAndWaitForResponse("exit", "logout");
+
+      shell.disconnect();
+    }
+    
+    
+    
     /**
-     * copy new files to nao
+     * run shell script for network initialisation as root
      *
      * @param session jsch session
      * @param sNaoNo nao number
      */
-    protected boolean setRobotNetworkConfig(Session session, String sNaoNo)
+    protected void setRobotNetworkConfig(Session session, String sNaoNo)
     {      
       actionInfo("initialization setup network part");
       try
       {
-        ChannelShell shell = (ChannelShell)session.openChannel("shell");
-        consoleIn.setText("");
-        
-        ((ChannelShell)shell).setInputStream(ts);
-        
-        ((ChannelShell)shell).setExtOutputStream(out);
-        ((ChannelShell)shell).setOutputStream(out);
-        
-        lastOut = "";
-        shell.connect();
-        sshWaitForResponse("localhost|nao");
-        
-        sshExecAndWaitForResponse("su", "Password:");
-        String response = sshExecAndWaitForResponse(sshRootPassword.getText(), "localhost|nao|Authentication|failure");
-        if(response.equals("Authentication") || response.equals("failure"))
-        {
-          haveScriptError(sNaoNo, "superuser password is wrong ");
-          scriptIsDone(sNaoNo);
-          shell.disconnect();
-          return false;
-        }
-
-        sshExecAndWaitForResponse("cd /home/nao/naoqi/naothSetup", "localhost|nao");
-//        sshExecAndWaitForResponse("chown root:root ./init_env.sh && chmod 744 ./init_env.sh && ./init_env.sh", "localhost");
-        sshExecAndWaitForResponse("chown root:root ./init_net.sh && chmod 744 ./init_net.sh && ./init_net.sh", "localhost|nao");
-        sshExecAndWaitForResponse("reboot", "localhost|nao");
-        sshExecAndWaitForResponse("exit", "localhost|nao");
-        sshExecAndWaitForResponse("exit", "logout");
-
-        shell.disconnect();
+        runSetupShellScriptAsRoot("/home/nao/naoqi/naothSetup", "init_net.sh");
       }
       catch(Exception e)
       {
         haveScriptError(sNaoNo, "Exception in setRobotNetworkConfig - Nao " + sNaoNo + ": " + e.toString());
-        scriptIsDone(sNaoNo);
-//        actionInfo("Error - Nao " + sNaoNo + ": " + e.toString());
-//        log("Exception in setRobotNetworkConfig (" + sNaoNo + ")");
-        return false;
+        return;
       }
-      return true;
+    }
+
+    /**
+     * run shell script for complete robot initialization as root
+     *
+     * @param session jsch session
+     * @param sNaoNo nao number
+     */
+    protected void initializeRobot(Session session, String sNaoNo)
+    {      
+      actionInfo("initialization setup network part");
+      try
+      {
+        runSetupShellScriptAsRoot("/home/nao/naoqi/naothSetup", "init_env.sh");
+      }
+      catch(Exception e)
+      {
+        haveScriptError(sNaoNo, "Exception in setRobotNetworkConfig - Nao " + sNaoNo + ": " + e.toString());
+        return;
+      }
     }
   }
 

@@ -60,10 +60,24 @@ else
     echo "./etc/conf.d/hostname is missing"
 fi
 
+#SSH Config
+if [ -f ./etc/ssh.conf/sshd_config ]
+then
+    echo "writing /etc/conf.d/hostname"
+    cp ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config
+    chown root:root /etc/ssh.conf/sshd_config
+    chmod 644 /etc/ssh.conf/sshd_config
+else
+    echo "./etc/conf.d/hostname is missing"
+fi
+
+
+
+
 # Check and Update Runlevel Configuration for Network Services
 chown root:root ./checkRC.sh
 chmod 744 ./checkRC.sh
-./checkRC.sh "connman=disable net.eth0=boot"
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot"
 # net.wlan0=boot"
 
 
