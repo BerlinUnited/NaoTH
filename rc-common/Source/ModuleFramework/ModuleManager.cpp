@@ -86,6 +86,35 @@ void ModuleManager::calculateExecutionList()
     std::cerr << "WARNING: maximal number of iterations reached." << std::endl;
   }//end if
 
+  // check that all REQUIRE have a PROVIDE somewhere
+  for (list<string>::const_iterator it1 = moduleExecutionList.begin(); it1 != moduleExecutionList.end(); it1++)
+  {
+    if (!moduleExecutionMap[*it1]->isEnabled()) continue;
+    Module* m1 = moduleExecutionMap[*it1]->getModule();
+
+    for (std::list<Representation*>::const_iterator itReq = m1->getRequiredRepresentations().begin();
+         itReq != m1->getRequiredRepresentations().end(); itReq++)
+    {
+      bool requirementMet = false;
+      std::string repName = (*itReq)->getName();
+
+      for (list<string>::const_iterator it2 = moduleExecutionList.begin();
+           it2 != it1 && !requirementMet; it2++)
+      {
+        if (!moduleExecutionMap[*it2]->isEnabled()) continue;
+        Module* m2 = moduleExecutionMap[*it2]->getModule();
+        for(std::list<Representation*>::const_iterator r = m2->getProvidedRepresentations().begin();
+            r != m2->getProvidedRepresentations().end(); ++r)
+        {
+          if ((*r)->getName() == repName)
+            requirementMet = true;
+        }
+      }
+
+      if (!requirementMet)
+        std::cerr << "ERROR: module " << m1->getModuleName() << "'s REQUIRE of " << repName << " not met!" << std::endl;
+    }
+  }
 
   // print execution list
   cout << "automatic module execution list" << endl;
@@ -94,7 +123,8 @@ void ModuleManager::calculateExecutionList()
     itExec != moduleExecutionList.end(); itExec++
   )
   {
-    cout << *itExec << endl;
+    if (moduleExecutionMap[*itExec]->isEnabled())
+      cout << *itExec << endl;
   }
   cout << "-------------------------------" << endl;
   cout << endl;
