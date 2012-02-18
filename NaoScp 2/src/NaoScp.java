@@ -63,10 +63,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private List<NaoSshWrapper> services;
   private final DefaultListModel naoModel;
   
-  private final TextFieldStreamer ts;
-  private final OutputStream out;
-  private String lastOut;
-  
   private boolean copyConfig;
   private boolean copyLib;
   private boolean copyExe;
@@ -87,33 +83,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   public NaoScp()
   {
     initComponents();
-    
-    out = new OutputStream() 
-          {  
-            @Override  
-            public void write(int b) throws IOException 
-            {  
-              updateLog(String.valueOf((char) b));  
-            }  
-
-            @Override  
-            public void write(byte[] b, int off, int len) throws IOException 
-            {  
-              updateLog(new String(b, off, len));  
-            }  
-
-            @Override  
-            public void write(byte[] b) throws IOException 
-            {  
-              write(b, 0, b.length);  
-            }  
-          };
-     
-    ts = new TextFieldStreamer(consoleIn);
-    //maybe this next line should be done in the TextFieldStreamer ctor
-    //but that would cause a "leak a this from the ctor" warning
-    consoleIn.addActionListener(ts);
-    
     
     this.naoNumberFields.put(0, new JTextField());
     this.scriptDone.put(0, false);
@@ -1365,25 +1334,9 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
 
   private void log(final String logtext)
   {
-//    SwingUtilities.invokeLater
-//    (
-//      new Runnable() 
-//      {
-//        public void run() 
-//        {
-          jLogWindow.append(logtext + "\n");
-          jLogWindow.validate();
-//          jLogWindow.invalidate();
-//          try
-//          {
-//            Thread.sleep(5);
-//          }
-//          catch(InterruptedException e)
-//          {}
-          System.out.println(logtext);
-//        }
-//      }
-//    );
+    jLogWindow.append(logtext + "\n");
+    jLogWindow.validate();
+    System.out.println(logtext);
   }//end log
 
   /**
@@ -1874,7 +1827,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     if(testOk)
     {
       cLan.execute();
-      while(!copyDone.get(0))
+      while(!cLan.isDone())
       {
         this.validateTree();
       }
@@ -1886,7 +1839,12 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       sshScriptRunner sLan = new sshScriptRunner(address, "0", sNaoByte, new String[] {"initializeRobot"});
       if(sLan.testConnection())
       {
-        sLan.execute();
+        scriptDone.put(0, false);
+        sLan.execute();    
+        while(!sLan.isDone())
+        {
+//          this.validateTree();
+        }
       }
       else
       {
@@ -1920,7 +1878,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
 
     boolean testOk = false;
-    sshSetupCopier cLan = new sshSetupCopier(address, sNaoByte, "network");
+    sshSetupCopier cLan = new sshSetupCopier(address, sNaoByte, "network");    
     testOk = cLan.testConnection();
 
     if(!testOk && addresses.size() > 0 && !addresses.contains(address))
@@ -1938,7 +1896,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     if(testOk)
     {
       cLan.execute();
-      while(!copyDone.get(0))
+      while(!cLan.isDone())
       {
         this.validateTree();
       }
@@ -1947,7 +1905,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         allIsDone("0");
         return;
       }
-
       sshScriptRunner sLan = new sshScriptRunner(address, "0", sNaoByte, new String[] {"setRobotNetworkConfig"});
       if(sLan.testConnection())
       {
@@ -1961,28 +1918,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     else
     {
       haveError("0", "Nao (" + address + ") not reachable, no setting up possible");
-    }   
+    }
     allIsDone("0");
   }
-  
-  private void updateLog(final String text) 
-  {  
-    SwingUtilities.invokeLater
-    (
-      new Runnable() 
-      {  
-        public void run() 
-        {  
-          if(text.length() > 0)
-          {
-            System.out.append(text);
-            lastOut += text;
-          }
-        }  
-      }
-    );  
-  }  
-  
+    
   
     private void jColorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jColorBoxActionPerformed
     }//GEN-LAST:event_jColorBoxActionPerformed
@@ -2075,7 +2014,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     jButtonSaveNetworkConfig = new javax.swing.JButton();
     jScrollPane3 = new javax.swing.JScrollPane();
     lstNaos = new javax.swing.JList();
-    consoleIn = new javax.swing.JTextField();
 
     org.jdesktop.layout.GroupLayout jDialog1Layout = new org.jdesktop.layout.GroupLayout(jDialog1.getContentPane());
     jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -2562,9 +2500,9 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
               .add(jLabel23))
             .add(18, 18, 18)
             .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(broadcastFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-              .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
-              .add(netmaskFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))))
+              .add(broadcastFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+              .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+              .add(netmaskFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE))))
         .addContainerGap())
     );
     jSettingsPanel1Layout.setVerticalGroup(
@@ -2665,7 +2603,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jLabel26)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
+            .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE))
           .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
             .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
               .add(org.jdesktop.layout.GroupLayout.LEADING, jSettingsPanel2Layout.createSequentialGroup()
@@ -2682,8 +2620,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
                 .add(jLabel28)))
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(sshPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
-              .add(sshRootPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE))))
+              .add(sshPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
+              .add(sshRootPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))))
         .addContainerGap())
     );
     jSettingsPanel2Layout.setVerticalGroup(
@@ -2791,9 +2729,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 742, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .add(6, 6, 6)
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(consoleIn, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
-              .add(jScrollPane1)
               .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
+              .add(jScrollPane1)
               .add(jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)))
           .add(jLabel12))
         .add(21, 21, 21))
@@ -2805,15 +2742,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
           .add(layout.createSequentialGroup()
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 295, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(consoleIn, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 333, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jCopyStatus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 19, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-            .add(11, 11, 11)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
           .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 393, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(20, Short.MAX_VALUE))
     );
 
     pack();
@@ -3025,7 +2960,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private javax.swing.JCheckBox cbCopyLogs;
   private javax.swing.JCheckBox cbNoBackup;
   private javax.swing.JCheckBox cbRestartNaoth;
-  private javax.swing.JTextField consoleIn;
   private javax.swing.JButton copyButton;
   private javax.swing.JPanel jActionsPanel;
   private javax.swing.JComboBox jBackupBox;
@@ -4002,18 +3936,68 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   {
     String[] runList;
     String hostname;
+    TextFieldStreamer ts;
+    JTextField cIn;
+    private OutputStream out;
+    private String lastOut;
     
     public sshScriptRunner(String Ip, int iNaoNo, int iNaoByte, String[] scriptRunList)
     {
       super(Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte));
-      runList = scriptRunList;
+      init(scriptRunList);
     }
 
     public sshScriptRunner(String Ip, String sNaoNo, String sNaoByte, String[] scriptRunList)
     {
       super(Ip, sNaoNo, sNaoByte);
-      runList = scriptRunList;
+      init(scriptRunList);
     }
+
+    private void init(String[] scriptRunList)
+    {
+      runList = scriptRunList;
+      cIn = new JTextField();
+      ts = new TextFieldStreamer(cIn);
+      cIn.addActionListener(ts);
+      out = new OutputStream() 
+            {  
+              @Override  
+              public void write(int b) throws IOException 
+              {  
+                updateLog(String.valueOf((char) b));  
+              }  
+
+              @Override  
+              public void write(byte[] b, int off, int len) throws IOException 
+              {  
+                updateLog(new String(b, off, len));  
+              }  
+
+              @Override  
+              public void write(byte[] b) throws IOException 
+              {  
+                write(b, 0, b.length);  
+              }  
+            };
+    }
+
+    private void updateLog(final String text) 
+    {  
+      SwingUtilities.invokeLater
+      (
+        new Runnable() 
+        {  
+          public void run() 
+          {  
+            if(text.length() > 0)
+            {
+              System.out.append(text);
+              lastOut += text;
+            }
+          }  
+        }
+      );  
+    }  
 
     protected Boolean doInBackground()
     {
@@ -4116,8 +4100,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         
     private String sshExecAndWaitForResponse(String cmd, String waitFor) throws InterruptedException, IOException
     {
-       consoleIn.setText(cmd);
-       ActionEvent evt = new ActionEvent(consoleIn, 0, "\n");
+       cIn.setText(cmd);
+       ActionEvent evt = new ActionEvent(cIn, 0, "\n");
        ts.actionPerformed(evt);
        synchronized (ts) 
        {
@@ -4161,7 +4145,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     private void runSetupShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
     {
       ChannelShell shell = (ChannelShell)session.openChannel("shell");
-      consoleIn.setText("");
+      cIn.setText("");
 
       ((ChannelShell)shell).setInputStream(ts);
 
