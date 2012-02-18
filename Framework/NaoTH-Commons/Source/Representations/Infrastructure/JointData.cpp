@@ -35,7 +35,7 @@ void JointData::init()
       max[i] = Math::fromDegrees(maxDeg);
     } else
     {
-      THROW("JointData: can not get " + jointName + " max angle")
+      THROW("JointData: can not get " + jointName + " max angle");
     }
 
     if (cfg.hasKey("joints", jointName + "Min"))
@@ -44,7 +44,7 @@ void JointData::init()
       min[i] = Math::fromDegrees(minDeg);
     } else
     {
-      THROW("JointData: can not get " + jointName + " min angle")
+      THROW("JointData: can not get " + jointName + " min angle");
     }
   }
 }

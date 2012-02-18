@@ -71,9 +71,9 @@ void NaoSensorData::get(GyrometerData& data) const
 {
   //data = (raw-zero) * 2.7 * PI/180 [rad/s]
   //static float scale_gyro = 2.7 * M_PI/180.0;
-  const static unsigned int range = 4096; // 2^12
-  const static unsigned int offset = range / 2;
-  const static float scale_gyro = Math::fromDegrees(1000) / range; // +/- 500 deg/s
+  const static double range = 4096; // 2^12
+  const static double offset = range / 2;
+  const static double scale_gyro = Math::fromDegrees(1000) / range; // +/- 500 deg/s
 
   data.rawData.x = sensorsValue[theGyrometerDataIndex + 0];
   data.rawData.y = sensorsValue[theGyrometerDataIndex + 1];
@@ -86,7 +86,7 @@ void NaoSensorData::get(GyrometerData& data) const
 void NaoSensorData::get(InertialSensorData& data) const
 {
   data.data.x = sensorsValue[theInertialSensorDataIndex];
-  data.data.y= sensorsValue[theInertialSensorDataIndex+1];
+  data.data.y = sensorsValue[theInertialSensorDataIndex+1];
 }//end InertialSensorData
 
 void NaoSensorData::get(IRReceiveData& data) const
