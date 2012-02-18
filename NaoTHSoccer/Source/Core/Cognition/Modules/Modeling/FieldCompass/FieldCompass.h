@@ -11,7 +11,7 @@
 #include <ModuleFramework/Module.h>
 
 // Representations
-#include "Representations/Modeling/RobotPose.h";
+#include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/CompassDirection.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
@@ -31,9 +31,7 @@ public:
   FieldCompass();
   ~FieldCompass(){};
 
-  virtual void execute() {
-      getCompassDirection().anlge = getRobotPose().rotation;
-  }
+  virtual void execute();
 
 private:
 

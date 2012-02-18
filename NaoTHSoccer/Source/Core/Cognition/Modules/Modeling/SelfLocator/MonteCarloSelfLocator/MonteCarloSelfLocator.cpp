@@ -1210,7 +1210,7 @@ void MonteCarloSelfLocator::execute()
   }
 
   getRobotPose() = newPose;
-  getSelfLocGoalModel().update(getPlayerInfo().gameData.teamColor, getRobotPose(), getFieldInfo());
+  getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
   /************************************
    * execude some debug requests (drawings)
@@ -1401,6 +1401,7 @@ void MonteCarloSelfLocator::drawSamplesImportance(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::drawSelfLocGoalModel() const
 {
+  /*18.02.2012
   FIELD_DRAWING_CONTEXT;
 
   PEN("0000FF",20);
@@ -1411,6 +1412,7 @@ void MonteCarloSelfLocator::drawSelfLocGoalModel() const
   CIRCLE(getSelfLocGoalModel().yellowGoal.leftPost.x, getSelfLocGoalModel().yellowGoal.leftPost.y, getFieldInfo().goalpostRadius);
   CIRCLE(getSelfLocGoalModel().yellowGoal.rightPost.x, getSelfLocGoalModel().yellowGoal.rightPost.y, getFieldInfo().goalpostRadius);
   LINE(getSelfLocGoalModel().yellowGoal.leftPost.x, getSelfLocGoalModel().yellowGoal.leftPost.y,getSelfLocGoalModel().yellowGoal.rightPost.x, getSelfLocGoalModel().yellowGoal.rightPost.y);
+  */
 }//end drawSelfLocGoalModel
 
 

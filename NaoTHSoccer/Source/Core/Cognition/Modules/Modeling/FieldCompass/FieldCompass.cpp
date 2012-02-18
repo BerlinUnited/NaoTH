@@ -24,5 +24,6 @@ FieldCompass::FieldCompass() {
 
 void FieldCompass::execute() {
 
+    getCompassDirection().angle = getRobotPose().rotation;
 
 }//end FieldCompass::execute()

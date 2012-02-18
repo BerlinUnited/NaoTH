@@ -30,11 +30,11 @@ void WholeGoalLocator::execute()
   lastRobotOdometry = getOdometryData();
 
   // update by odometry
-  getSensingGoalModel().blueGoal.leftPost = odometryDelta * getSensingGoalModel().blueGoal.leftPost;
-  getSensingGoalModel().blueGoal.rightPost = odometryDelta * getSensingGoalModel().blueGoal.rightPost;
+  getSensingGoalModel().goalOne.leftPost = odometryDelta * getSensingGoalModel().goalOne.leftPost;
+  getSensingGoalModel().goalOne.rightPost = odometryDelta * getSensingGoalModel().goalOne.rightPost;
 
-  getSensingGoalModel().yellowGoal.leftPost = odometryDelta * getSensingGoalModel().yellowGoal.leftPost;
-  getSensingGoalModel().yellowGoal.rightPost = odometryDelta * getSensingGoalModel().yellowGoal.rightPost;
+  getSensingGoalModel().goalTwo.leftPost = odometryDelta * getSensingGoalModel().goalTwo.leftPost;
+  getSensingGoalModel().goalTwo.rightPost = odometryDelta * getSensingGoalModel().goalTwo.rightPost;
 
 
   // TODO: check this condition
@@ -54,8 +54,11 @@ void WholeGoalLocator::execute()
   {
     for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
     {
+      //18.02.2012 - commented because of same colored goal
+      //introduce a switch
+      //TODO for diff colored goal games
       // two posts of the same color are seen
-      if(i+1 < getGoalPercept().getNumberOfSeenPosts() &&
+      /*if(i+1 < getGoalPercept().getNumberOfSeenPosts() &&
          getGoalPercept().getPost(i).color == getGoalPercept().getPost(i+1).color)
       {
          checkAndInsertSingleGoal(getGoalPercept().getPost(i), getGoalPercept().getPost(i+1));
@@ -63,7 +66,12 @@ void WholeGoalLocator::execute()
       }else if(getGoalPercept().getPost(i).type != GoalPercept::GoalPost::unknownPost)
       {
         // ...
-      }
+      }*/
+        if(i+1 < getGoalPercept().getNumberOfSeenPosts())
+        {
+            checkAndInsertSingleGoal(getGoalPercept().getPost(i), getGoalPercept().getPost(i+1));
+            //i++;
+        }
     }//end for
   }//end if
 
@@ -71,18 +79,18 @@ void WholeGoalLocator::execute()
   //Draw GoalModel
   DEBUG_REQUEST("WholeGoalLocator:drawGoalModel",
     FIELD_DRAWING_CONTEXT;
-    Vector2<double> centerBlue = getSensingGoalModel().blueGoal.calculateCenter();
+    Vector2<double> centerGoalOne = getSensingGoalModel().goalOne.calculateCenter();
     PEN("0000FF", 50);
-    CIRCLE(getSensingGoalModel().blueGoal.leftPost.x, getSensingGoalModel().blueGoal.leftPost.y, 50);
-    CIRCLE(getSensingGoalModel().blueGoal.rightPost.x, getSensingGoalModel().blueGoal.rightPost.y, 50);
+    CIRCLE(getSensingGoalModel().goalOne.leftPost.x, getSensingGoalModel().goalOne.leftPost.y, 50);
+    CIRCLE(getSensingGoalModel().goalOne.rightPost.x, getSensingGoalModel().goalOne.rightPost.y, 50);
     PEN("0000AA", 50);
-    CIRCLE(centerBlue.x, centerBlue.y, 50);
-    Vector2<double> centerYellow = getSensingGoalModel().yellowGoal.calculateCenter();
+    CIRCLE(centerGoalOne.x, centerGoalOne.y, 50);
+    Vector2<double> centerGoalTwo = getSensingGoalModel().goalTwo.calculateCenter();
     PEN("FFFF00", 50);
-    CIRCLE(getSensingGoalModel().yellowGoal.leftPost.x, getSensingGoalModel().yellowGoal.leftPost.y, 50);
-    CIRCLE(getSensingGoalModel().yellowGoal.rightPost.x, getSensingGoalModel().yellowGoal.rightPost.y, 50);
+    CIRCLE(getSensingGoalModel().goalTwo.leftPost.x, getSensingGoalModel().goalTwo.leftPost.y, 50);
+    CIRCLE(getSensingGoalModel().goalTwo.rightPost.x, getSensingGoalModel().goalTwo.rightPost.y, 50);
     PEN("AAAA00", 50);
-    CIRCLE(centerYellow.x, centerYellow.y, 50);
+    CIRCLE(centerGoalTwo.x, centerGoalTwo.y, 50);
   );
 
   DEBUG_REQUEST("WholeGoalLocator:drawRobotPose",
@@ -143,7 +151,9 @@ void WholeGoalLocator::checkAndInsertSingleGoal(
    **************************************/
 
   // both goal posts should have the same color...
-  if(postLeft.color == ColorClasses::yellow && postRight.color == ColorClasses::yellow )
+    /*18.02.2012
+      because of same colored goals
+if(postLeft.color == ColorClasses::yellow && postRight.color == ColorClasses::yellow )
   {
     if(getFieldSidePercept().facedFieldSide == FieldSidePercept::own)
     {
@@ -153,6 +163,7 @@ void WholeGoalLocator::checkAndInsertSingleGoal(
       getSensingGoalModel().yellowGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
       getSensingGoalModel().someGoalWasSeen = true;
     }
+    //FIXME never reached?
     else if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent)
     {
       getSensingGoalModel().blueGoal.leftPost = postLeft.position;
@@ -165,7 +176,10 @@ void WholeGoalLocator::checkAndInsertSingleGoal(
     {
       // TODO: what?!
     }
+
   }//end if
+*/
+
 
 }//end checkAndInsertSingleGoal
 

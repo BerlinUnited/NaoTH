@@ -13,22 +13,47 @@
 
 const GoalModel::Goal& GoalModel::getTeamGoal(double global_angle) const
 {
-  
+    //TODO check this decision, compare with robotPose.rotation
+    //18.02.2012
+    if (abs(global_angle) > Math::pi_2) {
+        return goalTwo; //oppGoal
+    } else {
+       return goalOne; //own goal
+    }
 }//end getTeamGoal
 
 GoalModel::Goal& GoalModel::getTeamGoal(double global_angle)
 {
-  
+    //TODO check this decision, compare with robotPose.rotation
+    //18.02.2012
+    if (abs(global_angle) > Math::pi_2) {
+        return goalTwo; //oppGoal
+    } else {
+       return goalOne; //own goal
+    }
 }//end getTeamGoal
 
 const GoalModel::Goal& GoalModel::getOppGoal(double global_angle) const
 {
-  
+    //TODO check this decision, compare with robotPose.rotation
+    //18.02.2012
+    if (abs(global_angle) > Math::pi_2) {
+        return goalTwo; //oppGoal
+    } else {
+       return goalOne; //own goal
+    }
 }//end getOppGoal
 
 GoalModel::Goal& GoalModel::getOppGoal(double global_angle)
 {
-  
+    //TODO check this decision, compare with robotPose.rotation
+    //18.02.2012
+    if (abs(global_angle) > Math::pi_2) {
+        return goalTwo; //oppGoal
+    } else {
+       return goalOne; //own goal
+    }
+
 }//end getOppGoal
 
 /*
@@ -117,7 +142,7 @@ Pose2D GoalModel::calculatePose(double global_angle, const FieldInfo& fieldInfo)
   const Vector2<double>& leftOpponentGoalPosition = fieldInfo.opponentGoalPostLeft;
   const Vector2<double>& rightOpponentGoalPosition = fieldInfo.opponentGoalPostRight;
 
-  Goal modeledOpponentGoal = getOppGoal(..);
+  Goal modeledOpponentGoal = getOppGoal(global_angle);
 
   // TODO: make it nicer with Vector2 operations
   double rotation = (modeledOpponentGoal.leftPost-modeledOpponentGoal.rightPost).angle() - Math::pi_2;

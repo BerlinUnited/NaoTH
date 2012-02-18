@@ -60,6 +60,10 @@ void ActiveGoalLocator::execute() {
   getLocalGoalModel().opponentGoalIsValid = false;
   getLocalGoalModel().ownGoalIsValid = false;
 
+
+  /* 18.02.2012
+  clear cause of same colored Goals!
+
   // HACK begin: senity check: the model cannot handle posts of different color now
 
   if (getGoalPercept().getNumberOfSeenPosts() > 0)
@@ -73,11 +77,16 @@ void ActiveGoalLocator::execute() {
     }//end for
   }//end if
   // HACK: end
-
+  */
 
   STOPWATCH_START("ActiveGoalLocator");
 
-  //TODO check if two post with different color
+
+
+  /* 18.02.2012
+  clear cause of same colored Goals!
+  hold sampleSets
+
   static ColorClasses::Color lastGoalColor = ColorClasses::skyblue;
 
   if (getGoalPercept().getNumberOfSeenPosts() > 0 && getGoalPercept().getPost(0).color != lastGoalColor) {
@@ -89,6 +98,8 @@ void ActiveGoalLocator::execute() {
       lastGoalColor = ColorClasses::yellow;
     }
   }
+  */
+
 
   // don't update if the body state is not valid
   if (getBodyState().fall_down_state != BodyState::upright || // robot is not upright
@@ -129,6 +140,9 @@ void ActiveGoalLocator::execute() {
 
   //For Modelling
 
+  /* 18.02.2012
+  //should be decided in updateByGoalPost!
+
   bool oppGoalSeen = false;
   bool ownGoalSeen = false;
 
@@ -141,7 +155,7 @@ void ActiveGoalLocator::execute() {
     oppGoalSeen = true;
   } else {
     ownGoalSeen = true;
-  }
+  }*/
 
   //get posts by cluster
   if (numOfClusters != 0) {
@@ -215,7 +229,10 @@ void ActiveGoalLocator::execute() {
         TEXT_DRAWING(rightPost.x+10,rightPost.y+10, "R");
       );
 
-      if (lastGoalColor == ColorClasses::skyblue) {
+      /*18.02.2012
+        tore malen welche lokal vorhanden sind
+
+        if (lastGoalColor == ColorClasses::skyblue) {
         getLocalGoalModel().blueGoal.leftPost = leftPost;
         getLocalGoalModel().blueGoal.rightPost = rightPost;
         // TODO: create a separate model for the another goal
@@ -228,16 +245,38 @@ void ActiveGoalLocator::execute() {
         getLocalGoalModel().calculateBlueByYellow(getFieldInfo().xLength);
         getLocalGoalModel().yellowGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
       }
+      */
+
+      getLocalGoalModel().goalOne.leftPost  = leftPost;
+      getLocalGoalModel().goalOne.rightPost = rightPost;
+      //frame Info when goal was seen not useful! New: some_goal_was seen
+      getLocalGoalModel().goalOne.frameInfoWhenGoalLastSeen = getFrameInfo();
+
+      //TODO Convention: should not be calculated here? Just in Model
+      LocalGoalModel::Goal another;
+      getLocalGoalModel().calculateAnotherGoal(getLocalGoalModel().goalOne, another, getFieldInfo().xLength);
+      getLocalGoalModel().goalTwo.leftPost  = another.leftPost;
+      getLocalGoalModel().goalTwo.rightPost = another.rightPost;
+      //end TODO
+
 
     //caculated by right and left post!
     Vector2<double> goalCenter;
     goalCenter = (leftPost - rightPost) * 0.5 + rightPost;
 
+    /*18.02.2012 same colors ... no decision of own ord opp goal
     if (ownGoalSeen) getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
     if (oppGoalSeen) {
       //getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
       getLocalGoalModel().seen_center = goalCenter; //opponentGoal Position
       getLocalGoalModel().seen_angle = goalCenter.angle(); //opponentGoal Angle
+    }*/
+
+    //TODO check decision for opp goal!
+    if (getCompassDirection().angle > Math::pi_2) {
+
+        getLocalGoalModel().seen_center = goalCenter;
+        getLocalGoalModel().seen_angle = goalCenter.angle();
     }
 
     DEBUG_REQUEST("ActiveGoalLocator:draw_goalCenter",
@@ -251,17 +290,20 @@ void ActiveGoalLocator::execute() {
   }
 
   // say it Model is Valid when more than one cluster is seen
-  getLocalGoalModel().opponentGoalIsValid = (oppGoalSeen && numOfClusters > 1);
-  getLocalGoalModel().ownGoalIsValid = (ownGoalSeen && numOfClusters > 1);
+  //commented 18.02.2012
+  //getLocalGoalModel().opponentGoalIsValid = (oppGoalSeen && numOfClusters > 1);
+  //getLocalGoalModel().ownGoalIsValid = (ownGoalSeen && numOfClusters > 1);
 
-  debugDrawings(lastGoalColor);
+  debugDrawings();
 
   STOPWATCH_STOP("ActiveGoalLocator");
 
 }//end execute
 
-void ActiveGoalLocator::debugDrawings(ColorClasses::Color lastGoalColor) {
+void ActiveGoalLocator::debugDrawings() {
 
+  /*18.02.2012
+    commented because of same colored goals
   DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
 
   if (lastGoalColor == ColorClasses::skyblue) {
@@ -281,7 +323,8 @@ void ActiveGoalLocator::debugDrawings(ColorClasses::Color lastGoalColor) {
       CIRCLE(getLocalGoalModel().yellowGoal.rightPost.x, getLocalGoalModel().yellowGoal.rightPost.y, 50);
       LINE(getLocalGoalModel().yellowGoal.rightPost.x, getLocalGoalModel().yellowGoal.rightPost.y, getLocalGoalModel().yellowGoal.leftPost.x, getLocalGoalModel().yellowGoal.leftPost.y);
   }
-);
+
+);*/
 
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_samples",
@@ -328,10 +371,11 @@ void ActiveGoalLocator::updateByGoalPercept() {
   bool oppGoalSeen = false;
   bool ownGoalSeen = false;
 
+  /* 18.02.2012
   ColorClasses::Color opponentGoalColor = ColorClasses::yellow;
   if (getPlayerInfo().gameData.teamColor == GameData::red) {
     opponentGoalColor = ColorClasses::skyblue;
-  }
+  }*/
 
   for (unsigned int i = 0; i < sampleSet.size(); i++) {
     Sample& sample = sampleSet[i];
@@ -362,9 +406,11 @@ void ActiveGoalLocator::updateByGoalPercept() {
         DEBUG_REQUEST("ActiveGoalLocator:with_distance_gaussian",
           weighting += Math::gaussianProbability(value2, parameters.standardDeviationDist)*670.0;
         );
-      }
+      } 
 
-      if (getGoalPercept().getPost(i).color == opponentGoalColor) {
+    //TODO check this decision
+    //18.02.2012
+    if (abs(getCompassDirection().angle) > Math::pi_2) {
         oppGoalSeen = true;
       } else {
         ownGoalSeen = true;
