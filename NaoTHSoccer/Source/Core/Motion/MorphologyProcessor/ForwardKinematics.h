@@ -41,6 +41,8 @@ public:
   /** */
   static void updateKinematicChainFrom(Link* l);
 
+  /** calculate rotation based on foot - torso transformation */
+  static RotationMatrix calcChestFeetRotation(const KinematicChain& theKinematicChain);
 
 private:
   ForwardKinematics() {} // don't create an instance
