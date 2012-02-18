@@ -115,6 +115,11 @@ then
     mkdir /home/nao/lib
 fi
 
+if [ ! -h /home/nao/Config ]
+then
+    ln -s /home/nao/naoqi/config /home/nao/Config
+fi
+
 if [ -d /home/nao/lib ]
 then
     chown -R nao:nao /home/nao/lib
