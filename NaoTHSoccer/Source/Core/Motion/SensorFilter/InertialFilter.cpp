@@ -9,6 +9,7 @@
 
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 using namespace naoth;
 
@@ -200,35 +201,8 @@ void InertialFilter::update_bhuman_like()
   // collecting....
   if(!unstable)
   {
-    // calculate rotation based on foot - torso transformation
-    const Pose3D& footLeft = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
-    const Pose3D& footRight = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
-    const Pose3D& body = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].M;
-
-    // local in chest
-    Pose3D localFootLeft(footLeft.local(body));
-    Pose3D localFootRight(footRight.local(body));
-    
-    if(abs(localFootLeft.translation.z - localFootRight.translation.z) < 3.f/* magic number */)
-    {
-      // use average of the calculated rotation of each leg
-
-      double meanX = (localFootLeft.rotation.getXAngle() + localFootRight.rotation.getXAngle())*0.5;
-      double meanY = (localFootLeft.rotation.getYAngle() + localFootRight.rotation.getYAngle())*0.5;
-
-      calculatedRotation.fromKardanRPY(0.0, meanY, meanX);
-
-    }
-    else if(localFootLeft.translation.z > localFootRight.translation.z)
-    {
-      // use left foot
-      calculatedRotation = localFootLeft.rotation;
-    }
-    else
-    {
-      // use right foot
-      calculatedRotation = localFootRight.rotation;
-    }
+    RotationMatrix calculatedRotation = 
+      Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());

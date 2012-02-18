@@ -14,7 +14,9 @@
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
 #include "Engine/ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
+
 #include "Tools/Debug/Stopwatch.h"
+#include "Tools/Debug/DebugRequest.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
 
@@ -62,6 +64,9 @@ Motion::Motion()
   ADD_LOGGER(GyrometerData);
   ADD_LOGGER(FSRData);
   ADD_LOGGER(MotionRequest);
+
+
+  DEBUG_REQUEST_REGISTER("Motion:kc_sensor_test", "", false);
 }
 
 Motion::~Motion()
@@ -225,7 +230,44 @@ void Motion::processSensorData()
   theBlackBoard.theKinematicChainModel.updateCoM();
   
   theBlackBoard.theLastMotorJointData = theBlackBoard.theMotorJointData;
+
+
+  // some basic plots
+  // plotting sensor data
+  PLOT("gyro:x", theBlackBoard.theGyrometerData.data.x);
+  PLOT("gyro:y", theBlackBoard.theGyrometerData.data.y);
+
+  PLOT("acc:x", theBlackBoard.theAccelerometerData.data.x);
+  PLOT("acc:y", theBlackBoard.theAccelerometerData.data.y);
+  PLOT("acc:z", theBlackBoard.theAccelerometerData.data.z);
+
+  PLOT("inertial:x", sin(theBlackBoard.theInertialSensorData.data.x));
+  PLOT("inertial:y", (theBlackBoard.theInertialSensorData.data.y));
+
+  PLOT("kinematik_chain:model:x",
+    theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::Hip].R.getXAngle()
+  );
+  PLOT("kinematik_chain:model:y",
+    theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::Hip].R.getYAngle()
+  );
+
+  DEBUG_REQUEST("Motion:kc_sensor_test",
+    RotationMatrix calculatedRotation = 
+      Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
+
+    // calculate expected acceleration sensor reading
+    Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
+
+    PLOT("kinematik_chain:sensor:x",
+      Math::toDegrees(inertialExpected.x)
+    );
+    
+    PLOT("kinematik_chain:sensor:y",
+      Math::toDegrees(inertialExpected.y)
+    );
+  );
 }//end processSensorData
+
 
 void Motion::postProcess()
 {
