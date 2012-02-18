@@ -305,7 +305,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   {
     java.awt.EventQueue.invokeLater(new Runnable()
     {
-
       public void run()
       {
         new NaoScp().setVisible(true);
@@ -1364,15 +1363,27 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
   }//end actionInfo
 
-  private void log(String logtext)
+  private void log(final String logtext)
   {
-    jLogWindow.append(logtext + "\n");
-//    if(jLogWindow.getText().length() > 1)
-//    {
-//      jLogWindow.setCaretPosition(jLogWindow.getText().length() - 1);
-//    }
-    jLogWindow.updateUI();
-    System.out.println(logtext);
+//    SwingUtilities.invokeLater
+//    (
+//      new Runnable() 
+//      {
+//        public void run() 
+//        {
+          jLogWindow.append(logtext + "\n");
+          jLogWindow.validate();
+//          jLogWindow.invalidate();
+//          try
+//          {
+//            Thread.sleep(5);
+//          }
+//          catch(InterruptedException e)
+//          {}
+          System.out.println(logtext);
+//        }
+//      }
+//    );
   }//end log
 
   /**
@@ -1682,7 +1693,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         copyConfig = true;
         copyLib = true;
         copyExe = true;
-        copySysLibs = true;
         copyLogs = false;
         restartNaoth = false;
         noBackup = true;
@@ -1824,6 +1834,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
     
     robotConfigPreparator preparator = new robotConfigPreparator();
+    copySysLibs = true;
     String address = preparator.getDefaultAddress();
     ArrayList<String> addresses = preparator.getAdressList();
     String sNaoByte = null;
@@ -1864,7 +1875,9 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       cLan.execute();
       while(!copyDone.get(0))
-      {}
+      {
+        this.validateTree();
+      }
       if(hadErrors.get(0))
       {
         allIsDone("0");
@@ -1890,6 +1903,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private void setRobotNetwork()
   {
     robotConfigPreparator preparator = new robotConfigPreparator();
+    copySysLibs = false;
     String address = preparator.getDefaultAddress();
     ArrayList<String> addresses = preparator.getAdressList();
       
@@ -1926,6 +1940,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       cLan.execute();
       while(!copyDone.get(0))
       {
+        this.validateTree();
       }
       if(hadCopyErrors.get(0))
       {
@@ -3617,7 +3632,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         recursiveSftpPut(c, localSetupScriptFiles, remoteSetupScriptDst);
 
         
-        if(copySysLibs)
+        if(copySysLibs && stagingLibDir != null)
         {
           File localSysLibsFiles = new File(stagingLibDir);
 
@@ -4014,15 +4029,16 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
             }
             else if(runList[i].equalsIgnoreCase("setRobotNetworkConfig"))
             {
-              setRobotNetworkConfig(session, sNaoByte);              
+              setRobotNetworkConfig(session, sNaoNo);              
             }
             else if(runList[i].equalsIgnoreCase("initializeRobot"))
             {
-              initializeRobot(session, sNaoByte);              
+              initializeRobot(session, sNaoNo);              
             }
           }
-          scriptIsDone(sNaoNo);
           disconnect();
+          scriptIsDone(sNaoNo);
+          return true;
         }
         else
         {
@@ -4037,7 +4053,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         scriptIsDone(sNaoNo);
         return false;
       }
-      return true;
     }
   
     /**
@@ -4192,7 +4207,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       catch(Exception e)
       {
         haveScriptError(sNaoNo, "Exception in setRobotNetworkConfig - Nao " + sNaoNo + ": " + e.toString());
-        return;
       }
     }
 
@@ -4212,7 +4226,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       catch(Exception e)
       {
         haveScriptError(sNaoNo, "Exception in setRobotNetworkConfig - Nao " + sNaoNo + ": " + e.toString());
-        return;
       }
     }
   }

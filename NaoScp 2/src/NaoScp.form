@@ -688,9 +688,9 @@
                                   </Group>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="broadcastFieldWLAN" alignment="0" pref="158" max="32767" attributes="1"/>
-                                      <Component id="subnetFieldWLAN" pref="158" max="32767" attributes="1"/>
-                                      <Component id="netmaskFieldWLAN" alignment="0" pref="158" max="32767" attributes="1"/>
+                                      <Component id="broadcastFieldWLAN" alignment="0" pref="157" max="32767" attributes="1"/>
+                                      <Component id="subnetFieldWLAN" pref="157" max="32767" attributes="1"/>
+                                      <Component id="netmaskFieldWLAN" alignment="0" pref="157" max="32767" attributes="1"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -854,7 +854,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel26" min="-2" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTeamCommPort" pref="111" max="32767" attributes="3"/>
+                                  <Component id="jTeamCommPort" pref="110" max="32767" attributes="3"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -875,8 +875,8 @@
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="sshPassword" pref="361" max="32767" attributes="3"/>
-                                      <Component id="sshRootPassword" alignment="0" pref="361" max="32767" attributes="3"/>
+                                      <Component id="sshPassword" pref="360" max="32767" attributes="3"/>
+                                      <Component id="sshRootPassword" alignment="0" pref="360" max="32767" attributes="3"/>
                                   </Group>
                               </Group>
                           </Group>
