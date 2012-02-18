@@ -1830,6 +1830,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       while(!cLan.isDone())
       {
         this.validateTree();
+        Thread.yield();
       }
       if(hadErrors.get(0))
       {
@@ -1841,10 +1842,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       {
         scriptDone.put(0, false);
         sLan.execute();    
-        while(!sLan.isDone())
-        {
-//          this.validateTree();
-        }
       }
       else
       {
@@ -1899,6 +1896,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       while(!cLan.isDone())
       {
         this.validateTree();
+        Thread.yield();
       }
       if(hadCopyErrors.get(0))
       {
@@ -3486,6 +3484,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       {
         actionInfo("Exception in recursiveSftpPut: " + e.getMessage());//.toString());
       }
+      Thread.yield();
     }
   }
   

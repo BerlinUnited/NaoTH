@@ -27,13 +27,8 @@
   <name replace-wildcards="yes">%h</name>
 
   <service>
-    <type>_naoth._cognition</type>
+    <type>_naoth._tcp</type>
     <port>5401</port>
-  </service>
-
-  <service>
-    <type>_naoth._</type>
-    <port>6401</port>
   </service>
 
 </service-group>

@@ -117,7 +117,7 @@ fi
 
 if [ ! -h /home/nao/Config ]
 then
-    ln -s /home/nao/naoqi/config /home/nao/Config
+    ln -s /home/nao/naoqi/Config /home/nao/Config
 fi
 
 if [ -d /home/nao/lib ]
