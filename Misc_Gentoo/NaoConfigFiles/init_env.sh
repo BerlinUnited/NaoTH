@@ -53,6 +53,17 @@ else
     echo "naoth exists"
 fi
 
+# NaoTH
+if [ -f ./naoth ]
+then
+    echo "adding start script naoth"
+    cp -f ./naoth /usr/bin/naoth
+    chown root:root /usr/bin/naoth
+    chmod 755 /usr/bin/naoth
+else
+    echo "start script naoth is missing"
+fi
+
 # naoqi user autoload.ini
 if [ -f ./autoload.ini ]
 then
@@ -116,14 +127,16 @@ then
 fi
 
 # copy naoth-profile.sh
-if [ -f ./etc/profile.d/dbus-session.sh ]
+if [ -f ./etc/ld.so.conf.d/naoth.conf ]
 then
-    echo "copy dbus-session.sh"
-    cp -f ./etc/profile.d/dbus-session.sh /etc/profile.d/dbus-session.sh
-    chown root:root /etc/profile.d/dbus-session.sh
-    chmod 755 /etc/profile.d/dbus-session.sh
+    echo "copy ld.so.conf.d/naoth.conf"
+    cp -f ./etc/ld.so.conf.d/naoth.conf /etc/ld.so.conf.d/naoth.conf
+    chown root:root /etc/ld.so.conf.d/naoth.conf
+    chmod 755 /etc/ld.so.conf.d/naoth.conf
+    ldconfig
+    ldconfig -p
 else
-    echo "naoth-profile.sh is missing"
+    echo "ld.so.conf.d/naoth.conf is missing"
 fi
 
 

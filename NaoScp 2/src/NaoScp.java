@@ -984,6 +984,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       copyFiles(new File(localSetupScriptPath() + "/init_net.sh"), mySetupScriptInitNet);
       File myAutoloadIni = new File(mySetupScriptPath +"/autoload.ini");        
       copyFiles(new File(localSetupScriptPath() + "/autoload.ini"), myAutoloadIni);
+      File myNaothScript = new File(mySetupScriptPath +"/naoth");        
+      copyFiles(new File(localSetupScriptPath() + "/naoth"), myNaothScript);
             
       File libRT = new File(stagingLibDir +"/usr/lib/librt.so");
       if(libRT.exists())
