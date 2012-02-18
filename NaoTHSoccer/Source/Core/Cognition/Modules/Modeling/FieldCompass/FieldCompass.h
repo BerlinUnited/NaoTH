@@ -28,6 +28,7 @@ BEGIN_DECLARE_MODULE(FieldCompass)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
 
+  PROVIDE(CompassDirection)
 END_DECLARE_MODULE(FieldCompass)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
