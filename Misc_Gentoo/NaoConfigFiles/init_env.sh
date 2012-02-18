@@ -117,6 +117,7 @@ fi
 
 if [ -d /home/nao/lib ]
 then
+    chown -R nao:nao /home/nao/lib
     chmod -R 755 /home/nao/lib
 fi
 
@@ -127,14 +128,13 @@ then
 fi
 
 # copy naoth-profile.sh
-if [ -f ./etc/ld.so.conf.d/naoth.conf ]
+if [ -f ./etc/ld.so.conf ]
 then
     echo "copy ld.so.conf.d/naoth.conf"
-    cp -f ./etc/ld.so.conf.d/naoth.conf /etc/ld.so.conf.d/naoth.conf
-    chown root:root /etc/ld.so.conf.d/naoth.conf
-    chmod 755 /etc/ld.so.conf.d/naoth.conf
+    cp -f ./etc/ld.so.conf /etc/ld.so.conf
+    chown root:root /etc/ld.so.conf
+    chmod 755 /etc/ld.so.conf
     ldconfig
-    ldconfig -p
 else
     echo "ld.so.conf.d/naoth.conf is missing"
 fi
