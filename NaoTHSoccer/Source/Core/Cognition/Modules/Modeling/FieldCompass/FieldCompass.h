@@ -10,23 +10,14 @@
 
 #include <ModuleFramework/Module.h>
 
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-
 // Representations
-
-// Tools
+#include "Representations/Modeling/RobotPose.h";
+#include "Representations/Modeling/CompassDirection.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldCompass)
-  REQUIRE(PlayerInfo)
-  REQUIRE(BodyState)
-  REQUIRE(CameraMatrix)
-  REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)
-  REQUIRE(OdometryData)
+  REQUIRE(RobotPose)
 
   PROVIDE(CompassDirection)
 END_DECLARE_MODULE(FieldCompass)
@@ -40,7 +31,9 @@ public:
   FieldCompass();
   ~FieldCompass(){};
 
-  virtual void execute();
+  virtual void execute() {
+      getCompassDirection().anlge = getRobotPose().rotation;
+  }
 
 private:
 
