@@ -172,7 +172,7 @@ public:
   }//end addPoint
 */
 
-  void setColor(const unsigned int& i, const ColorClasses::Color& color)
+  inline void setColor(const unsigned int& i, const ColorClasses::Color& color)
   {
     if(i < uniformGrid.numberOfGridPoints && numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints)
     {
