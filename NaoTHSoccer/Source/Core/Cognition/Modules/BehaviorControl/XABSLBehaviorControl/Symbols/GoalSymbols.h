@@ -13,6 +13,7 @@
 
 // representations
 #include "Representations/Modeling/GoalModel.h"
+#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
@@ -22,6 +23,7 @@ BEGIN_DECLARE_MODULE(GoalSymbols)
   REQUIRE(GoalPercept);
   REQUIRE(PlayerInfo);
   REQUIRE(FrameInfo);
+  REQUIRE(CompassDirection);
 END_DECLARE_MODULE(GoalSymbols)
 
 class GoalSymbols: public GoalSymbolsBase
@@ -33,7 +35,8 @@ public:
     localGoalModel(getLocalGoalModel()),
     goalPercept(getGoalPercept()),
     playerInfo(getPlayerInfo()),
-    frameInfo(getFrameInfo())
+    frameInfo(getFrameInfo()),
+    compassDirection(getCompassDirection())
   {
     theInstance = this;
     };
@@ -50,6 +53,7 @@ private:
   GoalPercept const& goalPercept;
   PlayerInfo const& playerInfo;
   FrameInfo const& frameInfo;
+  CompassDirection const& compassDirection;
 
   static GoalSymbols* theInstance;
 

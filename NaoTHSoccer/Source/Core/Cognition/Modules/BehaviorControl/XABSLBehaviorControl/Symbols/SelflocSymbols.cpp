@@ -82,8 +82,8 @@ void SelflocSymbols::execute()
 {
   angleOnField = Math::toDegrees(robotPose.rotation);
 
-  const GoalModel::Goal& ownGoalModel = selfLocGoalModel.getTeamGoal(playerInfo.gameData.teamColor);
-  const GoalModel::Goal& oppGoalModel = selfLocGoalModel.getTeamGoal(!playerInfo.gameData.teamColor);
+  const GoalModel::Goal& ownGoalModel = selfLocGoalModel.getOwnGoal(compassDirection.angle);
+  const GoalModel::Goal& oppGoalModel = selfLocGoalModel.getOppGoal(compassDirection.angle);
   ownGoal = Goal(ownGoalModel.leftPost, ownGoalModel.rightPost);
   oppGoal = Goal(oppGoalModel.leftPost, oppGoalModel.rightPost);
 

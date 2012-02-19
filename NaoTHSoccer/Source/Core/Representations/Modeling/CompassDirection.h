@@ -15,6 +15,7 @@
 
 class CompassDirection : public naoth::Printable
 {
+
 public:
     CompassDirection(){}
     ~CompassDirection(){}
@@ -23,7 +24,7 @@ public:
 
     virtual void print(ostream& stream) const
     {
-      stream << "angle = " << angle<< endl;
+      stream << "angle = " << angle << endl;
     }//end print
 
 };//end class CompassDirection

@@ -1210,7 +1210,7 @@ void MonteCarloSelfLocator::execute()
   }
 
   getRobotPose() = newPose;
-  getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
+  getSelfLocGoalModel().update(getCompassDirection().angle, getRobotPose(), getFieldInfo());
 
   /************************************
    * execude some debug requests (drawings)

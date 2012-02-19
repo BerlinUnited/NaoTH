@@ -2,7 +2,7 @@
 * @file MotionSymbols.h
 *
 * @author <a href="mailto:martius@informatik.hu-berlin.de">Martin Martius</a>
-* Definition of class MSelflocSymbols */
+* Definition of class SelflocSymbols */
 
 #ifndef __SelflocSymbols_h_
 #define __SelflocSymbols_h_
@@ -14,6 +14,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GPSData.h"
 #include "Representations/Motion/MotionStatus.h"
 
@@ -28,6 +29,7 @@ BEGIN_DECLARE_MODULE(SelflocSymbols)
   REQUIRE(PlayerInfo)
   REQUIRE(GPSData)
   REQUIRE(MotionStatus)
+  REQUIRE(CompassDirection)
 END_DECLARE_MODULE(SelflocSymbols)
 
 class SelflocSymbols: public SelflocSymbolsBase
@@ -41,6 +43,7 @@ public:
     playerInfo(getPlayerInfo()),
     gpsData(getGPSData()),
     motionStatus(getMotionStatus()),
+    compassDirection(getCompassDirection()),
 
     angleOnField(Math::toDegrees(robotPose.rotation)),
     rel2fieldX_x(0.0),
@@ -99,6 +102,7 @@ private:
   PlayerInfo const& playerInfo;
   GPSData const& gpsData;
   MotionStatus const& motionStatus;
+  CompassDirection const& compassDirection;
 
   // rotation of robotPose in degrees
   double angleOnField;

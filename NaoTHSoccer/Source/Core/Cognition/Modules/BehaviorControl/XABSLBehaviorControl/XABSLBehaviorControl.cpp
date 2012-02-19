@@ -123,7 +123,8 @@ void XABSLBehaviorControl::execute()
 void XABSLBehaviorControl::draw()
 {
   DEBUG_REQUEST("XABSL:draw_foot_decision",
-    Vector2<double> oppGoal = getSelfLocGoalModel().getTeamGoal(!(getPlayerInfo().gameData.teamColor)).calculateCenter();
+    //18.02.2012
+    Vector2<double> oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection().angle).calculateCenter();
     Vector2<double> ballPose = getBallModel().position;
 
     FIELD_DRAWING_CONTEXT;

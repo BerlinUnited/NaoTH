@@ -30,12 +30,8 @@ void WholeGoalLocator::execute()
   lastRobotOdometry = getOdometryData();
 
   // update by odometry
-  getSensingGoalModel().goalOne.leftPost = odometryDelta * getSensingGoalModel().goalOne.leftPost;
-  getSensingGoalModel().goalOne.rightPost = odometryDelta * getSensingGoalModel().goalOne.rightPost;
-
-  getSensingGoalModel().goalTwo.leftPost = odometryDelta * getSensingGoalModel().goalTwo.leftPost;
-  getSensingGoalModel().goalTwo.rightPost = odometryDelta * getSensingGoalModel().goalTwo.rightPost;
-
+  getSensingGoalModel().goal.leftPost = odometryDelta * getSensingGoalModel().goal.leftPost;
+  getSensingGoalModel().goal.rightPost = odometryDelta * getSensingGoalModel().goal.rightPost;
 
   // TODO: check this condition
   //check for GoalPercept distance not near 30cm
@@ -79,18 +75,18 @@ void WholeGoalLocator::execute()
   //Draw GoalModel
   DEBUG_REQUEST("WholeGoalLocator:drawGoalModel",
     FIELD_DRAWING_CONTEXT;
-    Vector2<double> centerGoalOne = getSensingGoalModel().goalOne.calculateCenter();
+    Vector2<double> centerGoal = getSensingGoalModel().goal.calculateCenter();
     PEN("0000FF", 50);
-    CIRCLE(getSensingGoalModel().goalOne.leftPost.x, getSensingGoalModel().goalOne.leftPost.y, 50);
-    CIRCLE(getSensingGoalModel().goalOne.rightPost.x, getSensingGoalModel().goalOne.rightPost.y, 50);
+    CIRCLE(getSensingGoalModel().goal.leftPost.x, getSensingGoalModel().goal.leftPost.y, 50);
+    CIRCLE(getSensingGoalModel().goal.rightPost.x, getSensingGoalModel().goal.rightPost.y, 50);
     PEN("0000AA", 50);
-    CIRCLE(centerGoalOne.x, centerGoalOne.y, 50);
-    Vector2<double> centerGoalTwo = getSensingGoalModel().goalTwo.calculateCenter();
-    PEN("FFFF00", 50);
-    CIRCLE(getSensingGoalModel().goalTwo.leftPost.x, getSensingGoalModel().goalTwo.leftPost.y, 50);
-    CIRCLE(getSensingGoalModel().goalTwo.rightPost.x, getSensingGoalModel().goalTwo.rightPost.y, 50);
-    PEN("AAAA00", 50);
-    CIRCLE(centerGoalTwo.x, centerGoalTwo.y, 50);
+    CIRCLE(centerGoal.x, centerGoal.y, 50);
+    //Vector2<double> centerGoalTwo = getSensingGoalModel().goalTwo.calculateCenter();
+    //PEN("FFFF00", 50);
+    //CIRCLE(getSensingGoalModel().goalTwo.leftPost.x, getSensingGoalModel().goalTwo.leftPost.y, 50);
+    //CIRCLE(getSensingGoalModel().goalTwo.rightPost.x, getSensingGoalModel().goalTwo.rightPost.y, 50);
+    //PEN("AAAA00", 50);
+    //CIRCLE(centerGoalTwo.x, centerGoalTwo.y, 50);
   );
 
   DEBUG_REQUEST("WholeGoalLocator:drawRobotPose",

@@ -11,49 +11,32 @@
 
 #include "GoalModel.h"
 
-const GoalModel::Goal& GoalModel::getTeamGoal(double global_angle) const
+const GoalModel::Goal& GoalModel::getOwnGoal(double global_angle) const
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(global_angle) > Math::pi_2) {
-        return goalTwo; //oppGoal
-    } else {
-       return goalOne; //own goal
-    }
-}//end getTeamGoal
+    return goal;
+}//end getOwnGoal
 
-GoalModel::Goal& GoalModel::getTeamGoal(double global_angle)
+GoalModel::Goal& GoalModel::getOwnGoal(double global_angle)
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(global_angle) > Math::pi_2) {
-        return goalTwo; //oppGoal
-    } else {
-       return goalOne; //own goal
-    }
-}//end getTeamGoal
+    return goal;
+}//end getOwnGoal
 
 const GoalModel::Goal& GoalModel::getOppGoal(double global_angle) const
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(global_angle) > Math::pi_2) {
-        return goalTwo; //oppGoal
-    } else {
-       return goalOne; //own goal
-    }
+    return goal;
 }//end getOppGoal
 
 GoalModel::Goal& GoalModel::getOppGoal(double global_angle)
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(global_angle) > Math::pi_2) {
-        return goalTwo; //oppGoal
-    } else {
-       return goalOne; //own goal
-    }
-
+    return goal;
 }//end getOppGoal
 
 /*
@@ -92,27 +75,26 @@ GoalModel::Goal& GoalModel::getTeamGoal(naoth::GameData::TeamColor teamColor)
 
 void GoalModel::print(ostream& stream) const
 {
-  stream<<"== Goal One ==\n";
-  stream<<goalOne.frameInfoWhenGoalLastSeen;
-  stream<<"LPost = "<<goalOne.leftPost<<'\n';
-  stream<<"RPost = "<<goalOne.rightPost<<'\n';
+  stream<<"== Seen Goal ==\n";
+  stream<< goal.frameInfoWhenGoalLastSeen;
+  stream<<"LPost = "<<goal.leftPost<<'\n';
+  stream<<"RPost = "<<goal.rightPost<<'\n';
 
-  stream<<"== Goal Two ==\n";
-  stream<<goalTwo.frameInfoWhenGoalLastSeen;
-  stream<<"LPost = "<<goalTwo.leftPost<<'\n';
-  stream<<"RPost = "<<goalTwo.rightPost<<'\n';
+  /*Goal anotherGoal;
+  calculateAnotherGoal(goal, anotherGoal, getFieldInfo().xLength);
+
+  stream<<"== Calculated Goal ==\n";
+  stream<<"LPost = "<<anotherGoal.leftPost<<'\n';
+  stream<<"RPost = "<<anotherGoal.rightPost<<'\n';*/
 }//end print
 
 void GoalModel::draw() const
 {
   FIELD_DRAWING_CONTEXT;
-  PEN("FFFF00", 50);
-  CIRCLE(goalOne.leftPost.x, goalOne.leftPost.y, 50);
-  CIRCLE(goalOne.rightPost.x, goalOne.rightPost.y, 50);
+  PEN("FF0000", 50);
+  CIRCLE(goal.leftPost.x, goal.leftPost.y, 50);
+  CIRCLE(goal.rightPost.x, goal.rightPost.y, 50);
 
-  PEN("FF00FF", 50);
-  CIRCLE(goalTwo.leftPost.x, goalTwo.leftPost.y, 50);
-  CIRCLE(goalTwo.rightPost.x, goalTwo.rightPost.y, 50);
 }//end draw
 
 LocalGoalModel::LocalGoalModel() 
@@ -169,10 +151,10 @@ void LocalGoalModel::print(ostream& stream) const
   GoalModel::print(stream);
 }//end print
 
-void SelfLocGoalModel::update(const Pose2D& robotPose, const FieldInfo& fieldInfo)
+void SelfLocGoalModel::update(double global_angle, const Pose2D& robotPose, const FieldInfo& fieldInfo)
 {
-  Goal& ownGoal = goalOne; //getTeamGoal(ownColor);
-  Goal& oppGoal = goalTwo; //getTeamGoal(!ownColor);
+  GoalModel::Goal ownGoal = getOwnGoal(global_angle);
+  GoalModel::Goal oppGoal = getOppGoal(global_angle);
 
   // transform the goal posts to the local coordinates according to the robotPose
   ownGoal.leftPost = robotPose/fieldInfo.ownGoalPostLeft;

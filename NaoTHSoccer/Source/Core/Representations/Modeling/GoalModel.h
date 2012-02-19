@@ -18,6 +18,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/CompassDirection.h"
 
 class GoalModel : public naoth::Printable
 {
@@ -42,11 +43,10 @@ public:
 
   };//end class Goal
 
-  Goal goalOne;
-  Goal goalTwo;
+  Goal goal;
 
-  const Goal& getTeamGoal(double global_angle) const;
-  Goal& getTeamGoal(double global_angle);
+  const Goal& getOwnGoal(double global_angle) const;
+  Goal& getOwnGoal(double global_angle);
   const Goal& getOppGoal(double global_angle) const;
   Goal& getOppGoal(double global_angle);
 
@@ -89,11 +89,11 @@ public:
 class SelfLocGoalModel : public GoalModel
 {
 public:
-  void update(const Pose2D& robotPose, const FieldInfo& fieldInfo);
+  void update(double global_angle, const Pose2D& robotPose, const FieldInfo& fieldInfo);
 
-  // convention: goalOne is own, goalTwo is opponent
-  inline const Goal& getOppGoal() const { return goalOne; };
-  inline const Goal& getOwnGoal() const { return goalTwo; };
+  inline const Goal& getOwnGoal(const double global_angle) const { return getOwnGoal(global_angle); };
+  inline const Goal& getOppGoal(const double global_angle) const { return getOppGoal(global_angle); };
+
 };
 
 

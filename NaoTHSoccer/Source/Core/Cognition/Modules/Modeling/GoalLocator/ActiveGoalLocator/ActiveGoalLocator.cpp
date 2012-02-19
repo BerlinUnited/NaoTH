@@ -247,18 +247,10 @@ void ActiveGoalLocator::execute() {
       }
       */
 
-      getLocalGoalModel().goalOne.leftPost  = leftPost;
-      getLocalGoalModel().goalOne.rightPost = rightPost;
+      getLocalGoalModel().goal.leftPost  = leftPost;
+      getLocalGoalModel().goal.rightPost = rightPost;
       //frame Info when goal was seen not useful! New: some_goal_was seen
-      getLocalGoalModel().goalOne.frameInfoWhenGoalLastSeen = getFrameInfo();
-
-      //TODO Convention: should not be calculated here? Just in Model
-      LocalGoalModel::Goal another;
-      getLocalGoalModel().calculateAnotherGoal(getLocalGoalModel().goalOne, another, getFieldInfo().xLength);
-      getLocalGoalModel().goalTwo.leftPost  = another.leftPost;
-      getLocalGoalModel().goalTwo.rightPost = another.rightPost;
-      //end TODO
-
+      getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
 
     //caculated by right and left post!
     Vector2<double> goalCenter;
