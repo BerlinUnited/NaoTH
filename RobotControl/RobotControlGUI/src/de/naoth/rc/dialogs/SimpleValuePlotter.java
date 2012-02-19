@@ -365,6 +365,7 @@ public class SimpleValuePlotter  extends AbstractDialog
         this.chart.enablePointHighlighting(false);
         
         this.panelList.removeAll();
+        this.panelList.repaint();
       }//end synchronized
     }//GEN-LAST:event_btClearActionPerformed
 
