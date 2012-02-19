@@ -15,14 +15,11 @@
  */
 
 
-import com.jcraft.jsch.*;
-import com.jcraft.jsch.ChannelSftp.*;
-import java.awt.Color;
+
 import javax.swing.*;
 import java.io.*;
-import java.awt.event.*;
 import java.util.*;
-import java.util.regex.*;
+//import java.util.regex.*;
 // import java.util.Arrays;
 import java.net.*;
 import java.text.*;
@@ -36,15 +33,13 @@ import static net.jcores.jre.CoreKeeper.$;
 import net.jcores.jre.interfaces.functions.F0R;
 //import net.jcores.jre.utils.internal.wrapper.InputStreamWrapper;
 
-public class NaoScp extends javax.swing.JFrame implements ServiceListener
+public class NaoScp extends NaoScpMainFrame implements ServiceListener
 {
-
   private boolean fhIsTesting = false;
   // if true, all ActionInfo is sent to log
   // @see actionInfo()
   private boolean logActionInfo = true;
-  private boolean debugVersion = true;
-  private HashMap backups = new HashMap();
+//  private boolean debugVersion = true;
   
   private HashMap<String, JTextField> networkConfigTags = new HashMap<String, JTextField>();
 
@@ -63,19 +58,10 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private List<NaoSshWrapper> services;
   private final DefaultListModel naoModel;
   
-  private boolean copyConfig;
-  private boolean copyLib;
-  private boolean copyExe;
-  private boolean copyLogs;
-  private boolean copySysLibs;
-  private boolean restartNaoth;
-  private boolean noBackup;
-  
   private boolean showCopyDoneMsg = false;
   private boolean showScriptDoneMsg = false;
   private boolean showDoneMsg = true;
   
-  private String stagingLibDir;
   private String setupPlayerNo;
   
   
@@ -83,6 +69,13 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   public NaoScp()
   {
     initComponents();
+    
+    super.sshUser = this.sshUser;
+    super.sshPassword = this.sshPassword;
+    super.sshRootPassword = this.sshRootPassword;
+    super.jLogWindow = this.jLogWindow;
+    super.jBackupBox = this.jBackupBox;
+    super.progressBar = this.progressBar;
     
     this.naoNumberFields.put(0, new JTextField());
     this.scriptDone.put(0, false);
@@ -100,7 +93,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       String name = allComps[c].getName();
       if(name != null && allComps[c].getClass() == JTextField.class)
       {
-//        JTextField naoByteField = (JTextField) allComps[c];
         Integer naoNo = Integer.parseInt(name.replaceAll("[a-zA-Z]+", ""));
         this.naoNumberFields.put(naoNo, (JTextField) allComps[c]);
         this.scriptDone.put(naoNo, false);
@@ -547,36 +539,70 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         boolean connected = false;
         if(!sNaoLanIps.get(naoNo).equals(""))
         {
-          sshCopier cLan = new sshCopier(sNaoLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
+          sshCopier cLan = new sshCopier(this, sNaoLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
           if(cLan.testConnection())
           {
-            cLan.execute();
-            while(!copyDone.get(naoNo))
-            {}            
+            cLan.execute();            
+            synchronized(cLan)
+            {
+              while(!cLan.isDone())
+              {
+                this.validateTree();
+                jLogWindow.updateUI();
+              }
+            }
             if(hadErrors.get(naoNo))
             {
               allIsDone(naoNo);
               return;
             }
-            sshScriptRunner sLan = new sshScriptRunner(sNaoLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo), new String[] {"restartNaoTH"});
-            sLan.execute();
+            if (restartNaoth)
+            {
+              sshScriptRunner sLan = new sshScriptRunner(this, sNaoLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo), new String[] {"restartNaoTH"});
+              sLan.execute();
+              synchronized(sLan)
+              {
+                while(!sLan.isDone())
+                {
+                  this.validateTree();
+                  jLogWindow.updateUI();
+                }
+              }
+            }
             connected = true;
           }
           else
           {
-            sshCopier cWlan = new sshCopier(sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
+            sshCopier cWlan = new sshCopier(this, sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
             if(cWlan.testConnection())
             {
               cWlan.execute();
-              while(!copyDone.get(naoNo))
-              {}            
+              synchronized(cWlan)
+              {
+                while(!cWlan.isDone())
+                {
+                  this.validateTree();
+                  jLogWindow.updateUI();
+                }
+              }
               if(hadErrors.get(naoNo))
               {
                 allIsDone(naoNo);
                 return;
               }
-              sshScriptRunner sWlan = new sshScriptRunner(sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo), new String[] {"restartNaoTH"});
-              sWlan.execute();
+              if (restartNaoth)
+              {
+                sshScriptRunner sWlan = new sshScriptRunner(this, sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo), new String[] {"restartNaoTH"});
+                sWlan.execute();
+                synchronized(sWlan)
+                {
+                  while(!sWlan.isDone())
+                  {
+                    this.validateTree();
+                    jLogWindow.updateUI();
+                  }
+                }
+              }
               connected = true;
             }
           }
@@ -630,131 +656,128 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   
   public void allIsDone(int naoNo)
   {
-    boolean done = copyIsDone(naoNo) && scriptIsDone(naoNo);
+    copyDone.put(naoNo, true);
+    scriptDone.put(naoNo, true);
+    checkIfFinished();
+  }
+    
+  public void scriptIsDone(String sNaoNo)
+  {
+     scriptIsDone(Integer.parseInt(sNaoNo));
+  }
+  
+  public void scriptIsDone(int naoNo)
+  {
+    scriptDone.put(naoNo, true);
+    checkIfFinished();
+  }  
+  
+  public void copyIsDone(String sNaoNo)
+  {
+     copyIsDone(Integer.parseInt(sNaoNo));
+  }
+  
+  public void copyIsDone(int naoNo)
+  {
+    copyDone.put(naoNo, true);
+    checkIfFinished();
+  }
+
+  public void checkIfFinished()
+  {
+    boolean done = true;
     boolean hadError = false;
+    boolean hadCopyError = false;
+    boolean hadScriptError = false;
+    
+    String add = "";
     
     for(Integer naoNo_ : this.iNaoBytes.keySet())
     {
-      if(!hadCopyErrors.get(naoNo_) && !hadScriptErrors.get(naoNo_))
-      {
-        hadError |= hadErrors.get(naoNo_);
-      }
-    }
-    
-    if(done)
-    {
-      String add = "";
-      if(hadError)
-      {
-        add = " - error with Nao ";
-        for(Integer naoNo_ : this.hadScriptErrors.keySet())
-        {
-          if(hadScriptErrors.get(naoNo_))
-          {
-            add = add + " " + naoNo_ + " ";
-          }
-        }
-        add = add + " - please check Logs.";
-      }      
-      resetBackupList();
+      hadError = hadError || hadErrors.get(naoNo_);
+      hadCopyError = hadCopyError || hadCopyErrors.get(naoNo_);
+      hadScriptError = hadScriptError || hadScriptErrors.get(naoNo_);
       if(showDoneMsg)
       {
+        done = done && copyDone.get(naoNo_) && scriptDone.get(naoNo_);
+      }
+      else
+      {
+        if(showCopyDoneMsg)
+        {
+          done = done && copyDone.get(naoNo_);
+        }
+        if(showScriptDoneMsg)
+        {
+          done = done && scriptDone.get(naoNo_);
+        }
+      }
+    }
+    if(done)
+    {    
+      if(showDoneMsg)
+      {
+        if(hadError)
+        {
+          add = " - error with Nao ";
+          for(Integer naoNo_ : this.hadErrors.keySet())
+          {
+            if(hadErrors.get(naoNo_))
+            {
+              add += " " + naoNo_ + " ";
+            }
+          }
+          add += " - please check Logs.";
+        }
         actionInfo("Copy + Scripts done");
+        Thread.yield();
         JOptionPane.showMessageDialog(null, "Copy + Scripts done" + add);
         setFormEnabled(true);
       }
-    }
-  }
-  
-  public boolean scriptIsDone(String sNaoNo)
-  {
-     return scriptIsDone(Integer.parseInt(sNaoNo));
-  }
-  
-  public boolean scriptIsDone(int naoNo)
-  {
-    scriptDone.put(naoNo, true);
-
-    boolean done = true;
-    boolean hadError = false;
-    
-    for(Integer naoNo_ : this.iNaoBytes.keySet())
-    {
-      done &= scriptDone.get(naoNo_);
-      hadError |= hadScriptErrors.get(naoNo_);
-    }
-    
-    if(done)
-    {
-      String add = "";
-      if(hadError)
+      else
       {
-        add = " - script error with Nao ";
-        for(Integer naoNo_ : this.hadScriptErrors.keySet())
+        if(showCopyDoneMsg)
         {
-          if(hadScriptErrors.get(naoNo_))
+          if(hadCopyError)
           {
-            add = add + " " + naoNo_ + " ";
+            add = " - copy error with Nao ";
+            for(Integer naoNo_ : this.hadCopyErrors.keySet())
+            {
+              if(hadCopyErrors.get(naoNo_))
+              {
+                add += " " + naoNo_ + " ";
+              }
+            }
+            add += " - please check Logs.";
           }
+          actionInfo("Copy done");
+          Thread.yield();
+          JOptionPane.showMessageDialog(null, "Copy done" + add);
         }
-        add = add + " - please check Logs.";
+        if(showScriptDoneMsg)
+        {
+          if(hadCopyError)
+          {
+            add = " - script error with Nao ";
+            for(Integer naoNo_ : this.hadScriptErrors.keySet())
+            {
+              if(hadScriptErrors.get(naoNo_))
+              {
+                add += " " + naoNo_ + " ";
+              }
+            }
+            add += " - please check Logs.";
+          }
+          actionInfo("Scripts done");
+          Thread.yield();
+          JOptionPane.showMessageDialog(null, "Scripts done" + add);
+        }
       }
-      resetBackupList();
-      if(showScriptDoneMsg)
-      {
-        actionInfo("Scripts done");
-        JOptionPane.showMessageDialog(null, "Scripts done" + add);
-        setFormEnabled(true);
-      }
+      resetBackupList();    
+      setFormEnabled(true);
     }
-    return done;
   }  
   
-  public boolean copyIsDone(String sNaoNo)
-  {
-     return copyIsDone(Integer.parseInt(sNaoNo));
-  }
-  
-  public boolean copyIsDone(int naoNo)
-  {
-    copyDone.put(naoNo, true);
-
-    boolean done = true;
-    boolean hadError = false;
-    
-    for(Integer naoNo_ : this.iNaoBytes.keySet())
-    {
-      done &= copyDone.get(naoNo_);
-      hadError |= hadCopyErrors.get(naoNo_);
-    }
-    
-    if(done)
-    {
-      String add = "";
-      if(hadError)
-      {
-        add = " - copy error with Nao ";
-        for(Integer naoNo_ : this.hadCopyErrors.keySet())
-        {
-          if(hadCopyErrors.get(naoNo_))
-          {
-            add = add + " " + naoNo_ + " ";
-          }
-        }
-        add = add + " - please check Logs.";
-      }
-      
-      resetBackupList();
-      if(showCopyDoneMsg)
-      {        
-        actionInfo("Copy done");
-        JOptionPane.showMessageDialog(null, "Copy done" + add);
-        setFormEnabled(true);
-      }
-    }
-    return done;
-  }
-
   private void setFormEnabled(boolean enable)
   {
       copyButton.setEnabled(enable);
@@ -1323,7 +1346,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     return true;
   }//end setSchemes
 
-  private void actionInfo(String debugtext)
+  protected void actionInfo(String debugtext)
   {
     jCopyStatus.setText(debugtext);
     if(logActionInfo)
@@ -1335,7 +1358,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private void log(final String logtext)
   {
     jLogWindow.append(logtext + "\n");
-    jLogWindow.validate();
+    jLogWindow.invalidate();
     System.out.println(logtext);
   }//end log
 
@@ -1610,7 +1633,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     {
       return false;
     }
-    String[] IPv4Parts = hostAddress.trim().split(".");
+    String[] IPv4Parts = hostAddress.trim().split("\\.");
     if(IPv4Parts.length != 4)
     {
       return false;
@@ -1745,7 +1768,14 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
         }
         else
         {
-          iNaoByte = Integer.parseInt(sNaoByte);
+          try
+          {
+            iNaoByte = Integer.parseInt(sNaoByte);
+          }
+          catch(Exception e)
+          {
+            iNaoByte = -1;
+          }
           iNaoBytes.put(0, iNaoByte);          
         }
       }
@@ -1809,7 +1839,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
 
     boolean testOk = false;
-    sshSetupCopier cLan = new sshSetupCopier(address, sNaoByte, "full");
+    sshSetupCopier cLan = new sshSetupCopier(this, address, sNaoByte, "full");
     testOk = cLan.testConnection();
 
     if(!testOk && addresses.size() > 0 && !addresses.contains(address))
@@ -1818,7 +1848,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       while(!testOk && idx < addresses.size())
       {    
         address = addresses.get(idx);
-        cLan = new sshSetupCopier(address, sNaoByte, "full");
+        cLan = new sshSetupCopier(this, address, sNaoByte, "full");
         testOk = cLan.testConnection();
         idx++;
       }
@@ -1827,21 +1857,31 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     if(testOk)
     {
       cLan.execute();
-      while(!cLan.isDone())
+      synchronized(cLan)
       {
-        this.validateTree();
-        Thread.yield();
+        while(!cLan.isDone())
+        {
+          this.validateTree();
+          jLogWindow.updateUI();
+        }
       }
       if(hadErrors.get(0))
       {
         allIsDone("0");
         return;
       }
-      sshScriptRunner sLan = new sshScriptRunner(address, "0", sNaoByte, new String[] {"initializeRobot"});
+      sshScriptRunner sLan = new sshScriptRunner(this, address, "0", sNaoByte, new String[] {"initializeRobot"}, cbRebootSystem.isSelected());
       if(sLan.testConnection())
       {
-        scriptDone.put(0, false);
-        sLan.execute();    
+        sLan.execute();
+        synchronized(sLan)
+        {
+          while(!sLan.isDone())
+          {
+            this.validateTree();
+            jLogWindow.updateUI();
+          }
+        }
       }
       else
       {
@@ -1875,7 +1915,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     }
 
     boolean testOk = false;
-    sshSetupCopier cLan = new sshSetupCopier(address, sNaoByte, "network");    
+    sshSetupCopier cLan = new sshSetupCopier(this, address, sNaoByte, "network");    
     testOk = cLan.testConnection();
 
     if(!testOk && addresses.size() > 0 && !addresses.contains(address))
@@ -1884,7 +1924,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
       while(!testOk && idx < addresses.size())
       {    
         address = addresses.get(idx);
-        cLan = new sshSetupCopier(address, sNaoByte, "network");
+        cLan = new sshSetupCopier(this, address, sNaoByte, "network");
         testOk = cLan.testConnection();
         idx++;
       }
@@ -1893,20 +1933,31 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     if(testOk)
     {
       cLan.execute();
-      while(!cLan.isDone())
+      synchronized(cLan)
       {
-        this.validateTree();
-        Thread.yield();
+        while(!cLan.isDone())
+        {
+          this.validateTree();
+          jLogWindow.updateUI();
+        }
       }
       if(hadCopyErrors.get(0))
       {
         allIsDone("0");
         return;
       }
-      sshScriptRunner sLan = new sshScriptRunner(address, "0", sNaoByte, new String[] {"setRobotNetworkConfig"});
+      sshScriptRunner sLan = new sshScriptRunner(this, address, "0", sNaoByte, new String[] {"setRobotNetworkConfig"}, cbRebootSystem.isSelected());
       if(sLan.testConnection())
       {
         sLan.execute();
+        synchronized(sLan)
+        {
+          while(!sLan.isDone())
+          {
+            this.validateTree();
+            jLogWindow.updateUI();
+          }
+        }
       }
       else
       {
@@ -2012,6 +2063,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     jButtonSaveNetworkConfig = new javax.swing.JButton();
     jScrollPane3 = new javax.swing.JScrollPane();
     lstNaos = new javax.swing.JList();
+    cbRebootSystem = new javax.swing.JCheckBox();
 
     org.jdesktop.layout.GroupLayout jDialog1Layout = new org.jdesktop.layout.GroupLayout(jDialog1.getContentPane());
     jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -2677,6 +2729,8 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
     });
     jScrollPane3.setViewportView(lstNaos);
 
+    cbRebootSystem.setText("reboot OS");
+
     org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -2688,23 +2742,26 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
           .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+          .add(cbRebootSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
           .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
           .add(org.jdesktop.layout.GroupLayout.TRAILING, jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-          .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
+          .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .add(19, 19, 19))
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
         .addContainerGap()
-        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
           .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel2Layout.createSequentialGroup()
             .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .add(18, 18, 18)
             .add(jSettingsPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
           .add(jPanel2Layout.createSequentialGroup()
-            .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
+            .add(cbRebootSystem)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jScrollPane3)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
@@ -2957,6 +3014,7 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private javax.swing.JCheckBox cbCopyLib;
   private javax.swing.JCheckBox cbCopyLogs;
   private javax.swing.JCheckBox cbNoBackup;
+  private javax.swing.JCheckBox cbRebootSystem;
   private javax.swing.JCheckBox cbRestartNaoth;
   private javax.swing.JButton copyButton;
   private javax.swing.JPanel jActionsPanel;
@@ -3027,1234 +3085,6 @@ public class NaoScp extends javax.swing.JFrame implements ServiceListener
   private javax.swing.JTextField subnetFieldLAN;
   private javax.swing.JTextField subnetFieldWLAN;
   // End of variables declaration//GEN-END:variables
-
-  
-  abstract class sshWorker extends SwingWorker<Boolean, File>
-  {
-    protected String Ip;
-    protected String sNaoNo;
-    protected String sNaoByte;
-    protected Session session;
-
-    public class MyLogger implements com.jcraft.jsch.Logger 
-    {
-      HashMap<Integer, String> name = new HashMap<Integer, String>();
-      {
-        name.put(new Integer(DEBUG), "DEBUG: ");
-        name.put(new Integer(INFO), "INFO: ");
-        name.put(new Integer(WARN), "WARN: ");
-        name.put(new Integer(ERROR), "ERROR: ");
-        name.put(new Integer(FATAL), "FATAL: ");
-      }
-
-      public boolean isEnabled(int level)
-      {
-        return true;
-      }
-
-      public void log(int level, String message)
-      {
-        System.err.print(name.get(new Integer(level)));
-        System.err.println(message);
-      }
-    }      
-
-    public class MyUserInfo implements UserInfo, UIKeyboardInteractive
-    {
-      public String getPassword()
-      { 
-        return sshPassword.getText(); 
-      }
-
-      public boolean promptYesNo(String str)
-      {
-        Object[] options={ "yes", "no" };
-        int foo=JOptionPane.showOptionDialog(null, 
-               str,
-               "Warning", 
-               JOptionPane.DEFAULT_OPTION, 
-               JOptionPane.WARNING_MESSAGE,
-               null, options, options[0]);
-         return foo==0;
-      }
-
-      String passwd;
-      JTextField passwordField=(JTextField)new JPasswordField(20);
-
-      public String getPassphrase()
-      { 
-        return null; 
-      }
-
-      public boolean promptPassphrase(String message)
-      { 
-        return true; 
-      }
-
-      public boolean promptPassword(String message)
-      {
-        Object[] ob = {passwordField}; 
-        int result = JOptionPane.showConfirmDialog(null, ob, message, JOptionPane.OK_CANCEL_OPTION);
-        if(result == JOptionPane.OK_OPTION)
-        {
-          passwd = passwordField.getText();
-          return true;
-        }
-        else
-        { 
-          return false; 
-        }
-      }
-
-      public void showMessage(String message)
-      {
-        JOptionPane.showMessageDialog(null, message);
-      }
-
-      public String[] promptKeyboardInteractive
-      (
-        String destination,
-        String name,
-        String instruction,
-        String[] prompt,
-        boolean[] echo
-      )
-      {
-        return new String[]{sshPassword.getText()};
-      }
-    }
-         
-
-    public sshWorker(String Ip, String sNaoNo, String sNaoByte)
-    {
-      this.Ip = Ip;
-      this.sNaoNo = sNaoNo;
-      this.sNaoByte = sNaoByte;
-    }
-
-    protected boolean connect() throws JSchException
-    {
-      if(session == null || !session.isConnected())
-      {
-        actionInfo("Trying to connect to " + Ip);
-        session = naoSsh(Ip);
-      }
-      return session.isConnected();
-    }
-
-    protected boolean disconnect() throws JSchException
-    {
-      if(session != null && session.isConnected())
-      {
-        session.disconnect();
-      }
-      return !session.isConnected();
-    }
-
-    /**
-     * returns ssh-session object
-     * @param Ip robot ip
-     * @return session
-     * @throws com.jcraft.jsch.JSchException
-     */
-    protected Session naoSsh(String Ip) throws JSchException
-    {
-      UserInfo ui = new MyUserInfo();
-      java.util.Properties config = new java.util.Properties();
-      config.put("StrictHostKeyChecking", "no");
-//      JSch.setLogger(new MyLogger());
-      JSch jsch = new JSch();
-
-      Session session = jsch.getSession(sshUser.getText(), Ip, 22);
-      session.setConfig(config);
-      session.setUserInfo(ui);
-      session.setPassword(sshPassword.getText());
-      session.connect();
-      return session;
-    }
-
-    public boolean testConnection()
-    {
-      try
-      {
-        InetAddress[] naoIps = InetAddress.getAllByName(Ip);
-        int idx = 0;
-        while(idx < naoIps.length)
-        {
-          actionInfo("Try to reach " + naoIps[idx].getHostAddress());
-          Ip = naoIps[idx].getHostAddress();
-          if(naoIps[idx].isReachable(2500))
-          {
-            Session session = naoSsh(Ip);
-            Thread.sleep(100);
-            Channel channel = session.openChannel("sftp");
-            channel.connect();
-            Thread.sleep(100);
-            if(channel.isConnected())
-            {
-              channel.disconnect();
-              Thread.sleep(100);
-              return true;
-            }
-            else
-            {
-              actionInfo(Ip + " could not open channel");
-            }
-          }
-          else
-          {
-            actionInfo(Ip + " unreachable");
-          }
-          idx++;
-        }
-      }
-      catch(Exception e)
-      {
-        actionInfo(e.toString());
-        return false;
-      }
-      return false;
-    }
-      
-    /**
-     * rm -r via sftp
-     * @param c ChannelSftp Object
-     * @param dstDir String directory to delete
-     */
-    protected void rmDirSftp(ChannelSftp c, String dstDir)
-    {
-      try
-      {
-        Vector v = c.ls(dstDir);
-        if(v != null)
-        {
-          for(int i = 0; i < v.size(); i ++)
-          {
-            Object obj = v.elementAt(i);
-            if(obj instanceof LsEntry)
-            {
-              LsEntry lsEntry = (LsEntry) obj;
-              if( ! lsEntry.getFilename().equals(".") &&  ! lsEntry.getFilename().
-              equals(".."))
-              {
-                if(lsEntry.getAttrs().isDir())
-                {
-                  rmDirSftp(c, dstDir + "/" + lsEntry.getFilename());
-                  c.rmdir(dstDir + "/" + lsEntry.getFilename());
-                }
-                else
-                {
-                  actionInfo("remote rm " + lsEntry.getFilename());
-
-                  c.rm(dstDir + "/" + lsEntry.getFilename());
-                }
-              }
-            }
-          }
-        }
-      }
-      catch(Exception e)
-      {
-        actionInfo("Exception in rmDirSftp: (" + dstDir + ")" + e.toString());
-      }
-    }
-
-    /**
-     * Recursively get Directory via Sftp
-     * @param c ChannelSftp Object
-     * @param local String Local Location (a.k.a destination)
-     * @param remote String Remote Location
-     */
-    protected void recursiveSftpGet(ChannelSftp c, String local, String remote)
-    {
-      try
-      {
-        if(remote.endsWith("/"))
-        {
-          remote = remote.substring(0, remote.length() - 1);
-        }
-        Vector v = c.ls(remote);
-        if(v != null)
-        {
-          for(int i = 0; i < v.size(); i ++)
-          {
-            Object obj = v.elementAt(i);
-            if(obj instanceof LsEntry)
-            {
-              LsEntry lsEntry = (LsEntry) obj;
-              if( ! lsEntry.getFilename().equals(".") &&  ! lsEntry.getFilename().
-              equals(".."))
-              {
-                String outputFileName = local + "/" + lsEntry.getFilename();
-                File f = new File(outputFileName);
-                if(lsEntry.getAttrs().isDir())
-                {
-                  f.mkdirs();
-                  recursiveSftpGet(c, outputFileName, remote + "/" + lsEntry.
-                  getFilename());
-                }
-                else
-                {
-                  actionInfo("get " + lsEntry.getFilename());
-                  FileOutputStream foo = new FileOutputStream(f);
-                  c.get(remote + "/" + lsEntry.getFilename(), foo);
-                }
-              }
-            }
-          }
-        }
-      }
-      catch(Exception e)
-      {
-        actionInfo("Exception in recursiveSftpGet: " + e.toString());
-      }
-    }
-    /**
-     * Get Directory via Sftp by Regex
-     * @param c ChannelSftp Object
-     * @param local String Local Location (a.k.a destination)
-     * @param remote String Remote Location
-     * @param pattern String Regex
-     *
-     */
-    protected void regexRecursiveSftpGet(ChannelSftp c, String local, String remote, String pattern)
-    {
-      try
-      {
-        if(remote.endsWith("/"))
-        {
-          remote = remote.substring(0, remote.length() - 1);
-        }
-        File target = new File(local);
-        Pattern p = Pattern.compile(pattern);
-        Vector v = c.ls(remote);
-        if(v != null)
-        {
-          for(int i = 0; i < v.size(); i ++)
-          {
-            Object obj = v.elementAt(i);
-            if(obj instanceof LsEntry)
-            {
-              LsEntry lsEntry = (LsEntry) obj;
-              boolean match = p.matcher(lsEntry.getFilename()).find();
-              if( ! lsEntry.getFilename().equals(".") &&  ! lsEntry.getFilename().equals(".."))
-              {
-                String outputFileName = local + "/" + lsEntry.getFilename();
-                File f = new File(outputFileName);
-                if(lsEntry.getAttrs().isDir()) {
-                  regexRecursiveSftpGet(c, outputFileName, remote + "/" + lsEntry.getFilename(), pattern);
-                } else if(match)
-                {
-                  File f2 = new File(f.getParent());
-                  if(!f2.exists()) {
-                      f2.mkdirs();
-                  }
-                  actionInfo("get " + lsEntry.getFilename());
-                  FileOutputStream foo = new FileOutputStream(f);
-                  c.get(remote + "/" + lsEntry.getFilename(), foo);
-                }
-              }
-            }
-          }
-        }
-      }
-      catch(Exception e)
-      {
-        actionInfo("Exception in recursiveSftpGet: " + e.toString());
-      }
-    }
-
-    protected boolean recursiveSftpCheckPath(ChannelSftp c, File src, String dst)
-    {      
-      String[] splittedPath = dst.split("[/\\\\]");
-      String path = "";
-      int end = splittedPath.length;
-      if(src.isFile())
-      {
-        end --;
-      }
-
-      for(int p = 1; p < end; p++)
-      {
-        path += "/" + splittedPath[p];
-        try
-        {
-          SftpATTRS attrs = c.stat(path);
-        }
-        catch(Exception e)
-        {
-          try
-          {
-            c.mkdir(path);
-          }
-          catch(Exception ex)
-          {
-            actionInfo("mkdir exception (" + path + ")");
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-    
-    /**
-     * recursive Put via sftp
-     * @param c ChannelSftp Object
-     * @param src File Local Sources
-     * @param dst String Remote Destination
-     */
-    protected void recursiveSftpPut(ChannelSftp c, File src, String dst)
-    {
-      recursiveSftpPut(c, src, dst, null);
-    }
-    /**
-     * recursive Put via sftp
-     * @param c ChannelSftp Object
-     * @param src File Local Sources
-     * @param dst String Remote Destination
-     */
-    protected void recursiveSftpPut(ChannelSftp c, File src, String dst, MyProgressMonitor monitor)
-    {
-      try
-      {
-        if(recursiveSftpCheckPath(c, src, dst) && src.isDirectory())
-        {
-          File files[] = src.listFiles();
-          Arrays.sort(files);
-          for(int i = 0, n = files.length; i < n; i ++)
-          {
-            String newdst = dst + "/" + files[i].getName();
-            if(monitor != null)
-            {
-              recursiveSftpPut(c, files[i], newdst, monitor);
-            }
-            {
-              recursiveSftpPut(c, files[i], newdst);
-            }
-          }
-        }
-        else if(src.isFile())
-        {
-          actionInfo("put " + src.getName());
-          if(recursiveSftpCheckPath(c, src, dst))
-          {
-            try
-            {
-              c.rm(dst);
-            }
-            catch(SftpException ex)
-            {
-              // if the file is not there its ok
-              if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
-              {
-                throw ex;
-              }
-            }//end try
-            try
-            {
-              if(monitor != null)
-              {
-                c.put(src.getAbsolutePath(), dst, monitor);
-              }
-              else
-              {
-                c.put(src.getAbsolutePath(), dst);
-              }
-            }
-            catch(SftpException ex)
-            {
-              // if the file is not there its ok
-              if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
-              {
-                throw ex;
-              }
-            }//end try
-          }
-          else
-          {
-            actionInfo("remote directory does not exist and could not be created.");
-          }              
-        }
-        else
-        {
-          actionInfo("remote directory does not exist and could not be created.");
-        }
-      }
-      catch(Exception e)
-      {
-        actionInfo("Exception in recursiveSftpPut: " + e.getMessage());//.toString());
-      }
-      Thread.yield();
-    }
-  }
-  
-  class sshSetupCopier extends sshCopier
-  {
-    private String mode;
-  
-    sshSetupCopier(String Ip, String sNaoNo, String mode)
-    {
-      super(Ip, "0", sNaoNo);
-      this.mode = mode;
-    }
-    
-    protected Boolean exec() throws JSchException, InterruptedException
-    {
-      boolean result = true;
-      result = result && writeNaoSetupFiles(session, sNaoNo);
-      if(result && mode.equals("full"))
-      {
-        Thread.sleep(500);
-        result = result && super.exec();
-      }
-      return result;
-    }
-
-    @Override
-    protected Boolean doInBackground()
-    {
-      try
-      {
-        if(connect())
-        {
-          boolean result = exec();
-          disconnect();
-          copyIsDone(sNaoNo);
-          return result;
-        }
-        else
-        {
-          haveCopyError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
-          copyIsDone(sNaoNo);
-          return false;
-        }      
-      }
-      catch(Exception e)
-      {
-        haveCopyError(sNaoNo, e.toString());
-        copyIsDone(sNaoNo);
-        return false;
-      }
-    }
-
-    /**
-     * copy new files to nao
-     *
-     * @param session jsch session
-     * @param sNaoNo nao number
-     */
-    protected boolean writeNaoSetupFiles(Session session, String sNaoNo)
-    {
-      actionInfo("initialization writing setup files part");
-      try
-      {
-        Channel channel = session.openChannel("sftp");
-        channel.connect();
-        ChannelSftp c = (ChannelSftp) channel;
-
-        String localSetupScriptPath = localDeployOutPath(sNaoNo) + setupScriptPath();
-        String remoteSetupScriptPath = remoteRootPath(sNaoNo) + setupScriptPath();
-
-        File localSetupScriptFiles = new File(localSetupScriptPath);
-
-        rmDirSftp(c, remoteRootPath(sNaoNo) + setupScriptPath());
-
-        // create if it is not existing
-        String remoteSetupScriptDst = remoteSetupScriptPath;
-
-        recursiveSftpPut(c, localSetupScriptFiles, remoteSetupScriptDst);
-
-        
-        if(copySysLibs && stagingLibDir != null)
-        {
-          File localSysLibsFiles = new File(stagingLibDir);
-
-          String remoteSysLibsDst = homePath() + "/lib";
-
-          recursiveSftpPut(c, localSysLibsFiles, remoteSysLibsDst);
-        }
-        
-        channel.disconnect();
-      }
-      catch(Exception e)
-      {
-        haveCopyError(sNaoNo, "Exception in writeNaoSetupFiles (" + sNaoNo + "): " + e.toString());
-        return false;
-      }
-      return true;
-    }
-  }
-  
-  class sshCopier extends sshWorker
-  {   
-    public sshCopier(String Ip, int iNaoNo, int iNaoByte)
-    {
-      super(Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte));
-    }
-
-    public sshCopier(String Ip, String sNaoNo, String sNaoByte)
-    {
-      super(Ip, sNaoNo, sNaoByte);
-    }
-
-    private Boolean exec() throws JSchException
-    {
-      if(debugVersion && noBackup)
-      {
-        // NO BACKUP!!!
-        jLogWindow.setBackground(Color.pink);
-        minimalBackupNao(session, sNaoNo, sNaoByte);
-      }
-      else
-      {
-        jLogWindow.setBackground(Color.white);
-        backupNao(session, sNaoNo, sNaoByte);
-      }
-      
-      return writeNao(session, sNaoNo);
-    }
-    
-    protected Boolean doInBackground()
-    {
-      try
-      {
-        if(connect())
-        {
-          boolean result = exec();
-          disconnect();
-          copyIsDone(sNaoNo);
-          return result;
-        }
-        else
-        {
-          haveCopyError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
-          copyIsDone(sNaoNo);
-          return false;
-        }      
-      }
-      catch(Exception e)
-      {
-        haveCopyError(sNaoNo, e.toString());
-        copyIsDone(sNaoNo);
-        return false;
-      }
-    }
-
-    protected void backupNao(Session session, String sNaNo, String sNaoByte)
-    {
-      String exceptionHelper = "during backup init";
-      actionInfo("Starting Backup Session for Nao " + sNaNo);
-      try
-      {
-        Channel channel = session.openChannel("sftp");
-        channel.connect();
-        ChannelSftp c = (ChannelSftp) channel;
-
-        // copy a backup
-        if(jBackupBox.getSelectedIndex() != 0)
-        {
-          if(copyLib)
-          {
-            File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
-            if(!libFile.exists() || !libFile.isFile())
-            {
-              actionInfo("selected backup contains no libnaoth.so file");
-              copyLib = false;
-            }
-          }
-
-          if(copyExe)
-          {
-            File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
-            if(!libFile.exists() || !libFile.isFile())
-            {
-              actionInfo("selected backup contains no libnaoth.so file");
-              copyExe = false;
-            }
-          }
-
-          if(copyConfig)
-          {
-            File exeDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/naoth");
-            if(!exeDir.exists() || !exeDir.isDirectory())
-            {
-              actionInfo("selected backup contains no Config directory");
-              copyConfig = false;
-            }
-          }
-        }
-
-        try
-        {
-          if(copyLib || copyExe || copyConfig)
-          {
-            exceptionHelper = "mkdir local " + localDeployInPath(sNaNo, sNaoByte);
-            File backup = new File(localDeployInPath(sNaNo, sNaoByte));
-            backup.mkdirs();
-          }
-
-          if(copyLib)
-          {
-            actionInfo("get libnaoth.so");
-
-            exceptionHelper = "get from robot " + remoteRootPath(sNaNo) + libnaoPath() + "/libnaoth.so to "
-                            + localDeployInPath(sNaNo, sNaoByte) + "/libnaoth.so";
-            c.get
-            (
-              remoteRootPath(sNaNo) + libnaoPath() + "/libnaoth.so",
-              new FileOutputStream(localDeployInPath(sNaNo, sNaoByte) + "/libnaoth.so"),
-              new MyProgressMonitor(progressBar)
-            );
-            
-            c.get
-            (
-              remoteRootPath(sNaNo) + libnaoPath() + "/comment.cfg",
-              new FileOutputStream(localDeployInPath(sNaNo, sNaoByte) + "/comment.cfg"),
-              new MyProgressMonitor(progressBar)
-            );
-          }
-
-          if(copyExe)
-          {
-            actionInfo("get naoth (exe)");
-            c.get
-            (
-              remoteRootPath(sNaNo) + binPath() + "/naoth",
-              new FileOutputStream(localDeployInPath(sNaNo, sNaoByte) + "/naoth"),
-              new MyProgressMonitor(progressBar)
-            );
-            
-          }
-        }
-        catch(Exception e)
-        {
-          haveCopyError(sNaoNo, "Exception in backupNao (" + sNaNo + "): " + e.toString() + "(" + exceptionHelper + ")");
-        }
-
-        try
-        {
-          if(copyConfig)
-          {
-            exceptionHelper = "get recursive from robot " + remoteRootPath(sNaNo) + configPath() + " to "
-                            + localDeployInPath(sNaNo, sNaoByte) + "/Config";
-            recursiveSftpGet(c, localDeployInPath(sNaNo, sNaoByte) + "/Config", remoteRootPath(sNaNo) + configPath());
-          }
-        }
-        catch(Exception e)
-        {
-          haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
-        }
-
-        try
-        {
-          if(copyLogs)
-          {
-            exceptionHelper = "get recursive from robot " + remoteRootPath(sNaNo) + "/tmp/nao.log" + " to "
-                            + localDeployInPath(sNaNo, sNaoByte) + "/nao.log";
-            recursiveSftpGet(c, localDeployInPath(sNaNo, sNaoByte) + "/nao.log", remoteRootPath(sNaNo) + "/tmp/nao.log");
-          }
-        }
-        catch(Exception e)
-        {
-          haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
-        }
-
-        channel.disconnect();
-      }
-      catch(Exception e)
-      {
-        haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
-      }
-    }
-
-    protected void minimalBackupNao(Session session, String sNaoNo, String sNaoByte)
-    {
-      String exceptionHelper = "during backup init";
-      actionInfo("Starting Backup Session for Nao " + String.valueOf(sNaoNo));
-      try
-      {
-        String myConfigPathIn = localDeployInPath(sNaoNo, sNaoByte) + "/MinimalConfig/";
-        File myConfigDirIn = new File(myConfigPathIn);
-        myConfigDirIn.mkdirs();
-
-        Channel channel = session.openChannel("sftp");
-        channel.connect();
-        ChannelSftp c = (ChannelSftp) channel;
-        exceptionHelper = "get recursive minimal backup from robot " + remoteRootPath(sNaoNo) + configPath() + " to "
-                            + localDeployInPath(sNaoNo, sNaoByte) + "/Config";
-        String regex = "[0-9A-Za-z]{2}_[0-9A-Za-z]{2}_[0-9A-Za-z]{2}_[0-9A-Za-z]{2}_[0-9A-Za-z]{2}_[0-9A-Za-z]{2}";
-        regexRecursiveSftpGet(c, myConfigPathIn,
-                        remoteRootPath(sNaoNo) + configPath(),
-                        regex);
-      }
-      catch(Exception e)
-      {
-        haveCopyError(sNaoNo, "Exception in backupNao (" + String.valueOf(sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
-      }
-    }
-
-    /**
-     * copy new files to nao
-     *
-     * @param session jsch session
-     * @param sNaoNo nao number
-     */
-    protected boolean writeNao(Session session, String sNaoNo)
-    {
-      actionInfo("initialization writing part");
-      try
-      {
-        Channel channel = session.openChannel("sftp");
-        channel.connect();
-        ChannelSftp c = (ChannelSftp) channel;
-
-        String localLibPath = localDeployOutPath(sNaoNo) + libnaoPath() + "/";
-        String remoteLibPath = remoteRootPath(sNaoNo) + libnaoPath() + "/";
-        
-        String localBinPath = localDeployOutPath(sNaoNo) + binPath() + "/";
-        String remoteBinPath = remoteRootPath(sNaoNo) + binPath() + "/";
-
-        String localConfigPath = localDeployOutPath(sNaoNo) + configPath();
-        String remoteConfigPath = remoteRootPath(sNaoNo) + configPath();
-
-        if(!jBackupBox.getSelectedItem().equals(jBackupBox.getItemAt(0)))
-        {
-          if(copyLib)
-          {
-            File libFile = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/libnaoth.so");
-            if(libFile.exists() && libFile.isFile())
-            {
-              localLibPath = localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/";
-              actionInfo("writing libnaoth.so file from Backup " + jBackupBox.getSelectedItem() + " to Nao " + sNaoNo);
-            }
-            else
-            {
-              actionInfo("selected backup contains no libnaoth.so file " + localLibPath);
-              copyLib = false;
-            }
-          }
-        }
-
-        if(copyLib)
-        {
-          try
-          {
-            c.rm(remoteRootPath(sNaoNo) + libnaoPath() + "/libnaoth.so");
-          }
-          catch(SftpException ex)
-          {
-            // if the file is not there its ok
-            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
-            {
-              throw ex;
-            }
-          }//end try
-
-          try
-          {
-            c.rm(remoteRootPath(sNaoNo) + libnaoPath() + "/comment.cfg");
-          }
-          catch(SftpException ex)
-          {
-            // if the file is not there its ok
-            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
-            {
-              throw ex;
-            }
-          }//end try
-          recursiveSftpPut(c, new File(localBinPath + "libnaoth.so"), remoteLibPath + "libnaoth.so", new MyProgressMonitor(progressBar));
-        }
-
-        if(copyExe)
-        {
-          try
-          {
-            c.rm(remoteRootPath(sNaoNo) + binPath() + "/naoth");
-          }
-          catch(SftpException ex)
-          {
-            // if the file is not there its ok
-            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
-            {
-              throw ex;
-            }
-          }//end try
-
-          recursiveSftpPut(c, new File(localLibPath + "naoth"), remoteBinPath + "naoth", new MyProgressMonitor(progressBar));
-          c.chmod(504, remoteBinPath + "naoth");
-
-        }
-        
-        if(!jBackupBox.getSelectedItem().equals(jBackupBox.getItemAt(0)))
-        {
-          if(copyConfig)
-          {
-            File configDir = new File(localDeployRootPath() + "/in/" + backups.get(jBackupBox.getSelectedItem()) + "/Config/");
-            if(configDir.exists() && configDir.isDirectory())
-            {
-              localConfigPath = configDir.getAbsolutePath();
-              actionInfo("writing Config directory from Backup " + jBackupBox.getSelectedItem() + " to Nao " + sNaoNo);
-            }
-            else
-            {
-              actionInfo("selected backup contains no Config directory " + localConfigPath);
-              copyConfig = false;
-            }
-          }
-        }
-
-        if(copyConfig)
-        {
-          File localConfigFiles = new File(localConfigPath);
-
-          rmDirSftp(c, remoteRootPath(sNaoNo) + configPath() + "/general");
-          rmDirSftp(c, remoteRootPath(sNaoNo) + configPath() + "/robots");
-          rmDirSftp(c, remoteRootPath(sNaoNo) + configPath() + "/scheme");
-          rmDirSftp(c, remoteRootPath(sNaoNo) + configPath() + "/private");
-
-          // create if it is not existing
-          String remooteConfigDst = remoteConfigPath;
-          //c.mkdir(remooteConfigDst);
-
-          recursiveSftpPut(c, localConfigFiles, remooteConfigDst, new MyProgressMonitor(progressBar));
-        }
-        channel.disconnect();
-      }
-      catch(Exception e)
-      {
-        haveCopyError(sNaoNo, "Exception in writeNao (" + sNaoNo + "): " + e.toString());
-        return false;
-      }
-      return true;
-    }    
-    
-  }
-
-  
-  class sshScriptRunner extends sshWorker
-  {
-    String[] runList;
-    String hostname;
-    TextFieldStreamer ts;
-    JTextField cIn;
-    private OutputStream out;
-    private String lastOut;
-    
-    public sshScriptRunner(String Ip, int iNaoNo, int iNaoByte, String[] scriptRunList)
-    {
-      super(Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte));
-      init(scriptRunList);
-    }
-
-    public sshScriptRunner(String Ip, String sNaoNo, String sNaoByte, String[] scriptRunList)
-    {
-      super(Ip, sNaoNo, sNaoByte);
-      init(scriptRunList);
-    }
-
-    private void init(String[] scriptRunList)
-    {
-      runList = scriptRunList;
-      cIn = new JTextField();
-      ts = new TextFieldStreamer(cIn);
-      cIn.addActionListener(ts);
-      out = new OutputStream() 
-            {  
-              @Override  
-              public void write(int b) throws IOException 
-              {  
-                updateLog(String.valueOf((char) b));  
-              }  
-
-              @Override  
-              public void write(byte[] b, int off, int len) throws IOException 
-              {  
-                updateLog(new String(b, off, len));  
-              }  
-
-              @Override  
-              public void write(byte[] b) throws IOException 
-              {  
-                write(b, 0, b.length);  
-              }  
-            };
-    }
-
-    private void updateLog(final String text) 
-    {  
-      SwingUtilities.invokeLater
-      (
-        new Runnable() 
-        {  
-          public void run() 
-          {  
-            if(text.length() > 0)
-            {
-              System.out.append(text);
-              lastOut += text;
-            }
-          }  
-        }
-      );  
-    }  
-
-    protected Boolean doInBackground()
-    {
-      try
-      {
-        if(connect())
-        {
-          for(int i = 0; i < runList.length; i++)
-          {
-            if(runList[i].equalsIgnoreCase("restartNaoTH"))
-            {
-              restartNaoTH(session, sNaoNo);
-            }
-            else if(runList[i].equalsIgnoreCase("setRobotNetworkConfig"))
-            {
-              setRobotNetworkConfig(session, sNaoNo);              
-            }
-            else if(runList[i].equalsIgnoreCase("initializeRobot"))
-            {
-              initializeRobot(session, sNaoNo);              
-            }
-          }
-          disconnect();
-          scriptIsDone(sNaoNo);
-          return true;
-        }
-        else
-        {
-          haveScriptError(sNaoNo, "Couldn't connect with Nao " + Ip + " (" + sNaoNo + ")");
-          scriptIsDone(sNaoNo);
-          return false;
-        }
-      }
-      catch(Exception e)
-      {
-        haveScriptError(sNaoNo, e.toString());
-        scriptIsDone(sNaoNo);
-        return false;
-      }
-    }
-  
-    /**
-     * copy new files to nao
-     *
-     * @param session jsch session
-     * @param sNaoNo nao number
-     */
-    protected void restartNaoTH(Session session, String sNaoNo)
-    {
-      actionInfo("initialization writing part");
-      try
-      {
-         if (restartNaoth)
-         {
-            Channel cmd = session.openChannel("exec");
-            
-            actionInfo("restarting naoqi");
-            ((ChannelExec) cmd).setCommand("/etc/init.d/naoqi restart");
-            
-            actionInfo("waiting");
-            
-            Thread.sleep(5000);
-            
-            actionInfo("restarting naoth cognition process");
-            ((ChannelExec) cmd).setCommand("/etc/init.d/naoth stop");
-            ((ChannelExec) cmd).setCommand("/etc/init.d/naoth start");
-            InputStream consoleOut = cmd.getInputStream();
-            cmd.connect();
-            byte[] buffer = new byte[4096];
-            while(true) 
-            {
-               if(consoleOut.available()>0) 
-               {
-                  int ret = consoleOut.read(buffer, 0, 4096);
-                  if(ret<0) 
-                  {
-                     break;
-                  }
-               }
-               if(cmd.isClosed()) 
-               {
-                  break;
-               }
-               try
-               {
-                 Thread.sleep(100);
-               }
-               catch(Exception threadEx)
-               {}
-            }
-            cmd.disconnect();
-           }
-        }
-        catch(Exception e)
-        {
-          haveScriptError(sNaoNo, "Exception in restartNaoQi - Nao " + sNaoNo + ": " + e.toString());
-          return;
-        }
-    }
-        
-    private String sshExecAndWaitForResponse(String cmd, String waitFor) throws InterruptedException, IOException
-    {
-       cIn.setText(cmd);
-       ActionEvent evt = new ActionEvent(cIn, 0, "\n");
-       ts.actionPerformed(evt);
-       synchronized (ts) 
-       {
-          while(!ts.wasTriggered())
-          {            
-            Thread.sleep(50);           
-          }
-          ts.resetTriggered();
-       }
-       return sshWaitForResponse(waitFor);
-       
-    }
-    
-    private String sshWaitForResponse(String waitFor) throws InterruptedException, IOException
-    {
-      String[] waitForStrings = waitFor.split("\\|"); 
-      
-      String o = lastOut;
-      String lastFound = null;
-      int count = 200;      
-      
-      boolean breakUp = false;
-      while(!breakUp)
-      {
-        Thread.sleep(10);
-        for(int i = 0; i < waitForStrings.length; i++)
-        {
-          if(o.contains(waitForStrings[i]))
-          {
-            breakUp = true;
-            lastFound = waitForStrings[i];
-          }
-        }
-        o = lastOut;
-        count--;
-      }      
-      lastOut = lastOut.replace(o, "");
-      return lastFound;
-    }
-    
-    private void runSetupShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
-    {
-      ChannelShell shell = (ChannelShell)session.openChannel("shell");
-      cIn.setText("");
-
-      ((ChannelShell)shell).setInputStream(ts);
-
-      ((ChannelShell)shell).setExtOutputStream(out);
-      ((ChannelShell)shell).setOutputStream(out);
-
-      lastOut = "";
-      shell.connect();
-
-      sshWaitForResponse("localhost|nao");
-      sshExecAndWaitForResponse("su", "Password:");
-      String response = sshExecAndWaitForResponse(sshRootPassword.getText(), "localhost|nao|Authentication|failure");
-      if(response.equals("Authentication") || response.equals("failure"))
-      {
-        haveScriptError(sNaoNo, "superuser password is wrong ");
-        shell.disconnect();
-        return;
-      }
-      sshExecAndWaitForResponse("cd " + directory, "localhost|nao");
-      sshExecAndWaitForResponse("chown root:root ./" + shellScript + " && chmod 744 ./" + shellScript + " && ./" + shellScript, "localhost|nao");
-      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && reboot && exit", "localhost|nao");
-//      sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && exit", "localhost|nao");
-      sshExecAndWaitForResponse("exit", "logout");
-
-      shell.disconnect();
-    }
-    
-    
-    
-    /**
-     * run shell script for network initialisation as root
-     *
-     * @param session jsch session
-     * @param sNaoNo nao number
-     */
-    protected void setRobotNetworkConfig(Session session, String sNaoNo)
-    {      
-      actionInfo("initialization setup network part");
-      try
-      {
-        runSetupShellScriptAsRoot("/home/nao/naoqi/naothSetup", "init_net.sh");
-      }
-      catch(Exception e)
-      {
-        haveScriptError(sNaoNo, "Exception in setRobotNetworkConfig - Nao " + sNaoNo + ": " + e.toString());
-      }
-    }
-
-    /**
-     * run shell script for complete robot initialization as root
-     *
-     * @param session jsch session
-     * @param sNaoNo nao number
-     */
-    protected void initializeRobot(Session session, String sNaoNo)
-    {      
-      actionInfo("initialization setup network part");
-      try
-      {
-        runSetupShellScriptAsRoot("/home/nao/naoqi/naothSetup", "init_env.sh");
-      }
-      catch(Exception e)
-      {
-        haveScriptError(sNaoNo, "Exception in setRobotNetworkConfig - Nao " + sNaoNo + ": " + e.toString());
-      }
-    }
-  }
-
-  class MyProgressMonitor implements SftpProgressMonitor
-  {
-
-    long count = 0;
-    long max = 0;
-    private long percent = -1;
-    private JProgressBar progressbar;
-
-    public MyProgressMonitor(JProgressBar progressbar)
-    {
-      this.progressbar = progressbar;
-    }
-
-    public void init(int op, String src, String dest, long max)
-    {
-      this.max = max;
-      progressbar.setIndeterminate(false);
-      progressbar.setValue(0);
-      progressbar.setMinimum(0);
-      progressbar.setMaximum(100);
-      progressbar.setVisible(true);
-      progressbar.setEnabled(true);
-    }
-
-    public boolean count(long count)
-    {
-      this.count += count;
-      percent = this.count * 100 / max;
-      progressbar.setValue((int) percent);
-      return true;
-    }
-
-    public void end()
-    {
-      progressbar.setVisible(false);
-      progressbar.setEnabled(false);
-    }
-  }//end MyProgressMonitor
-  
-  
-  
-  
 }
 
 
