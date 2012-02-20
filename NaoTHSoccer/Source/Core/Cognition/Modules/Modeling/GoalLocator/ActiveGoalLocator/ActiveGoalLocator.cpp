@@ -319,6 +319,15 @@ void ActiveGoalLocator::debugDrawings() {
 
 );*/
 
+    DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
+
+      FIELD_DRAWING_CONTEXT;
+        PEN("FF0000", 50);
+        CIRCLE(getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y, 50);
+        PEN("0000FF", 50);
+        CIRCLE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, 50);
+        LINE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y);
+  );
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_samples",
   for (unsigned int i = 0; i < sampleSet.size(); i++) {

@@ -65,8 +65,6 @@ void WholeGoalLocator::execute()
         if(i+1 < getGoalPercept().getNumberOfSeenPosts())
         {
             checkAndInsertSingleGoal(getGoalPercept().getPost(i), getGoalPercept().getPost(i+1));
-            std::cout << "check " << std::endl;
-
             i++;
         }
     }//end for
