@@ -42,6 +42,13 @@ project "Webots"
     
     
     print("Generating files for webots")
+
+    -- Debugging stuff
+    f = io.popen ("bzr revno", "r");
+    defines{ "BZR_REVISION=" .. f:read("*l") } 
+    f:close ();
+    -- end
+
     includedirs {
       "../Source/", 
 	  CORE_PATH,

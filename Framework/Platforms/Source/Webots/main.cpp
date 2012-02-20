@@ -19,6 +19,11 @@ void printUsage()
 {
   cout << "NaoTH Webots controller" << endl;
   cout << "-------------------------" << endl;
+  cout << "Compiled: " << __DATE__ << " at " << __TIME__ << endl;
+  #ifdef BZR_REVISION
+  cout << "Revision number: " << BZR_REVISION << endl;
+  #endif
+  cout << "-------------------------" << endl;
   cout << "http://www.naoth.de" << endl << endl;
 }//end printUsage
 
