@@ -34,7 +34,7 @@ void WholeGoalLocator::execute()
   getSensingGoalModel().goal.rightPost = odometryDelta * getSensingGoalModel().goal.rightPost;
 
   // TODO: check this condition
-  //check for GoalPercept distance not near 30cm
+  //check for GoalPercept distance not near 30cm (for wrong projections)
   bool getOut = false;
   for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
   {
@@ -44,7 +44,6 @@ void WholeGoalLocator::execute()
       break;
     }
   }//end for
-
 
   if (!getOut)
   {
@@ -66,7 +65,9 @@ void WholeGoalLocator::execute()
         if(i+1 < getGoalPercept().getNumberOfSeenPosts())
         {
             checkAndInsertSingleGoal(getGoalPercept().getPost(i), getGoalPercept().getPost(i+1));
-            //i++;
+            std::cout << "check " << std::endl;
+
+            i++;
         }
     }//end for
   }//end if
@@ -81,12 +82,6 @@ void WholeGoalLocator::execute()
     CIRCLE(getSensingGoalModel().goal.rightPost.x, getSensingGoalModel().goal.rightPost.y, 50);
     PEN("0000AA", 50);
     CIRCLE(centerGoal.x, centerGoal.y, 50);
-    //Vector2<double> centerGoalTwo = getSensingGoalModel().goalTwo.calculateCenter();
-    //PEN("FFFF00", 50);
-    //CIRCLE(getSensingGoalModel().goalTwo.leftPost.x, getSensingGoalModel().goalTwo.leftPost.y, 50);
-    //CIRCLE(getSensingGoalModel().goalTwo.rightPost.x, getSensingGoalModel().goalTwo.rightPost.y, 50);
-    //PEN("AAAA00", 50);
-    //CIRCLE(centerGoalTwo.x, centerGoalTwo.y, 50);
   );
 
   DEBUG_REQUEST("WholeGoalLocator:drawRobotPose",
@@ -176,6 +171,9 @@ if(postLeft.color == ColorClasses::yellow && postRight.color == ColorClasses::ye
   }//end if
 */
 
+    getSensingGoalModel().goal.leftPost  = postLeft.position;
+    getSensingGoalModel().goal.rightPost = postRight.position;
+    getSensingGoalModel().someGoalWasSeen = true;
 
 }//end checkAndInsertSingleGoal
 
