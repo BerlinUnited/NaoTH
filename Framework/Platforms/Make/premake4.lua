@@ -21,6 +21,9 @@ newaction {
     -- copy Config (blue and red)
     os.copydir("../../../NaoTHSoccer/Config/", playerRedDir .. "Config")
     os.copydir("../../../NaoTHSoccer/Config/", playerBlueDir .. "Config")
+
+    print("Copy executable nao_team_0 to ..NaoTH-2011/Framework/Platforms/nao_robocup/controllers/nao_team_0")
+    print("Copy executable nao_team_1 to ..NaoTH-2011/Framework/Platforms/nao_robocup/controllers/nao_team_1")
     
   end
 }
