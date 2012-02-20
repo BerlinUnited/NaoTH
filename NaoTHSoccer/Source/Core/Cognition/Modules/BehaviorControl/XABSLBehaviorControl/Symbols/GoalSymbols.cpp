@@ -64,25 +64,25 @@ void GoalSymbols::execute()
 
 double GoalSymbols::getTimeSinceWholeOwnGoalSeen()
 {
-  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getOwnGoal(theInstance->compassDirection.angle);
+  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo);
   return (double) theInstance->frameInfo.getTimeSince(goal.frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceWholeOwnGoalSeen
 
 double GoalSymbols::getTimeSinceWholeOppGoalSeen()
 {
-  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getOwnGoal(theInstance->compassDirection.angle);
+  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo);
   return (double) theInstance->frameInfo.getTimeSince(goal.frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceWholeOppGoalSeen
 
 
 double GoalSymbols::getOpponentGoalX()
 {
-  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection.angle).calculateCenter().x;
+  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().x;
 }//end getOpponentGoalX
 
 double GoalSymbols::getOpponentGoalY()
 {
-  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection.angle).calculateCenter().y;
+  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().y;
 }//end getOpponentGoalY
 
 double GoalSymbols::getAngleToOpponentGoal()
@@ -92,7 +92,7 @@ double GoalSymbols::getAngleToOpponentGoal()
 
 double GoalSymbols::getDistanceToOpponentGoal()
 {
-  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection.angle).calculateCenter().abs();
+  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().abs();
 }//end getDistanceToOpponentGoal
 
 double GoalSymbols::getTimeSinceOpponentGoalSeen()
@@ -104,12 +104,12 @@ double GoalSymbols::getTimeSinceOpponentGoalSeen()
 
 double GoalSymbols::getOwnGoalX()
 {
-  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection.angle).calculateCenter().x;
+  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().x;
 }//end getOwnGoalX
 
 double GoalSymbols::getOwnGoalY()
 {
-  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection.angle).calculateCenter().y;
+  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().y;
 }//end getOwnGoalY
 
 double GoalSymbols::getGoalCentroidX()
@@ -132,19 +132,19 @@ double GoalSymbols::getGoalCentroidZ()
 
 double GoalSymbols::getAngleToOwnGoal()
 {
-  double radAngle = theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection.angle).calculateCenter().angle();
+  double radAngle = theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().angle();
   return Math::toDegrees(radAngle);
 }//end getAngleToOwnGoal
 
 double GoalSymbols::getDistanceToOwnGoal()
 {
-  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection.angle).calculateCenter().abs();
+  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().abs();
 }//end getDistanceToOwnGoal
 
 double GoalSymbols::getTimeSinceOwnGoalSeen()
 {
   return (double) theInstance->frameInfo.getTimeSince(
-    theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection.angle).frameInfoWhenGoalLastSeen.getTime());
+    theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceOpponentGoalSeen
 
 

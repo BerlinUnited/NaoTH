@@ -45,10 +45,10 @@ public:
 
   Goal goal;
 
-  const Goal& getOwnGoal(double global_angle) const;
-  Goal& getOwnGoal(double global_angle);
-  const Goal& getOppGoal(double global_angle) const;
-  Goal& getOppGoal(double global_angle);
+  const Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
+  const Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
 
 
   // TODO: deprecated?!
@@ -59,8 +59,11 @@ public:
 
   void draw() const;
 
-  static void calculateAnotherGoal(const GoalModel::Goal& one, GoalModel::Goal& another, double distance);
-  Pose2D calculatePose(double global_angle, const FieldInfo& fieldInfo) const;
+  static GoalModel::Goal calculateAnotherGoal(const GoalModel::Goal& one, double distance);
+  Pose2D calculatePose(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+
+  //private:
+  //  Goal another;
 };//end class GoalModel
 
 
@@ -89,10 +92,10 @@ public:
 class SelfLocGoalModel : public GoalModel
 {
 public:
-  void update(double global_angle, const Pose2D& robotPose, const FieldInfo& fieldInfo);
+  void update(const CompassDirection& compassDirection, const Pose2D& robotPose, const FieldInfo& fieldInfo);
 
-  inline const Goal& getOwnGoal(const double global_angle) const { return getOwnGoal(global_angle); };
-  inline const Goal& getOppGoal(const double global_angle) const { return getOppGoal(global_angle); };
+  inline const Goal& getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const { return getOwnGoal(compassDirection, fieldInfo); }
+  inline const Goal& getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const { return getOppGoal(compassDirection, fieldInfo); }
 
 };
 

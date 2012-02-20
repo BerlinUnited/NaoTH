@@ -24,6 +24,7 @@ BEGIN_DECLARE_MODULE(GoalSymbols)
   REQUIRE(PlayerInfo);
   REQUIRE(FrameInfo);
   REQUIRE(CompassDirection);
+  REQUIRE(FieldInfo);
 END_DECLARE_MODULE(GoalSymbols)
 
 class GoalSymbols: public GoalSymbolsBase
@@ -36,7 +37,8 @@ public:
     goalPercept(getGoalPercept()),
     playerInfo(getPlayerInfo()),
     frameInfo(getFrameInfo()),
-    compassDirection(getCompassDirection())
+    compassDirection(getCompassDirection()),
+    fieldInfo(getFieldInfo())
   {
     theInstance = this;
     };
@@ -54,6 +56,7 @@ private:
   PlayerInfo const& playerInfo;
   FrameInfo const& frameInfo;
   CompassDirection const& compassDirection;
+  FieldInfo const& fieldInfo;
 
   static GoalSymbols* theInstance;
 

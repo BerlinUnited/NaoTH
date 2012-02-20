@@ -92,7 +92,7 @@ void WholeGoalLocator::execute()
   DEBUG_REQUEST("WholeGoalLocator:drawRobotPose",
     FIELD_DRAWING_CONTEXT;
     PEN(ColorClasses::yellow, 50);
-    Pose2D pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
+    Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
     ROBOT(pose.translation.x,
           pose.translation.y,
           pose.rotation);

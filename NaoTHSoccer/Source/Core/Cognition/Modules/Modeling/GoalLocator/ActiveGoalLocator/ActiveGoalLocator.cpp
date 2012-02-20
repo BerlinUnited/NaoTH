@@ -265,6 +265,7 @@ void ActiveGoalLocator::execute() {
     }*/
 
     //TODO check decision for opp goal!
+    //getOppGoal == goal ...
     if (getCompassDirection().angle > Math::pi_2) {
 
         getLocalGoalModel().seen_center = goalCenter;

@@ -200,7 +200,7 @@ double StrategySymbols::penaltyGoalieGuardPositionY()
 bool StrategySymbols::getApproachingWithRightFoot()
 {
   // get the vector to the center of the opponent goal
-  Vector2<double> oppGoal = theInstance->goalModel.getOppGoal(theInstance->compassDirection.angle).calculateCenter();
+  Vector2<double> oppGoal = theInstance->goalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
   
   Vector2<double> ballPose = theInstance->ballModel.position;
 
@@ -262,7 +262,7 @@ double StrategySymbols::getOwnClosestToBallDistanceToBall()
 Pose2D StrategySymbols::calculateDefensePose()
 {
   Pose2D defPose;
-  Vector2<double> ownGoal = goalModel.getOwnGoal(theInstance->compassDirection.angle).calculateCenter();
+  Vector2<double> ownGoal = goalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
 
   Pose2D g(ownGoal.angle(), ownGoal.x, ownGoal.y);
   g -= motionStatus.plannedMotion.hip;

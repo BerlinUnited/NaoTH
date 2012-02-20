@@ -16,6 +16,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GPSData.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Tools/Math/Common.h"
@@ -30,6 +31,7 @@ BEGIN_DECLARE_MODULE(SelflocSymbols)
   REQUIRE(GPSData)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
+  REQUIRE(FieldInfo)
 END_DECLARE_MODULE(SelflocSymbols)
 
 class SelflocSymbols: public SelflocSymbolsBase
@@ -44,6 +46,7 @@ public:
     gpsData(getGPSData()),
     motionStatus(getMotionStatus()),
     compassDirection(getCompassDirection()),
+    fieldInfo(getFieldInfo()),
 
     angleOnField(Math::toDegrees(robotPose.rotation)),
     rel2fieldX_x(0.0),
@@ -103,6 +106,7 @@ private:
   GPSData const& gpsData;
   MotionStatus const& motionStatus;
   CompassDirection const& compassDirection;
+  FieldInfo const& fieldInfo;
 
   // rotation of robotPose in degrees
   double angleOnField;

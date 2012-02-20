@@ -124,7 +124,7 @@ void XABSLBehaviorControl::draw()
 {
   DEBUG_REQUEST("XABSL:draw_foot_decision",
     //18.02.2012
-    Vector2<double> oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection().angle).calculateCenter();
+    Vector2<double> oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo()).calculateCenter();
     Vector2<double> ballPose = getBallModel().position;
 
     FIELD_DRAWING_CONTEXT;
