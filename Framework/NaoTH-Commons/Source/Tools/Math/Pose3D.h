@@ -231,9 +231,9 @@ template <typename DATATYPE>
 std::ostream& operator <<(std::ostream& ost, const Pose3T<DATATYPE>& v)
 {
     ost << v.rotation.c[0]<<" 0 "
-            <<v.rotation.c[1]<<" 0 "
-            <<v.rotation.c[2]<<" 0 "
-            <<v.translation<<" 1";
+        << v.rotation.c[1]<<" 0 "
+        << v.rotation.c[2]<<" 0 "
+        << v.translation <<" 1";
     return ost;
 }
 

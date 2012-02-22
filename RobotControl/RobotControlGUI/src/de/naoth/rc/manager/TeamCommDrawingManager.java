@@ -12,5 +12,5 @@ import de.naoth.rc.dialogs.drawings.DrawingsContainer;
  */
 public interface TeamCommDrawingManager extends Manager<DrawingsContainer>
 {
-
+    public void setCurrenId(String currenId);
 }
