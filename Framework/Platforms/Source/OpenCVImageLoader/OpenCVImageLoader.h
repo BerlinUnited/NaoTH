@@ -64,6 +64,7 @@ public:
   void stepBack();
   void jumpToStart();
   void jumpTo(const string fileName);
+  void play();
 
   //get methods
   void get(Image& data);
