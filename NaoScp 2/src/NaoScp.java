@@ -652,56 +652,56 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
   
   private void setFormEnabled(boolean enable)
   {
-      copyButton.setEnabled(enable);
-      cbCopyConfig.setEnabled(enable);
-      cbCopyLib.setEnabled(enable);
-      cbCopyExe.setEnabled(enable);
-      cbCopyLogs.setEnabled(enable);
+    copyButton.setEnabled(enable);
+    cbCopyConfig.setEnabled(enable);
+    cbCopyLib.setEnabled(enable);
+    cbCopyExe.setEnabled(enable);
+    cbCopyLogs.setEnabled(enable);
 
-      cbRestartNaoth.setEnabled(enable);
-      cbRebootSystem.setEnabled(enable);
-      if(config.debugVersion)
-      {
-        cbNoBackup.setEnabled(enable);
-      }
-      
-      if(jBackupBox.getItemCount() > 1 || !enable)
-      {
-        jBackupBox.setEnabled(enable);
-      }
+    cbRestartNaoth.setEnabled(enable);
+    cbRebootSystem.setEnabled(enable);
+    if(config.debugVersion)
+    {
+      cbNoBackup.setEnabled(enable);
+    }
 
-      jColorBox.setEnabled(enable);
-      jCommentTextArea.setEnabled(enable);
-      jDirChooser.setEnabled(enable);
-      jSchemeBox.setEnabled(enable);
+    if(jBackupBox.getItemCount() > 1 || !enable)
+    {
+      jBackupBox.setEnabled(enable);
+    }
 
-      lblTeamCommLAN.setEnabled(enable);
-      lblTeamCommWLAN.setEnabled(enable);
-      jTeamCommPort.setEnabled(enable);
-      jTeamNumber.setEnabled(enable);
+    jColorBox.setEnabled(enable);
+    jCommentTextArea.setEnabled(enable);
+    jDirChooser.setEnabled(enable);
+    jSchemeBox.setEnabled(enable);
 
-      naoByte1.setEnabled(enable);
-      naoByte2.setEnabled(enable);
-      naoByte3.setEnabled(enable);
-      naoByte4.setEnabled(enable);
+    lblTeamCommLAN.setEnabled(enable);
+    lblTeamCommWLAN.setEnabled(enable);
+    jTeamCommPort.setEnabled(enable);
+    jTeamNumber.setEnabled(enable);
 
-      sshUser.setEnabled(enable);
-      sshRootUser.setEnabled(enable);
-      sshPassword.setEnabled(enable);
-      sshRootPassword.setEnabled(enable);
+    naoByte1.setEnabled(enable);
+    naoByte2.setEnabled(enable);
+    naoByte3.setEnabled(enable);
+    naoByte4.setEnabled(enable);
 
-      subnetFieldLAN.setEnabled(enable);
-      netmaskFieldLAN.setEnabled(enable);
-      broadcastFieldLAN.setEnabled(enable);
+    sshUser.setEnabled(enable);
+    sshRootUser.setEnabled(enable);
+    sshPassword.setEnabled(enable);
+    sshRootPassword.setEnabled(enable);
 
-      subnetFieldWLAN.setEnabled(enable);
-      netmaskFieldWLAN.setEnabled(enable);
-      broadcastFieldWLAN.setEnabled(enable);
+    subnetFieldLAN.setEnabled(enable);
+    netmaskFieldLAN.setEnabled(enable);
+    broadcastFieldLAN.setEnabled(enable);
 
-      jButtonRefreshData.setEnabled(enable);
-      jButtonSaveNetworkConfig.setEnabled(enable);
-      jButtonInitRobotSystem.setEnabled(enable);
-      jButtonSetRobotNetwork.setEnabled(enable);
+    subnetFieldWLAN.setEnabled(enable);
+    netmaskFieldWLAN.setEnabled(enable);
+    broadcastFieldWLAN.setEnabled(enable);
+
+    jButtonRefreshData.setEnabled(enable);
+    jButtonSaveNetworkConfig.setEnabled(enable);
+    jButtonInitRobotSystem.setEnabled(enable);
+    jButtonSetRobotNetwork.setEnabled(enable);
   }
 
 

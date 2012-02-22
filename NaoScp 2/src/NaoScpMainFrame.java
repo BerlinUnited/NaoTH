@@ -338,11 +338,22 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
             {
               public void run()
               {
-                remoteScriptRunner sLan = new remoteScriptRunner(config, config.Ip, "0", config.sNaoByte, "restartNaoTH", false);
-                sLan.execute();
+                remoteScriptRunner sLan = new remoteScriptRunner(config, config.Ip, config.sNaoNo, config.sNaoByte, "restartNaoTH", false);
+                if(sLan.testConnection())
+                {
+                  sLan.execute();
+                }
+                else
+                {
+                  actionDone("script");
+                }
               }
             }
           );
+        }
+        else
+        {
+          action = "all";
         }
       }
       actionDone(action);

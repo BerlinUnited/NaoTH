@@ -106,6 +106,16 @@ abstract class sshScriptRunner extends sshWorker
    */
   protected boolean restartNaoTH()
   {
+//    setInfo("initialization setup network part");
+//    try
+//    {
+//      return runSetupShellScriptAsRoot(config.homePath(), "init_net.sh");
+//    }
+//    catch(Exception e)
+//    {
+//      haveError("Exception in setRobotNetworkConfig - Nao " + config.sNaoNo + ": " + e.toString());
+//      return false;
+//    }
     try
     {
       if(openChannel("exec"))
@@ -115,7 +125,7 @@ abstract class sshScriptRunner extends sshWorker
 
         setInfo("waiting");
 
-        Thread.sleep(5000);
+//        Thread.sleep(5000);
 
         setInfo("restarting naoth cognition process");
         ((ChannelExec) channel).setCommand("/etc/init.d/naoth stop");
@@ -209,8 +219,18 @@ abstract class sshScriptRunner extends sshWorker
 //    infos += o.replaceAll("[\\W\\S\\D]+", o);
     return lastFound;
   }
-
-  private boolean runSetupShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
+//  private boolean runShellScript(String directory, String shellScript) throws JSchException, InterruptedException, IOException
+//  {
+//    String rootPW;
+//    rootPW = config.sshRootPassword;
+//
+//    setInfo("trying to execute shellscript '" + shellScript + "'");
+//
+//    if(openChannel("shell"))
+//    {
+//    }
+//  }
+  private boolean runShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
   {
     String rootPW;
     rootPW = config.sshRootPassword;
@@ -299,7 +319,7 @@ abstract class sshScriptRunner extends sshWorker
     setInfo("initialization setup network part");
     try
     {
-      return runSetupShellScriptAsRoot(config.setupScriptPath(), "init_net.sh");
+      return runShellScriptAsRoot(config.setupScriptPath(), "init_net.sh");
     }
     catch(Exception e)
     {
@@ -319,7 +339,7 @@ abstract class sshScriptRunner extends sshWorker
     setInfo("initialization setup network part");
     try
     {
-      return runSetupShellScriptAsRoot(config.setupScriptPath(), "init_env.sh");
+      return runShellScriptAsRoot(config.setupScriptPath(), "init_env.sh");
     }
     catch(Exception e)
     {
