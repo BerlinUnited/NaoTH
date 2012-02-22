@@ -64,38 +64,7 @@ abstract class sshCopier extends sshWorker
   protected void backupNao()
   {
     String exceptionHelper = "during backup init";
-    
-//    boolean copyConfig;
-//    boolean copyLib;
-//    boolean copyExe;
-//    boolean copyLogs;
-//    boolean backupIsSelected;
-    
-//    String localDeployRootPath;
-//    String localDeployInPath;
-//    String remoteLibPath;
-//    String remoteBinPath;
-//    String remoteConfigPath;
-//    String remoteRootPath;
-//
-//    String selectedBackup = "";
-//
-//    copyConfig = config.copyConfig;
-//    copyLib = config.copyLib;
-//    copyExe = config.copyExe;
-//    copyLogs = config.copyLogs;
-//
-//    backupIsSelected = parent.jBackupBox.getSelectedIndex() != 0;
 
-//    localDeployRootPath = parent.localDeployRootPath();
-//    localDeployInPath = parent.localDeployInPath(sNaoNo, sNaoByte);
-//    remoteLibPath = parent.remoteRootPath(sNaoNo) + parent.libnaoPath() + "/";
-//    remoteBinPath = parent.remoteRootPath(sNaoNo) + parent.binPath() + "/";
-//    remoteConfigPath = parent.remoteRootPath(sNaoNo) + parent.configPath();
-//    remoteRootPath = parent.remoteRootPath(sNaoNo);
-
-    // copy a backup
-    
     setInfo("Starting Backup Session for Nao " + config.sNaoNo);
     if(config.backupIsSelected)
     {
@@ -166,7 +135,7 @@ abstract class sshCopier extends sshWorker
 
         try
         {
-          if(config.copyLib)
+          if(config.copyLib || config.copyExe)
           {
             setInfo("get comment.cfg");
             c.get
@@ -240,12 +209,6 @@ abstract class sshCopier extends sshWorker
 
   protected void minimalBackupNao()
   {
-//    String localDeployInPath;
-//    String remoteConfigPath;
-//
-//    localDeployInPath = parent.localDeployInPath(sNaoNo, sNaoByte);
-//    remoteConfigPath = parent.remoteRootPath(sNaoNo) + parent.configPath();
-      
     String exceptionHelper = "during backup init";
     setInfo("Starting minimal Backup Session for Nao " + String.valueOf(config.sNaoNo));
     try
@@ -279,36 +242,6 @@ abstract class sshCopier extends sshWorker
    */
   protected boolean writeNao()
   {
-//    String localLibPath;
-//    String remoteLibPath;
-//    String localBinPath;
-//    String remoteBinPath;
-//    String localConfigPath;
-//    String remoteConfigPath;
-//    String localDeployRootPath;
-//
-//    boolean copyConfig;
-//    boolean copyLib;
-//    boolean copyExe;
-//
-//    boolean backupIsSelected;
-//    String selectedBackup = "";
-//    Object boxSelected = "";
-
-//    localLibPath = parent.localDeployOutPath(sNaoNo) + parent.libnaoPath() + "/";
-//    remoteLibPath = parent.remoteRootPath(sNaoNo) + parent.libnaoPath() + "/";
-//    localBinPath = parent.localDeployOutPath(sNaoNo) + parent.binPath() + "/";
-//    remoteBinPath = parent.remoteRootPath(sNaoNo) + parent.binPath() + "/";
-//    localConfigPath = parent.localDeployOutPath(sNaoNo) + parent.configPath();
-//    remoteConfigPath = parent.remoteRootPath(sNaoNo) + parent.configPath();
-//    localDeployRootPath = parent.localDeployRootPath();
-//
-//    copyConfig = parent.copyConfig;
-//    copyLib = parent.copyLib;
-//    copyExe = parent.copyExe;
-
-//    backupIsSelected = !parent.jBackupBox.getSelectedItem().equals(parent.jBackupBox.getItemAt(0));
-
     setInfo("initialization writing part");
     try
     {        

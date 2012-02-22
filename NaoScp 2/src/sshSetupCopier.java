@@ -27,7 +27,6 @@ abstract class sshSetupCopier extends sshCopier
     result = result && writeNaoSetupFiles(session, config.sNaoNo);
     if(result && mode.equals("full"))
     {
-//      Thread.sleep(500);
       result = result && super.exec();
     }
     return result;
@@ -66,20 +65,6 @@ abstract class sshSetupCopier extends sshCopier
   protected boolean writeNaoSetupFiles(Session session, String sNaoNo)
   {
 
-//    String localSetupScriptPath;
-//    String remoteSetupScriptPath;
-//    String homePath;
-//
-//    boolean copySysLibs;
-//
-//    String stagingLibDir;
-//
-//    localSetupScriptPath = parent.localDeployOutPath(sNaoNo) + parent.setupScriptPath();
-//    remoteSetupScriptPath = parent.remoteRootPath(sNaoNo) + parent.setupScriptPath();
-//    homePath = parent.homePath();
-//    copySysLibs = parent.copySysLibs;
-//    stagingLibDir = parent.stagingLibDir;
-            
     try
     {
       if(openChannel("sftp"))
@@ -103,7 +88,7 @@ abstract class sshSetupCopier extends sshCopier
           recursiveSftpPut(localSysLibsFiles, remoteSysLibsDst);
         }
       }
-      disconnectChannel();//      channel.disconnect();
+      disconnectChannel();
     }
     catch(Exception e)
     {

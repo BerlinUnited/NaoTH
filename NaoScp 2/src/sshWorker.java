@@ -21,9 +21,6 @@ import sun.applet.Main;
  */
 abstract class sshWorker extends SwingWorker<Boolean, File>
 {
-//  protected String Ip;
-//  protected String sNaoNo;
-//  protected String sNaoByte;
   naoScpConfig config;
 
   protected Session session;
@@ -166,7 +163,6 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     if(channel == null || !channel.isConnected())
     {
       channel = session.openChannel(type);
-//      channel.connect();
     }
     return !channel.isClosed();
   }
@@ -285,7 +281,6 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
           }
         }
       }
-//      Thread.sleep(50);
     }
     catch(Exception e)
     {
@@ -338,7 +333,6 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
           }
         }
       }
-//      Thread.sleep(50);
     }
     catch(Exception e)
     {
@@ -364,7 +358,6 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
       {
         remote = remote.substring(0, remote.length() - 1);
       }
-//      File target = new File(local);
       Pattern p = Pattern.compile(pattern);
       Vector v = c.ls(remote);
       if(v != null)
@@ -396,7 +389,6 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
           }
         }
       }
-//      Thread.sleep(50);
     }
     catch(Exception e)
     {
@@ -499,7 +491,6 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
       {
         setInfo("remote directory does not exist and could not be created.");
       }
-//      Thread.sleep(50);
     }
     catch(Exception e)
     {

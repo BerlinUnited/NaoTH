@@ -106,16 +106,6 @@ abstract class sshScriptRunner extends sshWorker
    */
   protected boolean restartNaoTH()
   {
-//    setInfo("initialization setup network part");
-//    try
-//    {
-//      return runSetupShellScriptAsRoot(config.homePath(), "init_net.sh");
-//    }
-//    catch(Exception e)
-//    {
-//      haveError("Exception in setRobotNetworkConfig - Nao " + config.sNaoNo + ": " + e.toString());
-//      return false;
-//    }
     try
     {
       if(openChannel("exec"))
@@ -219,17 +209,7 @@ abstract class sshScriptRunner extends sshWorker
 //    infos += o.replaceAll("[\\W\\S\\D]+", o);
     return lastFound;
   }
-//  private boolean runShellScript(String directory, String shellScript) throws JSchException, InterruptedException, IOException
-//  {
-//    String rootPW;
-//    rootPW = config.sshRootPassword;
-//
-//    setInfo("trying to execute shellscript '" + shellScript + "'");
-//
-//    if(openChannel("shell"))
-//    {
-//    }
-//  }
+
   private boolean runShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
   {
     String rootPW;
