@@ -571,8 +571,8 @@ void protobuf_AddDesc_Messages_2eproto() {
     "thmessages.SingleDescriptor\022\024\n\014objectHei"
     "ght\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003"
     "(\0132\033.naothmessages.FeatureClass\022#\n\027numbe"
-    "rOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.hu_be"
-    "rlin.informatik.ki.nao.messages", 2631);
+    "rOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.naoth"
+    ".rc.messages", 2612);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   CMDArg::default_instance_ = new CMDArg();

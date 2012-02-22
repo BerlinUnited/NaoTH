@@ -703,8 +703,8 @@ void protobuf_AddDesc_Representations_2eproto() {
     "StepControlStatus\"3\n\014OdometryData\022#\n\004pos"
     "e\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017Calibr"
     "ationData\022:\n\024inertialSensorOffset\030\001 \001(\0132"
-    "\034.naothmessages.DoubleVector2B)\n\'de.hu_b"
-    "erlin.informatik.ki.nao.messages", 3592);
+    "\034.naothmessages.DoubleVector2B\026\n\024de.naot"
+    "h.rc.messages", 3573);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();

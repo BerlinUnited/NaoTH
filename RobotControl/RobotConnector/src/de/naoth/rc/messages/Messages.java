@@ -238,7 +238,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_CMDArg_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.CMDArg.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.CMDArg.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -704,7 +704,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_CMD_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.CMD.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.CMD.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1337,7 +1337,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_PlayerModel_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.PlayerModel.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.PlayerModel.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2082,7 +2082,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_TeamCommMessage_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.TeamCommMessage.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.TeamCommMessage.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3109,7 +3109,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_StopwatchItem_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.StopwatchItem.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.StopwatchItem.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3527,7 +3527,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_Stopwatches_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.Stopwatches.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.Stopwatches.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4280,7 +4280,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_PlotItem_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.PlotItem.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.PlotItem.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4847,7 +4847,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_Plots_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.Plots.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.Plots.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5595,7 +5595,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLParameter_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.XABSLParameter.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.XABSLParameter.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6491,7 +6491,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_XABSLAction_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.XABSLAction.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.XABSLAction.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -7757,7 +7757,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_BehaviorStatus_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.BehaviorStatus.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.BehaviorStatus.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -8959,7 +8959,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_Module_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.Module.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.Module.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -9531,7 +9531,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_ModuleList_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.ModuleList.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.ModuleList.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -10214,7 +10214,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_FeatureKeyPoint_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.FeatureKeyPoint.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.FeatureKeyPoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -10979,7 +10979,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_FeatureDetectionResult_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.FeatureDetectionResult.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.FeatureDetectionResult.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11918,7 +11918,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_SingleDescriptor_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.SingleDescriptor.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.SingleDescriptor.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12382,7 +12382,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_FeatureClass_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.FeatureClass.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.FeatureClass.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -13053,7 +13053,7 @@ public final class Messages {
         return de.naoth.rc.messages.Messages.internal_static_naothmessages_FeatureTable_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Messages.FeatureTable.newBuilder()
+      // Construct using de.naoth.rc.messages.Messages.FeatureTable.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -13612,8 +13612,8 @@ public final class Messages {
       "thmessages.SingleDescriptor\022\024\n\014objectHei" +
       "ght\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003" +
       "(\0132\033.naothmessages.FeatureClass\022#\n\027numbe" +
-      "rOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.hu_be" +
-      "rlin.informatik.ki.nao.messages"
+      "rOfFeatureElements\030\002 \001(\005:\00264B\026\n\024de.naoth" +
+      ".rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

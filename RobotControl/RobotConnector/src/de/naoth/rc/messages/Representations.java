@@ -383,7 +383,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_Image_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.Image.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.Image.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1250,7 +1250,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraInfo_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.CameraInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2083,7 +2083,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_JointData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.JointData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2754,7 +2754,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_SensorJointData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.SensorJointData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3418,7 +3418,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_UltraSoundReceiveData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.UltraSoundReceiveData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3963,7 +3963,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraMatrix_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.CameraMatrix.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4421,7 +4421,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_FrameInfo_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.FrameInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4942,7 +4942,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_BallPercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.BallPercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5827,7 +5827,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_GoalPercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.GoalPercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6807,7 +6807,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_HeadMotionRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.HeadMotionRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -8077,7 +8077,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_StepControlRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.StepControlRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -8791,7 +8791,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_WalkRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.WalkRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -9635,7 +9635,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_KickRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.KickRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -10366,7 +10366,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_MotionRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.MotionRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11237,7 +11237,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_LinePercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.LinePercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12241,7 +12241,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_ScanLineEndPoint_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.ScanLineEndPoint.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.ScanLineEndPoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12903,7 +12903,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_ScanLineEdgelPercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.ScanLineEdgelPercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.ScanLineEdgelPercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -13508,7 +13508,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_FSRData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.FSRData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -14067,7 +14067,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_StepControlStatus_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.StepControlStatus.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -14690,7 +14690,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_MotionStatus_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.MotionStatus.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -15698,7 +15698,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_OdometryData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.OdometryData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.OdometryData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -16136,7 +16136,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_CalibrationData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.CalibrationData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -16587,8 +16587,8 @@ public final class Representations {
       "StepControlStatus\"3\n\014OdometryData\022#\n\004pos" +
       "e\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017Calibr" +
       "ationData\022:\n\024inertialSensorOffset\030\001 \001(\0132" +
-      "\034.naothmessages.DoubleVector2B)\n\'de.hu_b" +
-      "erlin.informatik.ki.nao.messages"
+      "\034.naothmessages.DoubleVector2B\026\n\024de.naot" +
+      "h.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

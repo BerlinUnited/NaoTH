@@ -517,7 +517,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_FloatVector2_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FloatVector2.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.FloatVector2.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -928,7 +928,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_DoubleVector2_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector2.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1339,7 +1339,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_IntVector2_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.IntVector2.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.IntVector2.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1758,7 +1758,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_Pose2D_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose2D.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.Pose2D.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2281,7 +2281,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_DoubleVector3_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector3.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2707,7 +2707,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_DoubleVector_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.DoubleVector.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.DoubleVector.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3141,7 +3141,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_Pose3D_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Pose3D.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.Pose3D.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4011,7 +4011,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_GoalPost_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.GoalPost.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.GoalPost.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4790,7 +4790,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_LineSegment_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.LineSegment.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.LineSegment.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5556,7 +5556,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_FieldLineSegment_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.FieldLineSegment.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.FieldLineSegment.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6548,7 +6548,7 @@ public final class CommonTypes {
         return de.naoth.rc.messages.CommonTypes.internal_static_naothmessages_Intersection_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.CommonTypes.Intersection.newBuilder()
+      // Construct using de.naoth.rc.messages.CommonTypes.Intersection.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -7212,8 +7212,7 @@ public final class CommonTypes {
       "tch\020\r\022\014\n\010RHipRoll\020\016\022\014\n\010LHipRoll\020\017\022\016\n\nRKn" +
       "eePitch\020\020\022\016\n\nLKneePitch\020\021\022\017\n\013RAnklePitch" +
       "\020\022\022\017\n\013LAnklePitch\020\023\022\016\n\nRAnkleRoll\020\024\022\016\n\nL" +
-      "AnkleRoll\020\025B)\n\'de.hu_berlin.informatik.k",
-      "i.nao.messages"
+      "AnkleRoll\020\025B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
