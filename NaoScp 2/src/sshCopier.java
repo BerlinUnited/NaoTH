@@ -383,7 +383,11 @@ abstract class sshCopier extends sshWorker
               throw ex;
             }
           }//end try
+          recursiveSftpPut(new File(localLibPath + "libnaoth.so"), config.remoteLibPath() + "libnaoth.so");
+        }
 
+        if(config.copyLib || config.copyExe)
+        {
           try
           {
             c.rm(config.remoteLibPath() + "comment.cfg");
@@ -396,7 +400,7 @@ abstract class sshCopier extends sshWorker
               throw ex;
             }
           }//end try
-          recursiveSftpPut(new File(localLibPath + "libnaoth.so"), config.remoteLibPath() + "libnaoth.so");
+          recursiveSftpPut(new File(localLibPath + "comment.cfg"), config.remoteLibPath() + "comment.cfg");
         }
 
         if(config.copyExe)
