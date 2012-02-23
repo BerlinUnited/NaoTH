@@ -70,7 +70,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     blue += pixel.v;
     
     // classify the color
-    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);//simpleColorClassifier.getColorClass(pixel);// = getColorClassificationModel().getColorClass(pixel);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel.a, pixel.b, pixel.c);
     
     getColoredGrid().setColor(i, currentPixelColor);
 

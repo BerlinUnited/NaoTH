@@ -91,7 +91,7 @@ void BlobFinder::execute(Container<Blob>& result,
         
         // (pixelIndex)
         //get the GRID coordinates of pixel
-        Vector2<int> pixel = coloredGrid.getColorPoint(pixelIndex);//.uniformGrid.gridCoordinates[pixelIndex];
+        const Vector2<int>& pixel = coloredGrid.getColorPoint(pixelIndex);//.uniformGrid.gridCoordinates[pixelIndex];
 
         //check if the pixel wasn't treated allready and is of a relevant color
         if(visitedPixels(pixel.x, pixel.y) ||
@@ -99,7 +99,7 @@ void BlobFinder::execute(Container<Blob>& result,
 
         // (pixelIndex)
         //get the coordinates of pixel in the real image (as opposed to grid coordinates)
-        Vector2<int> pixelInImage = coloredGrid.getImagePoint(pixelIndex);//uniformGrid.pointsCoordinates[pixelIndex];
+        const Vector2<int>& pixelInImage = coloredGrid.getImagePoint(pixelIndex);//uniformGrid.pointsCoordinates[pixelIndex];
 
         //check if the pixel is inside the searchArea
         //TODO: give the Area in image coordinates

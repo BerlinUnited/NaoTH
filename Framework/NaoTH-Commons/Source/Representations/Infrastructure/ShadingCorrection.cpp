@@ -40,15 +40,6 @@ void ShadingCorrection::clear()
   }
 }//end destructor
 
-unsigned int ShadingCorrection::getY(unsigned int x, unsigned int y) const
-{
-  //if not initialized or invalid pixel, return default value
-  if(x > width || y > height || yC == NULL )
-  {
-    return 1024;
-  }
-  return yC[y * width + x];
-}//end getY
 
 bool ShadingCorrection::loadCorrectionFromFile(string camConfigPath, string hardwareID )
 {

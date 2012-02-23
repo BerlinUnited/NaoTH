@@ -91,60 +91,61 @@ public:
   //ColorClasses::Color classifiedImage[NX][NY];
   //ColorClasses classifiedImageIndex[NX][NY];
 
-
+//private:
   // index structure for faster access to points of special color in the grid
   unsigned int* colorPointsIndex[ColorClasses::numOfColors];
   unsigned int numberOfColorPoints[ColorClasses::numOfColors];
   double colorPointsRate[ColorClasses::numOfColors];
 
-  const Vector2<int>& getColorPoint(const int& pointIndex) const
+public:
+  inline const Vector2<int>& getColorPoint(const int& pointIndex) const
   {
     return uniformGrid.getGridCoordinates(pointIndex);
     //return uniformGrid.gridCoordinates[pointIndex];
   }
 
-  const Vector2<int>& getColorPoint(const ColorClasses::Color& color, const int& index) const
+  inline const Vector2<int>& getColorPoint(const ColorClasses::Color& color, const int& index) const
   {
     return uniformGrid.getGridCoordinates(colorPointsIndex[color][index]);
     //return uniformGrid.gridCoordinates[colorPointsIndex[color][index]];
   }
 
-  const Vector2<int>& getImagePoint(const ColorClasses::Color& color, const int& index) const
+  inline const Vector2<int>& getImagePoint(const ColorClasses::Color& color, const int& index) const
   {
     return uniformGrid.getPoint(colorPointsIndex[color][index]);
     //return uniformGrid.pointsCoordinates[colorPointsIndex[color][index]];
   }
 
-  const Vector2<int>& getImagePoint(const int& pointIndex) const
+  inline const Vector2<int>& getImagePoint(const int& pointIndex) const
   {
     return uniformGrid.getPoint(pointIndex);
     //return uniformGrid.pointsCoordinates[pointIndex];
   }
 
-  int getScaledImageIndex(const Vector2<int>& point) const
+  inline int getScaledImageIndex(const Vector2<int>& point) const
   {
-    ASSERT(point.x >= 0);
-    ASSERT(point.y >= 0);
-    ASSERT(point.x < (int) uniformGrid.width);
-    ASSERT(point.y < (int) uniformGrid.height);
+    ASSERT(point.x >= 0 &&
+           point.y >= 0 &&
+           point.x < (int) uniformGrid.width &&
+           point.y < (int) uniformGrid.height);
     return uniformGrid.getScaledImageIndex(point.x, point.y);
   }
 
-  int getScaledImageIndex(const int& x, const int& y) const
+  inline int getScaledImageIndex(const int& x, const int& y) const
   {
-    ASSERT(x >= 0);
-    ASSERT(y >= 0);
-    ASSERT(x < (int) uniformGrid.width);
-    ASSERT(y < (int) uniformGrid.height);
+    ASSERT(x >= 0 &&
+           y >= 0 &&
+           x < (int) uniformGrid.width &&
+           y < (int) uniformGrid.height);
     return uniformGrid.getScaledImageIndex(x, y);
   }
 
-  const Vector2<int>& getImagePoint(const Vector2<int>& colorPoint) const
+  inline const Vector2<int>& getImagePoint(const Vector2<int>& colorPoint) const
   {
-    ASSERT(colorPoint.x >= 0);
-    ASSERT(colorPoint.y >= 0);
-    ASSERT(colorPoint.x < (int) uniformGrid.width);
-    ASSERT(colorPoint.y < (int) uniformGrid.height);
+    ASSERT(colorPoint.x >= 0 &&
+           colorPoint.y >= 0 &&
+           colorPoint.x < (int) uniformGrid.width &&
+           colorPoint.y < (int) uniformGrid.height);
     //return uniformGrid.pointsCoordinates[getScaledImageIndex(colorPoint)]; 
     return uniformGrid.getPoint(getScaledImageIndex(colorPoint));
   }
@@ -174,13 +175,12 @@ public:
 
   inline void setColor(const unsigned int& i, const ColorClasses::Color& color)
   {
-    if(i < uniformGrid.numberOfGridPoints && numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints)
-    {
-      pointsColors[i] = color;
-      colorPointsRate[color] += singlePointRate;
-      colorPointsIndex[color][numberOfColorPoints[color]] = i;
-      numberOfColorPoints[color]++;
-    }//end if
+    ASSERT(i < uniformGrid.numberOfGridPoints && numberOfColorPoints[color] < uniformGrid.maxNumberOfPoints);
+
+    pointsColors[i] = color;
+    colorPointsRate[color] += singlePointRate;
+    colorPointsIndex[color][numberOfColorPoints[color]] = i;
+    numberOfColorPoints[color]++;
   }//end setColor
 
 
@@ -192,6 +192,7 @@ public:
       numberOfColorPoints[i] = 0;
       colorPointsRate[i] = 0.0;
     }//end for
+
     percentOfUnknownColors = 0;
     percentOfKnownColors = 0;
     meanBrightness = 127.0;

@@ -52,7 +52,7 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
 
   for(int i = 0; i < percept_msg.endpoints_size(); i++)
   {
-    ScanLineEdgelPercept::EndPoint& point = representation.endPoints[i];
+    ScanLineEdgelPercept::EndPoint point;
     const naothmessages::ScanLineEndPoint& point_msg = percept_msg.endpoints(i);
 
     // posInImage
@@ -69,5 +69,7 @@ void Serializer<ScanLineEdgelPercept>::deserialize(std::istream& stream, ScanLin
 
     // ScanLineID
     point.ScanLineID = point_msg.scanlineid();
+
+    representation.endPoints.push_back(point);
   }//end for
 }//end deserialize
