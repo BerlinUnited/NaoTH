@@ -235,6 +235,8 @@ public class BehaviorViewer extends AbstractDialog
     Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
     //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
 
+    this.frameList.addListSelectionListener(behaviorFrameListener);
+    
     JOptionPane.showMessageDialog(null,
       cause, "Error", JOptionPane.ERROR_MESSAGE);
   }//end errorOccured
