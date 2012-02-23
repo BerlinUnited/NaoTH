@@ -52,35 +52,6 @@ BEGIN_DECLARE_MODULE(BallDetector)
 END_DECLARE_MODULE(BallDetector)
 
 
-class SimpleColorClassifier: public ColorClassifier
-{
-public:
-
-  SimpleColorClassifier() {}
-
-  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
-  {
-    return get(a, b, c);
-  }
-
-  inline ColorClasses::Color getColorClass(const Pixel& p) const
-  {
-    return get(p.a, p.b, p.c);
-  }
-
-  inline ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
-  {
-    double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
-    unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
-
-    if(t > 120)
-      return ColorClasses::orange;
-    else
-      return ColorClasses::none;
-  }//end get
-};
-
-
 class BallDetector: private BallDetectorBase
 {
 public:
@@ -105,9 +76,8 @@ private:
 
   double calculateBase(Vector2<int>& x, Vector2<int>& y, Vector2<int>& z);
 
-  const SimpleColorClassifier simpleColorClassifier;
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

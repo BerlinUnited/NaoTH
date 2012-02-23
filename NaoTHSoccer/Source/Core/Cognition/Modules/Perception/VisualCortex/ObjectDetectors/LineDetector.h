@@ -94,7 +94,7 @@ private:
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

@@ -11,21 +11,17 @@
 #include <sstream>
 
 
-#include "ColoredGrid.h"
-
 //Tools
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/ColorClasses.h"
 #include "Tools/Math/Vector2.h"
+#include "Tools/ImageProcessing/ColorModelConversions.h"
+#include "Tools/ImageProcessing/ImagePrimitives.h"
+#include "Tools/DataStructures/Printable.h"
 
 //Representations
-#include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/ColorTable64.h"
-#include "Representations/Perception/BaseColorRegionPercept.h"
+#include "ColoredGrid.h"
 
-#include "Tools/ImageProcessing/ColorModelConversions.h"
-#include "Tools/DataStructures/Printable.h"
 
 #define COLOR_CHANNEL_VALUE_COUNT 256
 
@@ -38,13 +34,56 @@ class Histogram: public naoth::Printable
     void init();
     void execute();
 
-    void increaseValue(const int& x, const int& y, const ColorClasses::Color& color);
-    void increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color);
+    inline void increaseValue(const int& x, const int& y, const ColorClasses::Color& color)
+    {
+      xHistogram[color][y]++;
+      yHistogram[color][x]++;
+    }//end increaseValue
+
+    inline void increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color)
+    {
+      const Vector2<int>& pixel = grid.getGridCoordinates(pixelIndex);
+      xHistogram[color][pixel.y]++;
+      yHistogram[color][pixel.x]++;
+    }//end increaseValue
+
+    inline void increaseChannelValue(const Pixel& pixel, const ColorClasses::Color& color)
+    {
+      // calculate only once
+      //static unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
+
+      switch(color)
+      {
+        case ColorClasses::orange:
+        case ColorClasses::red:
+          colorChannelHistogramBall[0][pixel.y]++;
+          colorChannelHistogramBall[1][pixel.u]++;
+          colorChannelHistogramBall[2][pixel.v]++;
+          break;
+        case ColorClasses::yellow:
+          colorChannelHistogramGoal[0][pixel.y]++;
+          colorChannelHistogramGoal[1][pixel.u]++;
+          colorChannelHistogramGoal[2][pixel.v]++;
+          break;
+        case ColorClasses::green:
+          colorChannelHistogramField[0][pixel.y]++;
+          colorChannelHistogramField[1][pixel.u]++;
+          colorChannelHistogramField[2][pixel.v]++;
+          break;
+        case ColorClasses::white:
+        case ColorClasses::gray:
+          colorChannelHistogramLine[0][pixel.y]++;
+          colorChannelHistogramLine[1][pixel.u]++;
+          colorChannelHistogramLine[2][pixel.v]++;
+          break;
+        default: break;
+      }//end switch
+
+      colorChannelIsUptodate  = true;
+    }//end increaseChannelValue
+
+
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
-
-    void increaseChannelValue(const BaseColorRegionPercept& bwPercept, const Pixel& pixel);
-
-
     void showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const;
     virtual void print(ostream& stream) const;
 
@@ -52,6 +91,7 @@ class Histogram: public naoth::Printable
     // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
     unsigned int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
     unsigned int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
+
     unsigned int colorChannelHistogramField[3][COLOR_CHANNEL_VALUE_COUNT];
     unsigned int colorChannelHistogramLine[3][COLOR_CHANNEL_VALUE_COUNT];
     unsigned int colorChannelHistogramGoal[3][COLOR_CHANNEL_VALUE_COUNT];

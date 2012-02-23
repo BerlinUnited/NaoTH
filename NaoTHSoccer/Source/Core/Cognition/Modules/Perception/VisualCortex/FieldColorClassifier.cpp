@@ -49,23 +49,23 @@ void FieldColorClassifier::execute()
   unsigned int distCb = (unsigned int)getFieldColorPercept().distCb;
   unsigned int distCr = (unsigned int)getFieldColorPercept().distCr;
 
-  unsigned int maxDistY = fieldParams.fieldcolorDistMax.y;
-  unsigned int maxDistCb = fieldParams.fieldcolorDistMax.u;
-  unsigned int maxDistCr = fieldParams.fieldcolorDistMax.v;
+  unsigned int maxDistY = (unsigned int)fieldParams.fieldcolorDistMax.y;
+  unsigned int maxDistCb = (unsigned int)fieldParams.fieldcolorDistMax.u;
+  unsigned int maxDistCr = (unsigned int)fieldParams.fieldcolorDistMax.v;
 
   unsigned int idx;
 
   double modifyDist = maxDistY;
   MODIFY("FieldColorClassifier:maxDistY", modifyDist);
-  maxDistY = (unsigned int) modifyDist * getBaseColorRegionPercept().meanEnv.y / 128;
+  maxDistY = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanEnv.y / 128);
 
   modifyDist = maxDistCb;
   MODIFY("FieldColorClassifier:maxDistCb", modifyDist);
-  maxDistCb = (unsigned int) modifyDist * getBaseColorRegionPercept().meanEnv.y / 128;
+  maxDistCb = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanEnv.y / 128);
 
   modifyDist = maxDistCr;
   MODIFY("FieldColorClassifier:maxDistCr", modifyDist);
-  maxDistCr = (unsigned int) modifyDist * getBaseColorRegionPercept().meanEnv.y / 128;
+  maxDistCr = (unsigned int) (modifyDist * getBaseColorRegionPercept().meanEnv.y / 128);
 
   double maxWeightedY = 0.5 * getFieldColorPercept().maxWeightedY;
   unsigned int maxWeightedIndexY = getFieldColorPercept().maxWeightedIndexY;// * getBaseColorRegionPercept().meanImage.y / 128;;
@@ -273,33 +273,33 @@ void FieldColorClassifier::execute()
 //  distY = (unsigned int) (distY * fY) + fieldParams.fieldColorMin.y;
   if(distY < fieldParams.fieldColorMin.y)
   {
-    distY = fieldParams.fieldColorMin.y;
+    distY = (unsigned int)fieldParams.fieldColorMin.y;
   }
   if(distY > maxDistY)
   {
-    distY = maxDistY;
+    distY = (unsigned int)maxDistY;
   }
 
 //  double fCb = log((double) maxWeightedCb) / log(2.0) * 0.1;
 //  distCb += (unsigned int) (distCb * fCb);
   if(distCb < fieldParams.fieldColorMin.u)
   {
-    distCb = fieldParams.fieldColorMin.u;
+    distCb = (unsigned int)fieldParams.fieldColorMin.u;
   }
   if(distCb > maxDistCb)
   {
-    distCb = maxDistCb;
+    distCb = (unsigned int)maxDistCb;
   }
 
 //  double fCr = log((double) maxWeightedCr) / log(2.0) * 0.1;
 //  distCr += (unsigned int) (distCr * fCr);
   if(distCr < fieldParams.fieldColorMin.v)
   {
-    distCr = fieldParams.fieldColorMin.v;
+    distCr = (unsigned int)fieldParams.fieldColorMin.v;
   }
   if(distCr > maxDistCr)
   {
-    distCr = maxDistCr;
+    distCr = (unsigned int)maxDistCr;
   }
 
   getFieldColorPercept().distY = distY;

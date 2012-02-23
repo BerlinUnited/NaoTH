@@ -135,7 +135,7 @@ private:
   };//end class Blob
 
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

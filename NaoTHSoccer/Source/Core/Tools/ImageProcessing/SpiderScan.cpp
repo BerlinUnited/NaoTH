@@ -11,7 +11,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassificationModel& theColorClassifier)
 :
 theImage(theImage),
 theColorClassifier(theColorClassifier)
@@ -21,7 +21,7 @@ theColorClassifier(theColorClassifier)
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, ColorClasses::Color searchColor)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassificationModel& theColorClassifier, ColorClasses::Color searchColor)
 :
 theImage(theImage),
 theColorClassifier(theColorClassifier)
@@ -31,7 +31,7 @@ theColorClassifier(theColorClassifier)
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, vector<ColorClasses::Color>& searchColors)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassificationModel& theColorClassifier, vector<ColorClasses::Color>& searchColors)
 :
 theImage(theImage),
 theColorClassifier(theColorClassifier),
@@ -41,7 +41,7 @@ searchColors(searchColors)
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, ColorClasses::Color searchColor, ColorClasses::Color borderColor)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassificationModel& theColorClassifier, ColorClasses::Color searchColor, ColorClasses::Color borderColor)
 :
 theImage(theImage),
 theColorClassifier(theColorClassifier)
@@ -51,7 +51,7 @@ theColorClassifier(theColorClassifier)
   init();
 }
 
-SpiderScan::SpiderScan(const Image& theImage, const ColorClassifier& theColorClassifier, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors)
+SpiderScan::SpiderScan(const Image& theImage, const ColorClassificationModel& theColorClassifier, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors)
 :
 theImage(theImage),
 theColorClassifier(theColorClassifier),

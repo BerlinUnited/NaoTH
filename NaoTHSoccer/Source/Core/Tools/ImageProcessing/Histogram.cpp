@@ -6,7 +6,11 @@
  */
 
 #include "Histogram.h"
+
+// debug
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+
 
 Histogram::Histogram()
 {
@@ -217,52 +221,6 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
 
 }//end showDebugInfos
 
-void Histogram::increaseValue(const int& x, const int& y, const ColorClasses::Color& color)
-{
-    xHistogram[color][y]++;
-    yHistogram[color][x]++;
-}//end increaseValue
-
-void Histogram::increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color)
-{
-    const Vector2<int>& pixel = grid.getGridCoordinates(pixelIndex);
-    xHistogram[color][pixel.y]++;
-    yHistogram[color][pixel.x]++;
-}//end increaseValue
-
-
-void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, const Pixel& pixel)
-{
-
-//  if(bPercept.isRedOrOrangeOrPink(pixel))
-//  {
-//    colorChannelHistogramBall[0][pixel.y]++;
-//    colorChannelHistogramBall[1][pixel.u]++;
-//    colorChannelHistogramBall[2][pixel.v]++;
-//  }
-//  else
-//  if(bPercept.isYellow(pixel))
-//  {
-//    colorChannelHistogramGoal[0][pixel.y]++;
-//    colorChannelHistogramGoal[1][pixel.u]++;
-//    colorChannelHistogramGoal[2][pixel.v]++;
-//  }
-//  else
-  if(bPercept.isGreenOrBlue(pixel))
-  {
-    colorChannelHistogramField[0][pixel.y]++;
-    colorChannelHistogramField[1][pixel.u]++;
-    colorChannelHistogramField[2][pixel.v]++;
-  }
-//  else
-//  if(bPercept.isWhite(pixel))
-//  {
-//    colorChannelHistogramLine[0][pixel.y]++;
-//    colorChannelHistogramLine[1][pixel.u]++;
-//    colorChannelHistogramLine[2][pixel.v]++;
-//  }
-  colorChannelIsUptodate  = true;
-}
 
 inline void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
 {

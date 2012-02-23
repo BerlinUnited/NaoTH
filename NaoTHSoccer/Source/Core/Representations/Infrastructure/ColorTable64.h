@@ -29,7 +29,7 @@ using namespace std;
 * Contains a ColorTable64 which can decode the color for
 * every 4 * 4 * 4 cube in the 255 * 255 * 255 RGB color space.
 */
-class ColorTable64 : public naoth::Printable, public ColorClassifier
+class ColorTable64 : public naoth::Printable
 {
 public:
   /** Constructor */
@@ -40,7 +40,7 @@ public:
 
   virtual ~ColorTable64(){};
 
-  void setColorClass(const ColorClasses::Color& color, const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3)
+  inline void setColorClass(const ColorClasses::Color& color, const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3)
   {
     set( static_cast<unsigned char>(color), channel1, channel2, channel3);
   }
@@ -58,6 +58,14 @@ public:
 
   bool loadFromFile(const std::string& fileName);
 
+
+  inline ColorClasses::Color getColorClass(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
+  {
+    unsigned int idx = ((channel1 & div4) << 10) + ((channel2 & div4) << 4) + (channel3 >> 2);
+    ASSERT(idx < colorTableLength);
+    return static_cast<ColorClasses::Color>(colorClasses[idx]);
+  }//end getColorClass
+
 private:
   static const unsigned int colorTableLength = 64 * 64 * 64;
   // number with last two bits equal zero
@@ -72,13 +80,6 @@ private:
     ASSERT(idx < colorTableLength);
     colorClasses[idx] = color;
   }//end set
-
-  virtual inline ColorClasses::Color get(const unsigned char& channel1, const unsigned char& channel2, const unsigned char& channel3) const
-  {
-    unsigned int idx = ((channel1 & div4) << 10) + ((channel2 & div4) << 4) + (channel3 >> 2);
-    ASSERT(idx < colorTableLength);
-    return static_cast<ColorClasses::Color>(colorClasses[idx]);
-  }//end get
 
   virtual void print(ostream& stream) const
   {
