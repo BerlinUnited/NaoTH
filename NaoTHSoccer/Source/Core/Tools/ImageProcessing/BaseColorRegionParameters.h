@@ -13,8 +13,8 @@
 #define FIELD_DIST_CR 64.0
 
 #define GOAL_IDX_Y 160.0
-#define GOAL_IDX_CB 80.0
-#define GOAL_IDX_CR 135.0
+#define GOAL_IDX_CB 50.0
+#define GOAL_IDX_CR 165.0
 
 #define GOAL_DIST_Y 200.0
 #define GOAL_DIST_CB 20.0

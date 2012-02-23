@@ -52,32 +52,32 @@ class Histogram: public naoth::Printable
       // calculate only once
       //static unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
 
-      switch(color)
-      {
-        case ColorClasses::orange:
-        case ColorClasses::red:
-          colorChannelHistogramBall[0][pixel.y]++;
-          colorChannelHistogramBall[1][pixel.u]++;
-          colorChannelHistogramBall[2][pixel.v]++;
-          break;
-        case ColorClasses::yellow:
-          colorChannelHistogramGoal[0][pixel.y]++;
-          colorChannelHistogramGoal[1][pixel.u]++;
-          colorChannelHistogramGoal[2][pixel.v]++;
-          break;
-        case ColorClasses::green:
+//      switch(color)
+//      {
+//        case ColorClasses::orange:
+//        case ColorClasses::red:
+//          colorChannelHistogramBall[0][pixel.y]++;
+//          colorChannelHistogramBall[1][pixel.u]++;
+//          colorChannelHistogramBall[2][pixel.v]++;
+//          break;
+//        case ColorClasses::yellow:
+//          colorChannelHistogramGoal[0][pixel.y]++;
+//          colorChannelHistogramGoal[1][pixel.u]++;
+//          colorChannelHistogramGoal[2][pixel.v]++;
+//          break;
+//        case ColorClasses::green:
           colorChannelHistogramField[0][pixel.y]++;
           colorChannelHistogramField[1][pixel.u]++;
           colorChannelHistogramField[2][pixel.v]++;
-          break;
-        case ColorClasses::white:
-        case ColorClasses::gray:
-          colorChannelHistogramLine[0][pixel.y]++;
-          colorChannelHistogramLine[1][pixel.u]++;
-          colorChannelHistogramLine[2][pixel.v]++;
-          break;
-        default: break;
-      }//end switch
+//          break;
+//        case ColorClasses::white:
+//        case ColorClasses::gray:
+//          colorChannelHistogramLine[0][pixel.y]++;
+//          colorChannelHistogramLine[1][pixel.u]++;
+//          colorChannelHistogramLine[2][pixel.v]++;
+//          break;
+//        default: break;
+//      }//end switch
 
       colorChannelIsUptodate  = true;
     }//end increaseChannelValue
