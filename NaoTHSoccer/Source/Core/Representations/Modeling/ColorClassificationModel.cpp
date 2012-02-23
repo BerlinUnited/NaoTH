@@ -3,9 +3,7 @@
 ColorClassificationModel::ColorClassificationModel()
 :
   fieldColorPerceptValid(false),
-  fieldColorPercept(fieldDummy),
-  baseColorRegionPerceptValid(false),
-  baseColorRegionPercept(baseDummy)
+  baseColorRegionPerceptValid(false)
 {
 }
 

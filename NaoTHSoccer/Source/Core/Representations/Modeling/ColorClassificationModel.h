@@ -84,12 +84,10 @@ private :
   ColorTable64 colorTable;
 
   bool fieldColorPerceptValid;
-  FieldColorPercept fieldDummy;
-  FieldColorPercept& fieldColorPercept;
+  FieldColorPercept fieldColorPercept;
 
   bool baseColorRegionPerceptValid;
-  BaseColorRegionPercept baseDummy;
-  BaseColorRegionPercept& baseColorRegionPercept;
+  BaseColorRegionPercept baseColorRegionPercept;
 };
 
 #endif // COLORCLASSIFICATIONMODEL_H
