@@ -439,63 +439,70 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
    */
   protected void recursiveSftpPut(File src, String dst)
   {
-    ChannelSftp c = (ChannelSftp) channel;
-    try
+    if(src.exists())
     {
-      if(recursiveSftpCheckPath(src, dst) && src.isDirectory())
+      ChannelSftp c = (ChannelSftp) channel;
+      try
       {
-        File files[] = src.listFiles();
-        Arrays.sort(files);
-        for(int i = 0, n = files.length; i < n; i ++)
+        if(recursiveSftpCheckPath(src, dst) && src.isDirectory())
         {
-          String newdst = dst + "/" + files[i].getName();
-          recursiveSftpPut(files[i], newdst);
+          File files[] = src.listFiles();
+          Arrays.sort(files);
+          for(int i = 0, n = files.length; i < n; i ++)
+          {
+            String newdst = dst + "/" + files[i].getName();
+            recursiveSftpPut(files[i], newdst);
+          }
         }
-      }
-      else if(src.isFile())
-      {
-        setInfo("put " + src.getName());
-        if(recursiveSftpCheckPath(src, dst))
+        else if(src.isFile())
         {
-          try
+          setInfo("put " + src.getName());
+          if(recursiveSftpCheckPath(src, dst))
           {
-            c.rm(dst);
-          }
-          catch(SftpException ex)
-          {
-            // if the file is not there its ok
-            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+            try
             {
-              throw ex;
+              c.rm(dst);
             }
-          }//end try
-          try
-          {
-            c.put(src.getAbsolutePath(), dst);
-          }
-          catch(SftpException ex)
-          {
-            // if the file is not there its ok
-            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+            catch(SftpException ex)
             {
-              throw ex;
+              // if the file is not there its ok
+              if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+              {
+                throw ex;
+              }
+            }//end try
+            try
+            {
+              c.put(src.getAbsolutePath(), dst);
             }
-          }//end try
+            catch(SftpException ex)
+            {
+              // if the file is not there its ok
+              if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+              {
+                throw ex;
+              }
+            }//end try
+          }
+          else
+          {
+            setInfo("remote directory does not exist and could not be created.");
+          }
         }
         else
         {
           setInfo("remote directory does not exist and could not be created.");
-        }              
+        }
       }
-      else
+      catch(Exception e)
       {
-        setInfo("remote directory does not exist and could not be created.");
+        setInfo("Exception in recursiveSftpPut: " + e.toString());
       }
     }
-    catch(Exception e)
+    else
     {
-      setInfo("Exception in recursiveSftpPut: " + e.toString());
-    }   
+      setInfo("possible Error: file or directory '" + src.getName() + "' does not exist or is not accessable!");
+    }
   }
   
   abstract protected void setInfo(final String info);

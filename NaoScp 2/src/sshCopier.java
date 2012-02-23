@@ -319,7 +319,7 @@ abstract class sshCopier extends sshWorker
           recursiveSftpPut(new File(localLibPath + "libnaoth.so"), config.remoteLibPath() + "libnaoth.so");
         }
 
-        if(config.copyLib || config.copyExe)
+        if(config.copyLib)
         {
           try
           {
