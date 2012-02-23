@@ -32,4 +32,26 @@ struct Point {
   unsigned int y;
 };
 
+union DoublePixel
+{
+  struct
+  {
+    /** Brightness */
+    double y;
+    /** U, also known as Cb */
+    double u;
+    /** V, also known as Cr */
+    double v;
+  };
+
+  struct
+  {
+    double a;
+    double b;
+    double c;
+  };
+
+  double channels[3];
+
+};
 #endif

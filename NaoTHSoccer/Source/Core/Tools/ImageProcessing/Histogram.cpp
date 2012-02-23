@@ -233,40 +233,38 @@ void Histogram::increaseValue(const UniformGrid& grid, const int& pixelIndex, co
 
 void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, const Pixel& pixel)
 {
-  unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
 
-
-  if(bPercept.isRedOrOrangeOrPink(pixel))
-  {
-    colorChannelHistogramBall[0][pixel.y / factor]++;
-    colorChannelHistogramBall[1][pixel.u / factor]++;
-    colorChannelHistogramBall[2][pixel.v / factor]++;
-  }
-  else
-  if(bPercept.isYellow(pixel))
-  {
-    colorChannelHistogramGoal[0][pixel.y / factor]++;
-    colorChannelHistogramGoal[1][pixel.u / factor]++;
-    colorChannelHistogramGoal[2][pixel.v / factor]++;
-  }
-  else
+//  if(bPercept.isRedOrOrangeOrPink(pixel))
+//  {
+//    colorChannelHistogramBall[0][pixel.y]++;
+//    colorChannelHistogramBall[1][pixel.u]++;
+//    colorChannelHistogramBall[2][pixel.v]++;
+//  }
+//  else
+//  if(bPercept.isYellow(pixel))
+//  {
+//    colorChannelHistogramGoal[0][pixel.y]++;
+//    colorChannelHistogramGoal[1][pixel.u]++;
+//    colorChannelHistogramGoal[2][pixel.v]++;
+//  }
+//  else
   if(bPercept.isGreenOrBlue(pixel))
   {
-    colorChannelHistogramField[0][pixel.y / factor]++;
-    colorChannelHistogramField[1][pixel.u / factor]++;
-    colorChannelHistogramField[2][pixel.v / factor]++;
+    colorChannelHistogramField[0][pixel.y]++;
+    colorChannelHistogramField[1][pixel.u]++;
+    colorChannelHistogramField[2][pixel.v]++;
   }
-  else
-  if(bPercept.isWhite(pixel))
-  {
-    colorChannelHistogramLine[0][pixel.y / factor]++;
-    colorChannelHistogramLine[1][pixel.u / factor]++;
-    colorChannelHistogramLine[2][pixel.v / factor]++;
-  }
+//  else
+//  if(bPercept.isWhite(pixel))
+//  {
+//    colorChannelHistogramLine[0][pixel.y]++;
+//    colorChannelHistogramLine[1][pixel.u]++;
+//    colorChannelHistogramLine[2][pixel.v]++;
+//  }
   colorChannelIsUptodate  = true;
 }
 
-void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
+inline void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
 {
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
