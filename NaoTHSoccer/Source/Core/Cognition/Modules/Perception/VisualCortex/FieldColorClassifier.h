@@ -6,7 +6,7 @@
  */
 
 #ifndef FIELDCOLORCLASSIFIER_H
-#define  FIELDCOLORCLASSIFIER_H
+#define FIELDCOLORCLASSIFIER_H
 
 #include <ModuleFramework/Module.h>
 
@@ -26,12 +26,6 @@
 #include "Tools/ImageProcessing/Histogram.h"
 #include "Tools/ImageProcessing/FieldColorParameters.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
-
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 

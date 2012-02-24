@@ -29,8 +29,8 @@ public:
 
   virtual ~DrawingCanvas(){}
 
-  virtual unsigned int width() = 0;
-  virtual unsigned int height() = 0;
+  virtual unsigned int width() const = 0;
+  virtual unsigned int height() const = 0;
 };
 
 

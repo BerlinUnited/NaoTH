@@ -199,8 +199,8 @@ namespace naoth
       }
     }//end set()
 
-    unsigned int width();
-    unsigned int height();
+    unsigned int width() const { return cameraInfo.resolutionWidth; }
+    unsigned int height() const { return cameraInfo.resolutionHeight; }
 
     inline unsigned int getIndexSize() const
     {

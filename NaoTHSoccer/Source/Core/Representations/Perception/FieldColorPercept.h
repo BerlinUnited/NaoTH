@@ -19,7 +19,58 @@ using namespace naoth;
 
 class FieldColorPercept : public naoth::Printable
 {
-  
+private:
+  class ColorRegion
+  {
+  private:
+    Pixel min;
+    Pixel max;
+    bool valid;
+  public:
+    ColorRegion()
+    {
+      set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      valid = false;
+    }
+
+    void set
+    (
+      unsigned char minY,
+      unsigned char maxY,
+      unsigned char minU,
+      unsigned char maxU,
+      unsigned char minV,
+      unsigned char maxV
+    )
+    {
+      min.y = minY;
+      min.u = minU;
+      min.v = minV;
+      max.y = maxY;
+      max.u = maxU;
+      max.v = maxV;
+    }
+
+    void set
+    (
+        Pixel& min_,
+        Pixel& max_
+    )
+    {
+      min = min_;
+      max = max_;
+    }
+
+
+    inline bool inside(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+    {
+      return min.y < y && y < max.y && min.u < u && u < max.u && min.v < v && v < max.v;
+    }//end inside
+  };
+
+
+  ColorRegion greenRegion;
+
 public:
   double distY;
   double distCb;
@@ -30,6 +81,20 @@ public:
   unsigned int maxWeightedIndexY;
   unsigned int maxWeightedIndexCb;
   unsigned int maxWeightedIndexCr;
+
+
+  void set()
+  {
+    greenRegion.set(
+      (unsigned char)(max(maxWeightedIndexY - distY,0.0)),
+      (unsigned char)(min(maxWeightedIndexY + distY,255.0)),
+      (unsigned char)(max(maxWeightedIndexCb - distCb,0.0)),
+      (unsigned char)(min(maxWeightedIndexCb + distCb,255.0)),
+      (unsigned char)(max(maxWeightedIndexCr - distCr,0.0)),
+      (unsigned char)(min(maxWeightedIndexCr + distCr,255.0))
+      );
+  }
+
 
   FrameInfo lastUpdated;
 
@@ -55,6 +120,7 @@ public:
 
   inline bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
+    return greenRegion.inside(yy, cb, cr);
     return
       (
         abs((int) cr  - (int) maxWeightedIndexCr) < (int) distCr

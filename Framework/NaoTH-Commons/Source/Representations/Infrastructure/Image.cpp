@@ -228,16 +228,7 @@ void Image::drawPoint
 {
   set(x,y, a, b, c);
 }//end drawPoint
-                        
-unsigned int Image::width()
-{
-  return cameraInfo.resolutionWidth;
-}//end width
-
-unsigned int Image::height()
-{
-  return cameraInfo.resolutionHeight;
-}//end height
+                       
 
 void Serializer<Image>::serialize(const Image& representation, std::ostream& stream)
 {
