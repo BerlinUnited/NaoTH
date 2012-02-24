@@ -72,12 +72,11 @@ abstract class sshSetupCopier extends sshCopier
         channel.connect();
         setInfo("initialization writing setup files part");
         
-        File localSetupScriptFiles = new File(config.localSetupScriptPath());
+        File localSetupScriptFiles = new File(config.localDeployOutPath(sNaoNo) + config.setupScriptPath());
 
         rmDirSftp(config.remoteSetupScriptPath(sNaoNo));
 
         recursiveSftpPut(localSetupScriptFiles, config.remoteSetupScriptPath());
-
 
         if(config.copySysLibs && config.stagingLibDir != null)
         {
