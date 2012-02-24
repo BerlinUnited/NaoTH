@@ -58,6 +58,7 @@ public:
   void execute();
 
 private:
+  double adaptationRate;
 
   FieldColorParameters fieldParams;
 

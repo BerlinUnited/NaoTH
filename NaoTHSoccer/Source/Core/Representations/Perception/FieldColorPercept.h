@@ -38,9 +38,9 @@ public:
     maxWeightedY = 0.0;
     maxWeightedCb = 0.0;
     maxWeightedCr = 0.0;
-    maxWeightedIndexY = 160;
-    maxWeightedIndexCb = 160;
-    maxWeightedIndexCr = 160;
+    maxWeightedIndexY = 64;
+    maxWeightedIndexCb = 115;
+    maxWeightedIndexCr = 115;
   }
 
   ~FieldColorPercept()
@@ -57,18 +57,6 @@ public:
   {
     return
       (
-//        yy > theParameters.fieldColorMin.y
-//        &&
-//        yy < theParameters.fieldColorMax.y
-//        &&
-//        cb > theParameters.fieldColorMin.u
-//        &&
-//        cb < theParameters.fieldColorMax.u
-//        &&
-//        cr > theParameters.fieldColorMin.v
-//        &&
-//        cr < theParameters.fieldColorMax.v
-//        &&
         abs((int) cr  - (int) maxWeightedIndexCr) < (int) distCr
         &&          
         abs((int) cb  - (int) maxWeightedIndexCb) < (int) distCb
