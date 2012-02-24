@@ -34,7 +34,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author gxy
+ * @author Heinrich Mellmann
  */
 public class TeamCommViewer extends AbstractDialog
 {
@@ -47,8 +47,7 @@ public class TeamCommViewer extends AbstractDialog
       @InjectPlugin
       public static TeamCommDrawingManager teamCommDrawingManager;
   }//end Plugin
-    
-  private boolean runTeamCommListener = true;
+  
 
   private HashMap<String,RobotStatus> robotsMap;
 
@@ -128,7 +127,7 @@ public class TeamCommViewer extends AbstractDialog
   public void dispose()
   {
     // stop the listener
-    this.runTeamCommListener = false;
+    this.timerCheckMessages.stop();
   }//end dispose
 
 
@@ -165,16 +164,31 @@ public class TeamCommViewer extends AbstractDialog
   
     public TeamCommListener()
     {
-      try
-      {
-        udpSocket = new DatagramSocket(TEAMCOMM_PORT);
-      }
-      catch(IOException ex)
-      {
-        Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      connect();
     }
 
+    public final void connect()
+    {
+        try
+        {
+            udpSocket = new DatagramSocket(TEAMCOMM_PORT);
+        }
+        catch(IOException ex)
+        {
+            Logger.getLogger(TeamCommViewer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//end connect
+    
+    
+    public final void disconnect()
+    {
+        if(udpSocket != null)
+        {
+            udpSocket.close();
+            udpSocket = null;
+        }
+    }//end disconnect
+    
     @Override
     public void actionPerformed(ActionEvent e)
     {

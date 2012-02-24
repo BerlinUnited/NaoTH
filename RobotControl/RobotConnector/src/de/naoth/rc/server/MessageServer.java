@@ -139,6 +139,10 @@ public class MessageServer
     
     if(serverSocket != null && serverSocket.isConnected())
     {
+      // is it necessary?
+      // In case the serverSocket is broken this end up in a 
+      // deadlock...
+      /*
       try
       {
         // cleanup
@@ -153,6 +157,7 @@ public class MessageServer
       {
         // ignore
       }
+      */
 
       // call error handlers of remaining requests
       for(SingleExecEntry a : answerRequestQueue)
@@ -291,6 +296,13 @@ public class MessageServer
         {
           isActive = false;
           Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
+          disconnect();
+        }
+        catch(Exception ex)
+        {
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
+            "Unexpected exception...",
+            ex);
           disconnect();
         }
       } // while(isActive)

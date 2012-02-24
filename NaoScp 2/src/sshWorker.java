@@ -7,13 +7,11 @@
 import com.jcraft.jsch.*;
 import com.jcraft.jsch.ChannelSftp.*;
 //import java.awt.Component;
-import com.sun.j3d.utils.applet.MainFrame;
 import java.util.*;
 import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.util.regex.*;
-import sun.applet.Main;
 
 /**
  *
