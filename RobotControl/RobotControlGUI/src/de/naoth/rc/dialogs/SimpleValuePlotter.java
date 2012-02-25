@@ -77,6 +77,7 @@ public class SimpleValuePlotter  extends AbstractDialog
   private APointHighlighter pointHighlighter = new PointHighlighterConfigurable(new PointPainterCoords(), true);
     
   private Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
+  private Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
     /** Creates new form SimpleValuePlotter */
     public SimpleValuePlotter() {
@@ -269,6 +270,8 @@ public class SimpleValuePlotter  extends AbstractDialog
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveData = new javax.swing.JToggleButton();
         btClear = new javax.swing.JButton();
+        btClearData = new javax.swing.JButton();
+        cbDontScrollOnStaticRegionData = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
         cbShowGrid = new javax.swing.JCheckBox();
         jSplitPane = new javax.swing.JSplitPane();
@@ -301,6 +304,16 @@ public class SimpleValuePlotter  extends AbstractDialog
         });
         jToolBar1.add(btClear);
 
+        btClearData.setText("Clear Data");
+        btClearData.setFocusable(false);
+        btClearData.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btClearData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btClearData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btClearDataActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btClearData);
         jButton1.setText("Fit to Data");
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -312,6 +325,12 @@ public class SimpleValuePlotter  extends AbstractDialog
         });
         jToolBar1.add(jButton1);
 
+        cbDontScrollOnStaticRegionData.setSelected(true);
+        cbDontScrollOnStaticRegionData.setText("dont scroll in x-axis if on static data regions");
+        cbDontScrollOnStaticRegionData.setFocusable(false);
+        cbDontScrollOnStaticRegionData.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbDontScrollOnStaticRegionData.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(cbDontScrollOnStaticRegionData);
         cbShowGrid.setText("Show Grid");
         cbShowGrid.setFocusable(false);
         cbShowGrid.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -384,6 +403,7 @@ public class SimpleValuePlotter  extends AbstractDialog
       synchronized(this)
       {
         this.plotTraces.clear();
+        this. plotTracesMaxX.clear();
         this.panelList.removeAll();
         this.chart.removeAllTraces();
 
@@ -395,10 +415,25 @@ public class SimpleValuePlotter  extends AbstractDialog
       }//end synchronized
     }//GEN-LAST:event_btClearActionPerformed
 
+  private void btClearDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btClearDataActionPerformed
+      synchronized(this)
+      {
+        clearTracePoints();
+      }//end synchronized
+  }//GEN-LAST:event_btClearDataActionPerformed
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         chart.getAxisX().setRange(new Range(chart.getAxisX().getMinValue(), chart.getAxisX().getMaxValue()));
     }//GEN-LAST:event_jButton1ActionPerformed
 
+private void clearTracePoints()
+{
+  for(String traceName : this.plotTraces.keySet())
+  {
+    this.plotTraces.get(traceName).removeAllPoints();
+    this.plotTracesMaxX.put(traceName, 0.0);
+  }
+}
     private void cbShowGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbShowGridActionPerformed
         if(this.cbShowGrid.isSelected())
         {
@@ -416,7 +451,9 @@ public class SimpleValuePlotter  extends AbstractDialog
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btClear;
+    private javax.swing.JButton btClearData;
     private javax.swing.JToggleButton btReceiveData;
+    private javax.swing.JCheckBox cbDontScrollOnStaticRegionData;
     private javax.swing.JCheckBox cbShowGrid;
     private info.monitorenter.gui.chart.Chart2D chart;
     private javax.swing.JButton jButton1;
@@ -490,6 +527,7 @@ public class SimpleValuePlotter  extends AbstractDialog
       trace.setVisible(false);
       trace.setPointHighlighter(pointHighlighter);
       plotTraces.put(name, trace);
+      plotTracesMaxX.put(name, 0.0);
       chart.addTrace(trace);
 
       final JCheckBox checkBoxItem = new JCheckBox(name, false);
@@ -519,7 +557,25 @@ public class SimpleValuePlotter  extends AbstractDialog
       panelList.add(checkBoxItem);
     }//end if
     
-    plotTraces.get(name).addPoint(x, y);
+    if(cbDontScrollOnStaticRegionData.isSelected())
+    {
+      if(x > plotTracesMaxX.get(name))
+      {
+        plotTracesMaxX.put(name, x);
+        plotTraces.get(name).addPoint(x, y);
+      }
+      else
+      {
+        plotTracesMaxX.put(name, 0.0);
+        plotTraces.get(name).removeAllPoints();
+      }
+    }
+    else
+    {
+      plotTracesMaxX.put(name, x);
+      plotTraces.get(name).addPoint(x, y);
+    }
+    
   }//end addValue
 
   @Override
