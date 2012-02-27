@@ -82,6 +82,18 @@ class Histogram: public naoth::Printable
       colorChannelIsUptodate  = true;
     }//end increaseChannelValue
 
+    inline void collectFieldValue(const Pixel& pixel)
+    {
+      weightedHistY[pixel.y]++;
+      meanFieldY += pixel.y;
+      meanFieldCountY++;
+      weightedHistCb[pixel.u]++;
+    }
+
+    inline double getMeanFieldY() const
+    {
+      return meanFieldY / meanFieldCountY;
+    }
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
     void showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const;
@@ -93,9 +105,15 @@ class Histogram: public naoth::Printable
     unsigned int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
 
     unsigned int colorChannelHistogramField[3][COLOR_CHANNEL_VALUE_COUNT];
-    unsigned int colorChannelHistogramLine[3][COLOR_CHANNEL_VALUE_COUNT];
-    unsigned int colorChannelHistogramGoal[3][COLOR_CHANNEL_VALUE_COUNT];
-    unsigned int colorChannelHistogramBall[3][COLOR_CHANNEL_VALUE_COUNT];
+    //unsigned int colorChannelHistogramLine[3][COLOR_CHANNEL_VALUE_COUNT];
+    //unsigned int colorChannelHistogramGoal[3][COLOR_CHANNEL_VALUE_COUNT];
+    //unsigned int colorChannelHistogramBall[3][COLOR_CHANNEL_VALUE_COUNT];
+
+    double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
+    double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
+    double meanFieldY;
+    double meanFieldCountY;
+
     unsigned int colorChannelIsUptodate;
 
 };

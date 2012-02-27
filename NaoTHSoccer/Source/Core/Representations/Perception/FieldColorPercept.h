@@ -11,6 +11,7 @@
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
 #include <Tools/ImageProcessing/FieldColorParameters.h>
+#include <Tools/ColorClasses.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -29,7 +30,7 @@ private:
   public:
     ColorRegion()
     {
-      set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      set(0, 0, 0, 0, 0, 0);
       valid = false;
     }
 

@@ -46,9 +46,15 @@ void Histogram::init()
   memset(&xHistogram, 0, sizeof(xHistogram));
   memset(&yHistogram, 0, sizeof(xHistogram));
   memset(&colorChannelHistogramField, 0, sizeof(colorChannelHistogramField));
-  memset(&colorChannelHistogramLine, 0, sizeof(colorChannelHistogramLine));
-  memset(&colorChannelHistogramGoal, 0, sizeof(colorChannelHistogramGoal));
-  memset(&colorChannelHistogramBall, 0, sizeof(colorChannelHistogramBall));
+  //memset(&colorChannelHistogramLine, 0, sizeof(colorChannelHistogramLine));
+  //memset(&colorChannelHistogramGoal, 0, sizeof(colorChannelHistogramGoal));
+  //memset(&colorChannelHistogramBall, 0, sizeof(colorChannelHistogramBall));
+
+  meanFieldY = 0.0;
+  meanFieldCountY = 1.0;
+  //weightedHistCb = {0.0};
+  memset(&weightedHistY, 0, sizeof(weightedHistY));
+  memset(&weightedHistCb, 0, sizeof(weightedHistCb));
 
 //  for(int color = 0; color < ColorClasses::numOfColors; color++)
 //  {
