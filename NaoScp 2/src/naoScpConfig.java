@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 import java.util.*;
+import javax.swing.*;
 
 /**
  *
@@ -46,7 +47,7 @@ public class naoScpConfig
   String remotePrefix = "";
   boolean fhIsTesting = false;
 
-
+  JProgressBar progressBar;
 
   public String setupScriptPath()
   {

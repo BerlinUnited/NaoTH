@@ -213,20 +213,20 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
         config.Ip = naoIps[idx].getHostAddress();
         if(naoIps[idx].isReachable(2500) && connect())
         {
-          Channel channel = session.openChannel("sftp");
-          channel.connect();
+          Channel c = session.openChannel("sftp");
+          c.connect();
           Thread.sleep(100);
-          if(channel.isConnected())
+          if(c.isConnected())
           {
-            channel.disconnect();
+            c.disconnect();
             Thread.sleep(100);
             return true;
           }
           else
           {
             setInfo("Nao " + config.sNaoNo + " (" + config.Ip + ") could not open channel");
+            disconnect();
           }
-          disconnect();
         }
         else
         {
@@ -325,7 +325,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
               {
                 setInfo("get " + lsEntry.getFilename());
                 FileOutputStream foo = new FileOutputStream(f);
-                c.get(remote + "/" + lsEntry.getFilename(), foo);
+                c.get(remote + "/" + lsEntry.getFilename(), foo, new progressMonitor(config.progressBar));
               }
             }
           }
@@ -381,7 +381,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
                 }
                 setInfo("get " + lsEntry.getFilename());
                 FileOutputStream foo = new FileOutputStream(f);
-                c.get(remote + "/" + lsEntry.getFilename(), foo);
+                c.get(remote + "/" + lsEntry.getFilename(), foo, new progressMonitor(config.progressBar));
               }
             }
           }
@@ -471,7 +471,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
             }//end try
             try
             {
-              c.put(src.getAbsolutePath(), dst);
+              c.put(src.getAbsolutePath(), dst, new progressMonitor(config.progressBar));
             }
             catch(SftpException ex)
             {

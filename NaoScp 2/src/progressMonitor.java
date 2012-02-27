@@ -30,7 +30,6 @@ class progressMonitor implements SftpProgressMonitor
     progressbar.setValue(0);
     progressbar.setMinimum(0);
     progressbar.setMaximum(100);
-    progressbar.setVisible(true);
     progressbar.setEnabled(true);
   }
 
@@ -44,7 +43,6 @@ class progressMonitor implements SftpProgressMonitor
 
   public void end()
   {
-    progressbar.setVisible(false);
     progressbar.setEnabled(false);
   }
 }//end MyProgressMonitor

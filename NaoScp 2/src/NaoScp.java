@@ -32,6 +32,7 @@ import javax.jmdns.JmDNS;
 import static net.jcores.jre.CoreKeeper.$;
 import net.jcores.jre.interfaces.functions.F0R;
 //import net.jcores.jre.utils.internal.wrapper.InputStreamWrapper;
+//import com.jgoodies.looks.plastic;
 
 public class NaoScp extends NaoScpMainFrame implements ServiceListener
 {
@@ -66,14 +67,14 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
   @SuppressWarnings("unchecked")
   public NaoScp()
   {
-//    String laf = UIManager.getSystemLookAndFeelClassName();
-//    try {
-//        UIManager.setLookAndFeel(laf);
-//    }
-//    catch (Exception e) {
-//        e.printStackTrace();
-//        System.exit(1);
-//    }
+    String laf = "javax.swing.plaf.metal.MetalLookAndFeel";
+    try {
+        UIManager.setLookAndFeel(laf);
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+        System.exit(1);
+    }
 
     initComponents();
     
@@ -83,11 +84,10 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     config.sshUser = this.sshUser.getText();
     config.sshPassword = this.sshPassword.getText();
     config.sshRootPassword = this.sshRootPassword.getText();
+    config.progressBar = this.progressBar;
 
     this.cbNoBackup.setVisible(config.debugVersion);
     this.cbNoBackup.setEnabled(config.debugVersion);
-    this.progressBar.setVisible(false);
-    this.progressBar.setEnabled(false);
 
     this.naoNumberFields.put(0, new JTextField());
     this.scriptDone.put(0, false);
@@ -1717,8 +1717,8 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     
     robotConfigPreparator preparator = new robotConfigPreparator();
     config.copySysLibs = true;
-    String address = preparator.getDefaultAddress();
-    ArrayList<String> addresses = preparator.getAdressList();
+    final String address = preparator.getDefaultAddress();
+    final ArrayList<String> addresses = preparator.getAdressList();
     String sNaoByte = null;
     setupPlayerNo = null;
     if(address != null )
@@ -1737,30 +1737,64 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
       return;
     }
 
-    boolean testOk = false;
-    remoteSetupCopier cLan = new remoteSetupCopier(config, address, sNaoByte, "full");
-    testOk = cLan.testConnection();
+    final String naoByte = sNaoByte;    
+    SwingUtilities.invokeLater
+    (
+      new Runnable() 
+      {
+        public void run() 
+        {
+          String ip = address;
+          remoteSetupCopier cLan = new remoteSetupCopier(config, ip, naoByte, "full");
+          boolean testOk = cLan.testConnection();
 
-    if(!testOk && addresses.size() > 0 && !addresses.contains(address))
-    {
-      int idx = 0;
-      while(!testOk && idx < addresses.size())
-      {    
-        address = addresses.get(idx);
-        cLan = new remoteSetupCopier(config, address, sNaoByte, "full");
-        testOk = cLan.testConnection();
-        idx++;
-      }
-    }
-    
-    if(testOk)
-    {
-      cLan.execute();
-    }
-    else
-    {
-      allIsDone("0");
-    }
+          if(!testOk && addresses.size() > 0 && !addresses.contains(ip))
+          {
+            int idx = 0;
+            while(!testOk && idx < addresses.size())
+            {    
+              ip = addresses.get(idx);
+              cLan = new remoteSetupCopier(config, ip, naoByte, "full");
+              testOk = cLan.testConnection();
+              idx++;
+            }
+          }
+
+          if(testOk)
+          {
+            cLan.execute();
+          }
+          else
+          {
+            allIsDone("0");
+          }
+        }
+      }            
+    );
+//    boolean testOk = false;
+//    remoteSetupCopier cLan = new remoteSetupCopier(config, address, sNaoByte, "full");
+//    testOk = cLan.testConnection();
+//
+//    if(!testOk && addresses.size() > 0 && !addresses.contains(address))
+//    {
+//      int idx = 0;
+//      while(!testOk && idx < addresses.size())
+//      {    
+//        address = addresses.get(idx);
+//        cLan = new remoteSetupCopier(config, address, sNaoByte, "full");
+//        testOk = cLan.testConnection();
+//        idx++;
+//      }
+//    }
+//    
+//    if(testOk)
+//    {
+//      cLan.execute();
+//    }
+//    else
+//    {
+//      allIsDone("0");
+//    }
   }
 
   
@@ -1768,8 +1802,8 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
   {
     robotConfigPreparator preparator = new robotConfigPreparator();
     config.copySysLibs = false;
-    String address = preparator.getDefaultAddress();
-    ArrayList<String> addresses = preparator.getAdressList();
+    final String address = preparator.getDefaultAddress();
+    final ArrayList<String> addresses = preparator.getAdressList();
       
     String sNaoByte = null;
     if(address != null )
@@ -1782,31 +1816,41 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
       allIsDone("0");
       return;
     }
+    final String naoByte = sNaoByte;
+    
+    SwingUtilities.invokeLater
+    (
+      new Runnable() 
+      {
+        public void run() 
+        {
+          String ip = address;
+          remoteSetupCopier cLan = new remoteSetupCopier(config, ip, naoByte, "network");
+          boolean testOk = cLan.testConnection();
 
-    boolean testOk = false;
-    remoteSetupCopier cLan = new remoteSetupCopier(config, address, sNaoByte, "network");
-    testOk = cLan.testConnection();
+          if(!testOk && addresses.size() > 0 && !addresses.contains(ip))
+          {
+            int idx = 0;
+            while(!testOk && idx < addresses.size())
+            {    
+              ip = addresses.get(idx);
+              cLan = new remoteSetupCopier(config, ip, naoByte, "network");
+              testOk = cLan.testConnection();
+              idx++;
+            }
+          }
 
-    if(!testOk && addresses.size() > 0 && !addresses.contains(address))
-    {
-      int idx = 0;
-      while(!testOk && idx < addresses.size())
-      {    
-        address = addresses.get(idx);
-        cLan = new remoteSetupCopier(config, address, sNaoByte, "network");
-        testOk = cLan.testConnection();
-        idx++;
-      }
-    }
-
-    if(testOk)
-    {
-      cLan.execute();
-    }
-    else
-    {
-      allIsDone("0");
-    }
+          if(testOk)
+          {
+            cLan.execute();
+          }
+          else
+          {
+            allIsDone("0");
+          }
+        }
+      }            
+    );
   }
     
   

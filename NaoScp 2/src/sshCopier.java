@@ -123,8 +123,8 @@ abstract class sshCopier extends sshWorker
             (
               config.remoteLibPath() + "libnaoth.so",
               new FileOutputStream(config.localDeployInPath() + "/libnaoth.so")
-  //                  ,
-  //            new progressMonitor(parent.progressBar)
+                    ,
+              new progressMonitor(config.progressBar)
             );
           }
         }
@@ -142,8 +142,8 @@ abstract class sshCopier extends sshWorker
             (
               config.remoteLibPath() + "comment.cfg",
               new FileOutputStream(config.localDeployInPath() + "/comment.cfg")
-  //                  ,
-  //            new progressMonitor(parent.progressBar)
+                    ,
+              new progressMonitor(config.progressBar)
             );
           }
         }
@@ -162,8 +162,8 @@ abstract class sshCopier extends sshWorker
             (
               config.remoteBinPath() + "naoth",
               new FileOutputStream(config.localDeployInPath() + "/naoth")
-  //                  ,
-  //            new progressMonitor(parent.progressBar)
+                    ,
+              new progressMonitor(config.progressBar)
             );
 
           }
