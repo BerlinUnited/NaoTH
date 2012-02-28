@@ -200,10 +200,10 @@ void FieldColorClassifierPostProcessor::execute()
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
     //double mY = max(0.0,meanFieldY - fabs(meanFieldY - (double) i));
-    double mY = max(0.0,128.0 - fabs(meanFieldY - (double) i));
-    double wY = mY / 128.0 ;
+    //double mY = max(0.0,128.0 - fabs(meanFieldY - (double) i));
+    //double wY = mY / 128.0 ;
     double wYG = exp(-Math::sqr(meanFieldY - i)/(60.0*60.0));
-    double wYgS = exp(-Math::sqr(64.0 - i)/(32.0*32.0));
+    //double wYgS = exp(-Math::sqr(64.0 - i)/(32.0*32.0));
     //double wYG = exp(-Math::sqr(128.0 - i)/(64.0*64.0));
     weightedHistY[i] = histogram.weightedHistY[i];
     if(enablePlots)
@@ -265,7 +265,7 @@ void FieldColorClassifierPostProcessor::execute()
     
     double mCb = COLOR_CHANNEL_VALUE_COUNT - i;
     double wCb = mCb / (double) COLOR_CHANNEL_VALUE_COUNT;
-    double wCbG = exp(Math::sqr(i)/(-96.0*96.0));
+    //double wCbG = exp(Math::sqr(i)/(-96.0*96.0));
 
     //weightedHistCb[i] = histogram.weightedHistCb[i];
     //double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
