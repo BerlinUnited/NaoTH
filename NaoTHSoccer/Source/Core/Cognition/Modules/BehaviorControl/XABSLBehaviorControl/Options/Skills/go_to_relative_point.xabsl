@@ -42,9 +42,10 @@ option go_to_relative_point
     }
     action{
       motion.type = walk;
-      motion.walk_speed.x = (abs(value=@x) < 300 && 0.5*@x > 20)?0.5*@x:@x;
-      motion.walk_speed.y = (abs(value=@y) < 300 && 0.5*@y > 20)?0.5*@y:@y;
-      motion.walk_speed.rot = (abs(value=@rotation) < 30  && 0.5*@rotation > 5)?0.5*@rotation:@rotation;
+      motion.walk.style = (abs(value=@x) < 300)?stable:normal;
+      motion.walk_speed.x = @x;
+      motion.walk_speed.y = @y;
+      motion.walk_speed.rot = @rotation;
     }
   }
 }
