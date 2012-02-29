@@ -30,6 +30,9 @@ option head_control
       goto goalie_look_around;
     else if (head.control_mode == smart_search)
       goto smart_search;
+
+    else if (head.control_mode == search_for_goal_after_penalized)
+      goto search_for_goal_after_penalized;
   }
 
   initial state none
@@ -128,5 +131,12 @@ option head_control
     }
   }
 
+  state search_for_goal_after_penalized
+  {
+    action
+    {
+      search_for_goal_after_penalized();
+    }
+  }
 }
   

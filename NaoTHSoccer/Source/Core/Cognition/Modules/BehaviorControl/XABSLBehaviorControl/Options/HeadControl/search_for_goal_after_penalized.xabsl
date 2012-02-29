@@ -1,0 +1,96 @@
+/** Scan mode for looking at the goal/searching for the goal after being penalized
+*/
+option search_for_goal_after_penalized 
+{
+  
+  initial state look_for_goal_left
+  {
+    decision
+    {
+      if (goal.own.was_seen || goal.opp.was_seen)
+        goto look_at_goal_percept_left;
+      else if (state_time > 2200)
+        goto look_for_goal_right;
+      else 
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = search;
+      head.search.center.x = 2000;
+      head.search.center.y = 4000;
+      head.search.center.z = 500;
+      head.search.size.x = 500;
+      head.search.size.y = 0;
+      head.search.size.z = 0;
+    }
+  }
+
+  state look_for_goal_right
+  {
+    decision
+    {
+      if (goal.own.was_seen || goal.opp.was_seen)
+        goto look_at_goal_percept_right;
+      else if (state_time > 2200)
+        goto look_for_goal_left;
+      else 
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = search;
+      head.search.center.x = 2000;
+      head.search.center.y = -4000;
+      head.search.center.z = 500;
+      head.search.size.x = 500;
+      head.search.size.y = 0;
+      head.search.size.z = 0;
+    }
+  }
+  
+
+  state look_at_goal_percept_right
+  {
+    decision
+    {
+      if(goal.own.time_since_seen == 0 
+         || goal.opp.time_since_seen == 0 
+         || state_time > 1000)
+        goto look_for_goal_left;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = goal.centroid.x;
+      head.point_in_world.y = goal.centroid.y;
+      head.point_in_world.z = goal.centroid.z;
+    }
+  }
+
+  state look_at_goal_percept_left
+  {
+    decision
+    {
+      if(goal.own.time_since_seen == 0 
+         || goal.opp.time_since_seen == 0 
+         || state_time > 1000)
+        goto look_for_goal_right;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = goal.centroid.x;
+      head.point_in_world.y = goal.centroid.y;
+      head.point_in_world.z = goal.centroid.z;
+    }
+  }
+}

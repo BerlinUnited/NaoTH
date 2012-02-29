@@ -54,6 +54,7 @@ namespace motion_symbols("Motion Symbols") {
     search_for_own_goal,
     search_for_opp_goal,
     search_for_goal,
+    search_for_goal_after_penalized,
     search_for_whole_goal,
     search_for_line,
     //search_for_line,
