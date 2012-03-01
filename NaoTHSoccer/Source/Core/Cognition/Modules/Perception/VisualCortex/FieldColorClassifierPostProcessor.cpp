@@ -20,8 +20,9 @@
 
 FieldColorClassifierPostProcessor::FieldColorClassifierPostProcessor()
 :
-  adaptationRate(0.2),
+  adaptationRate(0.5),
   enablePlots(false),
+  justStarted(true),
   distY(0),
   distCb(0),
   distCr(0),
@@ -49,16 +50,10 @@ FieldColorClassifierPostProcessor::FieldColorClassifierPostProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifierPostProcessor:weightedHistCr", " ", false);
   
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifierPostProcessor:weightedSmoothedHistY", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifierPostProcessor:weightedSmoothedHistCb", " ", false);
-
-
-
   memset(&weightedSmoothedHistY, 0, sizeof(weightedSmoothedHistY));
   memset(&weightedSmoothedHistCb, 0, sizeof(weightedSmoothedHistCb));
-  //memset(&weightedHistY, 0, sizeof(weightedHistY));
-  //memset(&weightedHistCb, 0, sizeof(weightedHistCb));
-  //memset(&weightedHistCr, 0, sizeof(weightedHistCr));
+  memset(&weightedHistY, 0, sizeof(weightedHistY));
+  memset(&weightedHistCb, 0, sizeof(weightedHistCb));
 
   getFieldColorPercept().init(fieldParams);
 }
@@ -110,84 +105,18 @@ void FieldColorClassifierPostProcessor::execute()
     enablePlots = true;
   );
 
-  //PLOT("FieldColorClassifierPostProcessor:maxWeightedIndexY", getFieldColorPercept().maxWeightedIndexY);
-  //PLOT("FieldColorClassifierPostProcessor:maxWeightedIndexCb", getFieldColorPercept().maxWeightedIndexCb);
-  //PLOT("FieldColorClassifierPostProcessor:maxWeightedIndexCr", getFieldColorPercept().maxWeightedIndexCr);
-  //PLOT("FieldColorClassifierPostProcessor:maxWeightedY", getFieldColorPercept().maxWeightedY);
-  //PLOT("FieldColorClassifierPostProcessor:maxWeightedCb", getFieldColorPercept().maxWeightedCb);
-  //PLOT("FieldColorClassifierPostProcessor:maxWeightedCr", getFieldColorPercept().maxWeightedCr);
-  //PLOT("FieldColorClassifierPostProcessor:distY", getFieldColorPercept().distY);
-  //PLOT("FieldColorClassifierPostProcessor:distCb", getFieldColorPercept().distCb);
-  //PLOT("FieldColorClassifierPostProcessor:distCr", getFieldColorPercept().distCr);
-
-
-  //STOPWATCH_START("FieldColorClassifierPostProcessor:Cr_filtering");
-  
-
-  //weightedMeanY = 0;
-  //maxWeightedY = 0.0;//0.5 * getFieldColorPercept().maxWeightedY;
-  //maxWeightedIndexY = 0;//(unsigned int) (getFieldColorPercept().maxWeightedIndexY);
-  //maxWeightedCb = 0.0;//0.85 * getFieldColorPercept().maxWeightedCb;
-  //maxWeightedIndexCb = 0;//(unsigned int) (getFieldColorPercept().maxWeightedIndexCb);
-  //maxWeightedCr = 0.0;//0.85 * getFieldColorPercept().maxWeightedCr;
-  //maxWeightedIndexCr = 0;//(unsigned int) (getFieldColorPercept().maxWeightedIndexCr);
-
-  //for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
-  //{
-  //  weightedHistY[i] = 0.0;
-  //  weightedHistCb[i] = 0.0;
-
-  //  double mCr = (double) max<int>(0,  128 - i);
-  //  double wCr = mCr / 128.0;
-  //  double wCrG = exp(-Math::sqr(0.0 - i)/(60.0*60.0));
-  //  weightedHistCr[i] = (double) getHistogram().colorChannelHistogramField[2][i];
-  //  //if(enablePlots)
-  //  //{
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_unfiltered",i, weightedHistCr[i]);
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_weight",i, wCr);
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_weight_square",i, wCr * wCr);
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_weight_gauss",i, wCrG);
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_gauss_filter",i, weightedHistCr[i] * wCrG);
-  //  //}
-  //  weightedHistCr[i] *= wCr;
-  //  //if(enablePlots)
-  //  //{
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_linear_filter",i, weightedHistCr[i]);
-  //  //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCr_square_filter",i, weightedHistCr[i] * wCr);
-  //  //}
-  //  if(weightedHistCr[i] > maxWeightedCr)
-  //  {
-  //    maxWeightedCr = weightedHistCr[i];
-  //    maxWeightedIndexCr = i;
-  //  }
-  //}
-  //STOPWATCH_STOP("FieldColorClassifierPostProcessor:Cr_filtering");
-
-
-  //STOPWATCH_START("FieldColorClassifierPostProcessor:GridWalk");
-  //double meanFieldY = 0.0;
-  //double meanFieldCountY = 1.0;
-  //Pixel pixel;
-
-  //for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
-  //{
-  //  const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
-  //  getImage().get(point.x, point.y, pixel);
-  //  if
-  //  (
-  //    abs((int)pixel.v  - (int) maxWeightedIndexCr) < (int) distCr
-  //  )
-  //  {
-  //    weightedHistY[pixel.y]++;
-  //    meanFieldY += pixel.y;
-  //    meanFieldCountY++;
-  //    weightedHistCb[pixel.u]++;
-  //  }
-  //}
-  //STOPWATCH_STOP("FieldColorClassifierPostProcessor:GridWalk");
-
-  //meanFieldY /= meanFieldCountY;
-
+  if(enablePlots)
+  {
+    PLOT("FieldColorPercept:maxWeightedIndexY", fPercept.maxWeightedIndexY);
+    PLOT("FieldColorPercept:maxWeightedIndexCb", fPercept.maxWeightedIndexCb);
+    PLOT("FieldColorPercept:maxWeightedIndexCr", fPercept.maxWeightedIndexCr);
+    PLOT("FieldColorPercept:maxWeightedY", fPercept.maxWeightedY);
+    PLOT("FieldColorPercept:maxWeightedCb", fPercept.maxWeightedCb);
+    PLOT("FieldColorPercept:maxWeightedCr", fPercept.maxWeightedCr);
+    PLOT("FieldColorPercept:distY", fPercept.distY);
+    PLOT("FieldColorPercept:distCb", fPercept.distCb);
+    PLOT("FieldColorPercept:distCr", fPercept.distCr);
+  }
 
   unsigned int idx;
 
@@ -208,7 +137,6 @@ void FieldColorClassifierPostProcessor::execute()
     weightedHistY[i] = histogram.weightedHistY[i];
     if(enablePlots)
     {
-      PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_unfiltered",i, weightedHistY[i]);
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight",i, wY);
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight_square",i, wY * wY);
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight_gauss",i, wYG);
@@ -216,16 +144,17 @@ void FieldColorClassifierPostProcessor::execute()
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight_gauss*linear",i, wY * wYgS);
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight_gauss+square",i, (wY * wY + wYgS) * 0.5);
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight_gauss*square",i, wY * wY * wYgS);
-      PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_gauss_filter",i, weightedHistY[i] * wYG);
+      PLOT_GENERIC("FCCPost_weightedHistY_unfiltered",i, weightedHistY[i]);
+      PLOT_GENERIC("FCCPost_weightedHistY_linear_filter",i, weightedHistY[i] * wY);
+      PLOT_GENERIC("FCCPost_weightedHistY_square_filter",i, weightedHistY[i] * wY * wY);
+      PLOT_GENERIC("FCCPost_weightedHistY_gauss_filter",i, weightedHistY[i] * wYG);
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_gauss+linear_filter",i, weightedHistY[i] * (wY + wYG) * 0.5);
     }
 
-    //weightedHistY[i] *= (wY + wYgS) * 0.5;
-    //if(enablePlots)
-    //{
-      PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_filtered",i, weightedHistY[i]);
-    //  PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_square_filter",i, weightedHistY[i]  * wY);
-    //}
+    if(enablePlots)
+    {
+      PLOT_GENERIC("FCCPost_weightedHistY_filtered",i, weightedHistY[i]);
+    }
     double smoothWeightedY = smoothRungeKutta4(i, weightedHistY);
     weightedSmoothedHistY[i] = smoothWeightedY;
 
@@ -247,48 +176,48 @@ void FieldColorClassifierPostProcessor::execute()
          Vector3<double> regionEntry(region.x, region.y, area);
          regionList.push_back(regionEntry);
          area = 0.0;
+         region.x = 0.0;
+         region.y = 0.0;
       }
     }
 
     if(enablePlots)
     {
-      PLOT_GENERIC("FCCPost_weightedSmoothedHistY",i, weightedSmoothedHistY[i]);
+      if(!found)
+      {
+        PLOT_GENERIC("FCCPost_regionsY", i, 0.0);
+      }
+      else
+      {
+        PLOT_GENERIC("FCCPost_regionsY", i, 20.0);
+      }
+      PLOT_GENERIC("FCCPost_weightedSmoothedHistY", i, weightedSmoothedHistY[i]);
     }
-    //if
-    //(
-    //  weightedSmoothedHistY[i] > maxWeightedY
-    //)
-    //{
-    //  maxWeightedY = weightedSmoothedHistY[i];
-      //maxWeightedIndexY = (unsigned int) meanFieldY;
-    //}
+    maxWeightedIndexY = (unsigned int) meanFieldY;
     
     double mCb = COLOR_CHANNEL_VALUE_COUNT - i;
     double wCb = mCb / (double) COLOR_CHANNEL_VALUE_COUNT;
     //double wCbG = exp(Math::sqr(i)/(-96.0*96.0));
 
-    //weightedHistCb[i] = histogram.weightedHistCb[i];
-    //double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
-    double smoothWeightedCb = histogram.weightedHistCb[i];
+    weightedHistCb[i] = histogram.weightedHistCb[i];
+    double smoothWeightedCb = weightedHistCb[i];
     weightedSmoothedHistCb[i] = smoothWeightedCb;
    if(enablePlots)
     {
-   //   PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_unfiltered",i, weightedHistCb[i]);
-   //   PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_weight",i, wCb);
-   //   PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_weight_square",i, wCb * wCb);
-   //   PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_weight_gauss",i, wCbG);
-   //   PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_gauss_filter",i, weightedHistCb[i] * wCbG);
+   //   PLOT_GENERIC("FCCPost_weightedHistCb_weight",i, wCb);
+   //   PLOT_GENERIC("FCCPost_weightedHistCb_weight_square",i, wCb * wCb);
+   //   PLOT_GENERIC("FCCPost_weightedHistCb_weight_gauss",i, wCbG);
+      PLOT_GENERIC("FCCPost_weightedHistCb_unfiltered",i, weightedHistCb[i]);
+      PLOT_GENERIC("FCCPost_weightedHistCb_gauss_filter",i, weightedHistCb[i] * wCbG);
+      PLOT_GENERIC("FCCPost_weightedHistCb_linear_filter",i, weightedHistCb[i] * wCb);
+      PLOT_GENERIC("FCCPost_weightedHistCb_square_filter",i, weightedHistCb[i] * wCb * wCb);
    }
     weightedSmoothedHistCb[i] *= wCb * wCb;
     if(enablePlots)
     {
-      PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_filtered",i, weightedHistCb[i]);
-   //   PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistCb_square_filter",i, weightedHistCb[i] * wCb);
+      PLOT_GENERIC("FCCPost_weightedHistCb_filtered",i, weightedHistCb[i]);
     }
-    //double smoothWeightedCb = smoothRungeKutta4(i, weightedHistCb);
-    //weightedSmoothedHistCb[i] = smoothWeightedCb;
-    //weightedSmoothedHistCb[i] *= wCb;
-   if(enablePlots)
+    if(enablePlots)
     {
       PLOT_GENERIC("FCCPost_weightedSmoothedHistCb",i, weightedSmoothedHistCb[i]);
     }
@@ -299,56 +228,28 @@ void FieldColorClassifierPostProcessor::execute()
     }
   }
    
-  Vector3<double> maxRegion;
+  Vector3<double> maxRegion(0.0, 0.0, 0.0);
+  bool foundRegion = false;
   for(unsigned int i = 0; i < regionList.size(); i++)
   {
-    //PLOT_GENERIC("FieldColorClassifierPostProcessor:regions", maxRegion.x - 2, 0.0);
-    //PLOT_GENERIC("FieldColorClassifierPostProcessor:regions", maxRegion.x, 15.0);
-    //PLOT_GENERIC("FieldColorClassifierPostProcessor:regions", maxRegion.y, 15.0);
-    //PLOT_GENERIC("FieldColorClassifierPostProcessor:regions", maxRegion.y + 2, 0.0);
     if(regionList[i].z > maxRegion.z)
     {
       maxRegion = regionList[i];
+      foundRegion = true;
     }
   }
-  maxWeightedIndexY = (unsigned int) Math::round((maxRegion.y + maxRegion.x) * 0.5);
-
-  STOPWATCH_STOP("FieldColorClassifier:PostProcessor_Y_Cb_filtering");
-
   unsigned int meanRegionBeginIndexY = 0;
   unsigned int meanRegionEndIndexY = 0;
-
-  idx = maxWeightedIndexY;
-  while (idx >= 0 && meanRegionBeginIndexY == 0)
+  if(found)
   {
-    if(weightedSmoothedHistY[idx] <= 0.25)// /*log(maxWeightedY)*/ /*/ log(2.0)*/ || maxWeightedIndexY - idx >  factorDistY * maxDistY)
-    {
-      meanRegionBeginIndexY = idx;
-    }
-    idx--;
+    regionBeginY.add(maxRegion.x);
+    regionEndY.add(maxRegion.y);
+    meanRegionBeginIndexY = (unsigned int) Math::round(maxRegion.x);
+    meanRegionEndIndexY = (unsigned int) Math::round(maxRegion.y);
+    maxWeightedIndexY = (unsigned int) Math::round((meanRegionBeginIndexY + meanRegionEndIndexY) * 0.5);
   }
 
-  idx = maxWeightedIndexY;
-  while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexY == 0)// && idx < getFieldColorPercept().minWhite)
-  {
-    if(weightedSmoothedHistY[idx] <= 0.25)// /* log(maxWeightedY)*/ /*/ log(2.0)*/ || idx - maxWeightedIndexY > factorDistY * maxDistY)
-    {
-      meanRegionEndIndexY = idx;
-    }
-    idx++;
-  }
-
-  if(meanRegionEndIndexY > maxWeightedIndexY && meanRegionBeginIndexY < maxWeightedIndexY)
-  {
-//    maxWeightedIndexY = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexY + adaptationRate * maxWeightedIndexY);
-    maxWeightedIndexY = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexY + adaptationRate * (meanRegionBeginIndexY + meanRegionEndIndexY) * 0.5);
-    double dY = (distY + maxDistY + (meanRegionEndIndexY - meanRegionBeginIndexY) * 0.5) * 0.333;
-    distY = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().distY + adaptationRate * dY);
-  }
-  else
-  {
-    maxWeightedIndexY = 0;
-  }
+  STOPWATCH_STOP("FieldColorClassifier:PostProcessor_Y_Cb_filtering");
 
   unsigned int meanRegionBeginIndexCb = 0;
   unsigned int meanRegionEndIndexCb = 0;
@@ -356,7 +257,7 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCb;
   while (idx > 0 && meanRegionBeginIndexCb == 0)
   {
-    if(weightedSmoothedHistCb[idx] <= 0.5)//<= log(maxWeightedCb) || maxWeightedIndexCb - idx > maxDistCb)
+    if(weightedSmoothedHistCb[idx] <= 0.15)
     {
       meanRegionBeginIndexCb = idx;
     }
@@ -366,22 +267,11 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCb;
   while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCb == 0)
   {
-    if(weightedSmoothedHistCb[idx] <= 0.5)//<= log(maxWeightedCb) || idx - maxWeightedIndexCb > maxDistCb)
+    if(weightedSmoothedHistCb[idx] <= 0.15)
     {
       meanRegionEndIndexCb = idx;
     }
     idx++;
-  }
-
-  if(meanRegionEndIndexCb > maxWeightedIndexCb && meanRegionBeginIndexCb < maxWeightedIndexCb)
-  {
-    maxWeightedIndexCb = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexCb + adaptationRate * maxWeightedIndexCb);
-    double dCb = (distCb + maxDistCb + (meanRegionEndIndexCb - meanRegionBeginIndexCb) * 0.5) * 0.333;
-    distCb = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().distCb + adaptationRate * dCb);
- }
-  else
-  {
-    maxWeightedIndexCb = 0;
   }
 
   unsigned int meanRegionBeginIndexCr = 0;
@@ -390,7 +280,7 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCr;
   while (idx >= 0 && meanRegionBeginIndexCr == 0)
   {
-    if(fccPre.weightedHistCr[idx] <= 0.5)//<= log(maxWeightedCr) || maxWeightedIndexCr - idx > maxDistCr)
+    if(fccPre.weightedHistCr[idx] <= 0.15)
     {
       meanRegionBeginIndexCr = idx;
     }
@@ -400,22 +290,97 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCr;
   while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCr == 0)
   {
-    if(fccPre.weightedHistCr[idx] <= 0.5)//<= log(maxWeightedCr) || idx - maxWeightedIndexCr > maxDistCr)
+    if(fccPre.weightedHistCr[idx] <= 0.15)
     {
       meanRegionEndIndexCr = idx;
     }
     idx++;
   }
 
-  if(meanRegionEndIndexCr > maxWeightedIndexCr && meanRegionBeginIndexCr < maxWeightedIndexCr)
+  if(!justStarted)
   {
-    maxWeightedIndexCr = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexCr + adaptationRate * maxWeightedIndexCr);
-    double dCr = (distCr + maxDistCr + (meanRegionEndIndexCr - meanRegionBeginIndexCr) * 0.5) * 0.333;
-    distCr = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().distCr + adaptationRate * dCr);
-  }
-  else
-  {
-    maxWeightedIndexCr = 0;
+    if(meanRegionEndIndexY >= maxWeightedIndexY && meanRegionBeginIndexY <= maxWeightedIndexY)
+    {
+      maxWeightedIndexY = (unsigned int) ((1 - adaptationRate) * fPercept.maxWeightedIndexY + adaptationRate * (meanRegionBeginIndexY + meanRegionEndIndexY) * 0.5);
+      double dY = (distY + maxDistY + (meanRegionEndIndexY - meanRegionBeginIndexY) * 0.5) * 0.333;
+      distY = (unsigned int) ((1 - adaptationRate) * fPercept.distY + adaptationRate * dY);
+      if(enablePlots)
+      {
+        for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+        {
+          if(meanFieldY + maxDistY >= i && meanFieldY - maxDistY <= i)
+          {
+            PLOT_GENERIC("FCCPost_region_meanY", i, 20.0);
+          }
+          else
+          {
+            PLOT_GENERIC("FCCPost_region_meanY", i, 0.0);
+          }
+          if(maxWeightedIndexY + distY >= i && maxWeightedIndexY - distY<= i)
+          {
+            PLOT_GENERIC("FCCPost_regionY", i, 20.0);
+          }
+          else
+          {
+            PLOT_GENERIC("FCCPost_regionY", i, 0.0);
+          }
+        }
+      }  
+    }
+    else
+    {
+      maxWeightedIndexY = 0;
+    }
+
+    if(meanRegionEndIndexCb >= maxWeightedIndexCb && meanRegionBeginIndexCb <= maxWeightedIndexCb)
+    {
+      maxWeightedIndexCb = (unsigned int) ((1 - adaptationRate) * fPercept.maxWeightedIndexCb + adaptationRate * maxWeightedIndexCb);
+      double dCb = (distCb + maxDistCb + (meanRegionEndIndexCb - meanRegionBeginIndexCb) * 0.5) * 0.333;
+      distCb = (unsigned int) ((1 - adaptationRate) * fPercept.distCb + adaptationRate * dCb);
+      if(enablePlots)
+      {
+        for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+        {
+          if(maxWeightedIndexCb + distCb >= i && maxWeightedIndexCb - distCb<= i)
+          {
+            PLOT_GENERIC("FCCPost_regionCb", i, 20.0);
+          }
+          else
+          {
+            PLOT_GENERIC("FCCPost_regionCb", i, 0.0);
+          }
+        }
+      }
+    }
+    else
+    {
+      maxWeightedIndexCb = 0;
+    }
+
+    if(meanRegionEndIndexCr >= maxWeightedIndexCr && meanRegionBeginIndexCr <= maxWeightedIndexCr)
+    {
+      maxWeightedIndexCr = (unsigned int) ((1 - adaptationRate) * fPercept.maxWeightedIndexCr + adaptationRate * maxWeightedIndexCr);
+      double dCr = (distCr + maxDistCr + (meanRegionEndIndexCr - meanRegionBeginIndexCr) * 0.5) * 0.333;
+      distCr = (unsigned int) ((1 - adaptationRate) * fPercept.distCr + adaptationRate * dCr);
+      if(enablePlots)
+      {
+        for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
+        {
+         if(maxWeightedIndexCr + distCr >= i && maxWeightedIndexCr - distCr <= i)
+          {
+            PLOT_GENERIC("FCCPost_regionCr", i, 20.0);
+          }
+          else
+          {
+            PLOT_GENERIC("FCCPost_regionCr", i, 0.0);
+          }
+        }
+      }
+    }
+    else
+    {
+      maxWeightedIndexCr = 0;
+    }
   }
   setPerceptData();
   runDebugRequests((int)weightedMeanY, (int)meanFieldY);
@@ -445,6 +410,7 @@ void FieldColorClassifierPostProcessor::setPerceptData()
 {
   if(maxWeightedIndexY > 0 && maxWeightedIndexCb > 0 && maxWeightedIndexCr > 0)
   {
+    justStarted = false;
     if(distY < fieldParams.fieldColorMin.y)
     {
       distY = (unsigned int)fieldParams.fieldcolorDistMin.y;

@@ -104,9 +104,9 @@ public:
     maxWeightedY = 0.0;
     maxWeightedCb = 0.0;
     maxWeightedCr = 0.0;
-    maxWeightedIndexY = 64;
-    maxWeightedIndexCb = 115;
-    maxWeightedIndexCr = 115;
+    maxWeightedIndexY = 0;
+    maxWeightedIndexCb = 0;
+    maxWeightedIndexCr = 0;
   }
 
   ~FieldColorPercept()

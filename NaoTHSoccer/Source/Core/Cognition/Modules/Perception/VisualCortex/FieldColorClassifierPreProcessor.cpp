@@ -46,17 +46,18 @@ void FieldColorClassifierPreProcessor::execute()
     fPre.weightedHistCr[i] = (double) histogram.colorChannelHistogramField[2][i];
     if(enablePlots)
     {
-      PLOT_GENERIC("FCCPre_weightedHistCr_weight",i, wCr);
-      PLOT_GENERIC("FCCPre_weightedHistCr_weight_square",i, wCr * wCr);
-      PLOT_GENERIC("FCCPre_weightedHistCr_weight_gauss",i, wCrG);
+      //PLOT_GENERIC("FCCPre_weightedHistCr_weight",i, wCr);
+      //PLOT_GENERIC("FCCPre_weightedHistCr_weight_square",i, wCr * wCr);
+      //PLOT_GENERIC("FCCPre_weightedHistCr_weight_gauss",i, wCrG);
       PLOT_GENERIC("FCCPre_weightedHistCr_unfiltered",i, fPre.weightedHistCr[i]);
+      PLOT_GENERIC("FCCPre_weightedHistCr_linear_filter",i, fPre.weightedHistCr[i] * wCr);
+      PLOT_GENERIC("FCCPre_weightedHistCr_square_filter",i, fPre.weightedHistCr[i] * wCr * wCr);
       PLOT_GENERIC("FCCPre_weightedHistCr_gauss_filter",i, fPre.weightedHistCr[i] * wCrG);
     }
     fPre.weightedHistCr[i] *= wCr;
     if(enablePlots)
     {
-      PLOT_GENERIC("FCCPre_weightedHistCr_linear_filter",i, fPre.weightedHistCr[i]);
-      PLOT_GENERIC("FCCPre_weightedHistCr_square_filter",i, fPre.weightedHistCr[i] * wCr);
+      PLOT_GENERIC("FCCPre_weightedHistCr_filtered",i, fPre.weightedHistCr[i]);
     }
     if(fPre.weightedHistCr[i] > fPre.maxWeightedCr)
     {

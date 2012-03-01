@@ -29,7 +29,6 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifierPostProcessor)
-  //REQUIRE(ColoredGrid)
   REQUIRE(Histogram)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
@@ -53,6 +52,7 @@ public:
 private:
   double adaptationRate;
   bool enablePlots;
+  bool justStarted;
 
   FieldColorParameters fieldParams;
 
@@ -76,10 +76,6 @@ private:
   double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];
   double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
   double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  //double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
-
-  void runBasicClassifier();
-  void runExperimentalClassifier();
 
   double smoothRungeKutta4(const unsigned int& idx, double* valueArray);
   void setPerceptData();
