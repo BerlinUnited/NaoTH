@@ -10,7 +10,7 @@ option after_penalized_state
 
   common decision
   {
-    if(ball.was_seen || goal.own.time_since_seen < 500 
+    if((ball.was_seen && ball.distance < 1000)|| goal.own.time_since_seen < 500 
        || goal.opp.time_since_seen < 500)
       goto finished;
   }
