@@ -234,7 +234,8 @@ inline void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
   {
     for (unsigned int pixelIndex = 0; pixelIndex < coloredGrid.numberOfColorPoints[color]; pixelIndex++)
     {
-      increaseValue(coloredGrid.uniformGrid, coloredGrid.colorPointsIndex[color][pixelIndex], (ColorClasses::Color) color);
+      const Vector2<int>& gridPoint = coloredGrid.uniformGrid.getGridCoordinates(pixelIndex);
+      increaseValue(gridPoint, (ColorClasses::Color) color);
     }
   }
 }//end createFromColoredGrid

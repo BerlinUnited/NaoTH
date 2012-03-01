@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   histogram.h
  * Author: claas
  *
@@ -40,9 +40,8 @@ class Histogram: public naoth::Printable
       yHistogram[color][x]++;
     }//end increaseValue
 
-    inline void increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color)
+    inline void increaseValue(const Vector2<int> pixel, const ColorClasses::Color& color)
     {
-      const Vector2<int>& pixel = grid.getGridCoordinates(pixelIndex);
       xHistogram[color][pixel.y]++;
       yHistogram[color][pixel.x]++;
     }//end increaseValue

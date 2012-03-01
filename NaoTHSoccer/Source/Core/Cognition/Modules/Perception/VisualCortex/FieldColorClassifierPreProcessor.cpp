@@ -1,7 +1,7 @@
 /*
  * File:   FieldColorClassifierPreProcessor.cpp
  * Author: claas
- * 
+ *
  */
 
 #include "FieldColorClassifierPreProcessor.h"
@@ -22,8 +22,7 @@ FieldColorClassifierPreProcessor::FieldColorClassifierPreProcessor()
 
 void FieldColorClassifierPreProcessor::execute()
 {
-  const Histogram& histogram = getHistogram();
-  if(!histogram.colorChannelIsUptodate)
+  if(!getHistogram().colorChannelIsUptodate)
   {
     return;
   }
@@ -32,10 +31,9 @@ void FieldColorClassifierPreProcessor::execute()
     enablePlots = true;
   );
 
-  FieldColorPreProcessingPercept& fPre = getFieldColorPreProcessingPercept();
-  fPre.distCr = getFieldColorPercept().distCr;
-  fPre.maxWeightedCr = 0.0;//0.85 * getFieldColorPercept().maxWeightedCr;
-  fPre.maxWeightedIndexCr = 0;//(unsigned int) (getFieldColorPercept().maxWeightedIndexCr);
+  getFieldColorPreProcessingPercept().distCr = getFieldColorPercept().distCr;
+  getFieldColorPreProcessingPercept().maxWeightedCr = 0.0;//0.85 * getFieldColorPercept().maxWeightedCr;
+  getFieldColorPreProcessingPercept().maxWeightedIndexCr = 0;//(unsigned int) (getFieldColorPercept().maxWeightedIndexCr);
 
   STOPWATCH_START("FieldColorClassifier:PreProcessor_Cr_filtering");
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -43,30 +41,31 @@ void FieldColorClassifierPreProcessor::execute()
     double mCr = (double) max<int>(0,  128 - i);
     double wCr = mCr / 128.0;
     double wCrG = exp(-Math::sqr(0.0 - i)/(60.0*60.0));
-    fPre.weightedHistCr[i] = (double) histogram.colorChannelHistogramField[2][i];
+    getFieldColorPreProcessingPercept().weightedHistCr[i] = (double) getHistogram().colorChannelHistogramField[2][i];
     if(enablePlots)
     {
       //PLOT_GENERIC("FCCPre_weightedHistCr_weight",i, wCr);
       //PLOT_GENERIC("FCCPre_weightedHistCr_weight_square",i, wCr * wCr);
       //PLOT_GENERIC("FCCPre_weightedHistCr_weight_gauss",i, wCrG);
-      PLOT_GENERIC("FCCPre_weightedHistCr_unfiltered",i, fPre.weightedHistCr[i]);
-      PLOT_GENERIC("FCCPre_weightedHistCr_linear_filter",i, fPre.weightedHistCr[i] * wCr);
-      PLOT_GENERIC("FCCPre_weightedHistCr_square_filter",i, fPre.weightedHistCr[i] * wCr * wCr);
-      PLOT_GENERIC("FCCPre_weightedHistCr_gauss_filter",i, fPre.weightedHistCr[i] * wCrG);
+      PLOT_GENERIC("FCCPre_weightedHistCr_unfiltered",i, getFieldColorPreProcessingPercept().weightedHistCr[i]);
+      PLOT_GENERIC("FCCPre_weightedHistCr_linear_filter",i, getFieldColorPreProcessingPercept().weightedHistCr[i] * wCr);
+      PLOT_GENERIC("FCCPre_weightedHistCr_square_filter",i, getFieldColorPreProcessingPercept().weightedHistCr[i] * wCr * wCr);
+      PLOT_GENERIC("FCCPre_weightedHistCr_gauss_filter",i, getFieldColorPreProcessingPercept().weightedHistCr[i] * wCrG);
     }
-    fPre.weightedHistCr[i] *= wCr;
+    getFieldColorPreProcessingPercept().weightedHistCr[i] *= wCr;
     if(enablePlots)
     {
-      PLOT_GENERIC("FCCPre_weightedHistCr_filtered",i, fPre.weightedHistCr[i]);
+      PLOT_GENERIC("FCCPre_weightedHistCr_filtered",i, getFieldColorPreProcessingPercept().weightedHistCr[i]);
     }
-    if(fPre.weightedHistCr[i] > fPre.maxWeightedCr)
+    if(getFieldColorPreProcessingPercept().weightedHistCr[i] > getFieldColorPreProcessingPercept().maxWeightedCr)
     {
-      fPre.maxWeightedCr = fPre.weightedHistCr[i];
-      fPre.maxWeightedIndexCr = i;
-    }    
+      getFieldColorPreProcessingPercept().maxWeightedCr = getFieldColorPreProcessingPercept().weightedHistCr[i];
+      getFieldColorPreProcessingPercept().maxWeightedIndexCr = i;
+    }
   }
+  getFieldColorPreProcessingPercept().setRegionBorder();
   STOPWATCH_STOP("FieldColorClassifier:PreProcessor_Cr_filtering");
 
-  fPre.lastUpdated = getFrameInfo();
+  getFieldColorPreProcessingPercept().lastUpdated = getFrameInfo();
 }
 

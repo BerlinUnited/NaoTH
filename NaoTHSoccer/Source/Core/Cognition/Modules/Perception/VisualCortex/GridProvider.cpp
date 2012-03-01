@@ -24,10 +24,10 @@ GridProvider::GridProvider()
 
 
 void GridProvider::execute()
-{  
+{
   // fill the grid
   calculateColoredGrid();
-  
+
   // make some debug
   DEBUG_REQUEST("ImageProcessor:Histogram:enable_debug",
     getHistogram().showDebugInfos(getColoredGrid().uniformGrid, getImage().cameraInfo);
@@ -48,75 +48,69 @@ void GridProvider::execute()
 // daher wird es nicht im GridCreator gemacht)
 void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
 {
-  const Image& image = getImage();
-  const FieldColorPreProcessingPercept& fccPrePercept = getFieldColorPreProcessingPercept();
-  const ColorClassificationModel& colorModel = getColorClassificationModel();
-
-  ColoredGrid& coloredGrid = getColoredGrid();
-  Histogram& histogram = getHistogram();
-
   STOPWATCH_START("Histogram+ColoredGrid");
-  coloredGrid.reset();
-  histogram.init();
+  getColoredGrid().reset();
+  getHistogram().init();
 
   unsigned int grey = 0;
   unsigned int red = 0;
   unsigned int blue = 0;
   Pixel pixel;
 
-  for(unsigned int i = 0; i < coloredGrid.uniformGrid.numberOfGridPoints; i++)
+  for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
-    const Vector2<int>& point = coloredGrid.uniformGrid.getPoint(i);
+    const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
 
-    image.get(point.x, point.y, pixel);
-    
+    getImage().get(point.x, point.y, pixel);
+
     // mean color
     grey += pixel.y;
     red  += pixel.u;
     blue += pixel.v;
-    
+
     // classify the color
-    ColorClasses::Color currentPixelColor = colorModel.getColorClass(pixel.a, pixel.b, pixel.c);
-    
-    coloredGrid.setColor(i, currentPixelColor);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel.y, pixel.u, pixel.v);
+
+    getColoredGrid().setColor(i, currentPixelColor);
 
     if(currentPixelColor == ColorClasses::none)
     {
-      coloredGrid.percentOfUnknownColors += coloredGrid.singlePointRate; 
+      getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;
     }
     else
     {
-      coloredGrid.percentOfKnownColors += coloredGrid.singlePointRate;
+      getColoredGrid().percentOfKnownColors += getColoredGrid().singlePointRate;
     }
-    histogram.increaseValue(coloredGrid.uniformGrid, i, currentPixelColor);
-    histogram.increaseChannelValue(pixel, currentPixelColor);
-    if(fccPrePercept.isFieldCromaRed(pixel.v))
+    const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
+    getHistogram().increaseValue(gridPoint, currentPixelColor);
+    getHistogram().increaseChannelValue(pixel, currentPixelColor);
+    if(getFieldColorPreProcessingPercept().isFieldCromaRed(pixel.v))
     {
-      histogram.collectFieldValue(pixel);
+      getHistogram().collectFieldValue(pixel);
     }
   }//end for
 
   // TODO: do we need this?
   // check if enough known colors were detected
-  coloredGrid.valid = false;
-  if(coloredGrid.percentOfUnknownColors < 85 && coloredGrid.percentOfKnownColors > 20)
+  getColoredGrid().valid = false;
+  if(getColoredGrid().percentOfUnknownColors < 85 && getColoredGrid().percentOfKnownColors > 20)
   {
-    coloredGrid.valid = true;
+    getColoredGrid().valid = true;
   }
 
-  const unsigned int& imgArea = coloredGrid.uniformGrid.maxNumberOfPoints;
+  const unsigned int& imgArea = getColoredGrid().uniformGrid.maxNumberOfPoints;
 
-  coloredGrid.meanBrightness = grey / imgArea;
-  coloredGrid.meanRed = red / imgArea;
-  coloredGrid.meanBlue = blue / imgArea;
+  getColoredGrid().meanBrightness = grey / imgArea;
+  getColoredGrid().meanRed = red / imgArea;
+  getColoredGrid().meanBlue = blue / imgArea;
 
   STOPWATCH_STOP("Histogram+ColoredGrid");
-  
+
   DEBUG_REQUEST("ImageProcessor:show_grid",
-    for(unsigned int i = 0; i < coloredGrid.uniformGrid.numberOfGridPoints; i++)
+    for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
     {
-      Vector2<int> point = coloredGrid.uniformGrid.getPoint(i);
-      POINT_PX(coloredGrid.pointsColors[i], point.x, point.y);
+      Vector2<int> point = getColoredGrid().uniformGrid.getPoint(i);
+      POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
     }//end for
   );
 }//end calculateColoredGrid

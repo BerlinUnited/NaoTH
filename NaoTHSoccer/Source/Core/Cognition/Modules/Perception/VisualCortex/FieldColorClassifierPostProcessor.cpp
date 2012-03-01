@@ -60,28 +60,23 @@ FieldColorClassifierPostProcessor::FieldColorClassifierPostProcessor()
 
 void FieldColorClassifierPostProcessor::execute()
 {
-  const Histogram& histogram = getHistogram();
-  if(!histogram.colorChannelIsUptodate)
+  if(!getHistogram().colorChannelIsUptodate)
   {
     return;
   }
-  const FieldColorPreProcessingPercept &fccPre = getFieldColorPreProcessingPercept();
-
-  FieldColorPercept& fPercept = getFieldColorPercept();
-
   weightedMeanY = 0;
   maxWeightedY = 0.0;
   maxWeightedIndexY = 0;
   maxWeightedCb = 0.0;
   maxWeightedIndexCb = 0;
-  maxWeightedCr = fccPre.maxWeightedCr;
-  maxWeightedIndexCr = fccPre.maxWeightedIndexCr;
+  maxWeightedCr = getFieldColorPreProcessingPercept().maxWeightedCr;
+  maxWeightedIndexCr = getFieldColorPreProcessingPercept().maxWeightedIndexCr;
 
-  meanFieldY = histogram.getMeanFieldY();
+  meanFieldY = getHistogram().getMeanFieldY();
 
-  distY = (unsigned int) fPercept.distY;
-  distCb = (unsigned int) fPercept.distCb;
-  distCr = (unsigned int) fPercept.distCr;
+  distY = (unsigned int) getFieldColorPercept().distY;
+  distCb = (unsigned int) getFieldColorPercept().distCb;
+  distCr = (unsigned int) getFieldColorPercept().distCr;
   maxDistY = (unsigned int) fieldParams.fieldcolorDistMax.y;
   maxDistCb = (unsigned int) fieldParams.fieldcolorDistMax.u;
   maxDistCr = (unsigned int) fieldParams.fieldcolorDistMax.v;
@@ -107,15 +102,15 @@ void FieldColorClassifierPostProcessor::execute()
 
   if(enablePlots)
   {
-    PLOT("FieldColorPercept:maxWeightedIndexY", fPercept.maxWeightedIndexY);
-    PLOT("FieldColorPercept:maxWeightedIndexCb", fPercept.maxWeightedIndexCb);
-    PLOT("FieldColorPercept:maxWeightedIndexCr", fPercept.maxWeightedIndexCr);
-    PLOT("FieldColorPercept:maxWeightedY", fPercept.maxWeightedY);
-    PLOT("FieldColorPercept:maxWeightedCb", fPercept.maxWeightedCb);
-    PLOT("FieldColorPercept:maxWeightedCr", fPercept.maxWeightedCr);
-    PLOT("FieldColorPercept:distY", fPercept.distY);
-    PLOT("FieldColorPercept:distCb", fPercept.distCb);
-    PLOT("FieldColorPercept:distCr", fPercept.distCr);
+    PLOT("FieldColorPercept:maxWeightedIndexY", getFieldColorPercept().maxWeightedIndexY);
+    PLOT("FieldColorPercept:maxWeightedIndexCb", getFieldColorPercept().maxWeightedIndexCb);
+    PLOT("FieldColorPercept:maxWeightedIndexCr", getFieldColorPercept().maxWeightedIndexCr);
+    PLOT("FieldColorPercept:maxWeightedY", getFieldColorPercept().maxWeightedY);
+    PLOT("FieldColorPercept:maxWeightedCb", getFieldColorPercept().maxWeightedCb);
+    PLOT("FieldColorPercept:maxWeightedCr", getFieldColorPercept().maxWeightedCr);
+    PLOT("FieldColorPercept:distY", getFieldColorPercept().distY);
+    PLOT("FieldColorPercept:distCb", getFieldColorPercept().distCb);
+    PLOT("FieldColorPercept:distCr", getFieldColorPercept().distCr);
   }
 
   unsigned int idx;
@@ -134,7 +129,7 @@ void FieldColorClassifierPostProcessor::execute()
     double wYG = exp(-Math::sqr(meanFieldY - i)/(60.0*60.0));
     //double wYgS = exp(-Math::sqr(64.0 - i)/(32.0*32.0));
     //double wYG = exp(-Math::sqr(128.0 - i)/(64.0*64.0));
-    weightedHistY[i] = histogram.weightedHistY[i];
+    weightedHistY[i] = getHistogram().weightedHistY[i];
     if(enablePlots)
     {
       //PLOT_GENERIC("FieldColorClassifierPostProcessor:weightedHistY_weight",i, wY);
@@ -199,7 +194,7 @@ void FieldColorClassifierPostProcessor::execute()
     double wCb = mCb / (double) COLOR_CHANNEL_VALUE_COUNT;
     double wCbG = exp(Math::sqr(i)/(-96.0*96.0));
 
-    weightedHistCb[i] = histogram.weightedHistCb[i];
+    weightedHistCb[i] = getHistogram().weightedHistCb[i];
     double smoothWeightedCb = weightedHistCb[i];
     weightedSmoothedHistCb[i] = smoothWeightedCb;
    if(enablePlots)
@@ -278,7 +273,7 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCr;
   while (idx >= 0 && meanRegionBeginIndexCr == 0)
   {
-    if(fccPre.weightedHistCr[idx] <= 0.15)
+    if(getFieldColorPreProcessingPercept().weightedHistCr[idx] <= 0.15)
     {
       meanRegionBeginIndexCr = idx;
     }
@@ -288,7 +283,7 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCr;
   while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCr == 0)
   {
-    if(fccPre.weightedHistCr[idx] <= 0.15)
+    if(getFieldColorPreProcessingPercept().weightedHistCr[idx] <= 0.15)
     {
       meanRegionEndIndexCr = idx;
     }
@@ -299,9 +294,9 @@ void FieldColorClassifierPostProcessor::execute()
   {
     if(meanRegionEndIndexY >= maxWeightedIndexY && meanRegionBeginIndexY <= maxWeightedIndexY)
     {
-      maxWeightedIndexY = (unsigned int) ((1 - adaptationRate) * fPercept.maxWeightedIndexY + adaptationRate * (meanRegionBeginIndexY + meanRegionEndIndexY) * 0.5);
+      maxWeightedIndexY = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexY + adaptationRate * (meanRegionBeginIndexY + meanRegionEndIndexY) * 0.5);
       double dY = (distY + maxDistY + (meanRegionEndIndexY - meanRegionBeginIndexY) * 0.5) * 0.333;
-      distY = (unsigned int) ((1 - adaptationRate) * fPercept.distY + adaptationRate * dY);
+      distY = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().distY + adaptationRate * dY);
       if(enablePlots)
       {
         for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -332,9 +327,9 @@ void FieldColorClassifierPostProcessor::execute()
 
     if(meanRegionEndIndexCb >= maxWeightedIndexCb && meanRegionBeginIndexCb <= maxWeightedIndexCb)
     {
-      maxWeightedIndexCb = (unsigned int) ((1 - adaptationRate) * fPercept.maxWeightedIndexCb + adaptationRate * maxWeightedIndexCb);
+      maxWeightedIndexCb = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexCb + adaptationRate * maxWeightedIndexCb);
       double dCb = (distCb + maxDistCb + (meanRegionEndIndexCb - meanRegionBeginIndexCb) * 0.5) * 0.333;
-      distCb = (unsigned int) ((1 - adaptationRate) * fPercept.distCb + adaptationRate * dCb);
+      distCb = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().distCb + adaptationRate * dCb);
       if(enablePlots)
       {
         for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -357,9 +352,9 @@ void FieldColorClassifierPostProcessor::execute()
 
     if(meanRegionEndIndexCr >= maxWeightedIndexCr && meanRegionBeginIndexCr <= maxWeightedIndexCr)
     {
-      maxWeightedIndexCr = (unsigned int) ((1 - adaptationRate) * fPercept.maxWeightedIndexCr + adaptationRate * maxWeightedIndexCr);
+      maxWeightedIndexCr = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().maxWeightedIndexCr + adaptationRate * maxWeightedIndexCr);
       double dCr = (distCr + maxDistCr + (meanRegionEndIndexCr - meanRegionBeginIndexCr) * 0.5) * 0.333;
-      distCr = (unsigned int) ((1 - adaptationRate) * fPercept.distCr + adaptationRate * dCr);
+      distCr = (unsigned int) ((1 - adaptationRate) * getFieldColorPercept().distCr + adaptationRate * dCr);
       if(enablePlots)
       {
         for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)

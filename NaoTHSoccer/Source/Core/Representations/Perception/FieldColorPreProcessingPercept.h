@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   FieldColorPercept.h
  * Author: claas
  *
@@ -21,6 +21,9 @@ public:
   double distCr;
   double maxWeightedCr;
   int maxWeightedIndexCr;
+  int lowerBorderCr;
+  int upperBorderCr;
+
 
   double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
 
@@ -37,9 +40,16 @@ public:
   ~FieldColorPreProcessingPercept()
   {}
 
+  inline void setRegionBorder()
+  {
+    lowerBorderCr = maxWeightedIndexCr - (int) ceil(distCr);
+    upperBorderCr = maxWeightedIndexCr + (int) ceil(distCr);
+  }
+
   inline bool isFieldCromaRed(int cr) const
   {
-    return abs(cr - maxWeightedIndexCr) < (int) distCr;
+//    return abs(cr - maxWeightedIndexCr) < (int) distCr;
+    return lowerBorderCr <= cr && cr <= upperBorderCr;
   }
 
   inline void print(ostream& stream) const
