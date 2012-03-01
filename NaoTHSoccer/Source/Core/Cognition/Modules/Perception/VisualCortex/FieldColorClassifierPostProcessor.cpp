@@ -1,7 +1,7 @@
 /*
  * File:   FieldColorClassifierPostProcessor.cpp
  * Author: claas
- * 
+ *
  * Created on 15. März 2011, 15:56
  */
 
@@ -49,7 +49,7 @@ FieldColorClassifierPostProcessor::FieldColorClassifierPostProcessor()
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifierPostProcessor:enable_plots", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifierPostProcessor:weightedHistCr", " ", false);
-  
+
   memset(&weightedSmoothedHistY, 0, sizeof(weightedSmoothedHistY));
   memset(&weightedSmoothedHistCb, 0, sizeof(weightedSmoothedHistCb));
   memset(&weightedHistY, 0, sizeof(weightedHistY));
@@ -129,8 +129,8 @@ void FieldColorClassifierPostProcessor::execute()
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
     //double mY = max(0.0,meanFieldY - fabs(meanFieldY - (double) i));
-    //double mY = max(0.0,128.0 - fabs(meanFieldY - (double) i));
-    //double wY = mY / 128.0 ;
+    double mY = max(0.0,128.0 - fabs(meanFieldY - (double) i));
+    double wY = mY / 128.0 ;
     double wYG = exp(-Math::sqr(meanFieldY - i)/(60.0*60.0));
     //double wYgS = exp(-Math::sqr(64.0 - i)/(32.0*32.0));
     //double wYG = exp(-Math::sqr(128.0 - i)/(64.0*64.0));
@@ -194,10 +194,10 @@ void FieldColorClassifierPostProcessor::execute()
       PLOT_GENERIC("FCCPost_weightedSmoothedHistY", i, weightedSmoothedHistY[i]);
     }
     maxWeightedIndexY = (unsigned int) meanFieldY;
-    
+
     double mCb = COLOR_CHANNEL_VALUE_COUNT - i;
     double wCb = mCb / (double) COLOR_CHANNEL_VALUE_COUNT;
-    //double wCbG = exp(Math::sqr(i)/(-96.0*96.0));
+    double wCbG = exp(Math::sqr(i)/(-96.0*96.0));
 
     weightedHistCb[i] = histogram.weightedHistCb[i];
     double smoothWeightedCb = weightedHistCb[i];
@@ -227,7 +227,7 @@ void FieldColorClassifierPostProcessor::execute()
       maxWeightedIndexCb = i;
     }
   }
-   
+
   Vector3<double> maxRegion(0.0, 0.0, 0.0);
   bool foundRegion = false;
   for(unsigned int i = 0; i < regionList.size(); i++)
@@ -242,8 +242,6 @@ void FieldColorClassifierPostProcessor::execute()
   unsigned int meanRegionEndIndexY = 0;
   if(found)
   {
-    regionBeginY.add(maxRegion.x);
-    regionEndY.add(maxRegion.y);
     meanRegionBeginIndexY = (unsigned int) Math::round(maxRegion.x);
     meanRegionEndIndexY = (unsigned int) Math::round(maxRegion.y);
     maxWeightedIndexY = (unsigned int) Math::round((meanRegionBeginIndexY + meanRegionEndIndexY) * 0.5);
@@ -325,7 +323,7 @@ void FieldColorClassifierPostProcessor::execute()
             PLOT_GENERIC("FCCPost_regionY", i, 0.0);
           }
         }
-      }  
+      }
     }
     else
     {
