@@ -31,7 +31,8 @@ public class naoScpConfig
   String selectedBackup;
   String boxSelected;
 
-  String Ip;
+  ArrayList<String> addresses;
+  String actIp;
   String sNaoNo;
   String sNaoByte;
 
@@ -44,10 +45,17 @@ public class naoScpConfig
   //Timestamp-Prefix used for the nameing scheme in Deploy/in/
   String backupTimestamp;
   //Only for debugging purposes
-  String remotePrefix = "";
-  boolean fhIsTesting = false;
+  String remotePrefix;
+  boolean fhIsTesting;
 
   JProgressBar progressBar;
+
+  naoScpConfig()
+  {
+    addresses = new ArrayList<String>();
+    remotePrefix = "";
+    fhIsTesting = false;
+  }
 
   public String setupScriptPath()
   {

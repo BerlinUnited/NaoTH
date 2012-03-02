@@ -123,10 +123,12 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
   }
 
 
-  public sshWorker(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
+  public sshWorker(naoScpConfig config, String ip, String sNaoNo, String sNaoByte)
   {
     this.config = config;
-    config.Ip = Ip;
+    config.addresses.clear();
+    config.addresses.add(ip);
+    config.actIp = ip;
     config.sNaoNo = sNaoNo;
     config.sNaoByte = sNaoByte;
     hasError = false;
@@ -137,12 +139,33 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     channel = null;    
   }
 
+  public sshWorker(naoScpConfig config, String sNaoNo, String sNaoByte)
+  {
+    this.config = config;
+    if(config.addresses.size() > 0)
+    {
+      config.actIp = config.addresses.get(0);
+    }
+    else
+    {
+      config.actIp = "";
+    }
+    config.sNaoNo = sNaoNo;
+    config.sNaoByte = sNaoByte;
+    hasError = false;
+    errors = "";
+    infos = "";
+
+    session = null;
+    channel = null;
+  }
+
   protected boolean connect() throws JSchException
   {
     if(session == null || !session.isConnected())
     {
-      setInfo("Trying to connect to " + config.Ip);
-      naoSsh(config.Ip);
+      setInfo("Trying to connect to " + config.actIp);
+      naoSsh(config.actIp);
     }
     return session.isConnected();
   }
@@ -201,17 +224,17 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     session.connect();
   }
 
-  public boolean testConnection()
+  public boolean testAndConnect()
   {
     try
     {
-      InetAddress[] naoIps = InetAddress.getAllByName(config.Ip);
       int idx = 0;
-      while(idx < naoIps.length)
+      while(idx < config.addresses.size())
       {
-        setInfo("Try to reach Nao " + config.sNaoNo + " (" + naoIps[idx].getHostAddress() + ")");
-        config.Ip = naoIps[idx].getHostAddress();
-        if(naoIps[idx].isReachable(2500) && connect())
+        setInfo("Try to reach Nao " + config.sNaoNo + " (" + config.addresses.get(idx) + ")");
+        config.actIp = config.addresses.get(idx);
+        InetAddress iAddr = InetAddress.getByName(config.actIp);
+        if(iAddr.isReachable(2500) && connect())
         {
           Channel c = session.openChannel("sftp");
           c.connect();
@@ -224,13 +247,12 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
           }
           else
           {
-            setInfo("Nao " + config.sNaoNo + " (" + config.Ip + ") could not open channel");
-            disconnect();
+            setInfo("Nao " + config.sNaoNo + " (" + config.actIp + ") could not open channel");
           }
         }
         else
         {
-          setInfo("Nao " + config.sNaoNo + " (" + config.Ip + ") unreachable");
+          setInfo("Nao " + config.sNaoNo + " (" + config.actIp + ") unreachable");
         }
         idx++;
       }

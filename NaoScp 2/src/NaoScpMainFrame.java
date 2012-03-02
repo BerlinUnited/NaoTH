@@ -13,47 +13,8 @@ import java.util.*;
  */
 abstract class NaoScpMainFrame  extends javax.swing.JFrame
 {
-//  protected JTextField sshPassword;
-//  protected JTextField sshUser;
-//  protected JTextField sshRootPassword;
-//  protected JTextArea jLogWindow;
-//  protected JComboBox jBackupBox;
-//  protected JProgressBar progressBar;
-//
-//  protected String stagingLibDir;
-//
-//  protected HashMap backups = new HashMap();
-//
-//  protected boolean debugVersion;
-//  protected boolean noBackup;
-//  protected boolean copyConfig;
-//  protected boolean copyLib;
-//  protected boolean copyExe;
-//  protected boolean copyLogs;
-//  protected boolean copySysLibs;
-//  protected boolean restartNaoth;
-
-  protected naoScpConfig config;
-  
+  protected naoScpConfig config;  
   protected abstract void actionInfo(String debugtext);
-//
-//  protected abstract String remoteRootPath(String sNaoNo);
-//  protected abstract String setupScriptPath();
-//  protected abstract String configPath();
-//  protected abstract String setupPath();
-//  protected abstract String libnaoPath();
-//  protected abstract String naoqiPrefPath();
-//  protected abstract String binPath();
-//  protected abstract String homePath();
-//  protected abstract String localDeployRootPath();
-//  protected abstract String localDeployOutPath(String sNaoNo);
-//  protected abstract String localDeployInPath(String sNaoNo, String sNaoByte);
-//  protected abstract String localSetupScriptPath();
-//  protected abstract String localConfigPath();
-//  protected abstract String localLibnaothPath();
-
-//  protected abstract void runInitSetupScripts(String address, String sNaoByte);
-//  protected abstract void runNetworkSetupScripts(String address, String sNaoByte);
   
   protected abstract void haveError(String sNaoNo, String error);
   protected abstract void haveError(int naoNo, String error);
@@ -70,19 +31,9 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   class remoteScriptRunner extends sshScriptRunner
   {
-    public remoteScriptRunner(naoScpConfig config, String Ip, int iNaoNo, int iNaoByte, String scriptName, boolean reboot)
-    {
-      super(config, Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte), scriptName, reboot);
-    }
-
     public remoteScriptRunner(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
     {
       super(config, Ip, sNaoNo, sNaoByte, scriptName, reboot);
-    }
-
-    public remoteScriptRunner(naoScpConfig config, String Ip, int iNaoNo, int iNaoByte, String scriptName)
-    {
-      super(config, Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte), scriptName, false);
     }
 
     public remoteScriptRunner(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName)
@@ -139,14 +90,9 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   class remoteSetupCopier extends sshSetupCopier
   {
-    public remoteSetupCopier(naoScpConfig config, String Ip, int iNaoNo, int iNaoByte)
+    public remoteSetupCopier(naoScpConfig config, String sNaoNo, String sNaoByte)
     {
-      super(config, Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte));
-    }
-
-    public remoteSetupCopier(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
-    {
-      super(config, Ip, sNaoNo, sNaoByte);
+      super(config, sNaoNo, sNaoByte);
     }
 
     @Override
@@ -217,12 +163,12 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
       }
       else
       {
-        SwingUtilities.invokeLater
-        (
-          new Runnable()
-          {
-            public void run()
-            {
+//        SwingUtilities.invokeLater
+//        (
+//          new Runnable()
+//          {
+//            public void run()
+//            {
               String runFunction = "";
               if(mode.equals("full"))
               {
@@ -232,18 +178,20 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
               {
                 runFunction = "setRobotNetworkConfig";
               }
-              remoteScriptRunner sLan = new remoteScriptRunner(config, config.Ip, "0", config.sNaoByte, runFunction, config.reboot);
-              if(sLan.testConnection())
-              {
-                sLan.run();
-              }
-              else
-              {
-                actionDone("script");
-              }
-            }
-          }
-        );
+              config.addresses.clear();
+              remoteScriptRunner sLan = new remoteScriptRunner(config, config.actIp, "0", config.sNaoByte, runFunction, config.reboot);
+              sLan.execute();
+//              if(sLan.testConnection())
+//              {
+//                sLan.run();
+//              }
+//              else
+//              {
+//                actionDone("script");
+//              }
+//            }
+//          }
+//        );
       }
       actionDone(action);
     }
@@ -252,14 +200,9 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
 
   class remoteCopier extends sshCopier
   {
-    public remoteCopier(naoScpConfig config, String Ip, int iNaoNo, int iNaoByte)
+    public remoteCopier(naoScpConfig config, String sNaoNo, String sNaoByte)
     {
-      super(config, Ip, String.valueOf(iNaoNo), String.valueOf(iNaoByte));
-    }
-
-    public remoteCopier(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
-    {
-      super(config, Ip, sNaoNo, sNaoByte);
+      super(config, sNaoNo, sNaoByte);
     }
 
     @Override
@@ -332,24 +275,25 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
       {
         if (config.restartNaoth)
         {
-          SwingUtilities.invokeLater
-          (
-            new Runnable()
-            {
-              public void run()
-              {
-                remoteScriptRunner sLan = new remoteScriptRunner(config, config.Ip, config.sNaoNo, config.sNaoByte, "restartNaoTH", false);
-                if(sLan.testConnection())
-                {
-                  sLan.execute();
-                }
-                else
-                {
-                  actionDone("script");
-                }
-              }
-            }
-          );
+//          SwingUtilities.invokeLater
+//          (
+//            new Runnable()
+//            {
+//              public void run()
+//              {
+                remoteScriptRunner sLan = new remoteScriptRunner(config, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoTH", false);
+                sLan.execute();
+//                if(sLan.testConnection())
+//                {
+//                  sLan.execute();
+//                }
+//                else
+//                {
+//                  actionDone("script");
+//                }
+//              }
+//            }
+//          );
         }
         else
         {

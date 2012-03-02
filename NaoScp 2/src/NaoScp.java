@@ -393,103 +393,123 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     }
 
   }
-    
+
+  private void copyFiles2Nao()
+  {
+    setFormEnabled(false);
+    if(config.debugVersion && config.noBackup)
+    {
+      jLogWindow.setBackground(Color.pink);
+    }
+    else
+    {
+      jLogWindow.setBackground(Color.white);
+    }
+
+    config.copyConfig = cbCopyConfig.isSelected();
+    config.copyLib = cbCopyLib.isSelected();
+    config.copyExe = cbCopyExe.isSelected();
+    config.copyLogs = cbCopyLogs.isSelected();
+    config.restartNaoth = cbRestartNaoth.isSelected();
+    config.noBackup = cbNoBackup.isSelected();
+    if(config.backupIsSelected)
+    {
+      config.boxSelected = jBackupBox.getSelectedItem().toString();
+      config.selectedBackup = config.backups.get(jBackupBox.getSelectedItem()).toString();
+    }
+    else
+    {
+      config.boxSelected = "";
+      config.selectedBackup = "";
+    }
+
+    if(config.copyConfig || config.copyExe || config.copyLib || config.copyLogs)
+    {
+      showCopyDoneMsg = true;
+    }
+
+    if(config.restartNaoth)
+    {
+      if(showCopyDoneMsg)
+      {
+        showCopyDoneMsg = false;
+        showScriptDoneMsg = false;
+        showDoneMsg = true;
+      }
+      else
+      {
+        showScriptDoneMsg = true;
+        showDoneMsg = false;
+      }
+    }
+
+    jLogWindow.setText("");
+
+    config.backupTimestamp = String.valueOf(System.currentTimeMillis());
+    prepareDeploy();
+
+    checkNaoIps();
+
+    for(Integer naoNo : copyDone.keySet())
+    {
+      if(naoNo > 0)
+      {
+        scriptDone.put(naoNo, false);
+        copyDone.put(naoNo, false);
+      }
+      hadCopyErrors.put(naoNo, false);
+      hadScriptErrors.put(naoNo, false);
+      hadErrors.put(naoNo, false);
+    }
+    copyDone.put(0, true);
+    scriptDone.put(0, true);
+
+    for(Integer naoNo : sNaoLanIps.keySet())
+    {
+//      boolean connected = false;
+      if(!sNaoLanIps.get(naoNo).equals(""))
+      {
+        config.addresses = new ArrayList<String>();
+        config.addresses.add(sNaoLanIps.get(naoNo));
+        config.addresses.add(sNaoWLanIps.get(naoNo));
+        final remoteCopier cLan = new remoteCopier(config, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)));
+//        if(cLan.testConnection())
+//        {
+          cLan.execute();
+//          connected = true;
+//        }
+//        else
+//        {
+//          final remoteCopier cWlan = new remoteCopier(config, sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
+//          if(cWlan.testConnection())
+//          {
+//            cWlan.execute();
+//            connected = true;
+//          }
+//        }
+      }
+      else
+      {
+        allIsDone(naoNo);
+      }
+//      if(!connected)
+//      {
+//        allIsDone(naoNo);
+//      }
+    }
+  }
+
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
-
-      setFormEnabled(false);
-      if(config.debugVersion && config.noBackup)
-      {
-        jLogWindow.setBackground(Color.pink);
-      }
-      else
-      {
-        jLogWindow.setBackground(Color.white);
-      }
-     
-      config.copyConfig = cbCopyConfig.isSelected();
-      config.copyLib = cbCopyLib.isSelected();
-      config.copyExe = cbCopyExe.isSelected();
-      config.copyLogs = cbCopyLogs.isSelected();
-      config.restartNaoth = cbRestartNaoth.isSelected();
-      config.noBackup = cbNoBackup.isSelected();
-      if(config.backupIsSelected)
-      {
-        config.boxSelected = jBackupBox.getSelectedItem().toString();
-        config.selectedBackup = config.backups.get(jBackupBox.getSelectedItem()).toString();
-      }
-      else
-      {
-        config.boxSelected = "";
-        config.selectedBackup = "";
-      }
-   
-      if(config.copyConfig || config.copyExe || config.copyLib || config.copyLogs)
-      {
-        showCopyDoneMsg = true;        
-      }
-      
-      if(config.restartNaoth)
-      {
-        if(showCopyDoneMsg)
+      SwingUtilities.invokeLater
+      (
+        new Runnable()
         {
-          showCopyDoneMsg = false;
-          showScriptDoneMsg = false;
-          showDoneMsg = true;
-        }
-        else
-        {
-          showScriptDoneMsg = true;
-          showDoneMsg = false;
-        }
-      }
-      
-      jLogWindow.setText("");
-
-      config.backupTimestamp = String.valueOf(System.currentTimeMillis());
-      prepareDeploy();
-
-      checkNaoIps();
-      
-      for(Integer naoNo : copyDone.keySet())
-      {
-        if(naoNo > 0)
-        {
-          scriptDone.put(naoNo, false);
-          copyDone.put(naoNo, false);
-        }
-        hadCopyErrors.put(naoNo, false);
-        hadScriptErrors.put(naoNo, false);
-        hadErrors.put(naoNo, false);
-      }
-      copyDone.put(0, true);
-      scriptDone.put(0, true);
-      
-      for(Integer naoNo : sNaoLanIps.keySet())
-      {
-        boolean connected = false;
-        if(!sNaoLanIps.get(naoNo).equals(""))
-        {
-          remoteCopier cLan = new remoteCopier(config, sNaoLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
-          if(cLan.testConnection())
+          public void run()
           {
-            cLan.execute();
-            connected = true;
-          }
-          else
-          {
-            remoteCopier cWlan = new remoteCopier(config, sNaoWLanIps.get(naoNo), naoNo, iNaoBytes.get(naoNo));
-            if(cWlan.testConnection())
-            {
-              cWlan.execute();
-              connected = true;
-            }
+            copyFiles2Nao();
           }
         }
-        if(!connected)
-        {
-          allIsDone(naoNo);
-        }
-      }
+      );
     }//GEN-LAST:event_copyButtonActionPerformed
 
   public void haveError(String sNaoNo, String error)
@@ -1643,6 +1663,8 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
               address = JOptionPane.showInputDialog("Not a valid IPv4 address. Enter a valid one", "");             
             }
           }
+          addresses.clear();
+          addresses.add(address);
         }
       }
     }
@@ -1718,7 +1740,7 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     robotConfigPreparator preparator = new robotConfigPreparator();
     config.copySysLibs = true;
     final String address = preparator.getDefaultAddress();
-    final ArrayList<String> addresses = preparator.getAdressList();
+    config.addresses = preparator.getAdressList();
     String sNaoByte = null;
     setupPlayerNo = null;
     if(address != null )
@@ -1738,39 +1760,39 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     }
 
     final String naoByte = sNaoByte;    
-    SwingUtilities.invokeLater
-    (
-      new Runnable() 
-      {
-        public void run() 
-        {
-          String ip = address;
-          remoteSetupCopier cLan = new remoteSetupCopier(config, ip, naoByte, "full");
-          boolean testOk = cLan.testConnection();
+//    SwingUtilities.invokeLater
+//    (
+//      new Runnable()
+//      {
+//        public void run()
+//        {
+//          String ip = address;
+          remoteSetupCopier cLan = new remoteSetupCopier(config, naoByte, "full");
+//          boolean testOk = cLan.testConnection();
+//
+//          if(!testOk && addresses.size() > 0 && !addresses.contains(ip))
+//          {
+//            int idx = 0;
+//            while(!testOk && idx < addresses.size())
+//            {
+//              ip = addresses.get(idx);
+//              cLan = new remoteSetupCopier(config, ip, naoByte, "full");
+//              testOk = cLan.testConnection();
+//              idx++;
+//            }
+//          }
 
-          if(!testOk && addresses.size() > 0 && !addresses.contains(ip))
-          {
-            int idx = 0;
-            while(!testOk && idx < addresses.size())
-            {    
-              ip = addresses.get(idx);
-              cLan = new remoteSetupCopier(config, ip, naoByte, "full");
-              testOk = cLan.testConnection();
-              idx++;
-            }
-          }
-
-          if(testOk)
-          {
+//          if(testOk)
+//          {
             cLan.execute();
-          }
-          else
-          {
-            allIsDone("0");
-          }
-        }
-      }            
-    );
+//          }
+//          else
+//          {
+//            allIsDone("0");
+//          }
+//        }
+//      }
+//    );
 //    boolean testOk = false;
 //    remoteSetupCopier cLan = new remoteSetupCopier(config, address, sNaoByte, "full");
 //    testOk = cLan.testConnection();
@@ -1803,7 +1825,7 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     robotConfigPreparator preparator = new robotConfigPreparator();
     config.copySysLibs = false;
     final String address = preparator.getDefaultAddress();
-    final ArrayList<String> addresses = preparator.getAdressList();
+    config.addresses = preparator.getAdressList();
       
     String sNaoByte = null;
     if(address != null )
@@ -1818,39 +1840,39 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     }
     final String naoByte = sNaoByte;
     
-    SwingUtilities.invokeLater
-    (
-      new Runnable() 
-      {
-        public void run() 
-        {
+//    SwingUtilities.invokeLater
+//    (
+//      new Runnable()
+//      {
+//        public void run()
+//        {
           String ip = address;
-          remoteSetupCopier cLan = new remoteSetupCopier(config, ip, naoByte, "network");
-          boolean testOk = cLan.testConnection();
-
-          if(!testOk && addresses.size() > 0 && !addresses.contains(ip))
-          {
-            int idx = 0;
-            while(!testOk && idx < addresses.size())
-            {    
-              ip = addresses.get(idx);
-              cLan = new remoteSetupCopier(config, ip, naoByte, "network");
-              testOk = cLan.testConnection();
-              idx++;
-            }
-          }
-
-          if(testOk)
-          {
+          remoteSetupCopier cLan = new remoteSetupCopier(config, naoByte, "network");
+//          boolean testOk = cLan.testConnection();
+//
+//          if(!testOk && addresses.size() > 0 && !addresses.contains(ip))
+//          {
+//            int idx = 0;
+//            while(!testOk && idx < addresses.size())
+//            {
+//              ip = addresses.get(idx);
+//              cLan = new remoteSetupCopier(config, ip, naoByte, "network");
+//              testOk = cLan.testConnection();
+//              idx++;
+//            }
+//          }
+//
+//          if(testOk)
+//          {
             cLan.execute();
-          }
-          else
-          {
-            allIsDone("0");
-          }
-        }
-      }            
-    );
+//          }
+//          else
+//          {
+//            allIsDone("0");
+//          }
+//        }
+//      }
+//    );
   }
     
   
@@ -2786,18 +2808,18 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
     }//GEN-LAST:event_sshRootUserActionPerformed
 
     private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
-//      SwingUtilities.invokeLater
-//      (
-//        new Runnable() 
-//        {
-//          public void run() 
-//          {
-//             setRobotNetwork();
-//          }
-//        }
-//      );
-//      
-      setRobotNetwork();
+      SwingUtilities.invokeLater
+      (
+        new Runnable() 
+        {
+          public void run() 
+          {
+             setRobotNetwork();
+          }
+        }
+      );
+      
+//      setRobotNetwork();
     }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
 
     private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
@@ -2876,7 +2898,17 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
           }
         }
       }            
-      initializeRobot();
+      SwingUtilities.invokeLater
+      (
+        new Runnable()
+        {
+          public void run()
+          {
+            initializeRobot();
+          }
+        }
+      );
+//      initializeRobot();
     }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
 
     private void jSchemeBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jSchemeBoxItemStateChanged
@@ -2987,6 +3019,6 @@ public class NaoScp extends NaoScpMainFrame implements ServiceListener
   private javax.swing.JTextField subnetFieldLAN;
   private javax.swing.JTextField subnetFieldWLAN;
   // End of variables declaration//GEN-END:variables
-}
+};
 
 

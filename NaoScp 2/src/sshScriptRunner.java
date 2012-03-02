@@ -23,6 +23,13 @@ abstract class sshScriptRunner extends sshWorker
   private OutputStream out;
   private String lastOut;
 
+  public sshScriptRunner(naoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  {
+    super(config, sNaoNo, sNaoByte);
+    init(scriptName);
+    config.reboot = reboot;
+  }
+
   public sshScriptRunner(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
     super(config, Ip, sNaoNo, sNaoByte);
@@ -69,7 +76,8 @@ abstract class sshScriptRunner extends sshWorker
     
     try
     {
-      if(connect())
+      hasError = !testAndConnect();
+      if(!hasError)
       {
         if(scriptName.equalsIgnoreCase("restartNaoTH"))
         {
@@ -86,7 +94,7 @@ abstract class sshScriptRunner extends sshWorker
       }
       else
       {
-        errors = "Couldn't connect with Nao " + config.Ip + " (" + config.sNaoNo + ")";
+        errors = "Couldn't connect with Nao " + config.actIp + " (" + config.sNaoNo + ")";
       }      
       disconnect();
     }

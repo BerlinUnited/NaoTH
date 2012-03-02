@@ -14,6 +14,12 @@ abstract class sshSetupCopier extends sshCopier
 {
   protected String mode;
 
+  sshSetupCopier(naoScpConfig config, String sNaoNo, String mode)
+  {
+    super(config, "0", sNaoNo);
+    this.mode = mode;
+  }
+
   sshSetupCopier(naoScpConfig config, String Ip, String sNaoNo, String mode)
   {
     super(config, Ip, "0", sNaoNo);
@@ -39,13 +45,14 @@ abstract class sshSetupCopier extends sshCopier
     hasError = false;
     try
     {
-      if(connect())
+      hasError = !testAndConnect();
+      if(!hasError)
       {
         hasError = !exec();
       }
       else
       {
-        errors = "Couldn't connect with Nao " + config.Ip + " (" + config.sNaoNo + ")";
+        errors = "Couldn't connect with Nao " + config.actIp + " (" + config.sNaoNo + ")";
       }      
       disconnect();
     }

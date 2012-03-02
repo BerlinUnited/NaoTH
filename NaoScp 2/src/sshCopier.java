@@ -13,6 +13,11 @@ import javax.swing.SwingUtilities;
  */
 abstract class sshCopier extends sshWorker
 {   
+  public sshCopier(naoScpConfig config, String sNaoNo, String sNaoByte)
+  {
+    super(config, sNaoNo, sNaoByte);
+  }
+
   public sshCopier(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
   {
     super(config, Ip, sNaoNo, sNaoByte);
@@ -43,13 +48,14 @@ abstract class sshCopier extends sshWorker
     
     try
     {
-      if(connect())
+      hasError = !testAndConnect();
+      if(!hasError)
       {
         hasError = !exec();
       }
       else
       {
-        errors = "Couldn't connect with Nao " + config.Ip + " (" + config.sNaoNo + ")";
+        errors = "Couldn't connect with Nao " + config.actIp + " (" + config.sNaoNo + ")";
       }      
       disconnect();
     }
