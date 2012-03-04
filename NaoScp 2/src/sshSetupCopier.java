@@ -14,13 +14,13 @@ abstract class sshSetupCopier extends sshCopier
 {
   protected String mode;
 
-  sshSetupCopier(naoScpConfig config, String sNaoNo, String mode)
+  sshSetupCopier(NaoScpConfig config, String sNaoNo, String mode)
   {
     super(config, "0", sNaoNo);
     this.mode = mode;
   }
 
-  sshSetupCopier(naoScpConfig config, String Ip, String sNaoNo, String mode)
+  sshSetupCopier(NaoScpConfig config, String Ip, String sNaoNo, String mode)
   {
     super(config, Ip, "0", sNaoNo);
     this.mode = mode;
@@ -52,13 +52,17 @@ abstract class sshSetupCopier extends sshCopier
       }
       else
       {
-        errors = "Couldn't connect with Nao " + config.actIp + " (" + config.sNaoNo + ")";
+        errors = "No connection with Nao " + config.sNaoNo;
       }      
       disconnect();
     }
     catch(Exception e)
     {
-      errors += e.toString();
+      if(!errors.equals(""))
+      {
+        errors += "\n";
+      }
+      errors += "Exception in doInBackground: " + e.toString();
     }    
     return !hasError;
   }

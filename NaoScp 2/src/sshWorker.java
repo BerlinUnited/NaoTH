@@ -19,7 +19,7 @@ import java.util.regex.*;
  */
 abstract class sshWorker extends SwingWorker<Boolean, File>
 {
-  naoScpConfig config;
+  NaoScpConfig config;
 
   protected Session session;
   protected Channel channel;
@@ -122,26 +122,22 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     }
   }
 
-
-  public sshWorker(naoScpConfig config, String ip, String sNaoNo, String sNaoByte)
+  public sshWorker(NaoScpConfig naoScpConfig, String ip, String sNaoNo, String sNaoByte)
   {
-    this.config = config;
+    config = naoScpConfig;
     config.addresses.clear();
     config.addresses.add(ip);
-    config.actIp = ip;
-    config.sNaoNo = sNaoNo;
-    config.sNaoByte = sNaoByte;
-    hasError = false;
-    errors = "";
-    infos = "";
-    
-    session = null;
-    channel = null;    
+    init(sNaoNo, sNaoByte);
   }
 
-  public sshWorker(naoScpConfig config, String sNaoNo, String sNaoByte)
+  public sshWorker(NaoScpConfig naoScpConfig, String sNaoNo, String sNaoByte)
   {
-    this.config = config;
+    config = naoScpConfig;
+    init(sNaoNo, sNaoByte);
+  }
+  
+  private void init(String sNaoNo, String sNaoByte)
+  {
     if(config.addresses.size() > 0)
     {
       config.actIp = config.addresses.get(0);
@@ -155,46 +151,68 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     hasError = false;
     errors = "";
     infos = "";
-
+    
     session = null;
-    channel = null;
+    channel = null;    
   }
 
   protected boolean connect() throws JSchException
   {
-    if(session == null || !session.isConnected())
+    session = connect(session, config.actIp);
+    return (session != null && session.isConnected());
+  }
+
+  protected Session connect(Session s, String ip) throws JSchException
+  {
+    if(s == null || !s.isConnected())
     {
-      setInfo("Trying to connect to " + config.actIp);
-      naoSsh(config.actIp);
+      setInfo("Trying to connect to " + ip);
+      s = naoSsh(ip);
     }
-    return session.isConnected();
+    return s;
   }
 
   protected boolean disconnect() throws JSchException
   {
-    if(session != null && session.isConnected())
+    return disconnect(session);
+  }
+
+  protected boolean disconnect(Session s) throws JSchException
+  {
+    if(s != null && s.isConnected())
     {
-      session.disconnect();
+      s.disconnect();
     }
-    return !session.isConnected();
+    return (s == null || !s.isConnected());
   }
 
   protected boolean openChannel(String type) throws JSchException
   {
-    if(channel == null || !channel.isConnected())
-    {
-      channel = session.openChannel(type);
-    }
+    channel = openChannel(session, channel, type);
     return !channel.isClosed();
+  }
+
+  protected Channel openChannel(Session s, Channel c, String type) throws JSchException
+  {
+    if(c == null || !c.isConnected())
+    {
+      c = s.openChannel(type);
+    }
+    return c;
   }
 
   protected boolean disconnectChannel() throws JSchException
   {
-    if(channel != null && channel.isConnected())
+    return disconnectChannel(channel);
+  }
+  
+  protected boolean disconnectChannel(Channel c) throws JSchException
+  {
+    if(c != null && c.isConnected())
     {
-      channel.disconnect();
+      c.disconnect();
     }
-    return !channel.isConnected();
+    return (c == null || !c.isConnected());
   }
 
   /**
@@ -203,7 +221,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
    * @return session
    * @throws com.jcraft.jsch.JSchException
    */
-  protected void naoSsh(String Ip) throws JSchException
+  protected Session naoSsh(String Ip) throws JSchException
   {
     String password = config.sshPassword;
     String user = config.sshUser;
@@ -217,51 +235,56 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     }
     JSch jsch = new JSch();
 
-    session = jsch.getSession(user, Ip, 22);
-    session.setConfig(sshConfig);
-    session.setUserInfo(ui);
-    session.setPassword(password);
-    session.connect();
+    Session s = jsch.getSession(user, Ip, 22);
+    s.setConfig(sshConfig);
+    s.setUserInfo(ui);
+    s.setPassword(password);
+    s.connect();
+    return s;
   }
 
   public boolean testAndConnect()
   {
     try
     {
-      int idx = 0;
+      int idx = 0;      
       while(idx < config.addresses.size())
       {
-        setInfo("Try to reach Nao " + config.sNaoNo + " (" + config.addresses.get(idx) + ")");
         config.actIp = config.addresses.get(idx);
+        idx++;
         InetAddress iAddr = InetAddress.getByName(config.actIp);
-        if(iAddr.isReachable(2500) && connect())
+        System.out.println(idx);
+        if(iAddr.isReachable(2500))
         {
-          Channel c = session.openChannel("sftp");
-          c.connect();
-          Thread.sleep(100);
-          if(c.isConnected())
+          if(connect())
           {
-            c.disconnect();
-            Thread.sleep(100);
-            return true;
-          }
-          else
-          {
-            setInfo("Nao " + config.sNaoNo + " (" + config.actIp + ") could not open channel");
+            Channel c = null;
+            c = openChannel(session, c, "sftp");
+            if(!c.isClosed())
+            {
+              c.disconnect();
+//              Thread.sleep(100);            
+              return true;
+            }
+            else
+            {
+              disconnect();
+              setInfo("[0;31mNao " + config.sNaoNo + " (" + config.actIp + ") could not open channel\n[0m");
+            }
           }
         }
         else
         {
-          setInfo("Nao " + config.sNaoNo + " (" + config.actIp + ") unreachable");
+          setInfo("[0;31mNao " + config.sNaoNo + " (" + config.actIp + ") unreachable\n[0m");
         }
-        idx++;
       }
     }
     catch(Exception e)
     {
-      setInfo(e.toString());
+      haveError("Exeption while testing connectivity (" + e.toString() + ")");
       return false;
     }
+    hasError = true;
     return false;
   }
 
@@ -304,7 +327,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     }
     catch(Exception e)
     {
-      setInfo("Exception in rmDirSftp: (" + dstDir + ")" + e.toString());
+      setInfo("[0;31mException in rmDirSftp: (" + dstDir + ")" + e.toString() + "\n[0m");
     }
   }
 
@@ -356,7 +379,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     }
     catch(Exception e)
     {
-      setInfo("Exception in recursiveSftpGet: " + e.toString());
+      setInfo("[0;31mException in recursiveSftpGet: " + e.toString() + "\n[0m");
     }
     
   }
@@ -412,11 +435,11 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
     }
     catch(Exception e)
     {
-      setInfo("Exception in recursiveSftpGet: " + e.toString());
+      setInfo("[0;31mException in recursiveSftpGet: " + e.toString() + "\n[0m");
     }    
   }
 
-  protected boolean recursiveSftpCheckPath(File src, String dst)
+  protected boolean sftpCheckRemotePath(File src, String dst)
   {    
     ChannelSftp c = (ChannelSftp) channel;
     
@@ -443,7 +466,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
         }
         catch(SftpException ex)
         {
-          setInfo("mkdir exception (" + e.toString() + ")");
+          setInfo("[0;31mException in recursiveSftpCheckPath - mkdir (" + e.toString() + ")\n[0m");
           return false;
         }
       }
@@ -459,12 +482,12 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
    */
   protected void recursiveSftpPut(File src, String dst)
   {
-    if(src.exists())
+    if(src != null && src.exists())
     {
       ChannelSftp c = (ChannelSftp) channel;
       try
       {
-        if(recursiveSftpCheckPath(src, dst) && src.isDirectory())
+        if(sftpCheckRemotePath(src, dst) && src.isDirectory())
         {
           File files[] = src.listFiles();
           Arrays.sort(files);
@@ -477,7 +500,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
         else if(src.isFile())
         {
           setInfo("put " + src.getName());
-          if(recursiveSftpCheckPath(src, dst))
+          if(sftpCheckRemotePath(src, dst))
           {
             try
             {
@@ -516,12 +539,12 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
       }
       catch(Exception e)
       {
-        setInfo("Exception in recursiveSftpPut: " + e.toString());
+        setInfo("[0;31mException in recursiveSftpPut: " + e.toString() + "\n[0m");
       }
     }
     else
     {
-      setInfo("possible Error: file or directory '" + src.getName() + "' does not exist or is not accessable!");
+      setInfo("[43mpossible Error:[0m file or directory '" + src.getName() + "' does not exist or is not accessable!\n[0m");
     }
   }
   

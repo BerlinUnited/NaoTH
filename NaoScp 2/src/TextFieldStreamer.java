@@ -16,13 +16,18 @@ public class TextFieldStreamer extends InputStream implements ActionListener
 {
 
   private JTextField tf;
-  private String str = null;
-  private int pos = 0;
-  private boolean triggered = false;
+  private String str;
+  private int pos;
+  private boolean triggered;
+  private boolean stopWork;
 
   public TextFieldStreamer(JTextField jtf) 
   {
     tf = jtf;
+    str = null;
+    pos = 0;
+    triggered = false;
+    stopWork = false;
   }
 
   public boolean wasTriggered()
@@ -58,14 +63,14 @@ public class TextFieldStreamer extends InputStream implements ActionListener
     //and the EOS should be returned 
     if(str != null && pos == str.length())
     {
-      str =null;
+      str = null;
       //this is supposed to return -1 on "end of stream"
       //but I'm having a hard time locating the constant
       return java.io.StreamTokenizer.TT_EOF;
     }
     //no input available, block until more is available because that's
     //the behavior specified in the Javadocs
-    while (str == null || pos >= str.length()) 
+    while (!stopWork && (str == null || pos >= str.length()) )
     {
       try 
       {
@@ -80,7 +85,23 @@ public class TextFieldStreamer extends InputStream implements ActionListener
         ex.printStackTrace();
       }
     }
+    if(stopWork)
+    {
+      try
+      {
+        close();
+      }
+      catch(IOException e)
+      {}
+    }
     //read an additional character, return it and increment the index
     return str.charAt(pos++);
   }
+  
+  public synchronized void stop()
+  {
+    stopWork = true;
+    this.notifyAll();
+  }
+  
 }

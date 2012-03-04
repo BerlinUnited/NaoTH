@@ -1,6 +1,6 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.8" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Container class="javax.swing.JDialog" name="jDialog1">
 
@@ -51,8 +51,8 @@
                       <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="progressBar" pref="202" max="32767" attributes="1"/>
-                          <Component id="jScrollPane1" max="32767" attributes="1"/>
-                          <Component id="jCopyStatus" pref="202" max="32767" attributes="1"/>
+                          <Component id="jCopyStatus" max="32767" attributes="1"/>
+                          <Component id="jScrollPane5" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="jLabel12" min="-2" max="-2" attributes="1"/>
@@ -67,14 +67,14 @@
               <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane1" min="-2" pref="333" max="-2" attributes="1"/>
+                  <Group type="102" attributes="0">
+                      <Component id="jScrollPane5" min="-2" pref="333" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jCopyStatus" min="-2" pref="19" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="1"/>
                   </Group>
-                  <Component id="jTabbedPane1" alignment="0" min="-2" pref="393" max="-2" attributes="0"/>
+                  <Component id="jTabbedPane1" min="-2" pref="393" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="20" max="32767" attributes="0"/>
           </Group>
@@ -90,25 +90,6 @@
         <Property name="text" type="java.lang.String" value="v0.4"/>
       </Properties>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
-      <AuxValues>
-        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-      </AuxValues>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-      <SubComponents>
-        <Component class="javax.swing.JTextArea" name="jLogWindow">
-          <Properties>
-            <Property name="columns" type="int" value="20"/>
-            <Property name="editable" type="boolean" value="false"/>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Lucida Grande" size="10" style="0"/>
-            </Property>
-            <Property name="rows" type="int" value="5"/>
-          </Properties>
-        </Component>
-      </SubComponents>
-    </Container>
     <Component class="javax.swing.JLabel" name="jCopyStatus">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -180,7 +161,7 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" pref="93" max="32767" attributes="1"/>
+                              <Component id="jScrollPane2" max="32767" attributes="1"/>
                           </Group>
                           <Component id="jSettingsPanel" min="-2" max="-2" attributes="1"/>
                       </Group>
@@ -354,7 +335,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                     <Property name="text" type="java.lang.String" value="SET DIRECTORY :)"/>
-                    <Property name="toolTipText" type="java.lang.String" value="NaoController project directory (e.g., &quot;D:\u005cNaoTH-2009\u005cProjects\u005cNaoController&quot;)"/>
+                    <Property name="toolTipText" type="java.lang.String" value="NaoController project directory (e.g., &quot;D:\u005cu005cNaoTH-2009\u005cu005cProjects\u005cu005cNaoController&quot;)" containsInvalidXMLChars="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel15">
@@ -452,7 +433,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jTeamNumber" min="-2" pref="36" max="-2" attributes="1"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jButtonRefreshData" pref="129" max="32767" attributes="0"/>
+                                  <Component id="jButtonRefreshData" max="32767" attributes="0"/>
                               </Group>
                               <Component id="jSchemeBox" min="-2" pref="352" max="-2" attributes="1"/>
                           </Group>
@@ -542,6 +523,7 @@
                 <Property name="text" type="java.lang.String" value="NO BACKUP"/>
               </Properties>
               <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbNoBackupItemStateChanged"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbNoBackupActionPerformed"/>
               </Events>
             </Component>
@@ -604,7 +586,7 @@
                           <Component id="jScrollPane3" pref="163" max="32767" attributes="0"/>
                           <Component id="cbRebootSystem" pref="163" max="32767" attributes="0"/>
                           <Component id="jButtonSetRobotNetwork" pref="163" max="32767" attributes="0"/>
-                          <Component id="jButtonInitRobotSystem" alignment="1" pref="163" max="32767" attributes="1"/>
+                          <Component id="jButtonInitRobotSystem" alignment="1" pref="168" max="32767" attributes="1"/>
                           <Component id="jButtonSaveNetworkConfig" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
@@ -854,7 +836,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel26" min="-2" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTeamCommPort" pref="110" max="32767" attributes="3"/>
+                                  <Component id="jTeamCommPort" pref="122" max="32767" attributes="3"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -1054,6 +1036,17 @@
             </Component>
           </SubComponents>
         </Container>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane5">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextPane" name="logTextPane">
+        </Component>
       </SubComponents>
     </Container>
   </SubComponents>

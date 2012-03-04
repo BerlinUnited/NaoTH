@@ -13,12 +13,12 @@ import javax.swing.SwingUtilities;
  */
 abstract class sshCopier extends sshWorker
 {   
-  public sshCopier(naoScpConfig config, String sNaoNo, String sNaoByte)
+  public sshCopier(NaoScpConfig config, String sNaoNo, String sNaoByte)
   {
     super(config, sNaoNo, sNaoByte);
   }
 
-  public sshCopier(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
+  public sshCopier(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte)
   {
     super(config, Ip, sNaoNo, sNaoByte);
   }
@@ -55,13 +55,17 @@ abstract class sshCopier extends sshWorker
       }
       else
       {
-        errors = "Couldn't connect with Nao " + config.actIp + " (" + config.sNaoNo + ")";
+        errors = "Couldn't connect with Nao " + config.sNaoNo;
       }      
       disconnect();
     }
     catch(Exception e)
     {
-      errors += e.toString();
+      if(!errors.equals(""))
+      {
+        errors += "\n";
+      }
+      errors += "Exception in doInBackground :" + e.toString();
     }
     
     return !hasError;
@@ -79,7 +83,7 @@ abstract class sshCopier extends sshWorker
         File libFile = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/libnaoth.so");
         if(!libFile.exists() || !libFile.isFile())
         {
-          setInfo("selected backup contains no libnaoth.so file");
+          setInfo("[43mselected backup contains no libnaoth.so file\n[0m");
           config.copyLib = false;
         }
       }
@@ -89,7 +93,7 @@ abstract class sshCopier extends sshWorker
         File exeDir = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/naoth");
         if(!exeDir.exists() || !exeDir.isFile())
         {
-          setInfo("selected backup contains no libnaoth.so file");
+          setInfo("[43mselected backup contains no libnaoth.so file\n[0m");
           config.copyExe = false;
         }
       }
@@ -99,7 +103,7 @@ abstract class sshCopier extends sshWorker
         File configDir = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/Config");
         if(!configDir.exists() || !configDir.isDirectory())
         {
-          setInfo("selected backup contains no Config directory");
+          setInfo("[43mselected backup contains no Config directory\n[0m");
           config.copyConfig = false;
         }
       }
@@ -136,7 +140,7 @@ abstract class sshCopier extends sshWorker
         }
         catch(Exception e)
         {
-          setInfo("Exception in backupNao (" + config.sNaoNo + "): " + e.toString() + "(" + exceptionHelper + ")");
+          setInfo("[0;31mException in backupNao (" + config.sNaoNo + "): " + e.toString() + "(" + exceptionHelper + ")\n[0m");
         }
 
         try
@@ -155,7 +159,7 @@ abstract class sshCopier extends sshWorker
         }
         catch(Exception e)
         {
-          setInfo("Exception in backupNao (" + config.sNaoNo + "): " + e.toString() + "(" + exceptionHelper + ")");
+          setInfo("[0;31mException in backupNao (" + config.sNaoNo + "): " + e.toString() + "(" + exceptionHelper + ")\n[0m");
         }
 
         try
@@ -176,7 +180,7 @@ abstract class sshCopier extends sshWorker
         }
         catch(Exception e)
         {
-          setInfo("Exception in backupNao (" + config.sNaoNo + "): " + e.toString() + "(" + exceptionHelper + ")");
+          setInfo("[0;31mException in backupNao (" + config.sNaoNo + "): " + e.toString() + "(" + exceptionHelper + ")\n[0m");
         }
 
         try
@@ -189,7 +193,7 @@ abstract class sshCopier extends sshWorker
         }
         catch(Exception e)
         {
-          setInfo("Exception in backupNao (" + String.valueOf(config.sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
+          setInfo("[0;31mException in backupNao (" + String.valueOf(config.sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")\n[0m");
         }
 
         try
@@ -202,7 +206,7 @@ abstract class sshCopier extends sshWorker
         }
         catch(Exception e)
         {
-          setInfo("Exception in backupNao (" + String.valueOf(config.sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")");
+          setInfo("[0;31mException in backupNao (" + String.valueOf(config.sNaoNo) + "): " + e.toString() + "(" + exceptionHelper + ")\n[0m");
         }
       }
       disconnectChannel();
@@ -272,7 +276,7 @@ abstract class sshCopier extends sshWorker
             }
             else
             {
-              setInfo("selected backup contains no libnaoth.so file " + config.localLibPath());
+              setInfo("[43mselected backup contains no libnaoth.so file " + config.localLibPath() + "\n[0m");
               config.copyLib = false;
             }
           }
@@ -287,7 +291,7 @@ abstract class sshCopier extends sshWorker
             }
             else
             {
-              setInfo("selected backup contains no libnaoth.so file " + config.localLibPath());
+              setInfo("[43mselected backup contains no libnaoth.so file " + config.localLibPath()+ "\n[0m");
               config.copyExe = false;
             }
           }
@@ -302,7 +306,7 @@ abstract class sshCopier extends sshWorker
             }
             else
             {
-              setInfo("selected backup contains no Config directory " + config.localConfigPath());
+              setInfo("[43mselected backup contains no Config directory " + config.localConfigPath() + "\n[0m");
               config.copyConfig = false;
             }
           }
@@ -358,7 +362,18 @@ abstract class sshCopier extends sshWorker
           }//end try
 
           recursiveSftpPut(new File(localBinPath + "naoth"), config.remoteBinPath() + "naoth");
-          c.chmod(504, config.remoteBinPath() + "naoth");
+          try
+          {
+            c.chmod(504, config.remoteBinPath() + "naoth");
+          }
+          catch(SftpException ex)
+          {
+            // if the file is not there its ok
+            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+            {
+              throw ex;
+            }
+          }//end try
         }
 
         if(config.copyConfig)

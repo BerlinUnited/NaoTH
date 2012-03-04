@@ -23,14 +23,14 @@ abstract class sshScriptRunner extends sshWorker
   private OutputStream out;
   private String lastOut;
 
-  public sshScriptRunner(naoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  public sshScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
     super(config, sNaoNo, sNaoByte);
     init(scriptName);
     config.reboot = reboot;
   }
 
-  public sshScriptRunner(naoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+  public sshScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
   {
     super(config, Ip, sNaoNo, sNaoByte);
     init(scriptName);
@@ -94,13 +94,17 @@ abstract class sshScriptRunner extends sshWorker
       }
       else
       {
-        errors = "Couldn't connect with Nao " + config.actIp + " (" + config.sNaoNo + ")";
+        errors = "Couldn't connect with Nao " + config.sNaoNo;
       }      
       disconnect();
     }
     catch(Exception e)
     {
-      errors += e.toString();
+      if(!errors.equals(""))
+      {
+        errors += "\n";
+      }
+      errors += "Exception in doInBackground: " + e.toString();
     }
     
     return !hasError;
@@ -164,7 +168,7 @@ abstract class sshScriptRunner extends sshWorker
     return true;
   }
 
-  private String sshExecAndWaitForResponse(String cmd, String waitFor) throws InterruptedException, IOException
+  private String sshExecAndWaitForResponse(String cmd, String waitFor) throws InterruptedException
   {
      cIn.setText(cmd);
      ActionEvent evt = new ActionEvent(cIn, 0, "\n");
@@ -181,7 +185,7 @@ abstract class sshScriptRunner extends sshWorker
 
   }
 
-  private String sshWaitForResponse(String waitFor) throws InterruptedException, IOException
+  private String sshWaitForResponse(String waitFor) throws InterruptedException
   {
     String[] waitForStrings = waitFor.split("\\|"); 
 
@@ -218,7 +222,7 @@ abstract class sshScriptRunner extends sshWorker
     return lastFound;
   }
 
-  private boolean runShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException, IOException 
+  private boolean runShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException 
   {
     String rootPW;
     rootPW = config.sshRootPassword;
@@ -235,7 +239,7 @@ abstract class sshScriptRunner extends sshWorker
       channel.setOutputStream(out, false);
       channel.connect();
       
-      String response = null;
+      String response;
 
       response = sshWaitForResponse("localhost|nao|$");
       if(response == null)
@@ -253,8 +257,8 @@ abstract class sshScriptRunner extends sshWorker
       if(response == null || response.equals("Authentication") || response.equals("failure"))
       {
         haveError( "superuser password is wrong");
+        ts.stop();
         disconnectChannel();
-        ts.close();
         return false;
       }
       response = sshExecAndWaitForResponse("cd " + directory, "localhost|nao|$");
@@ -284,15 +288,16 @@ abstract class sshScriptRunner extends sshWorker
       }
       response = sshExecAndWaitForResponse("exit", "logout|localhost|nao|$");
     }
-    ts.close();
+    setInfo("\n");
+    ts.stop();
     disconnectChannel();
     return true;
   }
     
-  private void showTimeOutMsg() throws JSchException, IOException
+  private void showTimeOutMsg() throws JSchException
   {
     haveError("ssh shell response timed out");
-    ts.close();
+    ts.stop();
     disconnectChannel();
   }
   
