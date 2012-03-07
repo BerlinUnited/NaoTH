@@ -1,0 +1,21 @@
+option dribble_agent
+{
+
+	initial state and_action
+	{
+	  decision
+	  {
+	    stay;
+	  }
+	  action{
+      // Kick only
+	    dribble_stand_test(kick_right=true, walk_before_kick=false, step_after_kick=false, step_direction_x=0, step_direction_y=0, kick_direction=90);
+	    
+	    // Walk and kick
+	    // dribble_stand_test(kick_right=true, walk_before_kick=true, step_after_kick=false, step_direction_x=0, step_direction_y=0, kick_direction=90);
+
+      // Walk, kick, sidestep
+      // dribble_stand_test(kick_right=true, walk_before_kick=true, step_after_kick=true, step_direction_x=0, step_direction_y=100, kick_direction=90);
+    }
+	}
+}

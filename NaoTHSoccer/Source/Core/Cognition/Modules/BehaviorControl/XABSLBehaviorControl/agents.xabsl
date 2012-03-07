@@ -158,6 +158,8 @@ include "Options/NonSoccer/Test/skill_test.xabsl";
 include "Options/NonSoccer/Test/ultrasound_test.xabsl";
 include "Options/NonSoccer/Test/ultrasound_rawtest.xabsl";
 include "Options/NonSoccer/Test/dribble_test.xabsl";
+include "Options/NonSoccer/Test/dribble_agent.xabsl";
+include "Options/NonSoccer/Test/dribble_stand_test.xabsl";
 include "Options/NonSoccer/Test/walk_test.xabsl";
 
 include "Options/NonSoccer/Demo/ir_demo.xabsl";
@@ -190,6 +192,7 @@ agent localize("Localize", selfloc_player);
 
 
 /** The testing agent */
+agent dribble_agent("DribbleAgent", dribble_agent);
 agent KickTest("KickTest", goto_ball_and_kick);
 //agent test("Test", direct_control_test);
 agent skill_test("SkillTest", skill_test);
