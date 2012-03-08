@@ -20,6 +20,7 @@ InertialFilter::InertialFilter(const MotionBlackBoard& bb, Vector2d& offset):
   calibrateNum(0),
   max_offet(Math::fromDegrees(6))
 {
+  reset_bhuman_like();
 }
 
 InertialPercept InertialFilter::filter()

@@ -48,6 +48,15 @@ public:
   virtual ~GameControllerLEDRequest() {}
 };
 
+class FrameRateCheckLEDRequest : public LEDRequest
+{
+public:
+  FrameRateCheckLEDRequest() : ignore(true) {}
+  virtual ~FrameRateCheckLEDRequest() {}
+  bool ignore;
+};
+
+
 
 #endif  /* _LEDREQUEST_H */
 

@@ -20,11 +20,12 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(LEDSetter)
 
-REQUIRE(GameControllerLEDRequest)
-REQUIRE(BehaviorLEDRequest)
-REQUIRE(FrameInfo)
+  REQUIRE(FrameRateCheckLEDRequest)
+  REQUIRE(GameControllerLEDRequest)
+  REQUIRE(BehaviorLEDRequest)
+  REQUIRE(FrameInfo)
 
-PROVIDE(LEDData)
+  PROVIDE(LEDData)
 
 END_DECLARE_MODULE(LEDSetter)
 

@@ -100,6 +100,9 @@ public:
   FrameInfo lastUpdated;
 
   FieldColorPercept()
+    : distY(0.0),
+      distCb(0.0),
+      distCr(0.0)
   {
     maxWeightedY = 0.0;
     maxWeightedCb = 0.0;

@@ -34,6 +34,7 @@
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
 #include "Modules/Infrastructure/Debug/RoboViz.h"
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
+#include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
@@ -173,6 +174,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(TeamCommSender);
 
   // debug
+  REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(LEDSetter);
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(RoboViz);

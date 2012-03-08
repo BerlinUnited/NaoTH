@@ -14,7 +14,7 @@
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/Stopwatch.h>
 #include "Tools/Debug/DebugParameterList.h"
-
+#include <Tools/Debug/Trace.h>
 #include <PlatformInterface/Platform.h>
 
 #include <Tools/SynchronizedFileWriter.h>
@@ -75,13 +75,17 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 {
   if (command == "image")
   {
+    GT_TRACE("Debug::executeDebugCommand() handling image");
     //g_debug("sending image timestamp=%d, frame=%d", getImage().timestamp, getFrameInfo().frameNumber);
     // add the drawings to the image
-    DebugImageDrawings::getInstance().drawToImage((Image&) getImage());
+    GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
+    DebugImageDrawings::getInstance().drawToImage(getImage());
     
+    GT_TRACE("Debug::executeDebugCommand() before serialize");
     STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);
     STOPWATCH_STOP("sendImage");
+    GT_TRACE("Debug::executeDebugCommand() after serialize");
   }
   else if(command == "ping")
   {

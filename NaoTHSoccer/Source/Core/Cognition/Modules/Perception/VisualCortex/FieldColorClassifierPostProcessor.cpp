@@ -17,7 +17,6 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-
 FieldColorClassifierPostProcessor::FieldColorClassifierPostProcessor()
 :
   adaptationRate(0.5),
@@ -50,11 +49,12 @@ FieldColorClassifierPostProcessor::FieldColorClassifierPostProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifierPostProcessor:weightedHistCr", " ", false);
 
+  GT_TRACE("before FieldColorClassifierPostProcessor constructor memset");
   memset(&weightedSmoothedHistY, 0, sizeof(weightedSmoothedHistY));
   memset(&weightedSmoothedHistCb, 0, sizeof(weightedSmoothedHistCb));
   memset(&weightedHistY, 0, sizeof(weightedHistY));
   memset(&weightedHistCb, 0, sizeof(weightedHistCb));
-
+  GT_TRACE("after FieldColorClassifierPostProcessor constructor memset");
   getFieldColorPercept().init(fieldParams);
 }
 
@@ -273,6 +273,7 @@ void FieldColorClassifierPostProcessor::execute()
   idx = maxWeightedIndexCr;
   while (idx >= 0 && meanRegionBeginIndexCr == 0)
   {
+    ASSERT(idx < COLOR_CHANNEL_VALUE_COUNT);
     if(getFieldColorPreProcessingPercept().weightedHistCr[idx] <= 0.15)
     {
       meanRegionBeginIndexCr = idx;

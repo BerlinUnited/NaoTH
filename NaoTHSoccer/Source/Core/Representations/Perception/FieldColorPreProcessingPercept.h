@@ -30,14 +30,16 @@ public:
   FrameInfo lastUpdated;
 
   FieldColorPreProcessingPercept()
+    : distCr(0.0),
+      maxWeightedCr(0.0),
+      maxWeightedIndexCr(115),
+      lowerBorderCr(0),
+      upperBorderCr(255)
   {
-    distCr = 0.0;
-    maxWeightedCr = 0.0;
-    maxWeightedIndexCr = 115;
     memset(&weightedHistCr, 0, sizeof(weightedHistCr));
   }
 
-  ~FieldColorPreProcessingPercept()
+  virtual ~FieldColorPreProcessingPercept()
   {}
 
   inline void setRegionBorder()
