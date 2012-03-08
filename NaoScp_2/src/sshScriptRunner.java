@@ -65,7 +65,6 @@ abstract class sshScriptRunner extends sshWorker
 
   private void updateLog(final String text) 
   {  
-//    System.out.append(text);
     lastOut += text;
   }  
 
@@ -125,9 +124,7 @@ abstract class sshScriptRunner extends sshWorker
         setInfo("restarting naoqi");
         ((ChannelExec) channel).setCommand("/etc/init.d/naoqi restart");
 
-        setInfo("waiting");
-
-//        Thread.sleep(5000);
+//        setInfo("waiting");
 
         setInfo("restarting naoth cognition process");
         ((ChannelExec) channel).setCommand("/etc/init.d/naoth stop");
@@ -216,9 +213,12 @@ abstract class sshScriptRunner extends sshWorker
     lastOut = lastOut.replace(o, "");
     if(lastFound != null)
     {
-      setInfo(o);
+      //replace all control characters exept newline
+      String oo = o.replaceAll("\n", "NeWlInE");
+      oo = oo.replaceAll("\\p{Cntrl}", "");
+      oo = oo.replaceAll("NeWlInE", "\n");
+      setInfo(oo);
     }
-//    infos += o.replaceAll("[\\W\\S\\D]+", o);
     return lastFound;
   }
 

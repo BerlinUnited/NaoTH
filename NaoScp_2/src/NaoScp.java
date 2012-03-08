@@ -189,8 +189,8 @@ public class NaoScp extends NaoScpMainFrame
         String ResourceName="NaoScp.class";
         String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
         programPath = programPath.replace("file:", "");
-        programPath = programPath.replace("/NaoScp 2/dist/NaoScp.jar!/NaoScp.class", "");
-        programPath = programPath.replace("/NaoScp 2/build/classes/NaoScp.class", "") + "/NaoTHSoccer";
+        programPath = programPath.replace("/NaoScp_2/dist/NaoScp.jar!/NaoScp.class", "");
+        programPath = programPath.replace("/NaoScp_2/build/classes/NaoScp.class", "") + "/NaoTHSoccer";
         File ProgramDir = new File(programPath);
         if(ProgramDir.exists())
         {
@@ -496,6 +496,7 @@ public class NaoScp extends NaoScpMainFrame
 
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
       copyFiles2Nao();
+      resetBackupList();
     }//GEN-LAST:event_copyButtonActionPerformed
 
   public void haveError(String sNaoNo, String error)
@@ -1184,42 +1185,47 @@ public class NaoScp extends NaoScpMainFrame
         String entry = backupFiles[i].getName();
         Boolean entryAvaliable = false;
         String entryTag = "";
+        Boolean isMinimal = false;
 
         File minConfigDir = new File(config.localDeployRootPath() + "/in/" + entry + "/MinimalConfig/");
         if(minConfigDir.exists() && minConfigDir.isDirectory())
         {
           entryAvaliable = true;
-          entryTag += "M";
+          isMinimal = true;
         }
 
-        if(config.copyConfig)
+        File configDir = new File(config.localDeployRootPath() + "/in/" + entry + "/Config/");
+        if(configDir.exists() && configDir.isDirectory())
         {
-            File configDir = new File(config.localDeployRootPath() + "/in/" + entry + "/Config/");
-            if(configDir.exists() && configDir.isDirectory())
-            {
-              entryAvaliable = true;
-              entryTag += "C";
-            }
+          entryAvaliable = true;
+          entryTag += "C";
         }
 
-        if(config.copyLib)
+        File libFile = new File(config.localDeployRootPath() + "/in/" + entry + "/libnaoth.so");
+        if(libFile.exists() && libFile.isFile())
         {
-            File libFile = new File(config.localDeployRootPath() + "/in/" + entry + "/libnaoth.so");
-            if(libFile.exists() && libFile.isFile())
-            {
-              entryAvaliable = true;
-              entryTag += "L";
-            }
+          entryAvaliable = true;
+          entryTag += "L";
         }
 
-        if(config.copyExe)
+        File exeFile = new File(config.localDeployRootPath() + "/in/" + entry + "/naoth");
+        if(exeFile.exists() && exeFile.isFile())
         {
-            File exeFile = new File(config.localDeployRootPath() + "/in/" + entry + "/naoth");
-            if(exeFile.exists() && exeFile.isFile())
-            {
-              entryAvaliable = true;
-              entryTag += "E";
-            }
+          entryAvaliable = true;
+          entryTag += "E";
+        }
+
+        if(isMinimal)
+        {
+          if(entryTag.equals(""))
+          {
+            entryTag = "M" + entryTag;
+          }
+          else
+          {
+            entryTag = "M [" + entryTag + "]";
+          }
+          
         }
 
         boolean error = false;
@@ -2837,6 +2843,7 @@ public class NaoScp extends NaoScpMainFrame
 
     jTabbedPane1.addTab("Network Configuration", jPanel2);
 
+    logTextPane.setEditable(false);
     jScrollPane5.setViewportView(logTextPane);
 
     org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
@@ -2906,11 +2913,9 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_jBackupBoxItemStateChanged
 
     private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyConfigItemStateChanged
-      resetBackupList();
     }//GEN-LAST:event_cbCopyConfigItemStateChanged
 
     private void cbCopyLibItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyLibItemStateChanged
-      resetBackupList();
     }//GEN-LAST:event_cbCopyLibItemStateChanged
 
     private void naoByte4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte4ActionPerformed
