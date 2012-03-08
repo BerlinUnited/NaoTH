@@ -1,0 +1,10 @@
+/** shoot */
+option shoot
+{
+  initial state kick_to_opp_goal {
+    action {
+      kick_to(ang_right=robot_pose.rotation+atan2(y=goal.opp.right_post.y-ball.y, x=goal.opp.right_post.x-ball.x),
+        ang_left=robot_pose.rotation+atan2(y=goal.opp.left_post.y-ball.y, x=goal.opp.left_post.x-ball.x));
+    }
+  }
+}

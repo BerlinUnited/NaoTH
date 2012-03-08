@@ -1,0 +1,28 @@
+/** This is the file for the goal kick of your opponent*/
+
+option corner_kick_opp {
+
+  initial state corner_kick {
+    decision {
+     if (setpiece.participation) {
+          goto goto_position;         
+      } else {
+          stay;
+      }
+    
+    }
+    action {
+      // make here some initializations
+      team.is_playing_as_striker = false;
+      sim_playing_supporter();
+    }
+  }
+
+  state goto_position {
+    action {
+       go_to_point(x=setpiece.pose.x, y=setpiece.pose.y, rot=0);
+       head.control_mode = search_for_ball;     
+    }
+  }
+
+}

@@ -5,8 +5,8 @@
  * Created on 9. Januar 2009, 21:31
  */
 
-#ifndef _XABSLBehaviorControl_H
-#define  _XABSLBehaviorControl_H
+#ifndef _XABSLBehaviorControl2011_H
+#define  _XABSLBehaviorControl2011_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -29,39 +29,39 @@
 
 
 // symbols
-#include "Symbols/BallSymbols.h"
-#include "Symbols/GameSymbols.h"
-#include "Symbols/MotionSymbols.h"
-#include "Symbols/TeamSymbols.h"
-#include "Symbols/SensorSymbols.h"
-#include "Symbols/MathSymbols.h"
-#include "Symbols/GoalSymbols.h"
-#include "Symbols/LedSymbols.h"
-#include "Symbols/SelflocSymbols.h"
-#include "Symbols/OdometrySymbols.h"
-#include "Symbols/FieldSymbols.h"
-#include "Symbols/StrategySymbols.h"
-#include "Symbols/SoundSymbols.h"
-#include "Symbols/LineSymbols.h"
+#include "Symbols/BallSymbols2011.h"
+#include "Symbols/GameSymbols2011.h"
+#include "Symbols/MotionSymbols2011.h"
+#include "Symbols/TeamSymbols2011.h"
+#include "Symbols/SensorSymbols2011.h"
+#include "Symbols/MathSymbols2011.h"
+#include "Symbols/GoalSymbols2011.h"
+#include "Symbols/LedSymbols2011.h"
+#include "Symbols/SelflocSymbols2011.h"
+#include "Symbols/OdometrySymbols2011.h"
+#include "Symbols/FieldSymbols2011.h"
+#include "Symbols/StrategySymbols2011.h"
+#include "Symbols/SoundSymbols2011.h"
+#include "Symbols/LineSymbols2011.h"
 
 
 // ErrorHandler
-class MyErrorHandler : public xabsl::ErrorHandler
+class MyErrorHandler2011 : public xabsl::ErrorHandler
 {
 public:
 
-  MyErrorHandler();
+  MyErrorHandler2011();
   void printError(const char* txt);
 
   void printMessage(const char* txt);
 
-  virtual ~MyErrorHandler();
+  virtual ~MyErrorHandler2011();
 };
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 
-BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
+BEGIN_DECLARE_MODULE(XABSLBehaviorControl2011)
   REQUIRE(FrameInfo)
   REQUIRE(SelfLocGoalModel)
   REQUIRE(BallModel)
@@ -116,17 +116,17 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
 
   //PROVIDE(CameraSettingsRequest)
 */
-END_DECLARE_MODULE(XABSLBehaviorControl)
+END_DECLARE_MODULE(XABSLBehaviorControl2011)
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
-class XABSLBehaviorControl : 
-  private XABSLBehaviorControlBase, 
+class XABSLBehaviorControl2011 :
+  private XABSLBehaviorControl2011Base,
   private ModuleManager, 
   public DebugCommandExecutor
 {
 public:
-  XABSLBehaviorControl();
-  virtual ~XABSLBehaviorControl();
+  XABSLBehaviorControl2011();
+  virtual ~XABSLBehaviorControl2011();
 
   virtual void execute();
 
@@ -151,7 +151,7 @@ private:
   void draw();
 
   xabsl::Engine* theEngine;
-  MyErrorHandler theErrorHandler;
+  MyErrorHandler2011 theErrorHandler;
   // TODO: remove this member
   std::string agentName;
 
@@ -164,20 +164,20 @@ private:
   void fillRegisteredSymbols(naothmessages::BehaviorStatus &status);
 
   //symbols
-  ModuleCreator<BallSymbols>* theBallSymbols;
-  ModuleCreator<GameSymbols>* theGameSymbols;
-  ModuleCreator<MotionSymbols>* theMotionSymbols;
-  ModuleCreator<TeamSymbols>* theTeamSymbols;
-  ModuleCreator<SensorSymbols>* theSensorSymbols;
-  ModuleCreator<MathSymbols>* theMathSymbols;
-  ModuleCreator<GoalSymbols>* theGoalSymbols;
-  ModuleCreator<LedSymbols>* theLedSymbols;
-  ModuleCreator<SelflocSymbols>* theSelflocSymbols;
-  ModuleCreator<OdometrySymbols>* theOdometrySymbols;
-  ModuleCreator<FieldSymbols>* theFieldSymbols;
-  ModuleCreator<StrategySymbols>* theStrategySymbols;
-  ModuleCreator<SoundSymbols>* theSoundSymbols;
-  ModuleCreator<LineSymbols>* theLineSymbols;
+  ModuleCreator<BallSymbols2011>* theBallSymbols2011;
+  ModuleCreator<GameSymbols2011>* theGameSymbols2011;
+  ModuleCreator<MotionSymbols2011>* theMotionSymbols2011;
+  ModuleCreator<TeamSymbols2011>* theTeamSymbols2011;
+  ModuleCreator<SensorSymbols2011>* theSensorSymbols2011;
+  ModuleCreator<MathSymbols2011>* theMathSymbols2011;
+  ModuleCreator<GoalSymbols2011>* theGoalSymbols2011;
+  ModuleCreator<LedSymbols2011>* theLedSymbols2011;
+  ModuleCreator<SelflocSymbols2011>* theSelflocSymbols2011;
+  ModuleCreator<OdometrySymbols2011>* theOdometrySymbols2011;
+  ModuleCreator<FieldSymbols2011>* theFieldSymbols2011;
+  ModuleCreator<StrategySymbols2011>* theStrategySymbols2011;
+  ModuleCreator<SoundSymbols2011>* theSoundSymbols2011;
+  ModuleCreator<LineSymbols2011>* theLineSymbols2011;
 };
 
-#endif  /* _XABSLBehaviorControl_H */
+#endif  /* _XABSLBehaviorControl2011_H */

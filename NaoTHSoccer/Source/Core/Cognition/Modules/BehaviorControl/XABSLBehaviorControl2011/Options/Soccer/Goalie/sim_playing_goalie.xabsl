@@ -1,0 +1,126 @@
+/** Playing as goalie */
+option sim_playing_goalie {
+ 
+  state guard {
+    decision {
+
+     if(ball.time_since_last_seen > 3000)
+     {
+       goto ball_not_seen;
+     }
+     //else if (ball.position.field.x  < (field.xPosOwnPenaltyArea-200)
+     //        && abs(value=ball.position.field.y) < (field.yPosLeftPenaltyArea-200))
+     //   goto clear_ball;
+     
+     else if (ball.was_seen 
+             && abs(value=ball.angle) < 60
+             && ball.x > 0
+             && ball.distance >= 3000
+             && ball.future.x(t=10) < 500
+             && abs(value=rel2fieldY(x=ball.future.y(t=10), y=ball.future.y(t=10))) < (field.yPosLeftGoal+500)
+             && abs(value=ball.speed) > 600             
+             )
+     {
+       if(ball.future.y > 0)
+       {
+         goto fall_left;
+       }
+       else
+       {
+         goto fall_right;
+       }
+     }
+     else
+       stay;
+    }
+    action {
+        head.control_mode = search_for_ball;
+        team.is_playing_as_striker = false;
+        go_to_point(
+          x=goalie.guardline.x,y=goalie.guardline.y, 
+          rot=ball.time_since_last_seen < 3000 ? ball.angle : robot_pose.rotation);
+        motion.type = walk;
+    }
+  }
+
+  initial state ball_not_seen
+  {
+    decision {
+	    if(ball.was_seen)
+	    {
+	      goto guard;
+	    }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = -100;
+    }
+  }
+
+  state clear_ball {
+    decision {
+      if ( ball.time_since_last_seen > 3000
+      || ball.distance > 3000
+      || ball.position.field.x > (field.xPosOwnGroundline + 1500)
+      || abs(value=ball.position.field.y) > (field.yPosLeftPenaltyArea + 1500) )
+        goto guard;
+     /*
+     else if (ball.was_seen 
+             && ball.future.x(t=7) < 0
+             && ball.future.y(t=7) < 1500
+             && abs(value=ball.speed) > 100             
+             )
+     {
+       if(ball.future.y > 0)
+       {
+         goto fall_left;
+       }
+       else
+       {
+         goto fall_right;
+       }
+     }
+     */
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_ball;
+      team.is_playing_as_striker = true;
+      dribble(direction=attack.direction);
+    }
+  }
+
+
+  state fall_left {
+    decision {
+      if ( state_time > 3000 )
+        goto guard;
+      else
+        stay;
+    }
+    action {
+      motion.type = fall_left;
+    }
+  }
+
+  state fall_right {
+    decision {
+      if ( state_time > 3000 )
+        goto guard;
+      else
+        stay;
+    }
+    action {
+      motion.type = fall_right;
+    }
+  }
+  
+}

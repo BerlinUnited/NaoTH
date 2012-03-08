@@ -1,0 +1,248 @@
+// go to the ball and kick if there is no abstacle then go back into goal looking to opp goal
+option clear_ball_far_away{
+
+  initial state approach_ball_initial
+  {
+    decision {
+      if(action_done)
+        goto position;
+      else
+        stay;
+    }
+    action {
+      // error: x=40, y=40, a=20 => dist < 180+60 = 240
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach= true);
+    }
+  }
+
+  
+  state position
+  {
+    decision {
+      // start kick towards the goal
+      if(abs(value=attack.direction) < 85) // angle was reached
+      {
+        goto turn_to_ball_with_foot;
+      }
+      else
+        stay;
+    }
+    action {
+      // distance and direction to ball not preserved (!)
+      turn_around_ball_face_goal();
+    }
+  }
+
+  state turn_to_ball_with_foot
+  {
+    decision 
+    {
+      if(action_done)
+      {
+        goto stabilize_before_kick; // dribble_right;
+      }
+      else stay;
+    }
+    action 
+    {
+      // error: x=40, y=40, a=20 => dist < 180+60 = 240
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
+
+      //weve seen the ball shortly when we are here
+      head.control_mode = search_for_ball_force_model;
+    }
+  }
+  
+  
+  state turn_around_ball
+  {
+    decision
+    {
+      if(action_done || abs(value=attack.direction) < 50 )
+        goto clear_ball;
+      else if(action_done || abs(value=attack.direction) > 50 )
+        goto approach_ball_initial;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_cool(distance = 170, right_foot=true);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  /*state turn_around 
+  {
+    decision 
+    {
+      if(action_done)
+      {
+        if(goal.opp.time_since_seen < 10000 && 
+           abs(value=attack.direction) < 70)
+          goto approach_ball;
+        else
+          goto stabilize_before_kick; // dribble_right;
+      }
+      else stay;
+    }
+    action 
+    {
+      // error: x=40, y=40, a=20 => dist < 180+60 = 240
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=true);
+
+      //weve seen the ball shortly when we are here
+      head.control_mode = search_for_ball_force_model;
+    }
+  }*/
+
+  //TODO if obstacle -> block, else clear kick
+  //attack.direction > -75 && attack.direction < 75 is constraint by approach ball
+  state clear_ball {
+    decision{
+      if(false && obstacle.visual.was_seen){
+        goto block_attacker;
+      }else{
+        goto stabilize_before_kick;
+      } 
+    }
+    action{
+      head.control_mode = search_for_ball_force_model;
+      motion.type =stand;
+    }
+  }
+
+
+  state stabilize_before_kick
+  {
+    decision {
+      // stand 1 second before kick
+      if(state_time < 1000)
+        stay;
+      // maybe we touched the ball accidently
+      else if(!action_done)
+        goto approach_ball_initial;
+      else if(executed_motion.type == stand)
+        goto kick;
+      else
+        stay;
+    }
+    action {
+      // should execute stand
+      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state kick {
+    decision
+    {
+      if(action_done && state_time > 3000)
+        goto stabilize_after_kick;
+      else
+        stay;
+    }
+    action 
+    {
+      situation.abortable = false;
+      kick_ball(direction= 0);
+    }
+  }
+
+  state stabilize_after_kick {
+    decision
+    {
+      if ( state_time > 0 )
+        goto finished_clear_ball;
+      else
+        stay;
+    }
+    action
+    {
+      situation.abortable = false;
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  /*state prepare_kick
+  {
+    decision
+    {
+      if(state_time > 2000)
+      {
+        if(action_done)
+          goto do_kick_right;
+        else
+          goto approach_ball;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_cool(distance = 170, right_foot=true);
+      motion.type = stand;
+      head.control_mode = search_for_ball;
+    }
+  }
+  
+  state do_kick_right
+  {
+    decision
+    {
+      if(action_done)
+        goto finished_clear_ball;
+      else
+        stay;
+    }
+    action
+    {
+      kick_ball_with_foot(direction = -5, right = true);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state do_kick_left
+  {
+    decision
+    {
+      if(action_done)
+        goto finished_clear_ball;
+      else
+        stay;
+    }
+    action
+    {
+      kick_ball_with_foot(direction = 5, right = false);
+      head.control_mode = search_for_ball;
+    }
+  }*/
+  
+  target state finished_clear_ball{
+    decision{
+      stay;
+    }
+    action{
+      motion.type = stand;
+      head.control_mode = goalie_look_around;
+    }
+  }
+
+  state block_attacker
+  {
+    decision
+    {
+      if (!obstacle.visual.was_seen) {
+        goto stabilize_before_kick;
+      } else
+        stay;
+    }
+       action {
+         motion.type = block_middle; //make a wider stand
+         head.control_mode = search_for_ball;
+       }
+  }
+  
+}

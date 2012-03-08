@@ -1,0 +1,38 @@
+/** Goto ball omnidirectional */
+option go_to_ball_omni
+{
+  bool @right_foot;
+  /** The current difference to the wished angle */
+  float @distance [mm];
+
+  initial state walk_to_ball
+  {
+    decision
+    {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_omni_with_foot(right_foot = @right_foot, distance = @distance, offset = 0);
+    }
+  }
+
+  target state stand
+  {
+    decision
+    {
+      if(!action_done)
+        goto walk_to_ball;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_ball_omni_with_foot(right_foot = @right_foot, distance = @distance, offset = 0);
+    }
+  }
+  
+}

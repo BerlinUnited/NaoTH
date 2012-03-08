@@ -1,0 +1,91 @@
+/** dribble */
+option dribble {
+  float @direction; // [-180..180] "deg";
+  
+  initial state walk_to_ball
+  {
+    decision {
+      if ( vector.abs(x=ball.preview.x, y=ball.preview.y) > 550 )
+        goto ball_far_away;
+      /** outside of the opponent penalty area */
+      else if(robot_pose.x < field.xPosOppPenaltyArea-1000)
+      {
+        if(abs(value=@direction)>40)
+          goto turn_around_ball;
+        else
+          stay;
+      }
+      else
+      {
+        if(abs(value=@direction) > 20)
+          goto turn_around_ball;
+        else
+          stay;
+      }
+    }
+    action
+    {
+      //go_to_ball_omni(right_foot=(ball.preview.y<0), distance=-100);
+      go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x+200),
+                          x=ball.preview.x+200,
+                          y=ball.preview.y);
+      motion.walk.coordinate = (ball.preview.y<0?right_foot:left_foot);
+      //move_around_ball(direction = @direction *0.5, radius = 100+ball.radius);
+      //go_to_ball_cool(right_foot=(ball.preview.y<0), distance=-500);
+      motion.walk.offset.rot = 0;
+      motion.walk.offset.y = 20;
+    }
+  }
+
+  state turn_around_ball
+  {
+    decision {
+      if ( vector.abs(x=ball.preview.x, y=ball.preview.y) > 550 )
+        goto ball_far_away;
+      /** outside of the opponent penalty area */
+      else if(robot_pose.x < field.xPosOppPenaltyArea-1000)
+      {
+        if(abs(value=@direction) < 20)
+          goto walk_to_ball;
+        else
+          stay;
+      }
+      else
+      {
+        if(abs(value=@direction) < 15)
+          goto walk_to_ball;
+        else
+          stay;
+      }
+    }
+    action {
+      move_around_ball(direction = @direction*0.5, radius = 100+ball.radius);
+      //motion.walk_speed.x = (robot_pose.x < field.xPosOppPenaltyArea-1000 ? 1 : 0.3) * motion.walk_speed.x;
+      motion.walk.offset.rot = 0;
+      motion.walk.offset.y = 0;
+    }
+  }
+
+  state ball_far_away
+  {
+    decision {
+      if ( vector.abs(x=ball.preview.x, y=ball.preview.y) < 500 )
+        goto turn_around_ball;
+      else
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = ball.preview.x - ((!situation.opponent_at_the_ball)?250*cos(angle=@direction):0);
+      motion.walk_speed.y = ball.preview.y - ((!situation.opponent_at_the_ball)?250*sin(angle=@direction):0);
+      motion.walk_speed.rot = atan2(y=ball.preview.y, x=ball.preview.x);//atan2(y=motion.walk_speed.y, x=motion.walk_speed.x);
+      
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+      motion.plan.avoid_obstacle = true;
+
+      motion.walk.offset.rot = 0;
+      motion.walk.offset.y = 0;
+    }
+  }
+}

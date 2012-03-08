@@ -1,0 +1,123 @@
+option skill_demo
+{
+  common decision
+  {
+    if(button.remote == 0)
+      goto demo_0;
+    else if(button.remote == 1)
+      goto demo_1;
+    else if(button.remote == 2)
+      goto demo_2;
+    else if(button.remote == 3)
+      goto demo_3;
+    else if(button.remote == 4)
+      goto demo_4;
+    else if(button.remote == 5)
+      goto demo_5;
+    else if(button.remote == 6)
+      goto demo_6;
+    else if(button.remote == 7)
+      goto demo_7;
+    else if(button.remote == 8)
+      goto demo_8;
+    else if(button.remote == 9)
+      goto demo_9;
+    else if(button.remote < 0 || button.remote > 9)
+      goto none;
+  }
+    
+  initial state none
+  {
+    action
+    {
+      motion.type = stand;
+    }
+  }
+
+  state demo_0
+  {
+    action
+    {
+      head.control_mode = smart_search;
+      motion.type = stand;
+      head_control();
+
+    }
+  }
+
+  state demo_1
+  {
+    action
+    {
+    spl_playing_striker();
+    head_control();
+    }
+  }
+
+  state demo_2
+  {
+    action
+    {
+    go_to_ball_omni(distance = 200);
+    head_control();
+    }
+  }
+
+  state demo_3
+  {
+    action
+    {
+      
+    }
+  }
+
+  state demo_4
+  {
+    action
+    {
+    search_goal();
+    }
+  }
+
+  state demo_5
+  {
+    action
+    {
+      // TODO: define a nice demo
+    }
+  }
+
+  state demo_6
+  {
+    action
+    {
+    kick_ball(direction=0);
+    }
+  }
+
+  state demo_7
+  {
+    action
+    {
+    kick_ball(direction=80);
+    }
+  }
+
+  state demo_8
+  {
+    action
+    {
+    spl_playing_goalie();
+    head_control();
+    }
+  }
+
+  state demo_9
+  {
+    action
+    {
+    kick_training();
+    head_control();
+    }
+  }
+}

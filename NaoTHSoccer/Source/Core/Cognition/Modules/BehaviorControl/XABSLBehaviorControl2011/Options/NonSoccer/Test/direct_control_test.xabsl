@@ -1,0 +1,50 @@
+option direct_control_test
+{
+
+  initial state move_right
+  {
+    decision
+    {
+      if(state_time > 1000)
+        goto move_left;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = goto_pose_directly;
+      motion.pose.time = 1000;
+      
+      motion.pose.chest.x = 0;
+      motion.pose.chest.y = 30;
+      motion.pose.chest.z = 300;
+
+      motion.pose.lfoot.y = 50;
+      motion.pose.rfoot.y = -50;
+    }
+  }
+
+  state move_left
+  {
+    decision
+    {
+      if(state_time > 1000)
+        goto move_right;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = goto_pose_directly;
+      motion.pose.time = 1000;
+      
+      motion.pose.chest.x = 0;
+      motion.pose.chest.y = -30;
+      motion.pose.chest.z = 300;
+
+      motion.pose.lfoot.y = 50;
+      motion.pose.rfoot.y = -50;
+    }
+  }
+
+}

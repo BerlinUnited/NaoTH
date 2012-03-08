@@ -1,0 +1,253 @@
+/** Go to a specific position on the field */
+option go_to_point_with_lokalize
+{
+  
+  /** x position of the point to walk to on the field */
+  float @x; //[-3700..3700] "mm";
+
+  /** y position of the point to walk to on the field */
+  float @y; // [-2700..2700] "mm";
+
+  /** absolute rotation on field */
+  float @rot; // -180...180 "deg";
+
+  common decision
+  {
+    if(!robot_pose.is_valid)
+      goto initial_localize_look;
+  }
+
+  initial state initial_localize_look
+  {
+    decision
+    {
+      else if(goal.own.whole.time_since_seen < 100)
+        goto initial_localize_turn_to_own_goal;
+      else if(goal.opp.whole.time_since_seen < 100)
+        goto initial_localize_turn_to_opp_goal;
+      else if(state_time > 5000)
+        goto initial_localize_turn;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+  state initial_localize_turn
+  {
+    decision
+    {
+      else if(goal.own.whole.time_since_seen < 100)
+        goto initial_localize_turn_to_own_goal;
+      else if(goal.opp.whole.time_since_seen < 100)
+        goto initial_localize_turn_to_opp_goal;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = 10;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+
+  state initial_localize_turn_to_own_goal
+  {
+    decision
+    {
+      else if(abs(value=atan2(
+              y=odometry.preview.y(x=goal.centroid.x, y=goal.centroid.y), 
+              x=odometry.preview.x(x=goal.centroid.x, y=goal.centroid.y))) < 10)
+        goto initial_localize_look_at_goal;
+      else if(goal.own.whole.time_since_seen > 3000)
+        goto initial_localize_look;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.rot = 
+        atan2(y=odometry.preview.y(x=goal.centroid.x, y=goal.centroid.y), 
+              x=odometry.preview.x(x=goal.centroid.x, y=goal.centroid.y));
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+      
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+  state initial_localize_turn_to_opp_goal
+  {
+    decision
+    {
+      else if(abs(value=atan2(
+              y=odometry.preview.y(x=goal.centroid.x, y=goal.centroid.y), 
+              x=odometry.preview.x(x=goal.centroid.x, y=goal.centroid.y))) < 10)
+        goto initial_localize_look_at_goal;
+      else if(goal.opp.whole.time_since_seen > 3000)
+        goto initial_localize_look;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+
+      motion.walk_speed.rot = 
+	      atan2(y=odometry.preview.y(x=goal.centroid.x, y=goal.centroid.y), 
+              x=odometry.preview.x(x=goal.centroid.x, y=goal.centroid.y));
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+      
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+  state initial_localize_look_at_goal
+  {
+    decision
+    {
+      else if(goal.opp.whole.time_since_seen > 1000 && goal.own.whole.time_since_seen > 1000)
+        goto initial_localize_look;
+      else if(state_time > 3000)
+        goto stabilize_after_lokalize;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+
+
+
+
+  
+
+
+
+
+  state stabilize_after_lokalize
+  {
+    decision
+    {
+      else if ( action_done )
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_point(x=-1000, y=-500, rot=0);
+    }
+  }
+
+
+  state go_to_relative_point_no_turn
+  {
+    decision
+    {
+      else if (action_done ||
+              (vector.abs(x=rel2fieldX(x=odometry.relative_point.x, y=odometry.relative_point.y) - @x,
+                          y=rel2fieldY(x=odometry.relative_point.x, y=odometry.relative_point.y) - @y) > 400)
+          )
+        goto initial_localize_look;
+      else
+        stay;
+    }
+    action
+    {
+      go_to_relative_point(rotation=0, 
+                           x=odometry.preview.x(x=odometry.relative_point.x, y=odometry.relative_point.y), 
+                           y=odometry.preview.y(x=odometry.relative_point.x, y=odometry.relative_point.y));
+      
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+  state go_to_relative_point
+  {
+    decision
+    {
+      else if (action_done ||
+          (vector.abs(x=rel2fieldX(x=odometry.relative_point.x, y=odometry.relative_point.y) - @x,
+                      y=rel2fieldY(x=odometry.relative_point.x, y=odometry.relative_point.y) - @y) > 1000)
+          )
+        goto initial_localize_look;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = odometry.relative_point.x; // mm
+      motion.walk_speed.y = odometry.relative_point.y; // mm
+      motion.walk_speed.rot = atan2(y=odometry.relative_point.y, x=odometry.relative_point.x); //deg
+
+      go_to_relative_point(rotation=atan2(
+                             y=odometry.preview.y(x=odometry.relative_point.x, y=odometry.relative_point.y), 
+                             x=odometry.preview.x(x=odometry.relative_point.x, y=odometry.relative_point.y)),
+                           x=odometry.preview.x(x=odometry.relative_point.x, y=odometry.relative_point.y), 
+                           y=odometry.preview.y(x=odometry.relative_point.x, y=odometry.relative_point.y));
+      
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+
+  state turn_to_target
+  {
+    decision
+    {
+      else if(abs(value=robot_pose.rotation - @rot) < 10)
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = @rot - robot_pose.rotation; //deg
+      
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+
+  target state finished
+  {
+    decision
+    {
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      head.control_mode = search_for_whole_goal;
+    }
+  }
+
+  
+}

@@ -1,0 +1,46 @@
+option sim_play_with_check_fall_down 
+{
+  initial state play {
+    decision {
+      if (fall_down_state != upright)
+        goto stand_up;
+      else
+        stay;
+    }
+    action 
+    {
+      sim_play_play_mode();
+    }
+  }
+
+  state stand_up
+  {
+    decision
+    {
+      if(action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action 
+    {
+      stand_up();
+      team.is_playing_as_striker = false;
+    }
+  }
+
+  state stand
+  {
+    decision
+    {
+      if (fall_down_state != upright)
+        goto stand_up;
+      else
+        goto play;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+}

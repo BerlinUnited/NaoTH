@@ -1,0 +1,9 @@
+/** clear the ball */
+
+option clear_ball_fast {
+  initial state kick_ball {
+    action {
+      kick_to(ang_right=-90, ang_left=90);
+    }
+  }
+}

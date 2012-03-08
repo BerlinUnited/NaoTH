@@ -1,0 +1,89 @@
+/** Playing as defender/supporter */
+option sim_playing_defender {
+
+ initial state ball_not_seen {
+    decision {
+      if (ball.was_seen)
+        goto go_to_defence_position;
+      else
+        stay;
+    }
+    action {
+      simple_search_ball();
+      team.is_playing_as_striker = false;
+    }
+  }
+
+  target state clear_ball {
+    decision {
+      if(ball.time_since_last_seen > 400)
+      {
+        goto ball_not_seen;
+      }
+      else
+        stay;
+    }
+    action {
+      dribble(direction=attack.direction);
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state go_to_defence_position {
+    decision {
+      if(ball.time_since_last_seen > 100)
+      {
+        goto ball_not_seen;
+      }
+      else if ( players.own_closest_to_ball.number > 0.1 &&
+        abs(value=players.own_closest_to_ball.number - game.player_number) > 0.1
+        && players.own_closest_to_ball.distance_to_ball < 400 
+        && ball.distance < 1000 
+        && (ball.position.field.x > field.xPosOwnPenaltyArea+100 || abs(value=ball.position.field.y)>field.yPosLeftPenaltyArea+100))
+      {
+        // the teammates is very close to ball!!
+        goto block_goal;
+      }
+      else if ( players.opp_closest_to_ball.time_since_last_seen > 100
+      || players.opp_closest_to_ball.distance_to_ball > ball.distance )
+      {
+        goto clear_ball;
+      }
+      else
+        stay;
+    }
+    action {
+      go_to_point(x=robot_pose.x+defense.pose.translation.x*cos(angle=robot_pose.rotation)-defense.pose.translation.y*sin(angle=robot_pose.rotation),
+                  y=robot_pose.y+defense.pose.translation.x*sin(angle=robot_pose.rotation)+defense.pose.translation.y*cos(angle=robot_pose.rotation),
+                  rot=normalize(angle=robot_pose.rotation+defense.pose.rotation));
+      motion.plan.avoid_obstacle = vector.abs(x=defense.pose.translation.x, y=defense.pose.translation.y)<1000;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state block_goal {
+    decision {
+      if ( ball.time_since_last_seen > 2000 )
+      {
+        goto ball_not_seen;
+      }
+      else if ( players.own_closest_to_ball.number < 0.1
+        || abs(value=players.own_closest_to_ball.number - game.player_number) < 0.1
+        || players.own_closest_to_ball.distance_to_ball > 500 
+        || ball.distance > 1000 
+        || (ball.position.field.x < field.xPosOwnPenaltyArea-100 && abs(value=ball.position.field.y)<field.yPosLeftPenaltyArea-100)
+        )
+        {
+          goto go_to_defence_position;
+        }
+      else
+        stay;
+    }
+    action {
+      move_around_ball(direction=atan2(y=ball.y-goal.own.y, x=ball.x-goal.own.x), radius = 800);
+      head.control_mode = search_for_ball;
+      team.is_playing_as_striker = true;
+    }
+  }
+
+}

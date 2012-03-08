@@ -1,0 +1,34 @@
+/** goto the position between ball and own goal */
+option spl_simple_supporter {
+
+ initial target state go_to_position {
+    decision {
+      if (state_time > 5000 && goal.opp.time_since_seen > 5000
+      && goal.own.time_since_seen > 5000 )
+        goto search_goal;
+      else 
+        stay;
+    }
+    action {
+      go_to_point(x=clip(value=(ball.position.field.x-1000), min=field.xPosOwnPenaltyArea, max=field.xPosOppPenaltyArea),
+      y=clip(value=ball.position.field.y*0.8, min=field.yPosRightPenaltyArea, max=field.yPosLeftPenaltyArea),
+      rot=atan2(y=ball.position.field.y, x=ball.position.field.x-field.xPosOwnGroundline));
+      head.control_mode = smart_search;
+    }
+  }
+
+  state search_goal {
+    decision {
+      if ( ( goal.opp.time_since_seen == 0 || goal.own.time_since_seen == 0)
+        && state_time > 5000)
+        goto go_to_position;
+      else
+        stay;
+     }
+     action {
+       //search_goal(own=false);
+       find_goal();
+     }
+   }
+      
+}

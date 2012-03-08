@@ -1,0 +1,98 @@
+// test dribble with step control
+
+option dribble_stand_test 
+{
+  bool  @kick_right; // false -> kick left
+  bool  @walk_before_kick;
+  bool  @step_after_kick;
+  float @step_direction_x;
+  float @step_direction_y;
+  float @kick_direction; // 90 = left, 270 = right
+
+  initial state stand 
+  {
+    decision 
+    {
+      if(state_time>3000)
+        goto dribble;
+      else
+        stay;
+    }
+    action {
+      motion.walk.step_control.foot = none;
+      motion.walk.style = normal;
+      motion.type = stand;
+    }
+  }
+
+  state walk
+  {
+    decision
+    {
+      if(state_time > 3000)
+        goto dribble;
+      else
+        stay;
+    }
+	  action
+	  {
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk_speed.x = 300;
+      motion.walk_speed.y = 300;
+      motion.walk_speed.rot = 0;
+	  }
+  }
+
+  state step
+  {
+    decision
+    {
+      if(state_time > 500)
+        goto walk;
+      else
+        stay;
+    }
+    action
+    {
+      motion.walk.step_control.foot = @kick_right?left:right;
+      motion.walk.step_control.target.x = 270;
+      motion.walk.step_control.target.y = 0;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 90;
+      motion.walk.step_control.time = 400;
+      motion.walk.style = fast;
+      motion.walk.stop_with_stand = (!@step_after_kick);
+    }
+  }
+
+  
+  state dribble
+  {
+    decision 
+    {
+      if(state_time > 500)
+      {
+        if(@step_after_kick)
+          goto step;
+        else
+          goto stand;
+      }
+      else
+        stay;
+    }
+    action {
+
+      motion.type = walk;
+      motion.walk.coordinate = @kick_right?right_foot:left_foot;
+      motion.walk.step_control.foot = @kick_right?right:left;
+      motion.walk.step_control.target.x = 270;
+      motion.walk.step_control.target.y = 0;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = 90;
+      motion.walk.step_control.time = 400;
+      motion.walk.style = fast;
+      motion.walk.stop_with_stand = (!@step_after_kick);
+    }
+  }
+}

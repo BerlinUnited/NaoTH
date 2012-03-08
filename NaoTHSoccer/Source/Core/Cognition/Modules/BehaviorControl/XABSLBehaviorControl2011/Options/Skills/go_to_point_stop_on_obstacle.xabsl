@@ -1,0 +1,117 @@
+/** Go to point and stop if obstacle in front. Moves randomly to side if standing too long */
+option go_to_point_stop_on_obstacle {
+
+  /** x position of the point to walk to on the field */
+  float @x; //[-3700..3700] "mm";
+
+  /** y position of the point to walk to on the field */
+  float @y; // [-2700..2700] "mm";
+
+  /** absolute rotation on field */
+  float @rot; // -180...180 "deg";
+  
+  initial state go_on
+  {
+	  decision {
+      if(obstacle.ultrasound.distance < 350)
+      {
+        goto stop;
+      }
+      else if(action_done)
+      {
+        goto finished;
+      }
+      else
+      {
+        stay;
+      }
+	  }
+	  action {
+      go_to_point(x=@x, y=@y, rot=@rot);
+	  }
+  }
+
+  state stop {
+	  decision {
+      if(obstacle.ultrasound.distance > 380)
+      {
+        goto go_on;
+      }
+      else if(state_time > 5000) // 5 seconds
+      {
+        if(random < 0.5)
+          goto avoid_left;
+        else
+          goto avoid_right;
+      }
+      else
+      {
+        stay;
+      }
+	  }
+	  action {
+      motion.type = stand;
+
+      set_right_eye = red;
+      set_left_eye = red;
+      
+	  }
+	}
+
+  state avoid_left {
+	  decision {
+      if(obstacle.ultrasound.distance > 380)
+      {
+        goto go_on;
+      }
+      else
+      {
+        stay;
+      }
+	  }
+	  action {
+      motion.type =walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 50;
+      motion.walk_speed.rot = 0;
+      set_left_eye = red;
+	  }
+	}
+
+  state avoid_right {
+    decision {
+      if(obstacle.ultrasound.distance > 380)
+      {
+        goto go_on;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      motion.type =walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -50;
+      motion.walk_speed.rot = 0;
+      set_right_eye = red;
+    }
+  }
+
+  target state finished {
+	  decision
+	  {
+	    if(!action_done)
+	    {
+	      goto go_on;
+	    }
+	    else
+	    {
+	      stay;
+	    }
+   }
+   action {
+     go_to_point(x=@x, y=@y, rot=@rot);
+   }
+  }
+}

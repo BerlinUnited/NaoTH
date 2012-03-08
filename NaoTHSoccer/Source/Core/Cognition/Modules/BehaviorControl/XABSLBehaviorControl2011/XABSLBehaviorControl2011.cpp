@@ -5,7 +5,7 @@
  * Created on 9. Januar 2009, 21:31
  */
 
-#include "XABSLBehaviorControl.h"
+#include "XABSLBehaviorControl2011.h"
 
 #include "Tools/Xabsl/EngineFactory.h"
 #include <DebugCommunication/DebugCommandManager.h>
@@ -17,7 +17,7 @@
   the##module = registerModule<module>(std::string(#module), enable)
 
 
-XABSLBehaviorControl::XABSLBehaviorControl()
+XABSLBehaviorControl2011::XABSLBehaviorControl2011()
   : 
     // init the xabxl engine
     theEngine(NULL),
@@ -40,20 +40,20 @@ XABSLBehaviorControl::XABSLBehaviorControl()
 
 
   // init symbols
-  REGISTER_MODULE(BallSymbols, true);
-  REGISTER_MODULE(GameSymbols, true);
-  REGISTER_MODULE(MotionSymbols, true);
-  REGISTER_MODULE(TeamSymbols, true);
-  REGISTER_MODULE(SensorSymbols, true);
-  REGISTER_MODULE(MathSymbols, true);
-  REGISTER_MODULE(GoalSymbols, true);
-  REGISTER_MODULE(LedSymbols, true);
-  REGISTER_MODULE(SelflocSymbols, true);
-  REGISTER_MODULE(OdometrySymbols, true);
-  REGISTER_MODULE(FieldSymbols, true);
-  REGISTER_MODULE(StrategySymbols, true);
-  REGISTER_MODULE(SoundSymbols, true);
-  REGISTER_MODULE(LineSymbols, true);
+  REGISTER_MODULE(BallSymbols2011, true);
+  REGISTER_MODULE(GameSymbols2011, true);
+  REGISTER_MODULE(MotionSymbols2011, true);
+  REGISTER_MODULE(TeamSymbols2011, true);
+  REGISTER_MODULE(SensorSymbols2011, true);
+  REGISTER_MODULE(MathSymbols2011, true);
+  REGISTER_MODULE(GoalSymbols2011, true);
+  REGISTER_MODULE(LedSymbols2011, true);
+  REGISTER_MODULE(SelflocSymbols2011, true);
+  REGISTER_MODULE(OdometrySymbols2011, true);
+  REGISTER_MODULE(FieldSymbols2011, true);
+  REGISTER_MODULE(StrategySymbols2011, true);
+  REGISTER_MODULE(SoundSymbols2011, true);
+  REGISTER_MODULE(LineSymbols2011, true);
     
 
   // load the behavior from config
@@ -71,18 +71,18 @@ XABSLBehaviorControl::XABSLBehaviorControl()
 
 }//end constructor
 
-XABSLBehaviorControl::~XABSLBehaviorControl()
+XABSLBehaviorControl2011::~XABSLBehaviorControl2011()
 {
   delete theEngine;
 }//end XABSLBehaviorControl
 
 
-void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string agent)
+void XABSLBehaviorControl2011::reloadBehaviorFromFile(std::string file, std::string agent)
 {
   delete theEngine;
 
   //new xabsl::Engine(theErrorHandler, &NaoTime::getNaoTimeInMilliSeconds);
-  theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
+  theEngine = xabsl::EngineFactory<XABSLBehaviorControl2011>::create(theErrorHandler, this->xabslTime);
   
   registerXABSLSymbols();
 
@@ -94,7 +94,7 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
   theEngine->setSelectedAgent(agentName.c_str());
 }//end reloadBehaviorFromFile
 
-void XABSLBehaviorControl::execute()
+void XABSLBehaviorControl2011::execute()
 {
   // ATTENTION: it has to be set before xabsl engine is executed!!!
   xabslTime = getFrameInfo().getTime();
@@ -121,7 +121,7 @@ void XABSLBehaviorControl::execute()
 }//end execute
 
 
-void XABSLBehaviorControl::draw()
+void XABSLBehaviorControl2011::draw()
 {
   DEBUG_REQUEST("XABSL:draw_foot_decision",
     Vector2<double> oppGoal = getSelfLocGoalModel().getTeamGoal(!(getPlayerInfo().gameData.teamColor)).calculateCenter();
@@ -194,73 +194,73 @@ void XABSLBehaviorControl::draw()
 #define XABSL_REGISTER_SYMBOLS(module) \
   the##module->getModuleT()->registerSymbols(*theEngine)
 
-void XABSLBehaviorControl::registerXABSLSymbols()
+void XABSLBehaviorControl2011::registerXABSLSymbols()
 {
   if(theEngine != NULL)
   {
-    XABSL_REGISTER_SYMBOLS(BallSymbols);
-    XABSL_REGISTER_SYMBOLS(GameSymbols);
-    XABSL_REGISTER_SYMBOLS(MotionSymbols);
-    XABSL_REGISTER_SYMBOLS(TeamSymbols);
-    XABSL_REGISTER_SYMBOLS(SensorSymbols);
-    XABSL_REGISTER_SYMBOLS(MathSymbols);
-    XABSL_REGISTER_SYMBOLS(GoalSymbols);
-    XABSL_REGISTER_SYMBOLS(LedSymbols);
-    XABSL_REGISTER_SYMBOLS(SelflocSymbols);
-    XABSL_REGISTER_SYMBOLS(OdometrySymbols);
-    XABSL_REGISTER_SYMBOLS(FieldSymbols);
-    XABSL_REGISTER_SYMBOLS(StrategySymbols);
-    XABSL_REGISTER_SYMBOLS(SoundSymbols);
-    XABSL_REGISTER_SYMBOLS(LineSymbols);
+    XABSL_REGISTER_SYMBOLS(BallSymbols2011);
+    XABSL_REGISTER_SYMBOLS(GameSymbols2011);
+    XABSL_REGISTER_SYMBOLS(MotionSymbols2011);
+    XABSL_REGISTER_SYMBOLS(TeamSymbols2011);
+    XABSL_REGISTER_SYMBOLS(SensorSymbols2011);
+    XABSL_REGISTER_SYMBOLS(MathSymbols2011);
+    XABSL_REGISTER_SYMBOLS(GoalSymbols2011);
+    XABSL_REGISTER_SYMBOLS(LedSymbols2011);
+    XABSL_REGISTER_SYMBOLS(SelflocSymbols2011);
+    XABSL_REGISTER_SYMBOLS(OdometrySymbols2011);
+    XABSL_REGISTER_SYMBOLS(FieldSymbols2011);
+    XABSL_REGISTER_SYMBOLS(StrategySymbols2011);
+    XABSL_REGISTER_SYMBOLS(SoundSymbols2011);
+    XABSL_REGISTER_SYMBOLS(LineSymbols2011);
   }//end if
 }//end registerXABSLSymbols
 
 
-void XABSLBehaviorControl::updateXABSLSymbols()
+void XABSLBehaviorControl2011::updateXABSLSymbols()
 {
   if(theEngine != NULL)
   {
-    theSelflocSymbols->execute();
-    theSensorSymbols->execute();
-    theBallSymbols->execute();
-    theOdometrySymbols->execute();
-    theMotionSymbols->execute();
-    theLineSymbols->execute();
+    theSelflocSymbols2011->execute();
+    theSensorSymbols2011->execute();
+    theBallSymbols2011->execute();
+    theOdometrySymbols2011->execute();
+    theMotionSymbols2011->execute();
+    theLineSymbols2011->execute();
   }//end if
 }//end updateXABSLSymbols
 
-void XABSLBehaviorControl::updateOutputSymbols()
+void XABSLBehaviorControl2011::updateOutputSymbols()
 {
   if(theEngine != NULL)
   {
-    theMotionSymbols->getModuleT()->updateOutputSymbols();
+    theMotionSymbols2011->getModuleT()->updateOutputSymbols();
   }
 }
 
 // ERROR HANDLER //
 
-MyErrorHandler::MyErrorHandler()
+MyErrorHandler2011::MyErrorHandler2011()
 {
   
 }
 
-void MyErrorHandler::printError(const char* txt)
+void MyErrorHandler2011::printError(const char* txt)
 {
   std::cerr << "XABSL error: " << txt << std::endl;
 }
 
-void MyErrorHandler::printMessage(const char* txt)
+void MyErrorHandler2011::printMessage(const char* txt)
 {
   std::cout << "XABSL message: " << txt << std::endl;
 }
 
-MyErrorHandler::~MyErrorHandler()
+MyErrorHandler2011::~MyErrorHandler2011()
 {
 
 }
 
 
-void XABSLBehaviorControl::executeDebugCommand(
+void XABSLBehaviorControl2011::executeDebugCommand(
     const std::string& command, 
     const std::map<std::string, std::string>& arguments,
     std::ostream & outstream)
@@ -320,7 +320,7 @@ void XABSLBehaviorControl::executeDebugCommand(
 }//end executeDebugCommand
 
 
-void XABSLBehaviorControl::fillActiveOptions(naothmessages::BehaviorStatus &status)
+void XABSLBehaviorControl2011::fillActiveOptions(naothmessages::BehaviorStatus &status)
 {
   const xabsl::Array<xabsl::Action*>& actions = theEngine->getRootActions();
   for (int i=0; i < actions.getSize(); i++)
@@ -332,7 +332,7 @@ void XABSLBehaviorControl::fillActiveOptions(naothmessages::BehaviorStatus &stat
 } // end fillActiveOptions
 
 
-void XABSLBehaviorControl::fillAction(const xabsl::Action* source, naothmessages::XABSLAction* dest)
+void XABSLBehaviorControl2011::fillAction(const xabsl::Action* source, naothmessages::XABSLAction* dest)
 {
   if (const xabsl::Behavior* behavior = source->getBehavior())
   {
@@ -429,7 +429,7 @@ void XABSLBehaviorControl::fillAction(const xabsl::Action* source, naothmessages
 } // end fillActiveOptions
 
 
-void XABSLBehaviorControl::fillRegisteredSymbols(naothmessages::BehaviorStatus &status)
+void XABSLBehaviorControl2011::fillRegisteredSymbols(naothmessages::BehaviorStatus &status)
 {
   /*******************************************************************
    * input symbols
