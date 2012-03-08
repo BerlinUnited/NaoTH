@@ -127,7 +127,8 @@ public class TeamCommViewer extends AbstractDialog
   public void dispose()
   {
     // stop the listener
-    this.timerCheckMessages.stop();
+    if(this.timerCheckMessages != null)
+        this.timerCheckMessages.stop();
   }//end dispose
 
 

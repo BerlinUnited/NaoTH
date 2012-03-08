@@ -50,7 +50,7 @@ class ParticleFilterBallLocator : private ParticleFilterBallLocatorBase
 
 public:
   ParticleFilterBallLocator();
-  virtual ~ParticleFilterBallLocator(){};
+  virtual ~ParticleFilterBallLocator(){}
 
   virtual void execute();
 

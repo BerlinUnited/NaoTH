@@ -50,7 +50,7 @@ class ActiveGoalLocator : private ActiveGoalLocatorBase
 
 public:
   ActiveGoalLocator();
-  ~ActiveGoalLocator(){};
+  ~ActiveGoalLocator(){}
 
   virtual void execute();
 

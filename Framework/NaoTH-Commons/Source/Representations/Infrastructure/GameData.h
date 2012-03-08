@@ -132,7 +132,7 @@ public:
 class GameReturnData: public PlatformInterchangeable, public Printable
 {
 public:
-  GameReturnData():message(alive){};
+  GameReturnData():message(alive){}
 
   enum Message
   {

@@ -63,7 +63,7 @@ namespace naoth
   {
   public:
     CurrentCameraSettings();
-    virtual ~CurrentCameraSettings() {};
+    virtual ~CurrentCameraSettings() {}
   };
 
   class CameraSettingsRequest : public ParameterList,
@@ -71,7 +71,7 @@ namespace naoth
   {
   public:
     CameraSettingsRequest();
-    virtual ~CameraSettingsRequest() {};
+    virtual ~CameraSettingsRequest() {}
 
     /** Set to true to query a real CameraSetting from the Nao camera */
     bool queryCameraSettings;

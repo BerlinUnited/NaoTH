@@ -69,7 +69,7 @@ public:
   {
     theInstance = this;
   };
-  ~MotionSymbols(){};
+  virtual ~MotionSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

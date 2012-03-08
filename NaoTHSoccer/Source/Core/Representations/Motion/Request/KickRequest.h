@@ -27,7 +27,7 @@ public:
       finishKick(false)
   {};
 
-  ~KickRequest(){};
+  ~KickRequest(){}
 
   enum KickFootID
   {

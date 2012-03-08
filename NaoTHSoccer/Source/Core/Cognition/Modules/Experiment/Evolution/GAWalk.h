@@ -43,7 +43,7 @@ public:
   GAWalk(const VirtualVision& vv, const RobotPose& rp, const CameraMatrix& cm, const FrameInfo& fi, const FieldInfo& field,
     MotionRequest& mq);
 
-  virtual ~GAWalk(){};
+  virtual ~GAWalk(){}
 
   virtual void run();
 

@@ -35,7 +35,7 @@ public:
   {
     theInstance = this;
   };
-  ~LineSymbols(){};
+  virtual ~LineSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

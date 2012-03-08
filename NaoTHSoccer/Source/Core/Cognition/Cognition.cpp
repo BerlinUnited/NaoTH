@@ -103,7 +103,6 @@ Cognition::~Cognition()
 void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   g_message("Cognition register start");
-
   // register of the modules
 
   // input
