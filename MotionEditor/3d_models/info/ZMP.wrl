@@ -1,0 +1,20 @@
+#VRML V2.0 utf8
+
+#Zero Moment Point
+
+DEF ZMP Transform {
+   children [
+      Shape{
+	 appearance Appearance {
+	    material Material {
+	       diffuseColor 0 1 1
+	       shininess 0.9
+	       specularColor 0.9 0.9 0.9
+	    }
+	 }
+	 geometry Sphere {
+	    radius 0.01
+	 }
+      }
+   ]
+}
