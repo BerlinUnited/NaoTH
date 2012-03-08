@@ -15,21 +15,44 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <signal.h>
+
 //#include <rttools/rtthread.h>
 
 using namespace naoth;
 
-void got_signal(int)
+void got_signal(int t)
 {
-  // do something
-  std::cout << "catched signal" << std::endl;
 
+  if(t == SIGTERM)
+  {
+    std::cout << "shutdown requested by kill signal" << t << std::endl;
+  }
+  else if(t == SIGSEGV)
+  {
+    std::cerr << "SEGMENTATION FAULT" << std::endl;
+  }
+  else
+  {
+    std::cerr << "catched unknown signal " << t << std::endl;
+  }
+
+  std::cout << "dumping traces" << std::endl;
   Trace::getInstance().dump();
   Stopwatch::getInstance().dump("cognition");
 
+  std::cout << "syncing file system..." ;
   sync();
+  std::cout << " finished." << std::endl;
 
-  exit(0);
+  if(t == SIGTERM)
+  {
+    exit(0);
+  }
+  else
+  {
+    exit(-1);
+  }
 }//end got_signal
 
 /*
@@ -104,13 +127,18 @@ int main(int argc, char *argv[])
   if (!g_thread_supported())
     g_thread_init(NULL);
 
-  // react on "kill"
-  struct sigaction sa;
-  memset( &sa, 0, sizeof(sa) );
-  sa.sa_handler = got_signal;
-  sigfillset(&sa.sa_mask);
-  sigaction(SIGTERM,&sa,NULL);
-  
+  // react on "kill" and segmentation fault
+  struct sigaction saKill;
+  memset( &saKill, 0, sizeof(saKill) );
+  saKill.sa_handler = got_signal;
+  sigfillset(&saKill.sa_mask);
+  sigaction(SIGTERM,&saKill,NULL);
+  struct sigaction saSeg;
+  memset( &saSeg, 0, sizeof(saSeg) );
+  saSeg.sa_handler = got_signal;
+  sigfillset(&saSeg.sa_mask);
+  sigaction(SIGSEGV,&saSeg,NULL);
+
 
   // O_CREAT - create a new semaphore if not existing
   // open semaphore
