@@ -29,7 +29,7 @@ void ShadingCorrection::init(unsigned int w, unsigned int h, CameraInfo::CameraI
   size = w * h;
   yC = new unsigned int[size];
   reset();
-};
+}
 
 void ShadingCorrection::clear()
 {

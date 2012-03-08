@@ -37,7 +37,7 @@ public:
   {
     theInstance = this;
     };
-  ~GoalSymbols(){};
+  virtual ~GoalSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

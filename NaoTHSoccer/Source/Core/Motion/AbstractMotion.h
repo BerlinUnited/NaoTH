@@ -6,8 +6,8 @@
 * Declaration of class AbstractMotion
 */
 
-#ifndef __AbstractMotion_h_
-#define __AbstractMotion_h_
+#ifndef _AbstractMotion_h_
+#define _AbstractMotion_h_
 
 #include "MotionBlackBoard.h"
 
@@ -26,7 +26,7 @@ public:
 
   AbstractMotion(motion::MotionID id);
 
-  virtual ~AbstractMotion(){};
+  virtual ~AbstractMotion(){}
 
   virtual void init(){}
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& moitonStatus) = 0;

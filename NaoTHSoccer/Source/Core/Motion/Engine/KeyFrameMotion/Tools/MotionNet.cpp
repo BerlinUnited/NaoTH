@@ -15,7 +15,7 @@ MotionNet::MotionNet()
 {
 }
 
-MotionNet::~MotionNet(){};
+MotionNet::~MotionNet(){}
 
 
 void MotionNet::add(const MotionNet::KeyFrame& keyFrame)

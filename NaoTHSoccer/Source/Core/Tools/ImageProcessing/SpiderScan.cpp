@@ -157,7 +157,7 @@ void SpiderScan::scan(PointList<20>& goodPoints, PointList<20>& badPoints, Scans
     {
       if(badPoints.length > badPointsBeforeScan) //if a bad point was found
       {
-        Vector2<int>& badPoint = badPoints[badPoints.length-1]; //get this point
+        const Vector2<int>& badPoint = badPoints[badPoints.length-1]; //get this point
 
         //if the pixel lies at the image border and was not the result of a scan along that border
         if(pixelAtImageBorder(badPoint, 2) && !isBorderScan(scans.start[0], scans.direction[0], 2))

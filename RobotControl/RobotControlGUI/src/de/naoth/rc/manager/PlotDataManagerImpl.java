@@ -32,14 +32,15 @@ public class PlotDataManagerImpl extends AbstractManagerPlugin<Plots>
     }
     catch (InvalidProtocolBufferException ex)
     {
-      Logger.getLogger(PlotDataManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(PlotDataManagerImpl.class.getName()).log(Level.SEVERE, new String(result), ex);
       return Plots.getDefaultInstance();
     }
   }
 
+  @Override
   public Command getCurrentCommand()
   {
-    return new Command("plot_values");
+    return new Command("plot:get");
   }
 }//end class PlotDataManager
 

@@ -13,7 +13,7 @@
 class DummyCallable : public naoth::Callable
 {
 public:
-  virtual void call() {};
+  virtual void call() {}
   void init(naoth::PlatformInterfaceBase& platformInterface) {};
 };
 

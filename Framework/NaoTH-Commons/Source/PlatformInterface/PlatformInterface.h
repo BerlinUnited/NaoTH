@@ -300,7 +300,7 @@ namespace naoth
   class PlatformInterface: public PlatformInterfaceBase
   {
   public:
-    virtual ~PlatformInterface(){};
+    virtual ~PlatformInterface(){}
 
   protected:
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)

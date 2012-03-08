@@ -5,13 +5,14 @@
  *
  */
 
-#ifndef INERTIALPERCEPT_H
-#define INERTIALPERCEPT_H
+#ifndef _INERTIALPERCEPT_H
+#define _INERTIALPERCEPT_H
 
 #include "Representations/Infrastructure/InertialSensorData.h"
 
 class InertialPercept : public naoth::InertialSensorData
 {
+
 };
 
-#endif // INERTIALPERCEPT_H
+#endif // _INERTIALPERCEPT_H

@@ -33,7 +33,7 @@ public:
     character(0.5),
     coordinate(Hip)
   {};
-  ~WalkRequest(){};
+  ~WalkRequest(){}
 
   static std::string getCoordinateName(Coordinate c)
   {

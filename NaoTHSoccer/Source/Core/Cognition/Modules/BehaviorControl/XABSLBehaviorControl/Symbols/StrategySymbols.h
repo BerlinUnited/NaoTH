@@ -51,7 +51,7 @@ public:
   {
     theInstance = this;
   };
-  ~StrategySymbols(){};
+  virtual ~StrategySymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

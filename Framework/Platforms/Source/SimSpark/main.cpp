@@ -21,7 +21,8 @@ using namespace std;
 #define PLATFORM_NAME SimSpark
 #endif
 
-#define MAKE_NAME(name) #name
+#define MAKE_STRING(name) #name
+#define MAKE_NAME(name) MAKE_STRING(name)
 
 
 int main(int argc, char** argv)

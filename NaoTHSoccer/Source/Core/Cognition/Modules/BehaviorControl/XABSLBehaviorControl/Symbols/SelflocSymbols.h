@@ -50,7 +50,7 @@ public:
   {
     theInstance = this;
   };
-  ~SelflocSymbols(){};
+  virtual ~SelflocSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

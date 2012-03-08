@@ -42,7 +42,7 @@ public:
 
   GeneticAlgorithms();
 
-  virtual ~GeneticAlgorithms(){};
+  virtual ~GeneticAlgorithms(){}
 
   void init(const std::vector<Individual>& initial);
 
