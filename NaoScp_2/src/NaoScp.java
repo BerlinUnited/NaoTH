@@ -494,9 +494,22 @@ public class NaoScp extends NaoScpMainFrame
     }
   }
 
+  private boolean checkDirPath()
+  {
+    if(config.jDirPathLabel == null)
+    {
+      JOptionPane.showMessageDialog(null, "Main Directory not set");
+      return false;
+    }
+    return true;
+  }
+
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
-      copyFiles2Nao();
-      resetBackupList();
+      if(checkDirPath())
+      {
+        copyFiles2Nao();
+        resetBackupList();
+      }
     }//GEN-LAST:event_copyButtonActionPerformed
 
   public void haveError(String sNaoNo, String error)
@@ -1137,6 +1150,9 @@ public class NaoScp extends NaoScpMainFrame
     config.jDirPathLabel = directoryName;
     setSchemes();
     copyButton.setEnabled(true);
+    jButtonSaveNetworkConfig.setEnabled(true);
+    jButtonSetRobotNetwork.setEnabled(true);
+    jButtonInitRobotSystem.setEnabled(true);
     setFormData();
   }
 
@@ -2770,6 +2786,7 @@ public class NaoScp extends NaoScpMainFrame
     );
 
     jButtonSetRobotNetwork.setText("Set Network to Robot");
+    jButtonSetRobotNetwork.setEnabled(false);
     jButtonSetRobotNetwork.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButtonSetRobotNetworkActionPerformed(evt);
@@ -2777,6 +2794,7 @@ public class NaoScp extends NaoScpMainFrame
     });
 
     jButtonInitRobotSystem.setText("Initialize Robot System");
+    jButtonInitRobotSystem.setEnabled(false);
     jButtonInitRobotSystem.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButtonInitRobotSystemActionPerformed(evt);
@@ -2784,6 +2802,7 @@ public class NaoScp extends NaoScpMainFrame
     });
 
     jButtonSaveNetworkConfig.setText("Save As Default Config");
+    jButtonSaveNetworkConfig.setEnabled(false);
     jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButtonSaveNetworkConfigActionPerformed(evt);
@@ -2975,7 +2994,10 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_sshRootUserActionPerformed
 
     private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
-      setRobotNetwork();
+      if(checkDirPath())
+      {
+        setRobotNetwork();
+      }
     }//GEN-LAST:event_jButtonSetRobotNetworkActionPerformed
 
     private void jButtonSaveNetworkConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveNetworkConfigActionPerformed
@@ -2996,7 +3018,7 @@ public class NaoScp extends NaoScpMainFrame
 
     private void lstNaosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstNaosMouseClicked
       
-      if (evt.getClickCount() == 2) 
+      if (evt.getClickCount() == 2 && checkDirPath())
       {
         Object[] options={ "initialize Robot", "set network config" };
         int pressedBtnId = JOptionPane.showOptionDialog
@@ -3032,7 +3054,10 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_formWindowClosing
 
     private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
-      initializeRobot();
+      if(checkDirPath())
+      {
+        initializeRobot();
+      }
     }//GEN-LAST:event_jButtonInitRobotSystemActionPerformed
 
     private void jSchemeBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jSchemeBoxItemStateChanged

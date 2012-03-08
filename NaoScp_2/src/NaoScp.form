@@ -1085,6 +1085,7 @@
             <Component class="javax.swing.JButton" name="jButtonSetRobotNetwork">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Set Network to Robot"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSetRobotNetworkActionPerformed"/>
@@ -1093,6 +1094,7 @@
             <Component class="javax.swing.JButton" name="jButtonInitRobotSystem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Initialize Robot System"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonInitRobotSystemActionPerformed"/>
@@ -1101,6 +1103,7 @@
             <Component class="javax.swing.JButton" name="jButtonSaveNetworkConfig">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Save As Default Config"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSaveNetworkConfigActionPerformed"/>
