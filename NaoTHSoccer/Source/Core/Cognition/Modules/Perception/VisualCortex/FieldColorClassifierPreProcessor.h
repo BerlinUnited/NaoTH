@@ -39,9 +39,6 @@ public:
   /** executes the module */
   void execute();
 
-private:
-  bool enablePlots;
-
 };
 
 #endif  /* FIELDCOLORCLASSIFIER_H */

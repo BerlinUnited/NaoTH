@@ -13,23 +13,18 @@
 //Tools
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
-#include "Tools/ImageProcessing/ColorClassifier.h"
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
-#include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Perception/FieldColorPreProcessingPercept.h"
-//#include "Representations/Perception/BaseColorRegionPercept.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
-  REQUIRE(FrameInfo)
   REQUIRE(ColorClassificationModel)
   REQUIRE(FieldColorPreProcessingPercept)
-  //REQUIRE(BaseColorRegionPercept)
 
   PROVIDE(ColoredGrid)
   PROVIDE(Histogram)
@@ -49,8 +44,6 @@ public:
   void execute();
 
 private:
-  unsigned int lastTime;
-
   void calculateColoredGrid();
 };
 

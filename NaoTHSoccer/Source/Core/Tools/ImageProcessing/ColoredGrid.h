@@ -184,6 +184,29 @@ public:
   }//end setColor
 
 
+  // check whether the grid looks valid...
+  void validate()
+  {
+    for(int color = ColorClasses::orange; color < ColorClasses::numOfColors; color++)
+    {
+      percentOfKnownColors += colorPointsRate[color];
+    }
+        
+    percentOfUnknownColors = colorPointsRate[ColorClasses::none];
+     
+
+    // check if enough known colors were detected
+    if(percentOfUnknownColors < 85 && percentOfKnownColors > 20) // the criteria is a kind of strange..
+    {
+      valid = true;
+    }
+    else
+    {
+      valid = false;
+    }
+  }//end validate
+
+
   void reset()
   {
     //numberOfGridPoints = 0;
@@ -193,11 +216,13 @@ public:
       colorPointsRate[i] = 0.0;
     }//end for
 
+    // statistics
     percentOfUnknownColors = 0;
     percentOfKnownColors = 0;
     meanBrightness = 127.0;
     meanBlue = 127.0;
     meanRed = 127.0;
+
     valid =  false;
 
     /*

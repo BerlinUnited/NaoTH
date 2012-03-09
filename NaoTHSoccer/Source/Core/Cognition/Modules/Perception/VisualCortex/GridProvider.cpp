@@ -19,7 +19,6 @@ GridProvider::GridProvider()
   DEBUG_REQUEST_REGISTER("ImageProcessor:show_classified_image", "draw the image represented by uniformGrid", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:enable_debug", "Enables the debug output for the histogram", false);
-  lastTime = getFrameInfo().getTime();
 }
 
 
@@ -63,25 +62,20 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
 
     getImage().get(point.x, point.y, pixel);
 
+    // TODO: check if it is needed
     // mean color
-    grey += pixel.y;
-    red  += pixel.u;
-    blue += pixel.v;
+    grey += pixel.y; // used by BaseColorClassifier
+    red  += pixel.u; // used by BaseColorClassifier
+    blue += pixel.v; // used by BaseColorClassifier
 
     // classify the color
     ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel.y, pixel.u, pixel.v);
 
+    // remember the color in the grid
     getColoredGrid().setColor(i, currentPixelColor);
 
-    if(currentPixelColor == ColorClasses::none)
-    {
-      getColoredGrid().percentOfUnknownColors += getColoredGrid().singlePointRate;
-    }
-    else
-    {
-      getColoredGrid().percentOfKnownColors += getColoredGrid().singlePointRate;
-    }
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
+
     getHistogram().increaseValue(gridPoint, currentPixelColor);
     getHistogram().increaseChannelValue(pixel, currentPixelColor);
     if(getFieldColorPreProcessingPercept().isFieldCromaRed(pixel.v))
@@ -90,21 +84,17 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     }
   }//end for
 
-  // TODO: do we need this?
-  // check if enough known colors were detected
-  getColoredGrid().valid = false;
-  if(getColoredGrid().percentOfUnknownColors < 85 && getColoredGrid().percentOfKnownColors > 20)
-  {
-    getColoredGrid().valid = true;
-  }
+  // 
+  getColoredGrid().validate();
+  
 
-  const unsigned int& imgArea = getColoredGrid().uniformGrid.maxNumberOfPoints;
-
+  unsigned int imgArea = getColoredGrid().uniformGrid.maxNumberOfPoints;
   getColoredGrid().meanBrightness = grey / imgArea;
   getColoredGrid().meanRed = red / imgArea;
   getColoredGrid().meanBlue = blue / imgArea;
 
   STOPWATCH_STOP("Histogram+ColoredGrid");
+
 
   DEBUG_REQUEST("ImageProcessor:show_grid",
     for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)

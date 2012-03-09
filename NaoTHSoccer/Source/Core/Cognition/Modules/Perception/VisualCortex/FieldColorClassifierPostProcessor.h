@@ -12,7 +12,7 @@
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/ColorTable64.h"
+//#include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Perception/FieldColorPreProcessingPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -51,33 +51,45 @@ public:
 
 private:
   double adaptationRate;
-  bool enablePlots;
+  //bool enablePlots;
   bool justStarted;
 
+  //
   FieldColorParameters fieldParams;
 
+
+  // 
   unsigned int distY;
   unsigned int distCb;
   unsigned int distCr;
+
+  //
   unsigned int maxDistY;
   unsigned int maxDistCb;
   unsigned int maxDistCr;
 
+
+
   double meanFieldY;
   double weightedMeanY;
+  
+  //
   double maxWeightedY;
   unsigned int maxWeightedIndexY;
+  
   double maxWeightedCb;
   unsigned int maxWeightedIndexCb;
+  
   double maxWeightedCr;
   unsigned int maxWeightedIndexCr;
 
+  //
   double weightedSmoothedHistY[COLOR_CHANNEL_VALUE_COUNT];
   double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];
   double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
+  //double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
 
-  double smoothRungeKutta4(const unsigned int& idx, double* valueArray);
+  double smoothRungeKutta4(const unsigned int& idx, double* valueArray) const;
   void setPerceptData();
 
   void runDebugRequests(int weigthedMeanY, int meanY);

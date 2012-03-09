@@ -6,7 +6,7 @@
  */
 
 #ifndef FIELDCOLORPERCEPT_H
-#define  FIELDCOLORPERCEPT_H
+#define FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
@@ -52,11 +52,7 @@ private:
       max.v = maxV;
     }
 
-    void set
-    (
-        Pixel& min_,
-        Pixel& max_
-    )
+    void set( Pixel& min_, Pixel& max_ )
     {
       min = min_;
       max = max_;
@@ -76,9 +72,11 @@ public:
   double distY;
   double distCb;
   double distCr;
+
   double maxWeightedY;
   double maxWeightedCb;
   double maxWeightedCr;
+
   unsigned int maxWeightedIndexY;
   unsigned int maxWeightedIndexCb;
   unsigned int maxWeightedIndexCr;
@@ -94,7 +92,7 @@ public:
       (unsigned char)(max(maxWeightedIndexCr - distCr,0.0)),
       (unsigned char)(min(maxWeightedIndexCr + distCr,255.0))
       );
-  }
+  }//end set
 
 
   FrameInfo lastUpdated;
@@ -102,14 +100,14 @@ public:
   FieldColorPercept()
     : distY(0.0),
       distCb(0.0),
-      distCr(0.0)
+      distCr(0.0),
+      maxWeightedY(0.0),
+      maxWeightedCb(0.0),
+      maxWeightedCr(0.0),
+      maxWeightedIndexY(0),
+      maxWeightedIndexCb(0),
+      maxWeightedIndexCr(0)
   {
-    maxWeightedY = 0.0;
-    maxWeightedCb = 0.0;
-    maxWeightedCr = 0.0;
-    maxWeightedIndexY = 0;
-    maxWeightedIndexCb = 0;
-    maxWeightedIndexCr = 0;
   }
 
   ~FieldColorPercept()
@@ -125,6 +123,7 @@ public:
   inline bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
     return greenRegion.inside(yy, cb, cr);
+    /*
     return
       (
         abs((int) cr  - (int) maxWeightedIndexCr) < (int) distCr
@@ -133,6 +132,7 @@ public:
         &&
         abs((int) yy  - (int) maxWeightedIndexY) < (int) distY
       );
+      */
   }
 
   inline bool isFieldColor(const Pixel& pixel) const
@@ -140,7 +140,7 @@ public:
     return isFieldColor(pixel.y, pixel.u, pixel.v);
   }
 
-
+  /*
   inline bool isOnlyFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr, const ColorClasses::Color& color) const
   {
     return
@@ -152,11 +152,12 @@ public:
         color != ColorClasses::yellow
       );
   }
-
+  
   inline bool isOnlyFieldColor(const Pixel& pixel, const ColorClasses::Color& color) const
   {
     return isOnlyFieldColor(pixel.y, pixel.u, pixel.v, color);
   }
+  */
 
   inline void print(ostream& stream) const
   {

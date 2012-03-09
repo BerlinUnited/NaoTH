@@ -5,7 +5,7 @@
  */
 
 #ifndef FIELDCOLORPREPROCESSINGPERCEPT_H
-#define  FIELDCOLORPREPROCESSINGPERCEPT_H
+#define FIELDCOLORPREPROCESSINGPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
 #include <Representations/Infrastructure/FrameInfo.h>
