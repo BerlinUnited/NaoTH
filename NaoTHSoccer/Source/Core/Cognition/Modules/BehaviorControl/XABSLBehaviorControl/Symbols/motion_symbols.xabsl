@@ -152,6 +152,12 @@ namespace motion_symbols("Motion Symbols") {
   /** The currently executed motion type. */
   enum motion.type input executed_motion.type;
   
+  /** indicates whether the LEFT foot is currently avaliable for the step control */
+  bool input executed_motion.step_control.left_movable;
+  /** indicates whether the RIGHT foot is currently avaliable for the step control */
+  bool input executed_motion.step_control.right_movable;
+  
+  
   /** the universal enum type for direction */  
   enum direction   
   {

@@ -123,7 +123,8 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
   // motion status
   engine.registerEnumeratedInputSymbol("executed_motion.type","motion.type", &getMotionStatusId);
   engine.registerDecimalInputSymbol("executed_motion.time", &getMotionStatusTime);
-  
+  engine.registerBooleanInputSymbol("executed_motion.step_control.left_movable", &getMotionStatusLeftMovable);
+  engine.registerBooleanInputSymbol("executed_motion.step_control.right_movable", &getMotionStatusRightMovable);
 
   // universal enum type for direction
   engine.registerEnumElement("direction", "direction.right", -1);
@@ -253,8 +254,18 @@ void MotionSymbols::setMotionRequestId(int value){ theInstance->motionRequest.id
 int MotionSymbols::getMotionRequestId(){ return (int)(theInstance->motionRequest.id); }
 
 int MotionSymbols::getMotionStatusId(){ return (int)(theInstance->motionStatus.currentMotion); }
-
 double MotionSymbols::getMotionStatusTime(){ return theInstance->frameInfo.getTimeSince(theInstance->motionStatus.time); }
+bool MotionSymbols::getMotionStatusLeftMovable()
+{ 
+  return theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
+      || theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::LEFT; 
+}
+
+bool MotionSymbols::getMotionStatusRightMovable()
+{ 
+  return theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::BOTH 
+      || theInstance->motionStatus.stepControl.moveableFoot == MotionStatus::StepControlStatus::RIGHT; 
+}
 
 void MotionSymbols::setCameraID(int value){ theInstance->headMotionRequest.cameraID = (CameraInfo::CameraID)value; }
 int MotionSymbols::getCameraID(){ return (int)(theInstance->headMotionRequest.cameraID); }

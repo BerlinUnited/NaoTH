@@ -115,6 +115,8 @@ private:
   static int getMotionRequestId();
   static int getMotionStatusId();
   static double getMotionStatusTime();
+  static bool getMotionStatusLeftMovable();
+  static bool getMotionStatusRightMovable();
 
   static void setCameraID(int value);
   static int getCameraID();
