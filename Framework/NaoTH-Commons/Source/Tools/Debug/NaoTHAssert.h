@@ -38,7 +38,7 @@
   if(!(cond)) { \
     if(errno != 0) {\
       std::stringstream s; s << "errno: " << (int) errno << " (" << strerror(errno) << ")"; \
-      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());; \
+      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str()); \
     } \
     GT_TRACE(#cond); Trace::getInstance().dump(); assert(cond);\
   }\

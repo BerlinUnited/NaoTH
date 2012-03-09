@@ -1,57 +1,42 @@
 /**
 * @author edel at informatik.hu-berlin.de
 */
-#ifndef __ImagePrimitives_h_
-#define __ImagePrimitives_h_
+#ifndef _ImagePrimitives_h_
+#define _ImagePrimitives_h_
 
-union Pixel
+template <typename T>
+union PixelT
 {
   struct
   {
     /** Brightness */
-    unsigned char y;
+    T y;
     /** U, also known as Cb */
-    unsigned char u;
+    T u;
     /** V, also known as Cr */
-    unsigned char v;
+    T v;
   };
 
   struct
   {
-    unsigned char a;
-    unsigned char b;
-    unsigned char c;
+    T a;
+    T b;
+    T c;
   };
 
-  unsigned char channels[3];
+  T channels[3];
 
 };
+
+
+typedef PixelT<unsigned char> Pixel; // default pixel type
+typedef PixelT<double> DoublePixel;
+
 
 struct Point {
   unsigned int x;
   unsigned int y;
 };
 
-union DoublePixel
-{
-  struct
-  {
-    /** Brightness */
-    double y;
-    /** U, also known as Cb */
-    double u;
-    /** V, also known as Cr */
-    double v;
-  };
 
-  struct
-  {
-    double a;
-    double b;
-    double c;
-  };
-
-  double channels[3];
-
-};
 #endif

@@ -23,14 +23,14 @@
 namespace naoth
 {
   const unsigned int theSensorJointDataIndex = 0;
-  const unsigned int theFSRDataIndex = theSensorJointDataIndex + 4 * (JointData::numOfJoint - 1);
+  const unsigned int theFSRDataIndex = theSensorJointDataIndex + 4 * (JointData::numOfJoint - 1); // RHipYawPitch and LHipYawPitch are the same joint
   const unsigned int theAccelerometerDataIndex = theFSRDataIndex + FSRData::numOfFSR;
-  const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + 3; // 3 Axes
-  const unsigned int theInertialSensorDataIndex = theGyrometerDataIndex + 2 + 1; // 2 axes + ref value
-  const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // 2 axes
+  const unsigned int theGyrometerDataIndex = theAccelerometerDataIndex + 3; // 3 Axes acc
+  const unsigned int theInertialSensorDataIndex = theGyrometerDataIndex + 2 + 1; // 2 axes + ref value gyro
+  const unsigned int theIRReceiveDataIndex = theInertialSensorDataIndex + 2; // 2 axes inertial
   const unsigned int theButtonDataIndex = theIRReceiveDataIndex + IRReceiveData::numOfIRReceive;
   const unsigned int theUltraSoundReceiveDataIndex = theButtonDataIndex + ButtonData::numOfButtons;
-  const unsigned int thBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundData::numOfIRSend;
+  const unsigned int thBatteryDataIdex = theUltraSoundReceiveDataIndex + 1 + 2 * UltraSoundData::numOfUSEcho; // 
   const unsigned int numOfSensors = thBatteryDataIdex + 1;
   
   // data written by libnaoth

@@ -57,7 +57,7 @@ void NaoSensorData::get(AccelerometerData& data) const
   //forum of Aldebaran scale = g/56.0
   //experiments Nao36 scale = g/60.0
   //wrong sign in Aldebaran
-  static float scale_acc = -9.81/60.0;
+  static float scale_acc = 9.81/60.0;
 
   data.rawData.x = sensorsValue[theAccelerometerDataIndex + 0];
   data.rawData.y = sensorsValue[theAccelerometerDataIndex + 1];
@@ -65,6 +65,8 @@ void NaoSensorData::get(AccelerometerData& data) const
 
   //0.1532289 = 9.80665/64
   data.data = data.rawData * scale_acc;//* 0.1532289;
+  //TODO: why?
+  data.data.y *= -1; 
 }//end AccelerometerData
 
 void NaoSensorData::get(GyrometerData& data) const
@@ -127,12 +129,12 @@ void NaoSensorData::get(UltraSoundReceiveData& data) const
   if(data.ultraSoundTimeStep != 100) //Hack:is only 100 if mode 4 or 12 etc were the third bit is set
   {
     data.rawdata = sensorsValue[currentIndex++];
-    currentIndex += UltraSoundData::numOfIRSend * 2;
+    currentIndex += UltraSoundData::numOfUSEcho * 2;
   }
   else
   {
     currentIndex++;
-    for(int i = 0; i < UltraSoundData::numOfIRSend;i++)
+    for(int i = 0; i < UltraSoundData::numOfUSEcho;i++)
     {
       data.dataLeft[i] = sensorsValue[currentIndex++];
       data.dataRight[i] = sensorsValue[currentIndex++];

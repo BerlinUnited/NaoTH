@@ -6,8 +6,8 @@
  * @author Max Risler
  */
 
-#ifndef __RingBuffer_h_
-#define __RingBuffer_h_
+#ifndef _RingBuffer_h_
+#define _RingBuffer_h_
 
 #include <assert.h>
 

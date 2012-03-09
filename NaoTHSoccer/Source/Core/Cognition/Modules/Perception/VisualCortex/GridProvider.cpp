@@ -71,7 +71,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     // classify the color
     ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel.y, pixel.u, pixel.v);
 
-    // remember the color in the grid
+    // remember the color in the gridt
     getColoredGrid().setColor(i, currentPixelColor);
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);

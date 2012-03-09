@@ -11,8 +11,8 @@
 class SynchronizedFileWriter
 {
 private:
-  SynchronizedFileWriter(){};
-  ~SynchronizedFileWriter(){};
+  SynchronizedFileWriter(){}
+  ~SynchronizedFileWriter(){}
 
 public:
 

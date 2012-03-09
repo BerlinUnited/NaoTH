@@ -194,24 +194,28 @@ void DCMHandler::initButton()
 void DCMHandler::initUltraSoundReceive()
 {
   DCMPath_UltraSoundReceive = "Device/SubDeviceList/US/Sensor/Value";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_1] = "Device/SubDeviceList/US/Left/Sensor/Value1";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_2] = "Device/SubDeviceList/US/Left/Sensor/Value2";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_3] = "Device/SubDeviceList/US/Left/Sensor/Value3";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_4] = "Device/SubDeviceList/US/Left/Sensor/Value4";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_5] = "Device/SubDeviceList/US/Left/Sensor/Value5";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_6] = "Device/SubDeviceList/US/Left/Sensor/Value6";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_7] = "Device/SubDeviceList/US/Left/Sensor/Value7";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_8] = "Device/SubDeviceList/US/Left/Sensor/Value8";
-  DCMPath_UltraSoundReceiveLeft[UltraSoundData::distance_9] = "Device/SubDeviceList/US/Left/Sensor/Value9";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_1] = "Device/SubDeviceList/US/Right/Sensor/Value1";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_2] = "Device/SubDeviceList/US/Right/Sensor/Value2";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_3] = "Device/SubDeviceList/US/Right/Sensor/Value3";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_4] = "Device/SubDeviceList/US/Right/Sensor/Value4";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_5] = "Device/SubDeviceList/US/Right/Sensor/Value5";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_6] = "Device/SubDeviceList/US/Right/Sensor/Value6";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_7] = "Device/SubDeviceList/US/Right/Sensor/Value7";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_8] = "Device/SubDeviceList/US/Right/Sensor/Value8";
-  DCMPath_UltraSoundReceiveRight[UltraSoundData::distance_9] = "Device/SubDeviceList/US/Right/Sensor/Value9";
+  
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_0] = "Device/SubDeviceList/US/Left/Sensor/Value";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_1] = "Device/SubDeviceList/US/Left/Sensor/Value1";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_2] = "Device/SubDeviceList/US/Left/Sensor/Value2";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_3] = "Device/SubDeviceList/US/Left/Sensor/Value3";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_4] = "Device/SubDeviceList/US/Left/Sensor/Value4";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_5] = "Device/SubDeviceList/US/Left/Sensor/Value5";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_6] = "Device/SubDeviceList/US/Left/Sensor/Value6";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_7] = "Device/SubDeviceList/US/Left/Sensor/Value7";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_8] = "Device/SubDeviceList/US/Left/Sensor/Value8";
+  DCMPath_UltraSoundReceiveLeft[UltraSoundData::echo_9] = "Device/SubDeviceList/US/Left/Sensor/Value9";
+
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_0] = "Device/SubDeviceList/US/Right/Sensor/Value";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_1] = "Device/SubDeviceList/US/Right/Sensor/Value1";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_2] = "Device/SubDeviceList/US/Right/Sensor/Value2";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_3] = "Device/SubDeviceList/US/Right/Sensor/Value3";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_4] = "Device/SubDeviceList/US/Right/Sensor/Value4";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_5] = "Device/SubDeviceList/US/Right/Sensor/Value5";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_6] = "Device/SubDeviceList/US/Right/Sensor/Value6";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_7] = "Device/SubDeviceList/US/Right/Sensor/Value7";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_8] = "Device/SubDeviceList/US/Right/Sensor/Value8";
+  DCMPath_UltraSoundReceiveRight[UltraSoundData::echo_9] = "Device/SubDeviceList/US/Right/Sensor/Value9";
 }//end initUltraSoundReceive
 
 
@@ -286,7 +290,7 @@ void DCMHandler::initAllSensorData()
 
   //SensorJointData
   ASSERT(theSensorJointDataIndex == currentIndex);
-  for(int i=0;i<JointData::RHipYawPitch;i++)
+  for (int i = 0; i < JointData::RHipYawPitch; i++)
   {
     allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
     allSensorsList[currentIndex++] = DCMPath_SensorJointTemperature[i];
@@ -294,7 +298,7 @@ void DCMHandler::initAllSensorData()
     allSensorsList[currentIndex++] = DCMPath_MotorJointHardness[i];
   }
   // avoid the LHipYawPitch
-  for(int i=JointData::RHipYawPitch+1;i<JointData::numOfJoint;i++)
+  for (int i = JointData::RHipYawPitch + 1; i < JointData::numOfJoint; i++)
   {
     allSensorsList[currentIndex++] = DCMPath_SensorJointElectricCurrent[i];
     allSensorsList[currentIndex++] = DCMPath_SensorJointTemperature[i];
@@ -347,7 +351,7 @@ void DCMHandler::initAllSensorData()
   //UltraSoundReceiveData
   ASSERT(theUltraSoundReceiveDataIndex == currentIndex);
   allSensorsList[currentIndex++] = DCMPath_UltraSoundReceive; 
-  for(int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  for(int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveLeft[i];
     allSensorsList[currentIndex++] = DCMPath_UltraSoundReceiveRight[i];

@@ -24,7 +24,7 @@ protected:
   Vector2<double> direction;
   
 public:
-  Line() : direction(1.0,0.0) {}; 
+  Line() : direction(1.0,0.0) {}
   
   template <class V, class W>
   Line(const Vector2<V>& base, const Vector2<W>& direction) 

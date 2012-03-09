@@ -80,7 +80,7 @@ private:
     return &theInstance;
   }//end createInstanceOnStack
 
-  Singleton( const Singleton& ){};
+  Singleton( const Singleton& ){}
 
   static void deleteInstance()
   {

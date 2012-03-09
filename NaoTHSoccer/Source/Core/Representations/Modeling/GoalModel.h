@@ -25,8 +25,8 @@ public:
   class Goal
   {
   public:
-    Goal(){};
-    virtual ~Goal(){};
+    Goal(){}
+    virtual ~Goal(){}
 
     Vector2<double> leftPost;
     Vector2<double> rightPost;
