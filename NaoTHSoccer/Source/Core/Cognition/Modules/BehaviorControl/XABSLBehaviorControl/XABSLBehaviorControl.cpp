@@ -85,6 +85,9 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
   // clear old errors
   error_stream.str("");
   error_stream.clear();
+
+  // reset the error handler
+  theErrorHandler.errorsOccurred = false;
   
   theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
   
@@ -124,7 +127,7 @@ void XABSLBehaviorControl::execute()
   }//end if
 
   DEBUG_REQUEST("XABSL:update_status",
-    if(error_stream.str().length() > 0)
+    if(theErrorHandler.errorsOccurred)
     {
       getBehaviorStatus().status.set_errormessage(error_stream.str());
     }
@@ -264,7 +267,7 @@ void MyErrorHandler::printError(const char* txt)
 
 void MyErrorHandler::printMessage(const char* txt)
 {
-  out << "XABSL error: " << txt << std::endl;
+  out << "XABSL message: " << txt << std::endl;
   std::cout << "XABSL message: " << txt << std::endl;
 }
 
@@ -285,7 +288,7 @@ void XABSLBehaviorControl::executeDebugCommand(
     const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
     reloadBehaviorFromFile(behaviorPath, agentName);
     
-    if(error_stream.str().length() > 0)
+    if(theErrorHandler.errorsOccurred)
       outstream << error_stream.str();
     else
       outstream << "behavior reloaded";
