@@ -188,4 +188,6 @@ message OdometryData
 message CalibrationData
 {
   optional DoubleVector2 inertialSensorOffset = 1;
+  optional DoubleVector2 gyroSensorOffset = 2;
+  optional DoubleVector3 accSensorOffset = 3;
 }

@@ -50,12 +50,15 @@ class MyErrorHandler : public xabsl::ErrorHandler
 {
 public:
 
-  MyErrorHandler();
+  MyErrorHandler(std::ostream& out);
   void printError(const char* txt);
 
   void printMessage(const char* txt);
 
   virtual ~MyErrorHandler();
+
+private:
+  std::ostream& out;
 };
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
@@ -152,6 +155,8 @@ private:
 
   xabsl::Engine* theEngine;
   MyErrorHandler theErrorHandler;
+  std::stringstream error_stream;
+
   // TODO: remove this member
   std::string agentName;
 

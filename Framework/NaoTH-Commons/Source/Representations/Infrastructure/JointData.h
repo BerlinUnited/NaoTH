@@ -6,7 +6,7 @@
  */
 
 #ifndef _JOINTDATA_H
-#define  _JOINTDATA_H
+#define _JOINTDATA_H
 
 #include <string>
 
@@ -48,7 +48,7 @@ class JointData
       LAnklePitch,
       RAnkleRoll,
       LAnkleRoll,
-      numOfJoint, //error value
+      numOfJoint //error value
     };
     double position[numOfJoint];
     double stiffness[numOfJoint];
@@ -117,6 +117,14 @@ class JointData
     public:
     static void serialize(const SensorJointData& representation, std::ostream& stream);
     static void deserialize(std::istream& stream, SensorJointData& representation);
+  };
+
+  template<>
+  class Serializer<MotorJointData>
+  {
+    public:
+    static void serialize(const MotorJointData& representation, std::ostream& stream);
+    static void deserialize(std::istream& stream, MotorJointData& representation);
   };
 }
 

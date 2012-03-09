@@ -21,7 +21,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   : 
     // init the xabxl engine
     theEngine(NULL),
-    theErrorHandler(),
+    theErrorHandler(error_stream),
     agentName("soccer")
 {
   REGISTER_DEBUG_COMMAND("behavior:status", "send the active XABSL options", this);
@@ -82,6 +82,10 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
   delete theEngine;
 
   //new xabsl::Engine(theErrorHandler, &NaoTime::getNaoTimeInMilliSeconds);
+  // clear old errors
+  error_stream.str("");
+  error_stream.clear();
+  
   theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
   
   registerXABSLSymbols();
@@ -118,6 +122,13 @@ void XABSLBehaviorControl::execute()
 
     draw();
   }//end if
+
+  DEBUG_REQUEST("XABSL:update_status",
+    if(error_stream.str().length() > 0)
+    {
+      getBehaviorStatus().status.set_errormessage(error_stream.str());
+    }
+  );
 }//end execute
 
 
@@ -239,18 +250,21 @@ void XABSLBehaviorControl::updateOutputSymbols()
 
 // ERROR HANDLER //
 
-MyErrorHandler::MyErrorHandler()
+MyErrorHandler::MyErrorHandler(std::ostream& out)
+  : out(out)
 {
   
 }
 
 void MyErrorHandler::printError(const char* txt)
 {
+  out << "XABSL error: " << txt << std::endl;
   std::cerr << "XABSL error: " << txt << std::endl;
 }
 
 void MyErrorHandler::printMessage(const char* txt)
 {
+  out << "XABSL error: " << txt << std::endl;
   std::cout << "XABSL message: " << txt << std::endl;
 }
 
@@ -270,8 +284,11 @@ void XABSLBehaviorControl::executeDebugCommand(
     // restart the behavior
     const string behaviorPath = naoth::Platform::getInstance().theConfigDirectory + "/behavior-ic.dat";
     reloadBehaviorFromFile(behaviorPath, agentName);
-
-    outstream << "behavior reloaded";
+    
+    if(error_stream.str().length() > 0)
+      outstream << error_stream.str();
+    else
+      outstream << "behavior reloaded";
   }
   else if(command == "behavior:status")
   {

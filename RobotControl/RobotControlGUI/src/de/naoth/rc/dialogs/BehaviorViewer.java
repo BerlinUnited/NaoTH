@@ -269,9 +269,16 @@ public class BehaviorViewer extends AbstractDialog
         frameList.clearSelection();
       }
       
-      // show and add
-      addFrame(status);
-      showFrame(this.behaviorBuffer.get(this.behaviorBuffer.size()-1));
+      if(status.hasErrorMessage() && status.getErrorMessage().length() > 0)
+      {
+        errorOccured(status.getErrorMessage());
+      }
+      else
+      {
+        // show and add
+        addFrame(status);
+        showFrame(this.behaviorBuffer.get(this.behaviorBuffer.size()-1));
+      }
     }
     catch(InvalidProtocolBufferException ex)
     {
@@ -1120,6 +1127,15 @@ public class BehaviorViewer extends AbstractDialog
           sendCommand(reloadBehaviorCommand);
           JOptionPane.showMessageDialog(thisFinal,
             new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else if(originalCommand.getName().equals(reloadBehaviorCommand.getName()))
+        {
+          // HACK: the positive ansver "behavior reloaded" is defined in XABSLBehaviorControl.cpp
+          if(!("behavior reloaded".equals(new String(result))))
+          {
+              JOptionPane.showMessageDialog(thisFinal,
+                new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
+          }
         }
         else if(originalCommand.getName().startsWith(getAgentCommand.getName()))
         {

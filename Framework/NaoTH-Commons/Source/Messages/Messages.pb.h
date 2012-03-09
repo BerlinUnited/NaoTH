@@ -40,6 +40,7 @@ class TeamCommMessage;
 class StopwatchItem;
 class Stopwatches;
 class PlotItem;
+class PlotStroke2D;
 class Plots;
 class XABSLParameter;
 class XABSLAction;
@@ -941,6 +942,105 @@ class PlotItem : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class PlotStroke2D : public ::google::protobuf::Message {
+ public:
+  PlotStroke2D();
+  virtual ~PlotStroke2D();
+  
+  PlotStroke2D(const PlotStroke2D& from);
+  
+  inline PlotStroke2D& operator=(const PlotStroke2D& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PlotStroke2D& default_instance();
+  
+  void Swap(PlotStroke2D* other);
+  
+  // implements Message ----------------------------------------------
+  
+  PlotStroke2D* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PlotStroke2D& from);
+  void MergeFrom(const PlotStroke2D& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required string name = 2;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 2;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  
+  // repeated .naothmessages.DoubleVector2 points = 1;
+  inline int points_size() const;
+  inline void clear_points();
+  static const int kPointsFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& points(int index) const;
+  inline ::naothmessages::DoubleVector2* mutable_points(int index);
+  inline ::naothmessages::DoubleVector2* add_points();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
+      points() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >*
+      mutable_points();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.PlotStroke2D)
+ private:
+  inline void set_has_name();
+  inline void clear_has_name();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::std::string* name_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 > points_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Messages_2eproto();
+  friend void protobuf_AssignDesc_Messages_2eproto();
+  friend void protobuf_ShutdownFile_Messages_2eproto();
+  
+  void InitAsDefaultInstance();
+  static PlotStroke2D* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class Plots : public ::google::protobuf::Message {
  public:
   Plots();
@@ -1007,15 +1107,28 @@ class Plots : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotItem >*
       mutable_plots();
   
+  // repeated .naothmessages.PlotStroke2D plotstrokes = 2;
+  inline int plotstrokes_size() const;
+  inline void clear_plotstrokes();
+  static const int kPlotstrokesFieldNumber = 2;
+  inline const ::naothmessages::PlotStroke2D& plotstrokes(int index) const;
+  inline ::naothmessages::PlotStroke2D* mutable_plotstrokes(int index);
+  inline ::naothmessages::PlotStroke2D* add_plotstrokes();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotStroke2D >&
+      plotstrokes() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotStroke2D >*
+      mutable_plotstrokes();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.Plots)
  private:
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotItem > plots_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotStroke2D > plotstrokes_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -1510,12 +1623,25 @@ class BehaviorStatus : public ::google::protobuf::Message {
   inline ::google::protobuf::uint32 framenumber() const;
   inline void set_framenumber(::google::protobuf::uint32 value);
   
+  // optional string errorMessage = 6;
+  inline bool has_errormessage() const;
+  inline void clear_errormessage();
+  static const int kErrorMessageFieldNumber = 6;
+  inline const ::std::string& errormessage() const;
+  inline void set_errormessage(const ::std::string& value);
+  inline void set_errormessage(const char* value);
+  inline void set_errormessage(const char* value, size_t size);
+  inline ::std::string* mutable_errormessage();
+  inline ::std::string* release_errormessage();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.BehaviorStatus)
  private:
   inline void set_has_agent();
   inline void clear_has_agent();
   inline void set_has_framenumber();
   inline void clear_has_framenumber();
+  inline void set_has_errormessage();
+  inline void clear_has_errormessage();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1523,10 +1649,11 @@ class BehaviorStatus : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLAction > activerootactions_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLParameter > inputsymbols_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::XABSLParameter > outputsymbols_;
+  ::std::string* errormessage_;
   ::google::protobuf::uint32 framenumber_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_Messages_2eproto();
   friend void protobuf_AssignDesc_Messages_2eproto();
@@ -3167,6 +3294,93 @@ inline void PlotItem::set_rotation(double value) {
 
 // -------------------------------------------------------------------
 
+// PlotStroke2D
+
+// required string name = 2;
+inline bool PlotStroke2D::has_name() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void PlotStroke2D::set_has_name() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void PlotStroke2D::clear_has_name() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void PlotStroke2D::clear_name() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& PlotStroke2D::name() const {
+  return *name_;
+}
+inline void PlotStroke2D::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+}
+inline void PlotStroke2D::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+}
+inline void PlotStroke2D::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* PlotStroke2D::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    name_ = new ::std::string;
+  }
+  return name_;
+}
+inline ::std::string* PlotStroke2D::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+
+// repeated .naothmessages.DoubleVector2 points = 1;
+inline int PlotStroke2D::points_size() const {
+  return points_.size();
+}
+inline void PlotStroke2D::clear_points() {
+  points_.Clear();
+}
+inline const ::naothmessages::DoubleVector2& PlotStroke2D::points(int index) const {
+  return points_.Get(index);
+}
+inline ::naothmessages::DoubleVector2* PlotStroke2D::mutable_points(int index) {
+  return points_.Mutable(index);
+}
+inline ::naothmessages::DoubleVector2* PlotStroke2D::add_points() {
+  return points_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >&
+PlotStroke2D::points() const {
+  return points_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::DoubleVector2 >*
+PlotStroke2D::mutable_points() {
+  return &points_;
+}
+
+// -------------------------------------------------------------------
+
 // Plots
 
 // repeated .naothmessages.PlotItem plots = 1;
@@ -3192,6 +3406,31 @@ Plots::plots() const {
 inline ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotItem >*
 Plots::mutable_plots() {
   return &plots_;
+}
+
+// repeated .naothmessages.PlotStroke2D plotstrokes = 2;
+inline int Plots::plotstrokes_size() const {
+  return plotstrokes_.size();
+}
+inline void Plots::clear_plotstrokes() {
+  plotstrokes_.Clear();
+}
+inline const ::naothmessages::PlotStroke2D& Plots::plotstrokes(int index) const {
+  return plotstrokes_.Get(index);
+}
+inline ::naothmessages::PlotStroke2D* Plots::mutable_plotstrokes(int index) {
+  return plotstrokes_.Mutable(index);
+}
+inline ::naothmessages::PlotStroke2D* Plots::add_plotstrokes() {
+  return plotstrokes_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotStroke2D >&
+Plots::plotstrokes() const {
+  return plotstrokes_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::PlotStroke2D >*
+Plots::mutable_plotstrokes() {
+  return &plotstrokes_;
 }
 
 // -------------------------------------------------------------------
@@ -3877,6 +4116,64 @@ inline ::google::protobuf::uint32 BehaviorStatus::framenumber() const {
 inline void BehaviorStatus::set_framenumber(::google::protobuf::uint32 value) {
   set_has_framenumber();
   framenumber_ = value;
+}
+
+// optional string errorMessage = 6;
+inline bool BehaviorStatus::has_errormessage() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void BehaviorStatus::set_has_errormessage() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void BehaviorStatus::clear_has_errormessage() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void BehaviorStatus::clear_errormessage() {
+  if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
+    errormessage_->clear();
+  }
+  clear_has_errormessage();
+}
+inline const ::std::string& BehaviorStatus::errormessage() const {
+  return *errormessage_;
+}
+inline void BehaviorStatus::set_errormessage(const ::std::string& value) {
+  set_has_errormessage();
+  if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
+    errormessage_ = new ::std::string;
+  }
+  errormessage_->assign(value);
+}
+inline void BehaviorStatus::set_errormessage(const char* value) {
+  set_has_errormessage();
+  if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
+    errormessage_ = new ::std::string;
+  }
+  errormessage_->assign(value);
+}
+inline void BehaviorStatus::set_errormessage(const char* value, size_t size) {
+  set_has_errormessage();
+  if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
+    errormessage_ = new ::std::string;
+  }
+  errormessage_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* BehaviorStatus::mutable_errormessage() {
+  set_has_errormessage();
+  if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
+    errormessage_ = new ::std::string;
+  }
+  return errormessage_;
+}
+inline ::std::string* BehaviorStatus::release_errormessage() {
+  clear_has_errormessage();
+  if (errormessage_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = errormessage_;
+    errormessage_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
 }
 
 // -------------------------------------------------------------------
