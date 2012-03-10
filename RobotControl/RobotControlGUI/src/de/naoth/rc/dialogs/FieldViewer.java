@@ -7,6 +7,7 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
+import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dialogs.drawings.FieldDrawing;
 import de.naoth.rc.dataformats.JanusImage;
@@ -39,22 +40,26 @@ import org.freehep.util.export.ExportDialog;
  *
  * @author  Heinrich Mellmann
  */
-@PluginImplementation
 public class FieldViewer extends AbstractDialog
   implements ObjectListener<DrawingsContainer>,
   Dialog
 {
 
-  @InjectPlugin
-  public RobotControl parent;
-  @InjectPlugin
-  public DebugDrawingManager debugDrawingManager;
-  @InjectPlugin
-  public PlotDataManager plotDataManager;
-  @InjectPlugin
-  public ImageManager imageManager;
-  @InjectPlugin
-  public TeamCommDrawingManager teamCommDrawingManager;
+  @PluginImplementation
+  public static class Plugin extends DialogPlugin<FieldViewer>
+  {
+      @InjectPlugin
+      public static RobotControl parent;
+      @InjectPlugin
+      public static DebugDrawingManager debugDrawingManager;
+      @InjectPlugin
+      public static PlotDataManager plotDataManager;
+      @InjectPlugin
+      public static ImageManager imageManager;
+      @InjectPlugin
+      public static TeamCommDrawingManager teamCommDrawingManager;
+  }//end Plugin
+  
 
   private FieldDrawing fieldDrawing;
   private Drawable backgroundDrawing;
@@ -75,6 +80,7 @@ public class FieldViewer extends AbstractDialog
   }
 
   @Init
+  @Override
   public void init()
   {
     fieldDrawing = new FieldDrawing();
@@ -301,10 +307,10 @@ public class FieldViewer extends AbstractDialog
     private void btReceiveDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveDrawingsActionPerformed
       if(btReceiveDrawings.isSelected())
       {
-        if(parent.checkConnected())
+        if(Plugin.parent.checkConnected())
         {
-          debugDrawingManager.addListener(this);
-          plotDataManager.addListener(plotDataListener);
+          Plugin.debugDrawingManager.addListener(this);
+          Plugin.plotDataManager.addListener(plotDataListener);
         }
         else
         {
@@ -313,8 +319,8 @@ public class FieldViewer extends AbstractDialog
       }
       else
       {
-        debugDrawingManager.removeListener(this);
-        plotDataManager.removeListener(plotDataListener);
+        Plugin.debugDrawingManager.removeListener(this);
+        Plugin.plotDataManager.removeListener(plotDataListener);
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 
@@ -332,9 +338,9 @@ private void jMenuItemExportActionPerformed(java.awt.event.ActionEvent evt) {//G
 private void btImageProjectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btImageProjectionActionPerformed
     if(btImageProjection.isSelected())
       {
-        if(parent.checkConnected())
+        if(Plugin.parent.checkConnected())
         {
-          imageManager.addListener(imageListener);
+          Plugin.imageManager.addListener(imageListener);
         }
         else
         {
@@ -343,7 +349,7 @@ private void btImageProjectionActionPerformed(java.awt.event.ActionEvent evt) {/
       }
       else
       {
-        imageManager.removeListener(imageListener);
+        Plugin.imageManager.removeListener(imageListener);
       }
 }//GEN-LAST:event_btImageProjectionActionPerformed
 
@@ -386,11 +392,11 @@ private void btToggleSimsparkActionPerformed(java.awt.event.ActionEvent evt)//GE
 private void btReceiveTeamCommDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveTeamCommDrawingsActionPerformed
   if(btReceiveTeamCommDrawings.isSelected())
   {
-    teamCommDrawingManager.addListener(this);
+    Plugin.teamCommDrawingManager.addListener(this);
   }
   else
   {
-    teamCommDrawingManager.removeListener(this);
+    Plugin.teamCommDrawingManager.removeListener(this);
   }
 }//GEN-LAST:event_btReceiveTeamCommDrawingsActionPerformed
 
@@ -429,7 +435,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   public void errorOccured(String cause)
   {
     btReceiveDrawings.setSelected(false);
-    debugDrawingManager.removeListener(this);
+    Plugin.debugDrawingManager.removeListener(this);
   }
   
   void resetView()
@@ -467,7 +473,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     public void errorOccured(String cause)
     {
       btReceiveDrawings.setSelected(false);
-      plotDataManager.removeListener(this);
+      Plugin.plotDataManager.removeListener(this);
     }//end errorOccured
 
     @Override
@@ -512,7 +518,7 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
       public void errorOccured(String cause)
       {
         btImageProjection.setSelected(false);
-        imageManager.removeListener(this);
+        Plugin.imageManager.removeListener(this);
       }//end errorOccured
   }//end ImageListener
 
@@ -546,7 +552,11 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
   @Override
   public void dispose()
   {
-    System.out.println("Dispose is not implemented for: " + this.getClass().getName());
+    // remove all the registered listeners
+    Plugin.debugDrawingManager.removeListener(this);
+    Plugin.plotDataManager.removeListener(plotDataListener);
+    Plugin.imageManager.removeListener(imageListener);
+    Plugin.teamCommDrawingManager.removeListener(this);
   }//end dispose
   
     // Variables declaration - do not modify//GEN-BEGIN:variables
