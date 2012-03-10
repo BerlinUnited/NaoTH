@@ -1134,7 +1134,7 @@ public class BehaviorViewer extends AbstractDialog
           if(!("behavior reloaded".equals(new String(result))))
           {
               JOptionPane.showMessageDialog(thisFinal,
-                new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
+                new String(result), "Sending Behavior", JOptionPane.ERROR_MESSAGE);
           }
         }
         else if(originalCommand.getName().startsWith(getAgentCommand.getName()))
