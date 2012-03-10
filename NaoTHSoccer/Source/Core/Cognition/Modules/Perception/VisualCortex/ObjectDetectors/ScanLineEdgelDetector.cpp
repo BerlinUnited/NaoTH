@@ -234,15 +234,15 @@ void ScanLineEdgelDetector::iterative_edgel_detection()
 ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end)
 {
   // count the off-green colors (needed for the endpoint)
-  unsigned int whiteCount = 0;
-  unsigned int skyblueCount = 0;
-  unsigned int yellowCount = 0;
+  int whiteCount = 0;
+  int skyblueCount = 0;
+  int yellowCount = 0;
 
   // statistics of the green color
-  unsigned int noGreenSeen=0; // pixel count where continously no green was seen
-  unsigned int greenCount = 0;
-  unsigned int totalGreenCount = 0;
-  unsigned int greenValue = 0;
+  int noGreenSeen=0; // pixel count where continously no green was seen
+  int greenCount = 0;
+  int totalGreenCount = 0;
+  int greenValue = 0;
   int calculatedGreenValue = 0;
   
   
@@ -263,11 +263,20 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   //results
   Edgel edgel; 
 
-  for(int i = 1; i < scanLine.numberOfPixels; i++ )
+  Pixel pixel = getImage().get(point.x,point.y);
+  int thisPixelBrightness = pixel.y;
+  ColorClasses::Color thisPixelColor = getColorClassificationModel().getColorClass(pixel);
+  
+
+  // don't scan the two bottom lines
+  for(int i = 3; i < scanLine.numberOfPixels; i++ )
   {
-    const Pixel pixel = getImage().get(point.x,point.y);
-    const int thisPixelBrightness = pixel.y;
-    const ColorClasses::Color thisPixelColor = getColorClassificationModel().getColorClass(pixel);
+    getImage().get(point.x,point.y,pixel);
+    thisPixelBrightness = pixel.y;
+    //thisPixelColor = getColorClassificationModel().getColorClass(pixel); // 12ms
+
+    // TODO: possible optimization
+    thisPixelColor = (getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
 
     DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetector:scanlines",
       //int b_offset = thisPixelBrightness / 10;
@@ -330,10 +339,11 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       }
     }//end else
 
+    
 
     if(thisPixelColor == ColorClasses::green || thisPixelColor == ColorClasses::orange) // ignore the ball
     {
-      if(thisPixelColor == ColorClasses::green && 0.1 * point.abs() < totalGreenCount)
+      if(thisPixelColor == ColorClasses::green && point.abs2()/100 < totalGreenCount*totalGreenCount)
       {
         greenValue += thisPixelBrightness;
         lastGreenPoint = point;
@@ -357,10 +367,11 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       noGreenSeen++;
     }
 
+
     // calculate the mean green value
     if (greenCount > 5)
     {
-      calculatedGreenValue = (int)((greenValue / greenCount) + 0.5);
+      calculatedGreenValue = greenValue / greenCount;
     }
 
     last_point = point;
@@ -373,7 +384,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       last_min_point = point;
     }
 
-    scanLine.getNext(point);
+    // this one is a kind of slow..
+    //scanLine.getNext(point);
+    point.y--; // just go up
   }//end for
 
   // for the last edgel
@@ -395,7 +408,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 
 
   // determine the maximum off-green color
-  ColorClasses::Color maxLastColor = ColorClasses::none;
+  ColorClasses::Color maxLastColor = ColorClasses::green;
   if(skyblueCount > whiteCount && skyblueCount > yellowCount)
   {
     if(skyblueCount > 5) maxLastColor = ColorClasses::skyblue;
@@ -412,6 +425,11 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     }
   }//end else
 
+  if(maxLastColor == ColorClasses::green && noGreenSeen > 7)
+  {
+    maxLastColor = ColorClasses::none;
+  }
+
   ScanLineEdgelPercept::EndPoint endPoint;
   endPoint.posInImage = lastGreenPoint;
   endPoint.color = maxLastColor;
@@ -419,6 +437,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 
   return endPoint;
 }//end scanForEdgels
+
 
 
 //////////////////////////////////////////////////////////
