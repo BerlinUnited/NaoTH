@@ -13,9 +13,6 @@
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#define REGISTER_MODULE(module, enable) \
-  the##module = registerModule<module>(std::string(#module), enable)
-
 
 XABSLBehaviorControl::XABSLBehaviorControl()
   : 
@@ -39,6 +36,9 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   DEBUG_REQUEST_REGISTER("XABSL:draw_foot_decision", "visualize the foot decision", false);
 
 
+#define REGISTER_MODULE(module, enable) \
+  the##module = registerModule<module>(std::string(#module), enable)
+
   // init symbols
   REGISTER_MODULE(BallSymbols, true);
   REGISTER_MODULE(GameSymbols, true);
@@ -54,7 +54,7 @@ XABSLBehaviorControl::XABSLBehaviorControl()
   REGISTER_MODULE(StrategySymbols, true);
   REGISTER_MODULE(SoundSymbols, true);
   REGISTER_MODULE(LineSymbols, true);
-    
+  
 
   // load the behavior from config
   if(naoth::Platform::getInstance().theConfiguration.hasKey("agent", "agent"))
@@ -79,9 +79,9 @@ XABSLBehaviorControl::~XABSLBehaviorControl()
 
 void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string agent)
 {
-  delete theEngine;
+  // clear old status
+  getBehaviorStatus().status.Clear();
 
-  //new xabsl::Engine(theErrorHandler, &NaoTime::getNaoTimeInMilliSeconds);
   // clear old errors
   error_stream.str("");
   error_stream.clear();
@@ -89,17 +89,26 @@ void XABSLBehaviorControl::reloadBehaviorFromFile(std::string file, std::string 
   // reset the error handler
   theErrorHandler.errorsOccurred = false;
   
+
+  // (is it necessary?)
+  // delete the old engine if avaliable
+  delete theEngine;
+  // create a new engine 
   theEngine = xabsl::EngineFactory<XABSLBehaviorControl>::create(theErrorHandler, this->xabslTime); 
-  
+  //
   registerXABSLSymbols();
 
+
+  // load the behavior file
   XabslFileInputSource input(file);
   theEngine->createOptionGraph(input);
  
+  // set the currently active agent
   agentName = agent;
   std::cout << "loading agent \"" << agentName << "\" for behavior" << std::endl;
   theEngine->setSelectedAgent(agentName.c_str());
 }//end reloadBehaviorFromFile
+
 
 void XABSLBehaviorControl::execute()
 {
@@ -249,14 +258,14 @@ void XABSLBehaviorControl::updateOutputSymbols()
   {
     theMotionSymbols->getModuleT()->updateOutputSymbols();
   }
-}
+}//end updateOutputSymbols
+
 
 // ERROR HANDLER //
 
 MyErrorHandler::MyErrorHandler(std::ostream& out)
   : out(out)
 {
-  
 }
 
 void MyErrorHandler::printError(const char* txt)
@@ -273,7 +282,6 @@ void MyErrorHandler::printMessage(const char* txt)
 
 MyErrorHandler::~MyErrorHandler()
 {
-
 }
 
 
