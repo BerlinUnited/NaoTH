@@ -291,20 +291,29 @@ public:
 
   virtual void getMotionInput()
   {
+    STOPWATCH_START("getMotionInput");
     // try to get some data from the DCM
     if ( naoSensorData.swapReading() )
+    {
       sensorDataReading = naoSensorData.reading();
+    }
     else // didn't get new sensor data
+    {
+      std::cerr << "didn't get new sensor data" << std::endl;
       sensorDataReading = NULL;
+    }
 
     PlatformInterface<NaoController>::getMotionInput();
+    STOPWATCH_STOP("getMotionInput");
   }//end getMotionInput
 
 
   virtual void setMotionOutput()
   {
+    STOPWATCH_START("setMotionOutput");
     PlatformInterface<NaoController>::setMotionOutput();
-
+    STOPWATCH_STOP("setMotionOutput");
+    
     // send the data to DCM
     //naoCommandData.swapWriting();
   }//end setMotionOutput

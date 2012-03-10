@@ -16,8 +16,8 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <signal.h>
-
 //#include <rttools/rtthread.h>
+
 
 using namespace naoth;
 
@@ -55,21 +55,43 @@ void got_signal(int t)
   }
 }//end got_signal
 
-/*
+
+
+// a semaphore for sychronization with the DCM
+sem_t* dcm_sem = SEM_FAILED;
+
+
+/* Just some experiments with the RT-Threads
 class TestThread : public RtThread
 {
 	public:
     TestThread(){}
     ~TestThread(){}
-    virtual void *execute(){}
+    NaoController* theController;
+
+    virtual void *execute()
+    {
+      StopwatchItem stopwatch;
+      while(true)
+      {
+        theController->callMotion();
+    
+        if(sem_wait(dcm_sem) == -1)
+        {
+          cerr << "lock errno: " << errno << endl;
+        }
+
+        Stopwatch::getInstance().notifyStop(stopwatch);
+        Stopwatch::getInstance().notifyStart(stopwatch);
+        PLOT("_MotionCycle", stopwatch.lastValue);
+      }//end while
+
+      return NULL;
+    }
     virtual void postExecute(){}
     virtual void preExecute(){}
-};
+} motionRtThread;
 */
-
-// a semaphore for sychronization with the DCM
-sem_t* dcm_sem = SEM_FAILED;
-
 
 void* cognitionThreadCallback(void* ref)
 {
@@ -93,6 +115,7 @@ void* motionThreadCallback(void* ref)
   {
     theController->callMotion();
     
+
     if(sem_wait(dcm_sem) == -1)
     {
       cerr << "lock errno: " << errno << endl;
