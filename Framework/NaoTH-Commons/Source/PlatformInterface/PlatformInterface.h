@@ -4,7 +4,7 @@
  */
 
 #ifndef _PLATFORMINTERFACE_H
-#define  _PLATFORMINTERFACE_H
+#define _PLATFORMINTERFACE_H
 
 #include "Callable.h"
 #include "Tools/Debug/NaoTHAssert.h"
@@ -27,8 +27,12 @@ namespace naoth
   * It is used to wrap the call of a get/set method to read/write 
   * a representation.
   */
-  struct AbstractAction
+  class AbstractAction
   {
+  public:
+    AbstractAction(){}
+    virtual ~AbstractAction(){}
+
     virtual void execute() = 0;
   };
 
@@ -57,15 +61,9 @@ namespace naoth
     inline const string& getName() const { return platformName; }
     inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
 
-    MessageQueue* getMessageQueue(const std::string& name);
-    
-  protected:
-    virtual MessageQueue* createMessageQueue(const std::string& name) = 0;
-    
   private:
     std::string platformName;
     unsigned int theBasicTimeStep;
-    std::map<std::string, MessageQueue*> theMessageQueue;
   };//end class PlatformBase
 
 
@@ -101,23 +99,20 @@ namespace naoth
     virtual void getMotionInput();
     virtual void setMotionOutput();
   
-  public:
-    inline void delete_action_list(ActionList& actionList);
     inline void execute(ActionList& actionList) const;
 
+  private:
+    inline void delete_action_list(ActionList& actionList);
+    
 
     template<class T>
     class ActionCreator
     {
     public:
+      ActionCreator(){}
+      virtual ~ActionCreator(){}
       virtual AbstractAction* createAction(T& data) = 0;
     };//end ActionCreator
-
-
-
-
-    std::map<std::string,void*> registeredInputActions;
-    std::map<std::string,void*> registeredOutputActions;
 
 
     template<class T>
@@ -133,6 +128,13 @@ namespace naoth
     }//end getActionCreator
 
 
+  protected:
+    //
+    std::map<std::string,void*> registeredInputActions;
+    std::map<std::string,void*> registeredOutputActions;
+
+
+  public:
 
     template<class T>
     void registerCognitionInput(T& data)
@@ -193,14 +195,34 @@ namespace naoth
       }
     }//end registerMotionOutput
 
+
+
+  protected:
+    virtual MessageQueue* createMessageQueue(const std::string& name) = 0;
+
+
+  protected:
+      std::map<std::string, MessageQueue*> theMessageQueue;
+
+      MessageQueue* getMessageQueue(const std::string& name);
+    
   };//end class PlatformDataInterface
+
+
+
+
 
   class PlatformInterfaceBase: public PlatformBase, public PlatformDataInterface
   {
   protected:
     PlatformInterfaceBase(const std::string& name, unsigned int basicTimeStep)
-    : PlatformBase(name, basicTimeStep)
+      : PlatformBase(name, basicTimeStep)
     {
+    }
+
+    virtual ~PlatformInterfaceBase()
+    {
+
     }
 
   public:
@@ -213,30 +235,25 @@ namespace naoth
     template<class T, class ST>
     void registerMotionOutputChanel(const T& data) { motionOutput.push_back(createOutputChanelAction<T,ST>(data)); }
 
-  protected:
+  private:
     template<class T, class ST>
     AbstractAction* createOutputChanelAction(const T& data)
     {
       class OutputChanelAction: public AbstractAction
       {
-        MessageQueue* messageQueue;
         MessageWriter writer;
         const T& data;
       
       public:
         OutputChanelAction(MessageQueue* messageQueue, const T& data) 
-          : messageQueue(messageQueue),
-            writer(messageQueue),
+          : writer(messageQueue),
             data(data)
         {
         }
 
-        ~OutputChanelAction()
-        {
-          delete messageQueue;
-        }
+        ~OutputChanelAction(){}
       
-        virtual void execute()
+        void execute()
         {
           stringstream hmmsg;
           ST::serialize(data, hmmsg);
@@ -252,24 +269,19 @@ namespace naoth
     {
       class InputChanelAction: public AbstractAction
       {
-        MessageQueue* messageQueue;
         MessageReader reader;
         T& data;
 
       public:
         InputChanelAction(MessageQueue* messageQueue, T& data) 
-          : messageQueue(messageQueue),
-            reader(messageQueue),
+          : reader(messageQueue),
             data(data)
         {
         }
 
-        ~InputChanelAction()
-        {
-          delete messageQueue;
-        }
+        ~InputChanelAction(){}
       
-        virtual void execute()
+        void execute()
         {
           if ( !reader.empty() )
           {
@@ -328,12 +340,12 @@ namespace naoth
       {
       }
 
-      virtual void execute(){ std::cerr << "no action " << ACTION << " for " << typeid(representation).name() << endl; }
+      void execute(){ std::cerr << "no action " << ACTION << " for " << typeid(representation).name() << endl; }
     };//end RepresentationAction
 
 
     template<class T, typename PT>
-    class RepresentationAction<_NAOTH_INPUT_ACTION_,T,PT>
+    class RepresentationAction<_NAOTH_INPUT_ACTION_,T,PT>: public AbstractAction
     {
       PT& platform;
       T& representation;
@@ -349,7 +361,7 @@ namespace naoth
     };//end RepresentationAction
 
     template<class T, typename PT>
-    class RepresentationAction<_NAOTH_OUTPUT_ACTION_,T,PT>
+    class RepresentationAction<_NAOTH_OUTPUT_ACTION_,T,PT>: public AbstractAction
     {
       PT& platform;
       T& representation;

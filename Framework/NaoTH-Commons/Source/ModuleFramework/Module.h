@@ -5,8 +5,8 @@
 * Declaration of class Module (base class for modules)
 */
 
-#ifndef __Module_h_
-#define __Module_h_
+#ifndef _Module_h_
+#define _Module_h_
 
 #include "BlackBoardInterface.h"
 
@@ -352,6 +352,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
       unregisterRequiring(*static_requiring_registry); \
       unregisterProviding(*static_providing_registry); \
     } \
+    static std::string const className() { return #moduleName; } \
   };
-   
+
 #endif //__Module_h_

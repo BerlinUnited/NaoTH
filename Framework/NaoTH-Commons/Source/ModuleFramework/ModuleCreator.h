@@ -5,8 +5,8 @@
 * Declaration of class ModuleCreator
 */
 
-#ifndef __ModuleCreator_h__
-#define __ModuleCreator_h__
+#ifndef _ModuleCreator_h_
+#define _ModuleCreator_h_
 
 #include "BlackBoardInterface.h"
 
@@ -20,6 +20,7 @@ class Module;
 class AbstractModuleCreator
 {
 public:
+  virtual std::string const moduleClassName() = 0;
   virtual void setEnabled(bool value) = 0;
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
@@ -121,5 +122,10 @@ public:
     ASSERT(isEnabled());
     return static_cast<V*>(theInstance);
   }//end getModule
+
+  std::string const moduleClassName()
+  {
+    return typeid(V).name();
+  }
 };
-#endif //__ModuleCreator_h__
+#endif //_ModuleCreator_h_

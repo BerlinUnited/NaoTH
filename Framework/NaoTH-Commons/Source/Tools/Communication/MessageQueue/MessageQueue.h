@@ -55,7 +55,7 @@ class MessageReader
 public:
   MessageReader(MessageQueue* msgQueue);
   
-  ~MessageReader();
+  virtual ~MessageReader();
   
   std::string read() { return theMsgQueue->read(); }
   
@@ -70,7 +70,7 @@ class MessageWriter
 public:
   MessageWriter(MessageQueue* msgQueue);
   
-  ~MessageWriter();
+  virtual ~MessageWriter();
   
   void write(const std::string& msg) { theMsgQueue->write(msg); }
   
