@@ -67,11 +67,16 @@ public:
 
   inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
-    // ball green
+    // green
     if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(a, b, c))
     {
       return ColorClasses::green;
     }//end if
+
+    /*
+    if(c > fieldColorPercept.maxWeightedIndexCr && b < fieldColorPercept.maxWeightedIndexCb)
+      return ColorClasses::orange;
+    */
 
     if(baseColorRegionPerceptValid)
     {
@@ -96,6 +101,16 @@ public:
     return colorTable.getColorClass(a,b,c);
   }//end getColorClass
 
+
+  const FieldColorPercept& getFieldColorPercept() const
+  {
+    return fieldColorPercept;
+  }
+
+  FieldColorPercept& getFieldColorPercept()
+  {
+    return fieldColorPercept;
+  }
 
   virtual void print(ostream& stream) const
   {
