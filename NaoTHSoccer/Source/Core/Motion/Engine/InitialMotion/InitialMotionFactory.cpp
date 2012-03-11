@@ -20,20 +20,15 @@ InitialMotionFactory::InitialMotionFactory()
 
 InitialMotionFactory::~InitialMotionFactory()
 {
-  if (currentMotion != NULL)
-  {
-    delete currentMotion;
-    currentMotion = NULL;
-  }
+  delete currentMotion;
+  currentMotion = NULL;
 }
 
 AbstractMotion* InitialMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-  if(currentMotion != NULL)
-  {
-    delete currentMotion;
-    currentMotion = NULL;
-  }//end if
+  delete currentMotion;
+  currentMotion = NULL;
+
 
   switch(motionRequest.id)
   {

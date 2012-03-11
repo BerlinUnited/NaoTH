@@ -6,7 +6,7 @@
 */
 
 #ifndef _INITIALMOTION_H
-#define  _INITIALMOTION_H
+#define _INITIALMOTION_H
 
 #include "Motion/AbstractMotion.h"
 
@@ -42,10 +42,15 @@ private:
 
   bool isDanger() const;
 
+  double getDistance(const naoth::JointData& one, const naoth::JointData& another);
+
+  double init_time;
   double movedTime;
+  
   naoth::JointData startJoints;
   naoth::JointData extendJoints;
   naoth::JointData theInitJoints;
+
   double maxStiffness[naoth::JointData::numOfJoint];
   double safeStiffness[naoth::JointData::numOfJoint];
   double freeStiffness[naoth::JointData::numOfJoint];
