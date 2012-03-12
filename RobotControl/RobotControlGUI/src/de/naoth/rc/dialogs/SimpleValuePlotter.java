@@ -15,7 +15,9 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.PlotDataManager;
+import de.naoth.rc.messages.CommonTypes.DoubleVector2;
 import de.naoth.rc.messages.Messages.PlotItem;
+import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.IRangePolicy;
@@ -75,7 +77,7 @@ public class SimpleValuePlotter  extends AbstractDialog
   
   private ColorIterator colorIterator = new ColorIterator();
   private APointHighlighter pointHighlighter = new PointHighlighterConfigurable(new PointPainterCoords(), true);
-    
+
   private Map<String, ITrace2D> plotTraces = new HashMap<String, ITrace2D>();
   private Map<String, Double> plotTracesMaxX = new HashMap<String, Double>();
 
@@ -394,7 +396,7 @@ public class SimpleValuePlotter  extends AbstractDialog
       } else {
         plotDataManager.removeListener(this);
         chart.getAxisX().setRangePolicy(new RangePolicyFixedViewport(chart.getAxisX().getRange()));
-        chart.enablePointHighlighting(true);
+        //chart.enablePointHighlighting(true);
       }
 }//GEN-LAST:event_btReceiveDataActionPerformed
 
@@ -403,7 +405,7 @@ public class SimpleValuePlotter  extends AbstractDialog
       synchronized(this)
       {
         this.plotTraces.clear();
-        this. plotTracesMaxX.clear();
+        this.plotTracesMaxX.clear();
         this.panelList.removeAll();
         this.chart.removeAllTraces();
 
@@ -476,13 +478,20 @@ private void clearTracePoints()
     {
       synchronized(this)
       {
-        
-          
+         /*
         for(PlotItem item : data.getPlotsList())
         {
           if(item.getType() == PlotItem.PlotType.Default && item.hasX() && item.hasY())
           {
             addValue(item.getName(), item.getX(), item.getY());
+          }
+        }//end for
+           * */
+        for(PlotStroke2D stroke : data.getPlotstrokesList())
+        {
+          for(DoubleVector2 point: stroke.getPointsList())
+          {
+            addValue(stroke.getName(), point.getX(), point.getY());
           }
         }//end for
       }//end synchronized
@@ -591,17 +600,27 @@ private void clearTracePoints()
 
 
   private int currentColorIndex = 0;
+  private int colorDarkness = 200;
   private Color colorArray[] = new Color[]
   {
-    Color.blue,
-    Color.green,
-    Color.red,
-    Color.yellow,
-    Color.orange,
-    Color.pink,
-    Color.gray,
-    Color.magenta,
-    Color.cyan
+    new Color(0,0,colorDarkness),
+    new Color(0,colorDarkness,0),
+    new Color(colorDarkness,0,0),
+    new Color(colorDarkness,0,colorDarkness),
+    new Color(colorDarkness,colorDarkness,0),
+    new Color(0,colorDarkness,colorDarkness),
+    new Color(colorDarkness,colorDarkness,colorDarkness),
+    //Color.blue,
+    //Color.green,
+    //Color.red,
+    //Color.yellow,
+    //Color.orange,
+    //Color.pink,
+    //Color.gray,
+    //Color.magenta,
+    //Color.cyan
+    //new Color(128,0,128),
+    //Color.black,
   };
   
   private Color getNextColor()

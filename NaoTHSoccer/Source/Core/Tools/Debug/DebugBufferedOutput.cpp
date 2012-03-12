@@ -21,6 +21,9 @@ DebugBufferedOutput::DebugBufferedOutput()
 
   REGISTER_DEBUG_COMMAND("plot_values", 
     "return the values to plot which where collected in the internal buffer", this);
+
+  REGISTER_DEBUG_COMMAND("plot:get", 
+    "return the values to plot which where collected in the internal buffer", this);
 }
 
 DebugBufferedOutput::~DebugBufferedOutput()
@@ -51,6 +54,32 @@ void DebugBufferedOutput::executeDebugCommand(
     g_mutex_lock(plotsMutex);
     outstream << plots.SerializeAsString();
     plots.clear_plots();
+    g_mutex_unlock(plotsMutex);
+  }else if(command == "plot:get")
+  {
+    g_mutex_lock(plotsMutex);
+    naothmessages::Plots plotsMsg;
+
+    // serialize all the plots
+    std::map<std::string, RingBuffer<Vector2<double>, 100> >::const_iterator iter;
+    for(iter = plotStrokes.begin(); iter != plotStrokes.end(); ++iter)
+    {
+      naothmessages::PlotStroke2D* plotMsg = plotsMsg.add_plotstrokes();
+      plotMsg->set_name(iter->first);
+
+      const RingBuffer<Vector2<double>, 100>& plotBuffer = iter->second;
+      for(int i = plotBuffer.getNumberOfEntries()-1; i >= 0; i--)
+      {
+        naothmessages::DoubleVector2* point = plotMsg->add_points();
+        point->set_x(plotBuffer[i].x);
+        point->set_y(plotBuffer[i].y);
+      }
+    }//end for
+
+    outstream << plotsMsg.SerializeAsString();
+
+    // clear all plots (maybe it's better to clear only the points?)
+    plotStrokes.clear();
     g_mutex_unlock(plotsMutex);
   }
 }//end executeDebugCommand
