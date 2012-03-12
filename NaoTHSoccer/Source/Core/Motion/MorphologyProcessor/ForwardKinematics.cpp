@@ -40,12 +40,12 @@ void ForwardKinematics::forwardAllKinematicsExcept(Link* theLink, Link* ept)
   forwardAllKinematicsExcept(theLink->sister, ept);
 }
 
-void ForwardKinematics::calcChestRotation(Link* theLinks, const InertialSensorData& theInertialSensorData)
+void ForwardKinematics::calcChestRotation(Link* theLinks, const Vector2d& rotation)
 {
   Link* chest = (theLinks + KinematicChain::Torso);
   // Rotation from Inertial sensor data
-  chest->R = RotationMatrix::getRotationX(theInertialSensorData.data.x);
-  chest->R.rotateY(theInertialSensorData.data.y);
+  chest->R = RotationMatrix::getRotationX(rotation.x);
+  chest->R.rotateY(rotation.y);
 }//end calcChestRotation
 
 
@@ -53,10 +53,11 @@ void ForwardKinematics::calcChestRotation(Link* theLinks, const InertialSensorDa
 
 void ForwardKinematics::calcChestAll(Link* theLinks,
         const AccelerometerData& theAccelerometerData,
-        const InertialSensorData& theInertialSensorData,
+        //const InertialPercept& theInertialPercept,
+        const Vector2<double>& theBodyRotation,
         const double deltaTime)
 {
-  calcChestRotation(theLinks, theInertialSensorData);
+  calcChestRotation(theLinks, theBodyRotation);
   Link* chest = (theLinks + KinematicChain::Torso);
 
   // position is original
@@ -82,13 +83,14 @@ double ForwardKinematics::calcChestHeight(const Vector3<double>* fsrPos)
 
 void ForwardKinematics::calculateKinematicChainAll(
     const AccelerometerData& theAccelerometerData,
-    const InertialSensorData& theInertialSensorData,
+    //const InertialPercept& theInertialPercept,
+    const Vector2<double>& theBodyRotation,
     KinematicChain& theKinematicChain,
     Vector3<double>* theFSRPos,
     const double deltaTime)
 {
   Link* theLinks = theKinematicChain.theLinks;
-  calcChestAll(theLinks, theAccelerometerData, theInertialSensorData, deltaTime);
+  calcChestAll(theLinks, theAccelerometerData, theBodyRotation, deltaTime);
   forwardAllKinematics(theLinks + KinematicChain::Torso);
   
   // TODO: move the estimation of the chest height to somwhere else

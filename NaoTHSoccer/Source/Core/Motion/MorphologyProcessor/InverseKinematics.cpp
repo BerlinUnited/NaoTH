@@ -12,7 +12,7 @@
 
 // Tools
 #include "Tools/Math/Common.h"
-#include "Tools/Math/Matrix.h"
+#include "Tools/Math/RotationMatrix.h"
 //#include "Tools/TemplateUtility.h"
 #include "Tools/NaoInfo.h"
 
@@ -281,7 +281,7 @@ double InverseKinematics::calculateNaoLegJointsAnalyticaly(bool leftLeg, Pose3D&
     RotationMatrix::getRotationX(-theJointData.position[ankleRoll])
     .rotateY(-theJointData.position[kneePitch]-theJointData.position[anklePitch]);
 
-  double rotX = Math::fromDegrees(leftLeg?-45.0:45.0);
+  double rotX = leftLeg?-Math::pi_4:Math::pi_4; //Math::fromDegrees(leftLeg?-45.0:45.0);
   RotationMatrix HipO2Foot = RotationMatrix::getRotationX(rotX) * target.rotation;
 
   RotationMatrix HipO2Thigh = HipO2Foot * Foot2Thigh;
