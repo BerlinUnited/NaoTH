@@ -9,6 +9,8 @@
 #include <glib.h>
 
 #include "MorphologyProcessor/ForwardKinematics.h"
+#include "MorphologyProcessor/FootGroundContactDetector.h"
+
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include "Engine/InitialMotion/InitialMotionFactory.h"
 #include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
@@ -17,6 +19,9 @@
 
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugModify.h"
+
+#include "SensorFilter/InertiaSensorFilter.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
 
@@ -31,12 +36,8 @@ using namespace naoth;
 Motion::Motion()
   :
   theBlackBoard(MotionBlackBoard::getInstance()),
-  theInertialFilter(theBlackBoard, theBlackBoard.theCalibrationData.inertialSensorOffset),
+  theInertiaSensorCalibrator(theBlackBoard, theBlackBoard.theCalibrationData),
   theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
-  theMotionStatusWriter(NULL),
-  theOdometryDataWriter(NULL),
-  theHeadMotionRequestReader(NULL),
-  theMotionRequestReader(NULL),
   frameNumSinceLastMotionRequest(0),
   state(initial),
   motionLogger("MotionLog"),
@@ -77,12 +78,6 @@ Motion::~Motion()
     delete *iter;
   }
   theMotionFactories.clear();
-  
-  delete theMotionStatusWriter;
-  delete theOdometryDataWriter;
-  delete theHeadMotionRequestReader;
-  delete theMotionRequestReader;
-  delete theCalibrationDataWriter;
 }
 
 void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
@@ -113,17 +108,15 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(MotorJointData);
   //REG_OUTPUT(LEDData);
 
-#ifdef NAO_OLD
-  platformInterface.registerMotionInput(theDebugMessageIn);
-  platformInterface.registerMotionOutput(theDebugMessageOut);
-#endif
   g_message("Motion register end");
   
-
+  // messages from motion to cognition
   platformInterface.registerMotionOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
   platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
-  platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
+  //platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
+  platformInterface.registerMotionOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
 
+  // messages from cognition to motion
   platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
   platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
 
@@ -134,6 +127,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 
 void Motion::call()
 {
+  
   STOPWATCH_START("MotionExecute");
 
   // process sensor data
@@ -172,7 +166,9 @@ void Motion::call()
   }
   }//end switch
 
-  // execute head motion firstly
+  // IMPORTANT: execute head motion firstly
+  // stabilization of the walk depends on the head position
+  // cf. InverseKinematicsMotionEngine::controlCenterOfMass(...)
   theHeadMotionEngine.execute();
 
   // motion engine execute
@@ -184,12 +180,12 @@ void Motion::call()
   // calibrate the foot touch detector
   if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
-
-  STOPWATCH_STOP("MotionExecute");
   
   STOPWATCH_START("Motion:postProcess");
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
+
+  STOPWATCH_STOP("MotionExecute");
 
 #ifdef NAO_OLD
   theStopwatchSender.execute();
@@ -205,11 +201,27 @@ void Motion::processSensorData()
     THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<theBlackBoard.theSensorJointData.stiffness[i]);
   }
 
-  theBlackBoard.theInertialPercept = theInertialFilter.filter();
+  // calibrate inrtia sensors
+  theInertiaSensorCalibrator.update();
+
+  // correct the sensors
+  theBlackBoard.theInertialSensorData.data += theBlackBoard.theCalibrationData.inertialSensorOffset;
+  theBlackBoard.theGyrometerData.data += theBlackBoard.theCalibrationData.gyroSensorOffset;
+  theBlackBoard.theAccelerometerData.data += theBlackBoard.theCalibrationData.accSensorOffset;
   
+  // 
+  static InertiaSensorFilter theInertiaSensorFilterBH(theBlackBoard, theBlackBoard.theInertialModel);
+  theInertiaSensorFilterBH.update();
+
+
+  static FootGroundContactDetector theFootGroundContactDetector(theBlackBoard, theBlackBoard.theFSRData, theBlackBoard.theGroundContactModel);
+  theFootGroundContactDetector.update();
+
+  //
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     theBlackBoard.theAccelerometerData,
-    theBlackBoard.theInertialPercept,
+    //theBlackBoard.theInertialSensorData.data,
+    theBlackBoard.theInertialModel.orientation,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRPos,
     theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
@@ -234,38 +246,70 @@ void Motion::processSensorData()
 
   // some basic plots
   // plotting sensor data
-  PLOT("gyro:x", theBlackBoard.theGyrometerData.data.x);
-  PLOT("gyro:y", theBlackBoard.theGyrometerData.data.y);
+  PLOT("Motion:GyrometerData:data:x", theBlackBoard.theGyrometerData.data.x);
+  PLOT("Motion:GyrometerData:data:y", theBlackBoard.theGyrometerData.data.y);
 
-  PLOT("acc:x", theBlackBoard.theAccelerometerData.data.x);
-  PLOT("acc:y", theBlackBoard.theAccelerometerData.data.y);
-  PLOT("acc:z", theBlackBoard.theAccelerometerData.data.z);
+  PLOT("Motion:GyrometerData:rawData:x", theBlackBoard.theGyrometerData.rawData.x);
+  PLOT("Motion:GyrometerData:rawData:y", theBlackBoard.theGyrometerData.rawData.y);
+  PLOT("Motion:GyrometerData:rawZero:x", theBlackBoard.theGyrometerData.rawZero.x);
+  PLOT("Motion:GyrometerData:rawZero:y", theBlackBoard.theGyrometerData.rawZero.y);
+  PLOT("Motion:GyrometerData:ref", theBlackBoard.theGyrometerData.ref);
 
-  PLOT("inertial:x", sin(theBlackBoard.theInertialSensorData.data.x));
-  PLOT("inertial:y", (theBlackBoard.theInertialSensorData.data.y));
+  PLOT("Motion:AccelerometerData:x", theBlackBoard.theAccelerometerData.data.x);
+  PLOT("Motion:AccelerometerData:y", theBlackBoard.theAccelerometerData.data.y);
+  PLOT("Motion:AccelerometerData:z", theBlackBoard.theAccelerometerData.data.z);
 
-  PLOT("kinematik_chain:model:x",
+  PLOT("Motion:InertialSensorData:x", sin(theBlackBoard.theInertialSensorData.data.x));
+  PLOT("Motion:InertialSensorData:y", (theBlackBoard.theInertialSensorData.data.y));
+
+  PLOT("Motion:KinematicChain:oriantation:model:x",
     theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::Hip].R.getXAngle()
   );
-  PLOT("kinematik_chain:model:y",
+  PLOT("Motion:KinematicChain:oriantation:model:y",
     theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::Hip].R.getYAngle()
   );
 
-  DEBUG_REQUEST("Motion:kc_sensor_test",
+  DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
     RotationMatrix calculatedRotation = 
       Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
 
-    PLOT("kinematik_chain:sensor:x",
-      Math::toDegrees(inertialExpected.x)
-    );
-    
-    PLOT("kinematik_chain:sensor:y",
-      Math::toDegrees(inertialExpected.y)
-    );
+    PLOT("Motion:KinematicChain:oriantation:sensor:x", Math::toDegrees(inertialExpected.x) );
+    PLOT("Motion:KinematicChain:oriantation:sensor:y", Math::toDegrees(inertialExpected.y) );
   );
+
+
+  // plot the requested joint positions
+#define PLOT_JOINT(name) \
+  PLOT("Motion:MotorJointData:"#name, Math::toDegrees(theBlackBoard.theMotorJointData.position[JointData::name]))
+
+  PLOT_JOINT(HeadPitch);
+  PLOT_JOINT(HeadYaw);
+
+  PLOT_JOINT(RShoulderRoll);
+  PLOT_JOINT(LShoulderRoll);
+  PLOT_JOINT(RShoulderPitch);
+  PLOT_JOINT(LShoulderPitch);
+  PLOT_JOINT(RElbowRoll);
+  PLOT_JOINT(LElbowRoll);
+  PLOT_JOINT(RElbowYaw);
+  PLOT_JOINT(LElbowYaw);
+
+  PLOT_JOINT(RHipYawPitch);
+  PLOT_JOINT(LHipYawPitch);
+  PLOT_JOINT(RHipPitch);
+  PLOT_JOINT(LHipPitch);
+  PLOT_JOINT(RHipRoll);
+  PLOT_JOINT(LHipRoll);
+  PLOT_JOINT(RKneePitch);
+  PLOT_JOINT(LKneePitch);
+  PLOT_JOINT(RAnklePitch);
+  PLOT_JOINT(LAnklePitch);
+  PLOT_JOINT(RAnkleRoll);
+  PLOT_JOINT(LAnkleRoll);
+
 }//end processSensorData
 
 
@@ -309,6 +353,8 @@ void Motion::postProcess()
 
 void Motion::selectMotion()
 {
+  ASSERT(theBlackBoard.currentlyExecutedMotion != NULL);
+
   // test if the current MotionStatus allready arrived in cognition
   if ( theBlackBoard.theMotionStatus.time != theBlackBoard.theMotionRequest.time )
     return;

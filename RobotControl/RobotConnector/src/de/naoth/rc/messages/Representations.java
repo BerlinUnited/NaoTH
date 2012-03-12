@@ -16690,6 +16690,442 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.CalibrationData)
   }
   
+  public interface InertialModelOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional .naothmessages.DoubleVector2 orientation = 1;
+    boolean hasOrientation();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getOrientation();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getOrientationOrBuilder();
+  }
+  public static final class InertialModel extends
+      com.google.protobuf.GeneratedMessage
+      implements InertialModelOrBuilder {
+    // Use InertialModel.newBuilder() to construct.
+    private InertialModel(Builder builder) {
+      super(builder);
+    }
+    private InertialModel(boolean noInit) {}
+    
+    private static final InertialModel defaultInstance;
+    public static InertialModel getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public InertialModel getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // optional .naothmessages.DoubleVector2 orientation = 1;
+    public static final int ORIENTATION_FIELD_NUMBER = 1;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector2 orientation_;
+    public boolean hasOrientation() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getOrientation() {
+      return orientation_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getOrientationOrBuilder() {
+      return orientation_;
+    }
+    
+    private void initFields() {
+      orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (hasOrientation()) {
+        if (!getOrientation().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, orientation_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, orientation_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.InertialModel prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.InertialModelOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.InertialModel.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getOrientationFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (orientationBuilder_ == null) {
+          orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          orientationBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.InertialModel.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.InertialModel getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.InertialModel.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.InertialModel build() {
+        de.naoth.rc.messages.Representations.InertialModel result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.InertialModel buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.InertialModel result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.InertialModel buildPartial() {
+        de.naoth.rc.messages.Representations.InertialModel result = new de.naoth.rc.messages.Representations.InertialModel(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (orientationBuilder_ == null) {
+          result.orientation_ = orientation_;
+        } else {
+          result.orientation_ = orientationBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.InertialModel) {
+          return mergeFrom((de.naoth.rc.messages.Representations.InertialModel)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.InertialModel other) {
+        if (other == de.naoth.rc.messages.Representations.InertialModel.getDefaultInstance()) return this;
+        if (other.hasOrientation()) {
+          mergeOrientation(other.getOrientation());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (hasOrientation()) {
+          if (!getOrientation().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasOrientation()) {
+                subBuilder.mergeFrom(getOrientation());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setOrientation(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // optional .naothmessages.DoubleVector2 orientation = 1;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector2 orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> orientationBuilder_;
+      public boolean hasOrientation() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getOrientation() {
+        if (orientationBuilder_ == null) {
+          return orientation_;
+        } else {
+          return orientationBuilder_.getMessage();
+        }
+      }
+      public Builder setOrientation(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (orientationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          orientation_ = value;
+          onChanged();
+        } else {
+          orientationBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setOrientation(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (orientationBuilder_ == null) {
+          orientation_ = builderForValue.build();
+          onChanged();
+        } else {
+          orientationBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeOrientation(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (orientationBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              orientation_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            orientation_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(orientation_).mergeFrom(value).buildPartial();
+          } else {
+            orientation_ = value;
+          }
+          onChanged();
+        } else {
+          orientationBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearOrientation() {
+        if (orientationBuilder_ == null) {
+          orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          orientationBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getOrientationBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getOrientationFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getOrientationOrBuilder() {
+        if (orientationBuilder_ != null) {
+          return orientationBuilder_.getMessageOrBuilder();
+        } else {
+          return orientation_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getOrientationFieldBuilder() {
+        if (orientationBuilder_ == null) {
+          orientationBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  orientation_,
+                  getParentForChildren(),
+                  isClean());
+          orientation_ = null;
+        }
+        return orientationBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.InertialModel)
+    }
+    
+    static {
+      defaultInstance = new InertialModel(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.InertialModel)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_Image_descriptor;
   private static
@@ -16800,6 +17236,11 @@ public final class Representations {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_CalibrationData_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_InertialModel_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_InertialModel_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -16900,8 +17341,9 @@ public final class Representations {
       "2\034.naothmessages.DoubleVector2\0226\n\020gyroSe" +
       "nsorOffset\030\002 \001(\0132\034.naothmessages.DoubleV",
       "ector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothm" +
-      "essages.DoubleVector3B\026\n\024de.naoth.rc.mes" +
-      "sages"
+      "essages.DoubleVector3\"B\n\rInertialModel\0221" +
+      "\n\013orientation\030\001 \001(\0132\034.naothmessages.Doub" +
+      "leVector2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -17084,6 +17526,14 @@ public final class Representations {
               new java.lang.String[] { "InertialSensorOffset", "GyroSensorOffset", "AccSensorOffset", },
               de.naoth.rc.messages.Representations.CalibrationData.class,
               de.naoth.rc.messages.Representations.CalibrationData.Builder.class);
+          internal_static_naothmessages_InertialModel_descriptor =
+            getDescriptor().getMessageTypes().get(22);
+          internal_static_naothmessages_InertialModel_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_InertialModel_descriptor,
+              new java.lang.String[] { "Orientation", },
+              de.naoth.rc.messages.Representations.InertialModel.class,
+              de.naoth.rc.messages.Representations.InertialModel.Builder.class);
           return null;
         }
       };

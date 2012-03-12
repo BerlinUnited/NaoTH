@@ -84,6 +84,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* CalibrationData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   CalibrationData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* InertialModel_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  InertialModel_reflection_ = NULL;
 
 }  // namespace
 
@@ -502,6 +505,21 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CalibrationData));
+  InertialModel_descriptor_ = file->message_type(22);
+  static const int InertialModel_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialModel, orientation_),
+  };
+  InertialModel_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      InertialModel_descriptor_,
+      InertialModel::default_instance_,
+      InertialModel_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialModel, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialModel, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(InertialModel));
 }
 
 namespace {
@@ -558,6 +576,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     OdometryData_descriptor_, &OdometryData::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     CalibrationData_descriptor_, &CalibrationData::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    InertialModel_descriptor_, &InertialModel::default_instance());
 }
 
 }  // namespace
@@ -607,6 +627,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete OdometryData_reflection_;
   delete CalibrationData::default_instance_;
   delete CalibrationData_reflection_;
+  delete InertialModel::default_instance_;
+  delete InertialModel_reflection_;
 }
 
 void protobuf_AddDesc_Representations_2eproto() {
@@ -708,8 +730,9 @@ void protobuf_AddDesc_Representations_2eproto() {
     "2\034.naothmessages.DoubleVector2\0226\n\020gyroSe"
     "nsorOffset\030\002 \001(\0132\034.naothmessages.DoubleV"
     "ector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothm"
-    "essages.DoubleVector3B\026\n\024de.naoth.rc.mes"
-    "sages", 3685);
+    "essages.DoubleVector3\"B\n\rInertialModel\0221"
+    "\n\013orientation\030\001 \001(\0132\034.naothmessages.Doub"
+    "leVector2B\026\n\024de.naoth.rc.messages", 3753);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -734,6 +757,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   MotionStatus::default_instance_ = new MotionStatus();
   OdometryData::default_instance_ = new OdometryData();
   CalibrationData::default_instance_ = new CalibrationData();
+  InertialModel::default_instance_ = new InertialModel();
   Image::default_instance_->InitAsDefaultInstance();
   CameraInfo::default_instance_->InitAsDefaultInstance();
   JointData::default_instance_->InitAsDefaultInstance();
@@ -756,6 +780,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   MotionStatus::default_instance_->InitAsDefaultInstance();
   OdometryData::default_instance_->InitAsDefaultInstance();
   CalibrationData::default_instance_->InitAsDefaultInstance();
+  InertialModel::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_Representations_2eproto);
 }
 
@@ -8739,6 +8764,221 @@ void CalibrationData::Swap(CalibrationData* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = CalibrationData_descriptor_;
   metadata.reflection = CalibrationData_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int InertialModel::kOrientationFieldNumber;
+#endif  // !_MSC_VER
+
+InertialModel::InertialModel()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void InertialModel::InitAsDefaultInstance() {
+  orientation_ = const_cast< ::naothmessages::DoubleVector2*>(&::naothmessages::DoubleVector2::default_instance());
+}
+
+InertialModel::InertialModel(const InertialModel& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void InertialModel::SharedCtor() {
+  _cached_size_ = 0;
+  orientation_ = NULL;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+InertialModel::~InertialModel() {
+  SharedDtor();
+}
+
+void InertialModel::SharedDtor() {
+  if (this != default_instance_) {
+    delete orientation_;
+  }
+}
+
+void InertialModel::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* InertialModel::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return InertialModel_descriptor_;
+}
+
+const InertialModel& InertialModel::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+InertialModel* InertialModel::default_instance_ = NULL;
+
+InertialModel* InertialModel::New() const {
+  return new InertialModel;
+}
+
+void InertialModel::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_orientation()) {
+      if (orientation_ != NULL) orientation_->::naothmessages::DoubleVector2::Clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool InertialModel::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .naothmessages.DoubleVector2 orientation = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_orientation()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void InertialModel::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // optional .naothmessages.DoubleVector2 orientation = 1;
+  if (has_orientation()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->orientation(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* InertialModel::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // optional .naothmessages.DoubleVector2 orientation = 1;
+  if (has_orientation()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->orientation(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int InertialModel::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional .naothmessages.DoubleVector2 orientation = 1;
+    if (has_orientation()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->orientation());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void InertialModel::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const InertialModel* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const InertialModel*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void InertialModel::MergeFrom(const InertialModel& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_orientation()) {
+      mutable_orientation()->::naothmessages::DoubleVector2::MergeFrom(from.orientation());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void InertialModel::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void InertialModel::CopyFrom(const InertialModel& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool InertialModel::IsInitialized() const {
+  
+  if (has_orientation()) {
+    if (!this->orientation().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void InertialModel::Swap(InertialModel* other) {
+  if (other != this) {
+    std::swap(orientation_, other->orientation_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata InertialModel::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = InertialModel_descriptor_;
+  metadata.reflection = InertialModel_reflection_;
   return metadata;
 }
 

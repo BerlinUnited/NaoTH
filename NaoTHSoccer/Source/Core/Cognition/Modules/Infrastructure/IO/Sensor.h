@@ -28,13 +28,13 @@
 #include <Representations/Infrastructure/RobotInfo.h>
 #include <Representations/Infrastructure/VirtualVision.h>
 #include <Representations/Infrastructure/DebugMessage.h>
-#include <Representations/Infrastructure/CalibrationData.h>
+//#include <Representations/Infrastructure/CalibrationData.h>
 
-#include <Representations/Perception/InertialPercept.h>
 
 #include "Representations/Infrastructure/SerialSensorData.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
+#include <Representations/Modeling/InertialModel.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -44,6 +44,7 @@ using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(FrameInfo)
+  
   PROVIDE(SerialSensorData)
   PROVIDE(Image)
   PROVIDE(FSRData)
@@ -53,20 +54,24 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SensorJointData)
   PROVIDE(BumperData)
   PROVIDE(IRReceiveData)
-  PROVIDE(MotionStatus)
-  PROVIDE(OdometryData)
   PROVIDE(CurrentCameraSettings)
   PROVIDE(ButtonData)
   PROVIDE(BatteryData)
   PROVIDE(UltraSoundReceiveData)
   PROVIDE(SoundCaptureData)
+
   PROVIDE(TeamMessageDataIn)
   PROVIDE(GameData)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
   PROVIDE(DebugMessageIn)
-  PROVIDE(CalibrationData)
-  PROVIDE(InertialPercept)
+
+  // from motion
+  PROVIDE(MotionStatus)
+  PROVIDE(OdometryData)
+  PROVIDE(InertialModel)
+  //PROVIDE(CalibrationData)
+  
 END_DECLARE_MODULE(Sensor)
 
 class Sensor : public SensorBase

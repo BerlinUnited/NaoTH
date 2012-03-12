@@ -6,10 +6,10 @@
  * @author Max Risler
  */
 
-#ifndef __Pose3D_h__
-#define __Pose3D_h__
+#ifndef _Pose3D_h_
+#define _Pose3D_h_
 
-#include "Matrix.h"
+#include "RotationMatrix.h"
 #include "Pose2D.h"
 
 /** representation for 3D Transformation (Location + Orientation)*/
@@ -250,4 +250,4 @@ Pose2T<DATATYPE> reduceDimen(const Pose3T<DATATYPE>& in)
   return out;
 }
 
-#endif // __Pose3D_h__
+#endif // _Pose3D_h_

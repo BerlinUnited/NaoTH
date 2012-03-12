@@ -8,8 +8,9 @@
 #include "MotionBlackBoard.h"
 
 
-MotionBlackBoard::MotionBlackBoard():
-currentlyExecutedMotion(NULL)
+MotionBlackBoard::MotionBlackBoard()
+  :
+  currentlyExecutedMotion(NULL)
 {
 }
 
