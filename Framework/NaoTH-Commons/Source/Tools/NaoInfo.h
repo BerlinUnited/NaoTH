@@ -7,12 +7,8 @@
  * @author <a href="mailto:kaptur@informatik.hu-berlin.de">Christian Kaptur</a>
  */
 
-#ifndef __NaoInfo_h_
-#define __NaoInfo_h_
-
-#include "Tools/Math/Common.h"
-#include "Tools/Math/Vector3.h"
-#include "Math/Matrix.h"
+#ifndef _NaoInfo_h_
+#define _NaoInfo_h_
 
 class NaoInfo
 {
@@ -37,5 +33,5 @@ public:
   static double FSRMaxForce;
 }; //end namespace NaoInfo
 
-#endif //__NaoInfo_h_
+#endif //_NaoInfo_h_
 

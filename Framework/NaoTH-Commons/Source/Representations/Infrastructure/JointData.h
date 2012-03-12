@@ -36,7 +36,7 @@ class JointData
       RElbowYaw,
       LElbowYaw,
 
-      RHipYawPitch,
+      RHipYawPitch, // doesn't exist on Nao
       LHipYawPitch,
       RHipPitch,
       LHipPitch,

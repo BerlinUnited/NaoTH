@@ -6,7 +6,7 @@
  */
 
 #ifndef _GAWALK_H
-#define  _GAWALK_H
+#define _GAWALK_H
 
 #include "GeneticAlgorithms.h"
 #include "Representations/Infrastructure/VirtualVision.h"

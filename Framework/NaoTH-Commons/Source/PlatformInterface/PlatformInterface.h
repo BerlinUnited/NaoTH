@@ -390,7 +390,7 @@ namespace naoth
 
       virtual AbstractAction* createAction(T& data)
       {
-        return (AbstractAction*) new RepresentationAction<ACTION,T,PT>(platform, data);
+        return new RepresentationAction<ACTION,T,PT>(platform, data);
       }
     };//end InputActionCreator
 
