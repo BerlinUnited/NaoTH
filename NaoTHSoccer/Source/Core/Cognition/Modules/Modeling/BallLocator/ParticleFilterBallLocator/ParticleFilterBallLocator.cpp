@@ -68,7 +68,7 @@ void ParticleFilterBallLocator::execute()
   {
     Vector2<double> mean;
     Vector2<double> meanSpeed;
-    double numberOfMovingBalls = 0;
+    double numberOfMovingSamples = 0;
     for (unsigned int i = 0; i < theSampleSet.size(); i++)
     { 
       mean += theSampleSet[i].position;
@@ -76,12 +76,19 @@ void ParticleFilterBallLocator::execute()
       if(theSampleSet[i].moving)
       {
         meanSpeed += theSampleSet[i].speed;
-        numberOfMovingBalls++;
-      }
+        numberOfMovingSamples++;
+      }      
+
     }//end for
+
+    double meanSpeedAbs = meanSpeed.abs();
+    MODIFY("ParticleFilterBallLocator:meanSpeadAbs", meanSpeedAbs);
+    MODIFY("ParticleFilterBallLocator:numberOfMovingSamples", numberOfMovingSamples);
+
+
     mean /= theSampleSet.size();
-    if(numberOfMovingBalls > 0)
-      meanSpeed /= numberOfMovingBalls;
+    if(numberOfMovingSamples > 1)
+      meanSpeed /= numberOfMovingSamples;
 
 
 
@@ -92,7 +99,7 @@ void ParticleFilterBallLocator::execute()
     getBallModel().position = mean;
     //TODO change 13.03
     //getBallModel().speed = Vector2<double>();
-    getBallModel().speed = meanSpeed;
+    getBallModel().speed = meanSpeed*100;
     getBallModel().valid = true;
 
     updatePreviewModel();
@@ -171,7 +178,8 @@ ParticleFilterBallLocator::Sample ParticleFilterBallLocator::generateNewSample()
     {
       newSample.moving = true;
       newSample.speed  = speed;
-
+    } else {
+      newSample.moving = false;
     }
   }//end if
 
