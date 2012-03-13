@@ -16,7 +16,7 @@ using namespace InverseKinematic;
 using namespace naoth;
 
 InverseKinematicsMotionEngine::InverseKinematicsMotionEngine()
-:theBlackBoard(MotionBlackBoard::getInstance()),
+ :theBlackBoard(MotionBlackBoard::getInstance()),
   rotationStabilizeFactor(0)
 {
   
@@ -128,13 +128,14 @@ Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D
 
 HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p)
 {
+  // copy initial values
   HipFeetPose result;
   result.feet = p.feet;
   result.hip = p.com;
   result.localInHip();
   
   /* normally it should not affect the algorithm,
-   * but when IK can not be solved, it affects the result, i.e. support foot is prefered.
+   * but when IK can not be solved, it affects the result, i.e., support foot is prefered.
    */
   bool leftFootSupport = (result.feet.left.translation.abs2() < result.feet.right.translation.abs2());
   
@@ -145,16 +146,20 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   else
     refCoM = p.feet.right.invert() * p.com.translation;
   
-  // copy head joint and arm joint from sensor
-  const double *sj = theBlackBoard.theSensorJointData.position;
+
+  // copy the requested values for the head and arm joints
+  const double *sj = theBlackBoard.theMotorJointData.position;//theBlackBoard.theSensorJointData.position;
   double *j = theInverseKinematics.theJointData.position;
   for (int i = JointData::HeadPitch; i <= JointData::LElbowYaw; i++)
   {
     j[i] = sj[i];
   }
 
-  result.hip.translation = theCoMControlResult; // reuse results from last calculation
+
+  // reuse results from last calculation for the starting value
+  result.hip.translation = theCoMControlResult; 
   
+
   // set the support foot as orginal
   Kinematics::Link* obsFoot;
   if ( leftFootSupport )
@@ -166,9 +171,9 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
 
   double bestError = std::numeric_limits<double>::max();
-  int i = 0;
-  double max_iter = 15;
-  double max_error = 1e-8;
+  int i = 0; // iteration
+  double max_iter = 15; // max number of iretations
+  double max_error = 1e-8; // threshold
 
   // step control parameter
   double step = 1;
@@ -184,7 +189,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 
     Vector3<double> e = refCoM - obsCoM;
 
-    double error = e.x * e.x + e.y * e.y + e.z * e.z;
+    double error = e.abs2(); //e.x * e.x + e.y * e.y + e.z * e.z;
 
     if (bestError < error)
     {
@@ -229,30 +234,42 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 }//end controlCenterOfMass
 
 
-void InverseKinematicsMotionEngine::neuralStabilize(double (&position)[naoth::JointData::numOfJoint])
+void InverseKinematicsMotionEngine::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
 {
-  double weightX = 0.0;
-  double weightY = 0.0;
+  const Vector2d& inertial = theBlackBoard.theInertialModel.orientation;
+  const Vector2d& gyro = theBlackBoard.theGyrometerData.data;
 
-  double inputX = theBlackBoard.theInertialPercept.data.x*getParameters().walk.stabilizeNeuralXWin;
-  weightX = tanh(inputX*getParameters().walk.stabilizeNeuralXWin)*getParameters().walk.stabilizeNeuralXWout;
+  
 
+  // HACK: small filter...
+  static Vector2<double> lastGyro = gyro;
+  Vector2<double> filteredGyro = (lastGyro+gyro)*0.5;
 
-  double inputY = theBlackBoard.theInertialPercept.data.y;
-  weightY = tanh(inputY*getParameters().walk.stabilizeNeuralYWin)*getParameters().walk.stabilizeNeuralYWout;
+  Vector2<double> weight;
+  weight.x = 
+      getParameters().walk.stabilizeFeetP.x * inertial.x
+    + getParameters().walk.stabilizeFeetD.x * filteredGyro.x;
+
+  weight.y = 
+      getParameters().walk.stabilizeFeetP.y * inertial.y
+    + getParameters().walk.stabilizeFeetD.y * filteredGyro.y;
 
 
   // X axis
-  position[JointData::RHipRoll] += weightX;
-  position[JointData::LHipRoll] += weightX;
+  //position[JointData::RHipRoll] -= weightX;
+  position[JointData::RAnkleRoll] += weight.x;
+  //position[JointData::LHipRoll] -= weightX;
+  position[JointData::LAnkleRoll] += weight.x;
 
   // Y axis
-  position[JointData::RHipPitch] += weightY;
-  position[JointData::LHipPitch] += weightY;
+  position[JointData::RAnklePitch] += weight.y;
+  position[JointData::LAnklePitch] += weight.y;
+
+  lastGyro = gyro;
 }//end neuralStabilize
 
 
-bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
+bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip, const Pose3D& leftFoot, const Pose3D& rightFoot)
 {
   // disable stablization slowly when no foot is on the ground
   const double switchingTime = 3000; // ms
@@ -269,7 +286,11 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
   r.x = hip.rotation.getXAngle();
   r.y = hip.rotation.getYAngle();
 
-  const Vector2d& s = theBlackBoard.theInertialPercept.data;
+  PLOT("rotationStabilize:hip:x", Math::toDegrees(hip.rotation.getXAngle()));
+  PLOT("rotationStabilize:hip:y", Math::toDegrees(hip.rotation.getYAngle()));
+
+  //const Vector2d& s = theBlackBoard.theInertialPercept.data;
+  const Vector2d& s = theBlackBoard.theInertialSensorData.data;
 
   Vector2d e = r - s;
 
@@ -298,8 +319,14 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip)
     hip.rotateY(chestRotationStabilizerValue.y);
     hip.translate(0, 0, height);
   }
+
+  PLOT("rotationStabilize:stabilizer:x", Math::toDegrees(hip.rotation.getXAngle()));
+  PLOT("rotationStabilize:stabilizer:y", Math::toDegrees(hip.rotation.getYAngle()));
+
   return isWorking;
 }//end rotationStabilize
+
+
 
 void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFeetPose& p)
 {
@@ -322,10 +349,11 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   {
     position[i] = l[i];
   }
+  // TODO: this is not enough, currently a solution of BH is used from InverseKinematicsBH.h
   // use mean value of two hips
-  double hipYawPitch = (position[JointData::LHipYawPitch] + position[JointData::RHipYawPitch]) * 0.5;
-  position[JointData::LHipYawPitch] = hipYawPitch;
-  position[JointData::RHipYawPitch] = hipYawPitch;
+  //double hipYawPitch = (position[JointData::LHipYawPitch] + position[JointData::RHipYawPitch]) * 0.5;
+  //position[JointData::LHipYawPitch] = hipYawPitch;
+  //position[JointData::RHipYawPitch] = hipYawPitch;
 }
 
 
@@ -443,7 +471,7 @@ void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&p
   if (getParameters().arm.alwaysEnabled
     || (theBlackBoard.theMotionStatus.currentMotion == MotionRequestID::walk && getParameters().walk.useArm))
   {
-    const InertialSensorData& isd = theBlackBoard.theInertialSensorData;
+    const InertialPercept& isd = theBlackBoard.theInertialPercept;
     double shoulderPitch = isd.get(InertialSensorData::Y) * getParameters().arm.shoulderPitchInterialSensorRate;
     double shoulderRoll = isd.get(InertialSensorData::X) * getParameters().arm.shoulderRollInterialSensorRate;
     target[JointData::RShoulderPitch] += shoulderPitch;
@@ -554,9 +582,10 @@ void InverseKinematicsMotionEngine::gotoArms(const InverseKinematic::HipFeetPose
   if (getParameters().arm.alwaysEnabled
     || (theBlackBoard.theMotionStatus.currentMotion == motion::walk && getParameters().walk.useArm))
   {
-    const InertialSensorData& isd = theBlackBoard.theInertialSensorData;
-    double shoulderPitch = isd.data.y * getParameters().arm.shoulderPitchInterialSensorRate;
-    double shoulderRoll = isd.data.x * getParameters().arm.shoulderRollInterialSensorRate;
+    // TODO: InertialSensorData may be better
+    const InertialModel& isd = theBlackBoard.theInertialModel;
+    double shoulderPitch = isd.orientation.y * getParameters().arm.shoulderPitchInterialSensorRate;
+    double shoulderRoll = isd.orientation.x * getParameters().arm.shoulderRollInterialSensorRate;
     target[JointData::RShoulderPitch] += shoulderPitch;
     target[JointData::LShoulderPitch] += shoulderPitch;
     target[JointData::RShoulderRoll] += shoulderRoll;

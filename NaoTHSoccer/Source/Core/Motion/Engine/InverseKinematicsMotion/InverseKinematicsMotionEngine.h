@@ -83,13 +83,17 @@ public:
   void solveHipFeetIK(const InverseKinematic::HipFeetPose& p);
   
 
-  void neuralStabilize(double (&position)[naoth::JointData::numOfJoint]);
+  /**
+   * PID stabilizer controlling the feet of the robot directly
+   */
+  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
 
   /**
    * @return if stabilizer is working
    */
-  bool rotationStabilize(Pose3D& hip);
-  
+  bool rotationStabilize(Pose3D& hip, const Pose3D& leftFoot, const Pose3D& rightFoot);
+
+
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
   const IKParameters& getParameters() const { return theParameters; }

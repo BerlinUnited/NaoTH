@@ -150,7 +150,7 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
 
     if(theParameters.enableStaticStabilizer && theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE)
     {
-      theEngine.rotationStabilize(c.hip); // stabilize
+      theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right); // stabilize
     }
 
     theEngine.solveHipFeetIK(c);
