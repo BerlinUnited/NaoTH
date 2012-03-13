@@ -45,6 +45,9 @@ ImageProcessor::ImageProcessor()
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
   theScanLineEdgelDetector->setEnabled(true);
 
+  theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
+  theScanLineEdgelDetectorDifferential->setEnabled(false);
+
   theFieldDetector = registerModule<FieldDetector>("FieldDetector");
   theFieldDetector->setEnabled(true);
 
@@ -97,6 +100,11 @@ void ImageProcessor::execute()
   STOPWATCH_START("ScanLineEdgelDetector");
   theScanLineEdgelDetector->execute();
   STOPWATCH_STOP("ScanLineEdgelDetector");
+
+  GT_TRACE("executing ScanLineEdgelDetectorDifferential");
+  STOPWATCH_START("ScanLineEdgelDetectorDifferential");
+  theScanLineEdgelDetectorDifferential->execute();
+  STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
 
   GT_TRACE("executing FieldDetector");
   STOPWATCH_START("FieldDetector");
