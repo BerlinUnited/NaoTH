@@ -7,6 +7,7 @@
 
 #include "PFBLParameters.h"
 #include "PlatformInterface/Platform.h"
+#include "Tools/Debug/DebugParameterList.h"
 
 PFBLParameters::PFBLParameters()
   : ParameterList("PFBLParameters")
@@ -19,11 +20,14 @@ PFBLParameters::PFBLParameters()
   PARAMETER_REGISTER(sigmaAngle) = 0.1;
   PARAMETER_REGISTER(sigmaDistance) = 0.1;
 
+  PARAMETER_REGISTER(speedWehnParticleIsMoving) = 1;
   // load from the file after registering all parameters
   syncWithConfig();
+
+  DebugParameterList::getInstance().add(this);
 }
 
 PFBLParameters::~PFBLParameters()
 {
-  
+    DebugParameterList::getInstance().remove(this);
 }
