@@ -31,7 +31,6 @@
 #include "Tools/Debug/DebugDrawings3D.h"
 #endif
 
-
 using namespace naoth;
 
 Motion::Motion()
@@ -66,6 +65,7 @@ Motion::Motion()
   ADD_LOGGER(GyrometerData);
   ADD_LOGGER(FSRData);
   ADD_LOGGER(MotionRequest);
+
 
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
 }

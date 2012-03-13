@@ -274,7 +274,9 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip, const Pose3D&
   // disable stablization slowly when no foot is on the ground
   const double switchingTime = 3000; // ms
   const double switchingRate = theBlackBoard.theRobotInfo.basicTimeStep / switchingTime;
-  if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
+  //if (theBlackBoard.theSupportPolygon.mode == SupportPolygon::NONE)
+  if(!theBlackBoard.theGroundContactModel.leftGroundContact &&
+     !theBlackBoard.theGroundContactModel.rightGroundContact)
     rotationStabilizeFactor -= switchingRate;
   else
     rotationStabilizeFactor += switchingRate;
@@ -351,9 +353,9 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   }
   // TODO: this is not enough, currently a solution of BH is used from InverseKinematicsBH.h
   // use mean value of two hips
-  //double hipYawPitch = (position[JointData::LHipYawPitch] + position[JointData::RHipYawPitch]) * 0.5;
-  //position[JointData::LHipYawPitch] = hipYawPitch;
-  //position[JointData::RHipYawPitch] = hipYawPitch;
+  double hipYawPitch = (position[JointData::LHipYawPitch] + position[JointData::RHipYawPitch]) * 0.5;
+  position[JointData::LHipYawPitch] = hipYawPitch;
+  position[JointData::RHipYawPitch] = hipYawPitch;
 }
 
 

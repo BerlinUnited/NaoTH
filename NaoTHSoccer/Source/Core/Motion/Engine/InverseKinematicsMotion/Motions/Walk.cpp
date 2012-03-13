@@ -82,11 +82,11 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
       theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
     }
 
-    //theEngine.solveHipFeetIK(c);
-    c.localInHip();
+    theEngine.solveHipFeetIK(c);
+    /*c.localInHip();
     static RobotDimensions theRobotDimensions;
     InverseKinematicBH::calcLegJoints(c.feet.left, c.feet.right, theMotorJointData, theRobotDimensions, 0.5f);
-
+    */
 
     theEngine.copyLegJoints(theMotorJointData.position);
     
@@ -210,7 +210,11 @@ void Walk::plan(const MotionRequest& motionRequest)
   ASSERT(!Math::isNan(walkRequest.target.translation.y));
   ASSERT(!Math::isNan(walkRequest.target.rotation));
   
-  if ( motionRequest.id == getId() || !canStop() )
+
+  double emergency_stop = 500;
+  MODIFY("Walk:emergency_stop", emergency_stop);
+
+  if ( (motionRequest.id == getId() && com_errors.getAverage() < emergency_stop) || !canStop() )
   {
     walk(walkRequest);
     isStopping = false;
@@ -227,6 +231,7 @@ void Walk::plan(const MotionRequest& motionRequest)
       stopWalkingWithoutStand();
     }
   }
+
 }//end plan
 
 void Walk::addStep(const Step& step)
@@ -421,6 +426,12 @@ CoMFeetPose Walk::executeStep()
       }
     }
 
+    double footPitchOffset = 1;
+    MODIFY("_test:footPitchOffset", footPitchOffset);
+    double footRollOffset = -1;
+    MODIFY("_test:footRollOffset", footRollOffset);
+
+
     if ( executingStep.stepControlling )
     {
       *liftFoot = FootTrajectorGenerator::stepControl(exeFootStep.footBegin(),
@@ -442,9 +453,9 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.samplesSingleSupport,
                                                         executingStep.extendDoubleSupport,
                                                         theWalkParameters.stepHeight,
-                                                        0, // footPitchOffset
+                                                        theBlackBoard.theInertialModel.orientation.y*footPitchOffset, // footPitchOffset
                                                         0, // footYawOffset
-                                                        0, // footRollOffset
+                                                        theBlackBoard.theInertialModel.orientation.x*footRollOffset, // footRollOffset
                                                         theWalkParameters.curveFactor);
     }
   }
@@ -825,11 +836,9 @@ void Walk::adaptStepSize(FootStep& step) const
 
   double k = -1;
   MODIFY("Walk:adaptStepSize:adaptStepSizeK", k);
-  double maxAdaption = 20;
-  MODIFY("Walk:adaptStepSize:maxAdaption", maxAdaption);
 
   Vector3d comErrG = step.supFoot().rotation * currentComError;
 
-  step.footEnd().translation.x += Math::clamp(comErrG.x * k,-maxAdaption,maxAdaption);
-  step.footEnd().translation.y += Math::clamp(comErrG.y * k,-maxAdaption,maxAdaption);
+  step.footEnd().translation.x += comErrG.x * k;
+  step.footEnd().translation.y += comErrG.y * k;
 }//end adaptStepSize
