@@ -5,8 +5,8 @@
  * Created on 11. November 2010, 18:32
  */
 
-#ifndef DEBUG_H
-#define  DEBUG_H
+#ifndef _DEBUG_H
+#define _DEBUG_H
 
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -82,7 +82,8 @@ private:
       cognitionLogger.addRepresentation(&theRepresentation, iter->first);
     }
   }//end registerLogableRepresentationList
+
 };
 
-#endif  /* DEBUG_H */
+#endif  /* _DEBUG_H */
 
