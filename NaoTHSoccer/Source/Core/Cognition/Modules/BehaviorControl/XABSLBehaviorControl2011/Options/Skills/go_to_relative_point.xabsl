@@ -42,7 +42,7 @@ option go_to_relative_point
     }
     action{
       motion.type = walk;
-      motion.walk.style = (abs(value=@x) < 300)?stable:normal;
+      motion.walk.style = (abs(value=@x) < 200)?stable:normal;
       motion.walk_speed.x = @x;
       motion.walk_speed.y = @y;
       motion.walk_speed.rot = @rotation;

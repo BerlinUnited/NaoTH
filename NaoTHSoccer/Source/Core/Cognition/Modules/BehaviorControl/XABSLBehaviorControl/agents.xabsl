@@ -100,6 +100,8 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 
 
 // NonSoccer
+include "Options/NonSoccer/Test/dribble_agent.xabsl";
+include "Options/NonSoccer/Test/dribble_stand_test.xabsl";
 
 // Test includes
 include "Options/Skills/go_to_ball_and_kick.xabsl";
@@ -107,3 +109,6 @@ include "Options/Skills/go_to_ball_and_kick.xabsl";
 ///** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
+
+/** dribble test */
+agent dribble_agent("DribbleAgent", dribble_agent);
