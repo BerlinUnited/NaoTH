@@ -82,7 +82,7 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
-#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
+//#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
 #include "Tools/NaoTime.h"
@@ -169,7 +169,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // experiment
   REGISTER_MODULE(Evolution);
-  REGISTER_MODULE(SaliencyMapProvider);
+  //REGISTER_MODULE(SaliencyMapProvider);
 
   // infrastructure
   REGISTER_MODULE(TeamCommSender);

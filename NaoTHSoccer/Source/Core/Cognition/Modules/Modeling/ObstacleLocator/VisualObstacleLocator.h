@@ -28,11 +28,11 @@
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
-#include "Representations/Modeling/VisualObstacleModel.h"
+//#include "Representations/Modeling/VisualObstacleModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BallPercept.h"
-#include "Representations/Perception/ObstaclePercept.h"
+//#include "Representations/Perception/ObstaclePercept.h"
 #include "Representations/Modeling/RadarGrid.h"
 
 
@@ -48,7 +48,7 @@ BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(Image)
 
-  PROVIDE(VisualObstacleModel)
+//  PROVIDE(VisualObstacleModel)
   PROVIDE(UltraSoundSendData)
   PROVIDE(LocalObstacleModel)
   PROVIDE(RadarGrid)
