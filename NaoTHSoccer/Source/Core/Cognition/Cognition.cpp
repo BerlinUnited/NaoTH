@@ -69,9 +69,9 @@
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
-
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
+#include "Modules/Modeling/PathPlanner/PathPlanner.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -82,6 +82,7 @@
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
+#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
 #include "Tools/NaoTime.h"
@@ -154,11 +155,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
-
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(AttentionAnalyzer);
-
   REGISTER_MODULE(SoccerStrategyProvider);
+  REGISTER_MODULE(PathPlanner);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
@@ -169,6 +169,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // experiment
   REGISTER_MODULE(Evolution);
+  REGISTER_MODULE(SaliencyMapProvider);
 
   // infrastructure
   REGISTER_MODULE(TeamCommSender);

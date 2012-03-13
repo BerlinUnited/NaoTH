@@ -112,7 +112,7 @@ double SensorSymbols::getFrameNumber()
 double SensorSymbols::getObstDistByAngle()
 {
   double angle = Math::fromDegrees(theInstance->parameter_obstDistByAngle_angle);
-  return theInstance->radarGrid.get(angle).x;
+  return theInstance->radarGrid.getDistanceForAngle(angle);
 }
 
 int SensorSymbols::getFallDownState()
