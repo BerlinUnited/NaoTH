@@ -43,14 +43,14 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
         {
           Node repNode = new Node(s, ModuleConfiguration.NodeType.Represenation, true);
           moduleConfiguration.addVertex(repNode);
-          //moduleConfiguration.addEdge(new ModuleConfiguration.Edge(),moduleNode,repNode);
+          moduleConfiguration.addEdge(moduleNode,repNode);
         }
         
         for(String s : m.getUsedRepresentationsList())
         {
           Node repNode = new Node(s, ModuleConfiguration.NodeType.Represenation, true);
           moduleConfiguration.addVertex(repNode);
-          //moduleConfiguration.addEdge(new ModuleConfiguration.Edge(),repNode,moduleNode);
+          moduleConfiguration.addEdge(repNode,moduleNode);
         }
       }
 
