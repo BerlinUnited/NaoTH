@@ -384,9 +384,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       last_min_point = point;
     }
 
-    // this one is a kind of slow..
-    //scanLine.getNext(point);
-    point.y--; // just go up
+    // this one is a kind of slow but does not crash..
+    scanLine.getNext(point);
+    //point.y--; // CRASHES just go up
   }//end for
 
   // for the last edgel
