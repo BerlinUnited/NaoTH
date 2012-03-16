@@ -542,10 +542,10 @@ void WebotsController::get(CurrentCameraSettings& data)
     // unsupported yet
   }
 
-  void WebotsController::set(const UltraSoundSendData& /*data*/)
-  {
-    // unsupported yet
-  }
+void WebotsController::set(const SoundData& /*data*/)
+{
+  // unsupported yet
+}
 
 void WebotsController::getCognitionInput()
 {

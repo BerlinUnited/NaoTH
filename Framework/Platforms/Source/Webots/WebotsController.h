@@ -120,7 +120,7 @@ namespace naoth
     void get(UltraSoundReceiveData& data)
     {
       // TODO
-    };
+    }
 
     void get(GameData& data);
 
