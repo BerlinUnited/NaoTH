@@ -152,14 +152,10 @@ double SensorSymbols2011::getTimeSinceObstacleWasSeen()
     theInstance->obstacleModel.frameWhenObstacleWasSeen.getTime());
 }//end getFrameWhenObstacleWasSeen
 
-double SensorSymbols2011::getObstacleAngle()
-{
-  return Math::toDegrees(theInstance->obstacleModel.ultraSoundObstacleEstimation.angle());
-}//end getObstacleAngle
 
 double SensorSymbols2011::getObstacleDistance()
 {
-  return theInstance->obstacleModel.ultraSoundObstacleEstimation.abs();
+  return theInstance->obstacleModel.nearestObstacleDistance;
 }//end getObstacleDistance
 
 double SensorSymbols2011::getCameraBufferFailedCount()

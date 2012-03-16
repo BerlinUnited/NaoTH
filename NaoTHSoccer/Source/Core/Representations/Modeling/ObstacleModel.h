@@ -29,24 +29,19 @@ public:
 
     FrameInfo frameInfoObstacleWasSeen;
     double distance;
-    Vector2<double> position;
   };
-  vector<Obstacle> obstacles;
-  Vector2<double> ultraSoundObstacleEstimation;
+  ObstacleModel();
+
+  vector<Obstacle> obstaclesLeft;
+  vector<Obstacle> obstaclesRight;
+
+  double nearestObstacleDistance;
+
+  bool someObstacleWasSeen;
   FrameInfo frameWhenObstacleWasSeen;
+
   virtual void print(ostream& stream) const;
 };//end class ObstacleModel
-
-class LocalObstacleModel : public ObstacleModel
-{
-private:
-public:
-  LocalObstacleModel();
-  
-  bool someObstacleWasSeen;
-
-  virtual void print(ostream& stream) const;
-};//end class LocalObstacleModel
 
 
 #endif// __ObstacleModel_h_

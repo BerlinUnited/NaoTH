@@ -37,7 +37,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols2011)
   REQUIRE(BatteryData)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
-  REQUIRE(LocalObstacleModel)
+  REQUIRE(ObstacleModel)
   REQUIRE(RadarGrid)
   REQUIRE(Image)
 
@@ -57,7 +57,7 @@ public:
     batteryData(getBatteryData()),
     frameInfo(getFrameInfo()),
     bodyState(getBodyState()),
-    obstacleModel(getLocalObstacleModel()),
+    obstacleModel(getObstacleModel()),
     radarGrid(getRadarGrid()),
     image(getImage())
   {
@@ -83,7 +83,7 @@ private:
   BatteryData const& batteryData;
   FrameInfo const& frameInfo;
   BodyState const& bodyState;
-  LocalObstacleModel const& obstacleModel;
+  ObstacleModel const& obstacleModel;
   RadarGrid const& radarGrid;
   Image const& image;
 
@@ -117,7 +117,6 @@ private:
   double parameter_obstDistByAngle_angle;
 
   static double getTimeSinceObstacleWasSeen();
-  static double getObstacleAngle();
   static double getObstacleDistance();
 
   static double getCameraBufferFailedCount();
