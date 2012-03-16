@@ -20,7 +20,6 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   REG_OUTPUT(LEDData);
   REG_OUTPUT(IRSendData);
-  REG_OUTPUT(UltraSoundSendData);
 
   REG_OUTPUT(CameraSettingsRequest);
   REG_OUTPUT(SoundPlayData);

@@ -170,6 +170,8 @@ void NaothModule::init()
 
 void NaothModule::motionCallbackPre()
 {
+  static bool firstCall = true;
+
   long long start = NaoTime::getSystemTimeInMicroSeconds();
 
   // update the dcm time
@@ -213,7 +215,13 @@ void NaothModule::motionCallbackPre()
   }//end else
 
   bool us_set = false;
+  if(firstCall)
+  {
+    firstCall = false;
 
+    theDCMHandler.setPeriodicUltraSoundSend(dcmTime);
+    us_set = true;
+  }
 
   /*
   if ( naoCommandIRSendData.swapReading() )

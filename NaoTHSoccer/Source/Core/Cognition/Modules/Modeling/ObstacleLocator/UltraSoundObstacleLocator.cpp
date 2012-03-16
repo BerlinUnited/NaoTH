@@ -22,12 +22,6 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
 
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBufferNumbers", "draw the values of modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_0", "left Transmitter left Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_1", "left Transmitter right Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_2", "right Transmitter left Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_3", "right Transmitter right Receiver", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_4", "left and right Transmitter and Receiver in two captures with one command", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_12", "left and right Transmitter and Receiver in two captures with one command and two transmitters at same time", false);
 
   maxValidDistance = 0.80f;
   minValidDistance = 0.15f;
@@ -69,34 +63,6 @@ void UltraSoundObstacleLocator::execute()
   //Draw ObstacleModel
   drawObstacleModel();
   drawObstacleModelNumbers();
-
-  // Use mode 1 for now
-  unsigned int mode = 1;
-
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_0",
-    mode = 0;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_2",
-    mode = 2;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_3",
-    mode = 3;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_4",
-    mode = 4;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_12",
-    mode = 12;
-  );
-  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_1",
-    mode = 1;
-  );
-
-  // Update mode 
-  if(mode != getUltraSoundSendData().mode)
-  {
-    getUltraSoundSendData().setMode(mode);
-  }
 
 }//end execute
 

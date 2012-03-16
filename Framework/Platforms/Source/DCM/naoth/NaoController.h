@@ -52,7 +52,6 @@ public:
     sensorDataReading(NULL),
     m_naoSensorData(NULL),
     m_naoCommandMotorJointData(NULL),
-    m_naoCommandUltraSoundSendData(NULL),
     m_naoCommandIRSendData(NULL),
     m_naoCommandLEDData(NULL),
     theSoundHandler(NULL),
@@ -132,7 +131,6 @@ public:
     registerOutput<const MotorJointData>(*this);
     registerOutput<const LEDData>(*this);
     registerOutput<const IRSendData>(*this);
-    registerOutput<const UltraSoundSendData>(*this);
 
 
     /*  INIT DEVICES  */
@@ -174,7 +172,6 @@ public:
 
     m_naoSensorData = g_mutex_new();
     m_naoCommandMotorJointData = g_mutex_new();
-    m_naoCommandUltraSoundSendData = g_mutex_new();
     m_naoCommandIRSendData = g_mutex_new();
     m_naoCommandLEDData = g_mutex_new();
   }
@@ -189,7 +186,6 @@ public:
 
     g_mutex_free(m_naoSensorData);
     g_mutex_free(m_naoCommandMotorJointData);
-    g_mutex_free(m_naoCommandUltraSoundSendData);
     g_mutex_free(m_naoCommandIRSendData);
     g_mutex_free(m_naoCommandLEDData);
 
@@ -346,7 +342,6 @@ protected:
   const NaoSensorData* sensorDataReading;
   GMutex* m_naoSensorData;
   GMutex* m_naoCommandMotorJointData;
-  GMutex* m_naoCommandUltraSoundSendData;
   GMutex* m_naoCommandIRSendData;
   GMutex* m_naoCommandLEDData;
   

@@ -38,7 +38,6 @@ BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
   REQUIRE(OdometryData)
   REQUIRE(UltraSoundReceiveData)
 
-  PROVIDE(UltraSoundSendData)
   PROVIDE(LocalObstacleModel)
 END_DECLARE_MODULE(UltraSoundObstacleLocator)
 

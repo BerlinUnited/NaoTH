@@ -49,7 +49,6 @@ BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(Image)
 
 //  PROVIDE(VisualObstacleModel)
-  PROVIDE(UltraSoundSendData)
   PROVIDE(LocalObstacleModel)
   PROVIDE(RadarGrid)
 END_DECLARE_MODULE(VisualObstacleLocator)

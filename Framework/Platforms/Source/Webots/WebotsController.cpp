@@ -44,7 +44,6 @@ WebotsController::WebotsController()
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
-  registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundData>(*this);
   registerOutput<const MotorJointData>(*this);
 
@@ -544,11 +543,6 @@ void WebotsController::get(CurrentCameraSettings& data)
   }
 
   void WebotsController::set(const UltraSoundSendData& /*data*/)
-  {
-    // unsupported yet
-  }
-
-  void WebotsController::set(const SoundData& /*data*/)
   {
     // unsupported yet
   }

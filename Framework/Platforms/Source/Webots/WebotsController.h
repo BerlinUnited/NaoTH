@@ -130,7 +130,6 @@ namespace naoth
      void set(const CameraSettingsRequest& data);
      void set(const LEDData& data);
      void set(const IRSendData& data);
-     void set(const UltraSoundSendData& data);
      void set(const SoundData& data);
      void set(const MotorJointData& data);
 
