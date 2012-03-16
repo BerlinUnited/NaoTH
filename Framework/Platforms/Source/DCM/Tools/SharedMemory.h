@@ -87,7 +87,7 @@ public:
       }
       else if ( shmStat.st_size != memSize )
       {
-        fprintf(stderr, "memory size are different\n");
+        fprintf(stderr, "(%s) memory size are different, was %d should have been %d \n", name.c_str(), (int) shmStat.st_size, (int) memSize);
         return false;
       }
 

@@ -66,7 +66,6 @@ public:
     const std::string naoSensorDataPath = "/nao_sensor_data";
     //const std::string naoCommandDataPath = "/nao_command_data";
     const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
-    const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
     const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
     const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
@@ -74,8 +73,6 @@ public:
     //naoCommandData.open(naoCommandDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
     naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
-    std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
-    naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
     naoCommandIRSendData.open(naoCommandIRSendDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
@@ -199,7 +196,6 @@ public:
     // close the shared memory
     naoSensorData.close();
     naoCommandMotorJointData.close();
-    naoCommandUltraSoundSendData.close();
     naoCommandIRSendData.close();
     naoCommandLEDData.close();
   }
@@ -285,9 +281,6 @@ public:
   SET_TO_SHARED_MEMORY(MotorJointData)
   SET_TO_SHARED_MEMORY(LEDData)
   SET_TO_SHARED_MEMORY(IRSendData)
-  SET_TO_SHARED_MEMORY(UltraSoundSendData)
-
-
 
   virtual void getMotionInput()
   {
@@ -363,7 +356,6 @@ protected:
   // NaoController --> DCM
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
-  SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
