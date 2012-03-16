@@ -40,39 +40,6 @@ public:
 class LocalObstacleModel : public ObstacleModel
 {
 private:
-  class RadialGrid{
-    private:
-      static const int cell_width = 20;
-      static const int RADIAL_RESOLUTION = 360/cell_width;
-      double cells[RADIAL_RESOLUTION]; 
-
-    public:
-      // Constructor
-      RadialGrid(){
-        for(int i=0; i<RADIAL_RESOLUTION; i++)
-          cells[i] = 2.55f;
-      }
-
-      //setter/getter
-      void setCell(int iWhichCell, double value){
-        if(iWhichCell<0)
-          iWhichCell=0;
-        if(iWhichCell>=RADIAL_RESOLUTION)
-          iWhichCell=RADIAL_RESOLUTION;
-        cells[iWhichCell] = value;
-      }
-      double getCell(int iWhichCell){
-        if(iWhichCell<0)
-          iWhichCell=0;
-        if(iWhichCell>=RADIAL_RESOLUTION)
-          iWhichCell=RADIAL_RESOLUTION;
-        return cells[iWhichCell];
-      }
-      int getResolution(){
-        return RADIAL_RESOLUTION;
-      }
-  };// RadialGrid
-
 public:
   LocalObstacleModel();
   
@@ -82,9 +49,6 @@ public:
 
   bool visualObstacleWasSeen;
   Vector2<double> posVisualObstacle;
-
-  //usRadialGrid perceptions/obstacles
-  RadialGrid usRadial;
 
 };//end class LocalObstacleModel
 

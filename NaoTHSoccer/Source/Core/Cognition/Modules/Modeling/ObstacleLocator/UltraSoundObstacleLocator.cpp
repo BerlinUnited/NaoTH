@@ -254,37 +254,6 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
   }
 
 
-  // provide to the radial grid model
-  for(int x=0; x < this->CELLS_X; x++){
-    for(int y=0; y < this->CELLS_Y; y++){
-      if(grid.getGrid(x,y).state == Cell::MAX_VALUE){
-        // translation i = x/y of 
-        Vector2<double> i;
-        i.x = (x-CELLS_X/2)*CELL_SIZE; 
-        i.y = -(y-CELLS_Y/2)*CELL_SIZE;
-        float fCellAngle = 0.0f;
-
-        // cartesian to polar (angle)
-        if (i.x == 0)
-          fCellAngle = 90.0f;            
-        else{
-          //fCellAngle = (float) Math.Atan(i.y / i.x) * 180 / (float)Math.PI;
-          if (fCellAngle < 0.0f)
-            fCellAngle += 360.0f;
-        }
-        //double dCellDistance = static_cast<double>(Math.Sqrt(i.x * i.x + i.y * i.y));
-        //if(getLocalObstacleModel().usRadial.getCell(fCellAngle) > dCellDistance)
-        //  getLocalObstacleModel().usRadial.setCell(fCellAngle, dCellDistance);
-        // Math <= unknown??
-      }
-    }
-  }
-
-  for(int i=0; i<getLocalObstacleModel().usRadial.getResolution(); i++){
-    double dNewValue = 0.0f;
-    getLocalObstacleModel().usRadial.setCell(i, dNewValue);
-  }
-
 } //end provideToLocalObstacleModel
 
 Vector2<double> UltraSoundObstacleLocator::getMean()
