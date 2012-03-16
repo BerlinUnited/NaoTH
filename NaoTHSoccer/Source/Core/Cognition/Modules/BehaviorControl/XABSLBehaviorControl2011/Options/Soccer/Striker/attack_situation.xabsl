@@ -10,10 +10,6 @@ option attack_situation
     decision {
       if(action_done)
         goto position;
-      else if (false && obstacle.radar.was_seen && getObstDistByAngle(angle=0) < 350)
-      {
-        goto avoid_obstacle;
-      }
       else
         stay;
     }
@@ -23,21 +19,6 @@ option attack_situation
     }
   }
 
-  state avoid_obstacle
-  {
-    decision {
-      if (obstacle.visual.was_seen) {
-        stay;
-      } else {
-        goto approach_ball;
-      }
-    }
-    action {
-      avoid_obstacle_spl();
-    }
-
-  }
-  
   state position
   {
     decision {

@@ -42,10 +42,6 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.time_since_seen", &getTimeSinceObstacleWasSeen);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
 
-  engine.registerBooleanInputSymbol("obstacle.visual.was_seen", &obstacleModel.visualObstacleWasSeen);
-  engine.registerDecimalInputSymbol("obstacle.visual.x", &obstacleModel.posVisualObstacle.x);
-  engine.registerDecimalInputSymbol("obstacle.visual.y", &obstacleModel.posVisualObstacle.y);
-
   //new radar obstacles
   engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
   engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);

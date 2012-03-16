@@ -10,10 +10,6 @@ option attack_situation
     decision {
       if(action_done)
         goto position;
-      else if (false && obstacle.radar.was_seen && getObstDistByAngle(angle=0) < 350)
-      {
-        goto avoid_obstacle;
-      }
       else
         stay;
     }
@@ -21,21 +17,6 @@ option attack_situation
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
       approach_ball_with_correct_foot_ckeck_goal(dist=180-20*random);
     }
-  }
-
-  state avoid_obstacle
-  {
-    decision {
-      if (obstacle.visual.was_seen) {
-        stay;
-      } else {
-        goto approach_ball;
-      }
-    }
-    action {
-      avoid_obstacle_spl();
-    }
-
   }
   
   state position

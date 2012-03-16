@@ -99,12 +99,8 @@ option clear_ball_far_away{
   //TODO if obstacle -> block, else clear kick
   //attack.direction > -75 && attack.direction < 75 is constraint by approach ball
   state clear_ball {
-    decision{
-      if(false && obstacle.visual.was_seen){
-        goto block_attacker;
-      }else{
-        goto stabilize_before_kick;
-      } 
+    decision{  
+      goto stabilize_before_kick;
     }
     action{
       head.control_mode = search_for_ball_force_model;
@@ -230,19 +226,5 @@ option clear_ball_far_away{
     }
   }
 
-  state block_attacker
-  {
-    decision
-    {
-      if (!obstacle.visual.was_seen) {
-        goto stabilize_before_kick;
-      } else
-        stay;
-    }
-       action {
-         motion.type = block_middle; //make a wider stand
-         head.control_mode = search_for_ball;
-       }
-  }
   
 }

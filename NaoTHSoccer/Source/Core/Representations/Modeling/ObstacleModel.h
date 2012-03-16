@@ -46,10 +46,6 @@ public:
   bool someObstacleWasSeen;
 
   virtual void print(ostream& stream) const;
-
-  bool visualObstacleWasSeen;
-  Vector2<double> posVisualObstacle;
-
 };//end class LocalObstacleModel
 
 
