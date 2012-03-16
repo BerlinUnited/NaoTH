@@ -62,9 +62,6 @@ private:
 
   OdometryData lastRobotOdometry;
 
-  double maxValidDistance; /* max distance that is concidered valid */
-  double minValidDistance; /* min distance that is concidered valid */
-
   unsigned int ageThreshold; /* max age of the considered data */
   double usOpeningAngle; // opening angle of the ultrasound detector (in radians)
 

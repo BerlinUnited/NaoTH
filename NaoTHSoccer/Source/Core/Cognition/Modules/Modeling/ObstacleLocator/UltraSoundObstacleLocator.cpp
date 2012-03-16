@@ -20,10 +20,7 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   lastRobotOdometry = getOdometryData();
 
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBufferNumbers", "draw the values of modelled Obstacle on the field", false);
 
-  maxValidDistance = 0.80f;
-  minValidDistance = 0.15f;
   usOpeningAngle = Math::fromDegrees(30.0f);
 
 }
@@ -71,22 +68,17 @@ void UltraSoundObstacleLocator::updateBuffer()
   // add obstacles based on left/right sensordate
   for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
-    break; // skip this for-loop for now
-    if(getUltraSoundReceiveData().dataLeft[i] < maxValidDistance && getUltraSoundReceiveData().dataLeft[i] > minValidDistance)
-    {
-      ObstacleModel::Obstacle obstacleLeft;
-      obstacleLeft.frameInfoObstacleWasSeen = getFrameInfo();
-      obstacleLeft.distance = getUltraSoundReceiveData().dataLeft[i] * 1000;
-      obstacleBuffer.add(obstacleLeft);
-    }//end if
 
-    if(getUltraSoundReceiveData().dataRight[i] < maxValidDistance && getUltraSoundReceiveData().dataRight[i] > minValidDistance)
-    {
-      ObstacleModel::Obstacle obstacleRight;
-      obstacleRight.frameInfoObstacleWasSeen = getFrameInfo();
-      obstacleRight.distance = getUltraSoundReceiveData().dataRight[i] * 1000;
-      obstacleBuffer.add(obstacleRight);
-    }//end if
+    ObstacleModel::Obstacle obstacleLeft;
+    obstacleLeft.frameInfoObstacleWasSeen = getFrameInfo();
+    obstacleLeft.distance = getUltraSoundReceiveData().dataLeft[i] * 1000;
+    obstacleBuffer.add(obstacleLeft);
+
+    ObstacleModel::Obstacle obstacleRight;
+    obstacleRight.frameInfoObstacleWasSeen = getFrameInfo();
+    obstacleRight.distance = getUltraSoundReceiveData().dataRight[i] * 1000;
+    obstacleBuffer.add(obstacleRight);
+
   }//end for
 } //end updateBuffer
 
@@ -132,7 +124,7 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 
 double UltraSoundObstacleLocator::getMean()
 {
-  double mean;
+  double mean = 0.0;
   for(int i = 0; i < obstacleBuffer.getNumberOfEntries(); i++)
   {
     mean += obstacleBuffer[i].distance;

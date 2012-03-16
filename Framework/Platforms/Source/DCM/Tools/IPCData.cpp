@@ -126,19 +126,11 @@ void NaoSensorData::get(ButtonData& data) const
 void NaoSensorData::get(UltraSoundReceiveData& data) const
 {
   unsigned int currentIndex = theUltraSoundReceiveDataIndex;
-  if(data.ultraSoundTimeStep != 100) //Hack:is only 100 if mode 4 or 12 etc were the third bit is set
+  currentIndex++;
+  for(int i = 0; i < UltraSoundData::numOfUSEcho;i++)
   {
-    data.rawdata = sensorsValue[currentIndex++];
-    currentIndex += UltraSoundData::numOfUSEcho * 2;
-  }
-  else
-  {
-    currentIndex++;
-    for(int i = 0; i < UltraSoundData::numOfUSEcho;i++)
-    {
-      data.dataLeft[i] = sensorsValue[currentIndex++];
-      data.dataRight[i] = sensorsValue[currentIndex++];
-    }
+    data.dataLeft[i] = sensorsValue[currentIndex++];
+    data.dataRight[i] = sensorsValue[currentIndex++];
   }
 }//end UltraSoundReceiveData
 
