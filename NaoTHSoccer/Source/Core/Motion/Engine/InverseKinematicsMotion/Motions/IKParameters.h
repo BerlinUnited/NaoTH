@@ -38,7 +38,7 @@ public:
     double extendDoubleSupportTimeByCharacter;
     
     double stepHeight;
-    double curveFactor;
+    //double curveFactor;
     
     // step parameters
     double maxTurnInner;

@@ -491,7 +491,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
     {
         finished = true;
     }
-    std::cout << headMotionState << std::endl;
+    //std::cout << headMotionState << std::endl;
   }
   else
   {

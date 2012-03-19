@@ -58,9 +58,12 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     // remember the pose
     commandPoseBuffer.add(theCoMFeetPose);
 
-    HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose);
+    HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose, true);
 
     PLOT("Walk:c:hip.z",c.hip.translation.z);
+
+    PLOT("Walk:theCoMFeetPose:left_diff",c.feet.left.translation.y - c.hip.translation.y-50);
+    PLOT("Walk:theCoMFeetPose:right_diff",c.feet.right.translation.y - c.hip.translation.y+50);
 
     // plot planned trajectory
     PLOT("Walk:theCoMFeetPose:com:x",theCoMFeetPose.com.translation.x);
@@ -77,13 +80,14 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
 
 
     // apply online stabilization
-    if(theParameters.walk.rotationStabilize)
+    if(theWalkParameters.rotationStabilize)
     {
       theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
     }
 
     theEngine.solveHipFeetIK(c);
-    /*c.localInHip();
+    /*
+    c.localInHip();
     static RobotDimensions theRobotDimensions;
     InverseKinematicBH::calcLegJoints(c.feet.left, c.feet.right, theMotorJointData, theRobotDimensions, 0.5f);
     */
@@ -104,7 +108,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     PLOT("Walk:RHipRoll",theMotorJointData.position[JointData::RHipRoll]);
     PLOT("Walk:LHipRoll",theMotorJointData.position[JointData::LHipRoll]);
 
-    if(theParameters.walk.stabilizeFeet)
+    if(theWalkParameters.stabilizeFeet)
       theEngine.feetStabilize(theMotorJointData.position);
   }
 
@@ -247,7 +251,10 @@ void Walk::manageSteps(const WalkRequest& req)
     cout<<"walk start"<<endl;
     theCoMFeetPose = theEngine.getCurrentCoMFeetPose();
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
-    currentZMP.localInLeftFoot();
+    
+    // TODO: why in the left foot?!
+    currentZMP.localInLeftFoot(); 
+
     currentZMP.zmp.translation.z = theWalkParameters.comHeight;
     Step zeroStep;
     updateParameters(zeroStep, req.character);
@@ -303,7 +310,7 @@ void Walk::manageSteps(const WalkRequest& req)
     else
     {
       step.footStep = theFootStepPlanner.nextStep(planningStep.footStep, req);
-      if ( !isStopping && theParameters.walk.dynamicStepsize )
+      if ( !isStopping && theWalkParameters.dynamicStepsize )
         adaptStepSize(step.footStep);
       updateParameters(step, req.character);
     }
@@ -321,7 +328,7 @@ void Walk::planStep()
 
 
   // EXPERIMENTAL: correct the ZMP
-  double delay = 0;
+  double delay = 1000;
   MODIFY("Walk:executeStep:correction.delay", delay);
   double factorX = 0;
   MODIFY("Walk:executeStep:correction.factorX", factorX);
@@ -343,7 +350,7 @@ void Walk::planStep()
   PLOT("Walk:planStep:zmp_simple.x", zmp_simple.x);
   PLOT("Walk:planStep:zmp_simple.y", zmp_simple.y);
 
-  /*
+  
   // better ZMP?
   Vector2d zmp = ZMPPlanner::betterOne(
     planningStep.footStep, 
@@ -356,7 +363,7 @@ void Walk::planStep()
   
   PLOT("Walk:planStep:zmp.x", zmp.x);
   PLOT("Walk:planStep:zmp.y", zmp.y);
-  */
+  
 
   // TODO: change the height?
   theEngine.controlZMPpush(Vector3d(zmp_simple.x, zmp_simple.y, theWalkParameters.comHeight));
@@ -365,11 +372,17 @@ void Walk::planStep()
 
 CoMFeetPose Walk::executeStep()
 {
+  // control the target com
   Vector3d com;
   if ( !theEngine.controlZMPpop(com) || stepBuffer.empty() )
   {
     return theEngine.getCurrentCoMFeetPose();
   }
+
+  PLOT("Walk:executeStep:com.x", com.x);
+  PLOT("Walk:executeStep:com.y", com.y);
+  PLOT("Walk:executeStep:com.z", com.z);
+
 
   Step& executingStep = stepBuffer.front();
   ASSERT(executingStep.executingCycle < executingStep.planningCycle);
@@ -392,7 +405,7 @@ CoMFeetPose Walk::executeStep()
   {
     liftFoot = &result.feet.right;
     result.feet.left = exeFootStep.supFoot();
-    footSupporting = theBlackBoard.theGroundContactModel.leftGroundContact;;
+    footSupporting = theBlackBoard.theGroundContactModel.leftGroundContact;
     break;
   }
   case FootStep::NONE:
@@ -431,17 +444,19 @@ CoMFeetPose Walk::executeStep()
     double footRollOffset = -1;
     MODIFY("_test:footRollOffset", footRollOffset);
 
-
     if ( executingStep.stepControlling )
     {
-      *liftFoot = FootTrajectorGenerator::stepControl(exeFootStep.footBegin(),
+      *liftFoot = FootTrajectorGenerator::stepControl(  exeFootStep.footBegin(),
                                                         exeFootStep.footEnd(),
                                                         executingStep.executingCycle,
                                                         executingStep.samplesDoubleSupport,
                                                         executingStep.samplesSingleSupport,
                                                         executingStep.extendDoubleSupport,
-                                                        theWalkParameters.stepHeight, 0, 0, 0,
-                                                        theWalkParameters.curveFactor,
+                                                        theWalkParameters.stepHeight, 
+                                                        0, //footPitchOffset
+                                                        0, //footYawOffset
+                                                        0, //footRollOffset
+                                                        0, //theWalkParameters.curveFactor, // not used right now
                                                         executingStep.speedDirection);
     }
     else
@@ -453,10 +468,11 @@ CoMFeetPose Walk::executeStep()
                                                         executingStep.samplesSingleSupport,
                                                         executingStep.extendDoubleSupport,
                                                         theWalkParameters.stepHeight,
-                                                        theBlackBoard.theInertialModel.orientation.y*footPitchOffset, // footPitchOffset
-                                                        0, // footYawOffset
-                                                        theBlackBoard.theInertialModel.orientation.x*footRollOffset, // footRollOffset
-                                                        theWalkParameters.curveFactor);
+                                                        0, //theBlackBoard.theInertialModel.orientation.y*footPitchOffset, // footPitchOffset
+                                                        0, //footYawOffset
+                                                        0, //theBlackBoard.theInertialModel.orientation.x*footRollOffset, // footRollOffset
+                                                        0  //theWalkParameters.curveFactor // not used right now
+                                                        );
     }
   }
 
@@ -666,7 +682,8 @@ void Walk::calculateError()
   Vector3d requested_com;
   Vector3d observed_com;
 
-  if(theCoMFeetPose.feet.left.translation.z < theCoMFeetPose.feet.right.translation.z)
+  // if right support
+  if(expectedCoMFeetPose.feet.left.translation.z > expectedCoMFeetPose.feet.right.translation.z)
   {
     const Pose3D& footRef_right = expectedCoMFeetPose.feet.right;
     requested_com = footRef_right.local(expectedCoMFeetPose.com).translation;

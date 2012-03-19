@@ -32,7 +32,7 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(walk.maxExtendDoubleSupportTime) = 20;
   PARAMETER_REGISTER(walk.extendDoubleSupportTimeByCharacter) = 0;
   PARAMETER_REGISTER(walk.stepHeight) = 10;
-  PARAMETER_REGISTER(walk.curveFactor) = 7;
+//  PARAMETER_REGISTER(walk.curveFactor) = 7;
 
   PARAMETER_REGISTER(walk.maxTurnInner) = 10;
   PARAMETER_REGISTER(walk.maxStepTurn) = 30;
