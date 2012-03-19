@@ -43,13 +43,14 @@ option after_penalized_state
   state completely_lost
   {
     decision {
-      else if(action_done || state_time > 15000)
+      else if(state_time > 10000)
         goto finished;
       else
         stay;
     }
     action {
-      go_to_relative_point(rotation=0, x=500, y=0);
+      motion.type = walk;
+      motion.walk_speed.x = 150;
       head.control_mode = search_for_goal;
     }  
   }

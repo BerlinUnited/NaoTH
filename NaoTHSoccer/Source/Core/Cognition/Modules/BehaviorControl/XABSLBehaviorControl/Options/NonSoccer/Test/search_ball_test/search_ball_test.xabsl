@@ -1,0 +1,141 @@
+/** Scan mode for looking at the ball/searching for the ball */
+option search_ball_test
+{
+
+  common decision
+  {
+    if (ball.was_seen)
+      goto finished;
+  }
+
+  initial state turn_to_ball_model
+  {
+    decision
+    {
+      else if (state_time > 3000 || ball.time_since_last_seen > 7000)
+      {
+        goto stand;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      search_ball.turns_for_searching = 0;
+    
+      head.control_mode = search_for_ball_test;
+      search_ball.search_direction = (ball.angle < 0)?-1:1;
+      motion.type = walk;
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = ball.angle; //deg
+      motion.walk.coordinate = hip;
+    }
+  }
+  
+  state stand
+  {
+    decision
+    {
+      else if (state_time > 3000 && search_ball.turns_for_searching < 5)
+        goto turn;
+      else if (search_ball.turns_for_searching > 4)
+        goto move;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      
+      motion.walk_speed.x = -10; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 10*search_ball.search_direction; //deg
+      motion.walk.coordinate = hip;
+      
+      head.control_mode = search_for_ball_test;
+    }
+  }
+  
+
+  state turn
+  {
+    decision
+    {
+      else if (state_time > 4000) // test
+        goto search_goal;
+      else
+        stay;
+    }
+    action
+    {
+      search_ball.turns_for_searching = search_ball.turns_for_searching + 1;
+      head.control_mode = search_for_ball_test;
+      motion.type = walk;
+      
+      motion.walk_speed.x = -15; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 90*search_ball.search_direction; //deg
+      motion.walk.coordinate = hip;
+    }
+  }
+
+  
+  state move
+  {
+    decision
+    {
+       else if (state_time > 1000)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      search_ball.turns_for_searching = 0;
+      motion.type = walk;
+      
+      motion.walk_speed.x = 1000; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 0; //deg
+      motion.walk.coordinate = hip;
+   }
+ }
+
+  state search_goal
+  {
+    decision
+    {
+      else if (state_time > 3000)
+        goto stand;
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_goal; 
+      //motion.type = stand;
+  
+      motion.walk_speed.x = 0; // mm
+      motion.walk_speed.y = 0; // mm
+      motion.walk_speed.rot = 10*search_ball.search_direction; //deg
+      motion.walk.coordinate = hip;
+    }
+  }
+  
+  target state finished
+  {
+    decision
+    {
+      else if (ball.time_since_last_seen > 2000)
+        goto turn_to_ball_model;
+      else
+        stay;
+    }
+    action
+    {
+      head.control_mode = search_for_ball_test;
+      motion.type = stand;
+    }
+  }
+}

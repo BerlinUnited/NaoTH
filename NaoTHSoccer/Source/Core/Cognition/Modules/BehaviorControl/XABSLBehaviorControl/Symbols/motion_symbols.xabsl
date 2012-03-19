@@ -60,7 +60,10 @@ namespace motion_symbols("Motion Symbols") {
     //search_for_line,
     look_around,
     goalie_look_around,
-    smart_search
+    smart_search,
+
+    //Test case
+    search_for_ball_test
   };
 
   enum head.control_mode internal head.control_mode;

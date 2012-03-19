@@ -21,6 +21,7 @@ option spl_play_soccer {
       motion.standHeight = -1;
       motion.walk.style = normal;
       motion.walk.step_control.foot = none;
+      motion.walk.stop_with_stand = true;
 
       initial_ready_set_play();
       

@@ -102,6 +102,10 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 // NonSoccer
 include "Options/NonSoccer/Test/dribble_agent.xabsl";
 include "Options/NonSoccer/Test/dribble_stand_test.xabsl";
+//NonSoccer - Search Ball
+include"Options/NonSoccer/Test/search_ball_agent.xabsl";
+include "Options/NonSoccer/Test/search_ball_test/search_ball_test.xabsl";
+include "Options/NonSoccer/Test/search_ball_test/search_for_ball_test.xabsl";
 
 // Test includes
 include "Options/Skills/go_to_ball_and_kick.xabsl";
@@ -112,3 +116,4 @@ agent penalty("Penalty", play_penalty);
 
 /** dribble test */
 agent dribble_agent("DribbleAgent", dribble_agent);
+agent search_ball_agent("SearchBallAgent", search_ball_agent);
