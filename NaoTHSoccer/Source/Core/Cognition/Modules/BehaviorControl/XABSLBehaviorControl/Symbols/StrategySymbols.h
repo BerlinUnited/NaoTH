@@ -12,6 +12,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Motion/MotionStatus.h"
 
 BEGIN_DECLARE_MODULE(StrategySymbols)
@@ -26,6 +27,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(LocalGoalModel)
   REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
+  PROVIDE(SituationStatus)
 END_DECLARE_MODULE(StrategySymbols)
 
 class StrategySymbols: public StrategySymbolsBase
@@ -79,7 +81,7 @@ private:
   // true if the right foot ich choosen, false else
   static bool getApproachingWithRightFoot();
 
-  // seter and getter
+  // setter and getter
   static double getOppClosestToBallNumber();
   static double getOppClosestToBallTimeSinceLastSeen();
   static double getOppClosestToBallDistanceToBall();
@@ -88,6 +90,12 @@ private:
   static double getOwnClosestToBallNumber();
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
+  
+  //enum 
+  // static SituationStatus::StatusID getSituationStatusId();
+  //bool
+  static bool getSituationStatusOwnHalf();
+  static void setSituationStatusOwnHalf(bool ownHalf);
 
   Pose2D calculateDefensePose();
   static double defensePoseX();
