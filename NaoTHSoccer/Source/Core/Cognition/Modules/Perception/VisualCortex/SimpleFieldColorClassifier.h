@@ -12,12 +12,11 @@
 #include <ModuleFramework/Module.h>
 
 // Representations
-#include "Representations/Infrastructure/Image.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
-#include "Tools/ImageProcessing/FieldColorParameters.h"
+//#include "Tools/ImageProcessing/ColoredGrid.h"
+#include "Representations/Infrastructure/Image.h" // just for debug
 
 
 // Tools
@@ -29,10 +28,10 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(SimpleFieldColorClassifier)
-  REQUIRE(ColoredGrid)
+  //REQUIRE(ColoredGrid)
+  REQUIRE(FrameInfo)
   REQUIRE(Histogram)
   REQUIRE(Image)
-  REQUIRE(FrameInfo)
 
   PROVIDE(FieldColorPercept)
 END_DECLARE_MODULE(SimpleFieldColorClassifier)
@@ -57,13 +56,9 @@ private:
 
     Parameters() : ParameterList("SimpleFieldColorClassifierParameters")
     {
-      PARAMETER_REGISTER(fieldcolorDistMin.y) = 20;
-      PARAMETER_REGISTER(fieldcolorDistMin.u) = 5;
-      PARAMETER_REGISTER(fieldcolorDistMin.v) = 5;
-
-      PARAMETER_REGISTER(fieldcolorDistMax.y) = 72;
-      PARAMETER_REGISTER(fieldcolorDistMax.u) = 32;
-      PARAMETER_REGISTER(fieldcolorDistMax.v) = 24;
+      PARAMETER_REGISTER(fieldColorMax.y) = 64;
+      PARAMETER_REGISTER(fieldColorMax.u) = 8;
+      PARAMETER_REGISTER(fieldColorMax.v) = 10;
 
       syncWithConfig();
 
@@ -75,16 +70,11 @@ private:
       DebugParameterList::getInstance().remove(this);
     }
 
-    DoublePixel fieldcolorDistMin;
-    DoublePixel fieldcolorDistMax;
+    DoublePixel fieldColorMax;
   };
 
-  FieldColorParameters fieldParams;
-/*
-  double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
-  */
+  Parameters fieldParams;
+
 };
 
 #endif  /* _SimpleFieldColorClassifier_H_ */

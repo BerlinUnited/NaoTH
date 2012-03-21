@@ -22,8 +22,6 @@ SimpleFieldColorClassifier::SimpleFieldColorClassifier()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:markCrClassification", "", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:SimpleFieldColorClassifier:mark_green", "", false);
-
-  getFieldColorPercept().init(fieldParams);
 }
 
 void SimpleFieldColorClassifier::execute()
@@ -41,14 +39,6 @@ void SimpleFieldColorClassifier::execute()
   static const double histogramStep = 1.0/(double) COLOR_CHANNEL_VALUE_COUNT;
   static const double histogramDoubleStep = 2.0*histogramStep;
   
-
-  // copy the paramaters
-  unsigned int maxDistY = (unsigned int)fieldParams.fieldcolorDistMax.y;
-  unsigned int maxDistCb = (unsigned int)fieldParams.fieldcolorDistMax.u;
-  unsigned int maxDistCr = (unsigned int)fieldParams.fieldcolorDistMax.v;
-
-
-
   STOPWATCH_START("SimpleFieldColorClassifier:Cr_filtering");
 
   // STEP 1: search for the maximal value in the weighted Cr histogramm 
@@ -86,7 +76,7 @@ void SimpleFieldColorClassifier::execute()
       for(unsigned int y = 0; y < getImage().height(); y++)
       {
         const Pixel& pixel = getImage().get(x, y);
-        if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)maxDistCr)
+        if( abs((int)pixel.v-(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v)
         {
           POINT_PX(ColorClasses::red, x, y);
         }
@@ -183,13 +173,11 @@ void SimpleFieldColorClassifier::execute()
 
         if
         (
-          ((int)pixel.y -(int)maxWeightedIndexY < (int)maxDistY)
+          abs((int)pixel.y -(int)maxWeightedIndexY) < (int)fieldParams.fieldColorMax.y
           &&
-          ((int)pixel.y -(int)maxWeightedIndexY > (int)fieldParams.fieldColorMin.y)
+          abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)fieldParams.fieldColorMax.u
           &&
-          abs((int)pixel.u -(int)maxWeightedIndexCb) < (int)maxDistCb
-          &&
-          abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)maxDistCr
+          abs((int)pixel.v -(int)maxWeightedIndexCr) < (int)fieldParams.fieldColorMax.v
         )
           POINT_PX(ColorClasses::green, x, y);
       }
@@ -197,10 +185,11 @@ void SimpleFieldColorClassifier::execute()
   );
 
 
-  // current release candidate
-  getFieldColorPercept().distY = maxDistY;
-  getFieldColorPercept().distCb = maxDistCb;
-  getFieldColorPercept().distCr = maxDistCr;
+  // 
+  getFieldColorPercept().distY = fieldParams.fieldColorMax.y;
+  getFieldColorPercept().distCb = fieldParams.fieldColorMax.u;
+  getFieldColorPercept().distCr = fieldParams.fieldColorMax.v;
+
 
   //getFieldColorPercept().maxWeightedY = maxWeightedY;
   getFieldColorPercept().maxWeightedIndexY = maxWeightedIndexY;
