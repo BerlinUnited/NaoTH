@@ -6,41 +6,54 @@ option dribble_stand_test
   bool  @walk_before_kick;
   float @kick_direction; // 90 = left, 270 = right
 
+
+  common decision
+  {
+    if(ball.time_since_last_seen <0)//> 2500)
+      goto finished;
+  }
   
   initial state decide_action 
   {
     decision 
     {
-      if(state_time>1500)
+      else if(@walk_before_kick)
       {
-        if(@walk_before_kick)
+        if(@kick_right)
         {
-          if(@kick_right)
-          {
-            goto approach_for_kick_right;
-          }
-          else
-          {
-            goto approach_for_kick_left;
-          }
-        }         
+          goto approach_for_kick_right;
+        }
         else
-          goto dribble;
-      }
+        {
+          goto approach_for_kick_left;
+        }
+      }         
       else
-        stay;
+        goto dribble;
     }
     action {
-      motion.walk.step_control.foot = none;
-      motion.walk_speed.x = 80*cos(angle=@kick_direction);
-      motion.walk_speed.y = 80*sin(angle=@kick_direction);
       motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk.step_control.foot = none;
+      motion.walk.stop_with_stand = false;
+      head.control_mode = search_for_ball;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.y = 0;
+
+      /*motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk.step_control.foot = none;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = true;
+      head.control_mode = search_for_ball;*/
     }
   }
 
   state approach_for_kick_left {
     decision{
-      if(action_done && executed_motion.step_control.right_movable  && ball.time_since_last_seen < 400)
+      else if(action_done && executed_motion.step_control.right_movable  
+              && ball.time_since_last_seen < 400
+              && (ball.left_foot.preview.x < 170) && (ball.left_foot.preview.y > -10))
         goto dribble; //approach_for_kick_left_done;
       else
         stay;
@@ -49,17 +62,19 @@ option dribble_stand_test
       go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
                            x = ball.left_foot.preview.x - 150 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
                            y = ball.left_foot.preview.y );
-      
+      motion.type = walk;
+      motion.walk.style = normal;
       motion.walk.coordinate = left_foot;
       motion.walk.stop_with_stand = false;
-      
       head.control_mode = search_for_ball;
     }
   }
 
   state approach_for_kick_right {
     decision{
-      if(action_done && executed_motion.step_control.left_movable && ball.time_since_last_seen < 400)
+      else if(action_done && executed_motion.step_control.left_movable 
+              && ball.time_since_last_seen < 400
+              && (ball.right_foot.preview.x < 170) && (ball.right_foot.preview.y < 10))
         goto dribble; //approach_for_kick_right_done;
       else
         stay;
@@ -68,19 +83,19 @@ option dribble_stand_test
       go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
                            x = ball.right_foot.preview.x - 150 * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
                            y = ball.right_foot.preview.y);
-      
+      motion.type = walk;
+      motion.walk.style = normal;
       motion.walk.coordinate = right_foot;
       motion.walk.stop_with_stand = false;
-      
       head.control_mode = search_for_ball;
     }
   }
 
   target state finished
   {
-    decision
+    /*decision
     {
-      if(state_time > 1500){
+      else if(state_time > 1500){
 			  if(@walk_before_kick)
 			    goto decide_action;
 			  else
@@ -88,15 +103,17 @@ option dribble_stand_test
       }
       else
         stay;
-    }
+    }*/
     action
     {
-      head.control_mode = search_for_ball;
-      motion.walk.step_control.foot = none;
       motion.type = walk;
-      motion.walk_speed.x = 80*cos(angle=@kick_direction);
-      motion.walk_speed.y = 80*sin(angle=@kick_direction);
+      motion.walk.style = normal;
+      motion.walk_speed.x = ball.preview.x;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk.step_control.foot = none;
+      motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = true;
+      head.control_mode = search_for_ball;
     }
   }
   
@@ -104,7 +121,7 @@ option dribble_stand_test
   {
     decision 
     {
-      if(state_time > 500)
+      else if(state_time > 500)
       {
         goto stabilize;
       }
@@ -113,7 +130,8 @@ option dribble_stand_test
     }
     action 
     {
-      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.style = fast;
       motion.walk.step_control.foot = @kick_right?right:left;
       motion.walk.coordinate = @kick_right?right_foot:left_foot;
       motion.walk.step_control.target.x = @kick_right?ball.right_foot.preview.x+100:ball.left_foot.preview.x+100;
@@ -121,9 +139,8 @@ option dribble_stand_test
       motion.walk.step_control.target.rot = 0;
       motion.walk.step_control.speed_direction = @kick_direction;
       motion.walk.step_control.time = 500;
-      motion.walk.style = fast;
-      motion.type = walk;
       motion.walk.stop_with_stand = false;
+      head.control_mode = search_for_ball;
     }
   }
 
@@ -131,21 +148,43 @@ option dribble_stand_test
   {
     decision
     {
-      if(state_time>500)
+      else if(state_time>500)
+        goto walk_after_stabilize;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = 80*cos(angle=@kick_direction);
+      motion.walk_speed.y = 80*sin(angle=@kick_direction);
+      motion.walk.stop_with_stand = false;
+      motion.walk.step_control.time = 500;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state walk_after_stabilize
+  {
+    decision
+    {
+      else if(state_time>1500)
+        //goto finished;
         goto decide_action;
       else
         stay;
     }
     action
     {
-      motion.walk.style = fast;
       motion.type = walk;
-      //motion.walk.step_control.foot = none;
-      motion.walk_speed.x = 80*cos(angle=@kick_direction);
-      motion.walk_speed.y = 80*sin(angle=@kick_direction);
-      //motion.walk_speed.rot = 0;
+      motion.walk.style = fast;
+      motion.walk.step_control.foot = none;
+      motion.walk_speed.x = ball.preview.x;
+      motion.walk_speed.y = ball.preview.y;
       motion.walk.stop_with_stand = false;
-      motion.walk.step_control.time = 500;
+      head.control_mode = search_for_ball;
     }
-  } 
+  }
 }
