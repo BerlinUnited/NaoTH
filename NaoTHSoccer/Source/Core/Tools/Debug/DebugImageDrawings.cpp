@@ -37,12 +37,12 @@ void DebugImageDrawings::drawPoint(
   }//end if
 }//end drawPoint
 
-unsigned int DebugImageDrawings::width()
+unsigned int DebugImageDrawings::width() const
 {
   return 320;
 }//end width
 
-unsigned int DebugImageDrawings::height()
+unsigned int DebugImageDrawings::height() const
 {
   return 240;
 }//end height

@@ -21,7 +21,8 @@
 
 //
 #include "V4lCameraHandler.h"
-//#include "SoundControl.h"
+#include "SoundPlayer.h"
+#include "SoundControl.h"
 #include "Tools/Communication/Broadcast/BroadCaster.h"
 #include "Tools/Communication/Broadcast/BroadCastListener.h"
 #include "SPLGameController.h"
@@ -54,7 +55,7 @@ public:
     m_naoCommandUltraSoundSendData(NULL),
     m_naoCommandIRSendData(NULL),
     m_naoCommandLEDData(NULL),
-    //theSoundHandler(NULL),
+    theSoundHandler(NULL),
     theBroadCaster(NULL),
     theBroadCastListener(NULL),
     theDebugServer(NULL)
@@ -102,7 +103,7 @@ public:
     registerOutput<const CameraSettingsRequest>(*this);
     
     // sound
-    //registerOutput<const SoundPlayData>(*this);
+    registerOutput<const SoundPlayData>(*this);
 
     // gamecontroller
     registerInput<GameData>(*this);
@@ -144,8 +145,9 @@ public:
     std::cout << "Init CameraHandler" << endl;
     theCameraHandler.init("/dev/video");
   
-//  std::cout << "Init SoundHandler" <<endl;
-//  theSoundHandler = new SoundControl();
+    std::cout << "Init SoundHandler" <<endl;
+    //theSoundPlayer.play("penalized");
+    theSoundHandler = new SoundControl();
 
     std::cout<< "Init TeamComm"<<endl;
     naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
@@ -212,7 +214,11 @@ public:
   void set(const CameraSettingsRequest& data) { theCameraHandler.setCameraSettings(data, data.queryCameraSettings); }
 
   // sound
-  void set(const SoundPlayData& data) { /*theSoundHandler->setSoundData(data);*/ }
+  void set(const SoundPlayData& data) 
+  { 
+    //if(data.soundFile.size() > 0) theSoundPlayer.play(data.soundFile); 
+    theSoundHandler->setSoundData(data);
+  }
 
   // teamcomm stuff
   void get(TeamMessageDataIn& data) { theBroadCastListener->receive(data.data); }
@@ -285,20 +291,29 @@ public:
 
   virtual void getMotionInput()
   {
+    STOPWATCH_START("getMotionInput");
     // try to get some data from the DCM
     if ( naoSensorData.swapReading() )
+    {
       sensorDataReading = naoSensorData.reading();
+    }
     else // didn't get new sensor data
+    {
+      std::cerr << "didn't get new sensor data" << std::endl;
       sensorDataReading = NULL;
+    }
 
     PlatformInterface<NaoController>::getMotionInput();
+    STOPWATCH_STOP("getMotionInput");
   }//end getMotionInput
 
 
   virtual void setMotionOutput()
   {
+    STOPWATCH_START("setMotionOutput");
     PlatformInterface<NaoController>::setMotionOutput();
-
+    STOPWATCH_STOP("setMotionOutput");
+    
     // send the data to DCM
     //naoCommandData.swapWriting();
   }//end setMotionOutput
@@ -354,7 +369,8 @@ protected:
 
   //
   V4lCameraHandler theCameraHandler;
-  //SoundControl *theSoundHandler;
+  SoundPlayer theSoundPlayer;
+  SoundControl *theSoundHandler;
   BroadCaster* theBroadCaster;
   BroadCastListener* theBroadCastListener;
   SPLGameController* theGameController;

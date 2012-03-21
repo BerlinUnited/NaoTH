@@ -1,7 +1,7 @@
 #ifndef COLORCLASSIFICATIONMODEL_H
 #define COLORCLASSIFICATIONMODEL_H
 
-#include "Tools/ImageProcessing/ColorClassifier.h"
+//#include "Tools/ImageProcessing/ColorClassifier.h"
 #include <Representations/Infrastructure/ColorTable64.h>
 #include <Representations/Perception/FieldColorPercept.h>
 #include <Representations/Perception/BaseColorRegionPercept.h>
@@ -12,45 +12,16 @@
 
 using namespace naoth;
 
-class ColorClassificationModel : public ColorClassifier, public naoth::Printable
+
+class SimpleColorClassifier
 {
 public:
-  ColorClassificationModel();
 
-  void setColorTable(const ColorTable64& ct);
-  void setFieldColorPercept(const FieldColorPercept& percept);
-  void invalidateFieldColorPercept();
-  void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
-  void invalidateBaseColorRegionPercept();
+  SimpleColorClassifier() {}
 
-protected:
-  inline ColorClasses::Color get(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
-    // ball green
-    if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(a, b, c))
-    {
-      return ColorClasses::green;
-    }
-
-    if(baseColorRegionPerceptValid)
-    {
-
-      if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
-      {
-        return ColorClasses::orange;
-      }
-      else if(baseColorRegionPercept.isYellow(a, b ,c))
-      {
-        return ColorClasses::yellow;
-      }
-      else if(baseColorRegionPercept.isWhite(a, b ,c))
-      {
-        return ColorClasses::white;
-      }
-    }
-    else
-    {
-      // ball color
+    // ball color
       double d = (Math::sqr((255.0 - (double)b)) + Math::sqr((double)c)) / (2.0*255.0);
       unsigned char t = (unsigned char)Math::clamp(Math::round(d),0.0,255.0);
 
@@ -69,8 +40,76 @@ protected:
       {
         return ColorClasses::yellow;
       }
-    }
+
+      return ColorClasses::none;
+  }//end get
+};
+
+
+
+class ColorClassificationModel: public naoth::Printable
+{
+public:
+  ColorClassificationModel();
+
+  // some setters for the provider
+  void setColorTable(const ColorTable64& ct);
+  void setFieldColorPercept(const FieldColorPercept& percept);
+  void invalidateFieldColorPercept();
+  void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
+  void invalidateBaseColorRegionPercept();
+
+
+  inline ColorClasses::Color getColorClass(const Pixel& p) const
+  {
+    return getColorClass(p.a, p.b, p.c);
+  }
+
+  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
+  {
+    // green
+    if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(a, b, c))
+    {
+      return ColorClasses::green;
+    }//end if
+
+    /*
+    if(c > fieldColorPercept.maxWeightedIndexCr && b < fieldColorPercept.maxWeightedIndexCb)
+      return ColorClasses::orange;
+    */
+
+    if(baseColorRegionPerceptValid)
+    {
+      if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
+      {
+        return ColorClasses::orange;
+      }
+      else if(baseColorRegionPercept.isYellow(a, b ,c))
+      {
+        return ColorClasses::yellow;
+      }
+      else if(baseColorRegionPercept.isWhite(a, b ,c))
+      {
+        return ColorClasses::white;
+      }
+    }//end if
+    
+    // simple classifier (used for tests)
+    //return simpleColorClassifier.getColorClass(a,b,c);
+    
+    // default fallback
     return colorTable.getColorClass(a,b,c);
+  }//end getColorClass
+
+
+  const FieldColorPercept& getFieldColorPercept() const
+  {
+    return fieldColorPercept;
+  }
+
+  FieldColorPercept& getFieldColorPercept()
+  {
+    return fieldColorPercept;
   }
 
   virtual void print(ostream& stream) const
@@ -79,17 +118,21 @@ protected:
     stream << "baseColorRegionPerceptValid: " << baseColorRegionPerceptValid << endl;
   }
 
-private :
-
+private:
+  // static color table
   ColorTable64 colorTable;
 
+  // field color detector
   bool fieldColorPerceptValid;
-  FieldColorPercept fieldDummy;
-  FieldColorPercept& fieldColorPercept;
+  FieldColorPercept fieldColorPercept;
 
+  // detector for the other colors
   bool baseColorRegionPerceptValid;
-  BaseColorRegionPercept baseDummy;
-  BaseColorRegionPercept& baseColorRegionPercept;
+  BaseColorRegionPercept baseColorRegionPercept;
+
+
+  // ...a hacked classifier
+  SimpleColorClassifier simpleColorClassifier;
 };
 
 #endif // COLORCLASSIFICATIONMODEL_H

@@ -13,11 +13,12 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Tools/Debug/DebugImageDrawings.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 
 inline int scanline(
              const Image& theImage,
-             const ColorClassifier& theColorClassifier,
+             const ColorClassificationModel& theColorClassifier,
              const ColorClasses::Color& searchColor,
              const Vector2<int>& start,
              Vector2<int>& end,

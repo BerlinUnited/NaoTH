@@ -2,6 +2,7 @@
  * @file SharedMemory.h
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinric Mellmann</a>
  * @breief Shared memory wrapper
  *
  */
@@ -128,8 +129,9 @@ public:
     }
     unlock();
     return swappingReady;
-  }
+  }//end swapReading
   
+
   void swapWriting()
   {
     if ( trylock() )
@@ -139,6 +141,7 @@ public:
     }
     unlock();
   }//end swapWriting
+
 
   T* writing() { return &(theMemory->data[theMemory->writing]); }
   
@@ -166,7 +169,7 @@ public:
 protected:
     bool trylock() { return sem_trywait(sem) == 0; }
     
-    void lock() 
+    void lock()
     {
       if(sem_wait(sem) == -1)
       {
@@ -174,7 +177,17 @@ protected:
       }
     }//end lock
 
-    void unlock() { sem_post(sem); }
+    void unlock() 
+    {
+      int sval;
+      if(sem_getvalue(sem, &sval) == 0)
+      {
+        if(sval < 1)
+        {
+          sem_post(sem); 
+        }
+      }
+    }//end unlock
 
 private:
   std::string theName;

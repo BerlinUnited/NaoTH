@@ -4,8 +4,8 @@
  * Declaration of class CameraMatrix
  */ 
 
-#ifndef __CameraMatrix_h_
-#define __CameraMatrix_h_
+#ifndef _CameraMatrix_h_
+#define _CameraMatrix_h_
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Line.h"
@@ -52,4 +52,4 @@ namespace naoth
   };
 }
 
-#endif //__CameraMatrix_h_
+#endif // _CameraMatrix_h_

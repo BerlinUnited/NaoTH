@@ -117,7 +117,7 @@ double PerceptProjector::projectionErrorLine(
        .rotateY(offsetY);
 
   // project the goal posts
-  const CameraInfo& cameraInfo = getImage().cameraInfo;;
+  const CameraInfo& cameraInfo = getImage().cameraInfo;
 
   Vector2<double> lineOneBegin;
   CameraGeometry::imagePixelToFieldCoord(tmpCM, cameraInfo, lineOne.begin(), 0.0, lineOneBegin);

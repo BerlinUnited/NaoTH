@@ -64,6 +64,7 @@ option play_with_check_fall_down
       decide_role();
       //critical_ball();
       last_state_was_penalized = false;
+      situationStatusOwnHalf = false;
     }
   }
 

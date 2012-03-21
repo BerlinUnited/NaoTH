@@ -125,7 +125,23 @@ public class MessageServer
     {
       public void run()
       {
-        sendReceiveLoop();
+        try
+        {
+            sendReceiveLoop();
+        }
+        catch(InterruptedException ex)
+        {
+          isActive = false;
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
+          close_connection();
+        }
+        catch(Exception ex)
+        {
+          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE,
+            "Unexpected exception...",
+            ex);
+          close_connection();
+        }
       }
     });
     
@@ -133,12 +149,14 @@ public class MessageServer
   }//end connect
 
   
-  public void disconnect()
+  public void close_connection()
   {
-    isActive = false;
-    
     if(serverSocket != null && serverSocket.isConnected())
     {
+      // is it necessary?
+      // In case the serverSocket is broken this end up in a 
+      // deadlock...
+      /*
       try
       {
         // cleanup
@@ -153,6 +171,7 @@ public class MessageServer
       {
         // ignore
       }
+      */
 
       // call error handlers of remaining requests
       for(SingleExecEntry a : answerRequestQueue)
@@ -183,15 +202,24 @@ public class MessageServer
       }
     }//end if
 
+  }//end close_connection
+  
+  
+  public void disconnect()
+  {
+    isActive = false;
+    
     // wait until the sender Thread is dead
-    /* ... good idea, but it causes a deadlock when disconnect() is called from within the senderThread
+    
     if(senderThread != null)
     {
       try {
-        senderThread.join();
-      } catch (InterruptedException e) {}
-    }
-     * */
+        senderThread.join(1000); // wait max one second for the thread to stop
+      } catch (InterruptedException e) { /* ignore */ }
+    }//end if
+    
+    close_connection();
+    
   }//end disconnect
 
   
@@ -260,14 +288,10 @@ public class MessageServer
 
   
   // send-receive-loop //
-  public void sendReceiveLoop()
+  public void sendReceiveLoop() throws Exception, InterruptedException
   {
-    try
-    {
       while(isActive && serverSocket != null && serverSocket.isConnected())
       {
-        try
-        {
           long startTime = System.currentTimeMillis();
 
           pollAnswers();
@@ -286,26 +310,11 @@ public class MessageServer
           {
             Thread.sleep(wait);
           }
-        }
-        catch(InterruptedException ex)
-        {
-          isActive = false;
-          Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, "thread was interupted", ex);
-          disconnect();
-        }
       } // while(isActive)
-    }
-    catch(Exception ex)
-    {
-      isActive = false;
-      Logger.getLogger(MessageServer.class.getName()).log(Level.SEVERE, null, ex);
-      disconnect();
-    }
-
-    // clean up
-    //disconnect();
   }//end sendReceiveLoop
 
+      
+      
   public void sendPendingCommands() throws IOException
   {
     // single execution //

@@ -383,7 +383,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_Image_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.Image.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.Image.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1250,7 +1250,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraInfo_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraInfo.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.CameraInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2083,7 +2083,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_JointData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.JointData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.JointData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2754,7 +2754,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_SensorJointData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.SensorJointData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.SensorJointData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3418,7 +3418,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_UltraSoundReceiveData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.UltraSoundReceiveData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.UltraSoundReceiveData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3963,7 +3963,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_CameraMatrix_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CameraMatrix.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.CameraMatrix.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4421,7 +4421,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_FrameInfo_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FrameInfo.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.FrameInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4942,7 +4942,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_BallPercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.BallPercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.BallPercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5827,7 +5827,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_GoalPercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.GoalPercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.GoalPercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6807,7 +6807,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_HeadMotionRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.HeadMotionRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.HeadMotionRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -8077,7 +8077,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_StepControlRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.StepControlRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -8791,7 +8791,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_WalkRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.WalkRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.WalkRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -9635,7 +9635,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_KickRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.KickRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.KickRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -10366,7 +10366,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_MotionRequest_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.MotionRequest.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.MotionRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11237,7 +11237,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_LinePercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.LinePercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.LinePercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12241,7 +12241,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_ScanLineEndPoint_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.ScanLineEndPoint.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.ScanLineEndPoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -12903,7 +12903,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_ScanLineEdgelPercept_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.ScanLineEdgelPercept.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.ScanLineEdgelPercept.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -13508,7 +13508,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_FSRData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.FSRData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.FSRData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -14067,7 +14067,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_StepControlStatus_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.StepControlStatus.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.StepControlStatus.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -14690,7 +14690,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_MotionStatus_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.MotionStatus.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.MotionStatus.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -15698,7 +15698,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_OdometryData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.OdometryData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.OdometryData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -15951,6 +15951,16 @@ public final class Representations {
     boolean hasInertialSensorOffset();
     de.naoth.rc.messages.CommonTypes.DoubleVector2 getInertialSensorOffset();
     de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getInertialSensorOffsetOrBuilder();
+    
+    // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+    boolean hasGyroSensorOffset();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getGyroSensorOffset();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getGyroSensorOffsetOrBuilder();
+    
+    // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
+    boolean hasAccSensorOffset();
+    de.naoth.rc.messages.CommonTypes.DoubleVector3 getAccSensorOffset();
+    de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getAccSensorOffsetOrBuilder();
   }
   public static final class CalibrationData extends
       com.google.protobuf.GeneratedMessage
@@ -15994,8 +16004,36 @@ public final class Representations {
       return inertialSensorOffset_;
     }
     
+    // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+    public static final int GYROSENSOROFFSET_FIELD_NUMBER = 2;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector2 gyroSensorOffset_;
+    public boolean hasGyroSensorOffset() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getGyroSensorOffset() {
+      return gyroSensorOffset_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getGyroSensorOffsetOrBuilder() {
+      return gyroSensorOffset_;
+    }
+    
+    // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
+    public static final int ACCSENSOROFFSET_FIELD_NUMBER = 3;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector3 accSensorOffset_;
+    public boolean hasAccSensorOffset() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector3 getAccSensorOffset() {
+      return accSensorOffset_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getAccSensorOffsetOrBuilder() {
+      return accSensorOffset_;
+    }
+    
     private void initFields() {
       inertialSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      accSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -16004,6 +16042,18 @@ public final class Representations {
       
       if (hasInertialSensorOffset()) {
         if (!getInertialSensorOffset().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasGyroSensorOffset()) {
+        if (!getGyroSensorOffset().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasAccSensorOffset()) {
+        if (!getAccSensorOffset().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -16018,6 +16068,12 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeMessage(1, inertialSensorOffset_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, gyroSensorOffset_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, accSensorOffset_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -16030,6 +16086,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, inertialSensorOffset_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, gyroSensorOffset_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, accSensorOffset_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -16136,7 +16200,7 @@ public final class Representations {
         return de.naoth.rc.messages.Representations.internal_static_naothmessages_CalibrationData_fieldAccessorTable;
       }
       
-      // Construct using de.hu_berlin.informatik.ki.nao.messages.Representations.CalibrationData.newBuilder()
+      // Construct using de.naoth.rc.messages.Representations.CalibrationData.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -16148,6 +16212,8 @@ public final class Representations {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getInertialSensorOffsetFieldBuilder();
+          getGyroSensorOffsetFieldBuilder();
+          getAccSensorOffsetFieldBuilder();
         }
       }
       private static Builder create() {
@@ -16162,6 +16228,18 @@ public final class Representations {
           inertialSensorOffsetBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
+        if (gyroSensorOffsetBuilder_ == null) {
+          gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          gyroSensorOffsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (accSensorOffsetBuilder_ == null) {
+          accSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+        } else {
+          accSensorOffsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -16208,6 +16286,22 @@ public final class Representations {
         } else {
           result.inertialSensorOffset_ = inertialSensorOffsetBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (gyroSensorOffsetBuilder_ == null) {
+          result.gyroSensorOffset_ = gyroSensorOffset_;
+        } else {
+          result.gyroSensorOffset_ = gyroSensorOffsetBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (accSensorOffsetBuilder_ == null) {
+          result.accSensorOffset_ = accSensorOffset_;
+        } else {
+          result.accSensorOffset_ = accSensorOffsetBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -16227,6 +16321,12 @@ public final class Representations {
         if (other.hasInertialSensorOffset()) {
           mergeInertialSensorOffset(other.getInertialSensorOffset());
         }
+        if (other.hasGyroSensorOffset()) {
+          mergeGyroSensorOffset(other.getGyroSensorOffset());
+        }
+        if (other.hasAccSensorOffset()) {
+          mergeAccSensorOffset(other.getAccSensorOffset());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -16234,6 +16334,18 @@ public final class Representations {
       public final boolean isInitialized() {
         if (hasInertialSensorOffset()) {
           if (!getInertialSensorOffset().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasGyroSensorOffset()) {
+          if (!getGyroSensorOffset().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasAccSensorOffset()) {
+          if (!getAccSensorOffset().isInitialized()) {
             
             return false;
           }
@@ -16271,6 +16383,24 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setInertialSensorOffset(subBuilder.buildPartial());
+              break;
+            }
+            case 18: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasGyroSensorOffset()) {
+                subBuilder.mergeFrom(getGyroSensorOffset());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setGyroSensorOffset(subBuilder.buildPartial());
+              break;
+            }
+            case 26: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder();
+              if (hasAccSensorOffset()) {
+                subBuilder.mergeFrom(getAccSensorOffset());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setAccSensorOffset(subBuilder.buildPartial());
               break;
             }
           }
@@ -16369,6 +16499,186 @@ public final class Representations {
         return inertialSensorOffsetBuilder_;
       }
       
+      // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector2 gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> gyroSensorOffsetBuilder_;
+      public boolean hasGyroSensorOffset() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getGyroSensorOffset() {
+        if (gyroSensorOffsetBuilder_ == null) {
+          return gyroSensorOffset_;
+        } else {
+          return gyroSensorOffsetBuilder_.getMessage();
+        }
+      }
+      public Builder setGyroSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (gyroSensorOffsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          gyroSensorOffset_ = value;
+          onChanged();
+        } else {
+          gyroSensorOffsetBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder setGyroSensorOffset(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (gyroSensorOffsetBuilder_ == null) {
+          gyroSensorOffset_ = builderForValue.build();
+          onChanged();
+        } else {
+          gyroSensorOffsetBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder mergeGyroSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (gyroSensorOffsetBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              gyroSensorOffset_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            gyroSensorOffset_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(gyroSensorOffset_).mergeFrom(value).buildPartial();
+          } else {
+            gyroSensorOffset_ = value;
+          }
+          onChanged();
+        } else {
+          gyroSensorOffsetBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder clearGyroSensorOffset() {
+        if (gyroSensorOffsetBuilder_ == null) {
+          gyroSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          gyroSensorOffsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getGyroSensorOffsetBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getGyroSensorOffsetFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getGyroSensorOffsetOrBuilder() {
+        if (gyroSensorOffsetBuilder_ != null) {
+          return gyroSensorOffsetBuilder_.getMessageOrBuilder();
+        } else {
+          return gyroSensorOffset_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getGyroSensorOffsetFieldBuilder() {
+        if (gyroSensorOffsetBuilder_ == null) {
+          gyroSensorOffsetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  gyroSensorOffset_,
+                  getParentForChildren(),
+                  isClean());
+          gyroSensorOffset_ = null;
+        }
+        return gyroSensorOffsetBuilder_;
+      }
+      
+      // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector3 accSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder> accSensorOffsetBuilder_;
+      public boolean hasAccSensorOffset() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3 getAccSensorOffset() {
+        if (accSensorOffsetBuilder_ == null) {
+          return accSensorOffset_;
+        } else {
+          return accSensorOffsetBuilder_.getMessage();
+        }
+      }
+      public Builder setAccSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector3 value) {
+        if (accSensorOffsetBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          accSensorOffset_ = value;
+          onChanged();
+        } else {
+          accSensorOffsetBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder setAccSensorOffset(
+          de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (accSensorOffsetBuilder_ == null) {
+          accSensorOffset_ = builderForValue.build();
+          onChanged();
+        } else {
+          accSensorOffsetBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder mergeAccSensorOffset(de.naoth.rc.messages.CommonTypes.DoubleVector3 value) {
+        if (accSensorOffsetBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              accSensorOffset_ != de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            accSensorOffset_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder(accSensorOffset_).mergeFrom(value).buildPartial();
+          } else {
+            accSensorOffset_ = value;
+          }
+          onChanged();
+        } else {
+          accSensorOffsetBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      public Builder clearAccSensorOffset() {
+        if (accSensorOffsetBuilder_ == null) {
+          accSensorOffset_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+          onChanged();
+        } else {
+          accSensorOffsetBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder getAccSensorOffsetBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getAccSensorOffsetFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getAccSensorOffsetOrBuilder() {
+        if (accSensorOffsetBuilder_ != null) {
+          return accSensorOffsetBuilder_.getMessageOrBuilder();
+        } else {
+          return accSensorOffset_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getAccSensorOffsetFieldBuilder() {
+        if (accSensorOffsetBuilder_ == null) {
+          accSensorOffsetBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  accSensorOffset_,
+                  getParentForChildren(),
+                  isClean());
+          accSensorOffset_ = null;
+        }
+        return accSensorOffsetBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:naothmessages.CalibrationData)
     }
     
@@ -16378,6 +16688,442 @@ public final class Representations {
     }
     
     // @@protoc_insertion_point(class_scope:naothmessages.CalibrationData)
+  }
+  
+  public interface InertialModelOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // optional .naothmessages.DoubleVector2 orientation = 1;
+    boolean hasOrientation();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2 getOrientation();
+    de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getOrientationOrBuilder();
+  }
+  public static final class InertialModel extends
+      com.google.protobuf.GeneratedMessage
+      implements InertialModelOrBuilder {
+    // Use InertialModel.newBuilder() to construct.
+    private InertialModel(Builder builder) {
+      super(builder);
+    }
+    private InertialModel(boolean noInit) {}
+    
+    private static final InertialModel defaultInstance;
+    public static InertialModel getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public InertialModel getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // optional .naothmessages.DoubleVector2 orientation = 1;
+    public static final int ORIENTATION_FIELD_NUMBER = 1;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector2 orientation_;
+    public boolean hasOrientation() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2 getOrientation() {
+      return orientation_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getOrientationOrBuilder() {
+      return orientation_;
+    }
+    
+    private void initFields() {
+      orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (hasOrientation()) {
+        if (!getOrientation().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, orientation_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, orientation_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.InertialModel parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.InertialModel prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.InertialModelOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_InertialModel_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.InertialModel.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getOrientationFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (orientationBuilder_ == null) {
+          orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+        } else {
+          orientationBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.InertialModel.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.InertialModel getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.InertialModel.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.InertialModel build() {
+        de.naoth.rc.messages.Representations.InertialModel result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.InertialModel buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.InertialModel result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.InertialModel buildPartial() {
+        de.naoth.rc.messages.Representations.InertialModel result = new de.naoth.rc.messages.Representations.InertialModel(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (orientationBuilder_ == null) {
+          result.orientation_ = orientation_;
+        } else {
+          result.orientation_ = orientationBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.InertialModel) {
+          return mergeFrom((de.naoth.rc.messages.Representations.InertialModel)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.InertialModel other) {
+        if (other == de.naoth.rc.messages.Representations.InertialModel.getDefaultInstance()) return this;
+        if (other.hasOrientation()) {
+          mergeOrientation(other.getOrientation());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (hasOrientation()) {
+          if (!getOrientation().isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder();
+              if (hasOrientation()) {
+                subBuilder.mergeFrom(getOrientation());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setOrientation(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // optional .naothmessages.DoubleVector2 orientation = 1;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector2 orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> orientationBuilder_;
+      public boolean hasOrientation() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2 getOrientation() {
+        if (orientationBuilder_ == null) {
+          return orientation_;
+        } else {
+          return orientationBuilder_.getMessage();
+        }
+      }
+      public Builder setOrientation(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (orientationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          orientation_ = value;
+          onChanged();
+        } else {
+          orientationBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setOrientation(
+          de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder builderForValue) {
+        if (orientationBuilder_ == null) {
+          orientation_ = builderForValue.build();
+          onChanged();
+        } else {
+          orientationBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeOrientation(de.naoth.rc.messages.CommonTypes.DoubleVector2 value) {
+        if (orientationBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              orientation_ != de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance()) {
+            orientation_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector2.newBuilder(orientation_).mergeFrom(value).buildPartial();
+          } else {
+            orientation_ = value;
+          }
+          onChanged();
+        } else {
+          orientationBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearOrientation() {
+        if (orientationBuilder_ == null) {
+          orientation_ = de.naoth.rc.messages.CommonTypes.DoubleVector2.getDefaultInstance();
+          onChanged();
+        } else {
+          orientationBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder getOrientationBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getOrientationFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder getOrientationOrBuilder() {
+        if (orientationBuilder_ != null) {
+          return orientationBuilder_.getMessageOrBuilder();
+        } else {
+          return orientation_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder> 
+          getOrientationFieldBuilder() {
+        if (orientationBuilder_ == null) {
+          orientationBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector2, de.naoth.rc.messages.CommonTypes.DoubleVector2.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector2OrBuilder>(
+                  orientation_,
+                  getParentForChildren(),
+                  isClean());
+          orientation_ = null;
+        }
+        return orientationBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.InertialModel)
+    }
+    
+    static {
+      defaultInstance = new InertialModel(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.InertialModel)
   }
   
   private static com.google.protobuf.Descriptors.Descriptor
@@ -16490,6 +17236,11 @@ public final class Representations {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_CalibrationData_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_InertialModel_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_InertialModel_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -16585,10 +17336,14 @@ public final class Representations {
       "tionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021" +
       "stepControlStatus\030\t \001(\0132 .naothmessages." +
       "StepControlStatus\"3\n\014OdometryData\022#\n\004pos" +
-      "e\030\001 \002(\0132\025.naothmessages.Pose2D\"M\n\017Calibr" +
-      "ationData\022:\n\024inertialSensorOffset\030\001 \001(\0132" +
-      "\034.naothmessages.DoubleVector2B)\n\'de.hu_b" +
-      "erlin.informatik.ki.nao.messages"
+      "e\030\001 \002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Calib" +
+      "rationData\022:\n\024inertialSensorOffset\030\001 \001(\013" +
+      "2\034.naothmessages.DoubleVector2\0226\n\020gyroSe" +
+      "nsorOffset\030\002 \001(\0132\034.naothmessages.DoubleV",
+      "ector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothm" +
+      "essages.DoubleVector3\"B\n\rInertialModel\0221" +
+      "\n\013orientation\030\001 \001(\0132\034.naothmessages.Doub" +
+      "leVector2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16768,9 +17523,17 @@ public final class Representations {
           internal_static_naothmessages_CalibrationData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CalibrationData_descriptor,
-              new java.lang.String[] { "InertialSensorOffset", },
+              new java.lang.String[] { "InertialSensorOffset", "GyroSensorOffset", "AccSensorOffset", },
               de.naoth.rc.messages.Representations.CalibrationData.class,
               de.naoth.rc.messages.Representations.CalibrationData.Builder.class);
+          internal_static_naothmessages_InertialModel_descriptor =
+            getDescriptor().getMessageTypes().get(22);
+          internal_static_naothmessages_InertialModel_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_InertialModel_descriptor,
+              new java.lang.String[] { "Orientation", },
+              de.naoth.rc.messages.Representations.InertialModel.class,
+              de.naoth.rc.messages.Representations.InertialModel.Builder.class);
           return null;
         }
       };

@@ -22,8 +22,9 @@
 
 ParticleFilterBallLocator::ParticleFilterBallLocator()
 {
-  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_ball_on_field", "draw the ball model on the field", false);
-  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_samples", "draw the sample set", false);
+  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_ball_on_field", "Draw the ball model on the field. Orange: Ball was seen.", false);
+  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:draw_samples", "Draw the sample set. Orange: Sample is moving.", false);
+  DEBUG_REQUEST_REGISTER("ParticleFilterBallLocator:drawMotionUpdateBySpeed", "", false);
 }
 
 void ParticleFilterBallLocator::execute()
@@ -67,7 +68,7 @@ void ParticleFilterBallLocator::execute()
   {
     Vector2<double> mean;
     Vector2<double> meanSpeed;
-    double numberOfMovingBalls = 0;
+    double numberOfMovingSamples = 0;
     for (unsigned int i = 0; i < theSampleSet.size(); i++)
     { 
       mean += theSampleSet[i].position;
@@ -75,12 +76,19 @@ void ParticleFilterBallLocator::execute()
       if(theSampleSet[i].moving)
       {
         meanSpeed += theSampleSet[i].speed;
-        numberOfMovingBalls++;
-      }
+        numberOfMovingSamples++;
+      }      
+
     }//end for
+
+    double meanSpeedAbs = meanSpeed.abs();
+    MODIFY("ParticleFilterBallLocator:meanSpeadAbs", meanSpeedAbs);
+    MODIFY("ParticleFilterBallLocator:numberOfMovingSamples", numberOfMovingSamples);
+
+
     mean /= theSampleSet.size();
-    if(numberOfMovingBalls > 0)
-      meanSpeed /= numberOfMovingBalls;
+    if(numberOfMovingSamples > 1)
+      meanSpeed /= numberOfMovingSamples;
 
 
 
@@ -89,7 +97,9 @@ void ParticleFilterBallLocator::execute()
       getBallModel().setFrameInfoWhenBallWasSeen(getFrameInfo());
 
     getBallModel().position = mean;
-    getBallModel().speed = Vector2<double>();
+    //TODO change 13.03
+    //getBallModel().speed = Vector2<double>();
+    getBallModel().speed = meanSpeed*100;
     getBallModel().valid = true;
 
     updatePreviewModel();
@@ -103,7 +113,9 @@ void ParticleFilterBallLocator::execute()
   // remember some data
   lastFrameInfo = getFrameInfo();
   lastRobotOdometry = getOdometryData();
-  perceptBuffer.add(getBallPercept());
+
+  if (getBallPercept().ballWasSeen)
+    perceptBuffer.add(getBallPercept());
 }//end execute
 
 
@@ -156,14 +168,18 @@ ParticleFilterBallLocator::Sample ParticleFilterBallLocator::generateNewSample()
 
     newSample.position = perceptBuffer[b].bearingBasedOffsetOnField;
 
-    //
-    newSample.moving = Math::random() > 0.5;
 
-    if(newSample.moving)
+    Vector2<double> speed = (perceptBuffer[b].bearingBasedOffsetOnField - perceptBuffer[a].bearingBasedOffsetOnField)*
+            fabs(timeDelta);
+
+    //newSample.moving = Math::random() > 0.5;
+
+    if(speed.abs() > parameters.speedWehnParticleIsMoving)
     {
-      newSample.speed =
-        (perceptBuffer[b].bearingBasedOffsetOnField - perceptBuffer[a].bearingBasedOffsetOnField)*
-        fabs(timeDelta);
+      newSample.moving = true;
+      newSample.speed  = speed;
+    } else {
+      newSample.moving = false;
     }
   }//end if
 
@@ -195,8 +211,15 @@ void ParticleFilterBallLocator::motionUpdate(SampleSet& sampleSet, bool noise)
 
     if(sample.moving)
     {
+
+
+      Vector2<double> position = sample.position;
+
       // simple motion model
       sample.position += sample.speed*timeDelta; //TODO: add some noise
+
+      Vector2<double> positionWithSpeed = sample.position+sample.speed;
+      DEBUG_REQUEST("ParticleFilterBallLocator:drawMotionUpdateBySpeed", drawMotionUpdateBySpeed(position, positionWithSpeed););
 
       // apply odometry to the speed of the ball
       sample.speed = sample.speed.rotate(odometryDelta.rotation);
@@ -243,7 +266,9 @@ void ParticleFilterBallLocator::resampleGT07(SampleSet& sampleSet, bool noise)
     totalWeighting += sampleSet[i].likelihood;
   }//end for
   const double averageWeighting = totalWeighting / (double)sampleSet.size();
-  PLOT("ParticleFilterBallLocator:averageWeighting", averageWeighting);
+
+  if (averageWeighting > 0) //wrong parameters
+    PLOT("ParticleFilterBallLocator:averageWeighting", averageWeighting);
 
   // copy the samples 
   // TODO: use memcopy?
@@ -337,9 +362,9 @@ void ParticleFilterBallLocator::drawSamples(const SampleSet& sampleSet) const
   for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
     if(sampleSet[i].moving)
-      PEN("FF9900", 5);
+      PEN("FF9900", 5); //orange
     else
-      PEN("0099FF", 5);
+      PEN("0099FF", 5); //blue
 
     const Vector2<double>& pos = sampleSet[i].position;
     FILLOVAL( pos.x, pos.y, 10, 10);
@@ -355,22 +380,26 @@ void ParticleFilterBallLocator::drawSamples(const SampleSet& sampleSet) const
 
 void ParticleFilterBallLocator::drawBallModel(const BallModel& ballModel) const
 {
+
+  const double timeDelta = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
+  ASSERT(timeDelta > 0);
+
   FIELD_DRAWING_CONTEXT;
   
   if(ballModel.valid)
   {
     if(getBallPercept().ballWasSeen)
-      PEN("FF9900", 20);
+      PEN("FF9900", 20); //orange
     else
-      PEN("0099FF", 20);
+      PEN("0099FF", 20); //blue
   }
   else
-    PEN("999999", 20);
+    PEN("999999", 20); //grey
 
   CIRCLE( ballModel.position.x, ballModel.position.y, getFieldInfo().ballRadius-10);
   ARROW( ballModel.position.x, ballModel.position.y,
-         ballModel.position.x+ballModel.speed.x, 
-         ballModel.position.y+ballModel.speed.y);
+         ballModel.position.x+ballModel.speed.x*timeDelta,
+         ballModel.position.y+ballModel.speed.y*timeDelta);
 
   // draw the distribution
   /*
@@ -380,10 +409,24 @@ void ParticleFilterBallLocator::drawBallModel(const BallModel& ballModel) const
   OVAL(getBallModel().position.x, getBallModel().position.y, Px[1][1], Py[1][1]);
   */
 
-  PEN("999999", 10);
+  PEN("999999", 10); //grey
   for(int i=1; i <= BALLMODEL_MAX_FUTURE_SECONDS; i++)
   {
     CIRCLE(ballModel.futurePosition[i].x, ballModel.futurePosition[i].y, getFieldInfo().ballRadius-5);
   }
 }//end drawBallModel
 
+void ParticleFilterBallLocator::drawMotionUpdateBySpeed(const Vector2<double> position, const Vector2<double> positionWithSpeed) const
+{
+
+    FIELD_DRAWING_CONTEXT;
+
+    PEN("999999", 8); //grey
+
+    CIRCLE( position.x, position.y, getFieldInfo().ballRadius-10);
+    LINE( position.x, position.y,
+           positionWithSpeed.x,
+           positionWithSpeed.y);
+    CIRCLE( positionWithSpeed.x, positionWithSpeed.y, getFieldInfo().ballRadius-10);
+
+}//end drawMotionUpdateBySpeed

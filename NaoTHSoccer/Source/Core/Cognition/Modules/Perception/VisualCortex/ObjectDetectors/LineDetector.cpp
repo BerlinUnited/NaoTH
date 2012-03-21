@@ -501,6 +501,8 @@ void LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& sca
     Pixel pixel = getImage().get(linePoint.x,linePoint.y);
     ColorClasses::Color thisPixelColor = getColorTable64().getColorClass(pixel);
 
+
+    // FIXME: what does that calculation mean?!
     int g = (int)(pixel.y - 0.3456 * (pixel.u - 128) - 0.71448 * (pixel.v - 128));
     if(g < 0) g = 0; else if(g > 255) g = 255;
     if((g > GREENAMOUNT && pixel.y < edgelBrightnessLevel) || thisPixelColor == ColorClasses::green)

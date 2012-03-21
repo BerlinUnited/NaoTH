@@ -1,0 +1,31 @@
+/** The root option of the soccer behavior */
+option spl_play_soccer {
+
+  initial state play_soccer {
+    decision {
+      stay;
+    }
+    action {
+      // make here some initializations
+      set_right_ear = game.player_number*3+1; // show player number
+      battery();
+      set_right_eye = 
+       goal.own.was_seen ? blue 
+        : (goal.opp.was_seen ? red : off );
+      set_left_eye = ball.was_seen ? green : off;    
+        
+      motion.type = stand;
+      head.control_mode = stay_as_forced;
+      team.is_playing_as_striker = false; //when penaliced or fall down ... don't communicate you are striker!
+      sensor.camera.reset = false;
+      motion.standHeight = -1;
+      motion.walk.style = normal;
+      motion.walk.step_control.foot = none;
+
+      initial_ready_set_play();
+      
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}

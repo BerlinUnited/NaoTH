@@ -5,8 +5,8 @@
  * Created on 11. November 2010, 18:32
  */
 
-#ifndef DEBUG_H
-#define  DEBUG_H
+#ifndef _DEBUG_H
+#define _DEBUG_H
 
 #include <ModuleFramework/Module.h>
 #include <DebugCommunication/DebugCommandExecutor.h>
@@ -37,7 +37,7 @@ BEGIN_DECLARE_MODULE(Debug)
   REQUIRE(GyrometerData)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
-  REQUIRE(Image)
+  PROVIDE(Image)
   REQUIRE(SensorJointData)
   REQUIRE(InertialSensorData)
   REQUIRE(AccelerometerData)
@@ -82,7 +82,8 @@ private:
       cognitionLogger.addRepresentation(&theRepresentation, iter->first);
     }
   }//end registerLogableRepresentationList
+
 };
 
-#endif  /* DEBUG_H */
+#endif  /* _DEBUG_H */
 

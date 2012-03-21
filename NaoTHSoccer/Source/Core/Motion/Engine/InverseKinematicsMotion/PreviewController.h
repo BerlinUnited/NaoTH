@@ -5,12 +5,12 @@
 * Preview controller for the Inverted pendulum
 */
 
-#ifndef PREVIEWCONTROLLER_H
-#define  PREVIEWCONTROLLER_H
+#ifndef _PREVIEWCONTROLLER_H
+#define _PREVIEWCONTROLLER_H
 
 #include <list>
 
-#include "Tools/Math/Matrix.h"
+#include "Tools/Math/Matrix3x3.h"
 
 class PreviewController
 {
@@ -70,5 +70,5 @@ private:
 
 std::istream& operator >>(std::istream& ist, PreviewController::Parameters& p);
 
-#endif  /* PREVIEWCONTROLLER_H */
+#endif  /* _PREVIEWCONTROLLER_H */
 

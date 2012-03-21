@@ -13,8 +13,10 @@
 using namespace naoth;
 
 OdometryCalculator::OdometryCalculator()
+  :
+  supportFoot(false),
+  init(false)
 {
-    init = false;
 
 //TODO
     //DEBUG_REQUEST_REGISTER("Motion:OdometryCalculator:support_foot", "plot the support foot in OdometryCalculator", false);

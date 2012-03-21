@@ -8,8 +8,8 @@ class Streamable
 {
   public:
   
-  virtual void dummyStreamable() {};
-  virtual ~Streamable() {};
+  virtual void dummyStreamable() {}
+  virtual ~Streamable() {}
 };
 
 }

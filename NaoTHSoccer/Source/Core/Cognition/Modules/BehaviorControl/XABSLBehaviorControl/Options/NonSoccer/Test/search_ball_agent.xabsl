@@ -1,0 +1,16 @@
+option search_ball_agent
+{
+
+  initial state test_search
+  {
+    decision
+    {
+      stay;
+    }
+    action
+    {
+      head_control();
+      search_ball_test();
+    }
+  }
+}

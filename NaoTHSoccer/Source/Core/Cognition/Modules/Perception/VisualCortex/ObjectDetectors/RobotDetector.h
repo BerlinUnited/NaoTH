@@ -140,7 +140,7 @@ private:
   inline bool pixelInSearchArea(Vector2<int>& pixel);
 
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

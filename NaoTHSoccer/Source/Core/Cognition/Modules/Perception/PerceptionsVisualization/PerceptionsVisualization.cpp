@@ -74,6 +74,24 @@ void PerceptionsVisualization::execute()
 
 
   DEBUG_REQUEST("PerceptionsVisualization:field:edgels_percept",
+    FIELD_DRAWING_CONTEXT;
+
+    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
+    {
+      const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+
+      if(point.posInImage.y < 10) // close to the top
+        PEN("009900", 20);
+      else
+        PEN(ColorClasses::colorClassToHex(point.color), 20);
+
+      CIRCLE(point.posOnField.x, point.posOnField.y, 10);
+      if(i > 0)
+      {
+        const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
+        LINE(last_point.posOnField.x, last_point.posOnField.y, point.posOnField.x, point.posOnField.y);
+      }
+    }//end for
   );
 
 

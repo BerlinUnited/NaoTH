@@ -1,0 +1,75 @@
+/** Symbols for accessing all strategy relevant information */
+namespace strategy("Strategy Symbols") {
+
+  /**  */
+  float input attention.mi_point.x;
+  float input attention.mi_point.y;
+
+  /** the attack direction calculate in strategy */
+  float input attack.direction;
+
+  float input players.opp_closest_to_ball.number;
+  float input players.opp_closest_to_ball.time_since_last_seen;
+  float input players.opp_closest_to_ball.distance_to_ball;
+  bool input situation.opponent_at_the_ball;
+
+  float input players.own_closest_to_ball.number;
+  float input players.own_closest_to_ball.time_since_last_seen;
+  float input players.own_closest_to_ball.distance_to_ball;
+  
+  /** the best foot to approach the ball with */
+  bool input attack.approaching_with_right_foot;
+
+  float input defense.pose.translation.x;
+  float input defense.pose.translation.y;
+  float input defense.pose.rotation;
+
+  /** */
+  float input goalie.guardline.x;
+  /** */
+  float input goalie.guardline.y;
+
+  /** */
+  float input penalty_goalie.pos.x;
+  /** */
+  float input penalty_goalie.pos.y;
+
+  /** set piece */
+  float input setpiece.pose.x;
+  float input setpiece.pose.y;
+  bool  input setpiece.participation;
+  //float input setpiece.goalKickPlayer;
+  //bool  output setpiece.goalKickPositionLeft;
+
+  /** remembers the dircetion for turning for search (@see search_ball)*/
+  float internal search_ball.search_direction;
+  /** remembers the numbers of turns while search (@see search_ball)*/
+  float internal search_ball.turns_for_searching;
+
+  /** target-x-position of a circleway between two points with enddirection to a certain point*/
+	float input circlex
+	(
+		float x;
+		float y;
+		float robot.x;
+		float robot.y;
+		float directionx;
+		float directiony;
+	);
+	
+	/** target-y-position of a circleway between two points with enddirection to a certain point*/
+	float input circley
+	(
+		float x;
+		float y;
+		float robot.x;
+		float robot.y;
+		float directionx;
+		float directiony;
+	);
+
+  /** formation */
+  float input soccer_strategy.formation.x;
+  float input soccer_strategy.formation.y;
+}
+  

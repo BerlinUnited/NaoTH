@@ -159,7 +159,7 @@ void UltraSoundObstacleLocator::updateBuffer()
   }// end if
 
   // add obstacles based on left/right sensordate
-  for(unsigned int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
     break; // skip this for-loop for now
     if(getUltraSoundReceiveData().dataLeft[i] < maxValidDistance && getUltraSoundReceiveData().dataLeft[i] > minValidDistance)

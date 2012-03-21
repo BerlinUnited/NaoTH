@@ -71,8 +71,8 @@ private:
     
   //UltraSound
   string DCMPath_UltraSoundReceive;
-  string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfIRSend];
-  string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfIRSend];
+  string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
+  string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
   string DCMPath_UltraSoundSend;
 
   //Body-ID

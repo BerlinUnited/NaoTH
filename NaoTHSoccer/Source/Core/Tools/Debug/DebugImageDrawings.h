@@ -28,8 +28,8 @@ public:
     const unsigned char& b,
     const unsigned char& c);
 
-  virtual unsigned int width();
-  virtual unsigned int height();
+  unsigned int width() const;
+  unsigned int height() const;
   void reset();
   void drawToImage(DrawingCanvas& image);
 

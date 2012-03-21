@@ -79,13 +79,14 @@ public:
     InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
 
     if(theParameters.stand.enableStabilization)
-      theEngine.rotationStabilize(c.hip);
+      theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
 
-    //theEngine.neuralStabilize(theMotorJointData.position);
+    //if(theParameters.stand.stabilizeNeural)
+      theEngine.feetStabilize(theMotorJointData.position);
 
     turnOffStiffnessWhenJointIsOutOfRange();
     currentState = motion::running;

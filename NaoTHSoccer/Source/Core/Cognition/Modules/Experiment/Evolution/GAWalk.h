@@ -6,7 +6,7 @@
  */
 
 #ifndef _GAWALK_H
-#define  _GAWALK_H
+#define _GAWALK_H
 
 #include "GeneticAlgorithms.h"
 #include "Representations/Infrastructure/VirtualVision.h"
@@ -43,7 +43,7 @@ public:
   GAWalk(const VirtualVision& vv, const RobotPose& rp, const CameraMatrix& cm, const FrameInfo& fi, const FieldInfo& field,
     MotionRequest& mq);
 
-  virtual ~GAWalk(){};
+  virtual ~GAWalk(){}
 
   virtual void run();
 

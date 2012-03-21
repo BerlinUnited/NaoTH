@@ -1,65 +1,60 @@
-/** after being in "penalized" state and coming back to the game*/
+/** after being in "penalized" state and coming back to the game
+*/
+
+//TODO when penalized: include avoid obstacles
+
 option after_penalized_state
-//rename to "after_penalized_state"
-//we know, that we must be outside the field close to the center!
+//we know, that we must be outside the field close to the center in our own half
 {
-  initial state stand_and_look 
-  {
-	  decision {
-		  if(state_time > 20000){
-		    goto completely_lost;
-		  }else if( goal.opp.was_seen || goal.own.was_seen ){
-		    goto look_at_the_goal;
-		  }else{
-		    stay;
-      }
-    }
-    action {
-      motion.type = stand;
-      head.control_mode = search_for_goal;
-    }
-  }
 
-  state look_at_the_goal
+  common decision
   {
-    decision{
-    if(state_time > 18000)
-      goto completely_lost;
-    else if ( state_time > 2000 && (goal.opp.was_seen || goal.own.was_seen) )
+    if((ball.was_seen && ball.distance < 1000)|| goal.own.time_since_seen < 500 
+       || goal.opp.time_since_seen < 500)
       goto finished;
-    else
-      stay;
-    }
-    action{
-      head.control_mode = search_for_goal;
-      motion.type = stand;
-    }
   }
-    
-  state completely_lost{
+      
+  initial state localize
+  {
     decision {
-      if(action_done || goal.opp.was_seen || goal.own.was_seen || state_time > 15000){
-        goto finished;
-      }else{ 
+      else if(state_time > 10000)
+        goto completely_lost;
+      else
         stay;
-      }
     }
-    action{
-      go_to_relative_point(rotation=0, x=500, y=0);
-      head.control_mode = search_for_goal;
+    action {
+      motion.type = stand;
+      head.control_mode = search_for_goal_after_penalized;
+      situationStatusOwnHalf = true; 
     }
   }
 
-  target state finished 
+  target state finished
   {
     action {
       motion.type = stand;
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_goal;
 
       //HACK
       last_state_was_penalized = false;
+      situationStatusOwnHalf = false;
     }
   }
 
-  
-}
+  state completely_lost
+  {
+    decision {
+      else if(state_time > 10000)
+        goto finished;
+      else
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = 150;
+      head.control_mode = search_for_goal;
+      situationStatusOwnHalf = false; 
+    }  
+  }
+
+}    

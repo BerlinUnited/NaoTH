@@ -37,7 +37,7 @@ public:
     lastREye = 0;
     lastLEye = 0;
   };
-  ~LedSymbols(){};
+  virtual ~LedSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

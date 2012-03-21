@@ -132,7 +132,7 @@ void LedSymbols::setEye(LEDData::MultiLEDID from, LEDData::MultiLEDID to, int va
       ledRequest.request.theMultiLED[i][LEDData::GREEN]
         = (i % 2 == 0) ? 0.0 : green;
       ledRequest.request.theMultiLED[i][LEDData::BLUE]
-        = (i % 2 == 0) ? blue : 0.0;;
+        = (i % 2 == 0) ? blue : 0.0;
     }
   }
 }

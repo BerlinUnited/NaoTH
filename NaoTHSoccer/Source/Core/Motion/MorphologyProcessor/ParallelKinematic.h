@@ -23,7 +23,7 @@ public:
     Vector2<double> rotation;
   };
 
-  ParallelKinematic(){};
+  ParallelKinematic(){}
   virtual ~ParallelKinematic(){}
 
   void calculateLegs(const Pose& pose, naoth::JointData& jointData);

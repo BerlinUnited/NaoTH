@@ -95,7 +95,7 @@ namespace naoth
      * Get the brightness of a pixel. This is faster than getting all color
      * channels.
      */
-    inline unsigned char getY(const unsigned int& x, const unsigned int& y) const
+    inline unsigned char getY(const unsigned int x, const unsigned int y) const
     {
       return (yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
     }
@@ -112,10 +112,11 @@ namespace naoth
 
       Pixel p;
       p.y = (yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
-      /* TODO: unify it to: ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-       p.u = yuv422[yOffset+1-((x & 1)<<1)];
-       p.v = yuv422[yOffset+3-((x & 1)<<1)];
-       */
+      
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      /* 
       if((x & 1) == 0) // == (x % 2 == 0)
       {
         p.u = yuv422[yOffset + 1];
@@ -125,7 +126,7 @@ namespace naoth
       {
         p.u = yuv422[yOffset - 1];
         p.v = yuv422[yOffset + 1];
-      }
+      }*/
       return p;
     }//end get()
 
@@ -140,10 +141,11 @@ namespace naoth
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       p.y = (yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
-      /* TODO: unify it to: ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-       p.u = yuv422[yOffset+1-((x & 1)<<1)];
-       p.v = yuv422[yOffset+3-((x & 1)<<1)];
-       */
+      
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      /* 
       if((x & 1) == 0) // == (x % 2 == 0)
       {
         p.u = yuv422[yOffset + 1];
@@ -153,8 +155,8 @@ namespace naoth
       {
         p.u = yuv422[yOffset - 1];
         p.v = yuv422[yOffset + 1];
-      }
-    }//end get()
+      }*/
+    }//end get
 
     inline void set(const unsigned int& x, const unsigned int& y, const Pixel& p)
     {
@@ -197,8 +199,8 @@ namespace naoth
       }
     }//end set()
 
-    unsigned int width();
-    unsigned int height();
+    unsigned int width() const { return cameraInfo.resolutionWidth; }
+    unsigned int height() const { return cameraInfo.resolutionHeight; }
 
     inline unsigned int getIndexSize() const
     {

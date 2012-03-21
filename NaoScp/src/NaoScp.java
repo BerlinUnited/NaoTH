@@ -2190,7 +2190,7 @@ public class NaoScp extends javax.swing.JFrame
       }
     }
 
-    public class MyUserInfo implements UserInfo
+    public class MyUserInfo implements UserInfo, UIKeyboardInteractive
     {
 
       public String getPassword()
@@ -2220,6 +2220,18 @@ public class NaoScp extends javax.swing.JFrame
 
       public void showMessage(String message)
       {
+      }
+
+      public String[] promptKeyboardInteractive
+      (
+        String destination,
+        String name,
+        String instruction,
+        String[] prompt,
+        boolean[] echo
+      )
+      {
+        return new String[]{sshPassword.getText()};
       }
     }
   }

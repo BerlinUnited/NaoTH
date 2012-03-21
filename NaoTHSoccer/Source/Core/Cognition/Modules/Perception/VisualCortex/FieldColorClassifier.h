@@ -6,7 +6,7 @@
  */
 
 #ifndef FIELDCOLORCLASSIFIER_H
-#define  FIELDCOLORCLASSIFIER_H
+#define FIELDCOLORCLASSIFIER_H
 
 #include <ModuleFramework/Module.h>
 
@@ -24,13 +24,8 @@
 //Perception
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/FieldColorParameters.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
-
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -57,6 +52,9 @@ public:
   void execute();
 
 private:
+  double adaptationRate;
+
+  FieldColorParameters fieldParams;
 
   double weightedSmoothedHistY[COLOR_CHANNEL_VALUE_COUNT];
   double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];

@@ -275,7 +275,14 @@ private void listParameters()
         // remember the carret
         int k = jTextArea.getCaretPosition();
         jTextArea.setText(strResult);
-        jTextArea.setCaretPosition(k);
+        try{
+            jTextArea.setCaretPosition(k);
+        }catch(IllegalArgumentException ex)
+        {
+            // do nothing
+            // could not set the caret at the right place, e.g.,
+            // if the text is shorter now
+        }
         jToggleButtonRefresh.setSelected(false);
       }
     }

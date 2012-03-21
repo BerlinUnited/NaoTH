@@ -41,7 +41,7 @@ class CameraDebug : private CameraDebugBase, public DebugCommandExecutor
 
 public:
   CameraDebug();
-  ~CameraDebug(){};
+  virtual ~CameraDebug(){}
 
   virtual void execute();
 

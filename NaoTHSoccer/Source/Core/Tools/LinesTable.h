@@ -6,8 +6,8 @@
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  */
 
-#ifndef __LinesTable_h_
-#define __LinesTable_h_
+#ifndef _LinesTable_h_
+#define _LinesTable_h_
 
 #include <limits>
 #include <vector>
@@ -321,7 +321,7 @@ public:
 
   NamedPoint get_closest_point(const Vector2<double>& p, int type = all_lines) const
   {
-    // allready prepared for rounding, i.e. +0.5
+    // allready prepared for rounding, i.e., +0.5
     int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
     int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
     

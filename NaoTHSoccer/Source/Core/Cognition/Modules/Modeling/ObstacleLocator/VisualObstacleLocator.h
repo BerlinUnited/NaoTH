@@ -2,7 +2,7 @@
  * @file VisualObstacleLocator.h
  *
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
- * @author Kirill Yasinovskiy
+ * @author <a href="mailto:yasinovs@informatik.hu-berlin.de">Kirill Yasinovskiy</a>
  * Declaration of class RadarObstacleLocator
  */
 
@@ -18,17 +18,21 @@
 // tools 
 #include "Tools/DataStructures/RingBufferWithSum.h"
 #include "Tools/Math/Geometry.h"
+#include "Tools/Math/Matrix2x2.h"
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/UltraSoundData.h"
+#include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
+//#include "Representations/Modeling/VisualObstacleModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BallPercept.h"
+//#include "Representations/Perception/ObstaclePercept.h"
 #include "Representations/Modeling/RadarGrid.h"
 
 
@@ -42,7 +46,9 @@ BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
   REQUIRE(UltraSoundReceiveData)
+  REQUIRE(Image)
 
+//  PROVIDE(VisualObstacleModel)
   PROVIDE(UltraSoundSendData)
   PROVIDE(LocalObstacleModel)
   PROVIDE(RadarGrid)
@@ -53,110 +59,34 @@ END_DECLARE_MODULE(VisualObstacleLocator)
 class VisualObstacleLocator : private VisualObstacleLocatorBase
 {
 public:
-  VisualObstacleLocator();
 
+  // default constructor
+  VisualObstacleLocator();
+  // default destructor
   ~VisualObstacleLocator(){};
+
+  // some variables
+
+  // time after obstacle is forgotten
+  enum {
+    timeAfterWhichObstacleIsForgotten = 5000
+  };
+  // update mode
+  enum UpdateMode{overwrite, extend, limit};
 
   virtual void execute();
 
 private:
 
-  //OdometryData lastRobotOdometry;
-
-
-  RingBuffer<Vector2<double>, 120 > buffer;
-  RingBuffer<unsigned int, 120 > timeBuffer;
-
-  //
-  double maxValidDistance;
-  double minValidDistance;
-  double usOpeningAngle;
-
-
-
-
-  class GroundPoint
-  {
-  public:
-    Vector2<double> posOnField;
-    ColorClasses::Color color;
-  };
-
-  unsigned int lastTimeObstacleWasSeen;
+  double sectorWidth;
   OdometryData lastRobotOdometry;
-  bool onceExecuted;
-
-  unsigned int initialTime;
-  unsigned int currentTime;
-
   Pose2D odometryDelta;
 
-  class GroundPointBuffer
-  {
-    int colors[ColorClasses::numOfColors];
-    RingBuffer<GroundPoint, 10> buffer;
 
-  public:
-    GroundPointBuffer()
-    {
-      for(int i = 0; i < ColorClasses::numOfColors; i++)
-        colors[i] = 0;
-    }
+  RingBuffer<ScanLineEdgelPercept::EndPoint, 120> buffer;
+  RingBuffer<unsigned int, 120 > timeBuffer;
 
-    void add(const GroundPoint& point)
-    {
-      (colors[(int)point.color])++;
-      buffer.add(point);
-    }
-
-    Vector2<double> getMean()
-    {
-      Vector2<double> result;
-      for(int i = 0; i < buffer.getNumberOfEntries(); i++)
-      {
-        result += buffer[i].posOnField;
-      }
-      return result / ((double)buffer.getNumberOfEntries());
-    }
-
-    ColorClasses::Color getColor()
-    {
-      int max_count = 0;
-      ColorClasses::Color max_color = ColorClasses::none;
-
-      for(int i = 0; i < ColorClasses::numOfColors; i++)
-      {
-        if(colors[i] > max_count)
-        {
-          max_count = colors[i];
-          max_color = (ColorClasses::Color)i;
-        }
-      }
-
-      return max_color;
-    }
-  };
-
-  inline void updateByUltraSoundData();
-
-
-  std::vector<GroundPointBuffer> obstacleBuffer;
-  double angle_offset;
-
-  inline void add(const ScanLineEdgelPercept::EndPoint& point)
-  {
-    double value = point.posOnField.abs();
-    int idx = ((int)Math::round((Math::toDegrees(value) + angle_offset))) % 20;
-    ASSERT(idx >= 0 && idx < 18);
-
-    GroundPoint p;
-    p.color = point.color;
-    p.posOnField = point.posOnField;
-    obstacleBuffer[idx].add(p);
-  }// end add
-
+  unsigned int lastTimeObstacleWasSeen;
 };
 
 #endif //_VisualObstacleLocator_h_
-
-

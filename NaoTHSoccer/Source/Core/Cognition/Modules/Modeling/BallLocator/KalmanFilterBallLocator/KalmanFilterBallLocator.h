@@ -47,7 +47,7 @@ class KalmanFilterBallLocator : private KalmanFilterBallLocatorBase
 
 public:
   KalmanFilterBallLocator();
-  ~KalmanFilterBallLocator(){};
+  virtual ~KalmanFilterBallLocator(){}
 
   virtual void execute();
 

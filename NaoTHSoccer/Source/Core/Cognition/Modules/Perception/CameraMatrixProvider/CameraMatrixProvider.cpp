@@ -53,7 +53,7 @@ void CameraMatrixProvider::execute()
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     getAccelerometerData(),
-    getInertialPercept(),
+    getInertialModel().orientation,
     getKinematicChain(),
     theFSRPos,
     deltaTime);
@@ -164,8 +164,8 @@ double CameraMatrixProvider::projectionError(double offsetX, double offsetY)
 {
   CameraMatrix tmpCM(getCameraMatrix());
 
-  tmpCM.rotateX(offsetX)
-       .rotateY(offsetY);
+  tmpCM.rotateY(offsetY)
+       .rotateX(offsetX);
 
   // project the goal posts
   const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;

@@ -6,8 +6,8 @@
 * Declaration of the class CameraGeometry
 */
 
-#ifndef __CameraGeometry_h__
-#define __CameraGeometry_h__
+#ifndef _CameraGeometry_h_
+#define _CameraGeometry_h_
 
 #include "Tools/Math/Pose3D.h"
 
@@ -100,4 +100,4 @@ public:
 
   };
 
-#endif //__CameraGeometry_h____
+#endif //_CameraGeometry_h_

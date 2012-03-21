@@ -1,0 +1,20 @@
+nao
+
+# Kommentar
+
+
+keyframe;id;x;y;
+
+keyframe -> Keyframe
+trenner -> ;
+id -> erste Zahl nach Keyframe
+x.val des keyframes -> n‰chste Zahl 
+y.val des keyframes -> n‰chste Zahl 
+
+Dann kommen die 22 Gelenkwerte als Doublewerte ....auﬂer der Wert wurde nicht, dann wird ein Stern gesetzt. Bei Stern wird die Varible "valid" auf false gesetzt, sonst auf true
+
+transition;von_id;nach_id;Duration;String_Condition
+
+description_begin
+description_end
+

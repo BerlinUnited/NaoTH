@@ -14,6 +14,7 @@ InitialMotion::InitialMotion()
   :
   AbstractMotion(motion::init),
   initStatus(Dead),
+  init_time(3000.0),
   movedTime(0)
 {
   theInitJoints.position[JointData::HeadPitch] = 0;
@@ -21,11 +22,11 @@ InitialMotion::InitialMotion()
   theInitJoints.position[JointData::LShoulderPitch] = Math::fromDegrees(90);
   theInitJoints.position[JointData::LShoulderRoll] = Math::fromDegrees(10);
   theInitJoints.position[JointData::LElbowRoll] = theInitJoints.max[JointData::LElbowRoll];
-  theInitJoints.position[JointData::LElbowYaw] = Math::fromDegrees(-90);;
+  theInitJoints.position[JointData::LElbowYaw] = Math::fromDegrees(-90);
   theInitJoints.position[JointData::RShoulderPitch] = Math::fromDegrees(90);
   theInitJoints.position[JointData::RShoulderRoll] = Math::fromDegrees(-10);
   theInitJoints.position[JointData::RElbowRoll] = theInitJoints.min[JointData::RElbowRoll];
-  theInitJoints.position[JointData::RElbowYaw] = Math::fromDegrees(90);;
+  theInitJoints.position[JointData::RElbowYaw] = Math::fromDegrees(90);
   theInitJoints.position[JointData::LHipYawPitch] = 0;
   theInitJoints.position[JointData::LHipRoll] = 0;  
   theInitJoints.position[JointData::LKneePitch] = theInitJoints.max[JointData::LKneePitch];
@@ -39,9 +40,10 @@ InitialMotion::InitialMotion()
   theInitJoints.position[JointData::RHipPitch] = -theInitJoints.position[JointData::RKneePitch] - theInitJoints.position[JointData::RAnklePitch];
   theInitJoints.position[JointData::RAnkleRoll] = 0;
 
+  // copy ...
   extendJoints = theInitJoints;
-  extendJoints.position[JointData::LShoulderRoll] = Math::fromDegrees(45);
-  extendJoints.position[JointData::RShoulderRoll] = Math::fromDegrees(-45);
+  //extendJoints.position[JointData::LShoulderRoll] = Math::fromDegrees(45);
+  //extendJoints.position[JointData::RShoulderRoll] = Math::fromDegrees(-45);
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -49,6 +51,11 @@ InitialMotion::InitialMotion()
     safeStiffness[i] = 0.3;
     maxStiffness[i] = 0.7;
   }
+
+  safeStiffness[JointData::RElbowYaw] = -1;
+  safeStiffness[JointData::RElbowRoll] = -1;
+  safeStiffness[JointData::LElbowYaw] = -1;
+  safeStiffness[JointData::LElbowRoll] = -1;
 
   freeStiffness[JointData::LHipPitch] = 0.1;
   freeStiffness[JointData::RHipPitch] = 0.1;
@@ -116,12 +123,14 @@ void InitialMotion::increaseStiffness()
     startJoints = theBlackBoard.theSensorJointData;
     startJoints.clamp();
     movedTime = 0;
+    double maxAngleSpeed = Math::pi_2; // radiant per second
+    init_time = getDistance(startJoints, extendJoints)/maxAngleSpeed*1000.0;
   }
 }//end increaseHardness
 
 void InitialMotion::moveToExtendPose()
 {
-  const double init_time = 3000;//ms
+  //const double init_time = 1000;//ms
 
   if (movedTime < init_time)
   {
@@ -141,7 +150,7 @@ void InitialMotion::moveToExtendPose()
 
 void InitialMotion::moveToInitialPose()
 {
-  const double init_time = 1000;//ms
+  const double init_time = 100;//ms
 
   if (movedTime < init_time)
   {
@@ -187,3 +196,16 @@ bool InitialMotion::isDanger() const
   return abs(theBlackBoard.theInertialSensorData.data.x) > dangerAngle
       || abs(theBlackBoard.theInertialSensorData.data.y) > dangerAngle;
 }
+
+double InitialMotion::getDistance(const JointData& one, const JointData& another)
+{
+  double distance = 0.0;
+  for (int i = 0; i < JointData::numOfJoint; i++)
+  {
+    double joindDistance = fabs(Math::normalize(one.position[i] - another.position[i]));
+    distance = max(joindDistance, distance);
+  }
+
+  return distance;
+}//end getDistance
+

@@ -1,0 +1,73 @@
+option decide_ready_position
+{
+  common decision {
+    if(fall_down_state != upright)
+      goto stand_up;
+  }
+  
+  initial state check_out_the_situation
+  {
+    decision
+    {
+      else if(state_time < 6000)
+        stay;
+      else if(game.own_kickoff)
+        goto own_kickoff;
+      else
+        goto opp_kickoff;
+    }
+    action
+    {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  state own_kickoff{
+    action{
+      decide_offense_position();
+    }
+  }
+
+  state opp_kickoff{
+    action{
+      decide_defense_position();
+    }
+  }
+  state stand_up
+  {
+    decision
+    {
+      else if(action_done)
+        goto calibrate;
+      else
+        stay;
+    }
+    action 
+    {
+      stand_up();
+    }
+  }
+
+  state calibrate
+  {
+    decision
+    {
+      else if(action_done)
+        goto check_out_the_situation;
+      else
+        stay;
+    }
+    action
+    {
+      calibrate_intertial();
+    }
+  }
+
+  target state stand {
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+}

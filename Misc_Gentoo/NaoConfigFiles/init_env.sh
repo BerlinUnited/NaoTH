@@ -53,6 +53,17 @@ else
     echo "naoth exists"
 fi
 
+# NaoTH
+if [ -f ./naoth ]
+then
+    echo "adding start script naoth"
+    cp -f ./naoth /usr/bin/naoth
+    chown root:root /usr/bin/naoth
+    chmod 755 /usr/bin/naoth
+else
+    echo "start script naoth is missing"
+fi
+
 # naoqi user autoload.ini
 if [ -f ./autoload.ini ]
 then
@@ -98,30 +109,39 @@ else
 fi
 
 # check for link to our local lib directory
-if [ ! -d /usr/local ]
+if [ ! -d /home/nao/lib ]
 then
-    echo "creating missing directory /usr/local"
-    mkdir /usr/local
+    echo "setting library directory permissions"
+    mkdir /home/nao/lib
 fi
-if [ ! -h /usr/local/lib ]
+
+if [ ! -h /home/nao/Config ]
 then
-    echo "creating link to /home/nao/lib"
-    if [ ! -d /home/nao/lib ]
-    then
-	mkdir /home/nao/lib
-    fi
-    if [ -d /usr/local/lib ]
-    then
-	mv /usr/local/lib/* /home/nao/lib
-	rm -rf /usr/local/lib
-    fi
-    ln -s /home/nao/lib /usr/local/lib
+    ln -s /home/nao/naoqi/Config /home/nao/Config
+fi
+
+if [ -d /home/nao/lib ]
+then
+    chown -R nao:nao /home/nao/lib
+    chmod -R 755 /home/nao/lib
 fi
 
 # check for link to librt.so
 if [ ! -h /home/nao/lib/librt.so ]
 then
     ln -s /usr/librt.so.1 /home/nao/lib/librt.so
+fi
+
+# copy naoth-profile.sh
+if [ -f ./etc/ld.so.conf ]
+then
+    echo "copy ld.so.conf.d/naoth.conf"
+    cp -f ./etc/ld.so.conf /etc/ld.so.conf
+    chown root:root /etc/ld.so.conf
+    chmod 755 /etc/ld.so.conf
+    ldconfig
+else
+    echo "ld.so.conf.d/naoth.conf is missing"
 fi
 
 

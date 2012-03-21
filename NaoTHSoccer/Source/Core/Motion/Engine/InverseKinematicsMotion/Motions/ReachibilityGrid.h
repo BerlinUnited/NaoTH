@@ -40,7 +40,7 @@ public:
     loadFromFile(path);
   }
 
-  ~ReachibilityGrid(){};
+  virtual ~ReachibilityGrid(){}
 
   void reset()
   {
@@ -108,7 +108,7 @@ public:
   {
   }
 
-  ~TransformedReachibilityGrid(){};
+  virtual ~TransformedReachibilityGrid(){}
 
   const ReachibilityGrid& grid;
 

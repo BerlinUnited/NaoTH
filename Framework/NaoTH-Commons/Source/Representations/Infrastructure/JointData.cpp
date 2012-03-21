@@ -35,7 +35,7 @@ void JointData::init()
       max[i] = Math::fromDegrees(maxDeg);
     } else
     {
-      THROW("JointData: can not get " + jointName + " max angle")
+      THROW("JointData: can not get " + jointName + " max angle");
     }
 
     if (cfg.hasKey("joints", jointName + "Min"))
@@ -44,7 +44,7 @@ void JointData::init()
       min[i] = Math::fromDegrees(minDeg);
     } else
     {
-      THROW("JointData: can not get " + jointName + " min angle")
+      THROW("JointData: can not get " + jointName + " min angle");
     }
   }
 }
@@ -308,3 +308,45 @@ void Serializer<SensorJointData>::deserialize(std::istream& stream, SensorJointD
     representation.ddp[i] = message.jointdata().ddp(i);
   }
 }
+
+
+void Serializer<MotorJointData>::serialize(const MotorJointData& representation, std::ostream& stream)
+{
+  naothmessages::JointData message;
+  
+  for(int i=0; i < JointData::numOfJoint; i++)
+  {
+    message.add_position(representation.position[i]);
+    message.add_stiffness(representation.stiffness[i]);
+    message.add_dp(representation.dp[i]);
+    message.add_ddp(representation.ddp[i]);
+  }
+
+  google::protobuf::io::OstreamOutputStream buf(&stream);
+  message.SerializeToZeroCopyStream(&buf);
+}
+
+void Serializer<MotorJointData>::deserialize(std::istream& stream, MotorJointData& representation)
+{
+  naothmessages::JointData message;
+  google::protobuf::io::IstreamInputStream buf(&stream);
+  message.ParseFromZeroCopyStream(&buf);
+
+  for(int i=0; i < message.position().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.position[i] = message.position(i);
+  }
+  for(int i=0; i < message.stiffness().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.stiffness[i] = message.stiffness(i);
+  }
+  for(int i=0; i < message.dp().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.dp[i] = message.dp(i);
+  }
+  for(int i=0; i < message.ddp().size() && i < JointData::numOfJoint; i++)
+  {
+    representation.ddp[i] = message.ddp(i);
+  }
+}
+

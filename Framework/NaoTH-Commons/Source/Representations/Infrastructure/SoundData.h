@@ -25,7 +25,7 @@ namespace naoth
     bool mute;
     string soundFile;
     string snd_ctl_dump;
-    int period_size;            /* auto */
+    int period_size;        /* auto */
     int periods;            /* auto */
 
     int rate;

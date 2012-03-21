@@ -41,7 +41,7 @@ public:
   /**
   * Destructor
   */
-  virtual ~Behavior() {};
+  virtual ~Behavior() {}
 
   /** the behavior is activated in the current path through the option graph */
   bool isActive;
@@ -64,7 +64,7 @@ public:
   Parameters* parameters; 
 
   /** Notify the software environment about a parameter change */
-  virtual void parametersChanged() {};
+  virtual void parametersChanged() {}
 };
 
 } // namespace

@@ -8,7 +8,6 @@
 */
 
 #include "BodyContourProvider.h"
-#include "Tools/Math/Matrix.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugImageDrawings.h"

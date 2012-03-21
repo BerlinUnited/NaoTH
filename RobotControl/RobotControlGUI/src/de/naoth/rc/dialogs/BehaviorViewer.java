@@ -235,6 +235,9 @@ public class BehaviorViewer extends AbstractDialog
     Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
     //parent.getGenericManager(getExecutedBehaviorCommand).removeListener(this);
 
+    // make the liste of frame clickable again
+    this.frameList.addListSelectionListener(behaviorFrameListener);
+    
     JOptionPane.showMessageDialog(null,
       cause, "Error", JOptionPane.ERROR_MESSAGE);
   }//end errorOccured
@@ -267,9 +270,16 @@ public class BehaviorViewer extends AbstractDialog
         frameList.clearSelection();
       }
       
-      // show and add
-      addFrame(status);
-      showFrame(this.behaviorBuffer.get(this.behaviorBuffer.size()-1));
+      if(status.hasErrorMessage() && status.getErrorMessage().length() > 0)
+      {
+        errorOccured(status.getErrorMessage());
+      }
+      else
+      {
+        // show and add
+        addFrame(status);
+        showFrame(this.behaviorBuffer.get(this.behaviorBuffer.size()-1));
+      }
     }
     catch(InvalidProtocolBufferException ex)
     {
@@ -460,7 +470,8 @@ public class BehaviorViewer extends AbstractDialog
       
     }catch(Exception ex)
     {
-        ex.printStackTrace();
+        Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+        //ex.printStackTrace();
     }
   }//end drawFrameOnField
 
@@ -718,9 +729,10 @@ public class BehaviorViewer extends AbstractDialog
 
     try{
       this.behaviorBuffer.add(new XABSLFrame(framePrototype, status));
-    }catch(Exception e)
+    }catch(Exception ex)
     {
-      e.printStackTrace();
+      Logger.getLogger(BehaviorViewer.class.getName()).log(Level.SEVERE, null, ex);
+      //e.printStackTrace();
       return;
     }
    /*
@@ -931,6 +943,8 @@ public class BehaviorViewer extends AbstractDialog
         sendCommand(getAgentCommand);
         Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).addListener(this);
         //parent.getGenericManager(getExecutedBehaviorCommand).addListener(this);
+        
+        // make the list of frames not clickable
         this.frameList.removeListSelectionListener(behaviorFrameListener);
       }
       else
@@ -1118,6 +1132,15 @@ public class BehaviorViewer extends AbstractDialog
           sendCommand(reloadBehaviorCommand);
           JOptionPane.showMessageDialog(thisFinal,
             new String(result), "Sending Behavior", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else if(originalCommand.getName().equals(reloadBehaviorCommand.getName()))
+        {
+          // HACK: the positive ansver "behavior reloaded" is defined in XABSLBehaviorControl.cpp
+          if(!("behavior reloaded".equals(new String(result))))
+          {
+              JOptionPane.showMessageDialog(thisFinal,
+                new String(result), "Sending Behavior", JOptionPane.ERROR_MESSAGE);
+          }
         }
         else if(originalCommand.getName().startsWith(getAgentCommand.getName()))
         {
@@ -1328,7 +1351,7 @@ public class BehaviorViewer extends AbstractDialog
   @Override
   public void dispose()
   {
-    System.out.println("Dispose is not implemented for: " + this.getClass().getName());
+    Plugin.genericManagerFactory.getManager(getExecutedBehaviorCommand).removeListener(this);
   }//end dispose
     
   // Variables declaration - do not modify//GEN-BEGIN:variables

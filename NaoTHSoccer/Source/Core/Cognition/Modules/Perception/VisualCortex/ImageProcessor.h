@@ -21,13 +21,13 @@
 // submodules
 #include "ObjectDetectors/HistogramFieldDetector.h"
 #include "ObjectDetectors/ScanLineEdgelDetector.h"
+#include "ObjectDetectors/ScanLineEdgelDetectorDifferential.h"
 #include "ObjectDetectors/FieldDetector.h"
 #include "ObjectDetectors/BallDetector.h"
 #include "ObjectDetectors/LineDetector.h"
 #include "ObjectDetectors/RobotDetector.h"
 #include "ObjectDetectors/GoalDetector.h"
 #include "../BodyContourProvider/BodyContourProvider.h"
-
 
 // Representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -71,6 +71,7 @@ public:
 private:
   ModuleCreator<HistogramFieldDetector>* theHistogramFieldDetector;
   ModuleCreator<ScanLineEdgelDetector>* theScanLineEdgelDetector;
+  ModuleCreator<ScanLineEdgelDetectorDifferential>* theScanLineEdgelDetectorDifferential;
   ModuleCreator<BodyContourProvider>* theBodyContourProvider;
   ModuleCreator<FieldDetector>* theFieldDetector;
 
@@ -80,7 +81,7 @@ private:
   ModuleCreator<LineDetector>* theLineDetector;
   ModuleCreator<GoalDetector>* theGoalDetector;
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

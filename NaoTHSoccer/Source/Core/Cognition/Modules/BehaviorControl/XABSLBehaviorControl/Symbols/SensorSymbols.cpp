@@ -112,7 +112,7 @@ double SensorSymbols::getFrameNumber()
 double SensorSymbols::getObstDistByAngle()
 {
   double angle = Math::fromDegrees(theInstance->parameter_obstDistByAngle_angle);
-  return theInstance->radarGrid.get(angle).x;
+  return theInstance->radarGrid.getDistanceForAngle(angle);
 }
 
 int SensorSymbols::getFallDownState()
@@ -125,7 +125,7 @@ double SensorSymbols::simplePassLeftSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
     if((theInstance->ultraSoundReceiveData.dataLeft[i] * 1000) < r && theInstance->ultraSoundReceiveData.dataLeft[i] > 0.2)
     {
@@ -139,7 +139,7 @@ double SensorSymbols::simplePassRightSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
     if((theInstance->ultraSoundReceiveData.dataRight[i] * 1000) < r && theInstance->ultraSoundReceiveData.dataRight[i] > 0.2)
     {

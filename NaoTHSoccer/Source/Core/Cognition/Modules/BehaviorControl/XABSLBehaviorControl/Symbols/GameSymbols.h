@@ -29,7 +29,7 @@ public:
   {
       theInstance = this;
     };
-  ~GameSymbols(){};
+  virtual ~GameSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

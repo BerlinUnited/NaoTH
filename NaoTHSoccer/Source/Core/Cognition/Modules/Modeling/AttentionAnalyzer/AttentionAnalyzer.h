@@ -5,8 +5,8 @@
 * Declaration of class AttentionAnalyzer
 */
 
-#ifndef __AttentionAnalyzer_h_
-#define __AttentionAnalyzer_h_
+#ifndef _AttentionAnalyzer_h_
+#define _AttentionAnalyzer_h_
 
 
 #include <list>
@@ -81,4 +81,4 @@ private:
   FrameInfo lastFrameInfo;
 };
 
-#endif //__AttentionAnalyzer_h_
+#endif //_AttentionAnalyzer_h_

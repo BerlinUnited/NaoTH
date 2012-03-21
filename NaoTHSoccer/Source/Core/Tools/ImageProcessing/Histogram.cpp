@@ -6,7 +6,11 @@
  */
 
 #include "Histogram.h"
+
+// debug
 #include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugImageDrawings.h"
+
 
 Histogram::Histogram()
 {
@@ -42,9 +46,15 @@ void Histogram::init()
   memset(&xHistogram, 0, sizeof(xHistogram));
   memset(&yHistogram, 0, sizeof(xHistogram));
   memset(&colorChannelHistogramField, 0, sizeof(colorChannelHistogramField));
-  memset(&colorChannelHistogramLine, 0, sizeof(colorChannelHistogramLine));
-  memset(&colorChannelHistogramGoal, 0, sizeof(colorChannelHistogramGoal));
-  memset(&colorChannelHistogramBall, 0, sizeof(colorChannelHistogramBall));
+  //memset(&colorChannelHistogramLine, 0, sizeof(colorChannelHistogramLine));
+  //memset(&colorChannelHistogramGoal, 0, sizeof(colorChannelHistogramGoal));
+  //memset(&colorChannelHistogramBall, 0, sizeof(colorChannelHistogramBall));
+
+  meanFieldY = 0.0;
+  meanFieldCountY = 1.0;
+  //weightedHistCb = {0.0};
+  memset(&weightedHistY, 0, sizeof(weightedHistY));
+  memset(&weightedHistCb, 0, sizeof(weightedHistCb));
 
 //  for(int color = 0; color < ColorClasses::numOfColors; color++)
 //  {
@@ -217,62 +227,15 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
 
 }//end showDebugInfos
 
-void Histogram::increaseValue(const int& x, const int& y, const ColorClasses::Color& color)
-{
-    xHistogram[color][y]++;
-    yHistogram[color][x]++;
-}//end increaseValue
 
-void Histogram::increaseValue(const UniformGrid& grid, const int& pixelIndex, const ColorClasses::Color& color)
-{
-    const Vector2<int>& pixel = grid.getGridCoordinates(pixelIndex);
-    xHistogram[color][pixel.y]++;
-    yHistogram[color][pixel.x]++;
-}//end increaseValue
-
-
-void Histogram::increaseChannelValue(const BaseColorRegionPercept& bPercept, const Pixel& pixel)
-{
-  unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
-
-
-  if(bPercept.isRedOrOrangeOrPink(pixel))
-  {
-    colorChannelHistogramBall[0][pixel.y / factor]++;
-    colorChannelHistogramBall[1][pixel.u / factor]++;
-    colorChannelHistogramBall[2][pixel.v / factor]++;
-  }
-  else
-  if(bPercept.isYellow(pixel))
-  {
-    colorChannelHistogramGoal[0][pixel.y / factor]++;
-    colorChannelHistogramGoal[1][pixel.u / factor]++;
-    colorChannelHistogramGoal[2][pixel.v / factor]++;
-  }
-  else
-  if(bPercept.isGreenOrBlue(pixel))
-  {
-    colorChannelHistogramField[0][pixel.y / factor]++;
-    colorChannelHistogramField[1][pixel.u / factor]++;
-    colorChannelHistogramField[2][pixel.v / factor]++;
-  }
-  else
-  if(bPercept.isWhite(pixel))
-  {
-    colorChannelHistogramLine[0][pixel.y / factor]++;
-    colorChannelHistogramLine[1][pixel.u / factor]++;
-    colorChannelHistogramLine[2][pixel.v / factor]++;
-  }
-  colorChannelIsUptodate  = true;
-}
-
-void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
+inline void Histogram::createFromColoredGrid(const ColoredGrid& coloredGrid)
 {
   for(int color = 0; color < ColorClasses::numOfColors; color++)
   {
     for (unsigned int pixelIndex = 0; pixelIndex < coloredGrid.numberOfColorPoints[color]; pixelIndex++)
     {
-      increaseValue(coloredGrid.uniformGrid, coloredGrid.colorPointsIndex[color][pixelIndex], (ColorClasses::Color) color);
+      const Vector2<int>& gridPoint = coloredGrid.uniformGrid.getGridCoordinates(pixelIndex);
+      increaseValue(gridPoint, (ColorClasses::Color) color);
     }
   }
 }//end createFromColoredGrid

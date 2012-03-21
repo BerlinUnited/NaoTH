@@ -6,10 +6,8 @@
  */
 
 #ifndef _MOTIONBLACKBOARD_H
-#define  _MOTIONBLACKBOARD_H
+#define _MOTIONBLACKBOARD_H
 
-
-//#include "PlatformInterface/PlatformInterchangeable.h"
 
 // representations
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -22,17 +20,17 @@
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
-
-#include "Representations/Perception/InertialPercept.h"
 #include "Representations/Infrastructure/CalibrationData.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Representations/Motion/MotionStatus.h"
 
+#include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Modeling/SupportPolygon.h"
+#include "Representations/Modeling/InertialModel.h"
 
 
 class AbstractMotion;
@@ -56,8 +54,12 @@ public:
   KinematicChain theKinematicChain; // data based on sensors
   KinematicChain theKinematicChainModel; // data based on joint command (motor joint data)
   SupportPolygon theSupportPolygon;
+  GroundContactModel theGroundContactModel;
+  
 
   Vector3<double> theFSRPos[naoth::FSRData::numOfFSR];
+
+  // sensory data
   naoth::FrameInfo theFrameInfo;
   naoth::AccelerometerData theAccelerometerData;
   naoth::GyrometerData theGyrometerData;
@@ -66,6 +68,7 @@ public:
   naoth::MotorJointData theMotorJointData;
   naoth::MotorJointData theLastMotorJointData;
   naoth::SensorJointData theSensorJointData;
+
   //naoth::LEDData theLEDData;
 
   CalibrationData theCalibrationData;
@@ -76,7 +79,7 @@ public:
   CameraMatrix theCameraMatrix;
   MotionStatus theMotionStatus;
   OdometryData theOdometryData;
-  InertialPercept theInertialPercept;
+  InertialModel theInertialModel;
 
   // data copied from cognition
   HeadMotionRequest theHeadMotionRequest;

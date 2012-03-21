@@ -381,8 +381,7 @@ void protobuf_AddDesc_CommonTypes_2eproto() {
     "tch\020\r\022\014\n\010RHipRoll\020\016\022\014\n\010LHipRoll\020\017\022\016\n\nRKn"
     "eePitch\020\020\022\016\n\nLKneePitch\020\021\022\017\n\013RAnklePitch"
     "\020\022\022\017\n\013LAnklePitch\020\023\022\016\n\nRAnkleRoll\020\024\022\016\n\nL"
-    "AnkleRoll\020\025B)\n\'de.hu_berlin.informatik.k"
-    "i.nao.messages", 2014);
+    "AnkleRoll\020\025B\026\n\024de.naoth.rc.messages", 1995);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "CommonTypes.proto", &protobuf_RegisterTypes);
   FloatVector2::default_instance_ = new FloatVector2();
