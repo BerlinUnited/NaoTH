@@ -276,7 +276,7 @@ void InverseKinematicsMotionEngine::feetStabilize(double (&position)[naoth::Join
   position[JointData::LAnklePitch] += weight.y;
 
   lastGyro = gyro;
-}//end neuralStabilize
+}//end feetStabilize
 
 
 bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip, const Pose3D& leftFoot, const Pose3D& rightFoot)

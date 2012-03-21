@@ -109,11 +109,91 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     PLOT("Walk:LHipRoll",theMotorJointData.position[JointData::LHipRoll]);
 
     if(theWalkParameters.stabilizeFeet)
-      theEngine.feetStabilize(theMotorJointData.position);
+      feetStabilize(theMotorJointData.position);
   }
 
   updateMotionStatus(motionStatus);
 }//end execute
+
+
+
+void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
+{
+  // calculate the cycle
+  // the same as in "FootTrajectorGenerator::genTrajectory"
+  const Step& executingStep = stepBuffer.front();
+  double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
+  double doubleSupportBegin = executingStep.samplesDoubleSupport / 2 + executingStep.samplesSingleSupport;
+  double samplesSingleSupport = executingStep.samplesSingleSupport - executingStep.extendDoubleSupport;
+  double cycle = executingStep.executingCycle;
+  double z = 0;
+
+  if (cycle <= doubleSupportEnd)
+  {
+    z = 0;
+  }
+  else if (cycle <= doubleSupportBegin)
+  {
+    double t = 1 - (doubleSupportBegin - cycle) / samplesSingleSupport;
+    t = t * Math::pi - Math::pi_2; // scale t
+    z = (1 + cos(t * 2))*0.5;
+  }
+  else
+  {
+    z = 0;
+  }
+
+  PLOT("Walk:feetStabilize:z", z);
+
+
+
+  const Vector2d& inertial = theBlackBoard.theInertialModel.orientation;
+  const Vector2d& gyro = theBlackBoard.theGyrometerData.data;
+
+
+  // HACK: small filter...
+  static Vector2<double> lastGyro = gyro;
+  Vector2<double> filteredGyro = (lastGyro+gyro)*0.5;
+
+  Vector2<double> weight;
+  weight.x = 
+      theWalkParameters.stabilizeFeetP.x * inertial.x
+    + theWalkParameters.stabilizeFeetD.x * filteredGyro.x;
+
+  weight.y = 
+      theWalkParameters.stabilizeFeetP.y * inertial.y
+    + theWalkParameters.stabilizeFeetD.y * filteredGyro.y;
+
+
+  switch(executingStep.footStep.liftingFoot())
+  {
+  case FootStep::LEFT: 
+    // adjust left
+    position[JointData::LAnkleRoll] -= inertial.x*z;
+    position[JointData::LAnklePitch] -= inertial.y*z;
+
+    // stabilize right
+    position[JointData::RAnkleRoll] += weight.x*z;
+    position[JointData::RAnklePitch] += weight.y*z;
+    break;
+
+  case FootStep::RIGHT:
+    // adjust right
+    position[JointData::RAnkleRoll] -= inertial.x*z;
+    position[JointData::RAnklePitch] -= inertial.y*z;
+
+    // stabilize left
+    position[JointData::LAnkleRoll] += weight.x*z;
+    position[JointData::LAnklePitch] += weight.y*z;
+    break;
+  default: break; // don't stabilize in double support mode
+  };
+
+  lastGyro = gyro;
+}//end feetStabilize
+
+
+
 
 bool Walk::FSRProtection()
 {

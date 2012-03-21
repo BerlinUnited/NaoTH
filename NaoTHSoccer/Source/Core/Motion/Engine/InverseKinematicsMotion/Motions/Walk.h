@@ -21,7 +21,7 @@ public:
   Walk();
   
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus);
-  
+
 private:
   struct Step {
 
@@ -48,6 +48,9 @@ private:
     bool stepControlling;
     double speedDirection;
   };
+
+  /** */
+  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
 
   /** */
   bool FSRProtection();
