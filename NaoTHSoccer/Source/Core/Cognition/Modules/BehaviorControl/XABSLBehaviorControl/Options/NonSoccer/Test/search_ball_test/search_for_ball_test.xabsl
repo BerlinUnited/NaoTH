@@ -2,26 +2,38 @@
 option search_for_ball_test
 {
   bool @force_ball_model_check; // false by default
+
+  common decision 
+  {
+    if (ball.was_seen)
+    {
+      goto look_at_ball_percept;
+    }
+  }
   
-  initial state start_search {
-  decision {
-    if((ball.time_since_last_seen < 3000 || 
-       @force_ball_model_check) && 
-       abs(value=ball.angle) < 85)
-      goto try_to_look_at_the_old_ball;
-    else
-      goto search_for_ball;
-  }
-  action {
-  }
+  initial state start_search 
+  {
+    decision {
+      else if((ball.time_since_last_seen < 3000 || 
+        @force_ball_model_check) && 
+        abs(value=ball.angle) < 85)
+        goto try_to_look_at_the_old_ball;
+      else if (ball.team.time_since_last_update < 3000)
+        goto check_team_ball;
+      else
+        goto search_for_ball;
+    }
+    action 
+    {
+    }
   }
 
   state try_to_look_at_the_old_ball
   {
     decision
     {
-      if (state_time > 2000)
-        goto search_for_ball;
+      else if (state_time > 2000)
+        goto check_team_ball;
       else
         stay;
     }
@@ -35,13 +47,28 @@ option search_for_ball_test
     }
   }
 
+  state check_team_ball
+  {
+    decision
+    {
+      else if (ball.team.time_since_last_update < 3000)
+        stay;
+      else
+        goto search_for_ball;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.team.position.x;
+      head.point_in_world.y = ball.team.position.y;
+    }
+  }
   
   state search_for_ball
   {
     decision
     {
-      if (ball.was_seen)
-        goto look_at_ball_percept;
       else if( state_time > 3000 && 
         (ball.time_since_last_seen < 15000 || 
          @force_ball_model_check) &&
@@ -75,8 +102,6 @@ option search_for_ball_test
   {
     decision
     {
-      if (ball.was_seen)
-        goto look_at_ball_percept;
       else if(head.executed_motion_type != search)
         goto search_for_ball_near;
       else
@@ -99,8 +124,6 @@ option search_for_ball_test
   {
     decision
     {
-      if (ball.was_seen)
-        goto look_at_ball_percept;
       else if(head.executed_motion_type != search)
         goto search_for_ball;
       else
@@ -124,7 +147,7 @@ option search_for_ball_test
   {
     decision
     {
-      if (ball.time_since_last_seen > 1000)
+      else if (ball.time_since_last_seen > 1000)
         goto search_for_ball_around_ball;
       else
         stay;
@@ -143,7 +166,7 @@ option search_for_ball_test
   {
     decision
     {
-      if (state_time > 1000)
+      else if (state_time > 1000)
         goto look_at_ball;
       else
         stay;

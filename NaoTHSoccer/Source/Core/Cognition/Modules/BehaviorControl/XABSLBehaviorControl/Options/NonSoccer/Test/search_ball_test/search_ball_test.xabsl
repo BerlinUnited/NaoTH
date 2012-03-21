@@ -8,6 +8,7 @@ option search_ball_test
       goto finished;
   }
 
+
   initial state turn_to_ball_model
   {
     decision
