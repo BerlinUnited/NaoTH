@@ -86,8 +86,8 @@ include "Options/Soccer/Strategy/SPL_Strategy/initial_ready_set_play.xabsl";
 include "Options/Soccer/spl_play_soccer.xabsl";
 include "Options/Soccer/Strategy/SPL_Strategy/decide_ready_position.xabsl";
 include "Options/Soccer/Strategy/SPL_Strategy/decide_strategy_position.xabsl";
-include "Options/Soccer/Strategy/SPL_Strategy/decide_offence_position.xabsl";
-include "Options/Soccer/Strategy/SPL_Strategy/decide_defence_position.xabsl";
+include "Options/Soccer/Strategy/SPL_Strategy/decide_offense_position.xabsl";
+include "Options/Soccer/Strategy/SPL_Strategy/decide_defense_position.xabsl";
 include "Options/Soccer/Strategy/SPL_Strategy/goto_ready_position.xabsl";
 
 // penalty
