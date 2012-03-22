@@ -90,7 +90,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
         getHistogram().collectFieldValue(pixel);
       }
 
-      POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
+      //POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
     }//end if
   }//end for
 

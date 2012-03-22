@@ -31,6 +31,9 @@
 #include "Representations/Perception/BodyContour.h"
 
 
+#include <Tools/DataStructures/ParameterList.h>
+
+
 BEGIN_DECLARE_MODULE(ScanLineEdgelDetectorDifferential)
   REQUIRE(Image)
   REQUIRE(ColorClassificationModel)
@@ -52,14 +55,23 @@ public:
   void execute();
 
 
-  class Parameters
+  class Parameters: public ParameterList
   {
   public:
-    Parameters()
+    Parameters() : ParameterList("ScanLineParameters")
     {
-      brightness_threshold = 6;
-      scanline_count = 22;
-      pixel_border_y = 3;
+      PARAMETER_REGISTER(brightness_threshold) = 6;
+      PARAMETER_REGISTER(scanline_count) = 22;
+      PARAMETER_REGISTER(pixel_border_y) = 3;
+
+      syncWithConfig();
+
+      DebugParameterList::getInstance().add(this);
+    }
+
+    ~Parameters()
+    {
+      DebugParameterList::getInstance().remove(this);
     }
 
     // threshold for detection of the jumps in the Y channel

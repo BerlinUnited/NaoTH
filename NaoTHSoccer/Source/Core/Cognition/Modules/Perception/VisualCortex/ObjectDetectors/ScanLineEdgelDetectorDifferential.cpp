@@ -190,14 +190,16 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     // TODO: possible optimization
     //ColorClasses::Color thisPixelColor = (getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
 
-
-
     int f_x = getImage().getY(point.x, point.y);
     int g = f_x - f_last;
     
     
     if(g > g_max)
     {
+      /*
+      Pixel pixel = getImage().get(point.x, x_peak);
+      bool green = getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+      */
       if(g_min < -t_edge)// end found
       {
 
@@ -216,6 +218,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
           }
         );
 
+
         begin_of_segment = x_peak;
 
 
@@ -232,10 +235,20 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
           edgel.begin.x = start.x;
           edgel.begin.y = begin_y;
           edgel.begin_angle = getPointsAngle(edgel.begin);
+          /*if(edgel.begin.y > 0)
+          {
+            double a = getPointsAngle(Vector2<int>(edgel.begin.x, edgel.begin.y-1));
+            edgel.begin_angle = calculateMeanAngle(edgel.begin_angle, a);
+          }*/
 
           edgel.end.x = start.x;
           edgel.end.y = x_peak;
           edgel.end_angle = Math::normalizeAngle(getPointsAngle(edgel.end) + Math::pi);
+          /*if(edgel.end.y > 0)
+          {
+            double a = getPointsAngle(Vector2<int>(edgel.end.x, edgel.end.y-1));
+            edgel.end_angle = calculateMeanAngle(edgel.end_angle, a);
+          }*/
 
           edgel.center = (edgel.end + edgel.begin) / 2;
           edgel.center_angle = calculateMeanAngle(edgel.begin_angle, edgel.end_angle);
@@ -269,6 +282,10 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     
     if(g < g_min)
     {
+      /*
+      Pixel pixel = getImage().get(point.x, x_peak);
+      bool green = getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+      */
       if(g_max > t_edge)// begin found
       {
         DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
@@ -353,7 +370,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 
   if(length > 0) meanY /= length;
 
-  return (numberOfGreen > numberOfSamples/2)?ColorClasses::green:((meanY > getColorClassificationModel().getFieldColorPercept().maxWeightedIndexY+getColorClassificationModel().getFieldColorPercept().distY)?ColorClasses::white:ColorClasses::none);
+  return (numberOfGreen > numberOfSamples/2)?ColorClasses::green:((meanY > (int)getColorClassificationModel().getFieldColorPercept().maxWeightedIndexY/*+getColorClassificationModel().getFieldColorPercept().distY*/)?ColorClasses::white:ColorClasses::none);
 }//end estimateColorOfSegment
 
 
