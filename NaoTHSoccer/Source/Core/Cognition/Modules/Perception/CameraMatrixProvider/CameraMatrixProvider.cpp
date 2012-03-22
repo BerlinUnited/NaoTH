@@ -24,7 +24,10 @@ CameraMatrixProvider::CameraMatrixProvider()
   udpateTime = getFrameInfo().getTime();
 
   // this is a HACK!!!!!!!!!!
-  getKinematicChain().init(getSensorJointData());
+  if(!getKinematicChain().is_initialized())
+  {
+    getKinematicChain().init(getSensorJointData());
+  }
 
   DEBUG_REQUEST_REGISTER("CameraMatrix:calibrate_camera_matrix",
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 

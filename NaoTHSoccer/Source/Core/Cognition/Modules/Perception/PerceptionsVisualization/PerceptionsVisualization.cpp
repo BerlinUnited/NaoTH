@@ -51,7 +51,7 @@ void PerceptionsVisualization::execute()
 
   DEBUG_REQUEST("PerceptionsVisualization:field:goal_percept",
     FIELD_DRAWING_CONTEXT;
-    for(unsigned int n = 0; n < getGoalPercept().getNumberOfSeenPosts(); n++)
+    for(int n = 0; n < getGoalPercept().getNumberOfSeenPosts(); n++)
     {
       const GoalPercept::GoalPost& post = getGoalPercept().getPost(n);
       

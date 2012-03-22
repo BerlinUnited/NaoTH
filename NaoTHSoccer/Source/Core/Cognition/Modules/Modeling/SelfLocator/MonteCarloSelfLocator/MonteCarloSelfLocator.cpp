@@ -177,7 +177,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
 
   
   //with the GoalPercept
-  for(unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+  for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
   {
     const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(i);
 
@@ -556,7 +556,7 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
   while(n < sampleSet.numberOfParticles)
   {
 
-    for(unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+    for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
     {
       const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(i);
 
@@ -762,7 +762,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // check whether the goals fit to the observations
   if(getGoalPercept().getNumberOfSeenPosts() > 0)
   {
-    for(unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+    for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
     {
       const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(i);
 

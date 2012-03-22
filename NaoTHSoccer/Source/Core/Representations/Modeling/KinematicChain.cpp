@@ -13,6 +13,7 @@ using namespace naoth;
 
 //KinematicChain-Class
 KinematicChain::KinematicChain()
+  : initialized(false)
 {
   for (int i = 0; i < numOfLinks; i++)
   {
@@ -268,6 +269,8 @@ void KinematicChain::init(JointData& jointData)
   initMassesInfo();
   initLinksInfo();
   buildLinkChains();
+
+  initialized = true;
 }
 
 string KinematicChain::test(const Kinematics::Link& node) const

@@ -167,7 +167,7 @@ bool GoalSymbols2011::getOwnGoalWasSeen()
 {
   ColorClasses::Color goalColor = (theInstance->playerInfo.gameData.teamColor == GameData::blue)?ColorClasses::skyblue  : ColorClasses::yellow;
 
-  for(unsigned int i = 0; i < theInstance->goalPercept.getNumberOfSeenPosts(); i++)
+  for(int i = 0; i < theInstance->goalPercept.getNumberOfSeenPosts(); i++)
     if(theInstance->goalPercept.getPost(i).color == goalColor && 
        theInstance->goalPercept.getPost(i).positionReliable)
       return true;

@@ -65,7 +65,7 @@ public:
 private:
   OdometryData lastRobotOdometry;
 
-  void checkAndInsertSingleGoal(
+  bool checkAndCalculateSingleGoal(
     const GoalPercept::GoalPost& post1,
     const GoalPercept::GoalPost& post2);
 
