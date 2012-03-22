@@ -43,6 +43,7 @@
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+#include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
@@ -131,6 +132,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
+  REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);

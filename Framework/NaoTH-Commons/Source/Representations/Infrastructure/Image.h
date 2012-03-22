@@ -97,7 +97,16 @@ namespace naoth
      */
     inline unsigned char getY(const unsigned int x, const unsigned int y) const
     {
-      return (yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
+      return (unsigned char) Math::clamp<unsigned int>((yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10, 0, 255);
+    }
+
+    /**
+     * Get the brightness of a pixel without any correction. This is faster than getting all color
+     * channels.
+     */
+    inline unsigned char getPlainY(const unsigned int x, const unsigned int y) const
+    {
+      return yuv422[2 * (y * cameraInfo.resolutionWidth + x)];// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
     }
 
     /**
