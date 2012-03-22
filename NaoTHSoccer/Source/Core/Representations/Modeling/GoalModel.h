@@ -8,8 +8,8 @@
 * Definition of class GoalModel
 */
 
-#ifndef __GoalModel_h_
-#define __GoalModel_h_
+#ifndef _GoalModel_h_
+#define _GoalModel_h_
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Pose2D.h>

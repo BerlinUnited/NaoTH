@@ -13,6 +13,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/CompassDirection.h"
 
 BEGIN_DECLARE_MODULE(StrategySymbols2011)
   REQUIRE(AttentionModel)
@@ -25,6 +26,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols2011)
   REQUIRE(FieldInfo)
   REQUIRE(LocalGoalModel)
   REQUIRE(SoccerStrategy)
+  REQUIRE(CompassDirection)
   REQUIRE(MotionStatus)
 END_DECLARE_MODULE(StrategySymbols2011)
 
