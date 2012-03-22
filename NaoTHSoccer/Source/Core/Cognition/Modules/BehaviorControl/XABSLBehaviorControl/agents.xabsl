@@ -33,6 +33,7 @@ include "Options/HeadControl/search_for_goal_after_penalized.xabsl";
 // Skills
 include "Options/Skills/approach_ball_with_correct_foot_ckeck_goal.xabsl";
 include "Options/Skills/go_to_relative_point.xabsl";
+include "Options/Skills/go_to_relative_point_avoid_obstacles.xabsl";
 include "Options/Skills/go_to_absolute_point.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_ball_cool.xabsl";
