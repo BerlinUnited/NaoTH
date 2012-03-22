@@ -1,8 +1,8 @@
 /**
-* @file SelflocSymbols.cpp
+* @file SelflocSymbols2011.cpp
 *
 * @author <a href="mailto:martius@informatik.hu-berlin.de">Martin Martius</a>
-* Implementation of class SelflocSymbols
+* Implementation of class SelflocSymbols2011
 */
 
 #include "SelflocSymbols2011.h"
@@ -82,8 +82,8 @@ void SelflocSymbols2011::execute()
 {
   angleOnField = Math::toDegrees(robotPose.rotation);
 
-  const GoalModel::Goal& ownGoalModel = selfLocGoalModel.getTeamGoal(playerInfo.gameData.teamColor);
-  const GoalModel::Goal& oppGoalModel = selfLocGoalModel.getTeamGoal(!playerInfo.gameData.teamColor);
+  const GoalModel::Goal& ownGoalModel = selfLocGoalModel.getOwnGoal(compassDirection, fieldInfo);
+  const GoalModel::Goal& oppGoalModel = selfLocGoalModel.getOppGoal(compassDirection, fieldInfo);
   ownGoal = Goal(ownGoalModel.leftPost, ownGoalModel.rightPost);
   oppGoal = Goal(oppGoalModel.leftPost, oppGoalModel.rightPost);
 

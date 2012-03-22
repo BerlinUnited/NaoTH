@@ -2,10 +2,10 @@
 * @file MotionSymbols.h
 *
 * @author <a href="mailto:martius@informatik.hu-berlin.de">Martin Martius</a>
-* Definition of class MSelflocSymbols */
+* Definition of class SelflocSymbols2011 */
 
-#ifndef __SelflocSymbols2011_h_
-#define __SelflocSymbols2011_h_
+#ifndef _SelflocSymbols2011_h_
+#define _SelflocSymbols2011_h_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -14,7 +14,9 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Infrastructure/GPSData.h"
+#include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Motion/MotionStatus.h"
 
 #include "Tools/Math/Common.h"
@@ -28,6 +30,8 @@ BEGIN_DECLARE_MODULE(SelflocSymbols2011)
   REQUIRE(PlayerInfo)
   REQUIRE(GPSData)
   REQUIRE(MotionStatus)
+  REQUIRE(CompassDirection)
+  REQUIRE(FieldInfo)
 END_DECLARE_MODULE(SelflocSymbols2011)
 
 class SelflocSymbols2011: public SelflocSymbols2011Base
@@ -41,6 +45,8 @@ public:
     playerInfo(getPlayerInfo()),
     gpsData(getGPSData()),
     motionStatus(getMotionStatus()),
+    compassDirection(getCompassDirection()),
+    fieldInfo(getFieldInfo()),
 
     angleOnField(Math::toDegrees(robotPose.rotation)),
     rel2fieldX_x(0.0),
@@ -50,7 +56,7 @@ public:
   {
     theInstance = this;
   };
-  ~SelflocSymbols2011(){};
+  virtual ~SelflocSymbols2011(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
@@ -99,6 +105,8 @@ private:
   PlayerInfo const& playerInfo;
   GPSData const& gpsData;
   MotionStatus const& motionStatus;
+  CompassDirection const& compassDirection;
+  FieldInfo const& fieldInfo;
 
   // rotation of robotPose in degrees
   double angleOnField;
@@ -113,7 +121,7 @@ private:
 
   Pose2D robotPosePlanned;
   double angleOnFieldPlanned;
-};// End class SelflocSymbols
+};// End class SelflocSymbols2011
 
 
 #endif // __SelflocSymbols2011_h_

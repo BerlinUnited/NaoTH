@@ -64,27 +64,25 @@ void GoalSymbols::execute()
 
 double GoalSymbols::getTimeSinceWholeOwnGoalSeen()
 {
-  const naoth::GameData::TeamColor ownColor = theInstance->getPlayerInfo().gameData.teamColor;
-  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getTeamGoal(ownColor);
+  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo);
   return (double) theInstance->frameInfo.getTimeSince(goal.frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceWholeOwnGoalSeen
 
 double GoalSymbols::getTimeSinceWholeOppGoalSeen()
 {
-  const naoth::GameData::TeamColor ownColor = theInstance->getPlayerInfo().gameData.teamColor;
-  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getTeamGoal(!ownColor);
+  const GoalModel::Goal& goal = theInstance->getSensingGoalModel().getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo);
   return (double) theInstance->frameInfo.getTimeSince(goal.frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceWholeOppGoalSeen
 
 
 double GoalSymbols::getOpponentGoalX()
 {
-  return theInstance->localGoalModel.getTeamGoal(!(theInstance->playerInfo.gameData.teamColor)).calculateCenter().x;
+  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().x;
 }//end getOpponentGoalX
 
 double GoalSymbols::getOpponentGoalY()
 {
-  return theInstance->localGoalModel.getTeamGoal(!(theInstance->playerInfo.gameData.teamColor)).calculateCenter().y;
+  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().y;
 }//end getOpponentGoalY
 
 double GoalSymbols::getAngleToOpponentGoal()
@@ -94,7 +92,7 @@ double GoalSymbols::getAngleToOpponentGoal()
 
 double GoalSymbols::getDistanceToOpponentGoal()
 {
-  return theInstance->localGoalModel.getTeamGoal(!(theInstance->playerInfo.gameData.teamColor)).calculateCenter().abs();
+  return theInstance->localGoalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().abs();
 }//end getDistanceToOpponentGoal
 
 double GoalSymbols::getTimeSinceOpponentGoalSeen()
@@ -106,12 +104,12 @@ double GoalSymbols::getTimeSinceOpponentGoalSeen()
 
 double GoalSymbols::getOwnGoalX()
 {
-  return theInstance->localGoalModel.getTeamGoal(theInstance->playerInfo.gameData.teamColor).calculateCenter().x;
+  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().x;
 }//end getOwnGoalX
 
 double GoalSymbols::getOwnGoalY()
 {
-  return theInstance->localGoalModel.getTeamGoal(theInstance->playerInfo.gameData.teamColor).calculateCenter().y;
+  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().y;
 }//end getOwnGoalY
 
 double GoalSymbols::getGoalCentroidX()
@@ -134,29 +132,33 @@ double GoalSymbols::getGoalCentroidZ()
 
 double GoalSymbols::getAngleToOwnGoal()
 {
-  double radAngle = theInstance->localGoalModel.getTeamGoal(theInstance->playerInfo.gameData.teamColor).calculateCenter().angle();
+  double radAngle = theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().angle();
   return Math::toDegrees(radAngle);
-}//end getAngleToOpGoal
+}//end getAngleToOwnGoal
 
 double GoalSymbols::getDistanceToOwnGoal()
 {
-  return theInstance->localGoalModel.getTeamGoal(theInstance->playerInfo.gameData.teamColor).calculateCenter().abs();
+  return theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter().abs();
 }//end getDistanceToOwnGoal
 
 double GoalSymbols::getTimeSinceOwnGoalSeen()
 {
   return (double) theInstance->frameInfo.getTimeSince(
-    theInstance->localGoalModel.getTeamGoal(theInstance->playerInfo.gameData.teamColor).frameInfoWhenGoalLastSeen.getTime());
+    theInstance->localGoalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).frameInfoWhenGoalLastSeen.getTime());
 }//end getTimeSinceOpponentGoalSeen
 
+
+//FIXME not via color decideable!
 bool GoalSymbols::getOpponentGoalWasSeen()
 {
+ /*
   ColorClasses::Color goalColor = (theInstance->playerInfo.gameData.teamColor == GameData::blue)?ColorClasses::yellow:ColorClasses::skyblue;
 
   for(unsigned int i = 0; i < theInstance->goalPercept.getNumberOfSeenPosts(); i++)
     if(theInstance->goalPercept.getPost(i).color == goalColor && 
        theInstance->goalPercept.getPost(i).positionReliable)
       return true;
+*/
 
   return false;
 }//end getOpponentGoalWasSeen

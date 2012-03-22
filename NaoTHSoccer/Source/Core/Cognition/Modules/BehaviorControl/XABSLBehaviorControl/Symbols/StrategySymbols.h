@@ -14,6 +14,7 @@
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/CompassDirection.h"
 
 BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(AttentionModel)
@@ -27,6 +28,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(LocalGoalModel)
   REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
+  REQUIRE(CompassDirection)
   PROVIDE(SituationStatus)
 END_DECLARE_MODULE(StrategySymbols)
 
@@ -47,6 +49,7 @@ public:
     localGoalModel(getLocalGoalModel()),
     soccerStrategy(getSoccerStrategy()),
     motionStatus(getMotionStatus()),
+    compassDirection(getCompassDirection()),
 
     goalKickPlayer(0.0),
     goalKickPositionLeft(false)
@@ -76,6 +79,7 @@ private:
   LocalGoalModel const& localGoalModel;
   SoccerStrategy const& soccerStrategy;
   MotionStatus const& motionStatus;
+  CompassDirection const& compassDirection;
 
   // calculate the best foot to approach the ball with
   // true if the right foot ich choosen, false else

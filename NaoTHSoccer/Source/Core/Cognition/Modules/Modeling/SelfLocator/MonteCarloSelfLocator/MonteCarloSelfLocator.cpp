@@ -142,13 +142,14 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
   double sigmaAngle = parameters.sigmaAngleGoalModel;
 
   Pose2D pose;
-  if (getPlayerInfo().gameData.teamColor == GameData::red)
-  {
-    pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
-  }else
-  {
-    pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
-  }//end else
+  //20.02.2012 - caused by different goal color
+  //if (getPlayerInfo().gameData.teamColor == GameData::red)
+  //{
+    pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
+  //}else
+  //{
+  //  pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
+  //}//end else
 
   updateByPose(sampleSet, pose, sigmaDistance, sigmaAngle);
 }//end updateByGoalModel
@@ -736,13 +737,14 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   if(n < oldSampleSet.numberOfParticles && getSensingGoalModel().someGoalWasSeen)
   {
     Pose2D pose;
-    if (getPlayerInfo().gameData.teamColor == GameData::red)
-    {
-      pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
-    }else
-    {
-      pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
-    }//end else
+    //20.02.2012
+    //if (getPlayerInfo().gameData.teamColor == GameData::red)
+    //{
+      pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
+    //}else
+    //{
+    //  pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
+    //}//end else
 
     if(isInsideCarpet(pose.translation))
     {
@@ -1050,7 +1052,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   {
     // update by the old position in order to stabilize it
     if(parameters.updateByOldPose > 0 && initialized && 
-      (getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo()).translation-
+      (getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo()).translation-
       getRobotPose().translation).abs() < 700)
     {
       updateByOldPose(sampleSet);
@@ -1210,7 +1212,7 @@ void MonteCarloSelfLocator::execute()
   }
 
   getRobotPose() = newPose;
-  getSelfLocGoalModel().update(getPlayerInfo().gameData.teamColor, getRobotPose(), getFieldInfo());
+  getSelfLocGoalModel().update(getCompassDirection(), getRobotPose(), getFieldInfo());
 
   /************************************
    * execude some debug requests (drawings)
@@ -1401,6 +1403,7 @@ void MonteCarloSelfLocator::drawSamplesImportance(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::drawSelfLocGoalModel() const
 {
+  /*18.02.2012
   FIELD_DRAWING_CONTEXT;
 
   PEN("0000FF",20);
@@ -1411,6 +1414,7 @@ void MonteCarloSelfLocator::drawSelfLocGoalModel() const
   CIRCLE(getSelfLocGoalModel().yellowGoal.leftPost.x, getSelfLocGoalModel().yellowGoal.leftPost.y, getFieldInfo().goalpostRadius);
   CIRCLE(getSelfLocGoalModel().yellowGoal.rightPost.x, getSelfLocGoalModel().yellowGoal.rightPost.y, getFieldInfo().goalpostRadius);
   LINE(getSelfLocGoalModel().yellowGoal.leftPost.x, getSelfLocGoalModel().yellowGoal.leftPost.y,getSelfLocGoalModel().yellowGoal.rightPost.x, getSelfLocGoalModel().yellowGoal.rightPost.y);
+  */
 }//end drawSelfLocGoalModel
 
 

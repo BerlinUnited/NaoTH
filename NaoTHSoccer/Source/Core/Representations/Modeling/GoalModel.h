@@ -8,8 +8,8 @@
 * Definition of class GoalModel
 */
 
-#ifndef __GoalModel_h_
-#define __GoalModel_h_
+#ifndef _GoalModel_h_
+#define _GoalModel_h_
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Pose2D.h>
@@ -18,6 +18,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Modeling/CompassDirection.h"
 
 class GoalModel : public naoth::Printable
 {
@@ -31,6 +32,9 @@ public:
     Vector2<double> leftPost;
     Vector2<double> rightPost;
     FrameInfo frameInfoWhenGoalLastSeen;
+    
+    /* color of the goal */
+    ColorClasses::Color color;
 
     Vector2<double> calculateCenter() const
     {
@@ -39,19 +43,27 @@ public:
 
   };//end class Goal
 
-  Goal blueGoal;
-  Goal yellowGoal;
+  Goal goal;
 
-  const Goal& getTeamGoal(naoth::GameData::TeamColor teamColor) const;
-  Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
+  const Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
+  const Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
+
+
+  // TODO: deprecated?!
+  //const Goal& getTeamGoal(naoth::GameData::TeamColor teamColor) const;
+  //Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
 
   virtual void print(ostream& stream) const;
 
   void draw() const;
 
-  void calculateBlueByYellow(double xLength);
-  void calculateYellowByBlue(double xLength);
-  Pose2D calculatePose(ColorClasses::Color opponentGoalColor, const FieldInfo& fieldInfo) const;
+  static GoalModel::Goal calculateAnotherGoal(const GoalModel::Goal& one, double distance);
+  Pose2D calculatePose(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+
+  //private:
+  //  Goal another;
 };//end class GoalModel
 
 /** goal model in robot's local coordinates based on pure observations of the goal posts */
@@ -79,9 +91,12 @@ public:
 class SelfLocGoalModel : public GoalModel
 {
 public:
-  void update(naoth::GameData::TeamColor ownColor, const Pose2D& robotPose, const FieldInfo& fieldInfo);
-};
+  void update(const CompassDirection& compassDirection, const Pose2D& robotPose, const FieldInfo& fieldInfo);
 
+  inline const Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const { return GoalModel::getOwnGoal(compassDirection, fieldInfo); }
+  inline const Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const { return GoalModel::getOppGoal(compassDirection, fieldInfo); }
+
+};
 
 class SensingGoalModel : public GoalModel
 {
