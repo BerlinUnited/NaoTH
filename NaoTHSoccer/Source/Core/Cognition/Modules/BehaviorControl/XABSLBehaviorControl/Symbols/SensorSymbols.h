@@ -40,7 +40,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BodyState)
   REQUIRE(LocalObstacleModel)
   REQUIRE(RadarGrid)
-  REQUIRE(Path)
+  PROVIDE(Path)
   REQUIRE(Image)
 
   REQUIRE(ButtonData)
@@ -88,7 +88,7 @@ private:
   BodyState const& bodyState;
   LocalObstacleModel const& obstacleModel;
   RadarGrid const& radarGrid;
-  Path const& path;
+  Path& path;
   Image const& image;
 
 
@@ -123,6 +123,12 @@ private:
   static double getTimeSinceObstacleWasSeen();
   static double getObstacleAngle();
   static double getObstacleDistance();
+
+  static double getTargetPointX();
+  static double getTargetPointY();
+
+  static void setTargetpointX(double targetX);
+  static void setTargetpointY(double targetY);
 
   static double getCameraBufferFailedCount();
   bool resetingCamera;
