@@ -13,14 +13,30 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+#include <limits>
 
 // naoth framework headers
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
-
 #include "Tools/Debug/Stopwatch.h"
 
+
+// Representations
+#include "Representations/Modeling/PlayersModel.h"
+#include "Representations/Modeling/ObstacleModel.h"
+#include "Representations/Modeling/RadarGrid.h"
+#include "Representations/Modeling/BallModel.h"
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/GoalModel.h"
+#include "Representations/Modeling/RobotPose.h"
+#include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/Path.h"
+#include "Representations/Motion/MotionStatus.h"
+// Percepts
+#include "Representations/Perception/ScanLineEdgelPercept.h"
+
+// class specific headers
 #include "AStarSearchParameters.h"
 
 #define EPSILON 0.00000001
@@ -140,6 +156,7 @@ public:
               const AStarNode& start,
               const AStarNode& goal,
               const AStarSearchParameters& parameterSet,
+              const std::vector<Vector2d>& obstacles,
               unsigned int ownNodeNum);
 
   /** Checks if this node has been expanded
@@ -224,7 +241,15 @@ protected:
   */
   bool tooCloseToAnotherNode(std::vector<AStarNode>& searchTree,
                              const std::vector<unsigned int>& expandedNodes,
-                             const Vector2d position) const;
+                             const Vector2d& position) const;
+
+  /** Tests if any node is too close to some goal
+  * @param obstacles The obstacles to test
+  * @param parameterSet The parameter set
+  * @return true, if the node is close to some obstacle
+  */
+  bool tooCloseToObstacle(const std::vector<Vector2d>& obstacles, const Vector2d& position,const AStarSearchParameters& parameterSet) const;
+
 };// end class AStarNode
 
 /** For sorting the heap the STL needs compare function that lets us compare
@@ -268,6 +293,7 @@ public:
     searchTree.reserve(elementsToReserve);
     expandedNodes.reserve(elementsToReserve);
     pathFound = false;
+    this->obstacles = obstacles;
   }// end constructor
 
 
@@ -278,8 +304,13 @@ public:
   * @param pathLength Returns the length of the path to the goal
   * @return The next node to go to
   */
-	AStarNode search(const AStarNode& start, const AStarNode& goal, double& pathLength)
+	AStarNode search(const AStarNode& start, const AStarNode& goal, double& pathLength, std::vector<Vector2d>& obstacles)
 	{
+    // set obstacles, goal, start
+    this->obstacles = obstacles;
+    this->start = start;
+    this->goal = goal;
+
     if(start.hasReached(goal, parameterSet))
     {
       return start;
@@ -298,7 +329,7 @@ public:
     {
       // find next node to expand (the one with
       // the minimal function value)
-      nextNodeToExpand = findIndexOfNextNode();
+      nextNodeToExpand = findNextNodeToExpand();
       // can we expand other nodes, or should we stop (memory bounding...)
       if(searchTree.size() >= (unsigned int)maxTreeSize)
       {
@@ -309,10 +340,10 @@ public:
       {
         unsigned int sizeBeforeExpand(searchTree.size());
         searchTree[nextNodeToExpand].successor(searchTree, expandedNodes, start,
-                                            goal, parameterSet, nextNodeToExpand);
+                                            goal, parameterSet, obstacles, nextNodeToExpand);
         expandedNodes.push_back(nextNodeToExpand);
         unsigned int sizeAfterExpand(searchTree.size());
-        int result(testNewNodesAgainstGoal(sizeBeforeExpand, sizeAfterExpand-1,goal));
+        int result(testNewNodesAgainstGoal(sizeBeforeExpand, sizeAfterExpand,goal));
         if(result != -1)
         {
           indexOfBestNode = result;
@@ -320,6 +351,7 @@ public:
         }
       }
     }
+    this->goal.setParentNode(indexOfBestNode);
     AStarNode result = backtraceNode(indexOfBestNode, pathLength);
     // return the node
     return result;
@@ -334,6 +366,7 @@ public:
   void drawHeuristic();
   void drawCost();
   void drawFunction();
+  void drawObstacles();
 
 
 private:
@@ -348,17 +381,24 @@ private:
   /** Did we find the path to Goal? */
   bool pathFound;
 
+  // obstacles positions
+  std::vector<Vector2d> obstacles;
+
+  // start and goal
+  AStarNode start;
+  AStarNode goal;
+
   /** 
   * Finds the next node to be expanded
   * @return The index of the node
   */
-  unsigned int findIndexOfNextNode()
+  unsigned int findNextNodeToExpand()
   {
     unsigned int expandableNode(0);
     // find first unexpanded node
     while(searchTree[expandableNode].hasBeenExpanded())
     {
-      ++expandableNode;
+      expandableNode++;
     }
     // store his function value (cost+heuristic)
     double f = searchTree[expandableNode].f();
@@ -384,15 +424,25 @@ private:
   int testNewNodesAgainstGoal(unsigned int firstNode, unsigned int lastNode,
                               const AStarNode& goal)
   {
-    for(unsigned int i = firstNode; i<= lastNode; i++)
+    double maxDistance(numeric_limits<double>::infinity());
+    double temp(0.0);
+    int result(-1);
+    for(unsigned int i = firstNode; i < lastNode; i++)
     {
       if(searchTree[i].hasReached(goal, parameterSet))
       {
-        return (int)i;
+        temp = searchTree[i].distToOtherNode(goal);
+        if (temp < maxDistance)
+        {
+          maxDistance = temp;
+          result = i;
+        }
       }
     }
-    return -1;
+    return result;
+
   }
+
 
   /** Back-traces the best node found to the first node after the start node
   * @param indexOfBestNode The index of the best node found

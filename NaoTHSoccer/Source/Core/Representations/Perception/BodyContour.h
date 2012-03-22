@@ -93,8 +93,7 @@ public:
     {
       point.y -= stepSize;
     }
-    // TODO: remove magic numbers
-    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
+    ASSERT(start.x >= 0 && start.x <= cameraResolution.x && start.y >= 0 && start.y <= cameraResolution.y);
     return point;
   }
 

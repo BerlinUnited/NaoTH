@@ -23,7 +23,11 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/Path.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "XabslEngine/XabslSymbols.h"
+// Percepts
+#include "Representations/Perception/ScanLineEdgelPercept.h"
 
 // module specific headers
 #include "AStarSearch.h"
@@ -31,6 +35,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(PathPlanner)
+  // representations
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
   REQUIRE(LocalObstacleModel)
@@ -42,6 +47,10 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   REQUIRE(PlayersModel)
   REQUIRE(RobotPose)
   REQUIRE(MotionStatus)
+  // percepts
+  REQUIRE(ScanLineEdgelPercept)
+  // provide path
+  PROVIDE(Path)
 END_DECLARE_MODULE(PathPlanner)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -49,7 +58,7 @@ END_DECLARE_MODULE(PathPlanner)
 class PathPlanner: public PathPlannerBase
 {
 public:
-public:
+
   /** functions */
   PathPlanner();
   ~PathPlanner(){}
@@ -65,6 +74,11 @@ public:
 
 protected:
 private:
+
+  Vector2d goalPoint;
+
+  // obstacle positions
+  std::vector<Vector2d> obstaclesPositions;
 };
 
 #endif // PathFinder_h_
