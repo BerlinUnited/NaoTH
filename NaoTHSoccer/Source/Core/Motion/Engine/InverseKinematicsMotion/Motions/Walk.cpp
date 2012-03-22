@@ -121,6 +121,10 @@ void Walk::feetStabilize(double (&position)[naoth::JointData::numOfJoint])
 {
   // calculate the cycle
   // the same as in "FootTrajectorGenerator::genTrajectory"
+  
+  // no stabilization if there are no steps planned
+  if(stepBuffer.empty()) return;
+
   const Step& executingStep = stepBuffer.front();
   double doubleSupportEnd = executingStep.samplesDoubleSupport / 2 + executingStep.extendDoubleSupport;
   double doubleSupportBegin = executingStep.samplesDoubleSupport / 2 + executingStep.samplesSingleSupport;
