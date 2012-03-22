@@ -2,8 +2,8 @@ option play_with_check_fall_down
 {  
 
   common decision {
-    if(fall_down_state != upright)
-      goto stand_up;
+    if(abs(value=sensor.inertial.y)>20)
+       goto fall_and_stand_up;      
   }
 
   initial state _init
@@ -70,20 +70,7 @@ option play_with_check_fall_down
 
 
 
-  state stand_up
-  {
-    decision
-    {
-      else if(action_done)
-        goto calibrate;
-      else
-        stay;
-    }
-    action 
-    {
-      stand_up();
-    }
-  }
+  
 
   state calibrate
   {
@@ -136,6 +123,21 @@ option play_with_check_fall_down
       sensor.camera.reset = false;
       set_right_eye = blue;
       set_left_eye = blue;
+    }
+  }
+
+  state fall_and_stand_up
+  {
+    decision
+    {
+      else if (action_done)
+        goto _init;
+      else 
+        stay; 
+    }
+    action
+    {
+      falling_down_standing_up();
     }
   }
 }
