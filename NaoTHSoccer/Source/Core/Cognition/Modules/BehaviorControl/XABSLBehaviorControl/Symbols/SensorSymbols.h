@@ -67,7 +67,6 @@ public:
     theInstance = this;
     forceGetCameraSettings = false;
     forceGetCameraSettingsOldValue = false;
-    parameter_obstDistByAngle_angle = 0;
   }
 
   /** registers the symbols at an engine */
@@ -98,15 +97,6 @@ private:
 
   static SensorSymbols* theInstance;
 
-  /*double directionParameter;
-  double passagewayParameter1;
-  double passagewayParameter2;
-  static double getObstacleRadialDirection_free();
-  static double getObstacleRadialPassageway_free();
-  static double getObstacleRadialObstacle_left();
-  static double getObstacleRadialObstacle_right();
-  static double getObstacleRadialObstacle_front();*/
-
   //get-method
   static double getIRButtonNumber();
   static double getFrameNumber();
@@ -115,13 +105,8 @@ private:
 
   static int getFallDownState();
 
-  //Radar Obstacle
-  static bool getIfObstacleSeen();
-  static double getObstDistByAngle();
-  double parameter_obstDistByAngle_angle;
-
-  static double getTimeSinceObstacleWasSeen();
   static double getObstacleDistance();
+  static double getBlockedTime();
 
   static double getTargetPointX();
   static double getTargetPointY();

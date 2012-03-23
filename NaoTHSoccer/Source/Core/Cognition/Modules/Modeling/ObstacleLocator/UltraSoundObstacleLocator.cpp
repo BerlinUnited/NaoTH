@@ -13,6 +13,7 @@
 #include "UltraSoundObstacleLocator.h"
 
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
+  : wasFrontBlockedInLastFrame(false)
 {
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacles", "draw the modelled Obstacle on the field", false);
 }
@@ -117,6 +118,21 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
   if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
   {
     model.frontDistance = std::min(model.leftDistance, model.rightDistance);
+  }
+
+  if(model.frontDistance < minBlockedDistance)
+  {
+    if(!wasFrontBlockedInLastFrame)
+    {
+      timeWhenFrontBlockStarted = getFrameInfo();
+    }
+    wasFrontBlockedInLastFrame = true;
+    model.blockedTime = getFrameInfo().getTimeSince(timeWhenFrontBlockStarted.getTime());
+  }
+  else
+  {
+    model.blockedTime = -1;
+    wasFrontBlockedInLastFrame = false;
   }
 
 } //end provideToLocalObstacleModel

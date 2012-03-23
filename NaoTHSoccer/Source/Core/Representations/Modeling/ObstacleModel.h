@@ -36,7 +36,7 @@ public:
   double rightDistance;
   double frontDistance;
 
-  FrameInfo frameWhenObstacleWasSeen;
+  int blockedTime;
 
   virtual void print(ostream& stream) const;
 };//end class ObstacleModel

@@ -57,11 +57,10 @@ public:
 private:
 
   static const double maxValidDistance = 500.0;
+  static const double minBlockedDistance = 350.0;
 
-
-  // Functionality
-  double getMean();
-  double getMinimum();
+  bool wasFrontBlockedInLastFrame;
+  FrameInfo timeWhenFrontBlockStarted;
 
   void provideToLocalObstacleModel();
   void drawObstacleModel();

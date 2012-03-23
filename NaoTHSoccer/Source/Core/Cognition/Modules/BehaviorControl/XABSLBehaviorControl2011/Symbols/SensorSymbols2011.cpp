@@ -148,8 +148,8 @@ double SensorSymbols2011::simplePassRightSensor()
 
 double SensorSymbols2011::getTimeSinceObstacleWasSeen()
 {
-  return (double)theInstance->frameInfo.getTimeSince(
-    theInstance->obstacleModel.frameWhenObstacleWasSeen.getTime());
+  // TODO: remove this since it is always invalid
+  return 0.0;
 }//end getFrameWhenObstacleWasSeen
 
 

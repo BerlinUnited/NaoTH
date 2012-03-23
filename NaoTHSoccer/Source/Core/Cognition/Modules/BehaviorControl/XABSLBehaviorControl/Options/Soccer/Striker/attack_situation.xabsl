@@ -37,7 +37,7 @@ option attack_situation
         }
       }
       // obstacle in front: kick side
-      else if(obstacle.ultrasound.distance < 350 && obstacle.ultrasound.time_since_seen < 1000)
+      else if(obstacle.ultrasound.distance < 350)
       {
         goto turn_to_ball_for_clear; // dribble
       }

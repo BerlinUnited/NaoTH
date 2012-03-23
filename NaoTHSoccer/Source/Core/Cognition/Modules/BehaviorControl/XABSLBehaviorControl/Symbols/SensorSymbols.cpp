@@ -39,15 +39,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
-  engine.registerDecimalInputSymbol("obstacle.ultrasound.time_since_seen", &getTimeSinceObstacleWasSeen);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
+  engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  //new radar obstacles
-  engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
-  engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);
   engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
   engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
-  engine.registerDecimalInputSymbolDecimalParameter("getObstDistByAngle", "getObstDistByAngle.angle", &parameter_obstDistByAngle_angle);
 
   engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
   engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
@@ -110,11 +106,6 @@ double SensorSymbols::getFrameNumber()
   return (double) (theInstance->frameInfo.getFrameNumber());
 }
 
-double SensorSymbols::getObstDistByAngle()
-{
-  double angle = Math::fromDegrees(theInstance->parameter_obstDistByAngle_angle);
-  return theInstance->radarGrid.getDistanceForAngle(angle);
-}
 
 int SensorSymbols::getFallDownState()
 {
@@ -151,15 +142,14 @@ double SensorSymbols::simplePassRightSensor()
 } // end simpleRightUSSensor
 
 
-double SensorSymbols::getTimeSinceObstacleWasSeen()
-{
-  return (double)theInstance->frameInfo.getTimeSince(
-    theInstance->obstacleModel.frameWhenObstacleWasSeen.getTime());
-}//end getFrameWhenObstacleWasSeen
-
 double SensorSymbols::getObstacleDistance()
 {
   return theInstance->obstacleModel.frontDistance;
+}//end getObstacleDistance
+
+double SensorSymbols::getBlockedTime()
+{
+  return theInstance->obstacleModel.blockedTime;
 }//end getObstacleDistance
 
 double SensorSymbols::getCameraBufferFailedCount()
