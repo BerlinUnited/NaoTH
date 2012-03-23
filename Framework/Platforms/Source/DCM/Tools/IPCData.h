@@ -61,29 +61,6 @@ namespace naoth
   private:
     T data;
   };
-
-  /*
-  // data written by naoth
-  class NaoCommandData
-  {
-  public:
-    void set(const LEDData& data) { theLEDData = data; }
-    void set(const IRSendData& data) { theIRSendData = data; }
-    void set(const UltraSoundSendData& data) { theUltraSoundSendData = data; }
-    void set(const MotorJointData& data){ theMotorJointData = data; }
-    
-    const LEDData& lEDData() const { return theLEDData; }
-    const IRSendData& iRSendData() const { return theIRSendData; }
-    const UltraSoundSendData& ultraSoundSendData() const { return theUltraSoundSendData; }
-    const MotorJointData& motorJointData() const { return theMotorJointData; }
-
-  private:
-    LEDData theLEDData;
-    IRSendData theIRSendData;
-    UltraSoundSendData theUltraSoundSendData;
-    MotorJointData theMotorJointData;
-  };
-  */
 }
 
 #endif // _IPC_DATA_H_

@@ -27,8 +27,6 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/BodyState.h"
-#include "Representations/Modeling/ObstacleModel.h"
-//#include "Representations/Modeling/VisualObstacleModel.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 #include "Representations/Perception/BallPercept.h"
@@ -48,9 +46,6 @@ BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(Image)
 
-//  PROVIDE(VisualObstacleModel)
-  PROVIDE(UltraSoundSendData)
-  PROVIDE(LocalObstacleModel)
   PROVIDE(RadarGrid)
 END_DECLARE_MODULE(VisualObstacleLocator)
 
@@ -63,7 +58,7 @@ public:
   // default constructor
   VisualObstacleLocator();
   // default destructor
-  ~VisualObstacleLocator(){};
+  ~VisualObstacleLocator(){}
 
   // some variables
 

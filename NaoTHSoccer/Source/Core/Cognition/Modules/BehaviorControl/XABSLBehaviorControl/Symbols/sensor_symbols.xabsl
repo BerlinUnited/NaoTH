@@ -40,20 +40,8 @@ namespace sensor("Sensor Symbols") {
   float input sensor.ultrasound.right;
 
   /** use the obstacle model (buffer) */
-  float input obstacle.ultrasound.time_since_seen;
   float input obstacle.ultrasound.distance;
-
-  /** ... */
-  bool input obstacle.visual.was_seen;
-  float input obstacle.visual.x;
-  float input obstacle.visual.y;
-
-  bool input obstacle.radar.was_seen;
-
-  /** RadarGrid provided obstacles */
-   float input getObstDistByAngle (
-    angle [decimal];
-  );
+  float input obstacle.ultrasound.blockedtime;
   
   /** number of the button pressed on a remote control*/
   float input button.remote;

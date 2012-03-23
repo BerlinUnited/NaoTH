@@ -25,7 +25,7 @@ public:
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
   virtual Module* getModule() const = 0;
-  virtual ~AbstractModuleCreator() {};
+  virtual ~AbstractModuleCreator() {}
 };
 
 /**

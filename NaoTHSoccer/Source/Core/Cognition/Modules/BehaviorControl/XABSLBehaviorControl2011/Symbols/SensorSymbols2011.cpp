@@ -42,10 +42,6 @@ void SensorSymbols2011::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.time_since_seen", &getTimeSinceObstacleWasSeen);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
 
-  engine.registerBooleanInputSymbol("obstacle.visual.was_seen", &obstacleModel.visualObstacleWasSeen);
-  engine.registerDecimalInputSymbol("obstacle.visual.x", &obstacleModel.posVisualObstacle.x);
-  engine.registerDecimalInputSymbol("obstacle.visual.y", &obstacleModel.posVisualObstacle.y);
-
   //new radar obstacles
   engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
   engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);
@@ -152,18 +148,14 @@ double SensorSymbols2011::simplePassRightSensor()
 
 double SensorSymbols2011::getTimeSinceObstacleWasSeen()
 {
-  return (double)theInstance->frameInfo.getTimeSince(
-    theInstance->obstacleModel.frameWhenObstacleWasSeen.getTime());
+  // TODO: remove this since it is always invalid
+  return 0.0;
 }//end getFrameWhenObstacleWasSeen
 
-double SensorSymbols2011::getObstacleAngle()
-{
-  return Math::toDegrees(theInstance->obstacleModel.ultraSoundObstacleEstimation.angle());
-}//end getObstacleAngle
 
 double SensorSymbols2011::getObstacleDistance()
 {
-  return theInstance->obstacleModel.ultraSoundObstacleEstimation.abs();
+  return theInstance->obstacleModel.frontDistance;
 }//end getObstacleDistance
 
 double SensorSymbols2011::getCameraBufferFailedCount()

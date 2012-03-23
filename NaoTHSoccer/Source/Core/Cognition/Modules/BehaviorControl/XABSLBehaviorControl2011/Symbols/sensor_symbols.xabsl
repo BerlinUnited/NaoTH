@@ -43,11 +43,6 @@ namespace sensor("Sensor Symbols") {
   float input obstacle.ultrasound.time_since_seen;
   float input obstacle.ultrasound.distance;
 
-  /** ... */
-  bool input obstacle.visual.was_seen;
-  float input obstacle.visual.x;
-  float input obstacle.visual.y;
-
   bool input obstacle.radar.was_seen;
 
   /** RadarGrid provided obstacles */

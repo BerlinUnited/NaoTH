@@ -65,7 +65,7 @@ option penalty_set_penalized_play
   state playing {
     action 
     {
-      sound.request = (state_time == 0)  ? playing : off;
+      //sound.request = (state_time == 0)  ? playing : off;
       decide_penalty_role();
       //check_fall_down();
       last_state_was_penalized = false;

@@ -50,7 +50,6 @@ include "Options/Skills/dribble_spl.xabsl";
 include "Options/Skills/turn_around_ball_face_goal.xabsl";
 include "Options/Skills/approach_ball_with_correct_foot.xabsl";
 include "Options/Skills/calibrate_intertial.xabsl";
-include "Options/Skills/avoid_obstacle_spl.xabsl";
 include "Options/Skills/go_to_relative_point_with_distance_and_rot.xabsl";
 include "Options/Skills/falling_down_standing_up.xabsl";
 

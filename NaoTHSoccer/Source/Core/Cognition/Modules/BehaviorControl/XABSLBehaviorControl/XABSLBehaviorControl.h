@@ -76,50 +76,6 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
 
   PROVIDE(MotionRequest)
   PROVIDE(BehaviorStatus)
-/*
-  
-  
-  REQUIRE(TeamMessage)
-  REQUIRE(MotionStatus)
-  REQUIRE(OdometryData)
-  REQUIRE(KinematicChain)
-
-  // percepts
-  REQUIRE(UltraSoundReceiveData)
-  REQUIRE(GyrometerData)
-  REQUIRE(GPSData)
-  REQUIRE(IRReceiveData)
-  REQUIRE(BallPercept)
-  REQUIRE(GoalPercept)
-  REQUIRE(BatteryData)
-  REQUIRE(Image)
-  REQUIRE(LinePercept)
-  REQUIRE(SensorJointData)
-
-  // models
-  REQUIRE(LocalGoalModel)
-  
-  
-  REQUIRE(TeamBallModel)
-  REQUIRE(LocalObstacleModel)
-  
-  REQUIRE(BodyState)
-  REQUIRE(PlayersModel)
-  REQUIRE(SoccerStrategy)
-
-  // HACK
-  PROVIDE(InertialSensorData)
-  
-  
-  PROVIDE(AttentionModel)
-  PROVIDE(HeadMotionRequest)
-  
-  PROVIDE(LEDRequest)
-  PROVIDE(SoundPlayData)
-  PROVIDE(PlayerInfo)
-
-  //PROVIDE(CameraSettingsRequest)
-*/
 END_DECLARE_MODULE(XABSLBehaviorControl)
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 

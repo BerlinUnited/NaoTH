@@ -38,7 +38,7 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   // representations
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
-  REQUIRE(LocalObstacleModel)
+  REQUIRE(ObstacleModel)
   REQUIRE(RadarGrid)
   REQUIRE(PlayerInfo)
   REQUIRE(BallModel)
