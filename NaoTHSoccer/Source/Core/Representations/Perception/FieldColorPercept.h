@@ -120,6 +120,11 @@ public:
     distCr = params.fieldcolorDistMax.v;
   }
 
+  inline bool isFieldCromaRed(int cr) const
+  {
+    return abs(cr - (int)maxWeightedIndexCr) < distCr;
+  }
+
   inline bool isFieldColor(const unsigned int& yy, const unsigned int& cb, const unsigned int& cr) const
   {
     return greenRegion.inside(yy, cb, cr);

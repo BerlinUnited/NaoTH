@@ -29,6 +29,11 @@ void ShadingCorrection::init(unsigned int w, unsigned int h, CameraInfo::CameraI
   size = w * h;
   yC = new unsigned int[size];
   reset();
+  loadCorrectionFromFile
+  (
+    Platform::getInstance().theConfigDirectory,
+    Platform::getInstance().theHardwareIdentity
+  );
 }
 
 void ShadingCorrection::clear()
@@ -46,7 +51,8 @@ bool ShadingCorrection::loadCorrectionFromFile(string camConfigPath, string hard
   if(yC != NULL)
   {
     stringstream cameraYCPath;
-    cameraYCPath << camConfigPath << "/camera_";
+
+    cameraYCPath << camConfigPath << "private/camera_";
     cameraYCPath << hardwareID << "_" << width << "x" << height;
     if(camID == CameraInfo::Bottom)
     {
@@ -57,7 +63,7 @@ bool ShadingCorrection::loadCorrectionFromFile(string camConfigPath, string hard
       cameraYCPath << "_top.yc";
     }
    
-    cout << "Load " << cameraYCPath.str();
+    cout << "Loading from " << cameraYCPath.str() << endl;
     ifstream inputFileStream ( cameraYCPath.str().c_str() , ifstream::in | ifstream::binary );
 
     if(inputFileStream.fail())
@@ -97,7 +103,7 @@ void ShadingCorrection::saveCorrectionToFile(string camConfigPath, string hardwa
   if(yC != NULL)
   {
     stringstream cameraYCPath;
-    cameraYCPath << camConfigPath << "/camera_";
+    cameraYCPath << camConfigPath << "private/camera_";
     cameraYCPath << hardwareID << "_" << width << "x" << height;
     if(camID == CameraInfo::Bottom)
     {
@@ -107,7 +113,7 @@ void ShadingCorrection::saveCorrectionToFile(string camConfigPath, string hardwa
     {
       cameraYCPath << "_top.yc";
     }
-    cout << "Load " << cameraYCPath.str() << endl;
+    cout << "Saving to " << cameraYCPath.str() << endl;
     ofstream outputFileStream ( cameraYCPath.str().c_str() , ofstream::out | ofstream::binary );
 
     outputFileStream.write((char*) yC, size * sizeof(unsigned int));

@@ -64,5 +64,13 @@ namespace sensor("Sensor Symbols") {
   bool output sensor.camera.reset;
 
   bool input button.bumper.pressed.left;
+
+  /** path planner */
+  
+  float input path.next_point_to_go_x;
+  float input path.next_point_to_go_y;
+
+  float output path.target_x;
+  float output path.target_y;
 }
   

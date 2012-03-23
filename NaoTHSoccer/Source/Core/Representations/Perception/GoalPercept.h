@@ -147,7 +147,7 @@ public:
 
   //////////////////////////////////////
   // getters
-  unsigned int getNumberOfSeenPosts() const { return numberOfSeenPosts; }
+  int getNumberOfSeenPosts() const { return (int)numberOfSeenPosts; }
   const GoalPost& getPost(unsigned int i) const { ASSERT(i < numberOfSeenPosts); return post[i]; }
 
 

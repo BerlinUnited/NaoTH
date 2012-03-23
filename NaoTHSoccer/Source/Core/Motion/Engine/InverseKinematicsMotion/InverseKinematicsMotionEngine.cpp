@@ -126,7 +126,7 @@ Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D
   return p;
 }//end interpolate
 
-HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p)
+HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p, bool fix_height)
 {
   // copy initial values
   HipFeetPose result;
@@ -134,18 +134,36 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   result.hip = p.com;
   result.localInHip();
   
+
   /* normally it should not affect the algorithm,
    * but when IK can not be solved, it affects the result, i.e., support foot is prefered.
    */
-  bool leftFootSupport = (result.feet.left.translation.abs2() < result.feet.right.translation.abs2());
-  
-  // transform all data in support foot local coordiantes
+  bool leftFootSupport = (result.feet.left.translation.z < result.feet.right.translation.z);
+
+  // requested com in the coordinates of the support foot
   Vector3<double> refCoM;
+  // support foot
+  Kinematics::Link* obsFoot;
+
+  // transform all data in support foot local coordiantes
   if ( leftFootSupport )
+  {
+    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
     refCoM = p.feet.left.invert() * p.com.translation;
+  }
   else
+  {
+    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::RFoot]);
     refCoM = p.feet.right.invert() * p.com.translation;
+  }
+
+  // 
+  obsFoot->R = RotationMatrix();
+  obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
   
+  // reuse results from last calculation for the starting value
+  result.hip.translation = theCoMControlResult;
+
 
   // copy the requested values for the head and arm joints
   const double *sj = theBlackBoard.theMotorJointData.position;//theBlackBoard.theSensorJointData.position;
@@ -156,19 +174,6 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   }
 
 
-  // reuse results from last calculation for the starting value
-  result.hip.translation = theCoMControlResult; 
-  
-
-  // set the support foot as orginal
-  Kinematics::Link* obsFoot;
-  if ( leftFootSupport )
-    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::LFoot]);
-  else
-    obsFoot = &(theInverseKinematics.theKinematicChain.theLinks[KinematicChain::RFoot]);
-    
-  obsFoot->R = RotationMatrix();
-  obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
 
   double bestError = std::numeric_limits<double>::max();
   int i = 0; // iteration
@@ -182,14 +187,19 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   
   for (; i < max_iter; i++)
   {
+    // calculate the joints fulfilling the result
     solveHipFeetIK(result);
+
+    // calculate the kinematic chain
     Kinematics::ForwardKinematics::updateKinematicChainFrom(obsFoot);
+    // ... and the com
     theInverseKinematics.theKinematicChain.updateCoM();
+
     Vector3<double> obsCoM = theInverseKinematics.theKinematicChain.CoM;
 
     Vector3<double> e = refCoM - obsCoM;
 
-    double error = e.abs2(); //e.x * e.x + e.y * e.y + e.z * e.z;
+    double error = e.x * e.x + e.y * e.y + e.z * e.z*(!fix_height);
 
     if (bestError < error)
     {
@@ -215,7 +225,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
     Vector3<double> u;
     u.x = Math::clamp(e.x * step, -50.0, 50.0);
     u.y = Math::clamp(e.y * step, -50.0, 50.0);
-    u.z = Math::clamp(e.z * step, -50.0, 50.0);
+    u.z = Math::clamp(e.z * step, -50.0, 50.0)*(!fix_height);
 
     result.hip.translation += u;
   }//end for
@@ -266,7 +276,7 @@ void InverseKinematicsMotionEngine::feetStabilize(double (&position)[naoth::Join
   position[JointData::LAnklePitch] += weight.y;
 
   lastGyro = gyro;
-}//end neuralStabilize
+}//end feetStabilize
 
 
 bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip, const Pose3D& leftFoot, const Pose3D& rightFoot)

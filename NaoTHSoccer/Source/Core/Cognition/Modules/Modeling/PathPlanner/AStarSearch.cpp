@@ -23,6 +23,7 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   const AStarNode& start,
   const AStarNode& goal,
   const AStarSearchParameters& parameterSet,
+  const std::vector<Vector2d>& obstacles,
   unsigned int ownNodeNum)
 {
   expanded = true;
@@ -31,24 +32,25 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   // compute new pseudo random params
   // for new node
   double currentBranchingFactor;
-  computeCurrentParameters(expansionRadius, currentBranchingFactor, start,parameterSet);
+  computeCurrentParameters(expansionRadius, currentBranchingFactor, start, parameterSet);
   Vector2d newPosition;
   double newG, newH;
   // angle between nodes: determines the angle distance between nodes
   // in some sector (could be the whole circle as well)
   double angleBetweenNodes(Math::pi / currentBranchingFactor);
   Vector2d parentPosition(searchTree[parentNode].getPosition());
-  double angleToParent((position - parentPosition).angle());
-  Vector2d nodePosition(expansionRadius, 0.0);
-  nodePosition.rotate(angleToParent-Math::pi_2);
   Vector2d goalPosition(goal.getPosition());
+  double angleToParent((position-parentPosition).angle());
+  double angleToGoal((goalPosition-position).angle());
+  Vector2d nodePosition(expansionRadius, 0.0);
+  nodePosition.rotate(angleToParent - Math::pi_2);
   for(int i = 0; i <= currentBranchingFactor; i++)
   {
     // estimate new position of the node
     newPosition = position;
     newPosition += nodePosition;
     // some constraints
-    if(!tooCloseToAnotherNode(searchTree, expandedNodes, newPosition))
+    if(!tooCloseToAnotherNode(searchTree, expandedNodes, newPosition) && !tooCloseToObstacle(obstacles, newPosition, parameterSet))
     {
       // set node params:
       // ..position
@@ -59,14 +61,34 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
       newNode.expansionRadius = expansionRadius;
       // ..heuristic and cost function
       newG = gValue + computeCostsTo(newNode);
-      newH = computeHeuristicBetween(newPosition, goalPosition);
+      newH = computeHeuristicBetween(goalPosition, newPosition);
       newNode.setFunctionValues(newG, newH);
       // push back new node to the tree...
       searchTree.push_back(newNode);
-      // and sort the heap
-      //push_heap(searchTree.begin(), searchTree.end(), HeapCompare());
     }
     nodePosition.rotate(angleBetweenNodes);
+  }
+  //make sure, that we added the closest to goal node as well
+  nodePosition.x = expansionRadius;
+  nodePosition.y = 0;
+  nodePosition.rotate(angleToGoal);
+  newPosition = position;
+  newPosition += nodePosition;
+  if(!tooCloseToAnotherNode(searchTree, expandedNodes, nodePosition) && !tooCloseToObstacle(obstacles, newPosition, parameterSet))
+  {
+    // set node params:
+    // ..position
+    newNode.setPosition(newPosition);
+    // ..parent
+    newNode.setParentNode(ownNodeNum);
+    // ..expansion radius
+    newNode.expansionRadius = expansionRadius;
+    // ..heuristic and cost function
+    newG = gValue + computeCostsTo(newNode);
+    newH = computeHeuristicBetween(newPosition, goalPosition);
+    newNode.setFunctionValues(newG, newH);
+    // push back new node to the tree...
+    searchTree.push_back(newNode);
   }
 } // end expand
 
@@ -98,47 +120,8 @@ inline double AStarNode::computeCostsTo(const AStarNode& node) const
 inline double AStarNode::computeHeuristicBetween(
   const Vector2d& p1, const Vector2d& p2) const
 {
-//   double angleToP2((p1-p2).angle());
-//   double angleBetween(Math::pi / currentBranchingFactor);
-//   double angleRatio(angleToP2 / angleBetween);
-//   if((angleRatio - floor(angleRatio)) < EPSILON)
-//   {
     double distance((p2 - p1).abs());
     return distance;
-//   }
-//   else
-//   {
-//     double smallerAngle(0.0), largerAngle(0.0);
-//     if(angleToP2 > 0)
-//     {
-//       while(largerAngle < angleToP2)
-//       {
-//         largerAngle += angleBetween;
-//       }
-//       smallerAngle = largerAngle - angleBetween;
-//     }
-//     else
-//     {
-//       while(smallerAngle > angleToP2)
-//       {
-//         smallerAngle -= angleBetween;
-//       }
-//       largerAngle = smallerAngle + angleBetween;
-//     }
-//     Vector2d vs(1.0,0.0);
-//     Vector2d vl(1.0,0.0);
-//     vs.rotate(smallerAngle);
-//     vl.rotate(largerAngle);
-//     Vector2d pDiff(p1-p2);
-//     double n((pDiff.x*vl.y - pDiff.y*vl.x) / (vs.x*vl.y - vs.y*vl.x));
-//     Vector2d intersectionPos(vs);
-//     intersectionPos *= n;
-//     intersectionPos += p2;
-//     double dist1((p1-intersectionPos).abs());
-//     double dist2((p2-intersectionPos).abs());
-//     return (dist1/expansionRadius*expansionRadius +
-//      dist2/expansionRadius)*expansionRadius;
-//   }
 }
 
 
@@ -157,7 +140,7 @@ inline void AStarNode::computeCurrentParameters(
   else if(dist > parameterSet.endOfFar)
   {
     currentExpansionRadius = parameterSet.maxExpansionRadius;
-    currentBranchingFactor = parameterSet.minBranchingFactor;
+    currentBranchingFactor = parameterSet.maxBranchingFactor;
   }
   else
   {
@@ -169,7 +152,7 @@ inline void AStarNode::computeCurrentParameters(
   }
 }
 
-bool AStarNode::tooCloseToAnotherNode( std::vector<AStarNode>& searchTree, const std::vector<unsigned int>& expandedNodes, const Vector2d position ) const
+bool AStarNode::tooCloseToAnotherNode( std::vector<AStarNode>& searchTree, const std::vector<unsigned int>& expandedNodes, const Vector2d& position ) const
 {
   for(unsigned int i=0; i<expandedNodes.size(); i++)
   {
@@ -180,6 +163,20 @@ bool AStarNode::tooCloseToAnotherNode( std::vector<AStarNode>& searchTree, const
     }
   }
   return false;
+}
+
+bool AStarNode::tooCloseToObstacle(const std::vector<Vector2d>& obstacles, const Vector2d& position,const AStarSearchParameters& parameterSet) const
+{
+  {
+    for(unsigned int i = 0; i < obstacles.size(); i++)
+    {
+      if ((position - obstacles[i]).abs() <= parameterSet.obstacleRadius + parameterSet.robotRadius)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 void AStarSearch::drawAllNodesField()
@@ -197,7 +194,24 @@ void AStarSearch::drawPathFiled()
 {
   FIELD_DRAWING_CONTEXT;
   PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
-
+  if (pathFound)
+  {
+    unsigned int currentNode = goal.getParentNode();
+    LINE(goal.getPosition().x, goal.getPosition().y, searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y);
+    PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
+    CIRCLE(goal.getPosition().x, goal.getPosition().y, parameterSet.robotRadius);
+    while(searchTree[currentNode].getParentNode() != 0)
+    {
+      PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
+      unsigned int nextNode = searchTree[currentNode].getParentNode();
+      LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, searchTree[nextNode].getPosition().x, searchTree[nextNode].getPosition().y);
+      PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
+      CIRCLE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, parameterSet.robotRadius);
+      currentNode = nextNode;
+    }
+    PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
+    LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, start.getPosition().x, start.getPosition().y);
+  }
 }
 
 void AStarSearch::drawHeuristic()
@@ -227,6 +241,18 @@ void AStarSearch::drawFunction()
   for (;it != searchTree.end(); it++)
   {
     TEXT_DRAWING(it->getPosition().x, it->getPosition().y, it->f());
+  }
+}
+
+void AStarSearch::drawObstacles()
+{
+  FIELD_DRAWING_CONTEXT;
+  for (unsigned int i = 0; i < obstacles.size(); i++)
+  {
+    PEN(ColorClasses::colorClassToHex(ColorClasses::black), 10);
+    CIRCLE(obstacles[i].x, obstacles[i].y, 10);
+    PEN(ColorClasses::colorClassToHex(ColorClasses::red), 5);
+    CIRCLE(obstacles[i].x, obstacles[i].y, parameterSet.obstacleRadius);
   }
 }
 

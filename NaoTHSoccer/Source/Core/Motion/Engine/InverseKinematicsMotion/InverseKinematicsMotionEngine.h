@@ -59,7 +59,7 @@ public:
     return p;
   }
 
-  InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p);
+  InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p, bool fix_height=false);
 
   unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
 

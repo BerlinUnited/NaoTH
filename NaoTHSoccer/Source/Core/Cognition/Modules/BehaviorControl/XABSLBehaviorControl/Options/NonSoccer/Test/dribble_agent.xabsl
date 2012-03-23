@@ -15,8 +15,8 @@ option dribble_agent
 	    //dribble_stand_test(kick_right=true, walk_before_kick=true, step_after_kick=false, step_direction_x=100, step_direction_y=500, kick_direction=90);
 
       // Walk, kick, sidestep
-       dribble_stand_test(kick_right=true, walk_before_kick=false, kick_direction=90);
-       head_control();
+      dribble_stand_test(kick_right=false, walk_before_kick=true, kick_direction=0);
+      head_control();
     }
 	}
 }

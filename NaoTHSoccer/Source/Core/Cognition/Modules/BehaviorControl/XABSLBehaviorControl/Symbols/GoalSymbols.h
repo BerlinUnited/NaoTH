@@ -5,14 +5,15 @@
 * Definition of class GoalSymbols
 */
 
-#ifndef __GaolSymbols_H_
-#define __GoalSymbols_H_
+#ifndef _GaolSymbols_H_
+#define _GoalSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
 // representations
 #include "Representations/Modeling/GoalModel.h"
+#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Perception/GoalPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
@@ -22,6 +23,8 @@ BEGIN_DECLARE_MODULE(GoalSymbols)
   REQUIRE(GoalPercept);
   REQUIRE(PlayerInfo);
   REQUIRE(FrameInfo);
+  REQUIRE(CompassDirection);
+  REQUIRE(FieldInfo);
 END_DECLARE_MODULE(GoalSymbols)
 
 class GoalSymbols: public GoalSymbolsBase
@@ -33,7 +36,9 @@ public:
     localGoalModel(getLocalGoalModel()),
     goalPercept(getGoalPercept()),
     playerInfo(getPlayerInfo()),
-    frameInfo(getFrameInfo())
+    frameInfo(getFrameInfo()),
+    compassDirection(getCompassDirection()),
+    fieldInfo(getFieldInfo())
   {
     theInstance = this;
     };
@@ -50,6 +55,8 @@ private:
   GoalPercept const& goalPercept;
   PlayerInfo const& playerInfo;
   FrameInfo const& frameInfo;
+  CompassDirection const& compassDirection;
+  FieldInfo const& fieldInfo;
 
   static GoalSymbols* theInstance;
 

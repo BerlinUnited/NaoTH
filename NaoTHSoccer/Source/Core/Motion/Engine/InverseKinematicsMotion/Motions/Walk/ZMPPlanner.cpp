@@ -25,11 +25,11 @@ Vector2d ZMPPlanner::betterOne(const FootStep& step, double offsetX, double offs
   double doubleSupportBegin = samplesDoubleSupport / 2 + samplesSingleSupport;
   samplesSingleSupport -= extendDoubleSupport;
 
-  
+  double t = 0.0;
   // interpolate in the double support phase
   if (cycle <= doubleSupportEnd)
   {
-    double t = (doubleSupportEnd + cycle) / samplesDoubleSupport;
+    t = (doubleSupportEnd + cycle) / samplesDoubleSupport;
 
     Pose3D supFoot = step.supFoot();
     supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);
@@ -43,7 +43,7 @@ Vector2d ZMPPlanner::betterOne(const FootStep& step, double offsetX, double offs
   }
   else if (cycle >= doubleSupportBegin)
   {
-    double t = (cycle-doubleSupportBegin) / samplesDoubleSupport;
+    t = (cycle-doubleSupportBegin) / samplesDoubleSupport;
 
     Pose3D supFoot = step.supFoot();
     supFoot.translate(offsetX, offsetY * step.liftingFoot(), 0);

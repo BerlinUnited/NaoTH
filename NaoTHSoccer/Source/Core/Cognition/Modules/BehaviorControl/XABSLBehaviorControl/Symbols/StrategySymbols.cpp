@@ -71,6 +71,19 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("soccer_strategy.formation.x", &soccerStrategy.formation.x);
   engine.registerDecimalInputSymbol("soccer_strategy.formation.y", &soccerStrategy.formation.y);
 
+  // XABSL-Option (current situation) symbol for some models.
+  // informs about the currently used option (option itself must set this variable!)
+  // register the enum type for head motion
+  //for(int i = 0; i < HeadMotionRequest::numOfHeadMotion; i++)
+  //{
+  //  string str("head.motion_type.");
+  //  str.append(HeadMotionRequest::getName((HeadMotionRequest::HeadMotionID)i));
+  //  engine.registerEnumElement("head.motion_type", str.c_str(), i);
+  //}
+  // engine.registerEnumeratedOutputSymbol("situationStatus", "StatusID", &getSituationStatusId);
+  engine.registerBooleanOutputSymbol("situationStatusOwnHalf", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
+
+
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
  
@@ -96,7 +109,17 @@ void StrategySymbols::execute()
 
 }//end execute
 
+//int StrategySymbols::getSituationStatusId(){ 
+//	return (int)(theInstance->situationStatus.id); 
+//}
 
+bool StrategySymbols::getSituationStatusOwnHalf(){ 
+	return (theInstance->getSituationStatus().ownHalf); 
+}
+
+void StrategySymbols::setSituationStatusOwnHalf(bool ownHalf){ 
+	theInstance->getSituationStatus().ownHalf = ownHalf; 
+}
 
 Vector2<double> StrategySymbols::calculateGoalieGuardPosition()
 {
@@ -200,7 +223,7 @@ double StrategySymbols::penaltyGoalieGuardPositionY()
 bool StrategySymbols::getApproachingWithRightFoot()
 {
   // get the vector to the center of the opponent goal
-  Vector2<double> oppGoal = theInstance->goalModel.getTeamGoal(!(theInstance->playerInfo.gameData.teamColor)).calculateCenter();
+  Vector2<double> oppGoal = theInstance->goalModel.getOppGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
   
   Vector2<double> ballPose = theInstance->ballModel.position;
 
@@ -262,7 +285,7 @@ double StrategySymbols::getOwnClosestToBallDistanceToBall()
 Pose2D StrategySymbols::calculateDefensePose()
 {
   Pose2D defPose;
-  Vector2<double> ownGoal = goalModel.getTeamGoal(playerInfo.gameData.teamColor).calculateCenter();
+  Vector2<double> ownGoal = goalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
 
   Pose2D g(ownGoal.angle(), ownGoal.x, ownGoal.y);
   g -= motionStatus.plannedMotion.hip;

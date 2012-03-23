@@ -12,9 +12,10 @@
 */
 
 #ifndef _StandMotion_H
-#define  _StandMotion_H
+#define _StandMotion_H
 
 #include "IKMotion.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 class StandMotion : public IKMotion
 {
@@ -85,8 +86,14 @@ public:
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
 
+
+    PLOT("Stand:hip:x",c.hip.translation.x);
+    PLOT("Stand:hip:y",c.hip.translation.y);
+    PLOT("Stand:hip:z",c.hip.translation.z);
+
+
     //if(theParameters.stand.stabilizeNeural)
-      theEngine.feetStabilize(theMotorJointData.position);
+    //  theEngine.feetStabilize(theMotorJointData.position);
 
     turnOffStiffnessWhenJointIsOutOfRange();
     currentState = motion::running;

@@ -1,0 +1,54 @@
+/** try go to relative point, via a path planner which avoids obstacles */
+option go_to_relative_point_avoid_obstacles
+{
+
+  float @x [mm];
+
+  float @y [mm];
+
+  float @rotation [deg];
+
+  initial state go_to {
+    decision{
+      if (abs(value = path.next_point_to_go_x) < 30
+        && abs(value = path.next_point_to_go_y) < 30
+        && abs(value = atan2(y=path.next_point_to_go_y, x=path.next_point_to_go_x)) < 15)
+        goto stand;
+      else
+        stay;
+    }
+    action{
+
+      //path planning
+      path.target_x=@x;
+      path.target_y=@y;
+
+      
+      motion.type = walk;
+      motion.walk.style = (abs(value=@x) < 200)?stable:normal;
+      motion.walk_speed.x = path.next_point_to_go_x;
+      motion.walk_speed.y = path.next_point_to_go_y;
+      motion.walk_speed.rot = atan2(y=path.next_point_to_go_y, x=path.next_point_to_go_x);
+    }
+  }
+  
+  target state stand
+  {
+    decision
+    {
+      if ( abs(value= @x) > 40
+        || abs(value= @y) > 40
+        || abs(value= @rotation) > 20)
+                          
+      {
+          goto go_to;
+      }
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }
+}

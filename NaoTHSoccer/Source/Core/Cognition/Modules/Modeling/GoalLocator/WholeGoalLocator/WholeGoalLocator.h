@@ -26,6 +26,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
+#include "Representations/Modeling/CompassDirection.h"
 #include <Representations/Perception/FieldSidePercept.h>
 
 
@@ -43,6 +44,7 @@ BEGIN_DECLARE_MODULE(WholeGoalLocator)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
   REQUIRE(CameraMatrix)
+  REQUIRE(CompassDirection)
 
   PROVIDE(SensingGoalModel)
 END_DECLARE_MODULE(WholeGoalLocator)
@@ -63,7 +65,7 @@ public:
 private:
   OdometryData lastRobotOdometry;
 
-  void checkAndInsertSingleGoal(
+  bool checkAndCalculateSingleGoal(
     const GoalPercept::GoalPost& post1,
     const GoalPercept::GoalPost& post2);
 

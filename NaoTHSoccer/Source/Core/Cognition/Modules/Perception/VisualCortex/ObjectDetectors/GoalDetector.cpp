@@ -157,18 +157,22 @@ void GoalDetector::execute()
 
 
     //TODO: handle the case if the projection is not possible
-    CameraGeometry::imagePixelToFieldCoord(
-      getCameraMatrix(),
-      getImage().cameraInfo,
-      postOne.basePoint.x, postOne.basePoint.y, 0.0,
-      postOne.position);
+    // position on the ground is not reliable if the post cannot be projected
+    postOne.positionReliable =
+      CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        postOne.basePoint.x, postOne.basePoint.y, 0.0,
+        postOne.position);
 
     //TODO: handle the case if the projection is not possible
-    CameraGeometry::imagePixelToFieldCoord(
-      getCameraMatrix(),
-      getImage().cameraInfo,
-      postTwo.basePoint.x, postTwo.basePoint.y, 0.0,
-      postTwo.position);
+    // position on the ground is not reliable if the post cannot be projected
+    postTwo.positionReliable = 
+      CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        postTwo.basePoint.x, postTwo.basePoint.y, 0.0,
+        postTwo.position);
 
     //TODO: try to calculate the position by the top of the post
 
@@ -176,8 +180,8 @@ void GoalDetector::execute()
     postOne.position.normalize(postOne.position.abs() + getFieldInfo().goalpostRadius);
     postTwo.position.normalize(postTwo.position.abs() + getFieldInfo().goalpostRadius);
 
-    postOne.positionReliable = checkIfPostReliable(postOne.basePoint);
-    postTwo.positionReliable = checkIfPostReliable(postTwo.basePoint);
+    postOne.positionReliable = postOne.positionReliable && checkIfPostReliable(postOne.basePoint);
+    postTwo.positionReliable = postTwo.positionReliable && checkIfPostReliable(postTwo.basePoint);
 
     getGoalPercept().add(postOne);
     getGoalPercept().add(postTwo);
@@ -185,13 +189,14 @@ void GoalDetector::execute()
   else if(numberOfPostsFound > 0) // only one post found
   {
     //TODO: handle the case if the projection is not possible
-    CameraGeometry::imagePixelToFieldCoord(
-      getCameraMatrix(),
-      getImage().cameraInfo,
-      postOne.basePoint.x, postOne.basePoint.y, 0.0,
-      postOne.position);
+    postOne.positionReliable = 
+      CameraGeometry::imagePixelToFieldCoord(
+        getCameraMatrix(),
+        getImage().cameraInfo,
+        postOne.basePoint.x, postOne.basePoint.y, 0.0,
+        postOne.position);
 
-    postOne.positionReliable = checkIfPostReliable(postOne.basePoint);
+    postOne.positionReliable = postOne.positionReliable && checkIfPostReliable(postOne.basePoint);
 
     postOne.type = GoalPercept::GoalPost::unknownPost;
     getGoalPercept().add(postOne);
@@ -247,7 +252,7 @@ void GoalDetector::execute()
   /////////////////////////////////////////////////////////
   // do some drawings
   DEBUG_REQUEST("ImageProcessor:GoalDetector:mark_goal",
-    for(unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
+    for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
     {
       const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
       ColorClasses::Color drawingColor;

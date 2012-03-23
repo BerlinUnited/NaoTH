@@ -31,6 +31,10 @@ public:
   double maxExpansionRadius;
   /** The minimum distance to the goal*/
   double distanceToGoal;
+  /** The radius of obstacle */
+  double obstacleRadius;
+  /** The radius of a robot */
+  double robotRadius;
   /** The minimum distance for enlarging expansion radius and reducing branching factor*/
   double endOfNear;
   /** The maximum distance for enlarging expansion radius and reducing branching factor*/

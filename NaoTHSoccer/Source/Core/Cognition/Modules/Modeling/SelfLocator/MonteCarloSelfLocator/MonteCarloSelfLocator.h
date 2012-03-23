@@ -50,6 +50,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
+  REQUIRE(CompassDirection)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)

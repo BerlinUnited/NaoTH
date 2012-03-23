@@ -27,6 +27,8 @@ BodyContourProvider::BodyContourProvider()
   getBodyContour().stepSize = 20;
   getBodyContour().yDensity = getImage().cameraInfo.resolutionHeight/getBodyContour().stepSize;
   getBodyContour().xDensity = getImage().cameraInfo.resolutionWidth/getBodyContour().stepSize;
+  getBodyContour().cameraResolution.x = getImage().cameraInfo.resolutionWidth;
+  getBodyContour().cameraResolution.y = getImage().cameraInfo.resolutionHeight;
  
   getBodyContour().grid.resize(getBodyContour().xDensity);
   for (int i = 0; i < getBodyContour().xDensity; i++)
@@ -230,13 +232,8 @@ inline bool BodyContourProvider::withinImage(const Vector2<double> point, const 
 {
   if (point.x >= 0 && point.x <= cameraInfo.resolutionWidth
       && point.y >= 0 && point.y <= cameraInfo.resolutionHeight)
-  {
-    return true;
-  } 
-  else
-  {
-    return false;
-  }
+  { return true; } 
+  else { return false; }
 }
 // TODO: Comment
 inline void BodyContourProvider::initializeGrid()

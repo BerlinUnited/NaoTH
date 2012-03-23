@@ -24,6 +24,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/GoalModel.h"
+#include "Representations/Modeling/CompassDirection.h"
 
 // Tools
 #include <vector>
@@ -39,6 +40,7 @@ BEGIN_DECLARE_MODULE(ActiveGoalLocator)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
+  REQUIRE(CompassDirection)
 
   PROVIDE(LocalGoalModel)
 END_DECLARE_MODULE(ActiveGoalLocator)
@@ -107,7 +109,7 @@ private:
   void cluster();
   int getClusterSize(const Vector2<double> start);
 
-  void debugDrawings(ColorClasses::Color lastGoalColor);
+  void debugDrawings();
   void updateByRobotOdometry();
   void updateByGoalPercept();
   void resampleGT07(bool noise);

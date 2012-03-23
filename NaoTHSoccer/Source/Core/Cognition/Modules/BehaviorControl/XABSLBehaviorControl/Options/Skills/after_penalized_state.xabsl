@@ -4,8 +4,7 @@
 //TODO when penalized: include avoid obstacles
 
 option after_penalized_state
-//rename to "after_penalized_state"
-//we know, that we must be outside the field close to the center!
+//we know, that we must be outside the field close to the center in our own half
 {
 
   common decision
@@ -26,6 +25,7 @@ option after_penalized_state
     action {
       motion.type = stand;
       head.control_mode = search_for_goal_after_penalized;
+      situationStatusOwnHalf = true; 
     }
   }
 
@@ -37,20 +37,23 @@ option after_penalized_state
 
       //HACK
       last_state_was_penalized = false;
+      situationStatusOwnHalf = false;
     }
   }
 
   state completely_lost
   {
     decision {
-      else if(action_done || state_time > 15000)
+      else if(state_time > 10000)
         goto finished;
       else
         stay;
     }
     action {
-      go_to_relative_point(rotation=0, x=500, y=0);
+      motion.type = walk;
+      motion.walk_speed.x = 150;
       head.control_mode = search_for_goal;
+      situationStatusOwnHalf = false; 
     }  
   }
 

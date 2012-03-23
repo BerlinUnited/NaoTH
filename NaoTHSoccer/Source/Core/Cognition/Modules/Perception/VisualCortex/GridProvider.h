@@ -18,6 +18,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Perception/FieldColorPreProcessingPercept.h"
+#include "Representations/Perception/CameraMatrix.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -25,6 +26,8 @@ BEGIN_DECLARE_MODULE(GridProvider)
   REQUIRE(Image)
   REQUIRE(ColorClassificationModel)
   REQUIRE(FieldColorPreProcessingPercept)
+  REQUIRE(FieldColorPercept)
+  REQUIRE(CameraMatrix)
 
   PROVIDE(ColoredGrid)
   PROVIDE(Histogram)

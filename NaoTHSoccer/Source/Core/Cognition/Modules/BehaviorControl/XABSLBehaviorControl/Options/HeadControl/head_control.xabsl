@@ -33,6 +33,10 @@ option head_control
 
     else if (head.control_mode == search_for_goal_after_penalized)
       goto search_for_goal_after_penalized;
+
+//Testcase
+    else if (head.control_mode == search_for_ball_test)
+      goto search_for_ball_test;
   }
 
   initial state none
@@ -136,6 +140,14 @@ option head_control
     action
     {
       search_for_goal_after_penalized();
+    }
+  }
+
+  state search_for_ball_test
+  {
+    action
+    {
+      search_for_ball_test();
     }
   }
 }

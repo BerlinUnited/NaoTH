@@ -162,23 +162,23 @@ void PotentialFieldProvider::execute()
 Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<double>& point)
 {
   // choose the goal model
-  GameData::TeamColor ownColor = getPlayerInfo().gameData.teamColor;
 //  Vector2<double> ownGoal = theInstance->goalModel.getTeamGoal(ownColor).calculateCenter();
-  GoalModel::Goal const* oppGoalModel = &(getSelfLocGoalModel().getTeamGoal(!ownColor));
+  GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
 
+  //FIXME: frameWhenOpponentGoalWasSeen not supported by Model anymore!
   if ( getFrameInfo().getTimeSince(getLocalGoalModel().frameWhenOpponentGoalWasSeen.getTime()) < 10000
     //&& getLocalGoalModel().someGoalWasSeen
     && getLocalGoalModel().opponentGoalIsValid )
   {
-    GoalModel::Goal const* localOppGoalModel = &(getLocalGoalModel().getTeamGoal(!ownColor));
-    if ( localOppGoalModel->calculateCenter().abs() < 4000 )
+    const GoalModel::Goal localOppGoalModel = getLocalGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
+    if ( localOppGoalModel.calculateCenter().abs() < 4000 )
     {
       oppGoalModel = localOppGoalModel;
     }
   }
 
   // begin --- getGoal() ---
-  Vector2<double> oppGoal = getGoalTarget(point, *oppGoalModel);
+  Vector2<double> oppGoal = getGoalTarget(point, oppGoalModel);
 
   // preview
   oppGoal = getMotionStatus().plannedMotion.hip / oppGoal;

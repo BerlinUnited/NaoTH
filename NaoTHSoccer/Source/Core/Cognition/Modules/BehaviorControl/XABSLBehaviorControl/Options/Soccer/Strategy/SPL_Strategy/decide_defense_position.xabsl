@@ -29,7 +29,8 @@ option decide_defense_position
         stay;
     }
     action {
-      goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
+      go_to_point(x=-2700, y=0, rot=0);
+      // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
     }
   }
   

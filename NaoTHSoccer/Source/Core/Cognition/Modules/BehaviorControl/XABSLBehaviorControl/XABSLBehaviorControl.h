@@ -6,7 +6,7 @@
  */
 
 #ifndef _XABSLBehaviorControl_H
-#define  _XABSLBehaviorControl_H
+#define _XABSLBehaviorControl_H
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/ModuleManager.h>
@@ -72,6 +72,7 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
   REQUIRE(MotionStatus)
   REQUIRE(FieldInfo)
   REQUIRE(RobotPose)
+  REQUIRE(CompassDirection)
 
   PROVIDE(MotionRequest)
   PROVIDE(BehaviorStatus)

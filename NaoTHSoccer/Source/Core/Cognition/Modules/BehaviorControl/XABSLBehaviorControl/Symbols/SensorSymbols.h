@@ -22,6 +22,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
 #include "Representations/Modeling/RadarGrid.h"
+#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
@@ -39,6 +40,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BodyState)
   REQUIRE(ObstacleModel)
   REQUIRE(RadarGrid)
+  PROVIDE(Path)
   REQUIRE(Image)
 
   REQUIRE(ButtonData)
@@ -59,6 +61,7 @@ public:
     bodyState(getBodyState()),
     obstacleModel(getObstacleModel()),
     radarGrid(getRadarGrid()),
+    path(getPath()),
     image(getImage())
   {
     theInstance = this;
@@ -85,6 +88,7 @@ private:
   BodyState const& bodyState;
   ObstacleModel const& obstacleModel;
   RadarGrid const& radarGrid;
+  Path& path;
   Image const& image;
 
 
@@ -118,6 +122,12 @@ private:
 
   static double getTimeSinceObstacleWasSeen();
   static double getObstacleDistance();
+
+  static double getTargetPointX();
+  static double getTargetPointY();
+
+  static void setTargetpointX(double targetX);
+  static void setTargetpointY(double targetY);
 
   static double getCameraBufferFailedCount();
   bool resetingCamera;

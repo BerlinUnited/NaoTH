@@ -12,7 +12,9 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/CompassDirection.h"
 
 BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(AttentionModel)
@@ -26,6 +28,8 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(LocalGoalModel)
   REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
+  REQUIRE(CompassDirection)
+  PROVIDE(SituationStatus)
 END_DECLARE_MODULE(StrategySymbols)
 
 class StrategySymbols: public StrategySymbolsBase
@@ -45,6 +49,7 @@ public:
     localGoalModel(getLocalGoalModel()),
     soccerStrategy(getSoccerStrategy()),
     motionStatus(getMotionStatus()),
+    compassDirection(getCompassDirection()),
 
     goalKickPlayer(0.0),
     goalKickPositionLeft(false)
@@ -74,12 +79,13 @@ private:
   LocalGoalModel const& localGoalModel;
   SoccerStrategy const& soccerStrategy;
   MotionStatus const& motionStatus;
+  CompassDirection const& compassDirection;
 
   // calculate the best foot to approach the ball with
   // true if the right foot ich choosen, false else
   static bool getApproachingWithRightFoot();
 
-  // seter and getter
+  // setter and getter
   static double getOppClosestToBallNumber();
   static double getOppClosestToBallTimeSinceLastSeen();
   static double getOppClosestToBallDistanceToBall();
@@ -88,6 +94,12 @@ private:
   static double getOwnClosestToBallNumber();
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
+  
+  //enum 
+  // static SituationStatus::StatusID getSituationStatusId();
+  //bool
+  static bool getSituationStatusOwnHalf();
+  static void setSituationStatusOwnHalf(bool ownHalf);
 
   Pose2D calculateDefensePose();
   static double defensePoseX();

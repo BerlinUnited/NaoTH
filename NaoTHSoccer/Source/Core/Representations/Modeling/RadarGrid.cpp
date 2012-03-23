@@ -75,11 +75,12 @@ double RadarGrid::getDistanceInCorridor(double angle, double width) const
 }// end get distance in corridor
 
 
-//set the grid with value
+// set the grid with value
 void RadarGrid::addObstaclePoint(Vector2<double> value)
 {
-  //we don't interested in distant obstacles...
-  if (value.abs() <= maxDistance && value.abs() != 0)
+  // we don't interested in distant obstacles...
+  // but need to filter up values, that are to close to robot
+  if (value.abs() <= maxDistance && value.abs() >= 200)
   {
     //get the sector index
     int position = this->getSectorByAngle(Math::normalize(value.angle()));

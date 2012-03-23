@@ -45,7 +45,12 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   //new radar obstacles
   engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
   engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
   engine.registerDecimalInputSymbolDecimalParameter("getObstDistByAngle", "getObstDistByAngle.angle", &parameter_obstDistByAngle_angle);
+
+  engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
+  engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
 
   /*engine.registerDecimalInputSymbol("obstacle.radial.direction_free", &getObstacleRadialDirection_free);
   engine.registerDecimalInputSymbolDecimalParameter("obstacle.radial.direction_free", "obstacle.radial.direction_free.deg", &directionParameter);
@@ -170,4 +175,24 @@ double SensorSymbols::getInertialSensorX()
 double SensorSymbols::getInertialSensorY()
 {
   return Math::toDegrees(theInstance->inertialSensorData.data.y);
+}
+
+double SensorSymbols::getTargetPointX()
+{
+  return theInstance->path.targetPoint.x;
+}
+
+double SensorSymbols::getTargetPointY()
+{
+  return theInstance->path.targetPoint.y;
+}
+
+void SensorSymbols::setTargetpointX(double targetX)
+{
+  theInstance->path.targetPoint.x = targetX;
+}
+
+void SensorSymbols::setTargetpointY(double targetY)
+{
+  theInstance->path.targetPoint.y = targetY;
 }

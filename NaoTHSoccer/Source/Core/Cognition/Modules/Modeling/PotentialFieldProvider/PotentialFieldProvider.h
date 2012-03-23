@@ -19,6 +19,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Motion/MotionStatus.h"
 
 // Tools
@@ -38,6 +39,7 @@ BEGIN_DECLARE_MODULE(PotentialFieldProvider)
   REQUIRE(PlayersModel)
   REQUIRE(RobotPose)
   REQUIRE(MotionStatus)
+  REQUIRE(CompassDirection)
   
   PROVIDE(SoccerStrategy)
 END_DECLARE_MODULE(PotentialFieldProvider)
