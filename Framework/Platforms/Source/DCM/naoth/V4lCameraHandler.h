@@ -69,6 +69,8 @@ public:
 
   void getCameraSettings(CameraSettings& data);
 
+  void shutdown();
+
   virtual ~V4lCameraHandler();
 
 private:

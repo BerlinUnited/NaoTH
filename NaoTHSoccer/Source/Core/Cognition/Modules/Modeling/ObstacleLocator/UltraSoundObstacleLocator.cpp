@@ -98,7 +98,6 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
   // add obstacles based on left/right sensordata and filter out too far away obstacles
   for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
-
     double distanceLeft = getUltraSoundReceiveData().dataLeft[i] * 1000.0;
     if(distanceLeft <= maxValidDistance)
     {

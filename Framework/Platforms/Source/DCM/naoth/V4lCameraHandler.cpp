@@ -1008,13 +1008,18 @@ void V4lCameraHandler::internalUpdateCameraSettings()
 
 }
 
-V4lCameraHandler::~V4lCameraHandler()
+void V4lCameraHandler::shutdown()
 {
   stopCapturing();
   uninitDevice();
   closeDevice();
 
   close(fdAdapter);
+}
+
+V4lCameraHandler::~V4lCameraHandler()
+{
+  shutdown();
 }
 
 string V4lCameraHandler::getErrnoDescription(int err)

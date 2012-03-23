@@ -106,6 +106,8 @@ private:
   static int getFallDownState();
 
   static double getObstacleDistance();
+  static double getObstacleDistanceLeft();
+  static double getObstacleDistanceRight();
   static double getBlockedTime();
 
   static double getTargetPointX();

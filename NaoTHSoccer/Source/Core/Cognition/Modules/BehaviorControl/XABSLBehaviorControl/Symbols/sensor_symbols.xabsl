@@ -39,8 +39,10 @@ namespace sensor("Sensor Symbols") {
   float input sensor.ultrasound.left;
   float input sensor.ultrasound.right;
 
-  /** use the obstacle model (buffer) */
+  /** use the obstacle model */
   float input obstacle.ultrasound.distance;
+  float input obstacle.ultrasound.left.distance;
+  float input obstacle.ultrasound.right.distance;
   float input obstacle.ultrasound.blockedtime;
   
   /** number of the button pressed on a remote control*/

@@ -40,6 +40,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
+  engine.registerDecimalInputSymbol("obstacle.ultrasound.left.distance", &getObstacleDistanceLeft);
+  engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
   engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
@@ -147,10 +149,20 @@ double SensorSymbols::getObstacleDistance()
   return theInstance->obstacleModel.frontDistance;
 }//end getObstacleDistance
 
+double SensorSymbols::getObstacleDistanceLeft()
+{
+  return theInstance->obstacleModel.leftDistance;
+}//end getObstacleDistanceLeft
+
+double SensorSymbols::getObstacleDistanceRight()
+{
+  return theInstance->obstacleModel.rightDistance;
+}//end getObstacleDistanceRight
+
 double SensorSymbols::getBlockedTime()
 {
   return theInstance->obstacleModel.blockedTime;
-}//end getObstacleDistance
+}//end getBlockedTime
 
 double SensorSymbols::getCameraBufferFailedCount()
 {

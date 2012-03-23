@@ -45,14 +45,7 @@ void got_signal(int t)
   sync();
   std::cout << " finished." << std::endl;
 
-  if(t == SIGTERM)
-  {
-    exit(0);
-  }
-  else
-  {
-    exit(-1);
-  }
+  exit(0);
 }//end got_signal
 
 
