@@ -155,7 +155,7 @@ double SensorSymbols2011::getTimeSinceObstacleWasSeen()
 
 double SensorSymbols2011::getObstacleDistance()
 {
-  return theInstance->obstacleModel.nearestObstacleDistance;
+  return theInstance->obstacleModel.frontDistance;
 }//end getObstacleDistance
 
 double SensorSymbols2011::getCameraBufferFailedCount()

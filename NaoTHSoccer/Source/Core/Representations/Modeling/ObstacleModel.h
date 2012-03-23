@@ -32,12 +32,10 @@ public:
   };
   ObstacleModel();
 
-  vector<Obstacle> obstaclesLeft;
-  vector<Obstacle> obstaclesRight;
+  double leftDistance;
+  double rightDistance;
+  double frontDistance;
 
-  double nearestObstacleDistance;
-
-  bool someObstacleWasSeen;
   FrameInfo frameWhenObstacleWasSeen;
 
   virtual void print(ostream& stream) const;

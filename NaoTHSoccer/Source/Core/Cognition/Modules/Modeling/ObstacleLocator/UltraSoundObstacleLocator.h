@@ -56,29 +56,17 @@ public:
 
 private:
 
-  // store around 3s
-  RingBuffer<ObstacleModel::Obstacle, 75 > obstacleBuffer;
-  unsigned int lastTimeObstacleWasSeen;
+  static const double maxValidDistance = 500.0;
 
-  OdometryData lastRobotOdometry;
-
-  unsigned int ageThreshold; /* max age of the considered data */
-  double usOpeningAngle; // opening angle of the ultrasound detector (in radians)
-
-  // unsigned int callCounter;
-  // unsigned int calcEveryCall;
 
   // Functionality
   double getMean();
   double getMinimum();
 
-  void updateBuffer();
-  void ageBuffer();
-  void ageGrid();
   void provideToLocalObstacleModel();
-  void updateByOdometry(const Pose2D& odometryDelta);  
   void drawObstacleModel();
-  //virtual void calculatePoints();?
+
+  double getNearestDistance(const std::vector<double>& dists);
 };
 
 #endif //_UltraSoundObstacleLocator_h_

@@ -13,23 +13,12 @@
 void ObstacleModel::print(ostream& stream) const
 {
   stream << "== Obstacles ==" << endl;
-  stream<<"someObstacleWasSeen = "<<(someObstacleWasSeen?"true":"false")<< std::endl;
-
-  for(unsigned int i = 0; i < obstaclesLeft.size(); i++ )
-  {
-    stream << "Left Obstacle Nr." << i << endl;
-    stream << obstaclesLeft[i].frameInfoObstacleWasSeen << endl;
-    stream << "Distance = " << obstaclesLeft[i].distance << endl;
-  }
-  for(unsigned int i = 0; i < obstaclesRight.size(); i++ )
-  {
-    stream << "Right Obstacle Nr." << i << endl;
-    stream << obstaclesRight[i].frameInfoObstacleWasSeen << endl;
-    stream << "Distance = " << obstaclesRight[i].distance << endl;
-  }
+  stream<<"leftDistance = "<< leftDistance << std::endl;
+  stream<<"rightDistance = "<< rightDistance << std::endl;
+  stream<<"frontDistance = "<< frontDistance << std::endl;
 }//end print
 
-ObstacleModel::ObstacleModel() : someObstacleWasSeen(false)
+ObstacleModel::ObstacleModel()
 {
 }
 

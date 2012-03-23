@@ -8,42 +8,22 @@
  */
 
 //#include "Tools/Math/Pose2D.h"
-
+#include <limits>
 
 #include "UltraSoundObstacleLocator.h"
 
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
 {
-  lastTimeObstacleWasSeen = 0;
-  ageThreshold = 5000; // 5 seconds
-  getObstacleModel().someObstacleWasSeen = false;
-  lastRobotOdometry = getOdometryData();
-
-  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacleBuffer", "draw the modelled Obstacle on the field", false);
-
-  usOpeningAngle = Math::fromDegrees(30.0f);
-
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacles", "draw the modelled Obstacle on the field", false);
 }
 
 void UltraSoundObstacleLocator::execute()
 {
-  getObstacleModel().obstaclesLeft.clear();
-  getObstacleModel().obstaclesRight.clear();
-  getObstacleModel().someObstacleWasSeen = false;
+  getObstacleModel().leftDistance = std::numeric_limits<double>::max();
+  getObstacleModel().rightDistance = std::numeric_limits<double>::max();
+  getObstacleModel().frontDistance = std::numeric_limits<double>::max();
 
   // negative odometry
-  Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
-  lastRobotOdometry = getOdometryData();
-
-  // remove old percepts
-  ageBuffer();
-  //ageGrid();
-  
-  // update by odometry
-  updateByOdometry(odometryDelta);
-
-  // add obstacles to buffer
-  updateBuffer();
 
   // Compute mean of seen obstacles and use that data as estimated USObstacle  
   // in local obstacle model
@@ -54,99 +34,101 @@ void UltraSoundObstacleLocator::execute()
 
 }//end execute
 
-void UltraSoundObstacleLocator::ageBuffer()
-{
-  if(obstacleBuffer.getNumberOfEntries() > 0 && 
-    static_cast<unsigned int>(getFrameInfo().getTimeSince(obstacleBuffer.first().frameInfoObstacleWasSeen.getTime())) > ageThreshold)
-  {
-    obstacleBuffer.removeFirst();
-  } 
-}
-
-void UltraSoundObstacleLocator::updateBuffer()
-{
-  // add obstacles based on left/right sensordate
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
-  {
-
-    ObstacleModel::Obstacle obstacleLeft;
-    obstacleLeft.frameInfoObstacleWasSeen = getFrameInfo();
-    obstacleLeft.distance = getUltraSoundReceiveData().dataLeft[i] * 1000;
-    obstacleBuffer.add(obstacleLeft);
-
-    ObstacleModel::Obstacle obstacleRight;
-    obstacleRight.frameInfoObstacleWasSeen = getFrameInfo();
-    obstacleRight.distance = getUltraSoundReceiveData().dataRight[i] * 1000;
-    obstacleBuffer.add(obstacleRight);
-
-  }//end for
-} //end updateBuffer
 
 
 void UltraSoundObstacleLocator::drawObstacleModel()
 {
   // Inits
-  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacleBuffer",
+  DEBUG_REQUEST("UltraSoundObstacleLocator:drawObstacles",
     FIELD_DRAWING_CONTEXT;
-    DebugDrawings::Color color(ColorClasses::blue);
-    color[DebugDrawings::Color::alpha] = 1.0;
+    DebugDrawings::Color colorLeft(ColorClasses::blue);
+    DebugDrawings::Color colorRight(ColorClasses::red);
+    colorLeft[DebugDrawings::Color::alpha] = 0.5;
+    colorRight[DebugDrawings::Color::alpha] = 0.5;
 
-  // Draw obstacle buffer
-    std::cout << "Drawing obstacle model:\n";
-    for(int i = 0; i < obstacleBuffer.getNumberOfEntries(); i++)
+    // draw raw sensor data
+    for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
     {
-      color[DebugDrawings::Color::alpha] = 1.0 - ((double)i)/((double)obstacleBuffer.getNumberOfEntries());
-      PEN(color, 50);
+
+      double distLeft = getUltraSoundReceiveData().dataLeft[i] * 1000.0;
+      double distRight = getUltraSoundReceiveData().dataRight[i] * 1000.0;
+
+      PEN(colorLeft, 25);
       CIRCLE(
-        obstacleBuffer[i].distance,
-        0,
+        distLeft,
+        distLeft,
+        50);
+
+      PEN(colorRight, 25);
+      CIRCLE(
+        distRight,
+        -distRight,
         50);
     }//end for
-  
-    if(obstacleBuffer.getNumberOfEntries() > 10)
-    {
-      PEN("522100", 600);
-      TEXT_DRAWING(getMean(), getMean()-300,getMean());
-      PEN("522100", 50);
-      CIRCLE(getMean(),
-             getMean(),
-             50);
-    }
+
+    // draw model
+    colorLeft[DebugDrawings::Color::alpha] = 1.0;
+    colorRight[DebugDrawings::Color::alpha] = 1.0;
+
+    PEN(colorLeft, 50);
+    CIRCLE(
+      getObstacleModel().leftDistance,
+      getObstacleModel().leftDistance,
+      50);
+
+    PEN(colorRight, 50);
+    CIRCLE(
+      getObstacleModel().rightDistance,
+      -getObstacleModel().rightDistance,
+      50);
+
+    DebugDrawings::Color colorFront(ColorClasses::black);
+    PEN(colorFront, 50);
+    LINE(getObstacleModel().frontDistance, -200, getObstacleModel().frontDistance, 200);
+
   );
 } //end drawObstacleMode
 
 void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 {
-  // TODO: fill obstacleModel
+  std::vector<double> left;
+  std::vector<double> right;
 
+  // add obstacles based on left/right sensordata and filter out too far away obstacles
+  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  {
+
+    double distanceLeft = getUltraSoundReceiveData().dataLeft[i] * 1000.0;
+    if(distanceLeft <= maxValidDistance)
+    {
+      left.push_back(distanceLeft);
+    }
+
+    double distanceRight = getUltraSoundReceiveData().dataRight[i] * 1000.0;
+    if(distanceRight <= maxValidDistance)
+    {
+      right.push_back(distanceRight);
+    }
+  }//end for each raw sensor input
+
+  ObstacleModel& model = getObstacleModel();
+  model.leftDistance = getNearestDistance(left);
+  model.rightDistance = getNearestDistance(right);
+  if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
+  {
+    model.frontDistance = std::min(model.leftDistance, model.rightDistance);
+  }
 
 } //end provideToLocalObstacleModel
 
-double UltraSoundObstacleLocator::getMean()
+double UltraSoundObstacleLocator::getNearestDistance(const std::vector<double> &dists)
 {
-  double mean = 0.0;
-  for(int i = 0; i < obstacleBuffer.getNumberOfEntries(); i++)
+  if(dists.size() > 0)
   {
-    mean += obstacleBuffer[i].distance;
-  }//end for
+    // the first one is always the smallest TODO: check if that assumption made in the naoqi doc always holds
+    return dists[0];
+  }
 
-  return mean / ((double)obstacleBuffer.getNumberOfEntries());
-}//end getMean
+  return std::numeric_limits<double>::max();
 
-double UltraSoundObstacleLocator::getMinimum()
-{
-  double min;
-  min = obstacleBuffer[0].distance;
-  for(int i = 1; i < obstacleBuffer.getNumberOfEntries(); i++)
-  {
-    if(min > obstacleBuffer[i].distance)
-      min = obstacleBuffer[i].distance;
-  }//end for
-
-  return min;
-}//end getMin
-
-void UltraSoundObstacleLocator::updateByOdometry(const Pose2D& odometryDelta)
-{
-  // TODO: update obstacle distance buffer by odometry
-}//end updateByOdometry
+}
