@@ -15,6 +15,7 @@
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   : wasFrontBlockedInLastFrame(false)
 {
+
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacles", "draw the modelled Obstacle on the field", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_0", "left Transmitter left Receiver", false);
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_1", "left Transmitter right Receiver", false);
@@ -67,8 +68,6 @@ void UltraSoundObstacleLocator::execute()
   }
 
 }//end execute
-
-
 
 void UltraSoundObstacleLocator::drawObstacleModel()
 {

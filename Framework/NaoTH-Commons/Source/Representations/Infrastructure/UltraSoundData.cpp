@@ -7,8 +7,8 @@
 using namespace naoth;
 
 UltraSoundData::UltraSoundData()
-  : ultraSoundTimeStep(100)
 {
+  ultraSoundTimeStep = 10;
 }
 
 UltraSoundData::~UltraSoundData()
@@ -115,7 +115,7 @@ void UltraSoundSendData::setMode(unsigned int _mode)
       break;
   }
 
-  if(_mode & 64 == 1)
+  if((_mode & 64) == 1)
   {
     ultraSoundTimeStep = 100;
   }
