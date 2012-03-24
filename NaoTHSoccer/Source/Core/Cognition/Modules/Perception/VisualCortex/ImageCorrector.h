@@ -25,6 +25,9 @@
 // Debug
 #include "Tools/Debug/DebugRequest.h"
 
+#include  <opencv2/core/core.hpp>
+#include  <opencv2/imgproc/imgproc.hpp>
+
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 

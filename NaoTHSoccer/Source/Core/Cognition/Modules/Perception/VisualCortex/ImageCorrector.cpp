@@ -14,6 +14,7 @@ ImageCorrector::ImageCorrector()
 {
   DEBUG_REQUEST_REGISTER("Image:Corrector:correctBrighnessInImage", " ", false);
   DEBUG_REQUEST_REGISTER("Image:Corrector:simpleBrighnessCorrection", " ", false);
+  DEBUG_REQUEST_REGISTER("Image:Corrector:GaussianBlur", " ", false);
   DEBUG_REQUEST_REGISTER("Image:Corrector:reset", " ", false);
   DEBUG_REQUEST_REGISTER("Image:Corrector:saveToFile", " ", false);
   DEBUG_REQUEST_REGISTER("Image:Corrector:loadFromFile", " ", false);
@@ -62,7 +63,7 @@ void ImageCorrector::execute()
     getImage().shadingCorrection.saveCorrectionToFile
     (
       Platform::getInstance().theConfigDirectory,
-      Platform::getInstance().theHardwareIdentity
+      Platform::getInstance().theHeadHardwareIdentity
     );
   );
 
@@ -70,7 +71,7 @@ void ImageCorrector::execute()
     getImage().shadingCorrection.loadCorrectionFromFile
     (
       Platform::getInstance().theConfigDirectory,
-      Platform::getInstance().theHardwareIdentity
+      Platform::getInstance().theHeadHardwareIdentity
     );
   );
 }
@@ -117,4 +118,16 @@ void ImageCorrector::correctBrightnessSimple()
       }
     }
   }
+  DEBUG_REQUEST("Image:Corrector:GaussianBlur",
+    if(correctionCycle == 1)
+    {
+      cv::Mat matYc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getYcPointer());
+      unsigned short* blurredYc = new unsigned short[getImage().shadingCorrection.getSize()];
+      cv::Mat matYcBlurred(getImage().height(), getImage().width(), CV_16U, blurredYc);
+
+      cv::Size size(5, 5);
+      cv::GaussianBlur(matYc, matYcBlurred, size, 10, 10);
+      memcpy(matYc.data, matYcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
+    }
+  );
 }
