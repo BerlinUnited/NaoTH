@@ -89,3 +89,45 @@ void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& r
   message.SerializePartialToZeroCopyStream(&buf);
 }//end serialize
 
+
+
+
+
+UltraSoundSendData::UltraSoundSendData()
+{
+  mode = 1;
+}
+
+void UltraSoundSendData::setMode(unsigned int _mode)
+{
+  switch(_mode)
+  {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+      mode = _mode;
+      //receiver.ultraSoundTimeStep = 10;
+      break;
+
+    case 4:
+    case 12:
+      mode = _mode;
+      //receiver.ultraSoundTimeStep = 100;
+      break;
+  }
+}
+
+
+void UltraSoundSendData::print(ostream& stream) const
+{
+  stream 
+    << "UltraSoundSendData" << std::endl
+    << "---------------------" << std::endl
+    << "mode = " << mode << std::endl;
+}
+
+UltraSoundSendData::~UltraSoundSendData()
+{
+
+}

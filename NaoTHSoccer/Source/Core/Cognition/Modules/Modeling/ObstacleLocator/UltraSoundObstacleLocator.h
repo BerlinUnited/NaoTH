@@ -39,6 +39,7 @@ BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
   REQUIRE(UltraSoundReceiveData)
 
   PROVIDE(ObstacleModel)
+  PROVIDE(UltraSoundSendData)
 END_DECLARE_MODULE(UltraSoundObstacleLocator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

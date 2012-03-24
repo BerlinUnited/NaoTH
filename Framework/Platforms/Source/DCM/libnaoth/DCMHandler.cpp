@@ -4,6 +4,7 @@
 using namespace naoth;
 
 DCMHandler::DCMHandler()
+  : last_us_mode(-1)
 {}
 
 DCMHandler::~DCMHandler()
@@ -916,12 +917,23 @@ void DCMHandler::initUltraSoundSend()
 }//end initUltraSoundSend
 
 
-void DCMHandler::setPeriodicUltraSoundSend(int dcmTime)
+bool DCMHandler::setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime)
+{
+  if(last_us_mode != data.mode)
+  {
+    last_us_mode = data.mode;
+    setUltraSoundSend(data, dcmTime);
+    return true;
+  }
+
+  return false;
+}//end setUltraSoundSendSmart
+
+
+void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
 {
   usSendCommands[4][0] = dcmTime;
-  // enable periodic send (7th bit), both transmitters (4th bit) and both receivers (3rd bit)
-  // 76 == 1001100,
-  usSendCommands[5][0][0] = static_cast<double>(76);
+  usSendCommands[5][0][0] = static_cast<double>(data.mode);
 
   try
   {

@@ -125,6 +125,7 @@ public:
 
   // remember last commands (needed by "smart" methods) 
   MotorJointData lastMotorJointData;
+  unsigned int last_us_mode;
   LEDData lastLEDData;
 
 
@@ -141,6 +142,7 @@ public:
     
   //void set(const LEDData& data);
   //void set(const IRSendData& data);
+  //void set(const UltraSoundSendData& data);
 
   void setSingleMotorData(const JointData::JointID jointID, const MotorJointData *theMotorJointData, int dcmTime);
     
@@ -148,13 +150,14 @@ public:
   void setAllHardnessData(const MotorJointData& mjd, int dcmTime);
   void setAllHardnessData(double value, int dcmTime);
 
-  void setPeriodicUltraSoundSend(int dcmTime);
+  void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
   void setLED(const LEDData& data, int dcmTime);
   void setSingleLED(const LEDData& data, int dcmTime);
   void setIRSend(const IRSendData& theIRSendData, int dcmTime);
 
   // smart set_methods
   bool setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime);
+  bool setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime);
   bool setLEDSmart(const LEDData& data, int dcmTime);
 };//end class DCMHandler
 
