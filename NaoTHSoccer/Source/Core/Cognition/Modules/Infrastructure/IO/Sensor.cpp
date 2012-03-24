@@ -23,6 +23,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   // read RobotInfo
   RobotInfo& robot = getRobotInfo();
   robot.platform = platformInterface.getName();
+  robot.headNickName = platformInterface.getHeadNickName();
   robot.bodyNickName = platformInterface.getBodyNickName();
   robot.bodyID = platformInterface.getBodyID();
   robot.basicTimeStep = platformInterface.getBasicTimeStep();

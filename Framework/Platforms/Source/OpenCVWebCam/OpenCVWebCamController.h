@@ -49,6 +49,8 @@ public:
 
   virtual string getBodyNickName() const {return "opencvwebcam"; }
 
+  virtual string getHeadNickName() const {return "opencvwebcam"; }
+
   /////////////////////// init ///////////////////////
   void init();
 
