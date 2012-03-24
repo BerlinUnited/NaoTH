@@ -39,8 +39,7 @@ void UltraSoundObstacleLocator::execute()
   //Draw ObstacleModel
   drawObstacleModel();
 
-  // Use mode 1 for now
-  unsigned int mode = 1;
+  unsigned int mode = UltraSoundSendData::TWO_CAPTURES + UltraSoundSendData::TWO_TRANSMITTERS;
 
   DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_0",
     mode = 0;

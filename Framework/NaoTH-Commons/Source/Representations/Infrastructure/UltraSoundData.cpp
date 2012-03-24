@@ -107,14 +107,21 @@ void UltraSoundSendData::setMode(unsigned int _mode)
     case 2:
     case 3:
       mode = _mode;
-      //receiver.ultraSoundTimeStep = 10;
       break;
 
     case 4:
     case 12:
       mode = _mode;
-      //receiver.ultraSoundTimeStep = 100;
       break;
+  }
+
+  if(_mode & 64 == 1)
+  {
+    ultraSoundTimeStep = 100;
+  }
+  else
+  {
+    ultraSoundTimeStep = 10;
   }
 }
 
