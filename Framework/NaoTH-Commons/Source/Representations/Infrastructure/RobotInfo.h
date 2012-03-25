@@ -22,6 +22,7 @@ public:
 
   std::string platform;
   std::string bodyNickName;
+  std::string headNickName;
   std::string bodyID;
 
   unsigned int basicTimeStep; /**< The time of each step which depends on platforms */
@@ -34,6 +35,7 @@ public:
   virtual void print(ostream& stream) const
   {
     stream<<"Platform: "<<platform<<"\n";
+    stream<<"HeadNickName: "<<headNickName<<"\n";
     stream<<"BodyNickName: "<<bodyNickName<<"\n";
     stream<<"BodyID: "<<bodyID<<"\n";
     stream<<"basicTimeStep: "<<basicTimeStep<<"\n";

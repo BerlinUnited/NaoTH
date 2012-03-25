@@ -27,22 +27,18 @@ void ShadingCorrection::init(unsigned int w, unsigned int h, CameraInfo::CameraI
   height = h;
   camID = cam;
   size = w * h;
-  yC = new unsigned int[size];
+  yC = new unsigned short[size];
   reset();
   loadCorrectionFromFile
   (
     Platform::getInstance().theConfigDirectory,
-    Platform::getInstance().theHardwareIdentity
+    Platform::getInstance().theHeadHardwareIdentity
   );
 }
 
 void ShadingCorrection::clear()
 {
-  if(yC != NULL)
-  {
-    delete[] yC;
-    yC = NULL;
-  }
+  delete[] yC;
 }//end destructor
 
 
@@ -74,13 +70,14 @@ bool ShadingCorrection::loadCorrectionFromFile(string camConfigPath, string hard
       return false;
     }//end if
 
-    inputFileStream.read((char*) yC, size * sizeof(unsigned int));
+    inputFileStream.read((char*) yC, size * sizeof(unsigned short));
     inputFileStream.close();
 
     // check the brigness Correction data
     for(unsigned int pos = 0; pos < size; pos++)
     {
-      if(yC[pos] > 261120) // bigger than 1024 * 255 ?
+//      if(yC[pos] > 261120) // bigger than 1024 * 255 ?
+      if(yC[pos] > 65025) // bigger than 255 * 255 ?
       {
         std::cout << std::endl << "brightness correction table broken!!! ["
           << pos << "] = "
@@ -116,7 +113,7 @@ void ShadingCorrection::saveCorrectionToFile(string camConfigPath, string hardwa
     cout << "Saving to " << cameraYCPath.str() << endl;
     ofstream outputFileStream ( cameraYCPath.str().c_str() , ofstream::out | ofstream::binary );
 
-    outputFileStream.write((char*) yC, size * sizeof(unsigned int));
+    outputFileStream.write((char*) yC, size * sizeof(unsigned short));
     outputFileStream.close();
   }
 }//end saveCorrectionToFile

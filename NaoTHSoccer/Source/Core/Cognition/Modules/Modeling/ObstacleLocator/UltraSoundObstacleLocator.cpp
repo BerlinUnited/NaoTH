@@ -13,7 +13,9 @@
 #include "UltraSoundObstacleLocator.h"
 
 // in accordance to the Aldeberan documentation and the raw values
-//UltraSoundObstacleLocator::invalidDistanceValue =  2550.0;
+const double UltraSoundObstacleLocator::invalidDistanceValue =  2550.0;
+const double UltraSoundObstacleLocator::maxValidDistance = 500.0;
+const double UltraSoundObstacleLocator::minBlockedDistance = 350.0;
 
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   : wasFrontBlockedInLastFrame(false)

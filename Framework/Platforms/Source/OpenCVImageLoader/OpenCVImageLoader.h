@@ -52,6 +52,8 @@ public:
 
   virtual string getBodyNickName() const {return "naoth"; }
 
+  virtual string getHeadNickName() const {return "naoth"; }
+
   void main();
   bool findFiles(const char* dirName);
   void listFiles();

@@ -97,7 +97,7 @@ namespace naoth
      */
     inline unsigned char getY(const unsigned int x, const unsigned int y) const
     {
-      return (unsigned char) Math::clamp<unsigned int>((yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10, 0, 255);
+      return (unsigned char) Math::clamp<unsigned short>((yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10, 0, 255);
     }
 
     /**
@@ -120,7 +120,7 @@ namespace naoth
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
-      p.y = (yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
+      p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10, 0, 255);
       
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
       p.u = yuv422[yOffset+1-((x & 1)<<1)];

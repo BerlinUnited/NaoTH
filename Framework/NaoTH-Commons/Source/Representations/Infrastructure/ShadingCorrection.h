@@ -12,7 +12,6 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "PlatformInterface/Platform.h"
 
-
 namespace naoth
 {
   class ShadingCorrection
@@ -68,8 +67,19 @@ namespace naoth
       yC[y * width + x] = value;
     }//end getY
 
+    inline unsigned short* getYcPointer() const
+    {
+      return yC;
+    }
+
+    inline unsigned long getSize()const
+    {
+      return size;
+    }
+
+
   private:
-    unsigned int* yC;
+    unsigned short* yC;
     CameraInfo::CameraID camID;
     unsigned int width;
     unsigned int height;

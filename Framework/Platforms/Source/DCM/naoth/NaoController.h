@@ -11,6 +11,8 @@
 #define _NAO_CONTROLLER_BASE_H_
 
 #include <glib.h>
+#include <string>
+#include <algorithm>
 
 #include "PlatformInterface/PlatformInterface.h"
 #include "PlatformInterface/Platform.h"
@@ -95,6 +97,10 @@ public:
     cout << "bodyID: " << theBodyID << endl;
     cout << "bodyNickName: " << theBodyNickName << endl;
 
+    ifstream isEthMac("/sys/class/net/eth0/address");    
+    isEthMac >> theHeadNickName;
+    std::replace(theHeadNickName.begin(), theHeadNickName.end(), ':', '_');    
+    cout << "headNickName: " << theHeadNickName << endl;
 
     /*  REGISTER IO  */
     // camera
@@ -206,6 +212,7 @@ public:
 
   virtual string getBodyID() const { return theBodyID; }
   virtual string getBodyNickName() const { return theBodyNickName; }
+  virtual string getHeadNickName() const { return theHeadNickName; }
   
 
   // camera stuff
@@ -348,6 +355,7 @@ protected:
   std::string staticMemberPath;
   std::string theBodyID;
   std::string theBodyNickName;
+  std::string theHeadNickName;
 
 
   const NaoSensorData* sensorDataReading;

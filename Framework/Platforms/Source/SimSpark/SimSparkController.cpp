@@ -151,6 +151,11 @@ string SimSparkController::getBodyNickName() const
   return theGameData.teamName + DataConversion::toStr(theGameData.playerNumber);
 }
 
+string SimSparkController::getHeadNickName() const
+{
+  return theGameData.teamName + DataConversion::toStr(theGameData.playerNumber);
+}
+
 string SimSparkController::getBodyID() const
 {
   return DataConversion::toStr(theGameData.playerNumber);
