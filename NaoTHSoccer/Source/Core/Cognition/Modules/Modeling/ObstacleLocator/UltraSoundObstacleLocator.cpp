@@ -12,6 +12,9 @@
 
 #include "UltraSoundObstacleLocator.h"
 
+const double UltraSoundObstacleLocator::maxValidDistance = 500.0;
+const double UltraSoundObstacleLocator::minBlockedDistance = 350.0;
+
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   : wasFrontBlockedInLastFrame(false)
 {

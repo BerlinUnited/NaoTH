@@ -56,8 +56,8 @@ public:
 
 private:
 
-  static const double maxValidDistance = 500.0;
-  static const double minBlockedDistance = 350.0;
+  static const double maxValidDistance;
+  static const double minBlockedDistance;
 
   bool wasFrontBlockedInLastFrame;
   FrameInfo timeWhenFrontBlockStarted;
