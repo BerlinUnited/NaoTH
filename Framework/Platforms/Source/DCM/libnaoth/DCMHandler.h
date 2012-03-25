@@ -125,7 +125,6 @@ public:
 
   // remember last commands (needed by "smart" methods) 
   MotorJointData lastMotorJointData;
-  unsigned int last_us_mode;
   LEDData lastLEDData;
 
 
@@ -157,7 +156,6 @@ public:
 
   // smart set_methods
   bool setAllHardnessDataSmart(const MotorJointData& mjd, int dcmTime);
-  bool setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime);
   bool setLEDSmart(const LEDData& data, int dcmTime);
 };//end class DCMHandler
 

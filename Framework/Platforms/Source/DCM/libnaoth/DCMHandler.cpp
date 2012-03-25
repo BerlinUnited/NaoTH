@@ -4,7 +4,6 @@
 using namespace naoth;
 
 DCMHandler::DCMHandler()
-  : last_us_mode(-1)
 {}
 
 DCMHandler::~DCMHandler()
@@ -915,20 +914,6 @@ void DCMHandler::initUltraSoundSend()
     std::cerr << "Failed to create UltraSound-Alias: " << e.toString() << endl;
   }
 }//end initUltraSoundSend
-
-
-bool DCMHandler::setUltraSoundSendSmart(const UltraSoundSendData& data, int dcmTime)
-{
-  if(last_us_mode != data.mode)
-  {
-    last_us_mode = data.mode;
-    setUltraSoundSend(data, dcmTime);
-    return true;
-  }
-
-  return false;
-}//end setUltraSoundSendSmart
-
 
 void DCMHandler::setUltraSoundSend(const UltraSoundSendData& data, int dcmTime)
 {

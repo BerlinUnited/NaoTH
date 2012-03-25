@@ -35,8 +35,6 @@ namespace naoth
 
     UltraSoundData();
     virtual ~UltraSoundData();
-
-    unsigned int ultraSoundTimeStep;
   };
 
   class UltraSoundReceiveData: public UltraSoundData
@@ -91,6 +89,7 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const;
 
+    unsigned int ultraSoundTimeStep;
     unsigned int mode;
   };
 

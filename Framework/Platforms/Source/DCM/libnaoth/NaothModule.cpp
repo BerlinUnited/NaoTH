@@ -215,13 +215,11 @@ void NaothModule::motionCallbackPre()
     drop_count += (drop_count < 11);
   }//end else
 
-  bool us_set = false;
-
   // get the UltraSoundSendData from the shared memory and put them to the DCM
   if ( naoCommandUltraSoundSendData.swapReading() )
   {
     const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
-    us_set = theDCMHandler.setUltraSoundSendSmart(commandData->get(), dcmTime);
+    theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
   }//end if
   
   /*
@@ -234,7 +232,7 @@ void NaothModule::motionCallbackPre()
 
   // get the LEDData from the shared memory and put them to the DCM
   // don't set too many things at once
-  if(!stiffness_set && !us_set && naoCommandLEDData.swapReading())
+  if(!stiffness_set && naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
     theDCMHandler.setSingleLED(commandData->get(), dcmTime);

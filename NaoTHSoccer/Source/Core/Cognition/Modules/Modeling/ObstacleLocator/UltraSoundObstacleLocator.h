@@ -60,13 +60,17 @@ private:
   static const double maxValidDistance = 500.0;
   static const double minBlockedDistance = 350.0;
 
+  static const double invalidDistanceValue;
+
   bool wasFrontBlockedInLastFrame;
   FrameInfo timeWhenFrontBlockStarted;
 
-  void provideToLocalObstacleModel();
-  void drawObstacleModel();
+  RingBuffer<double,12> bufferLeft;
+  RingBuffer<double,12> bufferRight;
 
-  double getNearestDistance(const std::vector<double>& dists);
+  void provideToLocalObstacleModel();
+  void fillBuffer();
+  void drawObstacleModel();
 };
 
 #endif //_UltraSoundObstacleLocator_h_
