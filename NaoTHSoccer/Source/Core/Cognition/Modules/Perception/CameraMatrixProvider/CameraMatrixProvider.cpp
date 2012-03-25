@@ -24,7 +24,10 @@ CameraMatrixProvider::CameraMatrixProvider()
   udpateTime = getFrameInfo().getTime();
 
   // this is a HACK!!!!!!!!!!
-  getKinematicChain().init(getSensorJointData());
+  if(!getKinematicChain().is_initialized())
+  {
+    getKinematicChain().init(getSensorJointData());
+  }
 
   DEBUG_REQUEST_REGISTER("CameraMatrix:calibrate_camera_matrix",
     "calculates the roll and tilt offset of the camera using the goal (it. shoult be exactely 3000mm in front of the robot)", 
@@ -53,7 +56,7 @@ void CameraMatrixProvider::execute()
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     getAccelerometerData(),
-    getInertialPercept(),
+    getInertialModel().orientation,
     getKinematicChain(),
     theFSRPos,
     deltaTime);
@@ -164,8 +167,8 @@ double CameraMatrixProvider::projectionError(double offsetX, double offsetY)
 {
   CameraMatrix tmpCM(getCameraMatrix());
 
-  tmpCM.rotateX(offsetX)
-       .rotateY(offsetY);
+  tmpCM.rotateY(offsetY)
+       .rotateX(offsetX);
 
   // project the goal posts
   const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;

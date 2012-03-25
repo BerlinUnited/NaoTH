@@ -15,9 +15,9 @@ class AttentionModel : public naoth::Printable
 {
 public:
 
-  AttentionModel() {};
+  AttentionModel() {}
 
-  virtual ~AttentionModel() {};
+  virtual ~AttentionModel() {}
 
 
   Vector2<double> mostInterestingPoint;

@@ -61,6 +61,9 @@ SimpleMotionBehaviorControl::SimpleMotionBehaviorControl()
   DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:motion:protect_falling", "Don't hurt me!", false);
 
 
+  DEBUG_REQUEST_REGISTER("SimpleMotionBehaviorControl:sound:test", "it is what it is...", false);
+
+
   DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_dance", "parallel dance test", false);
   DEBUG_REQUEST_REGISTER("ParallelKinematicMotionEngine:motion:parallel_stepper", "parallel stepper test", false);
 }
@@ -74,6 +77,12 @@ void SimpleMotionBehaviorControl::execute()
   testHead();
 
   testMotion();
+
+
+  getSoundPlayData().soundFile = "";
+  DEBUG_REQUEST("SimpleMotionBehaviorControl:sound:test",
+    getSoundPlayData().soundFile = "victory.wav";
+  );
 
 }//end execute
 

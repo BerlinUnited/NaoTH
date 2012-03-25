@@ -14,7 +14,7 @@
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/Stopwatch.h>
 #include "Tools/Debug/DebugParameterList.h"
-
+#include <Tools/Debug/Trace.h>
 #include <PlatformInterface/Platform.h>
 
 #include <Tools/SynchronizedFileWriter.h>
@@ -34,15 +34,13 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("colortable:file_path",
     "return the path of the currentelly loaded colortable (needed by ColorTableTool", this);
 
-  /*
-  cognitionLogger.addRepresentation(&(getImage()), "Image");
-  cognitionLogger.addRepresentation(&(getSensorJointData()), "SensorJointData");
-  cognitionLogger.addRepresentation(&(getInertialSensorData()), "InertialSensorData");
-  cognitionLogger.addRepresentation(&(getAccelerometerData()), "AccelerometerData");
-  cognitionLogger.addRepresentation(&getGyrometerData(), "GyrometerData");
-  cognitionLogger.addRepresentation(&(getFSRData()), "FSRData");
-  cognitionLogger.addRepresentation(&(getFrameInfo()), "FrameInfo");
-  */
+
+
+  REGISTER_DEBUG_COMMAND("motion_request:set",
+    "force a motion request (usage MotionRequest:set <name> )", this);
+  REGISTER_DEBUG_COMMAND("walk", "let the robot walk", this);
+  REGISTER_DEBUG_COMMAND("kick", "let the robot kick", this);
+
   registerLogableRepresentationList();
 
   // 3d drawings
@@ -75,13 +73,17 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
 {
   if (command == "image")
   {
+    GT_TRACE("Debug::executeDebugCommand() handling image");
     //g_debug("sending image timestamp=%d, frame=%d", getImage().timestamp, getFrameInfo().frameNumber);
     // add the drawings to the image
-    DebugImageDrawings::getInstance().drawToImage((Image&) getImage());
+    GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
+    DebugImageDrawings::getInstance().drawToImage(getImage());
     
+    GT_TRACE("Debug::executeDebugCommand() before serialize");
     STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);
     STOPWATCH_STOP("sendImage");
+    GT_TRACE("Debug::executeDebugCommand() after serialize");
   }
   else if(command == "ping")
   {
@@ -177,6 +179,32 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
       getMotionRequest().id = motion::getId(arguments.begin()->first);
       outstream << "Set MotionRequest to " << motion::getName(getMotionRequest().id) << endl;
     }
+  }
+  else if(command == "walk")
+  {
+    if(arguments.find("x") != arguments.end() && arguments.find("y") != arguments.end() && arguments.find("rot") != arguments.end())
+    {
+      getMotionRequest().id = motion::walk;
+      double x;
+      double y;
+      double rot;
+      DataConversion::strTo(arguments.find("x")->second, x);
+      DataConversion::strTo(arguments.find("y")->second, y);
+      DataConversion::strTo(arguments.find("rot")->second, rot);
+      getMotionRequest().walkRequest.target.translation.x = x;
+      getMotionRequest().walkRequest.target.translation.y = y;
+      getMotionRequest().walkRequest.target.rotation = rot;
+      outstream << "walk requested" << std::endl;
+
+    }
+    else
+    {
+      outstream << "missing param" << std::endl;
+    }
+  }
+  else if(command == "kick")
+  {
+    // TODO
   }
 }
 

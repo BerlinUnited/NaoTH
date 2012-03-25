@@ -44,7 +44,6 @@ WebotsController::WebotsController()
   registerOutput<const CameraSettingsRequest>(*this);
   registerOutput<const LEDData>(*this);
   registerOutput<const IRSendData>(*this);
-  registerOutput<const UltraSoundSendData>(*this);
   registerOutput<const SoundData>(*this);
   registerOutput<const MotorJointData>(*this);
 
@@ -433,8 +432,8 @@ void WebotsController::set(const MotorJointData& data)
   for (int i = 0; i < JointData::numOfJoint; i++) {
     if (stiffness[i] > 0) {
       wb_servo_set_position(joint[i], jointData[i]);
-      currentStiffness[i] = stiffness[i];
     }
+    currentStiffness[i] = stiffness[i];
   }//end for
 }
 
@@ -543,15 +542,10 @@ void WebotsController::get(CurrentCameraSettings& data)
     // unsupported yet
   }
 
-  void WebotsController::set(const UltraSoundSendData& /*data*/)
-  {
-    // unsupported yet
-  }
-
-  void WebotsController::set(const SoundData& /*data*/)
-  {
-    // unsupported yet
-  }
+void WebotsController::set(const SoundData& /*data*/)
+{
+  // unsupported yet
+}
 
 void WebotsController::getCognitionInput()
 {

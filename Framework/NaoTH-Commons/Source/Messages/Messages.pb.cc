@@ -39,6 +39,9 @@ const ::google::protobuf::Descriptor* PlotItem_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PlotItem_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* PlotItem_PlotType_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* PlotStroke2D_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PlotStroke2D_reflection_ = NULL;
 const ::google::protobuf::Descriptor* Plots_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Plots_reflection_ = NULL;
@@ -209,9 +212,26 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PlotItem));
   PlotItem_PlotType_descriptor_ = PlotItem_descriptor_->enum_type(0);
-  Plots_descriptor_ = file->message_type(7);
-  static const int Plots_offsets_[1] = {
+  PlotStroke2D_descriptor_ = file->message_type(7);
+  static const int PlotStroke2D_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlotStroke2D, name_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlotStroke2D, points_),
+  };
+  PlotStroke2D_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PlotStroke2D_descriptor_,
+      PlotStroke2D::default_instance_,
+      PlotStroke2D_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlotStroke2D, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PlotStroke2D, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PlotStroke2D));
+  Plots_descriptor_ = file->message_type(8);
+  static const int Plots_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Plots, plots_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Plots, plotstrokes_),
   };
   Plots_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -224,7 +244,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Plots));
-  XABSLParameter_descriptor_ = file->message_type(8);
+  XABSLParameter_descriptor_ = file->message_type(9);
   static const int XABSLParameter_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLParameter, type_),
@@ -244,7 +264,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLParameter));
   XABSLParameter_ParamType_descriptor_ = XABSLParameter_descriptor_->enum_type(0);
-  XABSLAction_descriptor_ = file->message_type(9);
+  XABSLAction_descriptor_ = file->message_type(10);
   static const int XABSLAction_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLAction, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(XABSLAction, name_),
@@ -269,13 +289,14 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(XABSLAction));
   XABSLAction_ActionType_descriptor_ = XABSLAction_descriptor_->enum_type(0);
-  BehaviorStatus_descriptor_ = file->message_type(10);
-  static const int BehaviorStatus_offsets_[5] = {
+  BehaviorStatus_descriptor_ = file->message_type(11);
+  static const int BehaviorStatus_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, agent_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, activerootactions_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, inputsymbols_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, outputsymbols_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, framenumber_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BehaviorStatus, errormessage_),
   };
   BehaviorStatus_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -288,7 +309,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BehaviorStatus));
-  Module_descriptor_ = file->message_type(11);
+  Module_descriptor_ = file->message_type(12);
   static const int Module_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Module, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Module, usedrepresentations_),
@@ -306,7 +327,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Module));
-  ModuleList_descriptor_ = file->message_type(12);
+  ModuleList_descriptor_ = file->message_type(13);
   static const int ModuleList_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ModuleList, modules_),
   };
@@ -321,7 +342,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ModuleList));
-  FeatureKeyPoint_descriptor_ = file->message_type(13);
+  FeatureKeyPoint_descriptor_ = file->message_type(14);
   static const int FeatureKeyPoint_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureKeyPoint, pt_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureKeyPoint, size_),
@@ -341,7 +362,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureKeyPoint));
-  FeatureDetectionResult_descriptor_ = file->message_type(14);
+  FeatureDetectionResult_descriptor_ = file->message_type(15);
   static const int FeatureDetectionResult_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureDetectionResult, grayscaleimage_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureDetectionResult, keypoints_),
@@ -360,7 +381,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureDetectionResult));
-  SingleDescriptor_descriptor_ = file->message_type(15);
+  SingleDescriptor_descriptor_ = file->message_type(16);
   static const int SingleDescriptor_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SingleDescriptor, d_),
   };
@@ -375,7 +396,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(SingleDescriptor));
-  FeatureClass_descriptor_ = file->message_type(16);
+  FeatureClass_descriptor_ = file->message_type(17);
   static const int FeatureClass_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureClass, name_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureClass, samples_),
@@ -392,7 +413,7 @@ void protobuf_AssignDesc_Messages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FeatureClass));
-  FeatureTable_descriptor_ = file->message_type(17);
+  FeatureTable_descriptor_ = file->message_type(18);
   static const int FeatureTable_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureTable, classes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FeatureTable, numberoffeatureelements_),
@@ -435,6 +456,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PlotItem_descriptor_, &PlotItem::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PlotStroke2D_descriptor_, &PlotStroke2D::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     Plots_descriptor_, &Plots::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     XABSLParameter_descriptor_, &XABSLParameter::default_instance());
@@ -475,6 +498,8 @@ void protobuf_ShutdownFile_Messages_2eproto() {
   delete Stopwatches_reflection_;
   delete PlotItem::default_instance_;
   delete PlotItem_reflection_;
+  delete PlotStroke2D::default_instance_;
+  delete PlotStroke2D_reflection_;
   delete Plots::default_instance_;
   delete Plots_reflection_;
   delete XABSLParameter::default_instance_;
@@ -528,51 +553,54 @@ void protobuf_AddDesc_Messages_2eproto() {
     ".naothmessages.PlotItem.PlotType\022\014\n\004name"
     "\030\002 \002(\t\022\r\n\005value\030\003 \001(\001\022\t\n\001x\030\004 \001(\001\022\t\n\001y\030\005 "
     "\001(\001\022\020\n\010rotation\030\006 \001(\001\"1\n\010PlotType\022\013\n\007Def"
-    "ault\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"/\n\005Plot"
-    "s\022&\n\005plots\030\001 \003(\0132\027.naothmessages.PlotIte"
-    "m\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t:\007unkn"
-    "own\022>\n\004type\030\002 \001(\0162\'.naothmessages.XABSLP"
-    "arameter.ParamType:\007Unknown\022\024\n\014decimalVa"
-    "lue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\tenumValu"
-    "e\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022\013\n\007Boo"
-    "lean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013XABSLA"
-    "ction\022<\n\004type\030\001 \001(\0162%.naothmessages.XABS"
-    "LAction.ActionType:\007Unknown\022\025\n\004name\030\002 \001("
-    "\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001(\003:\0010\022\023"
-    "\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005 \001(\003\0221"
-    "\n\nparameters\030\006 \003(\0132\035.naothmessages.XABSL"
-    "Parameter\0224\n\020activeSubActions\030\007 \003(\0132\032.na"
-    "othmessages.XABSLAction\022\024\n\014decimalValue\030"
-    "\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumValue\030\n "
-    "\001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\rBasicB"
-    "ehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002\022\027\n\023Bo"
-    "oleanOutputSymbol\020\003\022\024\n\020EnumOutputSymbol\020"
-    "\004\022\013\n\007Unknown\020\005\"\326\001\n\016BehaviorStatus\022\r\n\005age"
-    "nt\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003(\0132\032.na"
-    "othmessages.XABSLAction\0223\n\014inputSymbols\030"
-    "\003 \003(\0132\035.naothmessages.XABSLParameter\0224\n\r"
-    "outputSymbols\030\004 \003(\0132\035.naothmessages.XABS"
-    "LParameter\022\023\n\013frameNumber\030\005 \001(\r\"k\n\006Modul"
-    "e\022\014\n\004name\030\001 \002(\t\022\033\n\023usedRepresentations\030\002"
-    " \003(\t\022\037\n\027providedRepresentations\030\003 \003(\t\022\025\n"
-    "\006active\030\004 \001(\010:\005false\"4\n\nModuleList\022&\n\007mo"
-    "dules\030\001 \003(\0132\025.naothmessages.Module\"\213\001\n\017F"
-    "eatureKeyPoint\022\'\n\002pt\030\001 \002(\0132\033.naothmessag"
-    "es.FloatVector2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003"
-    " \002(\002\022\020\n\010response\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020"
-    "\n\010class_id\030\006 \002(\005\"\331\001\n\026FeatureDetectionRes"
-    "ult\022\026\n\016grayScaleImage\030\001 \002(\014\0221\n\tkeyPoints"
-    "\030\002 \003(\0132\036.naothmessages.FeatureKeyPoint\0224"
-    "\n\013descriptors\030\003 \003(\0132\037.naothmessages.Sing"
-    "leDescriptor\022\031\n\021namesForKeyPoints\030\004 \003(\t\022"
-    "#\n\027numberOfFeatureElements\030\005 \001(\005:\00264\"\035\n\020"
-    "SingleDescriptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureCl"
-    "ass\022\014\n\004name\030\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.nao"
-    "thmessages.SingleDescriptor\022\024\n\014objectHei"
-    "ght\030\003 \001(\001\"a\n\014FeatureTable\022,\n\007classes\030\001 \003"
-    "(\0132\033.naothmessages.FeatureClass\022#\n\027numbe"
-    "rOfFeatureElements\030\002 \001(\005:\00264B)\n\'de.hu_be"
-    "rlin.informatik.ki.nao.messages", 2631);
+    "ault\020\001\022\n\n\006Plot2D\020\002\022\014\n\010Origin2D\020\003\"J\n\014Plot"
+    "Stroke2D\022\014\n\004name\030\002 \002(\t\022,\n\006points\030\001 \003(\0132\034"
+    ".naothmessages.DoubleVector2\"a\n\005Plots\022&\n"
+    "\005plots\030\001 \003(\0132\027.naothmessages.PlotItem\0220\n"
+    "\013plotstrokes\030\002 \003(\0132\033.naothmessages.PlotS"
+    "troke2D\"\341\001\n\016XABSLParameter\022\025\n\004name\030\001 \001(\t"
+    ":\007unknown\022>\n\004type\030\002 \001(\0162\'.naothmessages."
+    "XABSLParameter.ParamType:\007Unknown\022\024\n\014dec"
+    "imalValue\030\003 \001(\001\022\021\n\tboolValue\030\004 \001(\010\022\021\n\ten"
+    "umValue\030\005 \001(\t\"<\n\tParamType\022\013\n\007Decimal\020\000\022"
+    "\013\n\007Boolean\020\001\022\010\n\004Enum\020\002\022\013\n\007Unknown\020\003\"\316\003\n\013"
+    "XABSLAction\022<\n\004type\030\001 \001(\0162%.naothmessage"
+    "s.XABSLAction.ActionType:\007Unknown\022\025\n\004nam"
+    "e\030\002 \001(\t:\007unknown\022\032\n\017timeOfExecution\030\003 \001("
+    "\003:\0010\022\023\n\013activeState\030\004 \001(\t\022\021\n\tstateTime\030\005"
+    " \001(\003\0221\n\nparameters\030\006 \003(\0132\035.naothmessages"
+    ".XABSLParameter\0224\n\020activeSubActions\030\007 \003("
+    "\0132\032.naothmessages.XABSLAction\022\024\n\014decimal"
+    "Value\030\010 \001(\001\022\021\n\tboolValue\030\t \001(\010\022\021\n\tenumVa"
+    "lue\030\n \001(\t\"\200\001\n\nActionType\022\n\n\006Option\020\000\022\021\n\r"
+    "BasicBehavior\020\001\022\027\n\023DecimalOutputSymbol\020\002"
+    "\022\027\n\023BooleanOutputSymbol\020\003\022\024\n\020EnumOutputS"
+    "ymbol\020\004\022\013\n\007Unknown\020\005\"\354\001\n\016BehaviorStatus\022"
+    "\r\n\005agent\030\001 \001(\t\0225\n\021activeRootActions\030\002 \003("
+    "\0132\032.naothmessages.XABSLAction\0223\n\014inputSy"
+    "mbols\030\003 \003(\0132\035.naothmessages.XABSLParamet"
+    "er\0224\n\routputSymbols\030\004 \003(\0132\035.naothmessage"
+    "s.XABSLParameter\022\023\n\013frameNumber\030\005 \001(\r\022\024\n"
+    "\014errorMessage\030\006 \001(\t\"k\n\006Module\022\014\n\004name\030\001 "
+    "\002(\t\022\033\n\023usedRepresentations\030\002 \003(\t\022\037\n\027prov"
+    "idedRepresentations\030\003 \003(\t\022\025\n\006active\030\004 \001("
+    "\010:\005false\"4\n\nModuleList\022&\n\007modules\030\001 \003(\0132"
+    "\025.naothmessages.Module\"\213\001\n\017FeatureKeyPoi"
+    "nt\022\'\n\002pt\030\001 \002(\0132\033.naothmessages.FloatVect"
+    "or2\022\014\n\004size\030\002 \002(\002\022\r\n\005angle\030\003 \002(\002\022\020\n\010resp"
+    "onse\030\004 \002(\002\022\016\n\006octave\030\005 \002(\005\022\020\n\010class_id\030\006"
+    " \002(\005\"\331\001\n\026FeatureDetectionResult\022\026\n\016grayS"
+    "caleImage\030\001 \002(\014\0221\n\tkeyPoints\030\002 \003(\0132\036.nao"
+    "thmessages.FeatureKeyPoint\0224\n\013descriptor"
+    "s\030\003 \003(\0132\037.naothmessages.SingleDescriptor"
+    "\022\031\n\021namesForKeyPoints\030\004 \003(\t\022#\n\027numberOfF"
+    "eatureElements\030\005 \001(\005:\00264\"\035\n\020SingleDescri"
+    "ptor\022\t\n\001d\030\001 \003(\002\"d\n\014FeatureClass\022\014\n\004name\030"
+    "\001 \002(\t\0220\n\007samples\030\002 \003(\0132\037.naothmessages.S"
+    "ingleDescriptor\022\024\n\014objectHeight\030\003 \001(\001\"a\n"
+    "\014FeatureTable\022,\n\007classes\030\001 \003(\0132\033.naothme"
+    "ssages.FeatureClass\022#\n\027numberOfFeatureEl"
+    "ements\030\002 \001(\005:\00264B\026\n\024de.naoth.rc.messages", 2760);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Messages.proto", &protobuf_RegisterTypes);
   CMDArg::default_instance_ = new CMDArg();
@@ -582,6 +610,7 @@ void protobuf_AddDesc_Messages_2eproto() {
   StopwatchItem::default_instance_ = new StopwatchItem();
   Stopwatches::default_instance_ = new Stopwatches();
   PlotItem::default_instance_ = new PlotItem();
+  PlotStroke2D::default_instance_ = new PlotStroke2D();
   Plots::default_instance_ = new Plots();
   XABSLParameter::default_instance_ = new XABSLParameter();
   XABSLAction::default_instance_ = new XABSLAction();
@@ -600,6 +629,7 @@ void protobuf_AddDesc_Messages_2eproto() {
   StopwatchItem::default_instance_->InitAsDefaultInstance();
   Stopwatches::default_instance_->InitAsDefaultInstance();
   PlotItem::default_instance_->InitAsDefaultInstance();
+  PlotStroke2D::default_instance_->InitAsDefaultInstance();
   Plots::default_instance_->InitAsDefaultInstance();
   XABSLParameter::default_instance_->InitAsDefaultInstance();
   XABSLAction::default_instance_->InitAsDefaultInstance();
@@ -2983,7 +3013,277 @@ void PlotItem::Swap(PlotItem* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int PlotStroke2D::kNameFieldNumber;
+const int PlotStroke2D::kPointsFieldNumber;
+#endif  // !_MSC_VER
+
+PlotStroke2D::PlotStroke2D()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void PlotStroke2D::InitAsDefaultInstance() {
+}
+
+PlotStroke2D::PlotStroke2D(const PlotStroke2D& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void PlotStroke2D::SharedCtor() {
+  _cached_size_ = 0;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PlotStroke2D::~PlotStroke2D() {
+  SharedDtor();
+}
+
+void PlotStroke2D::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::kEmptyString) {
+    delete name_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void PlotStroke2D::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PlotStroke2D::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PlotStroke2D_descriptor_;
+}
+
+const PlotStroke2D& PlotStroke2D::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Messages_2eproto();  return *default_instance_;
+}
+
+PlotStroke2D* PlotStroke2D::default_instance_ = NULL;
+
+PlotStroke2D* PlotStroke2D::New() const {
+  return new PlotStroke2D;
+}
+
+void PlotStroke2D::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::kEmptyString) {
+        name_->clear();
+      }
+    }
+  }
+  points_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PlotStroke2D::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .naothmessages.DoubleVector2 points = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_points:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_points()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_points;
+        if (input->ExpectTag(18)) goto parse_name;
+        break;
+      }
+      
+      // required string name = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->name().data(), this->name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void PlotStroke2D::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .naothmessages.DoubleVector2 points = 1;
+  for (int i = 0; i < this->points_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->points(i), output);
+  }
+  
+  // required string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->name(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* PlotStroke2D::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .naothmessages.DoubleVector2 points = 1;
+  for (int i = 0; i < this->points_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->points(i), target);
+  }
+  
+  // required string name = 2;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->name(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int PlotStroke2D::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string name = 2;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
+    }
+    
+  }
+  // repeated .naothmessages.DoubleVector2 points = 1;
+  total_size += 1 * this->points_size();
+  for (int i = 0; i < this->points_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->points(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PlotStroke2D::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PlotStroke2D* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PlotStroke2D*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PlotStroke2D::MergeFrom(const PlotStroke2D& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  points_.MergeFrom(from.points_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_name()) {
+      set_name(from.name());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PlotStroke2D::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PlotStroke2D::CopyFrom(const PlotStroke2D& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PlotStroke2D::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  for (int i = 0; i < points_size(); i++) {
+    if (!this->points(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void PlotStroke2D::Swap(PlotStroke2D* other) {
+  if (other != this) {
+    std::swap(name_, other->name_);
+    points_.Swap(&other->points_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PlotStroke2D::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PlotStroke2D_descriptor_;
+  metadata.reflection = PlotStroke2D_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int Plots::kPlotsFieldNumber;
+const int Plots::kPlotstrokesFieldNumber;
 #endif  // !_MSC_VER
 
 Plots::Plots()
@@ -3036,6 +3336,7 @@ Plots* Plots::New() const {
 
 void Plots::Clear() {
   plots_.Clear();
+  plotstrokes_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -3057,6 +3358,21 @@ bool Plots::MergePartialFromCodedStream(
           goto handle_uninterpreted;
         }
         if (input->ExpectTag(10)) goto parse_plots;
+        if (input->ExpectTag(18)) goto parse_plotstrokes;
+        break;
+      }
+      
+      // repeated .naothmessages.PlotStroke2D plotstrokes = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_plotstrokes:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_plotstrokes()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_plotstrokes;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -3085,6 +3401,12 @@ void Plots::SerializeWithCachedSizes(
       1, this->plots(i), output);
   }
   
+  // repeated .naothmessages.PlotStroke2D plotstrokes = 2;
+  for (int i = 0; i < this->plotstrokes_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, this->plotstrokes(i), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -3098,6 +3420,13 @@ void Plots::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->plots(i), target);
+  }
+  
+  // repeated .naothmessages.PlotStroke2D plotstrokes = 2;
+  for (int i = 0; i < this->plotstrokes_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        2, this->plotstrokes(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3116,6 +3445,14 @@ int Plots::ByteSize() const {
     total_size +=
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
         this->plots(i));
+  }
+  
+  // repeated .naothmessages.PlotStroke2D plotstrokes = 2;
+  total_size += 1 * this->plotstrokes_size();
+  for (int i = 0; i < this->plotstrokes_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->plotstrokes(i));
   }
   
   if (!unknown_fields().empty()) {
@@ -3144,6 +3481,7 @@ void Plots::MergeFrom(const ::google::protobuf::Message& from) {
 void Plots::MergeFrom(const Plots& from) {
   GOOGLE_CHECK_NE(&from, this);
   plots_.MergeFrom(from.plots_);
+  plotstrokes_.MergeFrom(from.plotstrokes_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -3164,12 +3502,16 @@ bool Plots::IsInitialized() const {
   for (int i = 0; i < plots_size(); i++) {
     if (!this->plots(i).IsInitialized()) return false;
   }
+  for (int i = 0; i < plotstrokes_size(); i++) {
+    if (!this->plotstrokes(i).IsInitialized()) return false;
+  }
   return true;
 }
 
 void Plots::Swap(Plots* other) {
   if (other != this) {
     plots_.Swap(&other->plots_);
+    plotstrokes_.Swap(&other->plotstrokes_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -4278,6 +4620,7 @@ const int BehaviorStatus::kActiveRootActionsFieldNumber;
 const int BehaviorStatus::kInputSymbolsFieldNumber;
 const int BehaviorStatus::kOutputSymbolsFieldNumber;
 const int BehaviorStatus::kFrameNumberFieldNumber;
+const int BehaviorStatus::kErrorMessageFieldNumber;
 #endif  // !_MSC_VER
 
 BehaviorStatus::BehaviorStatus()
@@ -4298,6 +4641,7 @@ void BehaviorStatus::SharedCtor() {
   _cached_size_ = 0;
   agent_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   framenumber_ = 0u;
+  errormessage_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4308,6 +4652,9 @@ BehaviorStatus::~BehaviorStatus() {
 void BehaviorStatus::SharedDtor() {
   if (agent_ != &::google::protobuf::internal::kEmptyString) {
     delete agent_;
+  }
+  if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
+    delete errormessage_;
   }
   if (this != default_instance_) {
   }
@@ -4341,6 +4688,11 @@ void BehaviorStatus::Clear() {
       }
     }
     framenumber_ = 0u;
+    if (has_errormessage()) {
+      if (errormessage_ != &::google::protobuf::internal::kEmptyString) {
+        errormessage_->clear();
+      }
+    }
   }
   activerootactions_.Clear();
   inputsymbols_.Clear();
@@ -4428,6 +4780,23 @@ bool BehaviorStatus::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(50)) goto parse_errorMessage;
+        break;
+      }
+      
+      // optional string errorMessage = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_errorMessage:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_errormessage()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->errormessage().data(), this->errormessage().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4482,6 +4851,15 @@ void BehaviorStatus::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(5, this->framenumber(), output);
   }
   
+  // optional string errorMessage = 6;
+  if (has_errormessage()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->errormessage().data(), this->errormessage().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      6, this->errormessage(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4526,6 +4904,16 @@ void BehaviorStatus::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(5, this->framenumber(), target);
   }
   
+  // optional string errorMessage = 6;
+  if (has_errormessage()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->errormessage().data(), this->errormessage().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        6, this->errormessage(), target);
+  }
+  
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -4549,6 +4937,13 @@ int BehaviorStatus::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
           this->framenumber());
+    }
+    
+    // optional string errorMessage = 6;
+    if (has_errormessage()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->errormessage());
     }
     
   }
@@ -4611,6 +5006,9 @@ void BehaviorStatus::MergeFrom(const BehaviorStatus& from) {
     if (from.has_framenumber()) {
       set_framenumber(from.framenumber());
     }
+    if (from.has_errormessage()) {
+      set_errormessage(from.errormessage());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -4639,6 +5037,7 @@ void BehaviorStatus::Swap(BehaviorStatus* other) {
     inputsymbols_.Swap(&other->inputsymbols_);
     outputsymbols_.Swap(&other->outputsymbols_);
     std::swap(framenumber_, other->framenumber_);
+    std::swap(errormessage_, other->errormessage_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

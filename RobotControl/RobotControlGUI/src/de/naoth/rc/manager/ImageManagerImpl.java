@@ -52,7 +52,7 @@ public class ImageManagerImpl extends AbstractManagerPlugin<JanusImage>
           byte v = bs.byteAt(i * 3 + 2);
 
           rgbBuffer[i] =
-            0xff000000 |
+             0xff000000 |
             (0x00ff0000 & y << 16) |
             (0x0000ff00 & u << 8) |
             (0x000000ff & v);
@@ -68,13 +68,13 @@ public class ImageManagerImpl extends AbstractManagerPlugin<JanusImage>
           byte v = bs.byteAt(i * 4 + 3);
 
           rgbBuffer[i*2] =
-            0xff000000 |
+             0xff000000 |
             (0x00ff0000 & y1 << 16) |
             (0x0000ff00 & u << 8) |
             (0x000000ff & v);
 
           rgbBuffer[i*2+1] =
-            0xff000000 |
+             0xff000000 |
             (0x00ff0000 & y2 << 16) |
             (0x0000ff00 & u << 8) |
             (0x000000ff & v);

@@ -58,7 +58,7 @@ public:
   };
 
   
-  Vector2<int> returnCellCoord(Vector2<int>& point) const
+  Vector2<int> returnCellCoord(const Vector2<int>& point) const
   {
     Vector2<int> cell;
     cell.x = point.x / stepSize;
@@ -77,23 +77,24 @@ public:
       cell.y = cell.y - 1;
     }
     return cell;
-  }
+  }//end returnCellCoord
 
-  bool isOccupied(Vector2<int>& point) const
+  bool isOccupied(const Vector2<int>& point) const
   {
     Vector2<int> temp = returnCellCoord(point);
     return grid[temp.x][temp.y].occupied;
   }
 
   
-  Vector2<int> returnFirstFreeCell(Vector2<int> start) const
+  Vector2<int> returnFirstFreeCell(const Vector2<int>& start) const
   {
-    while (isOccupied(start) && (start.y - stepSize) >= 0)
+    Vector2<int> point(start);
+    while (isOccupied(point) && (point.y - stepSize) >= 0)
     {
-      start.y -= stepSize;
+      point.y -= stepSize;
     }
-    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
-    return start;
+    ASSERT(start.x >= 0 && start.x <= cameraResolution.x && start.y >= 0 && start.y <= cameraResolution.y);
+    return point;
   }
 
   std::vector<std::vector<Cell> > grid;

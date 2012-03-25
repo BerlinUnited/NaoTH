@@ -100,11 +100,7 @@ option clear_ball_far_away{
   //attack.direction > -75 && attack.direction < 75 is constraint by approach ball
   state clear_ball {
     decision{
-      if(false && obstacle.visual.was_seen){
-        goto block_attacker;
-      }else{
-        goto stabilize_before_kick;
-      } 
+      goto stabilize_before_kick; 
     }
     action{
       head.control_mode = search_for_ball_force_model;
@@ -228,21 +224,5 @@ option clear_ball_far_away{
       motion.type = stand;
       head.control_mode = goalie_look_around;
     }
-  }
-
-  state block_attacker
-  {
-    decision
-    {
-      if (!obstacle.visual.was_seen) {
-        goto stabilize_before_kick;
-      } else
-        stay;
-    }
-       action {
-         motion.type = block_middle; //make a wider stand
-         head.control_mode = search_for_ball;
-       }
-  }
-  
+  }  
 }

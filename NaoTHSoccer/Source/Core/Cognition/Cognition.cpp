@@ -34,15 +34,21 @@
 #include "Modules/Infrastructure/Debug/StopwatchSender.h"
 #include "Modules/Infrastructure/Debug/RoboViz.h"
 #include "Modules/Infrastructure/Debug/CameraDebug.h"
+#include "Modules/Infrastructure/Debug/FrameRateCheck.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommSender.h"
 #include "Modules/Infrastructure/TeamCommunicator/TeamCommReceiver.h"
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
+#include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 
 // Perception
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+#include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
+#include "Modules/Perception/VisualCortex/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
+#include "Modules/Perception/VisualCortex/FieldColorClassifierPreProcessor.h"
+#include "Modules/Perception/VisualCortex/FieldColorClassifierPostProcessor.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -61,22 +67,25 @@
 #include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
+#include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
-
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
+#include "Modules/Modeling/PathPlanner/PathPlanner.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
 #include "Modules/BehaviorControl/SimpleMotionBehaviorControl/SimpleMotionBehaviorControl.h"
+#include "Modules/BehaviorControl/XABSLBehaviorControl2011/XABSLBehaviorControl2011.h"
 #include "Modules/BehaviorControl/XABSLBehaviorControl/XABSLBehaviorControl.h"
 #include "Modules/BehaviorControl/CalibrationBehaviorControl/CalibrationBehaviorControl.h"
 
 // Experiment
 #include "Modules/Experiment/Evolution/Evolution.h"
+//#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
 #include "Tools/NaoTime.h"
@@ -99,7 +108,6 @@ Cognition::~Cognition()
 void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 {
   g_message("Cognition register start");
-
   // register of the modules
 
   // input
@@ -121,13 +129,18 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(TeamCommReceiver);
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVImageProvider);
+  REGISTER_MODULE(BatteryAlert);
 
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
+  REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(BaseColorClassifier);
+  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
+  REGISTER_MODULE(FieldColorClassifierPreProcessor);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
+  REGISTER_MODULE(FieldColorClassifierPostProcessor);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(PerceptProjector);
@@ -143,29 +156,32 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
+  REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
-
   REGISTER_MODULE(PotentialFieldProvider);
   REGISTER_MODULE(AttentionAnalyzer);
-
   REGISTER_MODULE(SoccerStrategyProvider);
+  REGISTER_MODULE(PathPlanner);
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
   REGISTER_MODULE(SimpleMotionBehaviorControl);
   REGISTER_MODULE(CalibrationBehaviorControl);
+  REGISTER_MODULE(XABSLBehaviorControl2011);
   REGISTER_MODULE(XABSLBehaviorControl);
 
   // experiment
   REGISTER_MODULE(Evolution);
+  //REGISTER_MODULE(SaliencyMapProvider);
 
   // infrastructure
   REGISTER_MODULE(TeamCommSender);
 
   // debug
+  REGISTER_MODULE(FrameRateCheck);
   REGISTER_MODULE(LEDSetter);
   REGISTER_MODULE(Debug);
   REGISTER_MODULE(RoboViz);

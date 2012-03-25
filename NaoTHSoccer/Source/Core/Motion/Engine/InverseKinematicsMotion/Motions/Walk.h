@@ -21,7 +21,7 @@ public:
   Walk();
   
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus);
-  
+
 private:
   struct Step {
 
@@ -49,8 +49,13 @@ private:
     double speedDirection;
   };
 
+  /** */
+  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
+
+  /** */
   bool FSRProtection();
   
+  /** */
   bool waitLanding();
   
   void plan(const MotionRequest& motionRequest);
@@ -65,7 +70,11 @@ private:
   
   void updateParameters(Step& step, double character) const;
 
+  /** calculate the COM error */
   void calculateError();
+
+  /** estimate the correction for the COM */
+  void updateComObserver();
 
   void manageSteps(const WalkRequest& req);
 
@@ -101,11 +110,18 @@ private:
   
   FootStepPlanner theFootStepPlanner;
 
-  Vector3d theCoMErr;
-
 
   // observe the com error
   RingBufferWithSum<double, 100> com_errors;
+  Vector3<double> currentComError;
+
+  //
+  RingBufferWithSum<Vector2<double>, 100> corrections;
+
+
+  // a buffer of CoMFeetPoses requested in the past
+  // needed by stabilization
+  RingBuffer<InverseKinematic::CoMFeetPose, 10> commandPoseBuffer;
 };
 
 #endif // _IK_MOTION_H_

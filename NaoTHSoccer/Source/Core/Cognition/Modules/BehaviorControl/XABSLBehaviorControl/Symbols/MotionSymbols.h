@@ -69,7 +69,7 @@ public:
   {
     theInstance = this;
   };
-  ~MotionSymbols(){};
+  virtual ~MotionSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
@@ -115,6 +115,8 @@ private:
   static int getMotionRequestId();
   static int getMotionStatusId();
   static double getMotionStatusTime();
+  static bool getMotionStatusLeftMovable();
+  static bool getMotionStatusRightMovable();
 
   static void setCameraID(int value);
   static int getCameraID();

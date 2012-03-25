@@ -38,7 +38,7 @@ namespace Math {
   * defines the isNan function for linux and windows
   */
   template <class T>
-  bool isNan(T f)
+  inline bool isNan(T f)
   {
 #ifdef WIN32
     return _isnan(static_cast<double> (f)) != 0;
@@ -55,7 +55,7 @@ namespace Math {
 #ifdef WIN32
     return !_finite(x);
 #else
-    return isinf(x);
+    return !finite(x);
 #endif
   }//end isInf
 
@@ -67,7 +67,7 @@ namespace Math {
   #endif
 
   template <class T>
-  int sgn(const T& a)
+  inline int sgn(const T& a)
   {
     return ( (a) < 0 ? -1 : ((a)==0) ? 0 : 1 );
   }  
@@ -80,7 +80,7 @@ namespace Math {
   #endif
 
   template <class T>
-  T sqr(const T& a)
+  inline T sqr(const T& a)
   {
     return a*a;
   }
@@ -89,7 +89,7 @@ namespace Math {
   * mathematical rounding for floating point types
   */
   template <class T>
-  T round(const T& a)
+  inline T round(const T& a)
   {
     return floor(a + static_cast<T>(0.5));
   }
@@ -215,7 +215,7 @@ namespace Math {
    * @return the value be clamped
    */
   template < class T >
-  T clamp(T x, T min, T max)
+  inline T clamp(T x, T min, T max)
   {
     if (x > max) return max;
     if (x < min) return min;

@@ -20,6 +20,11 @@ public class ModuleConfiguration
   {
     nodeList = new ArrayList<Node>();
   }
+  
+  public void addEdge(Node vertexOne, Node vertexTwo)
+  {
+
+  }//end addVertex
 
   public void addVertex(Node vertex)
   {

@@ -1,0 +1,90 @@
+option decide_defense_position
+{
+  initial state check_player_number
+  {
+    decision{
+      if(game.player_number == 1)
+          goto goto_defense_position_goalie;
+        else if(game.player_number == 2)
+          goto goto_defense_position_striker;
+        else if(game.player_number == 3)
+          goto goto_defense_position_supporter;
+        else if(game.player_number == 4)
+          goto goto_defense_position_defender;
+        else
+          stay;
+    }
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+
+  state goto_defense_position_goalie
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action {
+      go_to_point(x=-2700, y=0, rot=0);
+      // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
+    }
+  }
+  
+  state goto_defense_position_striker
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=-600, rot=0);
+      go_to_point(x=-1300, y=0, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_defense_position_supporter
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point(x=-1800, y=700, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+
+  state goto_defense_position_defender
+  {
+    decision {
+      if(action_done)
+        goto arrived;
+      else
+        stay;
+    }
+    action
+    {
+      //go_to_point_with_lokalize(x=-1500, y=600, rot=-15);
+      go_to_point(x=-1800, y=-700, rot=0);
+      head.control_mode = search_for_goal;
+    }
+  }
+  target state arrived{
+    action {
+      head.control_mode = look_around;
+      motion.type = stand;
+    }
+  }
+}

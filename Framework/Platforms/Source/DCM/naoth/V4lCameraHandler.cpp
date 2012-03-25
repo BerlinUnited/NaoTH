@@ -752,7 +752,7 @@ void V4lCameraHandler::uninitDevice()
     case IO_MMAP:
       for (i = 0; i < n_buffers; ++i)
       {
-        VERIFY(-1 != munmap(buffers[i].start, buffers[i].length))
+        VERIFY(-1 != munmap(buffers[i].start, buffers[i].length));
       }
       break;
 
@@ -1008,13 +1008,18 @@ void V4lCameraHandler::internalUpdateCameraSettings()
 
 }
 
-V4lCameraHandler::~V4lCameraHandler()
+void V4lCameraHandler::shutdown()
 {
   stopCapturing();
   uninitDevice();
   closeDevice();
 
   close(fdAdapter);
+}
+
+V4lCameraHandler::~V4lCameraHandler()
+{
+  shutdown();
 }
 
 string V4lCameraHandler::getErrnoDescription(int err)

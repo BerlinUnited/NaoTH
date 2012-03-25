@@ -46,25 +46,27 @@ public:
   template<class T>
   ModuleCreator<T>* registerModule(std::string name, bool enable = false)
   {
-    // module does not exist
+    // module does not exist, so create a new one
     if(moduleExecutionMap.find(name) == moduleExecutionMap.end())
     {
       moduleExecutionList.push_back(name);
       moduleExecutionMap[name] = createModule<T>();
     }
-
+    
+    // find the existing module
     AbstractModuleCreator* module = moduleExecutionMap.find(name)->second;
     ModuleCreator<T>* typedModule = dynamic_cast<ModuleCreator<T>*>(module);
 
-    // check the type
+    // ...and check its type
     if(typedModule == NULL)
     {
       std::cerr << "Module type mismatch: " << name << " is already registered as "
                 // HACK: getModuleName doesn't necessary return the type of the module
-                << module->getModule()->getModuleName() << ", but "
+                << module->moduleClassName() << ", but "
                 << typeid(T).name() << " requested." << std::endl;
       assert(false);
     }//end if
+    
 
     typedModule->setEnabled(enable);
 
@@ -106,7 +108,6 @@ public:
       return iter->second;
     }
 
-    // TODO: assert?
     return NULL;
   }//end getModule
 
@@ -121,7 +122,6 @@ public:
       return iter->second;
     }
 
-    // TODO: assert?
     return NULL;
   }//end getModule
 

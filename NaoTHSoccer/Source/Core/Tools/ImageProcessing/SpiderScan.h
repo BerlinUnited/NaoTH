@@ -15,10 +15,12 @@
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/PointList.h"
 
-#include "ColorClassifier.h"
+//#include "ColorClassifier.h"
+
 
 #include "Representations/Infrastructure/Image.h"
 //#include "Representations/Infrastructure/ColorTable64.h"
+#include "Representations/Modeling/ColorClassificationModel.h"
 
 using namespace std;
 using namespace naoth;
@@ -26,11 +28,11 @@ using namespace naoth;
 class SpiderScan
 {
 public:
-  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64);
-  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor);
-  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors);
-  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor);
-  SpiderScan(const Image& theImage, const ColorClassifier& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors);
+  SpiderScan(const Image& theImage, const ColorClassificationModel& theColorTable64);
+  SpiderScan(const Image& theImage, const ColorClassificationModel& theColorTable64, ColorClasses::Color searchColor);
+  SpiderScan(const Image& theImage, const ColorClassificationModel& theColorTable64, vector<ColorClasses::Color>& searchColors);
+  SpiderScan(const Image& theImage, const ColorClassificationModel& theColorTable64, ColorClasses::Color searchColor, ColorClasses::Color borderColor);
+  SpiderScan(const Image& theImage, const ColorClassificationModel& theColorTable64, vector<ColorClasses::Color>& searchColors, vector<ColorClasses::Color>& borderColors);
   void init();
 
   class Scans
@@ -90,7 +92,7 @@ private:
   inline bool pixelAtImageBorder(const Vector2<int>& pixel, int borderWidth) const;
 
   const Image& theImage;
-  const ColorClassifier& theColorClassifier;
+  const ColorClassificationModel& theColorClassifier;
 
   bool drawScanLines;
   vector<ColorClasses::Color> searchColors;

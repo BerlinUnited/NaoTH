@@ -7,8 +7,8 @@
 using namespace naoth;
 
 UltraSoundData::UltraSoundData()
+  : ultraSoundTimeStep(100)
 {
-  ultraSoundTimeStep = 10;
 }
 
 UltraSoundData::~UltraSoundData()
@@ -26,7 +26,7 @@ UltraSoundReceiveData::UltraSoundReceiveData()
 void UltraSoundReceiveData::init()
 {
   rawdata = 2.55;
-  for(int i = 0; i < numOfIRSend; i++)
+  for(int i = 0; i < numOfUSEcho; i++)
   {
     dataLeft[i] = 0.0;
     dataRight[i] = 0.0;
@@ -39,7 +39,7 @@ void UltraSoundReceiveData::print(ostream& stream) const
     << "UltraSoundReceiveData" << std::endl
     << "---------------------" << std::endl
     << "rawdata = " << rawdata << std::endl;
-  for(int i = 0; i < numOfIRSend; i++)
+  for(int i = 0; i < numOfUSEcho; i++)
   {
     stream << "data[" << i << "]: left = " << dataLeft[i] << " , "  << "right = " << dataRight[i] << std::endl;
   }
@@ -62,6 +62,7 @@ void Serializer<UltraSoundReceiveData>::deserialize(std::istream& stream, UltraS
   representation.rawdata = message.rawdata();
 
   ASSERT(message.dataleft_size() == message.dataright_size());
+  ASSERT(message.dataleft_size() == representation.numOfUSEcho);
 
   for(int i = 0; i < message.dataleft_size(); i++)
   {
@@ -78,7 +79,7 @@ void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& r
   message.set_ultrasoundtimestep(representation.ultraSoundTimeStep);
   message.set_rawdata(representation.rawdata);
 
-  for(int i = 0; i < representation.numOfIRSend; i++)
+  for(int i = 0; i < representation.numOfUSEcho; i++)
   {
     message.add_dataleft(representation.dataLeft[i]);
     message.add_dataright(representation.dataRight[i]);
@@ -88,45 +89,3 @@ void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& r
   message.SerializePartialToZeroCopyStream(&buf);
 }//end serialize
 
-
-
-
-
-UltraSoundSendData::UltraSoundSendData()
-{
-  mode = 1;
-}
-
-void UltraSoundSendData::setMode(unsigned int _mode)
-{
-  switch(_mode)
-  {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-      mode = _mode;
-      //receiver.ultraSoundTimeStep = 10;
-      break;
-
-    case 4:
-    case 12:
-      mode = _mode;
-      //receiver.ultraSoundTimeStep = 100;
-      break;
-  }
-}
-
-
-void UltraSoundSendData::print(ostream& stream) const
-{
-  stream 
-    << "UltraSoundSendData" << std::endl
-    << "---------------------" << std::endl
-    << "mode = " << mode << std::endl;
-}
-
-UltraSoundSendData::~UltraSoundSendData()
-{
-
-}

@@ -3,7 +3,7 @@
 
 
 #include "PlatformInterface/PlatformInterface.h"
-//#include "DebugCommunication/DebugServer.h"
+#include "DebugCommunication/DebugServer.h"
 
 // Representations
 #include "Representations/Infrastructure/JointData.h"
@@ -28,8 +28,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+//std library
+#include <string>
+#include <vector>
+
 using namespace cv;
 using namespace naoth;
+using namespace std;
 
 class OpenCVWebCamController : public PlatformInterface<OpenCVWebCamController>
 {
@@ -43,6 +48,8 @@ public:
   virtual string getBodyID() const { return "naoth-opencvwebcam"; }
 
   virtual string getBodyNickName() const {return "opencvwebcam"; }
+
+  virtual string getHeadNickName() const {return "opencvwebcam"; }
 
   /////////////////////// init ///////////////////////
   void init();
@@ -89,7 +96,7 @@ private:
   unsigned int frameLossCounter;
 
 private:
-  /*
+
   DebugServer theDebugServer;
 public:
   void get(DebugMessageIn& data)
@@ -102,7 +109,7 @@ public:
     if(data.answers.size() > 0)
       theDebugServer.setDebugMessageOut(data);
   }
-  */
+
 };
 
 #endif //#define _OpenCVWebCamController_H

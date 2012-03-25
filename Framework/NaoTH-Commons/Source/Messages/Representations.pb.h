@@ -55,6 +55,7 @@ class StepControlStatus;
 class MotionStatus;
 class OdometryData;
 class CalibrationData;
+class InertialModel;
 
 enum Image_Format {
   Image_Format_YUV = 0,
@@ -2712,14 +2713,119 @@ class CalibrationData : public ::google::protobuf::Message {
   inline ::naothmessages::DoubleVector2* mutable_inertialsensoroffset();
   inline ::naothmessages::DoubleVector2* release_inertialsensoroffset();
   
+  // optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+  inline bool has_gyrosensoroffset() const;
+  inline void clear_gyrosensoroffset();
+  static const int kGyroSensorOffsetFieldNumber = 2;
+  inline const ::naothmessages::DoubleVector2& gyrosensoroffset() const;
+  inline ::naothmessages::DoubleVector2* mutable_gyrosensoroffset();
+  inline ::naothmessages::DoubleVector2* release_gyrosensoroffset();
+  
+  // optional .naothmessages.DoubleVector3 accSensorOffset = 3;
+  inline bool has_accsensoroffset() const;
+  inline void clear_accsensoroffset();
+  static const int kAccSensorOffsetFieldNumber = 3;
+  inline const ::naothmessages::DoubleVector3& accsensoroffset() const;
+  inline ::naothmessages::DoubleVector3* mutable_accsensoroffset();
+  inline ::naothmessages::DoubleVector3* release_accsensoroffset();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.CalibrationData)
  private:
   inline void set_has_inertialsensoroffset();
   inline void clear_has_inertialsensoroffset();
+  inline void set_has_gyrosensoroffset();
+  inline void clear_has_gyrosensoroffset();
+  inline void set_has_accsensoroffset();
+  inline void clear_has_accsensoroffset();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::naothmessages::DoubleVector2* inertialsensoroffset_;
+  ::naothmessages::DoubleVector2* gyrosensoroffset_;
+  ::naothmessages::DoubleVector3* accsensoroffset_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_Representations_2eproto();
+  friend void protobuf_AssignDesc_Representations_2eproto();
+  friend void protobuf_ShutdownFile_Representations_2eproto();
+  
+  void InitAsDefaultInstance();
+  static CalibrationData* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class InertialModel : public ::google::protobuf::Message {
+ public:
+  InertialModel();
+  virtual ~InertialModel();
+  
+  InertialModel(const InertialModel& from);
+  
+  inline InertialModel& operator=(const InertialModel& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const InertialModel& default_instance();
+  
+  void Swap(InertialModel* other);
+  
+  // implements Message ----------------------------------------------
+  
+  InertialModel* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const InertialModel& from);
+  void MergeFrom(const InertialModel& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // optional .naothmessages.DoubleVector2 orientation = 1;
+  inline bool has_orientation() const;
+  inline void clear_orientation();
+  static const int kOrientationFieldNumber = 1;
+  inline const ::naothmessages::DoubleVector2& orientation() const;
+  inline ::naothmessages::DoubleVector2* mutable_orientation();
+  inline ::naothmessages::DoubleVector2* release_orientation();
+  
+  // @@protoc_insertion_point(class_scope:naothmessages.InertialModel)
+ private:
+  inline void set_has_orientation();
+  inline void clear_has_orientation();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::naothmessages::DoubleVector2* orientation_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
@@ -2729,7 +2835,7 @@ class CalibrationData : public ::google::protobuf::Message {
   friend void protobuf_ShutdownFile_Representations_2eproto();
   
   void InitAsDefaultInstance();
-  static CalibrationData* default_instance_;
+  static InertialModel* default_instance_;
 };
 // ===================================================================
 
@@ -5241,6 +5347,97 @@ inline ::naothmessages::DoubleVector2* CalibrationData::release_inertialsensorof
   clear_has_inertialsensoroffset();
   ::naothmessages::DoubleVector2* temp = inertialsensoroffset_;
   inertialsensoroffset_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector2 gyroSensorOffset = 2;
+inline bool CalibrationData::has_gyrosensoroffset() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void CalibrationData::set_has_gyrosensoroffset() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void CalibrationData::clear_has_gyrosensoroffset() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void CalibrationData::clear_gyrosensoroffset() {
+  if (gyrosensoroffset_ != NULL) gyrosensoroffset_->::naothmessages::DoubleVector2::Clear();
+  clear_has_gyrosensoroffset();
+}
+inline const ::naothmessages::DoubleVector2& CalibrationData::gyrosensoroffset() const {
+  return gyrosensoroffset_ != NULL ? *gyrosensoroffset_ : *default_instance_->gyrosensoroffset_;
+}
+inline ::naothmessages::DoubleVector2* CalibrationData::mutable_gyrosensoroffset() {
+  set_has_gyrosensoroffset();
+  if (gyrosensoroffset_ == NULL) gyrosensoroffset_ = new ::naothmessages::DoubleVector2;
+  return gyrosensoroffset_;
+}
+inline ::naothmessages::DoubleVector2* CalibrationData::release_gyrosensoroffset() {
+  clear_has_gyrosensoroffset();
+  ::naothmessages::DoubleVector2* temp = gyrosensoroffset_;
+  gyrosensoroffset_ = NULL;
+  return temp;
+}
+
+// optional .naothmessages.DoubleVector3 accSensorOffset = 3;
+inline bool CalibrationData::has_accsensoroffset() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void CalibrationData::set_has_accsensoroffset() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void CalibrationData::clear_has_accsensoroffset() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void CalibrationData::clear_accsensoroffset() {
+  if (accsensoroffset_ != NULL) accsensoroffset_->::naothmessages::DoubleVector3::Clear();
+  clear_has_accsensoroffset();
+}
+inline const ::naothmessages::DoubleVector3& CalibrationData::accsensoroffset() const {
+  return accsensoroffset_ != NULL ? *accsensoroffset_ : *default_instance_->accsensoroffset_;
+}
+inline ::naothmessages::DoubleVector3* CalibrationData::mutable_accsensoroffset() {
+  set_has_accsensoroffset();
+  if (accsensoroffset_ == NULL) accsensoroffset_ = new ::naothmessages::DoubleVector3;
+  return accsensoroffset_;
+}
+inline ::naothmessages::DoubleVector3* CalibrationData::release_accsensoroffset() {
+  clear_has_accsensoroffset();
+  ::naothmessages::DoubleVector3* temp = accsensoroffset_;
+  accsensoroffset_ = NULL;
+  return temp;
+}
+
+// -------------------------------------------------------------------
+
+// InertialModel
+
+// optional .naothmessages.DoubleVector2 orientation = 1;
+inline bool InertialModel::has_orientation() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void InertialModel::set_has_orientation() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void InertialModel::clear_has_orientation() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void InertialModel::clear_orientation() {
+  if (orientation_ != NULL) orientation_->::naothmessages::DoubleVector2::Clear();
+  clear_has_orientation();
+}
+inline const ::naothmessages::DoubleVector2& InertialModel::orientation() const {
+  return orientation_ != NULL ? *orientation_ : *default_instance_->orientation_;
+}
+inline ::naothmessages::DoubleVector2* InertialModel::mutable_orientation() {
+  set_has_orientation();
+  if (orientation_ == NULL) orientation_ = new ::naothmessages::DoubleVector2;
+  return orientation_;
+}
+inline ::naothmessages::DoubleVector2* InertialModel::release_orientation() {
+  clear_has_orientation();
+  ::naothmessages::DoubleVector2* temp = orientation_;
+  orientation_ = NULL;
   return temp;
 }
 

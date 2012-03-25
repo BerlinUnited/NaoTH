@@ -5,8 +5,8 @@
 * Declaration of class CameraMatrixProvider
 */
 
-#ifndef __CameraMatrixProvider_h_
-#define __CameraMatrixProvider_h_
+#ifndef _CameraMatrixProvider_h_
+#define _CameraMatrixProvider_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -18,7 +18,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Infrastructure/AccelerometerData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
-#include "Representations/Perception/InertialPercept.h"
+#include "Representations/Modeling/InertialModel.h"
 
 // motion stuff
 #include "Representations/Modeling/KinematicChain.h"
@@ -27,7 +27,7 @@
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(CameraMatrixProvider)
-  REQUIRE(InertialPercept)
+  REQUIRE(InertialModel)
   REQUIRE(GoalPercept) // needed fot calibration of the camera matrix
   REQUIRE(Image)
   REQUIRE(FieldInfo)

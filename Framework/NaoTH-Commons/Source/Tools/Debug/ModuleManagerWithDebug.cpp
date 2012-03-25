@@ -43,7 +43,7 @@ void ModuleManagerWithDebug::printRepresentation(std::ostream &outstream, const 
       
     if(binary)
     {
-      //theRepresentation.toDataStream(outstream);
+      theRepresentation.serialize(outstream);
     }
     else
     {

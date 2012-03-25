@@ -50,7 +50,7 @@ class ParticleFilterBallLocator : private ParticleFilterBallLocatorBase
 
 public:
   ParticleFilterBallLocator();
-  virtual ~ParticleFilterBallLocator(){};
+  virtual ~ParticleFilterBallLocator(){}
 
   virtual void execute();
 
@@ -101,6 +101,8 @@ private:
   /** some debug drawings */
   void drawBallModel(const BallModel& ballModel) const;
   void drawSamples(const SampleSet& sampleSet) const;
+  void drawMotionUpdateBySpeed(const Vector2<double> position, const Vector2<double> positionWithSpeed) const;
+
 };
 
 #endif //__ParticleFilterBallLocator_h_

@@ -37,8 +37,9 @@ void SupportPolygonGenerator::init(const double* fsr,
     leftFootTouchDetectorCfg = cfg.getString(cfgname, "leftFoot");
     rightFootTouchDetectorCfg = cfg.getString(cfgname, "rightFoot");
   }
-    theLeftFootTouchDetector.init(theFSRData + FSRData::LFsrFL, leftFootTouchDetectorCfg);
-    theRightFootTouchDetector.init(theFSRData + FSRData::RFsrFL, rightFootTouchDetectorCfg);
+  
+  theLeftFootTouchDetector.init(theFSRData + FSRData::LFsrFL, leftFootTouchDetectorCfg);
+  theRightFootTouchDetector.init(theFSRData + FSRData::RFsrFL, rightFootTouchDetectorCfg);
 }
 
 SupportPolygonGenerator::~SupportPolygonGenerator()
@@ -122,7 +123,7 @@ void SupportPolygonGenerator::calcSupportPolygon(SupportPolygon& sp)
     }
     sp.standOrigin.translation.z = 0;
 
-}
+}//end calcSupportPolygon
 
 Vector3<double> SupportPolygonGenerator::calcSupportForceCenter()
 {

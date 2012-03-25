@@ -20,7 +20,12 @@ ColorProvider::ColorProvider()
 
 void ColorProvider::execute()
 {
-  if(getFieldColorPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber())
+  if
+  (
+    getFieldColorPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber()
+    ||
+    getFieldColorPreProcessingPercept().lastUpdated.getFrameNumber() == getFrameInfo().getFrameNumber()
+  )
   {
     getColorClassificationModel().setFieldColorPercept(getFieldColorPercept());
   }

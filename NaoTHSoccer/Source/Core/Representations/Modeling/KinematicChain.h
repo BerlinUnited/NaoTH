@@ -72,8 +72,11 @@ public:
 
   virtual void print(ostream& stream) const;
 
+  bool is_initialized() { return initialized; }
+
 private:
     double sumMass;
+    bool initialized;
 };
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);

@@ -24,6 +24,8 @@ public:
   double sigmaAngle;
   double sigmaDistance;
 
+  double speedWehnParticleIsMoving;
+
   virtual void print(std::ostream& stream) const {}
 
 };

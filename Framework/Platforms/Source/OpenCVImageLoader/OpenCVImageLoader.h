@@ -52,6 +52,8 @@ public:
 
   virtual string getBodyNickName() const {return "naoth"; }
 
+  virtual string getHeadNickName() const {return "naoth"; }
+
   void main();
   bool findFiles(const char* dirName);
   void listFiles();
@@ -64,6 +66,7 @@ public:
   void stepBack();
   void jumpToStart();
   void jumpTo(const string fileName);
+  void play();
 
   //get methods
   void get(Image& data);

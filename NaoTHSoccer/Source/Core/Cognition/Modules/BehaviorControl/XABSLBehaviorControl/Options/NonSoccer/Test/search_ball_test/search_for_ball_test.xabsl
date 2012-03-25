@@ -1,0 +1,183 @@
+/** Scan mode for looking at the ball/searching for the ball */
+option search_for_ball_test
+{
+  bool @force_ball_model_check; // false by default
+
+  common decision 
+  {
+    if (ball.was_seen)
+    {
+      goto look_at_ball_percept;
+    }
+  }
+  
+  initial state start_search 
+  {
+    decision {
+      else if((ball.time_since_last_seen < 3000 || 
+        @force_ball_model_check) && 
+        abs(value=ball.angle) < 85)
+        goto try_to_look_at_the_old_ball;
+      else if (ball.team.time_since_last_update < 3000)
+        goto check_team_ball;
+      else
+        goto search_for_ball;
+    }
+    action 
+    {
+    }
+  }
+
+  state try_to_look_at_the_old_ball
+  {
+    decision
+    {
+      else if (state_time > 2000)
+        goto check_team_ball;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.x;
+      head.point_in_world.y = ball.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state check_team_ball
+  {
+    decision
+    {
+      else if (ball.team.time_since_last_update < 3000)
+        stay;
+      else
+        goto search_for_ball;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.team.position.x;
+      head.point_in_world.y = ball.team.position.y;
+    }
+  }
+  
+  state search_for_ball
+  {
+    decision
+    {
+      else if( state_time > 3000 && 
+        (ball.time_since_last_seen < 15000 || 
+         @force_ball_model_check) &&
+       abs(value=ball.angle) < 85)
+       goto try_to_look_at_the_old_ball;
+      //else if( head.executed_motion_type != search )
+       //goto search_for_ball_near;
+      else
+       stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      
+      head.motion_type = look_at_point_on_the_ground;
+      head.point_on_grond.x = attention.mi_point.x;
+      head.point_on_grond.y = attention.mi_point.y;
+      /* 
+      head.motion_type = search;
+      head.search.center.x = 2000;
+      head.search.center.y = 0;
+      head.search.center.z = ball.radius;
+      head.search.size.x = 1500;
+      head.search.size.y = 1000;
+      head.search.size.z = 0;
+      */
+    }
+  }
+
+  state search_for_ball_around_ball
+  {
+    decision
+    {
+      else if(head.executed_motion_type != search)
+        goto search_for_ball_near;
+      else
+        stay;
+    }
+    action
+    {
+      head.motion_type = search;
+      head.camera.id = bottom;
+      head.search.center.x = ball.x;
+      head.search.center.y = ball.y;
+      head.search.center.z = ball.radius;
+      head.search.size.x = 100;
+      head.search.size.y = 100;
+      head.search.size.z = 0;
+    }
+  }
+  
+  state search_for_ball_near
+  {
+    decision
+    {
+      else if(head.executed_motion_type != search)
+        goto search_for_ball;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = search;
+      head.search.center.x = 800;
+      head.search.center.y = 0;
+      head.search.center.z = ball.radius;
+      head.search.size.x = 500;
+      head.search.size.y = 600;
+      head.search.size.z = 0;
+    }
+  }
+
+  
+  state look_at_ball
+  {
+    decision
+    {
+      else if (ball.time_since_last_seen > 1000)
+        goto search_for_ball_around_ball;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.x;//ball.percept.x;
+      head.point_in_world.y = ball.y;//ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+
+  state look_at_ball_percept
+  {
+    decision
+    {
+      else if (state_time > 1000)
+        goto look_at_ball;
+      else
+        stay;
+    }
+    action
+    {
+      head.camera.id = bottom;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius; // radius of the ball
+    }
+  }
+}

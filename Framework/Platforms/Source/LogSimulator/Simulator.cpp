@@ -183,7 +183,7 @@ void Simulator::play()
     unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
     #ifdef WIN32
-    Sleep(waitTime);
+    Sleep(60);
     if(_kbhit())
     #else
     // wait some time
@@ -319,7 +319,7 @@ void Simulator::jumpTo(unsigned int position)
   {
     cout << "frame not found!" << endl;
     currentFrame = oldPos;
-    printCurrentLineInfo();
+    if(!backendMode) printCurrentLineInfo();
   }
 }//end jumpTo
 
@@ -534,7 +534,10 @@ bool Simulator::compatibleExecute(const string& name, size_t dataSize)
 void Simulator::printCurrentLineInfo()
 {
   // output some informations about the current frame
-  cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]\t\r";
+  if(!backendMode)
+    cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]\t\r";
+  else
+    cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]" << endl;
 }//end printCurrentLineInfo
 
 void Simulator::parseFile()

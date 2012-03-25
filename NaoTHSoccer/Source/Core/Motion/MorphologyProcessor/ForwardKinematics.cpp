@@ -40,20 +40,24 @@ void ForwardKinematics::forwardAllKinematicsExcept(Link* theLink, Link* ept)
   forwardAllKinematicsExcept(theLink->sister, ept);
 }
 
-void ForwardKinematics::calcChestRotation(Link* theLinks, const InertialSensorData& theInertialSensorData)
+void ForwardKinematics::calcChestRotation(Link* theLinks, const Vector2d& rotation)
 {
   Link* chest = (theLinks + KinematicChain::Torso);
   // Rotation from Inertial sensor data
-  chest->R = RotationMatrix::getRotationX(theInertialSensorData.data.x);
-  chest->R.rotateY(theInertialSensorData.data.y);
+  chest->R = RotationMatrix::getRotationX(rotation.x);
+  chest->R.rotateY(rotation.y);
 }//end calcChestRotation
+
+
+
 
 void ForwardKinematics::calcChestAll(Link* theLinks,
         const AccelerometerData& theAccelerometerData,
-        const InertialSensorData& theInertialSensorData,
+        //const InertialPercept& theInertialPercept,
+        const Vector2<double>& theBodyRotation,
         const double deltaTime)
 {
-  calcChestRotation(theLinks, theInertialSensorData);
+  calcChestRotation(theLinks, theBodyRotation);
   Link* chest = (theLinks + KinematicChain::Torso);
 
   // position is original
@@ -79,13 +83,14 @@ double ForwardKinematics::calcChestHeight(const Vector3<double>* fsrPos)
 
 void ForwardKinematics::calculateKinematicChainAll(
     const AccelerometerData& theAccelerometerData,
-    const InertialSensorData& theInertialSensorData,
+    //const InertialPercept& theInertialPercept,
+    const Vector2<double>& theBodyRotation,
     KinematicChain& theKinematicChain,
     Vector3<double>* theFSRPos,
     const double deltaTime)
 {
   Link* theLinks = theKinematicChain.theLinks;
-  calcChestAll(theLinks, theAccelerometerData, theInertialSensorData, deltaTime);
+  calcChestAll(theLinks, theAccelerometerData, theBodyRotation, deltaTime);
   forwardAllKinematics(theLinks + KinematicChain::Torso);
   
   // TODO: move the estimation of the chest height to somwhere else
@@ -186,5 +191,42 @@ void ForwardKinematics::updateKinematicChainFrom(Link* l)
 
   calcCoMs(root);
 }//end updateKinematicChainFrom
+
+
+RotationMatrix ForwardKinematics::calcChestFeetRotation(const KinematicChain& theKinematicChain)
+{
+  RotationMatrix calculatedRotation;
+
+  // calculate rotation based on foot - torso transformation
+  const Pose3D& footLeft = theKinematicChain.theLinks[KinematicChain::LFoot].M;
+  const Pose3D& footRight = theKinematicChain.theLinks[KinematicChain::RFoot].M;
+  const Pose3D& body = theKinematicChain.theLinks[KinematicChain::Torso].M;
+
+  // local in chest
+  Pose3D localFootLeft(body.local(footLeft));
+  Pose3D localFootRight(body.local(footRight));
+    
+  if(abs(localFootLeft.translation.z - localFootRight.translation.z) < 3.f/* magic number */)
+  {
+    // use average of the calculated rotation of each leg
+    double meanX = (localFootLeft.rotation.getXAngle() + localFootRight.rotation.getXAngle())*0.5;
+    double meanY = (localFootLeft.rotation.getYAngle() + localFootRight.rotation.getYAngle())*0.5;
+
+    //calculatedRotation.fromKardanRPY(0.0, meanY, meanX);
+    calculatedRotation.rotateX(meanX).rotateY(meanY);
+  }
+  else if(localFootLeft.translation.z > localFootRight.translation.z)
+  {
+    // use left foot
+    calculatedRotation = localFootLeft.rotation;
+  }
+  else
+  {
+    // use right foot
+    calculatedRotation = localFootRight.rotation;
+  }
+
+  return calculatedRotation.invert();
+}//end calcChestFeetRotation
 
 } // namespace Kinematics

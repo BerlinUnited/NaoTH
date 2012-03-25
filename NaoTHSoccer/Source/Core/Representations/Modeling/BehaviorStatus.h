@@ -6,9 +6,8 @@
  */
 
 #ifndef _BEHAVIORSTATUS_H
-#define  _BEHAVIORSTATUS_H
+#define _BEHAVIORSTATUS_H
 
-//#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 

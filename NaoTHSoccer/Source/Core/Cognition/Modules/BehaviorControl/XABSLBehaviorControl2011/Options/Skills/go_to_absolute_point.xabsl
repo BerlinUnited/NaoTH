@@ -1,0 +1,40 @@
+option go_to_absolute_point{
+ /**  */
+  float @rotation [deg];
+
+  /**  */
+  float @x [mm];
+
+  /**  */
+  float @y [mm];
+
+  
+
+  initial state go_to {
+    decision{
+      if (action_done)
+        goto stand;
+      else
+        stay;
+    }
+    action {
+      go_to_relative_point(rotation=@rotation-robot_pose.planned.rotation, 
+                           x=odometry.preview.x(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)),
+                           y=odometry.preview.y(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) );
+    }
+  }
+  
+  target state stand {
+    decision{
+      if (action_done)
+        stay;
+      else
+        goto go_to;
+    }
+   action{
+      go_to_relative_point(rotation=@rotation-robot_pose.planned.rotation, 
+                           x=odometry.preview.x(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)),
+                           y=odometry.preview.y(x=locator.field_to_relative.x(x=@x, y=@y), y=locator.field_to_relative.y(x=@x, y=@y)) );
+    }
+  }
+}

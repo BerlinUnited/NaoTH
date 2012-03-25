@@ -34,7 +34,7 @@ BasicMotion::BasicMotion(
   theInitJoints.position[JointData::LShoulderPitch] = Math::fromDegrees(90);
   theInitJoints.position[JointData::LShoulderRoll]  = Math::fromDegrees(10);
   theInitJoints.position[JointData::LElbowRoll]     = LElbowRollMax;
-  theInitJoints.position[JointData::LElbowYaw]      = Math::fromDegrees(-90);;
+  theInitJoints.position[JointData::LElbowYaw]      = Math::fromDegrees(-90);
   theInitJoints.position[JointData::RShoulderPitch] = Math::fromDegrees(90);
   theInitJoints.position[JointData::RShoulderRoll]  = Math::fromDegrees(-10);
   theInitJoints.position[JointData::RElbowRoll]     = RElbowRollMin;

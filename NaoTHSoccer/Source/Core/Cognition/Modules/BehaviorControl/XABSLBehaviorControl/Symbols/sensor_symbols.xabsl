@@ -39,21 +39,11 @@ namespace sensor("Sensor Symbols") {
   float input sensor.ultrasound.left;
   float input sensor.ultrasound.right;
 
-  /** use the obstacle model (buffer) */
-  float input obstacle.ultrasound.time_since_seen;
+  /** use the obstacle model */
   float input obstacle.ultrasound.distance;
-
-  /** ... */
-  bool input obstacle.visual.was_seen;
-  float input obstacle.visual.x;
-  float input obstacle.visual.y;
-
-  bool input obstacle.radar.was_seen;
-
-  /** RadarGrid provided obstacles */
-   float input getObstDistByAngle (
-    angle [decimal];
-  );
+  float input obstacle.ultrasound.left.distance;
+  float input obstacle.ultrasound.right.distance;
+  float input obstacle.ultrasound.blockedtime;
   
   /** number of the button pressed on a remote control*/
   float input button.remote;
@@ -69,5 +59,13 @@ namespace sensor("Sensor Symbols") {
   bool output sensor.camera.reset;
 
   bool input button.bumper.pressed.left;
+
+  /** path planner */
+  
+  float input path.next_point_to_go_x;
+  float input path.next_point_to_go_y;
+
+  float output path.target_x;
+  float output path.target_y;
 }
   

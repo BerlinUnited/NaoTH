@@ -71,5 +71,16 @@ namespace strategy("Strategy Symbols") {
   /** formation */
   float input soccer_strategy.formation.x;
   float input soccer_strategy.formation.y;
+
+  enum situationStatus
+  {
+    after_penalized,
+    dribble,
+    kick,
+    kickoff
+  };
+  enum situationStatus output situationStatus;
+  bool output situationStatusOwnHalf;
+  
 }
   

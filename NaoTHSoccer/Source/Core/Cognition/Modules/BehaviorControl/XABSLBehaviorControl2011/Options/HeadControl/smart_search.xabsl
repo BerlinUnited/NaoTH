@@ -1,0 +1,42 @@
+option smart_search
+{
+
+  state look_at_goal
+  {
+    decision
+    {
+      if(head.smart_search.rate == 1)
+        stay;
+      else if(head.smart_search.rate == 0)
+        goto look_at_ball;
+      else if (state_time < 10000*head.smart_search.rate)
+        stay;
+      else
+        goto look_at_ball;
+    }
+    action
+    {
+      search_for_goal();
+    }
+  }
+
+  initial state look_at_ball
+  {
+    decision
+    {
+      if(head.smart_search.rate == 1)
+        goto look_at_goal;
+      else if(head.smart_search.rate == 0)
+        stay;
+      else if (state_time < 10000*(1-head.smart_search.rate))
+        stay;
+      else
+        goto look_at_goal;
+    }
+    action
+    {
+      search_for_ball();
+    }
+  }
+
+}

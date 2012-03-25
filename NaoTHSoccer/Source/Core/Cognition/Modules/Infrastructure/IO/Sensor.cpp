@@ -23,6 +23,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   // read RobotInfo
   RobotInfo& robot = getRobotInfo();
   robot.platform = platformInterface.getName();
+  robot.headNickName = platformInterface.getHeadNickName();
   robot.bodyNickName = platformInterface.getBodyNickName();
   robot.bodyID = platformInterface.getBodyID();
   robot.basicTimeStep = platformInterface.getBasicTimeStep();
@@ -51,14 +52,15 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   
   platformInterface.registerCognitionInputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
   platformInterface.registerCognitionInputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
-  platformInterface.registerCognitionInputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData());
+  //platformInterface.registerCognitionInputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData());
+  platformInterface.registerCognitionInputChanel<InertialModel, Serializer<InertialModel> >(getInertialModel());
 }//end init
 
 
 void Sensor::execute()
 {
   // add calibration to inertial sensor
-  getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
+  //getInertialPercept().data = getInertialSensorData().data + getCalibrationData().inertialSensorOffset;
 
   GT_TRACE("Sensor:execute() end");
 

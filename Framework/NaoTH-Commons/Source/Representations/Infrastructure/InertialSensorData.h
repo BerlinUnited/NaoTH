@@ -6,7 +6,7 @@
  */
 
 #ifndef _INERTIALSENSORDATA_H
-#define  _INERTIALSENSORDATA_H
+#define _INERTIALSENSORDATA_H
 
 #include <string>
 

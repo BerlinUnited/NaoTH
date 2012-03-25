@@ -6,8 +6,8 @@
 * Declaration of class IKMotion
 */
 
-#ifndef __IKMotion_h_
-#define __IKMotion_h_
+#ifndef _IKMotion_h_
+#define _IKMotion_h_
 
 #include "Motion/AbstractMotion.h"
 #include "IKPose.h"
@@ -36,4 +36,4 @@ public:
 
 };
 
-#endif //__IKMotion_h_
+#endif // _IKMotion_h_

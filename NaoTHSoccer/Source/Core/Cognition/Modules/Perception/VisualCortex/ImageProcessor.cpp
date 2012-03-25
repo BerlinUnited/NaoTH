@@ -14,6 +14,7 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugDrawings3D.h"
 #include "Tools/Debug/Stopwatch.h"
+#include "Tools/Debug/Trace.h"
 
 //#include "Tools/Debug/DebugBufferedOutput.h"
 
@@ -27,7 +28,7 @@ ImageProcessor::ImageProcessor()
   DEBUG_REQUEST_REGISTER("ImageProcessor:draw_horizon", "draws the artificial horizon", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_on_field", "draw the projection of the ball on the field", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_in_image", "draw ball in the image if found", true);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:draw_ball_in_image", "draw ball in the image if found", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:ballpos_relative_3d", "draw the estimated ball position relative to the camera in 3d viewer", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:mark_previous_ball", "draw the projection of the previous Ball Percept on the image", false);
@@ -43,6 +44,9 @@ ImageProcessor::ImageProcessor()
 
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
   theScanLineEdgelDetector->setEnabled(true);
+
+  theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
+  theScanLineEdgelDetectorDifferential->setEnabled(false);
 
   theFieldDetector = registerModule<FieldDetector>("FieldDetector");
   theFieldDetector->setEnabled(true);
@@ -72,38 +76,52 @@ void ImageProcessor::execute()
   getLinePercept().reset();
   getPlayersPercept().reset();
 
+  GT_TRACE("executing HistogramFieldDetector");
   STOPWATCH_START("HistogramFieldDetector");
   theHistogramFieldDetector->execute();
   STOPWATCH_STOP("HistogramFieldDetector");
 
+  GT_TRACE("executing BodyContourProvider");
   STOPWATCH_START("BodyContourProvider");
   theBodyContourProvider->execute();
   STOPWATCH_STOP("BodyContourProvider");
 
+  GT_TRACE("executing RobotDetector");
   STOPWATCH_START("RobotDetector");
   theRobotDetector->execute();
   STOPWATCH_STOP("RobotDetector");
 
+  GT_TRACE("executing GoalDetector");
   STOPWATCH_START("GoalDetector");
   theGoalDetector->execute();
   STOPWATCH_STOP("GoalDetector");
 
+  GT_TRACE("executing ScanLineEdgelDetector");
   STOPWATCH_START("ScanLineEdgelDetector");
   theScanLineEdgelDetector->execute();
   STOPWATCH_STOP("ScanLineEdgelDetector");
 
+  GT_TRACE("executing ScanLineEdgelDetectorDifferential");
+  STOPWATCH_START("ScanLineEdgelDetectorDifferential");
+  theScanLineEdgelDetectorDifferential->execute();
+  STOPWATCH_STOP("ScanLineEdgelDetectorDifferential");
+
+  GT_TRACE("executing FieldDetector");
   STOPWATCH_START("FieldDetector");
   theFieldDetector->execute();
   STOPWATCH_STOP("FieldDetector");
 
+  GT_TRACE("executing BallDetector");
   STOPWATCH_START("BallDetector");
   theBallDetector->execute();
   STOPWATCH_STOP("BallDetector");
 
+  GT_TRACE("executing LineDetector");
   STOPWATCH_START("LineDetector");
   theLineDetector->execute();
   STOPWATCH_STOP("LineDetector");
 
+  GT_TRACE("executing rest of ImageProcessor::execute()");
 
   // estimate the relative position of the ball
   if(getBallPercept().ballWasSeen)

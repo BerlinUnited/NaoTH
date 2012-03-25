@@ -11,11 +11,18 @@
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
-#include <Tools/DataStructures/Printable.h>
+#include "Tools/Math/Matrix2x2.h"
+#include "Tools/DataStructures/Printable.h"
+#include "Tools/DataStructures/RingBuffer.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
+
+#include "Representations/Modeling/BallModel.h"
+
 
 #include <vector>
 #include <map>
 #include <list>
+#include <algorithm>
 
 
 class RadarGrid: public naoth::Printable
@@ -26,14 +33,63 @@ public:
   //default destructor:
   virtual ~RadarGrid(){}
 
+  // possible go directions for a robot
+  enum Directions{ back, backRight, right, frontRight, front, frontLeft, left, backLeft, numberOfDirections };
+  // search directions
+  enum SearchDirections{searchLeft, searchLeftAndRight, searchRight};
+  // number of sectors
+  enum { numOfSectors = 45 , maxDistance = 1500};
+  // update types
+  enum UpdateMode{ overwrite, extend, limit };
+  // number of points in buffer
+  enum { bufferCapacity = 5 };
+  // time, after the obstacle is forgotten
+  enum { timeToForget = 6000, timeToForgetWithBuffer = 1200 };
+
+  //angle resolution of the grid:
+  double angleResolution;
+
+  // do we have some obstacle?
   bool obstacleWasSeen;
- 
+
+  // use buffer or just a single value
+  bool useBuffer;
+
+  //center of the grid
+  Vector2<double> center;
+
+
+  // store the system time
+  unsigned int currentTime;
+
+  // density of the grid:
+  // how wide is a sector in degrees
+  double density;
+
+  //model update parameters
+  double nearUpdate;
+  double farUpdate;
+  
   //some functions
   //get/set model
-  void set(Vector2<double>);
+  void addObstaclePoint(Vector2<double>);
 
-  Vector2d get(double angle) const;
+  // set the current system time
+  void setCurrentTime(unsigned int tStamp) {this->currentTime = tStamp;}
 
+  /** get the distance for a particular angle */
+  double getDistanceForAngle(double angle) const;
+
+  /** returns the distance to the closest obstacle
+   * in the corridor specified by angle and width */
+  double getDistanceInCorridor(double angle, double width) const;
+
+  /** get all obstacles from the model in one vector of
+  * of positions
+  */
+  void getAllObstacles(std::vector<Vector2d> obstaclesVector) const;
+
+  // check whether model is valid
   void checkValid();
 
   //age the model
@@ -41,57 +97,67 @@ public:
 
   //update the model:
   //apply the odometry data, erase old values
-  void updateGrid(Pose2D& odometryDelta);
-
+  void updateGridByOdometry(Pose2D& odometryDelta);
 
   //set model params:
-  void setCenter(Vector2<double>& newCenter){this->center = newCenter;}
-  void setFarUpdate(double& newFarUpdate){this->nearUpdate = newFarUpdate;}
-  void setNearUpdate(double& setNearUpdate){this->farUpdate = setNearUpdate;}
+  void setCenter(Vector2<double> newCenter){this->center = newCenter;}
+  void setFarUpdate(double newFarUpdate){this->nearUpdate = newFarUpdate;}
+  void setNearUpdate(double setNearUpdate){this->farUpdate = setNearUpdate;}
 
+  // debug drawings
   void drawFieldContext();
   void drawImageContext();
 
   virtual void print(std::ostream& stream) const
   {
     stream << "Obstacle was seen: " << obstacleWasSeen << endl;
-    newMap::const_iterator CIT = cells.begin();
-    for (; CIT != cells.end(); ++CIT)
+    cellsMap::const_iterator it = cells.begin();
+    for (; it != cells.end(); ++it)
     {
-      stream << "ValueNr.: " << CIT->first << " value: " << CIT->second.value << endl;
+      stream << "ValueNr.: " << it->first << " mean: " << it->second.mean << endl;
+      stream << "SumOfBuffer.: " << it->second.sum << endl;
+      for (int i = 0; i < it->second.buffer.getNumberOfEntries(); i++)
+      {
+        stream << "\t" << "bufferNr: " << i << " : " << it->second.buffer[i] << " time: " << it->second.timeStamp << endl;
+      }
     }
   }//end print
 
 private:
-  //angle resolution of the grid:
-  double angleResolution;
-
   struct Cell
   {
-    //in polar coordinates system
-    //value.x = distance;
-    //value.y = angle
-    Vector2d value;
-    //age of the cell
-    //in some entities
-    int age;
+    Vector2d mean;
+    //buffer for percepts
+    RingBuffer<Vector2d, bufferCapacity> buffer;
+    //sum of the buffer
+     Vector2d sum;
+    //time the cell was set
+    unsigned int timeStamp;
+    Cell():
+      mean(0.0, 0.0),
+      sum(0.0, 0.0),
+      timeStamp(0)
+    {}
   };
 
-  //new version: now we are using map
-  typedef std::map<unsigned int, Cell> newMap;
-  newMap cells;
+  //new version: now we use map
+  typedef std::map<int, Cell> cellsMap;
+  cellsMap cells;
 
-  //center of the grid
-  Vector2<double> center;
 
-  //model update parameters
-  double nearUpdate;
-  double farUpdate;
+  Vector2d applyOdometry(Vector2d& someValue, Pose2D& odometryDelta);
 
-  Vector2d applyOdometry(Vector2d someValue, Pose2D& odometryDelta);
-
+  void setMean(int& position, Vector2d& newValue);
  
-  unsigned int getIndexByAngle(const double& angle) const;
+  // get sector of model for a given angle
+  inline int getSectorByAngle(const double angle) const;
+
+  // get angle of a given sector
+  inline double getAngleBySector(const int sector) const;
+
+  // get sum and average values of buffer
+  inline void getSumAndAverage(RingBuffer<Vector2d, 5>& buffer, Vector2d& sum, Vector2d& average) const;
 };
+
 
 #endif// __RadarGrid_h_

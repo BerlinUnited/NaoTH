@@ -1,6 +1,6 @@
 package naothmessages;
 
-option java_package= "de.hu_berlin.informatik.ki.nao.messages";
+option java_package= "de.naoth.rc.messages";
 
 import "CommonTypes.proto";
 
@@ -63,8 +63,14 @@ message PlotItem {
   optional double rotation = 6;
 }
 
+message PlotStroke2D {
+  required string name = 2;
+  repeated DoubleVector2 points = 1;
+}
+
 message Plots {
   repeated PlotItem plots = 1;
+  repeated PlotStroke2D plotstrokes = 2;
 }
 
 message XABSLParameter {
@@ -115,6 +121,7 @@ message BehaviorStatus {
  repeated XABSLParameter inputSymbols = 3;
  repeated XABSLParameter outputSymbols = 4;
  optional uint32 frameNumber = 5;
+ optional string errorMessage = 6;
 }
 
 message Module {

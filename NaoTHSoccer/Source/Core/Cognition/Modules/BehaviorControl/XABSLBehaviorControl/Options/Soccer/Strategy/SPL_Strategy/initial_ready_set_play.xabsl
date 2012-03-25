@@ -24,6 +24,7 @@ option initial_ready_set_play
 		{
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
+      situationStatusOwnHalf = true;
 			head.control_mode = stay_as_forced;
 			motion.type = init;
 		}
@@ -56,6 +57,7 @@ option initial_ready_set_play
 		action 
 		{
       sound.request = (state_time == 0)  ? playing : off;
+      situationStatusOwnHalf = false;
       play_with_check_fall_down();
       //last_state_was_penalized = false;
 		}
@@ -65,7 +67,7 @@ option initial_ready_set_play
 		action
 		{
       last_state_was_penalized = true;
-      sound.request = (state_time == 0) ? penalized : off;
+      //sound.request = (state_time == 0) ? penalized : off;
 			head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
 			motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
 

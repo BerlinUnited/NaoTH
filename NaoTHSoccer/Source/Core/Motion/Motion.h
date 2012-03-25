@@ -6,19 +6,22 @@
  *
  */
 
-#ifndef MOTION_H
-#define  MOTION_H
+#ifndef _MOTION_H
+#define _MOTION_H
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
+
 #include "MotionBlackBoard.h"
 #include "AbstractMotion.h"
+#include "Engine/HeadMotion/HeadMotionEngine.h"
+#include "Engine/MotionFactory.h"
+
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 #include "MorphologyProcessor/FootTouchCalibrator.h"
-#include "SensorFilter/InertialFilter.h"
-#include "Engine/HeadMotion/HeadMotionEngine.h"
-#include "Engine/MotionFactory.h"
+#include "SensorFilter/InertiaSensorCalibrator.h"
+
 #include "Tools/Debug/Logger.h"
 
 #ifdef NAO_OLD
@@ -53,7 +56,7 @@ private:
 
   EmptyMotion theEmptyMotion;
   
-  InertialFilter theInertialFilter;
+  InertiaSensorCalibrator theInertiaSensorCalibrator;
   SupportPolygonGenerator theSupportPolygonGenerator;
   OdometryCalculator theOdometryCalculator;
   FootTouchCalibrator theFootTouchCalibrator;
@@ -61,15 +64,6 @@ private:
   HeadMotionEngine theHeadMotionEngine;
   std::list<MotionFactory*> theMotionFactories;
   
-  // message from motion to cognition
-  MessageWriter* theMotionStatusWriter;
-  MessageWriter* theOdometryDataWriter;
-  MessageWriter* theCalibrationDataWriter;
-  
-  // message from cognition to motion
-  MessageReader* theHeadMotionRequestReader;
-  MessageReader* theMotionRequestReader;
-
   unsigned int frameNumSinceLastMotionRequest;
 
   enum State

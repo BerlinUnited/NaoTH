@@ -5,13 +5,12 @@
 * Declaration of the class ForwardKinematics
 */
 
-#ifndef _FORWARDKINEMATICS_H
-#define  _FORWARDKINEMATICS_H
+#ifndef _ForwardKinematics_H_
+#define _ForwardKinematics_H_
 
-#include <Tools/Math/Matrix.h>
+#include <Tools/Math/RotationMatrix.h>
 #include <Tools/Math/Vector3.h>
 
-#include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 
 #include "Representations/Modeling/KinematicChain.h"
@@ -27,7 +26,8 @@ public:
   /** */
   static void calculateKinematicChainAll(
     const naoth::AccelerometerData& theAccelerometerData,
-    const naoth::InertialSensorData& theInertialSensorData,
+    //const InertialPercept& theInertialPercept,
+    const Vector2<double>& theBodyRotation,
     KinematicChain& theKinematicChain,
     Vector3<double>* theFSRPos,
     const double deltaTime);
@@ -41,17 +41,20 @@ public:
   /** */
   static void updateKinematicChainFrom(Link* l);
 
+  /** calculate rotation based on foot - torso transformation */
+  static RotationMatrix calcChestFeetRotation(const KinematicChain& theKinematicChain);
 
 private:
   ForwardKinematics() {} // don't create an instance
 
   /** */
-  static void calcChestRotation(Link* theLinks, const naoth::InertialSensorData& theInertialSensorData);
+  static void calcChestRotation(Link* theLinks, const Vector2d& rotation);
 
   /** */
   static void calcChestAll(Link* theLinks,
           const naoth::AccelerometerData& theAccelerometerData,
-          const naoth::InertialSensorData& theInertialSensorData,
+          //const InertialPercept& theInertialPercept,
+          const Vector2<double>& theBodyRotation,
           const double deltaTime);
   
   /** */
@@ -79,5 +82,5 @@ private:
 };
 
 } // namespace Kinematics
-#endif  /* _FORWARDKINEMATICS_H */
+#endif  /* _ForwardKinematics_H_ */
 

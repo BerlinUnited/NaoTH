@@ -1,0 +1,35 @@
+/**  */
+option ball_far_away_situation {
+
+ initial state approach_ball 
+ {
+   decision
+   {
+      if(attack.approaching_with_right_foot)
+        goto approach_ball_right;
+      else
+        goto approach_ball_left;
+   }
+   action 
+   { 
+   }
+  }
+
+  state approach_ball_right 
+  {
+    action {
+      //go_to_ball_omni(distance = @dist, right_foot=true);
+      go_to_ball_cool(distance = 160, right_foot=true);
+    }
+  }
+
+  state approach_ball_left
+  {
+    action 
+    {
+      //go_to_ball_omni(distance = @dist, right_foot=false);
+      go_to_ball_cool(distance = 160, right_foot=false);
+    }
+  }
+  
+}

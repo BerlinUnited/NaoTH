@@ -93,7 +93,8 @@ project "naoth"
    "opencv_core",
    "opencv_imgproc",
    "opencv_highgui",
-   "opencv_ml"
+   "opencv_ml",
+   "asound"
 	 -- "rttools"
       }
 

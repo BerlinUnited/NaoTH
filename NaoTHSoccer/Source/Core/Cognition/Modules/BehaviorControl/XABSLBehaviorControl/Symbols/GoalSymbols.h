@@ -5,8 +5,8 @@
 * Definition of class GoalSymbols
 */
 
-#ifndef __GaolSymbols_H_
-#define __GoalSymbols_H_
+#ifndef _GaolSymbols_H_
+#define _GoalSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -42,7 +42,7 @@ public:
   {
     theInstance = this;
     };
-  ~GoalSymbols(){};
+  virtual ~GoalSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

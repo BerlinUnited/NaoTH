@@ -7,8 +7,8 @@
 * Definition of class LineDetector
 */
 
-#ifndef __LineDetector_H_
-#define __LineDetector_H_
+#ifndef _LineDetector_H_
+#define _LineDetector_H_
 
 #include <ModuleFramework/Module.h>
 
@@ -94,7 +94,7 @@ private:
   int cameraBrighness;
   unsigned int edgelBrightnessLevel;
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

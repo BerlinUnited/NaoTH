@@ -13,10 +13,12 @@
 
 // representations
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Infrastructure/SoundData.h"
+
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Modeling/BallModel.h"
-#include "Representations/Infrastructure/FieldInfo.h"
 
 #include "Representations/Motion/Request/HeadMotionRequest.h"
 #include "Representations/Motion/Request/MotionRequest.h"
@@ -35,6 +37,7 @@ BEGIN_DECLARE_MODULE(SimpleMotionBehaviorControl)
 
   PROVIDE(HeadMotionRequest)
   PROVIDE(MotionRequest)
+  PROVIDE(SoundPlayData)
 END_DECLARE_MODULE(SimpleMotionBehaviorControl)
 
 class SimpleMotionBehaviorControl: public SimpleMotionBehaviorControlBase

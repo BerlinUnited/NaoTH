@@ -21,7 +21,7 @@ public:
   {
     theInstance = this;
   };
-  ~FieldSymbols(){};
+  virtual ~FieldSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

@@ -31,7 +31,7 @@ public:
   {
     theInstance = this;
   };
-  ~OdometrySymbols(){};
+  virtual ~OdometrySymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

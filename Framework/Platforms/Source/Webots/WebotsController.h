@@ -95,6 +95,8 @@ namespace naoth
     virtual string getBodyID() const { return "naoth-webots"; }
 
     virtual string getBodyNickName() const {return "naoth"; }
+
+    virtual string getHeadNickName() const {return "naoth"; }
     
     virtual void getCognitionInput();
 
@@ -120,7 +122,7 @@ namespace naoth
     void get(UltraSoundReceiveData& data)
     {
       // TODO
-    };
+    }
 
     void get(GameData& data);
 
@@ -130,7 +132,6 @@ namespace naoth
      void set(const CameraSettingsRequest& data);
      void set(const LEDData& data);
      void set(const IRSendData& data);
-     void set(const UltraSoundSendData& data);
      void set(const SoundData& data);
      void set(const MotorJointData& data);
 

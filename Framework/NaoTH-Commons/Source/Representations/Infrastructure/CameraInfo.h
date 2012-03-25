@@ -6,7 +6,7 @@
  */
 
 #ifndef _CAMERAINFO_H
-#define  _CAMERAINFO_H
+#define _CAMERAINFO_H
 
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/Common.h"

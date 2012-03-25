@@ -39,17 +39,16 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
-  engine.registerDecimalInputSymbol("obstacle.ultrasound.time_since_seen", &getTimeSinceObstacleWasSeen);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
+  engine.registerDecimalInputSymbol("obstacle.ultrasound.left.distance", &getObstacleDistanceLeft);
+  engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
+  engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
-  engine.registerBooleanInputSymbol("obstacle.visual.was_seen", &obstacleModel.visualObstacleWasSeen);
-  engine.registerDecimalInputSymbol("obstacle.visual.x", &obstacleModel.posVisualObstacle.x);
-  engine.registerDecimalInputSymbol("obstacle.visual.y", &obstacleModel.posVisualObstacle.y);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
 
-  //new radar obstacles
-  engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
-  engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);
-  engine.registerDecimalInputSymbolDecimalParameter("getObstDistByAngle", "getObstDistByAngle.angle", &parameter_obstDistByAngle_angle);
+  engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
+  engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
 
   /*engine.registerDecimalInputSymbol("obstacle.radial.direction_free", &getObstacleRadialDirection_free);
   engine.registerDecimalInputSymbolDecimalParameter("obstacle.radial.direction_free", "obstacle.radial.direction_free.deg", &directionParameter);
@@ -109,11 +108,6 @@ double SensorSymbols::getFrameNumber()
   return (double) (theInstance->frameInfo.getFrameNumber());
 }
 
-double SensorSymbols::getObstDistByAngle()
-{
-  double angle = Math::fromDegrees(theInstance->parameter_obstDistByAngle_angle);
-  return theInstance->radarGrid.get(angle).x;
-}
 
 int SensorSymbols::getFallDownState()
 {
@@ -125,7 +119,7 @@ double SensorSymbols::simplePassLeftSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
     if((theInstance->ultraSoundReceiveData.dataLeft[i] * 1000) < r && theInstance->ultraSoundReceiveData.dataLeft[i] > 0.2)
     {
@@ -139,7 +133,7 @@ double SensorSymbols::simplePassRightSensor()
 {
   double r = 2550.0;
   // return minimum measurement = closest object
-  for(unsigned int i = 0; i < UltraSoundData::numOfIRSend; i++)
+  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
   {
     if((theInstance->ultraSoundReceiveData.dataRight[i] * 1000) < r && theInstance->ultraSoundReceiveData.dataRight[i] > 0.2)
     {
@@ -150,21 +144,25 @@ double SensorSymbols::simplePassRightSensor()
 } // end simpleRightUSSensor
 
 
-double SensorSymbols::getTimeSinceObstacleWasSeen()
-{
-  return (double)theInstance->frameInfo.getTimeSince(
-    theInstance->obstacleModel.frameWhenObstacleWasSeen.getTime());
-}//end getFrameWhenObstacleWasSeen
-
-double SensorSymbols::getObstacleAngle()
-{
-  return Math::toDegrees(theInstance->obstacleModel.ultraSoundObstacleEstimation.angle());
-}//end getObstacleAngle
-
 double SensorSymbols::getObstacleDistance()
 {
-  return theInstance->obstacleModel.ultraSoundObstacleEstimation.abs();
+  return theInstance->obstacleModel.frontDistance;
 }//end getObstacleDistance
+
+double SensorSymbols::getObstacleDistanceLeft()
+{
+  return theInstance->obstacleModel.leftDistance;
+}//end getObstacleDistanceLeft
+
+double SensorSymbols::getObstacleDistanceRight()
+{
+  return theInstance->obstacleModel.rightDistance;
+}//end getObstacleDistanceRight
+
+double SensorSymbols::getBlockedTime()
+{
+  return theInstance->obstacleModel.blockedTime;
+}//end getBlockedTime
 
 double SensorSymbols::getCameraBufferFailedCount()
 {
@@ -179,4 +177,24 @@ double SensorSymbols::getInertialSensorX()
 double SensorSymbols::getInertialSensorY()
 {
   return Math::toDegrees(theInstance->inertialSensorData.data.y);
+}
+
+double SensorSymbols::getTargetPointX()
+{
+  return theInstance->path.targetPoint.x;
+}
+
+double SensorSymbols::getTargetPointY()
+{
+  return theInstance->path.targetPoint.y;
+}
+
+void SensorSymbols::setTargetpointX(double targetX)
+{
+  theInstance->path.targetPoint.x = targetX;
+}
+
+void SensorSymbols::setTargetpointY(double targetY)
+{
+  theInstance->path.targetPoint.y = targetY;
 }

@@ -22,8 +22,8 @@
 class OdometryData : public Pose2D, public naoth::Printable
 {
 public:
-  OdometryData() {};
-  ~OdometryData(){};
+  OdometryData() {}
+  ~OdometryData(){}
 
   virtual void print(ostream& stream) const
   {

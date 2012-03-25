@@ -30,6 +30,7 @@ selfCreatedImage(false)
   cameraInfo = Platform::getInstance().theCameraInfo;
   yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
+  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
 
 //copy constructor
@@ -45,6 +46,7 @@ cameraInfo(orig.cameraInfo)
   
   std::memcpy(yuv422, orig.yuv422, cameraInfo.size * SIZE_OF_YUV422_PIXEL);
   selfCreatedImage = true;
+  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
 
 Image& Image::operator=(const Image& orig)
@@ -57,6 +59,7 @@ Image& Image::operator=(const Image& orig)
   yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.size];
   std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.size);
   selfCreatedImage = true;
+  shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 
   return *this;
 }
@@ -228,16 +231,7 @@ void Image::drawPoint
 {
   set(x,y, a, b, c);
 }//end drawPoint
-                        
-unsigned int Image::width()
-{
-  return cameraInfo.resolutionWidth;
-}//end width
-
-unsigned int Image::height()
-{
-  return cameraInfo.resolutionHeight;
-}//end height
+                       
 
 void Serializer<Image>::serialize(const Image& representation, std::ostream& stream)
 {

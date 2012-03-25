@@ -6,10 +6,10 @@
  * @author Max Risler
  */
 
-#ifndef __Pose3D_h__
-#define __Pose3D_h__
+#ifndef _Pose3D_h_
+#define _Pose3D_h_
 
-#include "Matrix.h"
+#include "RotationMatrix.h"
 #include "Pose2D.h"
 
 /** representation for 3D Transformation (Location + Orientation)*/
@@ -231,9 +231,9 @@ template <typename DATATYPE>
 std::ostream& operator <<(std::ostream& ost, const Pose3T<DATATYPE>& v)
 {
     ost << v.rotation.c[0]<<" 0 "
-            <<v.rotation.c[1]<<" 0 "
-            <<v.rotation.c[2]<<" 0 "
-            <<v.translation<<" 1";
+        << v.rotation.c[1]<<" 0 "
+        << v.rotation.c[2]<<" 0 "
+        << v.translation <<" 1";
     return ost;
 }
 
@@ -250,4 +250,4 @@ Pose2T<DATATYPE> reduceDimen(const Pose3T<DATATYPE>& in)
   return out;
 }
 
-#endif // __Pose3D_h__
+#endif // _Pose3D_h_

@@ -11,6 +11,8 @@
 #define _NAO_CONTROLLER_BASE_H_
 
 #include <glib.h>
+#include <string>
+#include <algorithm>
 
 #include "PlatformInterface/PlatformInterface.h"
 #include "PlatformInterface/Platform.h"
@@ -21,7 +23,8 @@
 
 //
 #include "V4lCameraHandler.h"
-//#include "SoundControl.h"
+#include "SoundPlayer.h"
+#include "SoundControl.h"
 #include "Tools/Communication/Broadcast/BroadCaster.h"
 #include "Tools/Communication/Broadcast/BroadCastListener.h"
 #include "SPLGameController.h"
@@ -51,10 +54,9 @@ public:
     sensorDataReading(NULL),
     m_naoSensorData(NULL),
     m_naoCommandMotorJointData(NULL),
-    m_naoCommandUltraSoundSendData(NULL),
     m_naoCommandIRSendData(NULL),
     m_naoCommandLEDData(NULL),
-    //theSoundHandler(NULL),
+    theSoundHandler(NULL),
     theBroadCaster(NULL),
     theBroadCastListener(NULL),
     theDebugServer(NULL)
@@ -65,7 +67,6 @@ public:
     const std::string naoSensorDataPath = "/nao_sensor_data";
     //const std::string naoCommandDataPath = "/nao_command_data";
     const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
-    const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
     const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
     const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
@@ -73,8 +74,6 @@ public:
     //naoCommandData.open(naoCommandDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
     naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
-    std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
-    naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
     naoCommandIRSendData.open(naoCommandIRSendDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
@@ -94,6 +93,10 @@ public:
     cout << "bodyID: " << theBodyID << endl;
     cout << "bodyNickName: " << theBodyNickName << endl;
 
+    ifstream isEthMac("/sys/class/net/eth0/address");    
+    isEthMac >> theHeadNickName;
+    std::replace(theHeadNickName.begin(), theHeadNickName.end(), ':', '_');    
+    cout << "headNickName: " << theHeadNickName << endl;
 
     /*  REGISTER IO  */
     // camera
@@ -102,7 +105,7 @@ public:
     registerOutput<const CameraSettingsRequest>(*this);
     
     // sound
-    //registerOutput<const SoundPlayData>(*this);
+    registerOutput<const SoundPlayData>(*this);
 
     // gamecontroller
     registerInput<GameData>(*this);
@@ -134,7 +137,6 @@ public:
     registerOutput<const MotorJointData>(*this);
     registerOutput<const LEDData>(*this);
     registerOutput<const IRSendData>(*this);
-    registerOutput<const UltraSoundSendData>(*this);
 
 
     /*  INIT DEVICES  */
@@ -144,8 +146,9 @@ public:
     std::cout << "Init CameraHandler" << endl;
     theCameraHandler.init("/dev/video");
   
-//  std::cout << "Init SoundHandler" <<endl;
-//  theSoundHandler = new SoundControl();
+    std::cout << "Init SoundHandler" <<endl;
+    //theSoundPlayer.play("penalized");
+    theSoundHandler = new SoundControl();
 
     std::cout<< "Init TeamComm"<<endl;
     naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
@@ -175,7 +178,6 @@ public:
 
     m_naoSensorData = g_mutex_new();
     m_naoCommandMotorJointData = g_mutex_new();
-    m_naoCommandUltraSoundSendData = g_mutex_new();
     m_naoCommandIRSendData = g_mutex_new();
     m_naoCommandLEDData = g_mutex_new();
   }
@@ -190,20 +192,19 @@ public:
 
     g_mutex_free(m_naoSensorData);
     g_mutex_free(m_naoCommandMotorJointData);
-    g_mutex_free(m_naoCommandUltraSoundSendData);
     g_mutex_free(m_naoCommandIRSendData);
     g_mutex_free(m_naoCommandLEDData);
 
     // close the shared memory
     naoSensorData.close();
     naoCommandMotorJointData.close();
-    naoCommandUltraSoundSendData.close();
     naoCommandIRSendData.close();
     naoCommandLEDData.close();
   }
 
   virtual string getBodyID() const { return theBodyID; }
   virtual string getBodyNickName() const { return theBodyNickName; }
+  virtual string getHeadNickName() const { return theHeadNickName; }
   
 
   // camera stuff
@@ -212,7 +213,11 @@ public:
   void set(const CameraSettingsRequest& data) { theCameraHandler.setCameraSettings(data, data.queryCameraSettings); }
 
   // sound
-  void set(const SoundPlayData& data) { /*theSoundHandler->setSoundData(data);*/ }
+  void set(const SoundPlayData& data) 
+  { 
+    //if(data.soundFile.size() > 0) theSoundPlayer.play(data.soundFile); 
+    theSoundHandler->setSoundData(data);
+  }
 
   // teamcomm stuff
   void get(TeamMessageDataIn& data) { theBroadCastListener->receive(data.data); }
@@ -279,26 +284,32 @@ public:
   SET_TO_SHARED_MEMORY(MotorJointData)
   SET_TO_SHARED_MEMORY(LEDData)
   SET_TO_SHARED_MEMORY(IRSendData)
-  SET_TO_SHARED_MEMORY(UltraSoundSendData)
-
-
 
   virtual void getMotionInput()
   {
+    STOPWATCH_START("getMotionInput");
     // try to get some data from the DCM
     if ( naoSensorData.swapReading() )
+    {
       sensorDataReading = naoSensorData.reading();
+    }
     else // didn't get new sensor data
+    {
+      std::cerr << "didn't get new sensor data" << std::endl;
       sensorDataReading = NULL;
+    }
 
     PlatformInterface<NaoController>::getMotionInput();
+    STOPWATCH_STOP("getMotionInput");
   }//end getMotionInput
 
 
   virtual void setMotionOutput()
   {
+    STOPWATCH_START("setMotionOutput");
     PlatformInterface<NaoController>::setMotionOutput();
-
+    STOPWATCH_STOP("setMotionOutput");
+    
     // send the data to DCM
     //naoCommandData.swapWriting();
   }//end setMotionOutput
@@ -333,12 +344,12 @@ protected:
   std::string staticMemberPath;
   std::string theBodyID;
   std::string theBodyNickName;
+  std::string theHeadNickName;
 
 
   const NaoSensorData* sensorDataReading;
   GMutex* m_naoSensorData;
   GMutex* m_naoCommandMotorJointData;
-  GMutex* m_naoCommandUltraSoundSendData;
   GMutex* m_naoCommandIRSendData;
   GMutex* m_naoCommandLEDData;
   
@@ -348,13 +359,13 @@ protected:
   // NaoController --> DCM
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
-  SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
   //
   V4lCameraHandler theCameraHandler;
-  //SoundControl *theSoundHandler;
+  SoundPlayer theSoundPlayer;
+  SoundControl *theSoundHandler;
   BroadCaster* theBroadCaster;
   BroadCastListener* theBroadCastListener;
   SPLGameController* theGameController;

@@ -37,7 +37,7 @@ public:
   const unsigned int maxNumberOfPoints;
   const unsigned int& numberOfGridPoints;
 
-  unsigned int addPoint(const Vector2<int>& point)
+  inline unsigned int addPoint(const Vector2<int>& point)
   {
     ASSERT(numberOfGridPoints < maxNumberOfPoints);
 
@@ -46,7 +46,7 @@ public:
     return numberOfGridPoints-1;
   }//end addPoint
 
-  const Vector2<int>& getPoint(const unsigned int& i) const
+  inline const Vector2<int>& getPoint(const unsigned int& i) const
   {
     ASSERT(i < maxNumberOfPoints);
     return pointsCoordinates[i];

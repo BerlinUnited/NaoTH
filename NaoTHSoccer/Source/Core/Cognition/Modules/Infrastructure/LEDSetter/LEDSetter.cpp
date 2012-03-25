@@ -15,10 +15,19 @@ LEDSetter::LEDSetter()
 void LEDSetter::execute()
 {
   getLEDData().change = false;
-  // head LEDs from behavior
-  copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
-  copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
 
+  if(!getFrameRateCheckLEDRequest().ignore && (getFrameInfo().getFrameNumber() / 4) % 2 == 0)
+  {
+    // get all head LEDs from frame rate check
+    copyMonoLEDData(getFrameRateCheckLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+    copyMultiLEDData(getFrameRateCheckLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
+  }
+  else
+  {
+    // head LEDs from behavior
+    copyMonoLEDData(getBehaviorLEDRequest(), LEDData::EarRight0, LEDData::EarLeft324);
+    copyMultiLEDData(getBehaviorLEDRequest(), LEDData::FaceRight0, LEDData::FaceLeft315);
+  }
   // feet and chest button from GameController
   copyMultiLEDData(getGameControllerLEDRequest(), LEDData::FootLeft, LEDData::ChestButton);
 

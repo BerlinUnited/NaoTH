@@ -28,10 +28,12 @@ namespace naoth
 
     Platform()
     : _hardwareIdentity("Uninitialized"),
+      _headHardwareIdentity("Uninitialized"),
       _platformInterface(NULL),
       theConfiguration(_configuration),
       theConfigDirectory(_configDir),
       theHardwareIdentity(_hardwareIdentity),
+      theHeadHardwareIdentity(_headHardwareIdentity),
       theScheme(_scheme),
       thePlatformInterface(_platformInterface)
     {
@@ -42,6 +44,7 @@ namespace naoth
     Platform& operator=( const Platform& ) { return *this; }
 
     std::string _hardwareIdentity;
+    std::string _headHardwareIdentity;
     Configuration _configuration;
     std::string _configDir;
     std::string _scheme;
@@ -60,6 +63,7 @@ namespace naoth
 
       // set the the hardware identity according to platform
       _hardwareIdentity = _interface->getBodyNickName();
+      _headHardwareIdentity = _interface->getHeadNickName();
       _scheme = _interface->getName(); // set to platform by default
       std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
       if(schemefile.is_open() && schemefile.good())
@@ -75,6 +79,7 @@ namespace naoth
     Configuration& theConfiguration;
     const string& theConfigDirectory;
     const string& theHardwareIdentity; // the string to indentify different robots
+    const string& theHeadHardwareIdentity; // the string to indentify different robot heads
     const string& theScheme;
     CameraInfoParameter theCameraInfo;
 

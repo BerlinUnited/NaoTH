@@ -31,7 +31,7 @@ public:
   {
     theInstance = this;
   };
-  ~SoundSymbols(){};
+  virtual ~SoundSymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);

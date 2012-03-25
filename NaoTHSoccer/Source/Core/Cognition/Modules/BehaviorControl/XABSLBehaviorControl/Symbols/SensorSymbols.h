@@ -22,6 +22,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
 #include "Representations/Modeling/RadarGrid.h"
+#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
@@ -37,8 +38,9 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(BatteryData)
   REQUIRE(FrameInfo)
   REQUIRE(BodyState)
-  REQUIRE(LocalObstacleModel)
+  REQUIRE(ObstacleModel)
   REQUIRE(RadarGrid)
+  PROVIDE(Path)
   REQUIRE(Image)
 
   REQUIRE(ButtonData)
@@ -57,14 +59,14 @@ public:
     batteryData(getBatteryData()),
     frameInfo(getFrameInfo()),
     bodyState(getBodyState()),
-    obstacleModel(getLocalObstacleModel()),
+    obstacleModel(getObstacleModel()),
     radarGrid(getRadarGrid()),
+    path(getPath()),
     image(getImage())
   {
     theInstance = this;
     forceGetCameraSettings = false;
     forceGetCameraSettingsOldValue = false;
-    parameter_obstDistByAngle_angle = 0;
   }
 
   /** registers the symbols at an engine */
@@ -83,8 +85,9 @@ private:
   BatteryData const& batteryData;
   FrameInfo const& frameInfo;
   BodyState const& bodyState;
-  LocalObstacleModel const& obstacleModel;
+  ObstacleModel const& obstacleModel;
   RadarGrid const& radarGrid;
+  Path& path;
   Image const& image;
 
 
@@ -94,15 +97,6 @@ private:
 
   static SensorSymbols* theInstance;
 
-  /*double directionParameter;
-  double passagewayParameter1;
-  double passagewayParameter2;
-  static double getObstacleRadialDirection_free();
-  static double getObstacleRadialPassageway_free();
-  static double getObstacleRadialObstacle_left();
-  static double getObstacleRadialObstacle_right();
-  static double getObstacleRadialObstacle_front();*/
-
   //get-method
   static double getIRButtonNumber();
   static double getFrameNumber();
@@ -111,14 +105,16 @@ private:
 
   static int getFallDownState();
 
-  //Radar Obstacle
-  static bool getIfObstacleSeen();
-  static double getObstDistByAngle();
-  double parameter_obstDistByAngle_angle;
-
-  static double getTimeSinceObstacleWasSeen();
-  static double getObstacleAngle();
   static double getObstacleDistance();
+  static double getObstacleDistanceLeft();
+  static double getObstacleDistanceRight();
+  static double getBlockedTime();
+
+  static double getTargetPointX();
+  static double getTargetPointY();
+
+  static void setTargetpointX(double targetX);
+  static void setTargetpointY(double targetY);
 
   static double getCameraBufferFailedCount();
   bool resetingCamera;

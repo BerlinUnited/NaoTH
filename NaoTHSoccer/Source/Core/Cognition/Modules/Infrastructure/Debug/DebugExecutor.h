@@ -22,7 +22,7 @@ class DebugExecutor : public DebugExecutorBase
 {
 public:
   DebugExecutor();
-  virtual ~DebugExecutor(){};
+  virtual ~DebugExecutor(){}
 
   virtual void execute();
 };

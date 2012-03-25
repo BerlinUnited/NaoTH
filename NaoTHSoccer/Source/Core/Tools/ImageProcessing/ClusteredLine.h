@@ -50,7 +50,7 @@ public:
     count = 1;
   };
 
-  ~ClusteredLine(){};
+  ~ClusteredLine(){}
 
   bool check(const Edgel& edgel) const
   {

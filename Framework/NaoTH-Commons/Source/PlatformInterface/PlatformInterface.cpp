@@ -10,13 +10,17 @@ using namespace naoth;
 
 PlatformBase::~PlatformBase()
 {
-  for(std::map<std::string, MessageQueue*>::iterator iter = theMessageQueue.begin(); iter!=theMessageQueue.end(); ++iter)
-  {
-    delete iter->second;
-  }
 }
 
-MessageQueue* PlatformBase::getMessageQueue(const std::string& name)
+
+PlatformDataInterface::PlatformDataInterface()
+  :
+  motionCallback(NULL),
+  cognitionCallback(NULL)
+{
+}
+
+MessageQueue* PlatformDataInterface::getMessageQueue(const std::string& name)
 {
   if (theMessageQueue.count(name) == 0)
   {
@@ -27,13 +31,6 @@ MessageQueue* PlatformBase::getMessageQueue(const std::string& name)
   return theMessageQueue[name];
 }
 
-PlatformDataInterface::PlatformDataInterface()
-  :
-  motionCallback(NULL),
-  cognitionCallback(NULL)
-{
-}
-
 PlatformDataInterface::~PlatformDataInterface()
 {
   cout<<"NaoTH clean..."<<endl;
@@ -41,6 +38,11 @@ PlatformDataInterface::~PlatformDataInterface()
   delete_action_list(motionOutput);
   delete_action_list(cognitionInput);
   delete_action_list(cognitionOutput);
+
+  for(std::map<std::string, MessageQueue*>::iterator iter = theMessageQueue.begin(); iter!=theMessageQueue.end(); ++iter)
+  {
+    delete iter->second;
+  }
 }
 
 

@@ -48,7 +48,7 @@ then
     chown root:root /etc/hostname
     chmod 644 /etc/hostname
 else
-    echo "./etc/conf.d/net is missing"
+    echo "./etc/hostname is missing"
 fi
 if [ -f ./etc/conf.d/hostname ]
 then
@@ -63,12 +63,12 @@ fi
 #SSH Config
 if [ -f ./etc/ssh.conf/sshd_config ]
 then
-    echo "writing /etc/conf.d/hostname"
+    echo "writing /etc/ssh.conf/sshd_config"
     cp ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config
     chown root:root /etc/ssh.conf/sshd_config
     chmod 644 /etc/ssh.conf/sshd_config
 else
-    echo "./etc/conf.d/hostname is missing"
+    echo "./etc/ssh.conf/sshd_config is missing"
 fi
 
 

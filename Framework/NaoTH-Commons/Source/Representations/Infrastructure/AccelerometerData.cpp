@@ -15,15 +15,15 @@ AccelerometerData::~AccelerometerData()
 Vector3<double> AccelerometerData::getAcceleration() const
 {
     Vector3<double> acc(data);
-    acc.z -= 9.81;
+    acc.z += 9.81;
     return acc;
 }//end getAcceleration
 
 void AccelerometerData::print(ostream& stream) const
 {
   stream << "X = " << data.x << endl;
-  stream << "Y = " << data.x << endl;
-  stream << "Z = " << data.x << endl;
+  stream << "Y = " << data.y << endl;
+  stream << "Z = " << data.z << endl;
   stream << getAcceleration() <<endl;
 }//end print
 

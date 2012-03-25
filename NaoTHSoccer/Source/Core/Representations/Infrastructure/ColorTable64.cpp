@@ -31,7 +31,7 @@ bool ColorTable64::loadFromFile(const std::string& fileName)
     {
       for(int channel3 = 0; channel3 < 64; channel3++)
       {
-        ColorClasses::Color color = get(channel1 << 2, channel2 << 2, channel3 << 2);
+        ColorClasses::Color color = getColorClass(channel1 << 2, channel2 << 2, channel3 << 2);
         if(color >= ColorClasses::numOfColors)
         {
           std::cout << std::endl << "Colortable broken!!! ["

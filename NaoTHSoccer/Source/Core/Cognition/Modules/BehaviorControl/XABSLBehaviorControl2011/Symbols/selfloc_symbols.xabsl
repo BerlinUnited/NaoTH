@@ -1,0 +1,86 @@
+/** Symbols concerning self-localization. */
+namespace selfloc_symbols("Self-localization Symbols") {
+
+  /** Is the robot pose valid?*/
+  bool input robot_pose.is_valid;
+
+  /** The robot's x-position on the field*/
+  float input robot_pose.x [mm];
+
+  /** The robot's y-position on the field*/
+  float input robot_pose.y [mm];
+  
+  /** The robot's angle on the field*/
+  float input robot_pose.rotation [deg];
+
+  /** The robot's x-position on the field which is planned in motion engine */
+  float input robot_pose.planned.x [mm];
+
+  /** The robot's y-position on the field which is planned in motion engine */
+  float input robot_pose.planned.y [mm];
+  
+  /** The robot's angle on the field which is planned in motion engine */
+  float input robot_pose.planned.rotation [deg];
+
+
+  /** 
+  converts any relative position on the field to an absolute one
+  using self location: X
+  */
+  float input rel2fieldX (
+    x [decimal];
+    y [decimal];
+  );
+  /** 
+  converts any relative position on the field to an absolute one
+  using self location: Y
+  */
+  float input rel2fieldY (
+    x [decimal];
+    y [decimal];
+  );
+
+    /** Calculates the relative x position to a specified point on the field */
+  float input locator.field_to_relative.x "mm" (
+    /** The x position on the field */
+    x [-3000..3000] "mm";
+    /** The y position on the field */
+    y [-2000..2000] "mm";
+  );
+
+  /** Calculates the relative y position to a specified point on the field */
+  float input locator.field_to_relative.y "mm" (
+    /** The x position on the field */
+    x [-3000..3000] "mm";
+    /** The y position on the field */
+    y [-2000..2000] "mm";
+  );
+
+  /** The robot's x-position from GPS*/
+  float input gps.x [mm];
+
+  /** The robot's y-position from GPS*/
+  float input gps.y [mm];
+
+  /** */
+  float input goal.opp.x [mm];
+  float input goal.opp.y [mm];
+  float input goal.opp.angle [deg];
+  float input goal.opp.distance [mm];
+  float input goal.opp.left_post.x [mm];
+  float input goal.opp.left_post.y [mm];
+  float input goal.opp.right_post.x [mm];
+  float input goal.opp.right_post.y [mm];
+
+  /** */
+  float input goal.own.x [mm];
+  float input goal.own.y [mm];
+  float input goal.own.angle [deg];
+  float input goal.own.distance [mm];
+  float input goal.own.left_post.x [mm];
+  float input goal.own.left_post.y [mm];
+  float input goal.own.right_post.x [mm];
+  float input goal.own.right_post.y [mm];
+
+}
+

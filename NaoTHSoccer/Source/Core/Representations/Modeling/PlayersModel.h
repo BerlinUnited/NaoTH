@@ -22,7 +22,7 @@ public:
     teammates.resize(12);
   };
 
-  virtual ~PlayersModel(){};
+  virtual ~PlayersModel(){}
 
   class Player
   {

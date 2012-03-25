@@ -63,8 +63,27 @@ void BallDetector::execute()
   if(getFieldPercept().isValid())
   {
     //theBlobFinder.execute(blobList, connectedColors, wholeImageArea);
+    STOPWATCH_START("BallDetector ~ BlobFinder");
     theBlobFinder.execute(blobList, connectedColors, getFieldPercept().getLargestValidPoly());
+    STOPWATCH_STOP("BallDetector ~ BlobFinder");
   }
+
+
+  // draw deteced blobs
+  DEBUG_REQUEST("ImageProcessor:BallDetector:mark_ball_blob",
+    for(int i = 0; i < blobList.blobNumber; i++)
+    {
+      const Blob& blob = blobList.blobs[i];
+      RECT_PX(ColorClasses::orange,
+              (unsigned int)(blob.upperLeft.x),
+              (unsigned int)(blob.upperLeft.y),
+              (unsigned int)(blob.lowerRight.x),
+              (unsigned int)(blob.lowerRight.y));
+      CIRCLE_PX(ColorClasses::orange, blob.centerOfMass.x, blob.centerOfMass.y, 4);
+    }//end for
+  );
+  
+
   //search for ball if orange blobs were found
   if(blobList.blobNumber > 0)
   {
@@ -80,7 +99,9 @@ void BallDetector::execute()
     }
     else
     {
+      STOPWATCH_START("BallDetector ~ internalexecute");
       execute(candidate);
+      STOPWATCH_STOP("BallDetector ~ internalexecute");
     }
   }
   else // no orange blobs found in the image 

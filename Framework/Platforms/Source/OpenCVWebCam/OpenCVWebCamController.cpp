@@ -8,12 +8,14 @@
 
 using namespace naoth;
 
+
 OpenCVWebCamController::OpenCVWebCamController()
 :
 PlatformInterface("OpenCVWebCam",10),
 frameNumber(0),
 frameLossCounter(0),
-time(0)
+time(0),
+windowName("OpenCVWebCam")
 {
   registerInput<FrameInfo>(*this);
   registerInput<Image>(*this);
@@ -24,7 +26,7 @@ time(0)
 
 
   theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
-  //theDebugServer.start(5401, true);
+  theDebugServer.start(5401, true);
 }
 
 void OpenCVWebCamController::init()
@@ -37,8 +39,7 @@ void OpenCVWebCamController::init()
     exit(-1);
   }//end if(!capture.isOpened())
 
-  cvInitSystem(0, NULL);
-  windowName = "OpenCVWebCam";
+//   cvInitSystem(0, NULL);
 }//end init
 
 void OpenCVWebCamController::main()
@@ -74,9 +75,11 @@ void OpenCVWebCamController::executeFrame()
 
     // Kirill
     cvtColor(frame, yCbCr, CV_BGR2YCrCb);
-
-    imshow(windowName, frame);
-
+    // opencv release libs have some issues with highgui imshow() window's names,
+    // so we use the old C functions: cvShowImage,
+    // requests ImpImage and NOT Mat, so we must convert Mat to IplImage
+    IplImage ipl_img = frame;
+    cvShowImage(windowName.c_str(), &ipl_img);
     frameLossCounter = 0;
   }
   else
@@ -96,6 +99,7 @@ void OpenCVWebCamController::copyImage(Image& image, Mat& capturedImage)
   int currentHeight = 240;
   Pixel pixel;
 
+  // Kirill
   for(int x = 0; x < currentWidth; x++)
   {
     for(int y = 0; y < currentHeight; y++)

@@ -1,0 +1,30 @@
+/** Symbols odometry datas */
+namespace odometry_symbols("Odometry Symbols") {
+
+  /** Translation of Nao in mm */
+  float input odometry.y [mm];
+  float input odometry.x [mm];
+
+  /** Rotation of Nao in deg */
+  float input odometry.rotation [deg];
+
+  /**  */
+  float output odometry.relative_point.x;
+  float output odometry.relative_point.y;
+
+  /** apply the preview odometry to a point in relative robot coordinates */
+  float input odometry.preview.x "mm" (
+    /** The x position on the field */
+    x [..] "mm";
+    /** The y position on the field */
+    y [..] "mm";
+  );
+
+  float input odometry.preview.y "mm" (
+    /** The x position on the field */
+    x [..] "mm";
+    /** The y position on the field */
+    y [..] "mm";
+  );
+}
+  

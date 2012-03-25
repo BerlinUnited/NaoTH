@@ -5,6 +5,7 @@ package de.naoth.rc.dialogs.drawings.three_dimension;
 
 import com.sun.j3d.loaders.Loader;
 import de.naoth.rc.Helper;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.DataFormatException;
@@ -15,8 +16,8 @@ import org.jdesktop.j3d.loaders.vrml97.VrmlLoader;
 
 public class Entity extends Drawable
 {
-
-  private static final String vrmlDir = "src/de/naoth/rc/res/vrml/";
+  
+  private static final String vrmlDir = "/de/naoth/rc/res/vrml/";
   private static final Loader loader = new VrmlLoader(Loader.LOAD_ALL);
   private static Map<String, BranchGroup> loadedEnities = new HashMap();
 
@@ -58,9 +59,11 @@ public class Entity extends Drawable
   {
     BranchGroup e = null;
     String vrmlfile = vrmlDir + name + ".wrl";
+    URL vrlmURL = getClass().getResource(vrmlfile);
+
       try
       {
-        com.sun.j3d.loaders.Scene vrmlScene = loader.load(vrmlfile);
+        com.sun.j3d.loaders.Scene vrmlScene = loader.load(vrlmURL);
         e = vrmlScene.getSceneGroup();
       } catch (Exception ex)
       {

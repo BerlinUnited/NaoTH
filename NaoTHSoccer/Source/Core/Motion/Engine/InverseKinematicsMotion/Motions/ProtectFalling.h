@@ -41,7 +41,7 @@ public:
 
     InverseKinematic::HipFeetPose c = keepPose;
 
-    theEngine.rotationStabilize(c.hip);
+    theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
@@ -53,7 +53,7 @@ private:
   /* decrease stiffness according to body rotation */
   void decreaseStiffness()
   {
-    const Vector2d& is = theBlackBoard.theInertialPercept.data;
+    const Vector2d& is = theBlackBoard.theInertialSensorData.data;
     double angle = max( abs(is.x), abs(is.y) );
 
     // limit the range

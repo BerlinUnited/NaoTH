@@ -81,7 +81,7 @@ public:
     {
       Representation& theRepresentation = iter->second->getRepresentation();
       const std::string& name = iter->first;
-
+      
       // look if there is a logged data for this representation
       std::map<std::string, std::string>::const_iterator iter = representations->find(name); 
       if(iter != representations->end() && iter->first != "FrameInfo" && iter->first != "")
@@ -105,6 +105,8 @@ public:
   virtual string getBodyID() const { return "naoth-logsimulator"; }
 
   virtual string getBodyNickName() const {return "naoth"; }
+
+  virtual string getHeadNickName() const {return "naoth"; }
 
   void main();
   void printHelp();
@@ -150,7 +152,6 @@ public:
   //virtual void set(const CameraSettingsRequest& /*data*/){};
   //virtual void set(const LEDData& /*data*/){};
   //virtual void set(const IRSendData& /*data*/){};
-  //virtual void set(const UltraSoundSendData& /*data*/){};
   //virtual void set(const SoundData& /*data*/){};
 
   /////////////////////// init ///////////////////////

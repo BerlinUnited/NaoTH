@@ -39,21 +39,28 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
 {
   // register input
   directoryName = dirPath;
-  findFiles(dirPath);
-  allFiles.reserve(1000);
-  currentPos = 0;
-  imageLoaded = false;
+  if(findFiles(dirPath))
+  {
+    currentPos = 0;
+    imageLoaded = false;
 
-  theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
-  theDebugServer.start(5401, true);
-  time = 0;
+    theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
+    theDebugServer.start(5401, true);
+    time = 0;
 
-  registerInput<FrameInfo>(*this);
-  registerInput<Image>(*this);
+    registerInput<FrameInfo>(*this);
+    registerInput<Image>(*this);
 
-  // debug
-  registerInput<DebugMessageIn>(*this);
-  registerOutput<DebugMessageOut>(*this);
+    // debug
+    registerInput<DebugMessageIn>(*this);
+    registerOutput<DebugMessageOut>(*this);
+  }
+  else
+  // couldn't find any files, exit...
+  {
+    cerr << "The directory doesn't contain any data..." << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void OpenCVImageLoader::main()
@@ -88,6 +95,10 @@ void OpenCVImageLoader::main()
     {
       executeCognition();
     }
+    if (c == 'p')
+    {
+      play();
+    }
     if (c == 'l')
     {
       listFiles();
@@ -102,50 +113,59 @@ void OpenCVImageLoader::main()
 
 void OpenCVImageLoader::makeStep()
 {
-  bool result = loadImage(loadedImage);
-  // execute
-  if (result)
+  if (!allFiles.empty())
   {
-    time += getBasicTimeStep();
-    callCognition();
-    callMotion();
-    imageLoaded = true;
-  }//end if
+    // execute
+    if (loadImage(loadedImage))
+    {
+      time += getBasicTimeStep();
+      callCognition();
+      callMotion();
+      imageLoaded = true;
+    }//end if
+    else
+    {
+      return;
+    }
+  }
   else
   {
-    return;
+    cout << "you didn't load any files..." << endl;
   }
 }//end make
 
 
 void OpenCVImageLoader::stepBack()
 {
+  cvDestroyWindow(allFiles[currentPos].c_str());
   if (currentPos > 0)
   {
     currentPos--;
   }//end if
   else
   {
-    currentPos = 0;
+    currentPos = allFiles.size() - 1;
   }//end else
   makeStep();
 }
 
 void OpenCVImageLoader::stepForward()
 {
+  cvDestroyWindow(allFiles[currentPos].c_str());
   if (currentPos < allFiles.size() - 1)
   {
     currentPos++;
   }//end if
   else
   {
-    currentPos = allFiles.size() - 1;
+    currentPos = 0;
   }//end else
   makeStep();
 }//end stepForward
 
 void OpenCVImageLoader::jumpTo(const string fileName)
 {
+  cvDestroyWindow(allFiles[currentPos].c_str());
   bool wasFound = false;
   for (unsigned int i = 0; i < allFiles.size(); ++i)
   {
@@ -167,6 +187,7 @@ void OpenCVImageLoader::jumpTo(const string fileName)
 
 void OpenCVImageLoader::jumpToStart()
 {
+  cvDestroyWindow(allFiles[currentPos].c_str());
   currentPos = 0;
   makeStep();
 }//end jumpToStart
@@ -176,17 +197,35 @@ void OpenCVImageLoader::executeCognition()
   if (imageLoaded)
   {
     cout << "cognition: just executing new cycle" << endl;
+    time += getBasicTimeStep();
     callCognition();
     callMotion();
-    // HACK: set the frame number...
-    // in fact we don't have to update if every time
-    theGameData.frameNumber = time;
   }
   else
   {
     cout << "you haven't load any image yet!" << endl;
   }
 }//end executeCognition
+
+void OpenCVImageLoader::play()
+{
+  int c = -1;
+  while(c != 'a' && c != 'd' && c != '\n' && c != 'w' && c != 'q' && c !='x' && c !='s' && c !='r' && c !='p' && c !='l' && c !='h')
+  {
+    unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
+    stepForward();
+    unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
+
+#ifdef WIN32
+    Sleep(waitTime);
+    if(_kbhit())
+#else
+    // wait some time
+    usleep(waitTime * 1000);
+#endif
+    c = getch();
+  }
+}// end play
 
 void OpenCVImageLoader::printHelp()
 {
@@ -199,6 +238,7 @@ void OpenCVImageLoader::printHelp()
   cout << "a - one step back" << endl;
   cout << "s - jump to the first file" << endl;
   cout << "w - jump to specific file" << endl << endl;
+  cout << "p - play all files in directory, press 'p' to stop playing" << endl;
 
   cout << "l - list all files in the directory" << endl;
   cout << "r - just execute cognition (current image) one more time" << endl;
@@ -208,8 +248,6 @@ void OpenCVImageLoader::printHelp()
 bool OpenCVImageLoader::findFiles(const char* dirName)
 {
   //which files do we want to find?
-  //int const size = static_cast<int>(strlen(dirName));
-  //char fileName[size];
   char* fileName = (char*) malloc(strlen(dirName));
   char mask[20] = "*.*";
   //path to the directory and files:
@@ -294,9 +332,6 @@ void OpenCVImageLoader::copyImage(Image& image, Mat mat)
       image.set(x, y, pixel);
     }//end for
   }//end for
-
-  //release resources
-  temp.release();
 }//end copyImage
 
 bool OpenCVImageLoader::loadImage(Mat& image)
@@ -305,33 +340,26 @@ bool OpenCVImageLoader::loadImage(Mat& image)
   char name[256];
   strcpy(name, directoryName);
   strcat(name, allFiles[currentPos].c_str());
-  IplImage *img = cvLoadImage(name);
-  if (!img) {
+  IplImage* img = cvLoadImage(name);
+  if(!img){
+    printf("Could not load image file: %s\n",name);
+    return false;
+  }
+  Mat temp(img);
+  if (temp.empty()) {
     cout << "Couldn't open the image file :" << name << endl;
     return false;
   }
-
-  cv::Mat temp(img);
-  image = temp.clone();
-
-  
-  //did we load the image?
-  if (image.empty())
-  {
-    cout << "Can not load image " << name << endl;
-    return false;
-  }//end if
   //did we load the image properly?
-  if (!image.data)
+  if (!temp.data)
   {
     cout << "Image data not loaded properly" << allFiles[currentPos] <<endl;
     return false;
   }//end if
   cout << "loaded image: " << name << endl;
-  //imshow("Image", image);
-  //cvWaitKey(0);
-
-  //release resources
+  image = temp.clone();
+  cvShowImage(allFiles[currentPos].c_str(), img);
+  cvWaitKey(1);
   cvReleaseImage(&img);
   temp.release();
   return true;

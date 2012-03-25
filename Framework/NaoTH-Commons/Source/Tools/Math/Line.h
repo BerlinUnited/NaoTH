@@ -24,7 +24,7 @@ protected:
   Vector2<double> direction;
   
 public:
-  Line() : direction(1.0,0.0) {}; 
+  Line() : direction(1.0,0.0) {}
   
   template <class V, class W>
   Line(const Vector2<V>& base, const Vector2<W>& direction) 
@@ -85,7 +85,7 @@ public:
   }
   ~LineSegment(){}
 
-  Vector2<double> begin() const { return base; }
+  const Vector2<double>& begin() const { return base; }
   Vector2<double> end() const { return base + direction*length; }
   Vector2<double> point(double t) const { return Line::point(Math::clamp(t, 0.0, length)); }
   double getLength() const { return length; }

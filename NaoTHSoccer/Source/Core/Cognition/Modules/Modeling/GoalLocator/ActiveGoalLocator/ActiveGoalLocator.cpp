@@ -111,7 +111,7 @@ void ActiveGoalLocator::execute() {
   timeFilter += parameters.timeFilterRange * averageWeighting;
 
   //TODO: Recognize which Goal was seen
-  for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) { //&& timeFilter < parameters.sigmaWeightingThreshhold
+  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) { //&& timeFilter < parameters.sigmaWeightingThreshhold
     //should be more flexible. when two posts are seen, and just one is reliable -> also add possible!
     if (getGoalPercept().getPost(i).positionReliable) {
       if (sampleSet.size() < 40) {
@@ -343,7 +343,7 @@ void ActiveGoalLocator::debugDrawings() {
   });
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_percept",
-  for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
+  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
     const Vector2<double> percept = getGoalPercept().getPost(i).position;
 
       FIELD_DRAWING_CONTEXT;
@@ -390,7 +390,7 @@ void ActiveGoalLocator::updateByGoalPercept() {
 
     double weighting(0.0);
 
-    for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
+    for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
 
       if (getGoalPercept().getPost(i).positionReliable) {
         //check with distance to perception

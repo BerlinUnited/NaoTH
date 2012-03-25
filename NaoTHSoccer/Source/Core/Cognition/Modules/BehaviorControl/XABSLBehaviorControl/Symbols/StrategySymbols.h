@@ -12,6 +12,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/SituationStatus.h"
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/CompassDirection.h"
 
@@ -28,6 +29,7 @@ BEGIN_DECLARE_MODULE(StrategySymbols)
   REQUIRE(SoccerStrategy)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
+  PROVIDE(SituationStatus)
 END_DECLARE_MODULE(StrategySymbols)
 
 class StrategySymbols: public StrategySymbolsBase
@@ -54,7 +56,7 @@ public:
   {
     theInstance = this;
   };
-  ~StrategySymbols(){};
+  virtual ~StrategySymbols(){}
   
   /** registers the symbols at an engine */
   void registerSymbols(xabsl::Engine& engine);
@@ -83,7 +85,7 @@ private:
   // true if the right foot ich choosen, false else
   static bool getApproachingWithRightFoot();
 
-  // seter and getter
+  // setter and getter
   static double getOppClosestToBallNumber();
   static double getOppClosestToBallTimeSinceLastSeen();
   static double getOppClosestToBallDistanceToBall();
@@ -92,6 +94,12 @@ private:
   static double getOwnClosestToBallNumber();
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
+  
+  //enum 
+  // static SituationStatus::StatusID getSituationStatusId();
+  //bool
+  static bool getSituationStatusOwnHalf();
+  static void setSituationStatusOwnHalf(bool ownHalf);
 
   Pose2D calculateDefensePose();
   static double defensePoseX();

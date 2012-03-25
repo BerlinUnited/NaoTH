@@ -62,7 +62,8 @@ MessageReader::MessageReader(MessageQueue* msgQueue)
 
 MessageReader::~MessageReader()
 {
-  theMsgQueue->setReader(NULL);
+  if(theMsgQueue != NULL)
+    theMsgQueue->setReader(NULL);
 }
 
 MessageWriter::MessageWriter(MessageQueue* msgQueue)
@@ -73,5 +74,6 @@ MessageWriter::MessageWriter(MessageQueue* msgQueue)
 
 MessageWriter::~MessageWriter()
 {
-  theMsgQueue->setWriter(NULL);
+  if(theMsgQueue != NULL)
+    theMsgQueue->setWriter(NULL);
 }

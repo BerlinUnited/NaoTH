@@ -61,7 +61,7 @@ private:
   ColorClasses::Color fieldColor;
   ColorClasses::Color lineColor;
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

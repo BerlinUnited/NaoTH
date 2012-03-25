@@ -12,9 +12,10 @@
 */
 
 #ifndef _StandMotion_H
-#define  _StandMotion_H
+#define _StandMotion_H
 
 #include "IKMotion.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 class StandMotion : public IKMotion
 {
@@ -79,13 +80,20 @@ public:
     InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
 
     if(theParameters.stand.enableStabilization)
-      theEngine.rotationStabilize(c.hip);
+      theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
 
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
 
-    //theEngine.neuralStabilize(theMotorJointData.position);
+
+    PLOT("Stand:hip:x",c.hip.translation.x);
+    PLOT("Stand:hip:y",c.hip.translation.y);
+    PLOT("Stand:hip:z",c.hip.translation.z);
+
+
+    //if(theParameters.stand.stabilizeNeural)
+    //  theEngine.feetStabilize(theMotorJointData.position);
 
     turnOffStiffnessWhenJointIsOutOfRange();
     currentState = motion::running;

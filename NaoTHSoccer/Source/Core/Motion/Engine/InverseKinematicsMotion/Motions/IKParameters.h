@@ -5,8 +5,8 @@
 * Declaration of parameters for IK motion
 */
 
-#ifndef __IK__PARAMETERS_H_
-#define __IK__PARAMETERS_H_
+#ifndef _IK_PARAMETERS_H_
+#define _IK_PARAMETERS_H_
 
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/Math/Vector2.h>
@@ -25,18 +25,22 @@ public:
 
   struct Walk {
     double stiffness;
+
+    // hip trajectory geometry
     double comHeight;
     double ZMPOffsetY;
     double ZMPOffsetYByCharacter;
     
+    // step geometry
     double singleSupportTime;
     double doubleSupportTime;
     double maxExtendDoubleSupportTime;
     double extendDoubleSupportTimeByCharacter;
     
     double stepHeight;
-    double curveFactor;
+    //double curveFactor;
     
+    // step parameters
     double maxTurnInner;
     double maxStepTurn;
     double maxStepLength;
@@ -44,6 +48,7 @@ public:
     double maxStepWidth;
     double maxStepChange; // (0 - 1]
     
+    // FSR stabilizators
     bool enableFSRProtection;
     bool enableWaitLanding;
     unsigned int minFSRProtectionCount;
@@ -56,11 +61,14 @@ public:
 
     bool rotationStabilize;
 
-    bool stabilizeNeural;
-    double stabilizeNeuralXWin;
-    double stabilizeNeuralXWout;
-    double stabilizeNeuralYWin;
-    double stabilizeNeuralYWout;
+    // enable the PD-control for the feet
+    bool stabilizeFeet;
+    // differential and proportional factors for rotation on x- and y- axes
+    Vector2<double> stabilizeFeetP;
+    Vector2<double> stabilizeFeetD;
+
+    // enable the synamic adaptation of the stepsize
+    bool dynamicStepsize;
 
     bool useArm;
   } walk;

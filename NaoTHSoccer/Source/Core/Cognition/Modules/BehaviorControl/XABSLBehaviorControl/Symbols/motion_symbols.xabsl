@@ -54,12 +54,16 @@ namespace motion_symbols("Motion Symbols") {
     search_for_own_goal,
     search_for_opp_goal,
     search_for_goal,
+    search_for_goal_after_penalized,
     search_for_whole_goal,
     search_for_line,
     //search_for_line,
     look_around,
     goalie_look_around,
-    smart_search
+    smart_search,
+
+    //Test case
+    search_for_ball_test
   };
 
   enum head.control_mode internal head.control_mode;
@@ -150,6 +154,12 @@ namespace motion_symbols("Motion Symbols") {
   enum motion.type output motion.type;
   /** The currently executed motion type. */
   enum motion.type input executed_motion.type;
+  
+  /** indicates whether the LEFT foot is currently avaliable for the step control */
+  bool input executed_motion.step_control.left_movable;
+  /** indicates whether the RIGHT foot is currently avaliable for the step control */
+  bool input executed_motion.step_control.right_movable;
+  
   
   /** the universal enum type for direction */  
   enum direction   

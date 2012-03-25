@@ -5,8 +5,8 @@
 * Definition of class GoalDetector
 */
 
-#ifndef __GoalDetector_H_
-#define __GoalDetector_H_
+#ifndef _GoalDetector_H_
+#define _GoalDetector_H_
 
 #include <ModuleFramework/Module.h>
 #include <ModuleFramework/Representation.h>
@@ -135,7 +135,7 @@ private:
   };//end class Blob
 
 
-  const ColorClassifier& getColorTable64() const
+  const ColorClassificationModel& getColorTable64() const
   {
     return getColorClassificationModel();
   }

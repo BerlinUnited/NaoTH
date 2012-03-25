@@ -1,0 +1,230 @@
+/** Symbols for accessing the motion requests */
+namespace motion_symbols("Motion Symbols") {
+  
+  /** possible motion type for the head */
+  enum head.motion_type
+  {
+    hold,
+    search,
+    stabilize,
+    look_straight_ahead,
+    look_at_point,
+    look_at_world_point,
+    look_at_point_on_the_ground
+  };
+  
+  /** The motion request for the head */
+  enum head.motion_type output head.motion_type;
+  /** The currently executed motion type. */
+  enum head.motion_type input head.executed_motion_type;
+  /** time the current motion is executed for */
+  float input executed_motion.time;
+  
+  /** Position in image for the head to look to */
+  float output head.point_in_image.x [px];
+  float output head.point_in_image.y [px];
+  
+  /** Position in the world for the head to look to */
+  float output head.point_in_world.x [mm];
+  float output head.point_in_world.y [mm];
+  float output head.point_in_world.z [mm];
+
+  /** Position on the ground for the head to look to */
+  float output head.point_on_grond.x [mm];
+  float output head.point_on_grond.y [mm];
+
+  /** Parameters for head search motion */
+  float output head.search.center.x [mm];
+  float output head.search.center.y [mm];
+  float output head.search.center.z [mm];
+  float output head.search.size.x [mm];
+  float output head.search.size.y [mm];
+  float output head.search.size.z [mm];
+  bool output head.search.direction;
+
+  /** The head motion control modes. This specifies how behavior should be moving the head. */
+  enum head.control_mode internal 
+  {
+    none,
+    look_straight_ahead,
+    stabilize,
+    search_for_ball,
+    search_for_ball_force_model,
+    stay_as_forced,
+    search_for_own_goal,
+    search_for_opp_goal,
+    search_for_goal,
+    search_for_goal_after_penalized,
+    search_for_whole_goal,
+    search_for_line,
+    //search_for_line,
+    look_around,
+    goalie_look_around,
+    smart_search
+  };
+
+  enum head.control_mode internal head.control_mode;
+
+  /** 0=always ball, 1=always goal, 0.0..01 to 0.999... > percentage of goal */
+  float internal head.smart_search.rate [0..1];
+
+  /** indicates wich camera has to be used */
+  enum head.camera.id
+  {
+    top,
+    bottom
+  };
+  
+  enum head.camera.id output head.camera.id;
+
+
+  
+  enum motion.type 
+  {
+    empty,
+    init,
+    dead,
+
+    sit,
+    stand,
+    walk,
+    kick,
+    dance,
+    protect_falling,
+    
+    stand_up_from_front,
+    stand_up_from_back,
+
+    block_middle,
+    goalie_get_down,
+    goalie_sit,
+    goalie_sit_small,
+
+    goalie_get_fast_down,
+
+    fall_left,
+    fall_right,
+
+    kick_right,
+
+    goalie_dive_right_test,
+    goalie_dive_left_test,
+    goalie_sit_block,
+    goalie_sit_n_dive_left,
+    goalie_sit_n_dive_right,
+    goalie_sit_n_dive_left_test,
+    goalie_sit_n_dive_right_test
+  };
+
+  enum motion.walk.coordinate
+  {
+    hip,
+    left_foot,
+    right_foot
+  };
+
+  /** 
+    If execute_immediately is set to true, the requested motion 
+    will be forced, i.e., currently executed motion will be interrupted
+  */
+  bool output motion.execute_immediately;
+  
+  /** The currently requested walk speed in x direction. */
+  float output motion.walk_speed.x [-a..b] "mm/s";
+  
+  /** The currently requested walk speed in y direction. */
+  float output motion.walk_speed.y [-a..b] "mm/s";
+  
+  /** The currently requested rotational walk speed. */
+  float output motion.walk_speed.rot [-a..b] "deg/s";
+
+  /** Should the robot keep the standard stand pose or not after walking. */
+  bool output motion.walk.stop_with_stand;
+
+  /* the height of stand motion, -1 means the same height as walk */
+  float output motion.standHeight;
+
+  /** The walk coordinate */
+  enum motion.walk.coordinate output motion.walk.coordinate;
+  
+  /** The currently requested motion type. */
+  enum motion.type output motion.type;
+  /** The currently executed motion type. */
+  enum motion.type input executed_motion.type;
+  
+  /** indicates whether the LEFT foot is currently avaliable for the step control */
+  bool input executed_motion.step_control.left_movable;
+  /** indicates whether the RIGHT foot is currently avaliable for the step control */
+  bool input executed_motion.step_control.right_movable;
+  
+  
+  /** the universal enum type for direction */  
+  enum direction   
+  {
+    left,
+    right  
+   };
+   
+  /** Parameter of the kick */
+  float output motion.kick.point.x [mm];
+  float output motion.kick.point.y [mm];
+  float output motion.kick.point.z [mm];
+  float output motion.kick.direction [deg];
+  bool output motion.kick.finish;
+  enum direction output motion.kick.foot;
+
+    
+   /** Parameter of the turn_circle */  
+   float output motion.turn_circle.radius [mm];  
+   enum direction output motion.turn_circle.direction;
+
+   /** distance which the goalie moved to ball out of the goal */
+   float internal distance_out_of_goal;
+
+   /** Calculates the position and direction in the current left foot coordination */
+   float input relativeToLeftFootX "mm" (x [..] "mm"; y [..] "mm";);
+   float input relativeToLeftFootY "mm" (x [..] "mm"; y [..] "mm";);
+   float input relativeToLeftFootA "deg" (a [..] "deg";);
+   /** Calculates the position and direction in the current right foot coordination */
+   float input relativeToRightFootX "mm" (x [..] "mm"; y [..] "mm";);
+   float input relativeToRightFootY "mm" (x [..] "mm"; y [..] "mm";);
+   float input relativeToRightFootA "deg" (a [..] "deg";);
+
+   /** avoid obstacle, return if necessary */
+   bool output motion.plan.avoid_obstacle;
+
+
+   /** head motion symbols (especially for the goalie dive )*/
+   float input motion.head.pitch "deg";
+   float input motion.head.yaw "deg";
+   float input motion.head.speed;
+
+  /** walk style */
+  enum motion.walk.style
+  {
+    stable,
+    normal,
+    fast
+  };
+  enum motion.walk.style output motion.walk.style;
+
+  /** walk offset */
+  float output motion.walk.offset.x [mm];
+  float output motion.walk.offset.y [mm];
+  float output motion.walk.offset.rot [mm];
+
+  /** step control */
+  enum motion.walk.step_control.foot
+  {
+    left,
+    right,
+    none
+  };
+  enum motion.walk.step_control.foot output motion.walk.step_control.foot;
+  float output motion.walk.step_control.target.x [mm];
+  float output motion.walk.step_control.target.y [mm];
+  float output motion.walk.step_control.target.rot [deg];
+  float output motion.walk.step_control.time [ms];
+  float output motion.walk.step_control.speed_direction [deg];
+ }
+  
