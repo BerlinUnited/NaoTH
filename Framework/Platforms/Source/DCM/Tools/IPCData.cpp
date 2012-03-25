@@ -126,12 +126,14 @@ void NaoSensorData::get(ButtonData& data) const
 void NaoSensorData::get(UltraSoundReceiveData& data) const
 {
   unsigned int currentIndex = theUltraSoundReceiveDataIndex;
-  currentIndex++;
+  data.rawdata = sensorsValue[currentIndex++];
+
   for(int i = 0; i < UltraSoundData::numOfUSEcho;i++)
   {
     data.dataLeft[i] = sensorsValue[currentIndex++];
     data.dataRight[i] = sensorsValue[currentIndex++];
   }
+
 }//end UltraSoundReceiveData
 
 void NaoSensorData::get(BatteryData& data) const

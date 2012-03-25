@@ -39,6 +39,7 @@ BEGIN_DECLARE_MODULE(UltraSoundObstacleLocator)
   REQUIRE(UltraSoundReceiveData)
 
   PROVIDE(ObstacleModel)
+  PROVIDE(UltraSoundSendData)
 END_DECLARE_MODULE(UltraSoundObstacleLocator)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
@@ -58,14 +59,17 @@ private:
 
   static const double maxValidDistance;
   static const double minBlockedDistance;
+  static const double invalidDistanceValue;
 
   bool wasFrontBlockedInLastFrame;
   FrameInfo timeWhenFrontBlockStarted;
 
-  void provideToLocalObstacleModel();
-  void drawObstacleModel();
+  RingBuffer<double,12> bufferLeft;
+  RingBuffer<double,12> bufferRight;
 
-  double getNearestDistance(const std::vector<double>& dists);
+  void provideToLocalObstacleModel();
+  void fillBuffer();
+  void drawObstacleModel();
 };
 
 #endif //_UltraSoundObstacleLocator_h_

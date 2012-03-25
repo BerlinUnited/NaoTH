@@ -149,11 +149,14 @@ void NaothModule::init()
   debugSM.open("/debug_data");
 
   const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
+  const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
   const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
   const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
   std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
   naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
+  std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
+  naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
   naoCommandIRSendData.open(naoCommandIRSendDataPath);
   std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
@@ -170,8 +173,6 @@ void NaothModule::init()
 
 void NaothModule::motionCallbackPre()
 {
-  static bool firstCall = true;
-
   long long start = NaoTime::getSystemTimeInMicroSeconds();
 
   // update the dcm time
@@ -213,16 +214,7 @@ void NaothModule::motionCallbackPre()
     // don't count more than 11
     drop_count += (drop_count < 11);
   }//end else
-
-  bool us_set = false;
-  if(firstCall)
-  {
-    firstCall = false;
-
-    theDCMHandler.setPeriodicUltraSoundSend(dcmTime);
-    us_set = true;
-  }
-
+  
   /*
   if ( naoCommandIRSendData.swapReading() )
   {
@@ -231,14 +223,21 @@ void NaothModule::motionCallbackPre()
   }//end if
   */
 
+  bool leddata_set = false;
+
   // get the LEDData from the shared memory and put them to the DCM
-  // don't set too many things at once
-  if(!stiffness_set && !us_set && naoCommandLEDData.swapReading())
+  if(!stiffness_set && naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-    theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+    leddata_set = theDCMHandler.setSingleLED(commandData->get(), dcmTime);
   }//end if
 
+  // get the UltraSoundSendData from the shared memory and put them to the DCM
+  if (naoCommandUltraSoundSendData.swapReading() )
+  {
+    const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
+    theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
+  }//end if
 
   long long stop = NaoTime::getSystemTimeInMicroSeconds();
   time_motionCallbackPre = (int)(stop - start);
@@ -328,6 +327,7 @@ void NaothModule::exit()
   // close the shared memory
   naoSensorData.close();
   naoCommandMotorJointData.close();
+  naoCommandUltraSoundSendData.close();
   naoCommandIRSendData.close();
   naoCommandLEDData.close();
 

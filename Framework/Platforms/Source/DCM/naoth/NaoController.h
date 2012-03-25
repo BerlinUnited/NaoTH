@@ -54,6 +54,7 @@ public:
     sensorDataReading(NULL),
     m_naoSensorData(NULL),
     m_naoCommandMotorJointData(NULL),
+    m_naoCommandUltraSoundSendData(NULL),
     m_naoCommandIRSendData(NULL),
     m_naoCommandLEDData(NULL),
     theSoundHandler(NULL),
@@ -67,6 +68,7 @@ public:
     const std::string naoSensorDataPath = "/nao_sensor_data";
     //const std::string naoCommandDataPath = "/nao_command_data";
     const std::string naoCommandMotorJointDataPath = "/nao_command.MotorJointData";
+    const std::string naoCommandUltraSoundSendDataPath = "/nao_command.UltraSoundSendData";
     const std::string naoCommandIRSendDataPath = "/nao_command.IRSendData";
     const std::string naoCommandLEDDataPath = "/nao_command.LEDData";
 
@@ -74,6 +76,8 @@ public:
     //naoCommandData.open(naoCommandDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandMotorJointDataPath << std::endl;
     naoCommandMotorJointData.open(naoCommandMotorJointDataPath);
+    std::cout << "Opening Shared Memory: " << naoCommandUltraSoundSendDataPath << std::endl;
+    naoCommandUltraSoundSendData.open(naoCommandUltraSoundSendDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandIRSendDataPath << std::endl;
     naoCommandIRSendData.open(naoCommandIRSendDataPath);
     std::cout << "Opening Shared Memory: " << naoCommandLEDDataPath << std::endl;
@@ -137,6 +141,7 @@ public:
     registerOutput<const MotorJointData>(*this);
     registerOutput<const LEDData>(*this);
     registerOutput<const IRSendData>(*this);
+    registerOutput<const UltraSoundSendData>(*this);
 
 
     /*  INIT DEVICES  */
@@ -178,6 +183,7 @@ public:
 
     m_naoSensorData = g_mutex_new();
     m_naoCommandMotorJointData = g_mutex_new();
+    m_naoCommandUltraSoundSendData = g_mutex_new();
     m_naoCommandIRSendData = g_mutex_new();
     m_naoCommandLEDData = g_mutex_new();
   }
@@ -192,12 +198,14 @@ public:
 
     g_mutex_free(m_naoSensorData);
     g_mutex_free(m_naoCommandMotorJointData);
+    g_mutex_free(m_naoCommandUltraSoundSendData);
     g_mutex_free(m_naoCommandIRSendData);
     g_mutex_free(m_naoCommandLEDData);
 
     // close the shared memory
     naoSensorData.close();
     naoCommandMotorJointData.close();
+    naoCommandUltraSoundSendData.close();
     naoCommandIRSendData.close();
     naoCommandLEDData.close();
   }
@@ -284,6 +292,9 @@ public:
   SET_TO_SHARED_MEMORY(MotorJointData)
   SET_TO_SHARED_MEMORY(LEDData)
   SET_TO_SHARED_MEMORY(IRSendData)
+  SET_TO_SHARED_MEMORY(UltraSoundSendData)
+
+
 
   virtual void getMotionInput()
   {
@@ -350,6 +361,7 @@ protected:
   const NaoSensorData* sensorDataReading;
   GMutex* m_naoSensorData;
   GMutex* m_naoCommandMotorJointData;
+  GMutex* m_naoCommandUltraSoundSendData;
   GMutex* m_naoCommandIRSendData;
   GMutex* m_naoCommandLEDData;
   
@@ -359,6 +371,7 @@ protected:
   // NaoController --> DCM
   //SharedMemory<NaoCommandData> naoCommandData;
   SharedMemory<Accessor<MotorJointData> > naoCommandMotorJointData;
+  SharedMemory<Accessor<UltraSoundSendData> > naoCommandUltraSoundSendData;
   SharedMemory<Accessor<IRSendData> > naoCommandIRSendData;
   SharedMemory<Accessor<LEDData> > naoCommandLEDData;
 
