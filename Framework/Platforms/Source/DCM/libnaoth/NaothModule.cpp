@@ -214,13 +214,6 @@ void NaothModule::motionCallbackPre()
     // don't count more than 11
     drop_count += (drop_count < 11);
   }//end else
-
-  // get the UltraSoundSendData from the shared memory and put them to the DCM
-  if ( naoCommandUltraSoundSendData.swapReading() )
-  {
-    const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
-    theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
-  }//end if
   
   /*
   if ( naoCommandIRSendData.swapReading() )
@@ -230,14 +223,21 @@ void NaothModule::motionCallbackPre()
   }//end if
   */
 
+  bool leddata_set = false;
+
   // get the LEDData from the shared memory and put them to the DCM
-  // don't set too many things at once
   if(!stiffness_set && naoCommandLEDData.swapReading())
   {
     const Accessor<LEDData>* commandData = naoCommandLEDData.reading();
-    theDCMHandler.setSingleLED(commandData->get(), dcmTime);
+    leddata_set = theDCMHandler.setSingleLED(commandData->get(), dcmTime);
   }//end if
 
+  // get the UltraSoundSendData from the shared memory and put them to the DCM
+  if (naoCommandUltraSoundSendData.swapReading() )
+  {
+    const Accessor<UltraSoundSendData>* commandData = naoCommandUltraSoundSendData.reading();
+    theDCMHandler.setUltraSoundSend(commandData->get(), dcmTime);
+  }//end if
 
   long long stop = NaoTime::getSystemTimeInMicroSeconds();
   time_motionCallbackPre = (int)(stop - start);

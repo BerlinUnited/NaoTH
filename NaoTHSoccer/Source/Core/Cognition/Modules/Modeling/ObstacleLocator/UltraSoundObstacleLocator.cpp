@@ -32,9 +32,9 @@ UltraSoundObstacleLocator::UltraSoundObstacleLocator()
 
 void UltraSoundObstacleLocator::execute()
 {
-  getObstacleModel().leftDistance = std::numeric_limits<double>::max();
-  getObstacleModel().rightDistance = std::numeric_limits<double>::max();
-  getObstacleModel().frontDistance = std::numeric_limits<double>::max();
+  getObstacleModel().leftDistance = invalidDistanceValue;
+  getObstacleModel().rightDistance = invalidDistanceValue;
+  getObstacleModel().frontDistance = invalidDistanceValue;
 
   fillBuffer();
 
@@ -146,7 +146,15 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
     }
   }
   ObstacleModel& model = getObstacleModel();
-  model.leftDistance = sum / (double) count;
+
+  if(count == 0)
+  {
+    model.leftDistance = invalidDistanceValue;
+  }
+  else
+  {
+    model.leftDistance = sum / (double) count;
+  }
 
   sum = 0.0;
   count = 0;
@@ -158,7 +166,14 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
       count++;
     }
   }
-  model.rightDistance = sum / (double) count;
+  if(count == 0)
+  {
+    model.rightDistance = invalidDistanceValue;
+  }
+  else
+  {
+    model.rightDistance = sum / (double) count;
+  }
 
   if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
   {

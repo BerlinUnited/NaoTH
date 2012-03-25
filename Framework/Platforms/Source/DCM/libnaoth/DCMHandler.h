@@ -151,7 +151,7 @@ public:
 
   void setUltraSoundSend(const UltraSoundSendData& data, int dcmTime);
   void setLED(const LEDData& data, int dcmTime);
-  void setSingleLED(const LEDData& data, int dcmTime);
+  bool setSingleLED(const LEDData& data, int dcmTime);
   void setIRSend(const IRSendData& theIRSendData, int dcmTime);
 
   // smart set_methods

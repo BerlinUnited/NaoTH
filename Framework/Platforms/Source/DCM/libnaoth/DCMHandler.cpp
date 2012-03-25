@@ -1,5 +1,6 @@
 #include "DCMHandler.h"
 #include <Tools/NaoInfo.h>
+#include <Tools/NaoTime.h>
 
 using namespace naoth;
 
@@ -754,8 +755,9 @@ bool DCMHandler::setLEDSmart(const LEDData& data, int dcmTime)
   return false;
 }//end setLEDSmart
 
-void DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
+bool DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
 {
+  bool result = false;
   try
   {
     singleLedCommand[2][0][1] = dcmTime;
@@ -764,6 +766,7 @@ void DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
     {
       if(lastLEDData.theMonoLED[i] != data.theMonoLED[i])
       {
+        result = true;
         singleLedCommand[0] = DCMPath_MonoLED[i];
         singleLedCommand[2][0][0] = lastLEDData.theMonoLED[i] = data.theMonoLED[i];
         al_dcmproxy->set(singleLedCommand);
@@ -777,6 +780,7 @@ void DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
       {
         if(lastLEDData.theMultiLED[i][k] != data.theMultiLED[i][k])
         {
+          result = true;
           singleLedCommand[0] = DCMPath_MultiLED[i][k];
           singleLedCommand[2][0][0] = lastLEDData.theMultiLED[i][k] = data.theMultiLED[i][k];
           al_dcmproxy->set(singleLedCommand);
@@ -788,6 +792,7 @@ void DCMHandler::setSingleLED(const LEDData& data, int dcmTime)
   catch(ALError e) {
     std::cerr << "Failed to set LEDs: " << e.toString() << endl;
   }
+  return result;
 }//end setSingleLED
 
 
