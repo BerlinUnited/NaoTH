@@ -10,6 +10,8 @@
 
 #include <ModuleFramework/Module.h>
 #include "AGLParameters.h"
+#include "AGLSampleSet.h"
+#include "AGLSampleBuffer.h"
 
 // Debug
 #include "Tools/Debug/DebugRequest.h"
@@ -29,6 +31,7 @@
 // Tools
 #include <vector>
 #include "Tools/Math/Geometry.h"
+#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -63,11 +66,29 @@ private:
   double averageWeighting;
 
   AGLParameters parameters;
+
+
+  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
+  AGLSampleBuffer theSampleBuffer;
+
+
   OdometryData lastRobotOdometry;
 
   //needs to check the need for using new percept
   // if high, no need for insert new percept
   double timeFilter;
+
+  class Cluster
+  {
+  public:
+      Cluster():
+          canopyClustering(theSampleSet){}
+
+      CanopyClustering<AGLSampleSet> canopyClustering;
+      AGLSampleSet theSampleSet;
+  };
+
+    Cluster ccSamples[10];
 
   class Sample
   {

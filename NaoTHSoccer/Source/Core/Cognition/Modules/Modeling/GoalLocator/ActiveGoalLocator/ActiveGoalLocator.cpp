@@ -27,8 +27,11 @@
 //#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/SampleSet.h"
 #include <cmath>
 
-ActiveGoalLocator::ActiveGoalLocator() {
-
+ActiveGoalLocator::ActiveGoalLocator()    :
+    //canopyClustering(theSampleSet[1], parameters.thresholdCanopy),
+    //canopyClustering2(theSampleSet2, parameters.thresholdCanopy),
+    ccTrashBuffer(theSampleBuffer, parameters.thresholdCanopy)
+{
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goalCenter", "draw the center of goal on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept", "draw the goal percept on field", false);
@@ -61,7 +64,8 @@ void ActiveGoalLocator::execute() {
   getLocalGoalModel().ownGoalIsValid = false;
 
 
-  /* 18.02.2012
+  /* SWITCH for different colored goals!
+    18.02.2012
   clear cause of same colored Goals!
 
   // HACK begin: senity check: the model cannot handle posts of different color now
@@ -83,7 +87,8 @@ void ActiveGoalLocator::execute() {
 
 
 
-  /* 18.02.2012
+  /* SWITCH for different colored goals!
+    18.02.2012
   clear cause of same colored Goals!
   hold sampleSets
 

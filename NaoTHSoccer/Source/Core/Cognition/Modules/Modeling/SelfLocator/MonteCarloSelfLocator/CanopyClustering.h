@@ -19,7 +19,7 @@ template<class C>
 class CanopyClustering
 {
 public: 
-  CanopyClustering(C& sampleSet, double clusterThreshold)
+  CanopyClustering(C& sampleSet, double clusterThreshold = 0)
     :
     sampleSet(sampleSet),
     numOfClusters(0),
@@ -66,6 +66,8 @@ public:
   const CanopyCluster& operator[](int index) const { ASSERT(index >= 0 && (unsigned int)index < this->numOfClusters); return clusters[index];}
   const CanopyCluster& getLargestCluster() const {return (*this).clusters[largestCluster];  }
   const int& getLargestClusterID() const {return this->largestCluster;}
+
+  void setClusterThreshold(const double clusterThreshold) {this->clusterThreshold = clusterThreshold;}
 
   void cluster()
   {
