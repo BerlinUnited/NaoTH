@@ -548,10 +548,11 @@ void WebotsController::set(const SoundData& /*data*/)
   // unsupported yet
 }
 
-  void WebotsController::set(const SoundData& /*data*/)
-  {
-    // unsupported yet
-  }
+void WebotsController::set(const UltraSoundSendData& data)
+{
+
+}
+
 
 void WebotsController::getCognitionInput()
 {
