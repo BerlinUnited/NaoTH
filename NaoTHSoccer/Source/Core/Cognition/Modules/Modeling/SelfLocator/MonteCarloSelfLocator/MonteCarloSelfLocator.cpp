@@ -17,7 +17,6 @@
 // tools
 #include "Tools/Math/Probabilistics.h"
 
-#include "PlatformInterface/Platform.h"
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
@@ -189,7 +188,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
     Vector2<double> leftGoalPosition;
     Vector2<double> rightGoalPosition;
     
-    if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
+    if( getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
         (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
          fabs(getRobotPose().rotation + seenAngle) < Math::pi_2)
       )
@@ -275,14 +274,26 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
 
   //updateByLinesTableNew();
 
-  PEN("FF00FF", 10);
-  for(unsigned int lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
+  //PEN("FF00FF", 10);
+  int lp = -1;
+  //for(lp=0; lp < getLinePercept().lines.size() && lp < 3; lp++)
+  for(int i = 0; i < 3; i++)
   {
+    int idx = Math::random((int)getLinePercept().lines.size());
     // dont use the lines which are parts of the circle 
     // when the circle itself was detected
-    if(getLinePercept().lines[lp].type == LinePercept::C && getLinePercept().middleCircleWasSeen)
+    if(getLinePercept().lines[idx].type == LinePercept::C && getLinePercept().middleCircleWasSeen)
       continue;
 
+    if(getLinePercept().lines[idx].lineOnField.getLength() < 300) // don't use too short lines
+      continue;
+
+    lp = idx;
+    break;
+  }
+
+  if(lp >= 0)
+  {
     //const int centerLine_id = 4; // HACK: see FieldInfo
     // special treatment for the center line
     //if(getLinePercept().lines[lp].seen_id == LinePercept::center_line)
@@ -293,8 +304,8 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
 
 
     // TODO: separate class
-    int lineVotes[30] = {0};
-    int maxIdx = 0;
+    //int lineVotes[30] = {0};
+    //int maxIdx = 0;
 
     const Math::LineSegment& relPercept = getLinePercept().lines[lp].lineOnField;
 
@@ -317,6 +328,12 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       int direction = (fabs(abs_direction.x) > fabs(abs_direction.y))?LinesTable::along_lines:LinesTable::across_lines;
       int type = (getLinePercept().lines[lp].type == LinePercept::C)?LinesTable::circle_lines:length|direction;
 
+      /*
+      const LinesTable::NamedPoint& p_mid = 
+        (type&LinesTable::circle_lines)?
+          getFieldInfo().fieldLinesTable.get_closest_point_direct(abs_mid, LinesTable::idx_circle):
+          getFieldInfo().fieldLinesTable.get_closest_line_point_fast(abs_mid, length, direction);
+          */
       // get the closest line in the world
       //LinesTable::NamedPoint p_begin = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.begin(), type);
       //LinesTable::NamedPoint p_end = getFieldInfo().fieldLinesTable.get_closest_point(absPercept.end(), type);
@@ -329,6 +346,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       // get the line
       const Math::LineSegment& ref_line = getFieldInfo().fieldLinesTable.getLines()[p_mid.id];
 
+      /*
       DEBUG_REQUEST("MCSL:draw_corner_votes",
         // vote for the corner id
         ASSERT(p_mid.id <= 29);
@@ -336,7 +354,8 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
         if(lineVotes[p_mid.id] > lineVotes[maxIdx]) 
           maxIdx = p_mid.id;
       );
-
+      */
+      // project the perceived line to the reference
       Vector2<double> p1 = ref_line.projection(abs_begin);
       Vector2<double> p2 = ref_line.projection(abs_end);
       Vector2<double> pm = p_mid.position;
@@ -355,6 +374,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
         sample.likelihood *= computeDistanceWeighting(relPercept.begin().abs(), relP1.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relPercept.begin().angle(), relP1.angle(), sigmaAngle, 1.0);
       }
+      
       {
         Vector2<double> relP2(sample/p2);
         sample.likelihood *= computeDistanceWeighting(relPercept.end().abs(), relP2.abs(), cameraHeight, sigmaDistance, 1.0);
@@ -366,9 +386,10 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
         sample.likelihood *= computeDistanceWeighting(relMidPoint.abs(), relPM.abs(), cameraHeight, sigmaDistance, 1.0);
         sample.likelihood *= computeAngleWeighting(relMidPoint.angle(), relPM.angle(), sigmaAngle, 1.0);
       }
+      
     }//end for
 
-
+    /*
     DEBUG_REQUEST("MCSL:draw_corner_votes",
       FIELD_DRAWING_CONTEXT;
 
@@ -392,6 +413,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       //Vector2<double> r = (p+q)*0.5;
       LINE(p.x, p.y, q.x, q.y);
     );
+    */
 
   }//end for
 
@@ -991,12 +1013,13 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   // goals
   if(parameters.updateByGoals)
   {
+    STOPWATCH_START("MonteCarloSelfLocator ~ updateByGoals");
     if(getGoalPercept().getNumberOfSeenPosts() > 0)
     {
       updateByGoalPosts(sampleSet);
       sensorDataAvailable = true;
     }
-
+    STOPWATCH_STOP("MonteCarloSelfLocator ~ updateByGoals");
     // update by the goal model
     /*
     if(getSensingGoalModel().someGoalWasSeen)

@@ -70,6 +70,7 @@
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
+#include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
@@ -143,22 +144,27 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(FieldColorClassifierPostProcessor);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
-  REGISTER_MODULE(PerceptProjector);
   REGISTER_MODULE(FieldSideDetector);
-  REGISTER_MODULE(PerceptionsVisualization);
   REGISTER_MODULE(OpenCVDebug);
+
+  // scene analysers 
+  // (analyze the visual information seen in the image)
+  REGISTER_MODULE(WholeGoalLocator);
+  REGISTER_MODULE(PerceptProjector);
+  REGISTER_MODULE(PerceptionsVisualization);
+
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(ParticleFilterBallLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(ActiveGoalLocator);
-  REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
+  REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
   REGISTER_MODULE(PotentialFieldProvider);
