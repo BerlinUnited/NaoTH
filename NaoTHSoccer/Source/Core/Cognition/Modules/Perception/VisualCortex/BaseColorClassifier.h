@@ -77,9 +77,7 @@ private:
   void runDebugRequests();
 
   BaseColorRegionParameters regionParams;
-  BaseColorRegionPercept& bPercept;
   ColorTable64& cTable;
-  const FieldColorPercept& fPercept;
   const Histogram& histogram;
   const ColoredGrid& coloredGrid;
 

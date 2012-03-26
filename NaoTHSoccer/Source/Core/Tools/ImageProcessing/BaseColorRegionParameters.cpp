@@ -4,37 +4,37 @@ BaseColorRegionParameters::BaseColorRegionParameters()
 :
   ParameterList("BaseColorRegionParameters")
 {
-  PARAMETER_REGISTER(fieldIndex.y) = FIELD_IDX_Y;
-  PARAMETER_REGISTER(fieldIndex.u) = FIELD_IDX_CB;
-  PARAMETER_REGISTER(fieldIndex.v) = FIELD_IDX_CR;
+  PARAMETER_REGISTER(fieldIndex.y) = 125.0;
+  PARAMETER_REGISTER(fieldIndex.u) = 127.0;
+  PARAMETER_REGISTER(fieldIndex.v) = 63.0;
 
-  PARAMETER_REGISTER(fieldDist.y) = FIELD_DIST_Y;
-  PARAMETER_REGISTER(fieldDist.u) = FIELD_DIST_CB;
-  PARAMETER_REGISTER(fieldDist.v) = FIELD_DIST_CR;
+  PARAMETER_REGISTER(fieldDist.y) = 120.0;
+  PARAMETER_REGISTER(fieldDist.u) = 128.0;
+  PARAMETER_REGISTER(fieldDist.v) = 64.0;
 
-  PARAMETER_REGISTER(goalIndex.y) = GOAL_IDX_Y;
-  PARAMETER_REGISTER(goalIndex.u) = GOAL_IDX_CB;
-  PARAMETER_REGISTER(goalIndex.v) = GOAL_IDX_CR;
+  PARAMETER_REGISTER(goalIndex.y) = 180.0;
+  PARAMETER_REGISTER(goalIndex.u) = 80.0;
+  PARAMETER_REGISTER(goalIndex.v) = 135.0;
 
-  PARAMETER_REGISTER(goalDist.y) = GOAL_DIST_Y;
-  PARAMETER_REGISTER(goalDist.u) = GOAL_DIST_CB;
-  PARAMETER_REGISTER(goalDist.v) = GOAL_DIST_CR;
+  PARAMETER_REGISTER(goalDist.y) = 120.0;
+  PARAMETER_REGISTER(goalDist.u) = 24.0;
+  PARAMETER_REGISTER(goalDist.v) = 24.0;
 
-  PARAMETER_REGISTER(ballIndex.y) = BALL_IDX_Y;
-  PARAMETER_REGISTER(ballIndex.u) = BALL_IDX_CB;
-  PARAMETER_REGISTER(ballIndex.v) = BALL_IDX_CR;
+  PARAMETER_REGISTER(ballIndex.y) = 140.0;
+  PARAMETER_REGISTER(ballIndex.u) = 85.0;
+  PARAMETER_REGISTER(ballIndex.v) = 200.0;
 
-  PARAMETER_REGISTER(ballDist.y) = BALL_DIST_Y;
-  PARAMETER_REGISTER(ballDist.u) = BALL_DIST_CB;
-  PARAMETER_REGISTER(ballDist.v) = BALL_DIST_CR;
+  PARAMETER_REGISTER(ballDist.y) = 160.0;
+  PARAMETER_REGISTER(ballDist.u) = 96.0;
+  PARAMETER_REGISTER(ballDist.v) = 30.0;
 
-  PARAMETER_REGISTER(lineIndex.y) = LINE_IDX_Y;
-  PARAMETER_REGISTER(lineIndex.u) = LINE_IDX_CB;
-  PARAMETER_REGISTER(lineIndex.v) = LINE_IDX_CR;
+  PARAMETER_REGISTER(lineIndex.y) = 254.0;
+  PARAMETER_REGISTER(lineIndex.u) = 135.0;
+  PARAMETER_REGISTER(lineIndex.v) = 125.0;
 
-  PARAMETER_REGISTER(lineDist.y) = LINE_DIST_Y;
-  PARAMETER_REGISTER(lineDist.u) = LINE_DIST_CB;
-  PARAMETER_REGISTER(lineDist.v) = LINE_DIST_CR;
+  PARAMETER_REGISTER(lineDist.y) = 96.0;
+  PARAMETER_REGISTER(lineDist.u) = 8.0;
+  PARAMETER_REGISTER(lineDist.v) = 8.0;
 
   syncWithConfig();
 
