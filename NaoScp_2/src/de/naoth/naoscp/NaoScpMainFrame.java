@@ -1,3 +1,5 @@
+package de.naoth.naoscp;
+
 
 import java.awt.Color;
 import javax.swing.*;
@@ -49,6 +51,16 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
     public remoteScriptRunner(NaoScpConfig config, String Ip, String sNaoNo, String sNaoByte, String scriptName)
     {
       super(config, Ip, sNaoNo, sNaoByte, scriptName, false);
+    }
+
+    public remoteScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName, boolean reboot)
+    {
+      super(config, sNaoNo, sNaoByte, scriptName, reboot);
+    }
+
+    public remoteScriptRunner(NaoScpConfig config, String sNaoNo, String sNaoByte, String scriptName)
+    {
+      super(config, sNaoNo, sNaoByte, scriptName, false);
     }
 
     @Override
@@ -269,7 +281,12 @@ abstract class NaoScpMainFrame  extends javax.swing.JFrame
       }
       else
       {
-        if (config.restartNaoth)
+        if (config.restartNaoqi)
+        {
+          remoteScriptRunner scriptRunner = new remoteScriptRunner(config, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoqi", false);
+          scriptRunner.execute();
+        }
+        else if(config.restartNaoth)
         {
           remoteScriptRunner scriptRunner = new remoteScriptRunner(config, config.actIp, config.sNaoNo, config.sNaoByte, "restartNaoTH", false);
           scriptRunner.execute();

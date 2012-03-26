@@ -1,3 +1,5 @@
+package de.naoth.naoscp;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -78,6 +80,10 @@ abstract class sshScriptRunner extends sshWorker
       hasError = !testAndConnect();
       if(!hasError)
       {
+        if(scriptName.equalsIgnoreCase("restartNaoqi"))
+        {
+          hasError = !restartNaoqi();
+        }
         if(scriptName.equalsIgnoreCase("restartNaoTH"))
         {
           hasError = !restartNaoTH();
@@ -110,10 +116,8 @@ abstract class sshScriptRunner extends sshWorker
   }
 
   /**
-   * copy new files to nao
+   * restarts naoth
    *
-   * @param session jsch session
-   * @param sNaoNo nao number
    */
   protected boolean restartNaoTH()
   {
@@ -121,28 +125,22 @@ abstract class sshScriptRunner extends sshWorker
     {
       if(openChannel("exec"))
       {
-        setInfo("restarting naoqi");
-        ((ChannelExec) channel).setCommand("/etc/init.d/naoqi restart");
-
-//        setInfo("waiting");
-
-        setInfo("restarting naoth cognition process");
-        ((ChannelExec) channel).setCommand("/etc/init.d/naoth stop");
-        ((ChannelExec) channel).setCommand("/etc/init.d/naoth start");
+        setInfo("restarting naoth");
+        ((ChannelExec) channel).setCommand("naoth restart");
         InputStream consoleOut = channel.getInputStream();
         channel.connect();
         byte[] buffer = new byte[4096];
-        while(true) 
+        while(true)
         {
-          if(consoleOut.available()>0) 
+          if(consoleOut.available()>0)
           {
             int ret = consoleOut.read(buffer, 0, 4096);
-            if(ret<0) 
+            if(ret<0)
             {
                break;
             }
           }
-          if(((ChannelExec) channel).isClosed()) 
+          if(((ChannelExec) channel).isClosed())
           {
             break;
           }
@@ -159,7 +157,61 @@ abstract class sshScriptRunner extends sshWorker
     }
     catch(Exception e)
     {
-      haveError("Exception in restartNaoQi - Nao " + config.sNaoNo + ": " + e.toString());
+      haveError("Exception in restartNaoTH - Nao " + config.sNaoNo + ": " + e.toString());
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * restarts naoqi and naoth
+   *
+   */
+  protected boolean restartNaoqi()
+  {
+    try
+    {
+      if(openChannel("exec"))
+      {
+
+        setInfo("restarting naoqi and naoth");
+        ((ChannelExec) channel).setCommand("naoth stop");
+        ((ChannelExec) channel).setCommand("nao stop");
+        ((ChannelExec) channel).setCommand("sleep 1");
+        ((ChannelExec) channel).setCommand("nao start");
+        ((ChannelExec) channel).setCommand("sleep 1");
+        ((ChannelExec) channel).setCommand("naoth start");
+        InputStream consoleOut = channel.getInputStream();
+        channel.connect();
+        byte[] buffer = new byte[4096];
+        while(true)
+        {
+          if(consoleOut.available()>0)
+          {
+            int ret = consoleOut.read(buffer, 0, 4096);
+            if(ret<0)
+            {
+               break;
+            }
+          }
+          if(((ChannelExec) channel).isClosed())
+          {
+            break;
+          }
+          try
+          {
+            Thread.sleep(100);
+          }
+          catch(Exception threadEx)
+          {}
+        }
+      }
+      disconnectChannel();
+      channel.getExitStatus();
+    }
+    catch(Exception e)
+    {
+      haveError("Exception in restartNaoqi - Nao " + config.sNaoNo + ": " + e.toString());
       return false;
     }
     return true;

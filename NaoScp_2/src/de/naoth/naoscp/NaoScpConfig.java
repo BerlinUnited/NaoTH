@@ -1,3 +1,5 @@
+package de.naoth.naoscp;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -12,8 +14,10 @@ import javax.swing.*;
 public class NaoScpConfig
 {
   boolean noBackup;
+  boolean forceBackup;
   boolean debugVersion;
   boolean restartNaoth;
+  boolean restartNaoqi;
   boolean reboot;
 
   boolean copyConfig;
@@ -60,8 +64,10 @@ public class NaoScpConfig
   NaoScpConfig(NaoScpConfig config)
   {
     noBackup = config.noBackup;
+    forceBackup = config.forceBackup;
     debugVersion = config.debugVersion;
     restartNaoth = config.restartNaoth;
+    restartNaoqi = config.restartNaoqi;
     reboot = config.reboot;
 
     copyConfig = config.copyConfig;

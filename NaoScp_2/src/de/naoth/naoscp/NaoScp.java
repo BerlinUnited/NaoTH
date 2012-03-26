@@ -1,3 +1,5 @@
+package de.naoth.naoscp;
+
 /*
  *
  * Warning - this is a "pre alpha version" and is largely untested
@@ -77,6 +79,8 @@ public class NaoScp extends NaoScpMainFrame
     }
 
     initComponents();
+
+    setActionBtnLabel();
 
     wlanBtnGroup.add(radioWPA);
     wlanBtnGroup.add(radioWEP);
@@ -186,11 +190,13 @@ public class NaoScp extends NaoScpMainFrame
     {
       try
       {
-        String ResourceName="NaoScp.class";
+        String ResourceName="de/naoth/naoscp/NaoScp.class";
         String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
         programPath = programPath.replace("file:", "");
-        programPath = programPath.replace("/NaoScp_2/dist/NaoScp.jar!/NaoScp.class", "");
-        programPath = programPath.replace("/NaoScp_2/build/classes/NaoScp.class", "") + "/NaoTHSoccer";
+        //path replacement if NaoScp is being started from console directly
+        programPath = programPath.replace("/NaoScp_2/dist/NaoScp_2.jar!/de/naoth/naoscp/NaoScp.class", "");
+        //path replacement if NaoScp is started from IDE (Netbeans)
+        programPath = programPath.replace("/NaoScp_2/build/classes/de/naoth/naoscp/NaoScp.class", "") + "/NaoTHSoccer";
         File ProgramDir = new File(programPath);
         if(ProgramDir.exists())
         {
@@ -412,8 +418,10 @@ public class NaoScp extends NaoScpMainFrame
     cfg.copyLib = cbCopyLib.isSelected();
     cfg.copyExe = cbCopyExe.isSelected();
     cfg.copyLogs = cbCopyLogs.isSelected();
+    cfg.restartNaoqi = cbRestartNaoqi.isSelected();
     cfg.restartNaoth = cbRestartNaoth.isSelected();
     cfg.noBackup = cbNoBackup.isSelected();
+    cfg.forceBackup = cbForceBackup.isSelected();
     if(cfg.backupIsSelected)
     {
       cfg.boxSelected = jBackupBox.getSelectedItem().toString();
@@ -425,12 +433,12 @@ public class NaoScp extends NaoScpMainFrame
       cfg.selectedBackup = "";
     }
 
-    if(cfg.copyConfig || cfg.copyExe || cfg.copyLib || cfg.copyLogs)
+    if(cfg.copyConfig || cfg.copyExe || cfg.copyLib || cfg.copyLogs || cfg.forceBackup || cfg.noBackup)
     {
       showCopyDoneMsg = true;
     }
 
-    if(cfg.restartNaoth)
+    if(cfg.restartNaoth || cfg.restartNaoqi)
     {
       if(showCopyDoneMsg)
       {
@@ -484,8 +492,29 @@ public class NaoScp extends NaoScpMainFrame
         NaoScpConfig naoCfg = new NaoScpConfig(cfg);        
         naoCfg.addresses.add(sNaoLanIps.get(naoNo));
         naoCfg.addresses.add(sNaoWLanIps.get(naoNo));
-        remoteCopier copier = new remoteCopier(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)));
-        copier.execute();
+
+        if(!showCopyDoneMsg && showScriptDoneMsg)
+        {
+          if (naoCfg.restartNaoqi)
+          {
+            remoteScriptRunner scriptRunner = new remoteScriptRunner(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)), "restartNaoqi", false);
+            scriptRunner.execute();
+          }
+          else if(naoCfg.restartNaoth)
+          {
+            remoteScriptRunner scriptRunner = new remoteScriptRunner(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)), "restartNaoTH", false);
+            scriptRunner.execute();
+          }
+          else
+          {
+            allIsDone(naoNo);
+          }
+        }
+        else
+        {
+          remoteCopier copier = new remoteCopier(naoCfg, String.valueOf(naoNo), String.valueOf(iNaoBytes.get(naoNo)));
+          copier.execute();
+        }
       }
       else
       {
@@ -494,18 +523,21 @@ public class NaoScp extends NaoScpMainFrame
     }
   }
 
-  private boolean checkDirPath()
+  private boolean checkDirPath(boolean verbose)
   {
-    if(config.jDirPathLabel == null)
+    if(config == null || config.jDirPathLabel == null)
     {
-      JOptionPane.showMessageDialog(null, "Main Directory not set");
+      if(verbose)
+      {
+        JOptionPane.showMessageDialog(null, "Main Directory not set");
+      }
       return false;
     }
     return true;
   }
 
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
-      if(checkDirPath())
+      if(checkDirPath(true))
       {
         copyFiles2Nao();
         resetBackupList();
@@ -644,7 +676,7 @@ public class NaoScp extends NaoScpMainFrame
             }
             add += " - please check Logs.";
           }
-          actionInfo("[1;32mCopyCopy done\n[0m");
+          actionInfo("[1;32mCopy done\n[0m");
           JOptionPane.showMessageDialog(this, "Copy done" + add);
         }
         if(showScriptDoneMsg)
@@ -661,7 +693,7 @@ public class NaoScp extends NaoScpMainFrame
             }
             add += " - please check Logs.";
           }
-          actionInfo("[1;32mCopyScripts done\n[0m");
+          actionInfo("[1;32mScripts done\n[0m");
           JOptionPane.showMessageDialog(this, "Scripts done" + add);
         }
       }
@@ -679,11 +711,13 @@ public class NaoScp extends NaoScpMainFrame
     cbCopyLogs.setEnabled(enable);
 
     cbRestartNaoth.setEnabled(enable);
+    cbRestartNaoqi.setEnabled(enable);
     cbRebootSystem.setEnabled(enable);
     if(config.debugVersion)
     {
       cbNoBackup.setEnabled(enable);
     }
+    cbForceBackup.setEnabled(enable);
 
     if(jBackupBox.getItemCount() > 1 || !enable)
     {
@@ -796,18 +830,6 @@ public class NaoScp extends NaoScpMainFrame
             {
               localLib.delete();
             }
-            try
-            {
-              FileOutputStream fos = new FileOutputStream(cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath() + "/comment.cfg");
-              DataOutputStream out = new DataOutputStream(fos);
-              out.writeBytes(jCommentTextArea.getText());
-              fos.close();
-            }
-            catch(IOException ioe)
-            {
-              actionInfo("I/O Error in prepareDeploy- " + ioe.toString());
-            }          
-
             copyFiles(new File(cfg.localLibnaothPath() + "/libnaoth.so"), localLib);
           }
 
@@ -819,8 +841,26 @@ public class NaoScp extends NaoScpMainFrame
             {
               localExe.delete();
             }
+            try
+            {
+              FileOutputStream fos = new FileOutputStream(cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath() + "/comment.cfg");
+              DataOutputStream out = new DataOutputStream(fos);
+              out.writeBytes(jCommentTextArea.getText());
+              fos.close();
+            }
+            catch(IOException ioe)
+            {
+              actionInfo("I/O Error in prepareDeploy- " + ioe.toString());
+            }
 
             copyFiles(new File(cfg.localLibnaothPath() + "/naoth"), localExe);
+          }
+
+          if(cfg.copyConfig || cfg.forceBackup)
+          {
+            String myConfigPathIn = cfg.localDeployInPath(sNaoNo, sNaoByte) + "/Config";
+            File myConfigDirIn = new File(myConfigPathIn);
+            myConfigDirIn.mkdirs();
           }
 
           if(cfg.copyConfig)
@@ -828,10 +868,6 @@ public class NaoScp extends NaoScpMainFrame
             String myConfigPath = cfg.localDeployOutPath(sNaoNo) + cfg.configPath();
             File myConfigDir = new File(myConfigPath);
             myConfigDir.mkdirs();
-
-            String myConfigPathIn = cfg.localDeployInPath(sNaoNo, sNaoByte) + "/Config";
-            File myConfigDirIn = new File(myConfigPathIn);
-            myConfigDirIn.mkdirs();
 
             copyFiles(new File(cfg.localConfigPath()), myConfigDir);
             writePlayerCfg(new File(myConfigPath + "/private/player.cfg"), sNaoNo);
@@ -1991,7 +2027,56 @@ public class NaoScp extends NaoScpMainFrame
     setupCopier.execute();
   }
     
-  
+  private void setActionBtnLabel()
+  {
+    boolean copyActionSelected = cbCopyConfig.isSelected()
+                                  || cbCopyExe.isSelected()
+                                  || cbCopyLib.isSelected()
+                                  || cbCopyLogs.isSelected();
+    boolean scriptActionSelected = cbRestartNaoth.isSelected()
+                                  || cbRestartNaoqi.isSelected();
+
+    copyButton.setEnabled(checkDirPath(false));
+
+    if(copyActionSelected && scriptActionSelected)
+    {
+      copyButton.setText("Copy files and run script");
+    }
+    else if(copyActionSelected)
+    {
+      copyButton.setText("Copy files");
+    }
+    else if(scriptActionSelected)
+    {
+      if(cbForceBackup.isSelected())
+      {
+        copyButton.setText("Full backup and run Script");
+      }
+      else if(cbNoBackup.isSelected())
+      {
+        copyButton.setText("Minimal backup and run Script");
+      }
+      else
+      {
+        copyButton.setText("Run Script");
+      }
+    }
+    else if(cbForceBackup.isSelected())
+    {
+      copyButton.setText("Full backup");
+    }
+    else if(cbNoBackup.isSelected())
+    {
+      copyButton.setText("Minimal backup");
+    }
+    else
+    {
+      copyButton.setText("Nothing to do");
+      copyButton.setEnabled(false);
+    }
+  }
+
+
     private void jColorBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jColorBoxActionPerformed
     }//GEN-LAST:event_jColorBoxActionPerformed
 
@@ -2032,7 +2117,6 @@ public class NaoScp extends NaoScpMainFrame
     cbCopyLib = new javax.swing.JCheckBox();
     cbRestartNaoth = new javax.swing.JCheckBox();
     cbCopyConfig = new javax.swing.JCheckBox();
-    cbCopyExe = new javax.swing.JCheckBox();
     jSettingsPanel = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     jColorBox = new javax.swing.JComboBox();
@@ -2046,6 +2130,9 @@ public class NaoScp extends NaoScpMainFrame
     jCommentTextArea = new javax.swing.JTextArea();
     cbCopyLogs = new javax.swing.JCheckBox();
     jLabel16 = new javax.swing.JLabel();
+    cbCopyExe = new javax.swing.JCheckBox();
+    cbRestartNaoqi = new javax.swing.JCheckBox();
+    cbForceBackup = new javax.swing.JCheckBox();
     jPanel2 = new javax.swing.JPanel();
     jSettingsPanel1 = new javax.swing.JPanel();
     jLabel13 = new javax.swing.JLabel();
@@ -2152,7 +2239,6 @@ public class NaoScp extends NaoScpMainFrame
 
     jLabel8.setText("Nao 3:");
 
-    copyButton.setText("Copy");
     copyButton.setEnabled(false);
     copyButton.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2201,15 +2287,15 @@ public class NaoScp extends NaoScpMainFrame
           .add(jActionsPanelLayout.createSequentialGroup()
             .add(jDirChooser)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE))
+            .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE))
           .add(jActionsPanelLayout.createSequentialGroup()
             .addContainerGap()
             .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-              .add(org.jdesktop.layout.GroupLayout.LEADING, jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 703, Short.MAX_VALUE)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jSeparator1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
               .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
                 .add(jLabel15)
                 .add(18, 18, 18)
-                .add(jBackupBox, 0, 553, Short.MAX_VALUE))
+                .add(jBackupBox, 0, 543, Short.MAX_VALUE))
               .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
                 .add(jLabel6)
                 .add(18, 18, 18)
@@ -2227,7 +2313,7 @@ public class NaoScp extends NaoScpMainFrame
                 .add(18, 18, 18)
                 .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .add(18, 18, 18)
-                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)))))
+                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)))))
         .addContainerGap())
     );
     jActionsPanelLayout.setVerticalGroup(
@@ -2243,7 +2329,7 @@ public class NaoScp extends NaoScpMainFrame
           .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
           .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
           .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-          .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE))
         .add(18, 18, 18)
         .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
           .add(jLabel15)
@@ -2281,14 +2367,6 @@ public class NaoScp extends NaoScpMainFrame
     cbCopyConfig.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         cbCopyConfigItemStateChanged(evt);
-      }
-    });
-
-    cbCopyExe.setSelected(true);
-    cbCopyExe.setText("copyNaoTH(exe)");
-    cbCopyExe.addItemListener(new java.awt.event.ItemListener() {
-      public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        cbCopyExeItemStateChanged(evt);
       }
     });
 
@@ -2341,9 +2419,9 @@ public class NaoScp extends NaoScpMainFrame
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
             .add(jTeamNumber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 36, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .add(18, 18, 18)
-            .add(jButtonRefreshData, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE))
-          .add(jSchemeBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 352, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        .add(73, 73, 73))
+            .add(jButtonRefreshData, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
+          .add(jSchemeBox, 0, 423, Short.MAX_VALUE))
+        .addContainerGap())
     );
     jSettingsPanelLayout.setVerticalGroup(
       jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -2358,11 +2436,10 @@ public class NaoScp extends NaoScpMainFrame
           .add(jTeamNumber)
           .add(jLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
           .add(jButtonRefreshData)
-          .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE))
-        .addContainerGap())
+          .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)))
     );
 
-    cbNoBackup.setText("NO BACKUP");
+    cbNoBackup.setText("ONLY MINIMAL BACKUP");
     cbNoBackup.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         cbNoBackupItemStateChanged(evt);
@@ -2379,6 +2456,11 @@ public class NaoScp extends NaoScpMainFrame
     jScrollPane2.setViewportView(jCommentTextArea);
 
     cbCopyLogs.setText("copyLogs");
+    cbCopyLogs.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        cbCopyLogsItemStateChanged(evt);
+      }
+    });
     cbCopyLogs.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         cbCopyLogsActionPerformed(evt);
@@ -2387,56 +2469,103 @@ public class NaoScp extends NaoScpMainFrame
 
     jLabel16.setText("Comment:");
 
+    cbCopyExe.setSelected(true);
+    cbCopyExe.setText("copyNaoTH(exe)");
+    cbCopyExe.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        cbCopyExeItemStateChanged(evt);
+      }
+    });
+
+    cbRestartNaoqi.setText("restartNaoqi");
+    cbRestartNaoqi.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        cbRestartNaoqiItemStateChanged(evt);
+      }
+    });
+    cbRestartNaoqi.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbRestartNaoqiActionPerformed(evt);
+      }
+    });
+
+    cbForceBackup.setText("force full Backup");
+    cbForceBackup.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        cbForceBackupItemStateChanged(evt);
+      }
+    });
+    cbForceBackup.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbForceBackupActionPerformed(evt);
+      }
+    });
+
     org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
-        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jPanel1Layout.createSequentialGroup()
-            .add(cbCopyConfig)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(cbCopyLib)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(cbCopyExe)
-            .add(18, 18, 18)
-            .add(cbRestartNaoth)
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+          .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1Layout.createSequentialGroup()
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(cbCopyExe)
+              .add(cbCopyLib))
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-            .add(cbCopyLogs)
-            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-            .add(cbNoBackup))
-          .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-            .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanel, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1Layout.createSequentialGroup()
-              .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-              .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-              .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 186, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(jLabel16)))))
-        .addContainerGap())
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(cbCopyConfig)
+              .add(cbCopyLogs))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(jPanel1Layout.createSequentialGroup()
+                .add(cbRestartNaoth)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(cbForceBackup))
+              .add(jPanel1Layout.createSequentialGroup()
+                .add(cbRestartNaoqi)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(cbNoBackup))))
+          .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1Layout.createSequentialGroup()
+            .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 186, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel16)))
+          .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .add(jActionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-        .add(15, 15, 15)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(11, 11, 11))
           .add(jPanel1Layout.createSequentialGroup()
             .add(jLabel16)
             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
-          .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-          .add(cbCopyConfig)
-          .add(cbCopyLib)
-          .add(cbCopyExe)
-          .add(cbRestartNaoth)
-          .add(cbCopyLogs)
-          .add(cbNoBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        .add(48, 48, 48))
+            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(cbCopyConfig)
+              .add(cbRestartNaoth)
+              .add(cbForceBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .add(8, 8, 8)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(cbCopyLogs)
+              .add(cbRestartNaoqi)
+              .add(cbNoBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(cbCopyExe)
+            .add(8, 8, 8)
+            .add(cbCopyLib)))
+        .addContainerGap(25, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Copy & Run", jPanel1);
@@ -2876,9 +3005,9 @@ public class NaoScp extends NaoScpMainFrame
             .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 742, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
             .add(6, 6, 6)
             .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-              .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-              .add(jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-              .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)))
+              .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+              .add(jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+              .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)))
           .add(jLabel12))
         .addContainerGap())
     );
@@ -2932,9 +3061,11 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_jBackupBoxItemStateChanged
 
     private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyConfigItemStateChanged
+      setActionBtnLabel();
     }//GEN-LAST:event_cbCopyConfigItemStateChanged
 
     private void cbCopyLibItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyLibItemStateChanged
+      setActionBtnLabel();
     }//GEN-LAST:event_cbCopyLibItemStateChanged
 
     private void naoByte4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte4ActionPerformed
@@ -2946,15 +3077,15 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_jButtonRefreshDataActionPerformed
 
     private void cbRestartNaothItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbRestartNaothItemStateChanged
-        // TODO add your handling code here:
+      setActionBtnLabel();
     }//GEN-LAST:event_cbRestartNaothItemStateChanged
 
     private void cbRestartNaothActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRestartNaothActionPerformed
-        // TODO add your handling code here:
+      
     }//GEN-LAST:event_cbRestartNaothActionPerformed
 
     private void cbCopyExeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyExeItemStateChanged
-      // TODO add your handling code here:
+      setActionBtnLabel();
     }//GEN-LAST:event_cbCopyExeItemStateChanged
 
     private void subnetFieldWLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldWLANActionPerformed
@@ -2994,7 +3125,7 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_sshRootUserActionPerformed
 
     private void jButtonSetRobotNetworkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSetRobotNetworkActionPerformed
-      if(checkDirPath())
+      if(checkDirPath(true))
       {
         setRobotNetwork();
       }
@@ -3018,7 +3149,7 @@ public class NaoScp extends NaoScpMainFrame
 
     private void lstNaosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstNaosMouseClicked
       
-      if (evt.getClickCount() == 2 && checkDirPath())
+      if (evt.getClickCount() == 2 && checkDirPath(true))
       {
         Object[] options={ "initialize Robot", "set network config" };
         int pressedBtnId = JOptionPane.showOptionDialog
@@ -3054,7 +3185,7 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_formWindowClosing
 
     private void jButtonInitRobotSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInitRobotSystemActionPerformed
-      if(checkDirPath())
+      if(checkDirPath(true))
       {
         initializeRobot();
       }
@@ -3090,12 +3221,32 @@ public class NaoScp extends NaoScpMainFrame
     }//GEN-LAST:event_broadcastFieldLANKeyPressed
 
   private void cbNoBackupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbNoBackupItemStateChanged
-    // TODO add your handling code here:
+    setActionBtnLabel();
   }//GEN-LAST:event_cbNoBackupItemStateChanged
 
   private void wlanSSIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanSSIDActionPerformed
     // TODO add your handling code here:
   }//GEN-LAST:event_wlanSSIDActionPerformed
+
+  private void cbRestartNaoqiItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbRestartNaoqiItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbRestartNaoqiItemStateChanged
+
+  private void cbRestartNaoqiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRestartNaoqiActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbRestartNaoqiActionPerformed
+
+  private void cbForceBackupItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbForceBackupItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbForceBackupItemStateChanged
+
+  private void cbForceBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbForceBackupActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbForceBackupActionPerformed
+
+  private void cbCopyLogsItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyLogsItemStateChanged
+    setActionBtnLabel();
+  }//GEN-LAST:event_cbCopyLogsItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField broadcastFieldLAN;
@@ -3104,8 +3255,10 @@ public class NaoScp extends NaoScpMainFrame
   private javax.swing.JCheckBox cbCopyExe;
   private javax.swing.JCheckBox cbCopyLib;
   private javax.swing.JCheckBox cbCopyLogs;
+  private javax.swing.JCheckBox cbForceBackup;
   private javax.swing.JCheckBox cbNoBackup;
   private javax.swing.JCheckBox cbRebootSystem;
+  private javax.swing.JCheckBox cbRestartNaoqi;
   private javax.swing.JCheckBox cbRestartNaoth;
   private javax.swing.JButton copyButton;
   private javax.swing.JPanel jActionsPanel;

@@ -1,3 +1,5 @@
+package de.naoth.naoscp;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,10 +27,10 @@ abstract class sshCopier extends sshWorker
 
   protected Boolean exec() throws JSchException, InterruptedException
   {
-    boolean onlyMinimalBackup;
-    
-    onlyMinimalBackup = config.debugVersion && config.noBackup;
-      
+    boolean onlyMinimalBackup = config.debugVersion && config.noBackup && !config.forceBackup;
+    boolean copyFiles = config.copyConfig || config.copyExe || config.copyLib || config.copyLogs;
+    boolean backupNeeded = config.forceBackup || copyFiles;
+
     if(onlyMinimalBackup)
     {
       // NO BACKUP!!!
@@ -36,9 +38,16 @@ abstract class sshCopier extends sshWorker
     }
     else
     {
-      backupNao();
+      if(backupNeeded)
+      {
+        backupNao();
+      }
     }
-    return writeNao();
+    if(copyFiles)
+    {
+      return writeNao();
+    }
+    return true;
   }
 
   protected Boolean doInBackground()
@@ -75,36 +84,51 @@ abstract class sshCopier extends sshWorker
   {
     String exceptionHelper = "during backup init";
 
+    boolean copyLib = config.copyLib;
+    boolean copyExe = config.copyExe;
+    boolean copyConfig = config.copyConfig;
+
+    if(config.forceBackup)
+    {
+      copyLib = true;
+      copyExe = true;
+      copyConfig = true;
+    }
+
+
     setInfo("Starting Backup Session for Nao " + config.sNaoNo);
     if(config.backupIsSelected)
     {
-      if(config.copyLib)
+      if(copyLib)
       {
         File libFile = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/libnaoth.so");
         if(!libFile.exists() || !libFile.isFile())
         {
           setInfo("[43mselected backup contains no libnaoth.so file\n[0m");
           config.copyLib = false;
+          copyLib = false;
         }
       }
 
-      if(config.copyExe)
+      if(copyExe)
       {
         File exeDir = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/naoth");
         if(!exeDir.exists() || !exeDir.isFile())
         {
           setInfo("[43mselected backup contains no libnaoth.so file\n[0m");
           config.copyExe = false;
+          copyExe = false;
         }
       }
 
-      if(config.copyConfig)
+      if(copyConfig)
       {
         File configDir = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/Config");
         if(!configDir.exists() || !configDir.isDirectory())
         {
           setInfo("[43mselected backup contains no Config directory\n[0m");
           config.copyConfig = false;
+          copyConfig = false;
         }
       }
     }
@@ -117,14 +141,17 @@ abstract class sshCopier extends sshWorker
         ChannelSftp c = (ChannelSftp) channel;
         try
         {
-          if(config.copyLib || config.copyExe || config.copyConfig)
+          if(copyLib || copyExe || copyConfig)
           {
             exceptionHelper = "mkdir local " + config.localDeployInPath();
             File backup = new File(config.localDeployInPath());
-            backup.mkdirs();
+            if(!backup.isDirectory())
+            {
+              backup.mkdirs();
+            }
           }
 
-          if(config.copyLib)
+          if(copyLib)
           {
             setInfo("get libnaoth.so");
 
@@ -145,14 +172,13 @@ abstract class sshCopier extends sshWorker
 
         try
         {
-          if(config.copyLib || config.copyExe)
+          if(copyExe)
           {
             setInfo("get comment.cfg");
             c.get
             (
               config.remoteLibPath() + "comment.cfg",
-              new FileOutputStream(config.localDeployInPath() + "/comment.cfg")
-                    ,
+              new FileOutputStream(config.localDeployInPath() + "/comment.cfg"),
               new progressMonitor(config.progressBar)
             );
           }
@@ -164,7 +190,7 @@ abstract class sshCopier extends sshWorker
 
         try
         {
-          if(config.copyExe)
+          if(copyExe)
           {
             setInfo("get naoth (exe)");
             exceptionHelper = "get from robot " + config.remoteLibPath() + "naoth "  + config.localDeployInPath() + "/naoth";
@@ -185,7 +211,7 @@ abstract class sshCopier extends sshWorker
 
         try
         {
-          if(config.copyConfig)
+          if(copyConfig)
           {
             exceptionHelper = "get recursive from robot " + config.remoteConfigPath() + " to " + config.localDeployInPath() + "/Config";
             recursiveSftpGet(config.localDeployInPath() + "/Config", config.remoteConfigPath());
@@ -329,7 +355,7 @@ abstract class sshCopier extends sshWorker
           recursiveSftpPut(new File(localLibPath + "libnaoth.so"), config.remoteLibPath() + "libnaoth.so");
         }
 
-        if(config.copyLib)
+        if(config.copyExe)
         {
           try
           {

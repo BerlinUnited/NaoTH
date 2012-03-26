@@ -52,9 +52,9 @@
                       <Component id="jTabbedPane1" min="-2" pref="742" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="progressBar" pref="199" max="32767" attributes="1"/>
-                          <Component id="jCopyStatus" pref="199" max="32767" attributes="1"/>
-                          <Component id="jScrollPane5" alignment="1" pref="199" max="32767" attributes="0"/>
+                          <Component id="progressBar" pref="257" max="32767" attributes="1"/>
+                          <Component id="jCopyStatus" pref="257" max="32767" attributes="1"/>
+                          <Component id="jScrollPane5" alignment="1" pref="257" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="jLabel12" min="-2" max="-2" attributes="1"/>
@@ -123,33 +123,42 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="cbCopyConfig" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="cbCopyExe" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="cbRestartNaoth" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="cbCopyExe" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="cbCopyLogs" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="cbNoBackup" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="jActionsPanel" alignment="0" min="0" max="32767" attributes="1"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="jSettingsPanel" min="-2" max="-2" attributes="1"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jScrollPane2" min="-2" pref="186" max="-2" attributes="0"/>
-                                      <Component id="jLabel16" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="cbCopyConfig" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbCopyLogs" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="cbRestartNaoth" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="cbForceBackup" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="cbRestartNaoqi" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="cbNoBackup" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jSettingsPanel" min="-2" max="-2" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jScrollPane2" min="-2" pref="186" max="-2" attributes="0"/>
+                                  <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Component id="jActionsPanel" alignment="0" max="32767" attributes="1"/>
                       </Group>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -158,25 +167,40 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jActionsPanel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jSettingsPanel" min="-2" max="-2" attributes="1"/>
+                              <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                          </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" pref="92" max="32767" attributes="1"/>
+                              <Component id="jScrollPane2" pref="89" max="32767" attributes="1"/>
+                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jSettingsPanel" min="-2" max="-2" attributes="1"/>
                       </Group>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="cbCopyConfig" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbCopyLib" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbCopyExe" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbRestartNaoth" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbCopyLogs" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cbNoBackup" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="cbCopyConfig" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbRestartNaoth" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbForceBackup" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="cbCopyLogs" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbRestartNaoqi" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cbNoBackup" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <Component id="cbCopyExe" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+                              <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                      <EmptySpace pref="25" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -192,16 +216,16 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jDirChooser" min="-2" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jDirPathLabel" pref="654" max="32767" attributes="1"/>
+                                  <Component id="jDirPathLabel" pref="644" max="32767" attributes="1"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="jSeparator1" alignment="0" pref="703" max="32767" attributes="1"/>
+                                      <Component id="jSeparator1" alignment="0" pref="693" max="32767" attributes="1"/>
                                       <Group type="102" alignment="0" attributes="1">
                                           <Component id="jLabel15" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="jBackupBox" pref="553" max="32767" attributes="2"/>
+                                          <Component id="jBackupBox" pref="543" max="32767" attributes="2"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
@@ -220,7 +244,7 @@
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Component id="naoByte4" min="-2" pref="35" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="copyButton" pref="266" max="32767" attributes="1"/>
+                                          <Component id="copyButton" pref="256" max="32767" attributes="1"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -242,7 +266,7 @@
                               <Component id="naoByte1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="naoByte3" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="naoByte4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="copyButton" alignment="3" max="32767" attributes="1"/>
+                              <Component id="copyButton" alignment="3" pref="19" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -315,7 +339,6 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="copyButton">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Copy"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
@@ -401,15 +424,6 @@
                 <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyConfigItemStateChanged"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="cbCopyExe">
-              <Properties>
-                <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="copyNaoTH(exe)"/>
-              </Properties>
-              <Events>
-                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyExeItemStateChanged"/>
-              </Events>
-            </Component>
             <Container class="javax.swing.JPanel" name="jSettingsPanel">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -428,18 +442,18 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" attributes="0">
                                   <Component id="jColorBox" min="-2" pref="89" max="-2" attributes="2"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jTeamNumber" min="-2" pref="36" max="-2" attributes="1"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jButtonRefreshData" pref="126" max="32767" attributes="0"/>
+                                  <Component id="jButtonRefreshData" pref="197" max="32767" attributes="0"/>
                               </Group>
-                              <Component id="jSchemeBox" min="-2" pref="352" max="-2" attributes="1"/>
+                              <Component id="jSchemeBox" pref="423" max="32767" attributes="1"/>
                           </Group>
-                          <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -459,7 +473,6 @@
                               <Component id="jButtonRefreshData" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel3" alignment="3" pref="59" max="32767" attributes="1"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -522,7 +535,7 @@
             </Container>
             <Component class="javax.swing.JCheckBox" name="cbNoBackup">
               <Properties>
-                <Property name="text" type="java.lang.String" value="NO BACKUP"/>
+                <Property name="text" type="java.lang.String" value="ONLY MINIMAL BACKUP"/>
               </Properties>
               <Events>
                 <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbNoBackupItemStateChanged"/>
@@ -549,6 +562,7 @@
                 <Property name="text" type="java.lang.String" value="copyLogs"/>
               </Properties>
               <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyLogsItemStateChanged"/>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbCopyLogsActionPerformed"/>
               </Events>
             </Component>
@@ -556,6 +570,33 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Comment:"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="cbCopyExe">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="copyNaoTH(exe)"/>
+              </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbCopyExeItemStateChanged"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="cbRestartNaoqi">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="restartNaoqi"/>
+              </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbRestartNaoqiItemStateChanged"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbRestartNaoqiActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="cbForceBackup">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="force full Backup"/>
+              </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbForceBackupItemStateChanged"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbForceBackupActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
