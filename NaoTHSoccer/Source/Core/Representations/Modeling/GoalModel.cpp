@@ -11,49 +11,26 @@
 
 #include "GoalModel.h"
 
-const GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
+GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
+    //if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
+    if(fabs(compassDirection.angle + goal.calculateCenter().angle()) > Math::pi_2){
+      return goal;
     } else {
-
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
-    }
-
-}//end getOwnGoal
-
-GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo)
-{
-    //TODO check this decision, compare with robotPose.rotation
-    //18.02.2012
-    if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
-    } else {
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
+      return calculateAnotherGoal(goal, fieldInfo.xLength);
     }
 }//end getOwnGoal
 
-const GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
+GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(compassDirection.angle) < Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
+    if(fabs(compassDirection.angle + goal.calculateCenter().angle()) < Math::pi_2){
+      return goal;
     } else {
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
-    }
-}//end getOppGoal
-
-GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo)
-{
-    //TODO check this decision, compare with robotPose.rotation
-    //18.02.2012
-    if (abs(compassDirection.angle) < Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
-    } else {
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
+      return calculateAnotherGoal(goal, fieldInfo.xLength);
     }
 }//end getOppGoal
 
@@ -133,6 +110,7 @@ GoalModel::Goal GoalModel::calculateAnotherGoal(const GoalModel::Goal& goal, dou
   normal.normalize(distance);
   normal.rotateRight();
 
+  // swich the posts
   another.leftPost = goal.rightPost + normal;
   another.rightPost = goal.leftPost + normal;
 
