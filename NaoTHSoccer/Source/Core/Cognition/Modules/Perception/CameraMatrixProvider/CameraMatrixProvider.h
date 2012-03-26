@@ -19,6 +19,7 @@
 #include "Representations/Infrastructure/AccelerometerData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Modeling/InertialModel.h"
+#include "Representations/Modeling/CameraMatrixOffset.h"
 
 // motion stuff
 #include "Representations/Modeling/KinematicChain.h"
@@ -33,6 +34,7 @@ BEGIN_DECLARE_MODULE(CameraMatrixProvider)
   REQUIRE(FieldInfo)
   REQUIRE(AccelerometerData)
   REQUIRE(FrameInfo)
+  REQUIRE(CameraMatrixOffset)
 
   PROVIDE(SensorJointData)
   PROVIDE(KinematicChain)
