@@ -158,7 +158,7 @@ void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
 }//end calculateArtificialHorizone
 
 
-Vector2<double> CameraGeometry::lookAtPoint(Vector3<double> point, double cameraHeight)
+Vector2<double> CameraGeometry::lookAtPoint(const Vector3<double>& point, double cameraHeight)
 {
   Vector3<double> vector;
   Vector2<double> result;

@@ -21,6 +21,9 @@
 */
 class CameraGeometry
 {
+private:
+  CameraGeometry(){} // there shouldn't be any instances of it
+
 public:
   /** 
    * transform a point in image coordinates to the camera coordinates
@@ -96,7 +99,7 @@ public:
    * calculation of the angles from the head of the robot to a given point in
    * the egocentric coordination system of the robot
    */
-  Vector2<double> lookAtPoint(Vector3<double> point, double cameraHeight);
+  static Vector2<double> lookAtPoint(const Vector3<double>& point, double cameraHeight);
 
   };
 
