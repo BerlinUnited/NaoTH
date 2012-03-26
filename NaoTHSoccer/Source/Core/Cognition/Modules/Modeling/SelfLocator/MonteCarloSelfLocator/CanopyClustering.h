@@ -236,7 +236,7 @@ private:
   unsigned int numOfClusters;
   int largestCluster;
 
-  const double clusterThreshold;
+  double clusterThreshold;
 };
 
 #endif //__CanopyClustering_h_

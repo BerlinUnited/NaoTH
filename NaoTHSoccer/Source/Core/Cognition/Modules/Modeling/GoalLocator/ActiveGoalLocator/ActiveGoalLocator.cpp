@@ -54,6 +54,8 @@ ActiveGoalLocator::ActiveGoalLocator()    :
     sampleSet[i].likelihood = 0.01;
   }*/
 
+  for(int i; i < 10; i++) ccSamples[i].canopyClustering.setClusterThreshold(parameters.thresholdCanopy);
+
 } //Constructor
 
 void ActiveGoalLocator::execute() {
@@ -62,7 +64,6 @@ void ActiveGoalLocator::execute() {
   getLocalGoalModel().someGoalWasSeen = false;
   getLocalGoalModel().opponentGoalIsValid = false;
   getLocalGoalModel().ownGoalIsValid = false;
-
 
   /* SWITCH for different colored goals!
     18.02.2012
@@ -106,17 +107,20 @@ void ActiveGoalLocator::execute() {
   */
 
 
+
+  //TODO: clear???
   // don't update if the body state is not valid
-  if (getBodyState().fall_down_state != BodyState::upright || // robot is not upright
+  /*if (getBodyState().fall_down_state != BodyState::upright || // robot is not upright
     !(getBodyState().standByLeftFoot || getBodyState().standByRightFoot) // no foot is on the ground
     ) {
     sampleSet.clear();
-  }
+  }*/
 
-  timeFilter += parameters.timeFilterRange * averageWeighting;
+  //TODO: raus??
+  //timeFilter += parameters.timeFilterRange * averageWeighting;
 
-  //TODO: Recognize which Goal was seen
-  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) { //&& timeFilter < parameters.sigmaWeightingThreshhold
+  //TODO: faellt weg wegen Buffer
+  /*for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) { //&& timeFilter < parameters.sigmaWeightingThreshhold
     //should be more flexible. when two posts are seen, and just one is reliable -> also add possible!
     if (getGoalPercept().getPost(i).positionReliable) {
       if (sampleSet.size() < 40) {
@@ -128,20 +132,84 @@ void ActiveGoalLocator::execute() {
         sampleSet[idx].position = getGoalPercept().getPost(i).position;
       }
     }
-  }
+  }*/
 
-  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+
+  //TODO reset likelihood
+  /*for (unsigned int i = 0; i < sampleSet.size(); i++) {
     sampleSet[i].likelihood = 0.1;
+  }*/
+
+  Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+  //TODO introduce size of ccSamples
+  for(int i = 1; i < 10; i++)
+    updateByOdometry(ccSamples[1].sampleSet, odometryDelta);
+
+  updateByOdometry(theSampleBuffer, odometryDelta);
+  lastRobotOdometry = getOdometryData();
+
+
+  //clear old percepts of the buffer
+  updateByFrameNumber(theSampleBuffer, 200);
+
+
+  double weightingByFilter[10] = {0};
+
+  bool noneFilterUpdated = true;
+  bool oneFilterIsEmpty = false;
+
+  //check if post-percepts available
+  for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
+    //if (getGoalPercept().getPost(i).positionReliable) {
+
+
+      //check if particle matches any filter
+      //TODO: Vorteil filter mit kleiner id!! ??
+      for (int x = 0; x < 10; x++) {
+        if(ccSamples[x].sampleSet.getIsValid()) {
+          weightingByFilter[x] = getWeightingOfPerceptAngle(ccSamples[x].sampleSet, getGoalPercept().getPost(i));
+        } else {
+            oneFilterIsEmpty = true;
+        }
+        if (weightingByFilter[x]) {
+          updateByGoalPerceptAngle(ccSamples[x].sampleSet, getGoalPercept().getPost(i));
+          noneFilterUpdated = false;
+        }
+
+      }
+
+      //both filters wasn't updated
+      if (noneFilterUpdated) {
+
+        //else insert the percept into the trashBuffer
+        AGLBSample bufferSample;
+          bufferSample.translation = getGoalPercept().getPost(i).position;
+          bufferSample.color       = getGoalPercept().getPost(i).color;
+          bufferSample.frameNumber = getFrameInfo().getFrameNumber();
+        theSampleBuffer.samples.add(bufferSample);
+      }
+
+  }//end for i < getGoalPercept().getNumberOfSeenPosts()
+
+
+  //////////////////////////
+  //   check Buffer
+  //////////////////////////
+
+  //just check Buffer if one PF is empty
+  //hier evtl bei mehreren filtern immer clustern!
+  if (oneFilterIsEmpty)
+  {
+    ccTrashBuffer.cluster();
+
+    //check if useable cluster in TrashBuffer exists
+    checkTrashBuffer(theSampleBuffer);
+  }//end if (!theSampleSet1.getIsValid() || !theSampleSet2.getIsValid())
+
+
+  for (unsigned int i = 0; i < 10; i++) {
+    resampleGT07(ccSamples[i].sampleSet, true);
   }
-
-  updateByRobotOdometry();
-  updateByGoalPercept();
-  resampleGT07(true);
-
-  cluster();
-
- double dNumOfCluster = (double) numOfClusters;
-    MODIFY("AGLSP:numOfCluster", dNumOfCluster);
 
   //For Modelling
 
@@ -161,136 +229,6 @@ void ActiveGoalLocator::execute() {
   } else {
     ownGoalSeen = true;
   }*/
-
-  //get posts by cluster
-  if (numOfClusters != 0) {
-
-      //initialize with first cluster
-      /********************************************************/
-      //locate the two biggest (size) clusters!
-      //not possible yet! mostly two big clusters behinds each other!!!
-      /*
-      Vector2<double> leftPost, rightPost;
-      int idxOfFirCluster = 0;
-      int idxOfSecCluster = 0;
-
-      leftPost = clusters[0].center.position;
-      rightPost = clusters[0].center.position;
-
-
-      for (int i = 0; i < numOfClusters; i++) {
-        if (clusters[idxOfFirCluster].size > clusters[i].size) {
-          idxOfFirCluster = i;
-          idxOfSecCluster = i;
-        }
-      }
-      for (int i = 0; i < numOfClusters; i++) {
-        if (clusters[idxOfFirCluster].size < clusters[i].size) {
-          idxOfFirCluster = i;
-        }
-      }
-      for (int i = 0; i < numOfClusters; i++) {
-        if (clusters[idxOfSecCluster].size < clusters[i].size && i != idxOfFirCluster) {
-          idxOfSecCluster = i;
-        }
-      }
-
-      if(clusters[idxOfFirCluster].center.position.angle() > clusters[idxOfSecCluster].center.position.angle()) {
-        leftPost  = clusters[idxOfFirCluster].center.position;
-        rightPost = clusters[idxOfSecCluster].center.position;
-      } else {
-        leftPost  = clusters[idxOfSecCluster].center.position;
-        rightPost = clusters[idxOfFirCluster].center.position;
-      }
-      */
-     /********************************************************/
-
-      //locate clusters the most left and right one!
-      //not possible yet! mostly two big clusters behinds each other!!!
-
-      Vector2<double> leftPost, rightPost;
-      leftPost = clusters[0].center.position;
-      rightPost = clusters[0].center.position;
-
-      for (int i = 0; i < numOfClusters; i++) {
-        if (leftPost.angle() < clusters[i].center.position.angle()) {
-          leftPost = clusters[i].center.position;
-        }
-      }
-
-      for (int i = 0; i < numOfClusters; i++) {
-        if (rightPost.angle() > clusters[i].center.position.angle()) {
-          rightPost = clusters[i].center.position;
-        }
-      }
-
-      DEBUG_REQUEST("ActiveGoalLocator:cluster_centers",
-        FIELD_DRAWING_CONTEXT;
-        PEN("FF0000", 50);
-        CIRCLE(leftPost.x, leftPost.y, 50);
-        TEXT_DRAWING(leftPost.x+10,leftPost.y+10, "L");
-        PEN("0000FF", 50);
-        CIRCLE(rightPost.x, rightPost.y, 50);
-        TEXT_DRAWING(rightPost.x+10,rightPost.y+10, "R");
-      );
-
-      /*18.02.2012
-        tore malen welche lokal vorhanden sind
-
-        if (lastGoalColor == ColorClasses::skyblue) {
-        getLocalGoalModel().blueGoal.leftPost = leftPost;
-        getLocalGoalModel().blueGoal.rightPost = rightPost;
-        // TODO: create a separate model for the another goal
-        getLocalGoalModel().calculateYellowByBlue(getFieldInfo().xLength);
-        getLocalGoalModel().blueGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
-      } else if(lastGoalColor == ColorClasses::yellow) {
-        getLocalGoalModel().yellowGoal.leftPost = leftPost;
-        getLocalGoalModel().yellowGoal.rightPost = rightPost;
-        // TODO: create a separate model for the another goal
-        getLocalGoalModel().calculateBlueByYellow(getFieldInfo().xLength);
-        getLocalGoalModel().yellowGoal.frameInfoWhenGoalLastSeen = getFrameInfo();
-      }
-      */
-
-      getLocalGoalModel().goal.leftPost  = leftPost;
-      getLocalGoalModel().goal.rightPost = rightPost;
-      //frame Info when goal was seen not useful! New: some_goal_was seen
-      getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
-
-    //caculated by right and left post!
-    Vector2<double> goalCenter;
-    goalCenter = (leftPost - rightPost) * 0.5 + rightPost;
-
-    /*18.02.2012 same colors ... no decision of own ord opp goal
-    if (ownGoalSeen) getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
-    if (oppGoalSeen) {
-      //getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
-      getLocalGoalModel().seen_center = goalCenter; //opponentGoal Position
-      getLocalGoalModel().seen_angle = goalCenter.angle(); //opponentGoal Angle
-    }*/
-
-    //TODO check decision for opp goal!
-    //getOppGoal == goal ...
-    if (getCompassDirection().angle > Math::pi_2) {
-
-        getLocalGoalModel().seen_center = goalCenter;
-        getLocalGoalModel().seen_angle = goalCenter.angle();
-    }
-
-    DEBUG_REQUEST("ActiveGoalLocator:draw_goalCenter",
-      FIELD_DRAWING_CONTEXT;
-      PEN("FF0000", 50);
-      CIRCLE(goalCenter.x, goalCenter.y, 50);
-    );
-
-  } else { //numOfClusters != 0
-    //do nothing -> symbol look for goal!
-  }
-
-  // say it Model is Valid when more than one cluster is seen
-  //commented 18.02.2012
-  //getLocalGoalModel().opponentGoalIsValid = (oppGoalSeen && numOfClusters > 1);
-  //getLocalGoalModel().ownGoalIsValid = (ownGoalSeen && numOfClusters > 1);
 
   debugDrawings();
 
@@ -335,16 +273,18 @@ void ActiveGoalLocator::debugDrawings() {
   );
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_samples",
-  for (unsigned int i = 0; i < sampleSet.size(); i++) {
-    const Sample& sample = sampleSet[i];
+  for (unsigned int x = 0; x < 10; x++ ) {
 
-    string color = ColorClasses::colorClassToHex((ColorClasses::Color)((sample.cluster+2)%ColorClasses::numOfColors));
+    string color = ColorClasses::colorClassToHex((ColorClasses::Color)((10+2)%ColorClasses::numOfColors));
 
-      FIELD_DRAWING_CONTEXT;
-      PEN(color, 30);
-      CIRCLE(sample.position.x, sample.position.y, 20);
-      TEXT_DRAWING(sample.position.x+10,sample.position.y+10,sample.cluster);
+    for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) {
+      const AGLSample& sample = ccSamples[x].sampleSet[i];
 
+        FIELD_DRAWING_CONTEXT;
+        PEN(color, 30);
+        CIRCLE(sample.translation.x, sample.translation.y, 20);
+        TEXT_DRAWING(sample.translation.x+10,sample.translation.y+10, sample.cluster);
+    }
   });
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_percept",
@@ -359,82 +299,165 @@ void ActiveGoalLocator::debugDrawings() {
 
 } //end debugDrawings
 
-void ActiveGoalLocator::updateByRobotOdometry() {
+void ActiveGoalLocator::updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const
+{
+    for (unsigned int i = 0; i < sampleSet.size(); i++) {
+      //update each particle with odometry
+      sampleSet[i].translation = odometryDelta * sampleSet[i].translation;
 
-  // negative odometry
-  Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
-  lastRobotOdometry = getOdometryData();
+      //making noise
+      sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
+      sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
+    }
 
+}//end updateByOdometry
+
+void ActiveGoalLocator::updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const
+{
+
+    for (unsigned int i = 0; i < sampleSet.size(); i++) {
+      //update each particle with odometry
+      sampleSet[i].translation = odometryDelta * sampleSet[i].translation;
+
+      //making noise
+      sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
+      sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
+    }
+
+}//end updateByOdometry
+
+double ActiveGoalLocator::getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post) {
+  //TODO check Color -> not similar, return 0
+  double weighting(0.0);
   for (unsigned int i = 0; i < sampleSet.size(); i++) {
-    sampleSet[i].position = odometryDelta * sampleSet[i].position;
+    double value = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
+    weighting = Math::gaussianProbability(value, parameters.standardDeviationAngle);
   }
 
-}//end updateByRobotOdometry
+  if (weighting > parameters.weightingTreshholdForUpdateWithAngle)//TODO: check value
+    return weighting;
+  else
+    return 0;
+}
 
-void ActiveGoalLocator::updateByGoalPercept() {
+void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet)
+{
 
-  if (!getGoalPercept().getNumberOfSeenPosts()) return;
+  //already known that sampleSet is empty!
+  int n = 0;
+  for (unsigned int i = 0; i < sampleSetBuffer.size(); i++) {
 
-  bool oppGoalSeen = false;
-  bool ownGoalSeen = false;
+    //search all particles with ID of largest cluster and add them
+    //TODO make n to param
+    //&& largestClusterID > -1
+    if (n < sampleSetBuffer.samples.getNumberOfEntries() && n < (int)sampleSet.numberOfParticles) {//  && sampleSetBuffer.samples.getEntry(i).cluster == largestClusterID) {
+      AGLSample tmpSample;
+      tmpSample.color = sampleSetBuffer[i].color;
+      tmpSample.translation = sampleSetBuffer[i].getPos();
+      tmpSample.likelihood = 1.0/(double)sampleSet.size();
+      sampleSet[n] = tmpSample;
+      n++;
+      std::cout << tmpSample.likelihood << std::endl;
+      std::cout << sampleSet[n].likelihood << std::endl;
 
-  /* 18.02.2012
-  ColorClasses::Color opponentGoalColor = ColorClasses::yellow;
-  if (getPlayerInfo().gameData.teamColor == GameData::red) {
+    } //else {
+      //would be nice to hold the samples we don't have clustert
+      //tmpSampleBuffer.samples.add(tmpSampleBuffer.samples.getEntry(i));
+    //}
+  }
+  sampleSet.setValid();
+  //not just clear completly??
+  theSampleBuffer.samples.clear();
+
+
+}//copyFromBufferToFilter
+
+void ActiveGoalLocator::updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const
+{
+    if(sampleSet.samples.getNumberOfEntries() > 0 &&
+     getFrameInfo().getFrameNumber() - sampleSet.samples.first().frameNumber > frames)
+    {
+        sampleSet.samples.removeFirst();
+    }
+}
+
+//TODO side effect with ccSamples los werdn
+void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
+{
+
+  if (ccTrashBuffer.getLargestCluster().size() > 9) //param
+  {
+
+      for (int i = 0; i < 10; i++) {
+
+          if (!ccSamples[i].sampleSet.getIsValid()) {
+            initFilterByBuffer(ccTrashBuffer.getLargestClusterID(), sampleBuffer, ccSamples[i].sampleSet);
+          }  //end if ccSamples[i] is empty
+      }
+
+
+  }//if largestCluster > 0
+
+}// checkTrashBuffer
+
+void ActiveGoalLocator::updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post) {
+
+  //bool oppGoalSeen = false;
+  //bool ownGoalSeen = false;
+
+  /*ColorClasses::Color opponentGoalColor = ColorClasses::yellow;
+  if (thePlayerInfo.teamColor == PlayerInfo::red) {
     opponentGoalColor = ColorClasses::skyblue;
   }*/
 
-  for (unsigned int i = 0; i < sampleSet.size(); i++) {
-    Sample& sample = sampleSet[i];
+  //zutrauen was der roboter an abweichung haben könnte
 
-    //double value/*distance*/ = (sample.position - getGoalPercept().getPost(0).position).abs();
+  for (unsigned int i = 0; i < sampleSet.size(); i++) {
+
+    //double value/*distance*/ = (sample.position - theGoalPercept.getPost(0).position).abs();
 
     //check if particle "close" to sample in relation to its angle
-    //double angle = getGoalPercept().getPost(0).position.angle();
-    //double weighting = Math::gaussianProbability(angle, parameters.standardDeviationAngle);
+    //double angle = theGoalPercept.getPost(0).position.angle();
+    //double weighting = Math::gaussianProbability(angle, standardDeviationAngle);
 
     double weighting(0.0);
 
-    for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
+    //for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
 
-      if (getGoalPercept().getPost(i).positionReliable) {
+      //if (theGoalPercept.getPost(i).positionReliable) {
         //check with distance to perception
-        double value = Math::normalize(sample.position.angle() - getGoalPercept().getPost(i).position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
-        weighting = Math::gaussianProbability(value, parameters.standardDeviationAngle);
+        double diff = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
+        weighting = Math::gaussianProbability(diff, parameters.standardDeviationAngle);
 
+        std::cout << weighting << std::endl;
         //Problem: winkelfehler und Distanz gemischt -> nicht vergleichbare fehler!
 
-        double diff = (sample.position - getGoalPercept().getPost(i).position).abs();
-        MODIFY("ActiveGoalLocator:dist_diff_of_sample_and_percept", diff);
-        MODIFY("ActiveGoalLocator:goalWidth", goalWidth);
+        //double diff = (sample.getPos() - getGoalPercept().getPost(i).position).abs();
+        //MODIFY("ActiveGoalLocatorSimpleParticle:dist_diff_of_sample_and_percept", diff);
+        //MODIFY("ActiveGoalLocatorSimpleParticle:goalWidth", goalWidth);
 
-        double value2 = abs((sample.position - getGoalPercept().getPost(i).position).abs() - goalWidth);
+        //double value2 = abs((sample.getPos() - getGoalPercept().getPost(i).position).abs() - goalWidth);
+        //weighting += Math::gaussianProbability(value2, parameters.standardDeviationDist);//*670.0;
 
-        DEBUG_REQUEST("ActiveGoalLocator:with_distance_gaussian",
-          weighting += Math::gaussianProbability(value2, parameters.standardDeviationDist)*670.0;
-        );
-      } 
 
-    //TODO check this decision
-    //18.02.2012
-    if (abs(getCompassDirection().angle) > Math::pi_2) {
+      /*if (theGoalPercept.getPost(i).color == opponentGoalColor) {
         oppGoalSeen = true;
       } else {
         ownGoalSeen = true;
-      }
-    }
+      }*/
+    //}
 
-    sample.likelihood *= weighting;
+    sampleSet[i].likelihood *= weighting;
+
   }//end for
 
-
-  if (ownGoalSeen) getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
-  if (oppGoalSeen) {
-    getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
-  }
+  //if (ownGoalSeen) theLocalGoalModel.frameWhenOwnGoalWasSeen = theFrameInfo;
+  //if (oppGoalSeen) {
+    //theLocalGoalModel.frameWhenOpponentGoalWasSeen = theFrameInfo;
+  //}
 }//end updateByBallPercept
 
-void ActiveGoalLocator::resampleGT07(bool noise) {
+void ActiveGoalLocator::resampleGT07(AGLSampleSet& sampleSet, bool noise) {
 
   double totalWeighting = 0;
 
@@ -445,7 +468,7 @@ void ActiveGoalLocator::resampleGT07(bool noise) {
 
   MODIFY("ActiveGoalLocator:totalWeighting", totalWeighting); //justDEBUG ERROR!!
 
-  if (!sampleSet.empty())
+  if (sampleSet.getIsValid()) //TODO: nicht leer!??
     averageWeighting = totalWeighting / (double) sampleSet.size();
   else averageWeighting = 0.0001234;
 
@@ -454,7 +477,7 @@ void ActiveGoalLocator::resampleGT07(bool noise) {
 
   // copy the samples
   // TODO: use memcopy?
-  std::vector<Sample> oldSampleSet = sampleSet;
+  AGLSampleSet oldSampleSet = sampleSet;
 
   totalWeighting += parameters.resamplingThreshhold * oldSampleSet.size();
   for (unsigned int i = 0; i < oldSampleSet.size(); i++) {
@@ -482,8 +505,8 @@ void ActiveGoalLocator::resampleGT07(bool noise) {
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
       if (noise) {
-        sampleSet[n].position.x += (Math::random() - 0.5) * parameters.processNoiseDistance;
-        sampleSet[n].position.y += (Math::random() - 0.5) * parameters.processNoiseDistance;
+        sampleSet[n].translation.x += (Math::random() - 0.5) * parameters.processNoiseDistance;
+        sampleSet[n].translation.y += (Math::random() - 0.5) * parameters.processNoiseDistance;
       }
 
       n++;
@@ -494,133 +517,3 @@ void ActiveGoalLocator::resampleGT07(bool noise) {
 
 }//end resampleGT07
 
-
-//////////////////////////////
-// Outsourding Cluster!
-//////////////////////////////
-
-void ActiveGoalLocator::cluster()
-{
-
-  //vector<CanopyCluster> clusters;
-  numOfClusters = 0; //not initialiszed here anymore, used in top
-
-  for (unsigned int j = 0; j < sampleSet.size(); j++)
-  {
-    sampleSet[j].cluster = -1; // no cluster
-
-    // look for a cluster with the smallest distance
-    double minDistance = 10000; // 10m
-    int minIdx = -1;
-
-    for (int k = 0; k < numOfClusters; k++) { //FIXME, static number
-      double dist = clusters[k].distance(sampleSet[j]);
-      if(dist < minDistance)
-      {
-        minIdx = k;
-        minDistance = dist;
-      }
-    }//end for
-
-    // try to add to the nearedst cluster
-    if(minIdx != -1 && isInCluster(clusters[minIdx], sampleSet[j]))
-    {
-      sampleSet[j].cluster = minIdx;
-      clusters[minIdx].add(sampleSet[j]);
-    }
-    // othervise create new cluster
-    else if(numOfClusters < maxNumberOfClusters)
-    {
-      // initialize a new cluster
-      clusters[numOfClusters].center = sampleSet[j];
-      clusters[numOfClusters].clusterSum = sampleSet[j].position;
-      clusters[numOfClusters].size = 1;
-      sampleSet[j].cluster = numOfClusters;
-      numOfClusters++;
-    }//end if
-
-
-  }//end for
-
-  // merge close clusters
-  for(int k=0; k< numOfClusters; k++)
-  {
-    if(clusters[k].size < 4) {
-      continue;
-    }
-    for(int j=k+1;j<numOfClusters;j++) {
-      if ( clusters[j].size < 4) {
-        continue;
-      }
-      // merge the clusters k and j
-      if((clusters[k].center.position - clusters[j].center.position).abs() < 500)
-      {
-        clusters[k].size += clusters[j].size;
-        clusters[j].size = 0;
-        //this is kind of pointless because we wont use the new center afterwards.
-        //the merge will be more accurate, but it is not that important because we only
-        //merge close clusters, so the error is small
-        //remove in case of performance issues:
-        clusters[k].center.position = (clusters[k].center.position + clusters[j].center.position) * 0.5;
-        for (unsigned int i = 0; i < sampleSet.size(); i++)
-        {
-          if(sampleSet[i].cluster == j) {
-              sampleSet[i].cluster = k;
-          }
-        } //end for i
-      } //end if abs < 500
-    } // end for j
-  } //end for k
-}//end cluster
-
-
-int ActiveGoalLocator::getClusterSize(const Vector2<double> start)
-{
-  CanopyCluster cluster;
-  cluster.center.position = start;
-  cluster.clusterSum = start;
-  cluster.size = 1;
-
-  for (unsigned int j = 0; j < sampleSet.size(); j++)
-  {
-    sampleSet[j].cluster = -1;
-    if(isInCluster(cluster, sampleSet[j]))
-    {
-      sampleSet[j].cluster = 0;
-      cluster.add(sampleSet[j]);
-    }
-  }//end for j
-
-  return (int)cluster.size;
-}//end getClusteSize
-
-bool ActiveGoalLocator::isInCluster(const CanopyCluster& cluster, const Sample& sample) const
-{
-  return cluster.distance(sample) < parameters.thresholdCanopy;
-}//end isInCluster
-
-
-void ActiveGoalLocator::CanopyCluster::add(const Sample& sample)
-{
-  size++;
-  clusterSum += sample.position;
-  center.position = (clusterSum / size);
-}//end add
-
-// TODO: make it switchable
-double ActiveGoalLocator::CanopyCluster::distance(const Sample& sample) const
-{
-  return euclideanDistance(sample);
-  //return manhattanDistance(sample);
-}//end distance
-
-double ActiveGoalLocator::CanopyCluster::manhattanDistance(const Sample& sample) const
-{
-  return std::fabs(center.position.x - sample.position.x)
-       + std::fabs(center.position.y - sample.position.y);
-}//end manhattanDistance
-
-double ActiveGoalLocator::CanopyCluster::euclideanDistance(const Sample& sample) const
-{
-  return (center.position - sample.position).abs();
-}//end euclideanDistance

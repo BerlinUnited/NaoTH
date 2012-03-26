@@ -22,6 +22,8 @@ public:
   double timeFilterRange;
   double sigmaWeightingThreshhold;
   double thresholdCanopy;
+  double motionNoiseDistance;
+  double weightingTreshholdForUpdateWithAngle;
   double processNoiseDistance;
   double resamplingThreshhold;
 

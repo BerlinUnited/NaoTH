@@ -22,7 +22,11 @@ AGLParameters::AGLParameters()
 
   PARAMETER_REGISTER(thresholdCanopy) = 900;
 
+  PARAMETER_REGISTER(motionNoiseDistance) = 0;
+
   PARAMETER_REGISTER(processNoiseDistance) = 5;
+
+  PARAMETER_REGISTER(weightingTreshholdForUpdateWithAngle) = 0.5;
 
   PARAMETER_REGISTER(resamplingThreshhold) = 0.99;
 

@@ -82,58 +82,25 @@ private:
   {
   public:
       Cluster():
-          canopyClustering(theSampleSet){}
+          canopyClustering(sampleSet){}
 
       CanopyClustering<AGLSampleSet> canopyClustering;
-      AGLSampleSet theSampleSet;
+      AGLSampleSet sampleSet;
   };
 
-    Cluster ccSamples[10];
-
-  class Sample
-  {
-  public:
-    Sample() : likelihood(0){}
-    Vector2<double> position;
-    double likelihood;
-    //hacked for canopy
-    int cluster;
-  };
-
-  std::vector<Sample> sampleSet;
-
-  class CanopyCluster
-  {
-  public:
-    ~CanopyCluster(){}
-    CanopyCluster():size(0){}
-
-    double size;
-    Vector2<double> clusterSum;
-    Sample center;
-
-    void add(const Sample& sample);
-    double distance(const Sample& sample) const;
-
-  private:
-    double manhattanDistance(const Sample& sample) const;
-    double euclideanDistance(const Sample& sample) const;
-  };
-
-  bool isInCluster(const CanopyCluster& cluster, const Sample& sample) const;
-
-  static const int maxNumberOfClusters = 100;   //FIXME
-  CanopyCluster clusters[maxNumberOfClusters]; //FIXME
-
-  int numOfClusters; //TODO: side-effect!!
-
-  void cluster();
-  int getClusterSize(const Vector2<double> start);
+  Cluster ccSamples[10];
 
   void debugDrawings();
-  void updateByRobotOdometry();
-  void updateByGoalPercept();
-  void resampleGT07(bool noise);
+
+  void resampleGT07(AGLSampleSet& sampleSet, bool noise);
+
+  void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
+  void updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const;
+  void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
+  void updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const;
+  double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
+  void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
+  void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
 };
 
 #endif //__ActiveGoalLocator_h_
