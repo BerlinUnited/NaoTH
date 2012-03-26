@@ -9,6 +9,8 @@
 #include "Tools/Math/Common.h"
 #include <Tools/DataStructures/Printable.h>
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Debug/DebugRequest.h"
+
 
 using namespace naoth;
 
@@ -17,7 +19,10 @@ class SimpleColorClassifier
 {
 public:
 
-  SimpleColorClassifier() {}
+  SimpleColorClassifier() 
+  {
+    DEBUG_REQUEST_REGISTER("ColorClassificationModel:use_simpleColorClassifier", "", false);
+  }
 
   inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
@@ -73,6 +78,12 @@ public:
       return ColorClasses::green;
     }//end if
 
+
+    // simple classifier (used for tests)
+    DEBUG_REQUEST("ColorClassificationModel:use_simpleColorClassifier",
+      return simpleColorClassifier.getColorClass(a,b,c);
+    );
+
     /*
     if(c > fieldColorPercept.maxWeightedIndexCr && b < fieldColorPercept.maxWeightedIndexCb)
       return ColorClasses::orange;
@@ -94,8 +105,6 @@ public:
       }
     }//end if
     
-    // simple classifier (used for tests)
-    //return simpleColorClassifier.getColorClass(a,b,c);
     
     // default fallback
     return colorTable.getColorClass(a,b,c);
