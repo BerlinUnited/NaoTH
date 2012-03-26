@@ -45,10 +45,8 @@ public:
 
   Goal goal;
 
-  const Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
-  Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
-  const Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
-  Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
+  Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
 
 
   // TODO: deprecated?!

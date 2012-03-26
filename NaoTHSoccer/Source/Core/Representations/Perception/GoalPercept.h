@@ -149,7 +149,7 @@ public:
   // getters
   int getNumberOfSeenPosts() const { return (int)numberOfSeenPosts; }
   const GoalPost& getPost(unsigned int i) const { ASSERT(i < numberOfSeenPosts); return post[i]; }
-
+  GoalPost& getPost(unsigned int i) { ASSERT(i < numberOfSeenPosts); return post[i]; }
 
 private:
   friend class naoth::Serializer<GoalPercept>;

@@ -5,8 +5,8 @@
 * Declaration of class MonteCarloSelfLocator
 */
 
-#ifndef __MonteCarloSelfLocator_h_
-#define __MonteCarloSelfLocator_h_
+#ifndef _MonteCarloSelfLocator_h_
+#define _MonteCarloSelfLocator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -22,6 +22,8 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
+#include "Representations/Modeling/SituationStatus.h"
+
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -51,6 +53,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
   REQUIRE(CompassDirection)
+  REQUIRE(SituationStatus)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -64,7 +67,7 @@ class MonteCarloSelfLocator : private MonteCarloSelfLocatorBase
 {
 public:
   MonteCarloSelfLocator();
-  ~MonteCarloSelfLocator(){}
+  virtual ~MonteCarloSelfLocator(){}
 
   /** executes the module */
   void execute();

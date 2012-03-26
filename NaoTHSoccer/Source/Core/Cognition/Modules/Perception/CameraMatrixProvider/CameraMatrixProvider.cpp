@@ -69,6 +69,11 @@ void CameraMatrixProvider::execute()
             getImage().cameraInfo.cameraID,
             getKinematicChain());
 
+  
+  getCameraMatrix()
+       .rotateY(getCameraMatrixOffset().offset.y)
+       .rotateX(getCameraMatrixOffset().offset.x);
+
   // 
   getCameraMatrix().valid = true;
 
