@@ -24,7 +24,7 @@ option initial_ready_set_play
 		{
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
-      situationStatusOwnHalf = true;
+      situationStatusOwnHalf = false;
 			head.control_mode = stay_as_forced;
 			motion.type = init;
 		}
@@ -44,11 +44,12 @@ option initial_ready_set_play
 	state set {
 		action
 		{
+      situationStatusOwnHalf = false;
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
       special_kickoff_done = false;
 			head.control_mode = search_for_ball;
-			motion.type = stand;
+      motion.type = stand;
 		}
 	}
 	
@@ -60,6 +61,7 @@ option initial_ready_set_play
       situationStatusOwnHalf = false;
       play_with_check_fall_down();
       //last_state_was_penalized = false;
+      
 		}
 	}
   
