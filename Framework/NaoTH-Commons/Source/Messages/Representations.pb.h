@@ -1331,6 +1331,13 @@ class HeadMotionRequest : public ::google::protobuf::Message {
   inline ::naothmessages::DoubleVector2* mutable_targetpointontheground();
   inline ::naothmessages::DoubleVector2* release_targetpointontheground();
   
+  // optional uint32 coordinate = 10;
+  inline bool has_coordinate() const;
+  inline void clear_coordinate();
+  static const int kCoordinateFieldNumber = 10;
+  inline ::google::protobuf::uint32 coordinate() const;
+  inline void set_coordinate(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.HeadMotionRequest)
  private:
   inline void set_has_id();
@@ -1351,6 +1358,8 @@ class HeadMotionRequest : public ::google::protobuf::Message {
   inline void clear_has_searchdirection();
   inline void set_has_targetpointontheground();
   inline void clear_has_targetpointontheground();
+  inline void set_has_coordinate();
+  inline void clear_has_coordinate();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1363,9 +1372,10 @@ class HeadMotionRequest : public ::google::protobuf::Message {
   ::naothmessages::DoubleVector3* searchsize_;
   ::naothmessages::DoubleVector2* targetpointontheground_;
   bool searchdirection_;
+  ::google::protobuf::uint32 coordinate_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(10 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -4157,6 +4167,28 @@ inline ::naothmessages::DoubleVector2* HeadMotionRequest::release_targetpointont
   ::naothmessages::DoubleVector2* temp = targetpointontheground_;
   targetpointontheground_ = NULL;
   return temp;
+}
+
+// optional uint32 coordinate = 10;
+inline bool HeadMotionRequest::has_coordinate() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void HeadMotionRequest::set_has_coordinate() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void HeadMotionRequest::clear_has_coordinate() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void HeadMotionRequest::clear_coordinate() {
+  coordinate_ = 0u;
+  clear_has_coordinate();
+}
+inline ::google::protobuf::uint32 HeadMotionRequest::coordinate() const {
+  return coordinate_;
+}
+inline void HeadMotionRequest::set_coordinate(::google::protobuf::uint32 value) {
+  set_has_coordinate();
+  coordinate_ = value;
 }
 
 // -------------------------------------------------------------------

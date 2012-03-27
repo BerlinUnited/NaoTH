@@ -46,7 +46,7 @@ HeadMotionEngine::HeadMotionEngine()
 
 void HeadMotionEngine::execute()
 {
-  // update torso
+  // HACK: update torso
   theKinematicChain.theLinks[KinematicChain::Torso].M = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].M;
 
   switch(theBlackBoard.theHeadMotionRequest.id)
@@ -54,8 +54,26 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_straight_ahead: lookStraightAhead(); break;
     case HeadMotionRequest::look_at_point: lookAtPoint(); break;
     
-    case HeadMotionRequest::look_at_world_point: 
-      lookAtWorldPoint(theBlackBoard.theHeadMotionRequest.targetPointInTheWorld); 
+    case HeadMotionRequest::look_at_world_point:
+    {
+        // HACK: transform the head motion request to the support foot coordinates
+      const Pose3D& lFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
+      const Pose3D& rFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
+      Vector3<double> targetPointInTheChest(theBlackBoard.theHeadMotionRequest.targetPointInTheWorld);
+
+      // left foot is the support foot
+      if(theBlackBoard.theHeadMotionRequest.coordinate == HeadMotionRequest::LFoot)
+      {
+        targetPointInTheChest = lFoot*targetPointInTheChest;
+      }
+      
+      if(theBlackBoard.theHeadMotionRequest.coordinate == HeadMotionRequest::RFoot)
+      {
+        targetPointInTheChest = rFoot*targetPointInTheChest;
+      }
+
+      lookAtWorldPoint(targetPointInTheChest); 
+    }
       break;
 
     case HeadMotionRequest::look_at_point_on_the_ground: 

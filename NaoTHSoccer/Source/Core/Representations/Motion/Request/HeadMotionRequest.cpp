@@ -56,6 +56,8 @@ void Serializer<HeadMotionRequest>::serialize(const HeadMotionRequest& represent
 
   message.set_searchdirection(representation.searchDirection);
 
+  message.set_coordinate(representation.coordinate);
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializePartialToZeroCopyStream(&buf);
 }//end serialize
@@ -77,5 +79,7 @@ void Serializer<HeadMotionRequest>::deserialize(std::istream& stream, HeadMotion
   DataConversion::fromMessage(message.searchsize(), representation.searchSize);
 
   representation.searchDirection = message.searchdirection();
+
+  representation.coordinate = static_cast<HeadMotionRequest::Coordinate>(message.coordinate());
 }//end deserialize
 

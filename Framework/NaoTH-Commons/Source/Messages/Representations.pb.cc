@@ -267,7 +267,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GoalPercept));
   HeadMotionRequest_descriptor_ = file->message_type(9);
-  static const int HeadMotionRequest_offsets_[9] = {
+  static const int HeadMotionRequest_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, cameraid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, targetjointposition_),
@@ -277,6 +277,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchsize_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, searchdirection_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, targetpointontheground_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(HeadMotionRequest, coordinate_),
   };
   HeadMotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -674,7 +675,7 @@ void protobuf_AddDesc_Representations_2eproto() {
     "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen"
     "troid\030\002 \001(\0132\034.naothmessages.DoubleVector"
     "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003"
-    "(\0132\027.naothmessages.GoalPost\"\240\003\n\021HeadMoti"
+    "(\0132\027.naothmessages.GoalPost\"\264\003\n\021HeadMoti"
     "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022"
     "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess"
     "ages.DoubleVector2\0228\n\022targetPointInImage"
@@ -685,54 +686,55 @@ void protobuf_AddDesc_Representations_2eproto() {
     "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022"
     "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO"
     "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV"
-    "ector2\"\207\001\n\022StepControlRequest\022\016\n\006stepID\030"
-    "\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022%\n\006target\030\003 "
-    "\002(\0132\025.naothmessages.Pose2D\022\014\n\004time\030\004 \002(\r"
-    "\022\026\n\016speedDirection\030\005 \002(\001\"\272\001\n\013WalkRequest"
-    "\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022"
-    "%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\0226"
-    "\n\013stepControl\030\004 \001(\0132!.naothmessages.Step"
-    "ControlRequest\022%\n\006offset\030\005 \002(\0132\025.naothme"
-    "ssages.Pose2D\"{\n\013KickRequest\022/\n\tkickPoin"
-    "t\030\001 \002(\0132\034.naothmessages.DoubleVector3\022\025\n"
-    "\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022"
-    "\n\nfinishKick\030\004 \002(\010\"\354\001\n\rMotionRequest\022\n\n\002"
-    "id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/"
-    "\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Walk"
-    "Request\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kickR"
-    "equest\030\006 \001(\0132\032.naothmessages.KickRequest"
-    "\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrateFootTo"
-    "uchDetector\030\010 \001(\010\"\253\001\n\013LinePercept\022.\n\005lin"
-    "es\030\001 \003(\0132\037.naothmessages.FieldLineSegmen"
-    "t\0222\n\rintersections\030\002 \003(\0132\033.naothmessages"
-    ".Intersection\0228\n\022middleCircleCenter\030\003 \001("
-    "\0132\034.naothmessages.DoubleVector2\"\254\001\n\020Scan"
-    "LineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.naoth"
-    "messages.IntVector2\0220\n\nposOnField\030\002 \002(\0132"
-    "\034.naothmessages.DoubleVector2\022#\n\005color\030\003"
-    " \002(\0162\024.naothmessages.Color\022\022\n\nScanLineID"
-    "\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\tendPoi"
-    "nts\030\002 \003(\0132\037.naothmessages.ScanLineEndPoi"
-    "nt\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003"
-    "(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStatus\022\016"
-    "\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n"
-    "\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotio"
-    "n\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMo"
-    "tion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224"
-    "\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naothmes"
-    "sages.Pose2D\0225\n\026plannedMotionRightFoot\030\007"
-    " \002(\0132\025.naothmessages.Pose2D\022/\n\020plannedMo"
-    "tionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021"
-    "stepControlStatus\030\t \001(\0132 .naothmessages."
-    "StepControlStatus\"3\n\014OdometryData\022#\n\004pos"
-    "e\030\001 \002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Calib"
-    "rationData\022:\n\024inertialSensorOffset\030\001 \001(\013"
-    "2\034.naothmessages.DoubleVector2\0226\n\020gyroSe"
-    "nsorOffset\030\002 \001(\0132\034.naothmessages.DoubleV"
-    "ector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothm"
-    "essages.DoubleVector3\"B\n\rInertialModel\0221"
-    "\n\013orientation\030\001 \001(\0132\034.naothmessages.Doub"
-    "leVector2B\026\n\024de.naoth.rc.messages", 3753);
+    "ector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022StepContr"
+    "olRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoo"
+    "t\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmessages."
+    "Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005"
+    " \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r"
+    "\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.na"
+    "othmessages.Pose2D\0226\n\013stepControl\030\004 \001(\0132"
+    "!.naothmessages.StepControlRequest\022%\n\006of"
+    "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic"
+    "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa"
+    "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001"
+    "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\354"
+    "\001\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002"
+    "(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132"
+    "\032.naothmessages.WalkRequest\022\026\n\016starndard"
+    "Stand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naoth"
+    "messages.KickRequest\022\023\n\013standHeight\030\007 \001("
+    "\001\022\"\n\032calibrateFootTouchDetector\030\010 \001(\010\"\253\001"
+    "\n\013LinePercept\022.\n\005lines\030\001 \003(\0132\037.naothmess"
+    "ages.FieldLineSegment\0222\n\rintersections\030\002"
+    " \003(\0132\033.naothmessages.Intersection\0228\n\022mid"
+    "dleCircleCenter\030\003 \001(\0132\034.naothmessages.Do"
+    "ubleVector2\"\254\001\n\020ScanLineEndPoint\022-\n\nposI"
+    "nImage\030\001 \002(\0132\031.naothmessages.IntVector2\022"
+    "0\n\nposOnField\030\002 \002(\0132\034.naothmessages.Doub"
+    "leVector2\022#\n\005color\030\003 \002(\0162\024.naothmessages"
+    ".Color\022\022\n\nScanLineID\030\004 \002(\r\"J\n\024ScanLineEd"
+    "gelPercept\0222\n\tendPoints\030\002 \003(\0132\037.naothmes"
+    "sages.ScanLineEndPoint\"5\n\007FSRData\022\r\n\005for"
+    "ce\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n"
+    "\021StepControlStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014mo"
+    "veableFoot\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004tim"
+    "e\030\001 \002(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMo"
+    "tion\030\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022curren"
+    "tMotionState\030\005 \002(\r\0224\n\025plannedMotionLeftF"
+    "oot\030\006 \002(\0132\025.naothmessages.Pose2D\0225\n\026plan"
+    "nedMotionRightFoot\030\007 \002(\0132\025.naothmessages"
+    ".Pose2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.naot"
+    "hmessages.Pose2D\022;\n\021stepControlStatus\030\t "
+    "\001(\0132 .naothmessages.StepControlStatus\"3\n"
+    "\014OdometryData\022#\n\004pose\030\001 \002(\0132\025.naothmessa"
+    "ges.Pose2D\"\274\001\n\017CalibrationData\022:\n\024inerti"
+    "alSensorOffset\030\001 \001(\0132\034.naothmessages.Dou"
+    "bleVector2\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.n"
+    "aothmessages.DoubleVector2\0225\n\017accSensorO"
+    "ffset\030\003 \001(\0132\034.naothmessages.DoubleVector"
+    "3\"B\n\rInertialModel\0221\n\013orientation\030\001 \001(\0132"
+    "\034.naothmessages.DoubleVector2B\026\n\024de.naot"
+    "h.rc.messages", 3773);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -4115,6 +4117,7 @@ const int HeadMotionRequest::kSearchCenterFieldNumber;
 const int HeadMotionRequest::kSearchSizeFieldNumber;
 const int HeadMotionRequest::kSearchDirectionFieldNumber;
 const int HeadMotionRequest::kTargetPointOnTheGroundFieldNumber;
+const int HeadMotionRequest::kCoordinateFieldNumber;
 #endif  // !_MSC_VER
 
 HeadMotionRequest::HeadMotionRequest()
@@ -4148,6 +4151,7 @@ void HeadMotionRequest::SharedCtor() {
   searchsize_ = NULL;
   searchdirection_ = false;
   targetpointontheground_ = NULL;
+  coordinate_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -4211,6 +4215,7 @@ void HeadMotionRequest::Clear() {
     if (has_targetpointontheground()) {
       if (targetpointontheground_ != NULL) targetpointontheground_->::naothmessages::DoubleVector2::Clear();
     }
+    coordinate_ = 0u;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -4349,6 +4354,22 @@ bool HeadMotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(80)) goto parse_coordinate;
+        break;
+      }
+      
+      // optional uint32 coordinate = 10;
+      case 10: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_coordinate:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &coordinate_)));
+          set_has_coordinate();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -4422,6 +4443,11 @@ void HeadMotionRequest::SerializeWithCachedSizes(
       9, this->targetpointontheground(), output);
   }
   
+  // optional uint32 coordinate = 10;
+  if (has_coordinate()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(10, this->coordinate(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -4485,6 +4511,11 @@ void HeadMotionRequest::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         9, this->targetpointontheground(), target);
+  }
+  
+  // optional uint32 coordinate = 10;
+  if (has_coordinate()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(10, this->coordinate(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -4561,6 +4592,13 @@ int HeadMotionRequest::ByteSize() const {
           this->targetpointontheground());
     }
     
+    // optional uint32 coordinate = 10;
+    if (has_coordinate()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->coordinate());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -4617,6 +4655,9 @@ void HeadMotionRequest::MergeFrom(const HeadMotionRequest& from) {
     if (from.has_targetpointontheground()) {
       mutable_targetpointontheground()->::naothmessages::DoubleVector2::MergeFrom(from.targetpointontheground());
     }
+    if (from.has_coordinate()) {
+      set_coordinate(from.coordinate());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -4668,6 +4709,7 @@ void HeadMotionRequest::Swap(HeadMotionRequest* other) {
     std::swap(searchsize_, other->searchsize_);
     std::swap(searchdirection_, other->searchdirection_);
     std::swap(targetpointontheground_, other->targetpointontheground_);
+    std::swap(coordinate_, other->coordinate_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

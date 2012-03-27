@@ -25,6 +25,15 @@ class HeadMotionRequest : public naoth::PlatformInterchangeable, public naoth::P
 {
 public:
   
+  enum Coordinate
+  {
+    Hip,
+    LFoot,
+    RFoot,
+    numOfCoordinate
+  };
+
+
   /** ids for all motion types */
   enum HeadMotionID
   {
@@ -45,6 +54,7 @@ public:
   :
   id(hold),
   cameraID(naoth::CameraInfo::Bottom),
+  coordinate(Hip),
   searchCenter(0, 0, 0),
   searchSize(90, 45, 0),
   searchDirection(true)
@@ -55,6 +65,7 @@ public:
   {
   }
 
+
   /** id of the motion to be executed */
   HeadMotionID id;
 
@@ -63,10 +74,19 @@ public:
   // describes the target angle-position: x=yaw, y=pitch 
   Vector2<double> targetJointPosition;
 
-
+  /** */
   Vector2<double> targetPointInImage;
+
+  /** see coordinate */
   Vector3<double> targetPointInTheWorld;
+
+  /** see coordinate */
   Vector2<double> targetPointOnTheGround;
+
+
+  /** the coordinate system for the targetPointInTheWorld and targetPointOnTheGround */
+  Coordinate coordinate;
+
 
   // parameters for head search motion
   Vector3<double> searchCenter;

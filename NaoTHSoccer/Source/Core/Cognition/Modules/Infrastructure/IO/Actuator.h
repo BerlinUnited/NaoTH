@@ -3,7 +3,7 @@
  */
 
 #ifndef _ACTUATOR_H
-#define  _ACTUATOR_H
+#define _ACTUATOR_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
@@ -21,10 +21,12 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Motion/Request/MotionRequest.h"
 
+#include "Representations/Modeling/KinematicChain.h"
+
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(Actuator)
-  REQUIRE(HeadMotionRequest)
+  
   REQUIRE(CameraSettingsRequest)
   REQUIRE(LEDData)
   REQUIRE(IRSendData)
@@ -34,8 +36,13 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
 
+  // HACK: needed to transform the HeadMotionRequest
+  REQUIRE(KinematicChain)
+
+
   // HACK: check execute()
   PROVIDE(MotionRequest)
+  PROVIDE(HeadMotionRequest)
 END_DECLARE_MODULE(Actuator)
 
 class Actuator : public ActuatorBase
