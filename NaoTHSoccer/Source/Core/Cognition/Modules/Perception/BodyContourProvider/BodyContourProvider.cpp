@@ -20,8 +20,6 @@
 #include <vector>
 
 
-
-
 BodyContourProvider::BodyContourProvider()
 {
   getBodyContour().stepSize = 20;
@@ -532,7 +530,20 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
   const Vector2<int> frameLowerRight(cameraInfo.resolutionWidth-1, cameraInfo.resolutionHeight-1);
   
   Vector2<int> q1, q2, tempPoint(0,0);
-  
+
+  Vector2<int> leftShoulderPoint(0,0);
+  Vector2<int> rightShoulderPoint(320,0);
+  Vector3<double> shoulderUpperPoint(-45, 20, 5);
+  bool intersectionShoulder = false;
+  Vector3<double> shoulderUpperPointCP;
+  Vector2<int> shoulderUpperPointImage;
+
+  if(id == BodyContour::UpperArmLeft || id == BodyContour::UpperArmRight)
+  {
+    shoulderUpperPointCP = origin * shoulderUpperPoint;
+    shoulderUpperPointImage = CameraGeometry::relativePointToImage(cameraMatrix, cameraInfo, shoulderUpperPointCP);
+  }
+
   // estimate the position of contour-point based on current position of the limb
   Vector3<double> p1 = origin * Vector3<double>(c[0].x, c[0].y * sign, c[0].z);
   // project this point into the image
@@ -548,16 +559,15 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
     // estimate, whether the points are within the image-boundaries
     bool p1InImage = withinImage(tempLine.p1, cameraInfo);
     bool p2InImage = withinImage(tempLine.p2, cameraInfo);
-    // if the points aren't behind the robot and at least one point
-    // is within image boundaries
-    if (q1.x != -1 && q2.x != -1 && (p1InImage || p2InImage))
+    // if the points aren't behind the robot 
+    if (q1.x != -1 && q2.x != -1)
     {
       if (p1InImage && p2InImage )
       {
         pushLine(tempLine, bodyContour);
       }//end if
-      //at least one point is not image
-      else
+      //at least one point is not in image
+      else if (p1InImage || p2InImage)
       {
         //temporary points
         Vector2<int> pointOne;
@@ -570,6 +580,11 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
           BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
           BodyContour::Line line2(tempLine2.p1, tempLine.p2, lineNumber, id);
           pushLine(line2, bodyContour);
+          if (tempLine2.p1.y <= 1 && (id == BodyContour::UpperArmLeft || id == BodyContour::UpperArmRight))
+          {
+            rightShoulderPoint = tempLine2.p1;
+            intersectionShoulder = true;
+          }
         }
         else
         {
@@ -577,10 +592,19 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
           BodyContour::Line tempLine2(pointOne, pointTwo, lineNumber, id);
           BodyContour::Line line2(tempLine.p1, tempLine2.p2, lineNumber, id);
           pushLine(line2, bodyContour);
+          if (tempLine2.p2.y <= 1 && (id == BodyContour::UpperArmLeft || id == BodyContour::UpperArmRight))
+          {
+            leftShoulderPoint = tempLine2.p2;
+            intersectionShoulder = true;
+          }
         }
       }//end else
     }//end if
   p1 = p2;
   q1 = q2;
+  if (intersectionShoulder || ((shoulderUpperPointImage.y < 0 && (shoulderUpperPointImage.x < 320 && shoulderUpperPointImage.x > 0)) &&  !intersectionShoulder))
+  {
+    pushLine(BodyContour::Line(leftShoulderPoint, rightShoulderPoint, lineNumber, id), bodyContour);
+  }
   }// end for
-}// end add
+}// end add)

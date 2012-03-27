@@ -18,9 +18,6 @@
 #include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
 
-
-//Debug
-
 //Representations
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/JointData.h"
