@@ -20,8 +20,9 @@ void TeamCommReceiver::handleMessage(const string& data)
 
   unsigned int num = msg.playernumber();
   unsigned int teamnum = msg.teamnumber();
+  std::string bodyID = msg.bodyid();
 
-  if ( teamnum == getPlayerInfo().gameData.teamNumber )
+  if ( teamnum == getPlayerInfo().gameData.teamNumber && !(num == getPlayerInfo().gameData.playerNumber && bodyID != getRobotInfo().bodyID))
   {
     TeamMessage::Data& content = getTeamMessage().data[num];
     content.frameInfo.setTime( getFrameInfo().getTime() );

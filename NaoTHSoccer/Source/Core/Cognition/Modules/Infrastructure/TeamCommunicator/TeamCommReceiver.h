@@ -6,10 +6,12 @@
 #include <Representations/Infrastructure/TeamMessageData.h>
 #include "Representations/Modeling/TeamMessage.h"
 #include "Representations/Modeling/PlayerInfo.h"
+#include "Representations/Infrastructure/RobotInfo.h"
 
 BEGIN_DECLARE_MODULE(TeamCommReceiver)
   REQUIRE(FrameInfo)
   REQUIRE(PlayerInfo)
+  REQUIRE(RobotInfo)
   REQUIRE(TeamMessageDataIn)
 
   PROVIDE(TeamMessage)
