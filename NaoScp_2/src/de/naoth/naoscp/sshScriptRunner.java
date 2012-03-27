@@ -80,11 +80,15 @@ abstract class sshScriptRunner extends sshWorker
       hasError = !testAndConnect();
       if(!hasError)
       {
-        if(scriptName.equalsIgnoreCase("restartNaoqi"))
+        if(scriptName.equalsIgnoreCase("reloadKernelVideoModule"))
+        {
+          hasError = !reloadKernelVideoModule();
+        }
+        else if(scriptName.equalsIgnoreCase("restartNaoqi"))
         {
           hasError = !restartNaoqi();
-        }
-        if(scriptName.equalsIgnoreCase("restartNaoTH"))
+        }        
+        else if(scriptName.equalsIgnoreCase("restartNaoTH"))
         {
           hasError = !restartNaoTH();
         }
@@ -273,8 +277,8 @@ abstract class sshScriptRunner extends sshWorker
     }
     return lastFound;
   }
-
-  private boolean runShellScriptAsRoot(String directory, String shellScript) throws JSchException, InterruptedException 
+  
+  private boolean runShellScriptAsRoot(String directory, String shellScript, boolean isSystemCommand) throws JSchException, InterruptedException 
   {
     String rootPW;
     rootPW = config.sshRootPassword;
@@ -319,7 +323,14 @@ abstract class sshScriptRunner extends sshWorker
         showTimeOutMsg();
         return false;
       }
-      response = sshExecAndWaitForResponse("chown root:root ./" + shellScript + " && chmod 744 ./" + shellScript + " && nohup ./" + shellScript + " 2>&1", "localhost|nao|$");
+      if(isSystemCommand)
+      {
+        response = sshExecAndWaitForResponse(shellScript , "localhost|nao|$");
+      }
+      else
+      {
+        response = sshExecAndWaitForResponse("chown root:root ./" + shellScript + " && chmod 744 ./" + shellScript + " && nohup ./" + shellScript + " 2>&1", "localhost|nao|$");
+      }
       if(response == null)
       {
         showTimeOutMsg();
@@ -353,18 +364,30 @@ abstract class sshScriptRunner extends sshWorker
     disconnectChannel();
   }
   
+  private boolean reloadKernelVideoModule()
+  {
+    setInfo("initialization setup network part");
+    try
+    {
+      return runShellScriptAsRoot("", "modprobe -r lxv4l2 && sleep 2 && modprobe lxv4l2", true);
+    }
+    catch(Exception e)
+    {
+      haveError("Exception in setRobotNetworkConfig - Nao " + config.sNaoNo + ": " + e.toString());
+      return false;
+    }
+  }
+
   /**
    * run shell script for network initialisation as root
    *
-   * @param session jsch session
-   * @param sNaoNo nao number
    */
   protected boolean setRobotNetworkConfig()
   {
     setInfo("initialization setup network part");
     try
     {
-      return runShellScriptAsRoot(config.setupScriptPath(), "init_net.sh");
+      return runShellScriptAsRoot(config.setupScriptPath(), "init_net.sh", false);
     }
     catch(Exception e)
     {
@@ -376,15 +399,13 @@ abstract class sshScriptRunner extends sshWorker
   /**
    * run shell script for complete robot initialization as root
    *
-   * @param session jsch session
-   * @param sNaoNo nao number
    */
   protected boolean initializeRobot()
   {     
     setInfo("initialization setup network part");
     try
     {
-      return runShellScriptAsRoot(config.setupScriptPath(), "init_env.sh");
+      return runShellScriptAsRoot(config.setupScriptPath(), "init_env.sh", false);
     }
     catch(Exception e)
     {

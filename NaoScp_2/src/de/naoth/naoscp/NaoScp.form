@@ -1,6 +1,6 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.8" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Container class="javax.swing.JDialog" name="jDialog1">
 
@@ -50,33 +50,39 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jTabbedPane1" min="-2" pref="742" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="progressBar" pref="257" max="32767" attributes="1"/>
-                          <Component id="jCopyStatus" pref="257" max="32767" attributes="1"/>
-                          <Component id="jScrollPane5" alignment="1" pref="257" max="32767" attributes="0"/>
+                          <Component id="progressBar" pref="0" max="32767" attributes="1"/>
+                          <Component id="jCopyStatus" max="32767" attributes="1"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jScrollPane5" min="-2" pref="253" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
-                  <Component id="jLabel12" min="-2" max="-2" attributes="1"/>
+                  <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="1"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="164" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+          <Group type="102" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
+                      <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jTabbedPane1" min="-2" pref="378" max="-2" attributes="1"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane5" min="-2" pref="333" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jCopyStatus" min="-2" pref="19" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="progressBar" min="-2" max="-2" attributes="1"/>
                   </Group>
-                  <Component id="jTabbedPane1" min="0" pref="0" max="32767" attributes="1"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -124,39 +130,41 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="jActionsPanel" alignment="0" max="32767" attributes="1"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="cbCopyExe" min="-2" max="-2" attributes="0"/>
-                                  <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="cbCopyConfig" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="cbCopyLogs" alignment="0" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="jSettingsPanel" alignment="0" min="-2" max="-2" attributes="1"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="cbRestartNaoth" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="cbForceBackup" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="cbRestartNaoqi" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="cbCopyExe" min="-2" max="-2" attributes="0"/>
+                                          <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="cbNoBackup" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="cbCopyConfig" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="cbCopyLogs" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="cbRestartNaoth" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="cbForceBackup" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="cbRestartNaoqi" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                              <Component id="cbNoBackup" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
                                   </Group>
                               </Group>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <Component id="jSettingsPanel" min="-2" max="-2" attributes="1"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jScrollPane2" min="-2" pref="186" max="-2" attributes="0"/>
+                                  <Component id="jScrollPane2" min="-2" pref="190" max="-2" attributes="0"/>
                                   <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="jActionsPanel" alignment="0" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -176,7 +184,7 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" pref="89" max="32767" attributes="1"/>
+                              <Component id="jScrollPane2" max="32767" attributes="1"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -200,7 +208,7 @@
                               <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="25" max="32767" attributes="0"/>
+                      <EmptySpace pref="19" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -266,7 +274,7 @@
                               <Component id="naoByte1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="naoByte3" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="naoByte4" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="copyButton" alignment="3" pref="19" max="32767" attributes="1"/>
+                              <Component id="copyButton" alignment="3" max="32767" attributes="1"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -360,7 +368,7 @@
                   <Properties>
                     <Property name="horizontalAlignment" type="int" value="2"/>
                     <Property name="text" type="java.lang.String" value="SET DIRECTORY :)"/>
-                    <Property name="toolTipText" type="java.lang.String" value="NaoController project directory (e.g., &quot;D:\u005cu005cNaoTH-2009\u005cu005cProjects\u005cu005cNaoController&quot;)"/>
+                    <Property name="toolTipText" type="java.lang.String" value="NaoController project directory (e.g., &quot;D:\u005cu005cu005cNaoTH-2009\u005cu005cu005cProjects\u005cu005cu005cNaoController&quot;)" containsInvalidXMLChars="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel15">
@@ -609,8 +617,8 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Network Configuration">
-                <Property name="tabTitle" type="java.lang.String" value="Network Configuration"/>
+              <JTabbedPaneConstraints tabName="Network Configuration / Utilities">
+                <Property name="tabTitle" type="java.lang.String" value="Network Configuration / Utilities"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -631,8 +639,9 @@
                           <Component id="jButtonInitRobotSystem" alignment="1" max="32767" attributes="1"/>
                           <Component id="jButtonSaveNetworkConfig" pref="197" max="32767" attributes="0"/>
                           <Component id="jScrollPane3" alignment="0" pref="197" max="32767" attributes="0"/>
+                          <Component id="jButtonRemoteKernelVideoReload" alignment="0" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -644,19 +653,24 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="cbRebootSystem" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane3" pref="207" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane3" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                              <Component id="jSettingsPanel1" max="32767" attributes="1"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jSettingsPanel2" alignment="1" min="-2" max="-2" attributes="1"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="jButtonRemoteKernelVideoReload" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="jButtonSaveNetworkConfig" min="-2" pref="27" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jButtonSetRobotNetwork" min="-2" pref="27" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jButtonInitRobotSystem" min="-2" pref="27" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                              <Component id="jSettingsPanel1" max="32767" attributes="1"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jSettingsPanel2" min="-2" max="-2" attributes="1"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -692,9 +706,9 @@
                                           </Group>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="1" attributes="0">
-                                              <Component id="subnetFieldLAN" alignment="0" pref="163" max="32767" attributes="1"/>
-                                              <Component id="netmaskFieldLAN" alignment="0" pref="163" max="32767" attributes="1"/>
-                                              <Component id="broadcastFieldLAN" alignment="0" pref="163" max="32767" attributes="1"/>
+                                              <Component id="subnetFieldLAN" alignment="0" pref="172" max="32767" attributes="1"/>
+                                              <Component id="netmaskFieldLAN" alignment="0" pref="172" max="32767" attributes="1"/>
+                                              <Component id="broadcastFieldLAN" alignment="0" pref="172" max="32767" attributes="1"/>
                                           </Group>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
@@ -714,9 +728,9 @@
                                                       </Group>
                                                   </Group>
                                                   <Group type="103" groupAlignment="0" attributes="0">
-                                                      <Component id="broadcastFieldWLAN" alignment="0" pref="130" max="32767" attributes="1"/>
-                                                      <Component id="subnetFieldWLAN" pref="130" max="32767" attributes="1"/>
-                                                      <Component id="netmaskFieldWLAN" alignment="0" pref="130" max="32767" attributes="1"/>
+                                                      <Component id="broadcastFieldWLAN" alignment="0" pref="138" max="32767" attributes="1"/>
+                                                      <Component id="subnetFieldWLAN" pref="138" max="32767" attributes="1"/>
+                                                      <Component id="netmaskFieldWLAN" alignment="0" pref="138" max="32767" attributes="1"/>
                                                       <Component id="radioWPA" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
@@ -727,26 +741,20 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="447" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="408" max="-2" attributes="0"/>
-                                      </Group>
                                       <Group type="102" alignment="1" attributes="0">
                                           <EmptySpace min="84" pref="84" max="84" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="wlanKey" alignment="0" pref="395" max="32767" attributes="3"/>
                                               <Group type="102" alignment="1" attributes="0">
-                                                  <Component id="wlanSSID" pref="163" max="32767" attributes="1"/>
+                                                  <Component id="wlanSSID" pref="167" max="32767" attributes="1"/>
                                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                                   <Component id="radioWEP" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace min="-2" pref="168" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
                                       </Group>
+                                      <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -806,7 +814,7 @@
                               <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="wlanKey" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="21" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -974,7 +982,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel26" min="-2" max="-2" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jTeamCommPort" pref="78" max="32767" attributes="3"/>
+                                  <Component id="jTeamCommPort" pref="94" max="32767" attributes="3"/>
                               </Group>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -995,8 +1003,8 @@
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="sshPassword" pref="329" max="32767" attributes="3"/>
-                                      <Component id="sshRootPassword" alignment="0" pref="329" max="32767" attributes="3"/>
+                                      <Component id="sshPassword" pref="337" max="32767" attributes="3"/>
+                                      <Component id="sshRootPassword" alignment="0" pref="337" max="32767" attributes="3"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -1174,6 +1182,15 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="reboot OS"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButtonRemoteKernelVideoReload">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Reload kernel video module"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonRemoteKernelVideoReloadActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
