@@ -13,6 +13,7 @@ BaseColorClassifier::BaseColorClassifier()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_simple_goal_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_image_2", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_corrected_image", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:initPercept", " ", false);
 
@@ -109,12 +110,12 @@ void BaseColorClassifier::execute()
 
   getBaseColorRegionPercept().setPerceptRegions();
 
-  getBaseColorRegionPercept().lineBorderMinus.y = Math::clamp<int>(getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY, 0.0, 255.0);
+  getBaseColorRegionPercept().lineBorderMinus.y = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY, 0.0, 255.0);
   getBaseColorRegionPercept().lineBorderPlus.y = 255.0;
 
   getBaseColorRegionPercept().lineColorRegion.set(getBaseColorRegionPercept().lineBorderMinus, getBaseColorRegionPercept().lineBorderPlus);
   
-  getBaseColorRegionPercept().goalBorderMinus.y = Math::clamp<int>(getFieldColorPercept().maxWeightedIndexY/* + getFieldColorPercept().distY*/, 0.0, 255.0);
+  getBaseColorRegionPercept().goalBorderMinus.y = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexY/* + getFieldColorPercept().distY*/, 0.0, 255.0);
 
   getBaseColorRegionPercept().goalColorRegion.set(getBaseColorRegionPercept().goalBorderMinus, getBaseColorRegionPercept().goalBorderPlus);
 
@@ -168,6 +169,22 @@ void BaseColorClassifier::runDebugRequests()
         const Pixel& pixel = getImage().get(x, y);
 
         if(getBaseColorRegionPercept().isYellowSimple(pixel))
+        {
+          POINT_PX(ColorClasses::yellowOrange, x, y);
+        }
+
+      }
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:set_goal_in_corrected_image",
+    for(int x = 0; x < imageWidth; x++)
+    {
+      for(int y = 0; y < imageHeight; y++)
+      {
+        const Pixel& pixel = getImage().getCorrected(x, y);
+
+        if(getBaseColorRegionPercept().isYellow(pixel))
         {
           POINT_PX(ColorClasses::yellowOrange, x, y);
         }

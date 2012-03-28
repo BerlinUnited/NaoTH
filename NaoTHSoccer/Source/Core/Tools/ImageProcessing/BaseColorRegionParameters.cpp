@@ -12,9 +12,9 @@ BaseColorRegionParameters::BaseColorRegionParameters()
   PARAMETER_REGISTER(fieldDist.u) = 128.0;
   PARAMETER_REGISTER(fieldDist.v) = 64.0;
 
-  PARAMETER_REGISTER(goalVUdistance) = 40.0;
-  PARAMETER_REGISTER(goalVUdistanceMin) = 40.0;
-  PARAMETER_REGISTER(goalVUdistanceMax) = 80.0;
+  PARAMETER_REGISTER(goalVUdistance) = 40;
+  PARAMETER_REGISTER(goalVUdistanceMin) = 40;
+  PARAMETER_REGISTER(goalVUdistanceMax) = 80;
 
   PARAMETER_REGISTER(goalIndex.y) = 180.0;
   PARAMETER_REGISTER(goalIndex.u) = 80.0;
