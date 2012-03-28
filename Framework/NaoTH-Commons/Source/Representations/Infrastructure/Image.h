@@ -180,8 +180,10 @@ namespace naoth
       p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
       
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-      p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
-      p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      //p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
+      //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
       return p;
     }//end get()
 
@@ -198,8 +200,10 @@ namespace naoth
       p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
       
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-      p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
-      p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      //p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
+      //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
     }//end get
 
     inline void set(const unsigned int& x, const unsigned int& y, const Pixel& p)

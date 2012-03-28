@@ -300,7 +300,7 @@ public:
 
   inline bool isRedOrOrangeOrPink(const int& y, const int& u, const int& v) const
   {
-    return ballColorRegion.inside(y, u, v);
+    return/* !isYellow(y, u, v) &&*/ ballColorRegion.inside(y, u, v);
   }
 
   inline bool isRedOrOrangeOrPink(const Pixel& pixel) const
@@ -408,7 +408,7 @@ public:
 
   inline bool isWhite(const int& y, const int& u, const int& v) const
   {
-    return lineColorRegion.inside(y, u, v);// && !isYellow(y, u, v);
+    return lineColorRegion.inside(y, u, v) && !isRedOrOrangeOrPink(y, u, v) && !isYellow(y, u, v);
   }
 
   inline bool isWhite(const Pixel& pixel) const

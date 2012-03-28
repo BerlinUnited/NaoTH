@@ -43,7 +43,7 @@ void GridProvider::execute()
   );//end DEBUG
 }//end execute
 
-// hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter glech,
+// hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter gleich,
 // daher wird es nicht im GridCreator gemacht)
 void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
 {
@@ -62,7 +62,8 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   {
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
 
-    getImage().get(point.x, point.y, pixel);
+    getImage().getCorrected(point.x, point.y, pixel);
+    //getImage().get(point.x, point.y, pixel);
 
     // TODO: check if it is needed
     // mean color
@@ -73,7 +74,7 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     // classify the color
     ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel.y, pixel.u, pixel.v);
 
-    // remember the color in the gridt
+    // remember the color in the grid
     getColoredGrid().setColor(i, currentPixelColor);
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
