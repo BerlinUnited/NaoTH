@@ -515,33 +515,49 @@ void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&p
 
 Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(KinematicChain::LinkID link) const
 {
-  return theBlackBoard.theKinematicChain.theLinks[link].M.invert() * theBlackBoard.theKinematicChain.CoM;
+  Pose3D foot = theBlackBoard.theKinematicChain.theLinks[link].M;
+  foot.translate(0, 0, -NaoInfo::FootHeight);
+  foot.rotation = RotationMatrix(); // assume the foot is flat on the ground
+  return foot.invert() * theBlackBoard.theKinematicChain.CoM;
 }
 
 // compares expected com and com from sensors
 // @return adjust applyed to hip
 Vector3<double> InverseKinematicsMotionEngine::balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const
 {
+  static unsigned int frameNumber = theBlackBoard.theFrameInfo.getFrameNumber();
+  static Vector3<double> uP, uI, uD;
+  if ( theBlackBoard.theFrameInfo.getFrameNumber() > frameNumber + 1)
+  {
+    // reset
+    uP = Vector3<double>();
+    uI = Vector3<double>();
+    uD = Vector3<double>();
+  }
+
   ASSERT(link==KinematicChain::LFoot || link==KinematicChain::RFoot );
   Vector3d sensorCoM = sensorCoMIn(link);
-  sensorCoM.z += NaoInfo::FootHeight;
 
   Vector3d e = lastReqCoM - sensorCoM;
-
-  double k = 1;
-  double threshold = 3;
-  MODIFY("balanceCoMK", k);
-  MODIFY("balanceCoMT", threshold);
 
   Vector3<double> u;
   for( int i=0; i<3; i++)
   {
-    if (abs(e[i]) > threshold)
+    if (abs(e[i]) > theParameters.balanceCoM.threshold)
     {
-      u[i] = e[i] - Math::sgn(e[i]) * threshold;
+      u[i] = e[i] - Math::sgn(e[i]) * theParameters.balanceCoM.threshold;
     }
   }
-  return u*k;
+  uI += u;
+  uD = u - uP;
+  uP = u;
+  frameNumber = theBlackBoard.theFrameInfo.getFrameNumber();
+  u = uP * theParameters.balanceCoM.kP + uI * theParameters.balanceCoM.kI + uD * theParameters.balanceCoM.kD;
+  for(int i=0; i<3; i++)
+  {
+    u[i] = Math::clamp(u[i], -30.0, 30.0);
+  }
+  return u;
 }
 
 
