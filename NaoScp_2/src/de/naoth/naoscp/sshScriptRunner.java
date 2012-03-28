@@ -374,8 +374,8 @@ abstract class sshScriptRunner extends sshWorker
     catch(Exception e)
     {
       haveError("Exception in setRobotNetworkConfig - Nao " + config.sNaoNo + ": " + e.toString());
-      return false;
     }
+    return false;
   }
 
   /**

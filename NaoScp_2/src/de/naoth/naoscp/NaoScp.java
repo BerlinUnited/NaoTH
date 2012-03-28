@@ -1934,7 +1934,15 @@ public class NaoScp extends NaoScpMainFrame
     robotConfigPreparator preparator = new robotConfigPreparator(cfg);
     String address = preparator.getDefaultAddress();
     cfg.addresses = preparator.getAdressList();
+
+    //show only Script done Message @ the end
+    showCopyDoneMsg = false;
+    showScriptDoneMsg = true;
+    showDoneMsg = false;
     
+    //nothing to copy so its done @ begin
+    copyDone.put(0, true);
+
     if(address == null)
     {
       actionInfo("reloading kernel video module aborted");
