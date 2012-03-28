@@ -8,7 +8,7 @@ option after_penalized_state
   initial state localize
   {
     decision {
-      if(robot_pose.is_valid)
+      if(robot_pose.is_valid && state_time > 1000)
         goto finished;
       else if(state_time > 10000)
         goto completely_lost;
@@ -17,7 +17,7 @@ option after_penalized_state
     }
     action {
       motion.type = stand;
-      head.control_mode = look_around;
+      head.control_mode = search_for_goal_after_penalized;
       situationStatusOwnHalf = true; 
     }
   }

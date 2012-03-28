@@ -19,10 +19,16 @@ public:
  
   RobotPose() 
     : 
-    isValid(true) 
+    isValid(false)
     {}
   ~RobotPose(){}
- 
+
+  void setPose(const Pose2D& other, bool isValid)
+  {
+    (Pose2D&) *this = other;
+    this->isValid=isValid;
+  }
+
   const RobotPose& operator=(const RobotPose& other)
   {
     (Pose2D&) *this = (const Pose2D&) other;
@@ -36,13 +42,13 @@ public:
   RobotPose (const Pose2D& otherPose) 
   {
     (Pose2D&) *this = otherPose;
-    isValid = true;
+    isValid = false;
   }
 
   const RobotPose& operator=(const Pose2D& other)
   {
     (Pose2D&) *this = other;
-    this->isValid=true;
+    this->isValid=false;
     return *this;
   }
 

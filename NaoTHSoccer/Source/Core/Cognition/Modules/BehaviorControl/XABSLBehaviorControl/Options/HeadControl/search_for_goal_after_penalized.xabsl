@@ -31,10 +31,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (goal.own.was_seen || goal.opp.was_seen)
+      if (state_time > 2000 && (goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_left;
-      else if (state_time > 2200)
-        goto switch_to_look_right;
       else 
         stay;
     }
@@ -55,10 +53,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (goal.own.was_seen || goal.opp.was_seen)
+      if (state_time > 2000 && (goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_right;
-      else if (state_time > 2200)
-        goto switch_to_look_left;
       else 
         stay;
     }
@@ -80,9 +76,7 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if(goal.own.time_since_seen == 0 
-         || goal.opp.time_since_seen == 0 
-         || state_time > 1000)
+      if(state_time > 1000)
         goto switch_to_look_left;
       else
         stay;
@@ -101,10 +95,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if(goal.own.time_since_seen == 0 
-         || goal.opp.time_since_seen == 0 
-         || state_time > 1000)
-        goto switch_to_look_right;
+      if(state_time > 1000)
+        goto look_for_goal_right;
       else
         stay;
     }
@@ -146,7 +138,7 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (goal.own.was_seen || goal.opp.was_seen)
+      if (state_time > 2000 && (goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_right;
       else if (state_time > 500)
          goto look_for_goal_right;
