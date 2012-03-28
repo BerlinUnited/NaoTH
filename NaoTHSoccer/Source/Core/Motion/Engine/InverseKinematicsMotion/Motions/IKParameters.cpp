@@ -104,6 +104,11 @@ IKParameters::IKParameters()
   PARAMETER_REGISTER(kick.shiftOffsetYLeft);
   PARAMETER_REGISTER(kick.shiftOffsetYRight);
 
+  PARAMETER_REGISTER(balanceCoM.kP) = 0;
+  PARAMETER_REGISTER(balanceCoM.kI) = 0;
+  PARAMETER_REGISTER(balanceCoM.kD) = 0;
+  PARAMETER_REGISTER(balanceCoM.threshold) = 10;
+
   syncWithConfig();
 
   DebugParameterList::getInstance().add(this);

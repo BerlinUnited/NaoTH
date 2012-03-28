@@ -13,7 +13,9 @@ BaseColorClassifier::BaseColorClassifier()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_simple_goal_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_image_2", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_goal_in_corrected_image", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:initPercept", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_ball", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_goal", " ", false);
@@ -37,6 +39,7 @@ BaseColorClassifier::BaseColorClassifier()
   lastMeanV = coloredGrid.meanRed;
   adaptationRate = 0.9;
   initPercept();
+  getBaseColorRegionPercept().setPerceptRegions();
   goalIsCalibrating = false;
 }
 
@@ -46,6 +49,10 @@ void BaseColorClassifier::initPercept()
   getBaseColorRegionPercept().fieldIndex = regionParams.fieldIndex;
   getBaseColorRegionPercept().fieldCalibDist = regionParams.fieldDist;
   getBaseColorRegionPercept().fieldDist = regionParams.fieldDist;
+
+  getBaseColorRegionPercept().goalVUdistance = regionParams.goalVUdistance;
+  getBaseColorRegionPercept().goalVUdistanceMin = regionParams.goalVUdistanceMin;
+  getBaseColorRegionPercept().goalVUdistanceMax = regionParams.goalVUdistanceMax;
 
   getBaseColorRegionPercept().goalCalibIndex = regionParams.goalIndex;
   getBaseColorRegionPercept().goalIndex = regionParams.goalIndex;
@@ -61,11 +68,14 @@ void BaseColorClassifier::initPercept()
   getBaseColorRegionPercept().lineIndex = regionParams.lineIndex;
   getBaseColorRegionPercept().lineCalibDist = regionParams.lineDist;
   getBaseColorRegionPercept().lineDist = regionParams.lineDist;
-  getBaseColorRegionPercept().setPerceptRegions();
 }
 
 void BaseColorClassifier::execute()
 {
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:initPercept",
+    initPercept();
+  );
+
   getBaseColorRegionPercept().meanImg.y = coloredGrid.meanBrightness;
   getBaseColorRegionPercept().meanImg.u = coloredGrid.meanBlue;
   getBaseColorRegionPercept().meanImg.v = coloredGrid.meanRed;
@@ -94,54 +104,20 @@ void BaseColorClassifier::execute()
     getBaseColorRegionPercept().diff.v = diff;
     lastMeanV = coloredGrid.meanRed;
   }
+  getBaseColorRegionPercept().goalVUdistance = regionParams.goalVUdistance;
+  getBaseColorRegionPercept().goalVUdistanceMin = regionParams.goalVUdistanceMin;
+  getBaseColorRegionPercept().goalVUdistanceMax = regionParams.goalVUdistanceMax;
 
-  MODIFY("BaseColorClassifier:adaptationRate", adaptationRate);
+  getBaseColorRegionPercept().setPerceptRegions();
 
-  MODIFY("BaseColorClassifier:fieldDistY", getBaseColorRegionPercept().fieldDist.y);
-  MODIFY("BaseColorClassifier:fieldDistU", getBaseColorRegionPercept().fieldDist.u);
-  MODIFY("BaseColorClassifier:fieldDistV", getBaseColorRegionPercept().fieldDist.v);
+  getBaseColorRegionPercept().lineBorderMinus.y = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY, 0.0, 255.0);
+  getBaseColorRegionPercept().lineBorderPlus.y = 255.0;
 
-  MODIFY("BaseColorClassifier:fieldIndexY", getBaseColorRegionPercept().fieldIndex.y);
-  MODIFY("BaseColorClassifier:fieldIndexU", getBaseColorRegionPercept().fieldIndex.u);
-  MODIFY("BaseColorClassifier:fieldIndexV", getBaseColorRegionPercept().fieldIndex.v);
+  getBaseColorRegionPercept().lineColorRegion.set(getBaseColorRegionPercept().lineBorderMinus, getBaseColorRegionPercept().lineBorderPlus);
+  
+  getBaseColorRegionPercept().goalBorderMinus.y = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexY/* + getFieldColorPercept().distY*/, 0.0, 255.0);
 
-  MODIFY("BaseColorClassifier:goalDistY", getBaseColorRegionPercept().goalDist.y);
-  MODIFY("BaseColorClassifier:goalDistU", getBaseColorRegionPercept().goalDist.u);
-  MODIFY("BaseColorClassifier:goalDistV", getBaseColorRegionPercept().goalDist.v);
-
-  MODIFY("BaseColorClassifier:goalIndexY", getBaseColorRegionPercept().goalIndex.y);
-  MODIFY("BaseColorClassifier:goalIndexU", getBaseColorRegionPercept().goalIndex.u);
-  MODIFY("BaseColorClassifier:goalIndexV", getBaseColorRegionPercept().goalIndex.v);
-
-  MODIFY("BaseColorClassifier:ballDistY", getBaseColorRegionPercept().ballDist.y);
-  MODIFY("BaseColorClassifier:ballDistU", getBaseColorRegionPercept().ballDist.u);
-  MODIFY("BaseColorClassifier:ballDistV", getBaseColorRegionPercept().ballDist.v);
-
-  MODIFY("BaseColorClassifier:ballIndexY", getBaseColorRegionPercept().ballIndex.y);
-  MODIFY("BaseColorClassifier:ballIndexU", getBaseColorRegionPercept().ballIndex.u);
-  MODIFY("BaseColorClassifier:ballIndexV", getBaseColorRegionPercept().ballIndex.v);
-
-  MODIFY("BaseColorClassifier:lineDistY", getBaseColorRegionPercept().lineDist.y);
-  MODIFY("BaseColorClassifier:lineDistU", getBaseColorRegionPercept().lineDist.u);
-  MODIFY("BaseColorClassifier:lineDistV", getBaseColorRegionPercept().lineDist.v);
-
-  MODIFY("BaseColorClassifier:lineIndexY", getBaseColorRegionPercept().lineIndex.y);
-  MODIFY("BaseColorClassifier:lineIndexU", getBaseColorRegionPercept().lineIndex.u);
-  MODIFY("BaseColorClassifier:lineIndexV", getBaseColorRegionPercept().lineIndex.v);
-
-  getBaseColorRegionPercept().goalBorderMinus.y = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexY + getFieldColorPercept().distY, 0.0, 255.0);
-  getBaseColorRegionPercept().goalBorderPlus.y = Math::clamp<double>(getBaseColorRegionPercept().goalBorderMinus.y + 2 * getBaseColorRegionPercept().goalDist.y, 0.0, 255.0);
-  getBaseColorRegionPercept().goalBorderMinus.u = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexCr + getFieldColorPercept().distCr, 0.0, 255.0);
-  getBaseColorRegionPercept().goalBorderPlus.u = Math::clamp<double>(getBaseColorRegionPercept().goalBorderMinus.u + 2 * getBaseColorRegionPercept().goalDist.u, 0.0, 255.0);
-  getBaseColorRegionPercept().goalBorderMinus.v = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexCb - getFieldColorPercept().distCb, 0.0, 255.0);
-  getBaseColorRegionPercept().goalBorderPlus.v = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexCb + getFieldColorPercept().distCb, 0.0, 255.0);
-
-  getBaseColorRegionPercept().ballBorderMinus.y = 0.0;
-  getBaseColorRegionPercept().ballBorderPlus.y = 255.0;
-  getBaseColorRegionPercept().ballBorderMinus.u = Math::clamp<double>(getBaseColorRegionPercept().goalBorderPlus.u, 0.0, 255.0);
-  getBaseColorRegionPercept().ballBorderPlus.u = 255.0;
-  getBaseColorRegionPercept().ballBorderMinus.v = Math::clamp<double>(getFieldColorPercept().maxWeightedIndexCb - getFieldColorPercept().distCb, 0.0, 255.0);
-  getBaseColorRegionPercept().ballBorderPlus.v = Math::clamp<double>(getBaseColorRegionPercept().ballBorderMinus.v + 2 * getBaseColorRegionPercept().ballDist.v, 0.0, 255.0);
+  getBaseColorRegionPercept().goalColorRegion.set(getBaseColorRegionPercept().goalBorderMinus, getBaseColorRegionPercept().goalBorderPlus);
 
   getBaseColorRegionPercept().lastUpdated = getFrameInfo();
 
@@ -193,6 +169,22 @@ void BaseColorClassifier::runDebugRequests()
         const Pixel& pixel = getImage().get(x, y);
 
         if(getBaseColorRegionPercept().isYellowSimple(pixel))
+        {
+          POINT_PX(ColorClasses::yellowOrange, x, y);
+        }
+
+      }
+    }
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:set_goal_in_corrected_image",
+    for(int x = 0; x < imageWidth; x++)
+    {
+      for(int y = 0; y < imageHeight; y++)
+      {
+        const Pixel& pixel = getImage().getCorrected(x, y);
+
+        if(getBaseColorRegionPercept().isYellow(pixel))
         {
           POINT_PX(ColorClasses::yellowOrange, x, y);
         }

@@ -51,16 +51,28 @@ void ImageCorrector::execute()
   );
 
   DEBUG_REQUEST("Image:Corrector:correctBrighnessInImage",
-    for(unsigned int i = 0; i < getImage().cameraInfo.size; i++)
+    Pixel pixel;
+    for(unsigned int y = 0; y < getImage().height(); y++)
     {
-      unsigned int newValue = (getImage().shadingCorrection.getY(i) * getImage().yuv422[2 * i]) >> 10;
-      newValue = Math::clamp<unsigned int>(newValue, 0, 255);
-      getImage().yuv422[2 * i] = (unsigned char) newValue;
+      for(unsigned int x = 0; x < getImage().width(); x++)
+      {
+        PixelT<unsigned short> newPixel;
+        getImage().get(x, y, pixel);
+        newPixel.y = (getImage().shadingCorrection.get(0, x, y) * pixel.y) >> 10;
+        newPixel.u = (getImage().shadingCorrection.get(1, x, y) * pixel.u) >> 10;
+        newPixel.v = (getImage().shadingCorrection.get(2, x, y) * pixel.v) >> 10;
+       
+        pixel.y = (unsigned char) Math::clamp<unsigned short>(newPixel.y, 0, 255);
+        pixel.u = (unsigned char) Math::clamp<unsigned short>(newPixel.u, 0, 255);
+        pixel.v = (unsigned char) Math::clamp<unsigned short>(newPixel.v, 0, 255);
+
+        getImage().set(x, y, pixel);
+      }
     }
   );
 
   DEBUG_REQUEST("Image:Corrector:saveToFile",
-    getImage().shadingCorrection.saveCorrectionToFile
+    getImage().shadingCorrection.saveCorrectionToFiles
     (
       Platform::getInstance().theConfigDirectory,
       Platform::getInstance().theHeadHardwareIdentity
@@ -68,7 +80,7 @@ void ImageCorrector::execute()
   );
 
   DEBUG_REQUEST("Image:Corrector:loadFromFile",
-    getImage().shadingCorrection.loadCorrectionFromFile
+    getImage().shadingCorrection.loadCorrectionFromFiles
     (
       Platform::getInstance().theConfigDirectory,
       Platform::getInstance().theHeadHardwareIdentity
@@ -86,34 +98,85 @@ void ImageCorrector::correctBrightnessSimple()
   unsigned int y1 = (unsigned int) ceil(mY);
   unsigned int y2 = (unsigned int) floor(mY);
 
-  unsigned int meanMiddleBrighness = (getImage().getPlainY(x1,y1) + getImage().getPlainY(x1,y2) + getImage().getPlainY(x2,y1) + getImage().getPlainY(x2,y2));
+  Pixel pix1;
+  getImage().get(x1,y1, pix1);
+  Pixel pix2;
+  getImage().get(x1,y2, pix2);
+  Pixel pix3;
+  getImage().get(x2,y1, pix3);
+  Pixel pix4;
+  getImage().get(x2,y2, pix4);
+
+  PixelT<unsigned short> meanMiddle;
+
+  meanMiddle.y = pix1.y + pix2.y + pix3.y + pix4.y;
+  meanMiddle.u = pix1.u + pix2.u + pix3.u + pix4.u;
+  meanMiddle.v = pix1.v + pix2.v + pix3.v + pix4.v;
+
+  Pixel pixel;
 
   for(unsigned int y = 0; y < getImage().height(); y++)
   {
     for(unsigned int x = 0; x < getImage().width(); x++)
     {
-      unsigned int pixelY = getImage().getPlainY(x, y);
-      unsigned int corrY = getImage().shadingCorrection.getY(x, y);
-      if(pixelY > 0)
+      getImage().get(x, y, pixel);
+      PixelT<unsigned short> corr;
+      corr.y = getImage().shadingCorrection.get(0, x, y);
+      corr.u = getImage().shadingCorrection.get(1, x, y);
+      corr.v = getImage().shadingCorrection.get(2, x, y);
+
+      if(correctionCycle != 255)
       {
-        if(correctionCycle != 255)
+        if(pixel.y > 0)
         {
-          getImage().shadingCorrection.setY(x, y, ((255 *  meanMiddleBrighness / pixelY) + corrY) / 2 );
+          getImage().shadingCorrection.set(0, x, y, ((255 *  meanMiddle.y / pixel.y) + corr.y) / 2 );
         }
-        else
+        else if(pixel.y == 0)
         {
-          getImage().shadingCorrection.setY(x, y, 255 *  meanMiddleBrighness / pixelY);
+          getImage().shadingCorrection.set(0, x, y, (255 *  meanMiddle.y) + corr.y );
+        }
+        if(pixel.u > 0)
+        {
+          getImage().shadingCorrection.set(1, x, y, ((255 *  meanMiddle.u / pixel.u) + corr.u) / 2 );
+        }
+        else if(pixel.u == 0)
+        {
+          getImage().shadingCorrection.set(1, x, y, (255 *  meanMiddle.u) + corr.u);
+        }
+        if(pixel.v > 0)
+        {
+          getImage().shadingCorrection.set(2, x, y, ((255 *  meanMiddle.v / pixel.v) + corr.v) / 2 );
+        }
+        else if(pixel.v == 0)
+        {
+          getImage().shadingCorrection.set(2, x, y, (255 *  meanMiddle.v) + corr.v);
         }
       }
       else
       {
-        if(correctionCycle != 255)
+        if(pixel.y > 0)
         {
-          getImage().shadingCorrection.setY(x, y, (255 *  meanMiddleBrighness) + (corrY) );
+          getImage().shadingCorrection.set(0, x, y, 255 *  meanMiddle.y / pixel.y);
         }
-        else
+        else if(pixel.y == 0)
         {
-          getImage().shadingCorrection.setY(x, y, 255 *  meanMiddleBrighness);
+          getImage().shadingCorrection.set(0, x, y, 255 *  meanMiddle.y);
+        }
+        if(pixel.u > 0)
+        {
+          getImage().shadingCorrection.set(1, x, y, 255 *  meanMiddle.u / pixel.u);
+        }
+        else if(pixel.u == 0)
+        {
+          getImage().shadingCorrection.set(1, x, y, 255 *  meanMiddle.u);
+        }
+        if(pixel.v > 0)
+        {
+          getImage().shadingCorrection.set(2, x, y, 255 *  meanMiddle.v / pixel.v);
+        }
+        else if(pixel.v == 0)
+        {
+          getImage().shadingCorrection.set(2, x, y, 255 *  meanMiddle.v);
         }
       }
     }
@@ -121,13 +184,25 @@ void ImageCorrector::correctBrightnessSimple()
   DEBUG_REQUEST("Image:Corrector:GaussianBlur",
     if(correctionCycle == 1)
     {
-      cv::Mat matYc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getYcPointer());
+      cv::Size size(5, 5);
+
+      cv::Mat matYc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getDataPointer(0));
       unsigned short* blurredYc = new unsigned short[getImage().shadingCorrection.getSize()];
       cv::Mat matYcBlurred(getImage().height(), getImage().width(), CV_16U, blurredYc);
-
-      cv::Size size(5, 5);
       cv::GaussianBlur(matYc, matYcBlurred, size, 10, 10);
       memcpy(matYc.data, matYcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
+
+      cv::Mat matUc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getDataPointer(1));
+      unsigned short* blurredUc = new unsigned short[getImage().shadingCorrection.getSize()];
+      cv::Mat matUcBlurred(getImage().height(), getImage().width(), CV_16U, blurredUc);
+      cv::GaussianBlur(matUc, matUcBlurred, size, 10, 10);
+      memcpy(matUc.data, matUcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
+
+      cv::Mat matVc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getDataPointer(2));
+      unsigned short* blurredVc = new unsigned short[getImage().shadingCorrection.getSize()];
+      cv::Mat matVcBlurred(getImage().height(), getImage().width(), CV_16U, blurredVc);
+      cv::GaussianBlur(matVc, matVcBlurred, size, 10, 10);
+      memcpy(matVc.data, matVcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
     }
   );
 }

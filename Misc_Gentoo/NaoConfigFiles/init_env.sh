@@ -146,7 +146,7 @@ fi
 
 
 # Check and Update Runlevel Configuration for Non-Network Services
-./checkRC.sh "set_dev_video=default connman=disable naoth=default"
+./checkRC.sh "set_dev_video=default connman=disable naoth=default netmount=disable lighttpd=disable naopathe=disable vsftpd=disable"
 
 
 

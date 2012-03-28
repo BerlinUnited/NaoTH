@@ -20,12 +20,12 @@
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
-  //gridClustering(sampleSet),
-  canopyClustering(theSampleSet, parameters.thresholdCanopy),
-  initialized(false),
-  // ...whole field by default
-  fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0),
-  fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0)
+    //gridClustering(sampleSet),
+    canopyClustering(theSampleSet, parameters.thresholdCanopy),
+    initialized(false),
+    // ...whole field by default
+    fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0),
+    fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0)
 {
 
   resetSampleSet(theSampleSet);
@@ -1143,8 +1143,11 @@ void MonteCarloSelfLocator::execute()
     //fieldMax = Vector2<double>(                             0.0,  getFieldInfo().yFieldLength/2.0);
     fieldMax.x = 0.0;
 
-    if(!init_own_half) initialized = false;
-
+    if(!init_own_half)
+    {
+      resetSampleSet(theSampleSet);
+      initialized = false;
+    }
     clampSampleSetToField(theSampleSet);
     init_own_half = true;
   }
@@ -1254,7 +1257,7 @@ void MonteCarloSelfLocator::execute()
   
 
   // a heap could collect more than 70% of all particles
-  initialized = initialized || (clusterSize > 0.7*(double)theSampleSet.numberOfParticles);
+  initialized = initialized || (clusterSize > 0.9*(double)theSampleSet.numberOfParticles);
   PLOT("MCSL:initialized", initialized);
 
   // TODO: find a beter place for it
@@ -1309,7 +1312,11 @@ void MonteCarloSelfLocator::execute()
     getRobotPose().isValid = false;
   }
 
+  // stupid = operator
+  bool wasValid = getRobotPose().isValid;
   getRobotPose() = newPose;
+  getRobotPose().isValid = wasValid;
+
   getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
   /************************************

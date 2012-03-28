@@ -131,21 +131,29 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     case KickRequest::right:
     {
       supFoot = KinematicChain::LFoot;
-      lastReqCoM = lastCoMPose.feet.left.invert() * lastCoMPose.com.translation;
+      Pose3D reqSupFoot = lastCoMPose.feet.left;
+      reqSupFoot.rotation = RotationMatrix();
+      lastReqCoM = reqSupFoot.invert() * lastCoMPose.com.translation;
       c.localInLeftFoot();
       break;
     }
     case KickRequest::left:
     {
       supFoot = KinematicChain::RFoot;
-      lastReqCoM = lastCoMPose.feet.right.invert() * lastCoMPose.com.translation;
+      Pose3D reqSupFoot = lastCoMPose.feet.right;
+      reqSupFoot.rotation = RotationMatrix();
+      lastReqCoM = reqSupFoot.invert() * lastCoMPose.com.translation;
       c.localInRightFoot();
       break;
     }
     }
 
     Vector3d adjust = theEngine.balanceCoM(lastReqCoM, supFoot);
-    c.hip.translation.y += adjust.y;
+
+    //c.hip.translation.y += adjust.y;
+    double maxRotate = Math::fromDegrees(20);
+    c.hip.rotateX(Math::clamp(adjust.y, -maxRotate, maxRotate));
+
     lastCoMPose = currentPose.pose;
 
     if(theParameters.enableStaticStabilizer && theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE)
@@ -156,7 +164,7 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
     theEngine.autoArms(c, theMotorJointData.position);
-
+    //theEngine.feetStabilize(theMotorJointData.position);
     // some direct offsets
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LKneePitch:JointData::RKneePitch] += currentPose.knee_pitch_offset;
     theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;

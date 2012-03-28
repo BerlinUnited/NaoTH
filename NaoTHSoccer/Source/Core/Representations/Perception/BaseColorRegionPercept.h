@@ -82,9 +82,6 @@ class BaseColorRegionPercept : public naoth::Printable
     }//end inside
   };
 
-
-
-
 private:
   double dCb;
   double dCr;
@@ -112,6 +109,10 @@ public:
   DoublePixel fieldDist;
   DoublePixel fieldCalibDist;
 
+  double goalVUdistance;
+  double goalVUdistanceMin;
+  double goalVUdistanceMax;
+  
   DoublePixel goalIndex;
   DoublePixel goalCalibIndex;
   DoublePixel goalDist;
@@ -150,6 +151,10 @@ public:
   {
     dCb = 96.0;
     dCr = 48.0;
+
+    goalVUdistance = 0.0;
+    goalVUdistanceMin = 0.0;
+    goalVUdistanceMax = 0.0;
 
     meanImg.y = 127.0;
     meanImg.u = 127.0;
@@ -230,7 +235,7 @@ public:
     goalBorderMinus.u = dMinusU;
     goalBorderPlus.v = dPlusV;
     goalBorderMinus.v = dMinusV;
-    goalColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
+    goalColorRegion.set(goalBorderMinus, goalBorderPlus);
 
     fY = meanImg.y / ballImageMean.y;
     dPlusY = fY * ballIndex.y + ballDist.y;
@@ -250,7 +255,7 @@ public:
     ballBorderMinus.u = dMinusU;
     ballBorderPlus.v = dPlusV;
     ballBorderMinus.v = dMinusV;
-    ballColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
+    ballColorRegion.set(ballBorderMinus, ballBorderPlus);
 
     fY = meanImg.y / linesImageMean.y;
     dPlusY = fY * lineIndex.y + lineDist.y;
@@ -270,23 +275,22 @@ public:
     lineBorderMinus.u = dMinusU;
     lineBorderPlus.v = dPlusV;
     lineBorderMinus.v = dMinusV;
-    lineColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
-
+    lineColorRegion.set(lineBorderMinus, lineBorderPlus);
   }
 
   inline bool isYellow(const int& y, const int& u, const int& v) const
   {
-    return goalColorRegion.inside(y, u, v);
+    return goalColorRegion.inside(y, u, v) && v - u > goalVUdistanceMin && v - u < goalVUdistanceMax;
   }
 
   inline bool isYellowSimple(const Pixel& pixel) const
   {
-    return pixel.u - pixel.v > 40;
+    return pixel.v - pixel.u > goalVUdistance;
   }
 
   inline bool isYellow2(const Pixel& pixel) const
   {
-    return goalColorRegion.inside(pixel.y, pixel.u, pixel.v) && pixel.u - pixel.v > 40;
+    return goalColorRegion.inside(pixel.y, pixel.u, pixel.v);
   }
 
   inline bool isYellow(const Pixel& pixel) const
@@ -404,7 +408,7 @@ public:
 
   inline bool isWhite(const int& y, const int& u, const int& v) const
   {
-    return lineColorRegion.inside(y, u, v);
+    return lineColorRegion.inside(y, u, v);// && !isYellow(y, u, v);
   }
 
   inline bool isWhite(const Pixel& pixel) const
