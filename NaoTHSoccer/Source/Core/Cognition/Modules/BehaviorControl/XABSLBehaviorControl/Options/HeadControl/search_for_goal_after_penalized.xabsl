@@ -134,27 +134,5 @@ option search_for_goal_after_penalized
     }
   }
 
-  state switch_to_look_right
-  {
-    decision
-    {
-      if (state_time > 2000 && (goal.own.was_seen || goal.opp.was_seen))
-        goto look_at_goal_percept_right;
-      else if (state_time > 500)
-         goto look_for_goal_right;
-      else
-        stay;
-    }
-    action
-    {
-      head.camera.id = bottom;
-      head.motion_type = search;
-      head.search.center.x = 500;
-      head.search.center.y = 0;
-      head.search.center.z = 0;
-      head.search.size.x = 0;
-      head.search.size.y = 500;
-      head.search.size.z = 0;
-    }
-  }
+
 }
