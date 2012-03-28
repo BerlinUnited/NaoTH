@@ -89,7 +89,6 @@ void MonteCarloSelfLocator::resample(SampleSet& sampleSet)
   double offset = 1.0/(2*sampleSet.numberOfParticles);
 
   for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)   //j is the value of the equidistant grid
-    
   {
     //take which particle?
 
@@ -620,9 +619,12 @@ void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, 
 
       if(  true /*on field */) // isInsideCarpet(pose.translation)
       {
+        /*
         sampleSet[n].translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
         sampleSet[n].translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
         sampleSet[n].rotation = (Math::random()*2-1)*Math::pi;
+        */
+        createRandomSample(sampleSet[n]);
         n++;
       }
     }//end for
@@ -662,13 +664,24 @@ bool MonteCarloSelfLocator::generateTemplateFromPosition(
 }//end generateTemplateFromPosition
 
 
-bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) const
+inline bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) const
 {
-  return p.y > -getFieldInfo().yFieldLength/2.0 &&
-         p.y <  getFieldInfo().yFieldLength/2.0 &&
-         p.x > -getFieldInfo().xFieldLength/2.0 &&
-         p.x <  getFieldInfo().xFieldLength/2.0;
+  Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+  Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+
+  return p.y > fieldMin.y && p.y < fieldMax.y &&
+         p.x > fieldMin.x && p.x < fieldMax.x;
 }//end isInsideCarpet
+
+inline void MonteCarloSelfLocator::createRandomSample(Sample& sample) const
+{
+  Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+  Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+
+  sample.translation.x = Math::random(fieldMin.x, fieldMax.x); //(Math::random()-0.5)*getFieldInfo().xFieldLength;
+  sample.translation.y = Math::random(fieldMin.y, fieldMax.y); //(Math::random()-0.5)*getFieldInfo().yFieldLength;
+  sample.rotation = Math::random(-Math::pi, Math::pi);
+}//end createRandomSample
 
 
 void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
@@ -896,9 +909,12 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
           // create a random sample
           if(!templateAvaliable)
           {
+            /*
             sampleSet[n].translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
             sampleSet[n].translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
             sampleSet[n].rotation = Math::random(-Math::pi, Math::pi);
+            */
+            createRandomSample(sampleSet[n]);
           }
         n++;
       }//end if
@@ -1004,6 +1020,7 @@ inline double MonteCarloSelfLocator::computeDistanceWeighting(
 }//end computeDistanceWeighting
 
 
+
 bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
 
@@ -1094,8 +1111,14 @@ void MonteCarloSelfLocator::execute()
   // HACK
   initialized = initialized || getSensingGoalModel().someGoalWasSeen;
 
+
   DEBUG_REQUEST("MCSL:reset_samples",
     resetSampleSet(theSampleSet);
+    
+    DEBUG_REQUEST("MCSL:draw_Samples",
+      // draw the random samples
+      drawSamplesImportance(theSampleSet);    
+    );
     return;
   );
 
@@ -1235,7 +1258,7 @@ void MonteCarloSelfLocator::execute()
   }
 
   getRobotPose() = newPose;
-  getSelfLocGoalModel().update(getCompassDirection(), getRobotPose(), getFieldInfo());
+  getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
   /************************************
    * execude some debug requests (drawings)
@@ -1342,12 +1365,29 @@ void MonteCarloSelfLocator::resetSampleSet(SampleSet& sampleSet)
   for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
   {
     Sample& sample = sampleSet[i];
+    createRandomSample(sample);
+    sample.likelihood = likelihood;
+    /*
     sample.translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
     sample.translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
     sample.rotation = Math::random(-Math::pi,Math::pi);//(Math::random()*2-1)*Math::pi;
-    sample.likelihood = likelihood;
+    */
   }//end for
 }//end resetSampleSet
+
+
+void MonteCarloSelfLocator::clampSampleSetToField(SampleSet& sampleSet)
+{
+  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  {
+    Sample& sample = sampleSet[i];
+    if(!isInsideCarpet(sample.translation))
+    {
+      createRandomSample(sample);
+    }
+  }//end for
+}//end resetSampleSet
+
 
 
 void MonteCarloSelfLocator::drawPosition() const

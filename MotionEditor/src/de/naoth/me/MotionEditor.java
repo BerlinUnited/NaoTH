@@ -6,7 +6,6 @@
  */
 package de.naoth.me;
 
-import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import de.naoth.me.core.JointDefaultConfiguration;
 import de.naoth.me.core.JointPrototypeConfiguration;
 import de.naoth.me.core.MotionNet;
@@ -14,24 +13,22 @@ import de.naoth.me.core.MotionNetLoader;
 import de.naoth.rc.server.ConnectionDialog;
 import de.naoth.rc.server.IMessageServerParent;
 import de.naoth.rc.server.MessageServer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.JOptionPane;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
 import org.freehep.util.export.ExportDialog;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.media.opengl.awt.GLCanvas;
-import javax.swing.JFrame;
 
 /**
  *
@@ -55,13 +52,45 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
   /** Creates new form MainForm */
   public MotionEditor()
   {
+    config = new Properties();
+    
+    String value = System.getenv("NAOTH_BZR");
+    
+    if(value != null)
+    {
+      setDirectory(value);
+    }
+    else
+    {
+      try
+      {
+        String ResourceName="de/naoth/me/MotionEditor.class";
+        String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
+        programPath = programPath.replace("file:", "");
+        //path replacement if MotionEditor is being started from console directly
+        programPath = programPath.replace("/MotionEditor/dist/NaoScp_2.jar!/de/naoth/me/MotionEditor.class", "");
+        //path replacement if MotionEditor is started from IDE (Netbeans)
+        programPath = programPath.replace("/MotionEditor/build/classes/de/naoth/me/MotionEditor.class", "");
+        File ProgramDir = new File(programPath);
+        if(ProgramDir.exists())
+        {
+          setDirectory(ProgramDir.getAbsolutePath());
+        }
+      }
+      catch(UnsupportedEncodingException ueEx)
+      {
+        Logger.getAnonymousLogger().log(Level.SEVERE, "could not determine current work directory\n" + ueEx.getMessage());
+      }
+    }
+    
+    System.setProperty("java.library.path", config.getProperty("pwd") + "/lib/gluegen-rt.dll");
+
     // set L&F to platform independent since the GTK-theme has problems with
     // the pin and close buttons
     String laf = "javax.swing.plaf.metal.MetalLookAndFeel";
     try
     {
         UIManager.setLookAndFeel(laf);
-//        UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
     }
     catch(Exception ex)
     {
@@ -70,7 +99,7 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     
     initComponents();
     initKneadEmulator();
-    initKneadEmulatorJOGL();
+//    initKneadEmulatorJOGL();
 
     this.setTitle("MotionNet Editor");
     this.motionNetLoader = new MotionNetLoader();
@@ -92,15 +121,13 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     this.motionNetEditorPanel.setMotionNet(motionNet);
     this.motionPlayer1.setMotionNet(motionNet);
     
-    FileChooser = new JFileChooser();
+    FileChooser = new JFileChooser(new File(config.getProperty("motions")));
     FileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    FileChooser.setCurrentDirectory(new File("../NaoController/Config/motionnet"));
 
     FileChooser.addPropertyChangeListener(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY, new PropertyChangeListener()
     {
       public void propertyChange(PropertyChangeEvent arg0)
       {
-        String ExtNew = "";
         String FileName = "" + FileChooser.getSelectedFile();
 
         SimpleFileFilter NewValue = (SimpleFileFilter) FileChooser.getFileFilter();
@@ -108,7 +135,7 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
         {
           return;
         }
-        ExtNew = NewValue.getFirstExtension();
+        String ExtNew = NewValue.getFirstExtension();
         if( FileName.endsWith(ExtNew))
         {
           return;
@@ -131,9 +158,15 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
   }//end MainForm
 
-    // Anfang Komponenten
-    // Ende Komponenten
-
+  private void setDirectory(String directory)
+  {
+    File dir = new File(directory + "/NaoTHSoccer");
+    config.setProperty("naothDir", dir.getAbsolutePath());
+    dir = new File(directory + "/MotionEditor");
+    config.setProperty("pwd", dir.getAbsolutePath());    
+    dir = new File(directory + "/NaoTHSoccer/Config/scheme");
+    config.setProperty("motions", dir.getAbsolutePath());
+  }  
 
   // Anfang Methoden
   private void initKneadEmulator()
@@ -492,10 +525,13 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     }//GEN-LAST:event_jMenuItemNewActionPerformed
 
     private void jMenuItemOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemOpenActionPerformed
-      FileChooser.setDialogTitle("Open");
-      FileChooser.removeChoosableFileFilter(FileChooser.getFileFilter());
-      FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
+      FileChooser.setDialogTitle("Open");      
+      for(FileFilter filter : FileChooser.getChoosableFileFilters())
+      {
+        FileChooser.removeChoosableFileFilter(filter);        
+      }      
       FileChooser.addChoosableFileFilter(new SimpleFileFilter("Textfile", "*.txt"));
+      FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
       FileChooser.showOpenDialog(this);
       this.selectedFile = FileChooser.getSelectedFile();
       if(this.selectedFile == null)
@@ -524,17 +560,23 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
 
     private void jMenuItemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveActionPerformed
       FileChooser.setDialogTitle("Save");
-      FileChooser.removeChoosableFileFilter(FileChooser.getFileFilter());
-      FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
+      for(FileFilter filter : FileChooser.getChoosableFileFilters())
+      {
+        FileChooser.removeChoosableFileFilter(filter);        
+      }      
       FileChooser.addChoosableFileFilter(new SimpleFileFilter("Textfile", "*.txt"));
+      FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
       FileChooser.showSaveDialog(this);
       this.selectedFile = FileChooser.getSelectedFile();
       if(this.selectedFile == null)
       {
         FileChooser.setDialogTitle("Save As");
-        FileChooser.removeChoosableFileFilter(FileChooser.getFileFilter());
-        FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
+      for(FileFilter filter : FileChooser.getChoosableFileFilters())
+      {
+        FileChooser.removeChoosableFileFilter(filter);        
+      }      
         FileChooser.addChoosableFileFilter(new SimpleFileFilter("Textfile", "*.txt"));
+        FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
         FileChooser.showSaveDialog(this);
         this.selectedFile = FileChooser.getSelectedFile();
       }
@@ -564,9 +606,12 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     }//GEN-LAST:event_jMenuItemSaveActionPerformed
 
     private void jMenuItemSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemSaveAsActionPerformed
-      FileChooser.removeChoosableFileFilter(FileChooser.getFileFilter());
-      FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
+      for(FileFilter filter : FileChooser.getChoosableFileFilters())
+      {
+        FileChooser.removeChoosableFileFilter(filter);        
+      }      
       FileChooser.addChoosableFileFilter(new SimpleFileFilter("Textfile", "*.txt"));
+      FileChooser.addChoosableFileFilter(new SimpleFileFilter("MotionNet Editor File", "*.mef"));
       FileChooser.showSaveDialog(this);
       File selectFile = FileChooser.getSelectedFile();
       if(selectFile == null)
@@ -600,7 +645,10 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
 
     private void jMenuItemImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemImportActionPerformed
       FileChooser.setDialogTitle("Import from Webot File");
-      FileChooser.removeChoosableFileFilter(FileChooser.getFileFilter());
+      for(FileFilter filter : FileChooser.getChoosableFileFilters())
+      {
+        FileChooser.removeChoosableFileFilter(filter);        
+      }      
       FileChooser.addChoosableFileFilter(new SimpleFileFilter("Webot File V1.0", "*.motion"));
       FileChooser.showOpenDialog(this);
       this.selectedFile = FileChooser.getSelectedFile();
@@ -626,7 +674,10 @@ public class MotionEditor extends javax.swing.JFrame implements IMessageServerPa
     }//GEN-LAST:event_jMenuItemImportActionPerformed
 
     private void jMenuItemExportWebotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExportWebotActionPerformed
-      FileChooser.removeChoosableFileFilter(FileChooser.getFileFilter());
+      for(FileFilter filter : FileChooser.getChoosableFileFilters())
+      {
+        FileChooser.removeChoosableFileFilter(filter);        
+      }      
       FileChooser.setDialogTitle("Export to Webot File");
       FileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
       FileChooser.addChoosableFileFilter(new SimpleFileFilter("Webot File V1.0", "*.motion"));

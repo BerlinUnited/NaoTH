@@ -57,6 +57,7 @@ void GameSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerEnumeratedInputSymbol("game.playmode", "game.playmode", &getPlayMode);
 
   engine.registerDecimalInputSymbol("game.player_number", &getPlayerNumber);
+  engine.registerDecimalInputSymbol("game.msecsRemaining", &getMsecsRemaining);
   engine.registerBooleanInputSymbol("game.own_kickoff", &getOwnKickOff);
 
 }//end registerSymbols
@@ -76,6 +77,11 @@ double GameSymbols::getPlayerNumber()
 {
   return theInstance->playerInfo.gameData.playerNumber;
 }//end setWalkSpeedRot
+
+double GameSymbols::getMsecsRemaining()
+{
+  return theInstance->playerInfo.gameData.msecsRemaining;
+}
 
 int GameSymbols::getPlayMode()
 {

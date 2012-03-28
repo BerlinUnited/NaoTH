@@ -40,6 +40,7 @@ private:
   static GameSymbols* theInstance;
   static bool getOwnKickOff();
   static double getPlayerNumber();
+  static double getMsecsRemaining();
   static int getPlayMode();
   static int getOpponentTeamColor();
   static int getOwnTeamColor();

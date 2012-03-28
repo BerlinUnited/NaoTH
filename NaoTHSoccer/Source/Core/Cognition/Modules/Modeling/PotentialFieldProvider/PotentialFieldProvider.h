@@ -5,8 +5,8 @@
 * Declaration of class PotentialFieldProvider
 */
 
-#ifndef __PotentialFieldProvider_h_
-#define __PotentialFieldProvider_h_
+#ifndef _PotentialFieldProvider_h_
+#define _PotentialFieldProvider_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -31,7 +31,6 @@ BEGIN_DECLARE_MODULE(PotentialFieldProvider)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
 
-
   REQUIRE(PlayerInfo)
   REQUIRE(BallModel)
   REQUIRE(SelfLocGoalModel)
@@ -51,7 +50,7 @@ class PotentialFieldProvider : public PotentialFieldProviderBase
 public:
 
   PotentialFieldProvider();
-  ~PotentialFieldProvider(){}
+  virtual ~PotentialFieldProvider(){}
 
   /** executes the module */
   void execute();

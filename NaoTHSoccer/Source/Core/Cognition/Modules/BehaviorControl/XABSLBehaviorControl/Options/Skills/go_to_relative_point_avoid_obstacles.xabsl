@@ -28,7 +28,7 @@ option go_to_relative_point_avoid_obstacles
       motion.walk.style = (abs(value=@x) < 200)?stable:normal;
       motion.walk_speed.x = path.next_point_to_go_x;
       motion.walk_speed.y = path.next_point_to_go_y;
-      motion.walk_speed.rot = atan2(y=path.next_point_to_go_y, x=path.next_point_to_go_x);
+      motion.walk_speed.rot = @rotation;
     }
   }
   

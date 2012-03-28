@@ -34,7 +34,7 @@ public:
     dribble,
     kick,
     kickoff,
-	numOfStatus
+	  numOfStatus
   };
 
   StatusID id;

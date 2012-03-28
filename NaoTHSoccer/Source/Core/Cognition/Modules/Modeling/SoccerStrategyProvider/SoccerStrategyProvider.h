@@ -5,8 +5,8 @@
 * provides soccer strategy
 */
 
-#ifndef __SoccerStrategyProvider_h_
-#define __SoccerStrategyProvider_h_
+#ifndef _SoccerStrategyProvider_h_
+#define _SoccerStrategyProvider_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -61,7 +61,7 @@ public:
   };
 
   SoccerStrategyProvider();
-  ~SoccerStrategyProvider(){}
+  virtual ~SoccerStrategyProvider(){}
 
   /** executes the module */
   virtual void execute();

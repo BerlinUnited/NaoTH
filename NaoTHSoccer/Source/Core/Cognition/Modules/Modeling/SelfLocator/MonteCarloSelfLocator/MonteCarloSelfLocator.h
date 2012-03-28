@@ -83,13 +83,20 @@ private:
   bool initialized;
 
   void resetSampleSet(SampleSet& sampleSet);
+  void clampSampleSetToField(SampleSet& sampleSet);
+
   
   bool generateTemplateFromPosition(
     Sample& newTemplate,
     const Vector2<double>& posSeen, 
     const Vector2<double>& posReal) const;
 
+
+  /** */
   bool isInsideCarpet(const Vector2<double>& p) const;
+
+  /** */
+  void createRandomSample(Sample& sample) const;
 
   void sensorResetByGoals(SampleSet& sampleSet, int start, int number);
   void resample(SampleSet& sampleSet);
@@ -114,6 +121,7 @@ private:
                                 double cameraZ,
                                 double standardDeviation, 
                                 double bestPossibleWeighting = 1.0) const;
+
 
   /****************************************
     update methods

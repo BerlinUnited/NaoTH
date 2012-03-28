@@ -151,17 +151,18 @@ void LocalGoalModel::print(ostream& stream) const
   GoalModel::print(stream);
 }//end print
 
-void SelfLocGoalModel::update(const CompassDirection& compassDirection, const Pose2D& robotPose, const FieldInfo& fieldInfo)
+void SelfLocGoalModel::update(const Pose2D& robotPose, const FieldInfo& fieldInfo)
 {
-  GoalModel::Goal ownGoal = getOwnGoal(compassDirection, fieldInfo);
-  GoalModel::Goal oppGoal = getOppGoal(compassDirection, fieldInfo);
+  //GoalModel::Goal ownGoal = getOwnGoal(compassDirection, fieldInfo);
+  //GoalModel::Goal oppGoal = getOppGoal(compassDirection, fieldInfo);
 
   // transform the goal posts to the local coordinates according to the robotPose
-  ownGoal.leftPost = robotPose/fieldInfo.ownGoalPostLeft;
-  ownGoal.rightPost = robotPose/fieldInfo.ownGoalPostRight;
+  //ownGoal.leftPost = robotPose/fieldInfo.ownGoalPostLeft;
+  //ownGoal.rightPost = robotPose/fieldInfo.ownGoalPostRight;
 
-  oppGoal.leftPost = robotPose/fieldInfo.opponentGoalPostLeft;
-  oppGoal.rightPost = robotPose/fieldInfo.opponentGoalPostRight;
+  // set the opponent goal regarding my position on the field
+  goal.leftPost = robotPose/fieldInfo.opponentGoalPostLeft;
+  goal.rightPost = robotPose/fieldInfo.opponentGoalPostRight;
 }//end update
 
 SensingGoalModel::SensingGoalModel()
