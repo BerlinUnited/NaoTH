@@ -1,8 +1,6 @@
 /** after being in "penalized" state and coming back to the game
 */
 
-//TODO when penalized: include avoid obstacles
-
 option after_penalized_state
 //we know, that we must be outside the field close to the center in our own half
 {
@@ -44,6 +42,8 @@ option after_penalized_state
   state completely_lost
   {
     decision {
+      else if(obstacle.ultrasound.distance < 200)
+        goto finished; 
       else if(state_time > 10000)
         goto finished;
       else
