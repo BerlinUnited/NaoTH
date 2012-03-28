@@ -8,9 +8,8 @@ option after_penalized_state
   initial state localize
   {
     decision {
-      if(goal.own.time_since_seen < 500 
-       || goal.opp.time_since_seen < 500)
-        goto wait_for_localization;
+      if(robot_pose.is_valid)
+        goto finished;
       else if(state_time > 10000)
         goto completely_lost;
       else
@@ -18,26 +17,10 @@ option after_penalized_state
     }
     action {
       motion.type = stand;
-      head.control_mode = search_for_goal_after_penalized;
-      situationStatusOwnHalf = false; 
+      head.control_mode = look_around;
+      situationStatusOwnHalf = true; 
     }
   }
-
-  state wait_for_localization 
-  {
-	  decision 
-	  {
-      if(state_time > 10000)
-        stay;
-      else
-        goto finished;
-	  }
-	  action {
-      motion.type = stand;
-      head.control_mode = search_for_goal_after_penalized;
-      situationStatusOwnHalf = true; 
-	  }
-}
 
   target state finished
   {
@@ -54,10 +37,7 @@ option after_penalized_state
   state completely_lost
   {
     decision {
-      if(goal.own.time_since_seen < 500 
-       || goal.opp.time_since_seen < 500)
-        goto wait_for_localization;
-      else if(state_time > 10000)
+      if(robot_pose.is_valid || state_time > 10000)
         goto finished;
       else
         stay;

@@ -84,13 +84,17 @@ private:
 
   void resetSampleSet(SampleSet& sampleSet);
   void clampSampleSetToField(SampleSet& sampleSet);
-
+  void mirrorSampleSetFieldSides(SampleSet& sampleSet);
   
   bool generateTemplateFromPosition(
     Sample& newTemplate,
     const Vector2<double>& posSeen, 
     const Vector2<double>& posReal) const;
 
+
+  // TODO: this is maybe not the best solution for this
+  Vector2<double> fieldMin;
+  Vector2<double> fieldMax;
 
   /** */
   bool isInsideCarpet(const Vector2<double>& p) const;
