@@ -21,55 +21,59 @@ namespace naoth
     ShadingCorrection();
     ~ShadingCorrection();
 
-    bool loadCorrectionFromFile(string camConfigPath, string hardwareID );
-    void saveCorrectionToFile(string camConfigPath, string hardwareID );
+    bool loadCorrectionFromFiles(string camConfigPath, string hardwareID );
+    bool loadCorrectionFile(string filePath, unsigned int idx);
+    void saveCorrectionToFiles(string camConfigPath, string hardwareID );
+    void saveCorrectionFile(string filePath, unsigned int idx);
+
     void init(unsigned int w, unsigned int h, CameraInfo::CameraID cam);
     void reset();
+    void reset(unsigned int idx);
     void clear();
 
-    inline unsigned int getY(unsigned int x, unsigned int y) const
+    inline unsigned int get(unsigned int idx, unsigned int x, unsigned int y) const
     {
       //if not initialized or invalid pixel, return default value
-      if(x > width || y > height || yC == NULL )
+      if(x > width || y > height || idx > 2 || data[idx] == NULL )
       {
         return 1024;
       }
-      return yC[y * width + x];
-    }//end getY
+      return data[idx][y * width + x];
+    }//end get
 
-    inline unsigned int getY(unsigned int i) const
+    inline unsigned int get(unsigned int idx, unsigned int i) const
     {
       //if not initialized or invalid pixel, return default value
-      if(i >= size || yC == NULL )
+      if(i >= size || idx > 2 || data[idx] == NULL)
       {
         return 1024;
       }
-      return yC[i];
-    }//end getY
+      return data[idx][i];
+    }//end get
 
-    inline void setY(unsigned int i, unsigned int value)
+    inline void set(unsigned int idx, unsigned int x, unsigned int y, unsigned int value)
+    {
+      //if not initialized or invalid pixel, return default value
+      if(x > width || y > height || idx > 2 || data[idx] == NULL )
+      {
+        return;
+      }
+      data[idx][y * width + x] = value;
+    }//end get
+
+    inline void set(unsigned int idx, unsigned int i, unsigned int value)
     {
       //if not initialized or invalid pixel, do nothing
-      if(i >= size || yC == NULL )
+      if(i >= size || idx > 2 || data[idx] == NULL )
       {
         return;
       }
-      yC[i] = value;
+      data[idx][i] = value;
     }//end setY
 
-    inline void setY(unsigned int x, unsigned int y, unsigned int value)
+    inline unsigned short* getDataPointer(unsigned int idx) const
     {
-      //if not initialized or invalid pixel, return default value
-      if(x > width || y > height || yC == NULL )
-      {
-        return;
-      }
-      yC[y * width + x] = value;
-    }//end getY
-
-    inline unsigned short* getYcPointer() const
-    {
-      return yC;
+      return data[idx];
     }
 
     inline unsigned long getSize()const
@@ -79,7 +83,7 @@ namespace naoth
 
 
   private:
-    unsigned short* yC;
+    unsigned short* data[3];
     CameraInfo::CameraID camID;
     unsigned int width;
     unsigned int height;

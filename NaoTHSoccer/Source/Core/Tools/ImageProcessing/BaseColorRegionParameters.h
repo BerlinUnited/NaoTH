@@ -9,6 +9,10 @@ using namespace naoth;
 class BaseColorRegionParameters : public ParameterList
 {
 public:
+  int goalVUdistance;
+  int goalVUdistanceMin;
+  int goalVUdistanceMax;
+
   DoublePixel fieldIndex;
   DoublePixel fieldDist;
 
