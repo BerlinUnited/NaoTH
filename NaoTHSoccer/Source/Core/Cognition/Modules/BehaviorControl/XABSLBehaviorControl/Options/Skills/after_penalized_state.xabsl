@@ -4,17 +4,13 @@
 option after_penalized_state
 //we know, that we must be outside the field close to the center in our own half
 {
-
-  common decision
-  {
-    if((ball.was_seen && ball.distance < 1000)|| goal.own.time_since_seen < 500 
-       || goal.opp.time_since_seen < 500)
-      goto finished;
-  }
       
   initial state localize
   {
     decision {
+      if(goal.own.time_since_seen < 500 
+       || goal.opp.time_since_seen < 500)
+        goto wait_for_localization;
       else if(state_time > 10000)
         goto completely_lost;
       else
@@ -23,9 +19,25 @@ option after_penalized_state
     action {
       motion.type = stand;
       head.control_mode = search_for_goal_after_penalized;
-      situationStatusOwnHalf = true; 
+      situationStatusOwnHalf = false; 
     }
   }
+
+  state wait_for_localization 
+  {
+	  decision 
+	  {
+      if(state_time > 10000)
+        stay;
+      else
+        goto finished;
+	  }
+	  action {
+      motion.type = stand;
+      head.control_mode = search_for_goal_after_penalized;
+      situationStatusOwnHalf = true; 
+	  }
+}
 
   target state finished
   {
@@ -42,8 +54,9 @@ option after_penalized_state
   state completely_lost
   {
     decision {
-      else if(obstacle.ultrasound.distance < 200)
-        goto finished; 
+      if(goal.own.time_since_seen < 500 
+       || goal.opp.time_since_seen < 500)
+        goto wait_for_localization;
       else if(state_time > 10000)
         goto finished;
       else
@@ -51,7 +64,9 @@ option after_penalized_state
     }
     action {
       motion.type = walk;
-      motion.walk_speed.x = 150;
+      motion.walk_speed.x = (obstacle.ultrasound.distance < 350) ? 0 : 150;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
       head.control_mode = search_for_goal;
       situationStatusOwnHalf = false; 
     }  
