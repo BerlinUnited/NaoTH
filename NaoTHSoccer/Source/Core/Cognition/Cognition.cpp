@@ -65,6 +65,7 @@
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/GoalLocator/ActiveGoalLocator/ActiveGoalLocator.h"
 #include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
@@ -164,6 +165,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
+  REGISTER_MODULE(DummyActiveGoalLocator); // has to be after MonteCarloSelfLocator
   REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);

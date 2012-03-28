@@ -20,10 +20,14 @@
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
-    //gridClustering(sampleSet),
+  //gridClustering(sampleSet),
   canopyClustering(theSampleSet, parameters.thresholdCanopy),
-  initialized(false)
+  initialized(false),
+  // ...whole field by default
+  fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0),
+  fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0)
 {
+
   resetSampleSet(theSampleSet);
 
   // infrastructure
@@ -184,22 +188,22 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
 
     // classify the seen goal
 
-    Vector2<double> leftGoalPosition;
-    Vector2<double> rightGoalPosition;
+    const Vector2<double>* leftGoalPosition;
+    const Vector2<double>* rightGoalPosition;
     
     if( getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
         (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
          fabs(getRobotPose().rotation + seenAngle) < Math::pi_2)
       )
     {
-      leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
-      rightGoalPosition = getFieldInfo().opponentGoalPostRight;
+      leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
+      rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
     }
     else
     {
       // own goals are switched (!)
-      leftGoalPosition = getFieldInfo().ownGoalPostRight;
-      rightGoalPosition = getFieldInfo().ownGoalPostLeft;
+      leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
+      rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
     }
 
     
@@ -222,30 +226,45 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
       Sample& sample = sampleSet[j];
       Vector2<double> expectedPostPosition;
 
+      // HACK:? each particle decides for itself
+      if(fabs(sample.rotation + seenAngle) < Math::pi_2)
+      {
+        leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
+        rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
+      }
+      else
+      {
+        // own goals are switched (!)
+        leftGoalPosition = &(getFieldInfo().ownGoalPostRight);
+        rightGoalPosition = &(getFieldInfo().ownGoalPostLeft);
+      }
+
+
+
       if(seenPost.type == GoalPercept::GoalPost::rightPost)
       {
-        expectedPostPosition = rightGoalPosition;
+        expectedPostPosition = *rightGoalPosition;
         // switch if the robot is behind the goal
         if( (expectedPostPosition.x < 0 && sample.translation.x < expectedPostPosition.x) ||
             (expectedPostPosition.x > 0 && sample.translation.x > expectedPostPosition.x))
-          expectedPostPosition = leftGoalPosition;
+          expectedPostPosition = *leftGoalPosition;
       }
       else if(seenPost.type == GoalPercept::GoalPost::leftPost)
       {
-        expectedPostPosition = leftGoalPosition;
+        expectedPostPosition = *leftGoalPosition;
         // switch if the robot is behind the goal
         if( (expectedPostPosition.x < 0 && sample.translation.x < expectedPostPosition.x) ||
             (expectedPostPosition.x > 0 && sample.translation.x > expectedPostPosition.x))
-          expectedPostPosition = rightGoalPosition;
+          expectedPostPosition = *rightGoalPosition;
       }
       else // unknown post
       {
         Vector2<double> globalPercept = sample * seenPost.position;
         // choose the closest one
-        if((globalPercept - rightGoalPosition).abs() < (globalPercept - leftGoalPosition).abs())
-          expectedPostPosition = rightGoalPosition;
+        if((globalPercept - *rightGoalPosition).abs() < (globalPercept - *leftGoalPosition).abs())
+          expectedPostPosition = *rightGoalPosition;
         else
-          expectedPostPosition = leftGoalPosition;
+          expectedPostPosition = *leftGoalPosition;
       }
 
       Vector2<double> relPost = sample/expectedPostPosition;
@@ -666,8 +685,8 @@ bool MonteCarloSelfLocator::generateTemplateFromPosition(
 
 inline bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) const
 {
-  Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
-  Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+  //Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+  //Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
 
   return p.y > fieldMin.y && p.y < fieldMax.y &&
          p.x > fieldMin.x && p.x < fieldMax.x;
@@ -675,8 +694,8 @@ inline bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) cons
 
 inline void MonteCarloSelfLocator::createRandomSample(Sample& sample) const
 {
-  Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
-  Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+  //Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+  //Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
 
   sample.translation.x = Math::random(fieldMin.x, fieldMax.x); //(Math::random()-0.5)*getFieldInfo().xFieldLength;
   sample.translation.y = Math::random(fieldMin.y, fieldMax.y); //(Math::random()-0.5)*getFieldInfo().yFieldLength;
@@ -771,21 +790,30 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // sensor resetting by whole goal
   if(n < oldSampleSet.numberOfParticles && getSensingGoalModel().someGoalWasSeen)
   {
-    Pose2D pose;
-    //20.02.2012
-    //if (getPlayerInfo().gameData.teamColor == GameData::red)
-    //{
-      pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
-    //}else
-    //{
-    //  pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
-    //}//end else
+    
+    // currently, getCompassDirection() is in fact just the rotation of the robot pose
+    Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
 
     if(isInsideCarpet(pose.translation))
     {
       sampleSet[n].translation = pose.translation;
       sampleSet[n].rotation = pose.rotation;
       n++;
+    }
+    
+    // HACK: generate the mirrored pose
+    if(!getRobotPose().isValid)
+    {
+      Pose2D poseMirrored(pose);
+      poseMirrored.translation *= -1;
+      poseMirrored.rotate(Math::pi); 
+
+      if(isInsideCarpet(poseMirrored.translation))
+      {
+        sampleSet[n].translation = pose.translation;
+        sampleSet[n].rotation = pose.rotation;
+        n++;
+      }
     }
   }//end if
 
@@ -1107,9 +1135,30 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::execute()
 {
+  static bool init_own_half = false;
+
+  if(getSituationStatus().ownHalf)
+  {
+    //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+    //fieldMax = Vector2<double>(                             0.0,  getFieldInfo().yFieldLength/2.0);
+    fieldMax.x = 0.0;
+
+    if(!init_own_half) initialized = false;
+
+    clampSampleSetToField(theSampleSet);
+    init_own_half = true;
+  }
+  else
+  {
+    // only own half
+    //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+    //fieldMax = Vector2<double>( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+    fieldMax.x = getFieldInfo().xFieldLength/2.0;
+    init_own_half = false;
+  }
 
   // HACK
-  initialized = initialized || getSensingGoalModel().someGoalWasSeen;
+  //initialized = initialized || getSensingGoalModel().someGoalWasSeen;
 
 
   DEBUG_REQUEST("MCSL:reset_samples",
@@ -1201,15 +1250,18 @@ void MonteCarloSelfLocator::execute()
 
   // try to track the hypothesis
   int clusterSize = canopyClustering.cluster(getRobotPose().translation);
-  DEBUG_REQUEST("MCSL:plots",
-    PLOT("MCSL:clusterSize", clusterSize);
-  );
+  PLOT("MCSL:clusterSize", clusterSize);
   
+
+  // a heap could collect more than 70% of all particles
+  initialized = initialized || (clusterSize > 0.7*(double)theSampleSet.numberOfParticles);
+  PLOT("MCSL:initialized", initialized);
+
   // TODO: find a beter place for it
-  getRobotPose().isValid = true;
+  getRobotPose().isValid = initialized;
 
   // Hypothesis tracking:
-  // the ide is to keep the cluster until it has at lest 1/3 of all particles
+  // the idea is to keep the cluster until it has at lest 1/3 of all particles
   // if not, then jump only if there is anoter cluster having more then 2/3 particles
 
   // if the hypothesis is to small...
@@ -1386,24 +1438,41 @@ void MonteCarloSelfLocator::clampSampleSetToField(SampleSet& sampleSet)
       createRandomSample(sample);
     }
   }//end for
-}//end resetSampleSet
+}//end clampSampleSetToField
 
+
+void MonteCarloSelfLocator::mirrorSampleSetFieldSides(SampleSet& sampleSet)
+{
+  for (unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  {
+    Sample& sample = sampleSet[i];
+    sample.translation *= -1;
+    sample.rotate(Math::pi);
+  }//end for
+}//end mirrorSampleSetFieldSides
 
 
 void MonteCarloSelfLocator::drawPosition() const
 {
   FIELD_DRAWING_CONTEXT;
-  switch( getPlayerInfo().gameData.teamColor )
+  if(getRobotPose().isValid)
   {
-  case GameData::red:
-    PEN("FF0000", 20);
-    break;
-  case GameData::blue:
-    PEN("0000FF", 20);
-    break;
-  default:
+    switch( getPlayerInfo().gameData.teamColor )
+    {
+    case GameData::red:
+      PEN("FF0000", 20);
+      break;
+    case GameData::blue:
+      PEN("0000FF", 20);
+      break;
+    default:
+      PEN("AAAAAA", 20);
+      break;
+    }
+  }
+  else
+  {
     PEN("AAAAAA", 20);
-    break;
   }
 
   ROBOT(getRobotPose().translation.x,
