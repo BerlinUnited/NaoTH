@@ -73,14 +73,8 @@ public:
 
 private:
 
-  double sectorWidth;
   OdometryData lastRobotOdometry;
   Pose2D odometryDelta;
-
-
-  RingBuffer<ScanLineEdgelPercept::EndPoint, 120> buffer;
-  RingBuffer<unsigned int, 120 > timeBuffer;
-
   unsigned int lastTimeObstacleWasSeen;
 };
 
