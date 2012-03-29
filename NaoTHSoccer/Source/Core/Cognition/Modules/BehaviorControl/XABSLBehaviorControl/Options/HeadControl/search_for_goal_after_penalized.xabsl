@@ -31,7 +31,7 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (state_time > 2000 && (state_time > 5000 || goal.own.was_seen || goal.opp.was_seen))
+      if (state_time > 1000 && (state_time > 5000 || goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_left;
       else 
         stay;
@@ -54,7 +54,7 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (state_time > 2000 && (state_time > 5000 || goal.own.was_seen || goal.opp.was_seen))
+      if (state_time > 1000 && (state_time > 5000 || goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_right;
       else 
         stay;
