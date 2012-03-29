@@ -19,6 +19,7 @@
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Pose2D.h"
+#include "Tools/Math/Line.h"
 #include "Tools/Debug/Stopwatch.h"
 
 
@@ -296,7 +297,6 @@ public:
     this->obstacles = obstacles;
   }// end constructor
 
-
   /** The main search function
   * @param start The starting node
   * @param goal The goal node
@@ -308,17 +308,18 @@ public:
 	{
     // set obstacles, goal, start
     this->obstacles = obstacles;
-    this->start = start;
-    this->goal = goal;
+    this->myStart.setPosition(start.getPosition());
+    this->myGoal.setPosition(goal.getPosition());
+    checkWhetherGoalIsInObstacle();
 
-    if(start.hasReached(goal, parameterSet))
+    if(start.hasReached(this->myGoal, parameterSet))
     {
       return start;
     }
     searchTree.clear();
     expandedNodes.clear();
     // push back the start node in vector
-    searchTree.push_back(start);
+    searchTree.push_back(this->myStart);
     // sort the heap
     //push_heap(searchTree.begin(), searchTree.end(), HeapCompare());
     // set the parent node of the start node
@@ -339,11 +340,11 @@ public:
       else
       {
         unsigned int sizeBeforeExpand(searchTree.size());
-        searchTree[nextNodeToExpand].successor(searchTree, expandedNodes, start,
-                                            goal, parameterSet, obstacles, nextNodeToExpand);
+        searchTree[nextNodeToExpand].successor(searchTree, expandedNodes, this->myStart,
+                                            this->myGoal, this->parameterSet, this->obstacles, nextNodeToExpand);
         expandedNodes.push_back(nextNodeToExpand);
         unsigned int sizeAfterExpand(searchTree.size());
-        int result(testNewNodesAgainstGoal(sizeBeforeExpand, sizeAfterExpand,goal));
+        int result(testNewNodesAgainstGoal(sizeBeforeExpand, sizeAfterExpand));
         if(result != -1)
         {
           indexOfBestNode = result;
@@ -351,7 +352,7 @@ public:
         }
       }
     }
-    this->goal.setParentNode(indexOfBestNode);
+    this->myGoal.setParentNode(indexOfBestNode);
     AStarNode result = backtraceNode(indexOfBestNode, pathLength);
     // return the node
     return result;
@@ -385,8 +386,8 @@ private:
   std::vector<Vector2d> obstacles;
 
   // start and goal
-  AStarNode start;
-  AStarNode goal;
+  AStarNode myStart;
+  AStarNode myGoal;
 
   /** 
   * Finds the next node to be expanded
@@ -418,20 +419,18 @@ private:
   /** Tests if any node has reached the goal
   * @param firstNode The first node to test
   * @param lastNode The last node to test
-  * @param goal The goal to test against
   * @return -1, if no node has reached the goal, the number of the node otherwise
   */
-  int testNewNodesAgainstGoal(unsigned int firstNode, unsigned int lastNode,
-                              const AStarNode& goal)
+  int testNewNodesAgainstGoal(unsigned int firstNode, unsigned int lastNode)
   {
     double maxDistance(numeric_limits<double>::infinity());
     double temp(0.0);
     int result(-1);
     for(unsigned int i = firstNode; i < lastNode; i++)
     {
-      if(searchTree[i].hasReached(goal, parameterSet))
+      if(searchTree[i].hasReached(myGoal, parameterSet))
       {
-        temp = searchTree[i].distToOtherNode(goal);
+        temp = searchTree[i].distToOtherNode(myGoal);
         if (temp < maxDistance)
         {
           maxDistance = temp;
@@ -440,7 +439,6 @@ private:
       }
     }
     return result;
-
   }
 
 
@@ -461,6 +459,29 @@ private:
     pathFound = true;
     return searchTree[currentNode];
   }
+
+
+  /** Check whether the Goal is in obstacle
+  * if it is so, the position of the goal is 
+  * changed to the closest point to previous goal
+  */
+  void checkWhetherGoalIsInObstacle()
+  {
+    
+    for(unsigned int i = 0; i < this->obstacles.size(); i++)
+    {
+      if ((this->myGoal.getPosition() - obstacles[i]).abs() <= this->parameterSet.obstacleRadius + this->parameterSet.robotRadius)
+      {
+        Math::LineSegment line(this->myStart.getPosition(), obstacles[i]);
+        Vector2d projection = line.projection(obstacles[i]);
+        double angleToObstacle  = (projection - this->myStart.getPosition()).angle();
+        double distanceToObstacle = (projection - this->myStart.getPosition()).abs();
+        Vector2d nodePosition((distanceToObstacle - this->parameterSet.obstacleRadius - this->parameterSet.robotRadius), 0.0);
+        nodePosition.rotate(angleToObstacle);
+        this->myGoal.setPosition(nodePosition);
+      }//end if
+    }// end for
+  } // end checkWhetherGoalIsInObstacle
 
 };// end class AStartSearch
 

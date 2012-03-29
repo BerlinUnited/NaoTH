@@ -119,6 +119,10 @@ void BaseColorClassifier::execute()
 
   getBaseColorRegionPercept().goalColorRegion.set(getBaseColorRegionPercept().goalBorderMinus, getBaseColorRegionPercept().goalBorderPlus);
 
+  getBaseColorRegionPercept().ballBorderMinus.v = Math::clamp<double>(getBaseColorRegionPercept().goalBorderPlus.v, 0.0, 255.0);
+
+  getBaseColorRegionPercept().ballColorRegion.set(getBaseColorRegionPercept().ballBorderMinus, getBaseColorRegionPercept().ballBorderPlus);
+
   getBaseColorRegionPercept().lastUpdated = getFrameInfo();
 
   runDebugRequests();

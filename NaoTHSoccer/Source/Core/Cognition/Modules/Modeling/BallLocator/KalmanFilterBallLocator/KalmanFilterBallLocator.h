@@ -20,6 +20,7 @@
 #include "Representations/Modeling/KinematicChain.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/SituationStatus.h"
 
 #include "Tools/Math/Matrix2x2.h"
 #include "Tools/Math/Line.h"
@@ -36,6 +37,7 @@ BEGIN_DECLARE_MODULE(KalmanFilterBallLocator)
   REQUIRE(OdometryData)
   REQUIRE(MotionStatus)
   REQUIRE(KinematicChain)
+  REQUIRE(SituationStatus)
   PROVIDE(BallModel)
 END_DECLARE_MODULE(KalmanFilterBallLocator)
 
@@ -77,6 +79,7 @@ private:
   FrameInfo lastFrameInfoWhenBallSeen;
   FrameInfo lastFrameInfo;
   bool modelIsValid;
+  bool wasReactiveInLastFrame;
 
   void reset();
   void resetMatrices();

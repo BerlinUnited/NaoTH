@@ -148,6 +148,9 @@ private:
   /** apply all the updates ba any avaliable sensor data */
   bool updateBySensors(SampleSet& sampleSet) const;
 
+  /** should be always a logical mirror of updateBySensor */
+  bool hasSensorUpdate() const;
+
 
   /****************************************
     drawing methods

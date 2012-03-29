@@ -1053,6 +1053,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
 {
 
   // calculate if sensor data is available
+  // ALWAYS SYNCHRONIZE LOGIC WITH hasSensorUpdate
   bool sensorDataAvailable = false;
   
   // goals
@@ -1131,6 +1132,50 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   return sensorDataAvailable;
 }//end updateBySensors
 
+bool MonteCarloSelfLocator::hasSensorUpdate() const
+{
+
+  // calculate if sensor data is available
+  bool sensorDataAvailable = false;
+
+  // goals
+  if(parameters.updateByGoals)
+  {
+    if(getGoalPercept().getNumberOfSeenPosts() > 0)
+    {
+      sensorDataAvailable = true;
+    }
+  }//end update by goals
+
+
+  // lines
+  if(parameters.updateByLinesTable > 0 && getLinePercept().lines.size() > 0)
+  {
+    sensorDataAvailable = true;
+  }//end update by lines
+
+
+  // corners
+  if(parameters.updateByCornerTable > 0 && getLinePercept().intersections.size() > 0)
+  {
+    sensorDataAvailable = true;
+  }//end update by corners
+
+  // circle
+  if(parameters.updateByCenterCircle > 0 && getLinePercept().middleCircleWasSeen)
+  {
+    sensorDataAvailable = true;
+  }//end update by circle
+
+
+  // flags
+  if(parameters.updateByFlags && getLinePercept().flags.size() > 0)
+  {
+    sensorDataAvailable = true;
+  }//end update by flags
+
+  return sensorDataAvailable;
+}
 
 
 void MonteCarloSelfLocator::execute()
@@ -1139,6 +1184,7 @@ void MonteCarloSelfLocator::execute()
 
   if(getSituationStatus().ownHalf)
   {
+    // only own half
     //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
     //fieldMax = Vector2<double>(                             0.0,  getFieldInfo().yFieldLength/2.0);
     fieldMax.x = 0.0;
@@ -1153,7 +1199,6 @@ void MonteCarloSelfLocator::execute()
   }
   else
   {
-    // only own half
     //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
     //fieldMax = Vector2<double>( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
     fieldMax.x = getFieldInfo().xFieldLength/2.0;
@@ -1211,13 +1256,14 @@ void MonteCarloSelfLocator::execute()
   // reset
   theSampleSet.resetLikelihood();
 
+  bool sensorDataAvailable = hasSensorUpdate();
 
   /************************************
    * motion update
    ************************************/
   {
     // apply some noise if sensor data is available 
-    updateByOdometry(theSampleSet, true);
+    updateByOdometry(theSampleSet, sensorDataAvailable);
     lastRobotOdometry = getOdometryData();
   }
 
@@ -1225,8 +1271,8 @@ void MonteCarloSelfLocator::execute()
   /************************************
    * sensor update
    ************************************/
-  bool sensorDataAvailable = updateBySensors(theSampleSet);
-
+  bool sensorDataAvailableByUpdate = updateBySensors(theSampleSet);
+  ASSERT(sensorDataAvailable == sensorDataAvailableByUpdate);
 
   DEBUG_REQUEST("MCSL:draw_Samples",
     // draw the distribution of the importance 

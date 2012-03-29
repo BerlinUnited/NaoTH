@@ -81,6 +81,6 @@ namespace strategy("Strategy Symbols") {
   };
   enum situationStatus output situationStatus;
   bool output situationStatusOwnHalf;
-  
+  bool output reactiveBallModelNeeded;  
 }
   
