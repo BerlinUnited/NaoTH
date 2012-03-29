@@ -1139,6 +1139,7 @@ void MonteCarloSelfLocator::execute()
 
   if(getSituationStatus().ownHalf)
   {
+    // only own half
     //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
     //fieldMax = Vector2<double>(                             0.0,  getFieldInfo().yFieldLength/2.0);
     fieldMax.x = 0.0;
@@ -1153,7 +1154,6 @@ void MonteCarloSelfLocator::execute()
   }
   else
   {
-    // only own half
     //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
     //fieldMax = Vector2<double>( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
     fieldMax.x = getFieldInfo().xFieldLength/2.0;
