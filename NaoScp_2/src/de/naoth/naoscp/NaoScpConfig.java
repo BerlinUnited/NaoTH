@@ -143,6 +143,8 @@ public class NaoScpConfig
   public String localBinPath(){return localBinPath(sNaoNo);}
   public String localBinPath(String sNaoNo){return localDeployOutPath(sNaoNo) + binPath() + "/";}
   public String localConfigPath(){return jDirPathLabel + "/Config";}
+  public String localConfigDeployOutPath(){return localConfigDeployOutPath(sNaoNo);}
+  public String localConfigDeployOutPath(String sNaoNo){return localDeployOutPath(sNaoNo) + configPath() + "/";}
   public String localDeployRootPath(){return jDirPathLabel + "/Deploy";}
   public String localDeployInPath(){return localDeployInPath(sNaoNo, sNaoByte);}
   public String localDeployInPath(String sNaoNo, String sNaoByte){return localDeployRootPath() + "/in/" + backupTimestamp + "-" + sNaoNo + "-" + sNaoByte;}
