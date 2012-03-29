@@ -41,7 +41,7 @@ project "SPL_SimSpark"
     "opencv_ml"
    }
 
-  targetname "naoth-simspark"
+  targetname "naoth-simspark-spl"
   
 -- removed by fh :) Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
   configuration {"linux"}
