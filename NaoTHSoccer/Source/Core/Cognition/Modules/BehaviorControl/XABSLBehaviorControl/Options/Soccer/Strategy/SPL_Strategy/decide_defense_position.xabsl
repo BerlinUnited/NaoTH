@@ -30,6 +30,7 @@ option decide_defense_position
     }
     action {
       go_to_point(x=-2700, y=0, rot=0);
+      head.control_mode = search_for_goal;
       // goto_ready_position(x=-2700, y=0, rot=0, check_by_line=true, distToLine=600, maxLineDist=2000, minLineDist=100);
     }
   }
