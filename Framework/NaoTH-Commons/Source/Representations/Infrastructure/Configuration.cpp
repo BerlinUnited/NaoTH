@@ -64,6 +64,7 @@ void Configuration::loadFromDir(std::string dirlocation, const std::string& sche
     loadFromSingleDir(publicKeyFile, dirlocation + "general/");
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
     loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + id + "/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + id + "/");
     privateDir = dirlocation + "private/";
     loadFromSingleDir(privateKeyFile, privateDir);
   } else
