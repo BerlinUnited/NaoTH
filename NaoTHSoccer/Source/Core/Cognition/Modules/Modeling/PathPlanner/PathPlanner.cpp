@@ -24,7 +24,6 @@ PathPlanner::PathPlanner()
   DEBUG_REQUEST_REGISTER("PathPlanner:function_values","draw functional value for each node", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:path_on_fied","draw only the path and nodes that lead to goal", false);
   DEBUG_REQUEST_REGISTER("PathPlanner:draw_obstacles", "draw obstacles on field", false);
-  obstaclesPositions.push_back(Vector2d(1200.0, 300.0));
 }
 
 void PathPlanner::execute()
@@ -34,9 +33,9 @@ void PathPlanner::execute()
 
 
   AStarNode start(Vector2d(0.0, 0.0));
-  AStarNode goal(Vector2d(1250.0, 340.0));
+  AStarNode goal(getPath().targetPoint);
   // get obstacles from radar grid
-  //getRadarGrid().getAllObstacles(obstaclesPositions);
+  getRadarGrid().getAllObstacles(obstaclesPositions);
 
   // store the entire path length
   double pathLength;

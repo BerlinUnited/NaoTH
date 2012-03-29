@@ -101,30 +101,37 @@ void RadarGrid::addNonObstaclePoint( Vector2d value)
   {
     return;
   } 
+  // we found some value, 
+  // must update it
   else
   {
     // we have found the pair with this key value
-    // do we use buffer
-    if (useBuffer)
+    // need to update value?
+    if (value.abs() > it->second.mean.abs())
     {
-      // we have at least 2 values in buffer
-      if(it->second.buffer.getNumberOfEntries() > 1)
+      // yes, we do
+      // do we use buffer?
+      if (useBuffer)
       {
-        it->second.buffer.removeFirst();
-        it->second.timeStamp = currentTime;
-        getSumAndAverage(it->second.buffer, it->second.sum, it->second.mean);
-      }//end if
-      //the buffer have no values -> erase the cell from map
-      else
-      {
-        cells.erase(it);
+        // we have at least 2 values in buffer
+        if(it->second.buffer.getNumberOfEntries() > 1)
+        {
+          it->second.buffer.removeFirst();
+          it->second.timeStamp = currentTime;
+          getSumAndAverage(it->second.buffer, it->second.sum, it->second.mean);
+        }//end if
+        //the buffer have no values -> erase the cell from map
+        else
+        {
+          cells.erase(it);
+        }// end els
       }
-    }
-    // no, we don't:
-    // so, just remove this cell
-    else 
-    { 
-      cells.erase(it);
+      // we use no buffer
+      // so, just remove this cell
+      else 
+      { 
+        cells.erase(it);
+      } // end else
     }
   }
 }
