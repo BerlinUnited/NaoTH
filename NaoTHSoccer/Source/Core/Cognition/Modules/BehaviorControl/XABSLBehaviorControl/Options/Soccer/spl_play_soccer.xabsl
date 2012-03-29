@@ -25,6 +25,7 @@ option spl_play_soccer {
       motion.walk.coordinate = hip;
 
       situationStatusOwnHalf = false;
+      reactiveBallModelNeeded = false;
 
       initial_ready_set_play();
       

@@ -15,7 +15,7 @@
 
 KalmanFilterBallLocator::KalmanFilterBallLocator()
   : 
-  modelIsValid(false)
+    modelIsValid(false), wasReactiveInLastFrame(false)
 {
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:draw_ball_on_field", "draw the modelled ball on the field", false);
   DEBUG_REQUEST_REGISTER("KalmanFilterBallLocator:hold_ball_prediction_in_10s", "draw the ball prediction for 10s.", false);
@@ -29,8 +29,10 @@ KalmanFilterBallLocator::KalmanFilterBallLocator()
 
 void KalmanFilterBallLocator::resetMatrices()
 {
-  double rPos   = parameters.sigmaBallPosition;
-  double rSpeed = parameters.sigmaBallSpeed;
+  double rPos   = getSituationStatus().reactiveBallModelNeeded
+      ? parameters.sigmaBallPositionReactive : parameters.sigmaBallPosition;
+  double rSpeed = getSituationStatus().reactiveBallModelNeeded ?
+        parameters.sigmaBallSpeedReactive : parameters.sigmaBallSpeed;
   double q      = parameters.processNoise;
 
   //R : Measurement noise Covariance (S_Z)
@@ -68,6 +70,11 @@ void KalmanFilterBallLocator::execute()
   DEBUG_REQUEST("KalmanFilterBallLocator:reset_matrices",
     resetMatrices();
   );
+
+  if(getSituationStatus().reactiveBallModelNeeded != wasReactiveInLastFrame)
+  {
+    resetMatrices();
+  }
   
   if(getBallPercept().ballWasSeen)
   {
@@ -307,6 +314,7 @@ void KalmanFilterBallLocator::execute()
 
 
   lastFrameInfo = getFrameInfo();
+  wasReactiveInLastFrame = getSituationStatus().reactiveBallModelNeeded;
 }//end execute
 
 

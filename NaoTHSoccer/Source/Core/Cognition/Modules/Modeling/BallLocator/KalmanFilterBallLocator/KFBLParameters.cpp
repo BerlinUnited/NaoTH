@@ -15,7 +15,9 @@ KFBLParameters::KFBLParameters()
   : ParameterList("KFBLParameters")
 {
   PARAMETER_REGISTER(sigmaBallPosition) = 100;
+  PARAMETER_REGISTER(sigmaBallPositionReactive) = 100;
   PARAMETER_REGISTER(sigmaBallSpeed) = 1000;
+  PARAMETER_REGISTER(sigmaBallSpeedReactive) = 350;
 
   PARAMETER_REGISTER(processNoise) = 3;
 
