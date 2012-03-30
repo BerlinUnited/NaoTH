@@ -12,7 +12,7 @@ option initial_ready_set_play
     else if (game.state == penalized)
       goto penalized;
     else if (game.state == finished)
-      goto finished;
+      goto _initial;
     else if(game.state == playing)
       goto playing;
     else if(game.state == unknown)
