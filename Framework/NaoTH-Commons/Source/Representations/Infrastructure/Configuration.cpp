@@ -52,7 +52,7 @@ Configuration::~Configuration()
   }
 }
 
-void Configuration::loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& id)
+void Configuration::loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& bodyID, const std::string& headID)
 {
   if (!g_str_has_suffix(dirlocation.c_str(), "/"))
   {
@@ -63,8 +63,8 @@ void Configuration::loadFromDir(std::string dirlocation, const std::string& sche
   {
     loadFromSingleDir(publicKeyFile, dirlocation + "general/");
     loadFromSingleDir(publicKeyFile, dirlocation + "scheme/" + scheme + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + id + "/");
-    loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + id + "/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "robots/" + bodyID + "/");
+    loadFromSingleDir(publicKeyFile, dirlocation + "robot_heads/" + headID + "/");
     privateDir = dirlocation + "private/";
     loadFromSingleDir(privateKeyFile, privateDir);
   } else

@@ -71,8 +71,7 @@ namespace naoth
         std::getline(schemefile, _scheme);
       }
       
-      _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity);
-      _configuration.loadFromDir(_configDir, _scheme, _headHardwareIdentity);
+      _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity, _headHardwareIdentity);
       theCameraInfo.init(); // TODO: the camera info should not be memeber of platform
 
     }//end init
