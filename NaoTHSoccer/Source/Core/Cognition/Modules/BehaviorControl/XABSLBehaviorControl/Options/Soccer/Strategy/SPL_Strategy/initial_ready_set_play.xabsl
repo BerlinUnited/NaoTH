@@ -48,8 +48,10 @@ option initial_ready_set_play
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
       special_kickoff_done = false;
-			head.control_mode = search_for_ball;
+			head.control_mode = (state_time > 3000 &&  robot_pose.is_valid) ? search_for_ball : search_for_goal;
       motion.type = stand;
+
+      situationStatusOwnHalf = true;
 		}
 	}
 	
