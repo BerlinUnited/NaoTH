@@ -24,6 +24,11 @@ option spl_play_soccer {
       motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;
 
+      situationStatusOwnHalf = false;
+      reactiveBallModelNeeded = false;
+
+      motion.walk.style = fast;
+
       initial_ready_set_play();
       
       // control head movement according to value of head.control_mode

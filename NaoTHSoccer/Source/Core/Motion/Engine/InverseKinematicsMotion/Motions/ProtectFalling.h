@@ -64,7 +64,7 @@ private:
     {
       if ( k < 0 )
       {
-        theMotorJointData.stiffness[i] = -1;
+        theMotorJointData.stiffness[i] = 0; // don't turn the motor off
       }
       else
       {

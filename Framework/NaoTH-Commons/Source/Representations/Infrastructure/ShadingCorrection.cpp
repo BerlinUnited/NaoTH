@@ -54,33 +54,80 @@ bool ShadingCorrection::loadCorrectionFromFiles(string camConfigPath, string har
   bool ok = false;
   if(data[0] != NULL && data[1] != NULL && data[2] != NULL)
   {
-    stringstream cameraYCPath;
-    stringstream cameraUCPath;
-    stringstream cameraVCPath;
+    stringstream cameraYCPathGeneral;
+    stringstream cameraUCPathGeneral;
+    stringstream cameraVCPathGeneral;
 
-    cameraYCPath << camConfigPath << "private/camera_";
-    cameraYCPath << hardwareID << "_" << width << "x" << height;
-    cameraUCPath << cameraYCPath;
-    cameraVCPath << cameraYCPath;
+    stringstream cameraYCPathPrivate;
+    stringstream cameraUCPathPrivate;
+    stringstream cameraVCPathPrivate;
+
+    cameraYCPathPrivate << camConfigPath << "private/camera_";
+    cameraYCPathPrivate << hardwareID << "_" << width << "x" << height;
+    cameraUCPathPrivate << cameraYCPathPrivate;
+    cameraVCPathPrivate << cameraYCPathPrivate;
     if(camID == CameraInfo::Bottom)
     {
-      cameraYCPath << "_bottom.yc";
-      cameraUCPath << "_bottom.uc";
-      cameraVCPath << "_bottom.vc";
+      cameraYCPathPrivate << "_bottom.yc";
+      cameraUCPathPrivate << "_bottom.uc";
+      cameraVCPathPrivate << "_bottom.vc";
     }
     else
     {
-      cameraYCPath << "_top.yc";
-      cameraUCPath << "_top.uc";
-      cameraVCPath << "_top.vc";
+      cameraYCPathPrivate << "_top.yc";
+      cameraUCPathPrivate << "_top.uc";
+      cameraVCPathPrivate << "_top.vc";
     }
    
-    cout << "Loading from " << cameraYCPath.str() << endl;
-    ok = loadCorrectionFile(cameraYCPath.str(), 0);
-    cout << "Loading from " << cameraUCPath.str() << endl;
-    ok = ok || loadCorrectionFile(cameraUCPath.str(), 1);
-    cout << "Loading from " << cameraVCPath.str() << endl;    
-    ok = ok || loadCorrectionFile(cameraVCPath.str(), 2);
+    cameraYCPathGeneral << camConfigPath << "general/camera_";
+    cameraYCPathGeneral << hardwareID << "_" << width << "x" << height;
+    cameraUCPathGeneral << cameraYCPathGeneral;
+    cameraVCPathGeneral << cameraYCPathGeneral;
+    if(camID == CameraInfo::Bottom)
+    {
+      cameraYCPathGeneral << "_bottom.yc";
+      cameraUCPathGeneral << "_bottom.uc";
+      cameraVCPathGeneral << "_bottom.vc";
+    }
+    else
+    {
+      cameraYCPathGeneral << "_top.yc";
+      cameraUCPathGeneral << "_top.uc";
+      cameraVCPathGeneral << "_top.vc";
+    }
+   
+    cout << "Try loading from " << cameraYCPathPrivate.str() << endl;
+    if(!loadCorrectionFile(cameraYCPathPrivate.str(), 0))
+    {
+      cout << "Try loading from " << cameraYCPathGeneral.str() << endl;
+      ok = loadCorrectionFile(cameraYCPathGeneral.str(), 0);
+    }
+    else
+    {
+      ok = true;
+    }
+
+    cout << "Try loading from " << cameraUCPathPrivate.str() << endl;
+    if(!loadCorrectionFile(cameraUCPathPrivate.str(), 0))
+    {
+      cout << "Try loading from " << cameraUCPathGeneral.str() << endl;
+      ok = loadCorrectionFile(cameraUCPathGeneral.str(), 0) || ok;
+    }
+    else
+    {
+      ok = true;
+    }
+
+    cout << "Try loading from " << cameraVCPathPrivate.str() << endl;
+    if(!loadCorrectionFile(cameraVCPathPrivate.str(), 0))
+    {
+      cout << "Try loading from " << cameraVCPathGeneral.str() << endl;
+      ok = loadCorrectionFile(cameraVCPathGeneral.str(), 0) || ok;
+    }
+    else
+    {
+      ok = true;
+    }
   }
   return ok;
 }//end loadCorrectionFromFiles

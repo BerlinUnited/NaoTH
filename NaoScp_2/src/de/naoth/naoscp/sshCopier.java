@@ -288,7 +288,7 @@ abstract class sshCopier extends sshWorker
 
         String localLibPath = config.localLibPath();
         String localBinPath = config.localBinPath();
-        String localConfigPath = config.localConfigPath();
+        String localConfigPath = config.localConfigDeployOutPath();
 
         if(config.backupIsSelected)
         {
@@ -401,7 +401,7 @@ abstract class sshCopier extends sshWorker
             }
           }//end try
         }
-
+        
         if(config.copyConfig)
         {
           File localConfigFiles = new File(localConfigPath);
@@ -412,6 +412,34 @@ abstract class sshCopier extends sshWorker
           rmDirSftp(config.remoteConfigPath() + "/private");
 
           recursiveSftpPut(localConfigFiles, config.remoteConfigPath());
+        }
+        else
+        {
+          try
+          {
+            c.rm(config.remoteConfigPath() + "/general/player.cfg");
+          }
+          catch(SftpException ex)
+          {
+            // if the file is not there its ok
+            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+            {
+              throw ex;
+            }
+          }//end try  
+          try
+          {
+            c.rm(config.remoteConfigPath() + "/private/player.cfg");
+          }
+          catch(SftpException ex)
+          {
+            // if the file is not there its ok
+            if(ex.id != ChannelSftp.SSH_FX_NO_SUCH_FILE)
+            {
+              throw ex;
+            }
+          }//end try  
+          recursiveSftpPut(new File(localConfigPath + "/general/player.cfg"), config.remoteConfigPath() + "/general/player.cfg");
         }
       }
       disconnectChannel();

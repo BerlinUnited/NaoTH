@@ -16,7 +16,7 @@
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 
-class InertialModel
+class InertialModel: public naoth::Printable
 {
 public:
   Vector2<double> orientation;

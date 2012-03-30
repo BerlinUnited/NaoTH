@@ -18,18 +18,22 @@ package de.naoth.naoscp;
 
 
 import java.awt.Color;
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
-import java.net.*;
-import java.text.*;
 import java.awt.Component;
-//import javax.jmdns.ServiceEvent;
-//import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
+import java.io.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.URLDecoder;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Collections;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
-import javax.swing.text.*;
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyledDocument;
 
 
 public class NaoScp extends NaoScpMainFrame
@@ -52,7 +56,7 @@ public class NaoScp extends NaoScpMainFrame
   private HashMap<Integer, String> sNaoWLanIps = new HashMap<Integer, String>();
 
   private ArrayList<JmDNS> jmdnsList = new ArrayList<JmDNS>();
-  private ArrayList<JmdnsServiceListener> jmdnsServiceListenerList = new ArrayList<JmdnsServiceListener>();
+//  private ArrayList<JmdnsServiceListener> jmdnsServiceListenerList = new ArrayList<JmdnsServiceListener>();
   private HashMap<String, ArrayList<InetAddress>> hostAdresses = new HashMap<String, ArrayList<InetAddress>>();
   private Map<String, NaoSshWrapper> services;
   private final DefaultListModel naoModel;
@@ -137,8 +141,9 @@ public class NaoScp extends NaoScpMainFrame
 
     naoModel = new DefaultListModel();
     lstNaos.setModel(naoModel);
+        
+    services = Collections.synchronizedMap(new HashMap<String, NaoSshWrapper>());
     
-    services = new HashMap<String, NaoSshWrapper>();
     try
     {      
       //get own interface ip addresses
@@ -169,7 +174,7 @@ public class NaoScp extends NaoScpMainFrame
           int idx = jmdnsList.indexOf(j);
           JmdnsServiceListener listener = new JmdnsServiceListener(idx);
           jmdnsList.get(idx).addServiceListener("_nao._tcp.local.", listener);
-          jmdnsServiceListenerList.add(listener);
+//          jmdnsServiceListenerList.add(listener);
         }
       }
     }
@@ -856,25 +861,23 @@ public class NaoScp extends NaoScpMainFrame
             copyFiles(new File(cfg.localLibnaothPath() + "/naoth"), localExe);
           }
 
-          if(cfg.copyConfig || cfg.forceBackup)
-          {
-            String myConfigPathIn = cfg.localDeployInPath(sNaoNo, sNaoByte) + "/Config";
-            File myConfigDirIn = new File(myConfigPathIn);
-            myConfigDirIn.mkdirs();
-          }
+          String myConfigPathIn = cfg.localDeployInPath(sNaoNo, sNaoByte) + "/Config";
+          File myConfigDirIn = new File(myConfigPathIn);
+          myConfigDirIn.mkdirs();
+          
+          String myConfigPath = cfg.localDeployOutPath(sNaoNo) + cfg.configPath();
+          File myGenericConfigDir = new File(myConfigPath + "/general");
+          myGenericConfigDir.mkdirs();
 
           if(cfg.copyConfig)
           {
-            String myConfigPath = cfg.localDeployOutPath(sNaoNo) + cfg.configPath();
             File myConfigDir = new File(myConfigPath);
-            myConfigDir.mkdirs();
-
             copyFiles(new File(cfg.localConfigPath()), myConfigDir);
-            writePlayerCfg(new File(myConfigPath + "/private/player.cfg"), sNaoNo);
-            writeTeamcommCfg(new File(myConfigPath + "/private/teamcomm.cfg"));
+            writeTeamcommCfg(new File(myConfigPath + "/general/teamcomm.cfg"));
             writeScheme(new File(myConfigPath + "/scheme.cfg"));
             writeNaoInfo(new File(myConfigPath + "/nao.info"));
           }
+          writePlayerCfg(new File(myConfigPath + "/general/player.cfg"), sNaoNo);
         }
       }
     }
@@ -1316,7 +1319,6 @@ public class NaoScp extends NaoScpMainFrame
       {
         jBackupBox.setEnabled(false);
       }
-
     }
   }
 
@@ -3100,7 +3102,6 @@ public class NaoScp extends NaoScpMainFrame
         config.backupIsSelected = true;
         config.boxSelected = jBackupBox.getSelectedItem().toString();
         config.selectedBackup = config.backups.get(jBackupBox.getSelectedItem()).toString();
-        setCommentText();
       }
       else
       {
@@ -3108,6 +3109,7 @@ public class NaoScp extends NaoScpMainFrame
         config.selectedBackup = "";
         config.backupIsSelected = false;
       }
+      setCommentText();
     }//GEN-LAST:event_jBackupBoxItemStateChanged
 
     private void cbCopyConfigItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbCopyConfigItemStateChanged

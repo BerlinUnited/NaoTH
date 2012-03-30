@@ -43,6 +43,15 @@ void DummyActiveGoalLocator::execute()
     getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
   }
 
+  if(getLocalGoalModel().opponentGoalIsValid)
+  {
+    getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
+  }
+  else
+  {
+    getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
+  }
+
   DEBUG_REQUEST("DummyActiveGoalLocator:draw_goal_model",
     FIELD_DRAWING_CONTEXT;
     if(getLocalGoalModel().opponentGoalIsValid)

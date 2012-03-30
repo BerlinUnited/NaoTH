@@ -21,8 +21,9 @@ public:
   //standardconstructor
   SituationStatus()
   :
-  id(unknown),
-  ownHalf(false)
+    id(unknown),
+    ownHalf(false),
+    reactiveBallModelNeeded(false)
   {
   }
   ~SituationStatus();
@@ -40,6 +41,7 @@ public:
   StatusID id;
 
   bool ownHalf;
+  bool reactiveBallModelNeeded;
   virtual void print(ostream& stream) const;
 
 };

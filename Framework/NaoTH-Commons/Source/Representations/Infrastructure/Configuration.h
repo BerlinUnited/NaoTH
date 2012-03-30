@@ -24,7 +24,7 @@ namespace naoth
     Configuration(const Configuration& orig);
     virtual ~Configuration();
 
-    void loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& id);
+    void loadFromDir(std::string dirlocation, const std::string& scheme, const std::string& bodyID, const std::string& headID);
 
     // note this function only save private keys
     void save();

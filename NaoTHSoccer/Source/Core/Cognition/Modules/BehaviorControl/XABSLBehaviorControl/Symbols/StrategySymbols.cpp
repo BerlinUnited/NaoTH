@@ -82,6 +82,7 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   //}
   // engine.registerEnumeratedOutputSymbol("situationStatus", "StatusID", &getSituationStatusId);
   engine.registerBooleanOutputSymbol("situationStatusOwnHalf", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
+  engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
 
   //Ausgabe in RobotControl
@@ -119,6 +120,16 @@ bool StrategySymbols::getSituationStatusOwnHalf(){
 
 void StrategySymbols::setSituationStatusOwnHalf(bool ownHalf){ 
 	theInstance->getSituationStatus().ownHalf = ownHalf; 
+}
+
+bool StrategySymbols::getReactiveBallModelNeeded()
+{
+  return (theInstance->getSituationStatus().reactiveBallModelNeeded);
+}
+
+void StrategySymbols::setReactiveBallModelRequested(bool reactiveNeeded)
+{
+  theInstance->getSituationStatus().reactiveBallModelNeeded = reactiveNeeded;
 }
 
 Vector2<double> StrategySymbols::calculateGoalieGuardPosition()

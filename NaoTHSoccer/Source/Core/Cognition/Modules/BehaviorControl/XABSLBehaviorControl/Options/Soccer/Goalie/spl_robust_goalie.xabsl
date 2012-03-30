@@ -36,30 +36,17 @@ option spl_robust_goalie{
     }
   }
 
-  state localize{
+  initial state localize{
     decision{
-    else if(robot_pose.is_valid)
+    else if(robot_pose.is_valid && state_time > 1000)
       goto inside_penalty_area;
      else stay;
     }
-    action{
+    action
+    {
       head.control_mode = goalie_look_around;
       motion.type = stand;
     }
   } 
-
-  //TODO delete when robot_pose.is_valid is supported!!
-  initial state start_localize{
-   decision{
-     else if (state_time > 5000)
-       goto localize;
-     else
-       stay; 
-   }
-   action{
-      head.control_mode = goalie_look_around;
-      motion.type = stand;
-    }
-  }
   
 }

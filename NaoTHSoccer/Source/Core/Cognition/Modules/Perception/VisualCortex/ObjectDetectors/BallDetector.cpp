@@ -89,19 +89,23 @@ void BallDetector::execute()
   {
     int largest = blobList.getLargestBlob();
     const Vector2<int>& candidate = blobList.blobs[largest].centerOfMass;
-    double area = blobList.blobs[largest].moments.getRawMoment(0, 0);
-    
-    if(area <= 1) // TODO: this limits the distance of ball recognition
+    // check, whether the point is occupied by bodyContour
+    if (!getBodyContour().isOccupied(candidate))
     {
-      // precise scan
-      regionGrowExpandArea(candidate, getBallPercept().centerInImage, getBallPercept().radiusInImage);
-      getBallPercept().ballWasSeen = true;
-    }
-    else
-    {
-      STOPWATCH_START("BallDetector ~ internalexecute");
-      execute(candidate);
-      STOPWATCH_STOP("BallDetector ~ internalexecute");
+      double area = blobList.blobs[largest].moments.getRawMoment(0, 0);
+
+      if(area <= 1) // TODO: this limits the distance of ball recognition
+      {
+        // precise scan
+        regionGrowExpandArea(candidate, getBallPercept().centerInImage, getBallPercept().radiusInImage);
+        getBallPercept().ballWasSeen = true;
+      }
+      else
+      {
+        STOPWATCH_START("BallDetector ~ internalexecute");
+        execute(candidate);
+        STOPWATCH_STOP("BallDetector ~ internalexecute");
+      }
     }
   }
   else // no orange blobs found in the image 
@@ -119,7 +123,10 @@ void BallDetector::execute()
 
     if(randomScan( ColorClasses::orange, candidate, min, max))
     {
-      execute(candidate);
+      if(!getBodyContour().isOccupied(candidate))
+      {
+        execute(candidate);
+      }
     }
 
     //project the old percept in the image
@@ -382,7 +389,7 @@ void BallDetector::regionGrowExpandArea(
     //get the GRID coordinates of pixel
     const Pixel pixel = getImage().get(currentPoint.x, currentPoint.y);
 
-    //check if the pixel wasn't treated allready and is of a relevant color
+    //check if the pixel wasn't treated already and is of a relevant color
     if(visitedPixels(currentPoint.x, currentPoint.y)) continue; 
     
     if(getColorTable64().getColorClass(pixel) != color)
@@ -418,7 +425,7 @@ void BallDetector::regionGrowExpandArea(
     {
       Vector2<int> neighborPixel = currentPoint + mask[i];
       // check if the pixel is inside the grid
-      // we have to ckeck it here, because in the case the pixel is 
+      // we have to check it here, because in the case the pixel is 
       // outside the grid its index in scaledImageIndex is not defined
       if(neighborPixel.x >= 0 && neighborPixel.x < gridWidth && 
          neighborPixel.y >= 0 && neighborPixel.y < gridHeight &&

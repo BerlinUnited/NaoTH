@@ -101,6 +101,9 @@ private:
   static bool getSituationStatusOwnHalf();
   static void setSituationStatusOwnHalf(bool ownHalf);
 
+  static bool getReactiveBallModelNeeded();
+  static void setReactiveBallModelRequested(bool reactiveNeeded);
+
   Pose2D calculateDefensePose();
   static double defensePoseX();
   static double defensePoseY();

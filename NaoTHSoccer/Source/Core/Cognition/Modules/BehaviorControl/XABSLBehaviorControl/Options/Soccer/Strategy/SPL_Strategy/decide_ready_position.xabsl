@@ -9,7 +9,7 @@ option decide_ready_position
   {
     decision
     {
-      else if(state_time < 6000)
+      else if(state_time < 2000 || !robot_pose.is_valid)
         stay;
       else if(game.own_kickoff)
         goto own_kickoff;
@@ -18,7 +18,7 @@ option decide_ready_position
     }
     action
     {
-      head.control_mode = look_around;
+      head.control_mode =  search_for_goal_after_penalized;
       motion.type = stand;
       
       //only the first we know that we are in our own half

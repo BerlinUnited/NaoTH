@@ -10,7 +10,7 @@ option play_with_check_fall_down
   {
     decision
     {
-      else if (last_state_was_penalized && game.player_number != 1)
+      else if (last_state_was_penalized)
         goto after_penalized_state;
       else
         goto calibrate_before_play;
