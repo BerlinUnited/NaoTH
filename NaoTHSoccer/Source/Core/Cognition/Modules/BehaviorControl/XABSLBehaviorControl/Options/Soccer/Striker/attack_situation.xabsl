@@ -15,7 +15,7 @@ option attack_situation
     }
     action {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot_ckeck_goal(dist=180-20*random);
+      approach_ball_with_correct_foot_ckeck_goal(dist=180, errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);
     }
   }
   
@@ -99,7 +99,7 @@ option attack_situation
 	  action 
 	  {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
 
       //we've seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
@@ -117,7 +117,7 @@ option attack_situation
     }
     action 
     {
-      approach_ball_with_correct_foot(dist=170-20*random, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170, errorX=30+10*random, errorY=30+10*random, errorR=15+5*random, want_to_turn_after_approach=false);
       //turn_to_ball_with_foot(right=true);
     }
   }
@@ -185,7 +185,7 @@ option attack_situation
     }
     action {
       // should execute stand
-      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
       head.control_mode = search_for_ball;
       motion.type = stand;
     }

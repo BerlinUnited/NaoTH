@@ -163,7 +163,8 @@ state rotate_to_critical_ball {
   }
   action {
     head.control_mode = search_for_ball;
-    go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0);
+    go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0,
+                         errorX=30, errorY=30, errorR=15);
     reactiveBallModelNeeded = true;
   }
 }
