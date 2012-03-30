@@ -15,6 +15,12 @@ option spl_playing_striker {
       {
         goto ball_far_away;
       }
+      /*else if(obstacle.ultrasound.distance < 400 
+        && ball.distance < 400
+        && goal.opp.distance > 1500)
+      {
+        goto attack_ball_with_obstacle_close;
+      }*/ 
       else
       {
         goto attacking;
@@ -49,4 +55,13 @@ option spl_playing_striker {
     }
   }
 
+  /*state attack_ball_with_obstacle_close
+  {
+    action 
+    {
+      situation.abortable = true;
+      attack_ball_with_obstacle_close_situation();
+      motion.walk.style = fast;
+    }
+  }*/
 }
