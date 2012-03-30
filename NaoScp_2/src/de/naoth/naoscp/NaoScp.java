@@ -142,45 +142,45 @@ public class NaoScp extends NaoScpMainFrame
     naoModel = new DefaultListModel();
     lstNaos.setModel(naoModel);
         
-    services = Collections.synchronizedMap(new HashMap<String, NaoSshWrapper>());
+    services = new HashMap<String, NaoSshWrapper>();
     
-    try
-    {      
-      //get own interface ip addresses
-      for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) 
-      {
-        NetworkInterface intf = en.nextElement();
-        if(!intf.isLoopback() && intf.isUp())
-        {
-          ArrayList<InetAddress> interfaceAdresses = new ArrayList<InetAddress>();
-          for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) 
-          {
-            InetAddress addr = enumIpAddr.nextElement();
-            {
-              interfaceAdresses.add(addr);
-            }
-          }
-          hostAdresses.put(intf.getName(), interfaceAdresses);
-        }
-      }
-     
-      //hook jmdns service for each address
-      for(String intf : hostAdresses.keySet())
-      {
-        if(hostAdresses.get(intf).size() > 0)
-        {
-          JmDNS j = JmDNS.create(hostAdresses.get(intf).get(0), intf);
-          jmdnsList.add(j);
-          int idx = jmdnsList.indexOf(j);
-          JmdnsServiceListener listener = new JmdnsServiceListener(idx);
-          jmdnsList.get(idx).addServiceListener("_nao._tcp.local.", listener);
-//          jmdnsServiceListenerList.add(listener);
-        }
-      }
-    }
-    catch (IOException ex)
-    {
-    }
+//    try
+//    {      
+//      //get own interface ip addresses
+//      for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) 
+//      {
+//        NetworkInterface intf = en.nextElement();
+//        if(!intf.isLoopback() && intf.isUp())
+//        {
+//          ArrayList<InetAddress> interfaceAdresses = new ArrayList<InetAddress>();
+//          for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) 
+//          {
+//            InetAddress addr = enumIpAddr.nextElement();
+//            {
+//              interfaceAdresses.add(addr);
+//            }
+//          }
+//          hostAdresses.put(intf.getName(), interfaceAdresses);
+//        }
+//      }
+//     
+//      //hook jmdns service for each address
+//      for(String intf : hostAdresses.keySet())
+//      {
+//        if(hostAdresses.get(intf).size() > 0)
+//        {
+//          JmDNS j = JmDNS.create(hostAdresses.get(intf).get(0), intf);
+//          jmdnsList.add(j);
+//          int idx = jmdnsList.indexOf(j);
+//          JmdnsServiceListener listener = new JmdnsServiceListener(idx);
+//          jmdnsList.get(idx).addServiceListener("_nao._tcp.local.", listener);
+////          jmdnsServiceListenerList.add(listener);
+//        }
+//      }
+//    }
+//    catch (IOException ex)
+//    {
+//    }
        
     String value = System.getenv("NAOTH_BZR");
     
