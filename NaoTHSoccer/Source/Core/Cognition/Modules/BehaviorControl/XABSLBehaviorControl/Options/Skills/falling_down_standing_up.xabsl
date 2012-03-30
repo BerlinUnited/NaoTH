@@ -38,8 +38,6 @@ option falling_down_standing_up
     {
       if(action_done)
         goto finished;
-      else if(abs(value=sensor.inertial.y)<15)
-        goto finished;
       else
         stay;
     }

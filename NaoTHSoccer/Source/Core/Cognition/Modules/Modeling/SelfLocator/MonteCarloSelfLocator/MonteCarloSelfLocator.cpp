@@ -1237,7 +1237,7 @@ void MonteCarloSelfLocator::execute()
 
   // treat the situation when the robot has been lifted from the ground
   // (keednapped)
-  if(parameters.treatLiftUp && (
+  if(getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
      !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
   {
