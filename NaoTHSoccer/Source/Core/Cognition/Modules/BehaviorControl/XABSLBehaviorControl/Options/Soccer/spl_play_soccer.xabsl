@@ -27,6 +27,8 @@ option spl_play_soccer {
       situationStatusOwnHalf = false;
       reactiveBallModelNeeded = false;
 
+      motion.walk.style = fast;
+
       initial_ready_set_play();
       
       // control head movement according to value of head.control_mode
