@@ -61,7 +61,8 @@ option dribble_stand_test
     action{
       go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
                            x = ball.left_foot.preview.x - 150 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           y = ball.left_foot.preview.y );
+                           y = ball.left_foot.preview.y,
+                           errorX=30, errorY=30, errorR=15);
       motion.type = walk;
       motion.walk.style = normal;
       motion.walk.coordinate = left_foot;
@@ -82,7 +83,8 @@ option dribble_stand_test
     action{
       go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
                            x = ball.right_foot.preview.x - 150 * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
-                           y = ball.right_foot.preview.y);
+                           y = ball.right_foot.preview.y,
+                           errorX=30, errorY=30, errorR=15);
       motion.type = walk;
       motion.walk.style = normal;
       motion.walk.coordinate = right_foot;
