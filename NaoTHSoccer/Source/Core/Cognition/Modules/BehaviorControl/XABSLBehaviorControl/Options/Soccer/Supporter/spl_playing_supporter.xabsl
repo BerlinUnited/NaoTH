@@ -1,6 +1,76 @@
 /** Playing as supporter */
 option spl_playing_supporter {
-initial state ball_not_seen {
+
+  state avoid_obstacle
+  {
+    decision
+    {
+      if(random < 0.5)
+      {
+        goto move_left_when_obstacle;
+      }
+      else
+      {
+        goto move_right_when_obstacle;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state move_left_when_obstacle
+  {
+    decision
+    { 
+      if(state_time > 1000)
+      {
+        goto ball_not_seen;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 100;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state move_right_when_obstacle
+  {
+    decision
+    { 
+      if(state_time > 1000)
+      {
+        goto ball_not_seen;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = -100;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  initial state ball_not_seen {
    decision{
      if ( last_state_was_penalized )
        goto go_to_default_position; // return from penalty
@@ -18,7 +88,11 @@ initial state ball_not_seen {
 
   state supporting {
     decision{
-      if( action_done && ball.time_since_last_seen > 5000 )
+      if(obstacle.ultrasound.distance < 350)
+      {
+        goto avoid_obstacle;
+      }
+     else if( action_done && ball.time_since_last_seen > 5000 )
         goto ball_not_seen;
       else
         stay;
@@ -32,6 +106,11 @@ initial state ball_not_seen {
     decision {
       if ( ball.was_seen )
         goto supporting;
+      else if(obstacle.ultrasound.distance < 350 && motion.walk_speed.x > 0 
+          && motion.type == walk )
+      {
+        goto avoid_obstacle;
+      }
       else if ( action_done || state_time > 30000)
         goto ball_not_seen;
       else
