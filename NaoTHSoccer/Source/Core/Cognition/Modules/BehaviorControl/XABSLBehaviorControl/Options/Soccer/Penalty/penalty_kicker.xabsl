@@ -40,7 +40,7 @@ option penalty_kicker
   {
     decision
     {
-      if(state_time > 2000)
+      if(state_time > 3000)
       {
         if(action_done)
           goto do_kick;

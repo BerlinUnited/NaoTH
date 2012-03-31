@@ -27,7 +27,7 @@ option kick_ball_with_foot
         stay;
     }
     action {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
     
       motion.type = kick;
       motion.kick.foot = left;
@@ -50,7 +50,7 @@ option kick_ball_with_foot
         stay;
     }
     action {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
     
       motion.type = kick;
       motion.kick.foot = right;
@@ -71,7 +71,7 @@ option kick_ball_with_foot
         stay;
     }
     action {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
     
       motion.type = kick;
       motion.kick.foot = left;
@@ -94,7 +94,7 @@ option kick_ball_with_foot
         stay;
     }
     action {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
     
       motion.type = kick;
       motion.kick.foot = right;
@@ -115,7 +115,7 @@ option kick_ball_with_foot
         stay;
     }
     action {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
       // important: the kick is still being executed,
       // the ball parameter have to passed to adjust the kick
       motion.kick.point.x = ball.x;
@@ -132,7 +132,7 @@ option kick_ball_with_foot
       goto kick;
     }
     action {
-      head.control_mode = search_for_ball;
+      head.control_mode = search_for_ball_force_model;//search_for_ball;
       motion.type = stand;    
     }
   }
