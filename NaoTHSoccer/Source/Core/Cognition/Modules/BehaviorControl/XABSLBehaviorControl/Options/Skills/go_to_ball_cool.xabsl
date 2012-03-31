@@ -6,6 +6,13 @@ option go_to_ball_cool
   /**  */
   bool @right_foot;
 
+  /** error range */
+  float @errorX [mm];
+
+  float @errorY [mm];
+
+  float @errorR [deg];
+
   target state go_to_ball_left_foot_done {
     decision{
       if(action_done)
@@ -16,7 +23,8 @@ option go_to_ball_cool
     action{
       go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
                            x = ball.left_foot.preview.x - @distance * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));
+                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)),
+                           errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = left_foot;
       motion.walk.stop_with_stand = true;
@@ -38,7 +46,8 @@ option go_to_ball_cool
     action{
      go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
                            x = ball.right_foot.preview.x - @distance * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
-                           y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)));
+                           y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)),
+                           errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = right_foot;
       motion.walk.stop_with_stand = true;
@@ -62,7 +71,8 @@ option go_to_ball_cool
     action{
       go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
                            x = ball.left_foot.preview.x - @distance * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));
+                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)),
+                           errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = left_foot;
       motion.walk.stop_with_stand = true;
@@ -83,7 +93,8 @@ option go_to_ball_cool
     action{
      go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
                           x = ball.right_foot.preview.x - @distance * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
-                          y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)));
+                          y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)),
+                           errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = right_foot;
       motion.walk.stop_with_stand = true;

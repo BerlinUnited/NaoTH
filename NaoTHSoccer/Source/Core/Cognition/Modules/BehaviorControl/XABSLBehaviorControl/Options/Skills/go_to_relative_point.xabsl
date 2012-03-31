@@ -10,14 +10,20 @@ option go_to_relative_point
   /**  */
   float @y [mm];
 
+  /** error range */
+  float @errorX [mm]; // 30
+
+  float @errorY [mm]; // 30
+
+  float @errorR [deg]; // 15
 
   target state stand
   {
     decision
     {
-      if ( abs(value= @x) > 40
-        || abs(value= @y) > 40
-        || abs(value= @rotation) > 20)
+      if ( abs(value= @x) > @errorX + 10
+        || abs(value= @y) > @errorY + 10
+        || abs(value= @rotation) > @errorR + 5)
                           
       {
           goto go_to;
@@ -33,9 +39,9 @@ option go_to_relative_point
 
   initial state go_to {
     decision{
-      if ( abs(value= @x) < 30
-        && abs(value= @y) < 30
-        && abs(value= @rotation) < 15)
+      if ( abs(value= @x) < @errorX
+        && abs(value= @y) < @errorY
+        && abs(value= @rotation) < @errorR)
         goto stand;
       else
         stay;

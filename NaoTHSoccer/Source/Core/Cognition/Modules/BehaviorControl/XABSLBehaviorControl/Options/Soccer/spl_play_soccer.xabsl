@@ -19,7 +19,6 @@ option spl_play_soccer {
       team.is_playing_as_striker = false; //when penaliced or fall down ... don't communicate you are striker!
       sensor.camera.reset = false;
       motion.standHeight = -1;
-      motion.walk.style = normal;
       motion.walk.step_control.foot = none;
       motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;

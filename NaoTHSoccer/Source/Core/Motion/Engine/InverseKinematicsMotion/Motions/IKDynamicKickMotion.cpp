@@ -122,7 +122,8 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
       targetPose.time -= theBlackBoard.theRobotInfo.basicTimeStep;
     
     // calculate the chest
-    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(currentPose.pose);
+    bool solved = false;
+    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(currentPose.pose, solved, false);
 
     KinematicChain::LinkID supFoot = KinematicChain::numOfLinks;
     Vector3d lastReqCoM;
@@ -147,7 +148,6 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
       break;
     }
     }
-
     Vector3d adjust = theEngine.balanceCoM(lastReqCoM, supFoot);
 
     //c.hip.translation.y += adjust.y;

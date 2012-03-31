@@ -11,7 +11,9 @@ option clear_ball_far_away{
     }
     action {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach= true);
+      approach_ball_with_correct_foot(dist=170,
+                                      errorX=30, errorY=30, errorR=40,
+                                      want_to_turn_after_approach= true);
     }
   }
 
@@ -46,7 +48,9 @@ option clear_ball_far_away{
     action 
     {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170,
+                                      errorX=30, errorY=30, errorR=40,
+                                      want_to_turn_after_approach=false);
 
       //weve seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
@@ -67,7 +71,8 @@ option clear_ball_far_away{
     }
     action
     {
-      go_to_ball_cool(distance = 170, right_foot=true);
+      go_to_ball_cool(distance = 170, right_foot=true,
+                      errorX=30, errorY=30, errorR=40);
       head.control_mode = search_for_ball;
     }
   }
@@ -125,7 +130,9 @@ option clear_ball_far_away{
     }
     action {
       // should execute stand
-      approach_ball_with_correct_foot(dist=170, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170,
+                                      errorX=30, errorY=30, errorR=40,
+                                      want_to_turn_after_approach=false);
       head.control_mode = search_for_ball;
       motion.type = stand;
     }

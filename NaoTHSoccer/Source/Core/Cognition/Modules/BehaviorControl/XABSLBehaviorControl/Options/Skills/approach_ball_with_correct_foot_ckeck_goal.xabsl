@@ -2,6 +2,13 @@
 option approach_ball_with_correct_foot_ckeck_goal
 {
   float @dist;
+
+  /** error range */
+  float @errorX [mm];
+
+  float @errorY [mm];
+
+  float @errorR [deg];
   
   common decision
   {
@@ -33,7 +40,9 @@ option approach_ball_with_correct_foot_ckeck_goal
     }
     action 
     {
-      approach_ball_with_correct_foot(dist = @dist, want_to_turn_after_approach=true);
+      approach_ball_with_correct_foot(dist = @dist,
+                                      errorX=@errorX, errorY=@errorY, errorR=@errorR,
+                                      want_to_turn_after_approach=true);
       head.control_mode = search_for_goal;
     }
   }
@@ -47,7 +56,9 @@ option approach_ball_with_correct_foot_ckeck_goal
    }
     action 
     {
-      approach_ball_with_correct_foot(dist = @dist, want_to_turn_after_approach=true);
+      approach_ball_with_correct_foot(dist = @dist,
+                                      errorX=@errorX, errorY=@errorY, errorR=@errorR,
+                                      want_to_turn_after_approach=true);
       head.control_mode = search_for_ball;
     }
   }
@@ -59,7 +70,9 @@ option approach_ball_with_correct_foot_ckeck_goal
    }
     action 
     {
-      approach_ball_with_correct_foot(dist = @dist, want_to_turn_after_approach=true);
+      approach_ball_with_correct_foot(dist = @dist,
+                                      errorX=@errorX, errorY=@errorY, errorR=@errorR,
+                                      want_to_turn_after_approach=true);
       head.control_mode = search_for_ball;
     }
   }

@@ -82,7 +82,8 @@ public:
     }
 
     calculateTrajectory(motionRequest);
-    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
+    bool solved = false;
+    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p, solved, false);
     theEngine.solveHipFeetIK(c);
     theEngine.copyLegJoints(theMotorJointData.position);
   }
