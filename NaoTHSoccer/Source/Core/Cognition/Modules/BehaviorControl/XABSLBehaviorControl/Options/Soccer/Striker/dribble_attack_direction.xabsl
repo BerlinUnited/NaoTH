@@ -1,0 +1,206 @@
+/** dribble_attack_direction */
+option dribble_attack_direction {
+
+  common decision
+  {
+    if(ball.time_since_last_seen > 2500)
+      goto finished;
+  }
+
+  initial state decide_dribble_side
+  {
+    decision
+    {
+      else if(attack.direction > 25)//25 or 45?
+        goto approach_for_kick_right;
+      else if(attack.direction < -25)
+        goto approach_for_kick_left;
+      else 
+        goto walk_against_ball;
+    }
+    action
+    {
+	    motion.type = walk;
+	    motion.walk.style = fast;
+	    motion.walk.stop_with_stand = false;
+	    head.control_mode = search_for_ball;
+	  }
+  }
+
+  state approach_for_kick_left {
+    decision{
+      else if(action_done && executed_motion.step_control.right_movable  
+              && ball.time_since_last_seen < 400
+              && ball.left_foot.preview.y <= 0
+              && ball.left_foot.preview.y > -30)
+              /*&& (ball.left_foot.preview.x < 165) 
+              && (ball.left_foot.preview.y > -20)  && (ball.right_foot.preview.y <= 0))*/
+        goto kick_left_foot; //approach_for_kick_left_done;
+      else
+        stay;
+    }
+    action{
+      go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
+                           x = ball.left_foot.preview.x - 160 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
+                           y = ball.left_foot.preview.y,
+                           errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);// + 10 * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk.coordinate = left_foot;
+      motion.walk.stop_with_stand = false;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state approach_for_kick_right {
+    decision{
+      else if(action_done && executed_motion.step_control.left_movable 
+              && ball.time_since_last_seen < 400
+              && ball.right_foot.preview.y >= 0
+              && ball.right_foot.preview.y < 30)
+              /*&& (ball.right_foot.preview.x < 165) 
+              && (ball.right_foot.preview.y < 20) && (ball.right_foot.preview.y >= 0))*/
+        goto kick_right_foot; //approach_for_kick_right_done;
+      else
+        stay;
+    }
+    action{
+      go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
+                           x = ball.right_foot.preview.x - 160 * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
+                           y = ball.right_foot.preview.y,
+                           errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);// - 10 * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)));
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk.coordinate = right_foot;
+      motion.walk.stop_with_stand = false;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state walk_against_ball
+  {
+    decision {
+      else if (state_time < 1000)
+        stay;
+      else 
+        goto finished;
+
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+    }
+  }
+    
+  state kick_right_foot
+  {
+    decision 
+    {
+      else if(state_time > 250)
+      {
+        goto stabilize;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk.step_control.foot = right;
+      motion.walk.coordinate = right_foot;
+      motion.walk.step_control.target.x = ball.right_foot.preview.x+100;
+      motion.walk.step_control.target.y = ball.right_foot.preview.y;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = attack.direction;
+      motion.walk.step_control.time = 250;
+      motion.walk.stop_with_stand = false;
+      //To avoid ball leaving the image when using ball model
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  state kick_left_foot
+  {
+    decision 
+    {
+      else if(state_time > 250)
+      {
+        goto stabilize;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk.step_control.foot = left;
+      motion.walk.coordinate = left_foot;
+      motion.walk.step_control.target.x = ball.left_foot.preview.x+100;
+      motion.walk.step_control.target.y = ball.left_foot.preview.y;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = attack.direction;
+      motion.walk.step_control.time = 250;
+      motion.walk.stop_with_stand = false;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+//Hack: Do not set motion.walk.step_control.foot 
+//      after dribble do keep vaules in queue correct
+  state stabilize
+  {
+    decision
+    {
+      else if(state_time>350)
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk.coordinate = hip;
+      motion.walk_speed.x = ball.percept.x;//ball.preview.x;
+      motion.walk_speed.y = ball.percept.y;//ball.preview.y;
+      motion.walk_speed.rot = clip(value=atan2(y = motion.walk_speed.y, x = motion.walk_speed.x), min=-90, max=90);
+      motion.walk.stop_with_stand = false;
+      motion.walk.step_control.time = 350;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  target state finished
+  {
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk_speed.x = ball.preview.x;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = 0;
+      motion.walk.step_control.foot = none;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = false;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+}

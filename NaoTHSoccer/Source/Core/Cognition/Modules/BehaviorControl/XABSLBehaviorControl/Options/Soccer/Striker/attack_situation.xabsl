@@ -16,6 +16,7 @@ option attack_situation
     action {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
       approach_ball_with_correct_foot_ckeck_goal(dist=180, errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);
+      motion.walk.stop_with_stand = false;
     }
   }
   
@@ -23,13 +24,13 @@ option attack_situation
   {
     decision {
       // start kick towards the goal
-      if(abs(value=attack.direction) < 25 || 
-         (abs(value=attack.direction) < 85 && goal.opp.distance < 1500)) // angle was reached
+      if(abs(value=attack.direction) < 60 || 
+         (abs(value=attack.direction) < 90 && goal.opp.distance < 1800)) // angle was reached
       {
 
         if(goal.opp.time_since_seen < 25000)
         {
-	        goto turn_to_ball_with_foot;
+          goto turn_to_ball_with_foot;
         }
         else // didn't see the goal for long time
         {
@@ -37,10 +38,10 @@ option attack_situation
         }
       }
       // obstacle in front: kick side
-      else if(obstacle.ultrasound.distance < 400)
+      /*else if(obstacle.ultrasound.distance < 400)
       {
         goto turn_to_ball_for_clear; // dribble
-      }
+      }*/
       else
         stay;
     }
@@ -60,13 +61,13 @@ option attack_situation
         // if a goal was seen, try to correct the position
         if(goal.opp.time_since_seen < 10000 || goal.own.time_since_seen < 10000)
         {
-	        // go back
-	        goto position;
+          // go back
+          goto position;
         }
-	      else 
-	      {
+        else 
+        {
           goto turn_to_ball_with_foot;
-	      }
+        }
       }
       else
         stay;
@@ -80,31 +81,27 @@ option attack_situation
 
   state turn_to_ball_with_foot
   {
-	  decision
-	  {
+    decision
+    {
       if(action_done)
       {
-        if((((abs(value=attack.direction) < 15) ||
-        
-            (abs(value=attack.direction) < 45 && goal.opp.distance > 2000)
-            
-           ) &&
-           random > 0.5) || goal.opp.distance > 2000)
+        if(goal.opp.distance > 2400
+          || (abs(value=attack.direction) < 45 && random > 0.4))
           goto dribble;
         else
           goto stabilize_before_kick;
       }
       else stay;
-	  }
-	  action 
-	  {
+    }
+    action 
+    {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
       approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
 
       //we've seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
-	  }
-	}
+    }
+  }
 
   state turn_to_ball_for_clear
   {
@@ -266,9 +263,7 @@ option attack_situation
     action
     {
       situation.abortable = true;
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-      dribble_spl();
+      dribble_attack_direction();
     }
   }
 }
