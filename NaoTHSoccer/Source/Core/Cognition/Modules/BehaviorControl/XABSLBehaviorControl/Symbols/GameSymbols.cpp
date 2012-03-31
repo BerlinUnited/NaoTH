@@ -70,8 +70,9 @@ void GameSymbols::execute()
 
 bool GameSymbols::getOwnKickOff()
 {
-  return theInstance->playerInfo.gameData.playMode == GameData::kick_off_own;
-}//end setWalkSpeedRot
+  return theInstance->playerInfo.gameData.playMode == GameData::kick_off_own
+      || theInstance->playerInfo.gameData.playMode == GameData::penalty_kick_own;
+}//end getOwnKickOff
 
 double GameSymbols::getPlayerNumber()
 {

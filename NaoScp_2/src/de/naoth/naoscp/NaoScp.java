@@ -875,7 +875,6 @@ public class NaoScp extends NaoScpMainFrame
             copyFiles(new File(cfg.localConfigPath()), myConfigDir);
             writeTeamcommCfg(new File(myConfigPath + "/general/teamcomm.cfg"));
             writeScheme(new File(myConfigPath + "/scheme.cfg"));
-            writeNaoInfo(new File(myConfigPath + "/nao.info"));
           }
           writePlayerCfg(new File(myConfigPath + "/general/player.cfg"), sNaoNo);
         }
@@ -1552,24 +1551,6 @@ public class NaoScp extends NaoScpMainFrame
         actionInfo("copyFiles: Unable to copy file: " + src.getAbsolutePath() + " to " + dest.
         getAbsolutePath() + ".");
       }
-    }
-  }
-
-  /**
-   * Creates scheme.cfg with the scheme
-   * @param schemeCfg File
-   */
-  private void writeNaoInfo(File infoFile)
-  {    
-    try
-    {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(infoFile));
-      writer.write("");
-      writer.close();
-    }
-    catch(IOException ioe)
-    {
-      actionInfo("I/O Error in writeNaoInfo- " + ioe.toString());
     }
   }
   
