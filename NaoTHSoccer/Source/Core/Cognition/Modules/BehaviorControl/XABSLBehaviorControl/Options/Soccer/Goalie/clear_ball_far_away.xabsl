@@ -71,8 +71,8 @@ option clear_ball_far_away{
     }
     action
     {
-      go_to_ball_cool(distance = 170, right_foot=true
-                      errorX=30, errorY=30, errorR=40,);
+      go_to_ball_cool(distance = 170, right_foot=true,
+                      errorX=30, errorY=30, errorR=40);
       head.control_mode = search_for_ball;
     }
   }
