@@ -718,7 +718,7 @@ class UltraSoundReceiveData : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required uint32 ultraSoundTimeStep = 1;
+  // optional uint32 ultraSoundTimeStep = 1;
   inline bool has_ultrasoundtimestep() const;
   inline void clear_ultrasoundtimestep();
   static const int kUltraSoundTimeStepFieldNumber = 1;
@@ -3490,7 +3490,7 @@ SensorJointData::mutable_electriccurrent() {
 
 // UltraSoundReceiveData
 
-// required uint32 ultraSoundTimeStep = 1;
+// optional uint32 ultraSoundTimeStep = 1;
 inline bool UltraSoundReceiveData::has_ultrasoundtimestep() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }

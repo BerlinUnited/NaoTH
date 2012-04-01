@@ -82,7 +82,7 @@ void Serializer<UltraSoundReceiveData>::serialize(const UltraSoundReceiveData& r
   }//end for
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
-  message.SerializePartialToZeroCopyStream(&buf);
+  message.SerializeToZeroCopyStream(&buf);
 }//end serialize
 
 

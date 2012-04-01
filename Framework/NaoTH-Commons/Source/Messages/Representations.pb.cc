@@ -660,7 +660,7 @@ void protobuf_AddDesc_Representations_2eproto() {
     "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
     "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
     "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei"
-    "veData\022\032\n\022ultraSoundTimeStep\030\001 \002(\r\022\017\n\007ra"
+    "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra"
     "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig"
     "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025"
     ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr"
@@ -2612,7 +2612,7 @@ bool UltraSoundReceiveData::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required uint32 ultraSoundTimeStep = 1;
+      // optional uint32 ultraSoundTimeStep = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -2705,7 +2705,7 @@ bool UltraSoundReceiveData::MergePartialFromCodedStream(
 
 void UltraSoundReceiveData::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required uint32 ultraSoundTimeStep = 1;
+  // optional uint32 ultraSoundTimeStep = 1;
   if (has_ultrasoundtimestep()) {
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->ultrasoundtimestep(), output);
   }
@@ -2735,7 +2735,7 @@ void UltraSoundReceiveData::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* UltraSoundReceiveData::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required uint32 ultraSoundTimeStep = 1;
+  // optional uint32 ultraSoundTimeStep = 1;
   if (has_ultrasoundtimestep()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->ultrasoundtimestep(), target);
   }
@@ -2768,7 +2768,7 @@ int UltraSoundReceiveData::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required uint32 ultraSoundTimeStep = 1;
+    // optional uint32 ultraSoundTimeStep = 1;
     if (has_ultrasoundtimestep()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::UInt32Size(
@@ -2846,7 +2846,7 @@ void UltraSoundReceiveData::CopyFrom(const UltraSoundReceiveData& from) {
 }
 
 bool UltraSoundReceiveData::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000002) != 0x00000002) return false;
   
   return true;
 }
