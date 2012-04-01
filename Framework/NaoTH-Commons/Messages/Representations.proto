@@ -57,7 +57,7 @@ message SensorJointData {
 }
 
 message UltraSoundReceiveData {
-  required uint32 ultraSoundTimeStep = 1;
+  optional uint32 ultraSoundTimeStep = 1;
   required double rawdata = 2;
   repeated double dataLeft = 3;
   repeated double dataRight = 4;

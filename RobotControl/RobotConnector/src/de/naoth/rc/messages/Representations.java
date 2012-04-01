@@ -3151,7 +3151,7 @@ public final class Representations {
   public interface UltraSoundReceiveDataOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required uint32 ultraSoundTimeStep = 1;
+    // optional uint32 ultraSoundTimeStep = 1;
     boolean hasUltraSoundTimeStep();
     int getUltraSoundTimeStep();
     
@@ -3198,7 +3198,7 @@ public final class Representations {
     }
     
     private int bitField0_;
-    // required uint32 ultraSoundTimeStep = 1;
+    // optional uint32 ultraSoundTimeStep = 1;
     public static final int ULTRASOUNDTIMESTEP_FIELD_NUMBER = 1;
     private int ultraSoundTimeStep_;
     public boolean hasUltraSoundTimeStep() {
@@ -3257,10 +3257,6 @@ public final class Representations {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasUltraSoundTimeStep()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       if (!hasRawdata()) {
         memoizedIsInitialized = 0;
         return false;
@@ -3548,10 +3544,6 @@ public final class Representations {
       }
       
       public final boolean isInitialized() {
-        if (!hasUltraSoundTimeStep()) {
-          
-          return false;
-        }
         if (!hasRawdata()) {
           
           return false;
@@ -3626,7 +3618,7 @@ public final class Representations {
       
       private int bitField0_;
       
-      // required uint32 ultraSoundTimeStep = 1;
+      // optional uint32 ultraSoundTimeStep = 1;
       private int ultraSoundTimeStep_ ;
       public boolean hasUltraSoundTimeStep() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -17327,7 +17319,7 @@ public final class Representations {
       "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
       "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
       "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei",
-      "veData\022\032\n\022ultraSoundTimeStep\030\001 \002(\r\022\017\n\007ra" +
+      "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra" +
       "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig" +
       "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025" +
       ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr" +
