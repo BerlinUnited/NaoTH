@@ -370,7 +370,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 
   if(length > 0) meanY /= length;
 
-  return (numberOfGreen > numberOfSamples/2)?ColorClasses::green:((meanY > (int)getColorClassificationModel().getFieldColorPercept().maxWeightedIndexY/*+getColorClassificationModel().getFieldColorPercept().distY*/)?ColorClasses::white:ColorClasses::none);
+  return (numberOfGreen > numberOfSamples/2) ? ColorClasses::green : ColorClasses::none;
 }//end estimateColorOfSegment
 
 

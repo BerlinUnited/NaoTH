@@ -4,6 +4,14 @@ BaseColorRegionParameters::BaseColorRegionParameters()
 :
   ParameterList("BaseColorRegionParameters")
 {
+  PARAMETER_REGISTER(distGray.y) = 255.0;
+  PARAMETER_REGISTER(distGray.u) = 96.0;
+  PARAMETER_REGISTER(distGray.v) = 48.0;
+
+  PARAMETER_REGISTER(grayLevel.y) = 127.0;
+  PARAMETER_REGISTER(grayLevel.u) = 127.0;
+  PARAMETER_REGISTER(grayLevel.v) = 127.0;
+
   PARAMETER_REGISTER(fieldIndex.y) = 125.0;
   PARAMETER_REGISTER(fieldIndex.u) = 127.0;
   PARAMETER_REGISTER(fieldIndex.v) = 63.0;

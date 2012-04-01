@@ -13,7 +13,7 @@ namespace naoth
 {
 
   /**
-  * A class that defines static conversions between color models for single pixels.
+  * A class that defines static inline conversions between color models for single pixels.
   */
   class ColorModelConversions
   {
@@ -27,7 +27,7 @@ namespace naoth
      *  @param G The G channel of the target pixel.
      *  @param B The B channel of the target pixel.
      */
-    static void fromYCbCrToRGB(unsigned char Y,
+    static inline void fromYCbCrToRGB(unsigned char Y,
                                unsigned char Cb,
                                unsigned char Cr,
                                unsigned char& R,
@@ -54,7 +54,7 @@ namespace naoth
      *  @param Cb The Cb channel of the target pixel.
      *  @param Cr The Cr channel of the target pixel.
      */
-    static void fromRGBToYCbCr(unsigned char R,
+    static inline void fromRGBToYCbCr(unsigned char R,
                                unsigned char G,
                                unsigned char B,
                                unsigned char& Y,
@@ -81,7 +81,7 @@ namespace naoth
      *  @param S The S channel of the target pixel.in 0-1000 1/10 percent
      *  @param I The I channel of the target pixel.in 0-1000 1/10 percent
      */
-    static void fromYUVToHSI(unsigned char Y,
+    static inline void fromYUVToHSI(unsigned char Y,
                                unsigned char U,
                                unsigned char V,
                                unsigned int& H,
@@ -205,7 +205,7 @@ namespace naoth
      *  @param S The S channel of the target pixel.
      *  @param I The I channel of the target pixel.
      */
-    static void fromYCbCrToHSI(unsigned char Y,
+    static inline void fromYCbCrToHSI(unsigned char Y,
                                unsigned char Cb,
                                unsigned char Cr,
                                unsigned char& H,
@@ -249,7 +249,7 @@ namespace naoth
      *  @param Cb The Cb channel of the target pixel.
      *  @param Cr The Cr channel of the target pixel.
      */
-    static void fromHSIToYCbCr(unsigned char H,
+    static inline void fromHSIToYCbCr(unsigned char H,
                                unsigned char S,
                                unsigned char I,
                                unsigned char& Y,
@@ -308,7 +308,7 @@ namespace naoth
      *  @param S The S channel of the target pixel.
      *  @param L The L channel of the target pixel.
      */
-    static void fromYCbCrToTSL(unsigned char Y,
+    static inline void fromYCbCrToTSL(unsigned char Y,
                                unsigned char Cb,
                                unsigned char Cr,
                                unsigned char& T,
@@ -354,7 +354,7 @@ namespace naoth
      *  @param Cb The Cr channel of the target pixel.
      *  @param Cr The Cr channel of the target pixel.
      */
-    static void fromTSLToYCbCr(unsigned char T,
+    static inline void fromTSLToYCbCr(unsigned char T,
                                unsigned char S,
                                unsigned char L,
                                unsigned char& Y,
@@ -388,7 +388,7 @@ namespace naoth
      *  @param Cb The Cr channel of the target pixel.
      *  @param Cr The Cr channel of the target pixel.
      */
-    static void fromTSLToRGB(unsigned char t,
+    static inline void fromTSLToRGB(unsigned char t,
                              unsigned char s,
                              unsigned char l,
                              unsigned char& r,

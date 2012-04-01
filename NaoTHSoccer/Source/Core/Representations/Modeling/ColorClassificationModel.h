@@ -64,7 +64,6 @@ public:
   void setBaseColorRegionPercept(const BaseColorRegionPercept& percept);
   void invalidateBaseColorRegionPercept();
 
-
   inline ColorClasses::Color getColorClass(const Pixel& p) const
   {
     return getColorClass(p.a, p.b, p.c);
@@ -72,22 +71,17 @@ public:
 
   inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
   {
+    
     // green
     if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(a, b, c))
     {
       return ColorClasses::green;
     }//end if
 
-
     // simple classifier (used for tests)
     DEBUG_REQUEST("ColorClassificationModel:use_simpleColorClassifier",
       return simpleColorClassifier.getColorClass(a,b,c);
     );
-
-    /*
-    if(c > fieldColorPercept.maxWeightedIndexCr && b < fieldColorPercept.maxWeightedIndexCb)
-      return ColorClasses::orange;
-    */
 
     if(baseColorRegionPerceptValid)
     {

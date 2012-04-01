@@ -48,51 +48,9 @@ class Histogram: public naoth::Printable
 
     inline void increaseChannelValue(const Pixel& pixel, const ColorClasses::Color& color)
     {
-      // calculate only once
-      //static unsigned int factor = 256 / COLOR_CHANNEL_VALUE_COUNT;
-
-//      switch(color)
-//      {
-//        case ColorClasses::orange:
-//        case ColorClasses::red:
-//          colorChannelHistogramBall[0][pixel.y]++;
-//          colorChannelHistogramBall[1][pixel.u]++;
-//          colorChannelHistogramBall[2][pixel.v]++;
-//          break;
-//        case ColorClasses::yellow:
-//          colorChannelHistogramGoal[0][pixel.y]++;
-//          colorChannelHistogramGoal[1][pixel.u]++;
-//          colorChannelHistogramGoal[2][pixel.v]++;
-//          break;
-//        case ColorClasses::green:
-          colorChannelHistogramField[0][pixel.y]++;
-          colorChannelHistogramField[1][pixel.u]++;
-          colorChannelHistogramField[2][pixel.v]++;
-//          break;
-//        case ColorClasses::white:
-//        case ColorClasses::gray:
-//          colorChannelHistogramLine[0][pixel.y]++;
-//          colorChannelHistogramLine[1][pixel.u]++;
-//          colorChannelHistogramLine[2][pixel.v]++;
-//          break;
-//        default: break;
-//      }//end switch
-
+      colorChannelHistogramField[pixel.v]++;
       colorChannelIsUptodate  = true;
     }//end increaseChannelValue
-
-    inline void collectFieldValue(const Pixel& pixel)
-    {
-      weightedHistY[pixel.y]++;
-      meanFieldY += pixel.y;
-      meanFieldCountY++;
-      weightedHistCb[pixel.u]++;
-    }
-
-    inline double getMeanFieldY() const
-    {
-      return meanFieldY / meanFieldCountY;
-    }
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
     void showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const;
@@ -100,18 +58,10 @@ class Histogram: public naoth::Printable
 
   public:
     // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH
-    unsigned int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
-    unsigned int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
+    int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
+    int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
 
-    unsigned int colorChannelHistogramField[3][COLOR_CHANNEL_VALUE_COUNT];
-    //unsigned int colorChannelHistogramLine[3][COLOR_CHANNEL_VALUE_COUNT];
-    //unsigned int colorChannelHistogramGoal[3][COLOR_CHANNEL_VALUE_COUNT];
-    //unsigned int colorChannelHistogramBall[3][COLOR_CHANNEL_VALUE_COUNT];
-
-    double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
-    double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-    double meanFieldY;
-    double meanFieldCountY;
+    int colorChannelHistogramField[COLOR_CHANNEL_VALUE_COUNT];
 
     unsigned int colorChannelIsUptodate;
 

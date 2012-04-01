@@ -53,8 +53,8 @@ void HistogramFieldDetector::getFieldRectFromHistogram(Vector2<int>& min, Vector
 {
   Vector2<int> actMin(-1,-1);
   Vector2<int> actMax(-1,-1);
-  const unsigned int minXHistLevel = (int) (getColoredGrid().uniformGrid.width * 0.10);
-  const unsigned int minYHistLevel = (int) (getColoredGrid().uniformGrid.height * 0.10);
+  const int minXHistLevel = (int) (getColoredGrid().uniformGrid.width * 0.10);
+  const int minYHistLevel = (int) (getColoredGrid().uniformGrid.height * 0.10);
 
   int whiteCount = 0;
   int otherCount = 0;

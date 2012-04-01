@@ -802,7 +802,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
     }
     
     // HACK: generate the mirrored pose
-    if(!getRobotPose().isValid)
+    if(n < sampleSet.numberOfParticles && !getRobotPose().isValid)
     {
       Pose2D poseMirrored(pose);
       poseMirrored.translation *= -1;

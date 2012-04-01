@@ -56,14 +56,12 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   unsigned int blue = 0;
   Pixel pixel;
 
-  int heightOfHorizon = (int)min(getCameraMatrix().horizon.begin().y, getCameraMatrix().horizon.end().y);
-
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
 
-    getImage().getCorrected(point.x, point.y, pixel);
-    //getImage().get(point.x, point.y, pixel);
+    //getImage().getCorrected(point.x, point.y, pixel);
+    getImage().get(point.x, point.y, pixel);
 
     // TODO: check if it is needed
     // mean color
@@ -78,21 +76,8 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     getColoredGrid().setColor(i, currentPixelColor);
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
-
-    if(point.y > heightOfHorizon)
-    {
-      getHistogram().increaseValue(gridPoint, currentPixelColor);
-      getHistogram().increaseChannelValue(pixel, currentPixelColor);
-
-      //if(getFieldColorPreProcessingPercept().isFieldCromaRed(pixel.v))
-      // consider only points below horizon
-      if(getFieldColorPercept().isFieldCromaRed(pixel.v))
-      {
-        getHistogram().collectFieldValue(pixel);
-      }
-
-      //POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
-    }//end if
+    getHistogram().increaseValue(gridPoint, currentPixelColor);
+    getHistogram().increaseChannelValue(pixel, currentPixelColor);
   }//end for
 
   // 
