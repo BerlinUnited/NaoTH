@@ -93,7 +93,7 @@ public:
       {
         return ColorClasses::yellow;
       }
-      else if(baseColorRegionPercept.isWhite(a, b ,c))
+      else if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
       {
         return ColorClasses::white;
       }

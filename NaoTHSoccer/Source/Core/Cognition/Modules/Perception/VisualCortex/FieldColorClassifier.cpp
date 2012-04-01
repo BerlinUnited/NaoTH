@@ -100,6 +100,7 @@ void FieldColorClassifier::classify()
   }//end for
   STOPWATCH_STOP("FieldColorClassifier:Cr_filtering");
 
+  getFieldColorPercept().set();
   getFieldColorPercept().lastUpdated = getFrameInfo();
   runDebugRequests();
 }

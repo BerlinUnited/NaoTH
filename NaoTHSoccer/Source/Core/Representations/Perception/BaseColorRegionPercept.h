@@ -402,6 +402,11 @@ public:
     return isGrayLevel(pixel.y, pixel.u, pixel.v);
   }
 
+  inline bool isWhiteColorModel(const int& y, const int& u, const int& v) const
+  {
+    return (isGrayLevel(y, u, v) || lineColorRegion.inside(y, u, v));
+  }
+
   inline bool isWhite(const int& y, const int& u, const int& v) const
   {
     return (isGrayLevel(y, u, v) || lineColorRegion.inside(y, u, v)) && !isRedOrOrangeOrPink(y, u, v) && !isYellow(y, u, v);

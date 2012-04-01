@@ -9,9 +9,12 @@
 #define FIELDCOLORPERCEPT_H
 
 #include <Tools/DataStructures/Printable.h>
-#include <Tools/ImageProcessing/ImagePrimitives.h>
+
 #include <Tools/ImageProcessing/FieldColorParameters.h>
+
 #include <Tools/ColorClasses.h>
+
+#include <Tools/Math/Common.h>
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -26,21 +29,32 @@ public:
   double distU;
   int indexU;
 
+  int borderLeftU;
+  int borderRightU;
+
   FrameInfo lastUpdated;
 
   FieldColorPercept()  
   : 
   valid(false),
   distU(5.0),
-  indexU(100)
+  indexU(100),
+  borderLeftU(0),
+  borderRightU(0)
   {}
 
   ~FieldColorPercept()
   {}
 
+  void set()
+  {
+    borderLeftU = (int) Math::clamp<double>(indexU - distU, 0.0, 255.0);
+    borderRightU = (int) Math::clamp<double>(indexU + distU, 0.0, 255.0);
+  }
+
   inline bool isFieldColor(const int& yy, const int& cb, const int& cr) const
   {
-    return abs(cr - indexU) < distU;
+    return borderLeftU < cr && cr < borderRightU;
   }
 
   inline bool isFieldColor(const Pixel& pixel) const
