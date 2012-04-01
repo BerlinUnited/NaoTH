@@ -216,10 +216,10 @@ void MotionSymbols::updateOutputSymbols()
       switch(walkStyle)
       {
         case stable:
-          theInstance->motionRequest.walkRequest.character = 0;
+          theInstance->motionRequest.walkRequest.character = 0.3;
           break;
         case normal:
-          theInstance->motionRequest.walkRequest.character = 0.5;
+          theInstance->motionRequest.walkRequest.character = 0.7;
           break;
         case fast:
           theInstance->motionRequest.walkRequest.character = 1;

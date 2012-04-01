@@ -25,6 +25,7 @@
 // Debug
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugModify.h"
@@ -55,9 +56,6 @@ public:
   /** executes the module */
   void execute();
 
-  void initPercept();
-  void setPercept();
-
 private:
   double adaptationRate;
 
@@ -68,11 +66,23 @@ private:
   RingBufferWithSum<double, 100> goalMeanY;
   RingBufferWithSum<double, 100> goalMeanU;
   RingBufferWithSum<double, 100> goalMeanV;
+
   bool goalIsCalibrating;
 
   double lastMeanY;
   double lastMeanU;
   double lastMeanV;
+
+  //RingBufferWithSum<Vector3<double>, 10> sampleDist;
+  //RingBufferWithSum<Vector3<int>, 10> sampleIndex;
+
+  void initPercepts();
+  //void setPercepts();
+
+  void setColorRegions();
+  void calibrateColorRegions();
+  void calibrateFieldColorRegion();
+  bool isInRegion(Pixel min, Pixel max, Pixel toTest);
 
   void runDebugRequests();
 
@@ -81,6 +91,31 @@ private:
   const Histogram& histogram;
   const ColoredGrid& coloredGrid;
 
+  unsigned int fieldHist[3][COLOR_CHANNEL_VALUE_COUNT];
+  double fieldCalibHist[2][COLOR_CHANNEL_VALUE_COUNT];
+  double fieldWeightedHist[3][COLOR_CHANNEL_VALUE_COUNT];
+  double fieldCalibMeanY;
+  double fieldCalibMeanCountY;
+
+  int calibCount;
+
+  RingBufferWithSum<int, 100> sampleMinDistVu;
+  RingBufferWithSum<int, 100> sampleMaxDistVu;
+
+  Pixel minYellow;
+  Pixel maxYellow;
+
+  PixelT<int> maxWeightedIndex;
+  PixelT<double> maxWeighted;
+  PixelT<double> weighted;
+
+  PixelT<int> distField;
+
+  int minDistVminusU;
+  int maxDistVminusU;
+
+  Pixel minEnv;
+  Pixel maxEnv;
 
 };
 

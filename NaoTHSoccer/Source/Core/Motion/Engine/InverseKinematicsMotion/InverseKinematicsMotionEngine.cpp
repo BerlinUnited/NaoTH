@@ -126,7 +126,7 @@ Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D
   return p;
 }//end interpolate
 
-HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p, bool fix_height)
+HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose& p,bool& sloved, bool fix_height)
 {
   // copy initial values
   HipFeetPose result;
@@ -222,10 +222,20 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
 
     step = Math::clamp(step, max_error, max_step);
 
+    double maxAdjustment = 50;
+    MODIFY("IK_COM_CTR_MAX", maxAdjustment);
     Vector3<double> u;
-    u.x = Math::clamp(e.x * step, -50.0, 50.0);
-    u.y = Math::clamp(e.y * step, -50.0, 50.0);
-    u.z = Math::clamp(e.z * step, -50.0, 50.0)*(!fix_height);
+    if (abs(u.x) > maxAdjustment || abs(u.y) > maxAdjustment)
+    {
+      sloved = false;
+    }
+    else
+    {
+      sloved = true;
+    }
+    u.x = Math::clamp(e.x * step, -maxAdjustment, maxAdjustment);
+    u.y = Math::clamp(e.y * step, -maxAdjustment, maxAdjustment);
+    u.z = Math::clamp(e.z * step, -maxAdjustment, maxAdjustment)*(!fix_height);
 
     result.hip.translation += u;
   }//end for

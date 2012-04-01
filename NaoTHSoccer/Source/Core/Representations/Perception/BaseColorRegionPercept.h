@@ -82,63 +82,63 @@ class BaseColorRegionPercept : public naoth::Printable
     }//end inside
   };
 
-private:
-  double dCb;
-  double dCr;
-
 public:
+
+  PixelT<double> distGray;
+  PixelT<double> grayLevel;
+
   bool ballColorIsCalibrated;
   bool goallColorIsCalibrated;
   bool linesColorIsCalibrated;
   bool fieldColorIsCalibrated;
 
-  DoublePixel ballImageMean;
-  DoublePixel goalImageMean;
-  DoublePixel linesImageMean;
-  DoublePixel fieldImageMean;
+  PixelT<double> ballImageMean;
+  PixelT<double> goalImageMean;
+  PixelT<double> linesImageMean;
+  PixelT<double> fieldImageMean;
 
-  DoublePixel meanEnv;
-  DoublePixel meanImg;
+  PixelT<double> meanEnv;
+  PixelT<double> meanImg;
 
-  DoublePixel diff;
+  PixelT<double> diff;
 
-  DoublePixel dist;
+  PixelT<double> dist;
 
-  DoublePixel fieldIndex;
-  DoublePixel fieldCalibIndex;
-  DoublePixel fieldDist;
-  DoublePixel fieldCalibDist;
+  PixelT<double> fieldIndex;
+  PixelT<double> fieldCalibIndex;
+  PixelT<double> fieldDist;
+  PixelT<double> fieldCalibDist;
 
   double goalVUdistance;
   double goalVUdistanceMin;
   double goalVUdistanceMax;
   
-  DoublePixel goalIndex;
-  DoublePixel goalCalibIndex;
-  DoublePixel goalDist;
-  DoublePixel goalCalibDist;
+  PixelT<double> goalIndex;
+  PixelT<double> goalCalibIndex;
+  PixelT<double> goalDist;
+  PixelT<double> goalCalibDist;
 
-  DoublePixel ballIndex;
-  DoublePixel ballCalibIndex;
-  DoublePixel ballDist;
-  DoublePixel ballCalibDist;
+  PixelT<double> ballIndex;
+  PixelT<double> ballCalibIndex;
+  PixelT<double> ballDist;
+  PixelT<double> ballCalibDist;
 
-  DoublePixel lineIndex;
-  DoublePixel lineCalibIndex;
-  DoublePixel lineDist;
-  DoublePixel lineCalibDist;
+  PixelT<double> lineIndex;
+  PixelT<double> lineCalibIndex;
+  PixelT<double> lineDist;
+  PixelT<double> lineCalibDist;
 
-  DoublePixel fieldBorderPlus;
-  DoublePixel fieldBorderMinus;
+  PixelT<double> fieldBorderPlus;
+  PixelT<double> fieldBorderMinus;
 
-  DoublePixel goalBorderPlus;
-  DoublePixel goalBorderMinus;
+  PixelT<double> goalBorderPlus;
+  PixelT<double> goalBorderMinus;
 
-  DoublePixel ballBorderPlus;
-  DoublePixel ballBorderMinus;
+  PixelT<double> ballBorderPlus;
+  PixelT<double> ballBorderMinus;
 
-  DoublePixel lineBorderPlus;
-  DoublePixel lineBorderMinus;
+  PixelT<double> lineBorderPlus;
+  PixelT<double> lineBorderMinus;
 
   ColorRegion fieldColorRegion;
   ColorRegion goalColorRegion;
@@ -149,8 +149,9 @@ public:
 
   BaseColorRegionPercept()
   {
-    dCb = 96.0;
-    dCr = 48.0;
+    distGray.y = 255.0;
+    distGray.u = 96.0;
+    distGray.v = 48.0;
 
     goalVUdistance = 0.0;
     goalVUdistanceMin = 0.0;
@@ -257,15 +258,15 @@ public:
     ballBorderMinus.v = dMinusV;
     ballColorRegion.set(ballBorderMinus, ballBorderPlus);
 
-    fY = meanImg.y / linesImageMean.y;
+    fY = 1;//meanImg.y / linesImageMean.y;
     dPlusY = fY * lineIndex.y + lineDist.y;
     dMinusY = fY * lineIndex.y - lineDist.y;
 
-    fU = meanImg.u / linesImageMean.u;
+    fU = 1;//meanImg.u / linesImageMean.u;
     dPlusU = fU * lineIndex.u + lineDist.u;
     dMinusU = fU * lineIndex.u - lineDist.u;
 
-    fV = meanImg.v / linesImageMean.v;
+    fV = 1;//meanImg.v / linesImageMean.v;
     dPlusV = fV * lineIndex.v + lineDist.v;
     dMinusV = fV * lineIndex.v - lineDist.v;
 
@@ -276,6 +277,11 @@ public:
     lineBorderPlus.v = dPlusV;
     lineBorderMinus.v = dMinusV;
     lineColorRegion.set(lineBorderMinus, lineBorderPlus);
+
+
+    //dY = meanImg.y / 127.0;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
+    //dCb = meanImg.u / 127.0;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
+    //dCr = meanImg.v / 127.0;//dCr / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;//127.0;
   }
 
   inline bool isYellow(const int& y, const int& u, const int& v) const
@@ -288,7 +294,7 @@ public:
     return pixel.v - pixel.u > goalVUdistance;
   }
 
-  inline bool isYellow2(const Pixel& pixel) const
+  inline bool isPlainYellow(const Pixel& pixel) const
   {
     return goalColorRegion.inside(pixel.y, pixel.u, pixel.v);
   }
@@ -355,48 +361,38 @@ public:
 
   inline bool isGrayLevel(const int& y, const int& u, const int& v) const
   {
-    double fCb = meanImg.y / 128;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
-    double fCr = meanImg.v / 128;//dCr / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;//127.0;
     return
     (
       (
-         y < 5.0
+        y > meanEnv.y// grayLevel.y
+        &&
+        u > grayLevel.u
+        &&
+        v > grayLevel.v
+        &&
+        u < (127.0 + y * distGray.u)
+        &&
+        u < (127.0 + v * distGray.v)
+        &&
+        v < (127.0 + y * distGray.v)
+        &&
+        v < (127.0 + u * distGray.u)
       )
       ||
       (
-         y > 232.0
-      )
-      ||
-      (
-        y > 127.0
+        y <= meanEnv.y//grayLevel.y
         &&
-        u > 127.0
+        u <= grayLevel.u
         &&
-        v > 127.0
+        v <= grayLevel.v
         &&
-        u < (127.0 + y * fCb)
+        u > (127.0 - y * distGray.u)
         &&
-        u < (127.0 + v * fCr)
+        u > (127.0 - v * distGray.v)
         &&
-        v < (127.0 + y * fCr)
+        v > (127.0 - y * distGray.v)
         &&
-        v < (127.0 + u * fCb)
-      )
-      ||
-      (
-        y < 127.0
-        &&
-        u < 127.0
-        &&
-        v < 127.0
-        &&
-        u > (127.0 - y * fCb)
-        &&
-        u > (127.0 - v * fCr)
-        &&
-        v > (127.0 - y * fCr)
-        &&
-        v > (127.0 - u * fCb)
+        v > (127.0 - u * distGray.u)
       )
     );
   }
@@ -408,7 +404,7 @@ public:
 
   inline bool isWhite(const int& y, const int& u, const int& v) const
   {
-    return lineColorRegion.inside(y, u, v) && !isRedOrOrangeOrPink(y, u, v) && !isYellow(y, u, v);
+    return (isGrayLevel(y, u, v) || lineColorRegion.inside(y, u, v)) && !isRedOrOrangeOrPink(y, u, v) && !isYellow(y, u, v);
   }
 
   inline bool isWhite(const Pixel& pixel) const
@@ -431,6 +427,9 @@ public:
     stream << "fieldDistY: " << fieldDist.y << endl;
     stream << "fieldDistU: " << fieldDist.u << endl;
     stream << "fieldDistV: " << fieldDist.v << endl;
+    
+    stream << "goalVUdistanceMin: " << goalVUdistanceMin << endl;
+    stream << "goalVUdistanceMax: " << goalVUdistanceMax << endl;
 
     stream << "goalIndexY: " << goalIndex.y << endl;
     stream << "goalIndexU: " << goalIndex.u << endl;

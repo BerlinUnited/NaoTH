@@ -309,8 +309,7 @@ abstract class sshWorker extends SwingWorker<Boolean, File>
           if(obj instanceof LsEntry)
           {
             LsEntry lsEntry = (LsEntry) obj;
-            if( ! lsEntry.getFilename().equals(".") &&  ! lsEntry.getFilename().
-            equals(".."))
+            if( !lsEntry.getFilename().equals("nao.info") && !lsEntry.getFilename().equals(".") &&  ! lsEntry.getFilename().equals(".."))
             {
               if(lsEntry.getAttrs().isDir())
               {

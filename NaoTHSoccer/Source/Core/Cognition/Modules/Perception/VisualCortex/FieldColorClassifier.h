@@ -12,8 +12,6 @@
 
 // Representations
 #include "Representations/Infrastructure/Image.h"
-#include "Representations/Infrastructure/ColorTable64.h"
-#include "Representations/Perception/BaseColorRegionPercept.h"
 #include "Representations/Perception/FieldColorPercept.h"
 #include "Representations/Infrastructure/FrameInfo.h"
 
@@ -22,19 +20,17 @@
 #include "Tools/Math/Vector3.h"
 
 //Perception
-#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
+#include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/FieldColorParameters.h"
-//#include "Tools/ImageProcessing/CameraParamCorrection.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(FieldColorClassifier)
-  REQUIRE(ColoredGrid)
   REQUIRE(Histogram)
+  REQUIRE(ColoredGrid)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
-  REQUIRE(BaseColorRegionPercept)
 
   PROVIDE(FieldColorPercept)
 END_DECLARE_MODULE(FieldColorClassifier)
@@ -52,19 +48,27 @@ public:
   void execute();
 
 private:
-  double adaptationRate;
+  bool justStarted;
 
   FieldColorParameters fieldParams;
 
-  double weightedSmoothedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedSmoothedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistY[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCb[COLOR_CHANNEL_VALUE_COUNT];
-  double weightedHistCr[COLOR_CHANNEL_VALUE_COUNT];
+  double maxWeightedU;
+  int indexU;
+  
+  double weightedHistU[COLOR_CHANNEL_VALUE_COUNT];
+  int colorChannelHistogram[COLOR_CHANNEL_VALUE_COUNT];
 
-  double smoothRungeKutta4(const unsigned int& idx, double* valueArray);
+  int sampleCount;
+  int maxSampleCount;
 
-  void runDebugRequests(int weigthedMeanY, int meanY);
+  double distCalib;
+
+
+  void classify();
+  void calibrate();
+  void runDebugRequests();
+
+  double smoothRungeKutta4(const int& idx, double* valueArray) const;
 
 };
 

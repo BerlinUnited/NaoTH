@@ -9,21 +9,24 @@ using namespace naoth;
 class BaseColorRegionParameters : public ParameterList
 {
 public:
+  PixelT<double> distGray;
+  PixelT<double> grayLevel;
+
   int goalVUdistance;
   int goalVUdistanceMin;
   int goalVUdistanceMax;
 
-  DoublePixel fieldIndex;
-  DoublePixel fieldDist;
+  PixelT<double> fieldIndex;
+  PixelT<double> fieldDist;
 
-  DoublePixel goalIndex;
-  DoublePixel goalDist;
+  PixelT<double> goalIndex;
+  PixelT<double> goalDist;
 
-  DoublePixel ballIndex;
-  DoublePixel ballDist;
+  PixelT<double> ballIndex;
+  PixelT<double> ballDist;
 
-  DoublePixel lineIndex;
-  DoublePixel lineDist;
+  PixelT<double> lineIndex;
+  PixelT<double> lineDist;
 
   BaseColorRegionParameters();
   ~BaseColorRegionParameters();

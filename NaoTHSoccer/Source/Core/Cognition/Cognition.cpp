@@ -45,10 +45,7 @@
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
-#include "Modules/Perception/VisualCortex/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
-#include "Modules/Perception/VisualCortex/FieldColorClassifierPreProcessor.h"
-#include "Modules/Perception/VisualCortex/FieldColorClassifierPostProcessor.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -136,13 +133,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
   REGISTER_MODULE(ImageCorrector);
-  REGISTER_MODULE(BaseColorClassifier);
-  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
-  REGISTER_MODULE(FieldColorClassifierPreProcessor);
+  REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
-  REGISTER_MODULE(FieldColorClassifierPostProcessor);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
   REGISTER_MODULE(FieldSideDetector);

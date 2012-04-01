@@ -9,11 +9,8 @@
 class FieldColorParameters : public ParameterList
 {
 public:
-  DoublePixel fieldcolorDistMin;
-  DoublePixel fieldcolorDistMax;
 
-  DoublePixel fieldColorMin;
-  DoublePixel fieldColorMax;
+  double CromaRedChannelDistance;
 
   FieldColorParameters();
   ~FieldColorParameters();

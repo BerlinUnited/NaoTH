@@ -28,7 +28,8 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_cool(distance = 170, right_foot=true);
+      go_to_ball_cool(distance = 170, right_foot=true,
+                      errorX=30, errorY=30, errorR=15);
       head.control_mode = search_for_ball;
       motion.walk.style = (ball.distance < 500)?stable:normal;
     }
@@ -39,7 +40,7 @@ option penalty_kicker
   {
     decision
     {
-      if(state_time > 2000)
+      if(state_time > 3000)
       {
         if(action_done)
           goto do_kick;
@@ -51,7 +52,8 @@ option penalty_kicker
     }
     action
     {
-      go_to_ball_cool(distance = 170, right_foot=true);
+      go_to_ball_cool(distance = 170, right_foot=true,
+                      errorX=30, errorY=30, errorR=15);
       motion.type = stand;
       head.control_mode = search_for_ball;
     }
