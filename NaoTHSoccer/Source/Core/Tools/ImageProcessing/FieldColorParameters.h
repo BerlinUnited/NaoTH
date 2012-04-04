@@ -11,6 +11,7 @@ class FieldColorParameters : public ParameterList
 public:
 
   double CromaRedChannelDistance;
+  int MaxCromaBlueChannelValue;
 
   FieldColorParameters();
   ~FieldColorParameters();

@@ -49,6 +49,7 @@ void FieldColorClassifier::execute()
 void FieldColorClassifier::classify()
 {
   getFieldColorPercept().distU = fieldParams.CromaRedChannelDistance;
+  getFieldColorPercept().maxV = fieldParams.MaxCromaBlueChannelValue;
 
   DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:reset",
     justStarted = true;

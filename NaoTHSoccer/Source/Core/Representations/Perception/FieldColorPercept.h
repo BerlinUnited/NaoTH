@@ -32,6 +32,8 @@ public:
   int borderLeftU;
   int borderRightU;
 
+  int maxV;
+
   FrameInfo lastUpdated;
 
   FieldColorPercept()  
@@ -40,7 +42,8 @@ public:
   distU(5.0),
   indexU(100),
   borderLeftU(0),
-  borderRightU(0)
+  borderRightU(0),
+  maxV(127)
   {}
 
   ~FieldColorPercept()
@@ -54,7 +57,7 @@ public:
 
   inline bool isFieldColor(const int& yy, const int& cb, const int& cr) const
   {
-    return borderLeftU < cr && cr < borderRightU;
+    return borderLeftU < cr && cr < borderRightU && cb < maxV;
   }
 
   inline bool isFieldColor(const Pixel& pixel) const

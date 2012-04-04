@@ -85,13 +85,14 @@ public:
 
     if(baseColorRegionPerceptValid)
     {
+      if(baseColorRegionPercept.isYellow(a, b ,c))
+      {
+        return ColorClasses::yellow;
+      }
+      else 
       if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
       {
         return ColorClasses::orange;
-      }
-      else if(baseColorRegionPercept.isYellow(a, b ,c))
-      {
-        return ColorClasses::yellow;
       }
       else if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
       {
