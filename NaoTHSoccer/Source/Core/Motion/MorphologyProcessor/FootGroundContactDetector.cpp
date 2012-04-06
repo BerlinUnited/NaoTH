@@ -29,12 +29,10 @@ void FootGroundContactDetector::update()
   // usually, broken sensors return large values
   for(int i = 0; i < naoth::FSRData::numOfFSR; i++)
   {
-    // 100*1N ~ 100*100g ~ 10kg
-    if(theFSRData.force[i] > 100)
+    if(theFSRData.data[i] > 100)
       theFSRData.valid[i] = false;
     else
       theFSRData.valid[i] = true;
-
   }//end for
 
 
@@ -52,17 +50,17 @@ void FootGroundContactDetector::update()
     theGroundContactModel.rightGroundContact = true;
 
 
-  /*
+  
   if(leftFSRBuffer.getAverage() < 3)
-    theGroundContactModel.leftGroundContact = false;
+    theGroundContactModel.leftGroundContactAverage = false;
   else
-    theGroundContactModel.leftGroundContact = true;
+    theGroundContactModel.leftGroundContactAverage = true;
 
   if(rightFSRBuffer.getAverage() < 3)
-    theGroundContactModel.rightGroundContact = false;
+    theGroundContactModel.rightGroundContactAverage = false;
   else
-    theGroundContactModel.rightGroundContact = true;
-  */
+    theGroundContactModel.rightGroundContactAverage = true;
+  
 
 
   PLOT("FootGroundContactDetector:leftGroundContact", theGroundContactModel.leftGroundContact);

@@ -108,8 +108,8 @@ void InertiaSensorCalibrator::update()
 
   // detect unstable stuff...
   bool unstable = theBlackBoard.theMotionStatus.currentMotion != motion::stand
-    || !theBlackBoard.theGroundContactModel.leftGroundContact 
-    || !theBlackBoard.theGroundContactModel.rightGroundContact;
+    || !theBlackBoard.theGroundContactModel.leftGroundContactAverage
+    || !theBlackBoard.theGroundContactModel.rightGroundContactAverage;
 
     //|| intentionallyMoving()
     //|| !( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) );

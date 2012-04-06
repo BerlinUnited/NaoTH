@@ -326,7 +326,7 @@ bool InverseKinematicsMotionEngine::rotationStabilize(Pose3D& hip, const Pose3D&
     {
       chestRotationStabilizerValue[i] = (e[i] - Math::sgn(e[i]) * threshold) * getParameters().rotationStabilize.k[i];
       chestRotationStabilizerValue[i] = Math::clamp(chestRotationStabilizerValue[i], -maxAngle, maxAngle);
-      chestRotationStabilizerValue[i] *= rotationStabilizeFactor;
+      //chestRotationStabilizerValue[i] *= rotationStabilizeFactor;
       isWorking = true;
     }
   }
