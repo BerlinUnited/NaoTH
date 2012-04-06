@@ -196,8 +196,8 @@ bool Walk::FSRProtection()
   // TODO: check current of leg joints
   // ==> stop walking
 
-  return !theBlackBoard.theGroundContactModel.leftGroundContact && 
-         !theBlackBoard.theGroundContactModel.rightGroundContact;
+  return !theBlackBoard.theGroundContactModel.leftGroundContactAverage && 
+         !theBlackBoard.theGroundContactModel.rightGroundContactAverage;
 
   static unsigned int noTouchCount = 0;
 
