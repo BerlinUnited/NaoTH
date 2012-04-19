@@ -7,7 +7,7 @@
  */
 
 #ifndef _FSRDATA_H
-#define  _FSRDATA_H
+#define _FSRDATA_H
 
 #include <string>
 

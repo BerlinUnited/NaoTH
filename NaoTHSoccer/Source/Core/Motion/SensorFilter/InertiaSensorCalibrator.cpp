@@ -7,6 +7,7 @@
 
 #include "InertiaSensorCalibrator.h"
 
+#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
@@ -20,8 +21,8 @@ InertiaSensorCalibrator::InertiaSensorCalibrator(
   theBlackBoard(bb),
   theCalibrationData(theCalibrationData)
 {
+  DEBUG_REQUEST_REGISTER("InertiaSensorCalibrator:force_calibrate", "", false);
 }
-
 
 // check all request joints' speed, return true if all joints are almost not moving
 bool InertiaSensorCalibrator::intentionallyMoving()
@@ -107,9 +108,12 @@ void InertiaSensorCalibrator::update()
 
 
   // detect unstable stuff...
-  bool unstable = theBlackBoard.theMotionStatus.currentMotion != motion::stand
-    || !theBlackBoard.theGroundContactModel.leftGroundContactAverage
-    || !theBlackBoard.theGroundContactModel.rightGroundContactAverage;
+  bool unstable = 
+        theBlackBoard.theMotionStatus.currentMotion != motion::stand
+    || !theBlackBoard.theGroundContactModel.leftGroundContact
+    || !theBlackBoard.theGroundContactModel.rightGroundContact;
+
+  DEBUG_REQUEST("InertiaSensorCalibrator:force_calibrate", unstable=false; );
 
     //|| intentionallyMoving()
     //|| !( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) );

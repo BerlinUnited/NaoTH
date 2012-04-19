@@ -93,7 +93,7 @@ public:
     {
       point.y -= stepSize;
     }
-    ASSERT(start.x >= 0 && start.x <= cameraResolution.x && start.y >= 0 && start.y <= cameraResolution.y);
+    ASSERT(start.x >= 0 && start.x < cameraResolution.x && start.y >= 0 && start.y < cameraResolution.y);
     return point;
   }
 

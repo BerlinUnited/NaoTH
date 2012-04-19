@@ -48,7 +48,7 @@ void NaoSensorData::get(FSRData& data) const
   {
     data.data[i] = sensorsValue[currentIndex++];
     // The value returned for each FSR is similar to Kg in NaoQi 1.3.17
-    data.force[i] = data.data[i] * 9.81;
+    data.force[i] = data.data[i] * Math::g;
   }
 }//end FSRData
 
@@ -57,7 +57,7 @@ void NaoSensorData::get(AccelerometerData& data) const
   //forum of Aldebaran scale = g/56.0
   //experiments Nao36 scale = g/60.0
   //wrong sign in Aldebaran
-  static float scale_acc = 9.81/60.0;
+  static float scale_acc = Math::g/60.0;
 
   data.rawData.x = sensorsValue[theAccelerometerDataIndex + 0];
   data.rawData.y = sensorsValue[theAccelerometerDataIndex + 1];
