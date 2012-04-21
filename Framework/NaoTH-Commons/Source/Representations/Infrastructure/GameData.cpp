@@ -44,11 +44,11 @@ std::string GameData::gameStateToString(GameData::GameState gameState)
 {
   switch (gameState)
   {
-    case initial: return "initial";
-    case ready: return "ready";
-    case set: return "set";
-    case playing: return "playing";
-    case penalized: return "penalized";
+    case initial: return "Initial";
+    case ready: return "Ready";
+    case set: return "Set";
+    case playing: return "Playing";
+    case penalized: return "Penalized";
     case finished: return "finished";
     default: return "unknown";
   }//end switch
