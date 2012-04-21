@@ -30,6 +30,8 @@ SimSparkController::SimSparkController(const std::string& name)
   theSyncMode(false),
   exiting(false)
 {
+  theGameData.gameState = GameData::unknown;
+
   // register input
   registerInput<AccelerometerData>(*this);
   registerInput<FrameInfo>(*this);
@@ -910,7 +912,11 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
         }
         else
         {
-          theGameData.gameState = state;
+          if ( theGameData.gameState != state )
+          {
+            theGameData.gameState = state;
+            theGameData.timeWhenPlayModeChanged = theFrameInfo.getTime();
+          }
         }
       } else if ("unum" == name) // unum
       {
