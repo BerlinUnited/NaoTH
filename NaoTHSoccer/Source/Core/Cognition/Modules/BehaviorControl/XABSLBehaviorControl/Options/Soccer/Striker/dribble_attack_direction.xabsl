@@ -43,7 +43,7 @@ option dribble_attack_direction {
       go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
                            x = ball.left_foot.preview.x - 160 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
                            y = ball.left_foot.preview.y,
-                           errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);// + 10 * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));
+                           errorX=10+10*random, errorY=10+10*random, errorR=5+5*random);// + 10 * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));
       motion.type = walk;
       motion.walk.style = normal;
       motion.walk.coordinate = left_foot;
@@ -68,7 +68,7 @@ option dribble_attack_direction {
       go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
                            x = ball.right_foot.preview.x - 160 * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
                            y = ball.right_foot.preview.y,
-                           errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);// - 10 * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)));
+                           errorX=10+10*random, errorY=10+10*random, errorR=5+5*random);// - 10 * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)));
       motion.type = walk;
       motion.walk.style = normal;
       motion.walk.coordinate = right_foot;
@@ -116,7 +116,7 @@ option dribble_attack_direction {
       motion.walk.step_control.target.x = ball.right_foot.preview.x+100;
       motion.walk.step_control.target.y = ball.right_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
-      motion.walk.step_control.speed_direction = attack.direction;
+      motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-90, max=0);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
       //To avoid ball leaving the image when using ball model
@@ -147,7 +147,7 @@ option dribble_attack_direction {
       motion.walk.step_control.target.x = ball.left_foot.preview.x+100;
       motion.walk.step_control.target.y = ball.left_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
-      motion.walk.step_control.speed_direction = attack.direction;
+      motion.walk.step_control.speed_direction = clip(value=attack.direction, min=0, max=90);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
       head.motion_type = look_at_world_point;
@@ -163,7 +163,7 @@ option dribble_attack_direction {
   {
     decision
     {
-      else if(state_time>350)
+      else if(state_time>250)
         goto finished;
       else
         stay;
@@ -173,26 +173,29 @@ option dribble_attack_direction {
       motion.type = walk;
       motion.walk.style = fast;
       motion.walk.coordinate = hip;
-      motion.walk_speed.x = ball.percept.x;//ball.preview.x;
-      motion.walk_speed.y = ball.percept.y;//ball.preview.y;
-      motion.walk_speed.rot = clip(value=atan2(y = motion.walk_speed.y, x = motion.walk_speed.x), min=-90, max=90);
+      motion.walk_speed.x = 0; // ball.preview.x;
+      motion.walk_speed.y = 0; //ball.preview.y;
+      motion.walk_speed.rot = 0; //clip(value=atan2(y = motion.walk_speed.y, x = motion.walk_speed.x), min=-90, max=90);
       motion.walk.stop_with_stand = false;
-      motion.walk.step_control.time = 350;
+      motion.walk.step_control.foot = none;
+      //motion.walk.step_control.time = 500;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
       head.point_in_world.z = ball.radius;
     }
   }
+    
 
+  //target state finished
   target state finished
   {
     action
     {
       motion.type = walk;
       motion.walk.style = normal;
-      motion.walk_speed.x = ball.preview.x;
-      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
       motion.walk.step_control.foot = none;
       motion.walk.coordinate = hip;
