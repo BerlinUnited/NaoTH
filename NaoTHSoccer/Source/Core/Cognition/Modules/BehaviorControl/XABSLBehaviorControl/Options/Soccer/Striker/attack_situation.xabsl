@@ -15,7 +15,8 @@ option attack_situation
     }
     action {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot_ckeck_goal(dist=180, errorX=30+10*random, errorY=30+10*random, errorR=15+5*random);
+      approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      motion.type = walk;
       motion.walk.stop_with_stand = false;
     }
   }
@@ -48,6 +49,8 @@ option attack_situation
     action {
       // distance and direction to ball not preserved (!)
       turn_around_ball_face_goal();
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
     }
   }
 
@@ -74,7 +77,10 @@ option attack_situation
     }
     action {
       head.control_mode = search_for_goal;
-      motion.type = stand;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
     }
   }
 
@@ -96,10 +102,12 @@ option attack_situation
     action 
     {
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
-      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170, errorX=15, errorY=15, errorR=15, want_to_turn_after_approach=false);
 
       //we've seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
+      motion.walk.stop_with_stand = false;
+      motion.type = walk;
     }
   }
 
@@ -182,9 +190,10 @@ option attack_situation
     }
     action {
       // should execute stand
-      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170, errorX=10, errorY=10, errorR=5, want_to_turn_after_approach=false);
       head.control_mode = search_for_ball;
-      motion.type = stand;
+      //motion.type = stand;
+      motion.type = walk;
     }
   }
 
@@ -264,6 +273,7 @@ option attack_situation
     {
       situation.abortable = true;
       dribble_attack_direction();
+      motion.walk.stop_with_stand = false;
     }
   }
 }
