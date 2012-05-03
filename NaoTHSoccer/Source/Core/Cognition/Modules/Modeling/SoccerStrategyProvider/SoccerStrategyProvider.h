@@ -10,6 +10,7 @@
 
 #include <ModuleFramework/Module.h>
 
+#include "Tools/DataStructures/RingBuffer.h"
 #include "Tools/Math/Vector3.h"
 
 // Representations
@@ -19,6 +20,7 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/RawAttackDirection.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/PlayersModel.h"
 
@@ -32,6 +34,7 @@ BEGIN_DECLARE_MODULE(SoccerStrategyProvider)
   REQUIRE(PlayerInfo)
   REQUIRE(BodyState)
   REQUIRE(PlayersModel)
+  REQUIRE(RawAttackDirection)
 
   PROVIDE(SoccerStrategy)
 END_DECLARE_MODULE(SoccerStrategyProvider)
@@ -77,6 +80,7 @@ protected:
 
 private:
   FormationParameters theFormationParameters;
+  RingBuffer<Vector2<double>, 10> attackDirectionBuffer;
 };
 
 #endif //__SoccerStrategyProvider_h_
