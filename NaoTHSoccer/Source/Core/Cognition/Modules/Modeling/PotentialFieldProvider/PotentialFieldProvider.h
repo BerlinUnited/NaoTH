@@ -19,6 +19,7 @@
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/SoccerStrategy.h"
+#include "Representations/Modeling/RawAttackDirection.h"
 #include "Representations/Modeling/CompassDirection.h"
 #include "Representations/Motion/MotionStatus.h"
 
@@ -40,7 +41,7 @@ BEGIN_DECLARE_MODULE(PotentialFieldProvider)
   REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
   
-  PROVIDE(SoccerStrategy)
+  PROVIDE(RawAttackDirection)
 END_DECLARE_MODULE(PotentialFieldProvider)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

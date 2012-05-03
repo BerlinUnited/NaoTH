@@ -30,14 +30,14 @@ PotentialFieldProvider::PotentialFieldProvider()
 void PotentialFieldProvider::execute()
 {
   Vector2<double> p = calculatePotentialField(getBallModel().positionPreview);
-  getSoccerStrategy().attackDirection = p;
+  getRawAttackDirection().attackDirection = p;
 
 
   DEBUG_REQUEST("PotentialFieldProvider:attackDirection",
     FIELD_DRAWING_CONTEXT;
     PEN("FFFFFF", 20);
 
-    Vector2<double> targetDir = getSoccerStrategy().attackDirection;
+    Vector2<double> targetDir = getRawAttackDirection().attackDirection;
     targetDir.normalize(200);
 
     ARROW(
@@ -162,7 +162,6 @@ void PotentialFieldProvider::execute()
 Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<double>& point)
 {
   // choose the goal model
-//  Vector2<double> ownGoal = theInstance->goalModel.getTeamGoal(ownColor).calculateCenter();
   GoalModel::Goal oppGoalModel = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
 
   //FIXME: frameWhenOpponentGoalWasSeen not supported by Model anymore!
@@ -184,28 +183,7 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<do
   oppGoal = getMotionStatus().plannedMotion.hip / oppGoal;
   // ----------
 
-  /*
-  double leftOffset = oppGoalModel->leftPost.y - oppGoalModel->leftPost.abs() * Math::fromDegrees(15);
-  double rightOffset = oppGoalModel->rightPost.y + oppGoalModel->rightPost.abs() * Math::fromDegrees(15);
-
-  Vector2<double> oppGoal = oppGoalModel->calculateCenter();
-  oppGoal.x += 100;
-  if (leftOffset > rightOffset)
-  {
-    oppGoal.y = Math::clamp(point.y, rightOffset, leftOffset);
-  }
-  else if ( Math::normalize((oppGoalModel->leftPost-point).angle() - (oppGoalModel->rightPost-point).angle()) < Math::fromDegrees(30) )
-  {
-    oppGoal = oppGoalModel->calculateCenter();
-    Vector2<double> c2r = oppGoalModel->rightPost-oppGoal;
-    c2r.rotate(Math::fromDegrees(-90));
-    double distance = ( getFieldInfo().xPosOpponentGroundline - getFieldInfo().xPosOpponentPenaltyArea ) * 0.5;
-    oppGoal = oppGoal + c2r.normalize(distance);
-  }*/
-  // end --- getGoal() ---
-
   Vector2<double> fieldF = calculateGoalPotentialField(oppGoal, point);
-  //  fieldF -= calculateGoalPotentialField(ownGoal, ball);
 
   Vector2<double> playerF;
   bool isAvoiding = false;

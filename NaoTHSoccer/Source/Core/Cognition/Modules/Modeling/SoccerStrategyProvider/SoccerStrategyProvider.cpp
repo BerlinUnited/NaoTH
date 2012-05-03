@@ -50,6 +50,8 @@ void SoccerStrategyProvider::execute()
   getSoccerStrategy().formation = calculateForamtion();
 
   getSoccerStrategy().timeToBall = estimateTimeToBall();
+
+  // TODO: model attackDirection from RawAttackDirection
 }
 
 Vector2<double> SoccerStrategyProvider::calculateForamtion() const
