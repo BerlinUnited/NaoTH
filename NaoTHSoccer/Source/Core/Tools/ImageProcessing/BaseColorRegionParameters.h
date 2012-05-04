@@ -2,6 +2,7 @@
 #define BASECOLORREGIONPARAMETERS_H
 
 #include <Tools/ImageProcessing/ImagePrimitives.h>
+#include <Tools/ImageProcessing/ColorRegion.h>
 #include "Tools/Debug/DebugParameterList.h"
 
 using namespace naoth;
@@ -9,6 +10,14 @@ using namespace naoth;
 class BaseColorRegionParameters : public ParameterList
 {
 public:
+  ColorRegionParameter fieldParams;
+  ColorRegionParameter linesParams;
+  yellowParamColorRegion yellowGoalParams;
+  skyblueParamColorRegion blueGoalParams;
+  orangeParamColorRegion orangeBallParams;
+  pinkParamColorRegion pinkWaistBandParams;
+  blueParamColorRegion blueWaistBandParams;
+
   PixelT<double> distGray;
   PixelT<double> grayLevel;
 

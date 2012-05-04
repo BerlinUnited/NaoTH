@@ -85,19 +85,38 @@ public:
 
     if(baseColorRegionPerceptValid)
     {
-      if(baseColorRegionPercept.isYellow(a, b ,c))
+      //if(baseColorRegionPercept.isYellow(a, b ,c))
+      if(baseColorRegionPercept.isYellowGoal(a, b ,c))
       {
         return ColorClasses::yellow;
       }
       else 
-      if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
+      //if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
+      if(baseColorRegionPercept.isOrangeBall(a, b ,c))
       {
         return ColorClasses::orange;
       }
-      else if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
+      else
+      if(baseColorRegionPercept.isBlueGoal(a, b ,c))
       {
-        return ColorClasses::white;
+        return ColorClasses::skyblue;
       }
+      else
+      if(baseColorRegionPercept.isPinkWaistBand(a, b ,c))
+      {
+        return ColorClasses::red;
+      }
+      else
+        if(baseColorRegionPercept.isBlueWaistBand(a, b ,c))
+      {
+        return ColorClasses::blue;
+      }
+     //else 
+      ////if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
+      //if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
+      //{
+      //  return ColorClasses::white;
+      //}
     }//end if
     
     

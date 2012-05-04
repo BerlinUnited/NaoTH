@@ -20,6 +20,8 @@ BaseColorClassifier::BaseColorClassifier()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:initWithPerceptParameters", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:savePerceptParameters", " ", false);
+
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_ball", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_goal", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_field", " ", false);
@@ -51,6 +53,19 @@ BaseColorClassifier::BaseColorClassifier()
 
 void BaseColorClassifier::initPercepts()
 {
+  PixelT<int> chDist;
+  PixelT<int> chIdx;
+  regionParams.orangeBallParams.get(chIdx, chDist);    
+  getBaseColorRegionPercept().orangeBall.set(chIdx, chDist);
+  regionParams.blueGoalParams.get(chIdx, chDist);    
+  getBaseColorRegionPercept().blueGoal.set(chIdx, chDist);
+  regionParams.yellowGoalParams.get(chIdx, chDist);    
+  getBaseColorRegionPercept().yellowGoal.set(chIdx, chDist);
+  regionParams.pinkWaistBandParams.get(chIdx, chDist);    
+  getBaseColorRegionPercept().pinkWaistBand.set(chIdx, chDist);
+  regionParams.blueWaistBandParams.get(chIdx, chDist);    
+  getBaseColorRegionPercept().blueWaistBand.set(chIdx, chDist);
+
   getBaseColorRegionPercept().distGray = regionParams.distGray;
   getBaseColorRegionPercept().grayLevel = regionParams.grayLevel;
 
@@ -200,6 +215,27 @@ void BaseColorClassifier::execute()
   //);
 
   setColorRegions();
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:savePerceptParameters",
+    PixelT<int> chDist;
+    PixelT<int> chIdx;
+    getBaseColorRegionPercept().orangeBall.get(chIdx, chDist);
+    regionParams.orangeBallParams.set(chIdx, chDist);    
+    getBaseColorRegionPercept().blueGoal.get(chIdx, chDist);
+    regionParams.blueGoalParams.set(chIdx, chDist);    
+    getBaseColorRegionPercept().yellowGoal.get(chIdx, chDist);
+    regionParams.yellowGoalParams.set(chIdx, chDist);    
+    getBaseColorRegionPercept().pinkWaistBand.get(chIdx, chDist);
+    regionParams.pinkWaistBandParams.set(chIdx, chDist);    
+    getBaseColorRegionPercept().blueWaistBand.get(chIdx, chDist);
+    regionParams.blueWaistBandParams.set(chIdx, chDist);    
+
+    regionParams.orangeBallParams.saveToConfig();
+    regionParams.blueGoalParams.saveToConfig();
+    regionParams.yellowGoalParams.saveToConfig();
+    regionParams.pinkWaistBandParams.saveToConfig();
+    regionParams.blueWaistBandParams.saveToConfig();
+  );
 
   runDebugRequests();
 }//end execute

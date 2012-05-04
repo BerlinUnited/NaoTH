@@ -2,7 +2,14 @@
 
 BaseColorRegionParameters::BaseColorRegionParameters()
 :
-  ParameterList("BaseColorRegionParameters")
+  ParameterList("BaseColorRegionParameters"),
+  fieldParams("Field", ColorClasses::green),
+  linesParams("Lines", ColorClasses::white),
+  yellowGoalParams("YellowGoal"),
+  blueGoalParams("BlueGoal"),
+  orangeBallParams("OrangeBall"),
+  pinkWaistBandParams("PinkWaistBand"),
+  blueWaistBandParams("BlueWaistBand")
 {
   PARAMETER_REGISTER(distGray.y) = 255.0;
   PARAMETER_REGISTER(distGray.u) = 96.0;

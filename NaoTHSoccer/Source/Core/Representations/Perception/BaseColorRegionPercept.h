@@ -3,7 +3,8 @@
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
-#include <Tools/ImageProcessing/BaseColorRegionParameters.h>
+//#include <Tools/ImageProcessing/BaseColorRegionParameters.h>
+#include "Tools/ImageProcessing/ColorRegion.h"
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -13,14 +14,14 @@ using namespace naoth;
 
 class BaseColorRegionPercept : public naoth::Printable
 {
-  class ColorRegion
+  class BaseColorRegion
   {
   private:
     DoublePixel min;
     DoublePixel max;
     bool valid;
   public:
-    ColorRegion()
+    BaseColorRegion()
     {
       set(0, 0, 0, 0, 0, 0);
       valid = false;
@@ -140,10 +141,16 @@ public:
   PixelT<double> lineBorderPlus;
   PixelT<double> lineBorderMinus;
 
-  ColorRegion fieldColorRegion;
-  ColorRegion goalColorRegion;
-  ColorRegion ballColorRegion;
-  ColorRegion lineColorRegion;
+  BaseColorRegion fieldColorRegion;
+  BaseColorRegion goalColorRegion;
+  BaseColorRegion ballColorRegion;
+  BaseColorRegion lineColorRegion;
+
+  yellowColorRegion yellowGoal;
+  skyblueColorRegion blueGoal;
+  orangeColorRegion orangeBall;
+  pinkColorRegion pinkWaistBand;
+  blueColorRegion blueWaistBand;
 
   FrameInfo lastUpdated;
 
@@ -415,6 +422,76 @@ public:
   inline bool isWhite(const Pixel& pixel) const
   {
     return isWhite((int) pixel.y, (int) pixel.u, (int) pixel.v);
+  }
+
+  inline bool isYellowGoal(const int& y, const int& u, const int& v) const
+  {
+    Pixel pixel; 
+    pixel.y = y; 
+    pixel.u = u;
+    pixel.v = v;
+    return isYellowGoal(pixel);
+  }
+
+  inline bool isYellowGoal(const Pixel& pixel) const
+  {
+    return yellowGoal.inside(pixel);
+  }
+
+  inline bool isBlueGoal(const int& y, const int& u, const int& v) const
+  {
+    Pixel pixel; 
+    pixel.y = y; 
+    pixel.u = u;
+    pixel.v = v;
+    return isBlueGoal(pixel);
+  }
+
+  inline bool isBlueGoal(const Pixel& pixel) const
+  {
+    return blueGoal.inside(pixel);
+  }
+
+  inline bool isOrangeBall(const int& y, const int& u, const int& v) const
+  {
+    Pixel pixel; 
+    pixel.y = y; 
+    pixel.u = u;
+    pixel.v = v;
+    return isOrangeBall(pixel);
+  }
+
+  inline bool isOrangeBall(const Pixel& pixel) const
+  {
+    return orangeBall.inside(pixel);
+  }
+
+  inline bool isPinkWaistBand(const int& y, const int& u, const int& v) const
+  {
+    Pixel pixel; 
+    pixel.y = y; 
+    pixel.u = u;
+    pixel.v = v;
+    return isPinkWaistBand(pixel);
+  }
+
+  inline bool isPinkWaistBand(const Pixel& pixel) const
+  {
+    return pinkWaistBand.inside(pixel);
+  }
+
+  inline bool isBlueWaistBand(const int& y, const int& u, const int& v) const
+  {
+    Pixel pixel; 
+    pixel.y = y; 
+    pixel.u = u;
+    pixel.v = v;
+    return isBlueWaistBand(pixel);
+  }
+
+  inline bool isBlueWaistBand(const Pixel& pixel) const
+  {
+    return blueWaistBand.inside(pixel);
   }
 
   inline void print(ostream& stream) const
