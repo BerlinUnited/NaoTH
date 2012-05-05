@@ -124,6 +124,7 @@ private:
   Vector2<double> setpiecePosition;
   double goalKickPlayer;
   bool goalKickPositionLeft;
+  double attackDirection;
 
   static Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
 

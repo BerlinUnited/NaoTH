@@ -80,7 +80,7 @@ protected:
 
 private:
   FormationParameters theFormationParameters;
-  RingBuffer<Vector2<double>, 10> attackDirectionBuffer;
+  RingBuffer<Vector2<double>, 3> attackDirectionBuffer;
 };
 
 #endif //__SoccerStrategyProvider_h_
