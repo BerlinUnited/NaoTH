@@ -12,6 +12,9 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugModify.h"
+#include "Tools/Math/Line.h"
+
+using namespace naoth;
 
 PotentialFieldProvider::PotentialFieldProvider()
 {
@@ -19,9 +22,6 @@ PotentialFieldProvider::PotentialFieldProvider()
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:global","draw gobal potential field", false);
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:goal_field_geometry","...", false);
-  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:different_colors","...", false);
-
-  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_ball_approach_field:local", "...", false);
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection", "draw attack direction", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:goal_target", "draw goal target", false);
@@ -51,7 +51,7 @@ void PotentialFieldProvider::execute()
   // begin --- getGoal() ---
   Vector2<double> targetPoint = getGoalTarget(ballRelative, oppGoalModel);
   // preview
-  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
+  //targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
   // ----------
 
 
@@ -83,7 +83,7 @@ void PotentialFieldProvider::execute()
     Vector2<double> globalBall
         = getRobotPose()*ballRelative;
     CIRCLE(globalBall.x, globalBall.y, 25);
-    Vector2<double> globalTarget = getRobotPose()*targetDir;
+    Vector2<double> globalTarget = getRobotPose()*(ballRelative+targetDir);
 
     ARROW(
           globalBall.x,
@@ -132,36 +132,29 @@ void PotentialFieldProvider::execute()
   DEBUG_REQUEST("PotentialFieldProvider:draw_potential_field:global",
     FIELD_DRAWING_CONTEXT;
 
-    const double stepX = (getFieldInfo().xPosOpponentGroundline - getFieldInfo().xPosOwnGroundline)/50.0;
-    const double stepY = (getFieldInfo().yPosLeftSideline - getFieldInfo().yPosRightSideline)/50.0;
+    const double stepX =
+      (getFieldInfo().xPosOpponentGroundline - getFieldInfo().xPosOwnGroundline)/50.0;
+    const double stepY =
+        (getFieldInfo().yPosLeftSideline - getFieldInfo().yPosRightSideline)/50.0;
 
-    Pose2D robotPose;
-    MODIFY("PotentialFieldProvider:global_drawing_direction", robotPose.rotation);
-
-    GoalModel::Goal gt;
-    gt.leftPost = robotPose/getFieldInfo().opponentGoalPostLeft;
-    gt.rightPost = robotPose/getFieldInfo().opponentGoalPostRight;
-    PEN("0000FF", 10);
-    CIRCLE(gt.leftPost.x, gt.leftPost.y, 50);
-    CIRCLE(gt.rightPost.x, gt.rightPost.y, 50);
-
-    for (robotPose.translation.x = getFieldInfo().xPosOwnGroundline; robotPose.translation.x <= getFieldInfo().xPosOpponentGroundline; robotPose.translation.x += stepX)
+    Vector2<double> simulatedGlobalBall;
+    for (simulatedGlobalBall.x = getFieldInfo().xPosOwnGroundline;
+         simulatedGlobalBall.x <= getFieldInfo().xPosOpponentGroundline;
+         simulatedGlobalBall.x += stepX)
     {
-      for (robotPose.translation.y = getFieldInfo().yPosRightSideline; robotPose.translation.y <= getFieldInfo().yPosLeftSideline; robotPose.translation.y += stepY)
+      for (simulatedGlobalBall.y = getFieldInfo().yPosRightSideline;
+           simulatedGlobalBall.y <= getFieldInfo().yPosLeftSideline;
+           simulatedGlobalBall.y += stepY)
       {
         PEN("FFFFFF", 5);
-        GoalModel::Goal g;
-        g.leftPost = robotPose/getFieldInfo().opponentGoalPostLeft;
-        g.rightPost = robotPose/getFieldInfo().opponentGoalPostRight;
+        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
 
-        Vector2<double> ball;
-        Vector2<double> goal = getGoalTarget(ball, g);
-        
-        Vector2<double> f = calculateGoalPotentialField(goal, ball);
+        Vector2<double> f = calculatePotentialField(simulatedGlobalBall, target, obstacles);
 
         f.normalize(50);
-        f = robotPose*f;
-        ARROW(robotPose.translation.x, robotPose.translation.y, f.x, f.y);
+        f = robotPose*(f+simulatedLocalBall);
+        ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
       }
     }
   );
@@ -171,7 +164,9 @@ list<Vector2<double> > PotentialFieldProvider::getValidObstacles()
 {
   std::list<Vector2<double> > result;
 
-  for (vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().opponents.begin(); iter != getPlayersModel().opponents.end(); ++iter)
+  for (vector<PlayersModel::Player>::const_iterator iter =
+       getPlayersModel().opponents.begin();
+       iter != getPlayersModel().opponents.end(); ++iter)
   {
     if (getFrameInfo().getTimeSince(iter->frameInfoWhenWasSeen.getTime()) < 1000)
     {
@@ -250,53 +245,32 @@ Vector2<double> PotentialFieldProvider::calculatePlayerPotentialField(const Vect
 
 Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel)
 {
-  double angle_inner_threshold = 15;
-  double angle_outer_threshold = 30;
-  double dist_threshold = 0;
-  MODIFY("potentialfield:angle_inner_threshold",angle_inner_threshold);
-  MODIFY("potentialfield:angle_outer_threshold",angle_outer_threshold);
-  MODIFY("potentialfield:dist_threshold",dist_threshold);
+  double postOffset = 100.0;
 
-  double leftOffset = oppGoalModel.leftPost.abs() * Math::fromDegrees(angle_inner_threshold);
-  double rightOffset = oppGoalModel.rightPost.abs() * Math::fromDegrees(angle_inner_threshold);
-  
-  Vector2<double> goalCenter = oppGoalModel.calculateCenter();
-  Vector2<double> goalNormal = oppGoalModel.rightPost - goalCenter;
-  goalNormal.rotateLeft().normalize();
-  Vector2<double> goalTangential = oppGoalModel.leftPost - goalCenter;
-  goalTangential.normalize();
+  MODIFY("potentialfield:postOffset",postOffset);
 
 
-  Vector2<double> leftPost = oppGoalModel.leftPost - goalTangential*leftOffset;
-  Vector2<double> rightPost = oppGoalModel.rightPost + goalTangential*rightOffset;
+  // relative vector from one post to another
+  Vector2<double> leftPost2RightPost = oppGoalModel.rightPost - oppGoalModel.leftPost;
+  Vector2<double> rightPost2LeftPost = oppGoalModel.leftPost - oppGoalModel.rightPost;
 
-  double goalAngle = fabs(Math::normalize((leftPost-point).angle() - (rightPost-point).angle()));
-  Math::LineSegment goalLine(leftPost, rightPost);
+  // the endpoints of our line are a shortened version of the goal line
+  Vector2<double> leftEndpoint = oppGoalModel.leftPost
+      + leftPost2RightPost.normalize(postOffset);
+  Vector2<double> rightEndpoint = oppGoalModel.rightPost
+      + rightPost2LeftPost.normalize(postOffset);
 
-  if (goalAngle > Math::fromDegrees(angle_outer_threshold))
-  {
-    double t = goalLine.project(point);
-    goalCenter = goalLine.point(t);
-    
-    // 10cm behind the actual goal line
-    goalCenter += goalNormal*100;
-    DEBUG_REQUEST("PotentialFieldProvider:different_colors", PEN("FF0000", 5); );
-  }
-  else if ( goalAngle < Math::fromDegrees(angle_inner_threshold) )
-  {
-    double distance = ( getFieldInfo().xPosOpponentGroundline - getFieldInfo().xPosOpponentPenaltyArea ) * 0.5 + dist_threshold;
-    goalCenter -= goalNormal*distance;
+  DEBUG_REQUEST("PotentialFieldProvider:goal_target",
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 10);
 
-    Math::LineSegment penaltyLine(goalCenter + goalTangential*distance, goalCenter - goalTangential*distance);
-    goalCenter = penaltyLine.point(penaltyLine.project(point));
+    CIRCLE((getRobotPose()*leftEndpoint).x, (getRobotPose()*leftEndpoint).y, 100);
+    CIRCLE((getRobotPose()*rightEndpoint).x, (getRobotPose()*rightEndpoint).y, 100);
+  );
 
-    DEBUG_REQUEST("PotentialFieldProvider:different_colors", PEN("0000FF", 5); );
-  }else
-  {
-    DEBUG_REQUEST("PotentialFieldProvider:different_colors", PEN("000000", 5); );
-    // 10cm behind the actual goal line
-    goalCenter += goalNormal*100;
-  }
+  Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
 
-  return goalCenter; 
+  Vector2<double> target = goalLine.projection(point);
+
+  return target;
 }//end getGoalTarget

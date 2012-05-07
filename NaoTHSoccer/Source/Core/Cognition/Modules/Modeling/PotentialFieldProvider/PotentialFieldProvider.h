@@ -63,6 +63,7 @@ public:
     * @param targetPoint Relative coordinates of the target point.
     * @param obstacles List of valid obstacles that need to be avoided.
     * @return A vector describing the attack direction to the target point as represented by the potential field.
+    *         The vector is in relative coordinates (same coordinate system as point and targetPoint)
     */
   Vector2<double> calculatePotentialField(
         const Vector2<double>& point, const Vector2<double> &targetPoint,
