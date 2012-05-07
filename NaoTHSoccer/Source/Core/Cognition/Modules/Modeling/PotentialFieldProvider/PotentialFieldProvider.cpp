@@ -246,9 +246,9 @@ Vector2<double> PotentialFieldProvider::calculatePlayerPotentialField(const Vect
 Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel)
 {
   double postOffset = 100.0;
-
-  MODIFY("potentialfield:postOffset",postOffset);
-
+  double goalLineOffset = 100.0;
+  MODIFY("potentialfield:postOffset", postOffset);
+  MODIFY("potentialfield:goalLineOffset", goalLineOffset);
 
   // relative vector from one post to another
   Vector2<double> leftPost2RightPost = oppGoalModel.rightPost - oppGoalModel.leftPost;
@@ -271,6 +271,24 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
   Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
 
   Vector2<double> target = goalLine.projection(point);
+
+
+  Vector2<double> goalNormal = leftPost2RightPost.rotateRight();
+
+  // get distance between point and target point
+  double dist = (target-point).abs();
+  if(dist <= goalLineOffset)
+  {
+    // the point is quite near to the goal line, put the target point behind the
+    // goal line
+    target = target - goalNormal.normalize(goalLineOffset);
+  }
+  else
+  {
+    // the point is far away from the goal line, put the target point before the
+    // goal line
+    target = target + goalNormal.normalize(goalLineOffset);
+  }
 
   return target;
 }//end getGoalTarget
