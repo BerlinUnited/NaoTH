@@ -56,22 +56,29 @@ public:
   /** executes the module */
   void execute();
 
+
+  /**
+    * Calculate the potential field for a given point and a target point (e.g. the center of the goal)
+    * @param point The relative point for which the vector should be calculated.
+    * @param targetPoint Relative coordinates of the target point.
+    * @return A vector describing the attack direction to the target point as represented by the potential field.
+    */
+  Vector2<double> calculatePotentialField(const Vector2<double>& point, Vector2<double> targetPoint);
+
+  /**
+    * Calculate the target point between the goal posts to shoot at.
+    * @param point The relative point for which the target point should be calculated.
+    * @param oppGoalModel Relative coordinates of the opponent goal.
+    * @return Target point.
+    */
+  Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel);
+
+
 private:
 
   /** @return the suggested attack direction in local coordinates */
   Vector2<double> calculateGoalPotentialField( const Vector2<double>& goal, const Vector2<double>& ball);
-
-  /** @param ball position in local coordinates*/
-  Vector2<double> calculatePotentialField(const Vector2<double>& point);
-
   Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
-
-  Vector2<double> getGoal(const Vector2<double>& ball, const GoalModel::Goal& oppGoalModel);
-  Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel);
-
-
-  Vector2<double> approachBall(const Vector2<double>& point, const Vector2<double>& target);
-  Vector2<double> calculateBallPotentialField(const Vector2<double>& point, const Vector2<double>& ball, const Vector2<double>& dir);
 };
 
 #endif //__PotentialFieldProvider_h_
