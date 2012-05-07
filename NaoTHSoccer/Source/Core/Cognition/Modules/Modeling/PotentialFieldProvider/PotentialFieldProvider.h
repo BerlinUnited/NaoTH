@@ -61,9 +61,12 @@ public:
     * Calculate the potential field for a given point and a target point (e.g. the center of the goal)
     * @param point The relative point for which the vector should be calculated.
     * @param targetPoint Relative coordinates of the target point.
+    * @param obstacles List of valid obstacles that need to be avoided.
     * @return A vector describing the attack direction to the target point as represented by the potential field.
     */
-  Vector2<double> calculatePotentialField(const Vector2<double>& point, Vector2<double> targetPoint);
+  Vector2<double> calculatePotentialField(
+        const Vector2<double>& point, const Vector2<double> &targetPoint,
+        const std::list<Vector2<double> >& obstacles);
 
   /**
     * Calculate the target point between the goal posts to shoot at.
@@ -79,6 +82,9 @@ private:
   /** @return the suggested attack direction in local coordinates */
   Vector2<double> calculateGoalPotentialField( const Vector2<double>& goal, const Vector2<double>& ball);
   Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
+
+  std::list<Vector2<double> > getValidObstacles();
+
 };
 
 #endif //__PotentialFieldProvider_h_

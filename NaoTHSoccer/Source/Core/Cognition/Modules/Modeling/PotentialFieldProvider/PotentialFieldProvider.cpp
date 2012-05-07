@@ -50,6 +50,10 @@ void PotentialFieldProvider::execute()
 
   // begin --- getGoal() ---
   Vector2<double> targetPoint = getGoalTarget(ballRelative, oppGoalModel);
+  // preview
+  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
+  // ----------
+
 
   DEBUG_REQUEST("PotentialFieldProvider:goal_target",
     FIELD_DRAWING_CONTEXT;
@@ -63,8 +67,9 @@ void PotentialFieldProvider::execute()
     CIRCLE((robotPose * targetPoint).x, (robotPose * targetPoint).y, 50);
   );
 
+  std::list<Vector2<double> > obstacles = getValidObstacles();
 
-  Vector2<double> p = calculatePotentialField(ballRelative, targetPoint);
+  Vector2<double> p = calculatePotentialField(ballRelative, targetPoint, obstacles);
   getRawAttackDirection().attackDirection = p;
 
   DEBUG_REQUEST("PotentialFieldProvider:attackDirection",
@@ -99,7 +104,7 @@ void PotentialFieldProvider::execute()
       for (double y = getFieldInfo().yPosRightSideline; y <= getFieldInfo().yPosLeftSideline; y += step)
       {
         Vector2<double> ball = getRobotPose()/Vector2<double>(x,y);
-        Vector2<double> f = calculatePotentialField(ball, targetPoint);
+        Vector2<double> f = calculatePotentialField(ball, targetPoint, obstacles);
         f.normalize(200);
         f += ball;
         ARROW(ball.x, ball.y, f.x, f.y);
@@ -162,28 +167,18 @@ void PotentialFieldProvider::execute()
   );
 }//end execute
 
-/*
-  depends on:
-  getPlayersModel()
-  
-*/
-Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<double>& point, Vector2<double> targetPoint)
+list<Vector2<double> > PotentialFieldProvider::getValidObstacles()
 {
+  std::list<Vector2<double> > result;
 
-  // preview
-  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
-  // ----------
-
-  Vector2<double> fieldF = calculateGoalPotentialField(targetPoint, point);
-
-  Vector2<double> playerF;
-  bool isAvoiding = false;
   for (vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().opponents.begin(); iter != getPlayersModel().opponents.end(); ++iter)
   {
     if (getFrameInfo().getTimeSince(iter->frameInfoWhenWasSeen.getTime()) < 1000)
     {
-      playerF -= calculatePlayerPotentialField(iter->pose.translation, point);
-      isAvoiding = true;
+      // preview
+      Vector2d p = getMotionStatus().plannedMotion.hip / iter->pose.translation;
+
+      result.push_back(p);
     }
   }
   for (vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().teammates.begin(); iter != getPlayersModel().teammates.end(); ++iter)
@@ -191,9 +186,29 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<do
     if (iter->number != getPlayerInfo().gameData.playerNumber &&
       getFrameInfo().getTimeSince(iter->frameInfoWhenWasSeen.getTime()) < 1000)
     {
-      playerF -= calculatePlayerPotentialField(iter->pose.translation, point);
-      isAvoiding = true;
+      // preview
+      Vector2d p = getMotionStatus().plannedMotion.hip / iter->pose.translation;
+      result.push_back(p);
     }
+  }
+  return result;
+} // end getValidOpponents()
+
+
+Vector2<double> PotentialFieldProvider::calculatePotentialField(
+    const Vector2<double>& point, const Vector2<double>& targetPoint,
+    const list<Vector2<double> > &obstacles)
+{
+
+  Vector2<double> fieldF = calculateGoalPotentialField(targetPoint, point);
+
+  Vector2<double> playerF;
+  bool isAvoiding = false;
+  for (list<Vector2<double> >::const_iterator iter =
+       obstacles.begin(); iter != obstacles.end(); ++iter)
+  {
+    playerF -= calculatePlayerPotentialField(*iter, point);
+    isAvoiding = true;
   }
 
   if (isAvoiding)
@@ -208,7 +223,7 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(const Vector2<do
     playerF.normalize(ff);
   }
   return fieldF + playerF;
-}//end updateTheFootState
+}//end calculatePotentialField
 
 
 Vector2<double> PotentialFieldProvider::calculateGoalPotentialField(const Vector2<double>& goal, const Vector2<double>& point)
@@ -226,10 +241,7 @@ Vector2<double> PotentialFieldProvider::calculatePlayerPotentialField(const Vect
   const double a = 1500;
   const double d = 2000;
 
-  // preview
-  Vector2d p = getMotionStatus().plannedMotion.hip / player;
-
-  Vector2<double> v = p-ball;
+  Vector2<double> v = player-ball;
   double t = v.abs();
   if ( t >= d-100 ) return Vector2<double>();
 
