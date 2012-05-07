@@ -39,9 +39,9 @@ BEGIN_DECLARE_MODULE(ColorCalibrator)
   REQUIRE(Histogram)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
-  REQUIRE(FieldColorPercept)
   REQUIRE(GoalPercept)
 
+  PROVIDE(FieldColorPercept)
   PROVIDE(BaseColorRegionPercept)
   PROVIDE(ColorTable64)
 END_DECLARE_MODULE(ColorCalibrator)
@@ -70,8 +70,8 @@ private:
   CalibrationRect leftField;
   CalibrationRect rightField;
   
-  greenColorRegion fieldParams;
-  whiteColorRegion linesParams;
+  greenColorRegion greenFieldParams;
+  whiteColorRegion whiteLinesParams;
   yellowColorRegion yellowGoalParams;
   skyblueColorRegion blueGoalParams;
   orangeColorRegion orangeBallParams;
@@ -88,10 +88,13 @@ private:
   vector<vector<double> > blueWaistBandHistColorChannel;
   vector<vector<double> > fieldHistDifference;
   vector<vector<double> > fieldHistColorChannel;
+  vector<vector<double> > linesHistDifference;
+  vector<vector<double> > linesHistColorChannel;
 
   void calibrateColorRegions();
 
   void calibrateColorRegionField();
+  void calibrateColorRegionLines();
   void calibrateColorRegionBall();
   void calibrateColorRegionGoal();
   void calibrateColorRegionPinkWaistBand();

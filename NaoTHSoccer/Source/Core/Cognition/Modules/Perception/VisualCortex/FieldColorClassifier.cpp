@@ -30,9 +30,10 @@ FieldColorClassifier::FieldColorClassifier()
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:set_in_image", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:reset", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:FieldColorClassifier:saveCalibratedParams", " ", false);
 
   GT_TRACE("before FieldColorClassifier constructor memset");
-  memset(&weightedHistU, 0, sizeof(weightedHistU));
+  memset(&weightedHistV, 0, sizeof(weightedHistV));
   GT_TRACE("after FieldColorClassifier constructor memset");
 }
 
@@ -43,13 +44,22 @@ void FieldColorClassifier::execute()
   //  return;
   //);
 
+  DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:saveCalibratedParams",
+    fieldParams.MaxBrightnessChannelValue = getFieldColorPercept().maxY2Set;
+    fieldParams.MaxCromaBlueChannelValue = getFieldColorPercept().maxU2Set;
+    fieldParams.CromaRedChannelDistance = getFieldColorPercept().distV2Set;
+    fieldParams.saveToConfig();
+    fieldParams.syncWithConfig();
+  );
+
   classify();
 }
 
 void FieldColorClassifier::classify()
 {
-  getFieldColorPercept().distU = fieldParams.CromaRedChannelDistance;
-  getFieldColorPercept().maxV = fieldParams.MaxCromaBlueChannelValue;
+  getFieldColorPercept().maxY = fieldParams.MaxBrightnessChannelValue;
+  getFieldColorPercept().maxU = fieldParams.MaxCromaBlueChannelValue;
+  getFieldColorPercept().distV = fieldParams.CromaRedChannelDistance;
 
   DEBUG_REQUEST("ImageProcessor:FieldColorClassifier:reset",
     justStarted = true;
@@ -63,14 +73,14 @@ void FieldColorClassifier::classify()
   if(sampleCount >= maxSampleCount)
   {
     justStarted = false;
-    diff.v = abs(getFieldColorPercept().indexU - maxWeightedU);
+    diff.v = abs(getFieldColorPercept().indexV - maxWeightedV);
     valid = valid && diff.v < 1;
   }
 
   if(valid || justStarted)
   {
     sampleCount++;
-    getFieldColorPercept().indexU = indexU;
+    getFieldColorPercept().indexV = indexV;
   }
 
 
@@ -80,8 +90,8 @@ void FieldColorClassifier::classify()
   }
  
   // init values
-  maxWeightedU = 0.0;
-  indexU = 0;
+  maxWeightedV = 0.0;
+  indexV = 0;
 
   STOPWATCH_START("FieldColorClassifier:Cr_filtering");
   for(unsigned int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
@@ -89,14 +99,14 @@ void FieldColorClassifier::classify()
     double mCr = max<int>(0,  128 - i);
     double wCr = mCr / 128.0;
     
-    weightedHistU[i] = getHistogram().colorChannelHistogramField[i];
-    weightedHistU[i] *= wCr;
+    weightedHistV[i] = getHistogram().colorChannelHistogramField[i];
+    weightedHistV[i] *= wCr;
 
     // remember the maximal value
-    if(weightedHistU[i] > maxWeightedU)
+    if(weightedHistV[i] > maxWeightedV)
     {
-      maxWeightedU = weightedHistU[i];
-      indexU = i;
+      maxWeightedV = weightedHistV[i];
+      indexV = i;
     }
   }//end for
   STOPWATCH_STOP("FieldColorClassifier:Cr_filtering");
@@ -113,7 +123,7 @@ void FieldColorClassifier::calibrate()
 
   unsigned int gridPointNum = getColoredGrid().uniformGrid.numberOfGridPoints;
 
-  memset(&weightedHistU, 0, sizeof(weightedHistU));
+  memset(&weightedHistV, 0, sizeof(weightedHistV));
 
   for(unsigned int i = gridPointNum / 2; i < gridPointNum; i++)
   {
@@ -129,13 +139,13 @@ void FieldColorClassifier::calibrate()
     double mCr = max<int>(0,  128 - i);
     double wCr = mCr / 128.0;
     
-    weightedHistU[i] = colorChannelHistogram[i];
-    weightedHistU[i] *= wCr;
+    weightedHistV[i] = colorChannelHistogram[i];
+    weightedHistV[i] *= wCr;
 
     // remember the maximal value
-    if(weightedHistU[i] > maxWeightedU)
+    if(weightedHistV[i] > maxWeightedV)
     {
-      maxWeightedCr = weightedHistU[i];
+      maxWeightedCr = weightedHistV[i];
       indexCr = i;
     }
   }//end for
@@ -148,7 +158,7 @@ void FieldColorClassifier::calibrate()
   int idx = indexCr;
   while (idx >= 0 && meanRegionBeginIndexCr == 0)
   {
-    if(weightedHistU[idx] <= 0.5)
+    if(weightedHistV[idx] <= 0.5)
     {
       meanRegionBeginIndexCr = idx;
     }
@@ -160,7 +170,7 @@ void FieldColorClassifier::calibrate()
   idx = indexCr;
   while (idx < COLOR_CHANNEL_VALUE_COUNT && meanRegionEndIndexCr == 0)
   {
-    if(weightedHistU[idx] <= 0.5)
+    if(weightedHistV[idx] <= 0.5)
     {
       meanRegionEndIndexCr = idx;
     }
@@ -168,7 +178,7 @@ void FieldColorClassifier::calibrate()
   }
   
   distCalib = distCalib / 2 + abs((int) meanRegionBeginIndexCr - (int) meanRegionEndIndexCr) / 4;
-  getFieldColorPercept().distU = distCalib;
+  getFieldColorPercept().distV = distCalib;
 
   runDebugRequests();
 }

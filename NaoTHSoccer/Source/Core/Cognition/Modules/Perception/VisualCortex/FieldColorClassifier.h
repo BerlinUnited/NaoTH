@@ -52,10 +52,10 @@ private:
 
   FieldColorParameters fieldParams;
 
-  double maxWeightedU;
-  int indexU;
+  double maxWeightedV;
+  int indexV;
   
-  double weightedHistU[COLOR_CHANNEL_VALUE_COUNT];
+  double weightedHistV[COLOR_CHANNEL_VALUE_COUNT];
   int colorChannelHistogram[COLOR_CHANNEL_VALUE_COUNT];
 
   int sampleCount;

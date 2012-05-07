@@ -32,6 +32,7 @@ ColorCalibrator::ColorCalibrator()
   DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_pinkWaistBand", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_blueWaistBand", " ", false);
   
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_field", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_ball", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_blue_goal", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_yellow_goal", " ", false);
@@ -45,6 +46,7 @@ ColorCalibrator::ColorCalibrator()
   initHistograms(pinkWaistBandHistColorChannel, pinkWaistBandHistDifference);
   initHistograms(blueWaistBandHistColorChannel, blueWaistBandHistDifference);
   initHistograms(fieldHistColorChannel, fieldHistDifference);
+  initHistograms(linesHistColorChannel, linesHistDifference);
 
   PixelT<int> chDist;
   PixelT<int> chIdx;
@@ -96,7 +98,26 @@ void ColorCalibrator::execute()
     initHistograms(pinkWaistBandHistColorChannel, pinkWaistBandHistDifference);
     initHistograms(blueWaistBandHistColorChannel, blueWaistBandHistDifference);
     initHistograms(fieldHistColorChannel, fieldHistDifference);
+    initHistograms(linesHistColorChannel, linesHistDifference);
   );
+
+  DEBUG_REQUEST("ImageProcessor:ColorCalibrator:set_percept_colors_field",
+    PixelT<int> chDist;
+    PixelT<int> chIdx;
+    greenFieldParams.get(chIdx, chDist); 
+
+    getFieldColorPercept().maxY2Set = Math::clamp<int>(chIdx.y + chDist.y, 0, 255);
+    getFieldColorPercept().maxU2Set = Math::clamp<int>(chIdx.u + chDist.u, 0, 255);
+    getFieldColorPercept().distV2Set = chDist.v;
+
+  );
+
+  //DEBUG_REQUEST("ImageProcessor:ColorCalibrator:set_percept_colors_lines",
+  //  PixelT<int> chDist;
+  //  PixelT<int> chIdx;
+  //  whiteLinesParams.get(chIdx, chDist);    
+  //  getBaseColorRegionPercept().orangeBall.set(chIdx, chDist);
+  //);
 
   DEBUG_REQUEST("ImageProcessor:ColorCalibrator:set_percept_colors_ball",
     PixelT<int> chDist;
@@ -159,14 +180,22 @@ void ColorCalibrator::calibrateColorRegions()
 void ColorCalibrator::calibrateColorRegionField()
 {
   //green field
-  leftField.draw();
-  rightField.draw();
+  //leftField.draw();
+  //rightField.draw();
+
+  CalibrationRect fieldCalibRect("Field", ColorClasses::green, 0, getImage().height() / 2, getImage().width() - 1, getImage().height() - 2);
+  fieldCalibRect.draw();
 
   /// field
-  getAverageDistances2(leftField, rightField, fieldHistColorChannel, fieldHistDifference, fieldParams);
+  getAverageDistances(fieldCalibRect, fieldHistColorChannel, fieldHistDifference, greenFieldParams); 
+  //getAverageDistances2(leftField, rightField, fieldHistColorChannel, fieldHistDifference, fieldParams);
   //PLOT("BCCT:avgGreenV-U", regionParams.fieldParams.ccdIdx.x);
   //PLOT("BCCT:avgGreenU-Y", regionParams.fieldParams.ccdIdx.y);
   //PLOT("BCCT:avgGreenV-Y", regionParams.fieldParams.ccdIdx.z);  
+}
+
+void ColorCalibrator::calibrateColorRegionLines()
+{
 }
 
 void ColorCalibrator::calibrateColorRegionBall()
@@ -491,7 +520,7 @@ void ColorCalibrator::runDebugRequests()
 {
   DEBUG_REQUEST("ImageProcessor:ColorCalibrator:show_calibrated_colors",
     bool showField = false;
-    fieldParams.sync();
+    greenFieldParams.sync();
     DEBUG_REQUEST("ImageProcessor:ColorCalibrator:show_calibrated_colors_field",
       showField = true;
     );
@@ -526,7 +555,7 @@ void ColorCalibrator::runDebugRequests()
       {
         const Pixel& pixel = getImage().get(x, y);
 
-        if(showField && fieldParams.inside(pixel) )
+        if(showField && greenFieldParams.inside(pixel) )
         {
           POINT_PX(ColorClasses::green, x, y);
         }
