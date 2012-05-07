@@ -146,14 +146,14 @@ void PotentialFieldProvider::execute()
            simulatedGlobalBall.y <= getFieldInfo().yPosLeftSideline;
            simulatedGlobalBall.y += stepY)
       {
-        PEN("FFFFFF", 5);
         Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
         Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
 
-        Vector2<double> f = calculatePotentialField(simulatedGlobalBall, target, obstacles);
+        Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         f.normalize(50);
         f = robotPose*(f+simulatedLocalBall);
+        PEN("FFFFFF", 5);
         ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
       }
     }
