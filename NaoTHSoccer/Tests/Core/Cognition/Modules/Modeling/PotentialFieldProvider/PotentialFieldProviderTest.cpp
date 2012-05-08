@@ -54,6 +54,7 @@ TEST_F(PotentialFieldProviderTest, StableOnMovedRobot)
   potentialFieldProvider->execute();
   Vector2<double> result1 = getRawAttackDirection().attackDirection;
 
+  // should not be the trivial case
   ASSERT_NE(0.0, result1.x);
   ASSERT_NE(0.0, result1.y);
 
@@ -62,14 +63,17 @@ TEST_F(PotentialFieldProviderTest, StableOnMovedRobot)
   // move robot (and ball/goal)
   Pose2D pose2(0.0, 0.0, 1000.0);
 
-  getBallModel().positionPreview = pose2/simulatedBall;
-  getSelfLocGoalModel().goal.leftPost = pose2/simulatedLeftPost;
-  getSelfLocGoalModel().goal.leftPost = pose2/simulatedRightPost;
+  getBallModel().positionPreview = pose2*simulatedBall;
+  getSelfLocGoalModel().goal.leftPost = pose2*simulatedLeftPost;
+  getSelfLocGoalModel().goal.leftPost = pose2*simulatedRightPost;
 
   potentialFieldProvider->execute();
   Vector2<double> result2 = getRawAttackDirection().attackDirection;
 
+  // should not be the trivial case
   ASSERT_NE(0.0, result2.x);
   ASSERT_NE(0.0, result2.y);
-  ASSERT_NEAR(result1.angle(), result2.angle(), 0.001);
+
+  // global angle should not be changed
+  ASSERT_NEAR((pose2*result1).angle(), (pose2*result2).angle(), 0.001);
 }
