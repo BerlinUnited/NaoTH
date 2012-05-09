@@ -61,8 +61,6 @@ void FieldColorClassifier::classify()
     sampleCount = 0;
   );
 
-  bool valid = false;
-
   if(sampleCount >= maxSampleCount)
   {
     justStarted = false;
@@ -123,7 +121,7 @@ void FieldColorClassifier::calibrate()
 
   fieldParams.MaxBrightnessChannelValue = Math::clamp<int>(ccIdx.y + ccDist.y, 0, 255);
   fieldParams.MaxCromaBlueChannelValue = Math::clamp<int>(ccIdx.u + ccDist.u, 0, 255);
-  fieldParams.CromaRedChannelDistance = Math::clamp<int>(ccDist.v, 0, 255);
+  fieldParams.CromaRedChannelDistance = ccDist.v;
   fieldParams.saveToConfig();
   fieldParams.syncWithConfig();
 }

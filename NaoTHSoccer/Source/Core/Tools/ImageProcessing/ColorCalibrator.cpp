@@ -91,11 +91,13 @@ void ColorCalibrator::calibrateColorRegions(const naoth::Image& image)
   switch(color)
   {
     case ColorClasses::green:
-      calibrateColorRegionField(image);
+      /// green field
+      getAverageDistances(image, greenParams); 
       break;
 
     case ColorClasses::orange:
-      calibrateColorRegionBall(image);
+      /// orange ball
+      getAverageDistances(image, orangeParams);
       break;
 
     case ColorClasses::yellow:
@@ -104,36 +106,24 @@ void ColorCalibrator::calibrateColorRegions(const naoth::Image& image)
       break;
 
     case ColorClasses::pink:
-      calibrateColorRegionPinkWaistBand(image);
+      //pink waistband
+      getAverageDistances(image, pinkParams);
       break;
 
     case ColorClasses::blue:
-      calibrateColorRegionBlueWaistBand(image);
+      //blue waistband
+      getAverageDistances(image, blueParams);
       break;
 
     case ColorClasses::white:
-      calibrateColorRegionLines(image);
+      /// white lines
+      getAverageDistances(image, whiteParams); 
+      break;
+
+    default:
       break;
 
   }
-}
-
-void ColorCalibrator::calibrateColorRegionField(const naoth::Image& image)
-{
-  /// green field
-  getAverageDistances(image, greenParams); 
-}
-
-void ColorCalibrator::calibrateColorRegionLines(const naoth::Image& image)
-{
-  /// white lines
-  getAverageDistances(image, whiteParams); 
-}
-
-void ColorCalibrator::calibrateColorRegionBall(const naoth::Image& image)
-{
-  /// orange ball
-  getAverageDistances(image, orangeParams);
 }
 
 void ColorCalibrator::calibrateColorRegionGoal(const naoth::Image& image)
@@ -158,18 +148,6 @@ void ColorCalibrator::calibrateColorRegionGoal(const naoth::Image& image)
     skyblueParams.set(ccdIdx, ccdDist);
     skyblueParams.set(ccIdx, ccDist);
   }
-}
-
-void ColorCalibrator::calibrateColorRegionPinkWaistBand(const naoth::Image& image)
-{
-  //pink waistband
-  getAverageDistances(image, pinkParams);
-}
-
-void ColorCalibrator::calibrateColorRegionBlueWaistBand(const naoth::Image& image)
-{
-  //blue waistband
-  getAverageDistances(image, skyblueParams);
 }
 
 void ColorCalibrator::getAverageDistances
@@ -296,13 +274,13 @@ void ColorCalibrator::calculateRegions
   sigma.y = sqrt(fabs(z2.y));
   sigma.z = sqrt(fabs(z2.z));
 
-  ccdIdx.VminusU = (int) m1.x;
-  ccdIdx.UminusY = (int) m1.y;
-  ccdIdx.VminusY = (int) m1.z;
+  ccdIdx.VminusU = (int) Math::clamp<double>(m1.x, -255.0, 255.0);
+  ccdIdx.UminusY = (int) Math::clamp<double>(m1.y, -255.0, 255.0);
+  ccdIdx.VminusY = (int) Math::clamp<double>(m1.z, -255.0, 255.0);
   
-  ccdDist.VminusU = (int) (sigma.x * 1.4);
-  ccdDist.UminusY = (int) (sigma.y * 1.4);
-  ccdDist.VminusY = (int) (sigma.z * 1.4);
+  ccdDist.VminusU = (int) Math::clamp<double>(sigma.x * 1.4, -255.0, 255.0);
+  ccdDist.UminusY = (int) Math::clamp<double>(sigma.y * 1.4, -255.0, 255.0);
+  ccdDist.VminusY = (int) Math::clamp<double>(sigma.z * 1.4, -255.0, 255.0);
 
   m1.x = 0;
   m1.y = 0;
@@ -354,12 +332,12 @@ void ColorCalibrator::calculateRegions
   sigma.y = sqrt(fabs(z2.y));
   sigma.z = sqrt(fabs(z2.z));
 
-  ccIdx.y = (int) m1.x;
-  ccIdx.u = (int) m1.y;
-  ccIdx.v = (int) m1.z;
-  ccDist.y = (int) (sigma.x * 1.4);
-  ccDist.u = (int) (sigma.y * 1.4);
-  ccDist.v = (int) (sigma.z * 1.4);
+  ccIdx.y = (int) Math::clamp<double>(m1.x, 0.0, 255.0);
+  ccIdx.u = (int) Math::clamp<double>(m1.y, 0.0, 255.0);
+  ccIdx.v = (int) Math::clamp<double>(m1.z, 0.0, 255.0);
+  ccDist.y = (int) Math::clamp<double>(sigma.x * 1.4, 0.0, 255.0);
+  ccDist.u = (int) Math::clamp<double>(sigma.y * 1.4, 0.0, 255.0);
+  ccDist.v = (int) Math::clamp<double>(sigma.z * 1.4, 0.0, 255.0);
 }
 
 void ColorCalibrator::get(PixelT<int>& idx, PixelT<int>& dist)
@@ -386,6 +364,9 @@ void ColorCalibrator::get(PixelT<int>& idx, PixelT<int>& dist)
 
     case ColorClasses::white:
       return whiteParams.get(idx, dist);
+    
+    default:
+      break;
   }
 }
   
@@ -413,6 +394,9 @@ void ColorCalibrator::get(colorPixel& idx, colorPixel& dist)
 
     case ColorClasses::white:
       return whiteParams.get(idx, dist);
+
+    default:
+      break;
   }
 }
 

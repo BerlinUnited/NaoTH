@@ -68,6 +68,8 @@ void BaseColorClassifier::initPercepts()
   getBaseColorRegionPercept().pinkWaistBand.set(chIdx, chDist);
   regionParams.blueWaistBandParams.get(chIdx, chDist);    
   getBaseColorRegionPercept().blueWaistBand.set(chIdx, chDist);
+  regionParams.whiteLineParams.get(chIdx, chDist);    
+  getBaseColorRegionPercept().whiteLine.set(chIdx, chDist);
 }
 
 
@@ -83,6 +85,7 @@ void BaseColorClassifier::execute()
   );
 
   calibrateColorRegions();
+  initPercepts();
 
   runDebugRequests();
 }//end execute
@@ -91,12 +94,12 @@ void BaseColorClassifier::calibrateColorRegions()
 {
   PixelT<int> chIdx;
   PixelT<int> chDist;
-  chIdx.y = 0; 
-  chIdx.u = 0; 
-  chIdx.v = 0;
-  chDist.y = 0; 
-  chDist.u = 0; 
-  chDist.v = 0;
+  chIdx.y = 127; 
+  chIdx.u = 127; 
+  chIdx.v = 127;
+  chDist.y = 10; 
+  chDist.u = 10; 
+  chDist.v = 10;
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_ball",
     orangeBallColorCalibrator.execute(getImage());

@@ -25,7 +25,7 @@ union colorPixelT
 
   struct
   {
-    T Y;
+    T Yy;
     T Cb;
     T Cr;
   };

@@ -63,12 +63,7 @@ private:
 
   void calibrateColorRegions(const naoth::Image& image);
 
-  void calibrateColorRegionField(const naoth::Image& image);
-  void calibrateColorRegionLines(const naoth::Image& image);
-  void calibrateColorRegionBall(const naoth::Image& image);
   void calibrateColorRegionGoal(const naoth::Image& image);
-  void calibrateColorRegionPinkWaistBand(const naoth::Image& image);
-  void calibrateColorRegionBlueWaistBand(const naoth::Image& image);
 
   void initHistograms
   (
