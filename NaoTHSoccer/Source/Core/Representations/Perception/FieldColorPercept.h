@@ -33,10 +33,6 @@ public:
   int maxY;
   int maxU;
 
-  double distV2Set;
-  int maxY2Set;
-  int maxU2Set;
-
   FrameInfo lastUpdated;
 
   FieldColorPercept()  
@@ -47,10 +43,7 @@ public:
   borderLeftV(0),
   borderRightV(0),
   maxY(127),
-  maxU(127),
-  distV2Set(distV),
-  maxY2Set(maxY),
-  maxU2Set(maxU)
+  maxU(127)
   {}
 
   ~FieldColorPercept()
@@ -74,6 +67,8 @@ public:
 
   inline void print(ostream& stream) const
   {
+    stream << "max value in Y channel = " << maxY << endl;
+    stream << "max value in Cb (U) channel = " << maxU << endl;
     stream << "distance in Cr (V) channel = " << distV << endl;
     stream << "index in Cr (V) channel = " << indexV << endl;
   }//end print

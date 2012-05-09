@@ -151,6 +151,7 @@ public:
   orangeColorRegion orangeBall;
   pinkColorRegion pinkWaistBand;
   blueColorRegion blueWaistBand;
+  whiteColorRegion whiteLine;
 
   FrameInfo lastUpdated;
 
@@ -421,77 +422,7 @@ public:
 
   inline bool isWhite(const Pixel& pixel) const
   {
-    return isWhite((int) pixel.y, (int) pixel.u, (int) pixel.v);
-  }
-
-  inline bool isYellowGoal(const int& y, const int& u, const int& v) const
-  {
-    Pixel pixel; 
-    pixel.y = y; 
-    pixel.u = u;
-    pixel.v = v;
-    return isYellowGoal(pixel);
-  }
-
-  inline bool isYellowGoal(const Pixel& pixel) const
-  {
-    return yellowGoal.inside(pixel);
-  }
-
-  inline bool isBlueGoal(const int& y, const int& u, const int& v) const
-  {
-    Pixel pixel; 
-    pixel.y = y; 
-    pixel.u = u;
-    pixel.v = v;
-    return isBlueGoal(pixel);
-  }
-
-  inline bool isBlueGoal(const Pixel& pixel) const
-  {
-    return blueGoal.inside(pixel);
-  }
-
-  inline bool isOrangeBall(const int& y, const int& u, const int& v) const
-  {
-    Pixel pixel; 
-    pixel.y = y; 
-    pixel.u = u;
-    pixel.v = v;
-    return isOrangeBall(pixel);
-  }
-
-  inline bool isOrangeBall(const Pixel& pixel) const
-  {
-    return orangeBall.inside(pixel);
-  }
-
-  inline bool isPinkWaistBand(const int& y, const int& u, const int& v) const
-  {
-    Pixel pixel; 
-    pixel.y = y; 
-    pixel.u = u;
-    pixel.v = v;
-    return isPinkWaistBand(pixel);
-  }
-
-  inline bool isPinkWaistBand(const Pixel& pixel) const
-  {
-    return pinkWaistBand.inside(pixel);
-  }
-
-  inline bool isBlueWaistBand(const int& y, const int& u, const int& v) const
-  {
-    Pixel pixel; 
-    pixel.y = y; 
-    pixel.u = u;
-    pixel.v = v;
-    return isBlueWaistBand(pixel);
-  }
-
-  inline bool isBlueWaistBand(const Pixel& pixel) const
-  {
-    return blueWaistBand.inside(pixel);
+    return isWhite(pixel.y, pixel.u, pixel.v);
   }
 
   inline void print(ostream& stream) const

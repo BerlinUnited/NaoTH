@@ -20,6 +20,7 @@
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/Histogram.h"
 #include "Tools/ImageProcessing/BaseColorRegionParameters.h"
+#include "Tools/ImageProcessing/ColorCalibrator.h"
 //#include "Tools/ImageProcessing/CameraParamCorrection.h"
 
 // Debug
@@ -80,9 +81,9 @@ private:
   //void setPercepts();
 
   void setColorRegions();
+
+  void calibrate();
   void calibrateColorRegions();
-  void calibrateFieldColorRegion();
-  bool isInRegion(Pixel min, Pixel max, Pixel toTest);
 
   void runDebugRequests();
 
@@ -116,6 +117,22 @@ private:
 
   Pixel minEnv;
   Pixel maxEnv;
+
+  CalibrationRect orangeBallCalibRect;
+  CalibrationRect yellowGoalPostLeftCalibRect;
+  CalibrationRect yellowGoalPostRightCalibRect;
+  CalibrationRect blueGoalLeftCalibRect;
+  CalibrationRect blueGoalRightCalibRect;
+  CalibrationRect blueWaistBandCalibRect;
+  CalibrationRect pinkWaistBandCalibRect;
+  CalibrationRect whiteLinesCalibRect;
+
+  ColorCalibrator orangeBallColorCalibrator;
+  ColorCalibrator yellowGoalColorCalibrator;
+  ColorCalibrator blueGoalColorCalibrator;
+  ColorCalibrator blueWaistBandColorCalibrator;
+  ColorCalibrator pinkWaistBandColorCalibrator;
+  ColorCalibrator whiteLinesColorCalibrator;
 
 };
 

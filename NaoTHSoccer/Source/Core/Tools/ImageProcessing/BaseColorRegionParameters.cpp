@@ -4,7 +4,7 @@ BaseColorRegionParameters::BaseColorRegionParameters()
 :
   ParameterList("BaseColorRegionParameters"),
   fieldParams("Field", ColorClasses::green),
-  linesParams("Lines", ColorClasses::white),
+  whiteLineParams("WhiteLines"),
   yellowGoalParams("YellowGoal"),
   blueGoalParams("BlueGoal"),
   orangeBallParams("OrangeBall"),

@@ -11,7 +11,7 @@ class BaseColorRegionParameters : public ParameterList
 {
 public:
   ColorRegionParameter fieldParams;
-  ColorRegionParameter linesParams;
+  whiteParamColorRegion whiteLineParams;
   yellowParamColorRegion yellowGoalParams;
   skyblueParamColorRegion blueGoalParams;
   orangeParamColorRegion orangeBallParams;

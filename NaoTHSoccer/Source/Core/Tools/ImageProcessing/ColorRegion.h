@@ -530,8 +530,7 @@ public:
 
   inline bool inside(const Pixel& pixel) const
   {
-    return /*chLow.Y <= pixel.y &&*/ pixel.y <= chHigh.Y && 
-            /*chLow.U <= pixel.u &&*/ pixel.u <= chHigh.U && 
+    return pixel.y <= chHigh.Y && pixel.u <= chHigh.U && 
             chLow.V <= pixel.v && pixel.v <= chHigh.V;
   }
 };

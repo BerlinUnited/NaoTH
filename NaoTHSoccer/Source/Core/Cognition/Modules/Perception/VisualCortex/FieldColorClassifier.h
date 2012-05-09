@@ -23,6 +23,7 @@
 #include "Tools/ImageProcessing/Histogram.h"
 #include "Tools/ImageProcessing/ColoredGrid.h"
 #include "Tools/ImageProcessing/FieldColorParameters.h"
+#include "Tools/ImageProcessing/ColorCalibrator.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -51,6 +52,8 @@ private:
   bool justStarted;
 
   FieldColorParameters fieldParams;
+  CalibrationRect fieldCalibRect;
+  ColorCalibrator fieldColorCalibrator;
 
   double maxWeightedV;
   int indexV;
@@ -63,13 +66,9 @@ private:
 
   double distCalib;
 
-
   void classify();
   void calibrate();
   void runDebugRequests();
-
-  double smoothRungeKutta4(const int& idx, double* valueArray) const;
-
 };
 
 #endif  /* FIELDCOLORCLASSIFIER_H */

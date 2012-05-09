@@ -26,9 +26,14 @@ public:
     PARAMETER_REGISTER(lowerLeft.y) = lowerLeft.y;  
     PARAMETER_REGISTER(upperRight.x) = upperRight.x;  
     PARAMETER_REGISTER(upperRight.y) = upperRight.y;        
-    syncWithConfig();
+    syncWithConfig();  
 
-    DebugParameterList::getInstance().add(this);
+    registerParameters();
+  }
+
+  void registerParameters()
+  {
+     DebugParameterList::getInstance().add(this);
   }
 
   ~CalibrationRect()
