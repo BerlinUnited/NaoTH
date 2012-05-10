@@ -64,7 +64,7 @@ void V4lCameraHandler::init(std::string camDevice)
   openDevice(true);//in blocking mode
   initDevice();
   internalUpdateCameraSettings();
-  setFPS(15);
+  setFPS(30);
 
   // start capturing
   startCapturing();
