@@ -317,6 +317,8 @@ public:
       regionColor == ColorClasses::blue
       ||
       regionColor == ColorClasses::green
+      ||
+      regionColor == ColorClasses::white
     )
     {
       PARAMETER_REGISTER(colorChannelDistance.Y) = colorChannelDistance.Y;        

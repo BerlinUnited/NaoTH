@@ -118,7 +118,6 @@ void FieldColorClassifier::calibrate()
   ccDist.u = 0; 
   ccDist.v = 0;
   fieldColorCalibrator.get(ccIdx, ccDist);
-
   fieldParams.MaxBrightnessChannelValue = Math::clamp<int>(ccIdx.y + ccDist.y, 0, 255);
   fieldParams.MaxCromaBlueChannelValue = Math::clamp<int>(ccIdx.u + ccDist.u, 0, 255);
   fieldParams.CromaRedChannelDistance = ccDist.v;

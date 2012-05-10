@@ -26,14 +26,21 @@ BaseColorClassifier::BaseColorClassifier()
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_waistband_in_image", " ", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:set_lines_in_image", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors_line", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors_ball", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors_blue_goal", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors_yellow_goal", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors_pinkWaistBand", " ", false);
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors_blueWaistBand", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:line", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:ball", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:blue_goal", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:yellow_goal", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:pinkWaistBand", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:blueWaistBand", " ", false);
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:reset_calibration_data", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_areas:show_line_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_areas:show_ball_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_areas:show_blue_goal_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_areas:show_yellow_goal_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_areas:show_pinkWaistBand_area", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_areas:show_blueWaistBand_area", " ", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BaseColorClassifier:calibrate_colors:reset_data", " ", false);
 
   lastMeanY = coloredGrid.meanBrightness;
   lastMeanU = coloredGrid.meanBlue;
@@ -75,7 +82,7 @@ void BaseColorClassifier::initPercepts()
 
 void BaseColorClassifier::execute()
 {
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:reset_calibration_data",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:reset_data",
     orangeBallColorCalibrator.reset();
     yellowGoalColorCalibrator.reset();
     blueGoalColorCalibrator.reset();
@@ -101,7 +108,7 @@ void BaseColorClassifier::calibrateColorRegions()
   chDist.u = 10; 
   chDist.v = 10;
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_ball",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:ball",
     orangeBallColorCalibrator.execute(getImage());
     orangeBallColorCalibrator.get(chIdx, chDist);
     getBaseColorRegionPercept().orangeBall.set(chIdx, chDist);
@@ -110,7 +117,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.orangeBallParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_yellow_goal",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:yellow_goal",
     yellowGoalColorCalibrator.execute(getImage());
     yellowGoalColorCalibrator.get(chIdx, chDist);
     getBaseColorRegionPercept().yellowGoal.set(chIdx, chDist);
@@ -119,7 +126,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.yellowGoalParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_blue_goal", 
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:blue_goal", 
     blueGoalColorCalibrator.execute(getImage());
     blueGoalColorCalibrator.get(chIdx, chDist);
     getBaseColorRegionPercept().blueGoal.set(chIdx, chDist);
@@ -128,7 +135,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.blueGoalParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_blueWaistBand", 
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:blueWaistBand", 
     blueWaistBandColorCalibrator.execute(getImage());
     blueWaistBandColorCalibrator.get(chIdx, chDist);
     getBaseColorRegionPercept().blueWaistBand.set(chIdx, chDist);
@@ -137,7 +144,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.blueWaistBandParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_pinkWaistBand",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:pinkWaistBand",
     pinkWaistBandColorCalibrator.execute(getImage());
     pinkWaistBandColorCalibrator.get(chIdx, chDist);
     getBaseColorRegionPercept().pinkWaistBand.set(chIdx, chDist);
@@ -146,7 +153,7 @@ void BaseColorClassifier::calibrateColorRegions()
     regionParams.pinkWaistBandParams.syncWithConfig();
   );
 
-  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors_line",
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:line",
     whiteLinesColorCalibrator.execute(getImage());
     whiteLinesColorCalibrator.get(chIdx, chDist);
     getBaseColorRegionPercept().whiteLine.set(chIdx, chDist);
@@ -158,6 +165,30 @@ void BaseColorClassifier::calibrateColorRegions()
 
 void BaseColorClassifier::runDebugRequests()
 {
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_areas:show_line_area",
+    whiteLinesColorCalibrator.drawCalibrationAreaRects();
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_areas:show_ball_area",
+    orangeBallColorCalibrator.drawCalibrationAreaRects();  
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_areas:show_blue_goal_area",
+    blueGoalColorCalibrator.drawCalibrationAreaRects();
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_areas:show_yellow_goal_area",
+    yellowGoalColorCalibrator.drawCalibrationAreaRects();
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_areas:show_pinkWaistBand_area",
+    pinkWaistBandColorCalibrator.drawCalibrationAreaRects();
+  );
+
+  DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_areas:show_blueWaistBand_area",
+    blueWaistBandColorCalibrator.drawCalibrationAreaRects();
+  );
+
   int imageWidth = getImage().cameraInfo.resolutionWidth;
   int imageHeight = getImage().cameraInfo.resolutionHeight;
 

@@ -43,6 +43,9 @@ public:
   void get(colorPixel& idx, colorPixel& dist);
 
   void addCalibrationRect(CalibrationRect&);
+  
+  void drawCalibrationAreaRects();
+  void runDebugRequests(naoth::Image& image);
 
 private:
   string name;
@@ -101,7 +104,6 @@ private:
     int& y
   );
 
-  void runDebugRequests(naoth::Image& image);
 };
 
 #endif // COLORCALIBRATOR_H

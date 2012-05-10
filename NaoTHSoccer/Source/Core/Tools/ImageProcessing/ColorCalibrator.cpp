@@ -177,9 +177,7 @@ void ColorCalibrator::getAverageDistances
   PixelT<int>& ccDist
 )
 {
-
-  unsigned int size = calibrationRectangles.size();
-  for(unsigned int rectIdx = 0; rectIdx < size; rectIdx++)
+  for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)
   {
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
     calibRect.draw();
@@ -237,8 +235,11 @@ void ColorCalibrator::calculateRegions
 
   vector<vector<double> > histColor;
   vector<vector<double> > histDiff;
+  vector<vector<double> > cumHistColor;
+  vector<vector<double> > cumHistDiff;
 
   initHistograms(histColor, histDiff);
+  initHistograms(cumHistColor, cumHistDiff);
 
   for(int i = 0; i < 512; i++)
   {
@@ -247,12 +248,43 @@ void ColorCalibrator::calculateRegions
     sum.z += histDifference[2][i];
   }
 
+  Vector3<double> medianVal;
+  Vector3<int> medianIdx;
+
   for(int i = 0; i < 512; i++)
   {
     histDiff[0][i] = histDifference[0][i] / sum.x;
     histDiff[1][i] = histDifference[1][i] / sum.y;
     histDiff[2][i] = histDifference[2][i] / sum.z;
+    if(i > 0)
+    {
+      cumHistDiff[0][i] = cumHistDiff[0][i - 1] + histDiff[0][i];
+      cumHistDiff[1][i] = cumHistDiff[1][i - 1] + histDiff[1][i];
+      cumHistDiff[2][i] = cumHistDiff[2][i - 1] + histDiff[2][i];
+    }
+    else
+    {
+      cumHistDiff[0][i] = histDiff[0][i];
+    }
+    if(medianVal.x == 0.0 && cumHistDiff[0][i] > 0.5)
+    {
+      medianVal.x = cumHistDiff[0][i];
+      medianIdx.x = i;
+    }
+    if(medianVal.y == 0.0 && cumHistDiff[1][i] > 0.5)
+    {
+      medianVal.y = cumHistDiff[1][i];
+      medianIdx.y = i;
+    }
+    if(medianVal.z == 0.0 && cumHistDiff[2][i] > 0.5)
+    {
+      medianVal.z = cumHistDiff[2][i];
+      medianIdx.z = i;
+    }
   }
+
+  double max = 0.0;
+  int maxIdx = 0;
 
   for(int i = 0; i < 512; i++)
   {
@@ -264,7 +296,13 @@ void ColorCalibrator::calculateRegions
      m2.y += (i - 255) * temp;
      temp =  (i - 255) * histDiff[2][i];
      m1.z += temp;
-     m2.z += (i - 255) * temp;
+     m2.z += (i - 255) * temp;  
+     
+     if (max < histDiff[0][i])
+     {
+        max = histDiff[0][i];
+        maxIdx = i;
+     }
   }
   z2.x = m2.x - (m1.x * m1.x);
   z2.y = m2.y - (m1.y * m1.y);
@@ -276,11 +314,13 @@ void ColorCalibrator::calculateRegions
 
   ccdIdx.VminusU = (int) Math::clamp<double>(m1.x, -255.0, 255.0);
   ccdIdx.UminusY = (int) Math::clamp<double>(m1.y, -255.0, 255.0);
-  ccdIdx.VminusY = (int) Math::clamp<double>(m1.z, -255.0, 255.0);
-  
-  ccdDist.VminusU = (int) Math::clamp<double>(sigma.x * 1.4, -255.0, 255.0);
-  ccdDist.UminusY = (int) Math::clamp<double>(sigma.y * 1.4, -255.0, 255.0);
-  ccdDist.VminusY = (int) Math::clamp<double>(sigma.z * 1.4, -255.0, 255.0);
+  ccdIdx.VminusY = (int) Math::clamp<double>(m1.z, -255.0, 255.0); 
+  //ccdIdx.VminusU = (int) Math::clamp<double>(medianIdx.x, -255.0, 255.0);
+  //ccdIdx.UminusY = (int) Math::clamp<double>(medianIdx.y, -255.0, 255.0);
+  //ccdIdx.VminusY = (int) Math::clamp<double>(medianIdx.z, -255.0, 255.0); 
+  ccdDist.VminusU = (int) Math::clamp<double>(1.3 * sigma.x, -255.0, 255.0);
+  ccdDist.UminusY = (int) Math::clamp<double>(1.3 * sigma.y, -255.0, 255.0);
+  ccdDist.VminusY = (int) Math::clamp<double>(1.3 * sigma.z, -255.0, 255.0);
 
   m1.x = 0;
   m1.y = 0;
@@ -305,12 +345,47 @@ void ColorCalibrator::calculateRegions
     sum.z += histColorChannel[2][i];
   }
 
+  medianVal.x = 0.0;
+  medianVal.y = 0.0;
+  medianVal.z = 0.0;
+  medianIdx.x = 0;
+  medianIdx.y = 0;
+  medianIdx.z = 0;
+
   for(int i = 0; i < 256; i++)
   {
     histColor[0][i] = histColorChannel[0][i] / sum.x;
     histColor[1][i] = histColorChannel[1][i] / sum.y;
     histColor[2][i] = histColorChannel[2][i] / sum.z;
+    if(i > 0)
+    {
+      cumHistColor[0][i] = cumHistColor[0][i - 1] + histColor[0][i];
+      cumHistColor[1][i] = cumHistColor[1][i - 1] + histColor[1][i];
+      cumHistColor[2][i] = cumHistColor[2][i - 1] + histColor[2][i];
+    }
+    else
+    {
+      cumHistColor[0][i] = histColor[0][i];
+    }
+    if(medianVal.x == 0.0 && cumHistColor[0][i] > 0.5)
+    {
+      medianVal.x = cumHistColor[0][i];
+      medianIdx.x = i;
+    }
+    if(medianVal.y == 0.0 && cumHistColor[1][i] > 0.5)
+    {
+      medianVal.y = cumHistColor[1][i];
+      medianIdx.y = i;
+    }
+    if(medianVal.z == 0.0 && cumHistColor[2][i] > 0.5)
+    {
+      medianVal.z = cumHistColor[2][i];
+      medianIdx.z = i;
+    }
   }
+
+  max = 0.0;
+  maxIdx = 0;
 
   for(int i = 0; i < 256; i++)
   {
@@ -323,6 +398,12 @@ void ColorCalibrator::calculateRegions
      temp = i * histColor[2][i];
      m1.z += temp;
      m2.z += i * temp;
+
+     if (max < histDiff[0][i])
+     {
+        max = histDiff[0][i];
+        maxIdx = i;
+     }
   }
   z2.x = m2.x - (m1.x * m1.x);
   z2.y = m2.y - (m1.y * m1.y);
@@ -332,12 +413,15 @@ void ColorCalibrator::calculateRegions
   sigma.y = sqrt(fabs(z2.y));
   sigma.z = sqrt(fabs(z2.z));
 
-  ccIdx.y = (int) Math::clamp<double>(m1.x, 0.0, 255.0);
-  ccIdx.u = (int) Math::clamp<double>(m1.y, 0.0, 255.0);
-  ccIdx.v = (int) Math::clamp<double>(m1.z, 0.0, 255.0);
-  ccDist.y = (int) Math::clamp<double>(sigma.x * 1.4, 0.0, 255.0);
-  ccDist.u = (int) Math::clamp<double>(sigma.y * 1.4, 0.0, 255.0);
-  ccDist.v = (int) Math::clamp<double>(sigma.z * 1.4, 0.0, 255.0);
+  //ccIdx.y = (int) Math::clamp<double>(m1.x, 0.0, 255.0);
+  //ccIdx.u = (int) Math::clamp<double>(m1.y, 0.0, 255.0);
+  //ccIdx.v = (int) Math::clamp<double>(m1.z, 0.0, 255.0);
+  ccIdx.y = (int) Math::clamp<double>(medianIdx.x, 0.0, 255.0);
+  ccIdx.u = (int) Math::clamp<double>(medianIdx.y, 0.0, 255.0);
+  ccIdx.v = (int) Math::clamp<double>(medianIdx.z, 0.0, 255.0);
+  ccDist.y = (int) Math::clamp<double>(1.3 * sigma.x, 0.0, 255.0);
+  ccDist.u = (int) Math::clamp<double>(1.3 * sigma.y, 0.0, 255.0);
+  ccDist.v = (int) Math::clamp<double>(1.3 * sigma.z, 0.0, 255.0);
 }
 
 void ColorCalibrator::get(PixelT<int>& idx, PixelT<int>& dist)
@@ -400,6 +484,14 @@ void ColorCalibrator::get(colorPixel& idx, colorPixel& dist)
   }
 }
 
+void ColorCalibrator::drawCalibrationAreaRects()
+{
+  for(unsigned int rectIdx = 0; rectIdx < calibrationRectangles.size(); rectIdx++)
+  {
+    CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
+    calibRect.draw();
+  }
+}
 
 void ColorCalibrator::runDebugRequests(naoth::Image& image)
 {
