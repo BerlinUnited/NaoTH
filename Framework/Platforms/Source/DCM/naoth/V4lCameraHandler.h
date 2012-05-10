@@ -78,10 +78,8 @@ private:
   int xioctl(int fd, int request, void* arg);
   bool hasIOError(int errOccured, int errNo, bool exitByIOError);
   void initIDMapping();
-  void initialCameraSelection(CameraInfo::CameraID camId);
   void openDevice(bool blockingMode);
   void initDevice();
-  void initI2C();
   void initMMap();
   void initUP(unsigned int buffer_size);
   void initRead(unsigned int buffer_size);

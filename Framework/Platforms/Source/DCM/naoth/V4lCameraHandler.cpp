@@ -60,11 +60,6 @@ void V4lCameraHandler::init(std::string camDevice)
   // set our IDs
   initIDMapping();
 
-  initI2C();
-  // FIXME: the camera has to be selected here!
-  CameraInfo::CameraID camID = CameraInfo::Bottom;
-
-  initialCameraSelection(camID);
   // open the device
   openDevice(true);//in blocking mode
   initDevice();
@@ -128,23 +123,6 @@ void V4lCameraHandler::initIDMapping()
 
 }
 
-void V4lCameraHandler::initialCameraSelection(CameraInfo::CameraID camId)
-{
-  std::cout << "FAST camera selection to " << camId << std::endl;
-
-  unsigned char cmd[2] = {2, 0}; // select lower camera by default
-  if (camId == CameraInfo::Top)
-  {
-    // adjust to the top camera
-    cmd[0] = 1;
-  }
-  VERIFY(i2c_smbus_write_block_data(fdAdapter, 220, 1, cmd) != -1);
-
-  currentCamera = camId;
-  currentSettings[camId].data[CameraSettings::CameraSelection] = camId;
-}
-
-
 void V4lCameraHandler::setFPS(int fpsRate)
 {
   struct v4l2_streamparm fps;
@@ -196,25 +174,6 @@ void V4lCameraHandler::openDevice(bool blockingMode)
       << strerror(errno) << std::endl;
     return;
   }
-}
-
-void V4lCameraHandler::initI2C()
-{
-  fdAdapter = open("/dev/i2c-0", O_RDWR);
-  ASSERT(fdAdapter != -1);
-  VERIFY(ioctl(fdAdapter, 0x703, 8) == 0);
-  __s32 version = 0;
-  do
-  {
-    version = i2c_smbus_read_byte_data(fdAdapter, 170);
-    if(version == 0)
-    {
-      std::cout << "waiting until I2C is fully started" << std::endl;
-      sleep(1);
-    }
-  } while(version == 0);
-  std::cout << "VERSION OF NAO IS " << version << std::endl;
-  VERIFY(version >= 2); // at least Nao V3
 }
 
 void V4lCameraHandler::initDevice()
