@@ -61,7 +61,7 @@ class V4lCameraHandler
 public:
   V4lCameraHandler();
 
-  void init(std::string camDevice = "/dev/video");
+  void init(std::string camDevice = "/dev/video1");
 
   void get(Image& theImage);
 

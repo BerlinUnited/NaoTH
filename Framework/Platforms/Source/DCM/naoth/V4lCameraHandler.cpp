@@ -64,7 +64,7 @@ void V4lCameraHandler::init(std::string camDevice)
   openDevice(true);//in blocking mode
   initDevice();
   internalUpdateCameraSettings();
-  setFPS(30);
+  setFPS(15);
 
   // start capturing
   startCapturing();
@@ -182,6 +182,7 @@ void V4lCameraHandler::initDevice()
   unsigned int min;
 
   // set default parameters and init the camera
+  /*
   struct v4l2_control control;
   memset(&control, 0, sizeof (struct v4l2_control));
   control.id = V4L2_CID_CAM_INIT;
@@ -204,9 +205,12 @@ void V4lCameraHandler::initDevice()
   }
   std::cout << std::endl;
   hasIOError(errorOccured, errno);
+  */
 
+  /*
   v4l2_std_id esid0 = 0x04000000UL; // use 0x08000000UL when the width is 640
   VERIFY(!ioctl(fd, VIDIOC_S_STD, &esid0));
+  */
 
   memset(&(currentBuf), 0, sizeof (struct v4l2_buffer));
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -762,7 +766,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   queryctrl.id = id;
   if (ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
+//    std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
     return -1;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -835,7 +839,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
   queryctrl.id = id;
   if (ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
+    //std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
     return false;
   }
 
@@ -898,26 +902,26 @@ void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
 //    {
 //      setFPS(data.data[i]);
 //    }
-    if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
-    {
-      std::cout << "Camera parameter "
-        << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-        << " was changed from " << currentSettings[currentCamera].data[i] << " to " << data.data[i]
-        << std::endl;
+//    if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
+//    {
+//      std::cout << "Camera parameter "
+//        << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
+//        << " was changed from " << currentSettings[currentCamera].data[i] << " to " << data.data[i]
+//        << std::endl;
 
       
-      if (setSingleCameraParameterCheckFlip((CameraSettings::CameraSettingID) i, 
-        (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection], data.data[i]))
-      {
-        currentSettings[currentCamera].data[i] = data.data[i];
-      }
-      else
-      {
-        std::cerr << "COULD NOT SET "
-          << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-          << " CAMERA PARAMETER" << std::endl;
-      }
-    }
+//      if (setSingleCameraParameterCheckFlip((CameraSettings::CameraSettingID) i,
+//        (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection], data.data[i]))
+//      {
+//        currentSettings[currentCamera].data[i] = data.data[i];
+//      }
+//      else
+//      {
+//        std::cerr << "COULD NOT SET "
+//          << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
+//          << " CAMERA PARAMETER" << std::endl;
+//      }
+//    }
   }
 
 

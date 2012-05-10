@@ -149,7 +149,7 @@ public:
     Platform::getInstance().init(this);
 
     std::cout << "Init CameraHandler" << endl;
-    theCameraHandler.init("/dev/video");
+    theCameraHandler.init("/dev/video1");
   
     std::cout << "Init SoundHandler" <<endl;
     //theSoundPlayer.play("penalized");
