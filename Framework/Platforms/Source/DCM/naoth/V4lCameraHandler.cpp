@@ -107,15 +107,15 @@ void V4lCameraHandler::initIDMapping()
 
 
   // map the existing parameters that can be used safely
-  csConst[CameraSettings::AutoExposition] = V4L2_CID_AUTOEXPOSURE;
+  //csConst[CameraSettings::AutoExposition] = V4L2_CID_AUTOEXPOSURE;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
-  csConst[CameraSettings::AutoGain] = V4L2_CID_AUTOGAIN;
+  //csConst[CameraSettings::AutoGain] = V4L2_CID_AUTOGAIN;
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  csConst[CameraSettings::RedChroma] = V4L2_CID_RED_BALANCE;
-  csConst[CameraSettings::BlueChroma] = V4L2_CID_BLUE_BALANCE;
+  //csConst[CameraSettings::RedChroma] = V4L2_CID_RED_BALANCE;
+  //csConst[CameraSettings::BlueChroma] = V4L2_CID_BLUE_BALANCE;
   csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
   csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
@@ -512,33 +512,33 @@ int V4lCameraHandler::readFrameUP()
   buf.memory = V4L2_MEMORY_USERPTR;
 
   int errorOccured = -1;
-//  if(blockingCaptureModeEnabled)
-//  {
-//    //in blocking mode just get a buffer from the drivers outgoing queue
+  if(blockingCaptureModeEnabled)
+  {
+    //in blocking mode just get a buffer from the drivers outgoing queue
     errorOccured = xioctl(fd, VIDIOC_DQBUF, &buf);
     cout << "after dequeue:" << buf.index << ", l = " << buf.length << endl;
-//    hasIOError(errorOccured, errno);
-////    std::cout << "get buffer from driver blocking" << std::endl;
-//  }
-//  else
-//  {
-//    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
-//    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
-//    for(int i = 0; i < 20 && errorOccured < 0; i++)
-//    {
-//      errorOccured = ioctl(fd, VIDIOC_DQBUF, &buf);
-////      std::cout << "get buffer from driver nonblocking" << std::endl;
-//      if(errorOccured < 0 && errno == EAGAIN)
-//      {
-//        usleep(100);
-//      }
-//      else
-//      {
-//        hasIOError(errorOccured, errno);
-//      }
-//    }
-//  }
-//
+    hasIOError(errorOccured, errno);
+    //    std::cout << "get buffer from driver blocking" << std::endl;
+  }
+  else
+  {
+    //in non-blocking mode make some tries if no buffer in the  drivers outgoing queue is ready
+    //but limit the number of tries (better to loose a frame then to stuck in an endless loop)
+    for(int i = 0; i < 20 && errorOccured < 0; i++)
+    {
+      errorOccured = ioctl(fd, VIDIOC_DQBUF, &buf);
+      //      std::cout << "get buffer from driver nonblocking" << std::endl;
+      if(errorOccured < 0 && errno == EAGAIN)
+      {
+        usleep(100);
+      }
+      else
+      {
+        hasIOError(errorOccured, errno);
+      }
+    }
+  }
+
     if(errorOccured < 0 && errno != EAGAIN && errno != EIO)
     {
       hasIOError(errorOccured, errno, true);
@@ -766,7 +766,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   queryctrl.id = id;
   if (ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-//    std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
+    std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
     return -1;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -837,9 +837,10 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 {
   struct v4l2_queryctrl queryctrl;
   queryctrl.id = id;
-  if (ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
+  if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    //std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
+    std::cerr << "VIDIOC_QUERYCTRL failed with code " << errCode << " "
+                 << getErrnoDescription(errCode) << std::endl;
     return false;
   }
 
@@ -898,39 +899,30 @@ void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
   // set camera settings for "old" camera
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
-//    if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
-//    {
-//      setFPS(data.data[i]);
-//    }
-//    if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
-//    {
-//      std::cout << "Camera parameter "
-//        << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-//        << " was changed from " << currentSettings[currentCamera].data[i] << " to " << data.data[i]
-//        << std::endl;
+    if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
+    {
+      setFPS(data.data[i]);
+    }
+    if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
+    {
+      std::cout << "Camera parameter "
+                << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
+                << " was changed from " << currentSettings[currentCamera].data[i] << " to " << data.data[i]
+                << std::endl;
 
-      
-//      if (setSingleCameraParameterCheckFlip((CameraSettings::CameraSettingID) i,
-//        (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection], data.data[i]))
-//      {
-//        currentSettings[currentCamera].data[i] = data.data[i];
-//      }
-//      else
-//      {
-//        std::cerr << "COULD NOT SET "
-//          << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-//          << " CAMERA PARAMETER" << std::endl;
-//      }
-//    }
+      if (setSingleCameraParameterCheckFlip((CameraSettings::CameraSettingID) i,
+                                            (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection], data.data[i]))
+      {
+        currentSettings[currentCamera].data[i] = data.data[i];
+      }
+      else
+      {
+        std::cerr << "COULD NOT SET "
+                  << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
+                  << " CAMERA PARAMETER" << std::endl;
+      }
+    }
   }
-
-
-  // TODO: allow changing the camera selection
-//  if (currentSettings[currentCamera].data[CameraSettings::CameraSelection] != data.data[CameraSettings::CameraSelection])
-//  {
-//    fastCameraSelection((CameraInfo::CameraID) data.data[CameraSettings::CameraSelection]);
-//  }
-
 
 }
 
