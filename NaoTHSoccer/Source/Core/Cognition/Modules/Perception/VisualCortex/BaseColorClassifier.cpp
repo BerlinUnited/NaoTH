@@ -73,7 +73,7 @@ void BaseColorClassifier::initPercepts()
   getBaseColorRegionPercept().orangeBall.set(     chIdx, chDist);
   regionParams.yellowGoalParams.get(              chIdx, chDist);    
   getBaseColorRegionPercept().yellowGoal.set(     chIdx, chDist);
-  regionParams.blueGoalParams.get(              chIdx, chDist);    
+  regionParams.blueGoalParams.get(                chIdx, chDist);    
   getBaseColorRegionPercept().blueGoal.set(       chIdx, chDist);
   regionParams.pinkWaistBandParams.get(           chIdx, chDist);    
   getBaseColorRegionPercept().pinkWaistBand.set(  chIdx, chDist);
@@ -105,6 +105,7 @@ void BaseColorClassifier::execute()
   calibrateColorRegions();
   initPercepts();
 
+  getBaseColorRegionPercept().lastUpdated = getFrameInfo();
   runDebugRequests();
 }//end execute
 

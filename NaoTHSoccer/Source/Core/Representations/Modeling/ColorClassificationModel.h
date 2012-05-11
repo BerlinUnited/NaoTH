@@ -101,7 +101,7 @@ public:
         return ColorClasses::red;
       }
       else
-        if(baseColorRegionPercept.blueWaistBand.inside(p))
+      if(baseColorRegionPercept.blueWaistBand.inside(p))
       {
         return ColorClasses::blue;
       }
