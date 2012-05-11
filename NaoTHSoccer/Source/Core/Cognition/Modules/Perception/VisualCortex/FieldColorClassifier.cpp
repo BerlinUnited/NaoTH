@@ -108,7 +108,6 @@ void FieldColorClassifier::classify()
 
 void FieldColorClassifier::calibrate()
 {
-  double maxWeightedCr = 0.0;
   int indexCr = 0;
 
   unsigned int gridPointNum = getColoredGrid().uniformGrid.numberOfGridPoints;
@@ -135,7 +134,6 @@ void FieldColorClassifier::calibrate()
     // remember the maximal value
     if(weightedHistU[i] > maxWeightedU)
     {
-      maxWeightedCr = weightedHistU[i];
       indexCr = i;
     }
   }//end for

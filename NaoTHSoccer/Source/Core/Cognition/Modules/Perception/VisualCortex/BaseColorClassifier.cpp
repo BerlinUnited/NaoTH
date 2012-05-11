@@ -269,8 +269,6 @@ void BaseColorClassifier::calibrateFieldColorRegion()
   double meanFieldY = 0;
   double numberOfFieldY = 0;
 
-  int maxWhiteIndex = 0;
-
   for(int i = 0; i < COLOR_CHANNEL_VALUE_COUNT; i++)
   {
     // weight based on the mean value  (255 - i)/255
@@ -290,11 +288,6 @@ void BaseColorClassifier::calibrateFieldColorRegion()
 
     PLOT_GENERIC("BaseColorClassifier:weighted.y", i, fieldCalibHist[0][i]);
     fieldWeightedHist[0][i] = fieldCalibHist[0][i];
-
-    if(fieldCalibHist[0][i] > 1)
-    {
-      maxWhiteIndex = i;
-    }
 
     meanFieldY += fieldCalibHist[0][i] * i;
     numberOfFieldY += fieldCalibHist[0][i];
