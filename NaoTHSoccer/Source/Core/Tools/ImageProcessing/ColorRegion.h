@@ -308,7 +308,9 @@ public:
       PARAMETER_REGISTER(colorChannelDistance.V) = colorChannelDistance.V;
       //colorChannelIndex.Y = 127;
       PARAMETER_REGISTER(colorChannelIndex.U) = colorChannelIndex.U;        
-      PARAMETER_REGISTER(colorChannelIndex.V) = colorChannelIndex.V;        
+      PARAMETER_REGISTER(colorChannelIndex.V) = colorChannelIndex.V;
+      PARAMETER_REGISTER(colorDifferenceDistance.VminusU) = colorDifferenceDistance.VminusU;
+      PARAMETER_REGISTER(colorDifferenceIndex.VminusU) = colorDifferenceIndex.VminusU;
     }
     else  if
     (
@@ -368,8 +370,10 @@ public:
 
   inline bool inside(const Pixel& pixel) const
   {
+    int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
-            chLow.V <= pixel.v && pixel.v <= chHigh.V;
+            chLow.V <= pixel.v && pixel.v <= chHigh.V &&
+            cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };
 
@@ -384,8 +388,10 @@ public:
 
   inline bool inside(const Pixel& pixel)
   {
+    int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
-            chLow.V <= pixel.v && pixel.v <= chHigh.V;
+            chLow.V <= pixel.v && pixel.v <= chHigh.V &&
+            cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };
 
@@ -400,8 +406,10 @@ public:
 
   inline bool inside(const Pixel& pixel) const
   {
+    int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
-            chLow.V <= pixel.v && pixel.v <= chHigh.V;
+            chLow.V <= pixel.v && pixel.v <= chHigh.V && 
+            cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };
 
@@ -416,8 +424,10 @@ public:
 
   inline bool inside(const Pixel& pixel)
   {
+    int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
-            chLow.V <= pixel.v && pixel.v <= chHigh.V;
+            chLow.V <= pixel.v && pixel.v <= chHigh.V && 
+            cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };
 
@@ -432,8 +442,10 @@ public:
 
   inline bool inside(const Pixel& pixel) const
   {
+    int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
-            chLow.V <= pixel.v && pixel.v <= chHigh.V;
+            chLow.V <= pixel.v && pixel.v <= chHigh.V && 
+            cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };
 
@@ -448,8 +460,10 @@ public:
 
   inline bool inside(const Pixel& pixel)
   {
+    int diff = pixel.v - pixel.u;
     return chLow.U <= pixel.u && pixel.u <= chHigh.U && 
-            chLow.V <= pixel.v && pixel.v <= chHigh.V;
+            chLow.V <= pixel.v && pixel.v <= chHigh.V && 
+            cDiffLow.VminusU <= diff && diff <= cDiffHigh.VminusU;
   }
 };
 

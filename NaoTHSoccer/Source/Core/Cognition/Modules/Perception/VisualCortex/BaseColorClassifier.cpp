@@ -50,6 +50,8 @@ BaseColorClassifier::BaseColorClassifier()
   getBaseColorRegionPercept().setPerceptRegions();
   goalIsCalibrating = false;
 
+  CalibrationRect testRect("test", ColorClasses::black, 0, 0, 10 ,10);
+
   orangeBallColorCalibrator.addCalibrationRect(orangeBallCalibRect);
   yellowGoalColorCalibrator.addCalibrationRect(yellowGoalPostLeftCalibRect);
   yellowGoalColorCalibrator.addCalibrationRect(yellowGoalPostRightCalibRect);
@@ -64,20 +66,29 @@ void BaseColorClassifier::initPercepts()
 {
   PixelT<int> chDist;
   PixelT<int> chIdx;
+  colorPixel diffDist;
+  colorPixel diffIdx;
 
-  regionParams.orangeBallParams.get(chIdx, chDist);    
-  getBaseColorRegionPercept().orangeBall.set(chIdx, chDist);
-  regionParams.blueGoalParams.get(chIdx, chDist);    
-  getBaseColorRegionPercept().blueGoal.set(chIdx, chDist);
-  regionParams.yellowGoalParams.get(chIdx, chDist);    
-  getBaseColorRegionPercept().yellowGoal.set(chIdx, chDist);
-  regionParams.pinkWaistBandParams.get(chIdx, chDist);    
-  getBaseColorRegionPercept().pinkWaistBand.set(chIdx, chDist);
-  regionParams.blueWaistBandParams.get(chIdx, chDist);    
-  getBaseColorRegionPercept().blueWaistBand.set(chIdx, chDist);
-  regionParams.whiteLineParams.get(chIdx, chDist);    
-  getBaseColorRegionPercept().whiteLine.set(chIdx, chDist);
-}
+  regionParams.orangeBallParams.get(              chIdx, chDist);    
+  getBaseColorRegionPercept().orangeBall.set(     chIdx, chDist);
+  regionParams.yellowGoalParams.get(              chIdx, chDist);    
+  getBaseColorRegionPercept().yellowGoal.set(     chIdx, chDist);
+  regionParams.blueGoalParams.get(              chIdx, chDist);    
+  getBaseColorRegionPercept().blueGoal.set(       chIdx, chDist);
+  regionParams.pinkWaistBandParams.get(           chIdx, chDist);    
+  getBaseColorRegionPercept().pinkWaistBand.set(  chIdx, chDist);
+  regionParams.blueWaistBandParams.get(           chIdx, chDist);    
+  getBaseColorRegionPercept().blueWaistBand.set(  chIdx, chDist);
+  regionParams.whiteLineParams.get(               chIdx, chDist);    
+  getBaseColorRegionPercept().whiteLine.set(      chIdx, chDist);
+
+  regionParams.orangeBallParams.get(              diffIdx, diffDist);    
+  getBaseColorRegionPercept().orangeBall.set(     diffIdx, diffDist);
+  regionParams.yellowGoalParams.get(              diffIdx, diffDist);    
+  getBaseColorRegionPercept().yellowGoal.set(     diffIdx, diffDist);
+  regionParams.blueGoalParams.get(                diffIdx, diffDist);    
+  getBaseColorRegionPercept().blueGoal.set(       diffIdx, diffDist);
+ }
 
 
 void BaseColorClassifier::execute()
@@ -99,65 +110,92 @@ void BaseColorClassifier::execute()
 
 void BaseColorClassifier::calibrateColorRegions()
 {
+  colorPixel diffDist;
+  colorPixel diffIdx;
+  diffIdx.VminusU = 0; 
+  diffIdx.UminusY = 0; 
+  diffIdx.VminusY = 0;
+  diffDist.VminusU = 0; 
+  diffDist.UminusY = 0; 
+  diffDist.VminusY = 0;
+
   PixelT<int> chIdx;
   PixelT<int> chDist;
-  chIdx.y = 127; 
-  chIdx.u = 127; 
-  chIdx.v = 127;
-  chDist.y = 10; 
-  chDist.u = 10; 
-  chDist.v = 10;
+  chIdx.y = 0; 
+  chIdx.u = 0; 
+  chIdx.v = 0;
+  chDist.y = 0; 
+  chDist.u = 0; 
+  chDist.v = 0;
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:ball",
     orangeBallColorCalibrator.execute(getImage());
-    orangeBallColorCalibrator.get(chIdx, chDist);
-    getBaseColorRegionPercept().orangeBall.set(chIdx, chDist);
-    regionParams.orangeBallParams.set(chIdx, chDist);    
+    orangeBallColorCalibrator.get(                chIdx, chDist);
+    getBaseColorRegionPercept().orangeBall.set(   chIdx, chDist);
+    regionParams.orangeBallParams.set(            chIdx, chDist);    
+
+    orangeBallColorCalibrator.get(                diffIdx, diffDist);
+    getBaseColorRegionPercept().orangeBall.set(   diffIdx, diffDist);
+    regionParams.orangeBallParams.set(            diffIdx, diffDist);    
+
     regionParams.orangeBallParams.saveToConfig();
     regionParams.orangeBallParams.syncWithConfig();
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:yellow_goal",
     yellowGoalColorCalibrator.execute(getImage());
-    yellowGoalColorCalibrator.get(chIdx, chDist);
-    getBaseColorRegionPercept().yellowGoal.set(chIdx, chDist);
-    regionParams.yellowGoalParams.set(chIdx, chDist);    
+    yellowGoalColorCalibrator.get(                chIdx, chDist);
+    getBaseColorRegionPercept().yellowGoal.set(   chIdx, chDist);
+    regionParams.yellowGoalParams.set(            chIdx, chDist); 
+
+    yellowGoalColorCalibrator.get(                diffIdx, diffDist);
+    getBaseColorRegionPercept().yellowGoal.set(   diffIdx, diffDist);
+    regionParams.yellowGoalParams.set(            diffIdx, diffDist);    
+
     regionParams.yellowGoalParams.saveToConfig();
     regionParams.yellowGoalParams.syncWithConfig();
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:blue_goal", 
     blueGoalColorCalibrator.execute(getImage());
-    blueGoalColorCalibrator.get(chIdx, chDist);
-    getBaseColorRegionPercept().blueGoal.set(chIdx, chDist);
-    regionParams.blueGoalParams.set(chIdx, chDist);    
+    blueGoalColorCalibrator.get(                  chIdx, chDist);
+    getBaseColorRegionPercept().blueGoal.set(     chIdx, chDist);
+    regionParams.blueGoalParams.set(              chIdx, chDist);    
+
+    blueGoalColorCalibrator.get(                  diffIdx, diffDist);
+    getBaseColorRegionPercept().blueGoal.set(     diffIdx, diffDist);
+    regionParams.blueGoalParams.set(              diffIdx, diffDist);    
+
     regionParams.blueGoalParams.saveToConfig();
     regionParams.blueGoalParams.syncWithConfig();
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:blueWaistBand", 
     blueWaistBandColorCalibrator.execute(getImage());
-    blueWaistBandColorCalibrator.get(chIdx, chDist);
+    blueWaistBandColorCalibrator.get(             chIdx, chDist);
     getBaseColorRegionPercept().blueWaistBand.set(chIdx, chDist);
-    regionParams.blueWaistBandParams.set(chIdx, chDist);    
+    regionParams.blueWaistBandParams.set(         chIdx, chDist);    
+
     regionParams.blueWaistBandParams.saveToConfig();
     regionParams.blueWaistBandParams.syncWithConfig();
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:pinkWaistBand",
     pinkWaistBandColorCalibrator.execute(getImage());
-    pinkWaistBandColorCalibrator.get(chIdx, chDist);
+    pinkWaistBandColorCalibrator.get(             chIdx, chDist);
     getBaseColorRegionPercept().pinkWaistBand.set(chIdx, chDist);
-    regionParams.pinkWaistBandParams.set(chIdx, chDist);    
+    regionParams.pinkWaistBandParams.set(         chIdx, chDist);    
+
     regionParams.pinkWaistBandParams.saveToConfig();
     regionParams.pinkWaistBandParams.syncWithConfig();
   );
 
   DEBUG_REQUEST("ImageProcessor:BaseColorClassifier:calibrate_colors:line",
     whiteLinesColorCalibrator.execute(getImage());
-    whiteLinesColorCalibrator.get(chIdx, chDist);
-    getBaseColorRegionPercept().whiteLine.set(chIdx, chDist);
-    regionParams.whiteLineParams.set(chIdx, chDist);    
+    whiteLinesColorCalibrator.get(                chIdx, chDist);
+    getBaseColorRegionPercept().whiteLine.set(    chIdx, chDist);
+    regionParams.whiteLineParams.set(             chIdx, chDist);    
+
     regionParams.whiteLineParams.saveToConfig();
     regionParams.whiteLineParams.syncWithConfig();
   );
