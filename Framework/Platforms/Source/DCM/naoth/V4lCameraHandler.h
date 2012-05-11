@@ -80,6 +80,7 @@ private:
   void initIDMapping();
   void openDevice(bool blockingMode);
   void initDevice();
+  void initSetRequiredParams();
   void initMMap();
   void initUP(unsigned int buffer_size);
   void initRead(unsigned int buffer_size);

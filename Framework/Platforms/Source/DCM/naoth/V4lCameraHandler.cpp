@@ -21,9 +21,6 @@ extern "C"
 }
 
 // define some non-standard constants
-#ifndef V4L2_CID_AUTOEXPOSURE
-#define V4L2_CID_AUTOEXPOSURE     (V4L2_CID_BASE+32)
-#endif
 #ifndef V4L2_CID_CAM_INIT
 #define V4L2_CID_CAM_INIT         (V4L2_CID_BASE+33)
 #endif
@@ -63,6 +60,7 @@ void V4lCameraHandler::init(std::string camDevice)
   // open the device
   openDevice(true);//in blocking mode
   initDevice();
+  initSetRequiredParams();
   internalUpdateCameraSettings();
   setFPS(30);
 
@@ -107,7 +105,7 @@ void V4lCameraHandler::initIDMapping()
 
 
   // map the existing parameters that can be used safely
-  //csConst[CameraSettings::AutoExposition] = V4L2_CID_AUTOEXPOSURE;
+  csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
   //csConst[CameraSettings::AutoGain] = V4L2_CID_AUTOGAIN;
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
@@ -120,6 +118,7 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
+  csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
 
 }
 
@@ -947,8 +946,17 @@ bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraS
 
 }
 
+void V4lCameraHandler::initSetRequiredParams()
+{
+  setSingleCameraParameter(CameraSettings::Brightness, 100);
+  setSingleCameraParameter(CameraSettings::BacklightCompensation, 0);
+  setSingleCameraParameter(CameraSettings::AutoExposition, 0);
+  setSingleCameraParameter(CameraSettings::AutoWhiteBalancing, 0);
+}
+
 void V4lCameraHandler::internalUpdateCameraSettings()
 {
+
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
     if (csConst[i] > -1)

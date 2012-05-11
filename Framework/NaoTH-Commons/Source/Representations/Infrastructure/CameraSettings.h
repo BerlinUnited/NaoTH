@@ -47,6 +47,7 @@ namespace naoth
         ExposureCorrection,
         FPS,
         Resolution,
+        BacklightCompensation,
         numOfCameraSetting
       };
 
