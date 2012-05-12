@@ -49,6 +49,7 @@ namespace naoth
         Resolution,
         BacklightCompensation,
         WhiteBalance,
+        Sharpness,
         numOfCameraSetting
       };
 

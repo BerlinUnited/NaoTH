@@ -107,19 +107,17 @@ void V4lCameraHandler::initIDMapping()
   // map the existing parameters that can be used safely
   csConst[CameraSettings::AutoExposition] = V4L2_CID_EXPOSURE_AUTO;
   csConst[CameraSettings::AutoWhiteBalancing] = V4L2_CID_AUTO_WHITE_BALANCE;
-  //csConst[CameraSettings::AutoGain] = V4L2_CID_AUTOGAIN;
   csConst[CameraSettings::Brightness] = V4L2_CID_BRIGHTNESS;
   csConst[CameraSettings::Contrast] = V4L2_CID_CONTRAST;
   csConst[CameraSettings::Saturation] = V4L2_CID_SATURATION;
   csConst[CameraSettings::Hue] = V4L2_CID_HUE;
-  //csConst[CameraSettings::RedChroma] = V4L2_CID_RED_BALANCE;
-  //csConst[CameraSettings::BlueChroma] = V4L2_CID_BLUE_BALANCE;
   csConst[CameraSettings::Gain] = V4L2_CID_GAIN;
   csConst[CameraSettings::HorizontalFlip] = V4L2_CID_HFLIP;
   csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
+  csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
 
 }
 
@@ -788,14 +786,14 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   int errorOccured = -1;
   int returnValue = -1;
 
-  std::cout << "Getting camera parameter (" << id << ") ";
+//  std::cout << "Getting camera parameter (" << id << ") ";
   for(int i = 0; i < 20 && errorOccured < 0; i++)
   {
     errorOccured = ioctl(fd, VIDIOC_G_CTRL, &control_s);
     if(errorOccured < 0 && (errno == EBUSY))
     {
       usleep(10);
-      std::cout << ".";
+//      std::cout << ".";
     }
     else
     {
@@ -874,12 +872,20 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
   control_s.id = id;
   control_s.value = value;
 
+  bool forceRepeat = false;
   int errorOccured = -1;
   std::cout << "setting camera parameter (" << id << ") ";
-  for(int i = 0; i < 20 && errorOccured < 0; i++)
+  for(int i = 0; i < 20 && (forceRepeat || errorOccured < 0); i++)
   {
     errorOccured = ioctl(fd, VIDIOC_S_CTRL, &control_s);
-    if(errorOccured < 0 && (errno == EBUSY))
+    if(id == V4L2_CID_BRIGHTNESS)
+    {
+      // query actual value
+      int actualVal = getSingleCameraParameter(id);
+      forceRepeat = value != actualVal;
+    }
+
+    if(forceRepeat || (errorOccured < 0 && (errno == EBUSY)))
     {
       usleep(10);
       std::cout << ".";
@@ -942,16 +948,23 @@ bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraS
     }
   }
 
-  return setSingleCameraParameter(csConst[i], value);
-
+  if(csConst[i] > -1)
+  {
+    return setSingleCameraParameter(csConst[i], value);
+  }
+  else
+  {
+    return false;
+  }
 }
 
 void V4lCameraHandler::initSetRequiredParams()
 {
-  setSingleCameraParameter(CameraSettings::Brightness, 100);
-  setSingleCameraParameter(CameraSettings::BacklightCompensation, 0);
-  setSingleCameraParameter(CameraSettings::AutoExposition, 0);
-  setSingleCameraParameter(CameraSettings::AutoWhiteBalancing, 0);
+  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, 100);
+  setSingleCameraParameter(V4L2_CID_BACKLIGHT_COMPENSATION, 0);
+  setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO, 0);
+  setSingleCameraParameter(V4L2_CID_AUTO_WHITE_BALANCE, 0);
+  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, 100);
 }
 
 void V4lCameraHandler::internalUpdateCameraSettings()
