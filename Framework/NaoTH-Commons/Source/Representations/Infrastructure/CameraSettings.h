@@ -48,6 +48,7 @@ namespace naoth
         FPS,
         Resolution,
         BacklightCompensation,
+        WhiteBalance,
         numOfCameraSetting
       };
 

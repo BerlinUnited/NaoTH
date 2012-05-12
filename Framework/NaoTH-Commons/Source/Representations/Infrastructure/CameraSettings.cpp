@@ -41,6 +41,7 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case Resolution: return "Resolution"; break;
     case CameraSelection: return "CameraSelection"; break;
     case BacklightCompensation: return "BacklightCompensation"; break;
+    case WhiteBalance: return "WhiteBalance"; break;
     default: return "Unknown CameraSetting"; break;
   }//end switch
 }//end getCameraSettingsName

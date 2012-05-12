@@ -119,6 +119,7 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::VerticalFlip] = V4L2_CID_VFLIP;
   csConst[CameraSettings::Exposure] = V4L2_CID_EXPOSURE;
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
+  csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
 
 }
 
@@ -763,9 +764,10 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
 {
   struct v4l2_queryctrl queryctrl;
   queryctrl.id = id;
-  if (ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
+  if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
-    std::cerr << "VIDIOC_QUERYCTRL failed" << std::endl;
+    std::cerr << "VIDIOC_QUERYCTRL failed: "
+              << getErrnoDescription(errCode) << std::endl;
     return -1;
   }
   if (queryctrl.flags & V4L2_CTRL_FLAG_DISABLED)
@@ -894,8 +896,6 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
 void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
 {
-
-  // set camera settings for "old" camera
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
     if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
