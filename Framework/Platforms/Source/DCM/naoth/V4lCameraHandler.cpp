@@ -896,6 +896,14 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
       return !hasIOError(errorOccured, errno, false);
     }
   }
+
+  if((id == V4L2_CID_AUTO_WHITE_BALANCE || id == V4L2_CID_AUTOGAIN
+     || id == V4L2_CID_EXPOSURE_AUTO)
+     && value == 0)
+  {
+    internalUpdateCameraSettings();
+  }
+
   std::cout << std::endl;
   return !hasIOError(errorOccured, errno, false);
 }
@@ -975,10 +983,7 @@ void V4lCameraHandler::internalUpdateCameraSettings()
     if (csConst[i] > -1)
     {
       int value = getSingleCameraParameterCheckFlip(csConst[i], currentCamera);
-      if (value > -1)
-      {
-        currentSettings[currentCamera].data[i] = value;
-      }
+      currentSettings[currentCamera].data[i] = value;
     }
   }
 
