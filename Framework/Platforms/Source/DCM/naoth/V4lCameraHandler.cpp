@@ -138,6 +138,7 @@ void V4lCameraHandler::openDevice(bool blockingMode)
 {
 
   struct stat st;
+  memset (&st, 0, sizeof (st));
 
   if (-1 == stat(cameraName.c_str(), &st))
   {
@@ -177,6 +178,7 @@ void V4lCameraHandler::openDevice(bool blockingMode)
 void V4lCameraHandler::initDevice()
 {
   struct v4l2_capability cap;
+  memset (&cap, 0, sizeof (cap));
   unsigned int min;
 
   // set default parameters and init the camera
@@ -766,6 +768,7 @@ void V4lCameraHandler::setCameraSettings(const CameraSettings& data, bool queryN
 int V4lCameraHandler::getSingleCameraParameter(int id)
 {
   struct v4l2_queryctrl queryctrl;
+  memset (&queryctrl, 0, sizeof (queryctrl));
   queryctrl.id = id;
   if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
@@ -786,6 +789,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   }
 
   struct v4l2_control control_s;
+  memset (&control_s, 0, sizeof (control_s));
   control_s.id = id;
 
   int errorOccured = -1;
@@ -840,6 +844,7 @@ int V4lCameraHandler::getSingleCameraParameterCheckFlip(int id, CameraInfo::Came
 bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 {
   struct v4l2_queryctrl queryctrl;
+  memset (&queryctrl, 0, sizeof (queryctrl));
   queryctrl.id = id;
   if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
@@ -874,6 +879,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
   }
 
   struct v4l2_control control_s;
+  memset (&control_s, 0, sizeof (control_s));
   control_s.id = id;
   control_s.value = value;
 
