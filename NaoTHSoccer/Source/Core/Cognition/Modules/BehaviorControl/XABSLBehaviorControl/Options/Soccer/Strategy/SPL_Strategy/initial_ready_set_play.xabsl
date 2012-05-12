@@ -44,7 +44,6 @@ option initial_ready_set_play
 	state set {
 		action
 		{
-      situationStatusOwnHalf = false;
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
       special_kickoff_done = false;
