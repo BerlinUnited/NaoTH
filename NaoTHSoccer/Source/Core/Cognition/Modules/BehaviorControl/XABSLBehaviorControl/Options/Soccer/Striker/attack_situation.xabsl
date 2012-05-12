@@ -20,14 +20,29 @@ option attack_situation
       motion.walk.stop_with_stand = false;
     }
   }
+
+  /*state stand_tester
+  {
+    decision
+    {
+      if(state_time > 10000)
+      {
+        goto approach_ball;
+      }
+      else stay;
+    }
+    action
+    {
+      motion.type = stand;
+    }
+  }*/
   
   state position
   {
     decision {
-      // start kick towards the goal at 80 degree or less to be sure about the direction
-      if(abs(value=attack.direction) < 80) // angle was reached
+      // start kick towards the goal at 90 degree or less to be sure about the direction
+      if(abs(value=attack.direction) < 90) // angle was reached
       {
-
         if(robot_pose.is_valid || goal.opp.time_since_seen < 15000)
         {
           goto turn_to_ball_with_foot;
