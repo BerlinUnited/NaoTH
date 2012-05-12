@@ -28,7 +28,7 @@ extern "C"
 using namespace naoth;
 
 V4lCameraHandler::V4lCameraHandler()
-:
+  :
   selMethodIO(IO_MMAP),
   actMethodIO(Num_of_MethodIO),
   fd(-1), buffers(NULL),
@@ -37,7 +37,8 @@ V4lCameraHandler::V4lCameraHandler()
   n_buffers(0),
   hadReset(false),
   wasQueried(false),
-  isCapturing(false)
+  isCapturing(false),
+  cameraParamsInitialized(false)
 {
 
 }
@@ -60,7 +61,6 @@ void V4lCameraHandler::init(std::string camDevice)
   // open the device
   openDevice(true);//in blocking mode
   initDevice();
-  initSetRequiredParams();
   internalUpdateCameraSettings();
   setFPS(30);
 
@@ -754,6 +754,11 @@ void V4lCameraHandler::setCameraSettings(const CameraSettings& data, bool queryN
   }
   else
   {
+    if(!cameraParamsInitialized)
+    {
+      initSetRequiredParams();
+      cameraParamsInitialized = true;
+    }
     internalSetCameraSettings(data);
   }
 }

@@ -144,6 +144,7 @@ private:
   CameraInfo::CameraID currentCamera;
 
   unsigned int noBufferChangeCount;
+  bool cameraParamsInitialized;
 
 };
 
