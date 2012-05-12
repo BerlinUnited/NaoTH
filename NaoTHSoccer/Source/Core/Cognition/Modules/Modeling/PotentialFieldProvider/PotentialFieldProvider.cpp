@@ -23,7 +23,8 @@ PotentialFieldProvider::PotentialFieldProvider()
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_ball_approach_field:local", "...", false);
 
-  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection", "", false);
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection:local", "", false);
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection:global", "", false);
 }
 
 
@@ -33,7 +34,7 @@ void PotentialFieldProvider::execute()
   getSoccerStrategy().attackDirection = p;
 
 
-  DEBUG_REQUEST("PotentialFieldProvider:attackDirection",
+  DEBUG_REQUEST("PotentialFieldProvider:attackDirection:local",
     FIELD_DRAWING_CONTEXT;
     PEN("FFFFFF", 20);
 
@@ -46,6 +47,26 @@ void PotentialFieldProvider::execute()
           getBallModel().positionPreview.x + targetDir.x,
           getBallModel().positionPreview.y + targetDir.y
           );
+  );
+
+  DEBUG_REQUEST("PotentialFieldProvider:attackDirection:global",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 20);
+    TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
+    ROTATION(getRobotPose().rotation);
+
+    Vector2<double> targetDir = getSoccerStrategy().attackDirection;
+    targetDir.normalize(200);
+
+    ARROW(
+          getBallModel().positionPreview.x,
+          getBallModel().positionPreview.y,
+          getBallModel().positionPreview.x + targetDir.x,
+          getBallModel().positionPreview.y + targetDir.y
+          );
+
+    ROTATION(-getRobotPose().rotation);
+    TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
   );
 
 
