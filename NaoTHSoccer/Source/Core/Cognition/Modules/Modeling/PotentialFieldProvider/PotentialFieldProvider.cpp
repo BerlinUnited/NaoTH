@@ -23,8 +23,13 @@ PotentialFieldProvider::PotentialFieldProvider()
 
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:goal_field_geometry","...", false);
 
-  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection", "draw attack direction", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:goal_target", "draw goal target", false);
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:different_colors","...", false);
+
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_ball_approach_field:local", "...", false);
+
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection:local", "", false);
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection:global", "", false);
 }
 
 
@@ -72,7 +77,7 @@ void PotentialFieldProvider::execute()
   Vector2<double> p = calculatePotentialField(ballRelative, targetPoint, obstacles);
   getRawAttackDirection().attackDirection = p;
 
-  DEBUG_REQUEST("PotentialFieldProvider:attackDirection",
+  DEBUG_REQUEST("PotentialFieldProvider:attackDirection:local",
     FIELD_DRAWING_CONTEXT;
 
     PEN("FFFFFF", 20);
@@ -91,6 +96,26 @@ void PotentialFieldProvider::execute()
           globalTarget.x,
           globalTarget.y
           );
+  );
+
+  DEBUG_REQUEST("PotentialFieldProvider:attackDirection:global",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 20);
+    TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
+    ROTATION(getRobotPose().rotation);
+
+    Vector2<double> targetDir = getRawAttackDirection().attackDirection;
+    targetDir.normalize(200);
+
+    ARROW(
+          getBallModel().positionPreview.x,
+          getBallModel().positionPreview.y,
+          getBallModel().positionPreview.x + targetDir.x,
+          getBallModel().positionPreview.y + targetDir.y
+          );
+
+    ROTATION(-getRobotPose().rotation);
+    TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
   );
 
 

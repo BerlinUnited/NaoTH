@@ -27,11 +27,13 @@ GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, 
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if(fabs(compassDirection.angle + goal.calculateCenter().angle()) < Math::pi_2){
-      return goal;
-    } else {
-      return calculateAnotherGoal(goal, fieldInfo.xLength);
-    }
+    //if(fabs(goal.calculateCenter().rotate(compassDirection.angle).angle()) < Math::pi_2)
+  if(fabs(Math::normalize(compassDirection.angle + goal.calculateCenter().angle())) < Math::pi_2)
+  {
+    return goal;
+  } else {
+    return calculateAnotherGoal(goal, fieldInfo.xLength);
+  }
 }//end getOppGoal
 
 /*
