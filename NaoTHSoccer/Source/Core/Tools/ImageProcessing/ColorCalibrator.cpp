@@ -5,47 +5,8 @@ ColorCalibrator::ColorCalibrator(string name, ColorClasses::Color color)
   name(name),
   color(color)
 {
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:calibrate_color_region_" + string(ColorClasses::getColorName(color)) + "_" + name, " ", false);
- 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_calibrated_colors_" + string(ColorClasses::getColorName(color)) + "_" + name, " ", false);
-  
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_field", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_ball", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_blue_goal", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_yellow_goal", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_pinkWaistBand", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:show_percept_colors_blueWaistBand", " ", false);
-  
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_field", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_ball", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_blue_goal", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_yellow_goal", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_pinkWaistBand", " ", false);
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:set_percept_colors_blueWaistBand", " ", false);
-
-  //DEBUG_REQUEST_REGISTER("ImageProcessor:ColorCalibrator:reset_calibration_data", " ", false);
-
   reset();
-
-  //PixelT<int> chDist;
-  //PixelT<int> chIdx;
-  //getBaseColorRegionPercept().orangeBall.get(chIdx, chDist);
-  //orangeBallParams.set(chIdx, chDist);    
-  //getBaseColorRegionPercept().blueGoal.get(chIdx, chDist);
-  //blueGoalParams.set(chIdx, chDist);    
-  //getBaseColorRegionPercept().yellowGoal.get(chIdx, chDist);
-  //yellowGoalParams.set(chIdx, chDist);    
-  //getBaseColorRegionPercept().pinkWaistBand.get(chIdx, chDist);
-  //pinkWaistBandParams.set(chIdx, chDist);    
-  //getBaseColorRegionPercept().blueWaistBand.get(chIdx, chDist);
-  //blueWaistBandParams.set(chIdx, chDist);    
 }
-
-//void ColorCalibrator::addCalibrationRect(string rectName, int x0, int y0, int x1, int y1)
-//{
-//  //calibRect.registerParameters();
-//  calibrationRectangles.push_back(CalibrationRect(rectName, color, x0, y0, x1, y1));
-//}
 
 void ColorCalibrator::addCalibrationRect(CalibrationRect& calibRect)
 {
@@ -490,59 +451,5 @@ void ColorCalibrator::drawCalibrationAreaRects()
   {
     CalibrationRect& calibRect = *calibrationRectangles[rectIdx];
     calibRect.draw();
-  }
-}
-
-void ColorCalibrator::runDebugRequests(naoth::Image& image)
-{
-  bool show = false;
-  greenParams.sync();
-  orangeParams.sync();
-  skyblueParams.sync();   
-  yellowParams.sync();
-  pinkParams.sync();
-  blueParams.sync();
-  whiteParams.sync();
-
-  DEBUG_REQUEST("ImageProcessor:ColorCalibrator:show_calibrated_colors" + string(ColorClasses::getColorName(color)) + "_" + name,
-    show = true;
-  );
-
-  for(unsigned int x = 0; x < image.width(); x++)
-  {
-    for(unsigned int y = 0; y < image.height(); y++)
-    {
-      const Pixel& pixel = image.get(x, y);
-
-      if(color == ColorClasses::green && show && greenParams.inside(pixel) )
-      {
-        POINT_PX(ColorClasses::green, x, y);
-      }
-
-      if(color == ColorClasses::orange && show && orangeParams.inside(pixel))
-      {
-        POINT_PX(ColorClasses::red, x, y);
-      }
-
-      if(color == ColorClasses::skyblue && show && skyblueParams.inside(pixel))
-      {
-        POINT_PX(ColorClasses::skyblue, x, y);
-      }
-
-      if(color == ColorClasses::yellow && show && yellowParams.inside(pixel) )
-      {
-        POINT_PX(ColorClasses::yellow, x, y);
-      }
-
-      if(color == ColorClasses::pink && show && pinkParams.inside(pixel))
-      {
-        POINT_PX(ColorClasses::pink, x, y);
-      }
-
-      if(color == ColorClasses::blue && show && blueParams.inside(pixel) )
-      {
-        POINT_PX(ColorClasses::blue, x, y);
-      }
-    }
   }
 }

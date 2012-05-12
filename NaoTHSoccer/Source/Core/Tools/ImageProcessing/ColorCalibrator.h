@@ -45,7 +45,6 @@ public:
   void addCalibrationRect(CalibrationRect&);
   
   void drawCalibrationAreaRects();
-  void runDebugRequests(naoth::Image& image);
 
 private:
   string name;
