@@ -855,7 +855,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
   }
 
   // clip value
-  if (value < 0)
+  if (value == -1)
   {
     value = queryctrl.default_value;
   }
