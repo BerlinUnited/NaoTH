@@ -81,50 +81,6 @@ option approach_ball_with_correct_foot {
     }
   }
 
-  state avoid_abstacle_right
-  {
-    decision 
-    {
-      if(obstacle.ultrasound.distance > 380)
-        goto approach_ball;
-      else
-        stay;
-    }
-    action 
-    {
-      //go_to_ball_omni(distance = @dist, right_foot=false);
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = -60;
-      motion.walk_speed.rot = 0;
-      motion.walk.coordinate = right_foot;
-      motion.walk.stop_with_stand = true;
-      head.control_mode = search_for_ball;
-    }
-  }
-
-  state avoid_abstacle_left
-  {
-    decision 
-    {
-      if(obstacle.ultrasound.distance > 380)
-        goto approach_ball;
-      else
-        stay;
-    }
-    action 
-    {
-      //go_to_ball_omni(distance = @dist, right_foot=false);
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 60;
-      motion.walk_speed.rot = 0;
-      motion.walk.coordinate = right_foot;
-      motion.walk.stop_with_stand = true;
-      head.control_mode = search_for_ball;
-    }
-  }
-
   target state approach_ball_right_finished 
   {
     decision 

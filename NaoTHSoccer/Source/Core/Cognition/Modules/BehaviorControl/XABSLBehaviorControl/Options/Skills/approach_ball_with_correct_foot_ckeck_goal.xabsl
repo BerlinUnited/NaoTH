@@ -33,7 +33,7 @@ option approach_ball_with_correct_foot_ckeck_goal
 
   state look_for_goal {
     decision{
-      else if(goal.opp.time_since_seen > 15000) // || goal.own.time_since_seen
+      else if(goal.opp.time_since_seen > 15000) //|| robot_pose.is_valid // || goal.own.time_since_seen
         goto check_position;
       else if(state_time > 1500)
         goto look_for_ball;
@@ -58,7 +58,7 @@ option approach_ball_with_correct_foot_ckeck_goal
         goto turn_around_ball;
       }
       // if a goal was seen, try to correct the position
-      else if(robot_pose.is_valid || goal.opp.time_since_seen < 3000 || goal.own.time_since_seen < 3000)
+      else if(goal.opp.time_since_seen < 3000 || goal.own.time_since_seen < 3000)//|| robot_pose.is_valid
       {
         goto look_for_ball;
       }

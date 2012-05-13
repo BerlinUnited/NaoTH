@@ -43,7 +43,7 @@ option attack_situation
       // start kick towards the goal at 90 degree or less to be sure about the direction
       if(abs(value=attack.direction) < 90) // angle was reached
       {
-        if(robot_pose.is_valid || goal.opp.time_since_seen < 15000)
+        if(goal.opp.time_since_seen < 15000) //|| robot_pose.is_valid)
         {
           goto turn_to_ball_with_foot;
         }
@@ -73,7 +73,7 @@ option attack_situation
         goto turn_around_ball;
       }
       // if a goal was seen, try to correct the position
-      else if(robot_pose.is_valid || goal.opp.time_since_seen < 3000 || goal.own.time_since_seen < 3000)
+      else if(goal.opp.time_since_seen < 3000 || goal.own.time_since_seen < 3000) //|| robot_pose.is_valid)
       {
         goto position;
       }
