@@ -43,7 +43,7 @@ option attack_situation
       // start kick towards the goal at 90 degree or less to be sure about the direction
       if(abs(value=attack.direction) < 90) // angle was reached
       {
-        if(goal.opp.time_since_seen < 15000) //|| robot_pose.is_valid)
+        if(goal.opp.time_since_seen < 55000) //|| robot_pose.is_valid) xxx
         {
           goto turn_to_ball_with_foot;
         }
@@ -116,11 +116,11 @@ option attack_situation
     {
       if(action_done)
       {
-        /*if(goal.opp.distance > 2400
-          || random > 0.4)*/
+        if(goal.opp.distance < 2000 && abs(value=attack.direction) < 60)
+          //|| random > 0.4)
+          goto stabilize_before_kick;
+        else
           goto dribble;
-        /*else
-          goto stabilize_before_kick;*/
       }
       else stay;
     }
@@ -145,17 +145,34 @@ option attack_situation
       // maybe we touched the ball accidently
       else if(!action_done)
         goto approach_ball;
-      else if(executed_motion.type == stand)
-        goto kick;
-      else
-        stay;
+      else //if(executed_motion.type == stand) HACK xxx
+        goto kick_prep;
+      //else
+        //stay;
     }
     action {
       // should execute stand
-      approach_ball_with_correct_foot(dist=170, errorX=15, errorY=15, errorR=5+5*random, want_to_turn_after_approach=false);
+      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=5+5*random, want_to_turn_after_approach=false);
       head.control_mode = search_for_ball;
+      motion.walk.stop_with_stand = true;
       //motion.type = stand;
       motion.type = walk;
+    }
+  }
+
+  state kick_prep
+  {
+    decision {
+         if(executed_motion.type == stand) {
+           goto kick;
+         } else {
+            stay;
+         }
+    }
+    action {
+    
+      head.control_mode = search_for_ball;
+      motion.type = stand;
     }
   }
 
