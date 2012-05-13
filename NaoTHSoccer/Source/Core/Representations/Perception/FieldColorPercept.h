@@ -22,28 +22,28 @@ using namespace naoth;
 
 class FieldColorPercept : public naoth::Printable
 {
-private:
-
 public:
   bool valid;
-  double distU;
-  int indexU;
+  double distV;
+  int indexV;
 
-  int borderLeftU;
-  int borderRightU;
+  int borderLeftV;
+  int borderRightV;
 
-  int maxV;
+  int maxY;
+  int maxU;
 
   FrameInfo lastUpdated;
 
   FieldColorPercept()  
   : 
   valid(false),
-  distU(5.0),
-  indexU(100),
-  borderLeftU(0),
-  borderRightU(0),
-  maxV(127)
+  distV(5.0),
+  indexV(100),
+  borderLeftV(0),
+  borderRightV(0),
+  maxY(127),
+  maxU(127)
   {}
 
   ~FieldColorPercept()
@@ -51,13 +51,13 @@ public:
 
   void set()
   {
-    borderLeftU = (int) Math::clamp<double>(indexU - distU, 0.0, 255.0);
-    borderRightU = (int) Math::clamp<double>(indexU + distU, 0.0, 255.0);
+    borderLeftV = (int) Math::clamp<double>(indexV - distV, 0.0, 255.0);
+    borderRightV = (int) Math::clamp<double>(indexV + distV, 0.0, 255.0);
   }
 
   inline bool isFieldColor(const int& yy, const int& cb, const int& cr) const
   {
-    return borderLeftU < cr && cr < borderRightU && cb < maxV;
+    return borderLeftV < cr && cr < borderRightV && cb < maxU && yy < maxY;
   }
 
   inline bool isFieldColor(const Pixel& pixel) const
@@ -67,8 +67,10 @@ public:
 
   inline void print(ostream& stream) const
   {
-    stream << "distance in Cr (U) channel = " << distU << endl;
-    stream << "index in Cr (U) channel = " << indexU << endl;
+    stream << "max value in Y channel = " << maxY << endl;
+    stream << "max value in Cb (U) channel = " << maxU << endl;
+    stream << "distance in Cr (V) channel = " << distV << endl;
+    stream << "index in Cr (V) channel = " << indexV << endl;
   }//end print
 
 };

@@ -3,7 +3,8 @@
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
-#include <Tools/ImageProcessing/BaseColorRegionParameters.h>
+//#include <Tools/ImageProcessing/BaseColorRegionParameters.h>
+#include "Tools/ImageProcessing/ColorRegion.h"
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -13,14 +14,14 @@ using namespace naoth;
 
 class BaseColorRegionPercept : public naoth::Printable
 {
-  class ColorRegion
+  class BaseColorRegion
   {
   private:
     DoublePixel min;
     DoublePixel max;
     bool valid;
   public:
-    ColorRegion()
+    BaseColorRegion()
     {
       set(0, 0, 0, 0, 0, 0);
       valid = false;
@@ -140,10 +141,17 @@ public:
   PixelT<double> lineBorderPlus;
   PixelT<double> lineBorderMinus;
 
-  ColorRegion fieldColorRegion;
-  ColorRegion goalColorRegion;
-  ColorRegion ballColorRegion;
-  ColorRegion lineColorRegion;
+  BaseColorRegion fieldColorRegion;
+  BaseColorRegion goalColorRegion;
+  BaseColorRegion ballColorRegion;
+  BaseColorRegion lineColorRegion;
+
+  yellowColorRegion yellowGoal;
+  skyblueColorRegion blueGoal;
+  orangeColorRegion orangeBall;
+  pinkColorRegion pinkWaistBand;
+  blueColorRegion blueWaistBand;
+  whiteColorRegion whiteLine;
 
   FrameInfo lastUpdated;
 
@@ -414,7 +422,7 @@ public:
 
   inline bool isWhite(const Pixel& pixel) const
   {
-    return isWhite((int) pixel.y, (int) pixel.u, (int) pixel.v);
+    return isWhite(pixel.y, pixel.u, pixel.v);
   }
 
   inline void print(ostream& stream) const
