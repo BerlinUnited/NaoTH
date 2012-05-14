@@ -102,15 +102,15 @@ public:
     return 0.0 <= t && t <= length;
   }//end intersect
 
+  /** projection of the point to the line */
   double project(const Vector2<double>& p) const
   {
-    // projection of the point to the line
     return direction*p - direction*base;
   }//end project
 
+  /** projection of the point to the line */
   Vector2<double> projection(const Vector2<double>& p) const
   {
-    // projection of the point to the line
     double t = direction*p - direction*base;
     return point(t);
   }//end projection
