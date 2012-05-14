@@ -11,9 +11,9 @@ option dribble_attack_direction {
   {
     decision
     {
-      else if(attack.direction > 25)
+      else if(attack.direction > 40) //xxx
         goto approach_for_kick_right;
-      else if(attack.direction < -25)
+      else if(attack.direction < -40) //xxx
         goto approach_for_kick_left;
       else 
         goto walk_against_ball;
@@ -87,7 +87,9 @@ option dribble_attack_direction {
   state walk_against_ball
   {
     decision {
-      else if (state_time > 1500 || ball.distance > 300) //state_time as backup
+      else if (state_time > 1200)
+        goto finished;
+      else if ((ball.preview.x > 0 && ball.preview.x < 200 && abs(value=ball.preview.y) < 70)) //state_time as backup xxx
         stay;
       else 
         goto finished;
