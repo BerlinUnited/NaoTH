@@ -50,6 +50,17 @@ void SoccerStrategyProvider::execute()
   getSoccerStrategy().formation = calculateForamtion();
 
   getSoccerStrategy().timeToBall = estimateTimeToBall();
+
+  attackDirectionBuffer.add(getRawAttackDirection().attackDirection);
+  double sumX = 0.0;
+  double sumY = 0.0;
+  for(int i=0; i < attackDirectionBuffer.getNumberOfEntries(); i++)
+  {
+    sumX += attackDirectionBuffer[i].x;
+    sumY += attackDirectionBuffer[i].y;
+  }
+  getSoccerStrategy().attackDirection.x = sumX / (double) attackDirectionBuffer.getNumberOfEntries();
+  getSoccerStrategy().attackDirection.y = sumY / (double) attackDirectionBuffer.getNumberOfEntries();
 }
 
 Vector2<double> SoccerStrategyProvider::calculateForamtion() const

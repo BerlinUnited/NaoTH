@@ -61,14 +61,14 @@ public class Entity extends Drawable
     String vrmlfile = vrmlDir + name + ".wrl";
     URL vrlmURL = getClass().getResource(vrmlfile);
 
-      try
-      {
-        com.sun.j3d.loaders.Scene vrmlScene = loader.load(vrlmURL);
-        e = vrmlScene.getSceneGroup();
-      } catch (Exception ex)
-      {
-        Helper.handleException(name, ex);
-      }
+    try
+    {
+      com.sun.j3d.loaders.Scene vrmlScene = loader.load(vrlmURL);
+      e = vrmlScene.getSceneGroup();
+    } catch (Exception ex)
+    {
+      Helper.handleException("Could not load " + name + " with URL " + vrlmURL.toString(), ex);
+    }
     return e;
   }
 
