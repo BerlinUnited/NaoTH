@@ -149,7 +149,7 @@ public:
     Platform::getInstance().init(this);
 
     std::cout << "Init CameraHandler" << endl;
-    theCameraHandler.init("/dev/video1");
+    theCameraHandler.init("/dev/video1", CameraInfo::Bottom);
   
     std::cout << "Init SoundHandler" <<endl;
     //theSoundPlayer.play("penalized");
@@ -218,7 +218,9 @@ public:
   // camera stuff
   void get(Image& data) { theCameraHandler.get(data); }
   void get(CurrentCameraSettings& data) { theCameraHandler.getCameraSettings(data); }
-  void set(const CameraSettingsRequest& data) { theCameraHandler.setCameraSettings(data, data.queryCameraSettings); }
+  void set(const CameraSettingsRequest& data) {
+    theCameraHandler.setCameraSettings(data, data.queryCameraSettings);
+  }
 
   // sound
   void set(const SoundPlayData& data) 

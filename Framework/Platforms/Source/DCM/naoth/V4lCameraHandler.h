@@ -61,7 +61,8 @@ class V4lCameraHandler
 public:
   V4lCameraHandler();
 
-  void init(std::string camDevice = "/dev/video1");
+  void init(std::string camDevice = "/dev/video1",
+            CameraInfo::CameraID camID = CameraInfo::Bottom);
 
   void get(Image& theImage);
 
@@ -145,6 +146,8 @@ private:
 
   unsigned int noBufferChangeCount;
   bool cameraParamsInitialized;
+
+  unsigned int settingToCheck;
 
 };
 

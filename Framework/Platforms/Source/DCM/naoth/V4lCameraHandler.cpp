@@ -38,13 +38,16 @@ V4lCameraHandler::V4lCameraHandler()
   hadReset(false),
   wasQueried(false),
   isCapturing(false),
-  cameraParamsInitialized(false)
+  cameraParamsInitialized(false),
+  settingToCheck(0)
 {
 
 }
 
-void V4lCameraHandler::init(std::string camDevice)
+void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID)
 {
+
+  currentCamera = camID;
 
   for(int i=0; i < CameraInfo::numOfCamera; i++)
   {
@@ -58,15 +61,20 @@ void V4lCameraHandler::init(std::string camDevice)
   // set our IDs
   initIDMapping();
 
+  settingToCheck = 0;
+
   // open the device
   openDevice(true);//in blocking mode
   initDevice();
-  internalUpdateCameraSettings();
+
+  initSetRequiredParams();
+
   setFPS(30);
 
   // start capturing
   startCapturing();
-;
+
+
 }
 
 int V4lCameraHandler::xioctl(int fd, int request, void* arg)
@@ -756,11 +764,6 @@ void V4lCameraHandler::setCameraSettings(const CameraSettings& data, bool queryN
   }
   else
   {
-    if(!cameraParamsInitialized)
-    {
-      initSetRequiredParams();
-      cameraParamsInitialized = true;
-    }
     internalSetCameraSettings(data);
   }
 }
@@ -816,6 +819,7 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
      returnValue = control_s.value;
   }
 
+  std::cout << "GetCameraParam " << id << " --> " << returnValue << std::endl;
   return returnValue;
 }
 
@@ -846,7 +850,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
   struct v4l2_queryctrl queryctrl;
   memset (&queryctrl, 0, sizeof (queryctrl));
   queryctrl.id = id;
-  if (int errCode = ioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
+  if (int errCode = xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl) < 0)
   {
     std::cerr << "VIDIOC_QUERYCTRL failed with code " << errCode << " "
                  << getErrnoDescription(errCode) << std::endl;
@@ -885,15 +889,16 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
   bool forceRepeat = false;
   int errorOccured = -1;
-  std::cout << "setting camera parameter (" << id << ") ";
+  std::cout << "setting camera parameter (id " << id << " to " << value
+            << ") ";
   for(int i = 0; i < 20 && (forceRepeat || errorOccured < 0); i++)
   {
-    errorOccured = ioctl(fd, VIDIOC_S_CTRL, &control_s);
+    errorOccured = xioctl(fd, VIDIOC_S_CTRL, &control_s);
     if(id == V4L2_CID_BRIGHTNESS)
     {
       // query actual value
-      int actualVal = getSingleCameraParameter(id);
-      forceRepeat = value != actualVal;
+      //int actualVal = getSingleCameraParameter(id);
+      //forceRepeat = value != actualVal;
     }
 
     if(forceRepeat || (errorOccured < 0 && (errno == EBUSY)))
@@ -912,7 +917,7 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
      || id == V4L2_CID_EXPOSURE_AUTO)
      && value == 0)
   {
-    internalUpdateCameraSettings();
+//    internalUpdateCameraSettings();
   }
 
   std::cout << std::endl;
@@ -921,23 +926,36 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
 
 void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
 {
-  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
+  if(settingToCheck >= CameraSettings::numOfCameraSetting)
   {
+    settingToCheck = 0;
+  }
+  for (int i = settingToCheck; i < CameraSettings::numOfCameraSetting; i++)
+  {
+    settingToCheck++;
+
     if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
     {
       setFPS(data.data[i]);
+      return;
     }
-    if (csConst[i] > -1 && i != CameraSettings::CameraSelection && data.data[i] != currentSettings[currentCamera].data[i])
+
+    int value = data.data[i];
+
+    if (csConst[i] > -1 && i != CameraSettings::CameraSelection
+        && (value != currentSettings[currentCamera].data[i]))
     {
       std::cout << "Camera parameter "
                 << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-                << " was changed from " << currentSettings[currentCamera].data[i] << " to " << data.data[i]
+                << " was changed from " << currentSettings[currentCamera].data[i]
+                << " to " << value
                 << std::endl;
 
       if (setSingleCameraParameterCheckFlip((CameraSettings::CameraSettingID) i,
-                                            (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection], data.data[i]))
+                                            (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection],
+                                            value))
       {
-        currentSettings[currentCamera].data[i] = data.data[i];
+        currentSettings[currentCamera].data[i] = value;
       }
       else
       {
@@ -945,7 +963,10 @@ void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
                   << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
                   << " CAMERA PARAMETER" << std::endl;
       }
-    }
+
+      return;
+
+    } // if was changed
   }
 
 }
@@ -979,11 +1000,11 @@ bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraS
 
 void V4lCameraHandler::initSetRequiredParams()
 {
-  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, 100);
+  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, 0);
   setSingleCameraParameter(V4L2_CID_BACKLIGHT_COMPENSATION, 0);
   setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO, 0);
   setSingleCameraParameter(V4L2_CID_AUTO_WHITE_BALANCE, 0);
-  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, 100);
+  setSingleCameraParameter(V4L2_CID_EXPOSURE, 399);
 }
 
 void V4lCameraHandler::internalUpdateCameraSettings()
@@ -991,8 +1012,12 @@ void V4lCameraHandler::internalUpdateCameraSettings()
 
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
+    std::cout << "IN INTERNAL UPDATE!"
+              << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID)i)
+              << std::endl;
     if (csConst[i] > -1)
     {
+      std::cout << "ACTUALLY DOING UPDATE" << std::endl;
       int value = getSingleCameraParameterCheckFlip(csConst[i], currentCamera);
       currentSettings[currentCamera].data[i] = value;
     }

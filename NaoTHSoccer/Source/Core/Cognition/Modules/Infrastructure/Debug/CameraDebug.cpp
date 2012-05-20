@@ -25,7 +25,6 @@ CameraDebug::CameraDebug(): CameraDebugBase(),
 
 void CameraDebug::execute()
 {
-
   // HACK: select camera by head motion request (of course in the representation itself...)
   getCameraSettingsRequest().data[CameraSettings::CameraSelection] = getHeadMotionRequest().cameraID;
 
