@@ -669,6 +669,7 @@ void V4lCameraHandler::getCameraSettings(CameraSettings& data, bool update)
 {
   if(update)
   {
+    std::cout << "V4L camera settings are updated" << std::endl;
     internalUpdateCameraSettings();
   }
   for (unsigned int i = 0; i < CameraSettings::numOfCameraSetting; i++)
@@ -758,6 +759,11 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
     min = -120;
     max = -36;
   }
+  else if(id == V4L2_CID_BRIGHTNESS)
+  {
+    min  = 0;
+    max = 255;
+  }
 
   // clip value
   if (value == -1)
@@ -786,35 +792,12 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
   return value;
 }
 
-bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraSettingID i, CameraInfo::CameraID newCam,int value)
-{
-  // flip the meaing of VerticalFlip and HorizontalFlip according to camera selection
-  if (i == CameraSettings::VerticalFlip || i == CameraSettings::HorizontalFlip)
-  {
-    if (value == 0)
-    {
-      value = (newCam == CameraInfo::Top) ?
-        1 : 0;
-    }
-    else if (value == 1)
-    {
-      value = (newCam == CameraInfo::Top) ?
-        0 : 1;
-    }
-  }
-
-  if(csConst[i] > -1)
-  {
-    return setSingleCameraParameter(csConst[i], value);
-  }
-  else
-  {
-    return false;
-  }
-}
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
+
+  // HACK
+  setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,1);
 
   for(std::list<CameraSettings::CameraSettingID>::const_iterator it=settingsOrder.begin();
       it != settingsOrder.end(); it++)
@@ -829,7 +812,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
         << ": ";
 
       int errorNumber = 0;
-      while(!success && errorNumber < 10)
+      while(!success && errorNumber < 30)
       {
         int clippedValue =
             setSingleCameraParameter(csConst[*it], data.data[*it]);
@@ -852,7 +835,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           {
             errorNumber++;
             std::cout << "." << std::flush;
-            usleep(100000);
+            usleep(10000);
           }
         }
 

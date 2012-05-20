@@ -241,7 +241,7 @@ public:
                       << " was requested to change from " << current.data[i]
                       << " to " << data.data[i] << std::endl;
             somethingChanged = true;
-            break;
+ //           break;
           }
         }
       }

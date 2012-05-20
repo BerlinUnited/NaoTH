@@ -60,10 +60,6 @@ void CameraDebug::execute()
       getCameraSettingsRequest().data[i] = getCurrentCameraSettings().data[i];
     }
 
-    // hack again
-    getCameraSettingsRequest().data[CameraSettings::VerticalFlip] = 0;
-    getCameraSettingsRequest().data[CameraSettings::HorizontalFlip] = 0;
-
     // deactivate the auto stuff
     //disabled auto exposure time setting
     getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;

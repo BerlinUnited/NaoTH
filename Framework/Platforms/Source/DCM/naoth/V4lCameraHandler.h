@@ -97,7 +97,6 @@ private:
 
   int getSingleCameraParameter(int id);
   int setSingleCameraParameter(int id, int value);
-  bool setSingleCameraParameterCheckFlip(CameraSettings::CameraSettingID i,CameraInfo::CameraID newCam, int value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
 
