@@ -665,8 +665,12 @@ void V4lCameraHandler::closeDevice()
   fd = -1;
 }
 
-void V4lCameraHandler::getCameraSettings(CameraSettings& data)
+void V4lCameraHandler::getCameraSettings(CameraSettings& data, bool update)
 {
+  if(update)
+  {
+    internalUpdateCameraSettings();
+  }
   for (unsigned int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
     data.data[i] = currentSettings.data[i];

@@ -224,18 +224,25 @@ public:
     if(theCameraHandler.isRunning())
     {
       CurrentCameraSettings current;
-      theCameraHandler.getCameraSettings(current);
+      theCameraHandler.getCameraSettings(current, data.queryCameraSettings);
 
-      for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
+      if(data.queryCameraSettings)
       {
-        if(current.data[i] != data.data[i])
+        somethingChanged = false;
+      }
+      else
+      {
+        for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
         {
-          std::cout << "CameraParameter " <<
-                       CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-                    << " was requested to change from " << current.data[i]
-                    << " to " << data.data[i] << std::endl;
-          somethingChanged = true;
-          break;
+          if(current.data[i] != data.data[i])
+          {
+            std::cout << "CameraParameter " <<
+                         CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
+                      << " was requested to change from " << current.data[i]
+                      << " to " << data.data[i] << std::endl;
+            somethingChanged = true;
+            break;
+          }
         }
       }
     }

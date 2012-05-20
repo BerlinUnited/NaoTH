@@ -67,7 +67,7 @@ public:
             CameraInfo::CameraID camID = CameraInfo::Bottom);
 
   void get(Image& theImage);
-  void getCameraSettings(CameraSettings& data);
+  void getCameraSettings(CameraSettings& data, bool update = false);
 
   void shutdown();
 
