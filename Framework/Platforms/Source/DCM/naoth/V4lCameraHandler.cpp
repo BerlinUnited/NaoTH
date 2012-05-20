@@ -34,6 +34,28 @@ V4lCameraHandler::V4lCameraHandler()
   isCapturing(false)
 {
 
+  for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
+  {
+    allowedTolerance[i] = -1;
+  }
+
+  allowedTolerance[CameraSettings::Brightness] = 5;
+  allowedTolerance[CameraSettings::WhiteBalance] = 0;
+
+  settingsOrder.push_back(CameraSettings::Brightness);
+  settingsOrder.push_back(CameraSettings::BacklightCompensation);
+  settingsOrder.push_back(CameraSettings::AutoExposition);
+  settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
+  settingsOrder.push_back(CameraSettings::Brightness);
+  settingsOrder.push_back(CameraSettings::Contrast);
+  settingsOrder.push_back(CameraSettings::Saturation);
+  settingsOrder.push_back(CameraSettings::Exposure);
+  settingsOrder.push_back(CameraSettings::Gain);
+  settingsOrder.push_back(CameraSettings::Sharpness);
+  settingsOrder.push_back(CameraSettings::WhiteBalance);
+
+  // set our IDs
+  initIDMapping();
 }
 
 void V4lCameraHandler::init(const CameraSettings camSettings,
@@ -54,17 +76,12 @@ void V4lCameraHandler::init(const CameraSettings camSettings,
 
   cameraName = camDevice;
 
-  // set our IDs
-  initIDMapping();
-
   // open the device
   openDevice(true);//in blocking mode
-
   setAllCameraParams(camSettings);
-
   setFPS(30);
-
   initDevice();
+
 
   // start capturing
   startCapturing();
@@ -686,32 +703,26 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   int errorOccured = -1;
   int returnValue = -1;
 
-//  std::cout << "Getting camera parameter (" << id << ") ";
   for(int i = 0; i < 20 && errorOccured < 0; i++)
   {
     errorOccured = ioctl(fd, VIDIOC_G_CTRL, &control_s);
     if(errorOccured < 0 && (errno == EBUSY))
     {
-      usleep(10);
-//      std::cout << ".";
+      usleep(100000);
     }
     else
     {
       hasIOError(errorOccured, errno, false);
     }
   }
-  std::cout << std::endl;
-
   if(!hasIOError(errorOccured, errno, false))
   {
      returnValue = control_s.value;
   }
-
-  std::cout << "GetCameraParam " << id << " --> " << returnValue << std::endl;
   return returnValue;
 }
 
-bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
+int V4lCameraHandler::setSingleCameraParameter(int id, int value)
 {
   struct v4l2_queryctrl queryctrl;
   memset (&queryctrl, 0, sizeof (queryctrl));
@@ -734,18 +745,28 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
     return false; // not supported
   }
 
+  int min = queryctrl.minimum;
+  int max = queryctrl.maximum;
+
+  // HACK
+  if(id == V4L2_CID_DO_WHITE_BALANCE)
+  {
+    min = -120;
+    max = -36;
+  }
+
   // clip value
   if (value == -1)
   {
     value = queryctrl.default_value;
   }
-  if (value < queryctrl.minimum)
+  if (value < min)
   {
-    value = queryctrl.minimum;
+    value = min;
   }
-  if (value > queryctrl.maximum)
+  if (value > max)
   {
-    value = queryctrl.maximum;
+    value = max;
   }
 
   struct v4l2_control control_s;
@@ -753,34 +774,12 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
   control_s.id = id;
   control_s.value = value;
 
-  bool forceRepeat = false;
-  int errorOccured = -1;
-  std::cout << "setting camera parameter (id " << id << " to " << value
-            << ") ";
-  for(int i = 0; i < 20 && (forceRepeat || errorOccured < 0); i++)
-  {
-    errorOccured = xioctl(fd, VIDIOC_S_CTRL, &control_s);
-    if(id == V4L2_CID_BRIGHTNESS)
-    {
-      // query actual value
-      //int actualVal = getSingleCameraParameter(id);
-      //forceRepeat = value != actualVal;
-    }
+  int errorOccured = -1;  
+  errorOccured = xioctl(fd, VIDIOC_S_CTRL, &control_s);
+  hasIOError(errorOccured, errno, false);
 
-    if(forceRepeat || (errorOccured < 0 && (errno == EBUSY)))
-    {
-      usleep(10);
-      std::cout << ".";
-    }
-    else
-    {
-      std::cout << std::endl;
-      return !hasIOError(errorOccured, errno, false);
-    }
-  }
-
-  std::cout << std::endl;
-  return !hasIOError(errorOccured, errno, false);
+  // return the clipped value
+  return value;
 }
 
 bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraSettingID i, CameraInfo::CameraID newCam,int value)
@@ -812,15 +811,61 @@ bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraS
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
-  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, data.data[CameraSettings::Brightness]);
 
-  for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
+  for(std::list<CameraSettings::CameraSettingID>::const_iterator it=settingsOrder.begin();
+      it != settingsOrder.end(); it++)
   {
-    if(i != CameraSettings::Brightness && csConst[i] != -1)
+    if(csConst[*it] != -1)
     {
-      setSingleCameraParameter(csConst[i], data.data[i]);
-    }
-  }
+      bool success = false;
+      int realValue = data.data[*it];
+
+      std::cout << "setting "
+        << CameraSettings::getCameraSettingsName(*it) << " to " << data.data[*it]
+        << ": ";
+
+      int errorNumber = 0;
+      while(!success && errorNumber < 10)
+      {
+        int clippedValue =
+            setSingleCameraParameter(csConst[*it], data.data[*it]);
+
+        if(clippedValue != data.data[*it])
+        {
+          std::cout << "(clipped " << clippedValue << ")";
+        }
+
+        if(allowedTolerance[*it] == -1)
+        {
+          success = true;
+        }
+        else
+        {
+          realValue = getSingleCameraParameter(csConst[*it]);
+          success = abs(realValue - clippedValue) <= allowedTolerance[*it];
+
+          if(!success)
+          {
+            errorNumber++;
+            std::cout << "." << std::flush;
+            usleep(100000);
+          }
+        }
+
+
+      } // end while not successfull
+
+      if(success)
+      {
+        std::cout << std::endl;
+      }
+      else
+      {
+        std::cout << "XXX hang up at " << realValue << std::endl;
+      }
+
+    } // end if csConst was set
+  } // end for each camera setting (in order
 
 }
 

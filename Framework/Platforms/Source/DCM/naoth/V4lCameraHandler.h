@@ -9,6 +9,7 @@
 #define	_V4LCAMERAHANDLER_H
 
 #include <string>
+#include <list>
 
 extern "C"
 {
@@ -95,7 +96,7 @@ private:
   void closeDevice();
 
   int getSingleCameraParameter(int id);
-  bool setSingleCameraParameter(int id, int value);
+  int setSingleCameraParameter(int id, int value);
   bool setSingleCameraParameterCheckFlip(CameraSettings::CameraSettingID i,CameraInfo::CameraID newCam, int value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
@@ -134,6 +135,9 @@ private:
   bool blockingCaptureModeEnabled;
 
   int csConst[CameraSettings::numOfCameraSetting];
+  int allowedTolerance[CameraSettings::numOfCameraSetting];
+  /** order in which the camera settings need to be applied */
+  std::list<CameraSettings::CameraSettingID> settingsOrder;
 
   CameraSettings currentSettings;
   CameraInfo::CameraID currentCamera;
