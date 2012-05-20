@@ -20,11 +20,6 @@ extern "C"
   #include "Tools/NaoTime.h"
 }
 
-// define some non-standard constants
-#ifndef V4L2_CID_CAM_INIT
-#define V4L2_CID_CAM_INIT         (V4L2_CID_BASE+33)
-#endif
-
 using namespace naoth;
 
 V4lCameraHandler::V4lCameraHandler()
@@ -35,45 +30,44 @@ V4lCameraHandler::V4lCameraHandler()
 //  selMethodIO(IO_USERPTR),
 //  selMethodIO(IO_READ),
   n_buffers(0),
-  hadReset(false),
   wasQueried(false),
-  isCapturing(false),
-  cameraParamsInitialized(false),
-  settingToCheck(0)
+  isCapturing(false)
 {
 
 }
 
-void V4lCameraHandler::init(std::string camDevice, CameraInfo::CameraID camID)
+void V4lCameraHandler::init(const CameraSettings camSettings,
+                            std::string camDevice, CameraInfo::CameraID camID)
 {
+
+  if(isCapturing)
+  {
+    shutdown();
+  }
 
   currentCamera = camID;
 
-  for(int i=0; i < CameraInfo::numOfCamera; i++)
+  for(int j=0; j < CameraSettings::numOfCameraSetting; j++)
   {
-    for(int j=0; j < CameraSettings::numOfCameraSetting; j++)
-    {
-      currentSettings[i].data[j] = -1;
-    }
+    currentSettings.data[j] = camSettings.data[j];
   }
+
   cameraName = camDevice;
 
   // set our IDs
   initIDMapping();
 
-  settingToCheck = 0;
-
   // open the device
   openDevice(true);//in blocking mode
-  initDevice();
 
-  initSetRequiredParams();
+  setAllCameraParams(camSettings);
 
   setFPS(30);
 
+  initDevice();
+
   // start capturing
   startCapturing();
-
 
 }
 
@@ -139,7 +133,7 @@ void V4lCameraHandler::setFPS(int fpsRate)
   fps.parm.capture.timeperframe.denominator = fpsRate;
   VERIFY(ioctl(fd, VIDIOC_S_PARM, &fps) != -1);
 
-  currentSettings[currentCamera].data[CameraSettings::FPS] = fpsRate;
+  currentSettings.data[CameraSettings::FPS] = fpsRate;
 }
 
 void V4lCameraHandler::openDevice(bool blockingMode)
@@ -188,37 +182,6 @@ void V4lCameraHandler::initDevice()
   struct v4l2_capability cap;
   memset (&cap, 0, sizeof (cap));
   unsigned int min;
-
-  // set default parameters and init the camera
-  /*
-  struct v4l2_control control;
-  memset(&control, 0, sizeof (struct v4l2_control));
-  control.id = V4L2_CID_CAM_INIT;
-  control.value = 0;
-
-  int errorOccured = -1;
-  std::cout << "Initializing camera ";
-  for(int i = 0; i < 20 && errorOccured < 0; i++)
-  {
-    errorOccured = ioctl(fd, VIDIOC_S_CTRL, &control);
-    if(errorOccured < 0 && (errno == EBUSY) )
-    {
-      usleep(10);
-      std::cout << ".";
-    }
-    else 
-    {
-      hasIOError(errorOccured, errno);
-    }
-  }
-  std::cout << std::endl;
-  hasIOError(errorOccured, errno);
-  */
-
-  /*
-  v4l2_std_id esid0 = 0x04000000UL; // use 0x08000000UL when the width is 640
-  VERIFY(!ioctl(fd, VIDIOC_S_STD, &esid0));
-  */
 
   memset(&(currentBuf), 0, sizeof (struct v4l2_buffer));
   currentBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -410,7 +373,6 @@ void V4lCameraHandler::startCapturing()
     isCapturing = true;
     wasQueried = false;
     bufferSwitched = true;
-    noBufferChangeCount = 0;
     lastBuf = currentBuf;
   }
 }
@@ -426,11 +388,6 @@ int V4lCameraHandler::readFrameMMaP()
       //put buffer back in the drivers incoming queue
       VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
       //std::cout << "give buffer to driver" << std::endl;
-      noBufferChangeCount = 0;
-      if(hadReset)
-      {
-        hadReset = false;
-      }
     }
    }
 
@@ -467,24 +424,6 @@ int V4lCameraHandler::readFrameMMaP()
   }
   currentBuf = buf;
 
-  //not first frame and no other error while getting next buffer
-  if(wasQueried && ( (!blockingCaptureModeEnabled && errorOccured < 0) || errorOccured == 0) )
-  {
-    if(lastBuf.index != currentBuf.index)
-    {
-      //yes
-      bufferSwitched = true;
-//      std::cout << "switching buffers" << std::endl;
-    }
-    else
-    {
-      //no => count number of failed/overwritten frames
-//      std::cout << "didn't switch buffers" << std::endl;
-      bufferSwitched = false;
-      noBufferChangeCount++;
-    }
-  }
-
   //remember current buffer for the next frame as last buffer
   lastBuf = currentBuf;
 
@@ -505,11 +444,6 @@ int V4lCameraHandler::readFrameUP()
       //put buffer back in the drivers incoming queue
       VERIFY(-1 != xioctl(fd, VIDIOC_QBUF, &lastBuf));
       //std::cout << "give buffer to driver" << std::endl;
-      noBufferChangeCount = 0;
-      if(hadReset)
-      {
-        hadReset = false;
-      }
       cout << "queued buffer: " << lastBuf.index << ", l = " << lastBuf.length << endl;
     }
    }
@@ -568,26 +502,6 @@ int V4lCameraHandler::readFrameUP()
       }
     }
 
-
-    //not first frame and no other error while getting next buffer
-    if(wasQueried && ( (!blockingCaptureModeEnabled && errorOccured < 0) || errorOccured == 0) )
-    {
-      cout << "current buffer: " << currentBuf.index << " last buffer: " << lastBuf.index << endl;
-      if(lastBuf.index != currentBuf.index)
-      {
-        //yes
-        bufferSwitched = true;
-        std::cout << "switching buffers" << std::endl;
-      }
-      else
-      {
-        //no => count number of failed/overwritten frames
-        std::cout << "didn't switch buffers" << std::endl;
-        bufferSwitched = false;
-        noBufferChangeCount++;
-      }
-    }
-
   //remember current buffer for the next frame as last buffer
   lastBuf = currentBuf;
 
@@ -640,20 +554,6 @@ void V4lCameraHandler::get(Image& theImage)
 {
   if(isCapturing)
   {
-    if(hadReset)
-    {
-      theImage.bufferFailedCount = 0;
-      theImage.wrongBufferSizeCount = 0;
-    }
-
-    //try to reinitialize the camera device after some failed buffer switchings
-    if(noBufferChangeCount % currentSettings[currentCamera].data[CameraSettings::FPS] == 1)
-    {
-      if(!hadReset)
-      {
-        theImage.bufferFailedCount++;
-      }
-    }
 
     //STOPWATCH_START("ImageRetrieve");
     int resultCode = readFrame();
@@ -752,19 +652,7 @@ void V4lCameraHandler::getCameraSettings(CameraSettings& data)
 {
   for (unsigned int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
-    data.data[i] = currentSettings[currentCamera].data[i];
-  }
-}
-
-void V4lCameraHandler::setCameraSettings(const CameraSettings& data, bool queryNew)
-{
-  if (queryNew)
-  {
-    internalUpdateCameraSettings();
-  }
-  else
-  {
-    internalSetCameraSettings(data);
+    data.data[i] = currentSettings.data[i];
   }
 }
 
@@ -821,28 +709,6 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
 
   std::cout << "GetCameraParam " << id << " --> " << returnValue << std::endl;
   return returnValue;
-}
-
-int V4lCameraHandler::getSingleCameraParameterCheckFlip(int id, CameraInfo::CameraID camId)
-{
-  int value = getSingleCameraParameter(id);
-  // flip the meaing of VerticalFlip and HorizontalFlip according to camera selection
-  if (id == CameraSettings::VerticalFlip || id == CameraSettings::HorizontalFlip)
-  {
-    if (value == 0)
-    {
-      value = (camId == CameraInfo::Top) ?
-        1 : 0;
-    }
-    else if (value == 1)
-    {
-      value = (camId == CameraInfo::Top) ?
-        0 : 1;
-    }
-  }
-
-  return value;
-
 }
 
 bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
@@ -913,62 +779,8 @@ bool V4lCameraHandler::setSingleCameraParameter(int id, int value)
     }
   }
 
-  if((id == V4L2_CID_AUTO_WHITE_BALANCE || id == V4L2_CID_AUTOGAIN
-     || id == V4L2_CID_EXPOSURE_AUTO)
-     && value == 0)
-  {
-//    internalUpdateCameraSettings();
-  }
-
   std::cout << std::endl;
   return !hasIOError(errorOccured, errno, false);
-}
-
-void V4lCameraHandler::internalSetCameraSettings(const CameraSettings& data)
-{
-  if(settingToCheck >= CameraSettings::numOfCameraSetting)
-  {
-    settingToCheck = 0;
-  }
-  for (int i = settingToCheck; i < CameraSettings::numOfCameraSetting; i++)
-  {
-    settingToCheck++;
-
-    if (i == CameraSettings::FPS && currentSettings[currentCamera].data[i] != data.data[i])
-    {
-      setFPS(data.data[i]);
-      return;
-    }
-
-    int value = data.data[i];
-
-    if (csConst[i] > -1 && i != CameraSettings::CameraSelection
-        && (value != currentSettings[currentCamera].data[i]))
-    {
-      std::cout << "Camera parameter "
-                << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-                << " was changed from " << currentSettings[currentCamera].data[i]
-                << " to " << value
-                << std::endl;
-
-      if (setSingleCameraParameterCheckFlip((CameraSettings::CameraSettingID) i,
-                                            (CameraInfo::CameraID) currentSettings[currentCamera].data[CameraSettings::CameraSelection],
-                                            value))
-      {
-        currentSettings[currentCamera].data[i] = value;
-      }
-      else
-      {
-        std::cerr << "COULD NOT SET "
-                  << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
-                  << " CAMERA PARAMETER" << std::endl;
-      }
-
-      return;
-
-    } // if was changed
-  }
-
 }
 
 bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraSettingID i, CameraInfo::CameraID newCam,int value)
@@ -998,13 +810,18 @@ bool V4lCameraHandler::setSingleCameraParameterCheckFlip(CameraSettings::CameraS
   }
 }
 
-void V4lCameraHandler::initSetRequiredParams()
+void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
-  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, 0);
-  setSingleCameraParameter(V4L2_CID_BACKLIGHT_COMPENSATION, 0);
-  setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO, 0);
-  setSingleCameraParameter(V4L2_CID_AUTO_WHITE_BALANCE, 0);
-  setSingleCameraParameter(V4L2_CID_EXPOSURE, 399);
+  setSingleCameraParameter(V4L2_CID_BRIGHTNESS, data.data[CameraSettings::Brightness]);
+
+  for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
+  {
+    if(i != CameraSettings::Brightness && csConst[i] != -1)
+    {
+      setSingleCameraParameter(csConst[i], data.data[i]);
+    }
+  }
+
 }
 
 void V4lCameraHandler::internalUpdateCameraSettings()
@@ -1012,14 +829,10 @@ void V4lCameraHandler::internalUpdateCameraSettings()
 
   for (int i = 0; i < CameraSettings::numOfCameraSetting; i++)
   {
-    std::cout << "IN INTERNAL UPDATE!"
-              << CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID)i)
-              << std::endl;
     if (csConst[i] > -1)
     {
-      std::cout << "ACTUALLY DOING UPDATE" << std::endl;
-      int value = getSingleCameraParameterCheckFlip(csConst[i], currentCamera);
-      currentSettings[currentCamera].data[i] = value;
+      int value = getSingleCameraParameter(csConst[i]);
+      currentSettings.data[i] = value;
     }
   }
 
@@ -1030,8 +843,11 @@ void V4lCameraHandler::shutdown()
   stopCapturing();
   uninitDevice();
   closeDevice();
+}
 
-  close(fdAdapter);
+bool V4lCameraHandler::isRunning()
+{
+  return isCapturing;
 }
 
 V4lCameraHandler::~V4lCameraHandler()

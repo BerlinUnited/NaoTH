@@ -61,16 +61,16 @@ class V4lCameraHandler
 public:
   V4lCameraHandler();
 
-  void init(std::string camDevice = "/dev/video1",
+  void init(const CameraSettings camSettings,
+            string camDevice = "/dev/video1",
             CameraInfo::CameraID camID = CameraInfo::Bottom);
 
   void get(Image& theImage);
-
-  void setCameraSettings(const CameraSettings& data, bool queryNew);
-
   void getCameraSettings(CameraSettings& data);
 
   void shutdown();
+
+  bool isRunning();
 
   virtual ~V4lCameraHandler();
 
@@ -81,7 +81,7 @@ private:
   void initIDMapping();
   void openDevice(bool blockingMode);
   void initDevice();
-  void initSetRequiredParams();
+  void setAllCameraParams(const CameraSettings &data);
   void initMMap();
   void initUP(unsigned int buffer_size);
   void initRead(unsigned int buffer_size);
@@ -95,12 +95,10 @@ private:
   void closeDevice();
 
   int getSingleCameraParameter(int id);
-  int getSingleCameraParameterCheckFlip(int id, CameraInfo::CameraID camId);
   bool setSingleCameraParameter(int id, int value);
   bool setSingleCameraParameterCheckFlip(CameraSettings::CameraSettingID i,CameraInfo::CameraID newCam, int value);
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
-  void internalSetCameraSettings(const CameraSettings& data);
 
   string getErrnoDescription(int err);
 
@@ -120,9 +118,6 @@ private:
   /** The camera file descriptor */
   int fd;
 
-  /** The camera adapter file descriptor */
-  int fdAdapter;
-
   /** Image buffers (v4l2) */
   struct buffer* buffers;
   /** Buffer number counter */
@@ -133,7 +128,6 @@ private:
 
   unsigned char* currentImage;
 
-  bool hadReset;
   bool wasQueried;
   bool isCapturing;
   bool bufferSwitched;
@@ -141,13 +135,8 @@ private:
 
   int csConst[CameraSettings::numOfCameraSetting];
 
-  CameraSettings currentSettings[CameraInfo::numOfCamera];
+  CameraSettings currentSettings;
   CameraInfo::CameraID currentCamera;
-
-  unsigned int noBufferChangeCount;
-  bool cameraParamsInitialized;
-
-  unsigned int settingToCheck;
 
 };
 
