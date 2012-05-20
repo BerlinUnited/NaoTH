@@ -28,10 +28,10 @@ public class VirtualWorld
     light = new BranchGroup();
     
     // load entities
-    field.addChild(new Entity("env/Field"));
+    field.addChild(new Entity("Field"));
     field.setCapability(BranchGroup.ALLOW_DETACH);
     locale.addBranchGraph(field);
-    light.addChild(new Entity("env/Light"));
+    light.addChild(new Entity("Light"));
     locale.addBranchGraph(light);
   }
 
