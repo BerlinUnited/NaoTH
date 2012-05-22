@@ -358,7 +358,7 @@ public class NaoScp extends NaoScpMainFrame
     
   }
   
-  private boolean checkNaoIps()
+  private boolean checkNaoIps(Boolean init)
   {
     int naoIpCount = 0;
     for(Integer naoNo : this.iNaoBytes.keySet())
@@ -369,13 +369,16 @@ public class NaoScp extends NaoScpMainFrame
       }
       else
       {
-        iNaoBytes.put(naoNo, -1);
+        if(!init && naoNo == 0)
+        {
+          iNaoBytes.put(naoNo, -1);
+        }
       }
     }
-
+    
     for(Integer naoNo : this.sNaoLanIps.keySet())
     {
-      if(naoNo > 0)
+      if(naoNo > 0 )
       {
         if(iNaoBytes.get(naoNo) < 256 && iNaoBytes.get(naoNo) > -1 )
         {
@@ -465,7 +468,7 @@ public class NaoScp extends NaoScpMainFrame
       logTextPane.setBackground(Color.WHITE);
     }
 
-    if(!checkNaoIps())
+    if(!checkNaoIps(false))
     {
       actionInfo("[0;31mNo Nao has a valid ip address specified\n[0m");
       setFormEnabled(true);
@@ -802,7 +805,7 @@ public class NaoScp extends NaoScpMainFrame
       return false;
     }
 
-    checkNaoIps();
+    checkNaoIps(init);
     
     for(Integer naoNo : iNaoBytes.keySet())
     {
@@ -912,7 +915,7 @@ public class NaoScp extends NaoScpMainFrame
       return false;
     }
 
-    checkNaoIps();
+    checkNaoIps(false);
     int naoNo = 0;
     int iNaoByte = Integer.parseInt(sNaoByte);
     
@@ -1879,9 +1882,9 @@ public class NaoScp extends NaoScpMainFrame
           {
             iNaoByte = -1;
           }
-          iNaoBytes.put(0, iNaoByte);          
         }
       }
+      iNaoBytes.put(0, iNaoByte);          
       return sNaoByte;
     }
     
@@ -2000,7 +2003,7 @@ public class NaoScp extends NaoScpMainFrame
         setupPlayerNo = preparator.askForPlayerNumber();
       }
     }    
-    
+    iNaoBytes = iNaoBytes;
     if(address == null || sNaoByte == null || setupPlayerNo == null || !prepareDeploy(cfg, true) || !prepareSetupDeploy(cfg, sNaoByte))
     {
       actionInfo("robot initialization aborted");

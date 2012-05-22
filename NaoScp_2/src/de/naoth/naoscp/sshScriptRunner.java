@@ -323,33 +323,32 @@ abstract class sshScriptRunner extends sshWorker
         showTimeOutMsg();
         return false;
       }
+      
+      String cmd2exec = "";
       if(isSystemCommand)
       {
-        response = sshExecAndWaitForResponse(shellScript , "localhost|nao|$");
+        cmd2exec += shellScript;
       }
       else
       {
-        response = sshExecAndWaitForResponse("chown root:root ./" + shellScript + " && chmod 744 ./" + shellScript + " && nohup ./" + shellScript + " 2>&1", "localhost|nao|$");
+        cmd2exec += "chown root:root ./" + shellScript + " ; chmod 744 ./" + shellScript + " ; nohup ./" + shellScript + " 2>&1";
       }
-      if(response == null)
-      {
-        showTimeOutMsg();
-        return false;
-      }
+            
       if(config.reboot)
       {
-        response = sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && reboot && exit", "localhost|nao|$");
+        cmd2exec += " ; cd .. ; rm -rf ./naothSetup ; reboot ; exit ;";
       }
       else
       {
-        response = sshExecAndWaitForResponse("cd .. && rm -rf ./naothSetup && exit", "localhost|nao|$");
+        cmd2exec += " ; cd .. ; rm -rf ./naothSetup ; exit ;";
       }
+      response = sshExecAndWaitForResponse(cmd2exec, "localhost|nao|$");
       if(response == null)
       {
         showTimeOutMsg();
         return false;
       }
-      response = sshExecAndWaitForResponse("exit", "logout|localhost|nao|$");
+      response = sshExecAndWaitForResponse("exit ; ", "logout|localhost|nao|$");
     }
     setInfo("\n");
     ts.stop();
