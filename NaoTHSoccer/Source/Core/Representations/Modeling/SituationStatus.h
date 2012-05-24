@@ -23,6 +23,7 @@ public:
   :
     id(unknown),
     ownHalf(false),
+    oppHalf(false),
     reactiveBallModelNeeded(false)
   {
   }
@@ -40,7 +41,8 @@ public:
 
   StatusID id;
 
-  bool ownHalf;
+  bool ownHalf; //force selflocator to locate in own half (e.g. after penalized)
+  bool oppHalf; //force selflocator to locate in opp half (e.g. for debugging attacksituations)
   bool reactiveBallModelNeeded;
   virtual void print(ostream& stream) const;
 
