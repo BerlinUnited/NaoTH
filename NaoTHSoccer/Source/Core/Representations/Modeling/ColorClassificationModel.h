@@ -66,43 +66,56 @@ public:
 
   inline ColorClasses::Color getColorClass(const Pixel& p) const
   {
-    return getColorClass(p.a, p.b, p.c);
-  }
-
-  inline ColorClasses::Color getColorClass(const unsigned char& a, const unsigned char& b, const unsigned char& c) const
-  {
-    
     // green
-    if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(a, b, c))
+    if(fieldColorPerceptValid && fieldColorPercept.isFieldColor(p.y, p.u, p.v))
     {
       return ColorClasses::green;
     }//end if
 
     // simple classifier (used for tests)
     DEBUG_REQUEST("ColorClassificationModel:use_simpleColorClassifier",
-      return simpleColorClassifier.getColorClass(a,b,c);
+      return simpleColorClassifier.getColorClass(p.y, p.u, p.v);
     );
 
     if(baseColorRegionPerceptValid)
     {
-      if(baseColorRegionPercept.isYellow(a, b ,c))
+      //if(baseColorRegionPercept.isYellow(a, b ,c))
+      if(baseColorRegionPercept.yellowGoal.inside(p))
       {
         return ColorClasses::yellow;
       }
       else 
-      if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
+      //if(baseColorRegionPercept.isRedOrOrangeOrPink(a, b ,c))
+      if(baseColorRegionPercept.orangeBall.inside(p))
       {
         return ColorClasses::orange;
       }
-      else if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
+      else
+      if(baseColorRegionPercept.blueGoal.inside(p))
       {
-        return ColorClasses::white;
+        return ColorClasses::skyblue;
       }
+      else
+      if(baseColorRegionPercept.pinkWaistBand.inside(p))
+      {
+        return ColorClasses::red;
+      }
+      else
+      if(baseColorRegionPercept.blueWaistBand.inside(p))
+      {
+        return ColorClasses::blue;
+      }
+     //else 
+      ////if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
+      //if(baseColorRegionPercept.isWhiteColorModel(a, b ,c))
+      //{
+      //  return ColorClasses::white;
+      //}
     }//end if
     
     
     // default fallback
-    return colorTable.getColorClass(a,b,c);
+    return colorTable.getColorClass(p.y, p.u, p.v);
   }//end getColorClass
 
 

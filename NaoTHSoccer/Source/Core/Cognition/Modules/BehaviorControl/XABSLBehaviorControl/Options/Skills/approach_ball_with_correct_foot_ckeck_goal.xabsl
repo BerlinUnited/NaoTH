@@ -33,7 +33,9 @@ option approach_ball_with_correct_foot_ckeck_goal
 
   state look_for_goal {
     decision{
-      else if(state_time > 1500 || ball.distance < 600)
+      else if(goal.opp.time_since_seen > 15000) //|| robot_pose.is_valid // || goal.own.time_since_seen
+        goto check_position;
+      else if(state_time > 1500)
         goto look_for_ball;
       else
         stay;
@@ -47,9 +49,55 @@ option approach_ball_with_correct_foot_ckeck_goal
     }
   }
 
+// To avoid delocalization
+ state check_position {
+   decision {
+      // localize again or turn around ball
+      else if (state_time > 3000)
+      {
+        goto turn_around_ball;
+      }
+      // if a goal was seen, try to correct the position
+      else if(goal.opp.time_since_seen < 3000 || goal.own.time_since_seen < 3000)//|| robot_pose.is_valid
+      {
+        goto look_for_ball;
+      }
+      else
+        stay;
+    }
+    action {
+      head.control_mode = search_for_goal;
+      motion.type = walk;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  // Turn around ball if not localized
+  state turn_around_ball
+  {
+    decision
+    {
+      else if (state_time > 2000)
+      { 
+        goto look_for_goal;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      turn_around_ball_face_goal();
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
  state look_for_ball {
    decision{
-     else if(state_time > 3000 && ball.distance > 1000)
+     else if(state_time > 1500 && ball.distance > 200)
        goto look_for_goal;
      else
        stay;

@@ -12,6 +12,7 @@ public:
 
   double CromaRedChannelDistance;
   int MaxCromaBlueChannelValue;
+  int MaxBrightnessChannelValue;
 
   FieldColorParameters();
   ~FieldColorParameters();

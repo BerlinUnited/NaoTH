@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   
   GError *error = NULL;
   GOptionContext *context = g_option_context_new("\n-------------------------------\n  http://www.naoth.de");
-  g_option_context_add_main_entries (context, entries, "NaoTH Simspark controller");
+  g_option_context_add_main_entries (context, entries, "NaoTH Simspark (SPL) controller");
   if (!g_option_context_parse (context, &argc, &argv, &error))
   {
     g_print ("option parsing failed: %s\n", error->message);
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
   if (!theController.init(teamName, num, server, port, sync))
   {
-    cerr << "NaoTH SimSpark initialization failed!" << endl;
+      cerr << "NaoTH SimSpark (SPL) initialization failed!" << endl;
     return EXIT_FAILURE;
   }
 

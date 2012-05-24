@@ -193,7 +193,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
     
     if( getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
         (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
-         fabs(getRobotPose().rotation + seenAngle) < Math::pi_2)
+         fabs(Math::normalize(getRobotPose().rotation + seenAngle)) < Math::pi_2)
       )
     {
       leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
@@ -227,7 +227,7 @@ void MonteCarloSelfLocator::updateByGoalPosts(SampleSet& sampleSet) const
       Vector2<double> expectedPostPosition;
 
       // HACK:? each particle decides for itself
-      if(fabs(sample.rotation + seenAngle) < Math::pi_2)
+      if(fabs(Math::normalize(sample.rotation + seenAngle)) < Math::pi_2)
       {
         leftGoalPosition = &(getFieldInfo().opponentGoalPostLeft);
         rightGoalPosition = &(getFieldInfo().opponentGoalPostRight);
@@ -840,7 +840,8 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
       //if (seenPost.color == opponentGoalColor)
       if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
         (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
-         fabs(getRobotPose().rotation + seenPost.position.angle()) < Math::pi_2)
+        //fabs(Vector2<double>(seenPost.position).rotate(getRobotPose().rotation).angle()) < Math::pi_2)
+        fabs(Math::normalize(getRobotPose().rotation + seenPost.position.angle())) < Math::pi_2)
       )
       {
         leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
@@ -897,7 +898,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
 
   // WORK in progress
-  if((maxDistanceError > 1000 || maxAngleError > Math::fromDegrees(30)) && getGoalPercept().getNumberOfSeenPosts() > 0)
+  if(false && (maxDistanceError > 1000 || maxAngleError > Math::fromDegrees(30)) && getGoalPercept().getNumberOfSeenPosts() > 0)
   {
     PLOT("MCSL:maxDistanceError",maxDistanceError);
     PLOT("MCSL:maxAngleError",maxAngleError);
@@ -1181,6 +1182,7 @@ bool MonteCarloSelfLocator::hasSensorUpdate() const
 void MonteCarloSelfLocator::execute()
 {
   static bool init_own_half = false;
+  static bool init_opp_half = false;
 
   if(getSituationStatus().ownHalf)
   {
@@ -1204,7 +1206,26 @@ void MonteCarloSelfLocator::execute()
     fieldMax.x = getFieldInfo().xFieldLength/2.0;
     init_own_half = false;
   }
+  
+  if(getSituationStatus().oppHalf && !getSituationStatus().ownHalf)
+  {
+    fieldMin.x = 0.0;
 
+    if(!init_opp_half)
+    {
+      resetSampleSet(theSampleSet);
+      initialized = false;
+    }
+    clampSampleSetToField(theSampleSet);
+    init_opp_half = true;
+  }
+  else
+  {
+    //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+    //fieldMax = Vector2<double>( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+    fieldMin.x = -getFieldInfo().xFieldLength/2.0;
+    init_opp_half = false;
+  }
   // HACK
   //initialized = initialized || getSensingGoalModel().someGoalWasSeen;
 
@@ -1588,18 +1609,12 @@ void MonteCarloSelfLocator::drawSamplesImportance(SampleSet& sampleSet) const
 
 void MonteCarloSelfLocator::drawSelfLocGoalModel() const
 {
-  /*18.02.2012
+  // remark: the selfloc goal model always contains the opponent goal
   FIELD_DRAWING_CONTEXT;
-
-  PEN("0000FF",20);
-  CIRCLE(getSelfLocGoalModel().blueGoal.leftPost.x, getSelfLocGoalModel().blueGoal.leftPost.y, getFieldInfo().goalpostRadius);
-  CIRCLE(getSelfLocGoalModel().blueGoal.rightPost.x, getSelfLocGoalModel().blueGoal.rightPost.y, getFieldInfo().goalpostRadius);
-  LINE(getSelfLocGoalModel().blueGoal.leftPost.x, getSelfLocGoalModel().blueGoal.leftPost.y,getSelfLocGoalModel().blueGoal.rightPost.x, getSelfLocGoalModel().blueGoal.rightPost.y);
-  PEN("FFFF00",20);
-  CIRCLE(getSelfLocGoalModel().yellowGoal.leftPost.x, getSelfLocGoalModel().yellowGoal.leftPost.y, getFieldInfo().goalpostRadius);
-  CIRCLE(getSelfLocGoalModel().yellowGoal.rightPost.x, getSelfLocGoalModel().yellowGoal.rightPost.y, getFieldInfo().goalpostRadius);
-  LINE(getSelfLocGoalModel().yellowGoal.leftPost.x, getSelfLocGoalModel().yellowGoal.leftPost.y,getSelfLocGoalModel().yellowGoal.rightPost.x, getSelfLocGoalModel().yellowGoal.rightPost.y);
-  */
+  PEN("FF0000", 50);
+  CIRCLE(getSelfLocGoalModel().goal.leftPost.x, getSelfLocGoalModel().goal.leftPost.y, 50);
+  CIRCLE(getSelfLocGoalModel().goal.rightPost.x, getSelfLocGoalModel().goal.rightPost.y, 50);
+  LINE(getSelfLocGoalModel().goal.rightPost.x, getSelfLocGoalModel().goal.rightPost.y, getSelfLocGoalModel().goal.leftPost.x, getSelfLocGoalModel().goal.leftPost.y);
 }//end drawSelfLocGoalModel
 
 

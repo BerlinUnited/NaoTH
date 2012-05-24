@@ -68,8 +68,7 @@ void DebugCommandManager::objectDestructed(DebugCommandExecutor* object)
   for (iter_key = registeredKeys.begin(); iter_key != registeredKeys.end(); iter_key++)
   {
     executorMap.erase(*iter_key);
-
-    std::cout << "unregistering command " << (*iter_key) << std::endl;
+//    std::cout << "unregistering command " << (*iter_key) << std::endl;
   }//end for
 }//end objectDestructed
 

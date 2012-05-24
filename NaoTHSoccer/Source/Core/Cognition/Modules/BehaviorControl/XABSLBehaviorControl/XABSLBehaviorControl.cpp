@@ -250,6 +250,7 @@ void XABSLBehaviorControl::updateXABSLSymbols()
     theOdometrySymbols->execute();
     theMotionSymbols->execute();
     theLineSymbols->execute();
+    theStrategySymbols->execute();
   }//end if
 }//end updateXABSLSymbols
 
