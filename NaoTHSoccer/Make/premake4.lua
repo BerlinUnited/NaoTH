@@ -1,3 +1,4 @@
+dofile "helper/naocrosscompile_v3.lua"
 dofile "helper/naocrosscompile.lua"
 dofile "helper/extract_todos.lua"
 dofile "helper/qtcreator.lua"
@@ -98,6 +99,8 @@ solution "NaoTHSoccer"
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then
     dofile "../../Framework/Platforms/Make/DCM.lua"
+  elseif(_OPTIONS["platform"] == "Naov3") then
+    dofile "../../Framework/Platforms/Make/DCM_v3.lua"
   else
     dofile "../../Framework/Platforms/Make/SimSpark.lua"
 	dofile "../../Framework/Platforms/Make/SPL_SimSpark.lua"
