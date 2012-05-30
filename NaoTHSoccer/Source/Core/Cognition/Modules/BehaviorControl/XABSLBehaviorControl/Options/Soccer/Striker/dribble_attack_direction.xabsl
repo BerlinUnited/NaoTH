@@ -12,9 +12,11 @@ option dribble_attack_direction {
     decision
     {
       else if(attack.direction > 40) //xxx
-        goto approach_for_kick_right;
+        goto kick_left_foot;
+        //goto approach_for_kick_right;
       else if(attack.direction < -40) //xxx
-        goto approach_for_kick_left;
+        goto kick_right_foot;
+        //goto approach_for_kick_left;
       else 
         goto walk_against_ball;
     }
@@ -61,7 +63,7 @@ option dribble_attack_direction {
   state approach_for_kick_right {
     decision{
       else if(    ball.left_foot.preview.x <= 175 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))
-               && ball.left_foot.preview.y <= -110  * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) 
+               && ball.left_foot.preview.y <= -110  * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)) 
                && ball.left_foot.preview.y >= -125
                && executed_motion.step_control.right_movable)
         //else if(action_done) 
@@ -87,9 +89,9 @@ option dribble_attack_direction {
   state walk_against_ball
   {
     decision {
-      else if (state_time > 1200)
+      else if (state_time > 1000)
         goto finished;
-      else if ((ball.preview.x > 0 && ball.preview.x < 200 && abs(value=ball.preview.y) < 70)) //state_time as backup xxx
+      else if ((ball.preview.x > 0 && ball.preview.x < 400 && abs(value=ball.preview.y) < 70)) //state_time as backup xxx
         stay;
       else 
         goto finished;
@@ -102,6 +104,7 @@ option dribble_attack_direction {
       motion.walk_speed.rot = 0;
       motion.walk.coordinate = hip;
       motion.walk.style = fast;
+      head.control_mode = search_for_ball;
     }
   }
     

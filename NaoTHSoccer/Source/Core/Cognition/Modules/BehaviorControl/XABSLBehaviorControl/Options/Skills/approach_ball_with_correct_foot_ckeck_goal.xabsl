@@ -35,7 +35,7 @@ option approach_ball_with_correct_foot_ckeck_goal
     decision{
       else if(goal.opp.time_since_seen > 15000) //|| robot_pose.is_valid // || goal.own.time_since_seen
         goto check_position;
-      else if(state_time > 1500)
+      else if(state_time > 1500 || ball.distance < 300)
         goto look_for_ball;
       else
         stay;
@@ -97,7 +97,7 @@ option approach_ball_with_correct_foot_ckeck_goal
 
  state look_for_ball {
    decision{
-     else if(state_time > 1500 && ball.distance > 200)
+     else if(state_time > 1500 && ball.distance > 300)
        goto look_for_goal;
      else
        stay;

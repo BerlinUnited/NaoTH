@@ -9,7 +9,13 @@ option attack_situation
   {
     decision {
       if(action_done)
-        goto position;
+        if(abs(value=attack.direction) < 90) {
+          goto decide_kick_dribble;
+        }
+        else
+        {
+          goto position;
+        }
       else
         stay;
     }
@@ -21,13 +27,13 @@ option attack_situation
     }
   }
 
-  /*state stand_tester
+  state stand_tester
   {
     decision
     {
       if(state_time > 10000)
       {
-        goto approach_ball;
+          goto approach_ball;
       }
       else stay;
     }
@@ -35,7 +41,8 @@ option attack_situation
     {
       motion.type = stand;
     }
-  }*/
+  }
+
   
   state position
   {
@@ -45,7 +52,7 @@ option attack_situation
       {
         if(goal.opp.time_since_seen < 30000) //|| robot_pose.is_valid) xxx
         {
-          goto turn_to_ball_with_foot;
+          goto approach_ball_after_position;
         }
         else // didn't see the goal for long time
         {
@@ -110,17 +117,13 @@ option attack_situation
     }
   }
   
-  state turn_to_ball_with_foot
+  state approach_ball_after_position
   {
     decision
     {
       if(action_done)
       {
-        //if(goal.opp.distance < 2000 && abs(value=attack.direction) < 60)
-          //|| random > 0.4)
-        //  goto stabilize_before_kick;
-        //else
-          goto dribble;
+        goto decide_kick_dribble;
       }
       else stay;
     }
@@ -129,6 +132,25 @@ option attack_situation
       // error: x=40, y=40, a=20 => dist < 180+60 = 240
       approach_ball_with_correct_foot(dist=170, errorX=15, errorY=15, errorR=5+5*random, want_to_turn_after_approach=false);
 
+      //we've seen the ball shortly when we are here
+      head.control_mode = search_for_ball_force_model;
+      motion.walk.stop_with_stand = false;
+      motion.type = walk;
+    }
+  }
+
+  state decide_kick_dribble
+  {
+    decision
+    {
+      //if(goal.opp.distance < 2000 && abs(value=attack.direction) < 60)
+        //|| random > 0.4)
+        //  goto stabilize_before_kick;
+      //else
+      goto dribble;
+    }
+    action
+    {
       //we've seen the ball shortly when we are here
       head.control_mode = search_for_ball_force_model;
       motion.walk.stop_with_stand = false;
@@ -219,6 +241,7 @@ option attack_situation
     decision
     {
       if ( action_done )
+        //goto stand_tester;
         goto approach_ball;
       else
         stay;
