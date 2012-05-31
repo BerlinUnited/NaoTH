@@ -249,7 +249,7 @@ option attack_situation
     action
     {
       situation.abortable = true;
-      dribble_attack_direction();
+      dribble_attack_direction(sidekickDegree = 40);
     }
   }
 }

@@ -1,6 +1,8 @@
 /** dribble_attack_direction */
 option dribble_attack_direction {
 
+  float @sidekickDegree [deg];
+
   common decision
   {
     if(ball.time_since_last_seen > 2500)
@@ -11,11 +13,11 @@ option dribble_attack_direction {
   {
     decision
     {
-      else if(attack.direction > 40) //xxx
-        goto kick_left_foot;
-        //goto approach_for_kick_right;
-      else if(attack.direction < -40) //xxx
+      else if(attack.direction > @sidekickDegree) //xxx
         goto kick_right_foot;
+        //goto approach_for_kick_right;
+      else if(attack.direction < -@sidekickDegree) //xxx
+        goto kick_left_foot;
         //goto approach_for_kick_left;
       else 
         goto walk_against_ball;
@@ -91,7 +93,7 @@ option dribble_attack_direction {
     decision {
       else if (state_time > 1000)
         goto finished;
-      else if ((ball.preview.x > 0 && ball.preview.x < 400 && abs(value=ball.preview.y) < 70)) //state_time as backup xxx
+      else if ((ball.x > 0 && ball.x < 400 && abs(value=ball.y) < 70)) //state_time as backup xxx
         stay;
       else 
         goto finished;
