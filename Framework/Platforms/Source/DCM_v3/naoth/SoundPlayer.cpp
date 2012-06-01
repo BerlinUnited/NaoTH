@@ -12,8 +12,6 @@
 #include <cstdio>
 #include <glib/gstdio.h>
 
-#include <iostream>
-
 #include "SoundPlayer.h"
 
 SoundPlayer::SoundPlayer()
@@ -79,11 +77,7 @@ void SoundPlayer::playDirect(const std::string& basename)
   std::string full_command(command);
   full_command += file_path;
 
-  int retVal = system( full_command.c_str() );
-  if(retVal != 0)
-  {
-    std::cout << "SoundPlayer:playDirect error " << retVal << std::endl;
-  }
+  system( full_command.c_str() );
 }//end playDirect
 
 

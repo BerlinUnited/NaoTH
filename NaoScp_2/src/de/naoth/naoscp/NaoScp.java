@@ -95,10 +95,7 @@ public class NaoScp extends NaoScpMainFrame
     config = new NaoScpConfig();
     config.debugVersion = true;
 
-    config.sshUser = this.sshUser.getText();
-    config.sshPassword = this.sshPassword.getText();
-    config.sshRootPassword = this.sshRootPassword.getText();
-    config.progressBar = this.progressBar;
+    updateConfig();
 
     this.cbNoBackup.setVisible(config.debugVersion);
     this.cbNoBackup.setEnabled(config.debugVersion);
@@ -358,7 +355,7 @@ public class NaoScp extends NaoScpMainFrame
     
   }
   
-  private boolean checkNaoIps()
+  private boolean checkNaoIps(Boolean init)
   {
     int naoIpCount = 0;
     for(Integer naoNo : this.iNaoBytes.keySet())
@@ -369,13 +366,16 @@ public class NaoScp extends NaoScpMainFrame
       }
       else
       {
-        iNaoBytes.put(naoNo, -1);
+        if(!init && naoNo == 0)
+        {
+          iNaoBytes.put(naoNo, -1);
+        }
       }
     }
-
+    
     for(Integer naoNo : this.sNaoLanIps.keySet())
     {
-      if(naoNo > 0)
+      if(naoNo > 0 )
       {
         if(iNaoBytes.get(naoNo) < 256 && iNaoBytes.get(naoNo) > -1 )
         {
@@ -465,7 +465,7 @@ public class NaoScp extends NaoScpMainFrame
       logTextPane.setBackground(Color.WHITE);
     }
 
-    if(!checkNaoIps())
+    if(!checkNaoIps(false))
     {
       actionInfo("[0;31mNo Nao has a valid ip address specified\n[0m");
       setFormEnabled(true);
@@ -802,7 +802,7 @@ public class NaoScp extends NaoScpMainFrame
       return false;
     }
 
-    checkNaoIps();
+    checkNaoIps(init);
     
     for(Integer naoNo : iNaoBytes.keySet())
     {
@@ -912,7 +912,7 @@ public class NaoScp extends NaoScpMainFrame
       return false;
     }
 
-    checkNaoIps();
+    checkNaoIps(false);
     int naoNo = 0;
     int iNaoByte = Integer.parseInt(sNaoByte);
     
@@ -1879,9 +1879,9 @@ public class NaoScp extends NaoScpMainFrame
           {
             iNaoByte = -1;
           }
-          iNaoBytes.put(0, iNaoByte);          
         }
       }
+      iNaoBytes.put(0, iNaoByte);          
       return sNaoByte;
     }
     
@@ -1891,7 +1891,7 @@ public class NaoScp extends NaoScpMainFrame
       int iPlayerNo = 0;
       while(iPlayerNo >= iNaoBytes.size() || iPlayerNo < 1)
       {
-        sPlayerNo = JOptionPane.showInputDialog("Enter Nao Number (1 - " + (iNaoBytes.size() - 1) + ")", "");
+        sPlayerNo = JOptionPane.showInputDialog("Enter Player Number (1 - " + (iNaoBytes.size() - 1) + ")", "");
         if(sPlayerNo == null)
         {
           break;
@@ -1936,8 +1936,18 @@ public class NaoScp extends NaoScpMainFrame
     scriptRunner.execute();
   }
   
+  private void updateConfig()
+  {
+    config.sshUser = this.sshUser.getText();
+    config.sshPassword = this.sshPassword.getText();
+    config.sshRootPassword = this.sshRootPassword.getText();
+    config.progressBar = this.progressBar;
+  }
+  
   private void initializeRobot()
   {
+    updateConfig();
+    
     clearLog();
     NaoScpConfig cfg = new NaoScpConfig(config);
     cfg.stagingLibDir = null;
@@ -2000,7 +2010,7 @@ public class NaoScp extends NaoScpMainFrame
         setupPlayerNo = preparator.askForPlayerNumber();
       }
     }    
-    
+    iNaoBytes = iNaoBytes;
     if(address == null || sNaoByte == null || setupPlayerNo == null || !prepareDeploy(cfg, true) || !prepareSetupDeploy(cfg, sNaoByte))
     {
       actionInfo("robot initialization aborted");
@@ -2262,7 +2272,7 @@ public class NaoScp extends NaoScpMainFrame
         });
 
         jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jDirPathLabel.setText("SET DIRECTORY :)");
+        jDirPathLabel.setText("Set directory to {RepDir}/NaoTHSoccer");
         jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\u005cu005cNaoTH-2009\\u005cu005cProjects\\u005cu005cNaoController\")");
 
         jLabel15.setText("Version to Upload:");
@@ -2357,6 +2367,7 @@ public class NaoScp extends NaoScpMainFrame
             }
         });
 
+        cbRestartNaoth.setSelected(true);
         cbRestartNaoth.setText("restartNaoTH");
         cbRestartNaoth.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -2369,7 +2380,6 @@ public class NaoScp extends NaoScpMainFrame
             }
         });
 
-        cbCopyConfig.setSelected(true);
         cbCopyConfig.setText("copyConfig");
         cbCopyConfig.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -2575,7 +2585,7 @@ public class NaoScp extends NaoScpMainFrame
                         .add(cbCopyExe)
                         .add(8, 8, 8)
                         .add(cbCopyLib)))
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Copy & Run", jPanel1);
@@ -2873,7 +2883,7 @@ public class NaoScp extends NaoScpMainFrame
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                         .add(jLabel26)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE))
+                        .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
                         .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
                             .add(org.jdesktop.layout.GroupLayout.LEADING, jSettingsPanel2Layout.createSequentialGroup()
@@ -2972,12 +2982,12 @@ public class NaoScp extends NaoScpMainFrame
                     .add(jSettingsPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(cbRebootSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                    .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                    .add(cbRebootSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                    .add(jButtonRemoteKernelVideoReload, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .add(jButtonRemoteKernelVideoReload, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -3029,7 +3039,7 @@ public class NaoScp extends NaoScpMainFrame
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel3Layout.createSequentialGroup()
-                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
+                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jCopyStatus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 19, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)

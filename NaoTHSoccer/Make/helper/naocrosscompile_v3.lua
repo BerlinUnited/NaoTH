@@ -14,38 +14,36 @@ local stageDir = envVal .. "/staging/"
 
 -- the following steps are needed to add the nao cross compiler to the platforms
 -- extend the command line option list
-table.insert(premake.option.list["platform"].allowed, { "Nao", "Nao v4 (from NaoTH)" })
+table.insert(premake.option.list["platform"].allowed, { "Naov3", "Nao v3 (from NaoTH)" })
 -- extend the global variable
-premake.platforms.Nao = 
+premake.platforms.Naov3 = 
 { 
-  cfgsuffix       = "Nao",
+  cfgsuffix       = "Naov3",
   iscrosscompiler = true,
 }
 -- and one more (we are called after the automatic binding)
-table.insert(premake.fields.platforms.allowed, "Nao")
+table.insert(premake.fields.platforms.allowed, "Naov3")
 
 -- GCC/G++ settings
-premake.gcc.platforms.Nao =
+premake.gcc.platforms.Naov3 =
 {
   cppflags = "-MMD",
   -- Winline was here
-  flags = "-m32 -march=i686 -msse -msse2 -mssse3".. 
-   " --sysroot=" .. crossDir .. "/i686-unknown-linux-gnu/sysroot/" ..
-   " -isystem" .. crossDir .. "/i686-unknown-linux-gnu/sysroot/usr/include/" .. 
-   " -isystem" .. crossDir .. "/i686-unknown-linux-gnu/include/c++/4.4.7/" .. 
-   " -L" .. crossDir .. "/i686-unknown-linux-gnu/sysroot/usr/lib/" ..
-   " -I" .. stageDir .. "/usr/include/" .. 
-   " -L" .. stageDir .. "/usr/lib/" ..
+  flags = "--param inline-unit-growth=400 -m32 -march=geode -m3dnow --sysroot=" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/" ..
+   " -I" .. stageDir .. "/usr/include/" .. " -I" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/usr/include/" .. 
+   " -I" .. crossDir .. "/i586-unknown-linux-gnu/include/c++/4.3.3/" .. 
    " -I" .. stageDir .. "/usr/include/glib-2.0/" ..
    " -I" .. stageDir .. "/usr/include/gio-unix-2.0/" ..
-   " -I" .. stageDir .. "/usr/lib/glib-2.0/include/"
+   " -I" .. stageDir .. "/usr/lib/glib-2.0/include/" ..
+   " -L" .. stageDir .. "/usr/lib/" ..
+   " -L" .. crossDir .. "/i586-unknown-linux-gnu/sys-root/usr/lib/" 
 }
 
-if(_OPTIONS["platform"] == "Nao") then
+if(_OPTIONS["platform"] == "Naov3") then
   -- reset compiler path to the cross compiler
-  premake.gcc.cc     = crossDir .. "/bin/i686-unknown-linux-gnu-gcc"
-  premake.gcc.cxx    = crossDir .. "/bin/i686-unknown-linux-gnu-g++"
-  premake.gcc.ar     = crossDir .. "/bin/i686-unknown-linux-gnu-ar"
+  premake.gcc.cc     = crossDir .. "/bin/i586-unknown-linux-gnu-gcc"
+  premake.gcc.cxx    = crossDir .. "/bin/i586-unknown-linux-gnu-g++"
+  premake.gcc.ar     = crossDir .. "/bin/i586-unknown-linux-gnu-ar"
   print("INFO: GCC path was changed for cross compiling")
 end
 

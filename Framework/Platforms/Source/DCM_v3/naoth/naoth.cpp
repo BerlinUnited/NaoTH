@@ -155,11 +155,6 @@ int main(int argc, char *argv[])
   sigfillset(&saSeg.sa_mask);
   sigaction(SIGSEGV,&saSeg,NULL);
 
-  int retChDir = chdir("/home/nao");
-  if(retChDir != 0)
-  {
-    std::cerr << "Could not change working directory" << std::endl;
-  }
 
   // O_CREAT - create a new semaphore if not existing
   // open semaphore

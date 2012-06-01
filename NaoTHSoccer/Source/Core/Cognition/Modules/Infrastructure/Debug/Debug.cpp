@@ -5,6 +5,8 @@
  * Created on 11. November 2010, 18:32
  */
 
+#include "Tools/ImageProcessing/jpeg/jpge.h"
+
 #include "Debug.h"
 
 #include "Tools/Debug/DebugRequest.h"
@@ -74,11 +76,15 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   if (command == "image")
   {
     GT_TRACE("Debug::executeDebugCommand() handling image");
-    //g_debug("sending image timestamp=%d, frame=%d", getImage().timestamp, getFrameInfo().frameNumber);
     // add the drawings to the image
     GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
     DebugImageDrawings::getInstance().drawToImage(getImage());
     
+    if(arguments.find("jpeg") != arguments.end())
+    {
+      // TODO: do jpeg compression
+    }
+
     GT_TRACE("Debug::executeDebugCommand() before serialize");
     STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);
