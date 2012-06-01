@@ -1,0 +1,94 @@
+/** This behavior approaches the ball 
+* and performs an omnidirectional kick
+**/
+
+option perform_omnidirectional_kick
+{
+
+initial state stabilize_before_kick
+  {
+    decision {
+      // stand 1 second before kick
+      if(state_time < 1000)
+        stay;
+      // maybe we touched the ball accidently
+      else if(!action_done)
+        goto finished;
+      else //if(executed_motion.type == stand) HACK xxx
+        goto kick_prep;
+      //else
+        //stay;
+    }
+    action {
+      // should execute stand
+      approach_ball_with_correct_foot(dist=170, errorX=15, errorY=15, errorR=5+5*random, want_to_turn_after_approach=false);
+      head.control_mode = search_for_ball;
+      motion.walk.stop_with_stand = true;
+      //motion.type = stand;
+      motion.type = walk;
+    }
+  }
+
+  state kick_prep
+  {
+    decision {
+         if(executed_motion.type == stand) {
+           goto kick;
+         } else {
+            stay;
+         }
+    }
+    action {
+    
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state kick {
+    decision
+    {
+      if(action_done && state_time > 3000)
+        goto stabilize_after_kick;
+      else
+        stay;
+    }
+    action 
+    {
+      situation.abortable = false;
+      kick_ball(direction= attack.direction);
+
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  state stabilize_after_kick {
+    decision
+    {
+      if ( state_time > 0 )
+        goto finished;
+      else
+        stay;
+    }
+    action
+    {
+      situation.abortable = false;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+      motion.type = stand;
+    }
+  }
+
+  target state finished
+  {
+    action
+    {
+    }
+  }
+
+}

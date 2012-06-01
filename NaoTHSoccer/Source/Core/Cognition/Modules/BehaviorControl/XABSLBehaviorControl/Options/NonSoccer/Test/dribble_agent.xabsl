@@ -16,7 +16,7 @@ option dribble_agent
 
       // Walk, kick, sidestep
       //dribble_stand_test();
-      go_to_ball_cool(distance = 170, right_foot=true, errorX=15, errorY=10, errorR=5);
+      smart_attack_situation();
       head_control();
       battery();
     }

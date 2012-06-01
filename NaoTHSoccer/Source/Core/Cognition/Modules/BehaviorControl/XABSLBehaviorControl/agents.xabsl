@@ -52,6 +52,8 @@ include "Options/Skills/approach_ball_with_correct_foot.xabsl";
 include "Options/Skills/calibrate_intertial.xabsl";
 include "Options/Skills/go_to_relative_point_with_distance_and_rot.xabsl";
 include "Options/Skills/falling_down_standing_up.xabsl";
+include "Options/Skills/perform_omnidirectional_kick.xabsl";
+include "Options/Skills/sidekick.xabsl";
 
 // Debug 
 include "Options/Debug/battery.xabsl";
@@ -62,6 +64,8 @@ include "Options/Soccer/Striker/initial_kick_off.xabsl";
 include "Options/Soccer/Striker/ball_far_away_situation.xabsl";
 include "Options/Soccer/Striker/ball_not_seen_situation.xabsl";
 include "Options/Soccer/Striker/attack_situation.xabsl";
+include "Options/Soccer/Striker/between_goal_and_ball_situation.xabsl";
+include "Options/Soccer/Striker/smart_attack_situation.xabsl";
 include "Options/Soccer/Striker/spl_playing_striker.xabsl";
 include "Options/Soccer/Striker/dribble_attack_direction.xabsl";
 

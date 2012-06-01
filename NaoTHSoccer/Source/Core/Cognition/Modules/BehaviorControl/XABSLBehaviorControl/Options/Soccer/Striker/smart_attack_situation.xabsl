@@ -1,0 +1,202 @@
+/**
+* This is an attacking behavior. 
+* It should go to the ball, and dribble or kick 
+**/
+
+option smart_attack_situation
+{
+  common decision
+  {
+    if(abs(value = attack.direction) < 30 
+        && (ball.preview.x > 0 && ball.preview.x < 250 && abs(value=ball.preview.y) < 70))
+    {
+      goto walk_against_ball;
+    }
+  }
+  
+  initial state approach_decision
+  {
+    decision
+    {
+      else if(attack.direction < 0)
+      {
+        goto attack_left_foot;
+      }
+      else
+      {
+        goto attack_right_foot;
+      }
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state attack_left_foot
+  {
+    decision
+    {
+      // We decided for left foot but attack.direction changes to much due to moving ball, approach right
+      else if(attack.direction > 40)
+      {
+        goto attack_right_foot;
+      }
+      /* Include kick here
+      else if(action_done
+              && (goal.opp.distance < 2000 
+              && abs(value=attack.direction) < 60)
+              || random > 0.4)
+        goto omnidirectional_kick;
+      }*/
+      else if (action_done
+               && executed_motion.step_control.left_movable)
+      {
+        goto sidekick_left;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      go_to_ball_cool(distance = 220, right_foot=false, errorX=20, errorY=15, errorR=5);
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
+  state attack_right_foot
+  {
+    decision
+    {
+      // We decided for right foot but attack.direction changes to much due to moving ball, approach left
+      else if(attack.direction < -40)
+      {
+        goto attack_left_foot;
+      }
+      /* Include kick here
+      else if(action_done
+              && (goal.opp.distance < 2000 
+              && abs(value=attack.direction) < 60)
+              || random > 0.4)
+        goto omnidirectional_kick;
+      }*/
+      else if(action_done
+              && executed_motion.step_control.right_movable)
+      {
+        goto sidekick_right;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      go_to_ball_cool(distance = 220, right_foot=true, errorX=20, errorY=15, errorR=5);
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
+  state omnidirectional_kick
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto approach_decision;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      perform_omnidirectional_kick();
+    }
+  }
+
+  state walk_against_ball
+  {
+    decision {
+      else if (state_time > 1000 
+                || abs(value = attack.direction) > 30
+                || ball.preview.x > 0
+                || ball.preview.x > 250
+                || abs(value=ball.preview.y) > 70) //state_time as backup 
+      {
+        goto approach_decision;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+      head.control_mode = search_for_ball;
+    }
+  }
+
+  state sidekick_right
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto approach_decision;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      sidekick(right_foot=true);
+    }
+  }
+
+  state sidekick_left
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto approach_decision;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      sidekick(right_foot=false);
+    }
+  }
+
+  state finished
+  {
+    action
+    {
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+      motion.walk.stop_with_stand = true;
+    }
+  }
+}

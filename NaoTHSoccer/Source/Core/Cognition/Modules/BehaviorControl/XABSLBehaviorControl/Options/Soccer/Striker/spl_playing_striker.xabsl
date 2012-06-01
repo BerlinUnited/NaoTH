@@ -15,15 +15,20 @@ option spl_playing_striker {
       {
         goto ball_far_away;
       }
+      else if(abs(value = attack.direction)>90)
+      {
+        goto between_goal_and_ball;
+      }
       /*else if(obstacle.ultrasound.distance < 400 
         && ball.distance < 400
         && goal.opp.distance > 1500)
       {
         goto attack_ball_with_obstacle_close;
       }*/ 
+
       else
       {
-        goto attacking;
+        goto smart_attack;
       }
     }
     // else stay;
@@ -38,9 +43,17 @@ option spl_playing_striker {
     }
   }
 
-  state attacking
-  {
-    action {
+  state between_goal_and_ball {
+    action
+    {
+      situation.abortable = true;
+      between_goal_and_ball_situation();
+    }
+  }
+
+  state smart_attack {
+    action 
+    {
       situation.abortable = true;
       attack_situation();
     }
