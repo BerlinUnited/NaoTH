@@ -187,7 +187,7 @@
                                   <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="17" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -346,7 +346,7 @@
                     <Component class="javax.swing.JLabel" name="jDirPathLabel">
                       <Properties>
                         <Property name="horizontalAlignment" type="int" value="2"/>
-                        <Property name="text" type="java.lang.String" value="SET DIRECTORY :)"/>
+                        <Property name="text" type="java.lang.String" value="Set directory to {RepDir}/NaoTHSoccer"/>
                         <Property name="toolTipText" type="java.lang.String" value="NaoController project directory (e.g., &quot;D:\u005cu005cu005cNaoTH-2009\u005cu005cu005cProjects\u005cu005cu005cNaoController&quot;)" containsInvalidXMLChars="true"/>
                       </Properties>
                     </Component>
@@ -395,6 +395,7 @@
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="cbRestartNaoth">
                   <Properties>
+                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="restartNaoTH"/>
                   </Properties>
                   <Events>
@@ -404,7 +405,6 @@
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="cbCopyConfig">
                   <Properties>
-                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="copyConfig"/>
                   </Properties>
                   <Events>
@@ -618,7 +618,7 @@
                               <Component id="jButtonInitRobotSystem" alignment="1" max="32767" attributes="1"/>
                               <Component id="jButtonSaveNetworkConfig" max="32767" attributes="0"/>
                               <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
-                              <Component id="jButtonRemoteKernelVideoReload" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jButtonRemoteKernelVideoReload" alignment="0" pref="199" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -961,7 +961,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel26" min="-2" max="-2" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTeamCommPort" pref="105" max="32767" attributes="3"/>
+                                      <Component id="jTeamCommPort" pref="115" max="32767" attributes="3"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -1192,7 +1192,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane5" pref="331" max="32767" attributes="0"/>
+                      <Component id="jScrollPane5" pref="329" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jCopyStatus" min="-2" pref="19" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>
