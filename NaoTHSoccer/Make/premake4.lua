@@ -61,7 +61,8 @@ solution "NaoTHSoccer"
   
   configuration { "OptDebug" }
     defines { "DEBUG" }
-    flags { "Optimize", "FatalWarnings" }
+    -- flags { "Optimize", "FatalWarnings" }
+    flags { "Optimize" }
          
   configuration{"Native"}
     includedirs {
