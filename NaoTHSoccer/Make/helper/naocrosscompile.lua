@@ -9,7 +9,7 @@ else
   envVal = "/opt/aldebaran/info/crosscompile"
 end -- NAO_CROSSCOMPILE ~= nil
 
-local crossDir = envVal .. "/cross/"
+local crossDir = envVal .. "/i686-naoth-linux-gnu/"
 local stageDir = envVal .. "/staging/"
 
 -- the following steps are needed to add the nao cross compiler to the platforms
@@ -30,10 +30,10 @@ premake.gcc.platforms.Nao =
   cppflags = "-MMD",
   -- Winline was here
   flags = "-m32 -march=i686 -msse -msse2 -mssse3".. 
-   " --sysroot=" .. crossDir .. "/i686-unknown-linux-gnu/sysroot/" ..
-   " -isystem" .. crossDir .. "/i686-unknown-linux-gnu/sysroot/usr/include/" .. 
-   " -isystem" .. crossDir .. "/i686-unknown-linux-gnu/include/c++/4.4.7/" .. 
-   " -L" .. crossDir .. "/i686-unknown-linux-gnu/sysroot/usr/lib/" ..
+   " --sysroot=" .. crossDir .. "/i686-naoth-linux-gnu/sysroot/" ..
+   " -isystem" .. crossDir .. "/i686-naoth-linux-gnu/sysroot/usr/include/" .. 
+   " -isystem" .. crossDir .. "/i686-naoth-linux-gnu/include/c++/4.4.7/" .. 
+   " -L" .. crossDir .. "/i686-naoth-linux-gnu/sysroot/usr/lib/" ..
    " -I" .. stageDir .. "/usr/include/" .. 
    " -L" .. stageDir .. "/usr/lib/" ..
    " -I" .. stageDir .. "/usr/include/glib-2.0/" ..
@@ -43,9 +43,9 @@ premake.gcc.platforms.Nao =
 
 if(_OPTIONS["platform"] == "Nao") then
   -- reset compiler path to the cross compiler
-  premake.gcc.cc     = crossDir .. "/bin/i686-unknown-linux-gnu-gcc"
-  premake.gcc.cxx    = crossDir .. "/bin/i686-unknown-linux-gnu-g++"
-  premake.gcc.ar     = crossDir .. "/bin/i686-unknown-linux-gnu-ar"
+  premake.gcc.cc     = crossDir .. "/bin/i686-naoth-linux-gnu-gcc"
+  premake.gcc.cxx    = crossDir .. "/bin/i686-naoth-linux-gnu-g++"
+  premake.gcc.ar     = crossDir .. "/bin/i686-naoth-linux-gnu-ar"
   print("INFO: GCC path was changed for cross compiling")
 end
 
