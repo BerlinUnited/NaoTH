@@ -3,7 +3,9 @@
 option initial_ready_set_play 
 {  
 	common decision {
-		if (game.state == _initial_)
+	  if (ball.time_since_last_seen > 1000)
+       goto dont_know_what_to_do;
+		else if (game.state == _initial_)
 		  goto _initial;
 		else if (game.state == ready)
 		  goto ready;
@@ -44,6 +46,7 @@ option initial_ready_set_play
 	state set {
 		action
 		{
+      situationStatusOwnHalf = false;
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
       special_kickoff_done = false;
@@ -54,13 +57,40 @@ option initial_ready_set_play
 		}
 	}
 	
+    state calibrate_before_play
+  {
+    decision
+    {
+      else if(action_done)
+        goto playing;
+      else
+        stay;
+    }
+    action
+    {
+      // it was 1500
+      calibrate_intertial(stabilize_time = 1500);
+    }
+  }
   
 	state playing {
+ decision {
+  else if (state_time < 1600) {
+    goto calibrate_before_play;
+  } else {
+    stay;}
+  }
 		action 
 		{
       sound.request = (state_time == 0)  ? playing : off;
       situationStatusOwnHalf = false;
-      play_with_check_fall_down();
+      //play_with_check_fall_down();
+      go_to_relative_point_avoid_obstacles(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
+                           x = ball.left_foot.preview.x - 180 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
+                           y = ball.left_foot.preview.y - 180 * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));  
+      
+      
+      head.control_mode = search_for_ball;
       //last_state_was_penalized = false;
       
 		}
@@ -71,12 +101,12 @@ option initial_ready_set_play
 		{
       last_state_was_penalized = true;
       //sound.request = (state_time == 0) ? penalized : off;
-			head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
+			head.control_mode = stay_as_forced;
+      //head.control_mode = search_for_ball;
+      //go_to_relative_point_avoid_obstacles(x=ball.preview.x, y=ball.preview.y, rotation=ball.angle);
 			motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
-
       set_left_eye=red;
       set_right_eye=red;
-
       ball_was_outside_circle = true;
 		}
 	}

@@ -50,11 +50,10 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
     newPosition = position;
     newPosition += nodePosition;
     // some constraints
-    if(!tooCloseToAnotherNode(searchTree, expandedNodes, newPosition) && !tooCloseToObstacle(obstacles, newPosition, parameterSet))
+    Vector2d obstaclePosition;
+    newNode.setPosition(newPosition);
+    if(!tooCloseToAnotherNode(searchTree, expandedNodes, newPosition) && !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet))
     {
-      // set node params:
-      // ..position
-      newNode.setPosition(newPosition);
       // ..parent
       newNode.setParentNode(ownNodeNum);
       // ..expansion radius
@@ -74,11 +73,10 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   nodePosition.rotate(angleToGoal);
   newPosition = position;
   newPosition += nodePosition;
-  if(!tooCloseToAnotherNode(searchTree, expandedNodes, nodePosition) && !tooCloseToObstacle(obstacles, newPosition, parameterSet))
+  newNode.setPosition(newPosition);
+  Vector2d obstaclePosition;
+  if(!tooCloseToAnotherNode(searchTree, expandedNodes, nodePosition) && !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet))
   {
-    // set node params:
-    // ..position
-    newNode.setPosition(newPosition);
     // ..parent
     newNode.setParentNode(ownNodeNum);
     // ..expansion radius
@@ -165,16 +163,23 @@ bool AStarNode::tooCloseToAnotherNode( std::vector<AStarNode>& searchTree, const
   return false;
 }
 
-bool AStarNode::tooCloseToObstacle(const std::vector<Vector2d>& obstacles, const Vector2d& position,const AStarSearchParameters& parameterSet) const
+bool AStarNode::tooCloseToObstacle(const std::vector<Vector2d>& obstacles, Vector2d& obstaclePosition, 
+                                    const AStarSearchParameters& parameterSet) const
 {
+  double currentDistance = parameterSet.obstacleRadius + parameterSet.robotRadius;
+  bool foundObstacle = false;
+  double distance;
   for(unsigned int i = 0; i < obstacles.size(); i++)
   {
-    if ((position - obstacles[i]).abs() <= parameterSet.obstacleRadius + parameterSet.robotRadius)
+    distance = (position - obstacles[i]).abs();
+    if(distance < currentDistance && obstacles[i] != position) // finds the nearest obstacle to the current position
     {
-      return true;
+      obstaclePosition = obstacles[i];
+      currentDistance = distance;
+      foundObstacle = true;
     }
   }
-  return false;
+  return foundObstacle;
 }
 
 void AStarSearch::drawAllNodesField()

@@ -249,7 +249,7 @@ protected:
   * @param parameterSet The parameter set
   * @return true, if the node is close to some obstacle
   */
-  bool tooCloseToObstacle(const std::vector<Vector2d>& obstacles, const Vector2d& position,const AStarSearchParameters& parameterSet) const;
+  bool tooCloseToObstacle(const std::vector<Vector2d>& obstacles, Vector2d& obstaclePosition, const AStarSearchParameters& parameterSet) const;
 
 };// end class AStarNode
 
@@ -314,14 +314,14 @@ public:
 
     if(start.hasReached(this->myGoal, parameterSet))
     {
-      return start;
+      return goal;
     }
     searchTree.clear();
     expandedNodes.clear();
     // push back the start node in vector
     searchTree.push_back(this->myStart);
     // sort the heap
-    //push_heap(searchTree.begin(), searchTree.end(), HeapCompare());
+    //push_heap(searchTree.begin(), searchTree.end(), HeapCompare()); // we don't use in current version...
     // set the parent node of the start node
     searchTree[0].setParentNode(0);
     unsigned int indexOfBestNode;
