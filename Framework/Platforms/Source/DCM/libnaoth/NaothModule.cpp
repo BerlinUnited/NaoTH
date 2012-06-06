@@ -106,6 +106,14 @@ std::string NaothModule::version()
 void NaothModule::init()
 {
   std::cout << "Init DCMHandler" << endl;
+
+  std::cout << "resetting working directory to /home/nao/" << std::endl;
+  int retChDir = chdir("/home/nao");
+  if(retChDir != 0)
+  {
+    std::cerr << "Could not change working directory" << std::endl;
+  }
+
   theDCMHandler.init(pBroker);
 
   unsigned int delta = 0;

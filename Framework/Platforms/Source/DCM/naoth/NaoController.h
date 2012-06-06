@@ -148,9 +148,6 @@ public:
     std::cout << "Init Platform" << endl;
     Platform::getInstance().init(this);
 
-    std::cout << "Init CameraHandler" << endl;
-    theCameraHandler.init("/dev/video");
-  
     std::cout << "Init SoundHandler" <<endl;
     //theSoundPlayer.play("penalized");
     theSoundHandler = new SoundControl();
@@ -216,9 +213,50 @@ public:
   
 
   // camera stuff
-  void get(Image& data) { theCameraHandler.get(data); }
+  void get(Image& data)
+  {
+    theCameraHandler.get(data);
+  }
   void get(CurrentCameraSettings& data) { theCameraHandler.getCameraSettings(data); }
-  void set(const CameraSettingsRequest& data) { theCameraHandler.setCameraSettings(data, data.queryCameraSettings); }
+  void set(const CameraSettingsRequest& data)
+  {
+    bool somethingChanged = false;
+    if(theCameraHandler.isRunning())
+    {
+      CurrentCameraSettings current;
+      theCameraHandler.getCameraSettings(current, data.queryCameraSettings);
+
+      if(data.queryCameraSettings)
+      {
+        somethingChanged = false;
+      }
+      else
+      {
+        for(int i=0; i < CameraSettings::numOfCameraSetting; i++)
+        {
+          if(current.data[i] != data.data[i])
+          {
+            std::cout << "CameraParameter " <<
+                         CameraSettings::getCameraSettingsName((CameraSettings::CameraSettingID) i)
+                      << " was requested to change from " << current.data[i]
+                      << " to " << data.data[i] << std::endl;
+            somethingChanged = true;
+ //           break;
+          }
+        }
+      }
+    }
+    else
+    {
+      somethingChanged = true;
+    }
+
+    if(somethingChanged)
+    {
+      std::cout << "Init CameraHandler and settting camera settings" << endl;
+      theCameraHandler.init(data, "/dev/video1", CameraInfo::Bottom);
+    }
+  }
 
   // sound
   void set(const SoundPlayData& data) 
