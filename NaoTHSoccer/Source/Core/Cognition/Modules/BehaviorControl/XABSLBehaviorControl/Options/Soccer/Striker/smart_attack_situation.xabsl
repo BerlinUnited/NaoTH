@@ -8,14 +8,14 @@ option smart_attack_situation
   common decision
   {
     //Change angle here to influence walk against ball decision 
-    if(abs(value = attack.direction) < 0 
+    if(abs(value = attack.direction) < 30 
         && (ball.preview.x > 0 && ball.preview.x < 250 && abs(value=ball.preview.y) < 40))
     {
       goto walk_against_ball;
     }
   }
 
-  state stand_tester
+  /*state stand_tester
   {
     decision
     {
@@ -36,7 +36,7 @@ option smart_attack_situation
     {
       motion.type = stand;
     }
-  }
+  }*/
   
   initial state approach_decision
   {
@@ -79,12 +79,11 @@ option smart_attack_situation
         goto omnidirectional_kick;
       }*/
       else if (executed_motion.step_control.left_movable
-               && ball.right_foot.preview.x <= 210// * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))
-               && ball.right_foot.preview.y >= 110//  * abs(value=sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) 
-               && ball.right_foot.preview.y <= 130)//  * abs(value=sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))))
+               && ball.right_foot.preview.x <= 220// * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))
+               && ball.right_foot.preview.y >= 90//  * abs(value=sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) 
+               && ball.right_foot.preview.y <= 120)//  * abs(value=sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))))
       {
-        goto stand_tester;
-//        goto sidekick_left;
+        goto sidekick_left;
       }
       else
       {
@@ -93,13 +92,15 @@ option smart_attack_situation
     }
     action
     {
-      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.left_foot.preview.y - sin(angle=attack.direction)*200, x = ball.left_foot.preview.x - cos(angle=attack.direction)*200)
-                               :atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           x = ball.right_foot.preview.x - 200,// * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.right_foot.preview.y - 120// * abs(value=sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)))
+      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.preview.y - sin(angle=attack.direction)*200, x = ball.preview.x - cos(angle=attack.direction)*200)
+                                                        :atan2(y = ball.preview.y, x = ball.preview.x)),
+                                                        //:(ball.distance>300?atan2(y = ball.preview.y, x = ball.preview.x)
+                                                          //:atan2(y = ball.right_foot.preview.y -120, x = ball.right_foot.preview.x -180))),
+                           x = ((ball.distance>300)?ball.preview.x:ball.right_foot.preview.x) - 180,// * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
+                           y = ((ball.distance>300)?ball.preview.y:(ball.right_foot.preview.y - 110))// * abs(value=sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)))
                                - (ball.distance>500?sin(angle = clip(value=attack.direction, min=-180 ,max=0))*200:0),
-                           errorX=0, errorY=0, errorR=0);
-      //motion.walk.coordinate = right_foot;
+                           errorX=40, errorY=0, errorR=0);
+      motion.walk.coordinate = (ball.distance>300)?hip:right_foot;
       motion.type = walk;
       motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
@@ -127,8 +128,7 @@ option smart_attack_situation
               && ball.left_foot.preview.y <= -110//  * abs(value=sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) 
               && ball.left_foot.preview.y >= -125)//  * abs(value=sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))))
       {
-        goto stand_tester;
-//        goto sidekick_right;
+        goto sidekick_right;
       }
       else
       {
@@ -137,13 +137,15 @@ option smart_attack_situation
     }
     action
     {
-      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.right_foot.preview.y - sin(angle=attack.direction)*200, x = ball.right_foot.preview.x - cos(angle=attack.direction)*200)
-                               :atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
-                           x = ball.left_foot.preview.x - 200 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.left_foot.preview.y + 115,// * abs(value=sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)))
-                               //- (ball.distance>500?sin(angle = clip(value=attack.direction, min=0 ,max=180))*200:0),
-                           errorX=0, errorY=0, errorR=0);
-      motion.walk.coordinate = left_foot;
+      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.preview.y - sin(angle=attack.direction)*200, x = ball.preview.x - cos(angle=attack.direction)*200)
+                                                        :atan2(y = ball.preview.y, x = ball.preview.x)),
+                                                        //:(ball.distance>300?atan2(y = ball.preview.y, x = ball.preview.x)
+                                                          //:atan2(y = ball.left_foot.preview.y -120, x = ball.left_foot.preview.x -180))),
+                           x = ((ball.distance>300)?ball.preview.x:ball.left_foot.preview.x) - 180,// * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
+                           y = ((ball.distance>300)?ball.preview.y:(ball.left_foot.preview.y - 110))// * abs(value=sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)))
+                               - (ball.distance>500?sin(angle = clip(value=attack.direction, min=-180 ,max=0))*200:0),
+                           errorX=40, errorY=0, errorR=0);
+      motion.walk.coordinate = (ball.distance>300)?hip:left_foot;
       motion.type = walk;
       motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
@@ -179,10 +181,12 @@ option smart_attack_situation
   state walk_against_ball
   {
     decision {
+      // state_time as abckup
+      // use percept for y for quick abortion 
       else if (state_time > 1000 
                 || abs(value = attack.direction) > 30
-                || ball.percept.x < 0
-                || ball.percept.x > 250
+                || ball.preview.x < 0
+                || ball.preview.x > 250
                 || abs(value=ball.percept.y) > 40) //state_time as backup 
       {
         if(attack.direction < 0)
@@ -201,9 +205,9 @@ option smart_attack_situation
     }
     action {
       motion.type = walk;
-      motion.walk_speed.x = 100;
-      motion.walk_speed.y = 0;
-      motion.walk_speed.rot = 0;
+      motion.walk_speed.x = ball.preview.x + 100;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = ball.angle;
       motion.walk.coordinate = hip;
       motion.walk.style = fast;
       head.motion_type = look_at_world_point;
