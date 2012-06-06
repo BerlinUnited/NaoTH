@@ -15,6 +15,14 @@ option spl_playing_striker {
       {
         goto ball_far_away;
       }
+      else if(robot_pose.x > 0
+              //Functions define a line from goalpost to sideline
+              //crosses sideline at level of cross-mark
+              && ((13/18)*robot_pose.x-(8600/3) > robot_pose.y
+                ||(-13/18)*robot_pose.x+(8600/3) < robot_pose.y))
+      {
+        goto close_to_goal_corner;
+      }
       else if(abs(value = attack.direction)>90)
       {
         goto between_goal_and_ball;
@@ -56,6 +64,14 @@ option spl_playing_striker {
     {
       situation.abortable = true;
       smart_attack_situation();
+    }
+  }
+
+  state close_to_goal_corner {
+    action
+    {
+      situation.abortable = true;
+      close_to_goal_corner_situation();
     }
   }
   

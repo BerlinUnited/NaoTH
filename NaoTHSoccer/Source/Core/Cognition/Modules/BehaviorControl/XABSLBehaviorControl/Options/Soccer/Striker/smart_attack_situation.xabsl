@@ -187,7 +187,7 @@ option smart_attack_situation
                 || abs(value = attack.direction) > 30
                 || ball.preview.x < 0
                 || ball.preview.x > 250
-                || abs(value=ball.percept.y) > 40) //state_time as backup 
+                || abs(value=ball.percept.y) > 40)
       {
         if(attack.direction < 0)
         {
@@ -266,16 +266,6 @@ option smart_attack_situation
     action
     {
       sidekick(right_foot=false);
-    }
-  }
-
-  state finished
-  {
-    action
-    {
-      head.control_mode = search_for_ball;
-      motion.type = stand;
-      motion.walk.stop_with_stand = true;
     }
   }
 }

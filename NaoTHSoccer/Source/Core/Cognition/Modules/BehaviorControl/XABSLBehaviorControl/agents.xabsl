@@ -66,6 +66,7 @@ include "Options/Soccer/Striker/ball_not_seen_situation.xabsl";
 include "Options/Soccer/Striker/attack_situation.xabsl";
 include "Options/Soccer/Striker/between_goal_and_ball_situation.xabsl";
 include "Options/Soccer/Striker/smart_attack_situation.xabsl";
+include "Options/Soccer/Striker/close_to_goal_corner_situation.xabsl";
 include "Options/Soccer/Striker/spl_playing_striker.xabsl";
 include "Options/Soccer/Striker/dribble_attack_direction.xabsl";
 
