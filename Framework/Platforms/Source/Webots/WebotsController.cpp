@@ -215,6 +215,8 @@ void WebotsController::get(AccelerometerData& data)
   data.data.x = webots_accelerometer[0];
   data.data.y = webots_accelerometer[1];
   data.data.z = webots_accelerometer[2];
+
+  data.data *= -1.0; // it seems to be inverted in webots
 }
 
 /**
@@ -367,6 +369,8 @@ void WebotsController::get(GyrometerData& data)
   const double *webots_gyro = wb_gyro_get_values(gyrometer);
   data.data.x = webots_gyro[0];
   data.data.y = webots_gyro[1];
+
+  //data.data *= -1.0;
 }
 
 void WebotsController::get(FSRData& data)
@@ -381,10 +385,10 @@ void WebotsController::get(InertialSensorData& data)
 {
   // calculate the intertial sensor from GPS data
   // it can be enabled for debuging
-//  const float *gpsmatrix = gps_get_matrix(gps);
-//  data.data[InertialSensorData::X] = asin(-gpsmatrix[6]);
-//  data.data[InertialSensorData::Y] = -atan2(gpsmatrix[4], gpsmatrix[5]);
-//  return;
+  const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
+  data.data.x = asin(-gpsmatrix[6]);
+  data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
+  return;
 
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);

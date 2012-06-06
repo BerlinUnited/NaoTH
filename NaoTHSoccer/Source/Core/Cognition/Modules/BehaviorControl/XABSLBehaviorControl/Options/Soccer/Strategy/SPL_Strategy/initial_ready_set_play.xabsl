@@ -108,6 +108,7 @@ option initial_ready_set_play
       set_left_eye=red;
       set_right_eye=red;
       ball_was_outside_circle = true;
+      situationStatusOwnHalf = true;
 		}
 	}
 	

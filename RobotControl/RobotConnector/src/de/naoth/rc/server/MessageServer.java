@@ -54,7 +54,7 @@ public class MessageServer
   public final static String STRING_ENCODING = "ISO-8859-15";
   private SocketChannel serverSocket;
   private Thread senderThread;
-  private long updateIntervall = 10;
+  private long updateIntervall = 33;
   private InetSocketAddress address;
   private List<CommandSender> listeners;
   private List<SingleExecEntry> singleExec;

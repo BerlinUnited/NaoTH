@@ -2,6 +2,7 @@ project "NaoTH-Commons"
   kind "StaticLib"
   language "C++"
   
+  flags {"FatalWarnings"}
   targetname "naothtools"
   
   includedirs {
