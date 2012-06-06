@@ -55,7 +55,7 @@ option spl_playing_striker {
     action 
     {
       situation.abortable = true;
-      attack_situation();
+      smart_attack_situation();
     }
   }
   

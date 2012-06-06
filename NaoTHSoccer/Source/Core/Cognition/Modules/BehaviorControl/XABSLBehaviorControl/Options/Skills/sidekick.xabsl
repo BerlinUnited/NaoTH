@@ -45,7 +45,7 @@ option sidekick
       // wait at least 20ms as stepduration prob. will never be less 20ms -> prevents doublekicks
       else if(state_time > 20 && executed_motion.step_control.left_movable)
       {
-        goto finished;
+        goto stabilize;
       }
       else
         stay;
@@ -59,8 +59,8 @@ option sidekick
       motion.walk.step_control.target.x = ball.right_foot.preview.x+100;
       motion.walk.step_control.target.y = ball.right_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
-      motion.walk.step_control.speed_direction = (attack.direction > 45)?90:45;
-      //motion.walk.step_control.speed_direction = clip(value=attack.direction, min=25, max=90);
+      //motion.walk.step_control.speed_direction = (attack.direction > 45)?90:45;
+      motion.walk.step_control.speed_direction = clip(value=attack.direction, min=25, max=90);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
       //To avoid ball leaving the image when using ball model
@@ -79,7 +79,7 @@ option sidekick
       //Comment see kick_right_foot above
       else if(state_time > 20 && executed_motion.step_control.right_movable)
       {
-        goto finished;
+        goto stabilize;
       }
       else
         stay;
@@ -93,8 +93,8 @@ option sidekick
       motion.walk.step_control.target.x = ball.left_foot.preview.x+100;
       motion.walk.step_control.target.y = ball.left_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
-      motion.walk.step_control.speed_direction = (attack.direction < -45)?-90:-45;
-      //motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-90, max=-25);
+      //motion.walk.step_control.speed_direction = (attack.direction < -45)?-90:-45;
+      motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-90, max=-25);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
       head.motion_type = look_at_world_point;
@@ -106,8 +106,15 @@ option sidekick
 
 //Hack: Do not set motion.walk.step_control.foot 
 //      after dribble do keep vaules in queue correct
-  target state finished
+  state stabilize
   {
+    decision
+    {
+      else if(state_time > 100)
+        goto finished;
+      else
+        stay;
+    }
     action
     {
       motion.type = walk;
@@ -117,7 +124,28 @@ option sidekick
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
       motion.walk.stop_with_stand = false;
+      //motion.walk.step_control.foot = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+    
+
+  //target state finished
+  target state finished
+  {
+    action
+    {
+      motion.type = walk;
+      motion.walk.style = normal;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
       motion.walk.step_control.foot = none;
+      motion.walk.coordinate = hip;
+      motion.walk.stop_with_stand = false;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
