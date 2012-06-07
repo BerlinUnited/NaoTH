@@ -207,14 +207,9 @@ option smart_attack_situation
     }
     action
     {
-      //Todo: Calculate this stuff in C!
-      go_to_relative_point(rotation = (ball.distance>500?
-                                          atan2(y = ball.preview.y + sin(angle=clip(value=attack.direction, min=-90 ,max=0))*200, x = ball.preview.x - cos(angle=attack.direction)*200)
-                                         :atan2(y = ball.left_foot.preview.y + 90, x = ball.left_foot.preview.x-190)),
-                           x = ball.left_foot.preview.x - 190 * cos(angle=atan2(y = ball.left_foot.preview.y+90, x = ball.left_foot.preview.x-190))
-                                 - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.left_foot.preview.y + 90 * (1 + sin(angle=atan2(y = ball.left_foot.preview.y+90, x = ball.left_foot.preview.x-190)))
-                                 - (ball.distance>500?sin(angle = clip(value=attack.direction, min=0 ,max=90))*200:0),
+      go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y + 90, x = ball.left_foot.preview.x-190),
+                           x = ball.left_foot.preview.x - 190 * cos(angle=atan2(y = ball.left_foot.preview.y+90, x = ball.left_foot.preview.x-190)),
+                           y = ball.left_foot.preview.y + 90 * (1 + sin(angle=atan2(y = ball.left_foot.preview.y+90, x = ball.left_foot.preview.x-190))),                        
                            errorX=0, errorY=0, errorR=0);
       motion.walk.coordinate = left_foot;
       motion.type = walk;
