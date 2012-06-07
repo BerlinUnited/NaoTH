@@ -139,7 +139,6 @@ public:
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);
-  SIM_GET(BumperData);
   SIM_GET(IRReceiveData);
   SIM_GET(CurrentCameraSettings);
   SIM_GET(ButtonData);

@@ -74,6 +74,7 @@
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
 #include "Modules/Modeling/AttentionAnalyzer/AttentionAnalyzer.h"
 #include "Modules/Modeling/PathPlanner/PathPlanner.h"
+#include "Modules/Modeling/CollisionDetector/CollisionDetector.h"
 
 // Behavior
 #include "Modules/BehaviorControl/SensorBehaviorControl/SensorBehaviorControl.h"
@@ -167,6 +168,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(AttentionAnalyzer);
   REGISTER_MODULE(SoccerStrategyProvider);
   REGISTER_MODULE(PathPlanner);
+  REGISTER_MODULE(CollisionDetector)
 
   // behavior
   REGISTER_MODULE(SensorBehaviorControl);
