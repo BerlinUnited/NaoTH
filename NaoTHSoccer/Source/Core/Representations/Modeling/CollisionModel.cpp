@@ -2,6 +2,7 @@
 #include "CollisionModel.h"
 
 CollisionModel::CollisionModel()
+  : isColliding(false)
 {
 }
 

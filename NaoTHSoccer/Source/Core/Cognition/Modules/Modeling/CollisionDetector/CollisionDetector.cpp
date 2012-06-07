@@ -14,7 +14,7 @@ CollisionDetector::~CollisionDetector()
 
 void CollisionDetector::execute()
 {
-  double allowedRobotDistance = 400;
+  double allowedRobotDistance = 350;
   MODIFY("CollisionDetector:allowedRobotDistance", allowedRobotDistance);
 
   if(getCollisionModel().isColliding)
