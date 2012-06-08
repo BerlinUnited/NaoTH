@@ -43,8 +43,7 @@ solution "NaoTHSoccer"
   configurations {"OptDebug", "Debug", "Release"}
   
   FRAMEWORK_PATH = path.getabsolute("../../Framework")
-  --EXTERN_PATH = path.getabsolute("../../Extern")
-  EXTERN_PATH = path.getabsolute("../../../NaoTH-2011/Extern")
+  EXTERN_PATH = path.getabsolute("../../Extern")
   
   CORE_PATH = {
     path.getabsolute("../Source/Core/Cognition/"), 
