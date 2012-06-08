@@ -36,9 +36,7 @@ RobotDetector::RobotDetector()
   
   blueMarkers.reserve(MAX_MARKER_NUMBER);
   redMarkers.reserve(MAX_MARKER_NUMBER);
-  resolutionWidth = getImage().cameraInfo.resolutionWidth;
-  resolutionHeight = getImage().cameraInfo.resolutionHeight;
-
+  
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_blobs", "draw the blobs", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_poly_params", "draw marker's polygon parameters", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_scanlines_marker", "draw marker scanlines", false);
@@ -488,14 +486,7 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
   // process the current point
   ////////////////////////////////
 
-  Pixel pixel; //default is black pixel, if you reuest a pixel outside the resolution
-  pixel.u = 0;
-  pixel.v = 0;
-  pixel.y = 0;
-  if (currentPoint.x >= 0 && currentPoint.y >= 0 && (unsigned int)currentPoint.x < resolutionWidth && (unsigned int)currentPoint.y < resolutionHeight) {
-    pixel = getImage().get(currentPoint.x,currentPoint.y);
-  }
-
+  Pixel pixel = getImage().get(currentPoint.x,currentPoint.y);
   ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
   //check whether the current point has the right color
   bool hasColor = isSearchColor(currentPixelColor, searchColor);
@@ -511,6 +502,7 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
   {
     searchColorPointsSkipIndex++;
   }//end else
+  
   if(draw)
   {
     if(hasColor)
@@ -532,7 +524,7 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
   currentPoint += direction;
   }//end for
 
-if(borderPointFound) //if a point was found ...
+  if(borderPointFound) //if a point was found ...
   {
     point = borderPoint;
     //goodPoints.add(borderPoint); //it's good point
@@ -541,11 +533,11 @@ if(borderPointFound) //if a point was found ...
 
 
 //check whether a point is in the image
-inline bool RobotDetector::pixelInSearchArea(Vector2<int>& pixel)
+inline bool RobotDetector::pixelInSearchArea(const Vector2<int>& pixel) const
 {
 //   return searchArea.isInside(pixel);
-  return ((pixel.x >= 0 && pixel.x <= (int)resolutionWidth)
-    &&(pixel.y >= 0 && pixel.y <= (int)resolutionHeight));
+  return ((pixel.x >= 0 && pixel.x < (int)getImage().cameraInfo.resolutionWidth) &&
+          (pixel.y >= 0 && pixel.y < (int)getImage().cameraInfo.resolutionHeight));
 }//end pixelInImage
 
 
