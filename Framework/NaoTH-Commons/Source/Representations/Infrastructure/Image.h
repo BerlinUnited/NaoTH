@@ -114,10 +114,17 @@ namespace naoth
      * so please make sure not to call it more often than you need it.
      * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
      * seperatly.
-     */
+   */
     inline Pixel get(const unsigned int& x, const unsigned int& y) const
     {
+      assert(x >= 0);
+      assert(y >= 0);
+      assert(x < cameraInfo.resolutionWidth);
+      assert(y < cameraInfo.resolutionHeight);
+
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
+
+      Pixel p;
 
       Pixel p;
       p.y = yuv422[yOffset];
