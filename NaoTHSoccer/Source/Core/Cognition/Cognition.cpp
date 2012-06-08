@@ -45,10 +45,7 @@
 #include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
-#include "Modules/Perception/VisualCortex/SimpleFieldColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
-#include "Modules/Perception/VisualCortex/FieldColorClassifierPreProcessor.h"
-#include "Modules/Perception/VisualCortex/FieldColorClassifierPostProcessor.h"
 #include "Modules/Perception/VisualCortex/ColorProvider.h"
 #include "Modules/Perception/VisualCortex/GridProvider.h"
 #include "Modules/Perception/VisualCortex/ImageProcessor.h"
@@ -65,11 +62,13 @@
 #include "Modules/Modeling/BallLocator/TeamBallLocator/TeamBallLocator.h"
 #include "Modules/Modeling/GoalLocator/ActiveGoalLocator/ActiveGoalLocator.h"
 #include "Modules/Modeling/GoalLocator/WholeGoalLocator/WholeGoalLocator.h"
+#include "Modules/Modeling/GoalLocator/DummyActiveGoalLocator/DummyActiveGoalLocator.h"
 #include "Modules/Modeling/SelfLocator/GPS_SelfLocator/GPS_SelfLocator.h"
 #include "Modules/Modeling/SelfLocator/OdometrySelfLocator/OdometrySelfLocator.h"
 #include "Modules/Modeling/ObstacleLocator/UltraSoundObstacleLocator.h"
 #include "Modules/Modeling/ObstacleLocator/VisualObstacleLocator.h"
 #include "Modules/Modeling/SelfLocator/MonteCarloSelfLocator/MonteCarloSelfLocator.h"
+#include "Modules/Modeling/FieldCompass/FieldCompass.h"
 #include "Modules/Modeling/SoccerStrategyProvider/SoccerStrategyProvider.h"
 #include "Modules/Modeling/PlayersLocator/PlayersLocator.h"
 #include "Modules/Modeling/PotentialFieldProvider/PotentialFieldProvider.h"
@@ -134,31 +133,34 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // perception
   REGISTER_MODULE(CameraMatrixProvider);
   REGISTER_MODULE(ImageCorrector);
-  REGISTER_MODULE(BaseColorClassifier);
-  REGISTER_MODULE(SimpleFieldColorClassifier);
   REGISTER_MODULE(FieldColorClassifier);
-  REGISTER_MODULE(FieldColorClassifierPreProcessor);
+  REGISTER_MODULE(BaseColorClassifier);
   REGISTER_MODULE(ColorProvider);
   REGISTER_MODULE(GridProvider);
-  REGISTER_MODULE(FieldColorClassifierPostProcessor);
   REGISTER_MODULE(ImageProcessor);
   REGISTER_MODULE(VirtualVisionProcessor);
-  REGISTER_MODULE(PerceptProjector);
   REGISTER_MODULE(FieldSideDetector);
-  REGISTER_MODULE(PerceptionsVisualization);
   REGISTER_MODULE(OpenCVDebug);
+
+  // scene analysers 
+  // (analyze the visual information seen in the image)
+  REGISTER_MODULE(WholeGoalLocator);
+  REGISTER_MODULE(PerceptProjector);
+  REGISTER_MODULE(PerceptionsVisualization);
+
 
   // modeling
   REGISTER_MODULE(BodyStateProvider);
   REGISTER_MODULE(ParticleFilterBallLocator);
   REGISTER_MODULE(KalmanFilterBallLocator);
   REGISTER_MODULE(ActiveGoalLocator);
-  REGISTER_MODULE(WholeGoalLocator);
   REGISTER_MODULE(GPS_SelfLocator);
   REGISTER_MODULE(OdometrySelfLocator);
   REGISTER_MODULE(UltraSoundObstacleLocator);
   REGISTER_MODULE(VisualObstacleLocator);
   REGISTER_MODULE(MonteCarloSelfLocator);
+  REGISTER_MODULE(DummyActiveGoalLocator); // has to be after MonteCarloSelfLocator
+  REGISTER_MODULE(FieldCompass);
   REGISTER_MODULE(TeamBallLocator);
   REGISTER_MODULE(PlayersLocator);
   REGISTER_MODULE(PotentialFieldProvider);

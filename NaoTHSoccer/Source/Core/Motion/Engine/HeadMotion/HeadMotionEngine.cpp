@@ -46,7 +46,7 @@ HeadMotionEngine::HeadMotionEngine()
 
 void HeadMotionEngine::execute()
 {
-  // update torso
+  // HACK: update torso
   theKinematicChain.theLinks[KinematicChain::Torso].M = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].M;
 
   switch(theBlackBoard.theHeadMotionRequest.id)
@@ -54,8 +54,10 @@ void HeadMotionEngine::execute()
     case HeadMotionRequest::look_straight_ahead: lookStraightAhead(); break;
     case HeadMotionRequest::look_at_point: lookAtPoint(); break;
     
-    case HeadMotionRequest::look_at_world_point: 
-      lookAtWorldPoint(theBlackBoard.theHeadMotionRequest.targetPointInTheWorld); 
+    case HeadMotionRequest::look_at_world_point:
+    {
+      lookAtWorldPoint(theBlackBoard.theHeadMotionRequest.targetPointInTheWorld);
+    }
       break;
 
     case HeadMotionRequest::look_at_point_on_the_ground: 
@@ -296,8 +298,25 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
 }//end g
 
 
-void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& target)
+void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
 {
+  // HACK: transform the head motion request to the support foot coordinates
+  const Pose3D& lFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
+  const Pose3D& rFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
+  Vector3<double> target(origTarget);
+
+  // left foot is the support foot
+  if(theBlackBoard.theHeadMotionRequest.coordinate == HeadMotionRequest::LFoot)
+  {
+    target = lFoot*target;
+  }
+
+  if(theBlackBoard.theHeadMotionRequest.coordinate == HeadMotionRequest::RFoot)
+  {
+    target = rFoot*target;
+  }
+
+
   double y = 0.0;
   double p = 0.0;
   Vector2<double> x(y,p);
@@ -496,6 +515,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
   else
   {
     Vector3<double> lookTo = points[nextMotionState] * s + points[headMotionState] * (1-s);
+
     lookAtWorldPoint(lookTo);
 
     DEBUG_REQUEST("HeadMotionEngine:draw_search_points_on_field",

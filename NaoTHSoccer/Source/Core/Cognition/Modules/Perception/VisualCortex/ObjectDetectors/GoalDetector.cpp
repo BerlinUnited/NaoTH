@@ -68,6 +68,15 @@ void GoalDetector::execute()
     numberOfCandidates = scanForCandidates(c1, c2, candidates);
   }//end if
 
+  // try once again...
+  if(numberOfCandidates == 0)
+  {
+    Vector2<double> c1(0,getImage().cameraInfo.resolutionHeight/3);
+    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.resolutionHeight/3);
+    numberOfCandidates = scanForCandidates(c1, c2, candidates);
+  }//end if
+
+
   // estimate the post base points
   vector<GoalPercept::GoalPost> postvector;
   estimatePostsByScanlines(candidates, numberOfCandidates, postvector);

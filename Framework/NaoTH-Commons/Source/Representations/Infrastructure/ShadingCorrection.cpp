@@ -8,12 +8,15 @@ using namespace std;
 
 ShadingCorrection::ShadingCorrection()
 :
-yC(NULL),
 camID(CameraInfo::Bottom),
 width(0),
 height(0),
 size(0)
-{}//end constructor
+{
+  data[0] = NULL;
+  data[1] = NULL;
+  data[2] = NULL;
+}//end constructor
 
 ShadingCorrection::~ShadingCorrection()
 {
@@ -27,9 +30,11 @@ void ShadingCorrection::init(unsigned int w, unsigned int h, CameraInfo::CameraI
   height = h;
   camID = cam;
   size = w * h;
-  yC = new unsigned short[size];
+  data[0] = new unsigned short[size];
+  data[1] = new unsigned short[size];
+  data[2] = new unsigned short[size];
   reset();
-  loadCorrectionFromFile
+  loadCorrectionFromFiles
   (
     Platform::getInstance().theConfigDirectory,
     Platform::getInstance().theHeadHardwareIdentity
@@ -38,91 +43,182 @@ void ShadingCorrection::init(unsigned int w, unsigned int h, CameraInfo::CameraI
 
 void ShadingCorrection::clear()
 {
-  delete[] yC;
+  delete[] data[0];
+  delete[] data[1];
+  delete[] data[2];
 }//end destructor
 
 
-bool ShadingCorrection::loadCorrectionFromFile(string camConfigPath, string hardwareID )
+bool ShadingCorrection::loadCorrectionFromFiles(string camConfigPath, string hardwareID )
 {
-  if(yC != NULL)
+  bool ok = false;
+  if(data[0] != NULL && data[1] != NULL && data[2] != NULL)
   {
-    stringstream cameraYCPath;
+    stringstream cameraYCPathGeneral;
+    stringstream cameraUCPathGeneral;
+    stringstream cameraVCPathGeneral;
 
-    cameraYCPath << camConfigPath << "private/camera_";
-    cameraYCPath << hardwareID << "_" << width << "x" << height;
+    stringstream cameraYCPathPrivate;
+    stringstream cameraUCPathPrivate;
+    stringstream cameraVCPathPrivate;
+
+    cameraYCPathPrivate << camConfigPath << "private/camera_";
+    cameraYCPathPrivate << hardwareID << "_" << width << "x" << height;
+    cameraUCPathPrivate << cameraYCPathPrivate;
+    cameraVCPathPrivate << cameraYCPathPrivate;
     if(camID == CameraInfo::Bottom)
     {
-      cameraYCPath << "_bottom.yc";
+      cameraYCPathPrivate << "_bottom.yc";
+      cameraUCPathPrivate << "_bottom.uc";
+      cameraVCPathPrivate << "_bottom.vc";
     }
     else
     {
-      cameraYCPath << "_top.yc";
+      cameraYCPathPrivate << "_top.yc";
+      cameraUCPathPrivate << "_top.uc";
+      cameraVCPathPrivate << "_top.vc";
     }
    
-    cout << "Loading from " << cameraYCPath.str() << endl;
-    ifstream inputFileStream ( cameraYCPath.str().c_str() , ifstream::in | ifstream::binary );
-
-    if(inputFileStream.fail())
+    cameraYCPathGeneral << camConfigPath << "general/camera_";
+    cameraYCPathGeneral << hardwareID << "_" << width << "x" << height;
+    cameraUCPathGeneral << cameraYCPathGeneral;
+    cameraVCPathGeneral << cameraYCPathGeneral;
+    if(camID == CameraInfo::Bottom)
     {
-      // could not open color table
-      reset();
-      cout << " fail" << endl;
-      return false;
-    }//end if
-
-    inputFileStream.read((char*) yC, size * sizeof(unsigned short));
-    inputFileStream.close();
-
-    // check the brigness Correction data
-    for(unsigned int pos = 0; pos < size; pos++)
-    {
-//      if(yC[pos] > 261120) // bigger than 1024 * 255 ?
-      if(yC[pos] > 65025) // bigger than 255 * 255 ?
-      {
-        std::cout << std::endl << "brightness correction table broken!!! ["
-          << pos << "] = "
-          << yC[pos]
-          << std::endl << std::endl;
-        // clear the colortable
-        reset();
-        cout << " fail" << endl;
-        return false;
-      }
+      cameraYCPathGeneral << "_bottom.yc";
+      cameraUCPathGeneral << "_bottom.uc";
+      cameraVCPathGeneral << "_bottom.vc";
     }
-    cout << " ok" << endl;
-    return true;
-  }
-  return false;
-}//end loadCorrectionFromFile
+    else
+    {
+      cameraYCPathGeneral << "_top.yc";
+      cameraUCPathGeneral << "_top.uc";
+      cameraVCPathGeneral << "_top.vc";
+    }
+   
+    cout << "Try loading from " << cameraYCPathPrivate.str() << endl;
+    if(!loadCorrectionFile(cameraYCPathPrivate.str(), 0))
+    {
+      cout << "Try loading from " << cameraYCPathGeneral.str() << endl;
+      ok = loadCorrectionFile(cameraYCPathGeneral.str(), 0);
+    }
+    else
+    {
+      ok = true;
+    }
 
-void ShadingCorrection::saveCorrectionToFile(string camConfigPath, string hardwareID)
+    cout << "Try loading from " << cameraUCPathPrivate.str() << endl;
+    if(!loadCorrectionFile(cameraUCPathPrivate.str(), 0))
+    {
+      cout << "Try loading from " << cameraUCPathGeneral.str() << endl;
+      ok = loadCorrectionFile(cameraUCPathGeneral.str(), 0) || ok;
+    }
+    else
+    {
+      ok = true;
+    }
+
+    cout << "Try loading from " << cameraVCPathPrivate.str() << endl;
+    if(!loadCorrectionFile(cameraVCPathPrivate.str(), 0))
+    {
+      cout << "Try loading from " << cameraVCPathGeneral.str() << endl;
+      ok = loadCorrectionFile(cameraVCPathGeneral.str(), 0) || ok;
+    }
+    else
+    {
+      ok = true;
+    }
+  }
+  return ok;
+}//end loadCorrectionFromFiles
+
+bool ShadingCorrection ::loadCorrectionFile(string filePath, unsigned int idx)
 {
-  if(yC != NULL)
+  ifstream inputFileStream ( filePath.c_str() , ifstream::in | ifstream::binary );
+
+  if(inputFileStream.fail())
+  {
+    // could not open file
+    cout << filePath << " failed to load" << endl;
+    reset(idx);
+    return false;
+  }//end if
+
+  inputFileStream.read((char*) data[idx], size * sizeof(unsigned short));
+  inputFileStream.close();
+
+  // check the brigness Correction data
+  for(unsigned int pos = 0; pos < size; pos++)
+  {
+    if(data[idx][pos] > 65025) // bigger than 255 * 255 ?
+    {
+      std::cout << std::endl << "brightness correction table broken!!! ["
+        << pos << "] = "
+        << data[idx][pos]
+        << std::endl << std::endl;
+      cout << " failed" << endl;
+      reset(idx);
+      return false;
+    }
+  }
+  cout << " ok" << endl;
+  return true;
+}//end loadCorrectionFile
+
+
+void ShadingCorrection::saveCorrectionToFiles(string camConfigPath, string hardwareID)
+{
+  if(data[0] != NULL && data[1] != NULL && data[2] != NULL)
   {
     stringstream cameraYCPath;
+    stringstream cameraUCPath;
+    stringstream cameraVCPath;
+
     cameraYCPath << camConfigPath << "private/camera_";
     cameraYCPath << hardwareID << "_" << width << "x" << height;
+    cameraUCPath << cameraYCPath;
+    cameraVCPath << cameraYCPath;
     if(camID == CameraInfo::Bottom)
     {
       cameraYCPath << "_bottom.yc";
+      cameraUCPath << "_bottom.uc";
+      cameraVCPath << "_bottom.vc";
     }
     else
     {
       cameraYCPath << "_top.yc";
+      cameraUCPath << "_top.uc";
+      cameraVCPath << "_top.vc";
     }
     cout << "Saving to " << cameraYCPath.str() << endl;
-    ofstream outputFileStream ( cameraYCPath.str().c_str() , ofstream::out | ofstream::binary );
-
-    outputFileStream.write((char*) yC, size * sizeof(unsigned short));
-    outputFileStream.close();
+    saveCorrectionFile(cameraYCPath.str(), 0);
+    cout << "Saving to " << cameraUCPath.str() << endl;
+    saveCorrectionFile(cameraUCPath.str(), 1);
+    cout << "Saving to " << cameraVCPath.str() << endl;
+    saveCorrectionFile(cameraVCPath.str(), 2);
   }
 }//end saveCorrectionToFile
 
+void ShadingCorrection ::saveCorrectionFile(string filePath, unsigned int idx)
+{
+  ofstream outputFileStream ( filePath.c_str() , ofstream::out | ofstream::binary );
+  outputFileStream.write((char*) data[idx], size * sizeof(unsigned short));
+  outputFileStream.close();
+}//end saveCorrectionFile
+
+
 void ShadingCorrection::reset()
+{
+  reset(0);
+  reset(1);
+  reset(2);
+}//end reset
+
+void ShadingCorrection::reset(unsigned int idx)
 {
   for(unsigned long pos = 0; pos < size; pos++)
   {
-    yC[pos] = 1024;
+    data[idx][pos] = 1024;
   }
 }//end reset
 

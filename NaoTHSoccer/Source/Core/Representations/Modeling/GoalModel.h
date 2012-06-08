@@ -45,10 +45,8 @@ public:
 
   Goal goal;
 
-  const Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
-  Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
-  const Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
-  Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo);
+  Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
+  Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const;
 
 
   // TODO: deprecated?!
@@ -91,11 +89,11 @@ public:
 class SelfLocGoalModel : public GoalModel
 {
 public:
-  void update(const CompassDirection& compassDirection, const Pose2D& robotPose, const FieldInfo& fieldInfo);
-
+  void update(const Pose2D& robotPose, const FieldInfo& fieldInfo);
+  /*
   inline const Goal getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const { return GoalModel::getOwnGoal(compassDirection, fieldInfo); }
   inline const Goal getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const { return GoalModel::getOppGoal(compassDirection, fieldInfo); }
-
+  */
 };
 
 class SensingGoalModel : public GoalModel

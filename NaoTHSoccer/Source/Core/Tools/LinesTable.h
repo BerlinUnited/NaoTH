@@ -32,6 +32,22 @@ public:
     all_lines     =  long_lines | short_lines | along_lines | across_lines | circle_lines
   };
 
+  /*
+  line_type[0] = long_lines | along_lines;
+  line_type[1] = long_lines | across_lines;
+  line_type[2] = short_lines | along_lines;
+  line_type[3] = short_lines | across_lines;
+  line_type[4] = circle_lines;*/
+  enum LinesTableIndex
+  {
+    idx_long_along    =  0,
+    idx_long_across   =  1,
+    idx_short_along   =  2,
+    idx_short_across  =  3,
+    idx_circle        =  4,
+    numberOfLinesTableIndex = 5
+  };
+
   class NamedPoint
   {
   public:
@@ -62,6 +78,10 @@ private:
   /** table of the line points */
   NamedPoint closestPoints[xSize][ySize][numberOfLinesTableType];
 
+  /** table of typical combinations for fast access,
+  i.e., short|across, long|across, short|along, long|along*/
+  NamedPoint typicalClosestPoints[xSize][ySize][4];
+
   /** table of all corner points */
   NamedPoint closestCornerPoints[xSize][ySize];
 
@@ -85,11 +105,11 @@ public:
     circle_radius = 600.0;
     penalty_area_width = 600.0;
 
-    line_type[0] = long_lines | along_lines;
-    line_type[1] = long_lines | across_lines;
-    line_type[2] = short_lines | along_lines;
-    line_type[3] = short_lines | across_lines; // actualy, there are currently no such lines except on the circle 
-    line_type[4] = circle_lines;
+    line_type[idx_long_along]   = long_lines  | along_lines;
+    line_type[idx_long_across]  = long_lines  | across_lines;
+    line_type[idx_short_along]  = short_lines | along_lines;
+    line_type[idx_short_across] = short_lines | across_lines; // actualy, there are currently no such lines except on the circle 
+    line_type[idx_circle]       = circle_lines;
   }
 
   ~LinesTable()
@@ -318,6 +338,40 @@ public:
     //ASSERT(x >= 0 && x < xSize && y >= 0 && y < ySize );
     return closestTCrossings[x][y];
   }//end get_closest_tcrossing_point
+
+
+  const NamedPoint& get_closest_point_direct(const Vector2<double>& p, LinesTableIndex idx) const
+  {
+    ASSERT(idx >= 0 && idx < numberOfLinesTableIndex);
+
+    // allready prepared for rounding, i.e., +0.5
+    int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
+    int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
+
+    return closestPoints[x][y][idx];
+  }//end get_closest_point_direct
+
+
+  const NamedPoint& get_closest_line_point_fast(const Vector2<double>& p, int length, int direction) const
+  {
+    ASSERT((length&short_lines)|(length&long_lines));
+    ASSERT((across_lines&direction)|(along_lines&direction));
+    /*
+    line_type[0] = long_lines | along_lines;
+    line_type[1] = long_lines | across_lines;
+    line_type[2] = short_lines | along_lines;
+    line_type[3] = short_lines | across_lines;
+    */
+    unsigned int idx = ((length&short_lines) != 0)*2 + ((across_lines&direction) != 0);
+    ASSERT(idx < 4);
+
+    // allready prepared for rounding, i.e., +0.5
+    int x = Math::clamp((int)((p.x/xWidth + xSize)*0.5),0,xSize-1);
+    int y = Math::clamp((int)((p.y/yWidth + ySize)*0.5),0,ySize-1);
+
+    return closestPoints[x][y][idx];
+  }//end get_closest_point_fast
+
 
   NamedPoint get_closest_point(const Vector2<double>& p, int type = all_lines) const
   {

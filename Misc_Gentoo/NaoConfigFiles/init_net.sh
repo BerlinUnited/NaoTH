@@ -3,82 +3,92 @@
 # LAN
 if [ ! -f /etc/init.d/net.eth0 ]
 then
-    echo "adding rc link for ethernet"
-    ln -s /etc/init.d/net.lo /etc/init.d/net.eth0
+    echo "adding rc link for ethernet";
+    ln -s /etc/init.d/net.lo /etc/init.d/net.eth0;
 else
-    echo "ethernet link exists"
+    echo "ethernet link exists";
 fi
 
 # WLAN
 if [ ! -f /etc/init.d/net.wlan0 ]
 then
-    echo "adding rc link for wireless"
-    ln -s /etc/init.d/net.lo /etc/init.d/net.wlan0
+    echo "adding rc link for wireless";
+    ln -s /etc/init.d/net.lo /etc/init.d/net.wlan0;
 else
-    echo "wireless link exists"
+    echo "wireless link exists";
 fi
 
 # WLAN Encryption
 if [ -f ./etc/wpa_supplicant/wpa_supplicant.conf ]
 then
-    echo "writing wpa_supplicant.conf"
-    cp -f ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant
-    chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-    chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
+    echo "writing wpa_supplicant.conf";
+    cp -f ./etc/wpa_supplicant/wpa_supplicant.conf /etc/wpa_supplicant;
+    chown root:root /etc/wpa_supplicant/wpa_supplicant.conf;
+    chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf;
 else
-    echo "./etc/wpa_supplicant/wpa_supplicant.conf is missing"
+    echo "./etc/wpa_supplicant/wpa_supplicant.conf is missing";
 fi
 
 # Network IP Adresses
 if [ -f ./etc/conf.d/net ]
 then
-    echo "writing /etc/conf.d/net"
-    cp ./etc/conf.d/net /etc/conf.d/net
-    chown root:root /etc/conf.d/net
-    chmod 644 /etc/conf.d/net
+    echo "writing /etc/conf.d/net";
+    cp ./etc/conf.d/net /etc/conf.d/net;
+    chown root:root /etc/conf.d/net;
+    chmod 644 /etc/conf.d/net;
 else
-    echo "./etc/conf.d/net is missing"
+    echo "./etc/conf.d/net is missing";
 fi
 
 # Hostname
 if [ -f ./etc/hostname ]
 then
-    echo "writing /etc/hostname"
-    cp ./etc/hostname /etc/hostname
-    chown root:root /etc/hostname
-    chmod 644 /etc/hostname
+    echo "writing /etc/hostname";
+    cp ./etc/hostname /etc/hostname;
+    chown root:root /etc/hostname;
+    chmod 644 /etc/hostname;
 else
-    echo "./etc/hostname is missing"
+    echo "./etc/hostname is missing";
 fi
 if [ -f ./etc/conf.d/hostname ]
 then
-    echo "writing /etc/conf.d/hostname"
-    cp ./etc/conf.d/hostname /etc/conf.d/hostname
-    chown root:root /etc/conf.d/hostname
-    chmod 644 /etc/conf.d/hostname
+    echo "writing /etc/conf.d/hostname";
+    cp ./etc/conf.d/hostname /etc/conf.d/hostname;
+    chown root:root /etc/conf.d/hostname;
+    chmod 644 /etc/conf.d/hostname;
 else
-    echo "./etc/conf.d/hostname is missing"
+    echo "./etc/conf.d/hostname is missing";
 fi
 
 #SSH Config
 if [ -f ./etc/ssh.conf/sshd_config ]
 then
-    echo "writing /etc/ssh.conf/sshd_config"
-    cp ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config
-    chown root:root /etc/ssh.conf/sshd_config
-    chmod 644 /etc/ssh.conf/sshd_config
+    echo "writing /etc/ssh.conf/sshd_config";
+    cp ./etc/ssh.conf/sshd_config /etc/ssh.conf/sshd_config;
+    chown root:root /etc/ssh.conf/sshd_config;
+    chmod 644 /etc/ssh.conf/sshd_config;
 else
-    echo "./etc/ssh.conf/sshd_config is missing"
+    echo "./etc/ssh.conf/sshd_config is missing";
+fi
+
+#RC Config
+if [ -f ./etc/rc.conf ]
+then
+    echo "writing /etc/rc.conf";
+    cp ./etc/rc.conf /etc/rc.conf;
+    chown root:root /etc/rc.conf;
+    chmod 644 /etc/rc.conf;
+else
+    echo "./etc/rc.conf is missing";
 fi
 
 
 
 
 # Check and Update Runlevel Configuration for Network Services
-chown root:root ./checkRC.sh
-chmod 744 ./checkRC.sh
-./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot"
-# net.wlan0=boot"
+chown root:root ./checkRC.sh;
+chmod 744 ./checkRC.sh;
+./checkRC.sh "connman=disable net.eth0=boot net.wlan0=boot";
 
 
 

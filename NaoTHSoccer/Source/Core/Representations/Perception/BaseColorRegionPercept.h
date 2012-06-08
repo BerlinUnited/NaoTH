@@ -3,7 +3,8 @@
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/ImageProcessing/ImagePrimitives.h>
-#include <Tools/ImageProcessing/BaseColorRegionParameters.h>
+//#include <Tools/ImageProcessing/BaseColorRegionParameters.h>
+#include "Tools/ImageProcessing/ColorRegion.h"
 
 #include <Representations/Infrastructure/FrameInfo.h>
 
@@ -13,16 +14,16 @@ using namespace naoth;
 
 class BaseColorRegionPercept : public naoth::Printable
 {
-  class ColorRegion
+  class BaseColorRegion
   {
   private:
     DoublePixel min;
     DoublePixel max;
     bool valid;
   public:
-    ColorRegion()
+    BaseColorRegion()
     {
-      set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+      set(0, 0, 0, 0, 0, 0);
       valid = false;
     }
 
@@ -34,6 +35,27 @@ class BaseColorRegionPercept : public naoth::Printable
       double maxU,
       double minV,
       double maxV
+    )
+    {
+      set
+      (
+        (int) floor(minY),
+        (int) ceil(maxY),
+        (int) floor(minU),
+        (int) ceil(maxU),
+        (int) floor(minV),
+        (int) ceil(maxV)
+      );
+    }
+
+    void set
+    (
+      int minY,
+      int maxY,
+      int minU,
+      int maxU,
+      int minV,
+      int maxV
     )
     {
       min.y = minY;
@@ -55,80 +77,93 @@ class BaseColorRegionPercept : public naoth::Printable
     }
 
 
-    inline bool inside(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+    inline bool inside(const int& y, const int& u, const int& v) const
     {
-      return min.y < y && y < max.y && min.u < u && u < max.u && min.v < v && v < max.v;
+     return min.y <= y && y <= max.y && min.u <= u && u <= max.u && min.v <= v && v <= max.v;
     }//end inside
   };
 
-
-
-
-private:
-  double dCb;
-  double dCr;
-
 public:
+
+  PixelT<double> distGray;
+  PixelT<double> grayLevel;
+
   bool ballColorIsCalibrated;
   bool goallColorIsCalibrated;
   bool linesColorIsCalibrated;
   bool fieldColorIsCalibrated;
 
-  DoublePixel ballImageMean;
-  DoublePixel goalImageMean;
-  DoublePixel linesImageMean;
-  DoublePixel fieldImageMean;
+  PixelT<double> ballImageMean;
+  PixelT<double> goalImageMean;
+  PixelT<double> linesImageMean;
+  PixelT<double> fieldImageMean;
 
-  DoublePixel meanEnv;
-  DoublePixel meanImg;
+  PixelT<double> meanEnv;
+  PixelT<double> meanImg;
 
-  DoublePixel diff;
+  PixelT<double> diff;
 
-  DoublePixel dist;
+  PixelT<double> dist;
 
-  DoublePixel fieldIndex;
-  DoublePixel fieldCalibIndex;
-  DoublePixel fieldDist;
-  DoublePixel fieldCalibDist;
+  PixelT<double> fieldIndex;
+  PixelT<double> fieldCalibIndex;
+  PixelT<double> fieldDist;
+  PixelT<double> fieldCalibDist;
 
-  DoublePixel goalIndex;
-  DoublePixel goalCalibIndex;
-  DoublePixel goalDist;
-  DoublePixel goalCalibDist;
+  double goalVUdistance;
+  double goalVUdistanceMin;
+  double goalVUdistanceMax;
+  
+  PixelT<double> goalIndex;
+  PixelT<double> goalCalibIndex;
+  PixelT<double> goalDist;
+  PixelT<double> goalCalibDist;
 
-  DoublePixel ballIndex;
-  DoublePixel ballCalibIndex;
-  DoublePixel ballDist;
-  DoublePixel ballCalibDist;
+  PixelT<double> ballIndex;
+  PixelT<double> ballCalibIndex;
+  PixelT<double> ballDist;
+  PixelT<double> ballCalibDist;
 
-  DoublePixel lineIndex;
-  DoublePixel lineCalibIndex;
-  DoublePixel lineDist;
-  DoublePixel lineCalibDist;
+  PixelT<double> lineIndex;
+  PixelT<double> lineCalibIndex;
+  PixelT<double> lineDist;
+  PixelT<double> lineCalibDist;
 
-  DoublePixel fieldBorderPlus;
-  DoublePixel fieldBorderMinus;
+  PixelT<double> fieldBorderPlus;
+  PixelT<double> fieldBorderMinus;
 
-  DoublePixel goalBorderPlus;
-  DoublePixel goalBorderMinus;
+  PixelT<double> goalBorderPlus;
+  PixelT<double> goalBorderMinus;
 
-  DoublePixel ballBorderPlus;
-  DoublePixel ballBorderMinus;
+  PixelT<double> ballBorderPlus;
+  PixelT<double> ballBorderMinus;
 
-  DoublePixel lineBorderPlus;
-  DoublePixel lineBorderMinus;
+  PixelT<double> lineBorderPlus;
+  PixelT<double> lineBorderMinus;
 
-  ColorRegion fieldColorRegion;
-  ColorRegion goalColorRegion;
-  ColorRegion ballColorRegion;
-  ColorRegion lineColorRegion;
+  BaseColorRegion fieldColorRegion;
+  BaseColorRegion goalColorRegion;
+  BaseColorRegion ballColorRegion;
+  BaseColorRegion lineColorRegion;
+
+  yellowColorRegion yellowGoal;
+  skyblueColorRegion blueGoal;
+  orangeColorRegion orangeBall;
+  pinkColorRegion pinkWaistBand;
+  blueColorRegion blueWaistBand;
+  whiteColorRegion whiteLine;
 
   FrameInfo lastUpdated;
 
   BaseColorRegionPercept()
   {
-    dCb = 96.0;
-    dCr = 48.0;
+    distGray.y = 255.0;
+    distGray.u = 96.0;
+    distGray.v = 48.0;
+
+    goalVUdistance = 0.0;
+    goalVUdistanceMin = 0.0;
+    goalVUdistanceMax = 0.0;
 
     meanImg.y = 127.0;
     meanImg.u = 127.0;
@@ -151,9 +186,9 @@ public:
 
   inline void setPerceptRegions()
   {
-    double diffMeanY = 127.5 - meanEnv.y;
-    double diffMeanU = 127.5 - meanEnv.u;
-    double diffMeanV = 127.5 - meanEnv.v;
+    double diffMeanY = 0.0;//127.5 - meanEnv.y;
+    double diffMeanU = 0.0;//127.5 - meanEnv.u;
+    double diffMeanV = 0.0;//127.5 - meanEnv.v;
 
     double fY = meanImg.y / fieldImageMean.y;
     double fdY = fY * 0.5;//1;//fabs(fieldImageMean.y - meanImg.y) / meanEnv.y;
@@ -178,28 +213,28 @@ public:
     fieldBorderMinus.v = dMinusV;
     fieldColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
 
-    fY = meanImg.y / goalImageMean.y;
-    fdY = 1;//fY;//fabs(goalImageMean.y - meanEnv.y) / meanImg.y;
+    fY = 1;//meanImg.y / goalImageMean.y;
+    fdY = 1;//fabs(goalImageMean.y - meanEnv.y) / meanImg.y;
 //    dPlusY = fY * goalIndex.y + fdY * goalDist.y;
 //    dMinusY = fY * goalIndex.y - fdY * goalDist.y;
-    dPlusY = fY * (goalIndex.y - diffMeanY) + fdY * goalDist.y;
-    dMinusY = fY * (goalIndex.y - diffMeanY) - fdY * goalDist.y;
+    dPlusY = fY * (goalIndex.y) + fdY * goalDist.y;
+    dMinusY = fY * (goalIndex.y ) - fdY * goalDist.y;
 
-    fU = meanImg.u / goalImageMean.u;
-    fdU = 1;//fU;//fabs(goalImageMean.u - meanEnv.u) / meanImg.u;
+    fU = 1;//meanImg.u / goalImageMean.u;
+    fdU = 1;//fabs(goalImageMean.u - meanEnv.u) / meanImg.u;
 //    dPlusU = fU * (goalIndex.u + (goalCalibIndex.y - meanImg.y) / 5) + fdU * goalDist.u;
 //    dMinusU = fU * (goalIndex.u + (goalCalibIndex.y - meanImg.y) / 5) - fdU * goalDist.u;
-    dPlusU = fU * (goalIndex.u - diffMeanU + (goalCalibIndex.y - meanImg.y) / 4) + fdU * goalDist.u;
-    dMinusU = fU * (goalIndex.u - diffMeanU + (goalCalibIndex.y - meanImg.y) / 4) - fdU * goalDist.u;
+    dPlusU = fU * (goalIndex.u ) + fdU * goalDist.u;
+    dMinusU = fU * (goalIndex.u  ) - fdU * goalDist.u;
 //    dPlusU = fU * (goalIndex.u - diffMeanU + (goalCalibIndex.y - meanImg.y) / 5) + fdU * goalDist.u;
 //    dMinusU = fU * (goalIndex.u - diffMeanU + (goalCalibIndex.y - meanImg.y) / 5) - fdU * goalDist.u;
 
-    fV = meanImg.v / goalImageMean.v;
-    fdV = 1;//fV;//fabs(goalImageMean.v - meanEnv.v) / meanImg.v;
+    fV = 1;//meanImg.v / goalImageMean.v;
+    fdV = 1;//fabs(goalImageMean.v - meanEnv.v) / meanImg.v;
 //    dPlusV = fV * (goalIndex.v - (goalCalibIndex.y - meanImg.y) / 5) + fdV * goalDist.v;
 //    dMinusV = fV * (goalIndex.v - (goalCalibIndex.y - meanImg.y) / 5) - fdV * goalDist.v;
-    dPlusV = fV * (goalIndex.v + diffMeanV - (goalCalibIndex.y - meanImg.y) / 5) + fdV * goalDist.v;
-    dMinusV = fV * (goalIndex.v + diffMeanV - (goalCalibIndex.y - meanImg.y) / 5) - fdV * goalDist.v;
+    dPlusV = fV * (goalIndex.v  ) + fdV * goalDist.v;
+    dMinusV = fV * (goalIndex.v  ) - fdV * goalDist.v;
 //    dPlusV = fV * (goalIndex.v - diffMeanV - (goalCalibIndex.y - meanImg.y) / 5) + fdV * goalDist.v;
 //    dMinusV = fV * (goalIndex.v - diffMeanV - (goalCalibIndex.y - meanImg.y) / 5) - fdV * goalDist.v;
 
@@ -209,7 +244,7 @@ public:
     goalBorderMinus.u = dMinusU;
     goalBorderPlus.v = dPlusV;
     goalBorderMinus.v = dMinusV;
-    goalColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
+    goalColorRegion.set(goalBorderMinus, goalBorderPlus);
 
     fY = meanImg.y / ballImageMean.y;
     dPlusY = fY * ballIndex.y + ballDist.y;
@@ -229,17 +264,17 @@ public:
     ballBorderMinus.u = dMinusU;
     ballBorderPlus.v = dPlusV;
     ballBorderMinus.v = dMinusV;
-    ballColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
+    ballColorRegion.set(ballBorderMinus, ballBorderPlus);
 
-    fY = meanImg.y / linesImageMean.y;
+    fY = 1;//meanImg.y / linesImageMean.y;
     dPlusY = fY * lineIndex.y + lineDist.y;
     dMinusY = fY * lineIndex.y - lineDist.y;
 
-    fU = meanImg.u / linesImageMean.u;
+    fU = 1;//meanImg.u / linesImageMean.u;
     dPlusU = fU * lineIndex.u + lineDist.u;
     dMinusU = fU * lineIndex.u - lineDist.u;
 
-    fV = meanImg.v / linesImageMean.v;
+    fV = 1;//meanImg.v / linesImageMean.v;
     dPlusV = fV * lineIndex.v + lineDist.v;
     dMinusV = fV * lineIndex.v - lineDist.v;
 
@@ -249,31 +284,45 @@ public:
     lineBorderMinus.u = dMinusU;
     lineBorderPlus.v = dPlusV;
     lineBorderMinus.v = dMinusV;
-    lineColorRegion.set(dMinusY, dPlusY, dMinusU, dPlusU, dMinusV, dPlusV);
+    lineColorRegion.set(lineBorderMinus, lineBorderPlus);
 
+
+    //dY = meanImg.y / 127.0;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
+    //dCb = meanImg.u / 127.0;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
+    //dCr = meanImg.v / 127.0;//dCr / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;//127.0;
   }
 
-  inline bool isYellow(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+  inline bool isYellow(const int& y, const int& u, const int& v) const
   {
-    return goalColorRegion.inside(y, u, v);
+    return goalColorRegion.inside(y, u, v) && v - u > goalVUdistanceMin && v - u < goalVUdistanceMax;
+  }
+
+  inline bool isYellowSimple(const Pixel& pixel) const
+  {
+    return pixel.v - pixel.u > goalVUdistance;
+  }
+
+  inline bool isPlainYellow(const Pixel& pixel) const
+  {
+    return goalColorRegion.inside(pixel.y, pixel.u, pixel.v);
   }
 
   inline bool isYellow(const Pixel& pixel) const
   {
-    return isYellow(pixel.y, pixel.u, pixel.v);
+    return isYellow((int) pixel.y, (int) pixel.u, (int) pixel.v);
   }
 
-  inline bool isRedOrOrangeOrPink(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+  inline bool isRedOrOrangeOrPink(const int& y, const int& u, const int& v) const
   {
-    return ballColorRegion.inside(y, u, v);
+    return/* !isYellow(y, u, v) &&*/ ballColorRegion.inside(y, u, v);
   }
 
   inline bool isRedOrOrangeOrPink(const Pixel& pixel) const
   {
-    return isRedOrOrangeOrPink(pixel.y, pixel.u, pixel.v);
+    return isRedOrOrangeOrPink((int) pixel.y, (int) pixel.u, (int) pixel.v);
   }
 
-  inline bool isGreenOrBlue(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+  inline bool isGreenOrBlue(const int& y, const int& u, const int& v) const
   {
     return
     (
@@ -315,53 +364,43 @@ public:
 
   inline bool isGreenOrBlue(const Pixel& pixel) const
   {
-    return isGreenOrBlue(pixel.y, pixel.u, pixel.v);
+    return isGreenOrBlue((int) pixel.y, (int) pixel.u, (int) pixel.v);
   }
 
-  inline bool isGrayLevel(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+  inline bool isGrayLevel(const int& y, const int& u, const int& v) const
   {
-    double fCb = meanImg.y / 128;//dCb / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;// 127.0;
-    double fCr = meanImg.v / 128;//dCr / 127.0;//(127.0 + log(getBlackAndWhitePercept().diffMean));//getColoredGrid().meanBrightness;//127.0;
     return
     (
       (
-         y < 5.0
+        y > meanEnv.y// grayLevel.y
+        &&
+        u > grayLevel.u
+        &&
+        v > grayLevel.v
+        &&
+        u < (127.0 + y * distGray.u)
+        &&
+        u < (127.0 + v * distGray.v)
+        &&
+        v < (127.0 + y * distGray.v)
+        &&
+        v < (127.0 + u * distGray.u)
       )
       ||
       (
-         y > 232.0
-      )
-      ||
-      (
-        y > 127.0
+        y <= meanEnv.y//grayLevel.y
         &&
-        u > 127.0
+        u <= grayLevel.u
         &&
-        v > 127.0
+        v <= grayLevel.v
         &&
-        u < (127.0 + y * fCb)
+        u > (127.0 - y * distGray.u)
         &&
-        u < (127.0 + v * fCr)
+        u > (127.0 - v * distGray.v)
         &&
-        v < (127.0 + y * fCr)
+        v > (127.0 - y * distGray.v)
         &&
-        v < (127.0 + u * fCb)
-      )
-      ||
-      (
-        y < 127.0
-        &&
-        u < 127.0
-        &&
-        v < 127.0
-        &&
-        u > (127.0 - y * fCb)
-        &&
-        u > (127.0 - v * fCr)
-        &&
-        v > (127.0 - y * fCr)
-        &&
-        v > (127.0 - u * fCb)
+        v > (127.0 - u * distGray.u)
       )
     );
   }
@@ -371,9 +410,14 @@ public:
     return isGrayLevel(pixel.y, pixel.u, pixel.v);
   }
 
-  inline bool isWhite(const unsigned short& y, const unsigned short& u, const unsigned short& v) const
+  inline bool isWhiteColorModel(const int& y, const int& u, const int& v) const
   {
-    return lineColorRegion.inside(y, u, v);
+    return (isGrayLevel(y, u, v) || lineColorRegion.inside(y, u, v));
+  }
+
+  inline bool isWhite(const int& y, const int& u, const int& v) const
+  {
+    return (isGrayLevel(y, u, v) || lineColorRegion.inside(y, u, v)) && !isRedOrOrangeOrPink(y, u, v) && !isYellow(y, u, v);
   }
 
   inline bool isWhite(const Pixel& pixel) const
@@ -396,6 +440,9 @@ public:
     stream << "fieldDistY: " << fieldDist.y << endl;
     stream << "fieldDistU: " << fieldDist.u << endl;
     stream << "fieldDistV: " << fieldDist.v << endl;
+    
+    stream << "goalVUdistanceMin: " << goalVUdistanceMin << endl;
+    stream << "goalVUdistanceMax: " << goalVUdistanceMax << endl;
 
     stream << "goalIndexY: " << goalIndex.y << endl;
     stream << "goalIndexU: " << goalIndex.u << endl;

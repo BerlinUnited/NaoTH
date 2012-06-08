@@ -18,12 +18,13 @@ CameraDebug::CameraDebug(): CameraDebugBase(),
 {  
   REGISTER_DEBUG_COMMAND("camera:switch_auto_parameters",
     "switch Automation for camera parameters", this);
+  REGISTER_DEBUG_COMMAND("camera:force_reload",
+    "force reading all parameters from camera", this);
   //DebugParameterList::getInstance().add(&getCameraSettingsRequest());
 }
 
 void CameraDebug::execute()
 {
-
   // HACK: select camera by head motion request (of course in the representation itself...)
   getCameraSettingsRequest().data[CameraSettings::CameraSelection] = getHeadMotionRequest().cameraID;
 
@@ -31,7 +32,8 @@ void CameraDebug::execute()
 
   if(isAutoCalibratingCamera)
   {
-    getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 1;
+    //disabled auto exposure time setting
+    //getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 1;
     getCameraSettingsRequest().data[CameraSettings::AutoGain] = 1;
     getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 1;
 
@@ -58,12 +60,9 @@ void CameraDebug::execute()
       getCameraSettingsRequest().data[i] = getCurrentCameraSettings().data[i];
     }
 
-    // hack again
-    getCameraSettingsRequest().data[CameraSettings::VerticalFlip] = 0;
-    getCameraSettingsRequest().data[CameraSettings::HorizontalFlip] = 0;
-
     // deactivate the auto stuff
-    getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
+    //disabled auto exposure time setting
+    //getCameraSettingsRequest().data[CameraSettings::AutoExposition] = 0;
     getCameraSettingsRequest().data[CameraSettings::AutoGain] = 0;
     getCameraSettingsRequest().data[CameraSettings::AutoWhiteBalancing] = 0;
 
@@ -103,5 +102,11 @@ void CameraDebug::executeDebugCommand(
         outstream << "don't know this parameter, choose either \"on\" or \"off\"" << endl;
       }
     }
-  }//end if command
+  }
+  else if(command == "camera:force_reload")
+  {
+    timeWhenCameraCalibrationStopped = getFrameInfo();
+    afterAutoCalibratingCamera = true;
+  }
+  //end if command
 }//end executeDebugCommand

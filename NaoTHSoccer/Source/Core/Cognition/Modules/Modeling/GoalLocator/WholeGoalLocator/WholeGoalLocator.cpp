@@ -24,6 +24,7 @@ void WholeGoalLocator::execute()
 {
   // reset the model
   getSensingGoalModel().someGoalWasSeen = false;
+  getCameraMatrixOffset().offsetByGoalModel = Vector2<double>();
 
   // negative odometry
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
@@ -106,7 +107,7 @@ bool WholeGoalLocator::checkAndCalculateSingleGoal(
 
   // correct the posts
   DEBUG_REQUEST("WholeGoalLocator:correct_the_goal_percept",
-    correct_the_goal_percept(postLeft, postRight);
+    correct_the_goal_percept(getCameraMatrixOffset().offsetByGoalModel, postLeft, postRight);
   );
 
   DEBUG_REQUEST("WholeGoalLocator:drawPost",
@@ -133,6 +134,7 @@ bool WholeGoalLocator::checkAndCalculateSingleGoal(
 
 
 void WholeGoalLocator::correct_the_goal_percept(
+  Vector2<double>& offset,
   GoalPercept::GoalPost& post1,
   GoalPercept::GoalPost& post2)
 {
@@ -146,7 +148,7 @@ void WholeGoalLocator::correct_the_goal_percept(
   if(!post1.positionReliable || !post2.positionReliable)
     return;
 
-  Vector2<double> offset;
+  //Vector2<double> offset;
   double epsylon = 1e-8;
 
   // make only one step
@@ -178,8 +180,8 @@ void WholeGoalLocator::correct_the_goal_percept(
   // apply the correction to the posts
   CameraMatrix tmpCM(getCameraMatrix());
 
-  tmpCM.rotateX(offset.x)
-       .rotateY(offset.y);
+  tmpCM.rotateY(offset.y)
+       .rotateX(offset.x);
 
   // project the goal posts
   const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
@@ -212,8 +214,8 @@ double WholeGoalLocator::projectionError(
 {
   CameraMatrix tmpCM(getCameraMatrix());
 
-  tmpCM.rotateX(offsetX)
-       .rotateY(offsetY);
+  tmpCM.rotateY(offsetY)
+       .rotateX(offsetX);
 
   // project the goal posts
   const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
@@ -240,26 +242,6 @@ double WholeGoalLocator::projectionError(
   double goal_width = (getFieldInfo().opponentGoalPostLeft-getFieldInfo().opponentGoalPostRight).abs2();
   double seen_width = (leftPosition-rightPosition).abs2();
   double error = Math::sqr(goal_width - seen_width);
-  
-
-  /*
-  //TODO: IN PROGRESS
-  // percived position
-  double rotation = (leftPosition-rightPosition).angle() - Math::pi_2;
-  rotation = Math::normalize(-rotation);
-
-  Vector2<double> posLeft = getFieldInfo().opponentGoalPostLeft - leftPosition.rotate(rotation);
-  Vector2<double> posRight = getFieldInfo().opponentGoalPostRight - rightPosition.rotate(rotation);
-
-  Pose2D pose;
-  pose.translation = (posLeft + posRight)*0.5;
-  pose.rotation = rotation;
-
-  //
-  double error = 
-    (getFieldInfo().opponentGoalPostLeft - pose*leftPosition).abs() +
-    (getFieldInfo().opponentGoalPostRight - pose*rightPosition).abs();
-  */
 
   return error;
 }//end projectionError

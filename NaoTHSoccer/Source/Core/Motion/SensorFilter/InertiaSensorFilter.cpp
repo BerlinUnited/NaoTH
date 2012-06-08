@@ -78,6 +78,7 @@ Vector2<double> InertiaSensorFilter::update()
   double mode = 0;
   MODIFY("InertiaSensorFilter:mode",mode);
 
+  double modePlot = 0;
   if(
     (theBlackBoard.theMotionStatus.currentMotion == motion::stand || theBlackBoard.theMotionStatus.currentMotion == motion::walk)
     //&& ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) )
@@ -97,8 +98,7 @@ Vector2<double> InertiaSensorFilter::update()
     PLOT("InertiaSensorFilter:accGravOnly:x", accGravOnly.x);
     PLOT("InertiaSensorFilter:accGravOnly:y", accGravOnly.y);
     PLOT("InertiaSensorFilter:accGravOnly:z", accGravOnly.z);
-
-    PLOT("InertiaSensorFilter:mode", 0);
+    modePlot = 0;
 
     readingUpdate(accGravOnly);
   }
@@ -111,8 +111,10 @@ Vector2<double> InertiaSensorFilter::update()
     else // use the aldebaran sensor as a fallback
       x.rotation = RotationMatrix(Vector3<double>(safeRawAngle.x, safeRawAngle.y, 0.0));
 
-    PLOT("InertiaSensorFilter:mode", 1);
+    modePlot = 1;
   }
+
+  PLOT("InertiaSensorFilter:mode", modePlot);
 
   // fill the representation
   theInertialModel.orientation = Vector2<double>(

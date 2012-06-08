@@ -27,6 +27,7 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/CompassDirection.h"
+#include "Representations/Modeling/CameraMatrixOffset.h"
 #include <Representations/Perception/FieldSidePercept.h>
 
 
@@ -46,6 +47,7 @@ BEGIN_DECLARE_MODULE(WholeGoalLocator)
   REQUIRE(CameraMatrix)
   REQUIRE(CompassDirection)
 
+  PROVIDE(CameraMatrixOffset)
   PROVIDE(SensingGoalModel)
 END_DECLARE_MODULE(WholeGoalLocator)
 
@@ -70,6 +72,7 @@ private:
     const GoalPercept::GoalPost& post2);
 
   void correct_the_goal_percept(
+    Vector2<double>& offset,
     GoalPercept::GoalPost& post1,
     GoalPercept::GoalPost& post2);
 

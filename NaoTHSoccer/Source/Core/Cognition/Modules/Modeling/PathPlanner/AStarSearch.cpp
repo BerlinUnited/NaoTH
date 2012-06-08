@@ -167,16 +167,14 @@ bool AStarNode::tooCloseToAnotherNode( std::vector<AStarNode>& searchTree, const
 
 bool AStarNode::tooCloseToObstacle(const std::vector<Vector2d>& obstacles, const Vector2d& position,const AStarSearchParameters& parameterSet) const
 {
+  for(unsigned int i = 0; i < obstacles.size(); i++)
   {
-    for(unsigned int i = 0; i < obstacles.size(); i++)
+    if ((position - obstacles[i]).abs() <= parameterSet.obstacleRadius + parameterSet.robotRadius)
     {
-      if ((position - obstacles[i]).abs() <= parameterSet.obstacleRadius + parameterSet.robotRadius)
-      {
-        return true;
-      }
+      return true;
     }
-    return false;
   }
+  return false;
 }
 
 void AStarSearch::drawAllNodesField()
@@ -196,10 +194,10 @@ void AStarSearch::drawPathFiled()
   PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
   if (pathFound)
   {
-    unsigned int currentNode = goal.getParentNode();
-    LINE(goal.getPosition().x, goal.getPosition().y, searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y);
+    unsigned int currentNode = myGoal.getParentNode();
+    LINE(myGoal.getPosition().x, myGoal.getPosition().y, searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y);
     PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
-    CIRCLE(goal.getPosition().x, goal.getPosition().y, parameterSet.robotRadius);
+    CIRCLE(myGoal.getPosition().x, myGoal.getPosition().y, parameterSet.robotRadius);
     while(searchTree[currentNode].getParentNode() != 0)
     {
       PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
@@ -210,7 +208,7 @@ void AStarSearch::drawPathFiled()
       currentNode = nextNode;
     }
     PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
-    LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, start.getPosition().x, start.getPosition().y);
+    LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, myStart.getPosition().x, myStart.getPosition().y);
   }
 }
 

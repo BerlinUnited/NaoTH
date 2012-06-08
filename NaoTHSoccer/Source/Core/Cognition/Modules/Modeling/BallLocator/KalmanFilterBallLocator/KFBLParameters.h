@@ -20,7 +20,9 @@ public:
   // standart deviations for the gausian angle and distance model
 
   double sigmaBallPosition;
+  double sigmaBallPositionReactive;
   double sigmaBallSpeed;
+  double sigmaBallSpeedReactive;
 
   double processNoise;
 

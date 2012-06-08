@@ -72,7 +72,9 @@ public:
   
   //some functions
   //get/set model
-  void addObstaclePoint(Vector2<double>);
+  void addObstaclePoint(Vector2d);
+
+  void addNonObstaclePoint(Vector2d);
 
   // set the current system time
   void setCurrentTime(unsigned int tStamp) {this->currentTime = tStamp;}
@@ -87,7 +89,7 @@ public:
   /** get all obstacles from the model in one vector of
   * of positions
   */
-  void getAllObstacles(std::vector<Vector2d> obstaclesVector) const;
+  void getAllObstacles(std::vector<Vector2d>& obstaclesVector) const;
 
   // check whether model is valid
   void checkValid();

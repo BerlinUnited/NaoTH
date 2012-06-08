@@ -95,11 +95,16 @@ private:
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
   
-  //enum 
-  // static SituationStatus::StatusID getSituationStatusId();
-  //bool
+  //find out if the robot is in a certain field half
   static bool getSituationStatusOwnHalf();
+  static bool getSituationStatusOppHalf();
+  
+  //force selflocator to locate in a certain field half
   static void setSituationStatusOwnHalf(bool ownHalf);
+  static void setSituationStatusOppHalf(bool oppHalf);
+
+  static bool getReactiveBallModelNeeded();
+  static void setReactiveBallModelRequested(bool reactiveNeeded);
 
   Pose2D calculateDefensePose();
   static double defensePoseX();
@@ -121,6 +126,7 @@ private:
   Vector2<double> setpiecePosition;
   double goalKickPlayer;
   bool goalKickPositionLeft;
+  double attackDirection;
 
   static Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
 

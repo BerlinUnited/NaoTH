@@ -39,6 +39,7 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
 {
   // register input
   directoryName = dirPath;
+  //cvNamedWindow("ImageLoader");
   if(findFiles(dirPath))
   {
     currentPos = 0;
@@ -47,6 +48,11 @@ OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
     theGameData.loadFromCfg(Platform::getInstance().theConfiguration);
     theDebugServer.start(5401, true);
     time = 0;
+    //how ofter an image should be repeated before next one is loaded
+    maxPictureStepCount = 60;
+    //picturecount forward and backward
+    forwardCount = maxPictureStepCount;
+    backwardCount = maxPictureStepCount;
 
     registerInput<FrameInfo>(*this);
     registerInput<Image>(*this);
@@ -72,11 +78,19 @@ void OpenCVImageLoader::main()
   {
     if (c == 'd')
     {
-      stepForward();
+      stepForward(forwardCount);
     }
     if (c == 'a')
     {
-      stepBack();
+      stepBack(backwardCount);
+    }
+    if (c == 'D')
+    {
+      stepForward(0);
+    }
+    if (c == 'A')
+    {
+      stepBack(0);
     }
     if (c == 'w')
     {
@@ -97,7 +111,11 @@ void OpenCVImageLoader::main()
     }
     if (c == 'p')
     {
-      play();
+      play(false);
+    }
+    if (c == 'P')
+    {
+      play(true);
     }
     if (c == 'l')
     {
@@ -135,37 +153,59 @@ void OpenCVImageLoader::makeStep()
 }//end make
 
 
-void OpenCVImageLoader::stepBack()
+void OpenCVImageLoader::stepBack(int pictureSteps)
 {
-  cvDestroyWindow(allFiles[currentPos].c_str());
-  if (currentPos > 0)
+  if(pictureSteps <= 0)
   {
-    currentPos--;
-  }//end if
+    //cvDestroyWindow(allFiles[currentPos].c_str());
+    if (currentPos > 0)
+    {
+      currentPos--;
+    }
+    else
+    {
+      currentPos = allFiles.size() - 1;
+    }//end if
+    forwardCount = maxPictureStepCount;
+    backwardCount = maxPictureStepCount;
+  }
   else
   {
-    currentPos = allFiles.size() - 1;
-  }//end else
+    forwardCount = maxPictureStepCount - backwardCount;
+  }//end if
   makeStep();
+  backwardCount--;
+  forwardCount++;
 }
 
-void OpenCVImageLoader::stepForward()
+void OpenCVImageLoader::stepForward(int pictureSteps)
 {
-  cvDestroyWindow(allFiles[currentPos].c_str());
-  if (currentPos < allFiles.size() - 1)
+  if(pictureSteps <= 0)
   {
-    currentPos++;
-  }//end if
+    //cvDestroyWindow(allFiles[currentPos].c_str());
+    if (currentPos < allFiles.size() - 1)
+    {
+      currentPos++;
+    }
+    else
+    {
+      currentPos = 0;
+    }//end if
+    forwardCount = maxPictureStepCount;
+    backwardCount = maxPictureStepCount;
+  }
   else
   {
-    currentPos = 0;
-  }//end else
+    backwardCount = maxPictureStepCount - forwardCount;
+  }//end if
   makeStep();
+  forwardCount--;
+  backwardCount++;
 }//end stepForward
 
 void OpenCVImageLoader::jumpTo(const string fileName)
 {
-  cvDestroyWindow(allFiles[currentPos].c_str());
+  //cvDestroyWindow(allFiles[currentPos].c_str());
   bool wasFound = false;
   for (unsigned int i = 0; i < allFiles.size(); ++i)
   {
@@ -173,6 +213,8 @@ void OpenCVImageLoader::jumpTo(const string fileName)
     {
       wasFound = true;
       currentPos = i;
+      forwardCount = maxPictureStepCount;
+      backwardCount = maxPictureStepCount;
     }//end if
   }//end for
   if(wasFound)
@@ -187,8 +229,10 @@ void OpenCVImageLoader::jumpTo(const string fileName)
 
 void OpenCVImageLoader::jumpToStart()
 {
-  cvDestroyWindow(allFiles[currentPos].c_str());
+  //cvDestroyWindow(allFiles[currentPos].c_str());
   currentPos = 0;
+  forwardCount = maxPictureStepCount;
+  backwardCount = maxPictureStepCount;
   makeStep();
 }//end jumpToStart
 
@@ -207,13 +251,25 @@ void OpenCVImageLoader::executeCognition()
   }
 }//end executeCognition
 
-void OpenCVImageLoader::play()
+void OpenCVImageLoader::play(bool onePictureMode)
 {
   int c = -1;
-  while(c != 'a' && c != 'd' && c != '\n' && c != 'w' && c != 'q' && c !='x' && c !='s' && c !='r' && c !='p' && c !='l' && c !='h')
+  while
+  (
+    c != 'a' && c != 'd' && c != 'A' && c != 'D' && 
+    c != '\n' && c != 'w' && c != 'q' && c !='x' && 
+    c !='s' && c !='r' && c !='p' && c !='P' && c !='l' && c !='h'
+  )
   {
     unsigned int startTime = NaoTime::getNaoTimeInMilliSeconds();
-    stepForward();
+    if(onePictureMode)
+    {
+      stepForward(0);
+    }
+    else
+    {
+      stepForward(forwardCount);
+    }
     unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
 #ifdef WIN32
@@ -234,11 +290,14 @@ void OpenCVImageLoader::printHelp()
   cout << "--------------------------------------" << endl << endl;
 
   cout << "\"WASD\"-control" << endl;
-  cout << "d - one step forward" << endl;
-  cout << "a - one step back" << endl;
+  cout << "d - one step forward, show each picture for " << maxPictureStepCount << " steps" << endl;
+  cout << "a - one step backward , show each picture for " << maxPictureStepCount << " steps" << endl;
+  cout << "D - one step forward to next picture" << endl;
+  cout << "A - one step backward to previous picture" << endl;
   cout << "s - jump to the first file" << endl;
   cout << "w - jump to specific file" << endl << endl;
-  cout << "p - play all files in directory, press 'p' to stop playing" << endl;
+  cout << "p - play all files in directory, press 'p' to stop playing" << endl << "    show each picture for " << maxPictureStepCount << " steps";
+  cout << "P - play all files in directory, press 'P' to stop playing" << endl << "    show each picture for one step" << endl;
 
   cout << "l - list all files in the directory" << endl;
   cout << "r - just execute cognition (current image) one more time" << endl;
@@ -341,12 +400,14 @@ bool OpenCVImageLoader::loadImage(Mat& image)
   strcpy(name, directoryName);
   strcat(name, allFiles[currentPos].c_str());
   IplImage* img = cvLoadImage(name);
-  if(!img){
+  if(!img)
+  {
     printf("Could not load image file: %s\n",name);
     return false;
   }
   Mat temp(img);
-  if (temp.empty()) {
+  if (temp.empty()) 
+  {
     cout << "Couldn't open the image file :" << name << endl;
     return false;
   }
@@ -356,10 +417,21 @@ bool OpenCVImageLoader::loadImage(Mat& image)
     cout << "Image data not loaded properly" << allFiles[currentPos] <<endl;
     return false;
   }//end if
-  cout << "loaded image: " << name << endl;
+
+  if(forwardCount == maxPictureStepCount && backwardCount == maxPictureStepCount)
+  {
+    cout << endl << "loaded image: " << name << endl;
+  }
+  else
+  {
+    cout << ".";
+  }
   image = temp.clone();
-  cvShowImage(allFiles[currentPos].c_str(), img);
+//  cvShowImage(allFiles[currentPos].c_str(), img);
+  cvShowImage("ImageLoader", img);
+
   cvWaitKey(1);
+  //cvDestroyWindow(allFiles[currentPos].c_str());
   cvReleaseImage(&img);
   temp.release();
   return true;

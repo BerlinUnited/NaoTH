@@ -152,6 +152,7 @@ public:
   //virtual void set(const CameraSettingsRequest& /*data*/){};
   //virtual void set(const LEDData& /*data*/){};
   //virtual void set(const IRSendData& /*data*/){};
+  //virtual void set(const UltraSoundSendData& /*data*/){};
   //virtual void set(const SoundData& /*data*/){};
 
   /////////////////////// init ///////////////////////

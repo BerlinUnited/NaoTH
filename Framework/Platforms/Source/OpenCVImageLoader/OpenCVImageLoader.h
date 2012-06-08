@@ -46,7 +46,7 @@ class OpenCVImageLoader : public PlatformInterface<OpenCVImageLoader>
 {
 public:
   OpenCVImageLoader(const char* dirPath);
-  ~OpenCVImageLoader(){};
+  ~OpenCVImageLoader(){cvDestroyWindow("ImageLoader");};
 
   virtual string getBodyID() const { return "naoth-opencvimageloader"; }
 
@@ -62,11 +62,11 @@ public:
   void printHelp();
   
   void executeCognition();
-  void stepForward();
-  void stepBack();
+  void stepForward(int pictureSteps);
+  void stepBack(int pictureSteps);
   void jumpToStart();
   void jumpTo(const string fileName);
-  void play();
+  void play(bool onePictureMode);
 
   //get methods
   void get(Image& data);
@@ -87,6 +87,9 @@ private:
 
   GameData theGameData;
   unsigned int time;
+  int maxPictureStepCount;
+  int forwardCount;
+  int backwardCount;
   bool imageLoaded;
 
   void copyImage(Image& image, Mat mat);

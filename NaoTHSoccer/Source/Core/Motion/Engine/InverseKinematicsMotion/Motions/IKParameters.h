@@ -145,6 +145,13 @@ public:
     double shiftOffsetYRight;
   } kick;
   
+  struct BalanceCoMParameter {
+    double kP;
+    double kI;
+    double kD;
+    double threshold;
+  } balanceCoM;
+
   IKParameters();
 
   virtual ~IKParameters();

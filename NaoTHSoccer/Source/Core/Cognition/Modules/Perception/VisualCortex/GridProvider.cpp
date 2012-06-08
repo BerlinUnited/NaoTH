@@ -43,7 +43,7 @@ void GridProvider::execute()
   );//end DEBUG
 }//end execute
 
-// hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter glech,
+// hier wird das Gitter eingefaerbt (die Faerbung erfolgt fuer beliebige Gitter gleich,
 // daher wird es nicht im GridCreator gemacht)
 void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& coloredGrid, Histogram& histogram)
 {
@@ -56,12 +56,11 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
   unsigned int blue = 0;
   Pixel pixel;
 
-  int heightOfHorizon = (int)min(getCameraMatrix().horizon.begin().y, getCameraMatrix().horizon.end().y);
-
   for(unsigned int i = 0; i < getColoredGrid().uniformGrid.numberOfGridPoints; i++)
   {
     const Vector2<int>& point = getColoredGrid().uniformGrid.getPoint(i);
 
+    //getImage().getCorrected(point.x, point.y, pixel);
     getImage().get(point.x, point.y, pixel);
 
     // TODO: check if it is needed
@@ -71,27 +70,14 @@ void GridProvider::calculateColoredGrid()//const Grid& grid)//, ColoredGrid& col
     blue += pixel.v; // used by BaseColorClassifier
 
     // classify the color
-    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel.y, pixel.u, pixel.v);
+    ColorClasses::Color currentPixelColor = getColorClassificationModel().getColorClass(pixel);
 
-    // remember the color in the gridt
+    // remember the color in the grid
     getColoredGrid().setColor(i, currentPixelColor);
 
     const Vector2<int>& gridPoint = getColoredGrid().uniformGrid.getGridCoordinates(i);
-
-    if(point.y > heightOfHorizon)
-    {
-      getHistogram().increaseValue(gridPoint, currentPixelColor);
-      getHistogram().increaseChannelValue(pixel, currentPixelColor);
-
-      //if(getFieldColorPreProcessingPercept().isFieldCromaRed(pixel.v))
-      // consider only points below horizon
-      if(getFieldColorPercept().isFieldCromaRed(pixel.v))
-      {
-        getHistogram().collectFieldValue(pixel);
-      }
-
-      //POINT_PX(getColoredGrid().pointsColors[i], point.x, point.y);
-    }//end if
+    getHistogram().increaseValue(gridPoint, currentPixelColor);
+    getHistogram().increaseChannelValue(pixel, currentPixelColor);
   }//end for
 
   // 

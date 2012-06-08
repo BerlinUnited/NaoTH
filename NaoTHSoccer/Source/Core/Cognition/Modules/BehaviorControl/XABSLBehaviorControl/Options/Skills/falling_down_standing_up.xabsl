@@ -19,6 +19,13 @@ option falling_down_standing_up
 
   target state finished 
   {
+    decision
+    {
+      if(abs(value=sensor.inertial.y)>20)
+        goto stand_up;
+      else 
+        stay;
+    }      
     action
     {
       motion.type=stand;

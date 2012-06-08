@@ -2,10 +2,6 @@
 
 option dribble_stand_test 
 {
-  bool  @kick_right; // false -> kick left
-  bool  @walk_before_kick;
-  float @kick_direction; // 90 = left, 270 = right
-
 
   common decision
   {
@@ -13,115 +9,111 @@ option dribble_stand_test
       goto finished;
   }
   
-  initial state decide_action 
+  initial state decide_dribble_side
   {
-    decision 
+    decision
     {
-      else if(@walk_before_kick)
-      {
-        if(@kick_right)
-        {
-          goto approach_for_kick_right;
-        }
-        else
-        {
-          goto approach_for_kick_left;
-        }
-      }         
-      else
-        goto dribble;
+      /*else if(attack.direction > 35)//25 or 45?
+        goto approach_for_kick_right;
+      else if(attack.direction < -35)
+        goto approach_for_kick_left;
+      else 
+        goto walk_against_ball;*/
+      else goto approach_for_kick_left;
     }
-    action {
+    action
+    {
       motion.type = walk;
-      motion.walk.style = normal;
-      motion.walk.step_control.foot = none;
+      motion.walk.style = fast;
       motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
-      motion.walk_speed.x = 100;
-      motion.walk_speed.y = 0;
-
-      /*motion.type = walk;
-      motion.walk.style = normal;
-      motion.walk.step_control.foot = none;
-      motion.walk.coordinate = hip;
-      motion.walk.stop_with_stand = true;
-      head.control_mode = search_for_ball;*/
     }
   }
 
   state approach_for_kick_left {
     decision{
-      else if(action_done && executed_motion.step_control.right_movable  
-              && ball.time_since_last_seen < 400
-              && (ball.left_foot.preview.x < 170) && (ball.left_foot.preview.y > -10))
-        goto dribble; //approach_for_kick_left_done;
+      //Have at least 165 as distance, but less is also ok
+      //Have the ball more or less in front of your left foot (right_foot.preview.y between 85 and 125
+      else if(    ball.right_foot.preview.x <= 190
+               && ball.right_foot.preview.y >= 110 
+               && ball.right_foot.preview.y <= 125
+               && executed_motion.step_control.left_movable) 
+        //goto finished;
+        goto kick_left_foot; //approach_for_kick_right_done -> kick with the right foot;
       else
         stay;
     }
     action{
+      // Set motion.walk_speed here to give value for go_to_relative_point state stand
+      // as motion.type is changed to walk (instead of stand) afterwards
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      // No error field here as only shorter distance is ok for x and y has different error values (see above)
       go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
-                           x = ball.left_foot.preview.x - 150 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           y = ball.left_foot.preview.y );
+                           x = ball.right_foot.preview.x - 185,// * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
+                           y = ball.right_foot.preview.y - 115,
+                           errorX=0, errorY=0, errorR=5);
       motion.type = walk;
-      motion.walk.style = normal;
-      motion.walk.coordinate = left_foot;
-      motion.walk.stop_with_stand = false;
-      head.control_mode = search_for_ball;
-    }
-  }
-
-  state approach_for_kick_right {
-    decision{
-      else if(action_done && executed_motion.step_control.left_movable 
-              && ball.time_since_last_seen < 400
-              && (ball.right_foot.preview.x < 170) && (ball.right_foot.preview.y < 10))
-        goto dribble; //approach_for_kick_right_done;
-      else
-        stay;
-    }
-    action{
-      go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
-                           x = ball.right_foot.preview.x - 150 * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
-                           y = ball.right_foot.preview.y);
-      motion.type = walk;
-      motion.walk.style = normal;
       motion.walk.coordinate = right_foot;
       motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
     }
   }
 
-  target state finished
-  {
-    /*decision
-    {
-      else if(state_time > 1500){
-			  if(@walk_before_kick)
-			    goto decide_action;
-			  else
-			    goto dribble;
-      }
+  //Comments see above in approach_for_kick_left
+  state approach_for_kick_right {
+    decision{
+      else if(    ball.left_foot.preview.x <= 175
+               && ball.left_foot.preview.y <= -110 
+               && ball.left_foot.preview.y >= -125
+               && executed_motion.step_control.right_movable)
+        //else if(action_done) 
+        //goto finished;
+        goto kick_right_foot;
       else
         stay;
-    }*/
-    action
-    {
+    }
+    action{
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
+                           x = ball.left_foot.preview.x - 170,// * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
+                           y = ball.left_foot.preview.y + 115,
+                           errorX=0, errorY=0, errorR=5);
       motion.type = walk;
-      motion.walk.style = normal;
-      motion.walk_speed.x = ball.preview.x;
-      motion.walk_speed.y = ball.preview.y;
-      motion.walk.step_control.foot = none;
-      motion.walk.coordinate = hip;
-      motion.walk.stop_with_stand = true;
+      motion.walk.coordinate = left_foot;
+      motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
     }
   }
-  
-  state dribble
+
+  state walk_against_ball
+  {
+    decision {
+      else if (state_time < 250)
+        stay;
+      else 
+        goto finished;
+
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+    }
+  }
+    
+  state kick_right_foot
   {
     decision 
     {
-      else if(state_time > 500)
+      // When this state is reched, right foot is moveble -> as it is moving,
+      // sidekick is done after left foot is movable again
+      // wait at least 20ms as stepduration prob. will never be less 20ms -> prevents doublekicks
+      else if(state_time > 20 && executed_motion.step_control.left_movable)
       {
         goto stabilize;
       }
@@ -132,59 +124,109 @@ option dribble_stand_test
     {
       motion.type = walk;
       motion.walk.style = fast;
-      motion.walk.step_control.foot = @kick_right?right:left;
-      motion.walk.coordinate = @kick_right?right_foot:left_foot;
-      motion.walk.step_control.target.x = @kick_right?ball.right_foot.preview.x+100:ball.left_foot.preview.x+100;
-      motion.walk.step_control.target.y = @kick_right?ball.right_foot.preview.y:ball.left_foot.preview.y;
+      motion.walk.step_control.foot = right;
+      motion.walk.coordinate = right_foot;
+      motion.walk.step_control.target.x = ball.right_foot.preview.x+100;
+      motion.walk.step_control.target.y = ball.right_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
-      motion.walk.step_control.speed_direction = @kick_direction;
-      motion.walk.step_control.time = 500;
+      motion.walk.step_control.speed_direction = 90;
+      //motion.walk.step_control.speed_direction = clip(value=attack.direction, min=0, max=90);
+      motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
-      head.control_mode = search_for_ball;
+      //To avoid ball leaving the image when using ball model
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
     }
   }
 
+  state kick_left_foot
+  {
+    decision 
+    {
+      //Comment see kick_right_foot above
+      else if(state_time > 20 && executed_motion.step_control.right_movable)
+      {
+        //goto stabilize;
+        goto finished;
+      }
+      else
+        stay;
+    }
+    action 
+    {
+      motion.type = walk;
+      motion.walk.style = fast;
+      motion.walk.step_control.foot = left;
+      motion.walk.coordinate = left_foot;
+      motion.walk.step_control.target.x = ball.left_foot.preview.x+200;
+      motion.walk.step_control.target.y = ball.left_foot.preview.y;
+      motion.walk.step_control.target.rot = 0;
+      motion.walk.step_control.speed_direction = -90;
+      //motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-90, max=0);
+      motion.walk.step_control.time = 250;
+      motion.walk.stop_with_stand = false;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+//Hack: Do not set motion.walk.step_control.foot 
+//      after dribble do keep vaules in queue correct
   state stabilize
   {
     decision
     {
-      else if(state_time>500)
-        goto walk_after_stabilize;
+      else if(state_time > 400)
+        goto finished;
       else
         stay;
     }
     action
     {
       motion.type = walk;
-      motion.walk.style = fast;
+      motion.walk.style = stable;
       motion.walk.coordinate = hip;
-      motion.walk_speed.x = 80*cos(angle=@kick_direction);
-      motion.walk_speed.y = 80*sin(angle=@kick_direction);
+      motion.walk_speed.x = ball.preview.x -80;
+      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.rot = clip(value=atan2(y = motion.walk_speed.y, x = motion.walk_speed.x), min=-90, max=90);
       motion.walk.stop_with_stand = false;
-      motion.walk.step_control.time = 500;
-      head.control_mode = search_for_ball;
+      motion.walk.step_control.foot = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
     }
   }
+    
 
-  state walk_after_stabilize
+  //target state finished
+  target state finished
   {
     decision
     {
-      else if(state_time>1500)
-        //goto finished;
-        goto decide_action;
-      else
-        stay;
+      else if(state_time > 5000)
+        goto decide_dribble_side;
+      //else goto decide_dribble_side;
+      else stay;
     }
     action
     {
       motion.type = walk;
-      motion.walk.style = fast;
+      motion.walk.style = normal;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
       motion.walk.step_control.foot = none;
-      motion.walk_speed.x = ball.preview.x;
-      motion.walk_speed.y = ball.preview.y;
+      motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = false;
-      head.control_mode = search_for_ball;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
     }
   }
 }

@@ -6,7 +6,7 @@
 */
 
 #ifndef _KINEMATICCHAIN_H
-#define  _KINEMATICCHAIN_H
+#define _KINEMATICCHAIN_H
 
 #include "Tools/Kinematics/Link.h"
 #include "Representations/Infrastructure/JointData.h"

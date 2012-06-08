@@ -1,22 +1,15 @@
 /** after being in "penalized" state and coming back to the game
 */
 
-//TODO when penalized: include avoid obstacles
-
 option after_penalized_state
 //we know, that we must be outside the field close to the center in our own half
 {
-
-  common decision
-  {
-    if((ball.was_seen && ball.distance < 1000)|| goal.own.time_since_seen < 500 
-       || goal.opp.time_since_seen < 500)
-      goto finished;
-  }
       
   initial state localize
   {
     decision {
+      if(robot_pose.is_valid && state_time > 1000)
+        goto finished;
       else if(state_time > 10000)
         goto completely_lost;
       else
@@ -44,14 +37,16 @@ option after_penalized_state
   state completely_lost
   {
     decision {
-      else if(state_time > 10000)
+      if(robot_pose.is_valid || state_time > 10000)
         goto finished;
       else
         stay;
     }
     action {
       motion.type = walk;
-      motion.walk_speed.x = 150;
+      motion.walk_speed.x = (obstacle.ultrasound.distance < 350) ? 0 : 150;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
       head.control_mode = search_for_goal;
       situationStatusOwnHalf = false; 
     }  

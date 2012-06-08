@@ -11,50 +11,29 @@
 
 #include "GoalModel.h"
 
-const GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
+GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
+    //if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
+    if(fabs(compassDirection.angle + goal.calculateCenter().angle()) > Math::pi_2){
+      return goal;
     } else {
-
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
-    }
-
-}//end getOwnGoal
-
-GoalModel::Goal GoalModel::getOwnGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo)
-{
-    //TODO check this decision, compare with robotPose.rotation
-    //18.02.2012
-    if (abs(compassDirection.angle) > Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
-    } else {
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
+      return calculateAnotherGoal(goal, fieldInfo.xLength);
     }
 }//end getOwnGoal
 
-const GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
+GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo) const
 {
     //TODO check this decision, compare with robotPose.rotation
     //18.02.2012
-    if (abs(compassDirection.angle) < Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
-    } else {
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
-    }
-}//end getOppGoal
-
-GoalModel::Goal GoalModel::getOppGoal(const CompassDirection& compassDirection, const FieldInfo& fieldInfo)
-{
-    //TODO check this decision, compare with robotPose.rotation
-    //18.02.2012
-    if (abs(compassDirection.angle) < Math::pi_2 && abs(goal.calculateCenter().angle()) < Math::pi_2) {
-        return goal;
-    } else {
-        return calculateAnotherGoal(goal, fieldInfo.xLength);
-    }
+    //if(fabs(goal.calculateCenter().rotate(compassDirection.angle).angle()) < Math::pi_2)
+  if(fabs(Math::normalize(compassDirection.angle + goal.calculateCenter().angle())) < Math::pi_2)
+  {
+    return goal;
+  } else {
+    return calculateAnotherGoal(goal, fieldInfo.xLength);
+  }
 }//end getOppGoal
 
 /*
@@ -133,6 +112,7 @@ GoalModel::Goal GoalModel::calculateAnotherGoal(const GoalModel::Goal& goal, dou
   normal.normalize(distance);
   normal.rotateRight();
 
+  // swich the posts
   another.leftPost = goal.rightPost + normal;
   another.rightPost = goal.leftPost + normal;
 
@@ -173,17 +153,18 @@ void LocalGoalModel::print(ostream& stream) const
   GoalModel::print(stream);
 }//end print
 
-void SelfLocGoalModel::update(const CompassDirection& compassDirection, const Pose2D& robotPose, const FieldInfo& fieldInfo)
+void SelfLocGoalModel::update(const Pose2D& robotPose, const FieldInfo& fieldInfo)
 {
-  GoalModel::Goal ownGoal = getOwnGoal(compassDirection, fieldInfo);
-  GoalModel::Goal oppGoal = getOppGoal(compassDirection, fieldInfo);
+  //GoalModel::Goal ownGoal = getOwnGoal(compassDirection, fieldInfo);
+  //GoalModel::Goal oppGoal = getOppGoal(compassDirection, fieldInfo);
 
   // transform the goal posts to the local coordinates according to the robotPose
-  ownGoal.leftPost = robotPose/fieldInfo.ownGoalPostLeft;
-  ownGoal.rightPost = robotPose/fieldInfo.ownGoalPostRight;
+  //ownGoal.leftPost = robotPose/fieldInfo.ownGoalPostLeft;
+  //ownGoal.rightPost = robotPose/fieldInfo.ownGoalPostRight;
 
-  oppGoal.leftPost = robotPose/fieldInfo.opponentGoalPostLeft;
-  oppGoal.rightPost = robotPose/fieldInfo.opponentGoalPostRight;
+  // set the opponent goal regarding my position on the field
+  goal.leftPost = robotPose/fieldInfo.opponentGoalPostLeft;
+  goal.rightPost = robotPose/fieldInfo.opponentGoalPostRight;
 }//end update
 
 SensingGoalModel::SensingGoalModel()

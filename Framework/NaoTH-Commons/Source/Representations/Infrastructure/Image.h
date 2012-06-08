@@ -95,18 +95,18 @@ namespace naoth
      * Get the brightness of a pixel. This is faster than getting all color
      * channels.
      */
-    inline unsigned char getY(const unsigned int x, const unsigned int y) const
+    inline unsigned char getCorecctedY(const unsigned int x, const unsigned int y) const
     {
-      return (unsigned char) Math::clamp<unsigned short>((yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.getY(x,y)) >> 10, 0, 255);
+      return (unsigned char) Math::clamp<unsigned short>((yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
     }
 
     /**
      * Get the brightness of a pixel without any correction. This is faster than getting all color
      * channels.
      */
-    inline unsigned char getPlainY(const unsigned int x, const unsigned int y) const
+    inline unsigned char getY(const unsigned int x, const unsigned int y) const
     {
-      return yuv422[2 * (y * cameraInfo.resolutionWidth + x)];// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
+      return yuv422[2 * (y * cameraInfo.resolutionWidth + x)];
     }
 
     /**
@@ -120,7 +120,7 @@ namespace naoth
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
-      p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10, 0, 255);
+      p.y = yuv422[yOffset];
       
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
       p.u = yuv422[yOffset+1-((x & 1)<<1)];
@@ -149,12 +149,11 @@ namespace naoth
     {
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
-      p.y = (yuv422[yOffset] * shadingCorrection.getY(x,y)) >> 10;// * yC[y * cameraInfo.resolutionWidth + x]) >> 10;
-      
+      p.y = yuv422[yOffset];      
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
       p.u = yuv422[yOffset+1-((x & 1)<<1)];
       p.v = yuv422[yOffset+3-((x & 1)<<1)];
-      /* 
+       /* 
       if((x & 1) == 0) // == (x % 2 == 0)
       {
         p.u = yuv422[yOffset + 1];
@@ -165,6 +164,46 @@ namespace naoth
         p.u = yuv422[yOffset - 1];
         p.v = yuv422[yOffset + 1];
       }*/
+   }//end getPlain()
+
+    /**
+     * Get a pixel (its color). This does a mapping to the YUV422 array
+     * so please make sure not to call it more often than you need it.
+     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
+     * seperatly.
+     */
+    inline Pixel getCorrected(const unsigned int& x, const unsigned int& y) const
+    {
+      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
+
+      Pixel p;
+      p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
+      
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      //p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
+      //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
+      return p;
+    }//end get()
+
+   /**
+     * Get a pixel (its color). This does a mapping to the YUV422 array
+     * so please make sure not to call it more often than you need it.
+     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
+     * seperatly.
+     */
+    inline void getCorrected(const unsigned int& x, const unsigned int& y, Pixel& p) const
+    {
+      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
+
+      p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
+      
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      //p.u = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+1-((x & 1)<<1)] * shadingCorrection.get(1, x, y)) >> 10, 0, 255);
+      //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
     }//end get
 
     inline void set(const unsigned int& x, const unsigned int& y, const Pixel& p)

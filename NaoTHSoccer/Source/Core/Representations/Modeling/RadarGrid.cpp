@@ -88,6 +88,55 @@ void RadarGrid::addObstaclePoint(Vector2<double> value)
   }
 }//end set()
 
+
+void RadarGrid::addNonObstaclePoint( Vector2d value)
+{
+  // get the sector index
+  int position = this->getSectorByAngle(Math::normalize(value.angle()));
+  // find the sector in the map
+  cellsMap::iterator it = cells.find(position);
+  // the value with key wasn't found:
+  // do nothing
+  if (it == cells.end())
+  {
+    return;
+  } 
+  // we found some value, 
+  // must update it
+  else
+  {
+    // we have found the pair with this key value
+    // need to update value?
+    if (value.abs() > it->second.mean.abs())
+    {
+      // yes, we do
+      // do we use buffer?
+      if (useBuffer)
+      {
+        // we have at least 2 values in buffer
+        if(it->second.buffer.getNumberOfEntries() > 1)
+        {
+          it->second.buffer.removeFirst();
+          it->second.timeStamp = currentTime;
+          getSumAndAverage(it->second.buffer, it->second.sum, it->second.mean);
+        }//end if
+        //the buffer have no values -> erase the cell from map
+        else
+        {
+          cells.erase(it);
+        }// end els
+      }
+      // we use no buffer
+      // so, just remove this cell
+      else 
+      { 
+        cells.erase(it);
+      } // end else
+    }
+  }
+}
+
+
 void RadarGrid::setMean(int& position, Vector2d& value)
 {
   // find the sector in the map
@@ -140,7 +189,7 @@ double RadarGrid::getAngleBySector( const int sector ) const
 }
 
 
-void RadarGrid::getAllObstacles(std::vector<Vector2d> obstaclesVector) const
+void RadarGrid::getAllObstacles(std::vector<Vector2d>& obstaclesVector) const
 {
   obstaclesVector.clear();
   for(cellsMap::const_iterator it = cells.begin(); it != cells.end(); ++it)
@@ -166,6 +215,7 @@ void RadarGrid::ageGrid()
       if(it->second.buffer.getNumberOfEntries() > 1)
       {
         it->second.buffer.removeFirst();
+        it->second.timeStamp = currentTime;
         getSumAndAverage(it->second.buffer, it->second.sum, it->second.mean);
       }//end if
       //the buffer have no values -> erase the cell from map
@@ -182,8 +232,8 @@ void RadarGrid::ageGrid()
   }
 }//end ageGrid
 
-//update the model:
-//apply the odometry data, erase old values
+// update the model:
+// apply the odometry data, erase old values
 void RadarGrid::updateGridByOdometry(Pose2D& odometryDelta)
 {
   //so, we have no old values in the map,
@@ -203,7 +253,7 @@ void RadarGrid::updateGridByOdometry(Pose2D& odometryDelta)
       // do we use buffer?
       if (useBuffer)
       {
-        //update buffer with odometry
+        // update buffer with odometry
         newCell.buffer = it->second.buffer;
         for(int i = 0; i < newCell.buffer.getNumberOfEntries(); i++)
         {

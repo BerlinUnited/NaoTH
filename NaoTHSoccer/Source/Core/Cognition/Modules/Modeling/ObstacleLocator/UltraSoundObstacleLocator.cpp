@@ -12,22 +12,31 @@
 
 #include "UltraSoundObstacleLocator.h"
 
+// in accordance to the Aldeberan documentation and the raw values
+const double UltraSoundObstacleLocator::invalidDistanceValue =  2550.0;
 const double UltraSoundObstacleLocator::maxValidDistance = 500.0;
 const double UltraSoundObstacleLocator::minBlockedDistance = 350.0;
 
 UltraSoundObstacleLocator::UltraSoundObstacleLocator()
   : wasFrontBlockedInLastFrame(false)
 {
+
   DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:drawObstacles", "draw the modelled Obstacle on the field", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_0", "left Transmitter left Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_1", "left Transmitter right Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_2", "right Transmitter left Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_3", "right Transmitter right Receiver", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_4", "left and right Transmitter and Receiver in two captures with one command", false);
+  DEBUG_REQUEST_REGISTER("UltraSoundObstacleLocator:setMode_12", "left and right Transmitter and Receiver in two captures with one command and two transmitters at same time", false);
 }
 
 void UltraSoundObstacleLocator::execute()
 {
-  getObstacleModel().leftDistance = std::numeric_limits<double>::max();
-  getObstacleModel().rightDistance = std::numeric_limits<double>::max();
-  getObstacleModel().frontDistance = std::numeric_limits<double>::max();
+  getObstacleModel().leftDistance = invalidDistanceValue;
+  getObstacleModel().rightDistance = invalidDistanceValue;
+  getObstacleModel().frontDistance = invalidDistanceValue;
 
-  // negative odometry
+  fillBuffer();
 
   // Compute mean of seen obstacles and use that data as estimated USObstacle  
   // in local obstacle model
@@ -36,9 +45,34 @@ void UltraSoundObstacleLocator::execute()
   //Draw ObstacleModel
   drawObstacleModel();
 
+  unsigned int mode = UltraSoundSendData::TWO_CAPTURES + UltraSoundSendData::TWO_TRANSMITTERS;
+
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_0",
+    mode = 0;
+  );
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_2",
+    mode = 2;
+  );
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_3",
+    mode = 3;
+  );
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_4",
+    mode = 4;
+  );
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_12",
+    mode = 12;
+  );
+  DEBUG_REQUEST("UltraSoundObstacleLocator:setMode_1",
+    mode = 1;
+  );
+
+  // Update mode 
+  if(mode != getUltraSoundSendData().mode)
+  {
+    getUltraSoundSendData().setMode(mode);
+  }
+
 }//end execute
-
-
 
 void UltraSoundObstacleLocator::drawObstacleModel()
 {
@@ -93,30 +127,54 @@ void UltraSoundObstacleLocator::drawObstacleModel()
   );
 } //end drawObstacleMode
 
+void UltraSoundObstacleLocator::fillBuffer()
+{
+  bufferLeft.add(getUltraSoundReceiveData().dataLeft[UltraSoundData::echo_0] * 1000.0);
+  bufferRight.add(getUltraSoundReceiveData().dataRight[UltraSoundData::echo_0] * 1000.0);
+}
+
 void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 {
-  std::vector<double> left;
-  std::vector<double> right;
-
-  // add obstacles based on left/right sensordata and filter out too far away obstacles
-  for(unsigned int i = 0; i < UltraSoundData::numOfUSEcho; i++)
+  double sum = 0.0;
+  int count = 0;
+  for(int i=0; i < bufferLeft.getNumberOfEntries(); i++)
   {
-    double distanceLeft = getUltraSoundReceiveData().dataLeft[i] * 1000.0;
-    if(distanceLeft <= maxValidDistance)
+    if(bufferLeft[i] <= maxValidDistance)
     {
-      left.push_back(distanceLeft);
+      sum += bufferLeft[i];
+      count++;
     }
-
-    double distanceRight = getUltraSoundReceiveData().dataRight[i] * 1000.0;
-    if(distanceRight <= maxValidDistance)
-    {
-      right.push_back(distanceRight);
-    }
-  }//end for each raw sensor input
-
+  }
   ObstacleModel& model = getObstacleModel();
-  model.leftDistance = getNearestDistance(left);
-  model.rightDistance = getNearestDistance(right);
+
+  if(count == 0)
+  {
+    model.leftDistance = invalidDistanceValue;
+  }
+  else
+  {
+    model.leftDistance = sum / (double) count;
+  }
+
+  sum = 0.0;
+  count = 0;
+  for(int i=0; i < bufferRight.getNumberOfEntries(); i++)
+  {
+    if(bufferRight[i] <= maxValidDistance)
+    {
+      sum += bufferRight[i];
+      count++;
+    }
+  }
+  if(count == 0)
+  {
+    model.rightDistance = invalidDistanceValue;
+  }
+  else
+  {
+    model.rightDistance = sum / (double) count;
+  }
+
   if(model.leftDistance <= maxValidDistance && model.rightDistance <= maxValidDistance)
   {
     model.frontDistance = std::min(model.leftDistance, model.rightDistance);
@@ -139,14 +197,3 @@ void UltraSoundObstacleLocator::provideToLocalObstacleModel()
 
 } //end provideToLocalObstacleModel
 
-double UltraSoundObstacleLocator::getNearestDistance(const std::vector<double> &dists)
-{
-  if(dists.size() > 0)
-  {
-    // the first one is always the smallest TODO: check if that assumption made in the naoqi doc always holds
-    return dists[0];
-  }
-
-  return std::numeric_limits<double>::max();
-
-}

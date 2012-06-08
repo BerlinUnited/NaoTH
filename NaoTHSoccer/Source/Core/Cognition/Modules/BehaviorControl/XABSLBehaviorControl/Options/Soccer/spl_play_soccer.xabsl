@@ -16,13 +16,20 @@ option spl_play_soccer {
         
       motion.type = stand;
       head.control_mode = stay_as_forced;
-      team.is_playing_as_striker = false; //when penaliced or fall down ... don't communicate you are striker!
+      team.is_playing_as_striker = false; //when penalized or fallen down ... don't communicate you are striker!
       sensor.camera.reset = false;
       motion.standHeight = -1;
-      motion.walk.style = normal;
       motion.walk.step_control.foot = none;
       motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;
+
+      situationStatusOwnHalf = false;
+
+      //for DEBUGGING purposes only and will be overwritten by OwnHalf = true!
+      situationStatusOppHalf = false; 
+      reactiveBallModelNeeded = false;
+
+      motion.walk.style = fast;
 
       initial_ready_set_play();
       

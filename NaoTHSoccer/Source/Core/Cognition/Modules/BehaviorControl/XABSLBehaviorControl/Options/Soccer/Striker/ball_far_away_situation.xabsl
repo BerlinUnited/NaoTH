@@ -19,7 +19,8 @@ option ball_far_away_situation {
   {
     action {
       //go_to_ball_omni(distance = @dist, right_foot=true);
-      go_to_ball_cool(distance = 160, right_foot=true);
+      go_to_ball_cool(distance = 160, right_foot=true,
+                      errorX=30, errorY=30, errorR=15);
     }
   }
 
@@ -28,7 +29,8 @@ option ball_far_away_situation {
     action 
     {
       //go_to_ball_omni(distance = @dist, right_foot=false);
-      go_to_ball_cool(distance = 160, right_foot=false);
+      go_to_ball_cool(distance = 160, right_foot=false,
+                      errorX=30, errorY=30, errorR=15);
     }
   }
   

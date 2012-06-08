@@ -25,6 +25,7 @@ option critical_ball {
     action {
       head.control_mode = search_for_ball;
       motion.type = goalie_sit_block;
+      reactiveBallModelNeeded = true;
     }
   }
 
@@ -39,6 +40,7 @@ option critical_ball {
       motion.execute_immediately = true;
       motion.type = goalie_sit_n_dive_left;
       head.control_mode = search_for_ball;
+      reactiveBallModelNeeded = true;
     }
   }
 
@@ -53,6 +55,7 @@ option critical_ball {
       motion.execute_immediately = true;
       motion.type = goalie_sit_n_dive_right;
       head.control_mode = search_for_ball;
+      reactiveBallModelNeeded = true;
     }
   }
 
@@ -68,6 +71,7 @@ option critical_ball {
     action {
       motion.execute_immediately = false;
       motion.type = stand;
+      reactiveBallModelNeeded = true;
       //do noTHING
     }
   }
@@ -83,6 +87,7 @@ state make_ready {
   action {
     motion.type = sit;
     head.control_mode = search_for_ball;
+    reactiveBallModelNeeded = true;
   }
 }
 
@@ -98,6 +103,7 @@ initial state check_if_clearable {
   action {
     motion.type = stand;
     head.control_mode = search_for_ball;
+    reactiveBallModelNeeded = true;
   }
 }
 
@@ -142,6 +148,7 @@ state critical_ball {
     head.point_in_world.x = ball.percept.x;
     head.point_in_world.y = ball.percept.y;
     head.point_in_world.z = ball.radius; // radius of the ball
+    reactiveBallModelNeeded = true;
   }
 
 }
@@ -156,7 +163,9 @@ state rotate_to_critical_ball {
   }
   action {
     head.control_mode = search_for_ball;
-    go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0);
+    go_to_relative_point(rotation=atan2(y=ball.preview.y, x=ball.preview.x), x=0, y=0,
+                         errorX=30, errorY=30, errorR=15);
+    reactiveBallModelNeeded = true;
   }
 }
 

@@ -18,7 +18,7 @@ option search_for_goal_after_penalized
     {
       head.camera.id = bottom;
       head.motion_type = search;
-      head.search.center.x = 10;
+      head.search.center.x = 100;
       head.search.center.y = 0;
       head.search.center.z = 0;
       head.search.size.x = 0;
@@ -31,10 +31,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (goal.own.was_seen || goal.opp.was_seen)
+      if (state_time > 1000 && (state_time > 5000 || goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_left;
-      else if (state_time > 2200)
-        goto switch_to_look_right;
       else 
         stay;
     }
@@ -48,6 +46,7 @@ option search_for_goal_after_penalized
       head.search.size.x = 500;
       head.search.size.y = 0;
       head.search.size.z = 0;
+      head.search.direction =false;
     }
   }
 
@@ -55,10 +54,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if (goal.own.was_seen || goal.opp.was_seen)
+      if (state_time > 1000 && (state_time > 5000 || goal.own.was_seen || goal.opp.was_seen))
         goto look_at_goal_percept_right;
-      else if (state_time > 2200)
-        goto switch_to_look_left;
       else 
         stay;
     }
@@ -72,6 +69,7 @@ option search_for_goal_after_penalized
       head.search.size.x = 500;
       head.search.size.y = 0;
       head.search.size.z = 0;
+      head.search.direction =false;
     }
   }
   
@@ -80,10 +78,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if(goal.own.time_since_seen == 0 
-         || goal.opp.time_since_seen == 0 
-         || state_time > 1000)
-        goto switch_to_look_left;
+      if(state_time > 1000)
+        goto look_for_goal_left;
       else
         stay;
     }
@@ -101,10 +97,8 @@ option search_for_goal_after_penalized
   {
     decision
     {
-      if(goal.own.time_since_seen == 0 
-         || goal.opp.time_since_seen == 0 
-         || state_time > 1000)
-        goto switch_to_look_right;
+      if(state_time > 1000)
+        goto look_for_goal_right;
       else
         stay;
     }
@@ -118,51 +112,4 @@ option search_for_goal_after_penalized
     }
   }
 
-  state switch_to_look_left
-  {
-    decision
-    {
-      if (goal.own.was_seen || goal.opp.was_seen)
-        goto look_at_goal_percept_left;
-      else if (state_time > 500)
-         goto look_for_goal_left;
-      else
-        stay;
-    }
-    action
-    {
-      head.camera.id = bottom;
-      head.motion_type = search;
-      head.search.center.x = 500;
-      head.search.center.y = 0;
-      head.search.center.z = 0;
-      head.search.size.x = 0;
-      head.search.size.y = 500;
-      head.search.size.z = 0;
-    }
-  }
-
-  state switch_to_look_right
-  {
-    decision
-    {
-      if (goal.own.was_seen || goal.opp.was_seen)
-        goto look_at_goal_percept_right;
-      else if (state_time > 500)
-         goto look_for_goal_right;
-      else
-        stay;
-    }
-    action
-    {
-      head.camera.id = bottom;
-      head.motion_type = search;
-      head.search.center.x = 500;
-      head.search.center.y = 0;
-      head.search.center.z = 0;
-      head.search.size.x = 0;
-      head.search.size.y = 500;
-      head.search.size.z = 0;
-    }
-  }
 }

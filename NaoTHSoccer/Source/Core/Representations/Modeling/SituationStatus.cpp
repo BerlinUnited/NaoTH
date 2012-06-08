@@ -28,7 +28,8 @@ void SituationStatus::fromDataStream(istream& stream)
 
 void SituationStatus::print(ostream& stream) const
 {
-	stream << "In own half = " << ownHalf;
+  stream << "In own half = " << ownHalf << std::endl
+         << "Reactive ball model requested = " << reactiveBallModelNeeded << std::endl;
 }
 
 SituationStatus::~SituationStatus() {

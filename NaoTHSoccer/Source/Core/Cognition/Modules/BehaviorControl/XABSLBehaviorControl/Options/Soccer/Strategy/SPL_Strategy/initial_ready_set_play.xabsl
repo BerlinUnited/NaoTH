@@ -12,7 +12,7 @@ option initial_ready_set_play
     else if (game.state == penalized)
       goto penalized;
     else if (game.state == finished)
-      goto finished;
+      goto _initial;
     else if(game.state == playing)
       goto playing;
     else if(game.state == unknown)
@@ -24,7 +24,7 @@ option initial_ready_set_play
 		{
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
-      situationStatusOwnHalf = true;
+      situationStatusOwnHalf = false;
 			head.control_mode = stay_as_forced;
 			motion.type = init;
 		}
@@ -47,8 +47,10 @@ option initial_ready_set_play
       ball_was_outside_circle = false;
       last_state_was_penalized = false;
       special_kickoff_done = false;
-			head.control_mode = search_for_ball;
-			motion.type = stand;
+			head.control_mode = (state_time > 3000 &&  robot_pose.is_valid) ? search_for_ball : search_for_goal;
+      motion.type = stand;
+
+      situationStatusOwnHalf = true;
 		}
 	}
 	
@@ -60,6 +62,7 @@ option initial_ready_set_play
       situationStatusOwnHalf = false;
       play_with_check_fall_down();
       //last_state_was_penalized = false;
+      
 		}
 	}
   
@@ -75,6 +78,7 @@ option initial_ready_set_play
       set_right_eye=red;
 
       ball_was_outside_circle = true;
+      situationStatusOwnHalf = true;
 		}
 	}
 	

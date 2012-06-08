@@ -5,8 +5,8 @@
 * Declaration of class MonteCarloSelfLocator
 */
 
-#ifndef __MonteCarloSelfLocator_h_
-#define __MonteCarloSelfLocator_h_
+#ifndef _MonteCarloSelfLocator_h_
+#define _MonteCarloSelfLocator_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -22,6 +22,8 @@
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
+#include "Representations/Modeling/SituationStatus.h"
+
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Motion/MotionStatus.h"
@@ -51,6 +53,7 @@ BEGIN_DECLARE_MODULE(MonteCarloSelfLocator)
   REQUIRE(BodyState)
   REQUIRE(FrameInfo)
   REQUIRE(CompassDirection)
+  REQUIRE(SituationStatus)
 
   PROVIDE(RobotPose)
   PROVIDE(SelfLocGoalModel)
@@ -64,7 +67,7 @@ class MonteCarloSelfLocator : private MonteCarloSelfLocatorBase
 {
 public:
   MonteCarloSelfLocator();
-  ~MonteCarloSelfLocator(){}
+  virtual ~MonteCarloSelfLocator(){}
 
   /** executes the module */
   void execute();
@@ -80,13 +83,24 @@ private:
   bool initialized;
 
   void resetSampleSet(SampleSet& sampleSet);
+  void clampSampleSetToField(SampleSet& sampleSet);
+  void mirrorSampleSetFieldSides(SampleSet& sampleSet);
   
   bool generateTemplateFromPosition(
     Sample& newTemplate,
     const Vector2<double>& posSeen, 
     const Vector2<double>& posReal) const;
 
+
+  // TODO: this is maybe not the best solution for this
+  Vector2<double> fieldMin;
+  Vector2<double> fieldMax;
+
+  /** */
   bool isInsideCarpet(const Vector2<double>& p) const;
+
+  /** */
+  void createRandomSample(Sample& sample) const;
 
   void sensorResetByGoals(SampleSet& sampleSet, int start, int number);
   void resample(SampleSet& sampleSet);
@@ -112,6 +126,7 @@ private:
                                 double standardDeviation, 
                                 double bestPossibleWeighting = 1.0) const;
 
+
   /****************************************
     update methods
    ****************************************/
@@ -132,6 +147,9 @@ private:
 
   /** apply all the updates ba any avaliable sensor data */
   bool updateBySensors(SampleSet& sampleSet) const;
+
+  /** should be always a logical mirror of updateBySensor */
+  bool hasSensorUpdate() const;
 
 
   /****************************************

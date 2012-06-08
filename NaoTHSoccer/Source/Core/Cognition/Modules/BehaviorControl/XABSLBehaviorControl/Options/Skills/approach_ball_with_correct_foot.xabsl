@@ -3,7 +3,16 @@ option approach_ball_with_correct_foot {
 
  float @dist [mm];
 
- bool @want_to_turn_after_approach;
+  /** error range */
+  float @errorX [mm];
+
+  float @errorY [mm];
+
+  float @errorR [deg];
+
+  bool @want_to_turn_after_approach;
+
+ 
 
  initial state approach_ball 
  {
@@ -46,7 +55,7 @@ option approach_ball_with_correct_foot {
 	      stay;
     }
     action {
-      go_to_ball_cool(distance = @dist, right_foot=true);
+      go_to_ball_cool(distance = @dist, right_foot=true, errorX=@errorX, errorY=@errorY, errorR=@errorR);
     }
   }
 
@@ -68,51 +77,7 @@ option approach_ball_with_correct_foot {
     }
     action 
     {
-      go_to_ball_cool(distance = @dist, right_foot=false);
-    }
-  }
-
-  state avoid_abstacle_right
-  {
-    decision 
-    {
-      if(obstacle.ultrasound.distance > 380)
-        goto approach_ball;
-      else
-        stay;
-    }
-    action 
-    {
-      //go_to_ball_omni(distance = @dist, right_foot=false);
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = -60;
-      motion.walk_speed.rot = 0;
-      motion.walk.coordinate = right_foot;
-      motion.walk.stop_with_stand = true;
-      head.control_mode = search_for_ball;
-    }
-  }
-
-  state avoid_abstacle_left
-  {
-    decision 
-    {
-      if(obstacle.ultrasound.distance > 380)
-        goto approach_ball;
-      else
-        stay;
-    }
-    action 
-    {
-      //go_to_ball_omni(distance = @dist, right_foot=false);
-      motion.type = walk;
-      motion.walk_speed.x = 0;
-      motion.walk_speed.y = 60;
-      motion.walk_speed.rot = 0;
-      motion.walk.coordinate = right_foot;
-      motion.walk.stop_with_stand = true;
-      head.control_mode = search_for_ball;
+      go_to_ball_cool(distance = @dist, right_foot=false, errorX=@errorX, errorY=@errorY, errorR=@errorR);
     }
   }
 
@@ -126,7 +91,7 @@ option approach_ball_with_correct_foot {
         stay;
     }
     action {
-      go_to_ball_cool(distance = @dist, right_foot=true);
+      go_to_ball_cool(distance = @dist, right_foot=true, errorX=@errorX, errorY=@errorY, errorR=@errorR);
 
       // hack
       motion.type = stand;
@@ -144,7 +109,7 @@ option approach_ball_with_correct_foot {
     }
     action 
     {
-      go_to_ball_cool(distance = @dist, right_foot=false);
+      go_to_ball_cool(distance = @dist, right_foot=false, errorX=@errorX, errorY=@errorY, errorR=@errorR);
 
       // hack
       motion.type = stand;

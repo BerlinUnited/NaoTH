@@ -23,7 +23,8 @@ option go_to_relative_point_with_distance_and_rot
       go_to_relative_point( 
         rotation=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y)) - @rot,   
         x=odometry.preview.x(x=@x, y=@y) - @dist*cos(angle=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y))), 
-        y=odometry.preview.y(x=@x, y=@y) - @dist*sin(angle=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y)))
+        y=odometry.preview.y(x=@x, y=@y) - @dist*sin(angle=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y))),
+        errorX=30, errorY=30, errorR=15
       );
       
     }
@@ -40,7 +41,8 @@ option go_to_relative_point_with_distance_and_rot
       go_to_relative_point( 
         rotation=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y)) - @rot,   
         x=odometry.preview.x(x=@x, y=@y) - @dist*cos(angle=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y))), 
-        y=odometry.preview.y(x=@x, y=@y) - @dist*sin(angle=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y)))
+        y=odometry.preview.y(x=@x, y=@y) - @dist*sin(angle=atan2(y=odometry.preview.y(x=@x, y=@y), x=odometry.preview.x(x=@x, y=@y))),
+        errorX=30, errorY=30, errorR=15
       );
     }
   }

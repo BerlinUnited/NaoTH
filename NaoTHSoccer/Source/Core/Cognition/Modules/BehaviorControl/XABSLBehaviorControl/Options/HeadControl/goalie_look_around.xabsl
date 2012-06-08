@@ -33,7 +33,7 @@ option goalie_look_around
     decision
     {
       if (state_time > 1300)
-        if(random < 0.5){ //if ball not seen for longer than 20 secs. look back
+        if(random > 0.33){ //if ball not seen for longer than 20 secs. look back
           goto bottom_center;
         }else{
           goto far_behind_left;

@@ -61,6 +61,7 @@ namespace game_symbols("Game Control Symbols") {
   /* indicate whether we have a kick off */
   bool input game.own_kickoff;
 
+  float input game.msecsRemaining;
 
   /* */
   bool internal special_kickoff_done;

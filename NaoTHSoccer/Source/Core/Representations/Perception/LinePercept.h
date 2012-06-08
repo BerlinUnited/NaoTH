@@ -4,8 +4,8 @@
  * Declaration of class LinePercept
  */
 
-#ifndef __LinePercept_h_
-#define __LinePercept_h_
+#ifndef _LinePercept_h_
+#define _LinePercept_h_
 
 #include <vector>
 

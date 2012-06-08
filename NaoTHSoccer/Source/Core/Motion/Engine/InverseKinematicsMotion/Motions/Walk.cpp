@@ -36,18 +36,6 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
   calculateError();
   updateComObserver();
 
-
-  if ( theWalkParameters.enableFSRProtection && FSRProtection() )
-  {
-    if ( !isStopped() )
-    {
-      cout<<"walk stopped because of fsr protecting"<<endl;
-    }
-    stepBuffer.clear();
-    theEngine.controlZMPclear();
-    currentState = motion::stopped;
-  }
-  else
   {
     if ( !theWalkParameters.enableWaitLanding || !waitLanding() )
     {
@@ -58,8 +46,10 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     // remember the pose
     commandPoseBuffer.add(theCoMFeetPose);
 
-    HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose, true);
+    bool solved = false;
+    HipFeetPose c = theEngine.controlCenterOfMass(theCoMFeetPose, solved, true);
 
+    PLOT("Walk:com.solved", solved);
     PLOT("Walk:c:hip.z",c.hip.translation.z);
 
     PLOT("Walk:theCoMFeetPose:left_diff",c.feet.left.translation.y - c.hip.translation.y-50);
@@ -206,8 +196,8 @@ bool Walk::FSRProtection()
   // TODO: check current of leg joints
   // ==> stop walking
 
-  return !theBlackBoard.theGroundContactModel.leftGroundContact && 
-         !theBlackBoard.theGroundContactModel.rightGroundContact;
+  return !theBlackBoard.theGroundContactModel.leftGroundContactAverage && 
+         !theBlackBoard.theGroundContactModel.rightGroundContactAverage;
 
   static unsigned int noTouchCount = 0;
 
@@ -302,7 +292,10 @@ void Walk::plan(const MotionRequest& motionRequest)
   double emergency_stop = 500;
   MODIFY("Walk:emergency_stop", emergency_stop);
 
-  if ( (motionRequest.id == getId() && com_errors.getAverage() < emergency_stop) || !canStop() )
+  bool fsrStop = (theWalkParameters.enableFSRProtection && FSRProtection() );
+  PLOT("Walk:FSRStop", fsrStop);
+
+  if ( (motionRequest.id == getId() && com_errors.getAverage() < emergency_stop && !fsrStop) || !canStop() )
   {
     walk(walkRequest);
     isStopping = false;

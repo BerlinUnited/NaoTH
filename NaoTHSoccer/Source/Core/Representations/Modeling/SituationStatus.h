@@ -21,8 +21,10 @@ public:
   //standardconstructor
   SituationStatus()
   :
-  id(unknown),
-  ownHalf(false)
+    id(unknown),
+    ownHalf(false),
+    oppHalf(false),
+    reactiveBallModelNeeded(false)
   {
   }
   ~SituationStatus();
@@ -34,12 +36,14 @@ public:
     dribble,
     kick,
     kickoff,
-	numOfStatus
+	  numOfStatus
   };
 
   StatusID id;
 
-  bool ownHalf;
+  bool ownHalf; //force selflocator to locate in own half (e.g. after penalized)
+  bool oppHalf; //force selflocator to locate in opp half (e.g. for debugging attacksituations)
+  bool reactiveBallModelNeeded;
   virtual void print(ostream& stream) const;
 
 };

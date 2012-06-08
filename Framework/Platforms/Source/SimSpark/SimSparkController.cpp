@@ -30,6 +30,8 @@ SimSparkController::SimSparkController(const std::string& name)
   theSyncMode(false),
   exiting(false)
 {
+  theGameData.gameState = GameData::unknown;
+
   // register input
   registerInput<AccelerometerData>(*this);
   registerInput<FrameInfo>(*this);
@@ -894,12 +896,27 @@ bool SimSparkController::updateGameInfo(const sexp_t* sexp)
           ok = false;
           cerr << "SimSparkGameInfo::update failed get play mode value\n";
         }
-        SimSparkGameInfo::PlayMode splayMode = SimSparkGameInfo::getPlayModeByName(pm);
-        GameData::PlayMode playMode = SimSparkGameInfo::covertPlayMode(splayMode, theGameData.teamColor);
-        if ( theGameData.playMode != playMode )
+
+        // try SPL state first
+        GameData::GameState state = GameData::gameStateFromString(pm);
+        if (state == GameData::unknown)
         {
-          theGameData.playMode = playMode;
-          theGameData.timeWhenPlayModeChanged = theFrameInfo.getTime();
+          // try SimSpark play mode
+          SimSparkGameInfo::PlayMode splayMode = SimSparkGameInfo::getPlayModeByName(pm);
+          GameData::PlayMode playMode = SimSparkGameInfo::covertPlayMode(splayMode, theGameData.teamColor);
+          if ( theGameData.playMode != playMode )
+          {
+            theGameData.playMode = playMode;
+            theGameData.timeWhenPlayModeChanged = theFrameInfo.getTime();
+          }
+        }
+        else
+        {
+          if ( theGameData.gameState != state )
+          {
+            theGameData.gameState = state;
+            theGameData.timeWhenPlayModeChanged = theFrameInfo.getTime();
+          }
         }
       } else if ("unum" == name) // unum
       {
@@ -1348,6 +1365,7 @@ void SimSparkController::autoBeam()
   DEBUG_REQUEST("SimSparkController:beam", beamRequest = true;);
 
   if (beamRequest
+      || theGameData.gameState == GameData::initial
     || theGameData.playMode == GameData::goal_own
     || theGameData.playMode == GameData::goal_opp
     || theGameData.playMode == GameData::before_kick_off)

@@ -1,7 +1,7 @@
 /*** 
   Title: NaoTH Soccer
   Platform: Aldebaran Nao V3 (RoboCup edition).
-  Software-Environment: NaoTH2012
+  Software-Environment: NaoTH2011
 */
 
 // Symbols
@@ -63,13 +63,19 @@ include "Options/Soccer/Striker/ball_far_away_situation.xabsl";
 include "Options/Soccer/Striker/ball_not_seen_situation.xabsl";
 include "Options/Soccer/Striker/attack_situation.xabsl";
 include "Options/Soccer/Striker/spl_playing_striker.xabsl";
+include "Options/Soccer/Striker/dribble_attack_direction.xabsl";
+
+/* Not tested yet!
+include "Options/Soccer/Striker/attack_ball_with_obstacle_close_situation.xabsl";
+include "Options/Soccer/Striker/obstacle_clear_kick.xabsl";
+include "Options/Soccer/Striker/approach_ball_obstacle_clear_kick.xabsl";*/
 
 // supporter
 include "Options/Soccer/Supporter/spl_simple_supporter.xabsl";
 include "Options/Soccer/Supporter/spl_playing_supporter.xabsl";
 
 
-// defennder
+// defender
 include "Options/Soccer/Defender/spl_playing_defender.xabsl";
 include "Options/Soccer/Defender/spl_simple_defender.xabsl";
 

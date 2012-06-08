@@ -309,8 +309,9 @@ protected:
     
   }
   
-  virtual string getSensorModuleName() { return "Sensor";}
-  virtual string getActuatorModuleName() { return "Actuator";}
+  // FIXME: who needs that?
+  //virtual string getSensorModuleName() { return "Sensor";}
+  //virtual string getActuatorModuleName() { return "Actuator";}
 
 private:
   template<class T>

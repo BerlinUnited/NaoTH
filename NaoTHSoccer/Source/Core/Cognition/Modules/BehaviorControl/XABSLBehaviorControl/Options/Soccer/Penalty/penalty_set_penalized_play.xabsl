@@ -3,7 +3,18 @@
 option penalty_set_penalized_play
 {  
   common decision {
-    if (game.state == _initial_)
+    /* do nothing if it is not our turn */
+    if(game.player_number == 1 && game.own_kickoff)
+    {
+      // goalie does not perform kickoff
+      goto _initial;
+    }
+    else if(game.player_number > 1 && !game.own_kickoff)
+    {
+      // attacker does not protect the goal
+      goto _initial;
+    }
+    else if (game.state == _initial_)
     {
       goto _initial;
     }

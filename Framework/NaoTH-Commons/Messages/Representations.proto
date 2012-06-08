@@ -57,7 +57,7 @@ message SensorJointData {
 }
 
 message UltraSoundReceiveData {
-  required uint32 ultraSoundTimeStep = 1;
+  optional uint32 ultraSoundTimeStep = 1;
   required double rawdata = 2;
   repeated double dataLeft = 3;
   repeated double dataRight = 4;
@@ -98,6 +98,7 @@ message HeadMotionRequest {
   optional DoubleVector3 searchSize = 7;
   optional bool searchDirection = 8;
   optional DoubleVector2 targetPointOnTheGround = 9;
+  optional uint32 coordinate = 10;
 }
 
 message StepControlRequest

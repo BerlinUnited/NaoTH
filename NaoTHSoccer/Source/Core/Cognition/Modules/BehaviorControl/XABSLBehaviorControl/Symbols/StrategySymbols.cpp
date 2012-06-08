@@ -8,6 +8,7 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Representations/Motion/MotionStatus.h"
+#include <Tools/Debug/DebugBufferedOutput.h>
 
 void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 {
@@ -31,7 +32,7 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.distance_to_ball", &getOwnClosestToBallDistanceToBall);
 
 
-  engine.registerDecimalInputSymbol("attack.direction", &calculateAttackDirection);
+  engine.registerDecimalInputSymbol("attack.direction", &attackDirection);
 
   engine.registerDecimalInputSymbol("defense.pose.translation.x", &defensePoseX);
   engine.registerDecimalInputSymbol("defense.pose.translation.y", &defensePoseY);
@@ -82,6 +83,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   //}
   // engine.registerEnumeratedOutputSymbol("situationStatus", "StatusID", &getSituationStatusId);
   engine.registerBooleanOutputSymbol("situationStatusOwnHalf", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
+  engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
+  engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
 
   //Ausgabe in RobotControl
@@ -98,15 +101,17 @@ StrategySymbols* StrategySymbols::theInstance = NULL;
 
 void StrategySymbols::execute()
 {
+  attackDirection = calculateAttackDirection();
   DEBUG_REQUEST("XABSL:StrategySymbols:draw_attack_direction",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
     const Vector2<double>& ball = getBallModel().position;
     Vector2<double> p(200,0);
-    p.rotate( Math::fromDegrees(calculateAttackDirection()));
+    p.rotate( Math::fromDegrees(attackDirection));
     ARROW(ball.x, ball.y, (ball.x + p.x), (ball.y + p.y));
   );
 
+  PLOT("XABSL:attackDirection", attackDirection);
 }//end execute
 
 //int StrategySymbols::getSituationStatusId(){ 
@@ -119,6 +124,25 @@ bool StrategySymbols::getSituationStatusOwnHalf(){
 
 void StrategySymbols::setSituationStatusOwnHalf(bool ownHalf){ 
 	theInstance->getSituationStatus().ownHalf = ownHalf; 
+}
+
+
+bool StrategySymbols::getSituationStatusOppHalf(){ 
+	return (theInstance->getSituationStatus().oppHalf); 
+}
+
+void StrategySymbols::setSituationStatusOppHalf(bool oppHalf){ 
+	theInstance->getSituationStatus().oppHalf = oppHalf; 
+}
+
+bool StrategySymbols::getReactiveBallModelNeeded()
+{
+  return (theInstance->getSituationStatus().reactiveBallModelNeeded);
+}
+
+void StrategySymbols::setReactiveBallModelRequested(bool reactiveNeeded)
+{
+  theInstance->getSituationStatus().reactiveBallModelNeeded = reactiveNeeded;
 }
 
 Vector2<double> StrategySymbols::calculateGoalieGuardPosition()

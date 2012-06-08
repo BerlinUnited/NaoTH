@@ -38,7 +38,8 @@ option goto_ready_position
         stay;
     }
     action {
-      go_to_relative_point(rotation=0, x=-80, y=7);
+      go_to_relative_point(rotation=0, x=-80, y=7,
+                           errorX=30, errorY=30, errorR=15);
       head.camera.id = bottom;
       head.control_mode = none;
       head.motion_type = look_at_point_on_the_ground;

@@ -34,11 +34,16 @@ case "$1" in
     OLDPID=`cat /tmp/cognition.pid`
     echo "killing naoth cognition processes $OLDPID"
     kill $OLDPID
+    while [ -d "/proc/$OLDPID" ]
+    do
+      sleep 1
+    done
     rm $PID
 
     ;;
   restart)
     $0 stop
+    sleep 5
     $0 start
     ;;
   *)

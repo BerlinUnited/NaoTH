@@ -77,7 +77,8 @@ public:
     double k = min(time / totalTime, 1.0);
 
     InverseKinematic::CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
-    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p);
+    bool solved = false;
+    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p, solved, false);
 
     if(theParameters.stand.enableStabilization)
       theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right);
