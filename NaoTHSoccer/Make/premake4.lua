@@ -42,6 +42,10 @@ solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug", "Release"}
   
+  FRAMEWORK_PATH = path.getabsolute("../../Framework")
+  --EXTERN_PATH = path.getabsolute("../../Extern")
+  EXTERN_PATH = path.getabsolute("../../../NaoTH-2011/Extern")
+  
   CORE_PATH = {
     path.getabsolute("../Source/Core/Cognition/"), 
     path.getabsolute("../Source/Core/Motion/"),
@@ -52,7 +56,7 @@ solution "NaoTHSoccer"
 
   -- for all configurations
   includedirs {
-	  "../../Framework/NaoTH-Commons/Source/"
+	FRAMEWORK_PATH.."/NaoTH-Commons/Source/"
   }
   -- debug configuration
   configuration { "Debug" }
@@ -66,11 +70,12 @@ solution "NaoTHSoccer"
          
   configuration{"Native"}
     includedirs {
-      "../../Extern/include/",
-      "../../Extern/include/glib-2.0/",
-      "../../Extern/lib/glib-2.0/include/"}
+      EXTERN_PATH .. "/include/",
+      EXTERN_PATH .. "/include/glib-2.0/",
+      EXTERN_PATH .. "/lib/glib-2.0/include/"
+	}
     libdirs {
-      "../../Extern/lib"
+      EXTERN_PATH .. "/lib"
     }
     targetdir "../dist/Native"
     
@@ -95,22 +100,22 @@ solution "NaoTHSoccer"
   end
       
   -- base
-  dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
+  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
   
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then
-    dofile "../../Framework/Platforms/Make/DCM.lua"
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DCM.lua")
   elseif(_OPTIONS["platform"] == "Naov3") then
-    dofile "../../Framework/Platforms/Make/DCM_v3.lua"
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DCM_v3.lua")
   else
-    dofile "../../Framework/Platforms/Make/SimSpark.lua"
-	dofile "../../Framework/Platforms/Make/SPL_SimSpark.lua"
-    dofile "../../Framework/Platforms/Make/Webots.lua"
-    dofile "../../Framework/Platforms/Make/LogSimulator.lua"
-	dofile "../../Framework/Platforms/Make/OpenCVImageLoader.lua"
-	dofile "../../Framework/Platforms/Make/OpenCVWebCam.lua"
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/SPL_SimSpark.lua")
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVImageLoader.lua")
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVWebCam.lua")
     dofile "Tests.lua"
-    dofile "../../Framework/NaoTH-Commons/Make/Tests.lua"
+    dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
   end
   -- the core
   dofile "NaoTHSoccer.lua"

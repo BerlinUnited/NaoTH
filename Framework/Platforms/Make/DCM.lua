@@ -32,28 +32,32 @@ project "libnaoth"
   libdirs { alDir .. "/lib/"}
 
   includedirs {
-     "../Source/DCM", 
-     CORE_PATH,
-     "../../NaoTH-Tools/Source/",
-     alDir .. "/include/",
-     alDir .. "/include/alfactory/"
-  }
+	"../Source/DCM", 
+	CORE_PATH,
+	"../../NaoTH-Tools/Source/",
+	alDir .. "/include/",
+	alDir .. "/include/alfactory/"
+	}
 
   links {CORE, 
-	 "NaoTH-Commons",
-	 "almemoryfastaccess", 
-	 "alcommon",
-	 "gthread-2.0", 
-	 "glib-2.0",
-	 "gio-2.0",
-	 "gobject-2.0",
-	 "protobuf"
-      }
+	"NaoTH-Commons",
+	"almemoryfastaccess", 
+	"alcommon",
+	"gthread-2.0", 
+	"glib-2.0",
+	"gio-2.0",
+	"gobject-2.0",
+	"protobuf"
+	}
 
-  files{"../Source/DCM/libnaoth/**.cpp", "../Source/DCM/libnaoth/**.h",
-	"../Source/DCM/Tools/**.cpp", "../Source/DCM/Tools/**.h"
-     }
+  files{
+	"../Source/DCM/libnaoth/**.cpp", 
+	"../Source/DCM/libnaoth/**.h",
+	"../Source/DCM/Tools/**.cpp", 
+	"../Source/DCM/Tools/**.h"
+	}
   targetname "naoth"
+  
   
 project "naoth"
   kind "ConsoleApp"
@@ -80,25 +84,30 @@ project "naoth"
   }
 
   links {CORE, 
-	 "NaoTH-Commons",
+	"NaoTH-Commons",
 	 -- "almemoryfastaccess", 
 	 -- "alcommon",
-	 "gthread-2.0", 
-	 "glib-2.0",
-	 "gio-2.0",
-	 "z",
-	 "gmodule-2.0",
-	 "gobject-2.0",
-	 "protobuf",
-   "opencv_core",
-   "opencv_imgproc",
-   "opencv_highgui",
-   "opencv_ml",
-   "asound"
+	"gthread-2.0", 
+	"glib-2.0",
+	"gio-2.0",
+	"z",
+	"gmodule-2.0",
+	"gobject-2.0",
+	"protobuf",
+	"opencv_core",
+	"opencv_imgproc",
+	"opencv_highgui",
+	"opencv_ml",
+	"asound"
 	 -- "rttools"
-      }
+	}
 
-  files{"../Source/DCM/naoth/**.cpp", "../Source/DCM/naoth/**.h",
-	"../Source/DCM/Tools/**.cpp", "../Source/DCM/Tools/**.h"}
+  files{
+	"../Source/DCM/naoth/**.cpp", 
+	"../Source/DCM/naoth/**.h",
+	"../Source/DCM/Tools/**.cpp", 
+	"../Source/DCM/Tools/**.h"
+	}
   targetname "naoth"
+  
 -- END DCM
