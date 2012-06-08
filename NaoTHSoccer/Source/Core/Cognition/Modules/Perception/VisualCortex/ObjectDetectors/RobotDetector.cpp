@@ -488,7 +488,14 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
   // process the current point
   ////////////////////////////////
 
-  Pixel pixel = getImage().get(currentPoint.x,currentPoint.y);
+  Pixel pixel; //default is black pixel, if you reuest a pixel outside the resolution
+  pixel.u = 0;
+  pixel.v = 0;
+  pixel.y = 0;
+  if (currentPoint.x >= 0 && currentPoint.y >= 0 && (unsigned int)currentPoint.x < resolutionWidth && (unsigned int)currentPoint.y < resolutionHeight) {
+    pixel = getImage().get(currentPoint.x,currentPoint.y);
+  }
+
   ColorClasses::Color currentPixelColor = getColorTable64().getColorClass(pixel);
   //check whether the current point has the right color
   bool hasColor = isSearchColor(currentPixelColor, searchColor);
