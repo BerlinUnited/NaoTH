@@ -276,7 +276,7 @@ inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color 
   }
  
   // if the marker is good enough, 
-  // take him
+  // take it
   if (checkMarkerPoly(marker))
   {
     if(color == ColorClasses::blue)
@@ -296,7 +296,7 @@ inline bool RobotDetector::checkMarkerPoly(Marker& marker)
   // get the marker's area
   estimateArea(marker);
   // if the marker too small,
-  // don't take him
+  // don't take it
   if (marker.area < MARKER_MIN_SIZE)
   {
     result = false;
