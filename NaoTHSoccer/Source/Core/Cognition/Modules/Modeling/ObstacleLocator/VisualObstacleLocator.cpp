@@ -7,15 +7,68 @@
  */
 
 #include "VisualObstacleLocator.h"
+#include "Tools/CameraGeometry.h"
 
 VisualObstacleLocator::VisualObstacleLocator()
 {
   DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawGrid", "draw the modelled Obstacles on the field", false);
-  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:drawUltraSoundData", "draw the ultrasound Obstacles on the field", false);
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:RadarGrid:resetGrid", "reset grid each cognition frame", false);
+
+  DEBUG_REQUEST_REGISTER("VisualObstacleLocator:draw_field_of_view", "draw current field of view", false);
 }
 
 void VisualObstacleLocator::execute()
 {
+
+  DEBUG_REQUEST("VisualObstacleLocator:draw_field_of_view",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 10);
+  Vector2<double> lu;
+  CameraGeometry::imagePixelToFieldCoord(
+    getCameraMatrix(), 
+    getImage().cameraInfo,
+    0.0, 
+    0.0, 
+    0.0,
+    lu);
+
+  Vector2<double> ru;
+  CameraGeometry::imagePixelToFieldCoord(
+    getCameraMatrix(), 
+    getImage().cameraInfo,
+    (double)getImage().cameraInfo.resolutionWidth, 
+    0.0, 
+    0.0,
+    ru);
+
+  Vector2<double> rb;
+  CameraGeometry::imagePixelToFieldCoord(
+    getCameraMatrix(), 
+    getImage().cameraInfo,
+    (double)getImage().cameraInfo.resolutionWidth, 
+    (double)getImage().cameraInfo.resolutionHeight, 
+    0.0,
+    rb);
+
+  Vector2<double> lb;
+  CameraGeometry::imagePixelToFieldCoord(
+    getCameraMatrix(), 
+    getImage().cameraInfo,
+    0.0, 
+    (double)getImage().cameraInfo.resolutionHeight, 
+    0.0,
+    lb);
+
+  LINE(lu.x, lu.y, ru.x, ru.y);
+  LINE(ru.x, ru.y, rb.x, rb.y);
+  LINE(rb.x, rb.y, lb.x, lb.y);
+  LINE(lb.x, lb.y, lu.x, lu.y);
+  );
+
+  DEBUG_REQUEST("VisualObstacleLocator:draw_field_of_view",
+    getRadarGrid().resetGrid();
+  );
+
   // store odometry data
   odometryDelta = getOdometryData() - lastRobotOdometry;
   lastRobotOdometry = getOdometryData();

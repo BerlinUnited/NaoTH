@@ -29,9 +29,11 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BallPercept.h"
 //#include "Representations/Perception/ObstaclePercept.h"
 #include "Representations/Modeling/RadarGrid.h"
+
 
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
@@ -43,6 +45,7 @@ BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(ScanLineEdgelPercept)
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
+  REQUIRE(CameraMatrix)
   REQUIRE(UltraSoundReceiveData)
   REQUIRE(Image)
 

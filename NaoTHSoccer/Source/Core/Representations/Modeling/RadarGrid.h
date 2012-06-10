@@ -110,6 +110,9 @@ public:
   void drawFieldContext();
   void drawImageContext();
 
+  // reset the grid
+  void resetGrid();
+
   virtual void print(std::ostream& stream) const
   {
     stream << "Obstacle was seen: " << obstacleWasSeen << endl;

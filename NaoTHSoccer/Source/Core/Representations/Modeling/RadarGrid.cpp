@@ -316,6 +316,13 @@ void RadarGrid::checkValid()
   }
 }// check, whether we have some obstacles
 
+
+void RadarGrid::resetGrid()
+{
+  this->cells.clear();
+}
+
+
 //draw radarGrid within FieldContext
 void RadarGrid::drawFieldContext()
 {
