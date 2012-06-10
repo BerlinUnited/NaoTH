@@ -3,11 +3,35 @@ option obstacles_test
 
   initial state play
   {
+    decision
+    {
+      if(state_time < 500 )
+        stay;
+      else
+        goto stand;
+    }
 	  action
 	  {
+    head.control_mode = search_for_ball;
+    
 	  go_to_relative_point_avoid_obstacles(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
 	                           x = ball.left_foot.preview.x - 180 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
 	                           y = ball.left_foot.preview.y - 180 * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));  
 	  }
+  }
+
+  state stand
+  {
+    decision
+    {
+      if(state_time < 2000)
+        stay;
+      else
+        goto play;
+    }
+    action
+    {
+      motion.type = stand;
+    }
   }
 }

@@ -446,7 +446,10 @@ int V4lCameraHandler::readFrameMMaP()
 
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
-  return currentBuf.index;
+  if(errorOccured == 0)
+    return currentBuf.index;
+  else
+    return -1;
 }
 
 int V4lCameraHandler::readFrameUP()
