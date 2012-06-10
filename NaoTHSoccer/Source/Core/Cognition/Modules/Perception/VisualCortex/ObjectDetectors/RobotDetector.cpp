@@ -36,9 +36,7 @@ RobotDetector::RobotDetector()
   
   blueMarkers.reserve(MAX_MARKER_NUMBER);
   redMarkers.reserve(MAX_MARKER_NUMBER);
-  resolutionWidth = getImage().cameraInfo.resolutionWidth;
-  resolutionHeight = getImage().cameraInfo.resolutionHeight;
-
+  
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_blobs", "draw the blobs", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_poly_params", "draw marker's polygon parameters", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:RobotDetector:draw_scanlines_marker", "draw marker scanlines", false);
@@ -276,7 +274,7 @@ inline void RobotDetector::findMarkerPoly(Vector2<int> cog, ColorClasses::Color 
   }
  
   // if the marker is good enough, 
-  // take him
+  // take it
   if (checkMarkerPoly(marker))
   {
     if(color == ColorClasses::blue)
@@ -296,7 +294,7 @@ inline bool RobotDetector::checkMarkerPoly(Marker& marker)
   // get the marker's area
   estimateArea(marker);
   // if the marker too small,
-  // don't take him
+  // don't take it
   if (marker.area < MARKER_MIN_SIZE)
   {
     result = false;
@@ -504,6 +502,7 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
   {
     searchColorPointsSkipIndex++;
   }//end else
+  
   if(draw)
   {
     if(hasColor)
@@ -525,7 +524,7 @@ inline void RobotDetector::scanLine(Vector2<int> start, Vector2<int>& direction,
   currentPoint += direction;
   }//end for
 
-if(borderPointFound) //if a point was found ...
+  if(borderPointFound) //if a point was found ...
   {
     point = borderPoint;
     //goodPoints.add(borderPoint); //it's good point
@@ -534,11 +533,11 @@ if(borderPointFound) //if a point was found ...
 
 
 //check whether a point is in the image
-inline bool RobotDetector::pixelInSearchArea(Vector2<int>& pixel)
+inline bool RobotDetector::pixelInSearchArea(const Vector2<int>& pixel) const
 {
 //   return searchArea.isInside(pixel);
-  return ((pixel.x >= 0 && pixel.x <= (int)resolutionWidth)
-    &&(pixel.y >= 0 && pixel.y <= (int)resolutionHeight));
+  return ((pixel.x >= 0 && pixel.x < (int)getImage().cameraInfo.resolutionWidth) &&
+          (pixel.y >= 0 && pixel.y < (int)getImage().cameraInfo.resolutionHeight));
 }//end pixelInImage
 
 
