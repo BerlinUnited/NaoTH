@@ -8,6 +8,8 @@
 #include "Motion.h"
 #include <glib.h>
 
+#include <stdlib.h>
+
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 
@@ -39,6 +41,7 @@ Motion::Motion()
   theInertiaSensorCalibrator(theBlackBoard, theBlackBoard.theCalibrationData),
   theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
   frameNumSinceLastMotionRequest(0),
+  lastCognitionFrameNumber(0),
   state(initial),
   motionLogger("MotionLog"),
   oldMotionRequestTime(0)
@@ -127,7 +130,6 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 
 void Motion::call()
 {
-  
   STOPWATCH_START("MotionExecute");
 
   // process sensor data
@@ -135,6 +137,35 @@ void Motion::call()
   processSensorData();
   STOPWATCH_STOP("Motion:processSensorData");
 
+  // check if cognition is still alive
+
+  if(lastCognitionFrameNumber == theBlackBoard.theMotionRequest.cognitionFrameNumber)
+  {
+    frameNumSinceLastMotionRequest++;
+  }
+  else
+  {
+    lastCognitionFrameNumber = theBlackBoard.theMotionRequest.cognitionFrameNumber;
+    frameNumSinceLastMotionRequest = 0;
+  }
+
+  if(frameNumSinceLastMotionRequest > 500)
+  {
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "dumping traces" << std::endl;
+    Trace::getInstance().dump();
+    Stopwatch::getInstance().dump("cognition");
+
+    std::cerr << "syncing file system..." ;
+    sync();
+    std::cerr << " finished." << std::endl;
+
+    ::exit(-100);
+  }
+
+  // ensure initialization
   switch (state)
   {
   case initial:
@@ -154,7 +185,6 @@ void Motion::call()
   }
   case running:
   {
-    frameNumSinceLastMotionRequest = 0;
     break;
   }
   case exiting:
