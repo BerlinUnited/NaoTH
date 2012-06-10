@@ -139,18 +139,14 @@ void Motion::call()
 
   // check if cognition is still alive
 
-  std::cout << "lastCognitionFrameNumber=" << lastCognitionFrameNumber << " new:"
-               << theBlackBoard.theMotionRequest.cognitionFrameNumber << std::endl;
   if(lastCognitionFrameNumber == theBlackBoard.theMotionRequest.cognitionFrameNumber)
   {
-    std::cout << "equal for " << frameNumSinceLastMotionRequest << " frames"<< std::endl;
     frameNumSinceLastMotionRequest++;
   }
   else
   {
     lastCognitionFrameNumber = theBlackBoard.theMotionRequest.cognitionFrameNumber;
     frameNumSinceLastMotionRequest = 0;
-    std::cout << "not equalm reset" << std::endl;
   }
 
   if(frameNumSinceLastMotionRequest > 500)
