@@ -63,7 +63,6 @@ option sidekick
       motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-45, max=90);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
-      motion.execute_immediately = true;
       //To avoid ball leaving the image when using ball model
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
@@ -98,7 +97,6 @@ option sidekick
       motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-90, max=45);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
-      motion.execute_immediately = true;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -127,7 +125,6 @@ option sidekick
       motion.walk_speed.rot = 0;
       motion.walk.stop_with_stand = false;
       //motion.walk.step_control.foot = none;
-      motion.execute_immediately = false;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
