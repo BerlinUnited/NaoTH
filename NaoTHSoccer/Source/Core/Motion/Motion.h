@@ -65,6 +65,7 @@ private:
   std::list<MotionFactory*> theMotionFactories;
   
   unsigned int frameNumSinceLastMotionRequest;
+  unsigned int lastCognitionFrameNumber;
 
   enum State
   {
