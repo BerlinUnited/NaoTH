@@ -1,3 +1,5 @@
+--local EXTERN_PATH = path.getabsolute("../../../Extern")
+
 project "NaoTH-Commons-Tests"
   kind "ConsoleApp"
   language "C++"
@@ -31,5 +33,5 @@ project "NaoTH-Commons-Tests"
   targetname "testCommons"
   
   configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
 
