@@ -52,7 +52,7 @@ public:
   // default constructor
   BodyContourProvider();
   
-  ~BodyContourProvider(){};
+  virtual ~BodyContourProvider(){};
 
   virtual void execute();
 
@@ -81,19 +81,26 @@ private:
   // add a line to BodyContour:
   // take the Position of a robot's limb (Pose3d) and multiply it
   // with the contour of this limb, finally, project the contour into the image
-  inline void add(const Pose3D& origin, const std::vector< Vector3<double> >& c, float sign, 
-    const CameraInfo& cameraInfo,  const CameraMatrix& cameraMatrix, BodyContour& bodyContour, BodyContour::bodyPartID id);
+  inline void add(
+    const Pose3D& origin, 
+    const std::vector< Vector3<double> >& c, 
+    float sign, 
+    const CameraInfo& cameraInfo,  
+    const CameraMatrix& cameraMatrix, 
+    BodyContour& bodyContour, 
+    BodyContour::bodyPartID id);
+
   //
-  inline void pushLine(BodyContour::Line line, BodyContour& bodyContour);
+  inline void pushLine(const BodyContour::Line& line, BodyContour& bodyContour);
 
   // check whether a point is within the image 
-  inline bool withinImage(const Vector2<double> point, const CameraInfo& cameraInfo);
+  inline bool withinImage(const Vector2<double>& point) const;
   //
-  inline void cellPos(BodyContour::Line line, Vector2<int>& firstCell, Vector2<int>& secondCell);
+  inline void cellPos(const BodyContour::Line& line, Vector2<int>& firstCell, Vector2<int>& secondCell) const;
   //
-  inline void cellPos(Vector2<int> point, Vector2<int>& cell);
+  inline void cellPos(const Vector2<int>& point, Vector2<int>& cell) const;
   //
-  inline void setCells(BodyContour::Line line, BodyContour& bodyContour);
+  inline void setCells(const BodyContour::Line& line, BodyContour& bodyContour) const;
   //
   inline void initializeGrid();
   //
