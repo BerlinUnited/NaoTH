@@ -67,10 +67,8 @@ private:
 
   AGLParameters parameters;
 
-
   CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
   AGLSampleBuffer theSampleBuffer;
-
 
   OdometryData lastRobotOdometry;
 

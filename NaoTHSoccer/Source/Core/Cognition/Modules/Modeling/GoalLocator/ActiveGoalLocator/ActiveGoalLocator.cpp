@@ -35,6 +35,7 @@ ActiveGoalLocator::ActiveGoalLocator()    :
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goalCenter", "draw the center of goal on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept", "draw the goal percept on field", false);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept_buffer", "draw the buffer set on field", false);
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_major_of_cluster", "", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_minor_of_cluster", "", false);
@@ -54,7 +55,7 @@ ActiveGoalLocator::ActiveGoalLocator()    :
     sampleSet[i].likelihood = 0.01;
   }*/
 
-  for(int i; i < 10; i++) ccSamples[i].canopyClustering.setClusterThreshold(parameters.thresholdCanopy);
+  for(int i = 0; i < 10; i++) ccSamples[i].canopyClustering.setClusterThreshold(parameters.thresholdCanopy);
 
 } //Constructor
 
@@ -159,7 +160,7 @@ void ActiveGoalLocator::execute() {
   bool oneFilterIsEmpty = false;
 
   //check if post-percepts available
-  for (unsigned int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
+  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
     //if (getGoalPercept().getPost(i).positionReliable) {
 
 
@@ -238,30 +239,6 @@ void ActiveGoalLocator::execute() {
 
 void ActiveGoalLocator::debugDrawings() {
 
-  /*18.02.2012
-    commented because of same colored goals
-  DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
-
-  if (lastGoalColor == ColorClasses::skyblue) {
-
-    FIELD_DRAWING_CONTEXT;
-      PEN("FF0000", 50);
-      CIRCLE(getLocalGoalModel().blueGoal.leftPost.x, getLocalGoalModel().blueGoal.leftPost.y, 50);
-
-      PEN("0000FF", 50);
-      CIRCLE(getLocalGoalModel().blueGoal.rightPost.x, getLocalGoalModel().blueGoal.rightPost.y, 50);
-      LINE(getLocalGoalModel().blueGoal.rightPost.x, getLocalGoalModel().blueGoal.rightPost.y, getLocalGoalModel().blueGoal.leftPost.x, getLocalGoalModel().blueGoal.leftPost.y);
-  } else if (lastGoalColor == ColorClasses::yellow) {
-    FIELD_DRAWING_CONTEXT;
-      PEN("FF0000", 50);
-      CIRCLE(getLocalGoalModel().yellowGoal.leftPost.x, getLocalGoalModel().yellowGoal.leftPost.y, 50);
-      PEN("FFFF00", 50);
-      CIRCLE(getLocalGoalModel().yellowGoal.rightPost.x, getLocalGoalModel().yellowGoal.rightPost.y, 50);
-      LINE(getLocalGoalModel().yellowGoal.rightPost.x, getLocalGoalModel().yellowGoal.rightPost.y, getLocalGoalModel().yellowGoal.leftPost.x, getLocalGoalModel().yellowGoal.leftPost.y);
-  }
-
-);*/
-
     DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
 
       FIELD_DRAWING_CONTEXT;
@@ -295,6 +272,20 @@ void ActiveGoalLocator::debugDrawings() {
       PEN("FF0000", 30);
       CIRCLE(percept.x, percept.y, 20);
 
+  });
+
+
+  DEBUG_REQUEST("ActiveGoalLocator:draw_percept_buffer",
+
+    //std::cout << "size" << theSampleBuffer.size() << std::endl;
+    for (unsigned int i = 0; i < theSampleBuffer.size(); i++) {
+      const AGLBSample& sample = theSampleBuffer[i];
+
+      FIELD_DRAWING_CONTEXT;
+      PEN("000000", 50);
+      CIRCLE(sample.translation.x, sample.translation.y, 20);
+
+      //std::cout << "it" << i << "x" << sample.translation.x << "y" << sample.translation.y << std::endl;
   });
 
 } //end debugDrawings
@@ -357,8 +348,8 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
       tmpSample.likelihood = 1.0/(double)sampleSet.size();
       sampleSet[n] = tmpSample;
       n++;
-      std::cout << tmpSample.likelihood << std::endl;
-      std::cout << sampleSet[n].likelihood << std::endl;
+      //std::cout << tmpSample.likelihood << std::endl;
+      //std::cout << sampleSet[n].likelihood << std::endl;
 
     } //else {
       //would be nice to hold the samples we don't have clustert
@@ -392,6 +383,7 @@ void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
 
           if (!ccSamples[i].sampleSet.getIsValid()) {
             initFilterByBuffer(ccTrashBuffer.getLargestClusterID(), sampleBuffer, ccSamples[i].sampleSet);
+            break; //xxx
           }  //end if ccSamples[i] is empty
       }
 
@@ -429,7 +421,7 @@ void ActiveGoalLocator::updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const 
         double diff = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
         weighting = Math::gaussianProbability(diff, parameters.standardDeviationAngle);
 
-        std::cout << weighting << std::endl;
+        //std::cout << weighting << std::endl;
         //Problem: winkelfehler und Distanz gemischt -> nicht vergleichbare fehler!
 
         //double diff = (sample.getPos() - getGoalPercept().getPost(i).position).abs();
