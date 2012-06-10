@@ -138,14 +138,19 @@ void Motion::call()
   STOPWATCH_STOP("Motion:processSensorData");
 
   // check if cognition is still alive
+
+  std::cout << "lastCognitionFrameNumber=" << lastCognitionFrameNumber << " new:"
+               << theBlackBoard.theMotionRequest.cognitionFrameNumber << std::endl;
   if(lastCognitionFrameNumber == theBlackBoard.theMotionRequest.cognitionFrameNumber)
   {
+    std::cout << "equal for " << frameNumSinceLastMotionRequest << " frames"<< std::endl;
     frameNumSinceLastMotionRequest++;
   }
   else
   {
     lastCognitionFrameNumber = theBlackBoard.theMotionRequest.cognitionFrameNumber;
     frameNumSinceLastMotionRequest = 0;
+    std::cout << "not equalm reset" << std::endl;
   }
 
   if(frameNumSinceLastMotionRequest > 500)
@@ -153,8 +158,6 @@ void Motion::call()
     std::cerr << "+==================================+" << std::endl;
     std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
     std::cerr << "+==================================+" << std::endl;
-    std::cerr << "dumping stopwatch" << std::endl;
-    Stopwatch::getInstance().dump();
     std::cerr << "dumping traces" << std::endl;
     Trace::getInstance().dump();
     Stopwatch::getInstance().dump("cognition");
