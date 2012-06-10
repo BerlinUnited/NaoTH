@@ -79,6 +79,9 @@ private:
 
   // obstacle positions
   std::vector<Vector2d> obstaclesPositions;
+
+  // functions
+  void collectObstacles();
 };
 
 #endif // PathFinder_h_

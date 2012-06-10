@@ -483,6 +483,87 @@ private:
     }// end for
   } // end checkWhetherGoalIsInObstacle
 
+//   void addAvoidingPoints(const vector<Node>& allObstacles, vector<Node>& currentUsedTree, const Vector2<>& position, const Vector2<>& positionOfObstacle, bool nearestObstacleMMX, const Node& target, const bool startIsUsed)
+//   {
+//     int degree = 60;
+//     Vector2<> originalPosition = position;
+//     float length;
+//     Vector2<> difference;
+//     if(position == positionOfObstacle)// special handling if obstacle = position
+//     {
+//       length = parameters.distanceToObstacle;
+//       difference = Vector2<>(parameters.distanceToObstacle, 0.0f);
+//     }
+//     else
+//     {
+//       difference = position - positionOfObstacle;
+//       difference.normalize(parameters.distanceToObstacle - difference.abs());
+//       float hypotenuse = (position - positionOfObstacle).abs();
+//       float opposite = sin(fromDegrees(degree)) * hypotenuse;
+//       float adjacent = sqrt(sqr(hypotenuse) - sqr(opposite));
+//       length = sqrt((parameters.distanceToObstacle - opposite) * (parameters.distanceToObstacle + opposite)); // length based on "Höhensatz des Euklids"
+//       length -= adjacent;
+//       //length = sqrt((2 * parameters.distanceToObstacle - difference.abs()) * difference.abs()); // length based on "Höhensatz des Euklid"
+//     }
+// 
+//     const int arraySize = 3;
+//     float distances[arraySize];
+//     Node nodes[arraySize];
+//     bool collisions[arraySize];
+//     Vector2<> obstacles[arraySize];
+// 
+//     nodes[0].position = (position + difference);//own direction
+//     difference.rotate(fromDegrees(degree));
+//     difference.normalize(length);
+//     nodes[1].position = position + difference;// rotated 70° from original avoiding position, based on start/end position
+//     difference.rotate(fromDegrees(-(degree * 2)));
+//     nodes[2].position = position + difference;// rotated -70° from original avoiding position, 180° is not used because obstacle would be between position and new node
+// 
+//     collisions[0] = checkForObstaclesNearPosition(allObstacles, obstacles[0], nodes[0].position, distances[0]);// check for new collisions for all avoiding points
+//     collisions[1] = checkForObstaclesNearPosition(allObstacles, obstacles[1], nodes[1].position, distances[1]);
+//     collisions[2] = checkForObstaclesNearPosition(allObstacles, obstacles[2], nodes[2].position, distances[2]);
+// 
+//     if(collisions[0] && collisions[1] && collisions[2] && obstacles[0] != 
+//       positionOfObstacle && obstacles[1] != positionOfObstacle && obstacles[2] != 
+//       positionOfObstacle && obstacles[0] != originalPosition && obstacles[1] != 
+//       originalPosition && obstacles[2] != originalPosition) // if all avoiding points lead in new obstacles use all points
+//     {
+//       for(int i = 0; i < arraySize; i++)
+//       {
+//         currentUsedTree.push_back(nodes[i]);
+//       }
+//     }
+//     else if(startIsUsed) // use special avoiding points for moving point of path
+//     {
+//       Node newPosition;
+//       float currentDistance = FLT_MAX;
+//       for(int i = 0; i < arraySize; i++) // use only points which don't lead in another obstacle or where the distance to the new obstacle is high enough. Position is also used if collision exists but only whith the avoided obstacle or the own position
+//       {
+//         if(!collisions[i] || (collisions[i] && (obstacles[i] == positionOfObstacle || obstacles[i] == originalPosition || distances[i] > parameters.distanceCloseToObstacle)))
+//         {
+//           float distance = (nodes[i].position - target.position).abs();
+//           if(distance < currentDistance)
+//           {
+//             currentDistance = distance;
+//             newPosition = nodes[i];
+//           }
+//         }
+//       }
+//       currentUsedTree.push_back(newPosition);
+//     }
+//     else
+//     {
+//       for(int i = 0; i < arraySize; i++) // use only points which don't lead in another obstacle or where the distance to the new obstacle is high enough. Position is also used if collision exists but only whith the avoided obstacle or the own position
+//       {
+//         if(!collisions[i] || (collisions[i] && (obstacles[i] == positionOfObstacle || obstacles[i] == originalPosition || distances[i] > parameters.distanceCloseToObstacle)))
+//         {
+//           currentUsedTree.push_back(nodes[i]);
+//         }
+//       }
+//     }
+//   }
+
+
 };// end class AStartSearch
 
 

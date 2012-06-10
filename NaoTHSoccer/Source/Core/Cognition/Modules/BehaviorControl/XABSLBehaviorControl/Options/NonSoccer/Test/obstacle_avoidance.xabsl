@@ -1,0 +1,17 @@
+/** The root option of the soccer behavior */
+option obstacle_avoidance 
+{
+
+  initial state play_penalty {
+    decision {
+      stay;
+    }
+    action {
+
+    
+      obstacles_test();
+      // control head movement according to value of head.control_mode
+      head_control();
+    }
+  }
+}

@@ -29,14 +29,15 @@ PathPlanner::PathPlanner()
 void PathPlanner::execute()
 {
   // create start and goal nodes
-   goalPoint = Vector2d(getPath().targetPoint);
+  goalPoint = Vector2d(getPath().targetPoint);
 
+  // collect obstacles
+  collectObstacles();
 
   AStarNode start(Vector2d(0.0, 0.0));
   AStarNode goal(getPath().targetPoint);
-  // get obstacles from radar grid
-  getRadarGrid().getAllObstacles(obstaclesPositions);
-
+  //AStarNode goal(Vector2d(2000.0, 400.0));
+ 
   // store the entire path length
   double pathLength;
   // start search
@@ -95,5 +96,15 @@ void PathPlanner::execute()
     theAStarSearch->drawObstacles();
   }
   );// end DEBUG_REQUEST
+
+}
+
+void PathPlanner::collectObstacles()
+{
+  // get obstacles from radar grid
+  getRadarGrid().getAllObstacles(obstaclesPositions);
+  // get playersmodel/percept
+  /**currently not in use*/
+  // get goal model
 
 }
