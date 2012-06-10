@@ -227,11 +227,10 @@ void BodyContourProvider::execute()
 
 // TODO: Comment
 inline bool BodyContourProvider::withinImage(const Vector2<double> point, const CameraInfo& cameraInfo)
-{
-  if (point.x >= 0 && point.x <= cameraInfo.resolutionWidth
-      && point.y >= 0 && point.y <= cameraInfo.resolutionHeight)
-  { return true; } 
-  else { return false; }
+{ 
+  return ((point.x >= 0 && point.x < (int)getImage().cameraInfo.resolutionWidth) &&
+          (point.y >= 0 && point.y < (int)getImage().cameraInfo.resolutionHeight));
+
 }
 // TODO: Comment
 inline void BodyContourProvider::initializeGrid()
