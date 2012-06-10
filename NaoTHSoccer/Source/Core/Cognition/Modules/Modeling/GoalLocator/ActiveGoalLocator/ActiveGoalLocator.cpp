@@ -32,7 +32,7 @@ ActiveGoalLocator::ActiveGoalLocator()    :
     //canopyClustering2(theSampleSet2, parameters.thresholdCanopy),
     ccTrashBuffer(theSampleBuffer, parameters.thresholdCanopy)
 {
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", false);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", true);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goalCenter", "draw the center of goal on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept", "draw the goal percept on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept_buffer", "draw the buffer set on field", false);
@@ -111,11 +111,12 @@ void ActiveGoalLocator::execute() {
 
   //TODO: clear???
   // don't update if the body state is not valid
-  /*if (getBodyState().fall_down_state != BodyState::upright || // robot is not upright
-    !(getBodyState().standByLeftFoot || getBodyState().standByRightFoot) // no foot is on the ground
-    ) {
-    sampleSet.clear();
-  }*/
+  if (getBodyState().fall_down_state != BodyState::upright || // robot is not upright
+      !(getBodyState().standByLeftFoot || getBodyState().standByRightFoot)) // no foot is on the ground
+  {
+      for (unsigned int i = 0; i < 10; i++);
+   //     ccSamples[i].sampleSet.samples.clear();
+  }
 
   //TODO: raus??
   //timeFilter += parameters.timeFilterRange * averageWeighting;
@@ -144,7 +145,7 @@ void ActiveGoalLocator::execute() {
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
   //TODO introduce size of ccSamples
   for(int i = 1; i < 10; i++)
-    updateByOdometry(ccSamples[1].sampleSet, odometryDelta);
+    updateByOdometry(ccSamples[i].sampleSet, odometryDelta);
 
   updateByOdometry(theSampleBuffer, odometryDelta);
   lastRobotOdometry = getOdometryData();
@@ -252,7 +253,12 @@ void ActiveGoalLocator::debugDrawings() {
   DEBUG_REQUEST("ActiveGoalLocator:draw_samples",
   for (unsigned int x = 0; x < 10; x++ ) {
 
-    string color = ColorClasses::colorClassToHex((ColorClasses::Color)((10+2)%ColorClasses::numOfColors));
+    std::cout << "size of cluster" << x << " is " << ccSamples[x].sampleSet.numberOfParticles <<  std::endl;
+
+    string color = ColorClasses::colorClassToHex((ColorClasses::Color)((x+3)%ColorClasses::numOfColors));
+
+    if (!ccSamples[x].sampleSet.getIsValid()) //alls PFs are filled initilized
+        break;
 
     for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) {
       const AGLSample& sample = ccSamples[x].sampleSet[i];
@@ -260,7 +266,7 @@ void ActiveGoalLocator::debugDrawings() {
         FIELD_DRAWING_CONTEXT;
         PEN(color, 30);
         CIRCLE(sample.translation.x, sample.translation.y, 20);
-        TEXT_DRAWING(sample.translation.x+10,sample.translation.y+10, sample.cluster);
+        TEXT_DRAWING(sample.translation.x+10,sample.translation.y+10, x);
     }
   });
 
@@ -351,7 +357,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
       //std::cout << tmpSample.likelihood << std::endl;
       //std::cout << sampleSet[n].likelihood << std::endl;
 
-    } //else {
+    } //else { FIXME
       //would be nice to hold the samples we don't have clustert
       //tmpSampleBuffer.samples.add(tmpSampleBuffer.samples.getEntry(i));
     //}
