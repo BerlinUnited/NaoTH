@@ -162,7 +162,7 @@ void Motion::call()
     sync();
     std::cerr << " finished." << std::endl;
 
-    ::exit(-100);
+    ASSERT(frameNumSinceLastMotionRequest <= 500);
   }
 
   // ensure initialization
