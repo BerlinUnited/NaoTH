@@ -1,0 +1,37 @@
+/** This option will do an emergency stop on a collision and nothing otherwise */
+option check_collision
+{
+
+  initial state _init
+  {
+    decision
+    {
+      if(collision.colliding)
+        goto emergencystop;
+      else
+        stay;
+    }
+    action
+    {
+      //do nothing
+    }
+  }
+
+  state emergencystop 
+  {
+    decision 
+    {
+      if(!collision.colliding)
+        goto _init;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      motion.execute_immediately = true;
+      set_left_eye=red_green;
+      set_right_eye=red_green;
+    }
+  }
+}

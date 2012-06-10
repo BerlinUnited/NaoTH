@@ -13,7 +13,6 @@
 // sensors
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/BatteryData.h>
-#include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/IRData.h>
@@ -52,7 +51,6 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(GyrometerData)
   PROVIDE(InertialSensorData)
   PROVIDE(SensorJointData)
-  PROVIDE(BumperData)
   PROVIDE(IRReceiveData)
   PROVIDE(CurrentCameraSettings)
   PROVIDE(ButtonData)

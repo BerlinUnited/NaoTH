@@ -21,6 +21,7 @@ option spl_playing_supporter {
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
+      check_collision();
     }
   }
 
@@ -44,6 +45,7 @@ option spl_playing_supporter {
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 100;
       motion.walk_speed.rot = 0;
+      check_collision();
     }
   }
 
@@ -67,6 +69,7 @@ option spl_playing_supporter {
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -100;
       motion.walk_speed.rot = 0;
+      check_collision();
     }
   }
 
@@ -83,6 +86,7 @@ option spl_playing_supporter {
    }
     action {
       ball_not_seen_situation();
+      check_collision();
     }
   }
 
@@ -99,6 +103,7 @@ option spl_playing_supporter {
     }
       action {
         spl_simple_supporter();
+        check_collision();
       }
   }
 
@@ -119,6 +124,7 @@ option spl_playing_supporter {
     action {
        decide_strategy_position();
        head.control_mode = smart_search;
+       check_collision();
     }
   }
   
