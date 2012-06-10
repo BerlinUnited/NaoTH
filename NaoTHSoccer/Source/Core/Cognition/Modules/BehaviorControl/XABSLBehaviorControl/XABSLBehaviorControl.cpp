@@ -11,6 +11,8 @@
 #include <DebugCommunication/DebugCommandManager.h>
 #include "PlatformInterface/Platform.h"
 
+#include <Tools/Debug/Trace.h>
+
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 
@@ -118,9 +120,13 @@ void XABSLBehaviorControl::execute()
   // execute the behavior
   if(theEngine != NULL && !theErrorHandler.errorsOccurred)
   {
+    GT_TRACE("");
     updateXABSLSymbols();
+    GT_TRACE("");
     theEngine->execute();
+    GT_TRACE("");
     updateOutputSymbols();
+    GT_TRACE("");
     //cout << "test " << getMotionStatus().motionRequest << endl;
 
     // update the behavior status
@@ -132,6 +138,8 @@ void XABSLBehaviorControl::execute()
       fillRegisteredSymbols(getBehaviorStatus().status);
     );
 
+    GT_TRACE("");
+
     draw();
   }//end if
 
@@ -141,6 +149,9 @@ void XABSLBehaviorControl::execute()
       getBehaviorStatus().status.set_errormessage(error_stream.str());
     }
   );
+
+  GT_TRACE("");
+
 }//end execute
 
 
@@ -244,13 +255,21 @@ void XABSLBehaviorControl::updateXABSLSymbols()
 {
   if(theEngine != NULL)
   {
+    GT_TRACE("");
     theSelflocSymbols->execute();
+    GT_TRACE("");
     theSensorSymbols->execute();
+    GT_TRACE("");
     theBallSymbols->execute();
+    GT_TRACE("");
     theOdometrySymbols->execute();
+    GT_TRACE("");
     theMotionSymbols->execute();
+    GT_TRACE("");
     theLineSymbols->execute();
+    GT_TRACE("");
     theStrategySymbols->execute();
+    GT_TRACE("");
   }//end if
 }//end updateXABSLSymbols
 

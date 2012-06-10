@@ -35,7 +35,6 @@ compatibleMode(compatibleMode),
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<BumperData>(*this);
   registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);

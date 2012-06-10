@@ -18,8 +18,9 @@ InertiaSensorCalibrator::InertiaSensorCalibrator(
   const MotionBlackBoard& bb, 
   CalibrationData& theCalibrationData)
   :
-  theBlackBoard(bb),
-  theCalibrationData(theCalibrationData)
+    theBlackBoard(bb),
+    theCalibrationData(theCalibrationData),
+    calibrated(false)
 {
   DEBUG_REQUEST_REGISTER("InertiaSensorCalibrator:force_calibrate", "", false);
 }
