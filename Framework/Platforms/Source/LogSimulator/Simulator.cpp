@@ -92,6 +92,7 @@ void Simulator::printHelp()
   cout << "g - jump to specific frame" << endl;
   cout << "p - play to end (end by pressing p again)" << endl;
   cout << "l - play loop (end by pressing l again)" << endl;
+  cout << "r - repeat a frame" << endl;
   cout << "q or x - quit/exit" << endl << endl;
 
   cout << "After a frame was executed you will always get a line showing you the current frame and the minimal and maximal frame number" << endl;
@@ -148,6 +149,10 @@ void Simulator::main()
     {
       loop();
     }
+    else if(c == 'r')
+    {
+      executeCurrentFrame();
+    }
     else if(c == 'h')
     {
       printHelp();
@@ -182,7 +187,7 @@ void Simulator::play()
     unsigned int waitTime = Math::clamp(33 - (NaoTime::getNaoTimeInMilliSeconds() - startTime),(unsigned int) 5, (unsigned int) 33);
 
     #ifdef WIN32
-    Sleep(60);
+    Sleep(waitTime);
     if(_kbhit())
     #else
     // wait some time
@@ -423,6 +428,9 @@ void Simulator::adjust_frame_time()
   // the time should contineously increase even if the logfile is played backwards (!)
   static unsigned int current_time = 0;
 
+  // as well as the frame number
+  static unsigned int current_frame_number = 0;
+
   naothmessages::FrameInfo f;
   unsigned int time_delta = CYCLE_TIME;
   
@@ -458,10 +466,13 @@ void Simulator::adjust_frame_time()
   //
   f.set_time(current_time);
 
+  /*
   if(!f.has_framenumber())
   {
     f.set_framenumber(*currentFrame);
-  }
+  }*/
+  f.set_framenumber(current_frame_number++);
+  
 
   // write the result back
   string result = f.SerializeAsString();
