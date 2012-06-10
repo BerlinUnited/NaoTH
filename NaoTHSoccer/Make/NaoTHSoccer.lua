@@ -7,7 +7,7 @@ project "NaoTHSoccer"
   files {"../Source/**.h","../Source/**.cpp"}
   
   includedirs {
-	  "../Source/Core/"
+	"../Source/Core/"
 	}
   
   --links { "NaoTH-Commons" }

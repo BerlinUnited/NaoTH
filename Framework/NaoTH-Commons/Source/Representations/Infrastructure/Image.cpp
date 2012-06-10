@@ -124,7 +124,10 @@ void Image::print(ostream& stream) const
           << "Buffer Switching Fail Count: "<< bufferFailedCount << endl
           << "Wrong Buffer Size Count: "<< wrongBufferSizeCount << endl
           << "Image stucked" << ((possibleImageStuck) ? "true"  : "false") << endl
-          << "Camera Info: "<< cameraInfo << endl
+          << "Camera Info:"<< endl
+          << "============"<< endl
+          << cameraInfo << endl
+          << "============"<< endl
           ;
 }//end print
 

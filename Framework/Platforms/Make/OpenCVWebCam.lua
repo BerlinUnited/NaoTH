@@ -1,4 +1,4 @@
-local extern_dir = "../../../Extern"
+--local EXTERN_PATH = "../../../Extern"
 
 -- NaoTH controller for the webcam based "simulator"
 project "OpenCVWebCam"
@@ -10,12 +10,12 @@ project "OpenCVWebCam"
 	"../Source/",
 	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
-	extern_dir .. "/include/",
-	extern_dir .. "/include/glib-2.0/",
-	extern_dir .. "/lib/glib-2.0/include/",
-	extern_dir .. "/include/opencv2/core/include/",
-	extern_dir .. "/include/opencv2/imgproc/include/",
-	extern_dir .. "/include/opencv2/highgui/include/",
+	EXTERN_PATH .. "/include/",
+	EXTERN_PATH .. "/include/glib-2.0/",
+	EXTERN_PATH .. "/lib/glib-2.0/include/",
+	EXTERN_PATH .. "/include/opencv2/core/include/",
+	EXTERN_PATH .. "/include/opencv2/imgproc/include/",
+	EXTERN_PATH .. "/include/opencv2/highgui/include/",
 	}
   
   files{"../Source/OpenCVWebCam/**.cpp","../Source/OpenCVWebCam/**.h"}
@@ -37,6 +37,6 @@ project "OpenCVWebCam"
   targetname "OpenCVWebCam"
   
   configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
 
   -- END OpenCVWebCam

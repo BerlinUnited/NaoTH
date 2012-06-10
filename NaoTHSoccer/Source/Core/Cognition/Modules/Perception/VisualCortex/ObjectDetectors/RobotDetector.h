@@ -108,8 +108,6 @@ private:
     GameData::TeamColor color;
   }; // end class Marker
 
-  unsigned int resolutionWidth;
-  unsigned int resolutionHeight;
   std::vector<Marker> blueMarkers;
   std::vector<Marker> redMarkers;
   
@@ -137,7 +135,7 @@ private:
   inline void scanLine(Vector2<int> start, Vector2<int>& direction, int maxColorPointsToSkip, 
                         ColorClasses::Color searchColor, Vector2<int>& point, bool draw, Marker& marker);
   inline bool isSearchColor(ColorClasses::Color color, ColorClasses::Color searchColor);
-  inline bool pixelInSearchArea(Vector2<int>& pixel);
+  inline bool pixelInSearchArea(const Vector2<int>& pixel) const;
 
 
   const ColorClassificationModel& getColorTable64() const

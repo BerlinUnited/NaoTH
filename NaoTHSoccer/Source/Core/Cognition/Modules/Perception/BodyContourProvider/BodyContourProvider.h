@@ -35,7 +35,6 @@ BEGIN_DECLARE_MODULE(BodyContourProvider)
   REQUIRE(KinematicChain)
   REQUIRE(CameraMatrix)
   REQUIRE(Image)
-  REQUIRE(CameraInfo)
   PROVIDE(BodyContour)
 END_DECLARE_MODULE(BodyContourProvider)
 
