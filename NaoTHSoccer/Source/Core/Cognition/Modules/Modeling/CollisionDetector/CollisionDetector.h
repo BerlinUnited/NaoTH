@@ -24,7 +24,8 @@ public:
   virtual ~CollisionDetector();
 
   virtual void execute();
-
+private:
+  FrameInfo timeSinceFree;
 };
 
 #endif // COLLISIONDETECTOR_H

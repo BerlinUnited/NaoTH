@@ -15,9 +15,9 @@ option decide_role
     {
       if(state_time < 20000 &&
          game.own_kickoff && !ball_was_outside_circle)
-        goto initial_striker;
+        goto defender;
       else
-        goto striker;
+        goto defender;
     }
     else if(team.calc_if_is_the_last)
     {
@@ -25,7 +25,7 @@ option decide_role
     }
     else if(true)
     {
-      goto supporter;
+      goto defender;
     }
   }
 

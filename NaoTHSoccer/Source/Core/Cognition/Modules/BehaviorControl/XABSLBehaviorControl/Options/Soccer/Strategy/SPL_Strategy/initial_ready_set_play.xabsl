@@ -5,14 +5,12 @@ option initial_ready_set_play
 	common decision {
     if (game.state == _initial_)
 		  goto _initial;
-    else if (game.state == penalized)
-      goto penalized;
-    else if(collision.colliding)
-      goto emergencystop;
 		else if (game.state == ready)
 		  goto ready;
 		else if (game.state == set)
 		  goto set;
+    else if (game.state == penalized)
+      goto penalized;
     else if (game.state == finished)
       goto _initial;
     else if(game.state == playing)
@@ -99,16 +97,6 @@ option initial_ready_set_play
       last_state_was_penalized = false;
       head.control_mode = stay_as_forced;
       motion.type = stand;
-    }
-  }
-
-  state emergencystop {
-    action 
-    {
-      motion.type = stand;
-      motion.execute_immediately = true;
-      set_left_eye = red_green;
-      set_right_eye = red_green;
     }
   }
 }
