@@ -32,7 +32,12 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.distance_to_ball", &getOwnClosestToBallDistanceToBall);
 
 
+  // attack direction and previews
   engine.registerDecimalInputSymbol("attack.direction", &attackDirection);
+  engine.registerDecimalInputSymbol("attack.direction.preview", &attackDirection);
+  engine.registerDecimalInputSymbol("attack.direction.preview.left_foot", &attackDirection);
+  engine.registerDecimalInputSymbol("attack.direction.preview.right_foot", &attackDirection);
+
 
   engine.registerDecimalInputSymbol("defense.pose.translation.x", &defensePoseX);
   engine.registerDecimalInputSymbol("defense.pose.translation.y", &defensePoseY);
@@ -43,8 +48,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("setpiece.pose.y", &setpiecePosition.y);
   engine.registerBooleanInputSymbol("setpiece.participation", &setpieceParticipation);
 
+  
   engine.registerBooleanInputSymbol("attack.approaching_with_right_foot", &getApproachingWithRightFoot );
-
 
 
 
@@ -101,7 +106,16 @@ StrategySymbols* StrategySymbols::theInstance = NULL;
 
 void StrategySymbols::execute()
 {
-  attackDirection = calculateAttackDirection();
+  { // prepare the attack direction
+  const Vector2<double>& p = getSoccerStrategy().attackDirection;
+  
+  attackDirection             = Math::toDegrees(p.angle());
+  attackDirectionPreviewHip   = Math::toDegrees((getMotionStatus().plannedMotion.hip   / p).angle());
+  attackDirectionPreviewLFoot = Math::toDegrees((getMotionStatus().plannedMotion.lFoot / p).angle());
+  attackDirectionPreviewRFoot = Math::toDegrees((getMotionStatus().plannedMotion.rFoot / p).angle());
+  }
+
+
   DEBUG_REQUEST("XABSL:StrategySymbols:draw_attack_direction",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
@@ -576,27 +590,6 @@ bool StrategySymbols::setpieceParticipation()
 {
   return theInstance->calculateSetPiecePose();
 }
-
-double StrategySymbols::calculateAttackDirection()
-{
-  const Vector2<double>& p = theInstance->soccerStrategy.attackDirection;
-  return Math::toDegrees(p.angle());
-}
-
-
-Vector2<double> StrategySymbols::calculatePlayerPotentialField(const Vector2<double>& player, const Vector2<double>& ball)
-{
-  const static double a = 1500;
-  const static double d = 2000;
-
-  Vector2<double> v = player-ball;
-  double t = v.abs();
-  if ( t >= d-100 ) return Vector2<double>(0,0);
-
-  double ang = v.angle();
-  return Vector2<double>(cos(ang), sin(ang)) * exp(a / d - a / (d - t));
-}
-
 
 //returns the x-coordinate of the edge of the circle the robot shall move to reach the inputpoint with direction to another inputpoint
 /**

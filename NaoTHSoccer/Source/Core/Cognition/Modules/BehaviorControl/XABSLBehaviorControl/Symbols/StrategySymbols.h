@@ -126,9 +126,13 @@ private:
   Vector2<double> setpiecePosition;
   double goalKickPlayer;
   bool goalKickPositionLeft;
-  double attackDirection;
 
-  static Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
+
+  /** attack direction and its previews */
+  double attackDirection;
+  double attackDirectionPreviewHip;
+  double attackDirectionPreviewLFoot;
+  double attackDirectionPreviewRFoot;
 
 
   /** returns x-position on circle between to points */
@@ -154,10 +158,6 @@ private:
     /** The parameter "circlex.robot.x" and "circley.robot.x" of the functions "circlex" and "circley" */
     Vector2<double> robot_pose;
   } cycle;
-
-public:
-  /** @return the suggested attack direction in local coordinates */
-  static double calculateAttackDirection();
 
 };//end class StrategySymbols
 
