@@ -33,10 +33,16 @@ void PathPlanner::execute()
 
   // collect obstacles
   collectObstacles();
+//   obstaclesPositions.resize(3);
+//   obstaclesPositions[0] = Vector2d(250.0, 0.0);
+//   obstaclesPositions[1] = Vector2d(0.0,-250.0);
+//   obstaclesPositions[2] = Vector2d(0.0, 250.0);
+
+
 
   AStarNode start(Vector2d(0.0, 0.0));
   AStarNode goal(getPath().targetPoint);
-  //AStarNode goal(Vector2d(2000.0, 400.0));
+  //AStarNode goal(Vector2d(1200.0, 0.0));
  
   // store the entire path length
   double pathLength;

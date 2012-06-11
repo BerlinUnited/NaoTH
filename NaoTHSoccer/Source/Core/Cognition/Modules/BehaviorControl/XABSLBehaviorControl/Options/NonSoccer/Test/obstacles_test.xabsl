@@ -8,7 +8,7 @@ option obstacles_test
       if(state_time < 500 )
         stay;
       else
-        goto stand;
+        stay;// goto stand;
     }
 	  action
 	  {
@@ -17,6 +17,9 @@ option obstacles_test
 	  go_to_relative_point_avoid_obstacles(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
 	                           x = ball.left_foot.preview.x - 180 * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
 	                           y = ball.left_foot.preview.y - 180 * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)));  
+    set_left_eye = off;  
+    set_right_eye = off;                       
+	  check_collision();
 	  }
   }
 
@@ -32,6 +35,9 @@ option obstacles_test
     action
     {
       motion.type = stand;
+      set_left_eye = off;  
+      set_right_eye = off;  
+      check_collision();
     }
   }
 }

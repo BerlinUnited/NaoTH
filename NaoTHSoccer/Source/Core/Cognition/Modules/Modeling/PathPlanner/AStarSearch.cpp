@@ -258,4 +258,3 @@ void AStarSearch::drawObstacles()
     CIRCLE(obstacles[i].x, obstacles[i].y, parameterSet.obstacleRadius);
   }
 }
-
