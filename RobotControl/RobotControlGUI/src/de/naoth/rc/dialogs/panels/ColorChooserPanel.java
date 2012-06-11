@@ -29,12 +29,15 @@ public class ColorChooserPanel extends javax.swing.JPanel {
         initComponents();
 
         try{
-            for(Colors.ColorClass c: Colors.ColorClass.values())
+          for(Colors.ColorClass c: Colors.ColorClass.values())
+          {
+            if(c != Colors.ColorClass.numOfColors)
             {
-                ColorButton button = new ColorButton(Colors.GetColor(c), c.name());
-                this.colorClassButtonGroup.add(button);
-                this.colorToolBar.add(button);
-            }//end for
+              ColorButton button = new ColorButton(Colors.GetColor(c), c.name());
+              this.colorClassButtonGroup.add(button);
+              this.colorToolBar.add(button);
+            }
+          }//end for
         }catch(Exception e)
         {
           Helper.handleException(e);
