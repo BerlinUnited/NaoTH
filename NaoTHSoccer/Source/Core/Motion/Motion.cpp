@@ -158,7 +158,7 @@ void Motion::call()
     Trace::getInstance().dump();
     Stopwatch::getInstance().dump("cognition");
 
-    //TODO: is this a good place for linux sync command??
+    //TODO: Maybe better put it into Platform?
     #ifndef WIN32
     std::cerr << "syncing file system..." ;
     sync();
