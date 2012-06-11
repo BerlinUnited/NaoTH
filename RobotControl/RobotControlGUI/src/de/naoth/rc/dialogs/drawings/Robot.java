@@ -43,6 +43,7 @@ public class Robot implements Drawable
       this.color = Colors.parseColor(args[5]);
   }
 
+  @Override
   public void draw(Graphics2D g2d)
   {
     g2d.translate(x, y);
