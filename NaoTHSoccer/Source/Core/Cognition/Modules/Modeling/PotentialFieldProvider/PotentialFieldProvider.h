@@ -25,21 +25,20 @@
 
 // Tools
 
-
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(PotentialFieldProvider)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)  
-
   REQUIRE(PlayerInfo)
+
+  REQUIRE(RobotPose)
   REQUIRE(BallModel)
   REQUIRE(SelfLocGoalModel)
   REQUIRE(LocalGoalModel)
-  REQUIRE(PlayersModel)
-  REQUIRE(RobotPose)
-  REQUIRE(MotionStatus)
   REQUIRE(CompassDirection)
+  REQUIRE(PlayersModel)
+  REQUIRE(MotionStatus)
   
   PROVIDE(RawAttackDirection)
 END_DECLARE_MODULE(PotentialFieldProvider)
@@ -56,18 +55,7 @@ public:
   /** executes the module */
   void execute();
 
-
-  /**
-    * Calculate the potential field for a given point and a target point (e.g. the center of the goal)
-    * @param point The relative point for which the vector should be calculated.
-    * @param targetPoint Relative coordinates of the target point.
-    * @param obstacles List of valid obstacles that need to be avoided.
-    * @return A vector describing the attack direction to the target point as represented by the potential field.
-    *         The vector is in relative coordinates (same coordinate system as point and targetPoint)
-    */
-  Vector2<double> calculatePotentialField(
-        const Vector2<double>& point, const Vector2<double> &targetPoint,
-        const std::list<Vector2<double> >& obstacles);
+private:
 
   /**
     * Calculate the target point between the goal posts to shoot at.
@@ -75,17 +63,51 @@ public:
     * @param oppGoalModel Relative coordinates of the opponent goal.
     * @return Target point.
     */
-  Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel);
+  Vector2<double> getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const;
 
 
-private:
+  /** 
+    * Calculate the list of valide obstacles (opponents, teammates)
+    */
+  std::list<Vector2<double> > getValidObstacles() const;
 
-  /** @return the suggested attack direction in local coordinates */
-  Vector2<double> calculateGoalPotentialField( const Vector2<double>& goal, const Vector2<double>& ball);
-  Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
 
-  std::list<Vector2<double> > getValidObstacles();
+  // TODO: following methods should be made more universal and moved to a toolbox 
+
+  /**
+    * Calculate the potential field at a given point for a target point (e.g. the center of the goal)
+    * acting as attractor and a list of abstacles acting as repellers
+    * @param point The relative point for which the vector should be calculated.
+    * @param targetPoint Relative coordinates of the target point.
+    * @param obstacles List of valid obstacles that need to be avoided.
+    * @param a 2D transformation applied to the field
+    * @return A vector describing the attack direction to the target point as represented by the potential field.
+    *         The vector is in relative coordinates (same coordinate system as point and targetPoint)
+    */
+  Vector2<double> calculatePotentialField(
+        const Vector2<double>& point, 
+        const Vector2<double>& targetPoint,
+        const std::list<Vector2<double> >& obstacles) const;
+
+  /**
+    * Global field pointing to the point p with axponential strenth depending on the distance.
+    * @param x point at which to evaluate the vector field
+    * @param p position of the attractor
+    * @return potential vector at the point x 
+    */
+  Vector2<double> globalExponentialAttractor( const Vector2<double>& p, const Vector2<double>& x ) const;
+
+  /**
+    * A repeller produces a round fild around a point which 'pushes' away.
+    * The influence of the repeller is limited to the radius d.
+    * The sloping parameter 0 < a < d defines the strenth of the field 
+    * depending on the distance to the repeller.
+    * @param x point at which to evaluate the vector field
+    * @param p position of the repeller
+    * @return potential vector at the point x 
+    */
+  Vector2<double> compactExponentialRepeller( const Vector2<double>& p, const Vector2<double>& x ) const;
 
 };
 
-#endif //__PotentialFieldProvider_h_
+#endif //_PotentialFieldProvider_h_
