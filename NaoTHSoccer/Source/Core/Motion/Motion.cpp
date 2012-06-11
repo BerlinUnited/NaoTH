@@ -158,9 +158,12 @@ void Motion::call()
     Trace::getInstance().dump();
     Stopwatch::getInstance().dump("cognition");
 
+    //TODO: Maybe better put it into Platform?
+    #ifndef WIN32
     std::cerr << "syncing file system..." ;
     sync();
     std::cerr << " finished." << std::endl;
+    #endif
 
     ASSERT(frameNumSinceLastMotionRequest <= 500);
   }
