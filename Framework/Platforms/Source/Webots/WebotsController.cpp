@@ -503,7 +503,9 @@ void WebotsController::set(const CameraSettingsRequest& data)
 
 void WebotsController::get(ButtonData& data)
 {
-  for (int i = 0; i < ButtonData::numOfButtons; i++) {
+  data.isPressed[i] = 0;  //chest button
+
+  for (int i = 1; i < ButtonData::numOfButtons; i++) {
     data.isPressed[i] = (wb_touch_sensor_get_value(buttons[i]) > 0);
   }
 }
