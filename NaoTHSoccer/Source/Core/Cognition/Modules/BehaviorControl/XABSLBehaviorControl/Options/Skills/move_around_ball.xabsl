@@ -6,7 +6,7 @@ option move_around_ball
 
   common decision
   {
-    if (abs(value=ball.angle)>60)
+    if (abs(value=ball.angle)>30)
     {
       goto face_to_ball;
     }
