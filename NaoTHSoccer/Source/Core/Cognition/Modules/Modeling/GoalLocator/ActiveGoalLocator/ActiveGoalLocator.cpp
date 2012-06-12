@@ -31,6 +31,8 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goal_model", "", false);
 
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
+
   goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
 
   timeFilter = 0.000001;
@@ -152,7 +154,8 @@ void ActiveGoalLocator::execute() {
   debugDrawings();
   debugPlots();
 
-  for(int i = 1; i < 10; i++) {
+  //TEMP Debug
+  for(unsigned int i = 0; i < 10; i++) {
 
       if (ccSamples[i].sampleSet.getIsValid())
       std::cout << "Filter " << i << "is Valid" << std::endl;
@@ -193,6 +196,27 @@ void ActiveGoalLocator::debugDrawings() {
         TEXT_DRAWING(sample.translation.x+10,sample.translation.y+10, x);
     }
   });
+
+  DEBUG_REQUEST("ActiveGoalLocator:draw_mean_of_each_valid_PF",
+
+    for(unsigned int x = 0; x < 10; x++) {
+
+      Vector2<double> mean;
+
+      if (ccSamples[x].sampleSet.getIsValid()) {
+
+        for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) {
+          mean += ccSamples[x].sampleSet[i].getPos();
+
+        }
+         mean /= ccSamples[x].sampleSet.size();
+
+        FIELD_DRAWING_CONTEXT;
+        PEN("FF0000", 20);
+        CIRCLE(mean.x, mean.y, 20);
+      }
+    }
+  );
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_percept",
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
