@@ -1,4 +1,5 @@
 #include "StrategySymbols.h"
+#include "Tools/Math/Common.h"
 #include "Tools/Math/Pose2D.h"
 #include "Tools/Math/Geometry.h"
 #include "Representations/Modeling/BallModel.h"
@@ -9,6 +10,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include "Representations/Motion/MotionStatus.h"
 #include <Tools/Debug/DebugBufferedOutput.h>
+
 
 void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 {
@@ -86,6 +88,10 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
+  // Symbols for approaching the ball
+  engine.registerDecimalOutputSymbol("PosBehindBall2ADRotation", &PosBehindBall2ADY, &PosBehindBall2ADX);
+  engine.registerDecimalOutputSymbol("PosBehindBall2ADX", &PosBehindBall2ADY, &PosBehindBall2ADX);
+  engine.registerDecimalOutputSymbol("PosBehindBall2ADY", &PosBehindBall2ADY, &PosBehindBall2ADX);
 
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
@@ -97,6 +103,11 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
 
 StrategySymbols* StrategySymbols::theInstance = NULL;
+
+double StrategySymbols::PosBehindBall2ADRotation()
+{
+  return toDegrees(atan2(theInstance->PosBehindBall2ADY,theInstance->PosBehindBall2ADX));
+}
 
 
 void StrategySymbols::execute()
