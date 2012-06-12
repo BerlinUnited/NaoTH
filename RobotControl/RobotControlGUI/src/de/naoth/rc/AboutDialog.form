@@ -27,9 +27,9 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="btOk" alignment="0" pref="584" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="jLabel1" pref="301" max="32767" attributes="0"/>
+                      <Component id="jLabel1" pref="305" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="271" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="275" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -82,7 +82,7 @@
             </Property>
             <Property name="contentType" type="java.lang.String" value="text/html"/>
             <Property name="editable" type="boolean" value="false"/>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt; &#xa;&lt;center&gt;&#xa;  &lt;h3&gt;RobotControl&lt;/h3&gt; &#xa;  created by the &lt;b&gt;N&lt;/b&gt;ao &lt;b&gt;T&lt;/b&gt;eam &lt;b&gt;H&lt;/b&gt;umboldt &#xa;  &lt;br&gt;&lt;a href=&quot;http://www.naoteamhumbold.de/&quot;&gt;http://www.naoteamhumboldt.de&lt;/a&gt; &#xa;  &lt;br&gt;&lt;a href=&quot;http://www.ki.informatik.hu-berlin.de/&quot;&gt;http://www.ki.informatik.hu-berlin.de&lt;/a&gt; &#xa;  &lt;br&gt;&amp;copy; 2008-2011&#xa;&lt;/center&gt;&#xa;&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt; &#xa;&lt;center&gt;&#xa;  &lt;h3&gt;RobotControl&lt;/h3&gt; &#xa;  &lt;p&gt; a remote debugging and monitoring tool for mobile robots&lt;/p&gt;&#xa;  &lt;p&gt;created by the Berlin United - NaoTH&lt;/p&gt;&#xa;  &lt;br&gt;&lt;a href=&quot;http://naoth.de/&quot;&gt;http://naoth.de&lt;/a&gt; &#xa;  &lt;br&gt;&amp;copy; 2008-2012&#xa;&lt;/center&gt;&#xa;&lt;/html&gt;"/>
           </Properties>
         </Component>
       </SubComponents>

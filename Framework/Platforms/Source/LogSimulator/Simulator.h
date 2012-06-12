@@ -21,7 +21,6 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Infrastructure/IRData.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/ButtonData.h>
@@ -139,7 +138,6 @@ public:
   SIM_GET(GyrometerData);
   SIM_GET(FSRData);
   SIM_GET(InertialSensorData);
-  SIM_GET(BumperData);
   SIM_GET(IRReceiveData);
   SIM_GET(CurrentCameraSettings);
   SIM_GET(ButtonData);

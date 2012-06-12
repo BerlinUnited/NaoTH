@@ -134,6 +134,7 @@ message MotionRequest {
   optional KickRequest kickRequest = 6;
   optional double standHeight = 7;
   optional bool calibrateFootTouchDetector = 8;
+  optional uint32 cognitionFrameNumber = 9;
 }
 
 message LinePercept {

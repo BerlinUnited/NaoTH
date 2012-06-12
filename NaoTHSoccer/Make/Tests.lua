@@ -1,4 +1,4 @@
-local extern_dir = "../../../Extern"
+--local EXTERN_PATH = "../../../Extern"
 
 project "NaoTHSoccer-Tests"
   kind "ConsoleApp"
@@ -18,7 +18,7 @@ project "NaoTHSoccer-Tests"
   includedirs {
     "../Tests/",
     "../Source/Core/",
-    "../../Framework/NaoTH-Commons/Source/"
+    FRAMEWORK_PATH .. "/NaoTH-Commons/Source/"
   }
 
   links {"NaoTHSoccer", "NaoTH-Commons", 
@@ -33,5 +33,5 @@ project "NaoTHSoccer-Tests"
   targetname "testNaoTHSoccer"
   
   configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../Extern/lib/") .. "\""}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
     --postbuildcommands {"../dist/Native/executeTests"}

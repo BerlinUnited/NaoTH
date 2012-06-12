@@ -16,7 +16,6 @@
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
-#include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Perception/CameraMatrix.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
@@ -75,7 +74,6 @@ public:
   
   // SerialSensorData theSerialSensorData;
   // SerialSensorDataRequest theSerialSensorDataRequest;
-  // BumperData theBumperData;
   CameraMatrix theCameraMatrix;
   MotionStatus theMotionStatus;
   OdometryData theOdometryData;
