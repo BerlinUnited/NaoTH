@@ -19,10 +19,13 @@ public:
 
   double standardDeviationDist;
   double standardDeviationAngle;
+
   double timeFilterRange;
+
   double sigmaWeightingThreshhold;
   double thresholdCanopy;
   double motionNoiseDistance;
+
   double weightingTreshholdForUpdateWithAngle;
   double processNoiseDistance;
   double resamplingThreshhold;

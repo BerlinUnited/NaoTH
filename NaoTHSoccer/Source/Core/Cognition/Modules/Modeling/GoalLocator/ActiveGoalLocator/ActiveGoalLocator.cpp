@@ -49,6 +49,9 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
 void ActiveGoalLocator::execute() {
 
+  //TODO filter decreasen
+  //timeFilter += parameters.timeFilterRange * averageWeighting;
+
   // reset
   getLocalGoalModel().someGoalWasSeen = false;
   getLocalGoalModel().opponentGoalIsValid = false;
@@ -63,8 +66,6 @@ void ActiveGoalLocator::execute() {
       for (int i = 0; i < 10; i++)
         ccSamples[i].sampleSet.setUnValid();
   }
-
-  //timeFilter += parameters.timeFilterRange * averageWeighting;
 
   //TODO reset likelihood of valid filter
   for (unsigned int x = 0; x < 10; x++) {
@@ -140,6 +141,8 @@ void ActiveGoalLocator::execute() {
     ccTrashBuffer.cluster();
     checkTrashBuffer(theSampleBuffer); //check if useable cluster in TrashBuffer exists and insert
   }
+
+  //TODO check if buffer possible, then clear one filter!!!
 
   for (unsigned int i = 0; i < 10; i++) {
     resampleGT07(ccSamples[i].sampleSet, true);
