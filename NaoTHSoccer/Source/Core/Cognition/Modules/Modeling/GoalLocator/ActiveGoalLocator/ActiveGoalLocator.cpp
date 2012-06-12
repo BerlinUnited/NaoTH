@@ -139,7 +139,6 @@ void ActiveGoalLocator::execute() {
     checkTrashBuffer(theSampleBuffer); //check if useable cluster in TrashBuffer exists and insert
   }
 
-
   for (unsigned int i = 0; i < 10; i++) {
     resampleGT07(ccSamples[i].sampleSet, true);
   }
