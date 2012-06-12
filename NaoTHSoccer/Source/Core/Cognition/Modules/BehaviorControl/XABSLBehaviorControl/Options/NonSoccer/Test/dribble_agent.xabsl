@@ -16,7 +16,7 @@ option dribble_agent
 
       // Walk, kick, sidestep
       //dribble_stand_test();
-      smart_attack_situation();
+      sidekick(right_foot=true);
       head_control();
       battery();
     }
