@@ -56,7 +56,7 @@ option sidekick
       motion.walk.style = fast;
       motion.walk.step_control.foot = right;
       motion.walk.coordinate = right_foot;
-      motion.walk.step_control.target.x = ball.right_foot.preview.x+100;
+      motion.walk.step_control.target.x = ball.right_foot.preview.x;
       motion.walk.step_control.target.y = ball.right_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
       //motion.walk.step_control.speed_direction = (attack.direction > 45)?90:45;
@@ -90,7 +90,7 @@ option sidekick
       motion.walk.style = fast;
       motion.walk.step_control.foot = left;
       motion.walk.coordinate = left_foot;
-      motion.walk.step_control.target.x = ball.left_foot.preview.x+100;
+      motion.walk.step_control.target.x = ball.left_foot.preview.x;
       motion.walk.step_control.target.y = ball.left_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
       //motion.walk.step_control.speed_direction = (attack.direction < -45)?-90:-45;

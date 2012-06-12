@@ -32,8 +32,8 @@ option smart_attack_situation
         if(executed_motion.step_control.left_movable
            && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
            && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 90
-           && ball.right_foot.preview.y <= 110)
+           && ball.right_foot.preview.y >= 95
+           && ball.right_foot.preview.y <= 105)
         {
           goto sidekick_left;
         }
@@ -41,8 +41,8 @@ option smart_attack_situation
         else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
@@ -155,8 +155,8 @@ option smart_attack_situation
 	      if (executed_motion.step_control.left_movable
                && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
                && ball.right_foot.preview.x <= 200 
-               && ball.right_foot.preview.y >= 90
-               && ball.right_foot.preview.y <= 110)
+               && ball.right_foot.preview.y >= 95
+               && ball.right_foot.preview.y <= 105)
 	      {
 	        goto sidekick_left;
 	      }
@@ -165,8 +165,8 @@ option smart_attack_situation
 	      else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
@@ -235,8 +235,8 @@ option smart_attack_situation
       else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
       {
         goto sidekick_right;
       }
@@ -278,8 +278,8 @@ option smart_attack_situation
       else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
       {
         goto sidekick_right;
       }
@@ -287,8 +287,8 @@ option smart_attack_situation
       else if (executed_motion.step_control.left_movable
                && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
                && ball.right_foot.preview.x <= 200 
-               && ball.right_foot.preview.y >= 90
-               && ball.right_foot.preview.y <= 110)
+               && ball.right_foot.preview.y >= 95
+               && ball.right_foot.preview.y <= 105)
       {
         goto sidekick_left;
       }
@@ -321,8 +321,8 @@ option smart_attack_situation
         if(executed_motion.step_control.left_movable
            && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
            && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 90
-           && ball.right_foot.preview.y <= 110)
+           && ball.right_foot.preview.y >= 95
+           && ball.right_foot.preview.y <= 105)
         {
           goto sidekick_left;
         }
@@ -330,8 +330,8 @@ option smart_attack_situation
         else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
@@ -390,8 +390,8 @@ option smart_attack_situation
         else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
@@ -442,8 +442,8 @@ option smart_attack_situation
         if(executed_motion.step_control.left_movable
            && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
            && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 90
-           && ball.right_foot.preview.y <= 110)
+           && ball.right_foot.preview.y >= 95
+           && ball.right_foot.preview.y <= 105)
         {
           goto sidekick_left;
         }
@@ -451,8 +451,8 @@ option smart_attack_situation
         else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
@@ -495,8 +495,8 @@ option smart_attack_situation
         if(executed_motion.step_control.left_movable
            && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
            && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 90
-           && ball.right_foot.preview.y <= 110)
+           && ball.right_foot.preview.y >= 95
+           && ball.right_foot.preview.y <= 105)
         {
           goto sidekick_left;
         }
@@ -504,8 +504,8 @@ option smart_attack_situation
         else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -90
-              && ball.left_foot.preview.y >= -110)
+              && ball.left_foot.preview.y <= -95
+              && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
