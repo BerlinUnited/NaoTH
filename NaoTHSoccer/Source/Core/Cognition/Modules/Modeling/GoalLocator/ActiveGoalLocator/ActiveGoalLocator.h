@@ -63,8 +63,6 @@ private:
 
   double goalWidth;
 
-  double averageWeighting;
-
   AGLParameters parameters;
 
   CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
@@ -89,6 +87,7 @@ private:
   Cluster ccSamples[10];
 
   void debugDrawings();
+  void debugPlots();
 
   void resampleGT07(AGLSampleSet& sampleSet, bool noise);
 
@@ -99,6 +98,10 @@ private:
   double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
   void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
   void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
+
+  //Tools
+  string convertIntToString(int number);
+
 };
 
 #endif //__ActiveGoalLocator_h_
