@@ -11,6 +11,8 @@
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
 
+#include "Tools/Math/Pose2D.h"
+
 // representations
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/BallPercept.h"
@@ -19,6 +21,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/SoccerStrategy.h"
 
 BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(BallModel)
@@ -28,6 +31,7 @@ BEGIN_DECLARE_MODULE(BallSymbols)
   REQUIRE(TeamBallModel)
   REQUIRE(FieldInfo)
   REQUIRE(KinematicChain)
+  REQUIRE(SoccerStrategy)
 END_DECLARE_MODULE(BallSymbols)
 
 class BallSymbols: public BallSymbolsBase
@@ -43,6 +47,7 @@ public:
     teamBallModel(getTeamBallModel()),
     fieldInfo(getFieldInfo()),
     kinematicChain(getKinematicChain()),
+    soccerStrategy(getSoccerStrategy()),
 
     futureBallPosX_t(0.0),
     futureBallPosY_t(0.0),
@@ -70,8 +75,9 @@ private:
   TeamBallModel const& teamBallModel;
   FieldInfo const& fieldInfo;
   const KinematicChain& kinematicChain;
+  SoccerStrategy const& soccerStrategy;
 
-  // seter and getter
+  // setter and getter
   static double getBallDistance();
 
   static double getFutureBallPosX();
@@ -86,6 +92,13 @@ private:
   static double getBallTimeSeen();
   static double getTeamBallTimeSinceLastUpdate();
   static double getBallSpeed();
+
+  static void calculatePosBehindBallFuture();
+  static double getPosBehindBallFutureX();
+  static double getPosBehindBallFutureY();
+  static double getPosBehindBallFutureRotation();
+  static Pose2D posBehindBall;
+  static double distance;
 
   // some local members
   Vector2 <double> ballPositionField;

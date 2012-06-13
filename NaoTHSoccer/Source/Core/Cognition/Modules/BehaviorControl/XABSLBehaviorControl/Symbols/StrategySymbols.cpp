@@ -88,11 +88,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
-  // Symbols for approaching the ball
-  engine.registerDecimalOutputSymbol("PosBehindBall2ADRotation", &PosBehindBall2ADY, &PosBehindBall2ADX);
-  engine.registerDecimalOutputSymbol("PosBehindBall2ADX", &PosBehindBall2ADY, &PosBehindBall2ADX);
-  engine.registerDecimalOutputSymbol("PosBehindBall2ADY", &PosBehindBall2ADY, &PosBehindBall2ADX);
-
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
  
@@ -103,11 +98,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
 
 StrategySymbols* StrategySymbols::theInstance = NULL;
-
-double StrategySymbols::PosBehindBall2ADRotation()
-{
-  return toDegrees(atan2(theInstance->PosBehindBall2ADY,theInstance->PosBehindBall2ADX));
-}
 
 
 void StrategySymbols::execute()
