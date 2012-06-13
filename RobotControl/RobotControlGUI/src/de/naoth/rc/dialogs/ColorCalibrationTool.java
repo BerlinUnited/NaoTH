@@ -17,6 +17,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -34,8 +36,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
  * @author  thomas
  */
 @PluginImplementation
-public class ColorCalibrationTool extends AbstractDialog
-  implements ObjectListener<JanusImage>
+public class ColorCalibrationTool extends AbstractDialog implements ObjectListener<JanusImage>, PropertyChangeListener
 {
 
   @InjectPlugin
@@ -567,7 +568,16 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
             cmdString = cmdString.replace("[COLOR]", "blue").replace("[OBJECT]", "BlueWaistBand") + mode;
           break;
       }
-      sendCommand(new Command(cmdString));
+      Command cmd = new Command(cmdString);
+      if(mode.equals("set"))
+      {
+        String[][] values = colorValueSlidersPanel.getControlValues();
+        for(int i = 0; i < values.length; i++)
+        {
+          cmd.addArg(values[i][0], values[i][1]);
+        }
+      }
+      sendCommand(cmd);
     }
   }
 
@@ -605,6 +615,32 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
         break;
     }
     sendCommand(new Command(cmdString).addArg(arg));
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) 
+  {
+    String changedProperty = evt.getPropertyName().replace("ColorCalibrationTool:", "").replace(":changed", "");
+    if(changedProperty.equals("OrangeBall"))
+    {
+      sendGetColorValueCommand(Colors.ColorClass.orange, "set");
+    }
+    else if(changedProperty.equals("YellowGoal"))
+    {
+      sendGetColorValueCommand(Colors.ColorClass.yellow, "set");
+    }
+    else if(changedProperty.equals("PinkWaistBand"))
+    {
+      sendGetColorValueCommand(Colors.ColorClass.pink, "set");
+    }
+    else if(changedProperty.equals("BlueWaistBand"))
+    {
+      sendGetColorValueCommand(Colors.ColorClass.blue, "set");
+    }
+    else if(changedProperty.equals("WhiteLines"))
+    {
+      sendGetColorValueCommand(Colors.ColorClass.white, "set");
+    }    
   }
 
   private class ImagePanel extends JPanel implements MouseMotionListener, MouseListener//, ComponentListener
@@ -676,7 +712,7 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
           }
         }
         colorValueSlidersPanel.removeControls();
-        sendGetColorValueCommand(colorClass, "get");
+        sendGetColorValueCommand(newColorClass, "get");
       }
       colorClass = newColorClass;
       if(colorClass != null)
@@ -941,7 +977,7 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
 //    }
   }//end class ImagePanel
 
-  public void addUpdateControls(String result)
+  public void addUpdateControls(String name, String result)
   {
     String[] params = result.split("\\n");
     for(int i = 0; i < params.length; i++)
@@ -949,7 +985,7 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
       String[] parts = params[i].split("=");
       if(parts.length == 2)
       {
-        colorValueSlidersPanel.addControl(parts[0], Integer.parseInt(parts[1]));
+        colorValueSlidersPanel.addControl(name, parts[0], Integer.parseInt(parts[1]), this);
       }
     }
   }
@@ -960,7 +996,6 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     final ColorCalibrationTool thisFinal = this;
     this.parent.getMessageServer().executeSingleCommand(new CommandSender()
     {
-
       @Override
       public void handleResponse(byte[] result, Command originalCommand)
       {
@@ -973,53 +1008,11 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
           originalCommand.getName().contains(":get")
         )
         {
-          addUpdateControls(strResult);
-//          System.out.println(strResult);
-          System.out.println(originalCommand.getName());
+          int idx = originalCommand.getName().indexOf("ColorRegion_");
+          String name = originalCommand.getName().substring(idx).replace("ColorRegion_", "").replace(":get", "");
+          
+          addUpdateControls(name, strResult);
         }
-        
-//        if(originalCommand.getName().equals(getColorTableCommand.getName()))
-//        {
-//          ColorTable colorTable = new ColorTable();
-//          colorTable.createFromCharArray((new String(result)).toCharArray());
-//          setColorTable(colorTable);
-//        }
-//        else if(originalCommand.equals(pathColorTableCommand))
-//        {
-//          String path = new String(result);
-//          if(!path.equals("colortable file path is empty"))
-//          {
-//            lastPath = path;
-//
-//            char[] buffer = thisFinal.currentColorTable.getCharArray();
-//            
-//            Command command = new Command(setColorTableCommandBase)
-//                    .addArg("path", lastPath)
-//                    .addArg("content", new String(buffer));
-//
-//            sendCommand(command);
-//            sendCommand(reloadColorTableCommand);
-//          }
-//          else
-//          {
-//            JOptionPane.showMessageDialog(thisFinal,
-//              "Colortable path is empty", "Colortable NOT sent to robot", JOptionPane.ERROR_MESSAGE);
-//          }
-//        }
-//        else if(originalCommand.getName().equals(setColorTableCommandBase))
-//        {
-//          String answer = new String(result);
-//          if(answer.endsWith("successfull written."))
-//          {
-//            JOptionPane.showMessageDialog(thisFinal,
-//                "Colortable has been written to\n" + lastPath, "Colortable sent to robot", JOptionPane.INFORMATION_MESSAGE);
-//          }
-//          else
-//          {
-//            JOptionPane.showMessageDialog(thisFinal,
-//                answer, "Colortable NOT sent to robot", JOptionPane.INFORMATION_MESSAGE);
-//          }
-//        }
         else if(originalCommand.getName().equals(cameraAutoParam)
           && originalCommand.getArguments().size() >= 1
           && originalCommand.getArguments().keySet().contains("off"))

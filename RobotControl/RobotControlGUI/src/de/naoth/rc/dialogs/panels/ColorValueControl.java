@@ -13,17 +13,22 @@ import java.beans.PropertyChangeListener;
  */
 public class ColorValueControl extends javax.swing.JPanel //implements PropertyChangeListener 
 {
-  private boolean sliderChanged = true;
-//  private String name;
+  private boolean sliderChanged = false;
+  private boolean constructing = true;
+  private String coloredObjectName;
+  private String propertyName;
   
   /**
    * Creates new form ColorValueControl
    */
-  public ColorValueControl(String propertyName) 
+  public ColorValueControl(String coloredObjectName, String propertyName, PropertyChangeListener listener) 
   {
     initComponents();   
-
+    
+    this.coloredObjectName = coloredObjectName;
+    this.propertyName = propertyName;
     this.jLabel.setText(propertyName);
+    this.addPropertyChangeListener(listener);
 //    jSlider.addPropertyChangeListener(this);
 //    jSpinner.addPropertyChangeListener(this);    
   }
@@ -32,6 +37,11 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
   {
     sliderChanged = false;
     this.jSpinner.setValue(value);
+  }
+  
+  public int getValue()
+  {
+    return (Integer) this.jSpinner.getValue();
   }
   
   /**
@@ -114,6 +124,16 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
   }//GEN-LAST:event_jSliderPropertyChange
 
   private void jSpinnerPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jSpinnerPropertyChange
+   if(!sliderChanged && !constructing)
+    {
+      firePropertyChange("ColorCalibrationTool:" + coloredObjectName + ":changed", null, null);
+      this.jSlider.setValue((Integer) this.jSpinner.getValue());
+    }
+    else
+    {
+      sliderChanged = false;
+    }
+    constructing = false;                                    
   }//GEN-LAST:event_jSpinnerPropertyChange
 
   private void jSpinnerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSpinnerMouseClicked
@@ -122,6 +142,7 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
 
   private void jSliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSliderMouseReleased
     this.jSpinner.setValue(this.jSlider.getValue());
+    firePropertyChange("ColorCalibrationTool:" + coloredObjectName + ":changed", null, null);
     sliderChanged = true;
   }//GEN-LAST:event_jSliderMouseReleased
 
@@ -130,19 +151,21 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
   }//GEN-LAST:event_jSpinnerMouseReleased
 
   private void jSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinnerStateChanged
-   if(!sliderChanged)
+   if(!sliderChanged && !constructing)
     {
-      int val = (Integer) this.jSpinner.getValue();
+      firePropertyChange("ColorCalibrationTool:" + coloredObjectName + ":changed", null, null);
       this.jSlider.setValue((Integer) this.jSpinner.getValue());
     }
     else
     {
       sliderChanged = false;
     }
+    constructing = false;
   }//GEN-LAST:event_jSpinnerStateChanged
 
   private void jSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSliderMouseDragged
     this.jSpinner.setValue(this.jSlider.getValue());
+    firePropertyChange("ColorCalibrationTool:" + coloredObjectName + ":changed", null, null);
     sliderChanged = true;
   }//GEN-LAST:event_jSliderMouseDragged
 

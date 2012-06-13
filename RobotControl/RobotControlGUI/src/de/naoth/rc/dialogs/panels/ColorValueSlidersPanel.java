@@ -5,6 +5,7 @@
 package de.naoth.rc.dialogs.panels;//ColorValueSlidersPanel
 
 import java.awt.GridLayout;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class ColorValueSlidersPanel extends javax.swing.JPanel 
 {
-  private HashMap<String, ColorValueControl> valueControls;
+  private HashMap<String, Integer> valueControls;
   /**
    * Creates new form ColorValueSlidersPanel
    */
@@ -24,35 +25,57 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
     
     GridLayout layout = new GridLayout(10, 1);
     this.setLayout(layout); 
-    valueControls = new HashMap<String, ColorValueControl>();
+    valueControls = new HashMap<String, Integer>();
   }
 
-  public void addControl(String name, int value)
-  {
+  public void addControl(String objectName, String name, int value, PropertyChangeListener listener)
+  {    
     if(!valueControls.containsKey(name))
     {
-      ColorValueControl control = new ColorValueControl(name);
-      valueControls.put(name, control);
-      this.add(control);  
-    }
+      ColorValueControl control = new ColorValueControl(objectName, name, listener);
+      this.add(control, -1);
+      int idx = this.getComponentCount() - 1;
+      valueControls.put(name, idx);
+      this.validate();
+    }    
     setControlValue(name, value);
   }
-  
   
   public void setControlValue(String name, int value)
   {
     if(valueControls.containsKey(name))
     {
-      valueControls.get(name).setValue(value);
+      ColorValueControl control = (ColorValueControl) this.getComponent(valueControls.get(name).intValue());
+      control.setValue(value);
     }
+  }
+          
+  public String[][] getControlValues()
+  {
+    String[][] valueString = new String[valueControls.size()][2];
+    int idx = 0;
+    for(Map.Entry<String, Integer> entry : valueControls.entrySet())
+    {
+      ColorValueControl control = (ColorValueControl) this.getComponent(entry.getValue());
+      valueString[idx][0] = entry.getKey();
+      valueString[idx][1] = String.valueOf(control.getValue());
+      idx++;
+    }
+    return valueString;
   }
           
   public void removeControls()
   {
-    for(Map.Entry<String, ColorValueControl> entry : valueControls.entrySet())
+    for(Map.Entry<String, Integer> entry : valueControls.entrySet())
     {
-      this.remove(entry.getValue());
+      ColorValueControl control = (ColorValueControl) this.getComponent(entry.getValue());
+      PropertyChangeListener[] propListeners = control.getPropertyChangeListeners();
+      for(PropertyChangeListener propListener: propListeners)
+      {
+        control.removePropertyChangeListener(propListener);
+      }
     }
+    this.removeAll();
     valueControls.clear();
   }
   
