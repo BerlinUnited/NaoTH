@@ -228,15 +228,9 @@ void PotentialFieldProvider::execute()
         Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
 
         // transform it to global coordinates
-        f.normalize(50);
+        // ATTENTION: since it is a vector and not a point, we apply only the rotation
+        f.rotate(robotPose.rotation);
 
-        Vector2<double> u = robotPose*f;
-
-        f = robotPose*(f+simulatedLocalBall);
-        f = f-simulatedGlobalBall;
-
-
-        
         //ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
         SIMPLE_PARTICLE(simulatedGlobalBall.x, simulatedGlobalBall.y, f.angle());
       }
@@ -296,7 +290,7 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(
     playerF -= compactExponentialRepeller(Vector2<double>(0, 0), point);
   }
 
-  // magic normalization
+  // TODO: remove magic normalization
   double ff = fieldF.abs() * 0.8;
   if ( playerF.abs() > ff)
   {
@@ -309,7 +303,7 @@ Vector2<double> PotentialFieldProvider::calculatePotentialField(
 
 Vector2<double> PotentialFieldProvider::globalExponentialAttractor(const Vector2<double>& p, const Vector2<double>& x) const
 {
-  const double alpha = -0.001;
+  const double alpha = theParameters.goal_attractor_strength; //-0.001;
 
   Vector2<double> v = p - x;
   double d = v.abs();
@@ -319,8 +313,8 @@ Vector2<double> PotentialFieldProvider::globalExponentialAttractor(const Vector2
 
 Vector2<double> PotentialFieldProvider::compactExponentialRepeller(const Vector2<double>& p, const Vector2<double>& x) const
 {
-  const double a = 1500;
-  const double d = 2000;
+  const double a = theParameters.player_repeller_strenth; //1500; 
+  const double d = theParameters.player_repeller_radius; //2000;
 
   Vector2<double> v = p - x;
   double t = v.abs();

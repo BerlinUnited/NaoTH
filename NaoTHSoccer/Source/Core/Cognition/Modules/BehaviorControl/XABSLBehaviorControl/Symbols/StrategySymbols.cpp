@@ -109,10 +109,17 @@ void StrategySymbols::execute()
   { // prepare the attack direction
   const Vector2<double>& p = getSoccerStrategy().attackDirection;
   
+  // ATTENTION: since it is a vector and not a point, we apply only the rotation
   attackDirection             = Math::toDegrees(p.angle());
-  attackDirectionPreviewHip   = Math::toDegrees((getMotionStatus().plannedMotion.hip   / p).angle());
-  attackDirectionPreviewLFoot = Math::toDegrees((getMotionStatus().plannedMotion.lFoot / p).angle());
-  attackDirectionPreviewRFoot = Math::toDegrees((getMotionStatus().plannedMotion.rFoot / p).angle());
+
+  attackDirectionPreviewHip   = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.hip.rotation).angle());
+
+  attackDirectionPreviewLFoot = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.lFoot.rotation).angle());
+
+  attackDirectionPreviewRFoot = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.rFoot.rotation).angle());
   }
 
 

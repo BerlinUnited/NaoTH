@@ -24,6 +24,8 @@
 #include "Representations/Motion/MotionStatus.h"
 
 // Tools
+#include <Tools/DataStructures/ParameterList.h>
+#include <Tools/Debug/DebugParameterList.h>
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -54,6 +56,33 @@ public:
 
   /** executes the module */
   void execute();
+
+  class Parameters: public ParameterList
+  {
+  public:
+    Parameters() : ParameterList("PotentialFieldParameters")
+    {
+      PARAMETER_REGISTER(goal_attractor_strength) = -0.001;
+      PARAMETER_REGISTER(player_repeller_radius) = 2000;
+      PARAMETER_REGISTER(player_repeller_strenth) = 1500;
+
+      syncWithConfig();
+      DebugParameterList::getInstance().add(this);
+    }
+
+    virtual ~Parameters()
+    {
+      DebugParameterList::getInstance().remove(this);
+    }
+
+    // 
+    double goal_attractor_strength;
+
+    double player_repeller_radius;
+    double player_repeller_strenth;
+    
+  } theParameters;
+
 
 private:
 
