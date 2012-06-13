@@ -255,7 +255,7 @@ protected:
   bool tooCloseToObstacle(const std::vector<Vector2d>& obstacles, Vector2d& obstaclePosition, const AStarSearchParameters& parameterSet) const;
 
 
-  bool collidesWithField(const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi);
+  bool collidesWithField(const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi, const AStarSearchParameters& parameterSet);
 
 };// end class AStarNode
 
@@ -321,7 +321,7 @@ public:
     //push_heap(searchTree.begin(), searchTree.end(), HeapCompare()); // we don't use in current version...
     // set the parent node of the start node
     searchTree[0].setParentNode(0);
-    unsigned int indexOfBestNode = 0;
+    indexOfBestNode = 0;
     unsigned int nextNodeToExpand = 0;
     while(true)
     {
@@ -365,8 +365,10 @@ public:
   * draw Path in Field or Image Context
   */
   void drawAllNodesField();
-  void drawPathFiled();
-  void drawObstacles();
+  void drawPathFieldLocal();
+  void drawPathFieldGlobal();
+  void drawObstaclesLocal();
+  void drawObstaclesGlobal();
 
 
 private:
@@ -394,6 +396,9 @@ private:
   // start and goal
   AStarNode myStart;
   AStarNode myGoal;
+
+  // the best node
+  unsigned int indexOfBestNode;
 
   /** 
   * Finds the next node to be expanded

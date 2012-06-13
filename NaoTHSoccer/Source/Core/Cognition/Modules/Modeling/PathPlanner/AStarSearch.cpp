@@ -55,7 +55,7 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
     newNode.setPosition(newPosition);
     if(!newNode.tooCloseToAnotherNode(searchTree, expandedNodes, newPosition) && 
       !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet) &&
-      !newNode.collidesWithField(rp, pi, fi))
+      !newNode.collidesWithField(rp, pi, fi, parameterSet))
     {
       // ..parent
       newNode.setParentNode(ownNodeNum);
@@ -80,7 +80,7 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   Vector2d obstaclePosition;
   if(!newNode.tooCloseToAnotherNode(searchTree, expandedNodes, nodePosition) &&
     !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet) &&
-    !newNode.collidesWithField(rp, pi, fi))
+    !newNode.collidesWithField(rp, pi, fi, parameterSet))
   {
     // ..parent
     newNode.setParentNode(ownNodeNum);
@@ -101,7 +101,7 @@ bool AStarNode::hasReached(
   const AStarSearchParameters& parameterSet) const
 {
   double distanceToGoal((goal.getPosition() - position).abs());
-  return ((distanceToGoal <= parameterSet.distanceToGoal) || 
+  return ((distanceToGoal <= parameterSet.distanceToTarget) || 
     (distanceToGoal <= expansionRadius));
 }
 
@@ -187,13 +187,14 @@ bool AStarNode::tooCloseToObstacle(const std::vector<Vector2d>& obstacles, Vecto
   return foundObstacle;
 }
 
-bool AStarNode::collidesWithField(const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi)
+bool AStarNode::collidesWithField(const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi, const AStarSearchParameters& parameterSet)
 {
   bool collides = false;
   int playerNumber = pi.gameData.playerNumber;
   Vector2d globalPose = rp.translation + position;
   // path should be around the own penalty area for avoiding illegal defenders (Only for field players)
-  if(globalPose.x < fi.xPosOwnPenaltyArea + 200 && std::abs(globalPose.y) < fi.yPosLeftPenaltyArea + 200 && playerNumber != 1) 
+  if(globalPose.x < fi.xPosOwnPenaltyArea + parameterSet.distanceToOwnPenaltyArea && 
+     std::abs(globalPose.y) < fi.yPosLeftPenaltyArea + parameterSet.distanceToOwnPenaltyArea && playerNumber != 1) 
   {
     collides = true;
   }
@@ -213,16 +214,18 @@ void AStarSearch::drawAllNodesField()
   }
 }
 
-void AStarSearch::drawPathFiled()
+void AStarSearch::drawPathFieldLocal()
 {
   FIELD_DRAWING_CONTEXT;
-  PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
   if (pathFound)
   {
-    unsigned int currentNode = myGoal.getParentNode();
-    LINE(myGoal.getPosition().x, myGoal.getPosition().y, searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y);
+    unsigned int currentNode = indexOfBestNode;
+    // draw target
     PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
     CIRCLE(myGoal.getPosition().x, myGoal.getPosition().y, parameterSet.robotRadius);
+    PEN(ColorClasses::colorClassToHex(ColorClasses::blue), 4);
+    LINE(myGoal.getPosition().x, myGoal.getPosition().y, searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y);
+    
     while(searchTree[currentNode].getParentNode() != 0)
     {
       PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
@@ -232,12 +235,37 @@ void AStarSearch::drawPathFiled()
       CIRCLE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, parameterSet.robotRadius);
       currentNode = nextNode;
     }
-    PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
     LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, myStart.getPosition().x, myStart.getPosition().y);
   }
 }
 
-void AStarSearch::drawObstacles()
+void AStarSearch::drawPathFieldGlobal()
+{
+  FIELD_DRAWING_CONTEXT;
+  if (pathFound)
+  {
+    unsigned int currentNode = indexOfBestNode;
+    // draw target
+    PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
+    CIRCLE(myGoal.getPosition().x + theRobotPose.translation.x, myGoal.getPosition().y + theRobotPose.translation.y, parameterSet.robotRadius);
+    PEN(ColorClasses::colorClassToHex(ColorClasses::blue), 4);
+    LINE(myGoal.getPosition().x + theRobotPose.translation.x, myGoal.getPosition().y + theRobotPose.translation.y, searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y);
+
+    while(searchTree[currentNode].getParentNode() != 0)
+    {
+      PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
+      unsigned int nextNode = searchTree[currentNode].getParentNode();
+      LINE(searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y, searchTree[nextNode].getPosition().x + theRobotPose.translation.x, searchTree[nextNode].getPosition().y + theRobotPose.translation.y);
+      PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
+      CIRCLE(searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y, parameterSet.robotRadius);
+      currentNode = nextNode;
+    }
+    LINE(searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y, myStart.getPosition().x + theRobotPose.translation.x, myStart.getPosition().y + theRobotPose.translation.y);
+  }
+}
+
+
+void AStarSearch::drawObstaclesLocal()
 {
   FIELD_DRAWING_CONTEXT;
   for (unsigned int i = 0; i < obstacles.size(); i++)
@@ -246,5 +274,18 @@ void AStarSearch::drawObstacles()
     CIRCLE(obstacles[i].x, obstacles[i].y, 10);
     PEN(ColorClasses::colorClassToHex(ColorClasses::red), 5);
     CIRCLE(obstacles[i].x, obstacles[i].y, parameterSet.obstacleRadius);
+  }
+}
+
+
+void AStarSearch::drawObstaclesGlobal()
+{
+  FIELD_DRAWING_CONTEXT;
+  for (unsigned int i = 0; i < obstacles.size(); i++)
+  {
+    PEN(ColorClasses::colorClassToHex(ColorClasses::black), 10);
+    CIRCLE(obstacles[i].x + theRobotPose.translation.x, obstacles[i].y + theRobotPose.translation.y, 10);
+    PEN(ColorClasses::colorClassToHex(ColorClasses::red), 5);
+    CIRCLE(obstacles[i].x + theRobotPose.translation.x, obstacles[i].y + theRobotPose.translation.y, parameterSet.obstacleRadius);
   }
 }

@@ -15,7 +15,8 @@ AStarSearchParameters::AStarSearchParameters()
   PARAMETER_REGISTER(maxBranchingFactor) = 6.0;
   PARAMETER_REGISTER(minExpansionRadius) = 200.0;
   PARAMETER_REGISTER(maxExpansionRadius) = 400.0;
-  PARAMETER_REGISTER(distanceToGoal) = 150.0;
+  PARAMETER_REGISTER(distanceToTarget) = 150.0;
+  PARAMETER_REGISTER(distanceToOwnPenaltyArea) = 300.0;
   PARAMETER_REGISTER(obstacleRadius) = 150.0;
   PARAMETER_REGISTER(robotRadius) = 150;
   PARAMETER_REGISTER(endOfNear) = 300.0;

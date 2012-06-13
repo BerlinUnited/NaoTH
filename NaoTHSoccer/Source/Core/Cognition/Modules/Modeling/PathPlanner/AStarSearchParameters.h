@@ -30,7 +30,9 @@ public:
   /** The maximum expansion radius*/
   double maxExpansionRadius;
   /** The minimum distance to the goal*/
-  double distanceToGoal;
+  double distanceToTarget;
+  /** The distance to own penalty area*/
+  double distanceToOwnPenaltyArea;
   /** The radius of obstacle */
   double obstacleRadius;
   /** The radius of a robot */
