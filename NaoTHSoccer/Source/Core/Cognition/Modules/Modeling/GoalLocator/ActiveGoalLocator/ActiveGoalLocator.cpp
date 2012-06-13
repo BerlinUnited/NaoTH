@@ -399,18 +399,15 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
 {
 
   AGLSampleBuffer tmpSampleSetBuffer; //copy
-  for (unsigned int i = 0; i < sampleSetBuffer.samples.getNumberOfEntries(); i++) {
+  for (int i = 0; i < sampleSetBuffer.samples.getNumberOfEntries(); i++) {
       tmpSampleSetBuffer.samples.add(sampleSetBuffer[i]);
   }
 
   sampleSetBuffer.samples.clear(); //just clear and re-fill with unused entries
 
-
-  //std::cout << "cluster: " << tmpSampleSetBuffer[i].cluster << std::endl;
-
   //already known that sampleSet is empty!
   int n = 0;
-  for (unsigned int i = 0; i < tmpSampleSetBuffer.samples.getNumberOfEntries(); i++) {
+  for (int i = 0; i < tmpSampleSetBuffer.samples.getNumberOfEntries(); i++) {
 
     //search all particles with ID of largest cluster and add them
     //TODO make n to param
