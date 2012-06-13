@@ -212,7 +212,6 @@ void ActiveGoalLocator::execute() {
 
   }//end if numOfValidFilter
 
-
   debugDrawings();
   debugPlots();
   debugStdOut();
