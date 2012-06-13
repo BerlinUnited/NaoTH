@@ -27,11 +27,15 @@ ActiveGoalLocator::ActiveGoalLocator()    :
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", true);
   //DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goalCenter", "draw the center of goal on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept", "draw the goal percept on field", false);
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept_buffer", "draw the buffer set on field", false);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept_buffer", "draw the buffer set on field", true);
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goal_model", "", false);
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
+
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_temp_percept_buffer", "", true);
+
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", true);
 
   goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
 
@@ -156,13 +160,7 @@ void ActiveGoalLocator::execute() {
 
   debugDrawings();
   debugPlots();
-
-  //TEMP Debug
-  for(unsigned int i = 0; i < 10; i++) {
-
-      if (ccSamples[i].sampleSet.getIsValid())
-      std::cout << "Filter " << i << "is Valid" << std::endl;
-  }
+  debugStdOut();
 
   STOPWATCH_STOP("ActiveGoalLocator");
 
@@ -265,6 +263,17 @@ void ActiveGoalLocator::debugPlots() {
 
 } //end debugPlot
 
+void ActiveGoalLocator::debugStdOut() {
+
+    DEBUG_REQUEST("ActiveGoalLocator:which_filter_are_valid_to_StdOut",
+      for(unsigned int i = 0; i < 10; i++) {
+        if (ccSamples[i].sampleSet.getIsValid())
+        std::cout << "Filter " << i << "is Valid" << std::endl;
+      }
+    );
+
+}
+
 void ActiveGoalLocator::updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const
 {
     for (unsigned int i = 0; i < sampleSet.size(); i++) {
@@ -329,31 +338,41 @@ void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
 void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet)
 {
 
+  AGLSampleBuffer tmpSampleSetBuffer; //copy
+  for (unsigned int i = 0; i < sampleSetBuffer.samples.getNumberOfEntries(); i++) {
+      tmpSampleSetBuffer.samples.add(sampleSetBuffer[i]);
+  }
+
+  sampleSetBuffer.samples.clear(); //just clear and re-fill with unused entries
+
+
+  //std::cout << "cluster: " << tmpSampleSetBuffer[i].cluster << std::endl;
+
   //already known that sampleSet is empty!
   int n = 0;
-  for (unsigned int i = 0; i < sampleSetBuffer.size(); i++) {
+  for (unsigned int i = 0; i < tmpSampleSetBuffer.samples.getNumberOfEntries(); i++) {
 
     //search all particles with ID of largest cluster and add them
     //TODO make n to param
-    //&& largestClusterID > -1
-    if (n < sampleSetBuffer.samples.getNumberOfEntries() && n < (int)sampleSet.numberOfParticles) {//  && sampleSetBuffer.samples.getEntry(i).cluster == largestClusterID) {
+    if (n < tmpSampleSetBuffer.samples.getNumberOfEntries() && n < (int)sampleSet.numberOfParticles  && tmpSampleSetBuffer[i].cluster == largestClusterID && largestClusterID > -1) {
+
       AGLSample tmpSample;
-      tmpSample.color = sampleSetBuffer[i].color;
-      tmpSample.translation = sampleSetBuffer[i].getPos();
+      tmpSample.color = tmpSampleSetBuffer[i].color;
+      tmpSample.translation = tmpSampleSetBuffer[i].getPos();
       tmpSample.likelihood = 1.0/(double)sampleSet.size();
       sampleSet[n] = tmpSample;
       n++;
-      //std::cout << tmpSample.likelihood << std::endl;
-      //std::cout << sampleSet[n].likelihood << std::endl;
 
-    } //else { FIXME
-      //would be nice to hold the samples we don't have clustert
-      //tmpSampleBuffer.samples.add(tmpSampleBuffer.samples.getEntry(i));
-    //}
+    } else { //if not used for filter, just copy
+        AGLBSample bufferSample;
+          bufferSample.translation = tmpSampleSetBuffer[i].translation;
+          bufferSample.color       = tmpSampleSetBuffer[i].color;
+          bufferSample.frameNumber = tmpSampleSetBuffer[i].frameNumber;
+        sampleSetBuffer.samples.add(bufferSample);
+
+    }
   }
   sampleSet.setValid();
-  //not just clear completly??
-  theSampleBuffer.samples.clear();
 
 
 }//copyFromBufferToFilter

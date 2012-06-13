@@ -88,6 +88,7 @@ private:
 
   void debugDrawings();
   void debugPlots();
+  void debugStdOut();
 
   void resampleGT07(AGLSampleSet& sampleSet, bool noise);
 
