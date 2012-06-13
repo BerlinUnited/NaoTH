@@ -28,15 +28,16 @@ public:
     _numberOfParticles(n),
     isValid(false),
     samples(n),
-    averageWeighting(0.0)
+    lastTotalWeighting(0.0)
   {
   }
 
   ~AGLSampleSet() {}
 
+  Vector2<double> mean;
   std::vector<AGLSample> samples;
 
-  double averageWeighting; //saves the avarage weighting and decrease it by time in AGL
+  double lastTotalWeighting; //saves the avarage weighting and decrease it by time in AGL
 
   /** 
    * sort the particles according to their likelihood

@@ -56,11 +56,6 @@ void ActiveGoalLocator::execute() {
   //TODO filter decreasen
   //timeFilter += parameters.timeFilterRange * averageWeighting;
 
-  // reset
-  getLocalGoalModel().someGoalWasSeen = false;
-  getLocalGoalModel().opponentGoalIsValid = false;
-  getLocalGoalModel().ownGoalIsValid = false;
-
   STOPWATCH_START("ActiveGoalLocator");
 
   // don't update if the body state is not valid
@@ -152,6 +147,78 @@ void ActiveGoalLocator::execute() {
     resampleGT07(ccSamples[i].sampleSet, true);
   }
 
+  //calculate mean for all valid PFs
+  for(unsigned int x = 0; x < 10; x++) {
+
+    Vector2<double> mean;
+
+    if (ccSamples[x].sampleSet.getIsValid()) {
+
+      for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) {
+        mean += ccSamples[x].sampleSet[i].getPos();
+
+      }
+       ccSamples[x].sampleSet.mean = mean/(double)ccSamples[x].sampleSet.size();
+    }
+  }
+
+
+  //////////////////////////
+  //   provide Goal Model
+  //////////////////////////
+
+  // reset
+  getLocalGoalModel().someGoalWasSeen = false;
+  getLocalGoalModel().opponentGoalIsValid = false;
+  getLocalGoalModel().ownGoalIsValid = false;
+
+  //TODO Make as member
+  unsigned int numOfValidFilter;
+  for(unsigned int i = 0; i < 10; i++) {
+    if (ccSamples[i].sampleSet.getIsValid())
+      numOfValidFilter++;
+  }
+
+  //if (numOfValidFilter > 1) {
+
+
+
+
+
+  //}
+
+
+
+
+  //copy dummy
+
+//  getLocalGoalModel().someGoalWasSeen = getSensingGoalModel().someGoalWasSeen;
+
+//  // opp goal is in front of me
+//  const GoalModel::Goal& oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
+//  if(((oppGoal.leftPost+oppGoal.leftPost)*0.5).x > 0)
+//    getLocalGoalModel().opponentGoalIsValid = true;
+//  else
+//    getLocalGoalModel().ownGoalIsValid = true;
+
+
+//  // copy the self loc goal
+//  getLocalGoalModel().goal = getSelfLocGoalModel().goal;
+
+//  //frame Info when goal was seen not useful! New: some_goal_was seen
+//  if(getGoalPercept().getNumberOfSeenPosts() > 0)
+//  {
+//    getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
+//  }
+
+//  if(getLocalGoalModel().opponentGoalIsValid)
+//  {
+//    getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
+//  }
+//  else
+//  {
+//    getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
+//  }
 
   /*Decision in Modeling
     oppGoalSeen = true;
@@ -202,19 +269,11 @@ void ActiveGoalLocator::debugDrawings() {
 
     for(unsigned int x = 0; x < 10; x++) {
 
-      Vector2<double> mean;
-
       if (ccSamples[x].sampleSet.getIsValid()) {
-
-        for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) {
-          mean += ccSamples[x].sampleSet[i].getPos();
-
-        }
-         mean /= ccSamples[x].sampleSet.size();
 
         FIELD_DRAWING_CONTEXT;
         PEN("FF0000", 20);
-        CIRCLE(mean.x, mean.y, 20);
+        CIRCLE(ccSamples[x].sampleSet.mean.x, ccSamples[x].sampleSet.mean.y, 20);
       }
     }
   );
@@ -250,14 +309,16 @@ void ActiveGoalLocator::debugPlots() {
   for(unsigned int x = 0; x < 10; x++) {
 
       string id = convertIntToString(x);
-      double averageWeighting = ccSamples[x].sampleSet.averageWeighting;
-      double totalWeighting = ccSamples[x].sampleSet.averageWeighting*ccSamples[x].sampleSet.size();
+      double totalWeighting = ccSamples[x].sampleSet.lastTotalWeighting;
+      double averageWeighting = 0;
+      if (ccSamples[x].sampleSet.size() > 0)
+        averageWeighting = ccSamples[x].sampleSet.lastTotalWeighting/(double) ccSamples[x].sampleSet.size();
 
-      PLOT("ActiveGoalLocator:averageWeighting:"+id, averageWeighting);
-      MODIFY("ActiveGoalLocator:averageWeighting:"+id, averageWeighting);
+      PLOT("ActiveGoalLocator:lastAverageWeighting:"+id, averageWeighting);
+      MODIFY("ActiveGoalLocator:lastAverageWeighting:"+id, averageWeighting);
 
-      PLOT("ActiveGoalLocator:totalWeighting:"+id, totalWeighting);
-      MODIFY("ActiveGoalLocator:totalWeighting:"+id, totalWeighting);
+      PLOT("ActiveGoalLocator:lastTotalWeighting:"+id, totalWeighting);
+      MODIFY("ActiveGoalLocator:lastTotalWeighting:"+id, totalWeighting);
   }
 
 
@@ -364,12 +425,8 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
       n++;
 
     } else { //if not used for filter, just copy
-        AGLBSample bufferSample;
-          bufferSample.translation = tmpSampleSetBuffer[i].translation;
-          bufferSample.color       = tmpSampleSetBuffer[i].color;
-          bufferSample.frameNumber = tmpSampleSetBuffer[i].frameNumber;
-        sampleSetBuffer.samples.add(bufferSample);
-
+        sampleSetBuffer.samples.add(tmpSampleSetBuffer[i]);
+        std::cout << "ups" << std::endl;
     }
   }
   sampleSet.setValid();
@@ -404,7 +461,7 @@ void ActiveGoalLocator::updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const 
 
   }//end for
 
-  sampleSet.averageWeighting = totalWeighting / (double) sampleSet.size();
+  sampleSet.lastTotalWeighting = totalWeighting;
 
 }//end updateByBallPercept
 
