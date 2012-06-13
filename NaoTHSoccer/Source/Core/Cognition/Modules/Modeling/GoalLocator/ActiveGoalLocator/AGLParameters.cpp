@@ -16,7 +16,7 @@ AGLParameters::AGLParameters()
   //in RAD
   PARAMETER_REGISTER(standardDeviationAngle) = 0.15;
 
-  PARAMETER_REGISTER(timeFilterRange) = 0.1;
+  PARAMETER_REGISTER(timeFilterRange) = 0.90;
 
   PARAMETER_REGISTER(sigmaWeightingThreshhold) = 0.4;
 
@@ -31,6 +31,8 @@ AGLParameters::AGLParameters()
   PARAMETER_REGISTER(resamplingThreshhold) = 0.99;
 
   PARAMETER_REGISTER(possibleGoalWidhtError) = 200;
+
+  PARAMETER_REGISTER(deletePFbyTotalWeightingThreshold) = 1.2;
 
   // load from the file after registering all parameters
   syncWithConfig();

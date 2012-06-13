@@ -39,8 +39,6 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
   goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
 
-  timeFilter = 0.000001;
-
   for (unsigned int x = 0; x < 10; x++) {
     for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) {
       ccSamples[x].sampleSet[i].likelihood = 0.1; //param
@@ -53,9 +51,6 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
 void ActiveGoalLocator::execute() {
 
-  //TODO filter decreasen
-  //timeFilter += parameters.timeFilterRange * averageWeighting;
-
   STOPWATCH_START("ActiveGoalLocator");
 
   // don't update if the body state is not valid
@@ -64,6 +59,20 @@ void ActiveGoalLocator::execute() {
   {
       for (int i = 0; i < 10; i++)
         ccSamples[i].sampleSet.setUnValid();
+
+      return;
+  }
+
+  //decrease lastTotalWeighting of each PF
+
+  //TODO filter decreasen
+  for (unsigned int x = 0; x < 10; x++) {
+    if (ccSamples[x].sampleSet.getIsValid()) {
+        ccSamples[x].sampleSet.lastTotalWeighting *= parameters.timeFilterRange;
+    }
+
+    if (ccSamples[x].sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold)
+       ccSamples[x].sampleSet.setUnValid();
   }
 
   //TODO reset likelihood of valid filter
@@ -129,7 +138,6 @@ void ActiveGoalLocator::execute() {
 
   }//end for i < getGoalPercept().getNumberOfSeenPosts()
 
-
   //////////////////////////
   //   check Buffer
   //////////////////////////
@@ -161,7 +169,6 @@ void ActiveGoalLocator::execute() {
        ccSamples[x].sampleSet.mean = mean/(double)ccSamples[x].sampleSet.size();
     }
   }
-
 
   //////////////////////////
   //   provide Goal Model

@@ -70,10 +70,6 @@ private:
 
   OdometryData lastRobotOdometry;
 
-  //needs to check the need for using new percept
-  // if high, no need for insert new percept
-  double timeFilter;
-
   class Cluster
   {
   public:

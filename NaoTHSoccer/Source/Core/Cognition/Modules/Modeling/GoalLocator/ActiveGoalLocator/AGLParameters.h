@@ -32,6 +32,8 @@ public:
 
   double possibleGoalWidhtError;
 
+  double deletePFbyTotalWeightingThreshold;
+
   virtual void print(std::ostream& stream) const {}
 
 };
