@@ -167,11 +167,6 @@ void ActiveGoalLocator::execute() {
   //   provide Goal Model
   //////////////////////////
 
-  // reset
-  getLocalGoalModel().someGoalWasSeen = false;
-  getLocalGoalModel().opponentGoalIsValid = false;
-  getLocalGoalModel().ownGoalIsValid = false;
-
   //TODO Make as member
   unsigned int numOfValidFilter;
   for(unsigned int i = 0; i < 10; i++) {
@@ -179,51 +174,44 @@ void ActiveGoalLocator::execute() {
       numOfValidFilter++;
   }
 
-  //if (numOfValidFilter > 1) {
+  if (numOfValidFilter > 1) {
 
+    unsigned int id1 = 0;
+    unsigned int id2 = 0;
+    double lastDistError = 1000000;
 
+    for(unsigned int x = 0; x < 10; x++) {
 
+      double distError = 0;
 
+      if (ccSamples[x].sampleSet.getIsValid()) {
 
-  //}
+        for(unsigned int i = 0; i < 10; i++) {
 
+            if (ccSamples[i].sampleSet.getIsValid()) {
 
+                distError = abs((ccSamples[x].sampleSet.mean - ccSamples[i].sampleSet.mean).abs() - goalWidth);
 
+                if (distError < lastDistError) { //check if error becomes better
+                    lastDistError = distError;
+                    id1 = x;
+                    id2 = i;
+                }
+            }//end if
+        }//end for i
+      }//end if
+    }//end for x
 
-  //copy dummy
+    //decide whether distError is feasable
+    if (lastDistError < 200) { //make param
 
-//  getLocalGoalModel().someGoalWasSeen = getSensingGoalModel().someGoalWasSeen;
+        getLocalGoalModel().goal.leftPost  = ccSamples[id1].sampleSet.mean;
+        getLocalGoalModel().goal.rightPost = ccSamples[id2].sampleSet.mean;
 
-//  // opp goal is in front of me
-//  const GoalModel::Goal& oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
-//  if(((oppGoal.leftPost+oppGoal.leftPost)*0.5).x > 0)
-//    getLocalGoalModel().opponentGoalIsValid = true;
-//  else
-//    getLocalGoalModel().ownGoalIsValid = true;
+    }
 
+  }//end if numOfValidFilter
 
-//  // copy the self loc goal
-//  getLocalGoalModel().goal = getSelfLocGoalModel().goal;
-
-//  //frame Info when goal was seen not useful! New: some_goal_was seen
-//  if(getGoalPercept().getNumberOfSeenPosts() > 0)
-//  {
-//    getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
-//  }
-
-//  if(getLocalGoalModel().opponentGoalIsValid)
-//  {
-//    getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
-//  }
-//  else
-//  {
-//    getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
-//  }
-
-  /*Decision in Modeling
-    oppGoalSeen = true;
-    ownGoalSeen = true;
-  }*/
 
   debugDrawings();
   debugPlots();
