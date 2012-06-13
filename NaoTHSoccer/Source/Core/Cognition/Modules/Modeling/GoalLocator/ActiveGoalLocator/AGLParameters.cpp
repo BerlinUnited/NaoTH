@@ -32,7 +32,7 @@ AGLParameters::AGLParameters()
 
   PARAMETER_REGISTER(possibleGoalWidhtError) = 200;
 
-  PARAMETER_REGISTER(deletePFbyTotalWeightingThreshold) = 1.2;
+  PARAMETER_REGISTER(deletePFbyTotalWeightingThreshold) = 0.9;
 
   // load from the file after registering all parameters
   syncWithConfig();

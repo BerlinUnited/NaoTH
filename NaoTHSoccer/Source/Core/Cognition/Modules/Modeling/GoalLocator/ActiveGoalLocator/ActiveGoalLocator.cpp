@@ -33,8 +33,6 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
 
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_temp_percept_buffer", "", true);
-
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", true);
 
   goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
@@ -69,10 +67,12 @@ void ActiveGoalLocator::execute() {
   for (unsigned int x = 0; x < 10; x++) {
     if (ccSamples[x].sampleSet.getIsValid()) {
         ccSamples[x].sampleSet.lastTotalWeighting *= parameters.timeFilterRange;
-    }
 
-    if (ccSamples[x].sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold)
-       ccSamples[x].sampleSet.setUnValid();
+        if (ccSamples[x].sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold) {
+          ccSamples[x].sampleSet.setUnValid();
+          std::cout << "delete filter " << x << "because " << ccSamples[x].sampleSet.lastTotalWeighting << " is smaler " << parameters.deletePFbyTotalWeightingThreshold << std::endl;
+        }
+     }
   }
 
   //TODO reset likelihood of valid filter
@@ -425,7 +425,6 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
 
     } else { //if not used for filter, just copy
         sampleSetBuffer.samples.add(tmpSampleSetBuffer[i]);
-        std::cout << "ups" << std::endl;
     }
   }
   sampleSet.setValid();

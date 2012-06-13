@@ -28,7 +28,7 @@ public:
     _numberOfParticles(n),
     isValid(false),
     samples(n),
-    lastTotalWeighting(0.0)
+    lastTotalWeighting(1.2) //choosen by observation for usual initial values
   {
   }
 
