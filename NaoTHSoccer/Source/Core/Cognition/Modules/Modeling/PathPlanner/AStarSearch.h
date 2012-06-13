@@ -34,6 +34,8 @@
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
 // Percepts
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
@@ -158,7 +160,8 @@ public:
               const AStarNode& goal,
               const AStarSearchParameters& parameterSet,
               const std::vector<Vector2d>& obstacles,
-              unsigned int ownNodeNum);
+              unsigned int ownNodeNum,
+              const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi);
 
   /** Checks if this node has been expanded
   * @return true, if the node has been expanded
@@ -251,6 +254,9 @@ protected:
   */
   bool tooCloseToObstacle(const std::vector<Vector2d>& obstacles, Vector2d& obstaclePosition, const AStarSearchParameters& parameterSet) const;
 
+
+  bool collidesWithField(const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi);
+
 };// end class AStarNode
 
 /** For sorting the heap the STL needs compare function that lets us compare
@@ -278,9 +284,11 @@ public:
   * @param maxTreeSize The maximum number of nodes to expand
   * @param parameterSet A parameter set to check the maximum number of nodes to expand
   */
-  AStarSearch(const RobotPose& rp)
+  AStarSearch(const RobotPose& rp, const FieldInfo& fi, const PlayerInfo& pi)
     :
-  theRobotPose(rp)
+  theRobotPose(rp),
+  theFieldInfo(fi),
+  thePlayerInfo(pi)
   {
     pathFound = false;
     this->obstacles = obstacles;
@@ -330,7 +338,8 @@ public:
       {
         unsigned int sizeBeforeExpand(searchTree.size());
         searchTree[nextNodeToExpand].successor(searchTree, expandedNodes, this->myStart,
-                                            this->myGoal, this->parameterSet, this->obstacles, nextNodeToExpand);
+                                            this->myGoal, this->parameterSet, this->obstacles, nextNodeToExpand,
+                                            theRobotPose, thePlayerInfo, theFieldInfo);
         expandedNodes.push_back(nextNodeToExpand);
         unsigned int sizeAfterExpand(searchTree.size());
         if (sizeAfterExpand == sizeBeforeExpand)
@@ -357,9 +366,6 @@ public:
   */
   void drawAllNodesField();
   void drawPathFiled();
-  void drawHeuristic();
-  void drawCost();
-  void drawFunction();
   void drawObstacles();
 
 
@@ -378,6 +384,12 @@ private:
 
   // robot pose
   const RobotPose& theRobotPose;
+
+  // field info
+  const FieldInfo& theFieldInfo;
+
+  // player info
+  const PlayerInfo& thePlayerInfo;
 
   // start and goal
   AStarNode myStart;

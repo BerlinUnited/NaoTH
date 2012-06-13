@@ -24,7 +24,8 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   const AStarNode& goal,
   const AStarSearchParameters& parameterSet,
   const std::vector<Vector2d>& obstacles,
-  unsigned int ownNodeNum)
+  unsigned int ownNodeNum,
+  const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi)
 {
   expanded = true;
   // create new node
@@ -52,7 +53,9 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
     // some constraints
     Vector2d obstaclePosition;
     newNode.setPosition(newPosition);
-    if(!tooCloseToAnotherNode(searchTree, expandedNodes, newPosition) && !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet))
+    if(!newNode.tooCloseToAnotherNode(searchTree, expandedNodes, newPosition) && 
+      !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet) &&
+      !newNode.collidesWithField(rp, pi, fi))
     {
       // ..parent
       newNode.setParentNode(ownNodeNum);
@@ -75,7 +78,9 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   newPosition += nodePosition;
   newNode.setPosition(newPosition);
   Vector2d obstaclePosition;
-  if(!tooCloseToAnotherNode(searchTree, expandedNodes, nodePosition) && !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet))
+  if(!newNode.tooCloseToAnotherNode(searchTree, expandedNodes, nodePosition) &&
+    !newNode.tooCloseToObstacle(obstacles, obstaclePosition, parameterSet) &&
+    !newNode.collidesWithField(rp, pi, fi))
   {
     // ..parent
     newNode.setParentNode(ownNodeNum);
@@ -182,6 +187,21 @@ bool AStarNode::tooCloseToObstacle(const std::vector<Vector2d>& obstacles, Vecto
   return foundObstacle;
 }
 
+bool AStarNode::collidesWithField(const RobotPose& rp, const PlayerInfo& pi, const FieldInfo& fi)
+{
+  bool collides = false;
+  int playerNumber = pi.gameData.playerNumber;
+  Vector2d globalPose = rp.translation + position;
+  // path should be around the own penalty area for avoiding illegal defenders (Only for field players)
+  if(globalPose.x < fi.xPosOwnPenaltyArea + 200 && std::abs(globalPose.y) < fi.yPosLeftPenaltyArea + 200 && playerNumber != 1) 
+  {
+    collides = true;
+  }
+  return collides;
+}
+
+
+
 void AStarSearch::drawAllNodesField()
 {
   FIELD_DRAWING_CONTEXT;
@@ -214,36 +234,6 @@ void AStarSearch::drawPathFiled()
     }
     PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
     LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, myStart.getPosition().x, myStart.getPosition().y);
-  }
-}
-
-void AStarSearch::drawHeuristic()
-{
-  FIELD_DRAWING_CONTEXT;
-  std::vector<AStarNode>::const_iterator it = searchTree.begin();
-  for (;it != searchTree.end(); it++)
-  {
-    TEXT_DRAWING(it->getPosition().x, it->getPosition().y, it->h());
-  }
-}
-
-void AStarSearch::drawCost()
-{
-  FIELD_DRAWING_CONTEXT;
-  std::vector<AStarNode>::const_iterator it = searchTree.begin();
-  for (;it != searchTree.end(); it++)
-  {
-    TEXT_DRAWING(it->getPosition().x, it->getPosition().y, it->g());
-  }
-}
-
-void AStarSearch::drawFunction()
-{
-  FIELD_DRAWING_CONTEXT;
-  std::vector<AStarNode>::const_iterator it = searchTree.begin();
-  for (;it != searchTree.end(); it++)
-  {
-    TEXT_DRAWING(it->getPosition().x, it->getPosition().y, it->f());
   }
 }
 

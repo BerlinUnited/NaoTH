@@ -24,6 +24,9 @@
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
+
 #include "XabslEngine/XabslSymbols.h"
 // Percepts
 #include "Representations/Perception/ScanLineEdgelPercept.h"
@@ -46,6 +49,7 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   REQUIRE(PlayersModel)
   REQUIRE(RobotPose)
   REQUIRE(MotionStatus)
+
   // percepts
   REQUIRE(ScanLineEdgelPercept)
   // provide path

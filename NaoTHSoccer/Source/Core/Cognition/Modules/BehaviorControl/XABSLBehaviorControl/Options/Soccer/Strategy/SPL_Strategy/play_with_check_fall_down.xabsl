@@ -3,7 +3,7 @@ option play_with_check_fall_down
 
   common decision {
     if(abs(value=sensor.inertial.y)>20)
-       goto fall_and_stand_up;        
+       goto fall_and_stand_up;      
   }
 
   initial state _init
