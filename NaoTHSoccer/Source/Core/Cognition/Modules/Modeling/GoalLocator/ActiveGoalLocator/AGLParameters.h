@@ -30,6 +30,8 @@ public:
   double processNoiseDistance;
   double resamplingThreshhold;
 
+  double possibleGoalWidhtError;
+
   virtual void print(std::ostream& stream) const {}
 
 };

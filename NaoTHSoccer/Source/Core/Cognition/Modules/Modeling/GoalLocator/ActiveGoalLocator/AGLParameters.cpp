@@ -30,6 +30,8 @@ AGLParameters::AGLParameters()
 
   PARAMETER_REGISTER(resamplingThreshhold) = 0.99;
 
+  PARAMETER_REGISTER(possibleGoalWidhtError) = 200;
+
   // load from the file after registering all parameters
   syncWithConfig();
 

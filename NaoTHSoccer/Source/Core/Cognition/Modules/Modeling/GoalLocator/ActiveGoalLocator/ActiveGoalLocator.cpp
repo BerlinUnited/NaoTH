@@ -203,7 +203,7 @@ void ActiveGoalLocator::execute() {
     }//end for x
 
     //decide whether distError is feasable
-    if (lastDistError < 200) { //make param
+    if (lastDistError < parameters.possibleGoalWidhtError) { //make param
 
         getLocalGoalModel().goal.leftPost  = ccSamples[id1].sampleSet.mean;
         getLocalGoalModel().goal.rightPost = ccSamples[id2].sampleSet.mean;
