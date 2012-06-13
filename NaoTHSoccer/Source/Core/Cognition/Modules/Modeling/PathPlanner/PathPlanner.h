@@ -21,7 +21,6 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
-#include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Motion/MotionStatus.h"

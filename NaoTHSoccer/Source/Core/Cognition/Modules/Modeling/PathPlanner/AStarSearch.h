@@ -278,21 +278,10 @@ public:
   * @param maxTreeSize The maximum number of nodes to expand
   * @param parameterSet A parameter set to check the maximum number of nodes to expand
   */
-  AStarSearch(long minCacheSize, long maxTreeSize)
+  AStarSearch(const RobotPose& rp)
+    :
+  theRobotPose(rp)
   {
-    unsigned int elementsToReserve;
-    if(maxTreeSize != -1)
-    {
-      elementsToReserve = (maxTreeSize+(unsigned int)parameterSet.maxBranchingFactor);
-      this->maxTreeSize = maxTreeSize;
-    }
-    else
-    {
-      elementsToReserve = minCacheSize;
-      this->maxTreeSize = -1;
-    }
-    searchTree.reserve(elementsToReserve);
-    expandedNodes.reserve(elementsToReserve);
     pathFound = false;
     this->obstacles = obstacles;
   }// end constructor
@@ -332,7 +321,7 @@ public:
       // the minimal function value)
       nextNodeToExpand = findNextNodeToExpand();
       // can we expand other nodes, or should we stop (memory bounding...)
-      if(searchTree.size() >= (unsigned int)maxTreeSize)
+      if(searchTree.size() >= (unsigned int)parameterSet.maxNumberOfNodes)
       {
         indexOfBestNode = nextNodeToExpand;
         break;
@@ -379,8 +368,6 @@ private:
 	std::vector<AStarNode> searchTree;
   /** Indices of all expanded nodes*/
   std::vector<unsigned int> expandedNodes;
-  /** The maximum number of nodes to expand*/
-  long maxTreeSize;
   /** The parameter set*/
   AStarSearchParameters parameterSet;
   /** Did we find the path to Goal? */
@@ -388,6 +375,9 @@ private:
 
   // obstacles positions
   std::vector<Vector2d> obstacles;
+
+  // robot pose
+  const RobotPose& theRobotPose;
 
   // start and goal
   AStarNode myStart;

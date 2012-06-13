@@ -43,6 +43,8 @@ public:
   double standardGradientLength;
   /** The number of consecutive calls of the A*-search */
   double numberOfCalls;
+  /** The max number of nodes, the could be expanded*/
+  double maxNumberOfNodes;
   
   virtual void print(std::ostream& stream) const {}
 

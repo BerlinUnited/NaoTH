@@ -22,6 +22,7 @@ AStarSearchParameters::AStarSearchParameters()
   PARAMETER_REGISTER(endOfFar) = 700.0;
   PARAMETER_REGISTER(standardGradientLength) = 0.0;
   PARAMETER_REGISTER(numberOfCalls) = 10.0;
+  PARAMETER_REGISTER(maxNumberOfNodes) = 128.0;
 
   // load from the file after registering all parameters
   syncWithConfig();
