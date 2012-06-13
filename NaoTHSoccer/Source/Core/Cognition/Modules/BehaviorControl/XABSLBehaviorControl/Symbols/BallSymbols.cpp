@@ -109,6 +109,27 @@ void BallSymbols::execute()
     PLOT("XABSL:BallSymbols:ballRightFoot:y", ballRightFoot.y);
   );
 
+  // draw the position behind the ball (seen from attack direction)
+  DEBUG_REQUEST("PotentialFieldProvider:attackDirection:PosBehindBall",
+    FIELD_DRAWING_CONTEXT;
+    PEN("000000", 20);
+    // TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
+    // ROTATION(getRobotPose().rotation);
+
+    // Vector2<double> targetDir = getRawAttackDirection().attackDirection;
+    // targetDir.normalize(200);
+
+    ARROW(
+          posBehindBall.translation.x,
+          posBehindBall.translation.y,
+          getBallModel().positionPreview.x,
+          getBallModel().positionPreview.y
+          );
+
+    // ROTATION(-getRobotPose().rotation);
+    // TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
+  );
+
 }//end update
 
 
@@ -172,16 +193,14 @@ void BallSymbols::calculatePosBehindBallFuture()
   double distance = theInstance->distance;
 
   // ball.preview.x - 200*cos(angle=attack.direction), 
-  posBehindBall.translation.x = ball.x - cos(attack_dir)*distance;
+  
+  theInstance->posBehindBall.translation.x = ball.x - cos(attack_dir)*distance;
   
   //  y = ball.preview.y - sin(angle = attack_direction)*200 // clip(value=attack.direction, min=-90 ,max=90)???
-  posBehindBall.translation.y = ball.y - sin(attack_dir)*distance;
+  theInstance->posBehindBall.translation.y = ball.y - sin(attack_dir)*distance;
 
   // rot = atan2(y = ball.preview.y + sin(angle=attack.direction)*200, x = ball.preview.x - cos(angle=attack.direction)*200)
-  posBehindBall.rotation = atan2(ball.y + sin(attack_dir)*distance, ball.x - cos(attack_dir)*distance);
-  theInstance->robotPose.rotation;
-  theInstance->robotPose.translation.x;
-  theInstance->robotPose.translation.y;
+  theInstance->posBehindBall.rotation = atan2(ball.y + sin(attack_dir)*distance, ball.x - cos(attack_dir)*distance);
 }
 
 double BallSymbols::getPosBehindBallFutureX()

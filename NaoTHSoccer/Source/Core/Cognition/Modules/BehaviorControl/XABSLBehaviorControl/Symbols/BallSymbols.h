@@ -97,8 +97,8 @@ private:
   static double getPosBehindBallFutureX();
   static double getPosBehindBallFutureY();
   static double getPosBehindBallFutureRotation();
-  static Pose2D posBehindBall;
-  static double distance;
+  Pose2D posBehindBall;
+  double distance;
 
   // some local members
   Vector2 <double> ballPositionField;
