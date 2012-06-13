@@ -7,6 +7,12 @@ namespace strategy("Strategy Symbols") {
 
   /** the attack direction calculate in strategy */
   float input attack.direction;
+  /** the attack direction preview in hip */
+  float input attack.direction.preview;
+  /** the attack direction preview in left foot */
+  float input attack.direction.preview.left_foot;
+  /** the attack direction preview in right foot */
+  float input attack.direction.preview.right_foot;
 
   float input players.opp_closest_to_ball.number;
   float input players.opp_closest_to_ball.time_since_last_seen;
