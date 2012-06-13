@@ -61,18 +61,19 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
 
   
   // "Pose behind the ball in attackdirection with distance"
-  engine.registerDecimalInputSymbol("PosBehindBallPreview.x", &getPosBehindBallFutureX);
+  engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
   engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "distanceToBall", &distance);
 
-  engine.registerDecimalInputSymbol("PosBehindBallPreview.y", &getPosBehindBallFutureY);
+  engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
   engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "distanceToBall", &distance);
   
-  engine.registerDecimalInputSymbol("PosBehindBallPreview.rot", &getPosBehindBallFutureRotation);
+  engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
   engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "distanceToBall", &distance);
 
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
 
 }//end registerSymbols
 
@@ -81,7 +82,6 @@ void BallSymbols::execute()
 {
   // calculate the global position of the ball on the field
   ballPositionField = robotPose*ballModel.position;
-
 
   // transform the ball position into the feet coordinates
   const Pose3D& lFoot = kinematicChain.theLinks[KinematicChain::LFoot].M;
@@ -110,7 +110,7 @@ void BallSymbols::execute()
   );
 
   // draw the position behind the ball (seen from attack direction)
-  DEBUG_REQUEST("PotentialFieldProvider:attackDirection:PosBehindBall",
+  DEBUG_REQUEST("KalmanFilterBallLocator:pos_behind_ball",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 20);
     // TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
@@ -193,7 +193,6 @@ void BallSymbols::calculatePosBehindBallFuture()
   double distance = theInstance->distance;
 
   // ball.preview.x - 200*cos(angle=attack.direction), 
-  
   theInstance->posBehindBall.translation.x = ball.x - cos(attack_dir)*distance;
   
   //  y = ball.preview.y - sin(angle = attack_direction)*200 // clip(value=attack.direction, min=-90 ,max=90)???
