@@ -48,6 +48,7 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
       this.validate();
     }    
     setControlValue(name, value);
+    //this.validate();
   }
   
   public void setControlValue(String name, int value)
@@ -91,17 +92,27 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
   
   public void removeControls()
   {
-    for(Map.Entry<String, Integer> entry : valueControls.entrySet())
+    if(this.getComponentCount() > 0)
     {
-      ColorValueControl control = (ColorValueControl) this.getComponent(entry.getValue());
-      PropertyChangeListener[] propListeners = control.getPropertyChangeListeners();
+      for(Map.Entry<String, Integer> entry : valueControls.entrySet())
+      {
+        ColorValueControl control = (ColorValueControl) this.getComponent(entry.getValue());
+        PropertyChangeListener[] propListeners = control.getPropertyChangeListeners();
+        for(PropertyChangeListener propListener: propListeners)
+        {
+          control.removePropertyChangeListener(propListener);
+        }
+      }
+      ColorPixelOnOffControl pixelOnOffControl = (ColorPixelOnOffControl) this.getComponent(onOffControlIdx);
+      PropertyChangeListener[] propListeners = pixelOnOffControl.getPropertyChangeListeners();
       for(PropertyChangeListener propListener: propListeners)
       {
-        control.removePropertyChangeListener(propListener);
+        pixelOnOffControl.removePropertyChangeListener(propListener);
       }
     }
     this.removeAll();
     valueControls.clear();
+    this.repaint();
   }
   
   /**
@@ -113,15 +124,20 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        setBorder(javax.swing.BorderFactory.createEtchedBorder(new java.awt.Color(255, 255, 255), new java.awt.Color(51, 51, 51)));
+        setMaximumSize(new java.awt.Dimension(260, 32767));
+        setMinimumSize(new java.awt.Dimension(260, 480));
+        setPreferredSize(new java.awt.Dimension(260, 480));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 396, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 31996, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables

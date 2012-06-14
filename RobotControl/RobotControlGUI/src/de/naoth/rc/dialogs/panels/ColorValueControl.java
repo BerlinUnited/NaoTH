@@ -60,12 +60,17 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
         jSlider = new javax.swing.JSlider();
         jSpinner = new javax.swing.JSpinner();
 
+        setMaximumSize(new java.awt.Dimension(240, 53));
+        setMinimumSize(new java.awt.Dimension(240, 53));
+
         jLabel.setText("jLabel1");
 
         jSlider.setMajorTickSpacing(10);
         jSlider.setMaximum(255);
         jSlider.setMinorTickSpacing(1);
         jSlider.setPaintTicks(true);
+        jSlider.setMaximumSize(new java.awt.Dimension(200, 27));
+        jSlider.setMinimumSize(new java.awt.Dimension(200, 27));
         jSlider.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jSliderMouseReleased(evt);
@@ -110,7 +115,7 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
                 .addComponent(jLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)

@@ -100,7 +100,7 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         coloredObjectChooserPanel = new de.naoth.rc.dialogs.panels.ColoredObjectChooserPanel();
         colorValueSlidersPanel = new de.naoth.rc.dialogs.panels.ColorValueSlidersPanel();
 
-        setPreferredSize(new java.awt.Dimension(800, 363));
+        setPreferredSize(new java.awt.Dimension(800, 663));
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 formMouseClicked(evt);
@@ -148,6 +148,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         });
         jToolBar1.add(btCalibrate);
 
+        jPanel3.setPreferredSize(new java.awt.Dimension(640, 480));
+
         originalImageContainer.setBackground(java.awt.Color.gray);
         originalImageContainer.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         originalImageContainer.setMinimumSize(new java.awt.Dimension(640, 480));
@@ -183,8 +185,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(originalImageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 492, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 8, Short.MAX_VALUE))
+                .addComponent(originalImageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         coloredObjectChooserPanel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -562,12 +564,12 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       Colors.ColorClass newColorClass = coloredObjectChooserPanel.getSelectedColor();
       
       if(newColorClass != colorClass)
-      {
+      {        
         if(newColorClass == Colors.ColorClass.none)
         {
           btCalibrate.setEnabled(false);
-          colorValueSlidersPanel.removeControls();
         }
+        colorValueSlidersPanel.removeControls();
         
         for(Colors.ColorClass c: Colors.ColorClass.values())
         {
@@ -582,13 +584,14 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
             c == Colors.ColorClass.blue
           )
           {
-            btCalibrate.setSelected(false);
             sendShowColorAreaCommand(c, "off");
           }
-          btCalibrate.setEnabled(true);
-          sendGetColorValueCommand(newColorClass, "get");
-          colorValueSlidersPanel.removeControls();
         }
+        btCalibrate.setSelected(false);
+        btCalibrate.setEnabled(true);
+//        sendGetColorValueCommand(newColorClass, "get");
+        colorValueSlidersPanel.removeControls();
+        this.validateTree();
       }
       colorClass = newColorClass;
       if(colorClass != null)
@@ -601,6 +604,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           Logger.getLogger(ColorCalibrationTool.class.getName()).log(Level.SEVERE, null, ex);
         }
         CalibColorIndex = coloredObjectChooserPanel.getSelectedColorIndex();
+        sendGetColorValueCommand(colorClass, "get");
         sendShowColorAreaCommand(colorClass, "on");
       }
       else
