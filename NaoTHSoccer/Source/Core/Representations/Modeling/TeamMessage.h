@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMMESSAGE_H
-#define  _TEAMMESSAGE_H
+#define _TEAMMESSAGE_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"

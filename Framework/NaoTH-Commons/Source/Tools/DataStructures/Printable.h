@@ -6,10 +6,11 @@
  */
 
 #ifndef _PRINTABLE_H
-#define  _PRINTABLE_H
+#define _PRINTABLE_H
 
 #include <ostream>
 
+//TODO: remove it
 using namespace std;
 
 namespace naoth
@@ -18,22 +19,13 @@ namespace naoth
   class Printable
   {
   public:
-
-    Printable()
-    {}
-
     /**
      * This method must be overwritten bei a particular
      * Printable in order to stream out some specific (visible) data
      */
     virtual void print(ostream& stream) const = 0;
 
-    virtual ~Printable()
-    {
-    }
-
     friend ostream& operator<<(ostream& stream, const Printable& printable);
-
   };
 }
 
