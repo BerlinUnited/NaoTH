@@ -268,7 +268,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       if(colorClass != null)
       {
         this.colorValueSlidersPanel.setEnabled(false);
-        sendShowObjectsPixels(colorClass, "on");
+//        if(colorValueSlidersPanel.showColoredPixels())
+//        {
+//          sendShowObjectsPixels(colorClass, "on");
+//        }
         sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("on"));
         sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("off"));
         sendColorCalibCommand(colorClass, "on");     
@@ -290,7 +293,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           c == Colors.ColorClass.blue
         )
         {
-          sendShowObjectsPixels(c, "off");
+          if(colorValueSlidersPanel.showColoredPixels())
+          {
+            sendShowObjectsPixels(c, "off");
+          }
           sendColorCalibCommand(c, "off");          
         }
       }
@@ -441,31 +447,69 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
   @Override
   public void propertyChange(PropertyChangeEvent evt) 
   {
-    String changedProperty = evt.getPropertyName().replace("ColorCalibrationTool:", "").replace(":changed", "");
-    if(changedProperty.equals("OrangeBall"))
+    String property = evt.getPropertyName().replace("ColorCalibrationTool:", "");
+    String changedProperty = property.replace(":changed", "");
+    String switchedProperty = property.replace(":switched", "");
+    
+    if(evt.getNewValue() != null && evt.getNewValue() instanceof Boolean )
     {
-      sendGetColorValueCommand(Colors.ColorClass.orange, "set");
+      String mode = "off";
+      if((Boolean) evt.getNewValue())
+      {
+        mode = "on";
+      }
+      if(switchedProperty.equals("OrangeBall"))
+      {
+        sendShowObjectsPixels(Colors.ColorClass.orange, mode);
+      }
+      else if(switchedProperty.equals("YellowGoal"))
+      {
+        sendShowObjectsPixels(Colors.ColorClass.yellow, mode);
+      }
+      else if(switchedProperty.equals("PinkWaistBand"))
+      {
+        sendShowObjectsPixels(Colors.ColorClass.pink, mode);
+      }
+      else if(switchedProperty.equals("BlueWaistBand"))
+      {
+        sendShowObjectsPixels(Colors.ColorClass.blue, mode);
+      }
+      else if(switchedProperty.equals("WhiteLines"))
+      {
+        sendShowObjectsPixels(Colors.ColorClass.white, mode);
+      }
+      else if(switchedProperty.equals("Field"))
+      {
+        sendShowObjectsPixels(Colors.ColorClass.green, mode);
+      }
     }
-    else if(changedProperty.equals("YellowGoal"))
+    else if(evt.getNewValue() != null && evt.getNewValue() instanceof Integer)
     {
-      sendGetColorValueCommand(Colors.ColorClass.yellow, "set");
+      if(changedProperty.equals("OrangeBall"))
+      {
+        sendGetColorValueCommand(Colors.ColorClass.orange, "set");
+      }
+      else if(changedProperty.equals("YellowGoal"))
+      {
+        sendGetColorValueCommand(Colors.ColorClass.yellow, "set");
+      }
+      else if(changedProperty.equals("PinkWaistBand"))
+      {
+        sendGetColorValueCommand(Colors.ColorClass.pink, "set");
+      }
+      else if(changedProperty.equals("BlueWaistBand"))
+      {
+        sendGetColorValueCommand(Colors.ColorClass.blue, "set");
+      }
+      else if(changedProperty.equals("WhiteLines"))
+      {
+        sendGetColorValueCommand(Colors.ColorClass.white, "set");
+      }    
+      else if(changedProperty.equals("Field"))
+      {
+        sendGetColorValueCommand(Colors.ColorClass.green, "set");
+      }
     }
-    else if(changedProperty.equals("PinkWaistBand"))
-    {
-      sendGetColorValueCommand(Colors.ColorClass.pink, "set");
-    }
-    else if(changedProperty.equals("BlueWaistBand"))
-    {
-      sendGetColorValueCommand(Colors.ColorClass.blue, "set");
-    }
-    else if(changedProperty.equals("WhiteLines"))
-    {
-      sendGetColorValueCommand(Colors.ColorClass.white, "set");
-    }    
-    else if(changedProperty.equals("Field"))
-    {
-      sendGetColorValueCommand(Colors.ColorClass.green, "set");
-    }    
   }
 
   private class ImagePanel extends JPanel implements MouseMotionListener, MouseListener//, ComponentListener

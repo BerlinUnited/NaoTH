@@ -16,6 +16,8 @@ import java.util.Map;
 public class ColorValueSlidersPanel extends javax.swing.JPanel 
 {
   private HashMap<String, Integer> valueControls;
+  
+  private int onOffControlIdx;
   /**
    * Creates new form ColorValueSlidersPanel
    */
@@ -26,10 +28,17 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
     GridLayout layout = new GridLayout(10, 1);
     this.setLayout(layout); 
     valueControls = new HashMap<String, Integer>();
-  }
+  }  
 
   public void addControl(String objectName, String name, int value, PropertyChangeListener listener)
   {    
+    if(this.getComponentCount() == 0)
+    {
+      ColorPixelOnOffControl pixelOnOffControl = new ColorPixelOnOffControl(objectName, listener);
+      this.add(pixelOnOffControl, -1);
+      onOffControlIdx = this.getComponentCount() - 1;
+    }
+    
     if(!valueControls.containsKey(name))
     {
       ColorValueControl control = new ColorValueControl(objectName, name, listener);
@@ -62,6 +71,12 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
       idx++;
     }
     return valueString;
+  }
+      
+  public boolean showColoredPixels()
+  {
+    ColorPixelOnOffControl pixelOnOffControl = (ColorPixelOnOffControl) this.getComponent(onOffControlIdx);
+    return pixelOnOffControl.showColoredPixels();
   }
       
   @Override
