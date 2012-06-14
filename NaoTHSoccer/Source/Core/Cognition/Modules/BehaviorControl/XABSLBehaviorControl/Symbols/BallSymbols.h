@@ -55,7 +55,7 @@ public:
 
     goToPointX(0.0),
     goToPointY(0.0),
-    goToPointDistanceX(0.0)
+    goToPointDistanceX(0.0),
     goToPointDistanceY(0.0)
 
   {

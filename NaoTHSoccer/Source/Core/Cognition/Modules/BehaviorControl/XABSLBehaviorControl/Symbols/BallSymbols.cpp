@@ -61,13 +61,22 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
 
   // "Pose behind the ball in attackdirection with distance"
   engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointX", "posBehindBallPreview.x.goToPointY", "posBehindBallPreview.x.goToPointDistanceX", "posBehindBallPreview.x.goToPointDistanceY", &goToPointX, &goToPointY, &goToPointDistanceX, &goToPointDistanceY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointX", &goToPointX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointY", &goToPointY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointDistanceX",  &goToPointDistanceX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointDistanceY", &goToPointDistanceY);
 
   engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointX", "posBehindBallPreview.y.goToPointY", "posBehindBallPreview.x.goToPointDistanceX", "posBehindBallPreview.y.goToPointDistanceY", &goToPointX, &goToPointY, &goToPointDistanceX, &goToPointDistanceY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointX", &goToPointX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointY", &goToPointY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointDistanceX",  &goToPointDistanceX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointDistanceY", &goToPointDistanceY);
   
   engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointX", "posBehindBallPreview.rot.goToPointY", "posBehindBallPreview.x.goToPointDistanceX", "posBehindBallPreview.rot.goToPointDistanceY", &goToPointX, &goToPointY, &goToPointDistanceX, &goToPointDistanceY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointX", &goToPointX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointY", &goToPointY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointDistanceX",  &goToPointDistanceX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointDistanceY", &goToPointDistanceY);
 
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
@@ -109,25 +118,25 @@ void BallSymbols::execute()
   );
 
   // draw the position behind the ball (seen from attack direction)
-  DEBUG_REQUEST("XABSL:StrategySymbols:draw_position_behind_ball",
-    FIELD_DRAWING_CONTEXT;
-    PEN("000000", 20);
+  //DEBUG_REQUEST("XABSL:StrategySymbols:draw_position_behind_ball",
+    //FIELD_DRAWING_CONTEXT;
+    //PEN("000000", 20);
     // TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
     // ROTATION(getRobotPose().rotation);
 
     // Vector2<double> targetDir = getRawAttackDirection().attackDirection;
     // targetDir.normalize(200);
 
-    ARROW(
-          posBehindBall.translation.x,
-          posBehindBall.translation.y,
-          getBallModel().positionPreview.x,
-          getBallModel().positionPreview.y
-          );
+    //ARROW(
+    //      posBehindBall.translation.x,
+    //      posBehindBall.translation.y,
+    //      getBallModel().positionPreview.x,
+    //      getBallModel().positionPreview.y
+    //      );
 
     // ROTATION(-getRobotPose().rotation);
     // TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
-  );
+  //);
 
 }//end update
 
