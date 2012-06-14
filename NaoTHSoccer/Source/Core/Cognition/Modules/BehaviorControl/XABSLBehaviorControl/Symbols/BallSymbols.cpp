@@ -62,13 +62,13 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   
   // "Pose behind the ball in attackdirection with distance"
   engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "distanceToBall", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "distance", &distance);
 
   engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "distanceToBall", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "distance", &distance);
   
   engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "distanceToBall", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "distance", &distance);
 
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);

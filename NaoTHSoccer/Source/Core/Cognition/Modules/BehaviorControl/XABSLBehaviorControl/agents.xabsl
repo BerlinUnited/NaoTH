@@ -35,6 +35,7 @@ include "Options/Skills/approach_ball_with_correct_foot_ckeck_goal.xabsl";
 include "Options/Skills/go_to_relative_point.xabsl";
 include "Options/Skills/go_to_relative_point_avoid_obstacles.xabsl";
 include "Options/Skills/go_to_absolute_point.xabsl";
+include "Options/Skills/go_to_pos_behind_ball.xabsl";
 include "Options/Skills/go_to_ball.xabsl";
 include "Options/Skills/go_to_ball_cool.xabsl";
 include "Options/Skills/kick_ball_with_foot.xabsl";
@@ -130,3 +131,4 @@ agent penalty("Penalty", play_penalty);
 /** dribble test */
 agent dribble_agent("DribbleAgent", dribble_agent);
 agent search_ball_agent("SearchBallAgent", search_ball_agent);
+agent go_behind_ball("GoBehindBallAgent", go_to_pos_behind_ball);
