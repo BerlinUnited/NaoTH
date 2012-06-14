@@ -53,7 +53,10 @@ public:
     futureBallPosY_t(0.0),
     futureBallDistance_t(0.0),
 
-    distance(0.0)
+    goToPointX(0.0),
+    goToPointY(0.0),
+    goToPointDistanceX(0.0)
+    goToPointDistanceY(0.0)
 
   {
     theInstance = this;
@@ -100,7 +103,10 @@ private:
   static double getPosBehindBallFutureY();
   static double getPosBehindBallFutureRotation();
   Pose2D posBehindBall;
-  double distance;
+  double goToPointX;
+  double goToPointY;
+  double goToPointDistanceX;
+  double goToPointDistanceY;
 
   // some local members
   Vector2 <double> ballPositionField;

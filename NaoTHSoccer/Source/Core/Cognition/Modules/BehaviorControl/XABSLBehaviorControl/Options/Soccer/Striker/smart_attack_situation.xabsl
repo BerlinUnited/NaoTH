@@ -99,7 +99,7 @@ option smart_attack_situation
     }
   }
 
-  state stand_tester
+  /*state stand_tester
   {
     decision
     {
@@ -129,7 +129,7 @@ option smart_attack_situation
     {
       motion.type = stand;
     }
-  }
+  }*/
   
 
   initial state approach_roughly
@@ -141,13 +141,12 @@ option smart_attack_situation
       {
         goto validate_field_position;
       } 
-      /* Include kick here
-      else if(action_done
-              && (goal.opp.distance < 2000 
+      else if((goal.opp.distance < 2000 
               && abs(value=attack.direction) < 60)
-              || random > 0.4)
+              || random < 0.4)
+      {
         goto omnidirectional_kick;
-      }*/
+      }
       else if(ball.right_foot.preview.x < 500
               ||ball.left_foot.preview.x < 500)
       { 
@@ -188,16 +187,13 @@ option smart_attack_situation
     {
       go_to_relative_point(rotation = (ball.distance>500?
                                           atan2(y = ball.preview.y 
-                                            + sin(angle=(attack.direction < 0)?clip(value=attack.direction, min=0 ,max=90)
-                                              :clip(value=attack.direction, min=-90 ,max=0))*200, 
+                                            + sin(angle=clip(value=attack.direction, min=-90 ,max=90))*200, 
                                               x = ball.preview.x - cos(angle=attack.direction)*200)
                                          :atan2(y = ball.preview.y, x = ball.preview.x)),
                            x = ball.preview.x
                                  - (ball.distance>500?cos(angle=attack.direction)*200:0), 
                            y = ball.preview.y
-                                 - (ball.distance>500?sin(angle = (attack.direction < 0)?
-                                     clip(value=attack.direction, min=-90 ,max=0)
-                                     :clip(value=attack.direction, min=0 ,max=90))*200:0),
+                                 - (ball.distance>500?sin(angle = clip(value=attack.direction, min=-90 ,max=90))*200:0),
                            errorX=0, errorY=0, errorR=0);
       motion.walk.coordinate = hip;
       motion.type = walk;
@@ -215,6 +211,12 @@ option smart_attack_situation
               && ball.left_foot.preview.x > 600)
       {
         goto approach_roughly;
+      }
+      else if((goal.opp.distance < 2000 
+              && abs(value=attack.direction) < 60)
+              || random < 0.4)
+      {
+        goto omnidirectional_kick;
       }
       // We decided for left foot but attack.direction changes to much due to moving ball, approach right
       else if(attack.direction > 30)
@@ -268,6 +270,12 @@ option smart_attack_situation
               && ball.left_foot.preview.x > 600)
       {
         goto approach_roughly;
+      }
+      else if((goal.opp.distance < 2000 
+              && abs(value=attack.direction) < 60)
+              || random < 0.4)
+      {
+        goto omnidirectional_kick;
       }
       // We decided for right foot but attack.direction changes to much due to moving ball, approach left
       else if(attack.direction < -30)
@@ -369,13 +377,18 @@ option smart_attack_situation
   {
     decision {
       // state_time as backup
-      // use percept for y for quick abortion 
+      else if((goal.opp.distance < 2000 
+              && abs(value=attack.direction) < 60)
+              || random < 0.4)
+      {
+        goto omnidirectional_kick;
+      }
       else if (//state_time > 1000 
                 //|| 
                 abs(value = attack.direction) > 25
                 || ball.preview.x < 0
                 || ball.preview.x > 250
-                || abs(value=ball.percept.y) > 40)
+                || abs(value=ball.preview.y) > 40)
       { 
         // Ball lies good enough for sidekick with left foot
         if(executed_motion.step_control.left_movable

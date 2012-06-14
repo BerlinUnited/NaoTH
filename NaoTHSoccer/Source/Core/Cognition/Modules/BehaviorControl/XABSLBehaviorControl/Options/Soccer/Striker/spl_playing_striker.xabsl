@@ -55,6 +55,7 @@ option spl_playing_striker {
     action
     {
       situation.abortable = true;
+      set_right_eye=blue;
       between_goal_and_ball_situation();
     }
   }
@@ -63,6 +64,7 @@ option spl_playing_striker {
     action 
     {
       situation.abortable = true;
+      set_right_eye=green;
       smart_attack_situation();
     }
   }
@@ -71,6 +73,7 @@ option spl_playing_striker {
     action
     {
       situation.abortable = true;
+      set_right_eye=red;
       close_to_goal_corner_situation();
     }
   }

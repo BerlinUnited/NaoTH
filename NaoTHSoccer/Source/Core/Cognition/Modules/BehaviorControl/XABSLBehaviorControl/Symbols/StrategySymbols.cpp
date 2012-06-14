@@ -1,5 +1,4 @@
 #include "StrategySymbols.h"
-#include "Tools/Math/Common.h"
 #include "Tools/Math/Pose2D.h"
 #include "Tools/Math/Geometry.h"
 #include "Representations/Modeling/BallModel.h"

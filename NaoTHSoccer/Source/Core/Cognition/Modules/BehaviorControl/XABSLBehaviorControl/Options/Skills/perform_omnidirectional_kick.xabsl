@@ -5,14 +5,11 @@
 option perform_omnidirectional_kick
 {
 
-initial state stabilize_before_kick
+  initial state stabilize_before_kick
   {
     decision {
-      // stand 1 second before kick
-      if(state_time < 1000)
-        stay;
       // maybe we touched the ball accidently
-      else if(!action_done)
+      if(!action_done)
         goto finished;
       else //if(executed_motion.type == stand) HACK xxx
         goto kick_prep;
@@ -20,19 +17,19 @@ initial state stabilize_before_kick
         //stay;
     }
     action {
-      // should execute stand
       approach_ball_with_correct_foot(dist=170, errorX=15, errorY=15, errorR=5+5*random, want_to_turn_after_approach=false);
       head.control_mode = search_for_ball;
       motion.walk.stop_with_stand = true;
-      //motion.type = stand;
       motion.type = walk;
+      motion.walk.style = (ball.distance < 500)?stable:normal;
     }
   }
 
   state kick_prep
   {
     decision {
-         if(executed_motion.type == stand) {
+         if(state_time > 500 
+             && executed_motion.type == stand) {
            goto kick;
          } else {
             stay;
@@ -48,7 +45,7 @@ initial state stabilize_before_kick
   state kick {
     decision
     {
-      if(action_done && state_time > 3000)
+      if(action_done && state_time > 500)
         goto stabilize_after_kick;
       else
         stay;

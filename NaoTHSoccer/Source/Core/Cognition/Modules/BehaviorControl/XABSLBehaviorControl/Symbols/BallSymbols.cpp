@@ -61,13 +61,13 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
 
   // "Pose behind the ball in attackdirection with distance"
   engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.distance", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointX", "posBehindBallPreview.x.goToPointY", "posBehindBallPreview.x.goToPointDistanceX", "posBehindBallPreview.x.goToPointDistanceY", &goToPointX, &goToPointY, &goToPointDistanceX, &goToPointDistanceY);
 
   engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.distance", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointX", "posBehindBallPreview.y.goToPointY", "posBehindBallPreview.x.goToPointDistanceX", "posBehindBallPreview.y.goToPointDistanceY", &goToPointX, &goToPointY, &goToPointDistanceX, &goToPointDistanceY);
   
   engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.distance", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointX", "posBehindBallPreview.rot.goToPointY", "posBehindBallPreview.x.goToPointDistanceX", "posBehindBallPreview.rot.goToPointDistanceY", &goToPointX, &goToPointY, &goToPointDistanceX, &goToPointDistanceY);
 
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
@@ -187,18 +187,19 @@ double BallSymbols::getTeamBallTimeSinceLastUpdate()
 void BallSymbols::calculatePosBehindBallFuture()
 {
   // for better readability
-  Vector2 <double> ball = theInstance->ballModel.positionPreview;
-  double attack_dir = theInstance->getSoccerStrategy().attackDirection.angle();
-  double distance = theInstance->distance;
+  double gtpx = theInstance->goToPointX;
+  double gtpy = theInstance->goToPointY;
+  double distanceX = theInstance->goToPointDistanceX;
+  double distanceY = theInstance->goToPointDistanceY;
 
   // ball.preview.x - 200*cos(angle=attack.direction), 
-  theInstance->posBehindBall.translation.x = ball.x - cos(attack_dir)*distance;
+  theInstance->posBehindBall.translation.x = gtpx - distanceX * cos(Math::toDegrees(atan2(gtpy-distanceY, gtpx-distanceX)));
   
   //  y = ball.preview.y - sin(angle = attack_direction)*200 // clip(value=attack.direction, min=-90 ,max=90)???
-  theInstance->posBehindBall.translation.y = ball.y - sin(attack_dir)*distance;
+  theInstance->posBehindBall.translation.y = gtpy - distanceY * (1+sin(Math::toDegrees(atan2(gtpy-distanceY, gtpx-distanceX))));
 
   // rot = atan2(y = ball.preview.y + sin(angle=attack.direction)*200, x = ball.preview.x - cos(angle=attack.direction)*200)
-  theInstance->posBehindBall.rotation = atan2(ball.y + sin(attack_dir)*distance, ball.x - cos(attack_dir)*distance);
+  theInstance->posBehindBall.rotation = Math::toDegrees(atan2(gtpy, gtpx));
 }
 
 double BallSymbols::getPosBehindBallFutureX()
