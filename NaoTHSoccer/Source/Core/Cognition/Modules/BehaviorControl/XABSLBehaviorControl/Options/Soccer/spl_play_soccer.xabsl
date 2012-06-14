@@ -26,7 +26,7 @@ option spl_play_soccer {
       situationStatusOwnHalf = false;
 
       //for DEBUGGING purposes only and will be overwritten by OwnHalf = true!
-      situationStatusOppHalf = false; 
+      situationStatusOppHalf = true; 
       reactiveBallModelNeeded = false;
 
       motion.walk.style = fast;
