@@ -44,6 +44,14 @@ public class ColorValueControl extends javax.swing.JPanel //implements PropertyC
     return (Integer) this.jSpinner.getValue();
   }
   
+  @Override
+  public void setEnabled(boolean value) 
+  {
+    this.jSpinner.setEnabled(value);
+    this.jSlider.setEnabled(value);
+  }
+    
+  
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always

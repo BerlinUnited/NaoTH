@@ -35,8 +35,9 @@ public class ColoredObjectChooserPanel extends javax.swing.JPanel {
         {
           if
           (
-//            c == Colors.ColorClass.green || 
-//            c == Colors.ColorClass.white || 
+            c == Colors.ColorClass.green || 
+            c == Colors.ColorClass.white || 
+            c == Colors.ColorClass.none || 
             c == Colors.ColorClass.orange || 
             c == Colors.ColorClass.yellow ||
             c == Colors.ColorClass.skyblue || 
@@ -74,6 +75,11 @@ public class ColoredObjectChooserPanel extends javax.swing.JPanel {
               case blue:
                 button = new ColorButton(c, "Blue Team Player", 113);
                 break;
+                
+              default:
+                button = new ColorButton(Colors.ColorClass.none, "Off", 41);
+                button.setSelected(true);
+                break;                
                  
             }
             if(button != null)

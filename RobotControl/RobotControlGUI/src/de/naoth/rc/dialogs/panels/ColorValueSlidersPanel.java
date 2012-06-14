@@ -63,7 +63,17 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
     }
     return valueString;
   }
-          
+      
+  @Override
+  public void setEnabled(boolean value) 
+  {
+    for(Map.Entry<String, Integer> entry : valueControls.entrySet())
+    {
+      ColorValueControl control = (ColorValueControl) this.getComponent(entry.getValue());
+      control.setEnabled(value);
+    }
+  }
+  
   public void removeControls()
   {
     for(Map.Entry<String, Integer> entry : valueControls.entrySet())

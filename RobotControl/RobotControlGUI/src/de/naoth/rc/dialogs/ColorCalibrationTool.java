@@ -3,7 +3,6 @@ package de.naoth.rc.dialogs;
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.dialogs.Tools.ColorTable;
 import de.naoth.rc.dialogs.Tools.Colors;
 import de.naoth.rc.manager.ImageManager;
 import de.naoth.rc.manager.ObjectListener;
@@ -19,12 +18,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -33,7 +28,7 @@ import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
  *
- * @author  thomas
+ * @author  CNR
  */
 @PluginImplementation
 public class ColorCalibrationTool extends AbstractDialog implements ObjectListener<JanusImage>, PropertyChangeListener
@@ -45,35 +40,17 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
   public ImageManager imageManager;
 
   private ImagePanel imageCanvas;
-//  private ColorTable currentColorTable;
-//  private boolean currentColorTableWasModified;
-//  public final static int NUM_OF_CT_REVISIONS = 50;
-  
-//  private final Command getColorTableCommand = new Command("representation:get").addArg("ColorTable64");
-//  private final String setColorTableCommandBase = "file::write";
-//  private final Command reloadColorTableCommand = new Command("colortable:load");
-//  private final Command pathColorTableCommand = new Command("colortable:file_path");
-//  
-//  private final String defaultColorTablePath = "../NaoController/Config/colortable";
   private final String cameraAutoParam = "camera:switch_auto_parameters";
-//  private String lastPath;
   
   private final String showCalibArea = "ImageProcessor:BaseColorClassifier:calibration_areas:";
+  private final String showCalibPixel = "ImageProcessor:BaseColorClassifier:set_[OBJECT]_in_image";
+  private final String showCalibPixelField = "ImageProcessor:FieldColorClassifier:set_in_image";
   private final String getSetCalibAreaRect = "ParameterList:CalibrationAreaRect_";
   private final String toggleCalibCommand = "ImageProcessor:BaseColorClassifier:calibrate_colors:";
+  private final String toggleCalibCommandField = "ImageProcessor:FieldColorClassifier:calibrate:";
   private final String getSetCalibValues = "ParameterList:[COLOR]ColorRegion_[OBJECT]:";
-  
-//  ParameterList:orangeColorRegion_OrangeBall:get: set parameters of orangeColorRegion_OrangeBall
-//ParameterList:orangeColorRegion_OrangeBall:set: get parameters of pinkColorRegion_PinkWaistBand
-//ParameterList:pinkColorRegion_PinkWaistBand:get: set parameters of pinkColorRegion_PinkWaistBand
-//ParameterList:pinkColorRegion_PinkWaistBand:set: get parameters of skyblueColorRegion_BlueGoal
-//ParameterList:skyblueColorRegion_BlueGoal:get: set parameters of skyblueColorRegion_BlueGoal
-//ParameterList:skyblueColorRegion_BlueGoal:set: get parameters of whiteColorRegion_WhiteLines
-//ParameterList:whiteColorRegion_WhiteLines:get: set parameters of whiteColorRegion_WhiteLines
-//ParameterList:whiteColorRegion_WhiteLines:set: get parameters of yellowColorRegion_YellowGoal
-//ParameterList:yellowColorRegion_YellowGoal:get: set parameters of yellowColorRegion_YellowGoal
-//ParameterList:yellowColorRegion_YellowGoal:set: 
-  
+  private final String getSetCalibValuesField = "ParameterList:FieldColorParameters:";
+    
   private boolean drawRect = false;
   private Color CalibColor;
   private Integer CalibColorIndex;
@@ -89,9 +66,6 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
   @Init
   public void init()
   {
-//    this.currentColorTable = new ColorTable();
-//    this.currentColorTableWasModified = false;
-//    this.colorTableRevisions = new ArrayList<ColorTable>(NUM_OF_CT_REVISIONS);
 
     // setup the image-views
     imageCanvas = new ImagePanel();
@@ -99,17 +73,6 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
     this.imagePanel.addMouseListener(imageCanvas);
     this.imagePanel.addMouseMotionListener(imageCanvas);    
     
-    // set the default directory containing color table
-//    File defaultColorTableFile = new File(defaultColorTablePath);
-//    if(defaultColorTableFile.exists() && defaultColorTableFile.isDirectory())
-//    {
-//      this.fileChooser.setCurrentDirectory(defaultColorTableFile);
-//    }
-//    else
-//    {
-//      this.fileChooser.setCurrentDirectory(new File("."));
-//    }
-//    this.fileChooser.setFileFilter(new FileNameExtensionFilter("ColorTable64 File (*.c64)", "c64"));
   }//end init
 
   @Override
@@ -129,17 +92,11 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         fileChooser = new de.naoth.rc.dialogs.panels.ExtendedFileChooser();
         jToolBar1 = new javax.swing.JToolBar();
         btReceiveImages = new javax.swing.JToggleButton();
-        newMenuButton = new javax.swing.JButton();
-        openMenuButton = new javax.swing.JButton();
-        saveMenuButton = new javax.swing.JButton();
-        jButtonSend = new javax.swing.JButton();
-        jButtonGetFromRobot = new javax.swing.JButton();
-        btUndo = new javax.swing.JButton();
         btAutoCameraParameters = new javax.swing.JToggleButton();
+        btCalibrate = new javax.swing.JToggleButton();
         jPanel3 = new javax.swing.JPanel();
         originalImageContainer = new javax.swing.JPanel();
         imagePanel = new javax.swing.JPanel();
-        jToggleButtonCalibrate = new javax.swing.JToggleButton();
         coloredObjectChooserPanel = new de.naoth.rc.dialogs.panels.ColoredObjectChooserPanel();
         colorValueSlidersPanel = new de.naoth.rc.dialogs.panels.ColorValueSlidersPanel();
 
@@ -161,84 +118,6 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         });
         jToolBar1.add(btReceiveImages);
 
-        newMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/New24.gif"))); // NOI18N
-        newMenuButton.setToolTipText("New");
-        newMenuButton.setEnabled(false);
-        newMenuButton.setFocusable(false);
-        newMenuButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        newMenuButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        newMenuButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newMenuButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(newMenuButton);
-
-        openMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Open24.gif"))); // NOI18N
-        openMenuButton.setToolTipText("Open");
-        openMenuButton.setEnabled(false);
-        openMenuButton.setFocusable(false);
-        openMenuButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        openMenuButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        openMenuButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openMenuButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(openMenuButton);
-
-        saveMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Save24.gif"))); // NOI18N
-        saveMenuButton.setToolTipText("Save");
-        saveMenuButton.setEnabled(false);
-        saveMenuButton.setFocusable(false);
-        saveMenuButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        saveMenuButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        saveMenuButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveMenuButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(saveMenuButton);
-
-        jButtonSend.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Export24.gif"))); // NOI18N
-        jButtonSend.setToolTipText("Send To Robot");
-        jButtonSend.setEnabled(false);
-        jButtonSend.setFocusable(false);
-        jButtonSend.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonSend.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButtonSend.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSendActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButtonSend);
-
-        jButtonGetFromRobot.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Import24.gif"))); // NOI18N
-        jButtonGetFromRobot.setToolTipText("Get From Robot");
-        jButtonGetFromRobot.setEnabled(false);
-        jButtonGetFromRobot.setFocusable(false);
-        jButtonGetFromRobot.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButtonGetFromRobot.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButtonGetFromRobot.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonGetFromRobotActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButtonGetFromRobot);
-
-        btUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/toolbarButtonGraphics/general/Undo24.gif"))); // NOI18N
-        btUndo.setToolTipText("Undo");
-        btUndo.setEnabled(false);
-        btUndo.setFocusable(false);
-        btUndo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btUndo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btUndo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btUndoActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btUndo);
-
         btAutoCameraParameters.setText("Auto Camera Params");
         btAutoCameraParameters.setFocusable(false);
         btAutoCameraParameters.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -249,6 +128,25 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             }
         });
         jToolBar1.add(btAutoCameraParameters);
+
+        btCalibrate.setText("Run Calibration");
+        btCalibrate.setEnabled(false);
+        btCalibrate.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                btCalibrateStateChanged(evt);
+            }
+        });
+        btCalibrate.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                btCalibrateItemStateChanged(evt);
+            }
+        });
+        btCalibrate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCalibrateActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btCalibrate);
 
         originalImageContainer.setBackground(java.awt.Color.gray);
         originalImageContainer.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -286,25 +184,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(originalImageContainer, javax.swing.GroupLayout.PREFERRED_SIZE, 492, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 8, Short.MAX_VALUE))
         );
-
-        jToggleButtonCalibrate.setText("Run Calibration");
-        jToggleButtonCalibrate.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jToggleButtonCalibrateStateChanged(evt);
-            }
-        });
-        jToggleButtonCalibrate.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jToggleButtonCalibrateItemStateChanged(evt);
-            }
-        });
-        jToggleButtonCalibrate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButtonCalibrateActionPerformed(evt);
-            }
-        });
 
         coloredObjectChooserPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -316,7 +197,7 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -324,20 +205,15 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(colorValueSlidersPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jToggleButtonCalibrate)))
-                .addContainerGap(24, Short.MAX_VALUE))
+                    .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(142, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jToggleButtonCalibrate))
+                .addComponent(coloredObjectChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -371,61 +247,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
   private void imagePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagePanelMouseClicked
   }//GEN-LAST:event_imagePanelMouseClicked
 
-  private void newMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuButtonActionPerformed
-    setColorTable(new ColorTable());
-  }//GEN-LAST:event_newMenuButtonActionPerformed
-
-  private void jButtonSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendActionPerformed
-
-//    sendCommand(pathColorTableCommand); // get current path
-  }//GEN-LAST:event_jButtonSendActionPerformed
-
-  private void jButtonGetFromRobotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGetFromRobotActionPerformed
-//    sendCommand(getColorTableCommand);
-  }//GEN-LAST:event_jButtonGetFromRobotActionPerformed
-
-private void btUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btUndoActionPerformed
-//  if(colorTableRevisions != null && colorTableRevisions.size() > 0)
-//  {
-//    currentColorTable = colorTableRevisions.get(colorTableRevisions.size() - 1);
-//    colorTableRevisions.remove(colorTableRevisions.size() - 1);
-//  }
-}//GEN-LAST:event_btUndoActionPerformed
-
 private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
 }//GEN-LAST:event_formMouseClicked
-
-private void saveMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuButtonActionPerformed
-//  fileChooser.showSaveDialog(this);
-//  File selectedFile = fileChooser.getSelectedFile();
-//
-//
-//  if(selectedFile == null)
-//  {
-//    return;
-//  }
-//  try
-//  {
-//    FileWriter fileWriter = new FileWriter(selectedFile, false);
-//    char[] buffer = this.currentColorTable.getCharArray();
-//    for(int i = 0; i < buffer.length; i++)
-//    {
-//      if(buffer[i] != 0)
-//      {
-//        System.out.println("true");
-//      }
-//    }
-//    fileWriter.write(buffer, 0, buffer.length);
-//    fileWriter.close();
-//
-//    this.currentColorTableWasModified = false;
-//  }
-//  catch(IOException e)
-//  {
-//    JOptionPane.showMessageDialog(this,
-//      e.toString(), "The file could not be written.", JOptionPane.ERROR_MESSAGE);
-//  }//end catch
-}//GEN-LAST:event_saveMenuButtonActionPerformed
 
 private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btAutoCameraParametersActionPerformed
 {//GEN-HEADEREND:event_btAutoCameraParametersActionPerformed
@@ -435,66 +258,31 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
   sendCommand(cmd);
 }//GEN-LAST:event_btAutoCameraParametersActionPerformed
 
-private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuButtonActionPerformed
-  fileChooser.showOpenDialog(this);
-  File selectedFile = fileChooser.getSelectedFile();
+  private void btCalibrateStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_btCalibrateStateChanged
 
-  if(selectedFile == null)
-  {
-    return;
-  }
-  try
-  {
-    if(!selectedFile.getName().endsWith(".c64"))
-    {
-        BufferedImage img = ImageIO.read(selectedFile);
-        JanusImage janusImage = new JanusImage(img, false);
-        newObjectReceived(janusImage);
-    }
-    else
-    {
-        FileReader fileReader = new FileReader(selectedFile);
-        char[] buffer = new char[64 * 64 * 64];
-        fileReader.read(buffer, 0, buffer.length);
-        ColorTable colorTable = new ColorTable();
-        colorTable.createFromCharArray(buffer);
-
-        setColorTable(colorTable);
-
-        fileReader.close();
-    }
-  }
-  catch(IOException e)
-  {
-    JOptionPane.showMessageDialog(this,
-      e.toString(), "The file could not be read.", JOptionPane.ERROR_MESSAGE);
-
-  }//end catch
-}//GEN-LAST:event_openMenuButtonActionPerformed
-
-  private void jToggleButtonCalibrateStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jToggleButtonCalibrateStateChanged
-
- }//GEN-LAST:event_jToggleButtonCalibrateStateChanged
-
-  private void jToggleButtonCalibrateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jToggleButtonCalibrateItemStateChanged
+ }//GEN-LAST:event_btCalibrateStateChanged
+  
+  private void btCalibrateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_btCalibrateItemStateChanged
     if(evt.getStateChange() == ItemEvent.SELECTED)
     {
       if(colorClass != null)
       {
+        this.colorValueSlidersPanel.setEnabled(false);
+        sendShowObjectsPixels(colorClass, "on");
         sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("on"));
         sendCommand(new Command(toggleCalibCommand + "reset_data").addArg("off"));
-        sendColorCalibCommand(colorClass, "on"); 
-        
+        sendColorCalibCommand(colorClass, "on");     
       }
     }
     if(evt.getStateChange() == ItemEvent.DESELECTED)
     {
+      btCalibrate.setSelected(false);
       for(Colors.ColorClass c: Colors.ColorClass.values())
       {
         if
         (
-//            c == Colors.ColorClass.green || 
-//            c == Colors.ColorClass.white || 
+          c == Colors.ColorClass.green || 
+          c == Colors.ColorClass.white || 
           c == Colors.ColorClass.orange || 
           c == Colors.ColorClass.yellow ||
           c == Colors.ColorClass.skyblue || 
@@ -502,17 +290,17 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
           c == Colors.ColorClass.blue
         )
         {
-          jToggleButtonCalibrate.setSelected(false);
+          sendShowObjectsPixels(c, "off");
           sendColorCalibCommand(c, "off");          
         }
       }
       sendGetColorValueCommand(colorClass, "get");
+      this.colorValueSlidersPanel.setEnabled(true);
     }
-  }//GEN-LAST:event_jToggleButtonCalibrateItemStateChanged
+  }//GEN-LAST:event_btCalibrateItemStateChanged
 
-  private void jToggleButtonCalibrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonCalibrateActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_jToggleButtonCalibrateActionPerformed
+  private void btCalibrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCalibrateActionPerformed
+  }//GEN-LAST:event_btCalibrateActionPerformed
 
   private void coloredObjectChooserPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_coloredObjectChooserPanelMouseClicked
   }//GEN-LAST:event_coloredObjectChooserPanelMouseClicked
@@ -531,6 +319,39 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     JOptionPane.showMessageDialog(this,
       cause, "Error", JOptionPane.ERROR_MESSAGE);
   }
+  
+  private void sendShowObjectsPixels(Colors.ColorClass colorClass, String mode)
+  {
+    if(colorClass != null)
+    {
+      String cmdString = showCalibPixel;
+      switch(colorClass)
+      {
+        case green:
+            cmdString = showCalibPixelField;
+          break;
+
+        case white:
+            cmdString = cmdString.replace("[OBJECT]", "lines");
+          break;
+
+        case yellow:
+        case skyblue:
+            cmdString = cmdString.replace("[OBJECT]", "goal");
+          break;
+
+        case orange:
+            cmdString = cmdString.replace("[OBJECT]", "ball");
+          break;
+
+        case red:
+         case blue:
+            cmdString = cmdString.replace("[OBJECT]", "waistband") + mode;
+          break;
+      }
+      sendCommand(new Command(cmdString).addArg(mode));
+    }
+  }
 
   private void sendGetColorValueCommand(Colors.ColorClass colorClass, String mode)
   {
@@ -540,7 +361,7 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
       switch(colorClass)
       {
         case green:
-//            cmdString += "show_field_area";
+            cmdString = getSetCalibValuesField + mode;
           break;
 
         case white:
@@ -587,7 +408,7 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     switch(colorClass)
     {
       case green:
-//            cmdString += "show_field_area";
+            cmdString = toggleCalibCommandField;
         break;
 
       case white:
@@ -640,6 +461,10 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     else if(changedProperty.equals("WhiteLines"))
     {
       sendGetColorValueCommand(Colors.ColorClass.white, "set");
+    }    
+    else if(changedProperty.equals("Field"))
+    {
+      sendGetColorValueCommand(Colors.ColorClass.green, "set");
     }    
   }
 
@@ -694,12 +519,18 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
       
       if(newColorClass != colorClass)
       {
+        if(newColorClass == Colors.ColorClass.none)
+        {
+          btCalibrate.setEnabled(false);
+          colorValueSlidersPanel.removeControls();
+        }
+        
         for(Colors.ColorClass c: Colors.ColorClass.values())
         {
           if
           (
-  //            c == Colors.ColorClass.green || 
-  //            c == Colors.ColorClass.white || 
+            c == Colors.ColorClass.green || 
+            c == Colors.ColorClass.white || 
             c == Colors.ColorClass.orange || 
             c == Colors.ColorClass.yellow ||
             c == Colors.ColorClass.skyblue || 
@@ -707,12 +538,13 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
             c == Colors.ColorClass.blue
           )
           {
-            jToggleButtonCalibrate.setSelected(false);
+            btCalibrate.setSelected(false);
             sendShowColorAreaCommand(c, "off");
           }
+          btCalibrate.setEnabled(true);
+          sendGetColorValueCommand(newColorClass, "get");
+          colorValueSlidersPanel.removeControls();
         }
-        colorValueSlidersPanel.removeControls();
-        sendGetColorValueCommand(newColorClass, "get");
       }
       colorClass = newColorClass;
       if(colorClass != null)
@@ -740,9 +572,9 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
       int index = colorClass.ordinal();
       switch(colorClass)
       {
-        case green:
-            cmdString += "LowerField:set";
-          break;
+//        case green:
+//            cmdString += "LowerField:set";
+//          break;
           
         case white:
             cmdString += "WhiteLines:set";
@@ -767,6 +599,9 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
         case blue:
             cmdString += "BlueWaistBand:set";
           break;
+        
+        default:
+          return;
       }
       Command cmd = new Command(cmdString);             
       cmd.addArg("lowerLeft.x", String.valueOf(lowerLeft[index].x / 2));
@@ -800,9 +635,9 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
       String cmdString = showCalibArea;
       switch(colorClass)
       {
-        case green:
+//        case green:
 //            cmdString += "show_field_area";
-          break;
+//          break;
           
         case white:
             cmdString += "show_line_area";
@@ -827,6 +662,9 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
         case blue:
             cmdString += "show_blueWaistBand_area";
           break;
+        
+        default:
+          return;
       }
       
       sendCommand(new Command(cmdString).addArg(arg));
@@ -1013,6 +851,10 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
           
           addUpdateControls(name, strResult);
         }
+        else if((getSetCalibValuesField + "get").equals(originalCommand.getName()))
+        {
+          addUpdateControls("Field", strResult);
+        }
         else if(originalCommand.getName().equals(cameraAutoParam)
           && originalCommand.getArguments().size() >= 1
           && originalCommand.getArguments().keySet().contains("off"))
@@ -1048,60 +890,26 @@ private void openMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GE
     }, command);
   }//end sendCommand
 
-  private void saveColorTable()
-  {
-  }//end saveColorTable
-
-  private void setColorTable(ColorTable colorTable)
-  {
-//    if(this.currentColorTableWasModified)
-//    {
-//      int response = JOptionPane.showConfirmDialog(null,
-//        "ColorTable was modified Save it?", "Question",
-//        JOptionPane.YES_NO_CANCEL_OPTION,
-//        JOptionPane.QUESTION_MESSAGE);
-//
-//      if(response != JOptionPane.NO_OPTION)
-//      {
-//        if(response == JOptionPane.CANCEL_OPTION)
-//        {
-//          return;
-//        }
-//        if(response == JOptionPane.YES_OPTION)
-//        {
-//          return;
-//        }
-//        return;
-//      }//end if
-//    }//end if
-
-//    this.currentColorTable = colorTable;
-  }//end setColorTable
-
   @Override
   public void dispose()
   {
     //System.out.println("Dispose is not implemented for: " + this.getClass().getName());
     btReceiveImages.setSelected(false);
     imageManager.removeListener(this);
+    btCalibrate.setSelected(false);
+    colorValueSlidersPanel.removeControls();
   }//end dispose
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btAutoCameraParameters;
+    private javax.swing.JToggleButton btCalibrate;
     private javax.swing.JToggleButton btReceiveImages;
-    private javax.swing.JButton btUndo;
     private de.naoth.rc.dialogs.panels.ColorValueSlidersPanel colorValueSlidersPanel;
     private de.naoth.rc.dialogs.panels.ColoredObjectChooserPanel coloredObjectChooserPanel;
     private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
     private javax.swing.JPanel imagePanel;
-    private javax.swing.JButton jButtonGetFromRobot;
-    private javax.swing.JButton jButtonSend;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JToggleButton jToggleButtonCalibrate;
     private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JButton newMenuButton;
-    private javax.swing.JButton openMenuButton;
     private javax.swing.JPanel originalImageContainer;
-    private javax.swing.JButton saveMenuButton;
     // End of variables declaration//GEN-END:variables
 }
