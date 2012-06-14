@@ -59,16 +59,15 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
   engine.registerDecimalInputSymbol("ball.right_foot.y", &ballRightFoot.y);
 
-  
   // "Pose behind the ball in attackdirection with distance"
   engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "distance", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.distance", &distance);
 
   engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "distance", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.distance", &distance);
   
   engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
-  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "distance", &distance);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.distance", &distance);
 
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
@@ -110,7 +109,7 @@ void BallSymbols::execute()
   );
 
   // draw the position behind the ball (seen from attack direction)
-  DEBUG_REQUEST("KalmanFilterBallLocator:pos_behind_ball",
+  DEBUG_REQUEST("XABSL:StrategySymbols:draw_position_behind_ball",
     FIELD_DRAWING_CONTEXT;
     PEN("000000", 20);
     // TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);

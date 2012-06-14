@@ -91,19 +91,19 @@ namespace ball_symbols("Ball Symbols") {
   float input ball.right_foot.y "mm";
 
 /** the the x part of the position behind the ball function */
-  float input posBehindBallFuture.x (
+  float input posBehindBallPreview.x "mm"(
     /** distance */
     distance "mm";
   );
 
 /** the the y part of the position behind the ball function */
-  float input posBehindBallFuture.y (
+  float input posBehindBallPreview.y "mm"(
     /** distance */
     distance "mm";
   );
 
 /** the the rotation of the position behind the ball function */
-  float input posBehindBallFuture.rot (
+  float input posBehindBallPreview.rot "deg"(
     /** distance */
     distance "mm";
   );

@@ -51,7 +51,9 @@ public:
 
     futureBallPosX_t(0.0),
     futureBallPosY_t(0.0),
-    futureBallDistance_t(0.0)
+    futureBallDistance_t(0.0),
+
+    distance(0.0)
 
   {
     theInstance = this;
