@@ -81,3 +81,38 @@ void BodyStateProvider::updateTheFallDownState()
   }
 }//end updateTheFallDownState
 
+
+void BodyStateProvider::updateTheLegTemperature()
+{
+  static naoth::JointData::JointID leftLegId[] = 
+  {
+    naoth::JointData::LHipPitch,
+    naoth::JointData::LHipRoll,
+    naoth::JointData::LKneePitch,
+    naoth::JointData::LAnklePitch,
+    naoth::JointData::LAnkleRoll
+  };
+
+  static naoth::JointData::JointID rightLegId[] = 
+  {
+    naoth::JointData::RHipPitch,
+    naoth::JointData::RHipRoll,
+    naoth::JointData::RKneePitch,
+    naoth::JointData::RAnklePitch,
+    naoth::JointData::RAnkleRoll
+  };
+
+
+  double tempL(0);
+  double tempR(0);
+
+  for(int i = 0; i < 5; i++)
+  {
+    tempL = max(tempL, getSensorJointData().temperature[leftLegId[i]]);
+    tempR = max(tempR, getSensorJointData().temperature[leftLegId[i]]);
+  }
+
+  getBodyState().temperatureLeftLeg = tempL;
+  getBodyState().temperatureRightLeg = tempR;
+}//end updateTheLegTemperature
+

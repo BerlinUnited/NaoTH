@@ -6,7 +6,7 @@
  */
 
 #ifndef _SENSORSYMBOLS_H
-#define  _SENSORSYMBOLS_H
+#define _SENSORSYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>

@@ -37,6 +37,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("fall_down_state", "fall_down_state", &getFallDownState);
 
+
+  engine.registerDecimalInputSymbol("body.temperature.leg.left", &getBodyState().temperatureLeftLeg);
+  engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
+
+
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
