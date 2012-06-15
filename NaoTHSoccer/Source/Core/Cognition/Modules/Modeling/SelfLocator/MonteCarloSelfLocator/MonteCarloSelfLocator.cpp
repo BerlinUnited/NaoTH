@@ -1379,6 +1379,9 @@ void MonteCarloSelfLocator::execute()
   Vector2<double> minor;
   moments.getAxes(major, minor);
 
+  getRobotPose().principleAxisMajor = major;
+  getRobotPose().principleAxisMinor = minor;
+
   // HACK
   // check if the position jumps
   if(false && (getRobotPose().translation - newPose.translation).abs() > 1000)
