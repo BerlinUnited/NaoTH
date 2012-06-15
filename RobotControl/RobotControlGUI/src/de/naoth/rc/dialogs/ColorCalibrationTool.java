@@ -651,11 +651,62 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         default:
           return;
       }
-      Command cmd = new Command(cmdString);             
-      cmd.addArg("lowerLeft.x", String.valueOf(lowerLeft[index].x / 2));
-      cmd.addArg("lowerLeft.y", String.valueOf(lowerLeft[index].y / 2));
-      cmd.addArg("upperRight.x", String.valueOf(upperRight[index].x / 2));
-      cmd.addArg("upperRight.y", String.valueOf(upperRight[index].y / 2));
+      Command cmd = new Command(cmdString); 
+      
+      if(lowerLeft[index].x > 638)
+      {
+        lowerLeft[index].x = 638;
+      }
+      if(lowerLeft[index].y > 479)
+      {
+        lowerLeft[index].y = 479;
+      }
+      
+      if(lowerLeft[index].x < 0)
+      {
+        lowerLeft[index].x = 0;
+      }
+      if(lowerLeft[index].y < 0)
+      {
+        lowerLeft[index].y = 0;
+      }
+      
+      if(upperRight[index].x > 639)
+      {
+        upperRight[index].x = 639;
+      }
+      if(upperRight[index].y > 479)
+      {
+        upperRight[index].y = 479;
+      }
+      
+      if(upperRight[index].x < 0)
+      {
+        upperRight[index].x = 0;
+      }
+      if(upperRight[index].y < 0)
+      {
+        upperRight[index].y = 0;
+      }
+      
+      if(lowerLeft[index].x > upperRight[index].x)
+      {
+        int x = upperRight[index].x;
+        upperRight[index].x = lowerLeft[index].x;
+        lowerLeft[index].x = x;
+      }
+      
+      if(lowerLeft[index].y > upperRight[index].y)
+      {
+        int y = upperRight[index].y;
+        upperRight[index].y = lowerLeft[index].y;
+        lowerLeft[index].y = y;
+      }      
+      
+      cmd.addArg("lowerLeft.x", String.valueOf(lowerLeft[index].x / scale));
+      cmd.addArg("lowerLeft.y", String.valueOf(lowerLeft[index].y / scale));
+      cmd.addArg("upperRight.x", String.valueOf(upperRight[index].x / scale));
+      cmd.addArg("upperRight.y", String.valueOf(upperRight[index].y / scale));
       sendCommand(cmd);
       
       cmdString = getSetCalibAreaRect;
