@@ -1176,11 +1176,17 @@ bool MonteCarloSelfLocator::hasSensorUpdate() const
   }//end update by flags
 
   return sensorDataAvailable;
-}
+}//end hasSensorUpdate
 
 
 void MonteCarloSelfLocator::execute()
 {
+
+  /************************************
+   * STEP I: treat some special situations:
+   ************************************/
+
+  // (I) we know, we are in our half
   static bool init_own_half = false;
   static bool init_opp_half = false;
 
@@ -1240,7 +1246,7 @@ void MonteCarloSelfLocator::execute()
     return;
   );
 
-  // treat the situation when the robot fell down
+  // (II) treat the situation when the robot fell down
   if(parameters.treatFallDown && (
      getBodyState().fall_down_state != BodyState::upright ||
      getMotionStatus().currentMotion == motion::stand_up_from_back ||
@@ -1248,6 +1254,7 @@ void MonteCarloSelfLocator::execute()
   {
     // apply faling down noise
     updateFallDown(theSampleSet);
+
     // HACK
     DEBUG_REQUEST("MCSL:draw_position",
       drawPosition();
@@ -1256,7 +1263,7 @@ void MonteCarloSelfLocator::execute()
   }//end if
   
 
-  // treat the situation when the robot has been lifted from the ground
+  // (III) treat the situation when the robot has been lifted from the ground
   // (keednapped)
   if(getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
      !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
@@ -1272,15 +1279,15 @@ void MonteCarloSelfLocator::execute()
   }//end if
 
 
-
-
-  // reset
+  // reset particles
   theSampleSet.resetLikelihood();
 
+  // check if there is any sensor data
   bool sensorDataAvailable = hasSensorUpdate();
 
+
   /************************************
-   * motion update
+   * STEP II: motion update
    ************************************/
   {
     // apply some noise if sensor data is available 
@@ -1290,7 +1297,7 @@ void MonteCarloSelfLocator::execute()
 
 
   /************************************
-   * sensor update
+   * STEP III: sensor update
    ************************************/
   bool sensorDataAvailableByUpdate = updateBySensors(theSampleSet);
   ASSERT(sensorDataAvailable == sensorDataAvailableByUpdate);
@@ -1302,7 +1309,7 @@ void MonteCarloSelfLocator::execute()
   );
 
   /************************************
-   * resampling
+   * STEP IV: resampling
    ************************************/
   if(sensorDataAvailable)
   {
@@ -1313,7 +1320,7 @@ void MonteCarloSelfLocator::execute()
   
 
   /************************************
-   * clustering
+   * STEP V: clustering
    ************************************/
 
   //gridClustering.cluster();
@@ -1352,14 +1359,16 @@ void MonteCarloSelfLocator::execute()
       getRobotPose().isValid = false;
   }//end if
 
-  // clear plot
+  // TODO: clear plot
+  /*
   if(!getRobotPose().isValid)
   {
 
   }
+  */
 
   /************************************
-   * estimate new position and update the model
+   * STEP VI: estimate new position and update the model
    ************************************/
 
   // TODO: put it into the model
@@ -1379,15 +1388,17 @@ void MonteCarloSelfLocator::execute()
     getRobotPose().isValid = false;
   }
 
-  // stupid = operator
+  // stupid "=" operator (is there a better way to do it?)
   bool wasValid = getRobotPose().isValid;
   getRobotPose() = newPose;
   getRobotPose().isValid = wasValid;
 
+  // update the goal model based on the robot pose
   getSelfLocGoalModel().update(getRobotPose(), getFieldInfo());
 
+
   /************************************
-   * execude some debug requests (drawings)
+   * STEP VII: execude some debug requests (drawings)
    ************************************/
 
   DEBUG_REQUEST("MCSL:draw_Cluster",
@@ -1477,8 +1488,6 @@ void MonteCarloSelfLocator::execute()
     getFieldInfo().fieldLinesTable.draw_closest_tcrossing_points();
   );
 
-  /************************************/
-   
 }//end execute
 
 
@@ -1493,11 +1502,6 @@ void MonteCarloSelfLocator::resetSampleSet(SampleSet& sampleSet)
     Sample& sample = sampleSet[i];
     createRandomSample(sample);
     sample.likelihood = likelihood;
-    /*
-    sample.translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
-    sample.translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
-    sample.rotation = Math::random(-Math::pi,Math::pi);//(Math::random()*2-1)*Math::pi;
-    */
   }//end for
 }//end resetSampleSet
 
