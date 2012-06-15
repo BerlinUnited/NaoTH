@@ -120,7 +120,7 @@ namespace naoth
     // TODO: remove unsigned to prevent strange implicite casts
     inline Pixel get(const unsigned int x, const unsigned int y) const
     {
-      //assert(isInside(x,y));
+      assert(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
