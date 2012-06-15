@@ -522,6 +522,9 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     private java.awt.Point[] lowerLeft;
     private java.awt.Point[] upperRight;
     
+    private java.awt.Point[] lowerLeftAnim;
+    private java.awt.Point[] upperRightAnim;
+    
     private Double scale;
 
     public ImagePanel()
@@ -535,10 +538,15 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       lowerLeft = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
       upperRight = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
       
+      lowerLeftAnim = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
+      upperRightAnim = new java.awt.Point[Colors.ColorClass.numOfColors.ordinal()];
+      
       for(int i = 0; i < Colors.ColorClass.numOfColors.ordinal(); i++)
       {
         lowerLeft[i] = new java.awt.Point(0, 0);
         upperRight[i] = new java.awt.Point(0, 0);
+        lowerLeftAnim[i] = new java.awt.Point(0, 0);
+        upperRightAnim[i] = new java.awt.Point(0, 0);
       }
       CalibColorIndex = null;
       CalibColor = Color.black;
@@ -569,7 +577,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         {
           btCalibrate.setEnabled(false);
         }
-        colorValueSlidersPanel.removeControls();
+        if(colorClass != null && newColorClass != null )
+        {
+          colorValueSlidersPanel.removeControls();
+        }
         
         for(Colors.ColorClass c: Colors.ColorClass.values())
         {
@@ -589,9 +600,9 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         }
         btCalibrate.setSelected(false);
         btCalibrate.setEnabled(true);
-//        sendGetColorValueCommand(newColorClass, "get");
-        colorValueSlidersPanel.removeControls();
-        this.validateTree();
+        sendGetColorValueCommand(newColorClass, "get");
+//        colorValueSlidersPanel.removeControls();
+//        this.validateTree();
       }
       colorClass = newColorClass;
       if(colorClass != null)
@@ -604,7 +615,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
           Logger.getLogger(ColorCalibrationTool.class.getName()).log(Level.SEVERE, null, ex);
         }
         CalibColorIndex = coloredObjectChooserPanel.getSelectedColorIndex();
-        sendGetColorValueCommand(colorClass, "get");
+//        sendGetColorValueCommand(colorClass, "get");
         sendShowColorAreaCommand(colorClass, "on");
       }
       else
@@ -653,9 +664,9 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       }
       Command cmd = new Command(cmdString); 
       
-      if(lowerLeft[index].x > 638)
+      if(lowerLeft[index].x > 639)
       {
-        lowerLeft[index].x = 638;
+        lowerLeft[index].x = 639;
       }
       if(lowerLeft[index].y > 479)
       {
@@ -703,10 +714,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
         lowerLeft[index].y = y;
       }      
       
-      cmd.addArg("lowerLeft.x", String.valueOf(lowerLeft[index].x / scale));
-      cmd.addArg("lowerLeft.y", String.valueOf(lowerLeft[index].y / scale));
-      cmd.addArg("upperRight.x", String.valueOf(upperRight[index].x / scale));
-      cmd.addArg("upperRight.y", String.valueOf(upperRight[index].y / scale));
+      cmd.addArg("lowerLeft.x", String.valueOf((int) (lowerLeft[index].x / scale)));
+      cmd.addArg("lowerLeft.y", String.valueOf((int) (lowerLeft[index].y / scale)));
+      cmd.addArg("upperRight.x", String.valueOf((int) (upperRight[index].x / scale)));
+      cmd.addArg("upperRight.y", String.valueOf((int) (upperRight[index].y / scale)));
       sendCommand(cmd);
       
       cmdString = getSetCalibAreaRect;
@@ -778,7 +789,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     public void mouseDragged(MouseEvent e) {
       if(CalibColorIndex != null)
       {
-        upperRight[CalibColorIndex] = e.getPoint();
+        upperRightAnim[CalibColorIndex] = e.getPoint();
         this.repaint();
       }
      }
@@ -799,8 +810,10 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       getColor();
       if(CalibColorIndex != null && CalibColor != null)
       {
-        lowerLeft[CalibColorIndex] = e.getPoint();
-        upperRight[CalibColorIndex] = e.getPoint();
+        lowerLeftAnim[CalibColorIndex] = e.getPoint();
+        upperRightAnim[CalibColorIndex] = e.getPoint();
+//        lowerLeft[CalibColorIndex] = e.getPoint();
+//        upperRight[CalibColorIndex] = e.getPoint();
         drawRect = true;
         this.repaint();
       }
@@ -810,9 +823,11 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
     public void mouseReleased(MouseEvent e) {
       if(CalibColorIndex != null && CalibColor != null)
       {
-        upperRight[CalibColorIndex] = e.getPoint();
+        upperRightAnim[CalibColorIndex] = e.getPoint();
         if(isValidRect(CalibColorIndex))
         {
+          lowerLeft[CalibColorIndex] = lowerLeftAnim[CalibColorIndex];
+          upperRight[CalibColorIndex] = upperRightAnim[CalibColorIndex];
           sendShowColorAreaCommand(colorClass, "on");
           sendGetColorValueCommand(colorClass, "get");
           sendColorAreaCommand(colorClass);
@@ -863,27 +878,27 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
 
     private boolean isValidRect(int index)
     {
-      return Math.abs(lowerLeft[index].x - upperRight[index].x) > 1 && Math.abs(lowerLeft[index].y - upperRight[index].y) > 1;
+      return Math.abs(lowerLeftAnim[index].x - upperRightAnim[index].x) > 1 && Math.abs(lowerLeftAnim[index].y - upperRightAnim[index].y) > 1;
     }
     
     public void drawRect(Graphics2D g2d, int index, Color color)
     {
       if(isValidRect(index))
       {
-        int x = lowerLeft[index].x;
-        int y = lowerLeft[index].y;
+        int x = lowerLeftAnim[index].x;
+        int y = lowerLeftAnim[index].y;
 
-        int width = Math.abs(upperRight[index].x - lowerLeft[index].x);
-        int height = Math.abs(upperRight[index].y - lowerLeft[index].y);
+        int width = Math.abs(upperRightAnim[index].x - lowerLeftAnim[index].x);
+        int height = Math.abs(upperRightAnim[index].y - lowerLeftAnim[index].y);
 
-        if(upperRight[index].x < lowerLeft[index].x)
+        if(upperRightAnim[index].x < lowerLeftAnim[index].x)
         {
-          x = upperRight[index].x;
+          x = upperRightAnim[index].x;
         }
 
-        if(upperRight[index].y < lowerLeft[index].y)
+        if(upperRightAnim[index].y < lowerLeftAnim[index].y)
         {
-          y = upperRight[index].y;
+          y = upperRightAnim[index].y;
         }        
         g2d.setColor(color);
         Stroke drawingStroke = new BasicStroke(1);
