@@ -28,11 +28,11 @@ public:
     numOfCoordinate
   };
 
-  /** constructor */
   WalkRequest():
     character(0.5),
     coordinate(Hip)
   {};
+
   ~WalkRequest(){}
 
   static std::string getCoordinateName(Coordinate c)
@@ -48,13 +48,19 @@ public:
   
   struct StepControlRequest
   {
-    StepControlRequest():stepID(-1), time(0){}
+    StepControlRequest()
+      :
+      stepID(-1),
+      moveLeftFoot(false),
+      time(0),
+      speedDirection(0)
+    {}
 
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
     bool moveLeftFoot; // it should also match
     Pose2D target; // in coordinate
     unsigned int time; // in ms
-    double speedDirection;
+    double speedDirection; //TODO: what is that?
   };
 
   // indicates speed and stability, in range [0, 1]
@@ -62,10 +68,19 @@ public:
   // 0.5: normal
   // 1: fastest (unstable)
   double character;
+
+  //
   Coordinate coordinate;
+
+  // 
   Pose2D target;
+
+  //
   StepControlRequest stepControl;
-  Pose2D offset; // offset of relation between left foot and body
+
+  // offset of relation between left foot and body
+  Pose2D offset;
+
 
   void print(ostream& stream) const
   {
