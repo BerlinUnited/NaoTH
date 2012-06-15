@@ -82,6 +82,7 @@ private:
 
   bool initialized;
 
+  // sample set tools
   void resetSampleSet(SampleSet& sampleSet);
   void clampSampleSetToField(SampleSet& sampleSet);
   void mirrorSampleSetFieldSides(SampleSet& sampleSet);
@@ -102,7 +103,11 @@ private:
   /** */
   void createRandomSample(Sample& sample) const;
 
-  void sensorResetByGoals(SampleSet& sampleSet, int start, int number);
+  /** */
+  int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
+  int sensorResetByGoalPosts(SampleSet& sampleSet, int n) const;
+
+  /** */
   void resample(SampleSet& sampleSet);
   void resampleGT07(SampleSet& sampleSet, bool noise);
 

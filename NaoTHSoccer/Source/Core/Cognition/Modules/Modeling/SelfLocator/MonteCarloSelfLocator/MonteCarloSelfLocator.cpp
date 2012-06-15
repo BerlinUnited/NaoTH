@@ -577,211 +577,10 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
 }//end updateByFlags
 
 
-//TODO: not used yet
-void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, int number)
+int MonteCarloSelfLocator::sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const
 {
-  unsigned int n = start;
-  //const int resamplingSteps = 2;
-
-  Vector2<double> leftGoalPosition;
-  Vector2<double> rightGoalPosition;
-
-  while(n < sampleSet.numberOfParticles)
-  {
-
-    for(int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
-    {
-      const GoalPercept::GoalPost& seenPost = getGoalPercept().getPost(i);
-
-      //const double seenDistance = seenPost.position.abs();
-      //const double seenAngle = seenPost.position.angle();
-
-      /*
-      const ColorClasses::Color opponentGoalColor = (getPlayerInfo().gameData.teamColor == GameData::red)?ColorClasses::skyblue:ColorClasses::yellow;
-
-      if (seenPost.color == opponentGoalColor)
-      {
-        leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
-        rightGoalPosition = getFieldInfo().opponentGoalPostRight;
-      }else
-      {
-        leftGoalPosition = getFieldInfo().ownGoalPostLeft;
-        rightGoalPosition = getFieldInfo().ownGoalPostRight;
-      }//end else  
-      */
-
-      if(getFieldSidePercept().facedFieldSide == FieldSidePercept::opponent ||
-        (getFieldSidePercept().facedFieldSide == FieldSidePercept::unknown && 
-         fabs(getRobotPose().rotation + seenPost.position.angle()) < Math::pi_2)
-      )
-      {
-        leftGoalPosition = getFieldInfo().opponentGoalPostLeft;
-        rightGoalPosition = getFieldInfo().opponentGoalPostRight;
-      }
-      else
-      {
-        // own goals are switched (!)
-        leftGoalPosition = getFieldInfo().ownGoalPostRight;
-        rightGoalPosition = getFieldInfo().ownGoalPostLeft;
-      }
-
-      //
-      //double rand_dist = seenDistance + Math::randomGauss()*500;
-      //double rand_angle = Math::pi2 * Math::random() -Math::pi;
-
-      if(  true /*on field */) // isInsideCarpet(pose.translation)
-      {
-        /*
-        sampleSet[n].translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
-        sampleSet[n].translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
-        sampleSet[n].rotation = (Math::random()*2-1)*Math::pi;
-        */
-        createRandomSample(sampleSet[n]);
-        n++;
-      }
-    }//end for
-  }//end while
-}//end sensorResetByGoals
-
-
-// copied from BH10
-bool MonteCarloSelfLocator::generateTemplateFromPosition(
-  Sample& newTemplate,
-  const Vector2<double>& posSeen, 
-  const Vector2<double>& posReal) const
-{
-  const double standardDeviationDistance = 150;
-  double r = posSeen.abs() + getFieldInfo().goalpostRadius;
-  double distUncertainty = Math::sampleTriangularDistribution(standardDeviationDistance);
-  if(r+distUncertainty > standardDeviationDistance)
-    r += distUncertainty;
-  Vector2<double> realPosition = posReal;
-  double minY = std::max(posReal.y - r, static_cast<double>(getFieldInfo().yPosLeftSideline));
-  double maxY = std::min(posReal.y + r, static_cast<double>(getFieldInfo().yPosRightSideline));
-  Vector2<double> p;
-  p.y = minY + Math::random()*(maxY - minY);
-  double xOffset(sqrt(Math::sqr(r) - Math::sqr(p.y - posReal.y)));
-  p.x = posReal.x;
-  p.x += (p.x > 0) ? -xOffset : xOffset;
-
-  if(isInsideCarpet(p))
-  {
-    double origAngle = (realPosition-p).angle();
-    double observedAngle = posSeen.angle();
-    newTemplate.translation = p;
-    newTemplate.rotation = origAngle-observedAngle;
-    return true;
-  }
-  return false;
-}//end generateTemplateFromPosition
-
-
-inline bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) const
-{
-  //Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
-  //Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
-
-  return p.y > fieldMin.y && p.y < fieldMax.y &&
-         p.x > fieldMin.x && p.x < fieldMax.x;
-}//end isInsideCarpet
-
-inline void MonteCarloSelfLocator::createRandomSample(Sample& sample) const
-{
-  //Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
-  //Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
-
-  sample.translation.x = Math::random(fieldMin.x, fieldMax.x); //(Math::random()-0.5)*getFieldInfo().xFieldLength;
-  sample.translation.y = Math::random(fieldMin.y, fieldMax.y); //(Math::random()-0.5)*getFieldInfo().yFieldLength;
-  sample.rotation = Math::random(-Math::pi, Math::pi);
-}//end createRandomSample
-
-
-void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
-{
-  double totalWeighting = 0;
-  for(unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
-  {
-    totalWeighting += sampleSet[i].likelihood;
-  }//end for
-  const double averageWeighting = totalWeighting / sampleSet.numberOfParticles;
-  static double w_slow = averageWeighting;
-  static double w_fast = averageWeighting;
-  double alpha_slow = 0.0059;
-  double alpha_fast = 0.006;
-
-  w_slow += alpha_slow*(averageWeighting - w_slow);
-  w_fast += alpha_fast*(averageWeighting - w_fast);
-
-  double pp = max(0.0, 1.0 - w_fast/w_slow);
-  DEBUG_REQUEST("MCSL:plots",
-    PLOT("MonteCarloSelfLocator:pp", pp);
-    PLOT("MonteCarloSelfLocator:averageWeighting", averageWeighting);
-  );
-
-  // copy the samples 
-  // TODO: use memcopy?
-  SampleSet oldSampleSet = sampleSet;
-  oldSampleSet.normalize();
-
-
-  for(unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
-  {
-    oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
-  }//end for
-  oldSampleSet.normalize();
-
-  // resample 10% of particles
-  int numberOfPartiklesToResample = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
-  
-  //numberOfPartiklesToResample = (int)pp;
-
-  // don't resample if no global information is available
-  //if(getGoalPercept().getNumberOfSeenPosts() + getLinePercept().flags.size() < 2 &&
-  //   !getLinePercept().middleCircleWasSeen)
-  //{
-    // TODO: add crossings as global information
-    //numberOfPartiklesToResample = 0;
-  //}
-
-  /*
-  if(getGoalPercept().getNumberOfSeenPosts() == 0)
-    numberOfPartiklesToResample = 0;
-    */
-
-  double sum = -Math::random();
-  unsigned int count = 0;
-
-  unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
-  unsigned int n = 0;  // Zaehler durchs Ziel-Set
-
-  for(m = 0; m < sampleSet.numberOfParticles; m++)
-  {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.numberOfParticles;
-
-    // select the particle to copy
-    while(count < sum && count < oldSampleSet.numberOfParticles)
-    {
-      if (n >= oldSampleSet.numberOfParticles - numberOfPartiklesToResample) break;
-      
-      // copy the selected particle
-      sampleSet[n] = oldSampleSet[m];
-      if(noise)
-      {
-        sampleSet[n].translation.x += (Math::random()-0.5)*parameters.processNoiseDistance;
-        sampleSet[n].translation.y += (Math::random()-0.5)*parameters.processNoiseDistance;
-        sampleSet[n].rotation = Math::normalize(sampleSet[n].rotation + (Math::random()-0.5)*parameters.processNoiseAngle);
-      }
-      
-      n++;
-      count++;
-    }//end while
-
-    if (n >= oldSampleSet.numberOfParticles-numberOfPartiklesToResample) break;
-  }//end for
-
-
-  // sensor resetting by whole goal
-  if(n < oldSampleSet.numberOfParticles && getSensingGoalModel().someGoalWasSeen)
+// sensor resetting by whole goal
+  if(getSensingGoalModel().someGoalWasSeen)
   {
     
     // currently, getCompassDirection() is in fact just the rotation of the robot pose
@@ -794,8 +593,8 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
       n++;
     }
     
-    // HACK: generate the mirrored pose
-    if(n < sampleSet.numberOfParticles && !getRobotPose().isValid)
+    // HACK: generate a mirrored pose
+    if(n < (int)sampleSet.numberOfParticles && !getRobotPose().isValid)
     {
       Pose2D poseMirrored(pose);
       poseMirrored.translation *= -1;
@@ -810,8 +609,12 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
     }
   }//end if
 
+  return n;
+}//end sensorResetBySensingGoalModel
 
 
+int MonteCarloSelfLocator::sensorResetByGoalPosts(SampleSet& sampleSet, int n) const
+{
   double maxDistanceError = 0;
   double maxAngleError = 0;
 
@@ -898,9 +701,10 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
     // neue samples einstreuen (10 prozent)
     // TODO: draw with the probability of the goal percept
+    int numberOfPartiklesToResample = 1;
     for(int i=0; i < numberOfPartiklesToResample; i++) 
     {
-      if (n < sampleSet.numberOfParticles) 
+      if (n < (int)sampleSet.numberOfParticles) 
       {
           // select a random post
           int idx = Math::random((int)getGoalPercept().getNumberOfSeenPosts());
@@ -931,20 +735,173 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
           // create a random sample
           if(!templateAvaliable)
           {
-            /*
-            sampleSet[n].translation.x = (Math::random()-0.5)*getFieldInfo().xFieldLength;
-            sampleSet[n].translation.y = (Math::random()-0.5)*getFieldInfo().yFieldLength;
-            sampleSet[n].rotation = Math::random(-Math::pi, Math::pi);
-            */
             createRandomSample(sampleSet[n]);
           }
         n++;
       }//end if
     }//end for
   }//end if
+
+  return n;
+}//end sensorResetByGoals
+
+
+// copied from BH10
+bool MonteCarloSelfLocator::generateTemplateFromPosition(
+  Sample& newTemplate,
+  const Vector2<double>& posSeen, 
+  const Vector2<double>& posReal) const
+{
+  const double standardDeviationDistance = 150;
+  double r = posSeen.abs() + getFieldInfo().goalpostRadius;
+  double distUncertainty = Math::sampleTriangularDistribution(standardDeviationDistance);
+  if(r+distUncertainty > standardDeviationDistance)
+    r += distUncertainty;
+  Vector2<double> realPosition = posReal;
+  double minY = std::max(posReal.y - r, static_cast<double>(getFieldInfo().yPosLeftSideline));
+  double maxY = std::min(posReal.y + r, static_cast<double>(getFieldInfo().yPosRightSideline));
+  Vector2<double> p;
+  p.y = minY + Math::random()*(maxY - minY);
+  double xOffset(sqrt(Math::sqr(r) - Math::sqr(p.y - posReal.y)));
+  p.x = posReal.x;
+  p.x += (p.x > 0) ? -xOffset : xOffset;
+
+  if(isInsideCarpet(p))
+  {
+    double origAngle = (realPosition-p).angle();
+    double observedAngle = posSeen.angle();
+    newTemplate.translation = p;
+    newTemplate.rotation = origAngle-observedAngle;
+    return true;
+  }
+  return false;
+}//end generateTemplateFromPosition
+
+
+inline bool MonteCarloSelfLocator::isInsideCarpet(const Vector2<double>& p) const
+{
+  //Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+  //Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+
+  return p.y > fieldMin.y && p.y < fieldMax.y &&
+         p.x > fieldMin.x && p.x < fieldMax.x;
+}//end isInsideCarpet
+
+inline void MonteCarloSelfLocator::createRandomSample(Sample& sample) const
+{
+  //Vector2<double> fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+  //Vector2<double> fieldMax( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+
+  sample.translation.x = Math::random(fieldMin.x, fieldMax.x); //(Math::random()-0.5)*getFieldInfo().xFieldLength;
+  sample.translation.y = Math::random(fieldMin.y, fieldMax.y); //(Math::random()-0.5)*getFieldInfo().yFieldLength;
+  sample.rotation = Math::random(-Math::pi, Math::pi);
+}//end createRandomSample
+
+
+void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
+{
+
+  // calculate the weighting (BH paper)
+  // not used yet
+  double totalWeighting = 0;
+  for(unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  {
+    totalWeighting += sampleSet[i].likelihood;
+  }//end for
+  const double averageWeighting = totalWeighting / sampleSet.numberOfParticles;
+  static double w_slow = averageWeighting;
+  static double w_fast = averageWeighting;
+  double alpha_slow = 0.0059;
+  double alpha_fast = 0.006;
+
+  w_slow += alpha_slow*(averageWeighting - w_slow);
+  w_fast += alpha_fast*(averageWeighting - w_fast);
+
+  double pp = max(0.0, 1.0 - w_fast/w_slow);
+  DEBUG_REQUEST("MCSL:plots",
+    PLOT("MonteCarloSelfLocator:pp", pp);
+    PLOT("MonteCarloSelfLocator:averageWeighting", averageWeighting);
+  );
+
+  // copy the samples 
+  // TODO: use memcopy?
+  SampleSet oldSampleSet = sampleSet;
+  oldSampleSet.normalize();
+
+
+  // add a uniform offset for stabilization
+  for(unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
+  {
+    oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
+  }//end for
+  oldSampleSet.normalize();
+
+
+  // resample 10% of particles
+  int numberOfPartiklesToResample = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
+  
+  //numberOfPartiklesToResample = (int)pp;
+
+  // don't resample if no global information is available
+  //if(getGoalPercept().getNumberOfSeenPosts() + getLinePercept().flags.size() < 2 &&
+  //   !getLinePercept().middleCircleWasSeen)
+  //{
+    // TODO: add crossings as global information
+    //numberOfPartiklesToResample = 0;
+  //}
+
+  /*
+  if(getGoalPercept().getNumberOfSeenPosts() == 0)
+    numberOfPartiklesToResample = 0;
+    */
+
+  double sum = -Math::random();
+  unsigned int count = 0;
+
+  unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
+  unsigned int n = 0;  // Zaehler durchs Ziel-Set
+
+  for(m = 0; m < sampleSet.numberOfParticles; m++)
+  {
+    sum += oldSampleSet[m].likelihood * oldSampleSet.numberOfParticles;
+
+    // select the particle to copy
+    while(count < sum && count < oldSampleSet.numberOfParticles)
+    {
+      if (n >= oldSampleSet.numberOfParticles - numberOfPartiklesToResample) break;
+      
+      // copy the selected particle
+      sampleSet[n] = oldSampleSet[m];
+      if(noise)
+      {
+        sampleSet[n].translation.x += (Math::random()-0.5)*parameters.processNoiseDistance;
+        sampleSet[n].translation.y += (Math::random()-0.5)*parameters.processNoiseDistance;
+        sampleSet[n].rotation = Math::normalize(sampleSet[n].rotation + (Math::random()-0.5)*parameters.processNoiseAngle);
+      }
+      
+      n++;
+      count++;
+    }//end while
+
+    if (n >= oldSampleSet.numberOfParticles-numberOfPartiklesToResample) break;
+  }//end for
+
+
+
+  // sensor resetting by whole goal
+  if(n < oldSampleSet.numberOfParticles)
+  {
+    n = sensorResetBySensingGoalModel(sampleSet, n);
+  }
+
+  // sensor resetting by the goal posts
+  if(getGoalPercept().getNumberOfSeenPosts() > 0)
+  {
+    n = sensorResetByGoalPosts(sampleSet, n);
+  }
   
 
-  // rest fuellen, indem zufaellige sample kopiert werden! 
+  // fill up by copying random samples
   // (shouldn't happen)
   while (n < sampleSet.numberOfParticles) 
   {
