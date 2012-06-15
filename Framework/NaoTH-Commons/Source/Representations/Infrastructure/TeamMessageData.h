@@ -26,7 +26,7 @@ public:
 
   virtual void print(ostream& stream) const
   {
-    rctc::print(stream, data);
+    stream << data;
   }
 };
 

@@ -1,6 +1,7 @@
 
 #include "TeamMessage.h"
 #include <cstring>
+#include <cstdio>
 
 namespace rctc
 {
@@ -68,7 +69,7 @@ namespace rctc
     printf("ballPosY:\t%d\n", msg.ballPosY);
   }
 
-  void print(std::ostream& stream, const rctc::Message& msg)
+  std::ostream& operator<< (std::ostream& stream, const rctc::Message& msg)
   {
     stream << "teamID:  \t" << msg.teamID   << std::endl;
     stream << "playerID:\t" << msg.playerID << std::endl;
@@ -76,6 +77,7 @@ namespace rctc
     stream << "mabID:   \t" << msg.mabID << std::endl;
     stream << "ballPosX:\t" << msg.ballPosX << std::endl;
     stream << "ballPosY:\t" << msg.ballPosY << std::endl;
+    return stream;
   }//end print
 
 }//end namespace rctc

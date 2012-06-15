@@ -107,7 +107,7 @@ namespace rctc
   
   void print(const Message& msg);
 
-  void print(std::ostream& stream, const rctc::Message& msg);
+  std::ostream& operator<< (std::ostream& stream, const rctc::Message& msg);
 
 }//end namespace rctc
 
