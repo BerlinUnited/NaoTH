@@ -33,7 +33,7 @@ void AStarNode::successor(std::vector<AStarNode>& searchTree,
   // compute new pseudo random params
   // for new node
   double currentBranchingFactor;
-  computeCurrentParameters(expansionRadius, currentBranchingFactor, start, parameterSet);
+  computeCurrentParameters(currentBranchingFactor, start, parameterSet);
   Vector2d newPosition;
   double newG, newH;
   // angle between nodes: determines the angle distance between nodes
@@ -128,27 +128,26 @@ inline double AStarNode::computeHeuristicBetween(
 }
 
 
-inline void AStarNode::computeCurrentParameters(
-  double& currentExpansionRadius, 
+inline void AStarNode::computeCurrentParameters( 
   double& currentBranchingFactor,
   const AStarNode& start,
-  const AStarSearchParameters& parameterSet) const
+  const AStarSearchParameters& parameterSet)
 {
   double dist((position - start.getPosition()).abs());
   if(dist < parameterSet.endOfNear)
   {
-    currentExpansionRadius = parameterSet.minExpansionRadius;
+    expansionRadius = parameterSet.minExpansionRadius;
     currentBranchingFactor = parameterSet.maxBranchingFactor;
   }
   else if(dist > parameterSet.endOfFar)
   {
-    currentExpansionRadius = parameterSet.maxExpansionRadius;
+    expansionRadius = parameterSet.maxExpansionRadius;
     currentBranchingFactor = parameterSet.maxBranchingFactor;
   }
   else
   {
     double distPercentage((dist-parameterSet.endOfNear)/(parameterSet.endOfFar - parameterSet.endOfNear));
-    currentExpansionRadius = parameterSet.minExpansionRadius + distPercentage*
+    expansionRadius = parameterSet.minExpansionRadius + distPercentage*
       (parameterSet.maxExpansionRadius - parameterSet.minExpansionRadius);
     currentBranchingFactor = parameterSet.maxBranchingFactor - (unsigned int)(floor(distPercentage*
       (double)(parameterSet.maxBranchingFactor - parameterSet.minBranchingFactor)));
@@ -191,7 +190,7 @@ bool AStarNode::collidesWithField(const RobotPose& rp, const PlayerInfo& pi, con
 {
   bool collides = false;
   int playerNumber = pi.gameData.playerNumber;
-  Vector2d globalPose = rp.translation + position;
+  Vector2d globalPose = rp * position;
   // path should be around the own penalty area for avoiding illegal defenders (Only for field players)
   if(globalPose.x < fi.xPosOwnPenaltyArea + parameterSet.distanceToOwnPenaltyArea && 
      std::abs(globalPose.y) < fi.yPosLeftPenaltyArea + parameterSet.distanceToOwnPenaltyArea && playerNumber != 1) 
@@ -246,21 +245,22 @@ void AStarSearch::drawPathFieldGlobal()
   {
     unsigned int currentNode = indexOfBestNode;
     // draw target
+    Vector2d globalPosition = theRobotPose * myGoal.getPosition();
     PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
-    CIRCLE(myGoal.getPosition().x + theRobotPose.translation.x, myGoal.getPosition().y + theRobotPose.translation.y, parameterSet.robotRadius);
+    CIRCLE(globalPosition.x, globalPosition.y, parameterSet.robotRadius);
     PEN(ColorClasses::colorClassToHex(ColorClasses::blue), 4);
-    LINE(myGoal.getPosition().x + theRobotPose.translation.x, myGoal.getPosition().y + theRobotPose.translation.y, searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y);
+    LINE(globalPosition.x, globalPosition.y, (theRobotPose * searchTree[currentNode].getPosition()).x, (theRobotPose * searchTree[currentNode].getPosition()).y);
 
     while(searchTree[currentNode].getParentNode() != 0)
     {
       PEN(ColorClasses::colorClassToHex(ColorClasses::orange), 4);
       unsigned int nextNode = searchTree[currentNode].getParentNode();
-      LINE(searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y, searchTree[nextNode].getPosition().x + theRobotPose.translation.x, searchTree[nextNode].getPosition().y + theRobotPose.translation.y);
+      LINE((theRobotPose * searchTree[currentNode].getPosition()).x, (theRobotPose * searchTree[currentNode].getPosition()).y, (theRobotPose * searchTree[nextNode].getPosition()).x, (theRobotPose * searchTree[nextNode].getPosition()).y);
       PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
-      CIRCLE(searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y, parameterSet.robotRadius);
+      CIRCLE((theRobotPose * searchTree[currentNode].getPosition()).x, (theRobotPose * searchTree[currentNode].getPosition()).y, parameterSet.robotRadius);
       currentNode = nextNode;
     }
-    LINE(searchTree[currentNode].getPosition().x + theRobotPose.translation.x, searchTree[currentNode].getPosition().y + theRobotPose.translation.y, myStart.getPosition().x + theRobotPose.translation.x, myStart.getPosition().y + theRobotPose.translation.y);
+    LINE((theRobotPose * searchTree[currentNode].getPosition()).x, (theRobotPose * searchTree[currentNode].getPosition()).y, (theRobotPose * myStart.getPosition()).x, (theRobotPose * myStart.getPosition()).y);
   }
 }
 
@@ -284,8 +284,8 @@ void AStarSearch::drawObstaclesGlobal()
   for (unsigned int i = 0; i < obstacles.size(); i++)
   {
     PEN(ColorClasses::colorClassToHex(ColorClasses::black), 10);
-    CIRCLE(obstacles[i].x + theRobotPose.translation.x, obstacles[i].y + theRobotPose.translation.y, 10);
+    CIRCLE((theRobotPose * obstacles[i]).x, (theRobotPose * obstacles[i]).y, 10);
     PEN(ColorClasses::colorClassToHex(ColorClasses::red), 5);
-    CIRCLE(obstacles[i].x + theRobotPose.translation.x, obstacles[i].y + theRobotPose.translation.y, parameterSet.obstacleRadius);
+    CIRCLE((theRobotPose * obstacles[i]).x, (theRobotPose * obstacles[i]).y, parameterSet.obstacleRadius);
   }
 }

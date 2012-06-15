@@ -232,10 +232,9 @@ protected:
   * @param currentBranchingFactor The current branching factor
   * @param parameterSet The parameter set
   */
-  void computeCurrentParameters(double& currentExpansionRadius, 
-                                double& currentBranchingFactor,
+  void computeCurrentParameters(double& currentBranchingFactor,
                                 const AStarNode& start,
-                                const AStarSearchParameters& parameterSet) const;
+                                const AStarSearchParameters& parameterSet);
 
   /** Checks if a new node is too close to another previously expanded node
   * @param searchTree The search tree
@@ -319,8 +318,6 @@ public:
     searchTree.push_back(this->myStart);
     // sort the heap
     //push_heap(searchTree.begin(), searchTree.end(), HeapCompare()); // we don't use in current version...
-    // set the parent node of the start node
-    searchTree[0].setParentNode(0);
     indexOfBestNode = 0;
     unsigned int nextNodeToExpand = 0;
     while(true)
@@ -342,8 +339,10 @@ public:
                                             theRobotPose, thePlayerInfo, theFieldInfo);
         expandedNodes.push_back(nextNodeToExpand);
         unsigned int sizeAfterExpand(searchTree.size());
+        // have we expanded any nodes?
         if (sizeAfterExpand == sizeBeforeExpand)
         {
+          indexOfBestNode = nextNodeToExpand; //findPartiallyPath();
           break;
         }
         int result(testNewNodesAgainstGoal(sizeBeforeExpand, sizeAfterExpand));
@@ -414,7 +413,6 @@ private:
     }
     // store his function value (cost+heuristic)
     double f = searchTree[expandableNode].f();
-    // actually, we don't need it... while searchTree is sorted...
     for(unsigned int i=(expandableNode+1); i<searchTree.size(); i++)
     {
       if((!searchTree[i].hasBeenExpanded()) && (searchTree[i].f() < f))
@@ -424,6 +422,22 @@ private:
       }
     }
     return expandableNode;
+  }
+
+  unsigned int findPartiallyPath()
+  {
+    unsigned int result = 0;
+    // store his function value (cost+heuristic)
+    double f = (myStart.getPosition() - myGoal.getPosition()).abs();
+    for(unsigned int i=result; i<searchTree.size(); i++)
+    {
+      if(searchTree[i].f() < f)
+      {
+        f = searchTree[i].f();
+        result = i;
+      }
+    }
+    return result;
   }
 
 

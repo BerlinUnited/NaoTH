@@ -1,14 +1,48 @@
 /** The root option of the soccer behavior */
 option obstacle_avoidance 
 {
-
-  initial state play_penalty {
-    decision {
-      stay;
+common decision {
+    if (game.state == _initial_)
+      goto _initial;
+    else if (game.state == penalized)
+      goto penalized;
+    else if(game.state == playing)
+      goto playing;
+  }
+    
+  initial state _initial {
+    action
+    {
+      ball_was_outside_circle = false;
+      last_state_was_penalized = false;
+      situationStatusOwnHalf = true;
+      head.control_mode = stay_as_forced;
+      motion.type = init;
+      head_control();
     }
+  }
+  
+  state penalized {
+    action
+    {
+      last_state_was_penalized = true;
+      head.control_mode = stay_as_forced;
+      motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
+
+      set_left_eye=red;
+      set_right_eye=red;
+
+      ball_was_outside_circle = true;
+      situationStatusOwnHalf = true;
+      head_control();
+    }
+  }
+
+
+  state playing {
     action {
 
-    
+      situationStatusOwnHalf = true;
       obstacles_test();
       // control head movement according to value of head.control_mode
       head_control();
