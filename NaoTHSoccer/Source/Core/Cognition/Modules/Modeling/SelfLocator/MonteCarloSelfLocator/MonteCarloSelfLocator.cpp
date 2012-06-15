@@ -143,15 +143,7 @@ void MonteCarloSelfLocator::updateByGoalModel(SampleSet& sampleSet) const
   double sigmaDistance = parameters.sigmaDistanceGoalModel;
   double sigmaAngle = parameters.sigmaAngleGoalModel;
 
-  Pose2D pose;
-  //20.02.2012 - caused by different goal color
-  //if (getPlayerInfo().gameData.teamColor == GameData::red)
-  //{
-    pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
-  //}else
-  //{
-  //  pose = getSensingGoalModel().calculatePose(ColorClasses::skyblue, getFieldInfo());
-  //}//end else
+  Pose2D pose = getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo());
 
   updateByPose(sampleSet, pose, sigmaDistance, sigmaAngle);
 }//end updateByGoalModel
@@ -584,6 +576,7 @@ void MonteCarloSelfLocator::updateByFlags(SampleSet& sampleSet) const
 
 }//end updateByFlags
 
+
 //TODO: not used yet
 void MonteCarloSelfLocator::sensorResetByGoals(SampleSet& sampleSet, int start, int number)
 {
@@ -994,8 +987,8 @@ void MonteCarloSelfLocator::updateFallDown(SampleSet& sampleSet) const
 }//end updateFallDown
 
 
-
-double MonteCarloSelfLocator::getBearingDeviation(Pose2D& fromPose, const Vector2<double>& toPoint, double measuredBearing)
+// not used now
+double MonteCarloSelfLocator::getBearingDeviation(const Pose2D& fromPose, const Vector2<double>& toPoint, double measuredBearing) const
 { 
   // returns a value between 0..1:
   // 0   no bearing deviation (0deg)
@@ -1005,8 +998,8 @@ double MonteCarloSelfLocator::getBearingDeviation(Pose2D& fromPose, const Vector
 }//end getBearingDeviation
 
 
-
-double MonteCarloSelfLocator::getDistanceDeviation(Pose2D& fromPose, const Vector2<double>& toPoint, double measuredDistance)
+// not used now
+double MonteCarloSelfLocator::getDistanceDeviation(const Pose2D& fromPose, const Vector2<double>& toPoint, double measuredDistance) const
 {
   // returns a value between 0..1:
   // 0   no distance deviation (0mm)
@@ -1027,7 +1020,6 @@ inline double MonteCarloSelfLocator::computeAngleWeighting(
                                 double standardDeviation, 
                                 double bestPossibleWeighting) const
 { 
-  // TODO: normalize?
   double angleDif = Math::normalize(expectedAngle - measuredAngle);
   return Math::gaussianProbability(angleDif, standardDeviation) / bestPossibleWeighting;
 }//end computeAngleWeighting
@@ -1043,7 +1035,6 @@ inline double MonteCarloSelfLocator::computeDistanceWeighting(
   const double measuredDistanceAsAngle = atan2(measuredDistance, cameraZ);
   const double expectedDistanceAsAngle = atan2(expectedDistance, cameraZ);
 
-  // TODO: normalize?
   double angleDif = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
   return Math::gaussianProbability(angleDif, standardDeviation) / bestPossibleWeighting;
 }//end computeDistanceWeighting
@@ -1057,7 +1048,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   // ALWAYS SYNCHRONIZE LOGIC WITH hasSensorUpdate
   bool sensorDataAvailable = false;
   
-  // goals
+  // I: goals
   if(parameters.updateByGoals)
   {
     STOPWATCH_START("MonteCarloSelfLocator ~ updateByGoals");
@@ -1077,7 +1068,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   }//end update by goals
   
 
-  // lines
+  // II: lines
   if(parameters.updateByLinesTable > 0 && getLinePercept().lines.size() > 0)
   {
     STOPWATCH_START("MonteCarloSelfLocator ~ updateByLines");
@@ -1090,7 +1081,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   }//end update by lines
 
 
-  // corners
+  // III: corners
   if(parameters.updateByCornerTable > 0 && getLinePercept().intersections.size() > 0)
   {
     STOPWATCH_START("MonteCarloSelfLocator ~ updateByCorners");
@@ -1102,7 +1093,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     sensorDataAvailable = true;
   }//end update by corners
 
-  // circle
+  // IV: center circle
   if(parameters.updateByCenterCircle > 0 && getLinePercept().middleCircleWasSeen)
   {
     updateByMiddleCircle(sampleSet);
@@ -1110,7 +1101,7 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   }//end update by circle
 
 
-  // flags
+  // V: flags
   if(parameters.updateByFlags && getLinePercept().flags.size() > 0)
   {
     updateByFlags(sampleSet);
@@ -1121,9 +1112,11 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
   if(sensorDataAvailable)
   {
     // update by the old position in order to stabilize it
-    if(parameters.updateByOldPose > 0 && initialized && 
-      (getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo()).translation-
-      getRobotPose().translation).abs() < 700)
+    if(parameters.updateByOldPose > 0 && initialized 
+      // only if the sensing goal model is consistent with the actual guess
+      // TODO: is this good? schould we check the validity of it?
+      && (getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo()).translation- getRobotPose().translation).abs() < 700
+      )
     {
       updateByOldPose(sampleSet);
     }
@@ -1371,7 +1364,7 @@ void MonteCarloSelfLocator::execute()
    * STEP VI: estimate new position and update the model
    ************************************/
 
-  // TODO: put it into the model
+  // estimate the deviation of the pose
   Moments2<2> moments;
   Sample newPose = theSampleSet.meanOfLargestCluster(moments);
 
