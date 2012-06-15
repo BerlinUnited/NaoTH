@@ -52,6 +52,7 @@ include "Options/Skills/approach_ball_with_correct_foot.xabsl";
 include "Options/Skills/calibrate_intertial.xabsl";
 include "Options/Skills/go_to_relative_point_with_distance_and_rot.xabsl";
 include "Options/Skills/falling_down_standing_up.xabsl";
+include "Options/Skills/check_collision.xabsl";
 
 // Debug 
 include "Options/Debug/battery.xabsl";

@@ -57,7 +57,7 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
 {
   PARAMETER_REGISTER(resolutionWidth) = 320;
   PARAMETER_REGISTER(resolutionHeight) = 240;
-  PARAMETER_REGISTER(openingAngleDiagonal) = 58;
+  PARAMETER_REGISTER(openingAngleDiagonal) = 72.6;
   PARAMETER_REGISTER(cameraRollOffset) = 0;
   PARAMETER_REGISTER(cameraTiltOffset) = 0;
 

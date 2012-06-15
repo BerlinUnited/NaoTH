@@ -44,6 +44,8 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("obstacle.ultrasound.right.distance", &getObstacleDistanceRight);
   engine.registerDecimalInputSymbol("obstacle.ultrasound.blockedtime", &getBlockedTime);
 
+  engine.registerBooleanInputSymbol("collision.colliding", &collisionModel.isColliding);
+
   engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
   engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
 

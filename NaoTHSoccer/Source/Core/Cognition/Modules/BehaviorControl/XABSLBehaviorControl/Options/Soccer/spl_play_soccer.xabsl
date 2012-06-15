@@ -14,15 +14,18 @@ option spl_play_soccer {
         : (goal.opp.was_seen ? red : off );
       set_left_eye = ball.was_seen ? green : off;    
         
+      //IMPORTANT: reset some stuff(!)
       motion.type = stand;
-      head.control_mode = stay_as_forced;
-      team.is_playing_as_striker = false; //when penalized or fallen down ... don't communicate you are striker!
-      sensor.camera.reset = false;
+      motion.execute_immediately = false;
       motion.standHeight = -1;
       motion.walk.step_control.foot = none;
       motion.walk.stop_with_stand = true;
       motion.walk.coordinate = hip;
-
+      
+      head.control_mode = stay_as_forced;
+      team.is_playing_as_striker = false; //when penalized or fallen down ... don't communicate you are striker!
+      sensor.camera.reset = false;
+      
       situationStatusOwnHalf = false;
 
       //for DEBUGGING purposes only and will be overwritten by OwnHalf = true!
@@ -31,6 +34,7 @@ option spl_play_soccer {
 
       motion.walk.style = fast;
 
+      // run player behavior
       initial_ready_set_play();
       
       // control head movement according to value of head.control_mode

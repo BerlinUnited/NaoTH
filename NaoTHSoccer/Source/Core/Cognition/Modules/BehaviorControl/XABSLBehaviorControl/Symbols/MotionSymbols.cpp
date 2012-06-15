@@ -172,7 +172,11 @@ void MotionSymbols::registerSymbols(xabsl::Engine& engine)
 
 void MotionSymbols::execute()
 {
+  // reset provided stuff
+  // TODO: maybe better just to create new once?
   getMotionRequest().reset();
+  getHeadMotionRequest().reset();
+
 
   // Modell-Hack
   double curHeadPitch = sensorJointData.position[JointData::HeadPitch];

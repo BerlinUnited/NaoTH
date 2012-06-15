@@ -35,6 +35,7 @@ void Actuator::execute()
 {  
   // HACK: copy the time to indicate which motion status this request ist depending on (needed by motion)
   getMotionRequest().time = getMotionStatus().time;
+  getMotionRequest().cognitionFrameNumber = getFrameInfo().getFrameNumber();
 
 
   // HACK: transform the head motion request to the support foot coordinates
