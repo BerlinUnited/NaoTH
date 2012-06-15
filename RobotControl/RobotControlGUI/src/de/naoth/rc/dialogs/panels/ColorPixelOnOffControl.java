@@ -12,18 +12,19 @@ import java.beans.PropertyChangeListener;
  */
 public class ColorPixelOnOffControl extends javax.swing.JPanel 
 {
-  private boolean constructing = true;
+//  private boolean constructing;
   private String coloredObjectName;
 
   /**
    * Creates new form ColorPixelOnOffControl
    */
-  public ColorPixelOnOffControl(String coloredObjectName, PropertyChangeListener listener) 
+  public ColorPixelOnOffControl(String coloredObjectName, PropertyChangeListener listener, boolean showPixels) 
   {
     initComponents();
-    
+//    constructing = true;
     this.coloredObjectName = coloredObjectName;
     this.jRadioButton.setText("Show " + coloredObjectName + " Pixels");
+    this.jRadioButton.setSelected(showPixels);
     this.addPropertyChangeListener(listener);
   }
   
@@ -32,8 +33,6 @@ public class ColorPixelOnOffControl extends javax.swing.JPanel
     return this.jRadioButton.isSelected();
   }
  
-  
-
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,11 +71,11 @@ public class ColorPixelOnOffControl extends javax.swing.JPanel
     }// </editor-fold>//GEN-END:initComponents
 
   private void jRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButtonItemStateChanged
-   if(!constructing)
+//   if(!constructing)
     {
       firePropertyChange("ColorCalibrationTool:" + coloredObjectName + ":switched", null, this.jRadioButton.isSelected());
     }
-    constructing = false;                                      
+//    constructing = false;                                      
   }//GEN-LAST:event_jRadioButtonItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -18,6 +18,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -56,7 +57,8 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
   private Integer CalibColorIndex;
   private Colors.ColorClass colorClass;
 
-
+  private HashMap<Colors.ColorClass, Boolean> classifiedPixelShowStateList;
+  
   /** Creates new form ImageViewer */
   public ColorCalibrationTool()
   {
@@ -71,7 +73,12 @@ public class ColorCalibrationTool extends AbstractDialog implements ObjectListen
     imageCanvas = new ImagePanel();
     this.imagePanel.add(imageCanvas);
     this.imagePanel.addMouseListener(imageCanvas);
-    this.imagePanel.addMouseMotionListener(imageCanvas);    
+    this.imagePanel.addMouseMotionListener(imageCanvas);
+    classifiedPixelShowStateList = new HashMap<Colors.ColorClass, Boolean>();
+    for(Colors.ColorClass c: Colors.ColorClass.values())
+    {
+      classifiedPixelShowStateList.put(c,false);
+    }
     
   }//end init
 
@@ -460,30 +467,34 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       {
         mode = "on";
       }
+      Colors.ColorClass c = Colors.ColorClass.none;
+      
       if(switchedProperty.equals("OrangeBall"))
       {
-        sendShowObjectsPixels(Colors.ColorClass.orange, mode);
+        c = Colors.ColorClass.orange;
       }
       else if(switchedProperty.equals("YellowGoal"))
       {
-        sendShowObjectsPixels(Colors.ColorClass.yellow, mode);
+        c = Colors.ColorClass.yellow;
       }
       else if(switchedProperty.equals("PinkWaistBand"))
       {
-        sendShowObjectsPixels(Colors.ColorClass.pink, mode);
+        c = Colors.ColorClass.pink;
       }
       else if(switchedProperty.equals("BlueWaistBand"))
       {
-        sendShowObjectsPixels(Colors.ColorClass.blue, mode);
+        c = Colors.ColorClass.blue;
       }
       else if(switchedProperty.equals("WhiteLines"))
       {
-        sendShowObjectsPixels(Colors.ColorClass.white, mode);
+        c = Colors.ColorClass.white;
       }
       else if(switchedProperty.equals("Field"))
       {
-        sendShowObjectsPixels(Colors.ColorClass.green, mode);
+        c = Colors.ColorClass.green;
       }
+      sendShowObjectsPixels(c, mode);
+      classifiedPixelShowStateList.put(c, (Boolean) evt.getNewValue());     
     }
     else if(evt.getNewValue() != null && evt.getNewValue() instanceof Integer)
     {
@@ -937,7 +948,7 @@ private void btAutoCameraParametersActionPerformed(java.awt.event.ActionEvent ev
       String[] parts = params[i].split("=");
       if(parts.length == 2)
       {
-        colorValueSlidersPanel.addControl(name, parts[0], Integer.parseInt(parts[1]), this);
+        colorValueSlidersPanel.addControl(name, parts[0], Integer.parseInt(parts[1]), this, classifiedPixelShowStateList.get(colorClass));
       }
     }
   }

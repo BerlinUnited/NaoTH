@@ -30,11 +30,11 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
     valueControls = new HashMap<String, Integer>();
   }  
 
-  public void addControl(String objectName, String name, int value, PropertyChangeListener listener)
+  public void addControl(String objectName, String name, int value, PropertyChangeListener listener, boolean showPixels)
   {    
     if(this.getComponentCount() == 0)
     {
-      ColorPixelOnOffControl pixelOnOffControl = new ColorPixelOnOffControl(objectName, listener);
+      ColorPixelOnOffControl pixelOnOffControl = new ColorPixelOnOffControl(objectName, listener, showPixels);
       this.add(pixelOnOffControl, -1);
       onOffControlIdx = this.getComponentCount() - 1;
     }
@@ -79,7 +79,7 @@ public class ColorValueSlidersPanel extends javax.swing.JPanel
     ColorPixelOnOffControl pixelOnOffControl = (ColorPixelOnOffControl) this.getComponent(onOffControlIdx);
     return pixelOnOffControl.showColoredPixels();
   }
-      
+            
   @Override
   public void setEnabled(boolean value) 
   {
