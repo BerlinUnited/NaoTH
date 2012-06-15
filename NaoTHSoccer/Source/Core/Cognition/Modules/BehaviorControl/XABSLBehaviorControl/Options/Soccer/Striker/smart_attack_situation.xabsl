@@ -9,7 +9,8 @@ option smart_attack_situation
   {
     //Change angle here (and in walk_against_ball) to influence walk against ball decision 
     if(abs(value = attack.direction) < 25
-        && (ball.preview.x > 0 && ball.preview.x < 250 && abs(value=ball.preview.y) < 40))
+        && (ball.preview.x > 0 && ball.preview.x < 250 && abs(value=ball.preview.y) < 40)
+        && situation.abortable)
     {
       goto walk_against_ball;
     }
@@ -112,13 +113,14 @@ option smart_attack_situation
   {
     decision
     {
-      // We Mmight be delocalized
+      // We might be delocalized
       else if(goal.opp.time_since_seen > 30000) //|| robot_pose.is_valid) xxx
       {
         goto validate_field_position;
       } 
-      else if(goal.opp.distance < 1500 
-              && abs(value=attack.direction) < 40)
+      else if((goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
+              && abs(value=attack.direction) < 40
+              && ball.preview.x < 250)
       {
         goto omnidirectional_kick;
       }
@@ -182,14 +184,20 @@ option smart_attack_situation
   {
     decision
     {
+      // We might be delocalized
+      else if(goal.opp.time_since_seen > 30000) //|| robot_pose.is_valid) xxx
+      {
+        goto validate_field_position;
+      }
       //Ball is far away again:(
       else if(ball.right_foot.preview.x > 600
               && ball.left_foot.preview.x > 600)
       {
         goto approach_roughly;
       }
-      else if(goal.opp.distance < 1500 
-              && abs(value=attack.direction) < 40)
+      else if((goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
+              && abs(value=attack.direction) < 40
+              && ball.preview.x < 250)
       {
         goto omnidirectional_kick;
       }
@@ -205,7 +213,6 @@ option smart_attack_situation
                && ball.right_foot.preview.y >= 95
                && ball.right_foot.preview.y <= 105)
       {
-        //goto stand_tester;
         goto sidekick_left;
       }
       // Due to mysterious reasons the ball changed in front of our right foot
@@ -241,14 +248,20 @@ option smart_attack_situation
   {
     decision
     {
+      // We might be delocalized
+      else if(goal.opp.time_since_seen > 30000) //|| robot_pose.is_valid) xxx
+      {
+        goto validate_field_position;
+      }
       //Ball is far away again:(
       else if(ball.right_foot.preview.x > 600
               && ball.left_foot.preview.x > 600)
       {
         goto approach_roughly;
       }
-      else if(goal.opp.distance < 1500 
-              && abs(value=attack.direction) < 40)
+      else if((goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
+              && abs(value=attack.direction) < 40
+              && ball.preview.x < 250)
       {
         goto omnidirectional_kick;
       }
@@ -352,15 +365,14 @@ option smart_attack_situation
   state walk_against_ball
   {
     decision {
-      // state_time as backup
-      else if(goal.opp.distance < 1500 
-              && abs(value=attack.direction) < 40)
+      else if((goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
+              && abs(value=attack.direction) < 40
+              && ball.preview.x < 250)
       {
         goto omnidirectional_kick;
       }
-      else if (//state_time > 1000 
-                //|| 
-                abs(value = attack.direction) > 25
+      // get out of walk_against_ball
+      else if (abs(value = attack.direction) > 25
                 || ball.preview.x < 0
                 || ball.preview.x > 250
                 || abs(value=ball.preview.y) > 40)

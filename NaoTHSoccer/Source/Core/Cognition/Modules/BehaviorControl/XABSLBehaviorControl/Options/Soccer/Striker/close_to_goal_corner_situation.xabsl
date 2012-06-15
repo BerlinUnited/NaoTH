@@ -194,10 +194,10 @@ option close_to_goal_corner_situation
     }
     action {
       motion.type = walk;
-      motion.walk_speed.x = ball.preview.x+20;
-      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.x = ball.left_foot.preview.x;
+      motion.walk_speed.y = ball.left_foot.preview.y;
       motion.walk_speed.rot = ball.angle;
-      motion.walk.coordinate = hip;
+      motion.walk.coordinate = left_foot;
       motion.walk.style = stable;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
@@ -240,10 +240,10 @@ option close_to_goal_corner_situation
     }
     action {
       motion.type = walk;
-      motion.walk_speed.x = ball.preview.x+20;
-      motion.walk_speed.y = ball.preview.y;
+      motion.walk_speed.x = ball.right_foot.preview.x;
+      motion.walk_speed.y = ball.right_foot.preview.y;
       motion.walk_speed.rot = ball.angle;
-      motion.walk.coordinate = hip;
+      motion.walk.coordinate = right_foot;
       motion.walk.style = stable;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
