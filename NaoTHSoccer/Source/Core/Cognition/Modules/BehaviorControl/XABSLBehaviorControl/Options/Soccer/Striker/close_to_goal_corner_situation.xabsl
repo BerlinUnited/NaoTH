@@ -116,7 +116,7 @@ option close_to_goal_corner_situation
   {
     decision
     {
-      else if(action_done)
+      else if(attack.direction >= -10)
       {
         goto shoot_from_goal_line_left;
       }
@@ -129,7 +129,8 @@ option close_to_goal_corner_situation
     {
       // Put here an approach which definately stops behond the ball on the correct side!!!
       // Probably best here is parallel to goal line, ball in front of left foot?
-      approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      //approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      between_goal_and_ball_situation();
       motion.type = walk;
       motion.walk.stop_with_stand = false;
     }
@@ -139,7 +140,7 @@ option close_to_goal_corner_situation
   {
     decision
     {
-      else if(action_done)
+      else if(attack.direction <= 10)
       {
         goto shoot_from_goal_line_right;
       }
@@ -150,9 +151,10 @@ option close_to_goal_corner_situation
     }
     action
     {
-      // Put here an approach which definately stops behond the ball on the correct side!!!
+      // Put here an approach which definately stops behind the ball on the correct side!!!
       // Probably best here is parallel to goal line, ball in front of right foot?
-      approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      //approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      between_goal_and_ball_situation();
       motion.type = walk;
       motion.walk.stop_with_stand = false;
     }
@@ -162,18 +164,26 @@ option close_to_goal_corner_situation
   state shoot_from_goal_line_left
   {
     decision {
-      // If ball gets out of corner_area, sidekick with left foot into goal
-      else if (ball.left_foot.preview.x < 200
-               && (-13/18)*ball.position.field.x + (8600/3) < ball.position.field.y)
+      // If ball gets out of corner_area, sidekick with left foot into goal if possible
+      else if ((-13/18)*ball.position.field.x + (8600/3) < ball.position.field.y
+                && ball.left_foot.preview.x < 200
+                && ball.left_foot.preview.y > 0)
       {
         goto sidekick_left;
       }
-      // state_time as abckup
-      // use percept for y for quick abortion 
+      // If ball gets out of corner_area, sidekick with right foot into goal if possible
+      else if ((-13/18)*ball.position.field.x + (8600/3) < ball.position.field.y
+                && ball.right_foot.preview.x < 200
+                && ball.right_foot.preview.y > 0)
+      {
+        goto sidekick_right;
+      }
+      // state_time as backup
       else if (state_time > 1000 
                 || ball.preview.x < 0
                 || ball.preview.x > 250
-                || ball.left_foot.y < 10) 
+                || ball.left_foot.preview.y < 10
+                || robot_pose.x < 2800) 
       {
         goto left_side; 
       }
@@ -200,18 +210,26 @@ option close_to_goal_corner_situation
   state shoot_from_goal_line_right
   {
     decision {
-      // If ball gets out of corner_area, sidekick with right foot into goal
-      else if (ball.right_foot.preview.x < 200
-                &&(13/18)*ball.position.field.x - (8600/3) > ball.position.field.y)
+      // If ball gets out of corner_area, sidekick with right foot into goal if possible
+      else if ((13/18)*ball.position.field.x - (8600/3) > ball.position.field.y
+                && ball.right_foot.preview.x < 200
+                && ball.right_foot.preview.y < 0)
       {
         goto sidekick_right;
       }
-      // state_time as abckup
-      // use percept for y for quick abortion 
+      // If ball gets out of corner_area, sidekick with left foot into goal if possible
+      else if ((13/18)*ball.position.field.x - (8600/3) > ball.position.field.y
+                && ball.left_foot.preview.x < 200
+                && ball.left_foot.preview.y < 0)
+      {
+        goto sidekick_left;
+      }
+      // state_time as backup
       else if (state_time > 1000 
                 || ball.preview.x < 0
                 || ball.preview.x > 250
-                || ball.right_foot.y > -10) 
+                || ball.right_foot.preview.y > -10
+                || robot_pose.x < 2800) 
       {
         goto right_side; 
       }
