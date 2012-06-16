@@ -24,9 +24,14 @@ PotentialFieldProvider::PotentialFieldProvider()
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection:local", "it is what it is", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:attackDirection:global", "it is what it is", false);
 
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:different_colors","...", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:local","draw local potential field", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:global","draw gobal potential field", false);
   DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:high_res","draw gobal potential field with high resolution around the opponent goal", false);
+
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:draw_potential_field:sensitivity", "", false);
+
+  DEBUG_REQUEST_REGISTER("PotentialFieldProvider:getGoalTargetOld", "", false);
 }
 
 
@@ -209,8 +214,8 @@ void PotentialFieldProvider::execute()
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 1);
 
-    const double stepX = 25;
-    const double stepY = 25;
+    const double stepX = 20;
+    const double stepY = 20;
 
     Vector2<double> simulatedGlobalBall;
     for (simulatedGlobalBall.x = getFieldInfo().opponentGoalCenter.x - 1000;
@@ -236,6 +241,70 @@ void PotentialFieldProvider::execute()
       }
     }
   );
+
+
+
+  DEBUG_REQUEST("PotentialFieldProvider:draw_potential_field:sensitivity",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 1);
+
+    const double stepX = 20;
+    const double stepY = 20;
+
+    const double noise = 25; // mm
+    const double trials = 10;
+    
+    Vector2<double> simulatedGlobalBall;
+    for (simulatedGlobalBall.x = getFieldInfo().opponentGoalCenter.x - 1000;
+         simulatedGlobalBall.x <= getFieldInfo().opponentGoalCenter.x + 500;
+         simulatedGlobalBall.x += stepX)
+    {
+      for (simulatedGlobalBall.y = getFieldInfo().opponentGoalPostRight.y - 500;
+           simulatedGlobalBall.y <= getFieldInfo().opponentGoalPostLeft.y + 500;
+           simulatedGlobalBall.y += stepY)
+      {
+
+        // claculate the local attack direction for the current 
+        // robots position and current obstacles
+        Vector2<double> simulatedLocalBall = robotPose/simulatedGlobalBall;
+        Vector2<double> target = getGoalTarget(simulatedLocalBall, oppGoalModel);
+        Vector2<double> f = calculatePotentialField(simulatedLocalBall, target, obstacles);
+
+        // transform it to global coordinates
+        // ATTENTION: since it is a vector and not a point, we apply only the rotation
+        f.rotate(robotPose.rotation);
+        f.normalize();
+
+        double deviation = 0;
+
+        // apply some random noise
+        for(int i = 0; i < trials; i++)
+        {
+          Vector2<double> simulatedLocalBall_noise = robotPose/simulatedGlobalBall;
+          simulatedLocalBall_noise.x += (Math::random()-0.5)*2.0*noise;
+          simulatedLocalBall_noise.y += (Math::random()-0.5)*2.0*noise;
+
+          Vector2<double> target_noice = getGoalTarget(simulatedLocalBall_noise, oppGoalModel);
+          Vector2<double> f_noice = calculatePotentialField(simulatedLocalBall_noise, target, obstacles);
+
+          // transform it to global coordinates
+          // ATTENTION: since it is a vector and not a point, we apply only the rotation
+          f_noice.rotate(robotPose.rotation);
+          f_noice.normalize();
+
+          deviation = max(deviation, fabs(Math::toDegrees(Math::normalize(f.angle() - f_noice.angle()))));
+        }
+
+
+        //ARROW(simulatedGlobalBall.x, simulatedGlobalBall.y, f.x, f.y);
+        //SIMPLE_PARTICLE(simulatedGlobalBall.x, simulatedGlobalBall.y, f.angle());
+
+        FILLOVAL(simulatedGlobalBall.x, simulatedGlobalBall.y, deviation*0.5, deviation*0.5);
+      }
+    }
+  );
+  
+  
 }//end execute
 
 list<Vector2<double> > PotentialFieldProvider::getValidObstacles() const
@@ -324,7 +393,7 @@ Vector2<double> PotentialFieldProvider::compactExponentialRepeller(const Vector2
 }//end compactExponentialRepeller
 
 
-Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
+Vector2<double> PotentialFieldProvider::getGoalTargetOld(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
 {
   double postOffset = 100.0;
   double goalLineOffset = 100.0;
@@ -376,3 +445,60 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
 
   return target;
 }//end getGoalTarget
+
+Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& point, const GoalModel::Goal& oppGoalModel) const
+{
+  // for debug reasons
+  DEBUG_REQUEST("PotentialFieldProvider:getGoalTargetOld",
+    return getGoalTargetOld(point, oppGoalModel);
+  );
+
+  double postOffset = 200.0;
+  double goalLineOffsetFront = 100.0;
+  double goalLineOffsetBack = 100.0;
+  MODIFY("potentialfield:postOffset", postOffset);
+  MODIFY("potentialfield:goalLineOffset", goalLineOffsetFront);
+  MODIFY("potentialfield:goalLineOffset", goalLineOffsetBack);
+
+  // normalized vector from left post to the right
+  const Vector2<double> leftToRight((oppGoalModel.rightPost - oppGoalModel.leftPost).normalize());
+
+  // a normal vector ponting from the goal towards the field
+  Vector2<double> goalNormal(leftToRight);
+  goalNormal.rotateRight();
+
+
+  // the endpoints of our line are a shortened version of the goal line
+  Vector2<double> leftEndpoint = oppGoalModel.leftPost + leftToRight * postOffset;
+  Vector2<double> rightEndpoint = oppGoalModel.rightPost - leftToRight * postOffset;
+
+  // this is the goalline we are shooting for
+  Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
+
+  // project the point on the goal line
+  Vector2<double> target = goalLine.projection(point);
+
+  // this is the cos of the angle between the vectors (leftEndpoint-point) and (rightEndpoint-point)
+  // simple linear algebra: <l-p,r-p>/(||l-p||*||r-p||)
+  double goalAngleCos = (oppGoalModel.leftPost-point).normalize()*(oppGoalModel.rightPost-point).normalize();
+
+  // assymetric quadratic scale
+  // goalAngleCos = -1 => t = -goalLineOffsetBack
+  // goalAngleCos =  1 => t =  goalLineOffsetFront;
+  double c = (goalLineOffsetFront + goalLineOffsetBack)*0.5;
+  double v = (goalLineOffsetFront - goalLineOffsetBack)*0.5;
+  double t = goalAngleCos*(goalAngleCos*c + v);
+
+  // move the target depending on the goal opening angle
+  target = target + goalNormal.normalize(t);
+
+
+  DEBUG_REQUEST("PotentialFieldProvider:goal_target",
+    FIELD_DRAWING_CONTEXT;
+    PEN("0000FF", 10);
+    CIRCLE((getRobotPose()*leftEndpoint).x, (getRobotPose()*leftEndpoint).y, 100);
+    CIRCLE((getRobotPose()*rightEndpoint).x, (getRobotPose()*rightEndpoint).y, 100);
+  );
+ 
+  return target;
+}//end getGoalTargetCool

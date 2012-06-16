@@ -27,6 +27,14 @@ public:
 
   Vector2<double> attackDirection;
 
+  // some possible support information
+  double deviationLeft;
+  double deviationRight;
+  double distanceToTarget;
+
+  // strategic meaning
+  bool pointingToGoal;
+
   virtual void print(ostream &stream) const;
 };
 
