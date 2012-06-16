@@ -20,12 +20,12 @@
 //class constructor
 RadarGrid::RadarGrid()
   :
-obstacleWasSeen(false),
-useBuffer(true),
-center(0,0),
-density(Math::pi2/numOfSectors),
-nearUpdate(0.5),
-farUpdate(0.2)
+  obstacleWasSeen(false),
+  useBuffer(true),
+  center(0,0),
+  density(Math::pi2/numOfSectors),
+  nearUpdate(0.5),
+  farUpdate(0.2)
 {
   MODIFY("RadarGrid:nearUpdate", nearUpdate);
   MODIFY("RadarGrid:farUpdate", farUpdate);

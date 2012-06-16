@@ -40,14 +40,16 @@
 
 BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)
+  REQUIRE(Image)
   REQUIRE(OdometryData)
   REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(CameraMatrix)
+
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
-  REQUIRE(CameraMatrix)
   REQUIRE(UltraSoundReceiveData)
-  REQUIRE(Image)
+  REQUIRE(FieldInfo)
+  
 
   PROVIDE(RadarGrid)
 END_DECLARE_MODULE(VisualObstacleLocator)
@@ -61,7 +63,7 @@ public:
   // default constructor
   VisualObstacleLocator();
   // default destructor
-  ~VisualObstacleLocator(){}
+  virtual ~VisualObstacleLocator(){}
 
   // some variables
 
@@ -77,7 +79,6 @@ public:
 private:
 
   OdometryData lastRobotOdometry;
-  Pose2D odometryDelta;
   unsigned int lastTimeObstacleWasSeen;
 };
 
