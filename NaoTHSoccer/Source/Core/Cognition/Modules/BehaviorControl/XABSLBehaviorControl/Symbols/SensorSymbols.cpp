@@ -48,6 +48,7 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
   engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
+  engine.registerDecimalInputSymbol("path.time_no_node_expandable", &getTimeNoNodeExpandable);
 
   engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
   engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
@@ -190,6 +191,11 @@ double SensorSymbols::getTargetPointY()
 {
   return theInstance->path.targetPoint.y;
 }
+
+double SensorSymbols::getTimeNoNodeExpandable()
+{
+  return theInstance->path.timeNoNodeExpandable;
+}//end getBallTimeSeen
 
 void SensorSymbols::setTargetpointX(double targetX)
 {

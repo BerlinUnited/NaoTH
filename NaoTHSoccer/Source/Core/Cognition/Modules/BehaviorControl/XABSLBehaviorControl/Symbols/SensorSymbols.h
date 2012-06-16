@@ -117,6 +117,8 @@ private:
   static double getTargetPointX();
   static double getTargetPointY();
 
+  static double getTimeNoNodeExpandable();
+
   static void setTargetpointX(double targetX);
   static void setTargetpointY(double targetY);
 

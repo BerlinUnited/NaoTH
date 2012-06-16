@@ -32,22 +32,26 @@ void PathPlanner::execute()
 
   // collect obstacles
   collectObstacles();
-//   obstaclesPositions.resize(3);
-//   obstaclesPositions[0] = Vector2d(250.0, 0.0);
-//   obstaclesPositions[1] = Vector2d(0.0,-250.0);
-//   obstaclesPositions[2] = Vector2d(0.0, 250.0);
-
-
 
   AStarNode start(Vector2d(0.0, 0.0));
   AStarNode goal(getPath().targetPoint);
-  //AStarNode goal(Vector2d(1200.0, 0.0));
+
  
   // store the entire path length
   double pathLength;
+
+  // did we find the path
+  bool pathFound = false;
+  // no node is expanded
+  bool noNodeExpandable = false;
   // start search
-  AStarNode nextPoint = theAStarSearch->search(start, goal, pathLength, obstaclesPositions);
+  AStarNode nextPoint = theAStarSearch->search(start, goal, pathLength, obstaclesPositions, pathFound, noNodeExpandable);
   getPath().nextPointToGo = nextPoint.getPosition();
+
+  if (noNodeExpandable)
+  {
+    getPath().setFrameInfoWhenNodeWasNotExpanded(getFrameInfo());
+  }
 
   // debug requests sections
   DEBUG_REQUEST("PathPlanner:all_nodes_field",

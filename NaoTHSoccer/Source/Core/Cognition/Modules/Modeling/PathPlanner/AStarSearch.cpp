@@ -216,8 +216,6 @@ void AStarSearch::drawAllNodesField()
 void AStarSearch::drawPathFieldLocal()
 {
   FIELD_DRAWING_CONTEXT;
-  if (pathFound)
-  {
     unsigned int currentNode = indexOfBestNode;
     // draw target
     PEN(ColorClasses::colorClassToHex(ColorClasses::green), 3);
@@ -235,14 +233,11 @@ void AStarSearch::drawPathFieldLocal()
       currentNode = nextNode;
     }
     LINE(searchTree[currentNode].getPosition().x, searchTree[currentNode].getPosition().y, myStart.getPosition().x, myStart.getPosition().y);
-  }
 }
 
 void AStarSearch::drawPathFieldGlobal()
 {
   FIELD_DRAWING_CONTEXT;
-  if (pathFound)
-  {
     unsigned int currentNode = indexOfBestNode;
     // draw target
     Vector2d globalPosition = theRobotPose * myGoal.getPosition();
@@ -261,7 +256,6 @@ void AStarSearch::drawPathFieldGlobal()
       currentNode = nextNode;
     }
     LINE((theRobotPose * searchTree[currentNode].getPosition()).x, (theRobotPose * searchTree[currentNode].getPosition()).y, (theRobotPose * myStart.getPosition()).x, (theRobotPose * myStart.getPosition()).y);
-  }
 }
 
 

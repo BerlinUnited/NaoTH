@@ -289,7 +289,6 @@ public:
   theFieldInfo(fi),
   thePlayerInfo(pi)
   {
-    pathFound = false;
     this->obstacles = obstacles;
   }// end constructor
 
@@ -300,7 +299,7 @@ public:
   * @param pathLength Returns the length of the path to the goal
   * @return The next node to go to
   */
-	AStarNode search(const AStarNode& start, const AStarNode& goal, double& pathLength, std::vector<Vector2d>& obstacles)
+	AStarNode search(const AStarNode& start, const AStarNode& goal, double& pathLength, std::vector<Vector2d>& obstacles, bool& pathFound, bool& noNodeExpandable)
 	{
     // set obstacles, goal, start
     this->obstacles = obstacles;
@@ -343,12 +342,14 @@ public:
         if (sizeAfterExpand == sizeBeforeExpand)
         {
           indexOfBestNode = nextNodeToExpand; //findPartiallyPath();
+          noNodeExpandable = true;
           break;
         }
         int result(testNewNodesAgainstGoal(sizeBeforeExpand, sizeAfterExpand));
         if(result != -1)
         {
           indexOfBestNode = result;
+          pathFound = true;
           break;
         }
       }
@@ -377,8 +378,6 @@ private:
   std::vector<unsigned int> expandedNodes;
   /** The parameter set*/
   AStarSearchParameters parameterSet;
-  /** Did we find the path to Goal? */
-  bool pathFound;
 
   // obstacles positions
   std::vector<Vector2d> obstacles;
@@ -481,7 +480,6 @@ private:
       currentNode = searchTree[currentNode].getParentNode();
       pathLength += searchTree[currentNode].distToOtherNode(searchTree[searchTree[currentNode].getParentNode()]);
     }
-    pathFound = true;
     return searchTree[currentNode];
   }
 
