@@ -23,7 +23,7 @@ option spl_playing_striker {
       {
         goto close_to_goal_corner;
       }
-      else if(abs(value = attack.direction)>100)
+      else if(abs(value = attack.direction)>90)
       {
         goto between_goal_and_ball;
       }

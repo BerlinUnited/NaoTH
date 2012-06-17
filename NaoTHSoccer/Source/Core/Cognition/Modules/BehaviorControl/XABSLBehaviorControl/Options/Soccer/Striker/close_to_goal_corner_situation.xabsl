@@ -48,9 +48,10 @@ option close_to_goal_corner_situation
         if(robot_pose.x < 2700)
         {   
           if(robot_pose.rotation < 30
-              && robot_pose.rotation > -45)
+              && robot_pose.rotation > -45
+              && ball.left_foot.preview.x < 200)
           {
-            goto omnidirectional_kick;
+            goto omnidirectional_kick_left_side;
           }
           else
           {
@@ -59,7 +60,7 @@ option close_to_goal_corner_situation
         }
         else
         {
-          goto approach_for_shoot_from_goal_line_right;
+          goto approach_for_shoot_from_goal_line_left;
         }
       }
       else
@@ -85,9 +86,10 @@ option close_to_goal_corner_situation
         if(robot_pose.x < 2700)
         {   
           if(robot_pose.rotation < 45
-              && robot_pose.rotation > -30)
+              && robot_pose.rotation > -30
+              && ball.right_foot.preview.x < 200)
           {
-            goto omnidirectional_kick;
+            goto omnidirectional_kick_right_side;
           }
           else
           {
@@ -290,20 +292,13 @@ option close_to_goal_corner_situation
     }
   }
 
-  state omnidirectional_kick
+  state omnidirectional_kick_right_side
   {
     decision
     {
       else if(action_done)
       {
-        if(robot_pose.y > 0)
-        {
-          goto left_side;
-        }
-        else
-        {
-          goto right_side;
-        } 
+        goto right_side;
       }
       else
       {
@@ -312,7 +307,26 @@ option close_to_goal_corner_situation
     }
     action
     {
-      perform_omnidirectional_kick();
+      perform_omnidirectional_kick(distance = 190, right_foot = true, errorX=30, errorY=30, errorR=20);
+    }
+  }
+
+  state omnidirectional_kick_left_side
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto left_side; 
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      perform_omnidirectional_kick(distance = 190, right_foot = false, errorX=30, errorY=30, errorR=20);
     }
   }
 
@@ -357,14 +371,19 @@ option close_to_goal_corner_situation
           goto approach_for_shoot_from_goal_line_right;
         }
       }
-      else if((robot_pose.y > 0
+      else if(robot_pose.y > 0
           && robot_pose.rotation < 30
-          && robot_pose.rotation > -45)
-          || (robot_pose.y < 0
-          && robot_pose.rotation < 45
-          && robot_pose.rotation > -30))
+          && robot_pose.rotation > -45
+          && ball.left_foot.preview.x < 200)
       {
-        goto omnidirectional_kick;
+        goto omnidirectional_kick_left_side;
+      }
+      else if(robot_pose.y < 0
+          && robot_pose.rotation < 45
+          && robot_pose.rotation > -30
+          && ball.right_foot.preview.x < 200)
+      {
+        goto omnidirectional_kick_right_side;
       }
       else
       {

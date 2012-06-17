@@ -5,37 +5,78 @@
 option perform_omnidirectional_kick
 {
 
-  initial state stabilize_before_kick
+  /**  */
+  float @distance [mm];
+  /**  */
+  bool @right_foot;
+
+  /** error range */
+  float @errorX [mm];
+
+  float @errorY [mm];
+
+  float @errorR [deg];
+
+  initial state decide_foot
+  {
+    decision
+    {
+      if(@right_foot)
+      {
+        goto approach_right_foot;
+      }
+      else
+      {
+        goto approach_left_foot;
+      }
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+      motion.walk.style = stable;
+    }
+  }
+
+  state approach_right_foot
   {
     decision {
       // maybe we touched the ball accidently
-      if(abs(value=ball.preview.x) > 300)
+      if(ball.right_foot.preview.x > 250
+          || ball.right_foot.preview.x < 0
+          || abs(value=attack.direction) > 90)
         goto finished;
       else if(action_done) //HACK xxx
-        goto kick_prep;
+        goto kick_prep_right_foot;
       else
         stay;
     }
     action {
-      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
+      go_to_ball_cool(distance = @distance, right_foot=true,
+                      errorX=@errorX, errorY=@errorY, errorR=@errorR);
       head.control_mode = search_for_ball;
-      //motion.walk.stop_with_stand = true;
-      //motion.type = stand;
-      motion.walk.style = (ball.distance < 500)?stable:normal;
-      situation.abortable = false;
+      motion.walk.style = stable;
     }
   }
 
-  state kick_prep
+  state kick_prep_right_foot
   {
     decision {
-         if(state_time > 500)
+         if(state_time > 900)
          {
-           if(action_done) {
-             goto kick;
+           if(action_done 
+             && ball.right_foot.y < 70
+             && ball.right_foot.y > -50
+             && ball.right_foot.x < 250) 
+           {
+             goto kick_right;
            } 
-           else {
-            goto stabilize_before_kick;
+           else if (ball.right_foot.preview.y > 60)
+           {
+             goto approach_left_foot;
+           }
+           else 
+           {
+             goto approach_right_foot;
            }
          }
          else
@@ -44,26 +85,99 @@ option perform_omnidirectional_kick
          }
     }
     action {
-      approach_ball_with_correct_foot(dist=170, errorX=30, errorY=30, errorR=15, want_to_turn_after_approach=false);
+      go_to_ball_cool(distance = @distance, right_foot=true,
+                      errorX=@errorX, errorY=@errorY, errorR=@errorR);
       head.control_mode = search_for_ball;
       motion.type = stand;
-      situation.abortable = false;
     }
   }
 
-  state kick {
+  state approach_left_foot
+  {
+    decision {
+      // maybe we touched the ball accidently
+      if(ball.left_foot.preview.x > 250
+          || ball.left_foot.preview.x < 0
+          || abs(value=attack.direction) > 90)
+        goto finished;
+      else if(action_done) //HACK xxx
+        goto kick_prep_left_foot;
+      else
+        stay;
+    }
+    action {
+      go_to_ball_cool(distance = @distance, right_foot=false,
+                      errorX=@errorX, errorY=@errorY, errorR=@errorR);
+      head.control_mode = search_for_ball;
+      motion.walk.style = stable;
+    }
+  }
+
+  state kick_prep_left_foot
+  {
+    decision {
+         if(state_time > 900)
+         {
+           if(action_done 
+             && ball.left_foot.y < 50
+             && ball.left_foot.y > -70
+             && ball.left_foot.x < 250) 
+           {
+             goto kick_left;
+           } 
+           else if (ball.left_foot.preview.y < -60)
+           {
+             goto approach_right_foot;
+           }
+           else 
+           {
+             goto approach_left_foot;
+           }
+         }
+         else
+         {
+           stay;
+         }
+    }
+    action {
+      go_to_ball_cool(distance = @distance, right_foot=false,
+                      errorX=@errorX, errorY=@errorY, errorR=@errorR);
+      head.control_mode = search_for_ball;
+      motion.type = stand;
+    }
+  }
+
+  state kick_right {
     decision
     {
-      if(action_done && state_time > 1000)
+      if(action_done && state_time > 500)
         goto stabilize_after_kick;
       else
         stay;
     }
     action 
     {
+      kick_ball_with_foot(direction = attack.direction, right = true);
       situation.abortable = false;
-      kick_ball(direction= attack.direction);
-
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+  
+  state kick_left {
+    decision
+    {
+      if(action_done && state_time > 500)
+        goto stabilize_after_kick;
+      else
+        stay;
+    }
+    action 
+    {
+      kick_ball_with_foot(direction = attack.direction, right = false);
+      situation.abortable = false;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -81,7 +195,6 @@ option perform_omnidirectional_kick
     }
     action
     {
-      situation.abortable = false;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
