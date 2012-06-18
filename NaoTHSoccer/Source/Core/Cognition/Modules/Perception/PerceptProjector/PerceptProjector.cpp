@@ -27,7 +27,7 @@ PerceptProjector::~PerceptProjector()
 void PerceptProjector::execute()
 {
   Vector2<double> offset(getCameraMatrixOffset().offsetByGoalModel);
-  bool updated = false;
+//  bool updated = false;
   
   if(false && getLinePercept().lines.size() > 1)
   {
@@ -49,7 +49,7 @@ void PerceptProjector::execute()
           ))
       {
         offset = offset_line;
-        updated = true;
+//        updated = true;
       }
     }
   }

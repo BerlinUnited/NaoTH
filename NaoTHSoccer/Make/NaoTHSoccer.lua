@@ -2,10 +2,12 @@ project "NaoTHSoccer"
   kind "StaticLib"
   language "C++"
   
+  flags {"FatalWarnings"}
+  
   files {"../Source/**.h","../Source/**.cpp"}
   
   includedirs {
-	  "../Source/Core/"
+	"../Source/Core/"
 	}
   
   --links { "NaoTH-Commons" }

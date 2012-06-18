@@ -30,6 +30,7 @@ public:
   MotionRequest() 
     :
     time(0),
+    cognitionFrameNumber(0),
     id(motion::init),
     forced(false),
     standHeight(-1),
@@ -42,6 +43,8 @@ public:
   }
 
   unsigned int time;
+
+  unsigned int cognitionFrameNumber;
 
   /** id of the motion to be executed */
   motion::MotionID id;
@@ -70,7 +73,8 @@ public:
 
   virtual void print(ostream& stream) const 
   {
-    stream << "time = " << time << '\n';
+    stream << "time = " << time << endl;
+    stream << "cognition frame = " << cognitionFrameNumber << endl;
     stream << "MotionID = " << motion::getName(id) << endl;
     stream << "standardStand = " << standardStand <<endl;
     switch (id) {

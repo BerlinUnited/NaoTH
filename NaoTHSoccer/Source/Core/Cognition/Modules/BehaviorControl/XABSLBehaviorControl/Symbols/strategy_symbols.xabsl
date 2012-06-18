@@ -72,15 +72,11 @@ namespace strategy("Strategy Symbols") {
   float input soccer_strategy.formation.x;
   float input soccer_strategy.formation.y;
 
-  enum situationStatus
-  {
-    after_penalized,
-    dribble,
-    kick,
-    kickoff
-  };
-  enum situationStatus output situationStatus;
-  bool output situationStatusOwnHalf;
+  /** information for selflocator */
+  bool output situationStatusOwnHalf; //true = own half, false = unknown!!!
+  bool output situationStatusOppHalf; //true = opp half, false = unknown!!!
+
+  /** Information for the ball model */
   bool output reactiveBallModelNeeded;  
 }
   

@@ -1859,6 +1859,13 @@ class MotionRequest : public ::google::protobuf::Message {
   inline bool calibratefoottouchdetector() const;
   inline void set_calibratefoottouchdetector(bool value);
   
+  // optional uint32 cognitionFrameNumber = 9;
+  inline bool has_cognitionframenumber() const;
+  inline void clear_cognitionframenumber();
+  static const int kCognitionFrameNumberFieldNumber = 9;
+  inline ::google::protobuf::uint32 cognitionframenumber() const;
+  inline void set_cognitionframenumber(::google::protobuf::uint32 value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.MotionRequest)
  private:
   inline void set_has_id();
@@ -1877,6 +1884,8 @@ class MotionRequest : public ::google::protobuf::Message {
   inline void clear_has_standheight();
   inline void set_has_calibratefoottouchdetector();
   inline void clear_has_calibratefoottouchdetector();
+  inline void set_has_cognitionframenumber();
+  inline void clear_has_cognitionframenumber();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -1884,13 +1893,14 @@ class MotionRequest : public ::google::protobuf::Message {
   ::google::protobuf::uint32 time_;
   ::naothmessages::WalkRequest* walkrequest_;
   ::naothmessages::KickRequest* kickrequest_;
-  double standheight_;
   bool forced_;
   bool starndardstand_;
   bool calibratefoottouchdetector_;
+  ::google::protobuf::uint32 cognitionframenumber_;
+  double standheight_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -4738,6 +4748,28 @@ inline bool MotionRequest::calibratefoottouchdetector() const {
 inline void MotionRequest::set_calibratefoottouchdetector(bool value) {
   set_has_calibratefoottouchdetector();
   calibratefoottouchdetector_ = value;
+}
+
+// optional uint32 cognitionFrameNumber = 9;
+inline bool MotionRequest::has_cognitionframenumber() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void MotionRequest::set_has_cognitionframenumber() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void MotionRequest::clear_has_cognitionframenumber() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void MotionRequest::clear_cognitionframenumber() {
+  cognitionframenumber_ = 0u;
+  clear_has_cognitionframenumber();
+}
+inline ::google::protobuf::uint32 MotionRequest::cognitionframenumber() const {
+  return cognitionframenumber_;
+}
+inline void MotionRequest::set_cognitionframenumber(::google::protobuf::uint32 value) {
+  set_has_cognitionframenumber();
+  cognitionframenumber_ = value;
 }
 
 // -------------------------------------------------------------------

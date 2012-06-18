@@ -33,6 +33,7 @@ import java.awt.Color;
         pink, /*<! pink flag */
         gray, /*<! player */
         yellowOrange, /*<! ball or yellow goal */
+        numOfColors
     };
     
     public static Color GetColor(ColorClass colorClass) throws Exception

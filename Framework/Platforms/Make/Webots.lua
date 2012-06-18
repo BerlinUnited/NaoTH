@@ -1,4 +1,4 @@
-local extern_dir = "../../../Extern"
+--local EXTERN_PATH = path.getabsolute("../../../Extern")
 
 local hasWebots = true
 
@@ -49,26 +49,26 @@ project "Webots"
 	  "../../NaoTH-Tools/Source/",
       webotsHome .. "/include/controller/c/",
       "../Lib/win32/include/", 
-      extern_dir .. "/include/",
-      extern_dir .. "/include/glib-2.0/",
-	  extern_dir .. "/lib/glib-2.0/include/"}
+      EXTERN_PATH .. "/include/",
+      EXTERN_PATH .. "/include/glib-2.0/",
+	  EXTERN_PATH .. "/lib/glib-2.0/include/"}
     
     libdirs {webotsHome .. "/lib/"}
     
     files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
     
     links {CORE, 
-	    "NaoTH-Commons", 
-	    "Controller",
-	    "glib-2.0",
-	    "gio-2.0",
-	    "gobject-2.0",
-	    "gmodule-2.0",
-	    "gthread-2.0",
-	    "protobuf",
-	    "opencv_core",
-      "opencv_imgproc",
-	    "opencv_ml"
+	"NaoTH-Commons", 
+	"Controller",
+	"glib-2.0",
+	"gio-2.0",
+	"gobject-2.0",
+	"gmodule-2.0",
+	"gthread-2.0",
+	"protobuf",
+	"opencv_core",
+	"opencv_imgproc",
+	"opencv_ml"
     }
     
     targetname "nao_team_0"
@@ -79,7 +79,7 @@ project "Webots"
     }
     
     configuration {"linux"}
-      linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+      linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
   
 end -- hasWebots 
 -- END Webots

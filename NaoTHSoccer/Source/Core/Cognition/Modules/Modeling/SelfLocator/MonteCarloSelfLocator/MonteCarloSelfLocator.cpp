@@ -1182,6 +1182,7 @@ bool MonteCarloSelfLocator::hasSensorUpdate() const
 void MonteCarloSelfLocator::execute()
 {
   static bool init_own_half = false;
+  static bool init_opp_half = false;
 
   if(getSituationStatus().ownHalf)
   {
@@ -1205,7 +1206,26 @@ void MonteCarloSelfLocator::execute()
     fieldMax.x = getFieldInfo().xFieldLength/2.0;
     init_own_half = false;
   }
+  
+  if(getSituationStatus().oppHalf && !getSituationStatus().ownHalf)
+  {
+    fieldMin.x = 0.0;
 
+    if(!init_opp_half)
+    {
+      resetSampleSet(theSampleSet);
+      initialized = false;
+    }
+    clampSampleSetToField(theSampleSet);
+    init_opp_half = true;
+  }
+  else
+  {
+    //fieldMin = Vector2<double>(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0);
+    //fieldMax = Vector2<double>( getFieldInfo().xFieldLength/2.0,  getFieldInfo().yFieldLength/2.0);
+    fieldMin.x = -getFieldInfo().xFieldLength/2.0;
+    init_opp_half = false;
+  }
   // HACK
   //initialized = initialized || getSensingGoalModel().someGoalWasSeen;
 

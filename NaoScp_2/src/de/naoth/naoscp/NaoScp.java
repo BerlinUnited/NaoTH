@@ -95,10 +95,7 @@ public class NaoScp extends NaoScpMainFrame
     config = new NaoScpConfig();
     config.debugVersion = true;
 
-    config.sshUser = this.sshUser.getText();
-    config.sshPassword = this.sshPassword.getText();
-    config.sshRootPassword = this.sshRootPassword.getText();
-    config.progressBar = this.progressBar;
+    updateConfig();
 
     this.cbNoBackup.setVisible(config.debugVersion);
     this.cbNoBackup.setEnabled(config.debugVersion);
@@ -1939,8 +1936,18 @@ public class NaoScp extends NaoScpMainFrame
     scriptRunner.execute();
   }
   
+  private void updateConfig()
+  {
+    config.sshUser = this.sshUser.getText();
+    config.sshPassword = this.sshPassword.getText();
+    config.sshRootPassword = this.sshRootPassword.getText();
+    config.progressBar = this.progressBar;
+  }
+  
   private void initializeRobot()
   {
+    updateConfig();
+    
     clearLog();
     NaoScpConfig cfg = new NaoScpConfig(config);
     cfg.stagingLibDir = null;

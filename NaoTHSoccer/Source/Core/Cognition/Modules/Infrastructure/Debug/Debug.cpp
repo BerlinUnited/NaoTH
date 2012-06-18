@@ -5,6 +5,8 @@
  * Created on 11. November 2010, 18:32
  */
 
+#include "Tools/ImageProcessing/jpeg/jpge.h"
+
 #include "Debug.h"
 
 #include "Tools/Debug/DebugRequest.h"
@@ -41,6 +43,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("walk", "let the robot walk", this);
   REGISTER_DEBUG_COMMAND("kick", "let the robot kick", this);
 
+  REGISTER_DEBUG_COMMAND("kill_cognition", "kill cognition", this);
+
   registerLogableRepresentationList();
 
   // 3d drawings
@@ -74,11 +78,15 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   if (command == "image")
   {
     GT_TRACE("Debug::executeDebugCommand() handling image");
-    //g_debug("sending image timestamp=%d, frame=%d", getImage().timestamp, getFrameInfo().frameNumber);
     // add the drawings to the image
     GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
     DebugImageDrawings::getInstance().drawToImage(getImage());
     
+    if(arguments.find("jpeg") != arguments.end())
+    {
+      // TODO: do jpeg compression
+    }
+
     GT_TRACE("Debug::executeDebugCommand() before serialize");
     STOPWATCH_START("sendImage");
     Serializer<Image>::serialize(getImage(), outstream);
@@ -205,6 +213,17 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   else if(command == "kick")
   {
     // TODO
+  }
+  else if(command == "kill_cognition")
+  {
+    outstream << "will go into endless loop" << std::endl;
+    while(true)
+    {
+      std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
+                 << std::endl;
+      g_usleep(500000);
+
+    }
   }
 }
 

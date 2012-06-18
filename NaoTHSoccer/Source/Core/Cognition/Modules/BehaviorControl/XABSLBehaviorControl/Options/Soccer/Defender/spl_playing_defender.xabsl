@@ -21,6 +21,7 @@ option spl_playing_defender {
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
+      check_collision();
     }
   }
 
@@ -44,6 +45,7 @@ option spl_playing_defender {
       motion.walk_speed.x = 0;
       motion.walk_speed.y = 100;
       motion.walk_speed.rot = 0;
+      check_collision();
     }
   }
 
@@ -67,6 +69,7 @@ option spl_playing_defender {
       motion.walk_speed.x = 0;
       motion.walk_speed.y = -100;
       motion.walk_speed.rot = 0;
+      check_collision();
     }
   }
 
@@ -83,6 +86,7 @@ option spl_playing_defender {
     }
     action {
       ball_not_seen_situation();
+      check_collision();
     }
   }
 
@@ -95,6 +99,7 @@ option spl_playing_defender {
     }
       action {
         spl_simple_defender();
+        check_collision();
       }
   }
 
@@ -115,6 +120,7 @@ option spl_playing_defender {
     action {
        decide_strategy_position();
        head.control_mode = smart_search;
+       check_collision();
     }
   }
 }

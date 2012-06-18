@@ -95,11 +95,13 @@ private:
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
   
-  //enum 
-  // static SituationStatus::StatusID getSituationStatusId();
-  //bool
+  //find out if the robot is in a certain field half
   static bool getSituationStatusOwnHalf();
+  static bool getSituationStatusOppHalf();
+  
+  //force selflocator to locate in a certain field half
   static void setSituationStatusOwnHalf(bool ownHalf);
+  static void setSituationStatusOppHalf(bool oppHalf);
 
   static bool getReactiveBallModelNeeded();
   static void setReactiveBallModelRequested(bool reactiveNeeded);
