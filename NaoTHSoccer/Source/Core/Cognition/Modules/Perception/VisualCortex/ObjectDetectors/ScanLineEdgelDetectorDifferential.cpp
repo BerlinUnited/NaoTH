@@ -15,15 +15,12 @@ ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels", "mark the edgels on the image", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:scanlines", "mark the scan lines", false);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_end_points_on_field", "...", false);
-
-  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_estimated_obstacles", "...", false);
 }
 
 
 ScanLineEdgelDetectorDifferential::~ScanLineEdgelDetectorDifferential()
-{}
+{
+}
 
 
 void ScanLineEdgelDetectorDifferential::execute()
@@ -36,23 +33,24 @@ void ScanLineEdgelDetectorDifferential::execute()
   Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
 
   // horizontal stepsize between the scanlines
-  int step = (getImage().cameraInfo.resolutionWidth - 1) / theParameters.scanline_count;
+  int step = (getImage().cameraInfo.resolutionWidth - 1) / (theParameters.scanline_count - 1);
   int remaining_pixels = (getImage().cameraInfo.resolutionWidth - 1) % theParameters.scanline_count;
 
   // don't scan the lower lines in the image
   int borderY = getImage().cameraInfo.resolutionHeight - theParameters.pixel_border_y - 1;
   
   // start and endpoints for the scanlines
-  Vector2<int> start((step + remaining_pixels) / 2, borderY);
-  Vector2<int> end((step + remaining_pixels) / 2, beginField.y );
+  Vector2<int> start(step / 2, borderY);
+  Vector2<int> end(step / 2, beginField.y );
   
 
   for (int i = 0; i < theParameters.scanline_count; i++)
   {
+    ASSERT(getImage().isInside(start.x, start.y));
     // don't scan the own body
     start = getBodyContour().returnFirstFreeCell(start);
-    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
 
+    // vertical scanlines
     end.x = start.x;
 
     // execute the scan
@@ -60,25 +58,30 @@ void ScanLineEdgelDetectorDifferential::execute()
     
     
     // check if endpoint is not same as the begin of the scanline
-    if(endPoint.posInImage.y < borderY)
+    if(endPoint.posInImage.y >= borderY)
     {
-      // project it on the ground
-      CameraGeometry::imagePixelToFieldCoord(
-        getCameraMatrix(),
-        getImage().cameraInfo,
-        endPoint.posInImage.x,
-        endPoint.posInImage.y,
-        0.0,
-        endPoint.posOnField);
-
-      getScanLineEdgelPercept().endPoints.push_back(endPoint);
+      endPoint.color = ColorClasses::none;
     }//end if
+
+
+    // try to project it on the ground
+    endPoint.valid = CameraGeometry::imagePixelToFieldCoord(
+      getCameraMatrix(),
+      getImage().cameraInfo,
+      endPoint.posInImage.x,
+      endPoint.posInImage.y,
+      0.0,
+      endPoint.posOnField);
+
+    //
+    getScanLineEdgelPercept().endPoints.push_back(endPoint);
 
 
     start.y = borderY;
     start.x += step;
     end.x = start.x;
   }//end for
+
 
 
   DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
@@ -97,84 +100,33 @@ void ScanLineEdgelDetectorDifferential::execute()
     }//end for
   );
 
-  //obstacle detection vizualization
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_estimated_obstacles",
-    unsigned int size = getScanLineEdgelPercept().endPoints.size();
-    if (size >=2)
-    {
-      int pointer = 0;
-      for (unsigned int i = 0;  i < getScanLineEdgelPercept().endPoints.size(); i++)
-      {
-        const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-        if (point.color == (int) ColorClasses::white)
-        {
-          pointer++;
-        } 
-        else
-        {
-          if (pointer > 1)
-          {
-            while (pointer != 0)
-            {
-              const ScanLineEdgelPercept::EndPoint& point2 = getScanLineEdgelPercept().endPoints[i-pointer];
-              RECT_PX(ColorClasses::green, point2.posInImage.x - 3, point2.posInImage.y - 3, point2.posInImage.x + 3, point2.posInImage.y + 3);
-              pointer--;
-            }
-          }
-          pointer = 0;
-        }
-
-      }
-
-    }
-    );
-
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_end_points_on_field",
-    FIELD_DRAWING_CONTEXT;
-
-    for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
-    {
-      const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
-
-      if(point.posInImage.y < 10) // close to the top
-        PEN("009900", 20);
-      else
-        PEN(ColorClasses::colorClassToHex(point.color), 20);
-
-      CIRCLE(point.posOnField.x, point.posOnField.y, 10);
-      if(i > 0)
-      {
-        const ScanLineEdgelPercept::EndPoint& last_point = getScanLineEdgelPercept().endPoints[i-1];
-        LINE(last_point.posOnField.x, last_point.posOnField.y, point.posOnField.x, point.posOnField.y);
-      }
-    }//end for
-  );
-
 }//end execute
 
 
 
-// scanForEdgelsHTWK
+// scanForEdgels ala HTWK
+// TODO: reference to the master thesis von Thomas Reinhard
 ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end) const
 {
   Vector2<int> point(start);
-  //Vector2<int> last_point(start);
-  //Vector2<int> last_min_point(start); // the last point corresponding to lastMinPixelBrightnessDiff
   Vector2<int> lastGreenPoint(start); // needed for the endpoint
 
-  // line scanning state
-  //bool lineBeginFound = false;
   //results
-  Edgel edgel; 
+  Edgel edgel;
 
   //Pixel pixel = getImage().get(point.x, point.y);
 
+  // initialize
   int t_edge = theParameters.brightness_threshold * 2;
   int g_min = t_edge;
   int g_max = -t_edge;
   int x_peak = 0;
   int f_last = getImage().getY(point.x, point.y);
 
+
+  //
+  double greenCount = 0;
+  double segmentLength = 0;
 
   bool begin_found = false;
   int begin_y = 0;
@@ -185,43 +137,33 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
   for(;point.y >= end.y; point.y--)
   {
     // get the pixel color
-    //getImage().get(point.x, point.y, pixel);
+    Pixel pixel = getImage().get(point.x, x_peak);
+    bool green = getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
+    if(green) greenCount++;
+    segmentLength++;
 
-    // TODO: possible optimization
-    //ColorClasses::Color thisPixelColor = (getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c))?ColorClasses::green:ColorClasses::none;
-
+    // get the brightness chanel
     int f_x = getImage().getY(point.x, point.y);
     int g = f_x - f_last;
     
     
     if(g > g_max)
     {
-      /*
-      Pixel pixel = getImage().get(point.x, x_peak);
-      bool green = getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
-      */
+      DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
+        POINT_PX(ColorClasses::pink, start.x, x_peak);
+      );
+
       if(g_min < -t_edge)// end found
       {
 
-        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
-          // estimate the color of the past segment
-          ColorClasses::Color color = estimateColorOfSegment(
-            Vector2<int>(point.x, begin_of_segment),
-            Vector2<int>(point.x, x_peak)
-            );
-
-          LINE_PX(color, point.x, begin_of_segment, point.x, x_peak);
-
-          if(color == ColorClasses::green)
-          {
-            lastGreenPoint.y = x_peak;
-          }
-        );
-
+        if( greenCount/segmentLength > 0.3 )
+        {
+          lastGreenPoint.y = x_peak;
+        }
 
         begin_of_segment = x_peak;
-
-
+        greenCount = 0;
+        segmentLength = 1;
 
         if(begin_found) // secure edgel
         {
@@ -282,32 +224,19 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     
     if(g < g_min)
     {
-      /*
-      Pixel pixel = getImage().get(point.x, x_peak);
-      bool green = getColorClassificationModel().getFieldColorPercept().isFieldColor(pixel.a, pixel.b, pixel.c);
-      */
       if(g_max > t_edge)// begin found
       {
         DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
           POINT_PX(ColorClasses::blue, start.x, (int)x_peak);
         );
 
-       
-        DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
-          // estimate the color of the past segment
-          ColorClasses::Color color = estimateColorOfSegment(
-            Vector2<int>(point.x, begin_of_segment),
-            Vector2<int>(point.x, x_peak)
-            );
+        if( greenCount/segmentLength > 0.3 )
+        {
+          lastGreenPoint.y = x_peak;
+        }
 
-          LINE_PX(color, point.x, begin_of_segment, point.x, x_peak);
-
-          if(color == ColorClasses::green)
-          {
-            lastGreenPoint.y = x_peak;
-          }
-        );
-
+        greenCount = 0;
+        segmentLength = 1;
         begin_of_segment = x_peak;
         begin_found = true;
         begin_y = x_peak;
@@ -328,15 +257,12 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     );
   }//end for
 
+
   // check the color of the last segment
-  if( estimateColorOfSegment(
-    Vector2<int>(point.x, begin_of_segment),
-    Vector2<int>(point.x, x_peak)
-    ) == ColorClasses::green)
+  if(greenCount/segmentLength > 0.3)
   {
     lastGreenPoint.y = x_peak;
   }
-
 
   ScanLineEdgelPercept::EndPoint endPoint;
   endPoint.posInImage = lastGreenPoint;
@@ -353,7 +279,7 @@ ColorClasses::Color ScanLineEdgelDetectorDifferential::estimateColorOfSegment(co
 
   int length = begin.y - end.y;
   int numberOfGreen = 0;
-  const int numberOfSamples = min(length, 5);
+  const int numberOfSamples = min(length, 20);
   Vector2<int> point(begin);
   Pixel pixel;
 
