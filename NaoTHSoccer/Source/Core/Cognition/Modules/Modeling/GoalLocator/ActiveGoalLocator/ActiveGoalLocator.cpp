@@ -210,7 +210,7 @@ void ActiveGoalLocator::execute() {
     }//end for x
 
     //decide whether distError is feasable
-    if (lastDistError < parameters.possibleGoalWidhtError) { //make param
+    if (lastDistError < parameters.possibleGoalWidhtError) {
 
       if (ccSamples[id1].sampleSet.mean.angle() < ccSamples[id2].sampleSet.mean.angle()) {
         getLocalGoalModel().goal.leftPost  = ccSamples[id1].sampleSet.mean;
