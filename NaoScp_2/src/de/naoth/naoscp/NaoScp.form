@@ -490,7 +490,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTeamNumber">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="13"/>
+                        <Property name="text" type="java.lang.String" value="4"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel4">
@@ -867,7 +867,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="subnetFieldWLAN">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="192.168.13"/>
+                        <Property name="text" type="java.lang.String" value="192.168.4"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subnetFieldWLANActionPerformed"/>
@@ -883,7 +883,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="broadcastFieldWLAN">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="192.168.13.255"/>
+                        <Property name="text" type="java.lang.String" value="192.168.4.255"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldWLANActionPerformed"/>
@@ -919,7 +919,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="wlanSSID">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="NAONET"/>
+                        <Property name="text" type="java.lang.String" value="SPL_Field_B"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanSSIDActionPerformed"/>
@@ -932,8 +932,11 @@
                     </Component>
                     <Component class="javax.swing.JPasswordField" name="wlanKey">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="a1b0a1b0a1"/>
+                        <Property name="text" type="java.lang.String" value="SPLRC2012"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -1031,7 +1034,7 @@
                     <Component class="javax.swing.JTextField" name="lblTeamCommWLAN">
                       <Properties>
                         <Property name="editable" type="boolean" value="false"/>
-                        <Property name="text" type="java.lang.String" value="192.168.13.255"/>
+                        <Property name="text" type="java.lang.String" value="192.168.4.255"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lblTeamCommWLANActionPerformed"/>

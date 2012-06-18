@@ -2393,7 +2393,7 @@ public class NaoScp extends NaoScpMainFrame
 
         jLabel2.setText("TeamNr:");
 
-        jTeamNumber.setText("13");
+        jTeamNumber.setText("4");
 
         jLabel4.setText("Scheme:");
 
@@ -2637,7 +2637,7 @@ public class NaoScp extends NaoScpMainFrame
 
         jLabel23.setText("Broadcast");
 
-        subnetFieldWLAN.setText("192.168.13");
+        subnetFieldWLAN.setText("192.168.4");
         subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 subnetFieldWLANActionPerformed(evt);
@@ -2651,7 +2651,7 @@ public class NaoScp extends NaoScpMainFrame
             }
         });
 
-        broadcastFieldWLAN.setText("192.168.13.255");
+        broadcastFieldWLAN.setText("192.168.4.255");
         broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 broadcastFieldWLANActionPerformed(evt);
@@ -2693,7 +2693,7 @@ public class NaoScp extends NaoScpMainFrame
 
         jLabel5.setText("SSID");
 
-        wlanSSID.setText("NAONET");
+        wlanSSID.setText("SPL_Field_B");
         wlanSSID.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 wlanSSIDActionPerformed(evt);
@@ -2702,7 +2702,12 @@ public class NaoScp extends NaoScpMainFrame
 
         jLabel9.setText("WLAN Key");
 
-        wlanKey.setText("a1b0a1b0a1");
+        wlanKey.setText("SPLRC2012");
+        wlanKey.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                wlanKeyActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jSettingsPanel1Layout = new org.jdesktop.layout.GroupLayout(jSettingsPanel1);
         jSettingsPanel1.setLayout(jSettingsPanel1Layout);
@@ -2810,7 +2815,7 @@ public class NaoScp extends NaoScpMainFrame
         jLabel24.setText("TeamComm:");
 
         lblTeamCommWLAN.setEditable(false);
-        lblTeamCommWLAN.setText("192.168.13.255");
+        lblTeamCommWLAN.setText("192.168.4.255");
         lblTeamCommWLAN.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lblTeamCommWLANActionPerformed(evt);
@@ -3287,6 +3292,10 @@ public class NaoScp extends NaoScpMainFrame
   private void jButtonRemoteKernelVideoReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRemoteKernelVideoReloadActionPerformed
     remoteReloadKernelVideoModule();
   }//GEN-LAST:event_jButtonRemoteKernelVideoReloadActionPerformed
+
+  private void wlanKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wlanKeyActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_wlanKeyActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField broadcastFieldLAN;
