@@ -174,8 +174,12 @@ void ActiveGoalLocator::execute() {
   //   provide Goal Model
   //////////////////////////
 
+  getLocalGoalModel().opponentGoalIsValid = false;
+  getLocalGoalModel().ownGoalIsValid = false;
+  getLocalGoalModel().someGoalWasSeen = false;
+
   //TODO Make as member
-  unsigned int numOfValidFilter;
+  unsigned int numOfValidFilter = 0;
   for(unsigned int i = 0; i < 10; i++) {
     if (ccSamples[i].sampleSet.getIsValid())
       numOfValidFilter++;
@@ -220,9 +224,50 @@ void ActiveGoalLocator::execute() {
         getLocalGoalModel().goal.rightPost = ccSamples[id1].sampleSet.mean;
       }
 
+      getLocalGoalModel().someGoalWasSeen = true;
+      //frame Info when goal was seen not useful! New: some_goal_was seen
+      getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
+
     }
 
   }//end if numOfValidFilter
+
+  // opp goal is in front of me
+  const GoalModel::Goal& oppGoal = getLocalGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
+  if(((oppGoal.leftPost+oppGoal.leftPost)*0.5).x > 0)
+    getLocalGoalModel().opponentGoalIsValid = true;
+  else
+    getLocalGoalModel().ownGoalIsValid = true;
+
+  if(getLocalGoalModel().opponentGoalIsValid)
+  {
+    getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
+  }
+  else
+  {
+    getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
+  }
+
+  DEBUG_REQUEST("DummyActiveGoalLocator:draw_goal_model",
+    FIELD_DRAWING_CONTEXT;
+    if(getLocalGoalModel().opponentGoalIsValid)
+      PEN("000000", 50);
+    else
+      PEN("FFFFFF", 50);
+
+    CIRCLE(getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y, 50);
+    CIRCLE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, 50);
+    LINE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y);
+  );
+  //
+  /////////////////////////////////
+
+
+
+
+
+
+
 
   debugDrawings();
   debugPlots();
