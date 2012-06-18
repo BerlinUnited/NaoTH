@@ -36,6 +36,8 @@ ImageProcessor::ImageProcessor()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:classify_ball_color", "", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:use_ScanLineEdgelDetectorDifferential", "", false);
+
   theHistogramFieldDetector = registerModule<HistogramFieldDetector>("HistogramFieldDetector");
   theHistogramFieldDetector->setEnabled(true);
 
@@ -68,6 +70,22 @@ ImageProcessor::ImageProcessor()
 
 void ImageProcessor::execute()
 {
+
+  // HACK
+  bool use_ScanLineEdgelDetectorDifferential = false;
+  DEBUG_REQUEST("ImageProcessor:use_ScanLineEdgelDetectorDifferential", use_ScanLineEdgelDetectorDifferential = true; );
+  if(use_ScanLineEdgelDetectorDifferential)
+  {
+    if(theScanLineEdgelDetector->isEnabled()) theScanLineEdgelDetector->setEnabled(false);
+    if(!theScanLineEdgelDetectorDifferential->isEnabled()) theScanLineEdgelDetectorDifferential->setEnabled(true);
+  }
+  else
+  {
+    if(!theScanLineEdgelDetector->isEnabled()) theScanLineEdgelDetector->setEnabled(true);
+    if(theScanLineEdgelDetectorDifferential->isEnabled()) theScanLineEdgelDetectorDifferential->setEnabled(false);
+  }
+
+
   //reset the Representations:
   
   getBallPercept().reset();
