@@ -92,16 +92,17 @@ void VisualObstacleLocator::execute()
     const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
     
     // decide which points to include to the grid
-    if(//point.posInImage.y > 10 && 
-       //point.posInImage.y < 200 && 
-       (point.color != (int) ColorClasses::green)
+    if(point.posInImage.y > 10 && 
+       point.posInImage.y < 310 && 
+       //(point.color != (int) ColorClasses::green)
+       point.valid
       )
     {
       getRadarGrid().addObstaclePoint(point.posOnField);
     }
     else
     {
-      getRadarGrid().addNonObstaclePoint(point.posOnField);
+      //getRadarGrid().addNonObstaclePoint(point.posOnField);
     }
   }//end for
 

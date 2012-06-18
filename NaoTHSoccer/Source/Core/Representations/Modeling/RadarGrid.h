@@ -72,9 +72,9 @@ public:
   
   //some functions
   //get/set model
-  void addObstaclePoint(Vector2d);
+  void addObstaclePoint(const Vector2d&);
 
-  void addNonObstaclePoint(Vector2d);
+  void addNonObstaclePoint(const Vector2d&);
 
   // set the current system time
   void setCurrentTime(unsigned int tStamp) {this->currentTime = tStamp;}
@@ -135,7 +135,7 @@ private:
     //buffer for percepts
     RingBuffer<Vector2d, bufferCapacity> buffer;
     //sum of the buffer
-     Vector2d sum;
+    Vector2d sum;
     //time the cell was set
     unsigned int timeStamp;
     Cell():
@@ -152,7 +152,7 @@ private:
 
   Vector2d applyOdometry(Vector2d& someValue, Pose2D& odometryDelta);
 
-  void setMean(int& position, Vector2d& newValue);
+  void setMean(int& position, const Vector2d& newValue);
  
   // get sector of model for a given angle
   inline int getSectorByAngle(const double angle) const;
