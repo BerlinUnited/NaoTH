@@ -48,7 +48,8 @@ public:
     bodyState(getBodyState()),
     soccerStrategy(getSoccerStrategy()),
     motionStatus(getMotionStatus()),
-    playerInfo(getPlayerInfo())
+    playerInfo(getPlayerInfo()),
+    maximumFreshTime(5000)
   {
     theInstance = this;
   }
@@ -78,6 +79,8 @@ private:
   static bool getWasStriker();
   static void setWasStriker(bool striker);
   static bool calculateIfTheLast();
+
+  const unsigned int maximumFreshTime;
 };
 
 #endif  /* _TEAMSYMBOLS_H */
