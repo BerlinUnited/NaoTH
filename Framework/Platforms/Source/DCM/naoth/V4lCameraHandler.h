@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   V4lCameraHandler.h
  * Author: thomas
  *
@@ -54,9 +54,9 @@ struct buffer
  * @author Thomas Krause
  *
  */
- 
+
  namespace naoth{
- 
+
 class V4lCameraHandler
 {
 public:
@@ -95,6 +95,7 @@ private:
   void uninitDevice();
   void closeDevice();
 
+  void initialSetParameter();
   int getSingleCameraParameter(int id);
   int setSingleCameraParameter(int id, int value);
   void setFPS(int fpsRate);

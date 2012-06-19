@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   V4lCameraHandler.cpp
  * Author: thomas
- * 
+ *
  * Created on 22. April 2010, 17:24
  */
 
@@ -40,7 +40,7 @@ V4lCameraHandler::V4lCameraHandler()
   }
 
   allowedTolerance[CameraSettings::Brightness] = 5;
-  allowedTolerance[CameraSettings::WhiteBalance] = 0;
+  allowedTolerance[CameraSettings::WhiteBalance] = 1;
 
   settingsOrder.push_back(CameraSettings::Brightness);
   settingsOrder.push_back(CameraSettings::BacklightCompensation);
@@ -78,6 +78,7 @@ void V4lCameraHandler::init(const CameraSettings camSettings,
 
   // open the device
   openDevice(true);//in blocking mode
+  //initialSetParameter();
   setAllCameraParams(camSettings);
   setFPS(30);
   initDevice();
@@ -101,7 +102,7 @@ int V4lCameraHandler::xioctl(int fd, int request, void* arg)
 
 bool V4lCameraHandler::hasIOError(int errOccured, int errNo, bool exitByIOError = true)
 {
-  if(errOccured < 0)
+  if(errOccured < 0 && errNo != EAGAIN)
   {
     std::cout << " failed with errno " << errNo << " (" << getErrnoDescription(errNo) << ") >> exiting" << std::endl;
     if(exitByIOError)
@@ -137,6 +138,40 @@ void V4lCameraHandler::initIDMapping()
   csConst[CameraSettings::BacklightCompensation] = V4L2_CID_BACKLIGHT_COMPENSATION;
   csConst[CameraSettings::WhiteBalance] = V4L2_CID_DO_WHITE_BALANCE;
   csConst[CameraSettings::Sharpness] = V4L2_CID_SHARPNESS;
+
+//---------------------------------------------------------------------
+// copied from the driver for information:
+//---------------------------------------------------------------------
+//  /* Fill in min, max, step and default value for these controls. */
+//  switch (qc->id) {
+//  case V4L2_CID_BRIGHTNESS:
+//    return v4l2_ctrl_query_fill(qc, 0, 255, 1, 55);
+//  case V4L2_CID_CONTRAST:
+//    return v4l2_ctrl_query_fill(qc, 0, 127, 1, 32);
+//  case V4L2_CID_SATURATION:
+//    return v4l2_ctrl_query_fill(qc, 0, 255, 1, 128);
+//  case V4L2_CID_HUE:
+//    return v4l2_ctrl_query_fill(qc, -180, 180, 1, 0);
+//  case V4L2_CID_VFLIP:
+//  case V4L2_CID_HFLIP:
+//    return v4l2_ctrl_query_fill(qc, 0, 1, 1, 0);
+//  case V4L2_CID_SHARPNESS:
+//    return v4l2_ctrl_query_fill(qc, -7, 7, 1, 0);
+//  case V4L2_CID_EXPOSURE_AUTO:
+//    return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
+//  case V4L2_CID_AUTO_WHITE_BALANCE:
+//    return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
+//  case V4L2_CID_GAIN:
+//    return v4l2_ctrl_query_fill(qc, 0, 255, 1, 32);
+//  case V4L2_CID_EXPOSURE:
+//    return v4l2_ctrl_query_fill(qc, 0, 512, 1, 0);
+//  case V4L2_CID_DO_WHITE_BALANCE:
+//    return v4l2_ctrl_query_fill(qc, -180, 180, 1, -166);
+//  case V4L2_CID_BACKLIGHT_COMPENSATION:
+//    return v4l2_ctrl_query_fill(qc, 0, 4, 1, 1);
+//  }
+//---------------------------------------------------------------------
+
 
 }
 
@@ -246,7 +281,7 @@ void V4lCameraHandler::initDevice()
 
   std::cout << fmt.fmt.pix.sizeimage << endl;
 
-	switch (selMethodIO)
+  switch (selMethodIO)
   {
     case IO_READ:
       initRead(fmt.fmt.pix.sizeimage);
@@ -260,7 +295,7 @@ void V4lCameraHandler::initDevice()
       initUP(fmt.fmt.pix.sizeimage);
       break;
     default: ASSERT(false);
-	}
+  }
   actMethodIO = selMethodIO;
 }
 
@@ -527,7 +562,7 @@ int V4lCameraHandler::readFrameUP()
 
   wasQueried = true;
   ASSERT(currentBuf.index < n_buffers);
-  return currentBuf.index; 
+  return currentBuf.index;
 }
 
 int V4lCameraHandler::readFrameRead()
@@ -539,15 +574,15 @@ int V4lCameraHandler::readFrameRead()
     case EAGAIN:
       return 0;
 
-    case EIO:
+		case EIO:
 				/* Could ignore EIO, see spec. */
 
 				/* fall through */
 
     default:
       exit(-1);
-			}
-		}
+      }
+    }
   currentBuf.bytesused = buffers[0].length;
   return 0;
 }
@@ -555,7 +590,7 @@ int V4lCameraHandler::readFrameRead()
 
 int V4lCameraHandler::readFrame()
 {
-	switch (actMethodIO)
+  switch (actMethodIO)
   {
     case IO_READ:
       return readFrameRead();
@@ -566,7 +601,7 @@ int V4lCameraHandler::readFrame()
     case IO_USERPTR:
       return readFrameUP();
     default: ASSERT(false);
-	}
+  }
   return -1;
 }
 
@@ -605,9 +640,9 @@ void V4lCameraHandler::get(Image& theImage)
         theImage.cameraInfo.cameraID = currentCamera;
         theImage.currentBuffer = currentBuf.index;
         theImage.bufferCount = n_buffers;
-        theImage.timestamp = 
-          (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand + 
-                            ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) - 
+        theImage.timestamp =
+          (unsigned int) ( (((unsigned long long)currentBuf.timestamp.tv_sec) * NaoTime::long_thousand +
+                            ((unsigned long long)currentBuf.timestamp.tv_usec) / NaoTime::long_thousand) -
                           NaoTime::startingTimeInMilliSeconds);
       }
     }
@@ -634,7 +669,7 @@ void V4lCameraHandler::uninitDevice()
 {
   unsigned int i;
 
-	switch (actMethodIO) 
+  switch (actMethodIO)
   {
     case IO_READ:
       free (buffers[0].start);
@@ -654,7 +689,7 @@ void V4lCameraHandler::uninitDevice()
       }
       break;
 
-    default: ASSERT(false);
+		default: ASSERT(false);
 	}
 	free (buffers);
 }
@@ -714,13 +749,21 @@ int V4lCameraHandler::getSingleCameraParameter(int id)
   for(int i = 0; i < 20 && errorOccured < 0; i++)
   {
     errorOccured = ioctl(fd, VIDIOC_G_CTRL, &control_s);
-    if(errorOccured < 0 && (errno == EBUSY))
+    if(errorOccured < 0)
     {
-      usleep(100000);
-    }
-    else
-    {
-      hasIOError(errorOccured, errno, false);
+      switch (errno)
+      {
+        case EAGAIN:
+          usleep(10);
+          break;
+
+        case EBUSY:
+          usleep(100000);
+          break;
+
+        default:
+          hasIOError(errorOccured, errno, false);
+      }
     }
   }
   if(!hasIOError(errorOccured, errno, false))
@@ -756,17 +799,19 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
   int min = queryctrl.minimum;
   int max = queryctrl.maximum;
 
-  // HACK
-  if(id == V4L2_CID_DO_WHITE_BALANCE)
-  {
-    min = -120;
-    max = -36;
-  }
-  else if(id == V4L2_CID_BRIGHTNESS)
-  {
-    min  = 0;
-    max = 255;
-  }
+//  // HACK
+//  if(id == V4L2_CID_DO_WHITE_BALANCE)
+//  {
+//    //min = -120;
+//    //max = -36;
+//    //min = -1;
+//    //max = 1;
+//  }
+//  else if(id == V4L2_CID_BRIGHTNESS)
+//  {
+//    min  = 0;
+//    max = 255;
+//  }
 
   // clip value
   if (value == -1)
@@ -782,12 +827,22 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
     value = max;
   }
 
+  if(id == CameraSettings::Exposure)
+  {
+    value = (value << 2) >> 2;
+  }
+
+  if(id == CameraSettings::WhiteBalance)
+  {
+    value = ((value + 180) * 45) / 45 - 180;
+  }
+
   struct v4l2_control control_s;
   memset (&control_s, 0, sizeof (control_s));
   control_s.id = id;
   control_s.value = value;
 
-  int errorOccured = -1;  
+  int errorOccured = -1;
   errorOccured = xioctl(fd, VIDIOC_S_CTRL, &control_s);
   hasIOError(errorOccured, errno, false);
 
@@ -795,12 +850,112 @@ int V4lCameraHandler::setSingleCameraParameter(int id, int value)
   return value;
 }
 
+//Version ala Bembelbot
+void V4lCameraHandler::initialSetParameter() {
+
+    bool success = false;
+    int newValue;
+    // first set brightness
+    while (!success) {
+      newValue = currentSettings.data[CameraSettings::Brightness];
+      if (newValue < 0) newValue = 0;
+      if (newValue > 255) newValue = 255;
+      setSingleCameraParameter(CameraSettings::Brightness, newValue);
+
+      std::clog << "V4L2_CID_BRIGHTNESS ("
+      << V4L2_CID_BRIGHTNESS
+      << ") set: " << newValue
+      << ", read: " << getSingleCameraParameter(CameraSettings::Brightness) << '\n';
+      success = (abs(getSingleCameraParameter(CameraSettings::Brightness) - newValue) < 5);
+    }
+
+    setSingleCameraParameter(CameraSettings::BacklightCompensation, 0);
+    std::clog << "V4L2_CID_BACKLIGHT_COMPENSATION ("
+    << V4L2_CID_BACKLIGHT_COMPENSATION
+    << ") set: 0, read: "
+    << getSingleCameraParameter(CameraSettings::BacklightCompensation) << '\n';
+
+    setSingleCameraParameter(CameraSettings::AutoExposition, 0);
+    std::clog << "V4L2_CID_EXPOSURE_AUTO ("
+    << V4L2_CID_EXPOSURE_AUTO
+    << ") set: 0, read: "
+    << getSingleCameraParameter(CameraSettings::AutoExposition) << '\n';
+
+    setSingleCameraParameter(CameraSettings::AutoWhiteBalancing, 0);
+    std::clog << "V4L2_CID_AUTO_WHITE_BALANCE ("
+    << V4L2_CID_AUTO_WHITE_BALANCE
+    << ") set: 0, read: "
+    << getSingleCameraParameter(CameraSettings::AutoWhiteBalancing) << '\n';
+
+    setSingleCameraParameter(CameraSettings::Brightness, currentSettings.data[CameraSettings::Brightness]);
+    std::clog << "V4L2_CID_BRIGHTNESS ("
+    << V4L2_CID_BRIGHTNESS
+    << ") set: " << currentSettings.data[CameraSettings::Brightness]
+    << ", read: " << getSingleCameraParameter(CameraSettings::Brightness) << '\n';
+
+    setSingleCameraParameter(CameraSettings::Contrast, currentSettings.data[CameraSettings::Contrast]);
+    std::clog << "V4L2_CID_CONTRAST ("
+    << V4L2_CID_CONTRAST
+    << ") set: " << currentSettings.data[CameraSettings::Contrast]
+    << ", read: " << getSingleCameraParameter(CameraSettings::Contrast) << '\n';
+
+    setSingleCameraParameter(CameraSettings::Saturation, currentSettings.data[CameraSettings::Saturation]);
+    std::clog << "V4L2_CID_SATURATION ("
+    << V4L2_CID_SATURATION
+    << ") set: " << currentSettings.data[CameraSettings::Saturation]
+    << ", read: " << getSingleCameraParameter(CameraSettings::Saturation) << '\n';
+
+    setSingleCameraParameter(CameraSettings::Exposure, currentSettings.data[CameraSettings::Exposure]);
+    std::clog << "V4L2_CID_EXPOSURE ("
+    << V4L2_CID_EXPOSURE
+    << ") set: " << currentSettings.data[CameraSettings::Exposure]
+    << ", read: " << getSingleCameraParameter(CameraSettings::Exposure) << '\n';
+
+    setSingleCameraParameter(CameraSettings::Gain, currentSettings.data[CameraSettings::Gain]);
+    std::clog << "V4L2_CID_GAIN ("
+    << V4L2_CID_GAIN
+    << ") set: " << currentSettings.data[CameraSettings::Gain]
+    << ", read: " << getSingleCameraParameter(CameraSettings::Gain) << '\n';
+
+    setSingleCameraParameter(CameraSettings::Sharpness, currentSettings.data[CameraSettings::Sharpness]);
+    std::clog << "V4L2_CID_SHARPNESS ("
+    << V4L2_CID_SHARPNESS
+    << ") set: " << currentSettings.data[CameraSettings::Sharpness]
+    << ", read:" << getSingleCameraParameter(CameraSettings::Sharpness) << '\n';
+
+    success = false;
+    while (!success) {
+      newValue = currentSettings.data[CameraSettings::WhiteBalance];
+      if (newValue < -120) newValue = -120;
+      if (newValue > -36) newValue = -36;
+      setSingleCameraParameter(CameraSettings::WhiteBalance, newValue); // DO WHITE BALANCE
+      std::clog << "V4L2_CID_DO_WHITE_BALANCE ("
+      << V4L2_CID_DO_WHITE_BALANCE
+      << ") set: " << newValue
+      << ", read: " << getSingleCameraParameter(CameraSettings::WhiteBalance) << '\n';
+      success = (getSingleCameraParameter(CameraSettings::WhiteBalance) == newValue);
+    }
+
+    if (currentCamera == 0) {
+        setSingleCameraParameter(CameraSettings::HorizontalFlip, 1);
+        std::clog << "V4L2_CID_HFLIP set: 1, read: " << getSingleCameraParameter(CameraSettings::HorizontalFlip) << '\n';
+        setSingleCameraParameter(CameraSettings::VerticalFlip, 1);
+        std::clog << "V4L2_CID_VFLIP set: 1, read: " << getSingleCameraParameter(CameraSettings::VerticalFlip) << '\n';
+    } else {
+        setSingleCameraParameter(CameraSettings::HorizontalFlip, 0);
+        std::clog << "V4L2_CID_HFLIP set: 0, read: " << getSingleCameraParameter(CameraSettings::HorizontalFlip) << '\n';
+        setSingleCameraParameter(CameraSettings::VerticalFlip, 0);
+        std::clog << "V4L2_CID_VFLIP set: 0, read: " << getSingleCameraParameter(CameraSettings::VerticalFlip) << '\n';
+    }
+}
+
 
 void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
 
   // HACK
-  setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,1);
+  //setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,1);
+  //setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,0);
 
   for(std::list<CameraSettings::CameraSettingID>::const_iterator it=settingsOrder.begin();
       it != settingsOrder.end(); it++)
@@ -832,6 +987,16 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
         else
         {
           realValue = getSingleCameraParameter(csConst[*it]);
+          if(csConst[*it] == CameraSettings::Exposure)
+          {
+            clippedValue = (clippedValue << 2) >> 2;
+          }
+
+          if(csConst[*it] == CameraSettings::WhiteBalance)
+          {
+            clippedValue = ((clippedValue + 180) * 45) / 45 - 180;
+          }
+
           success = abs(realValue - clippedValue) <= allowedTolerance[*it];
 
           if(!success)
