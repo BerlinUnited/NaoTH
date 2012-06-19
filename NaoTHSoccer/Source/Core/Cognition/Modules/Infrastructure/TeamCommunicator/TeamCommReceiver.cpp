@@ -5,7 +5,7 @@
 TeamCommReceiver::TeamCommReceiver()
 {
   DEBUG_REQUEST_REGISTER("TeamCommReceiver:artificial_delay",
-                         "Add an artificial delay to all team comm messages", false);
+                         "Add an artificial delay to all team comm messages", false );
 }
 
 void TeamCommReceiver::execute()
@@ -52,7 +52,9 @@ void TeamCommReceiver::handleMessage(const string& data)
   unsigned int teamnum = msg.teamnumber();
   std::string bodyID = msg.bodyid();
 
-  if ( teamnum == getPlayerInfo().gameData.teamNumber && !(num == getPlayerInfo().gameData.playerNumber && bodyID != getRobotInfo().bodyID))
+  if ( teamnum == getPlayerInfo().gameData.teamNumber
+       // ignore messages from teammates that have the same player number by accident
+       && !(num == getPlayerInfo().gameData.playerNumber && bodyID != getRobotInfo().bodyID))
   {
     TeamMessage::Data& content = getTeamMessage().data[num];
     content.frameInfo.setTime( getFrameInfo().getTime() );
