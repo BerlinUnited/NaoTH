@@ -149,7 +149,7 @@ void Motion::call()
     frameNumSinceLastMotionRequest = 0;
   }
 
-  if(frameNumSinceLastMotionRequest > 15000)
+  if(frameNumSinceLastMotionRequest > 1500)
   {
     std::cerr << "+==================================+" << std::endl;
     std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
