@@ -73,8 +73,8 @@ BEGIN_DECLARE_MODULE(XABSLBehaviorControl)
   REQUIRE(FieldInfo)
   REQUIRE(RobotPose)
   REQUIRE(CompassDirection)
+  REQUIRE(MotionRequest)
 
-  PROVIDE(MotionRequest)
   PROVIDE(BehaviorStatus)
 END_DECLARE_MODULE(XABSLBehaviorControl)
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
