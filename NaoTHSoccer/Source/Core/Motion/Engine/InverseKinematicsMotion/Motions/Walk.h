@@ -20,15 +20,25 @@ class Walk: public IKMotion
 public:
   Walk();
   
+  /** */
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus);
 
 private:
-  struct Step {
-
-    Step():planningCycle(0),executingCycle(0),lifted(false),
+  /** class describing a single step */
+  struct Step 
+  {
+    Step():
+      planningCycle(0),
+      executingCycle(0),
+      lifted(false),
       character(-1),
+      bodyPitchOffset(0.0),
+      samplesDoubleSupport(0),
+      samplesSingleSupport(0),
       extendDoubleSupport(0),
-      stepControlling(false),speedDirection(0)
+      numberOfCyclePerFootStep(0),
+      stepControlling(false),
+      speedDirection(0)
     {}
 
     int planningCycle;
@@ -36,6 +46,7 @@ private:
     bool lifted;
     FootStep footStep;
     double character;
+    
     // parameters
     // calcualted parameters of walk
     double bodyPitchOffset;
@@ -58,16 +69,22 @@ private:
   /** */
   bool waitLanding();
   
+  /** */
   void plan(const MotionRequest& motionRequest);
   
+  /** */
   void walk(const WalkRequest& req);
   
+  /** */
   void stopWalking();
 
+  /** */
   void stopWalkingWithoutStand();
   
+  /** */
   bool canStop() const;
   
+  /** */
   void updateParameters(Step& step, double character) const;
 
   /** calculate the COM error */
@@ -76,23 +93,33 @@ private:
   /** estimate the correction for the COM */
   void updateComObserver();
 
+  /** */
   void manageSteps(const WalkRequest& req);
 
+  /** */
   void planStep();
 
+  /** */
   InverseKinematic::CoMFeetPose executeStep();
 
+  /** */
   RotationMatrix calculateBodyRotation(const InverseKinematic::FeetPose& feet, double pitch) const;
 
+  /** */
   void updateMotionStatus(MotionStatus& motionStatus);
   
+  /** */
   Pose3D calculateStableCoMByFeet(InverseKinematic::FeetPose feet, double pitch) const;
 
+  /** */
   void addStep(const Step& step);
 
+  /** */
   void adaptStepSize(FootStep& step) const;
 
+
 private:
+  // TODO: does it have to be static?
   static unsigned int theStepID; // use for step control
 
   const IKParameters::Walk& theWalkParameters;
