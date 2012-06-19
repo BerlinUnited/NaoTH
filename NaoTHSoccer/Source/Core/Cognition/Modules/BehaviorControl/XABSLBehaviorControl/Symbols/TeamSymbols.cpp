@@ -32,7 +32,6 @@ void TeamSymbols::execute()
 double TeamSymbols::getTeamMembersAliveCount()
 {
   int counter = 0;
-  unsigned int time = theInstance->frameInfo.getTime();
 
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=theInstance->teamMessage.data.begin();
     i != theInstance->teamMessage.data.end(); ++i)
@@ -40,7 +39,7 @@ double TeamSymbols::getTeamMembersAliveCount()
     const TeamMessage::Data& messageData = i->second;
 
     // "alive" means sent something in the last n seconds
-    if((time - messageData.frameInfo.getTime()) < theInstance->maximumFreshTime)
+    if(theInstance->frameInfo.getTimeSince(messageData.frameInfo.getTime()) < theInstance->maximumFreshTime)
     {
       counter++;
     }

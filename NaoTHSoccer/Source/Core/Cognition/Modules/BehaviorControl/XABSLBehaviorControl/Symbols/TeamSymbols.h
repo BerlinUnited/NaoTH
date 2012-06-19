@@ -80,7 +80,7 @@ private:
   static void setWasStriker(bool striker);
   static bool calculateIfTheLast();
 
-  const unsigned int maximumFreshTime;
+  const int maximumFreshTime;
 };
 
 #endif  /* _TEAMSYMBOLS_H */
