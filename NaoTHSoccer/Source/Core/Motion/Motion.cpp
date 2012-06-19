@@ -149,24 +149,24 @@ void Motion::call()
     frameNumSinceLastMotionRequest = 0;
   }
 
-//  if(frameNumSinceLastMotionRequest > 500)
-//  {
-//    std::cerr << "+==================================+" << std::endl;
-//    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
-//    std::cerr << "+==================================+" << std::endl;
-//    std::cerr << "dumping traces" << std::endl;
-//    Trace::getInstance().dump();
-//    Stopwatch::getInstance().dump("cognition");
+  if(frameNumSinceLastMotionRequest > 15000)
+  {
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "dumping traces" << std::endl;
+    Trace::getInstance().dump();
+    Stopwatch::getInstance().dump("cognition");
 
-//    //TODO: Maybe better put it into Platform?
-//    #ifndef WIN32
-//    std::cerr << "syncing file system..." ;
-//    sync();
-//    std::cerr << " finished." << std::endl;
-//    #endif
+    //TODO: Maybe better put it into Platform?
+    #ifndef WIN32
+    std::cerr << "syncing file system..." ;
+    sync();
+    std::cerr << " finished." << std::endl;
+    #endif
 
-//    ASSERT(frameNumSinceLastMotionRequest <= 500);
-//  }
+    ASSERT(frameNumSinceLastMotionRequest <= 500);
+  }
 
   // ensure initialization
   switch (state)

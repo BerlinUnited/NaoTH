@@ -95,7 +95,6 @@ private:
   void uninitDevice();
   void closeDevice();
 
-  void initialSetParameter();
   int getSingleCameraParameter(int id);
   int setSingleCameraParameter(int id, int value);
   void setFPS(int fpsRate);
