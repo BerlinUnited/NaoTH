@@ -1,4 +1,5 @@
 #include "TeamCommReceiver.h"
+#include "TeamCommSender.h"
 
 #include <Tools/Debug/DebugRequest.h>
 
@@ -41,20 +42,33 @@ void TeamCommReceiver::execute()
       delayBuffer.removeFirst();
     }
   }
+
+  // add our own status as artifical message
+  // (so we are not dependant on a lousy network)
+
+  naothmessages::TeamCommMessage ownMsg;
+  TeamCommSender::fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(),
+                              getBallModel(), getRobotPose(), getBodyState(),
+                              getMotionStatus(), getSoccerStrategy(), getPlayersModel(),
+                              getTeamMessage(), ownMsg);
+
+  handleMessage(ownMsg.SerializeAsString(), true);
+
+
 }
 
-void TeamCommReceiver::handleMessage(const string& data)
+void TeamCommReceiver::handleMessage(const string& data, bool allowOwn)
 {
   naothmessages::TeamCommMessage msg;
   msg.ParseFromString(data);
 
   unsigned int num = msg.playernumber();
   unsigned int teamnum = msg.teamnumber();
-  std::string bodyID = msg.bodyid();
 
   if ( teamnum == getPlayerInfo().gameData.teamNumber
-       // ignore messages from teammates that have the same player number by accident
-       && !(num == getPlayerInfo().gameData.playerNumber && bodyID != getRobotInfo().bodyID))
+       // ignore our own messages, we are adding it artficially later
+       && (allowOwn || num != getPlayerInfo().gameData.playerNumber)
+     )
   {
     TeamMessage::Data& content = getTeamMessage().data[num];
     content.frameInfo.setTime( getFrameInfo().getTime() );

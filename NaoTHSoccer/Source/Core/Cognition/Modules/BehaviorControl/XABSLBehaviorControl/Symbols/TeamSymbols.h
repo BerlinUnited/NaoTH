@@ -49,7 +49,7 @@ public:
     soccerStrategy(getSoccerStrategy()),
     motionStatus(getMotionStatus()),
     playerInfo(getPlayerInfo()),
-    maximumFreshTime(5000)
+    maximumFreshTime(2000)
   {
     theInstance = this;
   }
