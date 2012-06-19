@@ -11,12 +11,7 @@ option spl_simple_defender {
         stay;
     }
     action {
-      go_to_point(
-        x=clip(value=(ball.position.field.x+field.xPosOwnGroundline)*0.5, min=field.xPosOwnPenaltyArea, max=0),
-        y=clip(value=(ball.position.field.y*0.5), min=field.yPosRightPenaltyArea, max=field.yPosLeftPenaltyArea),
-        rot=atan2(y=ball.position.field.y, x=ball.position.field.x-field.xPosOwnGroundline)
-      );
-      
+      go_to_relative_point(rotation=defense.simplePose.rotation, x=defense.simplePose.translation.x, y=defense.simplePose.translation.y, errorX=30, errorY=30, errorR=15);
       head.control_mode = smart_search;
     }
   }
