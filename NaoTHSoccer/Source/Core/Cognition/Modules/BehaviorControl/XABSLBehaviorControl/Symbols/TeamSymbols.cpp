@@ -96,8 +96,9 @@ bool TeamSymbols::calculateIfStriker()
     double time_bonus = messageData.message.wasstriker()?4000.0:0.0;
 
     if(
-        theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime && // its fresh
-        (messageData.message.timesinceballwasseen() < 1000+time_bonus )// the guy sees the ball
+        theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime // its fresh
+        && !messageData.message.isfallendown()
+        && (messageData.message.timesinceballwasseen() < 1000+time_bonus )// the guy sees the ball
       )
     {
       Vector2<double> ballPos;
