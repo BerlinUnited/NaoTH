@@ -30,7 +30,7 @@ public:
 private:
   void handleMessage(const std::string& data);
 
-  RingBuffer<std::string, 500> delayBuffer;
+  RingBuffer<std::string, 100> delayBuffer;
 };
 
 #endif // TEAMCOMMRECEIVER_H
