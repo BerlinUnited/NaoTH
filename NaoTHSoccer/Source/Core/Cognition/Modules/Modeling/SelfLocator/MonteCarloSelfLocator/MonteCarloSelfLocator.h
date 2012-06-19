@@ -82,6 +82,7 @@ private:
 
   bool initialized;
 
+  // sample set tools
   void resetSampleSet(SampleSet& sampleSet);
   void clampSampleSetToField(SampleSet& sampleSet);
   void mirrorSampleSetFieldSides(SampleSet& sampleSet);
@@ -102,13 +103,19 @@ private:
   /** */
   void createRandomSample(Sample& sample) const;
 
-  void sensorResetByGoals(SampleSet& sampleSet, int start, int number);
+  /** */
+  int sensorResetBySensingGoalModel(SampleSet& sampleSet, int n) const;
+  int sensorResetByGoalPosts(SampleSet& sampleSet, int n) const;
+
+  /** */
   void resample(SampleSet& sampleSet);
   void resampleGT07(SampleSet& sampleSet, bool noise);
 
-  // some helper (copied from GT07)
-  double getDistanceDeviation(Pose2D& fromPose, const Vector2<double>& toPoint, double measuredDistance);
-  double getBearingDeviation(Pose2D& fromPose, const Vector2<double>& toPoint, double measuredBearing);
+
+  // some helper (copied from GT07) 
+  // not used now
+  double getDistanceDeviation(const Pose2D& fromPose, const Vector2<double>& toPoint, double measuredDistance) const;
+  double getBearingDeviation(const Pose2D& fromPose, const Vector2<double>& toPoint, double measuredBearing) const;
   double gaussian(double d) const {return exp(- d * d);}
 
   /** */
