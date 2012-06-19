@@ -35,9 +35,13 @@ public:
     right = -1
   };
 
-  Vector3<double> kickPoint; // it is the position of ball in robot's local coordination
+  // it is the position of ball in robot's local coordination
+  Vector3<double> kickPoint;
+
+  // angle of the desired direction of the kick in robot cooordinates
   double kickDirection;
 
+  // foot selection
   KickFootID kickFoot;
   
   // if a kick is already prepared it will 

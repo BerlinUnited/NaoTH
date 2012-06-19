@@ -97,6 +97,7 @@ namespace naoth
      */
     inline unsigned char getCorecctedY(const unsigned int x, const unsigned int y) const
     {
+      assert(isInside(x,y));
       return (unsigned char) Math::clamp<unsigned short>((yuv422[2 * (y * cameraInfo.resolutionWidth + x)] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
     }
 
@@ -106,6 +107,7 @@ namespace naoth
      */
     inline unsigned char getY(const unsigned int x, const unsigned int y) const
     {
+      assert(isInside(x,y));
       return yuv422[2 * (y * cameraInfo.resolutionWidth + x)];
     }
 
@@ -115,8 +117,10 @@ namespace naoth
      * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
      * seperatly.
      */
-    inline Pixel get(const unsigned int& x, const unsigned int& y) const
+    // TODO: remove unsigned to prevent strange implicite casts
+    inline Pixel get(const unsigned int x, const unsigned int y) const
     {
+      assert(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
@@ -125,6 +129,27 @@ namespace naoth
       // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
       p.u = yuv422[yOffset+1-((x & 1)<<1)];
       p.v = yuv422[yOffset+3-((x & 1)<<1)];
+
+      return p;
+    }//end get
+
+   /**
+     * Get a pixel (its color). This does a mapping to the YUV422 array
+     * so please make sure not to call it more often than you need it.
+     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
+     * seperatly.
+     */
+    inline void get(const unsigned int x, const unsigned int y, Pixel& p) const
+    {
+      assert(isInside(x,y));
+      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
+
+      p.y = yuv422[yOffset];      
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      p.u = yuv422[yOffset+1-((x & 1)<<1)];
+      p.v = yuv422[yOffset+3-((x & 1)<<1)];
+      
+      // TODO: remove
       /* 
       if((x & 1) == 0) // == (x % 2 == 0)
       {
@@ -136,35 +161,7 @@ namespace naoth
         p.u = yuv422[yOffset - 1];
         p.v = yuv422[yOffset + 1];
       }*/
-      return p;
-    }//end get()
-
-   /**
-     * Get a pixel (its color). This does a mapping to the YUV422 array
-     * so please make sure not to call it more often than you need it.
-     * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
-     * seperatly.
-     */
-    inline void get(const unsigned int& x, const unsigned int& y, Pixel& p) const
-    {
-      register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
-
-      p.y = yuv422[yOffset];      
-      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
-      p.u = yuv422[yOffset+1-((x & 1)<<1)];
-      p.v = yuv422[yOffset+3-((x & 1)<<1)];
-       /* 
-      if((x & 1) == 0) // == (x % 2 == 0)
-      {
-        p.u = yuv422[yOffset + 1];
-        p.v = yuv422[yOffset + 3];
-      }
-      else
-      {
-        p.u = yuv422[yOffset - 1];
-        p.v = yuv422[yOffset + 1];
-      }*/
-   }//end getPlain()
+   }//end get
 
     /**
      * Get a pixel (its color). This does a mapping to the YUV422 array
@@ -172,8 +169,9 @@ namespace naoth
      * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
      * seperatly.
      */
-    inline Pixel getCorrected(const unsigned int& x, const unsigned int& y) const
+    inline Pixel getCorrected(const unsigned int x, const unsigned int y) const
     {
+      assert(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       Pixel p;
@@ -193,8 +191,9 @@ namespace naoth
      * E.g. cache the pixel and dont call get(x,y).y, get(x,y).u, ...
      * seperatly.
      */
-    inline void getCorrected(const unsigned int& x, const unsigned int& y, Pixel& p) const
+    inline void getCorrected(const unsigned int x, const unsigned int y, Pixel& p) const
     {
+      assert(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
 
       p.y = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset] * shadingCorrection.get(0, x, y)) >> 10, 0, 255);
@@ -206,11 +205,18 @@ namespace naoth
       //p.v = (unsigned char) Math::clamp<unsigned short>((yuv422[yOffset+3-((x & 1)<<1)] * shadingCorrection.get(2, x, y)) >> 10, 0, 255);
     }//end get
 
-    inline void set(const unsigned int& x, const unsigned int& y, const Pixel& p)
+    inline void set(const unsigned int x, const unsigned int y, const Pixel& p)
     {
+      assert(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
       yuv422[yOffset] = p.y;
 
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      yuv422[yOffset+1-((x & 1)<<1)] = p.u;
+      yuv422[yOffset+3-((x & 1)<<1)] = p.v;
+
+      // TODO: remove
+      /*
       if((x & 1) == 0) // == (x % 2 == 0)
       {
         yuv422[yOffset + 1] = p.u;
@@ -221,6 +227,7 @@ namespace naoth
         yuv422[yOffset - 1] = p.u;
         yuv422[yOffset + 1] = p.v;
       }
+      */
     }//end set()
 
     inline void set
@@ -228,13 +235,20 @@ namespace naoth
       const unsigned int& x,
       const unsigned int& y,
       const unsigned char& yy,
-      const unsigned char& cb,
-      const unsigned char& cr
+      const unsigned char& cb, // u
+      const unsigned char& cr // v
     )
     {
+      assert(isInside(x,y));
       register unsigned int yOffset = 2 * (y * cameraInfo.resolutionWidth + x);
       yuv422[yOffset] = yy;
 
+      // ((x & 1)<<1) = 2 if x is odd and 0 if it's even
+      yuv422[yOffset+1-((x & 1)<<1)] = cb;
+      yuv422[yOffset+3-((x & 1)<<1)] = cr;
+
+      // TODO: remove
+      /*
       if((x & 1) == 0) // == (x % 2 == 0)
       {
         yuv422[yOffset + 1] = cb;
@@ -245,22 +259,32 @@ namespace naoth
         yuv422[yOffset - 1] = cb;
         yuv422[yOffset + 1] = cr;
       }
+      */
     }//end set()
+    
+    /**
+     * test whether a pixel is inside the image
+     */
+    inline bool isInside(const int x, const int y) const
+    { 
+      return x >= 0 && x < (int)cameraInfo.resolutionWidth && 
+             y >= 0 && y < (int)cameraInfo.resolutionHeight;
+    }
 
-    unsigned int width() const { return cameraInfo.resolutionWidth; }
-    unsigned int height() const { return cameraInfo.resolutionHeight; }
+    inline unsigned int width() const { return cameraInfo.resolutionWidth; }
+    inline unsigned int height() const { return cameraInfo.resolutionHeight; }
 
     inline unsigned int getIndexSize() const
     {
       return cameraInfo.size;
     }
 
-    inline unsigned int getXOffsetFromIndex(const unsigned int& i) const
+    inline unsigned int getXOffsetFromIndex(const unsigned int i) const
     {
       return i % cameraInfo.resolutionWidth;
     }
 
-    inline unsigned int getYOffsetFromIndex(const unsigned int& i) const
+    inline unsigned int getYOffsetFromIndex(const unsigned int i) const
     {
       return i / cameraInfo.resolutionWidth;
     }
@@ -277,6 +301,6 @@ namespace naoth
     static void deserialize(std::istream& stream, Image& representation);
   };
 
-}
+} // end namespace naoth
 
 #endif //__Image_h_

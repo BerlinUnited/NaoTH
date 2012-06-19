@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   V4lCameraHandler.h
  * Author: thomas
  *
@@ -54,9 +54,9 @@ struct buffer
  * @author Thomas Krause
  *
  */
- 
+
  namespace naoth{
- 
+
 class V4lCameraHandler
 {
 public:

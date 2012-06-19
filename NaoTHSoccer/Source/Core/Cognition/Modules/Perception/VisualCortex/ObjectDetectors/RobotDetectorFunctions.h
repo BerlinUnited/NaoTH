@@ -31,11 +31,13 @@ inline int scanline(
   for(int i = 0; i < scan.numberOfPixels; i++)
   {
     scan.getNext(end);
-    Pixel pixel = theImage.get(end.x,end.y);
-    ColorClasses::Color currentPixelColor = theColorClassifier.getColorClass(pixel);
+
     if(end.x >= 0 && (unsigned int)end.x < theImage.cameraInfo.resolutionWidth
       && end.y >= 0 && (unsigned int)end.y < theImage.cameraInfo.resolutionHeight)
     {
+      Pixel pixel = theImage.get(end.x,end.y);
+      ColorClasses::Color currentPixelColor = theColorClassifier.getColorClass(pixel);
+
       if(currentPixelColor == searchColor)
       {
         if (draw)
@@ -69,7 +71,7 @@ inline int scanline(
 
 inline bool exactLocalisation(const Image& theImage, const Vector2<int>& p)
 {
-  return (unsigned int)p.y <= theImage.cameraInfo.resolutionHeight;
+  return (unsigned int)p.y < theImage.cameraInfo.resolutionHeight;
 }
 
 #endif //__RobotDetectorFunctions_h_
