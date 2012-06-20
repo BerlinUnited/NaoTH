@@ -33,6 +33,7 @@ public:
   ~TeamBallLocator(){}
 
   virtual void execute();
+
 private:
   std::map<unsigned int, TeamMessage::Data> msgData;
 };

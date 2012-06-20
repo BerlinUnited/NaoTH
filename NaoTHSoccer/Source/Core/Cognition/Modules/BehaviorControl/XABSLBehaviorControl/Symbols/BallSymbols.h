@@ -96,6 +96,8 @@ private:
   static double getBallTimeSinceLastSeen();
   static double getBallTimeSeen();
   static double getTeamBallTimeSinceLastUpdate();
+  static double getTeamBallGoalieTimeSinceLastUpdate();
+  static double getTeamBallStrikerTimeSinceLastUpdate();
   static double getBallSpeed();
 
   static void calculatePosBehindBallFuture();
