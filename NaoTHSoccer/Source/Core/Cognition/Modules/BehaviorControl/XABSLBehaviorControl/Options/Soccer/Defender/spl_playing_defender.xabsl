@@ -5,7 +5,16 @@ option spl_playing_defender {
   {
     decision
     {
-      if(random < 0.5)
+      // if the point we want to go to is left, avoid obstacle going left
+      if(motion.type == walk)
+      {
+        if(motion.walk_speed.y > 0)
+          goto move_left_when_obstacle;
+        else
+          goto move_right_when_obstacle;
+      }
+      // just in case...
+      else if(random < 0.5)
       {
         goto move_left_when_obstacle;
       }
@@ -85,7 +94,8 @@ option spl_playing_defender {
         stay;
     }
     action {
-      ball_not_seen_situation();
+      /* HIER NOCH WAS SINNVOLLES MACHEN */
+      ball_not_seen_situation(); // only for attacker!
       check_collision();
     }
   }

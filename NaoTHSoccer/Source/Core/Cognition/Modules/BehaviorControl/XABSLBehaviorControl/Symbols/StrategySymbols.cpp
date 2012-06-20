@@ -325,7 +325,6 @@ double StrategySymbols::getOwnClosestToBallDistanceToBall()
 
 Pose2D StrategySymbols::calculateSimpleDefensePose()
 {
-
   Pose2D defPose;
   Vector2<double> ownGoal = goalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
 
@@ -333,30 +332,26 @@ Pose2D StrategySymbols::calculateSimpleDefensePose()
 
   Vector2<double> p = ballModel.position - ownGoal;
 
-  if ( p.abs() > d ) {
-    p = p.normalize(1000) + ownGoal;
+  if(p.abs() > d ) {
+    p = p.normalize(1200) + ownGoal;
 
     defPose.translation = p;
     defPose.rotation = ballModel.position.angle();
-
-//    double k = 0.2;
-
-//    FIELD_DRAWING_CONTEXT;
-//    PEN("FFFFFF", 20);
-//    CIRCLE(p.x, p.y, 30);
-
-//    defPose.translation = p * (1-k) + ownGoal*k;
-//    defPose.rotation = ballModel.position.angle();
-
-//    FIELD_DRAWING_CONTEXT;
-//    PEN("0000FF", 20);
-//    CIRCLE(defPose.translation.x, defPose.translation.y, 30);
+    
   }
   else
   {
-    defPose.translation = (ballModel.position-ownGoal)*0.5; //xxx +
+    defPose.translation =(ballModel.position-ownGoal)*0.5 +ownGoal; 
     defPose.rotation = defPose.translation.angle();
   }
+
+  defPose = motionStatus.plannedMotion.hip / defPose.translation;
+  defPose.rotation = ballModel.positionPreview.angle();
+
+/*  FIELD_DRAWING_CONTEXT;
+  PEN("00FF00", 20);
+  CIRCLE(defPose.translation.x, defPose.translation.y, 30);
+ */ 
 
   return defPose;
 }
