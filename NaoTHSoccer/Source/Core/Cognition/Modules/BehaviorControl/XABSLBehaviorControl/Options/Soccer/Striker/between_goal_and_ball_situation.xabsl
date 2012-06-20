@@ -21,12 +21,13 @@ option between_goal_and_ball_situation
     }
     action
     {
+    
       go_to_relative_point(rotation = atan2(y = ball.preview.y, x = ball.preview.x), 
                            x = ball.preview.x - 240 * cos(angle=atan2(y = ball.preview.y, x = ball.preview.x)), 
                            y = ball.preview.y - sin(angle=atan2(y = ball.preview.y, x = ball.preview.x)),
                            errorX=40, errorY=15, errorR=5);
       
-      motion.walk.stop_with_stand = false;    
+      motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
     }
   }

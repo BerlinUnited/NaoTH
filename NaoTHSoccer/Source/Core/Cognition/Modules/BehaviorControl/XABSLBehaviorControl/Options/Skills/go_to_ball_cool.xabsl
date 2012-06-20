@@ -21,11 +21,9 @@ option go_to_ball_cool
         goto go_to_ball_left_foot;
     }
     action{
-      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.left_foot.preview.y - sin(angle=clip(value=attack.direction, min=-90 ,max=0))*200, x = ball.left_foot.preview.x - cos(angle=attack.direction)*200)
-                               :atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           x = ball.left_foot.preview.x - @distance * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)) 
-                               - (ball.distance>500?sin(angle = clip(value=attack.direction, min=-90 ,max=0))*200:0),
+      go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
+                           x = ball.left_foot.preview.x - @distance * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
+                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)),
                            errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = left_foot;
@@ -46,11 +44,9 @@ option go_to_ball_cool
         goto go_to_ball_right_foot;
     }
     action{
-     go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.right_foot.preview.y + sin(angle=clip(value=attack.direction, min=0 ,max=90))*200, x = ball.right_foot.preview.x - cos(angle=attack.direction)*200)
-                               :atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)),
-                           x = ball.right_foot.preview.x - @distance * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) 
-                              + (ball.distance>500?sin(angle = clip(value=attack.direction, min=0 ,max=90))*200:0),
+     go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
+                           x = ball.right_foot.preview.x - @distance * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
+                           y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)),
                            errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = right_foot;
@@ -73,11 +69,9 @@ option go_to_ball_cool
         stay;
     }
     action{
-      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.left_foot.preview.y - sin(angle=clip(value=attack.direction, min=-90 ,max=0))*200, x = ball.left_foot.preview.x - cos(angle=attack.direction)*200)
-                               :atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
-                           x = ball.left_foot.preview.x - @distance * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))
-                               - (ball.distance>500?sin(angle = clip(value=attack.direction, min=-90 ,max=0))*200:0),
+      go_to_relative_point(rotation = atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x), 
+                           x = ball.left_foot.preview.x - @distance * cos(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)), 
+                           y = ball.left_foot.preview.y - @distance * sin(angle=atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)),
                            errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = left_foot;
@@ -97,11 +91,9 @@ option go_to_ball_cool
         stay;
     }
     action{
-      go_to_relative_point(rotation = (ball.distance>500?atan2(y = ball.right_foot.preview.y + sin(angle=clip(value=attack.direction, min=0 ,max=90))*200, x = ball.right_foot.preview.x - cos(angle=attack.direction)*200)
-                               :atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)),
-                           x = ball.right_foot.preview.x - @distance * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)) 
-                               + (ball.distance>500?sin(angle = clip(value=attack.direction, min=0 ,max=90))*200:0),
+     go_to_relative_point(rotation = atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x), 
+                          x = ball.right_foot.preview.x - @distance * cos(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)), 
+                          y = ball.right_foot.preview.y - @distance * sin(angle=atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)),
                            errorX=@errorX, errorY=@errorY, errorR=@errorR);
       
       motion.walk.coordinate = right_foot;

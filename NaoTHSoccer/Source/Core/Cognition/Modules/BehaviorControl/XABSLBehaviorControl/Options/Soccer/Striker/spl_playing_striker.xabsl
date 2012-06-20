@@ -15,7 +15,7 @@ option spl_playing_striker {
       {
         goto ball_far_away;
       }
-      else if(robot_pose.x > 0
+      else if(false && robot_pose.x > 0
               //Functions define a line from goalpost to sideline
               //crosses sideline at level of cross-mark
               && ((13/18)*robot_pose.x-(8600/3) > robot_pose.y
