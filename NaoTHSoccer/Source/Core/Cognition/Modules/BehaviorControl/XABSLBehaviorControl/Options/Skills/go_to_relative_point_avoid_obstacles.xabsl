@@ -1,7 +1,6 @@
 /** try go to relative point, via a path planner which avoids obstacles */
 option go_to_relative_point_avoid_obstacles
 {
-
   float @x [mm];
 
   float @y [mm];
@@ -23,7 +22,7 @@ option go_to_relative_point_avoid_obstacles
       path.target_x=@x;
       path.target_y=@y;
 
-      
+      //motion.type = stand;
       motion.type = walk;
       motion.walk.style = (abs(value=@x) < 200)?stable:normal;
       motion.walk_speed.x = path.next_point_to_go_x;

@@ -79,6 +79,7 @@ void PerceptionsVisualization::execute()
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
+      if(!point.valid) continue;
 
       if(point.posInImage.y < 10) // close to the top
         PEN("009900", 20);

@@ -1,7 +1,7 @@
 /*** 
   Title: NaoTH Soccer
   Platform: Aldebaran Nao V3 (RoboCup edition).
-  Software-Environment: NaoTH2011
+  Software-Environment: NaoTH2012
 */
 
 // Symbols
@@ -115,12 +115,17 @@ include"Options/NonSoccer/Test/search_ball_agent.xabsl";
 include "Options/NonSoccer/Test/search_ball_test/search_ball_test.xabsl";
 include "Options/NonSoccer/Test/search_ball_test/search_for_ball_test.xabsl";
 
+//obstacles
+include "Options/NonSoccer/Test/obstacle_avoidance.xabsl";
+include "Options/NonSoccer/Test/obstacles_test.xabsl";
+
 // Test includes
 include "Options/Skills/go_to_ball_and_kick.xabsl";
 
 ///** The soccer competition agent */
 agent spl_soccer("SPL Soccer", spl_play_soccer);
 agent penalty("Penalty", play_penalty);
+agent obstacles("Obstacles", obstacle_avoidance);
 
 /** dribble test */
 agent dribble_agent("DribbleAgent", dribble_agent);

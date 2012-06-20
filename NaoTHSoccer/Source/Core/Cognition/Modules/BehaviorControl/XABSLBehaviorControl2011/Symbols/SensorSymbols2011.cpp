@@ -45,6 +45,8 @@ void SensorSymbols2011::registerSymbols(xabsl::Engine& engine)
   //new radar obstacles
   engine.registerBooleanInputSymbol("obstacle.radar.was_seen", &radarGrid.obstacleWasSeen);
   engine.registerDecimalInputSymbol("getObstDistByAngle", &getObstDistByAngle);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
+  engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
   engine.registerDecimalInputSymbolDecimalParameter("getObstDistByAngle", "getObstDistByAngle.angle", &parameter_obstDistByAngle_angle);
 
   /*engine.registerDecimalInputSymbol("obstacle.radial.direction_free", &getObstacleRadialDirection_free);
