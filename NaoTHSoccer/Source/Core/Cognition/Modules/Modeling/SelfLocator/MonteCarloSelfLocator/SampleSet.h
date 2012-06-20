@@ -53,15 +53,15 @@ public:
    * Access operator.
    * @param index The index of the sample to access.
    */
-  Sample& operator[](int index) {return samples[index];}
+  inline Sample& operator[](int index) {return samples[index];}
 
-  unsigned int size() const { return numberOfParticles; }
+  inline unsigned int size() const { return numberOfParticles; }
 
   /**
    * Constant access operator.
    * @param index The index of the sample to access.
    */
-  const Sample& operator[](int index) const {return samples[index];}
+  inline const Sample& operator[](int index) const {return samples[index];}
 
 
   Sample meanOfLargestCluster(Moments2<2>& moments);
