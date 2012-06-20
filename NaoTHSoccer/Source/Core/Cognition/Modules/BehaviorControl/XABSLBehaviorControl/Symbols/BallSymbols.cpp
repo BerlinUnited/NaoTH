@@ -54,6 +54,14 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.team.position.x", &teamBallModel.position.x);
   engine.registerDecimalInputSymbol("ball.team.position.y", &teamBallModel.position.y);
 
+  engine.registerDecimalInputSymbol("ball.team.goalie.time_since_last_update", &getTeamBallGoalieTimeSinceLastUpdate);
+  engine.registerDecimalInputSymbol("ball.team.goalie.position.x", &teamBallModel.goaliePosition.x);
+  engine.registerDecimalInputSymbol("ball.team.goalie.position.y", &teamBallModel.goaliePosition.y);
+
+  engine.registerDecimalInputSymbol("ball.team.striker.time_since_last_update", &getTeamBallStrikerTimeSinceLastUpdate);
+  engine.registerDecimalInputSymbol("ball.team.striker.position.x", &teamBallModel.strikerPosition.x);
+  engine.registerDecimalInputSymbol("ball.team.striker.position.y", &teamBallModel.strikerPosition.y);
+
   engine.registerDecimalInputSymbol("ball.left_foot.x", &ballLeftFoot.x);
   engine.registerDecimalInputSymbol("ball.left_foot.y", &ballLeftFoot.y);
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
@@ -152,3 +160,13 @@ double BallSymbols::getTeamBallTimeSinceLastUpdate()
 {
   return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.time);
 }//end getTeamBallTimeSinceLastUpdate
+
+double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate()
+{
+  return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.goalieTime);
+}//end getTeamBallGoalieTimeSinceLastUpdate
+
+double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate()
+{
+  return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.strikerTime);
+}//end getTeamBallStrikerTimeSinceLastUpdate
