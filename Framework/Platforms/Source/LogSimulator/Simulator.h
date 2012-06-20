@@ -6,7 +6,7 @@
  */
 
 #ifndef _SIMULATOR_H
-#define  _SIMULATOR_H
+#define _SIMULATOR_H
 
 #include <stdlib.h>
 #include <iostream>
@@ -48,9 +48,25 @@ class LogProvider: public Module
 {
 private:
   std::map<std::string, std::string>* representations;
+  std::map<std::string, std::string> exludeMap;
 
 public:
-  LogProvider() : Module("LogProvider"), representations(NULL) {}
+  LogProvider() : Module("LogProvider"), representations(NULL) 
+  {
+    //HACK: do not provide basic percepts (they are provided by get(...)
+    exludeMap["AccelerometerData"] = "";
+    exludeMap["SensorJointData"] = "";
+    exludeMap["Image"] = "";
+    exludeMap["FSRData"] = "";
+    exludeMap["GyrometerData"] = "";
+    exludeMap["InertialSensorData"] = "";
+    exludeMap["IRReceiveData"] = "";
+    exludeMap["CurrentCameraSettings"] = "";
+    exludeMap["ButtonData"] = "";
+    exludeMap["BatteryData"] = "";
+    exludeMap["UltraSoundReceiveData"] = "";
+    exludeMap["FrameInfo"] = "";
+  }
 
   
 
@@ -83,7 +99,7 @@ public:
       
       // look if there is a logged data for this representation
       std::map<std::string, std::string>::const_iterator iter = representations->find(name); 
-      if(iter != representations->end() && iter->first != "FrameInfo" && iter->first != "")
+      if(iter != representations->end() && exludeMap.find(iter->first) == exludeMap.end() && iter->first != "")
       {
         DEBUG_REQUEST_GENERIC("LogProvider:"+(iter->first),
           std::stringstream stream(iter->second);
@@ -124,13 +140,16 @@ public:
   /////////////////////// get ///////////////////////
   #define SIM_GET(rep) void get(rep& data) const {generalGet(data,#rep);}
   
-  template<class T> void get(T& /*data*/) const {}
+  // generic get
+  template<class T> void get(T& data) const { generalGet(data, typeid(T).name()); }
+  
+  // do nothing
   template<class T> void set(const T& /*data*/){}
 
-  SIM_GET(FrameInfo);
+  //SIM_GET(FrameInfo);
   void get(unsigned int& /*timestamp*/) const {}
 
-  /*
+  
   SIM_GET(FrameInfo);
   SIM_GET(SensorJointData);
   SIM_GET(AccelerometerData);
@@ -143,7 +162,7 @@ public:
   SIM_GET(ButtonData);
   SIM_GET(BatteryData);
   SIM_GET(UltraSoundReceiveData);
-  */
+  
 
   /////////////////////// set ///////////////////////
   //virtual void set(const MotorJointData& /*data*/){};
@@ -177,10 +196,13 @@ private:
   std::ifstream logFile;
 
   std::list<unsigned int> frames;
+
+  // list of representation names included in the logfile
   std::set<std::string> includedRepresentations;
   unsigned int maxFrame;
   unsigned int minFrame;
-
+  
+  //
   std::map<std::string, std::string> representations;
 
   list<unsigned int>::iterator currentFrame;

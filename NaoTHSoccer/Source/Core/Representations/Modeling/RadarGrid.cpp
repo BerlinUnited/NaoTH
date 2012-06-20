@@ -20,12 +20,12 @@
 //class constructor
 RadarGrid::RadarGrid()
   :
-obstacleWasSeen(false),
-useBuffer(true),
-center(0,0),
-density(Math::pi2/numOfSectors),
-nearUpdate(0.5),
-farUpdate(0.2)
+  obstacleWasSeen(false),
+  useBuffer(true),
+  center(0,0),
+  density(Math::pi2/numOfSectors),
+  nearUpdate(0.5),
+  farUpdate(0.2)
 {
   MODIFY("RadarGrid:nearUpdate", nearUpdate);
   MODIFY("RadarGrid:farUpdate", farUpdate);
@@ -76,7 +76,7 @@ double RadarGrid::getDistanceInCorridor(double angle, double width) const
 
 
 // set the grid with value
-void RadarGrid::addObstaclePoint(Vector2<double> value)
+void RadarGrid::addObstaclePoint(const Vector2d& value)
 {
   // we don't interested in distant obstacles...
   // but need to filter up values, that are to close to robot
@@ -89,10 +89,10 @@ void RadarGrid::addObstaclePoint(Vector2<double> value)
 }//end set()
 
 
-void RadarGrid::addNonObstaclePoint( Vector2d value)
+void RadarGrid::addNonObstaclePoint(const Vector2d& value)
 {
   // get the sector index
-  int position = this->getSectorByAngle(Math::normalize(value.angle()));
+  int position = getSectorByAngle(value.angle());
   // find the sector in the map
   cellsMap::iterator it = cells.find(position);
   // the value with key wasn't found:
@@ -137,7 +137,7 @@ void RadarGrid::addNonObstaclePoint( Vector2d value)
 }
 
 
-void RadarGrid::setMean(int& position, Vector2d& value)
+void RadarGrid::setMean(int& position, const Vector2d& value)
 {
   // find the sector in the map
   cellsMap::iterator it = cells.find(position);
@@ -315,6 +315,13 @@ void RadarGrid::checkValid()
     obstacleWasSeen = false;
   }
 }// check, whether we have some obstacles
+
+
+void RadarGrid::resetGrid()
+{
+  this->cells.clear();
+}
+
 
 //draw radarGrid within FieldContext
 void RadarGrid::drawFieldContext()

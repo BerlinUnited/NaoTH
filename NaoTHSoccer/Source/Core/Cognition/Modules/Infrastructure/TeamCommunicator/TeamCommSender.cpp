@@ -31,56 +31,76 @@ void TeamCommSender::execute()
   }
 }
 
-void TeamCommSender::createMessage(naothmessages::TeamCommMessage &msg)
+void TeamCommSender::fillMessage(const PlayerInfo& playerInfo,
+                                   const RobotInfo& robotInfo,
+                                   const FrameInfo& frameInfo,
+                                   const BallModel& ballModel,
+                                   const RobotPose& robotPose,
+                                   const BodyState& bodyState,
+                                   const MotionStatus& motionStatus,
+                                   const SoccerStrategy& soccerStrategy,
+                                   const PlayersModel& playersModel,
+                                   const TeamMessage& teamMessage,
+                                   naothmessages::TeamCommMessage &msg)
 {
-  msg.set_playernumber(getPlayerInfo().gameData.playerNumber);
-  msg.set_teamnumber(getPlayerInfo().gameData.teamNumber);
-  msg.set_ispenalized(getPlayerInfo().gameData.gameState == GameData::penalized);
-  msg.set_wasstriker(getPlayerInfo().isPlayingStriker);
-  msg.set_bodyid(getRobotInfo().bodyID);
+  msg.set_playernumber(playerInfo.gameData.playerNumber);
+  msg.set_teamnumber(playerInfo.gameData.teamNumber);
+  msg.set_ispenalized(playerInfo.gameData.gameState == GameData::penalized);
+  msg.set_wasstriker(playerInfo.isPlayingStriker);
+  msg.set_bodyid(robotInfo.bodyID);
 
   msg.set_timesinceballwasseen(
-    getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()));
-  DataConversion::toMessage(getBallModel().position, *msg.mutable_ballposition());
+    frameInfo.getTimeSince(ballModel.frameInfoWhenBallWasSeen.getTime()));
+  DataConversion::toMessage(ballModel.position, *msg.mutable_ballposition());
 
   // robot pose
-  DataConversion::toMessage(getRobotPose(), *(msg.mutable_positiononfield()));
+  DataConversion::toMessage(robotPose, *(msg.mutable_positiononfield()));
 
-  msg.set_isfallendown(getBodyState().fall_down_state != BodyState::upright
-    || getMotionStatus().currentMotion == motion::stand_up_from_back
-    || getMotionStatus().currentMotion == motion::stand_up_from_front);
+  msg.set_isfallendown(bodyState.fall_down_state != BodyState::upright
+    || motionStatus.currentMotion == motion::stand_up_from_back
+    || motionStatus.currentMotion == motion::stand_up_from_front);
 
-  msg.set_timetoball(getSoccerStrategy().timeToBall);
+  msg.set_timetoball(soccerStrategy.timeToBall);
 
-  unsigned int oppNum = selectSendOpp();
+  unsigned int oppNum = selectSendOpp(playersModel, frameInfo,
+                                      teamMessage);
   if (oppNum != 0)
   {
-    addSendOppModel(oppNum, msg);
+    addSendOppModel(oppNum, playersModel, msg);
   }
+}
+
+void TeamCommSender::createMessage(naothmessages::TeamCommMessage &msg)
+{
+  fillMessage(getPlayerInfo(), getRobotInfo(), getFrameInfo(), getBallModel(),
+              getRobotPose(), getBodyState(), getMotionStatus(), getSoccerStrategy(),
+              getPlayersModel(), getTeamMessage(), msg);
 }
 
 // select one opponent:
 // * I see him
 // * the message about him is the oldest one
-unsigned int TeamCommSender::selectSendOpp() const
+unsigned int TeamCommSender::selectSendOpp(const PlayersModel& playersModel,
+                                           const FrameInfo& frameInfo,
+                                           const TeamMessage& teamMessage)
 {
   set<unsigned int> seenOppNum;
-  for(vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().opponents.begin();
-    iter != getPlayersModel().opponents.end(); ++iter)
+  for(vector<PlayersModel::Player>::const_iterator iter = playersModel.opponents.begin();
+    iter != playersModel.opponents.end(); ++iter)
   {
-    if ( getFrameInfo().getFrameNumber() == iter->frameInfoWhenWasSeen.getFrameNumber() )
+    if ( frameInfo.getFrameNumber() == iter->frameInfoWhenWasSeen.getFrameNumber() )
     {
       seenOppNum.insert(iter->number);
     }
   }
 
   unsigned int selectedNum = 0;
-  unsigned int earliest = getFrameInfo().getFrameNumber();
+  unsigned int earliest = frameInfo.getFrameNumber();
   for(set<unsigned int>::const_iterator iter = seenOppNum.begin();
     iter != seenOppNum.end(); ++iter)
   {
-    map<unsigned int, unsigned int>::const_iterator opp = getTeamMessage().lastFrameNumberHearOpp.find(*iter);
-    if ( opp == getTeamMessage().lastFrameNumberHearOpp.end() )
+    map<unsigned int, unsigned int>::const_iterator opp = teamMessage.lastFrameNumberHearOpp.find(*iter);
+    if ( opp == teamMessage.lastFrameNumberHearOpp.end() )
     {
       // no history of this opponent
       return *iter;
@@ -96,10 +116,12 @@ unsigned int TeamCommSender::selectSendOpp() const
   return selectedNum;
 }
 
-void TeamCommSender::addSendOppModel(unsigned int oppNum, naothmessages::TeamCommMessage& msg) const
+void TeamCommSender::addSendOppModel(unsigned int oppNum,
+                                     const PlayersModel& playersModel,
+                                     naothmessages::TeamCommMessage& msg)
 {
-  for (vector<PlayersModel::Player>::const_iterator iter = getPlayersModel().opponents.begin();
-    iter != getPlayersModel().opponents.end(); ++iter)
+  for (vector<PlayersModel::Player>::const_iterator iter = playersModel.opponents.begin();
+    iter != playersModel.opponents.end(); ++iter)
   {
     if ( iter->number == oppNum )
     {

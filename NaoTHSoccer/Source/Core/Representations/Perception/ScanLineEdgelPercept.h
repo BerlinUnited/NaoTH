@@ -29,11 +29,12 @@ public:
   class EndPoint
   {
   public:
-    EndPoint():color(ColorClasses::none), ScanLineID(0){}
+    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false){}
     Vector2<int> posInImage;
     Vector2<double> posOnField;
     ColorClasses::Color color;
     unsigned int ScanLineID;
+    bool valid;
   };
 
   /** */
