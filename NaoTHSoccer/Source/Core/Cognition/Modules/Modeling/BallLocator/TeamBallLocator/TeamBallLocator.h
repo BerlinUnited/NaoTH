@@ -34,14 +34,6 @@ public:
 
   virtual void execute();
 
-  struct info {
-    Vector2<double> globalBall;
-    double timeWhenSeen;
-    bool isStriker;
-  };
-
-  info ballInfoByNumber[4];
-
 private:
   std::map<unsigned int, TeamMessage::Data> msgData;
 };

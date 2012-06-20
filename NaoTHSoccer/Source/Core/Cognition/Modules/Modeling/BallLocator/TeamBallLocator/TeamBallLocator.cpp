@@ -15,18 +15,12 @@ TeamBallLocator::TeamBallLocator()
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_locally", "draw the team ball model on the local coordination", false);
 
-  for (unsigned int i = 0; i < 4; i++) {
-      ballInfoByNumber[i].isStriker = 0;
-      ballInfoByNumber[i].timeWhenSeen = 1000000;
-  }
 }
 
 void TeamBallLocator::execute()
 {
   int num = 0;
   //for (int i = 0; i < MAX_NUM_PLAYERS; i++) {
-
-  int idOfStriker = 0; //goalie if no one is striker
 
   msgData = getTeamMessage().data;
 
@@ -38,6 +32,7 @@ void TeamBallLocator::execute()
       const naothmessages::TeamCommMessage& msg = i->second.message;
       if ( msg.has_ballposition() )
       {
+
 
         Vector2<double> ballPos;
         ballPos.x = msg.ballposition().x();
@@ -62,15 +57,15 @@ void TeamBallLocator::execute()
           num++;
         }
 
-        int pn = i->first;;
-        assert(pn > 0);
-        assert(pn <= 4);
-        ballInfoByNumber[pn-1].globalBall = ballPos;
-        ballInfoByNumber[pn-1].timeWhenSeen = i->second.frameInfo.getTimeInSeconds();
-        ballInfoByNumber[pn-1].isStriker = msg.wasstriker();
-
+        if(i->first == true) {
+          getTeamBallModel().goaliePositionOnField = ballPos;
+          getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
+          getTeamBallModel().goalieTime = i->second.frameInfo.getTimeInSeconds();
+        }
         if (msg.wasstriker() == true) {
-            idOfStriker = pn-1;
+            getTeamBallModel().strikerPositionOnField = ballPos;
+            getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
+            getTeamBallModel().strikerTime = i->second.frameInfo.getTimeInSeconds();
         }
       }
     //}
@@ -81,14 +76,6 @@ void TeamBallLocator::execute()
     getTeamBallModel().positionOnField /= num;
   }
   getTeamBallModel().position = getRobotPose() / getTeamBallModel().positionOnField;
-
-  getTeamBallModel().goaliePositionOnField = ballInfoByNumber[0].globalBall;
-  getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
-  getTeamBallModel().goalieTime = ballInfoByNumber[0].timeWhenSeen;
-
-  getTeamBallModel().strikerPositionOnField = ballInfoByNumber[idOfStriker].globalBall;
-  getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
-  getTeamBallModel().strikerTime = ballInfoByNumber[idOfStriker].timeWhenSeen;
 
   DEBUG_REQUEST("TeamBallLocator:draw_ball_on_field",
     FIELD_DRAWING_CONTEXT;
