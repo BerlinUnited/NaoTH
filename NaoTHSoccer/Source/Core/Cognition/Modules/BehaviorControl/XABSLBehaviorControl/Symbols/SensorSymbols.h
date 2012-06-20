@@ -6,7 +6,7 @@
  */
 
 #ifndef _SENSORSYMBOLS_H
-#define  _SENSORSYMBOLS_H
+#define _SENSORSYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -116,6 +116,8 @@ private:
 
   static double getTargetPointX();
   static double getTargetPointY();
+
+  static double getTimeNoNodeExpandable();
 
   static void setTargetpointX(double targetX);
   static void setTargetpointY(double targetY);

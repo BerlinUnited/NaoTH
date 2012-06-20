@@ -58,6 +58,7 @@ public:
       stream << "TimeToBall: "<< message.timetoball() <<endl;
       stream << "wasStriker: " << (message.wasstriker() ? "yes" : "no") << endl;
       stream << "isPenalized: " << (message.ispenalized() ? "yes" : "no") << endl;
+      stream << "isFallenDown: " << (message.isfallendown() ? "yes" : "no") << endl;
       if ( message.has_opponent() ) {
         stream << "opponent " << message.opponent().number() << " : "
                << message.opponent().poseonfield().translation().x() << "; "

@@ -9,6 +9,7 @@
 
 #include "Tools/CameraGeometry.h"
 #include "Tools/Debug/NaoTHAssert.h"
+#include "Tools/DataStructures/RingBufferWithSum.h"
 
 ScanLineEdgelDetector::ScanLineEdgelDetector()
 {
@@ -79,20 +80,22 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
   for (;start.x < (int) getImage().cameraInfo.resolutionWidth;)
   {
     start = getBodyContour().returnFirstFreeCell(start);
-    ASSERT(start.x >= 0 && start.x <= 320 && start.y >= 0 && start.y <= 240);
+    ASSERT(getImage().isInside(start.x, start.y));
     end.x = start.x;
     ScanLineEdgelPercept::EndPoint endPoint = scanForEdgels(scanLineID, start, end);
     //check if endpoint is not same as the begin of the scanline
-    if(endPoint.posInImage.y < borderY)
+    //if(endPoint.posInImage.y < borderY)
     {
-      CameraGeometry::imagePixelToFieldCoord(
+      endPoint.valid = CameraGeometry::imagePixelToFieldCoord(
         getCameraMatrix(),
         getImage().cameraInfo,
         endPoint.posInImage.x,
         endPoint.posInImage.y,
         0.0,
         endPoint.posOnField);
-      getScanLineEdgelPercept().endPoints.push_back(endPoint);
+
+      //if(endPoint.valid)
+        getScanLineEdgelPercept().endPoints.push_back(endPoint);
     }
     scanLineID++;
     start.y = getImage().cameraInfo.resolutionHeight - PIXEL_BORDER - 1;
@@ -239,12 +242,15 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   int yellowCount = 0;
 
   // statistics of the green color
-  int noGreenSeen=0; // pixel count where continously no green was seen
-  int greenCount = 0;
-  int totalGreenCount = 0;
-  int greenValue = 0;
-  int calculatedGreenValue = 0;
+  double noGreenSeen=0; // pixel count where continously no green was seen
+  double greenCount = 0;
+  double totalGreenCount = 0;
+  double greenValue = 0;
+  double calculatedGreenValue = 0;
+
+  double segmentLengthNoWhite = 0;
   
+  RingBufferWithSum<double, 30> movingWindow;
   
   // trac the derivaive of the brightness
   int lastPixelBrightness = 0;
@@ -273,6 +279,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
   {
     getImage().get(point.x,point.y,pixel);
     thisPixelBrightness = pixel.y;
+    
     //thisPixelColor = getColorClassificationModel().getColorClass(pixel); // 12ms
 
     // TODO: possible optimization
@@ -307,6 +314,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
     }
     else // scan the ground
     {
+      // is this the right place for it?
+      segmentLengthNoWhite++;
+
       if( greenCount > 5 &&
           thisPixelBrightness - calculatedGreenValue > (int)edgelGrayThresholdLevel &&
           thisPixelColor != ColorClasses::green )
@@ -343,7 +353,8 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
 
     if(thisPixelColor == ColorClasses::green || thisPixelColor == ColorClasses::orange) // ignore the ball
     {
-      if(thisPixelColor == ColorClasses::green && point.abs2()/100 < totalGreenCount*totalGreenCount)
+      double greenDensity = movingWindow.getSum()/movingWindow.getNumberOfEntries();
+      if(thisPixelColor == ColorClasses::green && greenDensity > 0.3)
       {
         greenValue += thisPixelBrightness;
         lastGreenPoint = point;
@@ -354,6 +365,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       whiteCount = 0;
       skyblueCount = 0;
       yellowCount = 0;
+      movingWindow.add(1.0);
     }
     else
     {
@@ -365,6 +377,7 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetector::scanForEdgels(int scan_id,
       greenCount = 0;
       greenValue = 0;
       noGreenSeen++;
+      movingWindow.add(0.0);
     }
 
 

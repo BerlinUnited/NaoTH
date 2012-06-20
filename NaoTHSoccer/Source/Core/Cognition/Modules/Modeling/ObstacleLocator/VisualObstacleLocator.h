@@ -29,22 +29,27 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
+#include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/BallPercept.h"
 //#include "Representations/Perception/ObstaclePercept.h"
 #include "Representations/Modeling/RadarGrid.h"
+
 
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(VisualObstacleLocator)
   REQUIRE(FrameInfo)
-  REQUIRE(FieldInfo)
+  REQUIRE(Image)
   REQUIRE(OdometryData)
   REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(CameraMatrix)
+
   REQUIRE(BallModel)
   REQUIRE(BallPercept)
   REQUIRE(UltraSoundReceiveData)
-  REQUIRE(Image)
+  REQUIRE(FieldInfo)
+  
 
   PROVIDE(RadarGrid)
 END_DECLARE_MODULE(VisualObstacleLocator)
@@ -58,7 +63,7 @@ public:
   // default constructor
   VisualObstacleLocator();
   // default destructor
-  ~VisualObstacleLocator(){}
+  virtual ~VisualObstacleLocator(){}
 
   // some variables
 
@@ -74,7 +79,6 @@ public:
 private:
 
   OdometryData lastRobotOdometry;
-  Pose2D odometryDelta;
   unsigned int lastTimeObstacleWasSeen;
 };
 
