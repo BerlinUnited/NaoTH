@@ -34,7 +34,7 @@ void ScanLineEdgelDetectorDifferential::execute()
 
   // horizontal stepsize between the scanlines
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (theParameters.scanline_count - 1);
-  int remaining_pixels = (getImage().cameraInfo.resolutionWidth - 1) % theParameters.scanline_count;
+  //int remaining_pixels = (getImage().cameraInfo.resolutionWidth - 1) % theParameters.scanline_count;
 
   // don't scan the lower lines in the image
   int borderY = getImage().cameraInfo.resolutionHeight - theParameters.pixel_border_y - 1;

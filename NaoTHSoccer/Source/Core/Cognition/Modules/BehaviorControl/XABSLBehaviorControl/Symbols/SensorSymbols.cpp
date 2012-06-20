@@ -196,7 +196,7 @@ double SensorSymbols::getTargetPointY()
 
 double SensorSymbols::getTimeNoNodeExpandable()
 {
-  return theInstance->path.timeNoNodeExpandable;
+  return theInstance->path.getTimeNoNodeExpandable();
 }//end getBallTimeSeen
 
 void SensorSymbols::setTargetpointX(double targetX)

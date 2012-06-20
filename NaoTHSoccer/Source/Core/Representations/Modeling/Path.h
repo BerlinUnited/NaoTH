@@ -21,13 +21,7 @@ private:
 
 public:
   // default constructor
-  Path():
-    _timeNoNodeExpandable(0),
-
-    // accessors
-    timeNoNodeExpandable(_timeNoNodeExpandable),
-    frameInfoWhenNoNodeExpanded(_frameInfoWhenNoNodeExpanded)
-  {}
+  Path() {}
   // default destructor
   ~Path(){};
 
@@ -36,18 +30,20 @@ public:
   Vector2d targetPoint;
 
   // Tells when the path was found the last time
-  const naoth::FrameInfo& frameInfoWhenNoNodeExpanded;
+  //const naoth::FrameInfo& frameInfoWhenNoNodeExpanded;
+  const naoth::FrameInfo& getFrameInfoWhenNoNodeExpanded(){return _frameInfoWhenNoNodeExpanded;}
   // time how long we can't expand any nodes
-  const unsigned int& timeNoNodeExpandable;
+  //const unsigned int& timeNoNodeExpandable;
+  const unsigned int getTimeNoNodeExpandable(){return _timeNoNodeExpandable;}
 
   void setFrameInfoWhenNodeWasNotExpanded(const naoth::FrameInfo& frameInfo)
   {
-    if(frameInfo.getFrameNumber() != frameInfoWhenNoNodeExpanded.getFrameNumber()+1)
+    if(frameInfo.getFrameNumber() != _frameInfoWhenNoNodeExpanded.getFrameNumber()+1)
       _timeNoNodeExpandable = 0;
     else
     {
-      ASSERT(frameInfoWhenNoNodeExpanded.getTime() < frameInfo.getTime());
-      _timeNoNodeExpandable += frameInfo.getTimeSince(frameInfoWhenNoNodeExpanded.getTime());
+      ASSERT(_frameInfoWhenNoNodeExpanded.getTime() < frameInfo.getTime());
+      _timeNoNodeExpandable += frameInfo.getTimeSince(_frameInfoWhenNoNodeExpanded.getTime());
     }
     _frameInfoWhenNoNodeExpanded = frameInfo;
   }//end setFrameInfoWhenBallWasSeen
