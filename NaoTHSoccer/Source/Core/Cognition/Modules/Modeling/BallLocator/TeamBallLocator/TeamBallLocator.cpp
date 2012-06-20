@@ -57,7 +57,7 @@ void TeamBallLocator::execute()
           num++;
         }
 
-        if(i->first == true) {
+        if(i->first == 1) {
           getTeamBallModel().goaliePositionOnField = ballPos;
           getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
           getTeamBallModel().goalieTime = i->second.frameInfo.getTimeInSeconds();
