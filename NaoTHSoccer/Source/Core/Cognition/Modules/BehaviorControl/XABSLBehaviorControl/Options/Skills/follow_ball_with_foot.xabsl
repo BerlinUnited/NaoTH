@@ -1,0 +1,61 @@
+/** RC12: contains lots of magic numbers, use with caution ;) */
+option follow_ball_with_foot 
+{
+
+ initial state approach_ball 
+ {
+   decision
+   {
+       if(attack.direction > 0)
+         goto follow_ball_right;
+       else
+         goto follow_ball_left;
+   }
+   action 
+   { 
+   }
+  }
+
+  state follow_ball_right
+  {
+    decision 
+    {
+	    if(attack.direction < -20)
+        goto follow_ball_left;
+	    else
+	      stay;
+    }
+    action 
+    {
+      go_to_relative_point(rotation = (ball.distance<200)?atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)/2:atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x),
+                           x = clip(value=ball.left_foot.preview.x - 190 * cos(angle=atan2(y = ball.left_foot.preview.y+100, x = ball.left_foot.preview.x-190)),
+                                 max=ball.left_foot.preview.x-170, min=ball.left_foot.preview.x-190), 
+                           y = ball.left_foot.preview.y + 100 * (1 + sin(angle=atan2(y = ball.left_foot.preview.y+100, x = ball.left_foot.preview.x-190))),                        
+                           errorX=0, errorY=0, errorR=0); 
+                            
+      motion.walk.coordinate = left_foot;
+    }
+  }
+
+  state follow_ball_left
+  {
+    decision 
+    {
+      if(attack.direction > 20)
+        goto follow_ball_right;
+      else
+        stay;
+    }
+    action 
+    {
+      go_to_relative_point(rotation = (ball.distance<200)?atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)/2:atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x),
+                           x = clip(value=ball.right_foot.preview.x - 190 * cos(angle=atan2(y = ball.right_foot.preview.y-100, x = ball.right_foot.preview.x-190)),
+                                 max=ball.right_foot.preview.x-170, min=ball.right_foot.preview.x-190),                              
+                           y = ball.right_foot.preview.y - 100 * (1 + sin(angle=atan2(y = ball.right_foot.preview.y-100, x = ball.right_foot.preview.x-190))),                                
+                           errorX=0, errorY=0, errorR=0);
+                           
+      motion.walk.coordinate = right_foot;
+    }
+  }
+
+}
