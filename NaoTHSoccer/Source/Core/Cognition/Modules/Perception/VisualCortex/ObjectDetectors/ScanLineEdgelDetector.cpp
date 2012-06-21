@@ -94,7 +94,8 @@ void ScanLineEdgelDetector::integrated_edgel_detection()
         0.0,
         endPoint.posOnField);
 
-      //if(endPoint.valid)
+      // HACK: don't take endpoints on the body contur
+      if(endPoint.posInImage.y < start.y - 1)
         getScanLineEdgelPercept().endPoints.push_back(endPoint);
     }
     scanLineID++;

@@ -803,6 +803,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
 
   // calculate the weighting (BH paper)
   // not used yet
+  /*
   double totalWeighting = 0;
   for(unsigned int i = 0; i < sampleSet.numberOfParticles; i++)
   {
@@ -822,7 +823,7 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
     PLOT("MonteCarloSelfLocator:pp", pp);
     PLOT("MonteCarloSelfLocator:averageWeighting", averageWeighting);
   );
-
+  */
   // copy the samples 
   // TODO: use memcopy?
   SampleSet oldSampleSet = sampleSet;
@@ -897,7 +898,8 @@ void MonteCarloSelfLocator::resampleGT07(SampleSet& sampleSet, bool noise)
   // sensor resetting by the goal posts
   if(getGoalPercept().getNumberOfSeenPosts() > 0)
   {
-    n = sensorResetByGoalPosts(sampleSet, n);
+    //TODO: does not work properly yet
+    //n = sensorResetByGoalPosts(sampleSet, n);
   }
   
 
@@ -1072,7 +1074,8 @@ bool MonteCarloSelfLocator::updateBySensors(SampleSet& sampleSet) const
     if(parameters.updateByOldPose > 0 && initialized 
       // only if the sensing goal model is consistent with the actual guess
       // TODO: is this good? schould we check the validity of it?
-      && (getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo()).translation- getRobotPose().translation).abs() < 700
+      //&& (getSensingGoalModel().calculatePose(getCompassDirection(), getFieldInfo()).translation- getRobotPose().translation).abs() < 700
+      && getGoalPercept().getNumberOfSeenPosts() == 0 // no goals seen
       )
     {
       updateByOldPose(sampleSet);
@@ -1215,7 +1218,8 @@ void MonteCarloSelfLocator::execute()
 
   // (III) treat the situation when the robot has been lifted from the ground
   // (keednapped)
-  if(getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
+  if(getMotionStatus().currentMotion == motion::stand && // only in stand (!)
+     getBodyState().fall_down_state == BodyState::upright && parameters.treatLiftUp && (
      !getBodyState().standByLeftFoot && !getBodyState().standByRightFoot && // no foot is on the ground
       getFrameInfo().getTimeSince(getBodyState().foot_state_time) > 1000 )) // we lose the ground contact for more then 1s
   {
