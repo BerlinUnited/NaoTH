@@ -12,13 +12,13 @@ AGLParameters::AGLParameters()
   : ParameterList("AGLParameters")
 {
   //Deviation of the second post (seenpost.position + goalwidth), if just one post is seen
-  PARAMETER_REGISTER(standardDeviationDist) = 500;
+  //PARAMETER_REGISTER(standardDeviationDist) = 500;
   //in RAD
   PARAMETER_REGISTER(standardDeviationAngle) = 0.15;
 
   PARAMETER_REGISTER(timeFilterRange) = 0.90;
 
-  PARAMETER_REGISTER(sigmaWeightingThreshhold) = 0.4;
+  //PARAMETER_REGISTER(sigmaWeightingThreshhold) = 0.4;
 
   PARAMETER_REGISTER(thresholdCanopy) = 900;
 

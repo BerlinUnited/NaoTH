@@ -17,12 +17,12 @@ public:
   AGLParameters();
   ~AGLParameters();
 
-  double standardDeviationDist;
+  //double standardDeviationDist;
   double standardDeviationAngle;
 
   double timeFilterRange;
 
-  double sigmaWeightingThreshhold;
+  //double sigmaWeightingThreshhold;
   double thresholdCanopy;
   double motionNoiseDistance;
 
