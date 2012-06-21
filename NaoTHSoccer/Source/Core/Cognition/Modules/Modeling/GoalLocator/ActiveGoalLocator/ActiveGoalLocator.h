@@ -10,6 +10,8 @@
 
 #include <ModuleFramework/Module.h>
 #include "AGLParameters.h"
+#include "AGLSampleSet.h"
+#include "AGLSampleBuffer.h"
 
 // Debug
 #include "Tools/Debug/DebugRequest.h"
@@ -29,6 +31,7 @@
 // Tools
 #include <vector>
 #include "Tools/Math/Geometry.h"
+#include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -60,59 +63,42 @@ private:
 
   double goalWidth;
 
-  double averageWeighting;
-
   AGLParameters parameters;
+
+  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
+  AGLSampleBuffer theSampleBuffer;
+
   OdometryData lastRobotOdometry;
 
-  //needs to check the need for using new percept
-  // if high, no need for insert new percept
-  double timeFilter;
-
-  class Sample
+  class Cluster
   {
   public:
-    Sample() : likelihood(0){}
-    Vector2<double> position;
-    double likelihood;
-    //hacked for canopy
-    int cluster;
+      Cluster():
+          canopyClustering(sampleSet){}
+
+      CanopyClustering<AGLSampleSet> canopyClustering;
+      AGLSampleSet sampleSet;
   };
 
-  std::vector<Sample> sampleSet;
-
-  class CanopyCluster
-  {
-  public:
-    ~CanopyCluster(){}
-    CanopyCluster():size(0){}
-
-    double size;
-    Vector2<double> clusterSum;
-    Sample center;
-
-    void add(const Sample& sample);
-    double distance(const Sample& sample) const;
-
-  private:
-    double manhattanDistance(const Sample& sample) const;
-    double euclideanDistance(const Sample& sample) const;
-  };
-
-  bool isInCluster(const CanopyCluster& cluster, const Sample& sample) const;
-
-  static const int maxNumberOfClusters = 100;   //FIXME
-  CanopyCluster clusters[maxNumberOfClusters]; //FIXME
-
-  int numOfClusters; //TODO: side-effect!!
-
-  void cluster();
-  int getClusterSize(const Vector2<double> start);
+  Cluster ccSamples[10];
 
   void debugDrawings();
-  void updateByRobotOdometry();
-  void updateByGoalPercept();
-  void resampleGT07(bool noise);
+  void debugPlots();
+  void debugStdOut();
+
+  void resampleGT07(AGLSampleSet& sampleSet, bool noise);
+
+  void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
+  void updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const;
+  void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
+  void updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const;
+  double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
+  void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
+  void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
+
+  //Tools
+  string convertIntToString(int number);
+
 };
 
 #endif //__ActiveGoalLocator_h_
