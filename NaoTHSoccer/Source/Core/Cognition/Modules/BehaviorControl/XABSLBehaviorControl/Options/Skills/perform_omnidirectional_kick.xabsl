@@ -123,7 +123,8 @@ option perform_omnidirectional_kick
              && ball.left_foot.y > -70
              && ball.left_foot.x < 250) 
            {
-             goto kick_left;
+             //goto kick_left;
+             goto walk_against_ball;
            } 
            else if (ball.left_foot.preview.y < -60)
            {
@@ -159,6 +160,8 @@ option perform_omnidirectional_kick
     {
       kick_ball_with_foot(direction = attack.direction, right = true);
       situation.abortable = false;
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -176,8 +179,10 @@ option perform_omnidirectional_kick
     }
     action 
     {
-      kick_ball_with_foot(direction = attack.direction, right = false);
+      //kick_ball_with_foot(direction = attack.direction, right = false);
       situation.abortable = false;
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -195,6 +200,8 @@ option perform_omnidirectional_kick
     }
     action
     {
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -207,6 +214,35 @@ option perform_omnidirectional_kick
   {
     action
     {
+    }
+  }
+
+
+  state walk_against_ball
+  {
+    decision {
+      // get out of walk_against_ball
+      if (state_time > 1000)
+        goto stabilize_after_kick;
+      else
+        stay;
+    }
+    action {
+      common_decision.allowed = false;
+    
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+      motion.walk_speed.x = 201;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+
+      // HACK: look at percept
+      head.control_mode = none;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
     }
   }
 
