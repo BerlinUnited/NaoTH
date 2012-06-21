@@ -1,0 +1,64 @@
+/** This is the "main" file for playing */
+
+option kicker_agent 
+{  
+    
+	initial state stop 
+	{
+    decision 
+    {
+      if(state_time > 5000)
+        goto approach;
+      else stay;
+    }
+		action
+		{
+      set_left_eye =red;
+      set_right_eye =red;
+			motion.type = stand;
+      head.control_mode =search_for_ball;
+		}
+	}	
+
+  state approach
+  {
+    decision {
+      if(action_done)
+        goto kick;
+      else 
+        stay;
+    }
+    action {
+      set_left_eye = blue;
+      set_right_eye = blue;
+      
+      head.control_mode =search_for_ball;
+      
+      go_to_ball_cool(distance=190, right_foot = ball.preview.y<0, errorX=30, errorY=30, errorR=20);
+    }
+  }
+
+  state kick 
+  {
+    decision 
+    {
+      if(action_done)
+        goto stop;
+      else
+        stay;
+    }
+    action
+    {
+      set_left_eye =green;
+      set_right_eye =green;
+
+      head.control_mode =search_for_ball;
+      common_decision.allowed = false;
+      perform_omnidirectional_kick(distance = 190, right_foot = ball.preview.y<0, errorX=30, errorY=30, errorR=20);
+      
+    }
+  }
+  
+
+	
+}
