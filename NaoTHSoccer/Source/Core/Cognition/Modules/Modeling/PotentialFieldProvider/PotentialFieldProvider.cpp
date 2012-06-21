@@ -60,8 +60,10 @@ void PotentialFieldProvider::execute()
   // calculate the target point to play the ball to based on the 
   // goal model and the ball model 
   Vector2<double> targetPoint = getGoalTarget(ballRelative, oppGoalModel);
-  
-  
+  // preview
+  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
+  // ----------
+
   DEBUG_REQUEST("PotentialFieldProvider:goal_target",
     FIELD_DRAWING_CONTEXT;
 

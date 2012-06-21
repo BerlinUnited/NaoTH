@@ -37,14 +37,26 @@ public:
 
   virtual void execute();
 
+  static void fillMessage(const PlayerInfo &playerInfo,
+                            const RobotInfo &robotInfo,
+                            const FrameInfo &frameInfo,
+                            const BallModel &ballModel,
+                            const RobotPose &robotPose,
+                            const BodyState &bodyState,
+                            const MotionStatus &motionStatus,
+                            const SoccerStrategy &soccerStrategy,
+                            const PlayersModel &playersModel,
+                            const TeamMessage &teamMessage, naothmessages::TeamCommMessage &msg);
+
 private:
   unsigned int lastSentTimestamp;
   unsigned int send_interval;
 
   void createMessage(naothmessages::TeamCommMessage& msg);
 
-  unsigned int selectSendOpp() const;
-  void addSendOppModel(unsigned int oppNum, naothmessages::TeamCommMessage& msg) const;
+  static unsigned int selectSendOpp(const PlayersModel &playersModel, const FrameInfo &frameInfo, const TeamMessage &teamMessage);
+  static void addSendOppModel(unsigned int oppNum, const PlayersModel &playersModel,
+                              naothmessages::TeamCommMessage &msg);
 };
 
 #endif // TEAMCOMMSENDER_H

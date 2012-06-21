@@ -10,6 +10,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Tools/Debug/DebugBufferedOutput.h>
 
+
 void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("attention.mi_point.x", &attentionModel.mostInterestingPoint.x );
@@ -31,6 +32,9 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.time_since_last_seen", &getOwnClosestToBallTimeSinceLastSeen);
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.distance_to_ball", &getOwnClosestToBallDistanceToBall);
 
+  engine.registerDecimalInputSymbol("defense.simplePose.translation.x", &simpleDefensePoseX);
+  engine.registerDecimalInputSymbol("defense.simplePose.translation.y", &simpleDefensePoseY);
+  engine.registerDecimalInputSymbol("defense.simplePose.rotation", &simpleDefensePoseA);
 
   // attack direction and previews
   engine.registerDecimalInputSymbol("attack.direction", &attackDirection);
@@ -91,11 +95,13 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
-
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
  
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
+
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
+
 
   //testArrangeRobots();
 }//end registerSymbols
@@ -133,6 +139,17 @@ void StrategySymbols::execute()
   );
 
   PLOT("XABSL:attackDirection", attackDirection);
+
+  simpleDefenderPose = calculateSimpleDefensePose();
+  DEBUG_REQUEST("XABSL:StrategySymbols:draw_simpleDefenderPose",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 50);
+    CIRCLE(simpleDefenderPose.translation.x, simpleDefenderPose.translation.y, 30);
+  );
+
+
+
+
 }//end execute
 
 //int StrategySymbols::getSituationStatusId(){ 
@@ -325,6 +342,54 @@ double StrategySymbols::getOwnClosestToBallTimeSinceLastSeen()
 double StrategySymbols::getOwnClosestToBallDistanceToBall()
 {
   return (theInstance->ballModel.position - theInstance->playersModel.ownClosestToBall.pose.translation).abs();
+}
+
+Pose2D StrategySymbols::calculateSimpleDefensePose()
+{
+  Pose2D defPose;
+  Vector2<double> ownGoal = goalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
+
+  double d = ownGoal.abs();
+
+  Vector2<double> p = ballModel.position - ownGoal;
+
+  if(p.abs() > d ) {
+    p = p.normalize(1200) + ownGoal;
+
+    defPose.translation = p;
+    defPose.rotation = ballModel.position.angle();
+    
+  }
+  else
+  {
+    defPose.translation =(ballModel.position-ownGoal)*0.5 +ownGoal; 
+    defPose.rotation = defPose.translation.angle();
+  }
+
+  defPose = motionStatus.plannedMotion.hip / defPose.translation;
+  defPose.rotation = ballModel.positionPreview.angle();
+
+/*  FIELD_DRAWING_CONTEXT;
+  PEN("00FF00", 20);
+  CIRCLE(defPose.translation.x, defPose.translation.y, 30);
+ */ 
+
+  return defPose;
+}
+
+double StrategySymbols::simpleDefensePoseX()
+{
+  return theInstance->calculateSimpleDefensePose().translation.x;
+}
+
+double StrategySymbols::simpleDefensePoseY()
+{
+  return theInstance->calculateSimpleDefensePose().translation.y;
+}
+
+double StrategySymbols::simpleDefensePoseA()
+{
+  return Math::toDegrees(theInstance->calculateSimpleDefensePose().rotation);
 }
 
 Pose2D StrategySymbols::calculateDefensePose()

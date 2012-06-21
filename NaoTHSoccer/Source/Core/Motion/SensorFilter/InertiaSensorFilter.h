@@ -3,7 +3,7 @@
 * Declaration of module InertiaSensorFilter.
 * @author Colin Graf (BH-2011)
 * @author Heinrich Mellmann (NaoTH-2012)
-* copied from BH-2011
+* original from BH-2011
 */
 
 #ifndef _InertiaSensorFilter_H_

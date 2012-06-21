@@ -22,6 +22,10 @@ namespace strategy("Strategy Symbols") {
   float input players.own_closest_to_ball.number;
   float input players.own_closest_to_ball.time_since_last_seen;
   float input players.own_closest_to_ball.distance_to_ball;
+
+  float input defense.simplePose.translation.x;
+  float input defense.simplePose.translation.y;
+  float input defense.simplePose.rotation;
   
   /** the best foot to approach the ball with */
   bool input attack.approaching_with_right_foot;

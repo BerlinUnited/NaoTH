@@ -25,10 +25,12 @@ using namespace naoth;
 
 Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode)
 : PlatformInterface<Simulator>("LogSimulator", CYCLE_TIME),
-compatibleMode(compatibleMode),
+  compatibleMode(compatibleMode),
   backendMode(backendMode)
 {
-  /*
+  // TODO: we need a better solution for it, but now it's the 
+  // fastest way to provide stuff for motion
+  // register basic sensor input
   registerInput<AccelerometerData>(*this);
   registerInput<SensorJointData>(*this);
   registerInput<Image>(*this);
@@ -40,7 +42,6 @@ compatibleMode(compatibleMode),
   registerInput<ButtonData>(*this);
   registerInput<BatteryData>(*this);
   registerInput<UltraSoundReceiveData>(*this);
-  */
 
   registerInput<FrameInfo>(*this);
   registerInput<DebugMessageIn>(*this);
@@ -664,7 +665,6 @@ Simulator::~Simulator()
 
 
 MessageQueue* Simulator::createMessageQueue(const std::string& name)
-
 {
   // for single thread
   return new MessageQueue();

@@ -6,7 +6,7 @@ option move_around_ball
 
   common decision
   {
-    if (abs(value=ball.angle)>60)
+    if (abs(value=ball.angle)>30)
     {
       goto face_to_ball;
     }
@@ -35,7 +35,7 @@ option move_around_ball
     action {
       motion.type = walk;
       motion.walk_speed.rot = atan2(y=ball.left_foot.preview.y, x=ball.left_foot.preview.x);//relativeToRightFootA(a=ball.angle);
-      motion.walk_speed.x = (vector.abs(x=ball.preview.x, y=ball.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
+      motion.walk_speed.x = (vector.abs(x=ball.right_foot.preview.x, y=ball.right_foot.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
       motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=0, max=45)), min=100, max=100) * cos(angle=motion.walk_speed.rot);
       motion.walk.coordinate = right_foot;
     }
@@ -46,7 +46,7 @@ option move_around_ball
     action {
       motion.type = walk;
       motion.walk_speed.rot = atan2(y=ball.right_foot.preview.y, x=ball.right_foot.preview.x);
-      motion.walk_speed.x = (vector.abs(x=ball.preview.x, y=ball.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
+      motion.walk_speed.x = (vector.abs(x=ball.left_foot.preview.x, y=ball.left_foot.preview.y) - @radius) * cos(angle=motion.walk_speed.rot);
       motion.walk_speed.y = clip(value=@radius * tan(angle=clip(value=-@direction, min=-45, max=0)), min=-100, max=-100) * cos(angle=motion.walk_speed.rot);
       motion.walk.coordinate = left_foot;
     }

@@ -13,7 +13,6 @@
 #include "Representations/Motion/Request/MotionRequest.h"
 #include "Tools/Debug/DebugModify.h"
 
-
 void TeamSymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("team.members_alive_count", &getTeamMembersAliveCount);
@@ -33,15 +32,14 @@ void TeamSymbols::execute()
 double TeamSymbols::getTeamMembersAliveCount()
 {
   int counter = 0;
-  unsigned int time = theInstance->frameInfo.getTime();
 
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=theInstance->teamMessage.data.begin();
     i != theInstance->teamMessage.data.end(); ++i)
   {
     const TeamMessage::Data& messageData = i->second;
 
-    // "alive" means sent something in the last 3 seconds
-    if((time - messageData.frameInfo.getTime()) < 3000)
+    // "alive" means sent something in the last n seconds
+    if(theInstance->frameInfo.getTimeSince(messageData.frameInfo.getTime()) < theInstance->maximumFreshTime)
     {
       counter++;
     }
@@ -75,8 +73,7 @@ bool TeamSymbols::calculateIfStriker()
     const TeamMessage::Data& messageData = i->second;
     const unsigned int number = i->first;
 
-    // TODO: 100 frames or 100 ms?!
-    if((theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 1000) && // the message is fresh...
+    if((theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime) && // the message is fresh...
         number != theInstance->playerInfo.gameData.playerNumber && // its not me...
         messageData.message.wasstriker() // the guy wants to be striker...
         )
@@ -98,8 +95,9 @@ bool TeamSymbols::calculateIfStriker()
     double time_bonus = messageData.message.wasstriker()?4000.0:0.0;
 
     if(
-        theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 1000 && // its fresh
-        (messageData.message.timesinceballwasseen() < 1000+time_bonus )// the guy sees the ball
+        theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < theInstance->maximumFreshTime // its fresh
+        && !messageData.message.isfallendown()
+        && (messageData.message.timesinceballwasseen() < 1000+time_bonus )// the guy sees the ball
       )
     {
       Vector2<double> ballPos;
@@ -137,7 +135,8 @@ bool TeamSymbols::calculateIfStrikerByTimeToBall()
     if (
       i->first != theInstance->playerInfo.gameData.playerNumber
       && msg.wasstriker()
-      && msg.timesinceballwasseen() + theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime()) < 2000
+      && msg.timesinceballwasseen() + theInstance->frameInfo.getTimeSince(i->second.frameInfo.getTime())
+        < theInstance->maximumFreshTime
       )
       {
         if(msg.timetoball() < shortestTime)

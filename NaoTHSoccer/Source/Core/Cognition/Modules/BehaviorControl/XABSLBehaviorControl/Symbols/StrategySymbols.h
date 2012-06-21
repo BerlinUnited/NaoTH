@@ -94,7 +94,13 @@ private:
   static double getOwnClosestToBallNumber();
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
-  
+
+  //defender position SPL
+  Pose2D calculateSimpleDefensePose();
+  static double simpleDefensePoseX();
+  static double simpleDefensePoseY();
+  static double simpleDefensePoseA();
+
   //find out if the robot is in a certain field half
   static bool getSituationStatusOwnHalf();
   static bool getSituationStatusOppHalf();
@@ -133,6 +139,9 @@ private:
   double attackDirectionPreviewHip;
   double attackDirectionPreviewLFoot;
   double attackDirectionPreviewRFoot;
+  Pose2D simpleDefenderPose;
+
+  static Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
 
 
   /** returns x-position on circle between to points */
@@ -146,6 +155,9 @@ private:
   static double goalieGuardPositionY();
   static double penaltyGoalieGuardPositionX();
   static double penaltyGoalieGuardPositionY();
+
+  static double PosBehindBall2ADX;
+  static double PosBehindBall2ADY;
 
   struct CycleParameter
   {

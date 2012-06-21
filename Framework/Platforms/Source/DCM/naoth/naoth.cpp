@@ -93,6 +93,7 @@ void* cognitionThreadCallback(void* ref)
   while(true)
   {
     theController->callCognition();
+    g_thread_yield();
   }
 
   return NULL;
