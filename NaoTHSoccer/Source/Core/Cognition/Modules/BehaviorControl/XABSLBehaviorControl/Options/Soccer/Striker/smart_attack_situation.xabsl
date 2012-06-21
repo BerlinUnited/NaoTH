@@ -23,52 +23,12 @@ option smart_attack_situation
     {
       // if not localized turn around ball
       else if (state_time > 3000)
-      {
         goto turn_around_ball;
-      }
       // if position is verified, go on
       else if(goal.opp.time_since_seen < 3000 || goal.own.time_since_seen < 3000) //|| robot_pose.is_valid)
-      {
-        // Ball lies good enough for sidekick with left foot
-        if(executed_motion.step_control.left_movable
-           && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-           && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 95
-           && ball.right_foot.preview.y <= 105)
-        {
-          goto sidekick_left;
-        }
-        // Ball lies good enough for sidekick with left foot
-        else if(executed_motion.step_control.right_movable
-              && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
-              && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
-        {
-          goto sidekick_right;
-        }
-        else if(ball.right_foot.preview.x < 500
-              ||ball.left_foot.preview.x < 500)
-        {
-          if(attack.direction<0)
-          {
-            goto attack_left_foot;
-          }
-          else
-          {
-            goto attack_right_foot;
-          }
-        }
-        //Ball is far away again:(
-        else
-        {
-          goto approach_roughly;
-        }
-      }
+        goto approach_roughly;
       else
-      {
         stay;
-      }
     }
     action
     {
@@ -82,13 +42,9 @@ option smart_attack_situation
     decision
     {
       else if (action_done)
-      { 
         goto approach_roughly;
-      }
       else
-      {
         stay;
-      }
     }
     action {
       turn_around_ball_face_goal();
@@ -97,15 +53,8 @@ option smart_attack_situation
     }
   }
 
-  /*state stand_tester
-  {
-    
-    action
-    {
-      motion.type = stand;
-    }
-  }*/
 
+  // hold on for a while and go to approach_roughly
   state decide_what_to_do_next
   {
     decision
@@ -120,7 +69,12 @@ option smart_attack_situation
       motion.type = stand;
       motion.walk.stop_with_stand = true;
       common_decision.allowed = false;
-      head.control_mode = search_for_goal;
+
+      // look at percept
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
     }
   }
 
@@ -128,28 +82,30 @@ option smart_attack_situation
   {
     decision
     {
-      // We might be delocalized
-      else if(goal.opp.time_since_seen > 30000) //|| robot_pose.is_valid) xxx
+      // we might be delocalized
+      else if(goal.opp.time_since_seen > 30000 || !robot_pose.is_valid)
       {
         goto validate_field_position;
       } 
-      else if(ball.right_foot.preview.x < 500
-              ||ball.left_foot.preview.x < 500)
-      { 
-        if((goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
-              && ((ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0)
+      // ball is somewhat close
+      else if( ball.right_foot.preview.x < 500
+            || ball.left_foot.preview.x < 500)
+      {
+        // omni kick
+        if(      ((goal.opp.distance < 1500 && abs(value=attack.direction) < 40) || 
+                                               abs(value=attack.direction) < 10)
+              && goal.opp.distance > 800
+              && (  (ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0)
                   || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0))
-              && abs(value=attack.direction) < 40
-              && goal.opp.distance > 800)
+              )
 	      {
 	        goto omnidirectional_kick;
 	      }
 	      // Ball lies good enough for sidekick with left foot
 	      else if (executed_motion.step_control.left_movable
-               && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-               && ball.right_foot.preview.x <= 200 
-               && ball.right_foot.preview.y >= 95
-               && ball.right_foot.preview.y <= 105)
+               && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15       
+               && ball.right_foot.preview.x <= 200
+               && ball.right_foot.preview.y >= 95 && ball.right_foot.preview.y <= 105)
 	      {
 	        goto sidekick_left;
 	      }
@@ -158,19 +114,15 @@ option smart_attack_situation
 	      else if(executed_motion.step_control.right_movable
               && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
               && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
+              && ball.left_foot.preview.y <= -95 && ball.left_foot.preview.y >= -105)
         {
           goto sidekick_right;
         }
         //else 
-        else if(attack.direction<0)
-        {
-          goto attack_left_foot;
-        }
         else
         {
-          goto attack_right_foot;
+          // default situation
+          goto turn_around_ball;
         }
       }
       else
@@ -181,210 +133,25 @@ option smart_attack_situation
     action
     {
       common_decision.allowed = true;
-      go_to_relative_point(rotation = (ball.distance>500?
-                                          atan2(y = ball.preview.y 
-                                            + sin(angle=clip(value=attack.direction, min=-90 ,max=90))*200, 
-                                              x = ball.preview.x - cos(angle=attack.direction)*200)
-                                         :atan2(y = ball.preview.y, x = ball.preview.x)),
-                           x = ball.preview.x
-                                 - (ball.distance>500?cos(angle=attack.direction)*200:0), 
-                           y = ball.preview.y
-                                 - (ball.distance>500?sin(angle = clip(value=attack.direction, min=-90 ,max=90))*200:0),
-                           errorX=0, errorY=0, errorR=0);
-      motion.walk.coordinate = hip;
-      motion.type = walk;
+
+      // approach the ball
+      follow_ball_with_foot();
+      
+      //motion.walk.style = stable; // is also set in the follow_ball_with_foot->go_to_relative_point
       motion.walk.stop_with_stand = false;
       head.control_mode = search_for_ball;
     }
   }  
 
-  state attack_left_foot
-  {
-    decision
-    {
-      // We might be delocalized
-      else if(goal.opp.time_since_seen > 30000) //|| robot_pose.is_valid) xxx
-      {
-        goto validate_field_position;
-      }
-      //Ball is far away again:(
-      else if(ball.right_foot.preview.x > 600
-              && ball.left_foot.preview.x > 600)
-      {
-        goto approach_roughly;
-      }
-      else if( (goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
-            && ((ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0) || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0))
-            && abs(value=attack.direction) < 40
-            && goal.opp.distance > 800)
-      {
-        goto omnidirectional_kick;
-      }
-      // We decided for left foot but attack.direction changes to much due to moving ball, approach right
-      else if(attack.direction > 20)
-      {
-        goto attack_right_foot;
-      }
-      // Ball lies good enough for sidekick with left foot
-      else if (executed_motion.step_control.left_movable
-               && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-               && ball.right_foot.preview.x <= 200 
-               && ball.right_foot.preview.y >= 95
-               && ball.right_foot.preview.y <= 105)
-      {
-        goto sidekick_left;
-      }
-      // Due to mysterious reasons the ball changed in front of our right foot
-      else if(executed_motion.step_control.right_movable
-              && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
-              && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
-      {
-        goto sidekick_right;
-      }
-      else if( ball.left_foot.preview.x < 200 )
-      {
-        goto turn_around_ball;
-      }
-      else
-      {
-        stay;
-      }
-    }
-    action
-    {
-      common_decision.allowed = true;
-      go_to_relative_point(rotation = (ball.distance<200)?atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x)/2:atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x),
-                           x = clip(value=ball.right_foot.preview.x - 190 * cos(angle=atan2(y = ball.right_foot.preview.y-100, x = ball.right_foot.preview.x-190)),
-                                 max=ball.right_foot.preview.x-170, min=ball.right_foot.preview.x-190),                              
-                           y = ball.right_foot.preview.y - 100 * (1 + sin(angle=atan2(y = ball.right_foot.preview.y-100, x = ball.right_foot.preview.x-190))),                                
-                           errorX=0, errorY=0, errorR=0);
-      motion.walk.coordinate = right_foot;
-      motion.type = walk;
-      motion.walk.stop_with_stand = false;
-      head.control_mode = search_for_ball;
-      set_right_eye=green;
-    }
-  }
-
-  state attack_right_foot
-  {
-    decision
-    {
-      // We might be delocalized
-      else if(goal.opp.time_since_seen > 30000) //|| robot_pose.is_valid) xxx
-      {
-        goto validate_field_position;
-      }
-      //Ball is far away again:(
-      else if(ball.right_foot.preview.x > 600
-              && ball.left_foot.preview.x > 600)
-      {
-        goto approach_roughly;
-      }
-      else if((goal.opp.distance < 1500 || abs(value=attack.direction) < 10)
-            && ((ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0)
-                || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0))
-            && abs(value=attack.direction) < 40
-            && goal.opp.distance > 800)
-      {
-        goto omnidirectional_kick;
-      }
-      // We decided for right foot but attack.direction changes to much due to moving ball, approach left
-      else if(attack.direction < -20)
-      {
-        goto attack_left_foot;
-      }
-      // Ball lies good enough for sidekick with right foot
-      else if(executed_motion.step_control.right_movable
-              && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
-              && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
-      {
-        goto sidekick_right;
-      }
-      // Due to mysterious reasons the ball changed in front of our left foot
-      else if (executed_motion.step_control.left_movable
-               && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-               && ball.right_foot.preview.x <= 200 
-               && ball.right_foot.preview.y >= 95
-               && ball.right_foot.preview.y <= 105)
-      {
-        goto sidekick_left;
-      }
-      else if( ball.left_foot.preview.x < 200 )
-      {
-        goto turn_around_ball;
-      }
-      else
-      {
-        stay;
-      }
-    }
-    action
-    {
-      common_decision.allowed = true;
-      go_to_relative_point(rotation = (ball.distance<200)?atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x)/2:atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x),
-                           x = clip(value=ball.left_foot.preview.x - 190 * cos(angle=atan2(y = ball.left_foot.preview.y+100, x = ball.left_foot.preview.x-190)),
-                                 max=ball.left_foot.preview.x-170, min=ball.left_foot.preview.x-190), 
-                           y = ball.left_foot.preview.y + 100 * (1 + sin(angle=atan2(y = ball.left_foot.preview.y+100, x = ball.left_foot.preview.x-190))),                        
-                           errorX=0, errorY=0, errorR=0);
-      motion.walk.coordinate = left_foot;
-      motion.type = walk;
-      motion.walk.stop_with_stand = false;
-      head.control_mode = search_for_ball;
-      set_right_eye=red;
-    }
-  }
 
   state omnidirectional_kick
   {
     decision
     {
       else if(action_done)
-      {    
-        // Ball lies good enough for sidekick with left foot
-        if(executed_motion.step_control.left_movable
-           && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-           && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 95
-           && ball.right_foot.preview.y <= 105)
-        {
-          goto sidekick_left;
-        }
-        // Ball lies good enough for sidekick with right foot
-        else if(executed_motion.step_control.right_movable
-              && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
-              && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
-        {
-          goto sidekick_right;
-        }
-        else if(ball.right_foot.preview.x < 500
-              || ball.left_foot.preview.x < 500)
-        {
-          if(attack.direction<0)
-          {
-            goto attack_left_foot;
-          }
-          else
-          {
-            goto attack_right_foot;
-          }
-        }
-        //Ball is far away again:(
-        else
-        {
-          goto approach_roughly;
-        }
-      }
+        goto approach_roughly;
       else
-      {
         stay;
-      }
     }
     action
     {
@@ -398,24 +165,21 @@ option smart_attack_situation
     decision {
       // get out of walk_against_ball
       else if (state_time > 600)
-      { 
 	      goto decide_what_to_do_next;
-      }
       else
-      {
         stay;
-      }
     }
     action {
       common_decision.allowed = false;
     
       motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
       motion.walk_speed.x = 201;
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
-      motion.walk.coordinate = hip;
-      motion.walk.style = fast;
-      
+
+      // look at percept
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -428,47 +192,9 @@ option smart_attack_situation
     decision
     {
       else if(action_done)
-      { 
-        // Ball lies good enough for sidekick with left foot
-        if(executed_motion.step_control.left_movable
-           && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-           && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 95
-           && ball.right_foot.preview.y <= 105)
-        {
-          goto sidekick_left;
-        }
-        // Ball lies good enough for sidekick with right foot
-        else if(executed_motion.step_control.right_movable
-              && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
-              && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
-        {
-          goto sidekick_right;
-        }
-        else if(ball.right_foot.preview.x < 500
-              ||ball.left_foot.preview.x < 500)
-        {
-          if(attack.direction<0)
-          {
-            goto attack_left_foot;
-          }
-          else
-          {
-            goto attack_right_foot;
-          }
-        }
-        //Ball is far away again:(
-        else
-        {
-          goto approach_roughly;
-        }
-      }
+        goto approach_roughly;
       else
-      {
         stay;
-      }
     }
     action
     {
@@ -482,47 +208,9 @@ option smart_attack_situation
     decision
     {
       else if(action_done)
-      { 
-        // Ball lies good enough for sidekick with left foot
-        if(executed_motion.step_control.left_movable
-           && abs(value=(atan2(y = ball.left_foot.preview.y, x = ball.left_foot.preview.x))) < 15        
-           && ball.right_foot.preview.x <= 200 
-           && ball.right_foot.preview.y >= 95
-           && ball.right_foot.preview.y <= 105)
-        {
-          goto sidekick_left;
-        }
-        // Ball lies good enough for sidekick with left foot
-        else if(executed_motion.step_control.right_movable
-              && abs(value=(atan2(y = ball.right_foot.preview.y, x = ball.right_foot.preview.x))) < 15
-              && ball.left_foot.preview.x <= 200
-              && ball.left_foot.preview.y <= -95
-              && ball.left_foot.preview.y >= -105)
-        {
-          goto sidekick_right;
-        }
-        else if(ball.right_foot.preview.x < 500
-              ||ball.left_foot.preview.x < 500)
-        {
-          if(attack.direction<0)
-          {
-            goto attack_left_foot;
-          }
-          else
-          {
-            goto attack_right_foot;
-          }
-        }
-        //Ball is far away again:(
-        else
-        {
-          goto approach_roughly;
-        }
-      }
+        goto approach_roughly;
       else
-      {
         stay;
-      }
     }
     action
     {
