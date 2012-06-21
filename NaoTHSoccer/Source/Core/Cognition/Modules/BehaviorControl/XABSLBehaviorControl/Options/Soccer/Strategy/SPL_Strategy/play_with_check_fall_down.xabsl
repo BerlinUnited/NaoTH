@@ -83,7 +83,7 @@ option play_with_check_fall_down
     }
     action
     {
-      calibrate_intertial(stabilize_time = 3000);
+      calibrate_intertial(stabilize_time = 1000);
     }
   }
 
@@ -131,7 +131,7 @@ option play_with_check_fall_down
     decision
     {
       else if (action_done)
-        goto _init;
+        goto calibrate;//_init;
       else 
         stay; 
     }
@@ -140,4 +140,5 @@ option play_with_check_fall_down
       falling_down_standing_up();
     }
   }
+  
 }

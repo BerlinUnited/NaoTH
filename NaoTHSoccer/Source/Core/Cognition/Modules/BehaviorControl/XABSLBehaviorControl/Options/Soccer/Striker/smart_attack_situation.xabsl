@@ -59,7 +59,7 @@ option smart_attack_situation
   {
     decision
     {
-    else if(state_time < 1000)
+    else if(state_time < 600)
       stay;
     else
       goto approach_roughly;
@@ -70,7 +70,8 @@ option smart_attack_situation
       motion.walk.stop_with_stand = true;
       common_decision.allowed = false;
 
-      // look at percept
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -92,7 +93,8 @@ option smart_attack_situation
             || ball.left_foot.preview.x < 500)
       {
         // omni kick
-        if(      ((goal.opp.distance < 1500 && abs(value=attack.direction) < 40) || 
+        if(   body.temperature.leg.left < 60 && body.temperature.leg.right < 60
+              && ((goal.opp.distance < 1500 && abs(value=attack.direction) < 40) || 
                                                abs(value=attack.direction) < 10)
               && goal.opp.distance > 800
               && (  (ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0)
@@ -164,7 +166,7 @@ option smart_attack_situation
   {
     decision {
       // get out of walk_against_ball
-      else if (state_time > 600)
+      else if (state_time > 1000)
 	      goto decide_what_to_do_next;
       else
         stay;
@@ -179,7 +181,8 @@ option smart_attack_situation
       motion.walk_speed.y = 0;
       motion.walk_speed.rot = 0;
 
-      // look at percept
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
