@@ -120,6 +120,8 @@ include "Options/NonSoccer/Test/dribble_stand_test.xabsl";
 include"Options/NonSoccer/Test/search_ball_agent.xabsl";
 include "Options/NonSoccer/Test/search_ball_test/search_ball_test.xabsl";
 include "Options/NonSoccer/Test/search_ball_test/search_for_ball_test.xabsl";
+include "Options/NonSoccer/Test/kicker_agent_root.xabsl";
+include "Options/NonSoccer/Test/kicker_agent.xabsl";
 
 //obstacles
 include "Options/NonSoccer/Test/obstacle_avoidance.xabsl";
@@ -136,4 +138,6 @@ agent obstacles("Obstacles", obstacle_avoidance);
 /** dribble test */
 agent dribble_agent("DribbleAgent", dribble_agent);
 agent search_ball_agent("SearchBallAgent", search_ball_agent);
+
+agent kicker_agent("KickTestAgent", kicker_agent_root);
 //agent go_behind_ball("GoBehindBallAgent", go_to_pos_behind_ball);
