@@ -24,7 +24,7 @@ void DummyActiveGoalLocator::execute()
   getLocalGoalModel().opponentGoalIsValid = false;
   getLocalGoalModel().ownGoalIsValid = false;
 
-  getLocalGoalModel().someGoalWasSeen = getSensingGoalModel().someGoalWasSeen;
+  getLocalGoalModel().someGoalWasSeen = getGoalPercept().getNumberOfSeenPosts() > 0; //getSensingGoalModel().someGoalWasSeen;
   
   // opp goal is in front of me
   const GoalModel::Goal& oppGoal = getSelfLocGoalModel().getOppGoal(getCompassDirection(), getFieldInfo());
@@ -41,15 +41,15 @@ void DummyActiveGoalLocator::execute()
   if(getGoalPercept().getNumberOfSeenPosts() > 0)
   {
     getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
-  }
 
-  if(getLocalGoalModel().opponentGoalIsValid)
-  {
-    getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
-  }
-  else
-  {
-    getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
+    if(getLocalGoalModel().opponentGoalIsValid)
+    {
+      getLocalGoalModel().frameWhenOpponentGoalWasSeen = getFrameInfo();
+    }
+    else
+    {
+      getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
+    }
   }
 
   DEBUG_REQUEST("DummyActiveGoalLocator:draw_goal_model",

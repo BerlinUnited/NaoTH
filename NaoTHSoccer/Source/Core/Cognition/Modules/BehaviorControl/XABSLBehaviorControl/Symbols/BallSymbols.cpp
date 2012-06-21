@@ -67,9 +67,29 @@ void BallSymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("ball.right_foot.x", &ballRightFoot.x);
   engine.registerDecimalInputSymbol("ball.right_foot.y", &ballRightFoot.y);
 
+  // "Pose behind the ball in attackdirection with distance"
+  engine.registerDecimalInputSymbol("posBehindBallPreview.x", &getPosBehindBallFutureX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointX", &goToPointX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointY", &goToPointY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointDistanceX",  &goToPointDistanceX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.x", "posBehindBallPreview.x.goToPointDistanceY", &goToPointDistanceY);
+
+  engine.registerDecimalInputSymbol("posBehindBallPreview.y", &getPosBehindBallFutureY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointX", &goToPointX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointY", &goToPointY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointDistanceX",  &goToPointDistanceX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.y", "posBehindBallPreview.y.goToPointDistanceY", &goToPointDistanceY);
+  
+  engine.registerDecimalInputSymbol("posBehindBallPreview.rot", &getPosBehindBallFutureRotation);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointX", &goToPointX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointY", &goToPointY);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointDistanceX",  &goToPointDistanceX);
+  engine.registerDecimalInputSymbolDecimalParameter("posBehindBallPreview.rot", "posBehindBallPreview.rot.goToPointDistanceY", &goToPointDistanceY);
+
 
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballLeftFoot", "draw the ball model in left foot's coordinates on field", false);
   DEBUG_REQUEST_REGISTER("XABSL:BallSymbols:ballRightFoot", "draw the ball model in right foot's coordinates on field", false);
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_position_behind_ball", "draw the point behind the ball seen from the opp goal on field", false);
 
 }//end registerSymbols
 
@@ -78,7 +98,6 @@ void BallSymbols::execute()
 {
   // calculate the global position of the ball on the field
   ballPositionField = robotPose*ballModel.position;
-
 
   // transform the ball position into the feet coordinates
   const Pose3D& lFoot = kinematicChain.theLinks[KinematicChain::LFoot].M;
@@ -105,6 +124,27 @@ void BallSymbols::execute()
     PLOT("XABSL:BallSymbols:ballRightFoot:x", ballRightFoot.x);
     PLOT("XABSL:BallSymbols:ballRightFoot:y", ballRightFoot.y);
   );
+
+  // draw the position behind the ball (seen from attack direction)
+  //DEBUG_REQUEST("XABSL:StrategySymbols:draw_position_behind_ball",
+    //FIELD_DRAWING_CONTEXT;
+    //PEN("000000", 20);
+    // TRANSLATION(getRobotPose().translation.x, getRobotPose().translation.y);
+    // ROTATION(getRobotPose().rotation);
+
+    // Vector2<double> targetDir = getRawAttackDirection().attackDirection;
+    // targetDir.normalize(200);
+
+    //ARROW(
+    //      posBehindBall.translation.x,
+    //      posBehindBall.translation.y,
+    //      getBallModel().positionPreview.x,
+    //      getBallModel().positionPreview.y
+    //      );
+
+    // ROTATION(-getRobotPose().rotation);
+    // TRANSLATION(-getRobotPose().translation.x, -getRobotPose().translation.y);
+  //);
 
 }//end update
 
@@ -161,6 +201,40 @@ double BallSymbols::getTeamBallTimeSinceLastUpdate()
   return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.time);
 }//end getTeamBallTimeSinceLastUpdate
 
+void BallSymbols::calculatePosBehindBallFuture()
+{
+  // for better readability
+  double gtpx = theInstance->goToPointX;
+  double gtpy = theInstance->goToPointY;
+  double distanceX = theInstance->goToPointDistanceX;
+  double distanceY = theInstance->goToPointDistanceY;
+
+  // ball.preview.x - 200*cos(angle=attack.direction), 
+  theInstance->posBehindBall.translation.x = gtpx - distanceX * cos(Math::toDegrees(atan2(gtpy-distanceY, gtpx-distanceX)));
+  
+  //  y = ball.preview.y - sin(angle = attack_direction)*200 // clip(value=attack.direction, min=-90 ,max=90)???
+  theInstance->posBehindBall.translation.y = gtpy - distanceY * (1+sin(Math::toDegrees(atan2(gtpy-distanceY, gtpx-distanceX))));
+
+  // rot = atan2(y = ball.preview.y + sin(angle=attack.direction)*200, x = ball.preview.x - cos(angle=attack.direction)*200)
+  theInstance->posBehindBall.rotation = Math::toDegrees(atan2(gtpy, gtpx));
+}
+
+double BallSymbols::getPosBehindBallFutureX()
+{
+  calculatePosBehindBallFuture();
+  return theInstance->posBehindBall.translation.x;
+}
+double BallSymbols::getPosBehindBallFutureY()
+{
+  calculatePosBehindBallFuture();
+  return theInstance->posBehindBall.translation.x;
+}
+double BallSymbols::getPosBehindBallFutureRotation()
+{
+  calculatePosBehindBallFuture();
+  return Math::toDegrees(theInstance->posBehindBall.rotation);
+}
+
 double BallSymbols::getTeamBallGoalieTimeSinceLastUpdate()
 {
   return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.goalieTime);
@@ -170,3 +244,4 @@ double BallSymbols::getTeamBallStrikerTimeSinceLastUpdate()
 {
   return theInstance->frameInfo.getTimeSince(theInstance->teamBallModel.strikerTime);
 }//end getTeamBallStrikerTimeSinceLastUpdate
+

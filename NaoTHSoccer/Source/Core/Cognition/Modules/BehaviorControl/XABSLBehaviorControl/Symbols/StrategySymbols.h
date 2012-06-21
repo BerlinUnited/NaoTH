@@ -150,6 +150,9 @@ private:
   static double penaltyGoalieGuardPositionX();
   static double penaltyGoalieGuardPositionY();
 
+  static double PosBehindBall2ADX;
+  static double PosBehindBall2ADY;
+
   struct CycleParameter
   {
     /** The parameter "circlex.directiony" and "circley.directiony" of the functions "circlex" and "circley" */

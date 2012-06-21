@@ -144,8 +144,8 @@ void SimpleMotionBehaviorControl::testHead()
     if(getFrameInfo().getTimeSince(getBallModel().frameInfoWhenBallWasSeen.getTime()) < 3000)
     {
       getHeadMotionRequest().id = HeadMotionRequest::look_at_world_point;
-      getHeadMotionRequest().targetPointInTheWorld.x = getBallModel().positionPreview.x;
-      getHeadMotionRequest().targetPointInTheWorld.y = getBallModel().positionPreview.y;
+      getHeadMotionRequest().targetPointInTheWorld.x = getBallModel().position.x;
+      getHeadMotionRequest().targetPointInTheWorld.y = getBallModel().position.y;
       getHeadMotionRequest().targetPointInTheWorld.z = getFieldInfo().ballRadius;
     }
   );

@@ -10,6 +10,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Tools/Debug/DebugBufferedOutput.h>
 
+
 void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("attention.mi_point.x", &attentionModel.mostInterestingPoint.x );
@@ -88,7 +89,6 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("situationStatusOwnHalf", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
   engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
-
 
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
