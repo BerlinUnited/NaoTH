@@ -17,7 +17,8 @@ option calibrate_intertial
     {
       //head.control_mode = stay_as_forced;
       motion.type = stand;
-      sensor.inertial.calibrate = true;
+      head.control_mode = search_for_goal;
+      //sensor.inertial.calibrate = true;
     }
   }
 
@@ -33,7 +34,8 @@ option calibrate_intertial
     action
     {
       motion.type = stand;
-      sensor.inertial.calibrate = true;
+      head.control_mode = search_for_goal;
+      //sensor.inertial.calibrate = true;
     }
   }
 
@@ -45,7 +47,9 @@ option calibrate_intertial
     }
     action
     {
-      sensor.inertial.calibrate = false;
+      motion.type = stand;
+      head.control_mode = search_for_goal;
+      //sensor.inertial.calibrate = false;
     }
   }
 }
