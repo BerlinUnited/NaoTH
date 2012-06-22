@@ -154,7 +154,7 @@ public class TeamCommViewer extends AbstractDialog
  
   class TeamCommListener implements ActionListener
   {
-    public final int TEAMCOMM_PORT = 10700;
+    public final int TEAMCOMM_PORT = 10400;
     public final int MAX_PACKAGE_SIZE = 256;
     public final int NUM_OF_PLAYERS = 11;
 
