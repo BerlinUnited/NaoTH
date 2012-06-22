@@ -248,7 +248,7 @@ void ActiveGoalLocator::execute() {
     getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
   }
 
-  DEBUG_REQUEST("DummyActiveGoalLocator:draw_goal_model",
+  DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
     FIELD_DRAWING_CONTEXT;
     if(getLocalGoalModel().opponentGoalIsValid)
       PEN("000000", 50);
