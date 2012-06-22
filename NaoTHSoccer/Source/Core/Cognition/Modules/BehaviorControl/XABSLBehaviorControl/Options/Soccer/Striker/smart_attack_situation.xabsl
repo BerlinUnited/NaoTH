@@ -93,12 +93,10 @@ option smart_attack_situation
             || ball.left_foot.preview.x < 500)
       {
         // omni kick
-        if(   body.temperature.leg.left < 53 && body.temperature.leg.right < 53
-              && ((goal.opp.distance < 1500 && abs(value=attack.direction) < 40) || 
-                                               abs(value=attack.direction) < 10)
-              && goal.opp.distance > 800
-              && (  (ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0)
-                  || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0))
+        if(   (goal.opp.distance < 1500 && abs(value=attack.direction) < 10)
+              && goal.opp.distance > 400
+              && (  (ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0 && body.temperature.leg.right < 53)
+                  || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0 && body.temperature.leg.left < 53))
               )
 	      {
 	        goto omnidirectional_kick;
