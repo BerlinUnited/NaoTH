@@ -33,6 +33,7 @@ option decide_role
   {
     action
     {
+      situationStatusOwnHalf = true;
       team.is_playing_as_striker = false;
       ball_was_outside_circle = true;
       spl_robust_goalie();

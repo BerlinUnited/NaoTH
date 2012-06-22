@@ -61,10 +61,11 @@ option play_with_check_fall_down
     action 
     {
       sound.request = (state_time == 0) ? playing : off;
+      situationStatusOwnHalf = false;
+      
       decide_role();
       //critical_ball();
       last_state_was_penalized = false;
-      situationStatusOwnHalf = false;
     }
   }
 
