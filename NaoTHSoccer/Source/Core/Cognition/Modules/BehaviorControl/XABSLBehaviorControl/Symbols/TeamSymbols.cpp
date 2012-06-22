@@ -181,7 +181,7 @@ bool TeamSymbols::calculateIfTheLast()
         !messageData.message.wasstriker() &&
         number != 1 && // no goalie
         // we are already considered by the initial values
-        messageData.message.playernumber() != theInstance->playerInfo.gameData.playerNumber
+        messageData.message.playernumber() != (int) theInstance->playerInfo.gameData.playerNumber
         )
     {
       Vector2<double> robotpos;
