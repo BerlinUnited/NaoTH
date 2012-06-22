@@ -157,13 +157,16 @@ TeamSymbols::~TeamSymbols()
 /** the robot which is closest to own goal is defined as the last one */
 bool TeamSymbols::calculateIfTheLast()
 {
-  unsigned int fn = theInstance->frameInfo.getFrameNumber();
-
   TeamMessage const& tm = theInstance->teamMessage;
 
   // initialize with own values
   double shortestDistance = (theInstance->robotPose.translation - theInstance->fieldInfo.ownGoalCenter).abs();
+
+  double secondShortestDistance = std::numeric_limits<double>::max();
+
   unsigned int playerNearestToOwnGoal = theInstance->playerInfo.gameData.playerNumber;
+  unsigned int playerAlmostNearestToOwnGoal = std::numeric_limits<unsigned int>::max();
+
 
   // check all non-penalized and non-striker team members
   for(std::map<unsigned int, TeamMessage::Data>::const_iterator i=tm.data.begin();
@@ -172,10 +175,13 @@ bool TeamSymbols::calculateIfTheLast()
     const TeamMessage::Data& messageData = i->second;
     const int number = i->first;
 
-    if ((fn - messageData.frameInfo.getFrameNumber()) < 100 && // alive?
+    if ((theInstance->frameInfo.getTimeSince(messageData.frameInfo.getTime())
+         < theInstance->maximumFreshTime) && // alive?
         !messageData.message.ispenalized() && // not penalized?
         !messageData.message.wasstriker() &&
-        number != 1 // no goalie
+        number != 1 && // no goalie
+        // we are already considered by the initial values
+        messageData.message.playernumber() != theInstance->playerInfo.gameData.playerNumber
         )
     {
       Vector2<double> robotpos;
@@ -184,12 +190,51 @@ bool TeamSymbols::calculateIfTheLast()
       double d = (robotpos-theInstance->fieldInfo.ownGoalCenter).abs();
       if ( d < shortestDistance )
       {
+       // std::cout << "(old) secDist=" << secondShortestDistance << " secNum="
+       //           << playerAlmostNearestToOwnGoal << " firstDist=" << shortestDistance
+       //           << " firstNum=" << playerNearestToOwnGoal << std::endl;
+
+        // exchange the second shortest distance
+        secondShortestDistance = shortestDistance;
+        playerAlmostNearestToOwnGoal = playerNearestToOwnGoal;
+
+        //std::cout << "(after exchange) secDist=" << secondShortestDistance << " secNum="
+        //          << playerAlmostNearestToOwnGoal << " firstDist=" << shortestDistance
+        //          << " firstNum=" << playerNearestToOwnGoal << std::endl;
+
+        // set new nearest
         shortestDistance = d;
         playerNearestToOwnGoal = number;
+
+        //std::cout << "(new) secDist=" << secondShortestDistance << " secNum="
+        //          << playerAlmostNearestToOwnGoal << " firstDist=" << shortestDistance
+        //          << " firstNum=" << playerNearestToOwnGoal << std::endl;
       }
     }//end if
   }//end for
 
-  // is it me?
-  return playerNearestToOwnGoal == theInstance->playerInfo.gameData.playerNumber;
+//  std::cout << "==========" << std::endl;
+
+  if(abs(secondShortestDistance-shortestDistance) < 500)
+  {
+    // distance of distance is less than half a meter, choose if we have the
+    // lowest player number
+    if(playerNearestToOwnGoal == theInstance->playerInfo.gameData.playerNumber)
+    {
+      return playerNearestToOwnGoal < playerAlmostNearestToOwnGoal;
+    }
+    else if(playerAlmostNearestToOwnGoal == theInstance->playerInfo.gameData.playerNumber)
+    {
+      return playerAlmostNearestToOwnGoal < playerNearestToOwnGoal;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    // is it me?
+    return playerNearestToOwnGoal == theInstance->playerInfo.gameData.playerNumber;
+  }
 }//end calculateIfTheLast
