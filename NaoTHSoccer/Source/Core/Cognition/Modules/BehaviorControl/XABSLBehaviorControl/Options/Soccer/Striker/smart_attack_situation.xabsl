@@ -8,7 +8,9 @@ option smart_attack_situation
   common decision
   {
     //Change angle here (and in walk_against_ball) to influence walk against ball decision 
-    if( ((abs(value = attack.direction) < 30 && goal.opp.distance > 1500) ||
+    if(goal.opp.time_since_seen > 30000 || !robot_pose.is_valid)
+      goto validate_field_position;
+    else if( ((abs(value = attack.direction) < 30 && goal.opp.distance > 1500) ||
          (abs(value = attack.direction) < 5))
         && (ball.preview.x > 50 && ball.preview.x < 250 && abs(value=ball.preview.y) < 40)
         && common_decision.allowed)
@@ -84,7 +86,7 @@ option smart_attack_situation
     decision
     {
       // we might be delocalized
-      else if(goal.opp.time_since_seen > 30000 || !robot_pose.is_valid)
+      else if(goal.opp.time_since_seen > 50000 || !robot_pose.is_valid)
       {
         goto validate_field_position;
       } 
@@ -93,12 +95,10 @@ option smart_attack_situation
             || ball.left_foot.preview.x < 500)
       {
         // omni kick
-        if(   body.temperature.leg.left < 53 && body.temperature.leg.right < 53
-              && ((goal.opp.distance < 1500 && abs(value=attack.direction) < 40) || 
-                                               abs(value=attack.direction) < 10)
-              && goal.opp.distance > 800
-              && (  (ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0)
-                  || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0))
+        if(   (goal.opp.distance < 1500 && abs(value=attack.direction) < 10)
+              && goal.opp.distance > 400
+              && (  (ball.right_foot.preview.x < 200 && ball.right_foot.preview.x > 0 && body.temperature.leg.right < 53)
+                  || (ball.left_foot.preview.x < 200 && ball.left_foot.preview.x > 0 && body.temperature.leg.left < 53))
               )
 	      {
 	        goto omnidirectional_kick;
