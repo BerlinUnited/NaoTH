@@ -8,7 +8,9 @@ option smart_attack_situation
   common decision
   {
     //Change angle here (and in walk_against_ball) to influence walk against ball decision 
-    if( ((abs(value = attack.direction) < 30 && goal.opp.distance > 1500) ||
+    if(goal.opp.time_since_seen > 30000 || !robot_pose.is_valid)
+      goto validate_field_position;
+    else if( ((abs(value = attack.direction) < 30 && goal.opp.distance > 1500) ||
          (abs(value = attack.direction) < 5))
         && (ball.preview.x > 50 && ball.preview.x < 250 && abs(value=ball.preview.y) < 40)
         && common_decision.allowed)
@@ -84,7 +86,7 @@ option smart_attack_situation
     decision
     {
       // we might be delocalized
-      else if(goal.opp.time_since_seen > 30000 || !robot_pose.is_valid)
+      else if(goal.opp.time_since_seen > 50000 || !robot_pose.is_valid)
       {
         goto validate_field_position;
       } 
