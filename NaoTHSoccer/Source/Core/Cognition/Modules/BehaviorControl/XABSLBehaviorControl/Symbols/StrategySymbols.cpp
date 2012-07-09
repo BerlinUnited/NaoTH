@@ -34,9 +34,9 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 
   // attack direction and previews
   engine.registerDecimalInputSymbol("attack.direction", &attackDirection);
-  engine.registerDecimalInputSymbol("attack.direction.preview", &attackDirection);
-  engine.registerDecimalInputSymbol("attack.direction.preview.left_foot", &attackDirection);
-  engine.registerDecimalInputSymbol("attack.direction.preview.right_foot", &attackDirection);
+  engine.registerDecimalInputSymbol("attack.direction.preview", &attackDirectionPreviewHip);
+  engine.registerDecimalInputSymbol("attack.direction.preview.left_foot", &attackDirectionPreviewLFoot);
+  engine.registerDecimalInputSymbol("attack.direction.preview.right_foot", &attackDirectionPreviewRFoot);
 
 
   engine.registerDecimalInputSymbol("defense.pose.translation.x", &defensePoseX);

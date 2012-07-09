@@ -4,6 +4,7 @@
 
 package de.naoth.rc.manager;
 
+import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dialogs.drawings.Circle;
 import de.naoth.rc.dialogs.drawings.Drawable;
@@ -20,6 +21,9 @@ import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
 import de.naoth.rc.server.MessageServer;
 import java.awt.Color;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -64,7 +68,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
     
     try{
       TeamCommMessage msg = TeamCommMessage.parseFrom(result);
-
+      
       drawingMap.put(currenId, parseContainer(msg));
 
       for(ArrayList<Drawable> drawables: drawingMap.values())
@@ -78,6 +82,10 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
     }catch(InvalidProtocolBufferException ex)
     {
       throw new IllegalArgumentException(ex.toString());
+    }
+    catch(IOException iox)
+    {
+        iox.printStackTrace(System.err);
     }
 
     return drawingList;
@@ -109,7 +117,7 @@ public class TeamCommDrawingManagerImpl extends AbstractManager<DrawingsContaine
       drawingList.add(robot);
     }
 
-    if(msg.hasWasStriker())
+    if(msg.hasWasStriker() && msg.getWasStriker())
     {
       Pen pen = new Pen(30, Color.red);
       drawingList.add(pen);
