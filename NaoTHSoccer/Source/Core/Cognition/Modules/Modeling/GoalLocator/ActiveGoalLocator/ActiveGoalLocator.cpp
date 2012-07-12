@@ -185,6 +185,14 @@ void ActiveGoalLocator::execute() {
       numOfValidFilter++;
   }
 
+  if (getGoalPercept().getNumberOfSeenPosts() > 0) {
+
+    getLocalGoalModel().someGoalWasSeen = true; //by post
+    //frame Info when goal was seen not useful! New: some_goal_was seen
+    getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
+
+  }
+
   if (numOfValidFilter > 1) {
 
     unsigned int id1 = 0;
@@ -224,10 +232,6 @@ void ActiveGoalLocator::execute() {
         getLocalGoalModel().goal.rightPost = ccSamples[id1].sampleSet.mean;
       }
 
-      getLocalGoalModel().someGoalWasSeen = true;
-      //frame Info when goal was seen not useful! New: some_goal_was seen
-      getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
-
     }
 
   }//end if numOfValidFilter
@@ -261,12 +265,6 @@ void ActiveGoalLocator::execute() {
   );
   //
   /////////////////////////////////
-
-
-
-
-
-
 
 
   debugDrawings();
