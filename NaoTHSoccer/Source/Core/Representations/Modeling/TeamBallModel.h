@@ -24,6 +24,14 @@ public:
   // the time of message
   unsigned int time;
 
+  Vector2<double> goaliePositionOnField;
+  Vector2<double> goaliePosition;
+  unsigned int goalieTime;
+
+  Vector2<double> strikerPositionOnField;
+  Vector2<double> strikerPosition;
+  unsigned int strikerTime;
+
   virtual ~TeamBallModel()
   {
 

@@ -38,7 +38,7 @@ option spl_robust_goalie{
 
   initial state localize{
     decision{
-    else if(robot_pose.is_valid && state_time > 1000)
+    else if((robot_pose.is_valid && state_time > 1000) || state_time > 10000)
       goto inside_penalty_area;
      else stay;
     }

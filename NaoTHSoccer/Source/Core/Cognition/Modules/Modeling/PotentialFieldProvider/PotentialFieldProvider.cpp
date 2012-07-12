@@ -56,7 +56,7 @@ void PotentialFieldProvider::execute()
   // begin --- getGoal() ---
   Vector2<double> targetPoint = getGoalTarget(ballRelative, oppGoalModel);
   // preview
-  //targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
+  targetPoint = getMotionStatus().plannedMotion.hip / targetPoint;
   // ----------
 
 

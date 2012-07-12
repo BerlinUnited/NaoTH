@@ -1,0 +1,62 @@
+/** This is the "main" file for playing */
+
+option kicker_agent_root 
+{  
+	common decision {
+    if (game.state == penalized)
+      goto penalized;
+    else if(game.state == playing)
+      goto playing;
+    else if(game.state == unknown)
+      goto dont_know_what_to_do;
+	}
+    
+	initial state _initial {
+		action
+		{
+      ball_was_outside_circle = false;
+      last_state_was_penalized = false;
+      situationStatusOwnHalf = false;
+			head.control_mode = stay_as_forced;
+			motion.type = init;
+		}
+	}	
+  
+	state playing {
+		action 
+		{
+      sound.request = (state_time == 0)  ? playing : off;
+      situationStatusOwnHalf = false;
+
+      
+
+      //last_state_was_penalized = false;
+      
+		}
+	}
+  
+	state penalized {
+		action
+		{
+      last_state_was_penalized = true;
+      //sound.request = (state_time == 0) ? penalized : off;
+			head.control_mode = (state_time < 2000) ? look_straight_ahead : stay_as_forced;
+			motion.type = (executed_motion.type==init || fall_down_state == upright)?stand:dead;
+
+      set_left_eye=red;
+      set_right_eye=red;
+
+      ball_was_outside_circle = true;
+      situationStatusOwnHalf = true;
+		}
+	}
+
+  state dont_know_what_to_do {
+    action
+    {
+      last_state_was_penalized = false;
+      head.control_mode = stay_as_forced;
+      motion.type = stand;
+    }
+  }
+}

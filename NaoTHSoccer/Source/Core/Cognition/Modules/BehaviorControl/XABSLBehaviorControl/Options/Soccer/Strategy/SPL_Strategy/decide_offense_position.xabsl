@@ -62,7 +62,7 @@ option decide_offense_position
     }
     action
     {
-      go_to_point(x=-200, y=1000, rot=-15);
+      go_to_point(x=-400, y=1000, rot=-15);
       //goto_ready_position(x=-400, y=1000, rot=-15, check_by_line=true, distToLine=200, maxLineDist=1000, minLineDist=100);
       head.control_mode = search_for_goal;
     }

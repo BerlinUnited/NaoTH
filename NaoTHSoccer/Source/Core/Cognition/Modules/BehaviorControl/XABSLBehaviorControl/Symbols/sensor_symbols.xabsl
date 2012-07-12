@@ -34,6 +34,11 @@ namespace sensor("Sensor Symbols") {
   */
   enum fall_down_state input fall_down_state;
 
+  /** maximal temperature in the left leg */
+  float input body.temperature.leg.left;
+  /** maximal temperature in the right leg */
+  float input body.temperature.leg.right;
+  
   /** Ultrasound distance sensor */
   float input sensor.ultrasound;
   float input sensor.ultrasound.left;
@@ -65,9 +70,14 @@ namespace sensor("Sensor Symbols") {
 
   /** path planner */
   
+  // next point in the path to follow
   float input path.next_point_to_go_x;
   float input path.next_point_to_go_y;
+  
+  // time since the next_point_to_go could not be calculated
+  float input path.time_since_not_valid;
 
+  // target point to calculate the path to
   float output path.target_x;
   float output path.target_y;
 }

@@ -1,0 +1,399 @@
+/**
+* This is an attacking behavior. 
+* It should go to the ball, and dribble or kick 
+* when close to the enemy goal
+**/
+
+option close_to_goal_corner_situation
+{
+  common decision
+  {
+    if(abs(value = attack.direction) > 80)
+    {
+      goto between_goal_and_ball; 
+    }
+  } 
+  
+  initial state side_decision
+  {
+    decision
+    {
+      else if(robot_pose.y > 0)
+      {
+        goto left_side;
+      }
+      else
+      {
+        goto right_side;
+      } 
+    }
+    action
+    {
+      head.control_mode = search_for_ball;
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+      motion.walk_speed.x = 0;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+    }
+  }
+
+  state left_side
+  {
+    decision
+    {
+      else if(action_done)
+      {     
+        // No danger of shooting accidently outside the field
+        if(robot_pose.x < 2700)
+        {   
+          if(robot_pose.rotation < 30
+              && robot_pose.rotation > -45
+              && ball.left_foot.preview.x < 200)
+          {
+            goto omnidirectional_kick_left_side;
+          }
+          else
+          {
+            goto smart_attack;               
+          } 
+        }
+        else
+        {
+          goto approach_for_shoot_from_goal_line_left;
+        }
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
+  state right_side
+  {
+    decision
+    {
+      else if(action_done)
+      {     
+        // No danger of shooting accidently outside the field
+        if(robot_pose.x < 2700)
+        {   
+          if(robot_pose.rotation < 45
+              && robot_pose.rotation > -30
+              && ball.right_foot.preview.x < 200)
+          {
+            goto omnidirectional_kick_right_side;
+          }
+          else
+          {
+            goto smart_attack;               
+          } 
+        }
+        else
+        {
+          goto approach_for_shoot_from_goal_line_right;
+        }
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
+  state approach_for_shoot_from_goal_line_left
+  {
+    decision
+    {
+      else if(attack.direction >= -10)
+      {
+        goto shoot_from_goal_line_left;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      // Put here an approach which definately stops behond the ball on the correct side!!!
+      // Probably best here is parallel to goal line, ball in front of left foot?
+      //approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      between_goal_and_ball_situation();
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
+  state approach_for_shoot_from_goal_line_right
+  {
+    decision
+    {
+      else if(attack.direction <= 10)
+      {
+        goto shoot_from_goal_line_right;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      // Put here an approach which definately stops behind the ball on the correct side!!!
+      // Probably best here is parallel to goal line, ball in front of right foot?
+      //approach_ball_with_correct_foot_ckeck_goal(dist=170, errorX=15, errorY=15, errorR=5+5*random);
+      between_goal_and_ball_situation();
+      motion.type = walk;
+      motion.walk.stop_with_stand = false;
+    }
+  }
+
+  // Maybe we can use omnidirectional kick here instead?
+  state shoot_from_goal_line_left
+  {
+    decision {
+      // If ball gets out of corner_area, sidekick with left foot into goal if possible
+      else if ((-13/18)*ball.position.field.x + (8600/3) < ball.position.field.y
+                && ball.left_foot.preview.x < 200
+                && ball.left_foot.preview.y > 0)
+      {
+        goto sidekick_left;
+      }
+      // If ball gets out of corner_area, sidekick with right foot into goal if possible
+      else if ((-13/18)*ball.position.field.x + (8600/3) < ball.position.field.y
+                && ball.right_foot.preview.x < 200
+                && ball.right_foot.preview.y > 0)
+      {
+        goto sidekick_right;
+      }
+      // state_time as backup
+      else if (state_time > 1000 
+                || ball.preview.x < 0
+                || ball.preview.x > 250
+                || ball.left_foot.preview.y < 10
+                || robot_pose.x < 2800) 
+      {
+        goto left_side; 
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = ball.left_foot.preview.x;
+      motion.walk_speed.y = ball.left_foot.preview.y;
+      motion.walk_speed.rot = ball.angle;
+      motion.walk.coordinate = left_foot;
+      motion.walk.style = stable;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  // Maybe we can use omnidirectional kick here instead?
+  state shoot_from_goal_line_right
+  {
+    decision {
+      // If ball gets out of corner_area, sidekick with right foot into goal if possible
+      else if ((13/18)*ball.position.field.x - (8600/3) > ball.position.field.y
+                && ball.right_foot.preview.x < 200
+                && ball.right_foot.preview.y < 0)
+      {
+        goto sidekick_right;
+      }
+      // If ball gets out of corner_area, sidekick with left foot into goal if possible
+      else if ((13/18)*ball.position.field.x - (8600/3) > ball.position.field.y
+                && ball.left_foot.preview.x < 200
+                && ball.left_foot.preview.y < 0)
+      {
+        goto sidekick_left;
+      }
+      // state_time as backup
+      else if (state_time > 1000 
+                || ball.preview.x < 0
+                || ball.preview.x > 250
+                || ball.right_foot.preview.y > -10
+                || robot_pose.x < 2800) 
+      {
+        goto right_side; 
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action {
+      motion.type = walk;
+      motion.walk_speed.x = ball.right_foot.preview.x;
+      motion.walk_speed.y = ball.right_foot.preview.y;
+      motion.walk_speed.rot = ball.angle;
+      motion.walk.coordinate = right_foot;
+      motion.walk.style = stable;
+      head.motion_type = look_at_world_point;
+      head.point_in_world.x = ball.percept.x;
+      head.point_in_world.y = ball.percept.y;
+      head.point_in_world.z = ball.radius;
+    }
+  }
+
+  state sidekick_left
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto left_side;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      sidekick(right_foot=false);
+    }
+  }
+
+  state sidekick_right
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto right_side;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      sidekick(right_foot=true);
+    }
+  }
+
+  state omnidirectional_kick_right_side
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto right_side;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      perform_omnidirectional_kick(distance = 190, right_foot = true, errorX=30, errorY=30, errorR=20);
+    }
+  }
+
+  state omnidirectional_kick_left_side
+  {
+    decision
+    {
+      else if(action_done)
+      {
+        goto left_side; 
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      perform_omnidirectional_kick(distance = 190, right_foot = false, errorX=30, errorY=30, errorR=20);
+    }
+  }
+
+  state  between_goal_and_ball
+  {
+    decision
+    {
+      else if(abs(value = attack.direction) <= 80)
+      {
+        if(robot_pose.y > 0)
+        {
+          goto left_side;
+        }
+        else
+        {
+          goto right_side;
+        }   
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      between_goal_and_ball_situation();
+    }
+  }
+
+  state smart_attack
+  {
+    decision
+    {
+      else if (robot_pose.x >= 2700)
+      {
+        if(robot_pose.y > 0)
+        {
+          goto approach_for_shoot_from_goal_line_left;
+        }
+        else
+        {
+          goto approach_for_shoot_from_goal_line_right;
+        }
+      }
+      else if(robot_pose.y > 0
+          && robot_pose.rotation < 30
+          && robot_pose.rotation > -45
+          && ball.left_foot.preview.x < 200)
+      {
+        goto omnidirectional_kick_left_side;
+      }
+      else if(robot_pose.y < 0
+          && robot_pose.rotation < 45
+          && robot_pose.rotation > -30
+          && ball.right_foot.preview.x < 200)
+      {
+        goto omnidirectional_kick_right_side;
+      }
+      else
+      {
+        stay;
+      }
+    }
+    action
+    {
+      smart_attack_situation();
+    }
+  }
+  
+}
