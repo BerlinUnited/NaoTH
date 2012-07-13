@@ -19,7 +19,7 @@
 class CameraMatrix : public Pose3D, public naoth::Printable
 {
 public:
-  CameraMatrix() {}
+  CameraMatrix(): cameraNumber(-1), valid(false) {}
   CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraNumber(-1), valid(false) {}
 
   int cameraNumber;

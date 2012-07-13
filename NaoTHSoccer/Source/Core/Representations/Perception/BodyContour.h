@@ -189,7 +189,11 @@ public:
   Vector2<int> cameraResolution;
 
   /** Default constructor. */
-  BodyContour() 
+  BodyContour()
+  :   
+    stepSize(1),
+    xDensity(1),
+    yDensity(1)
   {
     lines.reserve(100);
   }

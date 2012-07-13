@@ -13,7 +13,15 @@ DebugImageDrawings::DebugImageDrawings()
   : 
   numberOfPoints(0)
 {
+  for(int i = 0; i < 320*240; i++)
+  {
+      pixels[i][0] = 0;
+      pixels[i][1] = 0;
+      pixels[i][2] = 0;
 
+      coordinates[i][0] = 0;
+      coordinates[i][1] = 0;
+  }
 }
 
 DebugImageDrawings::~DebugImageDrawings(){}

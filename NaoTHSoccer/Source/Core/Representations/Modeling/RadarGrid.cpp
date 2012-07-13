@@ -349,7 +349,7 @@ void RadarGrid::drawFieldContext()
 
   //draw grid values
   cellsMap::iterator CIT = cells.begin();
-  for (; CIT != cells.end(); CIT++)
+  for (; CIT != cells.end(); ++CIT)
   {
     // do we use buffer?
     if (useBuffer)

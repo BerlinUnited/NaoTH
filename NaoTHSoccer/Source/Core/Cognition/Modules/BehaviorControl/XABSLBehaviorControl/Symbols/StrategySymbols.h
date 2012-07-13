@@ -52,7 +52,8 @@ public:
     compassDirection(getCompassDirection()),
 
     goalKickPlayer(0.0),
-    goalKickPositionLeft(false)
+    goalKickPositionLeft(false),
+    attackDirection(0.0)
   {
     theInstance = this;
   };
