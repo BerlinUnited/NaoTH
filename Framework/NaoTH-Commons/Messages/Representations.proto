@@ -125,6 +125,13 @@ message KickRequest {
   required bool finishKick = 4;
 }
 
+message GraspRequest {
+  required DoubleVector3 graspingPoint = 1;
+  required uint32 graspingState = 2;
+  required uint32 graspDistState = 3;
+  required uint32 graspStiffState = 4;
+}
+
 message MotionRequest {
   required uint32 id = 1;
   required uint32 time = 2;
@@ -135,6 +142,7 @@ message MotionRequest {
   optional double standHeight = 7;
   optional bool calibrateFootTouchDetector = 8;
   optional uint32 cognitionFrameNumber = 9;
+  optional GraspRequest graspRequest = 10;
 }
 
 message LinePercept {

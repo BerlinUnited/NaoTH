@@ -10047,6 +10047,641 @@ public final class Representations {
     // @@protoc_insertion_point(class_scope:naothmessages.KickRequest)
   }
   
+  public interface GraspRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .naothmessages.DoubleVector3 graspingPoint = 1;
+    boolean hasGraspingPoint();
+    de.naoth.rc.messages.CommonTypes.DoubleVector3 getGraspingPoint();
+    de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getGraspingPointOrBuilder();
+    
+    // required uint32 graspingState = 2;
+    boolean hasGraspingState();
+    int getGraspingState();
+    
+    // required uint32 graspDistState = 3;
+    boolean hasGraspDistState();
+    int getGraspDistState();
+    
+    // required uint32 graspStiffState = 4;
+    boolean hasGraspStiffState();
+    int getGraspStiffState();
+  }
+  public static final class GraspRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements GraspRequestOrBuilder {
+    // Use GraspRequest.newBuilder() to construct.
+    private GraspRequest(Builder builder) {
+      super(builder);
+    }
+    private GraspRequest(boolean noInit) {}
+    
+    private static final GraspRequest defaultInstance;
+    public static GraspRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public GraspRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_GraspRequest_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return de.naoth.rc.messages.Representations.internal_static_naothmessages_GraspRequest_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required .naothmessages.DoubleVector3 graspingPoint = 1;
+    public static final int GRASPINGPOINT_FIELD_NUMBER = 1;
+    private de.naoth.rc.messages.CommonTypes.DoubleVector3 graspingPoint_;
+    public boolean hasGraspingPoint() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector3 getGraspingPoint() {
+      return graspingPoint_;
+    }
+    public de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getGraspingPointOrBuilder() {
+      return graspingPoint_;
+    }
+    
+    // required uint32 graspingState = 2;
+    public static final int GRASPINGSTATE_FIELD_NUMBER = 2;
+    private int graspingState_;
+    public boolean hasGraspingState() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getGraspingState() {
+      return graspingState_;
+    }
+    
+    // required uint32 graspDistState = 3;
+    public static final int GRASPDISTSTATE_FIELD_NUMBER = 3;
+    private int graspDistState_;
+    public boolean hasGraspDistState() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getGraspDistState() {
+      return graspDistState_;
+    }
+    
+    // required uint32 graspStiffState = 4;
+    public static final int GRASPSTIFFSTATE_FIELD_NUMBER = 4;
+    private int graspStiffState_;
+    public boolean hasGraspStiffState() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public int getGraspStiffState() {
+      return graspStiffState_;
+    }
+    
+    private void initFields() {
+      graspingPoint_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      graspingState_ = 0;
+      graspDistState_ = 0;
+      graspStiffState_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasGraspingPoint()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasGraspingState()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasGraspDistState()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasGraspStiffState()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getGraspingPoint().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, graspingPoint_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt32(2, graspingState_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, graspDistState_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeUInt32(4, graspStiffState_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, graspingPoint_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(2, graspingState_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(3, graspDistState_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(4, graspStiffState_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static de.naoth.rc.messages.Representations.GraspRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(de.naoth.rc.messages.Representations.GraspRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements de.naoth.rc.messages.Representations.GraspRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_GraspRequest_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return de.naoth.rc.messages.Representations.internal_static_naothmessages_GraspRequest_fieldAccessorTable;
+      }
+      
+      // Construct using de.naoth.rc.messages.Representations.GraspRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getGraspingPointFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (graspingPointBuilder_ == null) {
+          graspingPoint_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+        } else {
+          graspingPointBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        graspingState_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        graspDistState_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        graspStiffState_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return de.naoth.rc.messages.Representations.GraspRequest.getDescriptor();
+      }
+      
+      public de.naoth.rc.messages.Representations.GraspRequest getDefaultInstanceForType() {
+        return de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance();
+      }
+      
+      public de.naoth.rc.messages.Representations.GraspRequest build() {
+        de.naoth.rc.messages.Representations.GraspRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private de.naoth.rc.messages.Representations.GraspRequest buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        de.naoth.rc.messages.Representations.GraspRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public de.naoth.rc.messages.Representations.GraspRequest buildPartial() {
+        de.naoth.rc.messages.Representations.GraspRequest result = new de.naoth.rc.messages.Representations.GraspRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (graspingPointBuilder_ == null) {
+          result.graspingPoint_ = graspingPoint_;
+        } else {
+          result.graspingPoint_ = graspingPointBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.graspingState_ = graspingState_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.graspDistState_ = graspDistState_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.graspStiffState_ = graspStiffState_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof de.naoth.rc.messages.Representations.GraspRequest) {
+          return mergeFrom((de.naoth.rc.messages.Representations.GraspRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(de.naoth.rc.messages.Representations.GraspRequest other) {
+        if (other == de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance()) return this;
+        if (other.hasGraspingPoint()) {
+          mergeGraspingPoint(other.getGraspingPoint());
+        }
+        if (other.hasGraspingState()) {
+          setGraspingState(other.getGraspingState());
+        }
+        if (other.hasGraspDistState()) {
+          setGraspDistState(other.getGraspDistState());
+        }
+        if (other.hasGraspStiffState()) {
+          setGraspStiffState(other.getGraspStiffState());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasGraspingPoint()) {
+          
+          return false;
+        }
+        if (!hasGraspingState()) {
+          
+          return false;
+        }
+        if (!hasGraspDistState()) {
+          
+          return false;
+        }
+        if (!hasGraspStiffState()) {
+          
+          return false;
+        }
+        if (!getGraspingPoint().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder subBuilder = de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder();
+              if (hasGraspingPoint()) {
+                subBuilder.mergeFrom(getGraspingPoint());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setGraspingPoint(subBuilder.buildPartial());
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              graspingState_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              graspDistState_ = input.readUInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              graspStiffState_ = input.readUInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .naothmessages.DoubleVector3 graspingPoint = 1;
+      private de.naoth.rc.messages.CommonTypes.DoubleVector3 graspingPoint_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder> graspingPointBuilder_;
+      public boolean hasGraspingPoint() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3 getGraspingPoint() {
+        if (graspingPointBuilder_ == null) {
+          return graspingPoint_;
+        } else {
+          return graspingPointBuilder_.getMessage();
+        }
+      }
+      public Builder setGraspingPoint(de.naoth.rc.messages.CommonTypes.DoubleVector3 value) {
+        if (graspingPointBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          graspingPoint_ = value;
+          onChanged();
+        } else {
+          graspingPointBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setGraspingPoint(
+          de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder builderForValue) {
+        if (graspingPointBuilder_ == null) {
+          graspingPoint_ = builderForValue.build();
+          onChanged();
+        } else {
+          graspingPointBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeGraspingPoint(de.naoth.rc.messages.CommonTypes.DoubleVector3 value) {
+        if (graspingPointBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              graspingPoint_ != de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance()) {
+            graspingPoint_ =
+              de.naoth.rc.messages.CommonTypes.DoubleVector3.newBuilder(graspingPoint_).mergeFrom(value).buildPartial();
+          } else {
+            graspingPoint_ = value;
+          }
+          onChanged();
+        } else {
+          graspingPointBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearGraspingPoint() {
+        if (graspingPointBuilder_ == null) {
+          graspingPoint_ = de.naoth.rc.messages.CommonTypes.DoubleVector3.getDefaultInstance();
+          onChanged();
+        } else {
+          graspingPointBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder getGraspingPointBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getGraspingPointFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder getGraspingPointOrBuilder() {
+        if (graspingPointBuilder_ != null) {
+          return graspingPointBuilder_.getMessageOrBuilder();
+        } else {
+          return graspingPoint_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder> 
+          getGraspingPointFieldBuilder() {
+        if (graspingPointBuilder_ == null) {
+          graspingPointBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.DoubleVector3, de.naoth.rc.messages.CommonTypes.DoubleVector3.Builder, de.naoth.rc.messages.CommonTypes.DoubleVector3OrBuilder>(
+                  graspingPoint_,
+                  getParentForChildren(),
+                  isClean());
+          graspingPoint_ = null;
+        }
+        return graspingPointBuilder_;
+      }
+      
+      // required uint32 graspingState = 2;
+      private int graspingState_ ;
+      public boolean hasGraspingState() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getGraspingState() {
+        return graspingState_;
+      }
+      public Builder setGraspingState(int value) {
+        bitField0_ |= 0x00000002;
+        graspingState_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGraspingState() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        graspingState_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required uint32 graspDistState = 3;
+      private int graspDistState_ ;
+      public boolean hasGraspDistState() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getGraspDistState() {
+        return graspDistState_;
+      }
+      public Builder setGraspDistState(int value) {
+        bitField0_ |= 0x00000004;
+        graspDistState_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGraspDistState() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        graspDistState_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // required uint32 graspStiffState = 4;
+      private int graspStiffState_ ;
+      public boolean hasGraspStiffState() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public int getGraspStiffState() {
+        return graspStiffState_;
+      }
+      public Builder setGraspStiffState(int value) {
+        bitField0_ |= 0x00000008;
+        graspStiffState_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGraspStiffState() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        graspStiffState_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:naothmessages.GraspRequest)
+    }
+    
+    static {
+      defaultInstance = new GraspRequest(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:naothmessages.GraspRequest)
+  }
+  
   public interface MotionRequestOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
@@ -10087,6 +10722,11 @@ public final class Representations {
     // optional uint32 cognitionFrameNumber = 9;
     boolean hasCognitionFrameNumber();
     int getCognitionFrameNumber();
+    
+    // optional .naothmessages.GraspRequest graspRequest = 10;
+    boolean hasGraspRequest();
+    de.naoth.rc.messages.Representations.GraspRequest getGraspRequest();
+    de.naoth.rc.messages.Representations.GraspRequestOrBuilder getGraspRequestOrBuilder();
   }
   public static final class MotionRequest extends
       com.google.protobuf.GeneratedMessage
@@ -10213,6 +10853,19 @@ public final class Representations {
       return cognitionFrameNumber_;
     }
     
+    // optional .naothmessages.GraspRequest graspRequest = 10;
+    public static final int GRASPREQUEST_FIELD_NUMBER = 10;
+    private de.naoth.rc.messages.Representations.GraspRequest graspRequest_;
+    public boolean hasGraspRequest() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    public de.naoth.rc.messages.Representations.GraspRequest getGraspRequest() {
+      return graspRequest_;
+    }
+    public de.naoth.rc.messages.Representations.GraspRequestOrBuilder getGraspRequestOrBuilder() {
+      return graspRequest_;
+    }
+    
     private void initFields() {
       id_ = 0;
       time_ = 0;
@@ -10223,6 +10876,7 @@ public final class Representations {
       standHeight_ = 0D;
       calibrateFootTouchDetector_ = false;
       cognitionFrameNumber_ = 0;
+      graspRequest_ = de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -10249,6 +10903,12 @@ public final class Representations {
       }
       if (hasKickRequest()) {
         if (!getKickRequest().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasGraspRequest()) {
+        if (!getGraspRequest().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -10286,6 +10946,9 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeUInt32(9, cognitionFrameNumber_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeMessage(10, graspRequest_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -10331,6 +10994,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, cognitionFrameNumber_);
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, graspRequest_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10450,6 +11117,7 @@ public final class Representations {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getWalkRequestFieldBuilder();
           getKickRequestFieldBuilder();
+          getGraspRequestFieldBuilder();
         }
       }
       private static Builder create() {
@@ -10484,6 +11152,12 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000080);
         cognitionFrameNumber_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
+        if (graspRequestBuilder_ == null) {
+          graspRequest_ = de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance();
+        } else {
+          graspRequestBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
       
@@ -10566,6 +11240,14 @@ public final class Representations {
           to_bitField0_ |= 0x00000100;
         }
         result.cognitionFrameNumber_ = cognitionFrameNumber_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        if (graspRequestBuilder_ == null) {
+          result.graspRequest_ = graspRequest_;
+        } else {
+          result.graspRequest_ = graspRequestBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10609,6 +11291,9 @@ public final class Representations {
         if (other.hasCognitionFrameNumber()) {
           setCognitionFrameNumber(other.getCognitionFrameNumber());
         }
+        if (other.hasGraspRequest()) {
+          mergeGraspRequest(other.getGraspRequest());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10634,6 +11319,12 @@ public final class Representations {
         }
         if (hasKickRequest()) {
           if (!getKickRequest().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasGraspRequest()) {
+          if (!getGraspRequest().isInitialized()) {
             
             return false;
           }
@@ -10715,6 +11406,15 @@ public final class Representations {
             case 72: {
               bitField0_ |= 0x00000100;
               cognitionFrameNumber_ = input.readUInt32();
+              break;
+            }
+            case 82: {
+              de.naoth.rc.messages.Representations.GraspRequest.Builder subBuilder = de.naoth.rc.messages.Representations.GraspRequest.newBuilder();
+              if (hasGraspRequest()) {
+                subBuilder.mergeFrom(getGraspRequest());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setGraspRequest(subBuilder.buildPartial());
               break;
             }
           }
@@ -11048,6 +11748,96 @@ public final class Representations {
         cognitionFrameNumber_ = 0;
         onChanged();
         return this;
+      }
+      
+      // optional .naothmessages.GraspRequest graspRequest = 10;
+      private de.naoth.rc.messages.Representations.GraspRequest graspRequest_ = de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Representations.GraspRequest, de.naoth.rc.messages.Representations.GraspRequest.Builder, de.naoth.rc.messages.Representations.GraspRequestOrBuilder> graspRequestBuilder_;
+      public boolean hasGraspRequest() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      public de.naoth.rc.messages.Representations.GraspRequest getGraspRequest() {
+        if (graspRequestBuilder_ == null) {
+          return graspRequest_;
+        } else {
+          return graspRequestBuilder_.getMessage();
+        }
+      }
+      public Builder setGraspRequest(de.naoth.rc.messages.Representations.GraspRequest value) {
+        if (graspRequestBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          graspRequest_ = value;
+          onChanged();
+        } else {
+          graspRequestBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder setGraspRequest(
+          de.naoth.rc.messages.Representations.GraspRequest.Builder builderForValue) {
+        if (graspRequestBuilder_ == null) {
+          graspRequest_ = builderForValue.build();
+          onChanged();
+        } else {
+          graspRequestBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder mergeGraspRequest(de.naoth.rc.messages.Representations.GraspRequest value) {
+        if (graspRequestBuilder_ == null) {
+          if (((bitField0_ & 0x00000200) == 0x00000200) &&
+              graspRequest_ != de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance()) {
+            graspRequest_ =
+              de.naoth.rc.messages.Representations.GraspRequest.newBuilder(graspRequest_).mergeFrom(value).buildPartial();
+          } else {
+            graspRequest_ = value;
+          }
+          onChanged();
+        } else {
+          graspRequestBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000200;
+        return this;
+      }
+      public Builder clearGraspRequest() {
+        if (graspRequestBuilder_ == null) {
+          graspRequest_ = de.naoth.rc.messages.Representations.GraspRequest.getDefaultInstance();
+          onChanged();
+        } else {
+          graspRequestBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000200);
+        return this;
+      }
+      public de.naoth.rc.messages.Representations.GraspRequest.Builder getGraspRequestBuilder() {
+        bitField0_ |= 0x00000200;
+        onChanged();
+        return getGraspRequestFieldBuilder().getBuilder();
+      }
+      public de.naoth.rc.messages.Representations.GraspRequestOrBuilder getGraspRequestOrBuilder() {
+        if (graspRequestBuilder_ != null) {
+          return graspRequestBuilder_.getMessageOrBuilder();
+        } else {
+          return graspRequest_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          de.naoth.rc.messages.Representations.GraspRequest, de.naoth.rc.messages.Representations.GraspRequest.Builder, de.naoth.rc.messages.Representations.GraspRequestOrBuilder> 
+          getGraspRequestFieldBuilder() {
+        if (graspRequestBuilder_ == null) {
+          graspRequestBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              de.naoth.rc.messages.Representations.GraspRequest, de.naoth.rc.messages.Representations.GraspRequest.Builder, de.naoth.rc.messages.Representations.GraspRequestOrBuilder>(
+                  graspRequest_,
+                  getParentForChildren(),
+                  isClean());
+          graspRequest_ = null;
+        }
+        return graspRequestBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.MotionRequest)
@@ -17298,6 +18088,11 @@ public final class Representations {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_naothmessages_KickRequest_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_naothmessages_GraspRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_naothmessages_GraspRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_naothmessages_MotionRequest_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -17413,45 +18208,49 @@ public final class Representations {
       "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic" +
       "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa" +
       "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001" +
-      "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212" +
-      "\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002" +
-      "(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132",
-      "\032.naothmessages.WalkRequest\022\026\n\016starndard" +
-      "Stand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naoth" +
-      "messages.KickRequest\022\023\n\013standHeight\030\007 \001(" +
-      "\001\022\"\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n" +
-      "\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013LinePerc" +
-      "ept\022.\n\005lines\030\001 \003(\0132\037.naothmessages.Field" +
-      "LineSegment\0222\n\rintersections\030\002 \003(\0132\033.nao" +
-      "thmessages.Intersection\0228\n\022middleCircleC" +
-      "enter\030\003 \001(\0132\034.naothmessages.DoubleVector" +
-      "2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImage\030\001 \002",
-      "(\0132\031.naothmessages.IntVector2\0220\n\nposOnFi" +
-      "eld\030\002 \002(\0132\034.naothmessages.DoubleVector2\022" +
-      "#\n\005color\030\003 \002(\0162\024.naothmessages.Color\022\022\n\n" +
-      "ScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept" +
-      "\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages.Scan" +
-      "LineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014" +
-      "\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepContr" +
-      "olStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot" +
-      "\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n" +
-      "\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r",
-      "\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSta" +
-      "te\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132" +
-      "\025.naothmessages.Pose2D\0225\n\026plannedMotionR" +
-      "ightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n" +
-      "\020plannedMotionHip\030\010 \002(\0132\025.naothmessages." +
-      "Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 .naot" +
-      "hmessages.StepControlStatus\"3\n\014OdometryD" +
-      "ata\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D" +
-      "\"\274\001\n\017CalibrationData\022:\n\024inertialSensorOf" +
-      "fset\030\001 \001(\0132\034.naothmessages.DoubleVector2",
-      "\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessag" +
-      "es.DoubleVector2\0225\n\017accSensorOffset\030\003 \001(" +
-      "\0132\034.naothmessages.DoubleVector3\"B\n\rInert" +
-      "ialModel\0221\n\013orientation\030\001 \001(\0132\034.naothmes" +
-      "sages.DoubleVector2B\026\n\024de.naoth.rc.messa" +
-      "ges"
+      "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\213" +
+      "\001\n\014GraspRequest\0223\n\rgraspingPoint\030\001 \002(\0132\034" +
+      ".naothmessages.DoubleVector3\022\025\n\rgrasping",
+      "State\030\002 \002(\r\022\026\n\016graspDistState\030\003 \002(\r\022\027\n\017g" +
+      "raspStiffState\030\004 \002(\r\"\275\002\n\rMotionRequest\022\n" +
+      "\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010" +
+      "\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Wa" +
+      "lkRequest\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kic" +
+      "kRequest\030\006 \001(\0132\032.naothmessages.KickReque" +
+      "st\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrateFoot" +
+      "TouchDetector\030\010 \001(\010\022\034\n\024cognitionFrameNum" +
+      "ber\030\t \001(\r\0221\n\014graspRequest\030\n \001(\0132\033.naothm" +
+      "essages.GraspRequest\"\253\001\n\013LinePercept\022.\n\005",
+      "lines\030\001 \003(\0132\037.naothmessages.FieldLineSeg" +
+      "ment\0222\n\rintersections\030\002 \003(\0132\033.naothmessa" +
+      "ges.Intersection\0228\n\022middleCircleCenter\030\003" +
+      " \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020S" +
+      "canLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.na" +
+      "othmessages.IntVector2\0220\n\nposOnField\030\002 \002" +
+      "(\0132\034.naothmessages.DoubleVector2\022#\n\005colo" +
+      "r\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLin" +
+      "eID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\tend" +
+      "Points\030\002 \003(\0132\037.naothmessages.ScanLineEnd",
+      "Point\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030" +
+      "\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStatu" +
+      "s\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"" +
+      "\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMo" +
+      "tion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nhea" +
+      "dMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(" +
+      "\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naoth" +
+      "messages.Pose2D\0225\n\026plannedMotionRightFoo" +
+      "t\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020planne" +
+      "dMotionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022",
+      ";\n\021stepControlStatus\030\t \001(\0132 .naothmessag" +
+      "es.StepControlStatus\"3\n\014OdometryData\022#\n\004" +
+      "pose\030\001 \002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Ca" +
+      "librationData\022:\n\024inertialSensorOffset\030\001 " +
+      "\001(\0132\034.naothmessages.DoubleVector2\0226\n\020gyr" +
+      "oSensorOffset\030\002 \001(\0132\034.naothmessages.Doub" +
+      "leVector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.nao" +
+      "thmessages.DoubleVector3\"B\n\rInertialMode" +
+      "l\0221\n\013orientation\030\001 \001(\0132\034.naothmessages.D" +
+      "oubleVector2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -17562,16 +18361,24 @@ public final class Representations {
               new java.lang.String[] { "KickPoint", "KickDirection", "KickFoot", "FinishKick", },
               de.naoth.rc.messages.Representations.KickRequest.class,
               de.naoth.rc.messages.Representations.KickRequest.Builder.class);
-          internal_static_naothmessages_MotionRequest_descriptor =
+          internal_static_naothmessages_GraspRequest_descriptor =
             getDescriptor().getMessageTypes().get(13);
+          internal_static_naothmessages_GraspRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_naothmessages_GraspRequest_descriptor,
+              new java.lang.String[] { "GraspingPoint", "GraspingState", "GraspDistState", "GraspStiffState", },
+              de.naoth.rc.messages.Representations.GraspRequest.class,
+              de.naoth.rc.messages.Representations.GraspRequest.Builder.class);
+          internal_static_naothmessages_MotionRequest_descriptor =
+            getDescriptor().getMessageTypes().get(14);
           internal_static_naothmessages_MotionRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionRequest_descriptor,
-              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", "StandHeight", "CalibrateFootTouchDetector", "CognitionFrameNumber", },
+              new java.lang.String[] { "Id", "Time", "Forced", "WalkRequest", "StarndardStand", "KickRequest", "StandHeight", "CalibrateFootTouchDetector", "CognitionFrameNumber", "GraspRequest", },
               de.naoth.rc.messages.Representations.MotionRequest.class,
               de.naoth.rc.messages.Representations.MotionRequest.Builder.class);
           internal_static_naothmessages_LinePercept_descriptor =
-            getDescriptor().getMessageTypes().get(14);
+            getDescriptor().getMessageTypes().get(15);
           internal_static_naothmessages_LinePercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_LinePercept_descriptor,
@@ -17579,7 +18386,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.LinePercept.class,
               de.naoth.rc.messages.Representations.LinePercept.Builder.class);
           internal_static_naothmessages_ScanLineEndPoint_descriptor =
-            getDescriptor().getMessageTypes().get(15);
+            getDescriptor().getMessageTypes().get(16);
           internal_static_naothmessages_ScanLineEndPoint_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_ScanLineEndPoint_descriptor,
@@ -17587,7 +18394,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.ScanLineEndPoint.class,
               de.naoth.rc.messages.Representations.ScanLineEndPoint.Builder.class);
           internal_static_naothmessages_ScanLineEdgelPercept_descriptor =
-            getDescriptor().getMessageTypes().get(16);
+            getDescriptor().getMessageTypes().get(17);
           internal_static_naothmessages_ScanLineEdgelPercept_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_ScanLineEdgelPercept_descriptor,
@@ -17595,7 +18402,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.ScanLineEdgelPercept.class,
               de.naoth.rc.messages.Representations.ScanLineEdgelPercept.Builder.class);
           internal_static_naothmessages_FSRData_descriptor =
-            getDescriptor().getMessageTypes().get(17);
+            getDescriptor().getMessageTypes().get(18);
           internal_static_naothmessages_FSRData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_FSRData_descriptor,
@@ -17603,7 +18410,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.FSRData.class,
               de.naoth.rc.messages.Representations.FSRData.Builder.class);
           internal_static_naothmessages_StepControlStatus_descriptor =
-            getDescriptor().getMessageTypes().get(18);
+            getDescriptor().getMessageTypes().get(19);
           internal_static_naothmessages_StepControlStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_StepControlStatus_descriptor,
@@ -17611,7 +18418,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.StepControlStatus.class,
               de.naoth.rc.messages.Representations.StepControlStatus.Builder.class);
           internal_static_naothmessages_MotionStatus_descriptor =
-            getDescriptor().getMessageTypes().get(19);
+            getDescriptor().getMessageTypes().get(20);
           internal_static_naothmessages_MotionStatus_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_MotionStatus_descriptor,
@@ -17619,7 +18426,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.MotionStatus.class,
               de.naoth.rc.messages.Representations.MotionStatus.Builder.class);
           internal_static_naothmessages_OdometryData_descriptor =
-            getDescriptor().getMessageTypes().get(20);
+            getDescriptor().getMessageTypes().get(21);
           internal_static_naothmessages_OdometryData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_OdometryData_descriptor,
@@ -17627,7 +18434,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.OdometryData.class,
               de.naoth.rc.messages.Representations.OdometryData.Builder.class);
           internal_static_naothmessages_CalibrationData_descriptor =
-            getDescriptor().getMessageTypes().get(21);
+            getDescriptor().getMessageTypes().get(22);
           internal_static_naothmessages_CalibrationData_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CalibrationData_descriptor,
@@ -17635,7 +18442,7 @@ public final class Representations {
               de.naoth.rc.messages.Representations.CalibrationData.class,
               de.naoth.rc.messages.Representations.CalibrationData.Builder.class);
           internal_static_naothmessages_InertialModel_descriptor =
-            getDescriptor().getMessageTypes().get(22);
+            getDescriptor().getMessageTypes().get(23);
           internal_static_naothmessages_InertialModel_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_InertialModel_descriptor,

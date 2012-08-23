@@ -6,7 +6,7 @@
  */
 
 #ifndef _SERIALSENSORDATA_H
-#define  _SERIALSENSORDATA_H
+#define _SERIALSENSORDATA_H
 
 #include "Tools/DataStructures/Streamable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"

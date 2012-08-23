@@ -57,6 +57,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* KickRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   KickRequest_reflection_ = NULL;
+const ::google::protobuf::Descriptor* GraspRequest_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  GraspRequest_reflection_ = NULL;
 const ::google::protobuf::Descriptor* MotionRequest_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   MotionRequest_reflection_ = NULL;
@@ -346,8 +349,26 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(KickRequest));
-  MotionRequest_descriptor_ = file->message_type(13);
-  static const int MotionRequest_offsets_[9] = {
+  GraspRequest_descriptor_ = file->message_type(13);
+  static const int GraspRequest_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GraspRequest, graspingpoint_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GraspRequest, graspingstate_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GraspRequest, graspdiststate_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GraspRequest, graspstiffstate_),
+  };
+  GraspRequest_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      GraspRequest_descriptor_,
+      GraspRequest::default_instance_,
+      GraspRequest_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GraspRequest, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GraspRequest, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(GraspRequest));
+  MotionRequest_descriptor_ = file->message_type(14);
+  static const int MotionRequest_offsets_[10] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, forced_),
@@ -357,6 +378,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, standheight_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, calibratefoottouchdetector_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, cognitionframenumber_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionRequest, grasprequest_),
   };
   MotionRequest_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -369,7 +391,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionRequest));
-  LinePercept_descriptor_ = file->message_type(14);
+  LinePercept_descriptor_ = file->message_type(15);
   static const int LinePercept_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, lines_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LinePercept, intersections_),
@@ -386,7 +408,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(LinePercept));
-  ScanLineEndPoint_descriptor_ = file->message_type(15);
+  ScanLineEndPoint_descriptor_ = file->message_type(16);
   static const int ScanLineEndPoint_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, posinimage_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEndPoint, posonfield_),
@@ -404,7 +426,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ScanLineEndPoint));
-  ScanLineEdgelPercept_descriptor_ = file->message_type(16);
+  ScanLineEdgelPercept_descriptor_ = file->message_type(17);
   static const int ScanLineEdgelPercept_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ScanLineEdgelPercept, endpoints_),
   };
@@ -419,7 +441,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(ScanLineEdgelPercept));
-  FSRData_descriptor_ = file->message_type(17);
+  FSRData_descriptor_ = file->message_type(18);
   static const int FSRData_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, force_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FSRData, data_),
@@ -436,7 +458,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(FSRData));
-  StepControlStatus_descriptor_ = file->message_type(18);
+  StepControlStatus_descriptor_ = file->message_type(19);
   static const int StepControlStatus_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, stepid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StepControlStatus, moveablefoot_),
@@ -452,7 +474,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(StepControlStatus));
-  MotionStatus_descriptor_ = file->message_type(19);
+  MotionStatus_descriptor_ = file->message_type(20);
   static const int MotionStatus_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, time_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MotionStatus, lastmotion_),
@@ -475,7 +497,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(MotionStatus));
-  OdometryData_descriptor_ = file->message_type(20);
+  OdometryData_descriptor_ = file->message_type(21);
   static const int OdometryData_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OdometryData, pose_),
   };
@@ -490,7 +512,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(OdometryData));
-  CalibrationData_descriptor_ = file->message_type(21);
+  CalibrationData_descriptor_ = file->message_type(22);
   static const int CalibrationData_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, inertialsensoroffset_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CalibrationData, gyrosensoroffset_),
@@ -507,7 +529,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(CalibrationData));
-  InertialModel_descriptor_ = file->message_type(22);
+  InertialModel_descriptor_ = file->message_type(23);
   static const int InertialModel_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InertialModel, orientation_),
   };
@@ -561,6 +583,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     KickRequest_descriptor_, &KickRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    GraspRequest_descriptor_, &GraspRequest::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     MotionRequest_descriptor_, &MotionRequest::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     LinePercept_descriptor_, &LinePercept::default_instance());
@@ -611,6 +635,8 @@ void protobuf_ShutdownFile_Representations_2eproto() {
   delete WalkRequest_reflection_;
   delete KickRequest::default_instance_;
   delete KickRequest_reflection_;
+  delete GraspRequest::default_instance_;
+  delete GraspRequest_reflection_;
   delete MotionRequest::default_instance_;
   delete MotionRequest_reflection_;
   delete LinePercept::default_instance_;
@@ -698,45 +724,49 @@ void protobuf_AddDesc_Representations_2eproto() {
     "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic"
     "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa"
     "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001"
-    "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212"
-    "\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002"
-    "(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132"
-    "\032.naothmessages.WalkRequest\022\026\n\016starndard"
-    "Stand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naoth"
-    "messages.KickRequest\022\023\n\013standHeight\030\007 \001("
-    "\001\022\"\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n"
-    "\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013LinePerc"
-    "ept\022.\n\005lines\030\001 \003(\0132\037.naothmessages.Field"
-    "LineSegment\0222\n\rintersections\030\002 \003(\0132\033.nao"
-    "thmessages.Intersection\0228\n\022middleCircleC"
-    "enter\030\003 \001(\0132\034.naothmessages.DoubleVector"
-    "2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImage\030\001 \002"
-    "(\0132\031.naothmessages.IntVector2\0220\n\nposOnFi"
-    "eld\030\002 \002(\0132\034.naothmessages.DoubleVector2\022"
-    "#\n\005color\030\003 \002(\0162\024.naothmessages.Color\022\022\n\n"
-    "ScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept"
-    "\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages.Scan"
-    "LineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014"
-    "\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepContr"
-    "olStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot"
-    "\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n"
-    "\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r"
-    "\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSta"
-    "te\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132"
-    "\025.naothmessages.Pose2D\0225\n\026plannedMotionR"
-    "ightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n"
-    "\020plannedMotionHip\030\010 \002(\0132\025.naothmessages."
-    "Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 .naot"
-    "hmessages.StepControlStatus\"3\n\014OdometryD"
-    "ata\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D"
-    "\"\274\001\n\017CalibrationData\022:\n\024inertialSensorOf"
-    "fset\030\001 \001(\0132\034.naothmessages.DoubleVector2"
-    "\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessag"
-    "es.DoubleVector2\0225\n\017accSensorOffset\030\003 \001("
-    "\0132\034.naothmessages.DoubleVector3\"B\n\rInert"
-    "ialModel\0221\n\013orientation\030\001 \001(\0132\034.naothmes"
-    "sages.DoubleVector2B\026\n\024de.naoth.rc.messa"
-    "ges", 3803);
+    "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\213"
+    "\001\n\014GraspRequest\0223\n\rgraspingPoint\030\001 \002(\0132\034"
+    ".naothmessages.DoubleVector3\022\025\n\rgrasping"
+    "State\030\002 \002(\r\022\026\n\016graspDistState\030\003 \002(\r\022\027\n\017g"
+    "raspStiffState\030\004 \002(\r\"\275\002\n\rMotionRequest\022\n"
+    "\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010"
+    "\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessages.Wa"
+    "lkRequest\022\026\n\016starndardStand\030\005 \001(\010\022/\n\013kic"
+    "kRequest\030\006 \001(\0132\032.naothmessages.KickReque"
+    "st\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrateFoot"
+    "TouchDetector\030\010 \001(\010\022\034\n\024cognitionFrameNum"
+    "ber\030\t \001(\r\0221\n\014graspRequest\030\n \001(\0132\033.naothm"
+    "essages.GraspRequest\"\253\001\n\013LinePercept\022.\n\005"
+    "lines\030\001 \003(\0132\037.naothmessages.FieldLineSeg"
+    "ment\0222\n\rintersections\030\002 \003(\0132\033.naothmessa"
+    "ges.Intersection\0228\n\022middleCircleCenter\030\003"
+    " \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020S"
+    "canLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.na"
+    "othmessages.IntVector2\0220\n\nposOnField\030\002 \002"
+    "(\0132\034.naothmessages.DoubleVector2\022#\n\005colo"
+    "r\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLin"
+    "eID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\tend"
+    "Points\030\002 \003(\0132\037.naothmessages.ScanLineEnd"
+    "Point\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030"
+    "\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStatu"
+    "s\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\""
+    "\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMo"
+    "tion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nhea"
+    "dMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002("
+    "\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naoth"
+    "messages.Pose2D\0225\n\026plannedMotionRightFoo"
+    "t\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020planne"
+    "dMotionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022"
+    ";\n\021stepControlStatus\030\t \001(\0132 .naothmessag"
+    "es.StepControlStatus\"3\n\014OdometryData\022#\n\004"
+    "pose\030\001 \002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Ca"
+    "librationData\022:\n\024inertialSensorOffset\030\001 "
+    "\001(\0132\034.naothmessages.DoubleVector2\0226\n\020gyr"
+    "oSensorOffset\030\002 \001(\0132\034.naothmessages.Doub"
+    "leVector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.nao"
+    "thmessages.DoubleVector3\"B\n\rInertialMode"
+    "l\0221\n\013orientation\030\001 \001(\0132\034.naothmessages.D"
+    "oubleVector2B\026\n\024de.naoth.rc.messages", 3996);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -752,6 +782,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   StepControlRequest::default_instance_ = new StepControlRequest();
   WalkRequest::default_instance_ = new WalkRequest();
   KickRequest::default_instance_ = new KickRequest();
+  GraspRequest::default_instance_ = new GraspRequest();
   MotionRequest::default_instance_ = new MotionRequest();
   LinePercept::default_instance_ = new LinePercept();
   ScanLineEndPoint::default_instance_ = new ScanLineEndPoint();
@@ -775,6 +806,7 @@ void protobuf_AddDesc_Representations_2eproto() {
   StepControlRequest::default_instance_->InitAsDefaultInstance();
   WalkRequest::default_instance_->InitAsDefaultInstance();
   KickRequest::default_instance_->InitAsDefaultInstance();
+  GraspRequest::default_instance_->InitAsDefaultInstance();
   MotionRequest::default_instance_->InitAsDefaultInstance();
   LinePercept::default_instance_->InitAsDefaultInstance();
   ScanLineEndPoint::default_instance_->InitAsDefaultInstance();
@@ -5824,6 +5856,342 @@ void KickRequest::Swap(KickRequest* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int GraspRequest::kGraspingPointFieldNumber;
+const int GraspRequest::kGraspingStateFieldNumber;
+const int GraspRequest::kGraspDistStateFieldNumber;
+const int GraspRequest::kGraspStiffStateFieldNumber;
+#endif  // !_MSC_VER
+
+GraspRequest::GraspRequest()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void GraspRequest::InitAsDefaultInstance() {
+  graspingpoint_ = const_cast< ::naothmessages::DoubleVector3*>(&::naothmessages::DoubleVector3::default_instance());
+}
+
+GraspRequest::GraspRequest(const GraspRequest& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void GraspRequest::SharedCtor() {
+  _cached_size_ = 0;
+  graspingpoint_ = NULL;
+  graspingstate_ = 0u;
+  graspdiststate_ = 0u;
+  graspstiffstate_ = 0u;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+GraspRequest::~GraspRequest() {
+  SharedDtor();
+}
+
+void GraspRequest::SharedDtor() {
+  if (this != default_instance_) {
+    delete graspingpoint_;
+  }
+}
+
+void GraspRequest::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* GraspRequest::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return GraspRequest_descriptor_;
+}
+
+const GraspRequest& GraspRequest::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_Representations_2eproto();  return *default_instance_;
+}
+
+GraspRequest* GraspRequest::default_instance_ = NULL;
+
+GraspRequest* GraspRequest::New() const {
+  return new GraspRequest;
+}
+
+void GraspRequest::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_graspingpoint()) {
+      if (graspingpoint_ != NULL) graspingpoint_->::naothmessages::DoubleVector3::Clear();
+    }
+    graspingstate_ = 0u;
+    graspdiststate_ = 0u;
+    graspstiffstate_ = 0u;
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool GraspRequest::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .naothmessages.DoubleVector3 graspingPoint = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_graspingpoint()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_graspingState;
+        break;
+      }
+      
+      // required uint32 graspingState = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_graspingState:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &graspingstate_)));
+          set_has_graspingstate();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_graspDistState;
+        break;
+      }
+      
+      // required uint32 graspDistState = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_graspDistState:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &graspdiststate_)));
+          set_has_graspdiststate();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(32)) goto parse_graspStiffState;
+        break;
+      }
+      
+      // required uint32 graspStiffState = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_graspStiffState:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &graspstiffstate_)));
+          set_has_graspstiffstate();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void GraspRequest::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required .naothmessages.DoubleVector3 graspingPoint = 1;
+  if (has_graspingpoint()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->graspingpoint(), output);
+  }
+  
+  // required uint32 graspingState = 2;
+  if (has_graspingstate()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->graspingstate(), output);
+  }
+  
+  // required uint32 graspDistState = 3;
+  if (has_graspdiststate()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(3, this->graspdiststate(), output);
+  }
+  
+  // required uint32 graspStiffState = 4;
+  if (has_graspstiffstate()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(4, this->graspstiffstate(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* GraspRequest::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required .naothmessages.DoubleVector3 graspingPoint = 1;
+  if (has_graspingpoint()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->graspingpoint(), target);
+  }
+  
+  // required uint32 graspingState = 2;
+  if (has_graspingstate()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->graspingstate(), target);
+  }
+  
+  // required uint32 graspDistState = 3;
+  if (has_graspdiststate()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(3, this->graspdiststate(), target);
+  }
+  
+  // required uint32 graspStiffState = 4;
+  if (has_graspstiffstate()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(4, this->graspstiffstate(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int GraspRequest::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required .naothmessages.DoubleVector3 graspingPoint = 1;
+    if (has_graspingpoint()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->graspingpoint());
+    }
+    
+    // required uint32 graspingState = 2;
+    if (has_graspingstate()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->graspingstate());
+    }
+    
+    // required uint32 graspDistState = 3;
+    if (has_graspdiststate()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->graspdiststate());
+    }
+    
+    // required uint32 graspStiffState = 4;
+    if (has_graspstiffstate()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->graspstiffstate());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void GraspRequest::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const GraspRequest* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const GraspRequest*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void GraspRequest::MergeFrom(const GraspRequest& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_graspingpoint()) {
+      mutable_graspingpoint()->::naothmessages::DoubleVector3::MergeFrom(from.graspingpoint());
+    }
+    if (from.has_graspingstate()) {
+      set_graspingstate(from.graspingstate());
+    }
+    if (from.has_graspdiststate()) {
+      set_graspdiststate(from.graspdiststate());
+    }
+    if (from.has_graspstiffstate()) {
+      set_graspstiffstate(from.graspstiffstate());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void GraspRequest::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void GraspRequest::CopyFrom(const GraspRequest& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GraspRequest::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  
+  if (has_graspingpoint()) {
+    if (!this->graspingpoint().IsInitialized()) return false;
+  }
+  return true;
+}
+
+void GraspRequest::Swap(GraspRequest* other) {
+  if (other != this) {
+    std::swap(graspingpoint_, other->graspingpoint_);
+    std::swap(graspingstate_, other->graspingstate_);
+    std::swap(graspdiststate_, other->graspdiststate_);
+    std::swap(graspstiffstate_, other->graspstiffstate_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata GraspRequest::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = GraspRequest_descriptor_;
+  metadata.reflection = GraspRequest_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
 const int MotionRequest::kIdFieldNumber;
 const int MotionRequest::kTimeFieldNumber;
 const int MotionRequest::kForcedFieldNumber;
@@ -5833,6 +6201,7 @@ const int MotionRequest::kKickRequestFieldNumber;
 const int MotionRequest::kStandHeightFieldNumber;
 const int MotionRequest::kCalibrateFootTouchDetectorFieldNumber;
 const int MotionRequest::kCognitionFrameNumberFieldNumber;
+const int MotionRequest::kGraspRequestFieldNumber;
 #endif  // !_MSC_VER
 
 MotionRequest::MotionRequest()
@@ -5843,6 +6212,7 @@ MotionRequest::MotionRequest()
 void MotionRequest::InitAsDefaultInstance() {
   walkrequest_ = const_cast< ::naothmessages::WalkRequest*>(&::naothmessages::WalkRequest::default_instance());
   kickrequest_ = const_cast< ::naothmessages::KickRequest*>(&::naothmessages::KickRequest::default_instance());
+  grasprequest_ = const_cast< ::naothmessages::GraspRequest*>(&::naothmessages::GraspRequest::default_instance());
 }
 
 MotionRequest::MotionRequest(const MotionRequest& from)
@@ -5862,6 +6232,7 @@ void MotionRequest::SharedCtor() {
   standheight_ = 0;
   calibratefoottouchdetector_ = false;
   cognitionframenumber_ = 0u;
+  grasprequest_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5873,6 +6244,7 @@ void MotionRequest::SharedDtor() {
   if (this != default_instance_) {
     delete walkrequest_;
     delete kickrequest_;
+    delete grasprequest_;
   }
 }
 
@@ -5913,6 +6285,9 @@ void MotionRequest::Clear() {
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     cognitionframenumber_ = 0u;
+    if (has_grasprequest()) {
+      if (grasprequest_ != NULL) grasprequest_->::naothmessages::GraspRequest::Clear();
+    }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -6059,6 +6434,20 @@ bool MotionRequest::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(82)) goto parse_graspRequest;
+        break;
+      }
+      
+      // optional .naothmessages.GraspRequest graspRequest = 10;
+      case 10: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_graspRequest:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_grasprequest()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -6128,6 +6517,12 @@ void MotionRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt32(9, this->cognitionframenumber(), output);
   }
   
+  // optional .naothmessages.GraspRequest graspRequest = 10;
+  if (has_grasprequest()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      10, this->grasprequest(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -6183,6 +6578,13 @@ void MotionRequest::SerializeWithCachedSizes(
   // optional uint32 cognitionFrameNumber = 9;
   if (has_cognitionframenumber()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(9, this->cognitionframenumber(), target);
+  }
+  
+  // optional .naothmessages.GraspRequest graspRequest = 10;
+  if (has_grasprequest()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        10, this->grasprequest(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -6253,6 +6655,13 @@ int MotionRequest::ByteSize() const {
           this->cognitionframenumber());
     }
     
+    // optional .naothmessages.GraspRequest graspRequest = 10;
+    if (has_grasprequest()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->grasprequest());
+    }
+    
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -6309,6 +6718,9 @@ void MotionRequest::MergeFrom(const MotionRequest& from) {
     if (from.has_cognitionframenumber()) {
       set_cognitionframenumber(from.cognitionframenumber());
     }
+    if (from.has_grasprequest()) {
+      mutable_grasprequest()->::naothmessages::GraspRequest::MergeFrom(from.grasprequest());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -6334,6 +6746,9 @@ bool MotionRequest::IsInitialized() const {
   if (has_kickrequest()) {
     if (!this->kickrequest().IsInitialized()) return false;
   }
+  if (has_grasprequest()) {
+    if (!this->grasprequest().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -6348,6 +6763,7 @@ void MotionRequest::Swap(MotionRequest* other) {
     std::swap(standheight_, other->standheight_);
     std::swap(calibratefoottouchdetector_, other->calibratefoottouchdetector_);
     std::swap(cognitionframenumber_, other->cognitionframenumber_);
+    std::swap(grasprequest_, other->grasprequest_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

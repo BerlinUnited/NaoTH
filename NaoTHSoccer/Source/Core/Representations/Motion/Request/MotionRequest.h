@@ -16,6 +16,7 @@
 #include "MotionID.h"
 #include "KickRequest.h"
 #include "WalkRequest.h"
+#include "GraspRequest.h"
 
 /**
  * This describes the MotionRequest
@@ -68,6 +69,9 @@ public:
   /** special parameters if walk is requested */
   WalkRequest walkRequest;
 
+  /** */
+  GraspRequest graspRequest;
+
 
   /** set the same default values as at construction */
   void reset() 
@@ -104,6 +108,9 @@ public:
       default:
         break;
     }//end switch
+
+    if(graspRequest.graspingState != GraspRequest::none)
+      graspRequest.print(stream);
   }//end print
 };
 
