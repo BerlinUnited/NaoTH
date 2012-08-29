@@ -15,6 +15,7 @@
 #include "MotionBlackBoard.h"
 #include "AbstractMotion.h"
 #include "Engine/HeadMotion/HeadMotionEngine.h"
+#include "Engine/ArmMotion/IKArmGrasping.h"
 #include "Engine/MotionFactory.h"
 
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
@@ -62,6 +63,7 @@ private:
   FootTouchCalibrator theFootTouchCalibrator;
   
   HeadMotionEngine theHeadMotionEngine;
+  IKArmGrasping theArmGrasping;
   std::list<MotionFactory*> theMotionFactories;
   
   unsigned int frameNumSinceLastMotionRequest;

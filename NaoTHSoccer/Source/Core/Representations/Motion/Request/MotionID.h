@@ -18,14 +18,14 @@ namespace motion
   /** ids for all motion types */
   enum MotionID
   {
+    /* analytical */
     empty,
     init,
     dead,
-    
-    /* inverse kinematic */
     sit,
+
+    /* inverse kinematic */
     stand,
-    
     walk,
     kick,
     dance,
@@ -34,7 +34,6 @@ namespace motion
     /* paralell kinematic */
     parallel_stepper,
     parallel_dance,
-    
 
     /* motion net */
     stand_up_from_front,

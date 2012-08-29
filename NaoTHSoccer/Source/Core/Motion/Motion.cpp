@@ -210,6 +210,9 @@ void Motion::call()
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
 
+  // HACK: execute the arm grasping motion
+  theArmGrasping.execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
+
   // calibrate the foot touch detector
   if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();

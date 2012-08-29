@@ -14,7 +14,7 @@
 #include "IKParameters.h"
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
-class IKMotion: public AbstractMotion 
+class IKMotion: public AbstractMotion
 {
 protected:
 

@@ -78,7 +78,6 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     theEngine.copyLegJoints(theMotorJointData.position);
     
     // move arms
-    //theEngine.autoArms(c, theMotorJointData.position);
     theEngine.gotoArms(c, theMotorJointData.position);
 
     // force the hip joint
