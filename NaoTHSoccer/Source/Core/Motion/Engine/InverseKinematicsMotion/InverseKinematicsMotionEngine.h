@@ -59,6 +59,16 @@ public:
     return p;
   }
 
+  template<typename T>
+  T interpolateArms(const T& sp, const T& tp, double t) const 
+  {
+    T p;
+    p.body() = interpolate(sp.body(), tp.body(), t);
+    p.arms.left = interpolate(sp.arms.left, tp.arms.left, t);
+    p.arms.right = interpolate(sp.arms.right, tp.arms.right, t);
+    return p;
+  }
+
   InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p, bool& solved, bool fix_height/*=false*/);
 
   unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
@@ -103,6 +113,17 @@ public:
   Vector3<double> sensorCoMIn(KinematicChain::LinkID link) const;
 
   Vector3<double> balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
+
+  /**
+   * Solves the inverse kinematic for the hands
+   * @return squared sum error for the estimated joint positions
+   */
+  double solveHandsIK(
+    const Pose3D& chest,
+    const Pose3D& leftHand,
+    const Pose3D& rightHand,
+    double (&position)[naoth::JointData::numOfJoint]);
+
 
   void gotoArms(const InverseKinematic::HipFeetPose& currentPose, double (&position)[naoth::JointData::numOfJoint]);
 

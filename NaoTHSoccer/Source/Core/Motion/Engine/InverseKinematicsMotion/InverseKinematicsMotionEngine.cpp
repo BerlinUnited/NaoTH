@@ -157,7 +157,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
     refCoM = p.feet.right.invert() * p.com.translation;
   }
 
-  // 
+  // set the supporting foot as the origin
   obsFoot->R = RotationMatrix();
   obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
   
@@ -190,7 +190,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
     // calculate the joints fulfilling the result
     solveHipFeetIK(result);
 
-    // calculate the kinematic chain
+    // calculate the kinematic chain in the 
     Kinematics::ForwardKinematics::updateKinematicChainFrom(obsFoot);
     // ... and the com
     theInverseKinematics.theKinematicChain.updateCoM();
@@ -461,6 +461,48 @@ void InverseKinematicsMotionEngine::controlZMPclear()
 {
   thePreviewController.clear();
 }
+
+
+double InverseKinematicsMotionEngine::solveHandsIK(
+  const Pose3D& chest,
+  const Pose3D& leftHand,
+  const Pose3D& rightHand,
+  double (&position)[naoth::JointData::numOfJoint])
+{
+  // TODO: is it a good place for it?
+  static const Vector3<double> lHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+  static const Vector3<double> rHandOffset(NaoInfo::LowerArmLength+NaoInfo::HandOffsetX,0,0);
+
+  static const Kinematics::InverseKinematics::Mask lHandMask(Kinematics::InverseKinematics::MASK_POS);
+  static const Kinematics::InverseKinematics::Mask rHandMask(Kinematics::InverseKinematics::MASK_POS);
+
+  // STEP 1: transform the whole chain into torso (for symmetrie reasons)
+  //         otherwise, there is a risk of getting a assymetric solution
+  Kinematics::Link& torsoLink = theInverseKinematics.theKinematicChain.theLinks[KinematicChain::Torso];
+  torsoLink.R = RotationMatrix();
+  torsoLink.p = Vector3<double>(0, 0, 0);
+  Kinematics::ForwardKinematics::updateKinematicChainFrom(&torsoLink);
+
+  // STEP 2: solve the inverse kinematic for arms
+  double error = theInverseKinematics.gotoArms(
+    chest,
+    leftHand,
+    rightHand,
+    lHandOffset,
+    rHandOffset,
+    lHandMask,
+    rHandMask);
+
+  // STEP 3: copy the calculated joint angles of the arms
+  const JointData& jointData = theInverseKinematics.theJointData;
+  for (int i = JointData::RShoulderRoll; i < JointData::RHipYawPitch; i++)
+  {
+    position[i] = jointData.position[i];
+  }
+
+  return error;
+}//end solveHandsIK
+
 
 void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&position)[JointData::numOfJoint])
 {

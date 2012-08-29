@@ -18,7 +18,7 @@
 
 GraspingBehaviorControl::GraspingBehaviorControl() 
   : 
-  sitHeight(230.0)
+  sitHeight(190.0)
 {
 
   DEBUG_REQUEST_REGISTER("GraspingBehaviorControl:receive_ssd", "", false);
@@ -173,7 +173,7 @@ void GraspingBehaviorControl::take_object_from_table()
   static int old_state = state;
   static double state_start_time = getFrameInfo().getTimeInSeconds(); // in s
 
-  //to reset the state, when DEBUG-REQUEST isnt selected
+  //to reset the state, when DEBUG-REQUEST isn't selected
   static unsigned int oldFrameNumber = getFrameInfo().getFrameNumber();
   if (getFrameInfo().getFrameNumber() - oldFrameNumber > 1) 
   {
@@ -209,7 +209,7 @@ void GraspingBehaviorControl::take_object_from_table()
   defaultGraspingCenter = chestPose * defaultGraspingCenter;
   getMotionRequest().graspRequest.graspingPoint = defaultGraspingCenter;
 
-  //minimal height while sitting height 145.526
+  //minimal height while sitting is 145.526
   //minHipHeight indicates change of state
   double minHipHeight = 146.1; 
 

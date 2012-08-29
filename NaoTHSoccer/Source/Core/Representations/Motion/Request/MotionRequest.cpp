@@ -33,8 +33,8 @@ void Serializer<MotionRequest>::serialize(const MotionRequest& representation, s
     break;
   }
 
-  if(representation.graspRequest.graspingState != GraspRequest::none)
-    Serializer<GraspRequest>::serialize(representation.graspRequest, message.mutable_grasprequest());
+  //
+  Serializer<GraspRequest>::serialize(representation.graspRequest, message.mutable_grasprequest());
  
   google::protobuf::io::OstreamOutputStream buf(&stream);
   message.SerializeToZeroCopyStream(&buf);

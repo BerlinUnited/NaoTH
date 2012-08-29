@@ -5,13 +5,13 @@
 * Declaration of class IKDynamicKickMotion
 */
 
-#ifndef __IKDynamicKickMotion_h__
-#define __IKDynamicKickMotion_h__
+#ifndef _IKDynamicKickMotion_h__
+#define _IKDynamicKickMotion_h__
 
 // kinematic tools
 #include "IKMotion.h"
 #include "IKParameters.h"
-#include "ReachibilityGrid.h"
+#include "Tools/ReachibilityGrid.h"
 
 
 class KickPose
