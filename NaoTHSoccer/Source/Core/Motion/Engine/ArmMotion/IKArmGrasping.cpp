@@ -94,7 +94,7 @@ void IKArmGrasping::execute(const MotionRequest& motionRequest, MotionStatus& /*
   }
 
   // apply only the arms inverse kinematics
-  double error = theEngine.solveHandsIK(
+  theEngine.solveHandsIK(
     theCurrentPose.chest,
     theCurrentPose.arms.left,
     theCurrentPose.arms.right,
@@ -387,7 +387,6 @@ void IKArmGrasping::calculateTrajectory(const MotionRequest& motionRequest)
     q.arms.left.translate(lHandOffset);
     q.arms.right.translate(rHandOffset);
     q.localInChest();
-    int x = 0;
   }
 }//end calculateTrajectory
 
@@ -397,26 +396,26 @@ void IKArmGrasping::setShoulderPitchStiffness(double value)
 {
   double stiffness = Math::clamp(value,-1.0,1.0);
 
-  theMotorJointData.stiffness[MotorJointData::LShoulderPitch] = value;
-  theMotorJointData.stiffness[MotorJointData::LElbowYaw] = value;
+  theMotorJointData.stiffness[MotorJointData::LShoulderPitch] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::LElbowYaw] = stiffness;
 
-  theMotorJointData.stiffness[MotorJointData::RShoulderPitch] = value;
-  theMotorJointData.stiffness[MotorJointData::RElbowYaw] = value;
+  theMotorJointData.stiffness[MotorJointData::RShoulderPitch] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::RElbowYaw] = stiffness;
 }//end setShoulderPitchStiffness
 
 void IKArmGrasping::setArmStiffness(double value)
 {
   double stiffness = Math::clamp(value,-1.0,1.0);
 
-  theMotorJointData.stiffness[MotorJointData::LElbowYaw] = value;
-  theMotorJointData.stiffness[MotorJointData::LElbowRoll] = value;
-  theMotorJointData.stiffness[MotorJointData::LShoulderPitch] = value;
-  theMotorJointData.stiffness[MotorJointData::LShoulderRoll] = value;
+  theMotorJointData.stiffness[MotorJointData::LElbowYaw] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::LElbowRoll] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::LShoulderPitch] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::LShoulderRoll] = stiffness;
 
-  theMotorJointData.stiffness[MotorJointData::RElbowYaw] = value;
-  theMotorJointData.stiffness[MotorJointData::RElbowRoll] = value;
-  theMotorJointData.stiffness[MotorJointData::RShoulderPitch] = value;
-  theMotorJointData.stiffness[MotorJointData::RShoulderRoll] = value;
+  theMotorJointData.stiffness[MotorJointData::RElbowYaw] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::RElbowRoll] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::RShoulderPitch] = stiffness;
+  theMotorJointData.stiffness[MotorJointData::RShoulderRoll] = stiffness;
 }//end setArmStiffness
 
 
@@ -493,7 +492,7 @@ void IKArmGrasping::test_roundtrip_delay()
 void IKArmGrasping::debugDraw3D() 
 {
   // HACK: static access to the black board
-  const Kinematics::Link* lio = MotionBlackBoard::getInstance().theKinematicChain.theLinks;
+  //const Kinematics::Link* lio = MotionBlackBoard::getInstance().theKinematicChain.theLinks;
 
   // draw the current grasping center
   const Pose3D& chestPose = theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].M;

@@ -213,7 +213,7 @@ void GraspingBehaviorControl::take_object_from_table()
   //minHipHeight indicates change of state
   double minHipHeight = 146.1; 
 
-  double standHeight;
+  double standHeight = minHipHeight;
 
   // state machine
   switch(state) 

@@ -33,8 +33,8 @@ public:
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& moitonStatus);
 
 private:
-  int initialTime;
   InverseKinematicsMotionEngine& theEngine;
+  int initialTime;
   //ReachibilityGrid _pure_reachability_grid;
 
   //TransformedReachibilityGrid theReachibilityGridRight;
