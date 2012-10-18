@@ -22,7 +22,14 @@ CameraInfoProvider::CameraInfoProvider()
 
 void CameraInfoProvider::execute()
 {
-  // TODO
+  const CameraSettings& camSettings = getCameraSettings();
+  // check if the camera settings actually changed something in the CameraInfo
+  // uses
+  param.resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
+  param.resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
+
+  // set param for image
+  getImage().cameraInfo = param;
 }
 
 CameraInfoProvider::~CameraInfoProvider()

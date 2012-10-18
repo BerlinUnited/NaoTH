@@ -21,12 +21,17 @@
 #include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/CameraSettings.h>
 #include <Representations/Infrastructure/CameraInfo.h>
+#include <Representations/Infrastructure/CameraInfo.h>
+#include <Representations/Infrastructure/Image.h>
+
 
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(CameraInfoProvider)
   REQUIRE(CameraSettings)
-  PROVIDE(CameraInfo)
+
+  // we don't actually provide the Image but rather set the CameraInfo for it
+  PROVIDE(Image)
 END_DECLARE_MODULE(CameraInfoProvider)
 
 
@@ -37,6 +42,8 @@ public:
   virtual ~CameraInfoProvider();
 
   virtual void execute();
+private:
+  CameraInfoParameter param;
 };
 
 #endif // CAMERAINFOPROVIDER_H

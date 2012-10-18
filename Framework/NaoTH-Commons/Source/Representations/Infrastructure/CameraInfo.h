@@ -80,6 +80,9 @@ namespace naoth
     double cameraRollOffset;
     double cameraTiltOffset;
 
+    // offset to the neck joint
+    Pose3D transformation[numOfCamera];
+
     // getter functions that use the existing values to calculate their result
 
     double getFocalLength() const;
@@ -104,18 +107,12 @@ namespace naoth
 
     CameraTransInfo cameraTrans[numOfCamera];
 
+
     void setCameraTrans();
 
   public:
     CameraInfoParameter();
-
     void init();
-    
-    double openingAngleDiagonal;
-
-    // offset to the neck joint
-    Pose3D transformation[numOfCamera];
-
 
   };
   

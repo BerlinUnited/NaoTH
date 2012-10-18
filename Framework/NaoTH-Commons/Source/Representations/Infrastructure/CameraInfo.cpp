@@ -69,8 +69,6 @@ void CameraInfo::print(ostream& stream) const
 
 CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
 {
-  PARAMETER_REGISTER(resolutionWidth) = 320;
-  PARAMETER_REGISTER(resolutionHeight) = 240;
   PARAMETER_REGISTER(openingAngleDiagonal) = 72.6;
   PARAMETER_REGISTER(cameraRollOffset) = 0;
   PARAMETER_REGISTER(cameraTiltOffset) = 0;
@@ -102,6 +100,13 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 23.81;
   PARAMETER_REGISTER(cameraTrans[Bottom].rotationY) = 40.0;
 
+  init();
+}
+
+void CameraInfoParameter::init()
+{
+  // init config and values
+  syncWithConfig();
   setCameraTrans();
 }
 
@@ -113,12 +118,6 @@ void CameraInfoParameter::setCameraTrans()
     transformation[i].rotation = RotationMatrix::getRotationY(Math::fromDegrees(cameraTrans[i].rotationY));
   }
 }//end CameraInfoParameter::setCameraTrans
-
-void CameraInfoParameter::init()
-{
-  syncWithConfig();
-  setCameraTrans();
-}//end CameraInfoParameter::init
 
 
 void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::ostream& stream)
