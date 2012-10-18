@@ -101,7 +101,7 @@ void CameraMatrixProvider::execute()
 
   DEBUG_REQUEST("3DViewer:Robot:Camera",
     const CameraInfo& ci = Platform::getInstance().theCameraInfo;
-    DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.focalLength, ci.resolutionWidth, ci.resolutionHeight););
+      DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight););
 
 }//end execute
 

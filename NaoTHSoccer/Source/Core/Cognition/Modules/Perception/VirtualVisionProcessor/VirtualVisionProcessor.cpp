@@ -106,7 +106,7 @@ void VirtualVisionProcessor::updateBall()
     theBallPercept.bearingBasedOffsetOnField.x = p.x;
     theBallPercept.bearingBasedOffsetOnField.y = p.y;
 
-    theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.focalLength;
+    theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.getFocalLength();
     theBallPercept.centerInImage = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
   }
   else

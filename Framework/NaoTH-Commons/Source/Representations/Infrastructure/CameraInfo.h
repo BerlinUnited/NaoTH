@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   CameraInfo.h
  * Author: Oliver Welter
  *
@@ -25,11 +25,6 @@ namespace naoth
     :
     resolutionWidth(320),
     resolutionHeight(240),
-    focalLength(0.0),
-    openingAngleWidth(0.0),
-    openingAngleHeight(0.0),
-    opticalCenterX(0.0),
-    opticalCenterY(0.0),
     pixelSize(0.0),
     focus(0.0),
     xp(0.0),
@@ -41,7 +36,6 @@ namespace naoth
     p2(0.0),
     b1(0.0),
     b2(0.0),
-    size(0),
     cameraID(Bottom),
     cameraRollOffset(0.0),
     cameraTiltOffset(0.0)
@@ -59,12 +53,8 @@ namespace naoth
 
     unsigned int resolutionWidth;
     unsigned int resolutionHeight;
-    
-    double focalLength;
-    double openingAngleWidth;
-    double openingAngleHeight;
-    double opticalCenterX;
-    double opticalCenterY;
+
+    double openingAngleDiagonal;
 
     //size of an Pixel on the chip
     double pixelSize;
@@ -84,15 +74,20 @@ namespace naoth
     double b1;
     double b2;
 
-    unsigned long size;
-
     CameraID cameraID;
 
     // for calibration
     double cameraRollOffset;
     double cameraTiltOffset;
 
-    void setParameter(unsigned int resolutionWidth, unsigned int resolutionHeight, double openingAngleDiagonal);
+    // getter functions that use the existing values to calculate their result
+
+    double getFocalLength() const;
+    double getOpeningAngleWidth() const;
+    double getOpeningAngleHeight() const;
+    double getOpticalCenterX() const;
+    double getOpticalCenterY() const;
+    unsigned long getSize() const;
 
     virtual void print(ostream& stream) const;
   };

@@ -91,8 +91,8 @@ void AttentionAnalyzer::execute()
     if(CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
-      (double)getImage().cameraInfo.opticalCenterX, 
-      (double)getImage().cameraInfo.opticalCenterY, 
+      (double)getImage().cameraInfo.getOpticalCenterX(),
+      (double)getImage().cameraInfo.getOpticalCenterY(),
       0.0,
       centerOnField))
     {
@@ -116,8 +116,8 @@ int AttentionAnalyzer::compare(const PointOfInterest& one, const PointOfInterest
   if(!CameraGeometry::imagePixelToFieldCoord(
       getCameraMatrix(), 
       getImage().cameraInfo,
-      (double)getImage().cameraInfo.opticalCenterX, 
-      (double)getImage().cameraInfo.opticalCenterY, 
+      (double)getImage().cameraInfo.getOpticalCenterX(),
+      (double)getImage().cameraInfo.getOpticalCenterY(),
       0.0,
       centerOnField))
       return 0;
@@ -144,8 +144,8 @@ bool AttentionAnalyzer::isSeen(const Vector2<double> point)
     );
 
   Vector2<double> dist(
-    projectionInImage.x-getImage().cameraInfo.opticalCenterX,
-    projectionInImage.y-getImage().cameraInfo.opticalCenterY);
+    projectionInImage.x-getImage().cameraInfo.getOpticalCenterX(),
+    projectionInImage.y-getImage().cameraInfo.getOpticalCenterY());
 
   // test if the point is in image
   /*

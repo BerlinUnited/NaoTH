@@ -13,36 +13,50 @@
 
 using namespace naoth;
 
-void CameraInfo::setParameter(unsigned int resolutionWidth, unsigned int resolutionHeight, double openingAngleDiagonal)
+double CameraInfo::getFocalLength() const
 {
-  openingAngleDiagonal = Math::fromDegrees(openingAngleDiagonal);
-
-  // calculate focal length
   double d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight;
   double halfDiagLength = 0.5 * sqrt(d2);
 
-  focalLength = halfDiagLength / tan(0.5 * openingAngleDiagonal);
+  return halfDiagLength / tan(0.5 * openingAngleDiagonal);
+}
 
-  // calculate opening angle
-  openingAngleHeight = 2.0 * atan2((double)resolutionHeight,focalLength * 2.0);
-  openingAngleWidth = 2.0 * atan2((double)resolutionWidth,focalLength * 2.0);
+double CameraInfo::getOpeningAngleHeight() const
+{
+  return 2.0 * atan2((double)resolutionHeight,getFocalLength() * 2.0);
+}
 
-  // calculate optical senter
-  opticalCenterY = resolutionHeight / 2;
-  opticalCenterX = resolutionWidth / 2;
+double CameraInfo::getOpeningAngleWidth() const
+{
+  return 2.0 * atan2((double)resolutionWidth, getFocalLength() * 2.0);
+}
 
-  // values needed by Image
-  size = resolutionHeight * resolutionWidth;
+double CameraInfo::getOpticalCenterX() const
+{
+  // TODO: shouldn't we cast to double here? Now we get a double that is acutally
+  // an int...
+  return resolutionHeight / 2;
+}
 
-}//end CameraInfo::setParameter
+double CameraInfo::getOpticalCenterY() const
+{
+  // TODO: shouldn't we cast to double here? Now we get a double that is acutally
+  // an int...
+  return resolutionWidth / 2;
+}
+
+unsigned long CameraInfo::getSize() const
+{
+  return resolutionHeight * resolutionWidth;
+}
 
 void CameraInfo::print(ostream& stream) const
 {
   stream << "Roll Offset: "<< cameraRollOffset << " rad" << endl
          << "Tilt Offset: "<< cameraTiltOffset << " rad" <<  endl
-         << "Opening Angle: " << openingAngleWidth << " rad, " << openingAngleHeight << " rad" << endl
-         << "Optical Center: " << opticalCenterX << " Pixel, " << opticalCenterY << " Pixel" << endl
-         << "Focal Length (calculated): "<< focalLength << " Pixel"<< endl
+         << "Opening Angle (calculated): " << getOpeningAngleWidth() << " rad, " << getOpeningAngleHeight() << " rad" << endl
+         << "Optical Center (calculated): " << getOpticalCenterX() << " Pixel, " << getOpticalCenterY() << " Pixel" << endl
+         << "Focal Length (calculated): "<< getFocalLength() << " Pixel"<< endl
          << "Pixel Size: "<< pixelSize << " mm" << endl
          << "Focal Length: "<< focus << " mm" << endl
          << "Error to Center: " << xp << " mm, " << yp << " mm" << endl
@@ -88,7 +102,6 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 23.81;
   PARAMETER_REGISTER(cameraTrans[Bottom].rotationY) = 40.0;
 
-  setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
   setCameraTrans();
 }
 
@@ -104,7 +117,6 @@ void CameraInfoParameter::setCameraTrans()
 void CameraInfoParameter::init()
 {
   syncWithConfig();
-  setParameter(resolutionWidth, resolutionHeight, openingAngleDiagonal);
   setCameraTrans();
 }//end CameraInfoParameter::init
 
@@ -115,12 +127,12 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_resolutionwidth(representation.resolutionWidth);
   msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
-  msg.set_focallength(representation.focalLength);
-  msg.set_openinganglewidth(representation.openingAngleWidth);
-  msg.set_openingangleheight(representation.openingAngleHeight);
-  msg.set_opticalcenterx(representation.opticalCenterX);
-  msg.set_opticalcentery(representation.opticalCenterY);
-  msg.set_size(representation.size);
+  msg.set_focallength(representation.getFocalLength());
+  msg.set_openinganglewidth(representation.getOpeningAngleWidth());
+  msg.set_openingangleheight(representation.getOpeningAngleHeight());
+  msg.set_opticalcenterx(representation.getOpticalCenterX());
+  msg.set_opticalcentery(representation.getOpticalCenterY());
+  msg.set_size(representation.getSize());
   msg.set_camerarolloffset(representation.cameraRollOffset);
   msg.set_cameratiltoffset(representation.cameraTiltOffset);
   
@@ -137,12 +149,6 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.resolutionWidth = msg.resolutionwidth();
   r.resolutionHeight = msg.resolutionheight();
   r.cameraID = (CameraInfo::CameraID) msg.cameraid();
-  r.focalLength = msg.focallength();
-  r.openingAngleWidth = msg.openinganglewidth();
-  r.openingAngleHeight = msg.openingangleheight();
-  r.opticalCenterX = msg.opticalcenterx();
-  r.opticalCenterY = msg.opticalcentery();
-  r.size = (unsigned long)msg.size();
   r.cameraRollOffset = msg.camerarolloffset();
   r.cameraTiltOffset = msg.cameratiltoffset();
   

@@ -132,8 +132,8 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
   CameraGeometry::imagePixelToFieldCoord(
     theBlackBoard.theCameraMatrix, 
     Platform::getInstance().theCameraInfo,
-    (double)Platform::getInstance().theCameraInfo.opticalCenterX, 
-    (double)Platform::getInstance().theCameraInfo.opticalCenterY, 
+        (double)Platform::getInstance().theCameraInfo.getOpticalCenterX(),
+        (double)Platform::getInstance().theCameraInfo.getOpticalCenterY(),
     0.0,
     centerOnField);
   
@@ -283,8 +283,8 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
 
   // the point in the image which should point to the pointInWorld
   Vector2<double> projectionPointInImage(
-    Platform::getInstance().theCameraInfo.opticalCenterX,
-    Platform::getInstance().theCameraInfo.opticalCenterY);
+        Platform::getInstance().theCameraInfo.getOpticalCenterX(),
+        Platform::getInstance().theCameraInfo.getOpticalCenterY());
 
   Vector3<double> direction = CameraGeometry::imagePixelToCameraCoords(
     cameraMatrix, 
@@ -384,16 +384,16 @@ void HeadMotionEngine::lookAtPoint()
   double y = theBlackBoard.theHeadMotionRequest.targetPointInImage.y;
   //double f = RobotInfo::getInstance().theCameraInfo.focalLength;
     
-  double dev_x = Platform::getInstance().theCameraInfo.opticalCenterX - x;
-  double dev_y = y - Platform::getInstance().theCameraInfo.opticalCenterY;
+  double dev_x = Platform::getInstance().theCameraInfo.getOpticalCenterX() - x;
+  double dev_y = y - Platform::getInstance().theCameraInfo.getOpticalCenterY();
    
   Vector3<double> startingPointCamera(54,0,68);
 
   //double offsetX = startingPointCamera.x;
   //double offsetY = startingPointCamera.z;
  
-  double divAngleX = atan2(dev_x, Platform::getInstance().theCameraInfo.focalLength);
-  double divAngleY = atan2(dev_y, Platform::getInstance().theCameraInfo.focalLength);
+  double divAngleX = atan2(dev_x, Platform::getInstance().theCameraInfo.getFocalLength());
+  double divAngleY = atan2(dev_y, Platform::getInstance().theCameraInfo.getFocalLength());
 
   Vector2<double> update(divAngleX, divAngleY);
 

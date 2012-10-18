@@ -63,8 +63,8 @@ void GoalDetector::execute()
   // fallback: try to scan along the center of the image
   if(numberOfCandidates == 0)
   {
-    Vector2<double> c1(0,getImage().cameraInfo.opticalCenterY);
-    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.opticalCenterY);
+    Vector2<double> c1(0,getImage().cameraInfo.getOpticalCenterY());
+    Vector2<double> c2(getImage().cameraInfo.resolutionWidth-1,getImage().cameraInfo.getOpticalCenterY());
     numberOfCandidates = scanForCandidates(c1, c2, candidates);
   }//end if
 
