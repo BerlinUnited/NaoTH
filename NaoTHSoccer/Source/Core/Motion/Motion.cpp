@@ -10,6 +10,11 @@
 
 #include <stdlib.h>
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
+
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 
@@ -109,6 +114,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   platformInterface.registerMotionOutput(theBlackBoard.the##R)
 
   REG_OUTPUT(MotorJointData);
+  REG_OUTPUT(CameraMatrix);
   //REG_OUTPUT(LEDData);
 
   g_message("Motion register end");
