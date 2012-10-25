@@ -5,7 +5,7 @@
 * Implementation of class CameraMatrixProvider
 */
 
-#include "CameraMatrixProvider.h"
+#include "CameraMatrixCorrector.h"
 
 // debug
 #include "Tools/Debug/DebugModify.h"
@@ -19,7 +19,7 @@
 
 #include "PlatformInterface/Platform.h"
 
-CameraMatrixProvider::CameraMatrixProvider()
+CameraMatrixCorrector::CameraMatrixCorrector()
 {
   udpateTime = getFrameInfo().getTime();
 
@@ -38,11 +38,11 @@ CameraMatrixProvider::CameraMatrixProvider()
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:Camera", "Show the robot body in the 3D viewer.", false);
 }
 
-CameraMatrixProvider::~CameraMatrixProvider()
+CameraMatrixCorrector::~CameraMatrixCorrector()
 {
 }
 
-void CameraMatrixProvider::execute()
+void CameraMatrixCorrector::execute()
 {
   double deltaTime = ( getFrameInfo().getTime() - udpateTime ) * 0.001;
   udpateTime = getFrameInfo().getTime();
@@ -106,14 +106,14 @@ void CameraMatrixProvider::execute()
 }//end execute
 
 
-void CameraMatrixProvider::reset_calibration()
+void CameraMatrixCorrector::reset_calibration()
 {
   CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
   cameraInfo.cameraRollOffset = 0.0;
   cameraInfo.cameraTiltOffset = 0.0;
 }
 
-void CameraMatrixProvider::calibrate()
+void CameraMatrixCorrector::calibrate()
 {
   // calibrate the camera matrix
   // currently it is in test-mode, the correction parameter
@@ -170,7 +170,7 @@ void CameraMatrixProvider::calibrate()
 }//end calibrate
 
 
-double CameraMatrixProvider::projectionError(double offsetX, double offsetY)
+double CameraMatrixCorrector::projectionError(double offsetX, double offsetY)
 {
   CameraMatrix tmpCM(getCameraMatrix());
 

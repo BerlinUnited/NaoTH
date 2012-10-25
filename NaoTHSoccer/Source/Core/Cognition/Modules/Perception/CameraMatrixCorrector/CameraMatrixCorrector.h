@@ -1,12 +1,12 @@
 /**
-* @file CameraMatrixProvider.h
+* @file CameraMatrixCorrector.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Declaration of class CameraMatrixProvider
 */
 
-#ifndef _CameraMatrixProvider_h_
-#define _CameraMatrixProvider_h_
+#ifndef _CameraMatrixCorrector_h_
+#define _CameraMatrixCorrector_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -27,7 +27,7 @@
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
-BEGIN_DECLARE_MODULE(CameraMatrixProvider)
+BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(InertialModel)
   REQUIRE(GoalPercept) // needed fot calibration of the camera matrix
   REQUIRE(Image)
@@ -39,17 +39,17 @@ BEGIN_DECLARE_MODULE(CameraMatrixProvider)
   PROVIDE(SensorJointData)
   PROVIDE(KinematicChain)
   PROVIDE(CameraMatrix)
-END_DECLARE_MODULE(CameraMatrixProvider)
+END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
 
 
-class CameraMatrixProvider: public CameraMatrixProviderBase
+class CameraMatrixCorrector: public CameraMatrixCorrectorBase
 {
 public:
 
-  CameraMatrixProvider();
-  ~CameraMatrixProvider();
+  CameraMatrixCorrector();
+  ~CameraMatrixCorrector();
 
 
   /** executes the module */
@@ -64,4 +64,4 @@ private:
   double projectionError(double offsetX, double offsetY);
 };
 
-#endif //__CameraMatrixProvider_h_
+#endif //_CameraMatrixCorrector_h_

@@ -42,7 +42,7 @@
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
 
 // Perception
-#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
@@ -132,7 +132,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(BatteryAlert);
 
   // perception
-  REGISTER_MODULE(CameraMatrixProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(BaseColorClassifier);
