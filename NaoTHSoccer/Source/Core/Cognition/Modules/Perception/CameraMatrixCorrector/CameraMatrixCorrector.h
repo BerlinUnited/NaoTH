@@ -35,10 +35,10 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(AccelerometerData)
   REQUIRE(FrameInfo)
   REQUIRE(CameraMatrixOffset)
+  REQUIRE(CameraMatrix)
 
   PROVIDE(SensorJointData)
   PROVIDE(KinematicChain)
-  PROVIDE(CameraMatrix)
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

@@ -278,7 +278,7 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
 
   CameraMatrix cameraMatrix;
   CameraMatrixCalculator::calculateCameraMatrix(cameraMatrix,
-    theBlackBoard.theHeadMotionRequest.cameraID,
+    theBlackBoard.theCameraInfo,
     theKinematicChain);
 
   // the point in the image which should point to the pointInWorld

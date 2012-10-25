@@ -10,6 +10,7 @@
 #include <PlatformInterface/PlatformInterface.h>
 
 #include <Representations/Infrastructure/CameraSettings.h>
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/FrameInfo.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/IRData.h>
@@ -37,6 +38,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
   REQUIRE(FrameInfo)
+  REQUIRE(CameraInfo)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

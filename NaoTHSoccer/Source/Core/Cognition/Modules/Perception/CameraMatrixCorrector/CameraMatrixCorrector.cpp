@@ -63,40 +63,13 @@ void CameraMatrixCorrector::execute()
 
   getKinematicChain().updateCoM();
 
-  // calculate the camera matrix
-  CameraMatrixCalculator::calculateCameraMatrix(
-            getCameraMatrix(),
-            getImage().cameraInfo.cameraID,
-            getKinematicChain());
-
-
   /* TODO: this doesn't work properly
   getCameraMatrix()
        .rotateY(getCameraMatrixOffset().offset.y)
        .rotateX(getCameraMatrixOffset().offset.x);
   */
 
-  // 
-  getCameraMatrix().valid = true;
-
-  MODIFY("CameraMatrix:translation:x", getCameraMatrix().translation.x);
-  MODIFY("CameraMatrix:translation:y", getCameraMatrix().translation.y);
-  MODIFY("CameraMatrix:translation:z", getCameraMatrix().translation.z);
-  double correctionAngleX = 0.0;
-  double correctionAngleY = 0.0;
-  double correctionAngleZ = 0.0;
-  MODIFY("CameraMatrix:correctionAngle:x", correctionAngleX);
-  MODIFY("CameraMatrix:correctionAngle:y", correctionAngleY);
-  MODIFY("CameraMatrix:correctionAngle:z", correctionAngleZ);
-
-  getCameraMatrix().rotation.rotateX(correctionAngleX);
-  getCameraMatrix().rotation.rotateY(correctionAngleY);
-  getCameraMatrix().rotation.rotateZ(correctionAngleZ);
-
-  // estimate the horizon
-  Vector2<double> p1, p2;
-  CameraGeometry::calculateArtificialHorizon(getCameraMatrix(), getImage().cameraInfo, p1, p2);
-  getCameraMatrix().horizon = Math::LineSegment(p1, p2);
+  //
 
 
   DEBUG_REQUEST("3DViewer:Robot:Camera",

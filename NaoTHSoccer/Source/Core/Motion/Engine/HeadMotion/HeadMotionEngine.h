@@ -12,6 +12,7 @@
 
 #include <Tools/Math/Vector2.h>
 #include "Motion/MotionBlackBoard.h"
+#include <Representations/Infrastructure/CameraInfo.h>
 
 class HeadMotionEngine
 {
