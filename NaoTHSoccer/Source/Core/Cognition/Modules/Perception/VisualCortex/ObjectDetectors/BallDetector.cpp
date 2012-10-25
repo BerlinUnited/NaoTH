@@ -140,8 +140,8 @@ void BallDetector::execute()
   // now make a plausibility check
   //
   // get the horizon
-  Vector2<double> p1(getCameraMatrix().horizon.begin());
-  Vector2<double> p2(getCameraMatrix().horizon.end());
+  Vector2<double> p1(getArtificialHorizon().begin());
+  Vector2<double> p2(getArtificialHorizon().end());
   
   // ball is over horizon
   if(getBallPercept().centerInImage.y < min(p1.y, p2.y))

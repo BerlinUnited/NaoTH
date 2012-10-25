@@ -44,8 +44,8 @@ void GoalDetector::execute()
   */
 
   // estimate the horizon
-  Vector2<double> p1(getCameraMatrix().horizon.begin());
-  Vector2<double> p2(getCameraMatrix().horizon.end());
+  Vector2<double> p1(getArtificialHorizon().begin());
+  Vector2<double> p2(getArtificialHorizon().end());
   int heightOfHorizon = (int)((p1.y + p2.y) * 0.5 + 0.5);
 
   // image over the horizon
@@ -318,7 +318,8 @@ void GoalDetector::execute()
 Vector2<int> GoalDetector::extendCandidate(ColorClasses::Color color, const Vector2<int>& start)
 {
   Vector2<double> p1, p2;
-  CameraGeometry::calculateArtificialHorizon((Pose3D&)getCameraMatrix(), getImage().cameraInfo, p1, p2);
+  p1 = getArtificialHorizon().begin();
+  p2 = getArtificialHorizon().end();
   
   Vector2<int> direction(p2 - p1);
   
@@ -340,7 +341,7 @@ void GoalDetector::estimatePostsByScanlines(
   {
     // orthogonal to horizon (down)
     // TODO: check rounding
-    Vector2<int> directionDown((getCameraMatrix().horizon.end() - getCameraMatrix().horizon.begin()).rotateLeft());
+    Vector2<int> directionDown((getArtificialHorizon().end() - getArtificialHorizon().begin()).rotateLeft());
     Vector2<int> directionUp(-directionDown);
     Vector2<int> basePoint = scanColorLine(candidates[i].color, candidates[i].point, directionDown);
     Vector2<int> topPoint = scanColorLine(candidates[i].color, candidates[i].point, directionUp);

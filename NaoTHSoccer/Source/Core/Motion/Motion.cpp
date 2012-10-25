@@ -375,11 +375,6 @@ void Motion::updateCameraMatrix()
   cameraMatrix.rotation.rotateY(correctionAngleY);
   cameraMatrix.rotation.rotateZ(correctionAngleZ);
 
-  // estimate the horizon
-  Vector2<double> p1, p2;
-  CameraGeometry::calculateArtificialHorizon(cameraMatrix, theBlackBoard.theCameraInfo, p1, p2);
-  cameraMatrix.horizon = Math::LineSegment(p1, p2);
-
 } // end updateCameraMatrix
 
 void Motion::postProcess()

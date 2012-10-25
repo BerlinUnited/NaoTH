@@ -23,9 +23,6 @@ public:
   CameraMatrix(const Pose3D& pose): Pose3D(pose), cameraNumber(-1), valid(false) {}
 
   int cameraNumber;
-
-  Math::LineSegment horizon;
-
   bool valid;
 
   virtual void print(ostream& stream) const

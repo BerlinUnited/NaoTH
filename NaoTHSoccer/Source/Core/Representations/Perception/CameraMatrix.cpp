@@ -45,9 +45,4 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
     representation.rotation[i].y = msg.pose().rotation(i).y();
     representation.rotation[i].z = msg.pose().rotation(i).z();
   }
-
-  // HACK: calculate the horizon
-  Vector2<double> p1, p2;
-  CameraGeometry::calculateArtificialHorizon(representation, Platform::getInstance().theCameraInfo, p1, p2);
-  representation.horizon = Math::LineSegment(p1, p2);
 }//end deserialize

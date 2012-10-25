@@ -30,6 +30,7 @@
 #include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BallPercept.h"
 
 // tools
@@ -45,6 +46,7 @@ BEGIN_DECLARE_MODULE(BallDetector)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
+  REQUIRE(ArtificialHorizon)
   REQUIRE(FieldPercept)
   REQUIRE(BodyContour)
 //  REQUIRE(BlobPercept)

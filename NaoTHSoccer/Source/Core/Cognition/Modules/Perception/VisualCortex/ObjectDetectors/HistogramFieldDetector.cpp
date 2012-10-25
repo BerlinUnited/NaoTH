@@ -28,7 +28,7 @@ void HistogramFieldDetector::execute()
 
   getFieldRectFromHistogram(min, max);
 
-  getFieldPercept().setRect(largestAreaRectangle, getCameraMatrix().horizon);
+  getFieldPercept().setRect(largestAreaRectangle, getArtificialHorizon());
 
   //if die enclosured area of the polygon/rectangle is lower than 11200 squarepixels the area is to small
   //TODO: this could be an topic of some kind of learning

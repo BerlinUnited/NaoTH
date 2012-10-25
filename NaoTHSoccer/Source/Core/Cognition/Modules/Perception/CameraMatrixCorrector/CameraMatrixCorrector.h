@@ -39,6 +39,8 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
 
   PROVIDE(SensorJointData)
   PROVIDE(KinematicChain)
+  PROVIDE(CameraInfoParameter)
+  PROVIDE(CameraInfo)
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

@@ -45,6 +45,7 @@ BEGIN_DECLARE_MODULE(WholeGoalLocator)
   REQUIRE(FieldInfo)
   REQUIRE(BodyState)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraInfo)
   REQUIRE(CompassDirection)
 
   PROVIDE(CameraMatrixOffset)

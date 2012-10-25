@@ -54,6 +54,7 @@
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 #include "Modules/Perception/OpenCV/FieldSideDetector.h"
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
+#include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -133,6 +134,7 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // perception
   REGISTER_MODULE(CameraMatrixCorrector);
+  REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(BaseColorClassifier);

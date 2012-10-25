@@ -48,10 +48,10 @@ void CameraMatrixCorrector::execute()
   udpateTime = getFrameInfo().getTime();
   
   DEBUG_REQUEST("CameraMatrix:calibrate_camera_matrix", calibrate(); );
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", Platform::getInstance().theCameraInfo.saveToConfig(); );
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", getCameraInfoParameter().saveToConfig(); );
 
   DEBUG_REQUEST("CameraMatrix:reset_calibration", reset_calibration(); );
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", Platform::getInstance().theCameraInfo.saveToConfig(); );
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", getCameraInfoParameter().saveToConfig(); );
 
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
@@ -69,19 +69,20 @@ void CameraMatrixCorrector::execute()
        .rotateX(getCameraMatrixOffset().offset.x);
   */
 
-  //
-
 
   DEBUG_REQUEST("3DViewer:Robot:Camera",
-    const CameraInfo& ci = Platform::getInstance().theCameraInfo;
+    const CameraInfo& ci = getCameraInfoParameter();
       DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight););
+
+  // copy parameter based representation to the "pure" one
+  getCameraInfo() = getCameraInfoParameter();
 
 }//end execute
 
 
 void CameraMatrixCorrector::reset_calibration()
 {
-  CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
   cameraInfo.cameraRollOffset = 0.0;
   cameraInfo.cameraTiltOffset = 0.0;
 }
@@ -127,7 +128,7 @@ void CameraMatrixCorrector::calibrate()
 
 
   // apply changes
-  CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
 
   double lambda = 0.01;
   if (offset.abs() > lambda)
@@ -151,7 +152,7 @@ double CameraMatrixCorrector::projectionError(double offsetX, double offsetY)
        .rotateX(offsetX);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfoParameter& cameraInfo = getCameraInfoParameter();
 
   Vector2<double> leftPosition;
   CameraGeometry::imagePixelToFieldCoord(

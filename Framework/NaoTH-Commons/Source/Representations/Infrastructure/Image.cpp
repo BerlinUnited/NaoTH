@@ -27,7 +27,6 @@ meanBrightness(0.0),
 possibleImageStuck(false),
 selfCreatedImage(false)
 {
-  cameraInfo = Platform::getInstance().theCameraInfo;
   yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
   shadingCorrection.init(width(), height(), cameraInfo.cameraID);
@@ -178,7 +177,7 @@ void Image::fromDataStream(istream& stream)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
@@ -209,7 +208,7 @@ void Image::fromDataStream(istream& stream)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
@@ -273,7 +272,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
@@ -303,7 +302,7 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;

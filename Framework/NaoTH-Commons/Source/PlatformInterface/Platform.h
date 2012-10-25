@@ -72,9 +72,6 @@ namespace naoth
       }
       
       _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity, _headHardwareIdentity);
-
-      // init (again) after the configuration was loaded
-      theCameraInfo.init();
     }//end init
 
     Configuration& theConfiguration;
@@ -82,8 +79,6 @@ namespace naoth
     const string& theHardwareIdentity; // the string to indentify different robots
     const string& theHeadHardwareIdentity; // the string to indentify different robot heads
     const string& theScheme;
-    // TODO: the camera info should not be memeber of platform
-    CameraInfoParameter theCameraInfo;
 
     PlatformBase* const & thePlatformInterface;
 
