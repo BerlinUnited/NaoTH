@@ -14,8 +14,8 @@
    limitations under the License.
 */
 
-#ifndef CAMERAINFOPROVIDER_H
-#define CAMERAINFOPROVIDER_H
+#ifndef CAMERAINFOSETTER_H
+#define CAMERAINFOSETTER_H
 
 #include <ModuleFramework/Module.h>
 #include <Representations/Infrastructure/CameraInfo.h>
@@ -27,23 +27,28 @@
 
 using namespace naoth;
 
-BEGIN_DECLARE_MODULE(CameraInfoProvider)
+BEGIN_DECLARE_MODULE(CameraInfoSetter)
   REQUIRE(CameraSettings)
 
   // we don't actually provide the Image but rather set the CameraInfo for it
   PROVIDE(Image)
-END_DECLARE_MODULE(CameraInfoProvider)
+  PROVIDE(CameraInfoParameter)
+  PROVIDE(CameraInfo)
+END_DECLARE_MODULE(CameraInfoSetter)
 
 
-class CameraInfoProvider : public CameraInfoProviderBase
+/**
+ * @brief Sets the CameraInfo into the Image, also loads CameraInfo from config.
+ */
+class CameraInfoSetter : public CameraInfoSetterBase
 {
 public:
-  CameraInfoProvider();
-  virtual ~CameraInfoProvider();
+  CameraInfoSetter();
+  virtual ~CameraInfoSetter();
 
   virtual void execute();
 private:
   CameraInfoParameter param;
 };
 
-#endif // CAMERAINFOPROVIDER_H
+#endif // CAMERAINFOSETTER_H

@@ -14,13 +14,14 @@
    limitations under the License.
 */
 
-#include "CameraInfoProvider.h"
+#include "CameraInfoSetter.h"
 
-CameraInfoProvider::CameraInfoProvider()
+CameraInfoSetter::CameraInfoSetter()
 {
+  getCameraInfoParameter().init();
 }
 
-void CameraInfoProvider::execute()
+void CameraInfoSetter::execute()
 {
   const CameraSettings& camSettings = getCameraSettings();
   // check if the camera settings actually changed something in the CameraInfo
@@ -30,9 +31,12 @@ void CameraInfoProvider::execute()
 
   // set param for image
   getImage().cameraInfo = param;
+
+  // copy parameter based representation to the "pure" one
+  getCameraInfo() = getCameraInfoParameter();
 }
 
-CameraInfoProvider::~CameraInfoProvider()
+CameraInfoSetter::~CameraInfoSetter()
 {
 
 }

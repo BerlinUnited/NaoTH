@@ -74,8 +74,6 @@ void CameraMatrixCorrector::execute()
     const CameraInfo& ci = getCameraInfoParameter();
       DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight););
 
-  // copy parameter based representation to the "pure" one
-  getCameraInfo() = getCameraInfoParameter();
 
 }//end execute
 

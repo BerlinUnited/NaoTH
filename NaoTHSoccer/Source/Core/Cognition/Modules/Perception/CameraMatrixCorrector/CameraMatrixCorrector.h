@@ -37,10 +37,11 @@ BEGIN_DECLARE_MODULE(CameraMatrixCorrector)
   REQUIRE(CameraMatrixOffset)
   REQUIRE(CameraMatrix)
 
+  // TODO: put offset to extra config
+  PROVIDE(CameraInfoParameter)
   PROVIDE(SensorJointData)
   PROVIDE(KinematicChain)
-  PROVIDE(CameraInfoParameter)
-  PROVIDE(CameraInfo)
+
 END_DECLARE_MODULE(CameraMatrixCorrector)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////
