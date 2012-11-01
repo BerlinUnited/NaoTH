@@ -54,8 +54,6 @@ namespace naoth
     unsigned int resolutionWidth;
     unsigned int resolutionHeight;
 
-    double openingAngleDiagonal;
-
     //size of an Pixel on the chip
     double pixelSize;
     //measured focus
@@ -91,8 +89,13 @@ namespace naoth
     double getOpticalCenterX() const;
     double getOpticalCenterY() const;
     unsigned long getSize() const;
+    double getOpeningAngleDiagonal() const;
 
     virtual void print(ostream& stream) const;
+  protected:
+
+    double openingAngleDiagonal;
+
   };
 
 

@@ -18,7 +18,7 @@ double CameraInfo::getFocalLength() const
   double d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight;
   double halfDiagLength = 0.5 * sqrt(d2);
 
-  return halfDiagLength / tan(0.5 * openingAngleDiagonal);
+  return halfDiagLength / tan(0.5 * getOpeningAngleDiagonal());
 }
 
 double CameraInfo::getOpeningAngleHeight() const
@@ -35,19 +35,24 @@ double CameraInfo::getOpticalCenterX() const
 {
   // TODO: shouldn't we cast to double here? Now we get a double that is acutally
   // an int...
-  return resolutionHeight / 2;
+  return resolutionWidth / 2;
 }
 
 double CameraInfo::getOpticalCenterY() const
 {
   // TODO: shouldn't we cast to double here? Now we get a double that is acutally
   // an int...
-  return resolutionWidth / 2;
+  return resolutionHeight / 2;
 }
 
 unsigned long CameraInfo::getSize() const
 {
   return resolutionHeight * resolutionWidth;
+}
+
+double CameraInfo::getOpeningAngleDiagonal() const
+{
+  return Math::fromDegrees(openingAngleDiagonal);
 }
 
 void CameraInfo::print(ostream& stream) const

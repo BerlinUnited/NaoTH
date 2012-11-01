@@ -132,11 +132,10 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
-
-  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(CameraInfoSetter);
 
   // perception
+  REGISTER_MODULE(CameraMatrixCorrector);
   REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);

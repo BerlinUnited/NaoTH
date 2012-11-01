@@ -24,16 +24,17 @@ CameraInfoSetter::CameraInfoSetter()
 void CameraInfoSetter::execute()
 {
   const CameraSettings& camSettings = getCameraSettingsRequest();
+  // copy parameter based representation to the "pure" one
+  getCameraInfo() = getCameraInfoParameter();
+
   // check if the camera settings actually changed something in the CameraInfo
   // uses
   getCameraInfo().resolutionWidth = (unsigned int) camSettings.data[CameraSettings::ResolutionWidth];
   getCameraInfo().resolutionHeight = (unsigned int) camSettings.data[CameraSettings::ResolutionHeight];
 
+
   // set param for image
   getImage().cameraInfo = getCameraInfo();
-
-  // copy parameter based representation to the "pure" one
-  getCameraInfo() = getCameraInfoParameter();
 }
 
 CameraInfoSetter::~CameraInfoSetter()
