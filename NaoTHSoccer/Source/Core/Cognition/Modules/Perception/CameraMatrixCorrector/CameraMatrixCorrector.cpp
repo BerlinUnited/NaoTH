@@ -132,13 +132,13 @@ void CameraMatrixCorrector::calibrate()
   if (offset.abs() > lambda)
     offset.normalize(lambda);
 
+
+  double maxValue = Math::fromDegrees(10.0); // maximal correction offset
+  offset.x = Math::clamp(offset.x, -maxValue, maxValue);
+  offset.y = Math::clamp(offset.y, -maxValue, maxValue);
+
   cameraInfo.cameraRollOffset += offset.x;
   cameraInfo.cameraTiltOffset += offset.y;
-
-
-  double maxValue = Math::fromDegrees(10.0); // maximal correction
-  cameraInfo.cameraRollOffset = Math::clamp(cameraInfo.cameraRollOffset, -maxValue, maxValue);
-  cameraInfo.cameraTiltOffset = Math::clamp(cameraInfo.cameraTiltOffset, -maxValue, maxValue);
 
   // until now we only changed the parameters, change the pure CameraInfo as well
   getCameraInfo() = cameraInfo;
