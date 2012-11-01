@@ -52,7 +52,8 @@ unsigned long CameraInfo::getSize() const
 
 void CameraInfo::print(ostream& stream) const
 {
-  stream << "Roll Offset: "<< cameraRollOffset << " rad" << endl
+  stream << "Camera selection: " << cameraID << endl
+         << "Roll Offset: "<< cameraRollOffset << " rad" << endl
          << "Tilt Offset: "<< cameraTiltOffset << " rad" <<  endl
          << "Opening Angle (calculated): " << getOpeningAngleWidth() << " rad, " << getOpeningAngleHeight() << " rad" << endl
          << "Optical Center (calculated): " << getOpticalCenterX() << " Pixel, " << getOpticalCenterY() << " Pixel" << endl
