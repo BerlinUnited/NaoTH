@@ -28,7 +28,7 @@
 using namespace naoth;
 
 BEGIN_DECLARE_MODULE(CameraInfoSetter)
-  REQUIRE(CameraSettings)
+  REQUIRE(CameraSettingsRequest)
 
   // we don't actually provide the Image but rather set the CameraInfo for it
   PROVIDE(Image)
@@ -48,7 +48,6 @@ public:
 
   virtual void execute();
 private:
-  CameraInfoParameter param;
 };
 
 #endif // CAMERAINFOSETTER_H
