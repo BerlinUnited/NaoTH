@@ -110,24 +110,24 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
-  REG_INPUT(CameraInfo);
 
 #define REG_OUTPUT(R)                                                   \
   platformInterface.registerMotionOutput(theBlackBoard.the##R)
 
   REG_OUTPUT(MotorJointData);
-  REG_OUTPUT(CameraMatrix);
   //REG_OUTPUT(LEDData);
 
   g_message("Motion register end");
 
   // messages from motion to cognition
+  platformInterface.registerMotionOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(theBlackBoard.theCameraMatrix);
   platformInterface.registerMotionOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
   platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
   //platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
   platformInterface.registerMotionOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
 
   // messages from cognition to motion
+  platformInterface.registerMotionInputChanel<CameraInfo, Serializer<CameraInfo> >(theBlackBoard.theCameraInfo);
   platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
   platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
 

@@ -26,8 +26,8 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(SoundPlayData);
   REG_OUTPUT(TeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
-  REG_OUTPUT(CameraInfo);
-  
+
+  platformInterface.registerCognitionOutputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
   platformInterface.registerCognitionOutputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
   platformInterface.registerCognitionOutputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
 }//end init
