@@ -60,6 +60,12 @@ void CameraInfo::print(ostream& stream) const
   stream << "Camera selection: " << cameraID << endl
          << "Roll Offset: "<< cameraRollOffset << " rad" << endl
          << "Tilt Offset: "<< cameraTiltOffset << " rad" <<  endl
+         << "Transformation: " << "x=" << transformation[cameraID].translation.x << ", "
+            << " y=" <<transformation[cameraID].translation.y << ", "
+            << " z=" <<transformation[cameraID].translation.z << ", "
+            << " angleX=" <<transformation[cameraID].rotation.getXAngle() << " rad,"
+            << " angleY=" <<transformation[cameraID].rotation.getYAngle() << " rad,"
+            << " angleZ=" <<transformation[cameraID].rotation.getZAngle() << " rad" << endl
          << "Opening Angle (calculated): " << getOpeningAngleWidth() << " rad, " << getOpeningAngleHeight() << " rad" << endl
          << "Optical Center (calculated): " << getOpticalCenterX() << " Pixel, " << getOpticalCenterY() << " Pixel" << endl
          << "Focal Length (calculated): "<< getFocalLength() << " Pixel"<< endl
@@ -97,14 +103,14 @@ CameraInfoParameter::CameraInfoParameter():ParameterList("CameraInfo")
   PARAMETER_REGISTER(b1) = 0.0;
   PARAMETER_REGISTER(b2) = 0.0;
 
-  PARAMETER_REGISTER(cameraTrans[Top].offset.x) = 53.9;
+  PARAMETER_REGISTER(cameraTrans[Top].offset.x) = 58.71;
   PARAMETER_REGISTER(cameraTrans[Top].offset.y) = 0;
-  PARAMETER_REGISTER(cameraTrans[Top].offset.z) = 67.9;
+  PARAMETER_REGISTER(cameraTrans[Top].offset.z) = 63.64;
   PARAMETER_REGISTER(cameraTrans[Top].rotationY) = 0;
-  PARAMETER_REGISTER(cameraTrans[Bottom].offset.x) = 48.8;
+  PARAMETER_REGISTER(cameraTrans[Bottom].offset.x) = 50.71;
   PARAMETER_REGISTER(cameraTrans[Bottom].offset.y) = 0;
-  PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 23.81;
-  PARAMETER_REGISTER(cameraTrans[Bottom].rotationY) = 40.0;
+  PARAMETER_REGISTER(cameraTrans[Bottom].offset.z) = 17.74;
+  PARAMETER_REGISTER(cameraTrans[Bottom].rotationY) = 39.7;
 
   init();
 }

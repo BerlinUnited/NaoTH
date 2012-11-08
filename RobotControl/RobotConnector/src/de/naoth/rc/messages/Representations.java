@@ -3768,6 +3768,14 @@ public final class Representations {
     boolean hasPose();
     de.naoth.rc.messages.CommonTypes.Pose3D getPose();
     de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder();
+    
+    // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+    boolean hasCameraID();
+    de.naoth.rc.messages.CommonTypes.CameraID getCameraID();
+    
+    // optional bool valid = 3;
+    boolean hasValid();
+    boolean getValid();
   }
   public static final class CameraMatrix extends
       com.google.protobuf.GeneratedMessage
@@ -3811,8 +3819,30 @@ public final class Representations {
       return pose_;
     }
     
+    // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+    public static final int CAMERAID_FIELD_NUMBER = 2;
+    private de.naoth.rc.messages.CommonTypes.CameraID cameraID_;
+    public boolean hasCameraID() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.CommonTypes.CameraID getCameraID() {
+      return cameraID_;
+    }
+    
+    // optional bool valid = 3;
+    public static final int VALID_FIELD_NUMBER = 3;
+    private boolean valid_;
+    public boolean hasValid() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public boolean getValid() {
+      return valid_;
+    }
+    
     private void initFields() {
       pose_ = de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance();
+      cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+      valid_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3837,6 +3867,12 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeMessage(1, pose_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, cameraID_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, valid_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -3849,6 +3885,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, pose_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, cameraID_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, valid_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3981,6 +4025,10 @@ public final class Representations {
           poseBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
+        cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        valid_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -4027,6 +4075,14 @@ public final class Representations {
         } else {
           result.pose_ = poseBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.cameraID_ = cameraID_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.valid_ = valid_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4045,6 +4101,12 @@ public final class Representations {
         if (other == de.naoth.rc.messages.Representations.CameraMatrix.getDefaultInstance()) return this;
         if (other.hasPose()) {
           mergePose(other.getPose());
+        }
+        if (other.hasCameraID()) {
+          setCameraID(other.getCameraID());
+        }
+        if (other.hasValid()) {
+          setValid(other.getValid());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4092,6 +4154,22 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setPose(subBuilder.buildPartial());
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.CommonTypes.CameraID value = de.naoth.rc.messages.CommonTypes.CameraID.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                cameraID_ = value;
+              }
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              valid_ = input.readBool();
               break;
             }
           }
@@ -4188,6 +4266,51 @@ public final class Representations {
           pose_ = null;
         }
         return poseBuilder_;
+      }
+      
+      // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+      private de.naoth.rc.messages.CommonTypes.CameraID cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+      public boolean hasCameraID() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public de.naoth.rc.messages.CommonTypes.CameraID getCameraID() {
+        return cameraID_;
+      }
+      public Builder setCameraID(de.naoth.rc.messages.CommonTypes.CameraID value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        cameraID_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCameraID() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+        onChanged();
+        return this;
+      }
+      
+      // optional bool valid = 3;
+      private boolean valid_ ;
+      public boolean hasValid() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public boolean getValid() {
+        return valid_;
+      }
+      public Builder setValid(boolean value) {
+        bitField0_ |= 0x00000004;
+        valid_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearValid() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        valid_ = false;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.CameraMatrix)
@@ -17378,80 +17501,81 @@ public final class Representations {
       "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei",
       "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra" +
       "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig" +
-      "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025" +
-      ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr" +
-      "ameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPe" +
-      "rcept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInIm" +
-      "age\030\002 \001(\0132\034.naothmessages.DoubleVector2\022" +
-      "\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(" +
-      "\0162\024.naothmessages.Color\022?\n\031bearingBasedO" +
-      "ffsetOnField\030\005 \001(\0132\034.naothmessages.Doubl",
-      "eVector2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001" +
-      "(\0132\030.naothmessages.FrameInfo\"\234\001\n\013GoalPer" +
-      "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen" +
-      "troid\030\002 \001(\0132\034.naothmessages.DoubleVector" +
-      "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003" +
-      "(\0132\027.naothmessages.GoalPost\"\264\003\n\021HeadMoti" +
-      "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022" +
-      "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess" +
-      "ages.DoubleVector2\0228\n\022targetPointInImage" +
-      "\030\004 \001(\0132\034.naothmessages.DoubleVector2\022;\n\025",
-      "targetPointInTheWorld\030\005 \001(\0132\034.naothmessa" +
-      "ges.DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132" +
-      "\034.naothmessages.DoubleVector3\0220\n\nsearchS" +
-      "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022" +
-      "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO" +
-      "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV" +
-      "ector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022StepContr" +
-      "olRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoo" +
-      "t\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmessages." +
-      "Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005",
-      " \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r" +
-      "\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.na" +
-      "othmessages.Pose2D\0226\n\013stepControl\030\004 \001(\0132" +
-      "!.naothmessages.StepControlRequest\022%\n\006of" +
-      "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic" +
-      "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa" +
-      "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001" +
-      "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212" +
-      "\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002" +
-      "(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132",
-      "\032.naothmessages.WalkRequest\022\026\n\016starndard" +
-      "Stand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naoth" +
-      "messages.KickRequest\022\023\n\013standHeight\030\007 \001(" +
-      "\001\022\"\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n" +
-      "\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013LinePerc" +
-      "ept\022.\n\005lines\030\001 \003(\0132\037.naothmessages.Field" +
-      "LineSegment\0222\n\rintersections\030\002 \003(\0132\033.nao" +
-      "thmessages.Intersection\0228\n\022middleCircleC" +
-      "enter\030\003 \001(\0132\034.naothmessages.DoubleVector" +
-      "2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImage\030\001 \002",
-      "(\0132\031.naothmessages.IntVector2\0220\n\nposOnFi" +
-      "eld\030\002 \002(\0132\034.naothmessages.DoubleVector2\022" +
-      "#\n\005color\030\003 \002(\0162\024.naothmessages.Color\022\022\n\n" +
-      "ScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept" +
-      "\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages.Scan" +
-      "LineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014" +
-      "\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepContr" +
-      "olStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot" +
-      "\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n" +
-      "\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r",
-      "\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSta" +
-      "te\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132" +
-      "\025.naothmessages.Pose2D\0225\n\026plannedMotionR" +
-      "ightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n" +
-      "\020plannedMotionHip\030\010 \002(\0132\025.naothmessages." +
-      "Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 .naot" +
-      "hmessages.StepControlStatus\"3\n\014OdometryD" +
-      "ata\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D" +
-      "\"\274\001\n\017CalibrationData\022:\n\024inertialSensorOf" +
-      "fset\030\001 \001(\0132\034.naothmessages.DoubleVector2",
-      "\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessag" +
-      "es.DoubleVector2\0225\n\017accSensorOffset\030\003 \001(" +
-      "\0132\034.naothmessages.DoubleVector3\"B\n\rInert" +
-      "ialModel\0221\n\013orientation\030\001 \001(\0132\034.naothmes" +
-      "sages.DoubleVector2B\026\n\024de.naoth.rc.messa" +
-      "ges"
+      "ht\030\004 \003(\001\"u\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025" +
+      ".naothmessages.Pose3D\0221\n\010cameraID\030\002 \001(\0162" +
+      "\027.naothmessages.CameraID:\006bottom\022\r\n\005vali" +
+      "d\030\003 \001(\010\".\n\tFrameInfo\022\023\n\013frameNumber\030\001 \002(" +
+      "\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPercept\022\023\n\013ballW" +
+      "asSeen\030\001 \001(\010\0223\n\rcenterInImage\030\002 \001(\0132\034.na" +
+      "othmessages.DoubleVector2\022\025\n\rradiusInIma" +
+      "ge\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024.naothmessa",
+      "ges.Color\022?\n\031bearingBasedOffsetOnField\030\005" +
+      " \001(\0132\034.naothmessages.DoubleVector2\022:\n\030fr" +
+      "ameInfoWhenBallWasSeen\030\006 \001(\0132\030.naothmess" +
+      "ages.FrameInfo\"\234\001\n\013GoalPercept\022\027\n\017angleT" +
+      "oSeenGoal\030\001 \001(\001\0222\n\014goalCentroid\030\002 \001(\0132\034." +
+      "naothmessages.DoubleVector3\022\031\n\021numberOfS" +
+      "eenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027.naothmess" +
+      "ages.GoalPost\"\264\003\n\021HeadMotionRequest\022\n\n\002i" +
+      "d\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\0229\n\023targetJoint" +
+      "Position\030\003 \001(\0132\034.naothmessages.DoubleVec",
+      "tor2\0228\n\022targetPointInImage\030\004 \001(\0132\034.naoth" +
+      "messages.DoubleVector2\022;\n\025targetPointInT" +
+      "heWorld\030\005 \001(\0132\034.naothmessages.DoubleVect" +
+      "or3\0222\n\014searchCenter\030\006 \001(\0132\034.naothmessage" +
+      "s.DoubleVector3\0220\n\nsearchSize\030\007 \001(\0132\034.na" +
+      "othmessages.DoubleVector3\022\027\n\017searchDirec" +
+      "tion\030\010 \001(\010\022<\n\026targetPointOnTheGround\030\t \001" +
+      "(\0132\034.naothmessages.DoubleVector2\022\022\n\ncoor" +
+      "dinate\030\n \001(\r\"\207\001\n\022StepControlRequest\022\016\n\006s" +
+      "tepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022%\n\006tar",
+      "get\030\003 \002(\0132\025.naothmessages.Pose2D\022\014\n\004time" +
+      "\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001\n\013WalkR" +
+      "equest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcharacter\030" +
+      "\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmessages.Po" +
+      "se2D\0226\n\013stepControl\030\004 \001(\0132!.naothmessage" +
+      "s.StepControlRequest\022%\n\006offset\030\005 \002(\0132\025.n" +
+      "aothmessages.Pose2D\"{\n\013KickRequest\022/\n\tki" +
+      "ckPoint\030\001 \002(\0132\034.naothmessages.DoubleVect" +
+      "or3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003" +
+      " \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212\002\n\rMotionReque",
+      "st\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003" +
+      " \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessage" +
+      "s.WalkRequest\022\026\n\016starndardStand\030\005 \001(\010\022/\n" +
+      "\013kickRequest\030\006 \001(\0132\032.naothmessages.KickR" +
+      "equest\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrate" +
+      "FootTouchDetector\030\010 \001(\010\022\034\n\024cognitionFram" +
+      "eNumber\030\t \001(\r\"\253\001\n\013LinePercept\022.\n\005lines\030\001" +
+      " \003(\0132\037.naothmessages.FieldLineSegment\0222\n" +
+      "\rintersections\030\002 \003(\0132\033.naothmessages.Int" +
+      "ersection\0228\n\022middleCircleCenter\030\003 \001(\0132\034.",
+      "naothmessages.DoubleVector2\"\254\001\n\020ScanLine" +
+      "EndPoint\022-\n\nposInImage\030\001 \002(\0132\031.naothmess" +
+      "ages.IntVector2\0220\n\nposOnField\030\002 \002(\0132\034.na" +
+      "othmessages.DoubleVector2\022#\n\005color\030\003 \002(\016" +
+      "2\024.naothmessages.Color\022\022\n\nScanLineID\030\004 \002" +
+      "(\r\"J\n\024ScanLineEdgelPercept\0222\n\tendPoints\030" +
+      "\002 \003(\0132\037.naothmessages.ScanLineEndPoint\"5" +
+      "\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r" +
+      "\n\005valid\030\003 \003(\010\"9\n\021StepControlStatus\022\016\n\006st" +
+      "epID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n\014Mot",
+      "ionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 " +
+      "\002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion" +
+      "\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025pl" +
+      "annedMotionLeftFoot\030\006 \002(\0132\025.naothmessage" +
+      "s.Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\013" +
+      "2\025.naothmessages.Pose2D\022/\n\020plannedMotion" +
+      "Hip\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021step" +
+      "ControlStatus\030\t \001(\0132 .naothmessages.Step" +
+      "ControlStatus\"3\n\014OdometryData\022#\n\004pose\030\001 " +
+      "\002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Calibrati",
+      "onData\022:\n\024inertialSensorOffset\030\001 \001(\0132\034.n" +
+      "aothmessages.DoubleVector2\0226\n\020gyroSensor" +
+      "Offset\030\002 \001(\0132\034.naothmessages.DoubleVecto" +
+      "r2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothmessa" +
+      "ges.DoubleVector3\"B\n\rInertialModel\0221\n\013or" +
+      "ientation\030\001 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -17503,7 +17627,7 @@ public final class Representations {
           internal_static_naothmessages_CameraMatrix_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CameraMatrix_descriptor,
-              new java.lang.String[] { "Pose", },
+              new java.lang.String[] { "Pose", "CameraID", "Valid", },
               de.naoth.rc.messages.Representations.CameraMatrix.class,
               de.naoth.rc.messages.Representations.CameraMatrix.Builder.class);
           internal_static_naothmessages_FrameInfo_descriptor =

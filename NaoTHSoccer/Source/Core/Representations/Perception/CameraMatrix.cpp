@@ -18,6 +18,8 @@ using namespace naoth;
 void Serializer<CameraMatrix>::serialize(const CameraMatrix& representation, std::ostream& stream)
 {
   naothmessages::CameraMatrix msg;
+  msg.set_cameraid((naothmessages::CameraID) representation.cameraNumber);
+  msg.set_valid(representation.valid);
   msg.mutable_pose()->mutable_translation()->set_x( representation.translation.x );
   msg.mutable_pose()->mutable_translation()->set_y( representation.translation.y );
   msg.mutable_pose()->mutable_translation()->set_z( representation.translation.z );
@@ -36,6 +38,8 @@ void Serializer<CameraMatrix>::deserialize(std::istream& stream, CameraMatrix& r
   google::protobuf::io::IstreamInputStream buf(&stream);
   msg.ParseFromZeroCopyStream(&buf);
 
+  representation.cameraNumber = msg.cameraid();
+  representation.valid = msg.valid();
   representation.translation.x = msg.pose().translation().x();
   representation.translation.y = msg.pose().translation().y();
   representation.translation.z = msg.pose().translation().z();

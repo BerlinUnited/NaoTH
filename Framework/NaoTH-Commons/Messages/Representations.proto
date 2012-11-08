@@ -65,6 +65,8 @@ message UltraSoundReceiveData {
 
 message CameraMatrix {
   required Pose3D pose = 1;
+  optional CameraID cameraID = 2 [default=bottom];
+  optional bool valid = 3;
 }
 
 message FrameInfo {
