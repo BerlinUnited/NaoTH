@@ -17,6 +17,7 @@ double CameraInfo::getFocalLength() const
 {
   double d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight;
   double halfDiagLength = 0.5 * sqrt(d2);
+  ASSERT(halfDiagLength > 0.0);
 
   return halfDiagLength / tan(0.5 * getOpeningAngleDiagonal());
 }
@@ -138,14 +139,11 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_resolutionwidth(representation.resolutionWidth);
   msg.set_resolutionheight(representation.resolutionHeight);
   msg.set_cameraid((naothmessages::CameraID) representation.cameraID);
-  msg.set_focallength(representation.getFocalLength());
-  msg.set_openinganglewidth(representation.getOpeningAngleWidth());
-  msg.set_openingangleheight(representation.getOpeningAngleHeight());
-  msg.set_opticalcenterx(representation.getOpticalCenterX());
-  msg.set_opticalcentery(representation.getOpticalCenterY());
-  msg.set_size(representation.getSize());
   msg.set_camerarolloffset(representation.cameraRollOffset);
   msg.set_cameratiltoffset(representation.cameraTiltOffset);
+  msg.set_openinganglediagonal(representation.openingAngleDiagonal);
+  msg.set_focus(representation.focus);
+  msg.set_pixelsize(representation.pixelSize);
   
   // set transformations
   for(int camID=0; camID < CameraInfo::numOfCamera; camID++)
@@ -176,6 +174,9 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.cameraID = (CameraInfo::CameraID) msg.cameraid();
   r.cameraRollOffset = msg.camerarolloffset();
   r.cameraTiltOffset = msg.cameratiltoffset();
+  r.focus = msg.focus();
+  r.openingAngleDiagonal = msg.openinganglediagonal();
+  r.pixelSize = msg.pixelsize();
   
   if(msg.transformation_size() == CameraInfo::numOfCamera)
   {

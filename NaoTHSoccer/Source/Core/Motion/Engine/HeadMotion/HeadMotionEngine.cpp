@@ -348,6 +348,11 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
     Vector2<double> DgTw(dg1*w, dg2*w);
 
     //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
+    if(DgTDg.det() <= 1e-13)
+    {
+      // debug output
+      std::cerr << "bad matrix" << endl;
+    }
     Vector2<double> z_GN = (-(DgTDg.invert()*DgTw));
     x += z_GN;
   }//end for

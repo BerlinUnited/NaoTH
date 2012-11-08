@@ -19,6 +19,8 @@ namespace naoth
 
   class CameraInfo: public Printable
   {
+
+    friend class Serializer<CameraInfo>;
   public:
     
     CameraInfo()

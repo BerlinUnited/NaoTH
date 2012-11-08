@@ -314,54 +314,54 @@ class CameraInfo : public ::google::protobuf::Message {
   inline naothmessages::CameraID cameraid() const;
   inline void set_cameraid(naothmessages::CameraID value);
   
-  // optional double focalLength = 5;
-  inline bool has_focallength() const;
-  inline void clear_focallength();
+  // optional double focalLength = 5 [deprecated = true];
+  inline bool has_focallength() const PROTOBUF_DEPRECATED;
+  inline void clear_focallength() PROTOBUF_DEPRECATED;
   static const int kFocalLengthFieldNumber = 5;
-  inline double focallength() const;
-  inline void set_focallength(double value);
+  inline double focallength() const PROTOBUF_DEPRECATED;
+  inline void set_focallength(double value) PROTOBUF_DEPRECATED;
   
-  // optional double openingAngleWidth = 6;
-  inline bool has_openinganglewidth() const;
-  inline void clear_openinganglewidth();
+  // optional double openingAngleWidth = 6 [deprecated = true];
+  inline bool has_openinganglewidth() const PROTOBUF_DEPRECATED;
+  inline void clear_openinganglewidth() PROTOBUF_DEPRECATED;
   static const int kOpeningAngleWidthFieldNumber = 6;
-  inline double openinganglewidth() const;
-  inline void set_openinganglewidth(double value);
+  inline double openinganglewidth() const PROTOBUF_DEPRECATED;
+  inline void set_openinganglewidth(double value) PROTOBUF_DEPRECATED;
   
-  // optional double openingAngleHeight = 7;
-  inline bool has_openingangleheight() const;
-  inline void clear_openingangleheight();
+  // optional double openingAngleHeight = 7 [deprecated = true];
+  inline bool has_openingangleheight() const PROTOBUF_DEPRECATED;
+  inline void clear_openingangleheight() PROTOBUF_DEPRECATED;
   static const int kOpeningAngleHeightFieldNumber = 7;
-  inline double openingangleheight() const;
-  inline void set_openingangleheight(double value);
+  inline double openingangleheight() const PROTOBUF_DEPRECATED;
+  inline void set_openingangleheight(double value) PROTOBUF_DEPRECATED;
   
-  // optional double opticalCenterX = 8;
-  inline bool has_opticalcenterx() const;
-  inline void clear_opticalcenterx();
+  // optional double opticalCenterX = 8 [deprecated = true];
+  inline bool has_opticalcenterx() const PROTOBUF_DEPRECATED;
+  inline void clear_opticalcenterx() PROTOBUF_DEPRECATED;
   static const int kOpticalCenterXFieldNumber = 8;
-  inline double opticalcenterx() const;
-  inline void set_opticalcenterx(double value);
+  inline double opticalcenterx() const PROTOBUF_DEPRECATED;
+  inline void set_opticalcenterx(double value) PROTOBUF_DEPRECATED;
   
-  // optional double opticalCenterY = 9;
-  inline bool has_opticalcentery() const;
-  inline void clear_opticalcentery();
+  // optional double opticalCenterY = 9 [deprecated = true];
+  inline bool has_opticalcentery() const PROTOBUF_DEPRECATED;
+  inline void clear_opticalcentery() PROTOBUF_DEPRECATED;
   static const int kOpticalCenterYFieldNumber = 9;
-  inline double opticalcentery() const;
-  inline void set_opticalcentery(double value);
+  inline double opticalcentery() const PROTOBUF_DEPRECATED;
+  inline void set_opticalcentery(double value) PROTOBUF_DEPRECATED;
   
-  // optional int64 size = 10;
-  inline bool has_size() const;
-  inline void clear_size();
+  // optional int64 size = 10 [deprecated = true];
+  inline bool has_size() const PROTOBUF_DEPRECATED;
+  inline void clear_size() PROTOBUF_DEPRECATED;
   static const int kSizeFieldNumber = 10;
-  inline ::google::protobuf::int64 size() const;
-  inline void set_size(::google::protobuf::int64 value);
+  inline ::google::protobuf::int64 size() const PROTOBUF_DEPRECATED;
+  inline void set_size(::google::protobuf::int64 value) PROTOBUF_DEPRECATED;
   
-  // optional int64 memorysize = 11;
-  inline bool has_memorysize() const;
-  inline void clear_memorysize();
+  // optional int64 memorysize = 11 [deprecated = true];
+  inline bool has_memorysize() const PROTOBUF_DEPRECATED;
+  inline void clear_memorysize() PROTOBUF_DEPRECATED;
   static const int kMemorysizeFieldNumber = 11;
-  inline ::google::protobuf::int64 memorysize() const;
-  inline void set_memorysize(::google::protobuf::int64 value);
+  inline ::google::protobuf::int64 memorysize() const PROTOBUF_DEPRECATED;
+  inline void set_memorysize(::google::protobuf::int64 value) PROTOBUF_DEPRECATED;
   
   // optional double cameraRollOffset = 12;
   inline bool has_camerarolloffset() const;
@@ -389,6 +389,27 @@ class CameraInfo : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >*
       mutable_transformation();
   
+  // optional double openingAngleDiagonal = 15;
+  inline bool has_openinganglediagonal() const;
+  inline void clear_openinganglediagonal();
+  static const int kOpeningAngleDiagonalFieldNumber = 15;
+  inline double openinganglediagonal() const;
+  inline void set_openinganglediagonal(double value);
+  
+  // optional double pixelSize = 16;
+  inline bool has_pixelsize() const;
+  inline void clear_pixelsize();
+  static const int kPixelSizeFieldNumber = 16;
+  inline double pixelsize() const;
+  inline void set_pixelsize(double value);
+  
+  // optional double focus = 17;
+  inline bool has_focus() const;
+  inline void clear_focus();
+  static const int kFocusFieldNumber = 17;
+  inline double focus() const;
+  inline void set_focus(double value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.CameraInfo)
  private:
   inline void set_has_resolutionwidth();
@@ -415,6 +436,12 @@ class CameraInfo : public ::google::protobuf::Message {
   inline void clear_has_camerarolloffset();
   inline void set_has_cameratiltoffset();
   inline void clear_has_cameratiltoffset();
+  inline void set_has_openinganglediagonal();
+  inline void clear_has_openinganglediagonal();
+  inline void set_has_pixelsize();
+  inline void clear_has_pixelsize();
+  inline void set_has_focus();
+  inline void clear_has_focus();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
@@ -430,10 +457,13 @@ class CameraInfo : public ::google::protobuf::Message {
   double camerarolloffset_;
   double cameratiltoffset_;
   ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D > transformation_;
+  double openinganglediagonal_;
+  double pixelsize_;
+  double focus_;
   int cameraid_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(13 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(16 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3144,7 +3174,7 @@ inline void CameraInfo::set_cameraid(naothmessages::CameraID value) {
   cameraid_ = value;
 }
 
-// optional double focalLength = 5;
+// optional double focalLength = 5 [deprecated = true];
 inline bool CameraInfo::has_focallength() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -3166,7 +3196,7 @@ inline void CameraInfo::set_focallength(double value) {
   focallength_ = value;
 }
 
-// optional double openingAngleWidth = 6;
+// optional double openingAngleWidth = 6 [deprecated = true];
 inline bool CameraInfo::has_openinganglewidth() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -3188,7 +3218,7 @@ inline void CameraInfo::set_openinganglewidth(double value) {
   openinganglewidth_ = value;
 }
 
-// optional double openingAngleHeight = 7;
+// optional double openingAngleHeight = 7 [deprecated = true];
 inline bool CameraInfo::has_openingangleheight() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
@@ -3210,7 +3240,7 @@ inline void CameraInfo::set_openingangleheight(double value) {
   openingangleheight_ = value;
 }
 
-// optional double opticalCenterX = 8;
+// optional double opticalCenterX = 8 [deprecated = true];
 inline bool CameraInfo::has_opticalcenterx() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
@@ -3232,7 +3262,7 @@ inline void CameraInfo::set_opticalcenterx(double value) {
   opticalcenterx_ = value;
 }
 
-// optional double opticalCenterY = 9;
+// optional double opticalCenterY = 9 [deprecated = true];
 inline bool CameraInfo::has_opticalcentery() const {
   return (_has_bits_[0] & 0x00000080u) != 0;
 }
@@ -3254,7 +3284,7 @@ inline void CameraInfo::set_opticalcentery(double value) {
   opticalcentery_ = value;
 }
 
-// optional int64 size = 10;
+// optional int64 size = 10 [deprecated = true];
 inline bool CameraInfo::has_size() const {
   return (_has_bits_[0] & 0x00000100u) != 0;
 }
@@ -3276,7 +3306,7 @@ inline void CameraInfo::set_size(::google::protobuf::int64 value) {
   size_ = value;
 }
 
-// optional int64 memorysize = 11;
+// optional int64 memorysize = 11 [deprecated = true];
 inline bool CameraInfo::has_memorysize() const {
   return (_has_bits_[0] & 0x00000200u) != 0;
 }
@@ -3365,6 +3395,72 @@ CameraInfo::transformation() const {
 inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >*
 CameraInfo::mutable_transformation() {
   return &transformation_;
+}
+
+// optional double openingAngleDiagonal = 15;
+inline bool CameraInfo::has_openinganglediagonal() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void CameraInfo::set_has_openinganglediagonal() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void CameraInfo::clear_has_openinganglediagonal() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void CameraInfo::clear_openinganglediagonal() {
+  openinganglediagonal_ = 0;
+  clear_has_openinganglediagonal();
+}
+inline double CameraInfo::openinganglediagonal() const {
+  return openinganglediagonal_;
+}
+inline void CameraInfo::set_openinganglediagonal(double value) {
+  set_has_openinganglediagonal();
+  openinganglediagonal_ = value;
+}
+
+// optional double pixelSize = 16;
+inline bool CameraInfo::has_pixelsize() const {
+  return (_has_bits_[0] & 0x00004000u) != 0;
+}
+inline void CameraInfo::set_has_pixelsize() {
+  _has_bits_[0] |= 0x00004000u;
+}
+inline void CameraInfo::clear_has_pixelsize() {
+  _has_bits_[0] &= ~0x00004000u;
+}
+inline void CameraInfo::clear_pixelsize() {
+  pixelsize_ = 0;
+  clear_has_pixelsize();
+}
+inline double CameraInfo::pixelsize() const {
+  return pixelsize_;
+}
+inline void CameraInfo::set_pixelsize(double value) {
+  set_has_pixelsize();
+  pixelsize_ = value;
+}
+
+// optional double focus = 17;
+inline bool CameraInfo::has_focus() const {
+  return (_has_bits_[0] & 0x00008000u) != 0;
+}
+inline void CameraInfo::set_has_focus() {
+  _has_bits_[0] |= 0x00008000u;
+}
+inline void CameraInfo::clear_has_focus() {
+  _has_bits_[0] &= ~0x00008000u;
+}
+inline void CameraInfo::clear_focus() {
+  focus_ = 0;
+  clear_has_focus();
+}
+inline double CameraInfo::focus() const {
+  return focus_;
+}
+inline void CameraInfo::set_focus(double value) {
+  set_has_focus();
+  focus_ = value;
 }
 
 // -------------------------------------------------------------------
