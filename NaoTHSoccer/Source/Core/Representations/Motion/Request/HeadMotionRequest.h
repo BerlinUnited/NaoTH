@@ -116,10 +116,7 @@ public:
   static HeadMotionID getId(const std::string& name);
 
 
-  virtual void print(ostream& stream) const
-  {
-    stream << "Current MotionRequest = " << getName(id) << endl;
-  }//end print
+  virtual void print(ostream& stream) const;
 };
 
 namespace naoth

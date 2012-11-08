@@ -147,6 +147,20 @@ void Serializer<CameraInfo>::serialize(const CameraInfo& representation, std::os
   msg.set_camerarolloffset(representation.cameraRollOffset);
   msg.set_cameratiltoffset(representation.cameraTiltOffset);
   
+  // set transformations
+  for(int camID=0; camID < CameraInfo::numOfCamera; camID++)
+  {
+    naothmessages::Pose3D* pose3d = msg.add_transformation();
+    pose3d->mutable_translation()->set_x( representation.transformation[camID].translation.x );
+    pose3d->mutable_translation()->set_y( representation.transformation[camID].translation.y );
+    pose3d->mutable_translation()->set_z( representation.transformation[camID].translation.z );
+    for(int i=0; i<3; i++){
+      pose3d->add_rotation()->set_x( representation.transformation[camID].rotation[i].x );
+      pose3d->mutable_rotation(i)->set_y( representation.transformation[camID].rotation[i].y );
+      pose3d->mutable_rotation(i)->set_z( representation.transformation[camID].rotation[i].z );
+    }
+  }
+
   google::protobuf::io::OstreamOutputStream buf(&stream);
   msg.SerializeToZeroCopyStream(&buf);
 }
@@ -163,5 +177,21 @@ void Serializer<CameraInfo>::deserialize(std::istream& stream, CameraInfo& r)
   r.cameraRollOffset = msg.camerarolloffset();
   r.cameraTiltOffset = msg.cameratiltoffset();
   
+  if(msg.transformation_size() == CameraInfo::numOfCamera)
+  {
+    for(int camID = 0; camID < CameraInfo::numOfCamera; camID++)
+    {
+      r.transformation[camID].translation.x = msg.transformation(camID).translation().x();
+      r.transformation[camID].translation.y = msg.transformation(camID).translation().y();
+      r.transformation[camID].translation.z = msg.transformation(camID).translation().z();
+
+      for(int i=0; i<3; i++) {
+        r.transformation[camID].rotation[i].x = msg.transformation(camID).rotation(i).x();
+        r.transformation[camID].rotation[i].y = msg.transformation(camID).rotation(i).y();
+        r.transformation[camID].rotation[i].z = msg.transformation(camID).rotation(i).z();
+      }
+    }
+  }
+
 }
 

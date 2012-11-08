@@ -868,6 +868,16 @@ public final class Representations {
     // optional double cameraTiltOffset = 13;
     boolean hasCameraTiltOffset();
     double getCameraTiltOffset();
+    
+    // repeated .naothmessages.Pose3D transformation = 14;
+    java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> 
+        getTransformationList();
+    de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index);
+    int getTransformationCount();
+    java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+        getTransformationOrBuilderList();
+    de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+        int index);
   }
   public static final class CameraInfo extends
       com.google.protobuf.GeneratedMessage
@@ -1018,6 +1028,27 @@ public final class Representations {
       return cameraTiltOffset_;
     }
     
+    // repeated .naothmessages.Pose3D transformation = 14;
+    public static final int TRANSFORMATION_FIELD_NUMBER = 14;
+    private java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> transformation_;
+    public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
+      return transformation_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+        getTransformationOrBuilderList() {
+      return transformation_;
+    }
+    public int getTransformationCount() {
+      return transformation_.size();
+    }
+    public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
+      return transformation_.get(index);
+    }
+    public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+        int index) {
+      return transformation_.get(index);
+    }
+    
     private void initFields() {
       resolutionWidth_ = 0;
       resolutionHeight_ = 0;
@@ -1031,6 +1062,7 @@ public final class Representations {
       memorysize_ = 0L;
       cameraRollOffset_ = 0D;
       cameraTiltOffset_ = 0D;
+      transformation_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1044,6 +1076,12 @@ public final class Representations {
       if (!hasResolutionHeight()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getTransformationCount(); i++) {
+        if (!getTransformation(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -1087,6 +1125,9 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeDouble(13, cameraTiltOffset_);
+      }
+      for (int i = 0; i < transformation_.size(); i++) {
+        output.writeMessage(14, transformation_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -1144,6 +1185,10 @@ public final class Representations {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(13, cameraTiltOffset_);
+      }
+      for (int i = 0; i < transformation_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(14, transformation_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1261,6 +1306,7 @@ public final class Representations {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getTransformationFieldBuilder();
         }
       }
       private static Builder create() {
@@ -1293,6 +1339,12 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000400);
         cameraTiltOffset_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000800);
+        if (transformationBuilder_ == null) {
+          transformation_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00001000);
+        } else {
+          transformationBuilder_.clear();
+        }
         return this;
       }
       
@@ -1379,6 +1431,15 @@ public final class Representations {
           to_bitField0_ |= 0x00000800;
         }
         result.cameraTiltOffset_ = cameraTiltOffset_;
+        if (transformationBuilder_ == null) {
+          if (((bitField0_ & 0x00001000) == 0x00001000)) {
+            transformation_ = java.util.Collections.unmodifiableList(transformation_);
+            bitField0_ = (bitField0_ & ~0x00001000);
+          }
+          result.transformation_ = transformation_;
+        } else {
+          result.transformation_ = transformationBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1431,6 +1492,32 @@ public final class Representations {
         if (other.hasCameraTiltOffset()) {
           setCameraTiltOffset(other.getCameraTiltOffset());
         }
+        if (transformationBuilder_ == null) {
+          if (!other.transformation_.isEmpty()) {
+            if (transformation_.isEmpty()) {
+              transformation_ = other.transformation_;
+              bitField0_ = (bitField0_ & ~0x00001000);
+            } else {
+              ensureTransformationIsMutable();
+              transformation_.addAll(other.transformation_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.transformation_.isEmpty()) {
+            if (transformationBuilder_.isEmpty()) {
+              transformationBuilder_.dispose();
+              transformationBuilder_ = null;
+              transformation_ = other.transformation_;
+              bitField0_ = (bitField0_ & ~0x00001000);
+              transformationBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getTransformationFieldBuilder() : null;
+            } else {
+              transformationBuilder_.addAllMessages(other.transformation_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1443,6 +1530,12 @@ public final class Representations {
         if (!hasResolutionHeight()) {
           
           return false;
+        }
+        for (int i = 0; i < getTransformationCount(); i++) {
+          if (!getTransformation(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -1534,6 +1627,12 @@ public final class Representations {
             case 105: {
               bitField0_ |= 0x00000800;
               cameraTiltOffset_ = input.readDouble();
+              break;
+            }
+            case 114: {
+              de.naoth.rc.messages.CommonTypes.Pose3D.Builder subBuilder = de.naoth.rc.messages.CommonTypes.Pose3D.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addTransformation(subBuilder.buildPartial());
               break;
             }
           }
@@ -1795,6 +1894,192 @@ public final class Representations {
         cameraTiltOffset_ = 0D;
         onChanged();
         return this;
+      }
+      
+      // repeated .naothmessages.Pose3D transformation = 14;
+      private java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> transformation_ =
+        java.util.Collections.emptyList();
+      private void ensureTransformationIsMutable() {
+        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+          transformation_ = new java.util.ArrayList<de.naoth.rc.messages.CommonTypes.Pose3D>(transformation_);
+          bitField0_ |= 0x00001000;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> transformationBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
+        if (transformationBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(transformation_);
+        } else {
+          return transformationBuilder_.getMessageList();
+        }
+      }
+      public int getTransformationCount() {
+        if (transformationBuilder_ == null) {
+          return transformation_.size();
+        } else {
+          return transformationBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
+        if (transformationBuilder_ == null) {
+          return transformation_.get(index);
+        } else {
+          return transformationBuilder_.getMessage(index);
+        }
+      }
+      public Builder setTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D value) {
+        if (transformationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransformationIsMutable();
+          transformation_.set(index, value);
+          onChanged();
+        } else {
+          transformationBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          transformationBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addTransformation(de.naoth.rc.messages.CommonTypes.Pose3D value) {
+        if (transformationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransformationIsMutable();
+          transformation_.add(value);
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D value) {
+        if (transformationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransformationIsMutable();
+          transformation_.add(index, value);
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addTransformation(
+          de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.add(builderForValue.build());
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllTransformation(
+          java.lang.Iterable<? extends de.naoth.rc.messages.CommonTypes.Pose3D> values) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          super.addAll(values, transformation_);
+          onChanged();
+        } else {
+          transformationBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearTransformation() {
+        if (transformationBuilder_ == null) {
+          transformation_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00001000);
+          onChanged();
+        } else {
+          transformationBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeTransformation(int index) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.remove(index);
+          onChanged();
+        } else {
+          transformationBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder getTransformationBuilder(
+          int index) {
+        return getTransformationFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+          int index) {
+        if (transformationBuilder_ == null) {
+          return transformation_.get(index);  } else {
+          return transformationBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+           getTransformationOrBuilderList() {
+        if (transformationBuilder_ != null) {
+          return transformationBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(transformation_);
+        }
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder() {
+        return getTransformationFieldBuilder().addBuilder(
+            de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder(
+          int index) {
+        return getTransformationFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D.Builder> 
+           getTransformationBuilderList() {
+        return getTransformationFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+          getTransformationFieldBuilder() {
+        if (transformationBuilder_ == null) {
+          transformationBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder>(
+                  transformation_,
+                  ((bitField0_ & 0x00001000) == 0x00001000),
+                  getParentForChildren(),
+                  isClean());
+          transformation_ = null;
+        }
+        return transformationBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.CameraInfo)
@@ -17485,7 +17770,7 @@ public final class Representations {
       "40\022-\n\ncameraInfo\030\004 \001(\0132\031.naothmessages.C" +
       "ameraInfo\0220\n\006format\030\005 \001(\0162\033.naothmessage" +
       "s.Image.Format:\003YUV\022\021\n\ttimestamp\030\006 \001(\r\"\035" +
-      "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\304\002\n\nCamera" +
+      "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\363\002\n\nCamera" +
       "Info\022\027\n\017resolutionWidth\030\001 \002(\005\022\030\n\020resolut" +
       "ionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 \001(\0162\027.naot" +
       "hmessages.CameraID:\006bottom\022\023\n\013focalLengt",
@@ -17493,89 +17778,90 @@ public final class Representations {
       "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX" +
       "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n" +
       " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf" +
-      "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"I\n\t" +
-      "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness" +
-      "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso" +
-      "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
-      "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
-      "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei",
-      "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra" +
-      "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig" +
-      "ht\030\004 \003(\001\"u\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025" +
-      ".naothmessages.Pose3D\0221\n\010cameraID\030\002 \001(\0162" +
-      "\027.naothmessages.CameraID:\006bottom\022\r\n\005vali" +
-      "d\030\003 \001(\010\".\n\tFrameInfo\022\023\n\013frameNumber\030\001 \002(" +
-      "\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPercept\022\023\n\013ballW" +
-      "asSeen\030\001 \001(\010\0223\n\rcenterInImage\030\002 \001(\0132\034.na" +
-      "othmessages.DoubleVector2\022\025\n\rradiusInIma" +
-      "ge\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024.naothmessa",
-      "ges.Color\022?\n\031bearingBasedOffsetOnField\030\005" +
-      " \001(\0132\034.naothmessages.DoubleVector2\022:\n\030fr" +
-      "ameInfoWhenBallWasSeen\030\006 \001(\0132\030.naothmess" +
-      "ages.FrameInfo\"\234\001\n\013GoalPercept\022\027\n\017angleT" +
-      "oSeenGoal\030\001 \001(\001\0222\n\014goalCentroid\030\002 \001(\0132\034." +
-      "naothmessages.DoubleVector3\022\031\n\021numberOfS" +
-      "eenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027.naothmess" +
-      "ages.GoalPost\"\264\003\n\021HeadMotionRequest\022\n\n\002i" +
-      "d\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\0229\n\023targetJoint" +
-      "Position\030\003 \001(\0132\034.naothmessages.DoubleVec",
-      "tor2\0228\n\022targetPointInImage\030\004 \001(\0132\034.naoth" +
-      "messages.DoubleVector2\022;\n\025targetPointInT" +
-      "heWorld\030\005 \001(\0132\034.naothmessages.DoubleVect" +
-      "or3\0222\n\014searchCenter\030\006 \001(\0132\034.naothmessage" +
-      "s.DoubleVector3\0220\n\nsearchSize\030\007 \001(\0132\034.na" +
-      "othmessages.DoubleVector3\022\027\n\017searchDirec" +
-      "tion\030\010 \001(\010\022<\n\026targetPointOnTheGround\030\t \001" +
-      "(\0132\034.naothmessages.DoubleVector2\022\022\n\ncoor" +
-      "dinate\030\n \001(\r\"\207\001\n\022StepControlRequest\022\016\n\006s" +
-      "tepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010\022%\n\006tar",
-      "get\030\003 \002(\0132\025.naothmessages.Pose2D\022\014\n\004time" +
-      "\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001\n\013WalkR" +
-      "equest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcharacter\030" +
-      "\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmessages.Po" +
-      "se2D\0226\n\013stepControl\030\004 \001(\0132!.naothmessage" +
-      "s.StepControlRequest\022%\n\006offset\030\005 \002(\0132\025.n" +
-      "aothmessages.Pose2D\"{\n\013KickRequest\022/\n\tki" +
-      "ckPoint\030\001 \002(\0132\034.naothmessages.DoubleVect" +
-      "or3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kickFoot\030\003" +
-      " \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212\002\n\rMotionReque",
-      "st\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006forced\030\003" +
-      " \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naothmessage" +
-      "s.WalkRequest\022\026\n\016starndardStand\030\005 \001(\010\022/\n" +
-      "\013kickRequest\030\006 \001(\0132\032.naothmessages.KickR" +
-      "equest\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032calibrate" +
-      "FootTouchDetector\030\010 \001(\010\022\034\n\024cognitionFram" +
-      "eNumber\030\t \001(\r\"\253\001\n\013LinePercept\022.\n\005lines\030\001" +
-      " \003(\0132\037.naothmessages.FieldLineSegment\0222\n" +
-      "\rintersections\030\002 \003(\0132\033.naothmessages.Int" +
-      "ersection\0228\n\022middleCircleCenter\030\003 \001(\0132\034.",
-      "naothmessages.DoubleVector2\"\254\001\n\020ScanLine" +
-      "EndPoint\022-\n\nposInImage\030\001 \002(\0132\031.naothmess" +
-      "ages.IntVector2\0220\n\nposOnField\030\002 \002(\0132\034.na" +
-      "othmessages.DoubleVector2\022#\n\005color\030\003 \002(\016" +
-      "2\024.naothmessages.Color\022\022\n\nScanLineID\030\004 \002" +
-      "(\r\"J\n\024ScanLineEdgelPercept\0222\n\tendPoints\030" +
-      "\002 \003(\0132\037.naothmessages.ScanLineEndPoint\"5" +
-      "\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030\002 \003(\001\022\r" +
-      "\n\005valid\030\003 \003(\010\"9\n\021StepControlStatus\022\016\n\006st" +
-      "epID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"\322\002\n\014Mot",
-      "ionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMotion\030\002 " +
-      "\002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nheadMotion" +
-      "\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(\r\0224\n\025pl" +
-      "annedMotionLeftFoot\030\006 \002(\0132\025.naothmessage" +
-      "s.Pose2D\0225\n\026plannedMotionRightFoot\030\007 \002(\013" +
-      "2\025.naothmessages.Pose2D\022/\n\020plannedMotion" +
-      "Hip\030\010 \002(\0132\025.naothmessages.Pose2D\022;\n\021step" +
-      "ControlStatus\030\t \001(\0132 .naothmessages.Step" +
-      "ControlStatus\"3\n\014OdometryData\022#\n\004pose\030\001 " +
-      "\002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Calibrati",
-      "onData\022:\n\024inertialSensorOffset\030\001 \001(\0132\034.n" +
-      "aothmessages.DoubleVector2\0226\n\020gyroSensor" +
-      "Offset\030\002 \001(\0132\034.naothmessages.DoubleVecto" +
-      "r2\0225\n\017accSensorOffset\030\003 \001(\0132\034.naothmessa" +
-      "ges.DoubleVector3\"B\n\rInertialModel\0221\n\013or" +
-      "ientation\030\001 \001(\0132\034.naothmessages.DoubleVe" +
-      "ctor2B\026\n\024de.naoth.rc.messages"
+      "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\022-\n\016" +
+      "transformation\030\016 \003(\0132\025.naothmessages.Pos" +
+      "e3D\"I\n\tJointData\022\020\n\010position\030\001 \003(\001\022\021\n\tst" +
+      "iffness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l" +
+      "\n\017SensorJointData\022+\n\tjointData\030\001 \002(\0132\030.n" +
+      "aothmessages.JointData\022\023\n\013temperature\030\002 ",
+      "\003(\001\022\027\n\017electricCurrent\030\003 \003(\001\"i\n\025UltraSou" +
+      "ndReceiveData\022\032\n\022ultraSoundTimeStep\030\001 \001(" +
+      "\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\t" +
+      "dataRight\030\004 \003(\001\"u\n\014CameraMatrix\022#\n\004pose\030" +
+      "\001 \002(\0132\025.naothmessages.Pose3D\0221\n\010cameraID" +
+      "\030\002 \001(\0162\027.naothmessages.CameraID:\006bottom\022" +
+      "\r\n\005valid\030\003 \001(\010\".\n\tFrameInfo\022\023\n\013frameNumb" +
+      "er\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPercept\022\023" +
+      "\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInImage\030\002 \001" +
+      "(\0132\034.naothmessages.DoubleVector2\022\025\n\rradi",
+      "usInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(\0162\024.nao" +
+      "thmessages.Color\022?\n\031bearingBasedOffsetOn" +
+      "Field\030\005 \001(\0132\034.naothmessages.DoubleVector" +
+      "2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001(\0132\030.na" +
+      "othmessages.FrameInfo\"\234\001\n\013GoalPercept\022\027\n" +
+      "\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCentroid\030\002" +
+      " \001(\0132\034.naothmessages.DoubleVector3\022\031\n\021nu" +
+      "mberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003(\0132\027.na" +
+      "othmessages.GoalPost\"\264\003\n\021HeadMotionReque" +
+      "st\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\0229\n\023targ",
+      "etJointPosition\030\003 \001(\0132\034.naothmessages.Do" +
+      "ubleVector2\0228\n\022targetPointInImage\030\004 \001(\0132" +
+      "\034.naothmessages.DoubleVector2\022;\n\025targetP" +
+      "ointInTheWorld\030\005 \001(\0132\034.naothmessages.Dou" +
+      "bleVector3\0222\n\014searchCenter\030\006 \001(\0132\034.naoth" +
+      "messages.DoubleVector3\0220\n\nsearchSize\030\007 \001" +
+      "(\0132\034.naothmessages.DoubleVector3\022\027\n\017sear" +
+      "chDirection\030\010 \001(\010\022<\n\026targetPointOnTheGro" +
+      "und\030\t \001(\0132\034.naothmessages.DoubleVector2\022" +
+      "\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022StepControlReque",
+      "st\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoot\030\002 \002(\010" +
+      "\022%\n\006target\030\003 \002(\0132\025.naothmessages.Pose2D\022" +
+      "\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005 \002(\001\"\272\001" +
+      "\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r\022\021\n\tcha" +
+      "racter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.naothmess" +
+      "ages.Pose2D\0226\n\013stepControl\030\004 \001(\0132!.naoth" +
+      "messages.StepControlRequest\022%\n\006offset\030\005 " +
+      "\002(\0132\025.naothmessages.Pose2D\"{\n\013KickReques" +
+      "t\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessages.Dou" +
+      "bleVector3\022\025\n\rkickDirection\030\002 \002(\001\022\020\n\010kic",
+      "kFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212\002\n\rMoti" +
+      "onRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\022\016\n\006f" +
+      "orced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132\032.naoth" +
+      "messages.WalkRequest\022\026\n\016starndardStand\030\005" +
+      " \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naothmessage" +
+      "s.KickRequest\022\023\n\013standHeight\030\007 \001(\001\022\"\n\032ca" +
+      "librateFootTouchDetector\030\010 \001(\010\022\034\n\024cognit" +
+      "ionFrameNumber\030\t \001(\r\"\253\001\n\013LinePercept\022.\n\005" +
+      "lines\030\001 \003(\0132\037.naothmessages.FieldLineSeg" +
+      "ment\0222\n\rintersections\030\002 \003(\0132\033.naothmessa",
+      "ges.Intersection\0228\n\022middleCircleCenter\030\003" +
+      " \001(\0132\034.naothmessages.DoubleVector2\"\254\001\n\020S" +
+      "canLineEndPoint\022-\n\nposInImage\030\001 \002(\0132\031.na" +
+      "othmessages.IntVector2\0220\n\nposOnField\030\002 \002" +
+      "(\0132\034.naothmessages.DoubleVector2\022#\n\005colo" +
+      "r\030\003 \002(\0162\024.naothmessages.Color\022\022\n\nScanLin" +
+      "eID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept\0222\n\tend" +
+      "Points\030\002 \003(\0132\037.naothmessages.ScanLineEnd" +
+      "Point\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014\n\004data\030" +
+      "\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepControlStatu",
+      "s\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot\030\002 \002(\r\"" +
+      "\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n\nlastMo" +
+      "tion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r\022\022\n\nhea" +
+      "dMotion\030\004 \002(\r\022\032\n\022currentMotionState\030\005 \002(" +
+      "\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132\025.naoth" +
+      "messages.Pose2D\0225\n\026plannedMotionRightFoo" +
+      "t\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n\020planne" +
+      "dMotionHip\030\010 \002(\0132\025.naothmessages.Pose2D\022" +
+      ";\n\021stepControlStatus\030\t \001(\0132 .naothmessag" +
+      "es.StepControlStatus\"3\n\014OdometryData\022#\n\004",
+      "pose\030\001 \002(\0132\025.naothmessages.Pose2D\"\274\001\n\017Ca" +
+      "librationData\022:\n\024inertialSensorOffset\030\001 " +
+      "\001(\0132\034.naothmessages.DoubleVector2\0226\n\020gyr" +
+      "oSensorOffset\030\002 \001(\0132\034.naothmessages.Doub" +
+      "leVector2\0225\n\017accSensorOffset\030\003 \001(\0132\034.nao" +
+      "thmessages.DoubleVector3\"B\n\rInertialMode" +
+      "l\0221\n\013orientation\030\001 \001(\0132\034.naothmessages.D" +
+      "oubleVector2B\026\n\024de.naoth.rc.messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -17595,7 +17881,7 @@ public final class Representations {
           internal_static_naothmessages_CameraInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CameraInfo_descriptor,
-              new java.lang.String[] { "ResolutionWidth", "ResolutionHeight", "CameraID", "FocalLength", "OpeningAngleWidth", "OpeningAngleHeight", "OpticalCenterX", "OpticalCenterY", "Size", "Memorysize", "CameraRollOffset", "CameraTiltOffset", },
+              new java.lang.String[] { "ResolutionWidth", "ResolutionHeight", "CameraID", "FocalLength", "OpeningAngleWidth", "OpeningAngleHeight", "OpticalCenterX", "OpticalCenterY", "Size", "Memorysize", "CameraRollOffset", "CameraTiltOffset", "Transformation", },
               de.naoth.rc.messages.Representations.CameraInfo.class,
               de.naoth.rc.messages.Representations.CameraInfo.Builder.class);
           internal_static_naothmessages_JointData_descriptor =

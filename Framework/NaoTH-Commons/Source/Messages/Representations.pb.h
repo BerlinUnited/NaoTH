@@ -377,6 +377,18 @@ class CameraInfo : public ::google::protobuf::Message {
   inline double cameratiltoffset() const;
   inline void set_cameratiltoffset(double value);
   
+  // repeated .naothmessages.Pose3D transformation = 14;
+  inline int transformation_size() const;
+  inline void clear_transformation();
+  static const int kTransformationFieldNumber = 14;
+  inline const ::naothmessages::Pose3D& transformation(int index) const;
+  inline ::naothmessages::Pose3D* mutable_transformation(int index);
+  inline ::naothmessages::Pose3D* add_transformation();
+  inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >&
+      transformation() const;
+  inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >*
+      mutable_transformation();
+  
   // @@protoc_insertion_point(class_scope:naothmessages.CameraInfo)
  private:
   inline void set_has_resolutionwidth();
@@ -417,10 +429,11 @@ class CameraInfo : public ::google::protobuf::Message {
   ::google::protobuf::int64 memorysize_;
   double camerarolloffset_;
   double cameratiltoffset_;
+  ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D > transformation_;
   int cameraid_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(12 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(13 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -844,17 +857,37 @@ class CameraMatrix : public ::google::protobuf::Message {
   inline ::naothmessages::Pose3D* mutable_pose();
   inline ::naothmessages::Pose3D* release_pose();
   
+  // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+  inline bool has_cameraid() const;
+  inline void clear_cameraid();
+  static const int kCameraIDFieldNumber = 2;
+  inline naothmessages::CameraID cameraid() const;
+  inline void set_cameraid(naothmessages::CameraID value);
+  
+  // optional bool valid = 3;
+  inline bool has_valid() const;
+  inline void clear_valid();
+  static const int kValidFieldNumber = 3;
+  inline bool valid() const;
+  inline void set_valid(bool value);
+  
   // @@protoc_insertion_point(class_scope:naothmessages.CameraMatrix)
  private:
   inline void set_has_pose();
   inline void clear_has_pose();
+  inline void set_has_cameraid();
+  inline void clear_has_cameraid();
+  inline void set_has_valid();
+  inline void clear_has_valid();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::naothmessages::Pose3D* pose_;
+  int cameraid_;
+  bool valid_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_Representations_2eproto();
   friend void protobuf_AssignDesc_Representations_2eproto();
@@ -3309,6 +3342,31 @@ inline void CameraInfo::set_cameratiltoffset(double value) {
   cameratiltoffset_ = value;
 }
 
+// repeated .naothmessages.Pose3D transformation = 14;
+inline int CameraInfo::transformation_size() const {
+  return transformation_.size();
+}
+inline void CameraInfo::clear_transformation() {
+  transformation_.Clear();
+}
+inline const ::naothmessages::Pose3D& CameraInfo::transformation(int index) const {
+  return transformation_.Get(index);
+}
+inline ::naothmessages::Pose3D* CameraInfo::mutable_transformation(int index) {
+  return transformation_.Mutable(index);
+}
+inline ::naothmessages::Pose3D* CameraInfo::add_transformation() {
+  return transformation_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >&
+CameraInfo::transformation() const {
+  return transformation_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::naothmessages::Pose3D >*
+CameraInfo::mutable_transformation() {
+  return &transformation_;
+}
+
 // -------------------------------------------------------------------
 
 // JointData
@@ -3625,6 +3683,51 @@ inline ::naothmessages::Pose3D* CameraMatrix::release_pose() {
   ::naothmessages::Pose3D* temp = pose_;
   pose_ = NULL;
   return temp;
+}
+
+// optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+inline bool CameraMatrix::has_cameraid() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void CameraMatrix::set_has_cameraid() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void CameraMatrix::clear_has_cameraid() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void CameraMatrix::clear_cameraid() {
+  cameraid_ = 1;
+  clear_has_cameraid();
+}
+inline naothmessages::CameraID CameraMatrix::cameraid() const {
+  return static_cast< naothmessages::CameraID >(cameraid_);
+}
+inline void CameraMatrix::set_cameraid(naothmessages::CameraID value) {
+  GOOGLE_DCHECK(naothmessages::CameraID_IsValid(value));
+  set_has_cameraid();
+  cameraid_ = value;
+}
+
+// optional bool valid = 3;
+inline bool CameraMatrix::has_valid() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void CameraMatrix::set_has_valid() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void CameraMatrix::clear_has_valid() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void CameraMatrix::clear_valid() {
+  valid_ = false;
+  clear_has_valid();
+}
+inline bool CameraMatrix::valid() const {
+  return valid_;
+}
+inline void CameraMatrix::set_valid(bool value) {
+  set_has_valid();
+  valid_ = value;
 }
 
 // -------------------------------------------------------------------

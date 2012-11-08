@@ -41,6 +41,9 @@ message CameraInfo {
 
   optional double cameraRollOffset = 12;
   optional double cameraTiltOffset = 13;
+
+  // the array index is the camera id
+  repeated Pose3D transformation = 14;
 }
 
 message JointData {    

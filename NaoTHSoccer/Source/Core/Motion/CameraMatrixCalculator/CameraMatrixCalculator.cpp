@@ -18,10 +18,8 @@ void CameraMatrixCalculator::calculateCameraMatrix(
   Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
 
   // apply the correction
-  pose.rotateY(theCameraInfo.transformation[theCameraInfo.cameraID].rotation.getYAngle()
-               + theCameraInfo.cameraTiltOffset)
-      .rotateX(theCameraInfo.transformation[theCameraInfo.cameraID].rotation.getXAngle()
-               + theCameraInfo.cameraRollOffset);
+  pose.rotateY(theCameraInfo.cameraTiltOffset)
+      .rotateX(theCameraInfo.cameraRollOffset);
 
   // transformation from the head to the camera
   pose.conc(theCameraInfo.transformation[theCameraInfo.cameraID]);
