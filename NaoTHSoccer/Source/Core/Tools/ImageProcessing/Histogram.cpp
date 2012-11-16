@@ -30,7 +30,7 @@ Histogram::Histogram()
     DEBUG_REQUEST_REGISTER(dbgString.str(), descString.str(), false);
   }
 
-  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:colorChannelHistogramField", "draw X axis rate histogram of the V (Cr) color channel from the field", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:Histogram:colorChannelHistogramCr", "draw X axis rate histogram of the V (Cr) color channel from the field", false);
 
   init();
 }
@@ -41,8 +41,9 @@ void Histogram::init()
 
   memset(&xHistogram, 0, sizeof(xHistogram));
   memset(&yHistogram, 0, sizeof(xHistogram));
-  memset(&colorChannelHistogramField, 0, sizeof(colorChannelHistogramField));
-
+  memset(&colorChannelHistogramY, 0, sizeof(colorChannelHistogramY));
+  memset(&colorChannelHistogramCb, 0, sizeof(colorChannelHistogramCb));
+  memset(&colorChannelHistogramCr, 0, sizeof(colorChannelHistogramCr));
 }//end init
 
 void Histogram::execute()
@@ -100,9 +101,9 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
     );
   }
 
-  DEBUG_REQUEST("ImageProcessor:Histogram:colorChannelHistogramField",
+  DEBUG_REQUEST("ImageProcessor:Histogram:colorChannelHistogramCr",
     drawChannelHist = true;
-    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[0], 0, (int)cameraInfo.resolutionHeight));
+    Vector2<int> last(0, Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[0], 0, (int)cameraInfo.resolutionHeight));
     for(unsigned int x = 1; x < COLOR_CHANNEL_VALUE_COUNT; x ++)
     {
       LINE_PX
@@ -111,10 +112,10 @@ void Histogram::showDebugInfos(const UniformGrid& grid, const CameraInfo& camera
         last.x,
         last.y,
         x,
-        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[x], 0, (int)cameraInfo.resolutionHeight)
+        Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[x], 0, (int)cameraInfo.resolutionHeight)
       );
       last.x = x;
-      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramField[x], 0, (int)cameraInfo.resolutionHeight);
+      last.y = Math::clamp((int)cameraInfo.resolutionHeight - (int) colorChannelHistogramCr[x], 0, (int)cameraInfo.resolutionHeight);
     }
   );
 
