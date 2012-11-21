@@ -7,6 +7,8 @@
 
 #include "BehaviorStatus.h"
 
+using namespace std;
+
 BehaviorStatus::BehaviorStatus() 
 {
 }

@@ -69,9 +69,9 @@ namespace naoth
 
     virtual void print(std::ostream& stream) const
     {
-      stream << "frameNumber = " << frameNumber << endl;
-      stream << "time(ms) = " << time << endl;
-      stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << endl;
+      stream << "frameNumber = " << frameNumber << std::endl;
+      stream << "time(ms) = " << time << std::endl;
+      stream << "fps(avg) = " << (((double)frameNumber) / getTimeInSeconds()) << std::endl;
     }
 
     friend class Serializer<FrameInfo>;

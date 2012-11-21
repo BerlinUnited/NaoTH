@@ -76,7 +76,7 @@ namespace naoth
     };
 
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
 
     double theMonoLED[numOfMonoLED];
     double theMultiLED[numOfMultiLED][numOfLEDColor];
@@ -84,8 +84,8 @@ namespace naoth
     LEDData();
     ~LEDData();
 
-    static string getLEDName(MonoLEDID theMonoLEDID);
-    static string getLEDName(MultiLEDID theMultiLEDID);
+    static std::string getLEDName(MonoLEDID theMonoLEDID);
+    static std::string getLEDName(MultiLEDID theMultiLEDID);
 
   };
 }

@@ -2,6 +2,7 @@
 #include "PlatformInterface/Platform.h"
 
 using namespace naoth;
+using namespace std;
 
 CameraSettings::CameraSettings()
 {

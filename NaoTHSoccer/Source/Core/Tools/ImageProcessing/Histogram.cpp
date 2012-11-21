@@ -11,6 +11,8 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugImageDrawings.h"
 
+using namespace naoth;
+using namespace std;
 
 Histogram::Histogram()
 {

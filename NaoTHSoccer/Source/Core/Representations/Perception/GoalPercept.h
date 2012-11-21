@@ -4,8 +4,8 @@
 * Declaration of class GoalPercept
 */
 
-#ifndef __GoalPercept_h_
-#define __GoalPercept_h_
+#ifndef _GoalPercept_h_
+#define _GoalPercept_h_
 
 #include "Tools/Math/Vector2.h"
 #include "Tools/Math/Vector3.h"
@@ -129,18 +129,18 @@ public:
   }//end reset
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "angleToSeenGoal=" << angleToSeenGoal << endl;
-    stream << "goalCentroid=" << goalCentroid << endl;
+    stream << "angleToSeenGoal=" << angleToSeenGoal << std::endl;
+    stream << "goalCentroid=" << goalCentroid << std::endl;
     for(unsigned int n=0; n<numberOfSeenPosts; n++)
     {
-      stream << "=====Post " << n << "=====" << endl;
-      stream << "post type= " << GoalPost::getPostTypeName(post[n].type) << endl;
-      stream << "basePoint=(" << post[n].basePoint.x << ";" << post[n].basePoint.y << ")" << endl;
-      stream << "position=(" << post[n].position.x << ";" << post[n].position.y << ")" << endl;
-      stream << "color=" << ColorClasses::getColorName(post[n].color) << endl;
-      stream << "reliable=" << (post[n].positionReliable? "true" : "false") << endl;
+      stream << "=====Post " << n << "=====" << std::endl;
+      stream << "post type= " << GoalPost::getPostTypeName(post[n].type) << std::endl;
+      stream << "basePoint=(" << post[n].basePoint.x << ";" << post[n].basePoint.y << ")" << std::endl;
+      stream << "position=(" << post[n].position.x << ";" << post[n].position.y << ")" << std::endl;
+      stream << "color=" << ColorClasses::getColorName(post[n].color) << std::endl;
+      stream << "reliable=" << (post[n].positionReliable? "true" : "false") << std::endl;
     }//end for
   }//end print
 
@@ -166,5 +166,5 @@ namespace naoth
   };
 }
 
-#endif //__GoalPercept_h_
+#endif // _GoalPercept_h_
 

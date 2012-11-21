@@ -32,13 +32,13 @@ public:
   inline double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream<<"Platform: "<<platform<<"\n";
-    stream<<"HeadNickName: "<<headNickName<<"\n";
-    stream<<"BodyNickName: "<<bodyNickName<<"\n";
-    stream<<"BodyID: "<<bodyID<<"\n";
-    stream<<"basicTimeStep: "<<basicTimeStep<<"\n";
+    stream << "Platform: " << platform << std::endl;
+    stream << "HeadNickName: " << headNickName << std::endl;
+    stream << "BodyNickName: " << bodyNickName << std::endl;
+    stream << "BodyID: " << bodyID << std::endl;
+    stream << "basicTimeStep: " << basicTimeStep << std::endl;
   }
 };
 

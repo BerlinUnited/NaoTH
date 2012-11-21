@@ -82,18 +82,18 @@ public:
   Pose2D offset;
 
 
-  void print(ostream& stream) const
+  void print(std::ostream& stream) const
   {
-    stream << "target: " << target << endl;
-    stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
-    stream << "character: " << character <<endl;
+    stream << "target: " << target << std::endl;
+    stream << "coordinate: "<< getCoordinateName(coordinate) << std::endl;
+    stream << "character: " << character << std::endl;
     stream << "offset: "<< offset << "\n";
     if ( stepControl.stepID >= 0 )
     {
       stream << "step control: "<< stepControl.stepID <<" "
              << (stepControl.moveLeftFoot?"L":"R")<<" "<<stepControl.time
              <<"\n step target: "<< stepControl.target<<"\n"
-             <<"speed direction:"<< Math::toDegrees(stepControl.speedDirection)<<"\n";
+             <<"speed direction:"<< Math::toDegrees(stepControl.speedDirection) << std::endl;
     }
   }//end print
   

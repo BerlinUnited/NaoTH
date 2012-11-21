@@ -8,7 +8,7 @@
 #include "FootStepPlanner.h"
 
 using namespace InverseKinematic;
-
+using namespace std;
 
 FootStepPlanner::FootStepPlanner()
 {

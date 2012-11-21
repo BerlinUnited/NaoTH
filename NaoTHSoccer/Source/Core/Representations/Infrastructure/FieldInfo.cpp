@@ -15,10 +15,11 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
   
   PARAMETER_REGISTER(ballRadius) = 32.5;
 
-  PARAMETER_REGISTER(xFieldLength) = 6700;
-  PARAMETER_REGISTER(yFieldLength) = 4700;
-  PARAMETER_REGISTER(xLength) = 6050;
-  PARAMETER_REGISTER(yLength) = 4050;
+  PARAMETER_REGISTER(xLength) = 6000;
+  PARAMETER_REGISTER(yLength) = 4000;
+
+  PARAMETER_REGISTER(xFieldLength) = xLength + 2*700;
+  PARAMETER_REGISTER(yFieldLength) = yLength + 2*700;
 
   PARAMETER_REGISTER(xPosOpponentPenaltyArea) = 2400;
   PARAMETER_REGISTER(yPosLeftPenaltyArea) = 1100;
