@@ -6,14 +6,23 @@ if [ "$EXTERN_DIR" == "" ]; then
   exit -1
 fi
 
-if [ ! -d sexpr_1.2.1 ]; then
-
+if [ "$1" = "check" ]; then
+  if [ -d sexpr_1.2.1 ]; then
+    echo "n"
+    exit 0
+  else
+    echo "y" 
+    exit 1
+  fi
+elif [ "$1" = "install" ]; then
+  rm -Rf sexpr_1.2.1
   tar xvzf ../downloads/sexpr_1.2.1.tar.gz
   cd sexpr_1.2.1/
   ./configure && make
   cp src/*.h $EXTERN_DIR/include/
   cp src/libsexp.a $EXTERN_DIR/lib/libsfsexp.a
-  cd ..
+  cd ..  
 fi
+
 
 
