@@ -7,7 +7,7 @@ if [ "$EXTERN_DIR" == "" ]; then
 fi
 
 if [ "$1" = "check" ]; then
-  if [ -d sexpr_1.2.1 ]; then
+  if [ -f "/usr/include/sexp.h" -o -f "$EXTERN_DIR/include/sexp.h" ]; then
     echo "n"
     exit 0
   else

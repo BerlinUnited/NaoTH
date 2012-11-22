@@ -8,7 +8,7 @@ fi
 
 
 if [ "$1" = "check" ]; then
-  if [ -d OpenCV-2.3.1 ]; then
+  if [ -d "/usr/include/opencv2" -o -d "$EXTERN_DIR/include/opencv2" ]; then
     echo "n"
     exit 0
   else

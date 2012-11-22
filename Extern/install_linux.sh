@@ -27,8 +27,6 @@ ask_install_package()
   if [ "$ANSWER" = "y" -o "$ANSWER" = "Y" ]
   then
     PACKAGESTOINSTALL="$PACKAGESTOINSTALL $1"
-  else
-    echo "*NOT* installing \"$1\", install it with your package manager"
   fi
 }
 
@@ -57,14 +55,16 @@ do
    echo "* $PKG"
 done
 
-echo "Proceed? [Y/n]: "
+echo -n "Proceed? [Y/n]: "
 read ANSWER
 
 if [ "$ANSWER" != "n" ]; then
   # actually install the packages
   for PKG in $PACKAGESTOINSTALL
   do
+     echo "==========================="  
      echo "Installing \"$PKG\""
+     echo "==========================="
       . ../install_scripts/$PKG.sh install
   done
 fi

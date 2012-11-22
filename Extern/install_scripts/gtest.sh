@@ -7,7 +7,7 @@ if [ "$EXTERN_DIR" == "" ]; then
 fi
 
 if [ "$1" = "check" ]; then
-  if [ -d gtest-1.5.0 ]; then
+  if [ -d "/usr/include/gtest" -o -d "$EXTERN_DIR/include/gtest" ]; then
     echo "n"
     exit 0
   else

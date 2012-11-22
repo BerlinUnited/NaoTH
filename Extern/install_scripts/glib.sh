@@ -7,7 +7,7 @@ if [ "$EXTERN_DIR" == "" ]; then
 fi
 
 if [ "$1" = "check" ]; then
-  if [ -d glib-2.26.0 ]; then
+  if [ -d "/usr/include/glib-2.0/" -o -d "$EXTERN_DIR/include/glib-2.0" ]; then
     echo "n"
     exit 0
   else

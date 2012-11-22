@@ -7,7 +7,7 @@ if [ "$EXTERN_DIR" == "" ]; then
 fi
 
 if [ "$1" = "check" ]; then
-  if [ -d gmock-1.5.0 ]; then
+  if [ -d "/usr/include/gmock" -o -d "$EXTERN_DIR/include/gmock" ]; then
     echo "n"
     exit 0
   else
