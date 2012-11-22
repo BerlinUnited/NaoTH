@@ -27,7 +27,7 @@ public:
 
   Vector2<double> attackDirection;
 
-  virtual void print(ostream &stream) const;
+  virtual void print(std::ostream &stream) const;
 };
 
 #endif // RAWATTACKDIRECTION_H

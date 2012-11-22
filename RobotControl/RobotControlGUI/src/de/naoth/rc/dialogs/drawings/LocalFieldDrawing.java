@@ -14,6 +14,10 @@ import java.awt.Graphics2D;
  */
 public class LocalFieldDrawing implements Drawable
 {
+  @Override
+  public String toString() { return "Local"; }
+  
+  @Override
   public void draw(Graphics2D g2d)
   {
     // draw gree pane

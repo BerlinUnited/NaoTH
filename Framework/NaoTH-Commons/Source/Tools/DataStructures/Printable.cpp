@@ -2,7 +2,7 @@
 
 namespace naoth
 {
-  ostream& operator<<(ostream& stream, const Printable& printable)
+  std::ostream& operator<<(std::ostream& stream, const Printable& printable)
   {
     printable.print(stream);
     return stream;

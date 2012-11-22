@@ -63,7 +63,7 @@ public:
   V4lCameraHandler();
 
   void init(const CameraSettings camSettings,
-            string camDevice = "/dev/video1",
+            std::string camDevice = "/dev/video1",
             CameraInfo::CameraID camID = CameraInfo::Bottom);
 
   void get(Image& theImage);
@@ -100,7 +100,7 @@ private:
   void setFPS(int fpsRate);
   void internalUpdateCameraSettings();
 
-  string getErrnoDescription(int err);
+  std::string getErrnoDescription(int err);
 
   typedef enum
   {

@@ -10,6 +10,7 @@
 #include "Tools/Math/Common.h"
 
 using namespace naoth;
+using namespace std;
 
 BasicMotion::BasicMotion(
   naoth::MotorJointData& theMotorJointData,

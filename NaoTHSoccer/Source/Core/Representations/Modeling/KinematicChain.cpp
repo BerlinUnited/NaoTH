@@ -10,6 +10,7 @@
 #include <PlatformInterface/Platform.h>
 
 using namespace naoth;
+using namespace std;
 
 //KinematicChain-Class
 KinematicChain::KinematicChain()

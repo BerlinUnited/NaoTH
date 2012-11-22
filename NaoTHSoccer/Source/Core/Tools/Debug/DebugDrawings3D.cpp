@@ -7,8 +7,9 @@
 #include "Tools/Math/Pose3D.h"
 
 #include "DebugDrawings3D.h"
-//#include "Cognition/Modules/Infrastructure/Debug/Debug.h"
 #include <DebugCommunication/DebugCommandManager.h>
+
+using namespace std;
 
 DebugDrawings3D::DebugDrawings3D()
 {

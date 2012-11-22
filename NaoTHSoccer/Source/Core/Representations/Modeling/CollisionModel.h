@@ -11,7 +11,7 @@ public:
   CollisionModel();
   virtual ~CollisionModel();
 
-  virtual void print(ostream &stream) const;
+  virtual void print(std::ostream &stream) const;
 
   naoth::FrameInfo collisionStartTime;
   bool isColliding;
