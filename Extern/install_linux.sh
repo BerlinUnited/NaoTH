@@ -2,7 +2,11 @@
 
 export EXTERN_DIR="$PWD"
 
-install_package()
+
+PACKAGESTOINSTALL=""
+
+
+ask_install_package()
 {
   # test if installed and choose default answer based on this
   DEFAULT=`../install_scripts/$1.sh check`
@@ -12,19 +16,17 @@ install_package()
     DEFSTRING="[y/N]"
   fi
 
-  echo
   echo -n "Do you want to compile and install \"$1\" to Extern/ ? $DEFSTRING : "
   read ANSWER
 
   # set default answer
-  if [ -z "$ANSWER"]; then 
+  if [ -z "$ANSWER" ]; then 
     ANSWER=$DEFAULT
   fi
 
   if [ "$ANSWER" = "y" -o "$ANSWER" = "Y" ]
   then
-    echo "Installing \"$1\""
-    . ../install_scripts/$1.sh install
+    PACKAGESTOINSTALL="$PACKAGESTOINSTALL $1"
   else
     echo "*NOT* installing \"$1\", install it with your package manager"
   fi
@@ -40,33 +42,33 @@ fi
 mkdir -p extracted
 cd extracted
 
-install_package "sfsexp"
-install_package "glib"
-install_package "protobuf"
-install_package "gtest"
-install_package "gmock"
-install_package "opencv"
-#echo "Installing sfsexp library"
-#. ../install_scripts/sfsexp.sh
-#
-#echo "Installing glib library"
-#. ../install_scripts/glib.sh
-#
-#echo "Installing protobuf"
-#. ../install_scripts/protobuf.sh
-#
-#echo "Installing Google Test"
-#. ../install_scripts/gtest.sh
-#
-#echo "Installing Google Mock"
-#. ../install_scripts/gmock.sh
-#
-#echo "Installing OpenCV"
-#. ../install_scripts/opencv.sh
+echo
+ask_install_package "sfsexp"
+ask_install_package "glib"
+ask_install_package "protobuf"
+ask_install_package "gtest"
+ask_install_package "gmock"
+ask_install_package "opencv"
+
+echo "==========================="
+echo "Selected packages for install:"
+for PKG in $PACKAGESTOINSTALL
+do
+   echo "* $PKG"
+done
+
+echo "Proceed? [Y/n]: "
+read ANSWER
+
+if [ "$ANSWER" != "n" ]; then
+  # actually install the packages
+  for PKG in $PACKAGESTOINSTALL
+  do
+     echo "Installing \"$PKG\""
+      . ../install_scripts/$PKG.sh install
+  done
+fi
 
 
 # get out of the extracted directory
 cd ..
-
-# compile and install projects that are included as source code
-# cd Make && premake4 gmake && make && premake4 install && cd ..
