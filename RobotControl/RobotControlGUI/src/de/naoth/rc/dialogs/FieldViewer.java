@@ -12,6 +12,7 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.dialogs.drawings.FieldDrawing;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.PNGExportFileType;
+import de.naoth.rc.dialogs.Tools.PlainPDFExportFileType;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnField;
@@ -37,7 +38,6 @@ import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
 import org.freehep.graphicsio.java.JAVAExportFileType;
-import org.freehep.graphicsio.pdf.PDFExportFileType;
 import org.freehep.graphicsio.ps.EPSExportFileType;
 import org.freehep.graphicsio.svg.SVGExportFileType;
 import org.freehep.util.export.ExportDialog;
@@ -340,17 +340,19 @@ private void jMenuItemExportActionPerformed(java.awt.event.ActionEvent evt) {//G
   
   ExportDialog export = new ExportDialog("FieldViewer", false);
   
+  
   // add the image types for export
   export.addExportFileType(new SVGExportFileType());
-  export.addExportFileType(new PDFExportFileType());
+  export.addExportFileType(new PlainPDFExportFileType());
   export.addExportFileType(new EPSExportFileType());
   export.addExportFileType(new EMFExportFileType());
   export.addExportFileType(new JAVAExportFileType());
   export.addExportFileType(new PNGExportFileType());
   
-  
   export.showExportDialog(this, "Export view as ...", this.fieldCanvas, "export");
 }//GEN-LAST:event_jMenuItemExportActionPerformed
+
+
 
 private void btImageProjectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btImageProjectionActionPerformed
     if(btImageProjection.isSelected())
