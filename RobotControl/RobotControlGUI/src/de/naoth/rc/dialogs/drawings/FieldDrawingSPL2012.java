@@ -30,7 +30,7 @@ public class FieldDrawingSPL2012 implements Drawable
     int fieldLinesWidth = 50;
     
     // goals
-    int goalWidth = 1600;
+    int goalWidth = 1400;
     int goalpostRadius = 50;
     int goalDepth = 400 + 2*goalpostRadius;
     

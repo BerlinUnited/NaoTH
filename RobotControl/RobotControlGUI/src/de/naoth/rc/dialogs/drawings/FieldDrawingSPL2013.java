@@ -22,7 +22,7 @@ public class FieldDrawingSPL2013 extends FieldDrawingSPL2012
         this.xPenaltyAreaLength = 600;
         this.yPenaltyAreaLength = 2200;
 
-        this.centerCircleRadius = 600;
+        this.centerCircleRadius = 750;
 
         this.xCrossOffset = 1800;
         this.crossSize = 100;
