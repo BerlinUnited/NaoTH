@@ -126,6 +126,7 @@ public class DynamicCanvasPanel extends javax.swing.JPanel implements MouseMotio
     }//end synchronized
 
     // transform the drawing-pane back (nessesary to draw the other components corect)
+    g2d.scale(1.0/scale, 1.0/scale);
     if(mirrorXAxis)
     {
       g2d.transform(new AffineTransform(1,0,0,-1,0,0));
