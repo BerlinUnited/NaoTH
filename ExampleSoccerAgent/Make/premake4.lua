@@ -5,11 +5,8 @@ solution "ExampleSoccerAgent"
   configurations {"Debug", "Release"}
   targetdir "../"
   
-  
-  naoth_path = {
-	extern = path.getabsolute("../../Extern"), 
-	framework = path.getabsolute("../../Framework")
-	}
+  FRAMEWORK_PATH = path.getabsolute("../../Framework")
+  EXTERN_PATH = path.getabsolute("../../Extern")
 	
   -- additional defines for windows
   if os.is("windows") then
@@ -21,14 +18,14 @@ solution "ExampleSoccerAgent"
   end
   
   libdirs {
-	naoth_path.extern .. "/lib/"
+	  EXTERN_PATH .. "/lib/"
   }
   
   includedirs {
-    naoth_path.extern .. "/include/",
-    naoth_path.extern .. "/include/glib-2.0/",
-	naoth_path.extern .. "/lib/glib-2.0/include/",
-	naoth_path.framework .. "/NaoTH-Commons/Source/"
+    EXTERN_PATH .. "/include/",
+    EXTERN_PATH .. "/include/glib-2.0/",
+	  EXTERN_PATH .. "/lib/glib-2.0/include/",
+	  FRAMEWORK_PATH .. "/NaoTH-Commons/Source/"
   }
   
   -- debug configuration
@@ -44,6 +41,6 @@ solution "ExampleSoccerAgent"
   }
   CORE = "ExampleSoccerAgent"
   
-  dofile (naoth_path.framework .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
-  dofile (naoth_path.framework .. "/Platforms/Make/SimSpark.lua")
+  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
+  dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
   dofile "ExampleSoccerAgent.lua"

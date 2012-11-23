@@ -17,13 +17,22 @@ public:
   AGLParameters();
   ~AGLParameters();
 
-  double standardDeviationDist;
+  //double standardDeviationDist;
   double standardDeviationAngle;
+
   double timeFilterRange;
-  double sigmaWeightingThreshhold;
+
+  //double sigmaWeightingThreshhold;
   double thresholdCanopy;
+  double motionNoiseDistance;
+
+  double weightingTreshholdForUpdateWithAngle;
   double processNoiseDistance;
   double resamplingThreshhold;
+
+  double possibleGoalWidhtError;
+
+  double deletePFbyTotalWeightingThreshold;
 
   virtual void print(std::ostream& stream) const {}
 

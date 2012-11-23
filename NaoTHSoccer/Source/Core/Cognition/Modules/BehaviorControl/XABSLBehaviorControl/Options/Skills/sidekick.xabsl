@@ -27,6 +27,8 @@ option sidekick
     }
     action
     {
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -56,6 +58,7 @@ option sidekick
       motion.walk.style = fast;
       motion.walk.step_control.foot = right;
       motion.walk.coordinate = right_foot;
+      
       motion.walk.step_control.target.x = ball.right_foot.preview.x;
       motion.walk.step_control.target.y = ball.right_foot.preview.y;
       motion.walk.step_control.target.rot = 0;
@@ -64,6 +67,9 @@ option sidekick
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
       //To avoid ball leaving the image when using ball model
+
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -97,6 +103,9 @@ option sidekick
       motion.walk.step_control.speed_direction = clip(value=attack.direction, min=-90, max=45);
       motion.walk.step_control.time = 250;
       motion.walk.stop_with_stand = false;
+
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -125,6 +134,9 @@ option sidekick
       motion.walk_speed.rot = 0;
       motion.walk.stop_with_stand = false;
       //motion.walk.step_control.foot = none;
+
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;
@@ -146,6 +158,9 @@ option sidekick
       motion.walk.step_control.foot = none;
       motion.walk.coordinate = hip;
       motion.walk.stop_with_stand = false;
+
+      // HACK: look at percept
+      head.control_mode = none;
       head.motion_type = look_at_world_point;
       head.point_in_world.x = ball.percept.x;
       head.point_in_world.y = ball.percept.y;

@@ -5,15 +5,13 @@
  * Created on 11. März 2009, 11:03
  */
 
-#ifndef _IRDATA_H
-#define  _IRDATA_H
+#ifndef _IRData_H_
+#define _IRData_H_
 
 #include <string>
 
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
-
-using namespace std;
 
 namespace naoth
 {
@@ -41,7 +39,7 @@ namespace naoth
     ~IRSendData();
 
     void reset();
-    static string getIRSendName(IRSendID id);
+    static std::string getIRSendName(IRSendID id);
   };
 
   class IRReceiveData : public PlatformInterchangeable, public Printable
@@ -72,10 +70,10 @@ namespace naoth
     ~IRReceiveData();
 
     void reset();
-    static string getIRReceiveName(IRReceiveID id);
+    static std::string getIRReceiveName(IRReceiveID id);
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
 }
-#endif  /* _IRDATA_H */
+#endif  /* _IRData_H_ */
 

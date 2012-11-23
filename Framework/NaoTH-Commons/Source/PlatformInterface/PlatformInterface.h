@@ -20,7 +20,6 @@
 
 namespace naoth
 {
-  using namespace std;
 
   /*
   * AbstractAction defines an interface for an action.
@@ -55,11 +54,11 @@ namespace naoth
     virtual ~PlatformBase();
 
     /////////////////////// get ///////////////////////
-    virtual string getBodyID() const = 0;
-    virtual string getBodyNickName() const = 0;
-    virtual string getHeadNickName() const = 0;
+    virtual std::string getBodyID() const = 0;
+    virtual std::string getBodyNickName() const = 0;
+    virtual std::string getHeadNickName() const = 0;
 
-    inline const string& getName() const { return platformName; }
+    inline const std::string& getName() const { return platformName; }
     inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
 
   private:
@@ -144,10 +143,10 @@ namespace naoth
       if(creator != NULL)
       {
         cognitionInput.push_back(creator->createAction(data));
-        cout << /*getName() <<*/ " register Cognition input: " << typeid(T).name() << endl;
+        std::cout << /*getName() <<*/ " register Cognition input: " << typeid(T).name() << std::endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Cognition input: " << typeid(T).name() << endl;
+        std::cerr << /*getName() <<*/ " doesn't provide Cognition input: " << typeid(T).name() << std::endl;
       }
     }//end registerCognitionInput
 
@@ -159,10 +158,10 @@ namespace naoth
       if(creator != NULL)
       {
         cognitionOutput.push_back(creator->createAction(data));
-        cout << /*getName() <<*/ " register Cognition output: " << typeid(T).name() << endl;
+        std::cout << /*getName() <<*/ " register Cognition output: " << typeid(T).name() << std::endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Cognition output: " << typeid(T).name() << endl;
+        std::cerr << /*getName() <<*/ " doesn't provide Cognition output: " << typeid(T).name() << std::endl;
       }
     }//end registerCognitionOutput
 
@@ -174,10 +173,10 @@ namespace naoth
       if(creator != NULL)
       {
         motionInput.push_back(creator->createAction(data));
-        cout << /*getName() <<*/ " register Motion input: " << typeid(T).name() << endl;
+        std::cout << /*getName() <<*/ " register Motion input: " << typeid(T).name() << std::endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Motion input: " << typeid(T).name() << endl;
+        std::cerr << /*getName() <<*/ " doesn't provide Motion input: " << typeid(T).name() << std::endl;
       }
     }//end registerMotionInput
 
@@ -189,10 +188,10 @@ namespace naoth
       if(creator != NULL)
       {
         motionOutput.push_back(creator->createAction(data));
-        cout << /*getName() <<*/ " register Motion output: " << typeid(T).name() << endl;
+        std::cout << /*getName() <<*/ " register Motion output: " << typeid(T).name() << std::endl;
       }else
       {
-        cerr << /*getName() <<*/ " doesn't provide Motion output: " << typeid(T).name() << endl;
+        std::cerr << /*getName() <<*/ " doesn't provide Motion output: " << typeid(T).name() << std::endl;
       }
     }//end registerMotionOutput
 
@@ -256,7 +255,7 @@ namespace naoth
       
         void execute()
         {
-          stringstream hmmsg;
+          std::stringstream hmmsg;
           ST::serialize(data, hmmsg);
           writer.write(hmmsg.str());
         }//end execute
@@ -286,13 +285,13 @@ namespace naoth
         {
           if ( !reader.empty() )
           {
-            string msg = reader.read();
+            std::string msg = reader.read();
             // drop old message
             while ( !reader.empty() )
             {
               msg = reader.read();
             }
-            stringstream ss(msg);
+            std::stringstream ss(msg);
             ST::deserialize(ss, data);
           }//end if
         }//end execute
@@ -319,7 +318,7 @@ namespace naoth
     PlatformInterface(const std::string& name, unsigned int basicTimeStep)
       : PlatformInterfaceBase(name, basicTimeStep)
     {
-      cout<<"NaoTH "<<getName()<<" starting..."<<endl;
+      std::cout << "NaoTH " << getName() << " starting..." << std::endl;
     }
 
   //////////////////// GET/SET Actions /////////////////////
@@ -341,7 +340,7 @@ namespace naoth
       {
       }
 
-      void execute(){ std::cerr << "no action " << ACTION << " for " << typeid(representation).name() << endl; }
+      void execute(){ std::cerr << "no action " << ACTION << " for " << typeid(representation).name() << std::endl; }
     };//end RepresentationAction
 
 
@@ -400,14 +399,14 @@ namespace naoth
     template<class T, typename PT>
     void registerInput(PT& platform)
     {
-      cout << getName() << " register input: " << typeid(T).name() << endl;
+      std::cout << getName() << " register input: " << typeid(T).name() << std::endl;
       registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,PT,_NAOTH_INPUT_ACTION_>(platform);
     }//end registerInput
 
     template<class T, typename PT>
     void registerOutput(PT& platform)
     {
-      cout << getName() << " register output: " << typeid(T).name() << endl;
+      std::cout << getName() << " register output: " << typeid(T).name() << std::endl;
       registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,PT,_NAOTH_OUTPUT_ACTION_>(platform);
     }//end registerOutput
 

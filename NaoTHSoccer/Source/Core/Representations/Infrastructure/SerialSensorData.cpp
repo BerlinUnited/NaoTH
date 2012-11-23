@@ -14,6 +14,7 @@
 
 #define FORCE_SENSOR_ZEROPOINT 5200
 
+using namespace std;
 
 SerialSensorData::SerialSensorData()
   : 

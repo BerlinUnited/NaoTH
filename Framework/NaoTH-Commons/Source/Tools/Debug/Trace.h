@@ -7,16 +7,14 @@
 * @author Thomas Roefer (GT07)
 * @author Heinrich Mellmann
 */ 
-#ifndef __Trace_h_
-#define __Trace_h_
+#ifndef _Trace_h_
+#define _Trace_h_
 
 #include "Tools/DataStructures/RingBuffer.h"
 #include "Tools/DataStructures/Singleton.h"
 
 #include <ostream>
 #include <sstream>
-
-using namespace std;
 
 class Trace : public naoth::Singleton<Trace>
 {
@@ -57,7 +55,7 @@ public:
   */
   void setCurrentLine(const char* file, int line, const std::string& msg);
 
-  friend ostream& operator<<(ostream& stream, const Trace& trace);
+  friend std::ostream& operator<<(std::ostream& stream, const Trace& trace);
 
   void dump();
 };//end class Trace
@@ -71,7 +69,7 @@ class MotionTrace : public Trace{};
  * @param trace The trace to write.
  * @return The stream.
  */ 
-ostream& operator<<(ostream& stream, const Trace& trace);
+std::ostream& operator<<(std::ostream& stream, const Trace& trace);
 
 
 
@@ -83,4 +81,4 @@ ostream& operator<<(ostream& stream, const Trace& trace);
 #define MOTION_TRACE(...)
 #endif
 
-#endif // __Trace_h_
+#endif // _Trace_h_

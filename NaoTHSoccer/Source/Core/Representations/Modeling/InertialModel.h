@@ -21,7 +21,7 @@ class InertialModel: public naoth::Printable
 public:
   Vector2<double> orientation;
   
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << "orientation:" << Math::toDegrees(orientation.x) << " " << Math::toDegrees(orientation.y) << "\n";
   }

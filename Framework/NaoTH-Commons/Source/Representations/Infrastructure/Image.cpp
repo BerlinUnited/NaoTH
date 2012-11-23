@@ -14,6 +14,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+using namespace std;
 
 Image::Image()
 :

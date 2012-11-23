@@ -22,6 +22,7 @@
 namespace Kinematics {
 
   using namespace naoth;
+  using namespace std;
   
 InverseKinematics::InverseKinematics(bool autoInit)
   : maxError(1.0)

@@ -4,6 +4,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+using namespace std;
 
 void InertialSensorData::print(ostream& stream) const
 {

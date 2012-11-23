@@ -21,6 +21,7 @@ extern "C"
 }
 
 using namespace naoth;
+using namespace std;
 
 V4lCameraHandler::V4lCameraHandler()
   :
@@ -46,7 +47,7 @@ V4lCameraHandler::V4lCameraHandler()
   settingsOrder.push_back(CameraSettings::BacklightCompensation);
   settingsOrder.push_back(CameraSettings::AutoExposition);
   settingsOrder.push_back(CameraSettings::AutoWhiteBalancing);
-  settingsOrder.push_back(CameraSettings::Brightness);
+  //settingsOrder.push_back(CameraSettings::Brightness);
   settingsOrder.push_back(CameraSettings::Contrast);
   settingsOrder.push_back(CameraSettings::Saturation);
   settingsOrder.push_back(CameraSettings::Exposure);
@@ -848,8 +849,13 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
 {
 
   // HACK
-  //setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,1);
-  //setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,0);
+    setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,1);
+//    setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,0);
+//    usleep(1000);
+
+//    setSingleCameraParameter(V4L2_CID_BRIGHTNESS,128);
+//    //setSingleCameraParameter(V4L2_CID_EXPOSURE_AUTO,0);
+//    usleep(1000);
 
   for(std::list<CameraSettings::CameraSettingID>::const_iterator it=settingsOrder.begin();
       it != settingsOrder.end(); it++)
@@ -864,11 +870,10 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
         << ": ";
 
       int errorNumber = 0;
-      while(!success && errorNumber < 30)
+      while(!success && errorNumber < 100)
       {
-        int clippedValue =
-            setSingleCameraParameter(csConst[*it], data.data[*it]);
-
+        int clippedValue = setSingleCameraParameter(csConst[*it], data.data[*it]);
+        usleep(1000);
         if(clippedValue != data.data[*it])
         {
           std::cout << "(clipped " << clippedValue << ")";
@@ -897,7 +902,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
           {
             errorNumber++;
             std::cout << "." << std::flush;
-            usleep(10000);
+            usleep(1000);
           }
         }
 
@@ -912,7 +917,7 @@ void V4lCameraHandler::setAllCameraParams(const CameraSettings& data)
       {
         std::cout << "XXX hang up at " << realValue << std::endl;
       }
-
+      usleep(1000);
     } // end if csConst was set
   } // end for each camera setting (in order
 

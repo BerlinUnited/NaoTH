@@ -21,10 +21,10 @@ namespace naoth
     ShadingCorrection();
     ~ShadingCorrection();
 
-    bool loadCorrectionFromFiles(string camConfigPath, string hardwareID );
-    bool loadCorrectionFile(string filePath, unsigned int idx);
-    void saveCorrectionToFiles(string camConfigPath, string hardwareID );
-    void saveCorrectionFile(string filePath, unsigned int idx);
+    bool loadCorrectionFromFiles(std::string camConfigPath, std::string hardwareID );
+    bool loadCorrectionFile(std::string filePath, unsigned int idx);
+    void saveCorrectionToFiles(std::string camConfigPath, std::string hardwareID );
+    void saveCorrectionFile(std::string filePath, unsigned int idx);
 
     void init(unsigned int w, unsigned int h, CameraInfo::CameraID cam);
     void reset();

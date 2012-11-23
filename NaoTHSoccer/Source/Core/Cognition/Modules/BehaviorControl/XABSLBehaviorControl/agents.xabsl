@@ -31,6 +31,7 @@ include "Options/HeadControl/head_control.xabsl";
 include "Options/HeadControl/search_for_goal_after_penalized.xabsl";
 
 // Skills
+include "Options/Skills/follow_ball_with_foot.xabsl";
 include "Options/Skills/approach_ball_with_correct_foot_ckeck_goal.xabsl";
 include "Options/Skills/go_to_relative_point.xabsl";
 include "Options/Skills/go_to_relative_point_avoid_obstacles.xabsl";
@@ -71,6 +72,7 @@ include "Options/Soccer/Striker/smart_attack_situation.xabsl";
 include "Options/Soccer/Striker/close_to_goal_corner_situation.xabsl";
 include "Options/Soccer/Striker/spl_playing_striker.xabsl";
 include "Options/Soccer/Striker/dribble_attack_direction.xabsl";
+include "Options/Soccer/Striker/strafe_obstacle.xabsl";
 
 /* Not tested yet!
 include "Options/Soccer/Striker/attack_ball_with_obstacle_close_situation.xabsl";
@@ -116,10 +118,14 @@ include "Options/Soccer/Penalty/penalty_set_penalized_play.xabsl";
 // NonSoccer
 include "Options/NonSoccer/Test/dribble_agent.xabsl";
 include "Options/NonSoccer/Test/dribble_stand_test.xabsl";
+include "Options/NonSoccer/Test/dribble_stand_test2.xabsl";
+
 //NonSoccer - Search Ball
 include"Options/NonSoccer/Test/search_ball_agent.xabsl";
 include "Options/NonSoccer/Test/search_ball_test/search_ball_test.xabsl";
 include "Options/NonSoccer/Test/search_ball_test/search_for_ball_test.xabsl";
+include "Options/NonSoccer/Test/kicker_agent_root.xabsl";
+include "Options/NonSoccer/Test/kicker_agent.xabsl";
 
 //obstacles
 include "Options/NonSoccer/Test/obstacle_avoidance.xabsl";
@@ -136,4 +142,6 @@ agent obstacles("Obstacles", obstacle_avoidance);
 /** dribble test */
 agent dribble_agent("DribbleAgent", dribble_agent);
 agent search_ball_agent("SearchBallAgent", search_ball_agent);
+
+agent kicker_agent("KickTestAgent", kicker_agent_root);
 //agent go_behind_ball("GoBehindBallAgent", go_to_pos_behind_ball);

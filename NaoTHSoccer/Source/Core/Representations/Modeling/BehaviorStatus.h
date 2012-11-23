@@ -23,10 +23,10 @@ public:
   BehaviorStatus();
   virtual ~BehaviorStatus();
 
-  virtual void toDataStream(ostream& stream) const;
-  virtual void fromDataStream(istream& stream);
+  virtual void toDataStream(std::ostream& stream) const;
+  virtual void fromDataStream(std::istream& stream);
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
   naothmessages::BehaviorStatus status;
 

@@ -1,5 +1,5 @@
-#ifndef __ColoredGrid_H_
-#define __ColoredGrid_H_
+#ifndef _ColoredGrid_H_
+#define _ColoredGrid_H_
 
 #include <Tools/Math/Vector2.h>
 #include <Tools/ColorClasses.h>
@@ -7,8 +7,6 @@
 
 #include "Grid/UniformGrid.h"
 
-// TODO: remove it
-using namespace naoth;
 
 /**
  * Class ColoredGrid
@@ -235,21 +233,21 @@ public:
   }//end reset
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "Width = " << uniformGrid.width << endl
-            << "Height = " << uniformGrid.height << endl
-            << "Valid = " << (valid ? "true" : "false") << endl
-            << "Mean Brightness = " << meanBrightness << endl
-            << "Mean Blue = " << meanBlue << endl
-            << "Mean Red = " << meanRed << endl
-            << "Percent of known colors = " << percentOfKnownColors << endl
-            << "Percent of unknown colors = " << percentOfUnknownColors << endl
-            << "Rate of colors : " << endl;
+    stream << "Width = " << uniformGrid.width << std::endl
+            << "Height = " << uniformGrid.height << std::endl
+            << "Valid = " << (valid ? "true" : "false") << std::endl
+            << "Mean Brightness = " << meanBrightness << std::endl
+            << "Mean Blue = " << meanBlue << std::endl
+            << "Mean Red = " << meanRed << std::endl
+            << "Percent of known colors = " << percentOfKnownColors << std::endl
+            << "Percent of unknown colors = " << percentOfUnknownColors << std::endl
+            << "Rate of colors : " << std::endl;
 
     for(int i = 0; i < (int) ColorClasses::numOfColors; i++)
     {
-      stream << "  " << ColorClasses::getColorName((ColorClasses::Color) i) << " = " << colorPointsRate[i] << endl;
+      stream << "  " << ColorClasses::getColorName((ColorClasses::Color) i) << " = " << colorPointsRate[i] << std::endl;
     }
 
 
@@ -258,5 +256,5 @@ public:
 
 };//end class ColoredGrid
 
-#endif // __COLOREDGRID_H__
+#endif // _COLOREDGRID_H__
 

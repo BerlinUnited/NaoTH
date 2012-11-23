@@ -6,7 +6,7 @@
  */
 
 #ifndef _SERIALSENSORDATA_H
-#define  _SERIALSENSORDATA_H
+#define _SERIALSENSORDATA_H
 
 #include "Tools/DataStructures/Streamable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -18,18 +18,16 @@
 #define SERIALBUFFERLENGTH 1024
 #define SERIALSENSOR_INIT_COUNT 100
 
-using namespace naoth;
-
-class SerialSensorData  : public Streamable, public PlatformInterchangeable, public Printable
+class SerialSensorData : public naoth::Streamable, public naoth::PlatformInterchangeable, public naoth::Printable
 {
   public:
     SerialSensorData();
     virtual ~SerialSensorData();
 
-    virtual void toDataStream(ostream& os) const;
-    virtual void fromDataStream(istream& is);
-    virtual void print(ostream& stream) const;
-    const vector<int>& getBoardIDs() const;
+    virtual void toDataStream(std::ostream& os) const;
+    virtual void fromDataStream(std::istream& is);
+    virtual void print(std::ostream& stream) const;
+    const std::vector<int>& getBoardIDs() const;
     double getMaxForce() const;
     double getForce(int id) const;
     Vector3<double> getAccVector(int id) const;
@@ -42,19 +40,19 @@ class SerialSensorData  : public Streamable, public PlatformInterchangeable, pub
 
   private:
 
-    vector<vector<double> > accels;
-    vector<vector<double> > forces;
-    vector<int> ids;
+    std::vector<std::vector<double> > accels;
+    std::vector<std::vector<double> > forces;
+    std::vector<int> ids;
 };
 
-class SerialSensorDataRequest : public Streamable, public PlatformInterchangeable
+class SerialSensorDataRequest : public naoth::Streamable, public naoth::PlatformInterchangeable
 {
 public:
   SerialSensorDataRequest() : receive(false) {}
   bool receive;
 
-  virtual void toDataStream(ostream& os) const;
-  virtual void fromDataStream(istream& is);
+  virtual void toDataStream(std::ostream& os) const;
+  virtual void fromDataStream(std::istream& is);
 };
 
 

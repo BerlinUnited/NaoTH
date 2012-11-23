@@ -9,6 +9,7 @@
 #include "Tools/Math/Common.h"
 
 using namespace naoth;
+using namespace std;
 
 MotionNet::MotionNet() 
   : numberOfJoints(0)

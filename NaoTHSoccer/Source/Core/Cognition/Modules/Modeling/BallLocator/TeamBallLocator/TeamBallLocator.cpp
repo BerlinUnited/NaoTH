@@ -57,15 +57,20 @@ void TeamBallLocator::execute()
           num++;
         }
 
-        if(i->first == 1) {
+        // goalie
+        if(i->first == 1) 
+        {
           getTeamBallModel().goaliePositionOnField = ballPos;
           getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
-          getTeamBallModel().goalieTime = i->second.frameInfo.getTimeInSeconds();
+          getTeamBallModel().goalieTime = i->second.frameInfo.getTime();
         }
-        if (msg.wasstriker() == true) {
-            getTeamBallModel().strikerPositionOnField = ballPos;
-            getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
-            getTeamBallModel().strikerTime = i->second.frameInfo.getTimeInSeconds();
+
+        // striker
+        if (msg.wasstriker()) 
+        {
+          getTeamBallModel().strikerPositionOnField = ballPos;
+          getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
+          getTeamBallModel().strikerTime = i->second.frameInfo.getTime();
         }
       }
     //}

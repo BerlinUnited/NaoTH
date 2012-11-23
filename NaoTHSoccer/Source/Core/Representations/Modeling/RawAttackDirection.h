@@ -35,7 +35,7 @@ public:
   // strategic meaning
   bool pointingToGoal;
 
-  virtual void print(ostream &stream) const;
+  virtual void print(std::ostream &stream) const;
 };
 
 #endif // RAWATTACKDIRECTION_H

@@ -383,12 +383,12 @@ void WebotsController::get(FSRData& data)
 
 void WebotsController::get(InertialSensorData& data)
 {
-  // calculate the intertial sensor from GPS data
-  // it can be enabled for debuging
-  const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
-  data.data.x = asin(-gpsmatrix[6]);
-  data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
-  return;
+  //// calculate the intertial sensor from GPS data
+  //// it can be enabled for debuging
+  //const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
+  //data.data.x = asin(-gpsmatrix[6]);
+  //data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
+  //return;
 
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);

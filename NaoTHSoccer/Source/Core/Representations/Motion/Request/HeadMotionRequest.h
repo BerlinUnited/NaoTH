@@ -116,9 +116,9 @@ public:
   static HeadMotionID getId(const std::string& name);
 
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "Current MotionRequest = " << getName(id) << endl;
+    stream << "Current MotionRequest = " << getName(id) << std::endl;
   }//end print
 };
 

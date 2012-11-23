@@ -115,15 +115,15 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream << "Obstacle was seen: " << obstacleWasSeen << endl;
+    stream << "Obstacle was seen: " << obstacleWasSeen << std::endl;
     cellsMap::const_iterator it = cells.begin();
     for (; it != cells.end(); ++it)
     {
-      stream << "ValueNr.: " << it->first << " mean: " << it->second.mean << endl;
-      stream << "SumOfBuffer.: " << it->second.sum << endl;
+      stream << "ValueNr.: " << it->first << " mean: " << it->second.mean << std::endl;
+      stream << "SumOfBuffer.: " << it->second.sum << std::endl;
       for (int i = 0; i < it->second.buffer.getNumberOfEntries(); i++)
       {
-        stream << "\t" << "bufferNr: " << i << " : " << it->second.buffer[i] << " time: " << it->second.timeStamp << endl;
+        stream << "\t" << "bufferNr: " << i << " : " << it->second.buffer[i] << " time: " << it->second.timeStamp << std::endl;
       }
     }
   }//end print

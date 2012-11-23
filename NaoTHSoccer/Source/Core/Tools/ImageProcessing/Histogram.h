@@ -53,8 +53,8 @@ class Histogram: public naoth::Printable
     }//end increaseChannelValue
 
     void createFromColoredGrid(const ColoredGrid& coloredGrid);
-    void showDebugInfos(const UniformGrid& grid, const CameraInfo& cameraInfo) const;
-    virtual void print(ostream& stream) const;
+    void showDebugInfos(const UniformGrid& grid, const naoth::CameraInfo& cameraInfo) const;
+    virtual void print(std::ostream& stream) const;
 
   public:
     // FIXME: remove HACK_MAX_HEIGHT & HACK_MAX_WIDTH

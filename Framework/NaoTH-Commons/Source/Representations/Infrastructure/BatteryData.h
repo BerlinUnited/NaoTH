@@ -1,6 +1,6 @@
 
 #ifndef _BATTERY_DATA_H
-#define  _BATTERY_DATA_H
+#define _BATTERY_DATA_H
 
 #include <string>
 #include "PlatformInterface/PlatformInterchangeable.h"
@@ -14,7 +14,7 @@ namespace naoth
     double charge;
 
     BatteryData();
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
 
     virtual ~BatteryData();
   };
