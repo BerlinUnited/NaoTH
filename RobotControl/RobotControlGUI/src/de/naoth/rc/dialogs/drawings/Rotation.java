@@ -24,6 +24,7 @@ public class Rotation implements Drawable
     this.angle = Float.parseFloat(args[1]);
   }
 
+  @Override
   public void draw(Graphics2D g2d)
   {
     g2d.rotate(angle);
