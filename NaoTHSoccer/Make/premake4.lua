@@ -1,7 +1,18 @@
+-- load the global default settings
+dofile "projectconfig.lua"
+
+-- load local user settings if alailable
+if os.isfile("projectconfig.user.lua") then
+	print("loading local user path settings")
+	dofile "projectconfig.user.lua"
+end
+
+-- load some helpers for cross compilation etc.
 dofile "helper/naocrosscompile_v3.lua"
 dofile "helper/naocrosscompile.lua"
 dofile "helper/extract_todos.lua"
 dofile "helper/qtcreator.lua"
+
 
 newaction {
   trigger = "todo",
@@ -42,17 +53,6 @@ solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug", "Release"}
   
-  FRAMEWORK_PATH = path.getabsolute("../../Framework")
-  EXTERN_PATH = path.getabsolute("../../Extern")
-  
-  CORE_PATH = {
-    path.getabsolute("../Source/Core/Cognition/"), 
-    path.getabsolute("../Source/Core/Motion/"),
-    path.getabsolute("../Source/Core/")
-  }
-  
-  CORE = {"NaoTHSoccer"}
-
   -- for all configurations
   includedirs {
 	FRAMEWORK_PATH.."/NaoTH-Commons/Source/"

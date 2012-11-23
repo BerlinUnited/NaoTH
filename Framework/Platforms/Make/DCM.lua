@@ -2,18 +2,19 @@
 
   
   ------------------------- AL_DIR -----------------------------
-  local alDir = os.getenv("AL_DIR")
+  -- it's set in the global project config now
+  -- local AL_DIR = os.getenv("AL_DIR")
 
   -- check if the directory can be opened by lua and warn if not
-   if(alDir == nil) then
-    alDir = "/opt/aldebaran/info/naoqi"
-    print("Error: Enviroment variable AL_DIR not set. trying default: \"" .. alDir .. "\"")
+  if(AL_DIR == nil) then
+    AL_DIR = "/opt/aldebaran/info/naoqi"
+    print("Error: Enviroment variable AL_DIR not set. trying default: \"" .. AL_DIR .. "\"")
   end
--- if(alDir == nil) then
---    print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. alDir .. ")!")
+-- if(AL_DIR == nil) then
+--    print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. AL_DIR .. ")!")
 --	print("(PROBABLY) no compilation for DCM possible.\n")
 -- else
---    print("INFO: Configuring with NaoQi located in \"" .. alDir .. "\"")
+--    print("INFO: Configuring with NaoQi located in \"" .. AL_DIR .. "\"")
 --  end
   ----------------------------------------------------------------
 
@@ -29,14 +30,14 @@ project "libnaoth"
   
   print("Generating files for libnaoth")
 
-  libdirs { alDir .. "/lib/"}
+  libdirs { AL_DIR .. "/lib/"}
 
   includedirs {
 	"../Source/DCM", 
 	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
-	alDir .. "/include/",
-	alDir .. "/include/alfactory/"
+	AL_DIR .. "/include/",
+	AL_DIR .. "/include/alfactory/"
 	}
 
   links {CORE, 
@@ -73,14 +74,14 @@ project "naoth"
   -- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
   -- f:close ();  
 
-  libdirs { alDir .. "/lib/"}
+  libdirs { AL_DIR .. "/lib/"}
 
   includedirs {
      "../Source/DCM", 
      CORE_PATH,
      "../../NaoTH-Tools/Source/",
-     alDir .. "/include/",
-     alDir .. "/include/alfactory/"
+     AL_DIR .. "/include/",
+     AL_DIR .. "/include/alfactory/"
   }
 
   links {CORE, 
