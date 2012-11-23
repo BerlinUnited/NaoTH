@@ -455,13 +455,6 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
     return getGoalTargetOld(point, oppGoalModel);
   );
 
-  double postOffset = 200.0;
-  double goalLineOffsetFront = 100.0;
-  double goalLineOffsetBack = 100.0;
-  MODIFY("potentialfield:postOffset", postOffset);
-  MODIFY("potentialfield:goalLineOffset", goalLineOffsetFront);
-  MODIFY("potentialfield:goalLineOffset", goalLineOffsetBack);
-
   // normalized vector from left post to the right
   const Vector2<double> leftToRight((oppGoalModel.rightPost - oppGoalModel.leftPost).normalize());
 
@@ -471,8 +464,8 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
 
 
   // the endpoints of our line are a shortened version of the goal line
-  Vector2<double> leftEndpoint = oppGoalModel.leftPost + leftToRight * postOffset;
-  Vector2<double> rightEndpoint = oppGoalModel.rightPost - leftToRight * postOffset;
+  Vector2<double> leftEndpoint = oppGoalModel.leftPost + leftToRight * theParameters.goal_post_offset;
+  Vector2<double> rightEndpoint = oppGoalModel.rightPost - leftToRight * theParameters.goal_post_offset;
 
   // this is the goalline we are shooting for
   Math::LineSegment goalLine(leftEndpoint, rightEndpoint);
@@ -487,8 +480,8 @@ Vector2<double> PotentialFieldProvider::getGoalTarget(const Vector2<double>& poi
   // assymetric quadratic scale
   // goalAngleCos = -1 => t = -goalLineOffsetBack
   // goalAngleCos =  1 => t =  goalLineOffsetFront;
-  double c = (goalLineOffsetFront + goalLineOffsetBack)*0.5;
-  double v = (goalLineOffsetFront - goalLineOffsetBack)*0.5;
+  double c = (theParameters.goal_line_offset_front + theParameters.goal_line_offset_back)*0.5;
+  double v = (theParameters.goal_line_offset_front - theParameters.goal_line_offset_back)*0.5;
   double t = goalAngleCos*(goalAngleCos*c + v);
 
   // move the target depending on the goal opening angle

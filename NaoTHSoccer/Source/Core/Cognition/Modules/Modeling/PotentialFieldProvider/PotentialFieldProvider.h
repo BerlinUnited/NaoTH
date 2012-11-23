@@ -57,12 +57,17 @@ public:
   /** executes the module */
   void execute();
 
+  /** parameters for the module */
   class Parameters: public ParameterList
   {
   public:
     Parameters() : ParameterList("PotentialFieldParameters")
     {
       PARAMETER_REGISTER(goal_attractor_strength) = -0.001;
+      PARAMETER_REGISTER(goal_post_offset) = 200.0;
+      PARAMETER_REGISTER(goal_line_offset_front) = 100.0;
+      PARAMETER_REGISTER(goal_line_offset_back) = 100.0;
+
       PARAMETER_REGISTER(player_repeller_radius) = 2000;
       PARAMETER_REGISTER(player_repeller_strenth) = 1500;
 
@@ -77,7 +82,11 @@ public:
 
     // 
     double goal_attractor_strength;
+    double goal_post_offset;
+    double goal_line_offset_front;
+    double goal_line_offset_back;
 
+    //
     double player_repeller_radius;
     double player_repeller_strenth;
     
