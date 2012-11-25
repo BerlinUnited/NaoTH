@@ -35,15 +35,19 @@ public:
                                                    const double imgY);
 
   /**
-   * calculate the projection of a point in relative coordinates of the robot 
-   * in the image
+   * Calculate the projection of a point in relative coordinates of the robot 
+   * in the image. If the point is behind the image plane the result is (-1,-1)
+   * @param cameraMatrix
+   * @param cameraInfo
+   * @param point 3D point in robot coordinates
+   * @return calculated projection in px
    */
   static Vector2<int> relativePointToImage( const CameraMatrix& cameraMatrix,
                                             const naoth::CameraInfo& cameraInfo,
                                             const Vector3<double>& point);
 
   /** 
-   * calculates the angles to a point in the image
+   * Calculates the angles to a point in the image
    */
   static Vector2<double> angleToPointInImage( const CameraMatrix& cameraMatrix,
                                               const naoth::CameraInfo& cameraInfo,

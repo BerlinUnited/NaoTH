@@ -30,10 +30,13 @@ Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMat
                                              const CameraInfo& cameraInfo,
                                              const Vector3<double>& point)
 {
+  const static double epsilon = 1e-13;
+
+  // vector: O ---> point (in camera coordinates)
   Vector3<double> vectorToPoint = cameraMatrix.rotation.invert() * (point - cameraMatrix.translation);
 
-  // the point is behind me...
-  if(vectorToPoint.x <= 0)
+  // the point is behind the camera plane
+  if(vectorToPoint.x <= epsilon)
   {
     return Vector2<int>(-1,-1);
   }//end if
@@ -42,7 +45,7 @@ Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMat
   
   Vector2<int> pointInImage;
   pointInImage.x = (int)floor(-(vectorToPoint.y * factor) + 0.5 + cameraInfo.opticalCenterX);
-  pointInImage.y = (int)floor(-(vectorToPoint.z * factor) + 0.5 +  cameraInfo.opticalCenterY);
+  pointInImage.y = (int)floor(-(vectorToPoint.z * factor) + 0.5 + cameraInfo.opticalCenterY);
 
   return pointInImage;
 }//end relativePointToImage
@@ -78,7 +81,7 @@ bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix,
                                        const double& objectHeight,
                                        Vector2<double>& result)
 {
-  double epsilon = 1e-13;
+  const static double epsilon = 1e-13;
 
   Vector3<double> pixelVector = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
   
