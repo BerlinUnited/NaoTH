@@ -77,6 +77,7 @@ void PotentialFieldProvider::execute()
   Vector2<double> p = calculatePotentialField(ballRelative, targetPoint, obstacles);
   getRawAttackDirection().attackDirection = p;
 
+
   DEBUG_REQUEST("PotentialFieldProvider:attackDirection:local",
     FIELD_DRAWING_CONTEXT;
 
@@ -85,16 +86,11 @@ void PotentialFieldProvider::execute()
     Vector2<double> targetDir = getRawAttackDirection().attackDirection;
     targetDir.normalize(200);
 
-    Vector2<double> globalBall
-        = getRobotPose()*ballRelative;
-    CIRCLE(globalBall.x, globalBall.y, 25);
-    Vector2<double> globalTarget = getRobotPose()*(ballRelative+targetDir);
-
     ARROW(
-          globalBall.x,
-          globalBall.y,
-          globalTarget.x,
-          globalTarget.y
+          getBallModel().positionPreview.x,
+          getBallModel().positionPreview.y,
+          getBallModel().positionPreview.x + targetDir.x,
+          getBallModel().positionPreview.y + targetDir.y
           );
   );
 
