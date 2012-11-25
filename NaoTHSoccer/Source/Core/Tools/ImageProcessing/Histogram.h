@@ -48,7 +48,9 @@ class Histogram: public naoth::Printable
 
     inline void increaseChannelValue(const Pixel& pixel, const ColorClasses::Color& color)
     {
-      colorChannelHistogramField[pixel.v]++;
+      colorChannelHistogramY[pixel.y]++;
+      colorChannelHistogramCb[pixel.u]++;
+      colorChannelHistogramCr[pixel.v]++;
       colorChannelIsUptodate  = true;
     }//end increaseChannelValue
 
@@ -61,7 +63,10 @@ class Histogram: public naoth::Printable
     int xHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_HEIGHT];
     int yHistogram[ColorClasses::numOfColors][UniformGrid::HACK_MAX_WIDTH];
 
-    int colorChannelHistogramField[COLOR_CHANNEL_VALUE_COUNT];
+    // color histograms
+    int colorChannelHistogramY[COLOR_CHANNEL_VALUE_COUNT]; // y u-cb v-cr
+    int colorChannelHistogramCb[COLOR_CHANNEL_VALUE_COUNT];
+    int colorChannelHistogramCr[COLOR_CHANNEL_VALUE_COUNT];
 
     unsigned int colorChannelIsUptodate;
 

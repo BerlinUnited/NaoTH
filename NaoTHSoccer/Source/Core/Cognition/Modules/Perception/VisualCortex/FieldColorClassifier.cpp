@@ -88,7 +88,7 @@ void FieldColorClassifier::classify()
     double mCr = max<int>(0,  128 - i);
     double wCr = mCr / 128.0;
     
-    weightedHistV[i] = getHistogram().colorChannelHistogramField[i];
+    weightedHistV[i] = getHistogram().colorChannelHistogramCr[i];
     weightedHistV[i] *= wCr;
 
     // remember the maximal value
