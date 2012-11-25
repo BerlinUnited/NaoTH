@@ -24,6 +24,13 @@ AttentionAnalyzer::AttentionAnalyzer()
   //createRadialMapOfInterest(mapOfInterest,250,1250,500);
   //createRadialMapOfInterest(closeMapOfInterest,250,600,100);
 
+
+  // remember the time for the current interesting point
+  currentPointOfInterestTimeStamp = getFrameInfo().getTime();
+  // initialize the first element
+  currentPointOfInterest = mapOfInterest.begin();
+
+
   DEBUG_REQUEST_REGISTER("AttentionAnalyzer:drawMapOfInterest", "Plot the map of interest on the field.", false);
   DEBUG_REQUEST_REGISTER("AttentionAnalyzer:plot_focus_trace", "Plots the trace of the point of the attention.", false);
 }
@@ -31,23 +38,22 @@ AttentionAnalyzer::AttentionAnalyzer()
 
 void AttentionAnalyzer::execute()
 {
-  // remember the time
-  static unsigned int currentPointOfInterestTimeStamp = getFrameInfo().getTime();
-
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
-  odometryDelta.translation = Vector2<double>(0.0,0.0); // only rotattion is intersting
+  odometryDelta.translation = Vector2<double>(); // only rotattion is intersting
 
+  // TODO: make it parameter
   double agingFactor = 0.99; // factor per second
-//  double timeDelta = getFrameInfo().getTimeInSeconds() - lastFrameInfo.getTimeInSeconds();
 
-  std::list<PointOfInterest>::iterator iter;
-  for(iter = mapOfInterest.begin(); iter != mapOfInterest.end(); ++iter)
+
+  // update the points
+  for(ListOfInterest::iterator iter = mapOfInterest.begin(); iter != mapOfInterest.end(); ++iter)
   {
     // opdate by odometry
     iter->position = odometryDelta*iter->position;
 
-    //HACK: if the point was seen or is too old
-    if(isSeen(iter->position) || getFrameInfo().getTimeSince(currentPointOfInterestTimeStamp) > 1000)
+    // update the weights
+    // TODO: make it parameter
+    if( distanceToImageCenter(iter->position) < 80 )
     {
       iter->weight = 1.0;
     }
@@ -58,26 +64,29 @@ void AttentionAnalyzer::execute()
   }//end for
 
 
-  PointOfInterest nextPoint = mapOfInterest.front();
-
-  // get the next interesting point
-  for(iter = mapOfInterest.begin(); iter != mapOfInterest.end(); ++iter)
+  //HACK: if the point was seen or is too old
+  if(getFrameInfo().getTimeSince(currentPointOfInterestTimeStamp) > 1000)
   {
-    if((compare(nextPoint, *iter) < 0 && fabs(iter->position.angle()) < Math::pi*0.5)
-      || fabs(nextPoint.position.angle()) > Math::pi*0.5)
+    (*currentPointOfInterest).weight = 1.0;
+  }
+
+  
+  // get the next most interesting point
+  for(ListOfInterest::iterator iter = mapOfInterest.begin(); iter != mapOfInterest.end(); ++iter)
+  {
+    if(( compare(*currentPointOfInterest, *iter) < 0 && inView(*iter))
+       || !inView(*currentPointOfInterest))
     {
-      nextPoint = *iter;
+      currentPointOfInterest = iter;
+      currentPointOfInterestTimeStamp = getFrameInfo().getTime();
     }
   }//end for
 
 
-  if(getAttentionModel().mostInterestingPoint != nextPoint.position)
-  {
-    currentPointOfInterestTimeStamp = getFrameInfo().getTime();
-  }
-
-  getAttentionModel().mostInterestingPoint = nextPoint.position;
+  // update the model
+  getAttentionModel().mostInterestingPoint = (*currentPointOfInterest).position;
   
+
   DEBUG_REQUEST("AttentionAnalyzer:drawMapOfInterest",
     drawMapOfInterest(mapOfInterest);
     drawImageProjection();
@@ -85,7 +94,7 @@ void AttentionAnalyzer::execute()
 
   DEBUG_REQUEST("AttentionAnalyzer:plot_focus_trace",
     PEN("000000", 10);
-    OVAL(nextPoint.position.x, nextPoint.position.y, 30, 30);
+    OVAL((*currentPointOfInterest).position.x, (*currentPointOfInterest).position.y, 30, 30);
 
     Vector2<double> centerOnField;
     if(CameraGeometry::imagePixelToFieldCoord(
@@ -107,6 +116,10 @@ void AttentionAnalyzer::execute()
   lastRobotOdometry = getOdometryData();
 }//end execute
 
+bool AttentionAnalyzer::inView(const PointOfInterest& point)
+{
+  return fabs(point.position.angle()) < Math::pi*0.5;
+}//end inView
 
 // return 0 if one==two, or < 0 if one < two
 int AttentionAnalyzer::compare(const PointOfInterest& one, const PointOfInterest& two)
@@ -134,31 +147,30 @@ int AttentionAnalyzer::compare(const PointOfInterest& one, const PointOfInterest
   return (int)(twoDistanceToCenterOfView*(1.0-one.weight) - oneDistanceToCenterOfView*(1.0-two.weight));
 }//end compare
 
-bool AttentionAnalyzer::isSeen(const Vector2<double> point)
+double AttentionAnalyzer::distanceToImageCenter(const Vector2<double>& point)
 {
+  // distance from center to a corner of the image
+  // "+1" is for practiacl reasons (see below)
+  static const double maxDistanceToCenter = 
+    Vector2<double>(getImage().cameraInfo.opticalCenterX+1, 
+                    getImage().cameraInfo.opticalCenterY+1).abs();
+
+
+  // Note: projectionInImage = (-1,-1) if no projection is possible.
+  // We don't need to treat it extra, cince in this case the resulting distance is maximal.
   Vector2<int> projectionInImage = 
     CameraGeometry::relativePointToImage(
-      getCameraMatrix(), 
+      getCameraMatrix(),
       getImage().cameraInfo,
       Vector3<double>(point.x, point.y, 0.0)
     );
 
-  Vector2<double> dist(
+  Vector2<double> pointToCenter(
     projectionInImage.x-getImage().cameraInfo.opticalCenterX,
     projectionInImage.y-getImage().cameraInfo.opticalCenterY);
 
-  // test if the point is in image
-  /*
-  return 
-    projectionInImage.x > 0 &&
-    (unsigned int)projectionInImage.x < getImage().cameraInfo.resolutionWidth &&
-    projectionInImage.y > 0 &&
-    (unsigned int)projectionInImage.y < getImage().cameraInfo.resolutionHeight;
-    */
-
-  // test if the point is near center
-  return dist.abs() < 80;
-}//end isSeen
+  return std::min(pointToCenter.abs(), maxDistanceToCenter);
+}//end distanceToImageCenter
 
 
 void AttentionAnalyzer::createRadialMapOfInterest(
