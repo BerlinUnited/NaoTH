@@ -16,18 +16,20 @@ PerceptionsVisualization::PerceptionsVisualization()
 {
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:ball_percept", "draw ball percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:ball_percept", "draw ball percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:ball_percept", "draw ball percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:goal_percept", "draw goal percept", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:goal_percept", "draw goal percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:goal_percept", "draw goal percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:edgels_percept", "draw edgels percept", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:edgels_percept", "draw edgels percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:edgels_percept", "draw edgels percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:line_percept", "draw line percept", false);
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:line_percept", "draw line percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:line_percept", "draw line percept", false);
 
   DEBUG_REQUEST_REGISTER("PerceptionsVisualization:field:players_percept", "draw players percept", false);
-  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image:players_percept", "draw players percept", false);
+  DEBUG_REQUEST_REGISTER("PerceptionsVisualization:image_px:players_percept", "draw players percept", false);
 }
 
 void PerceptionsVisualization::execute()
@@ -42,9 +44,18 @@ void PerceptionsVisualization::execute()
   );
 
   DEBUG_REQUEST("PerceptionsVisualization:image:ball_percept",
-    CIRCLE_PX(ColorClasses::red, 
-      (int)getBallPercept().centerInImage.x, 
-      (int)getBallPercept().centerInImage.y, 
+    IMAGE_DRAWING_CONTEXT;
+    PEN("FF9900", 2);
+    CIRCLE(
+      (int)getBallPercept().centerInImage.x,
+      (int)getBallPercept().centerInImage.y,
+      (int)getBallPercept().radiusInImage);
+  );
+
+  DEBUG_REQUEST("PerceptionsVisualization:image_px:ball_percept",
+    CIRCLE_PX(ColorClasses::red,
+      (int)getBallPercept().centerInImage.x,
+      (int)getBallPercept().centerInImage.y,
       (int)getBallPercept().radiusInImage);
   );
 
@@ -68,7 +79,7 @@ void PerceptionsVisualization::execute()
     }//end for
   );
 
-  DEBUG_REQUEST("PerceptionsVisualization:image:goal_percept",
+  DEBUG_REQUEST("PerceptionsVisualization:image_px:goal_percept",
 
   );
 
@@ -96,7 +107,7 @@ void PerceptionsVisualization::execute()
   );
 
 
-  DEBUG_REQUEST("PerceptionsVisualization:image:edgels_percept",
+  DEBUG_REQUEST("PerceptionsVisualization:image_px:edgels_percept",
   );
 
 
@@ -174,34 +185,33 @@ void PerceptionsVisualization::execute()
       Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
       //d.rotate(Math::pi_2 - line.angle);
 
-      Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
-      Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
-      Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
-      Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
-      LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
-      LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
-      LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
-      LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
+      //Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
+      //Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
+      //Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
+      //Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
 
-      LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
+      PEN("009900", 2);
+      //LINE(lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
+      //LINE(lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
+      //LINE(upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
+      //LINE(lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
 
-      PEN("009900", 1);
-      LINE(lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
-      LINE(lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
-      LINE(upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
-      LINE(lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
+      LINE(linePercept.lineInImage.segment.begin().x, 
+           linePercept.lineInImage.segment.begin().y,
+           linePercept.lineInImage.segment.end().x, 
+           linePercept.lineInImage.segment.end().y);
+      
+
+      // indicate line count
+      LINE((2*i)+1,7,(2*i)+1,12);
     }//end for
 
     for(unsigned int i=0; i < getLinePercept().intersections.size(); i++)
     {
       //mark intersection on the field
-      ColorClasses::Color color = (ColorClasses::Color) getLinePercept().intersections[i].getType();
+      PEN(ColorClasses::colorClassToHex((ColorClasses::Color) getLinePercept().intersections[i].getType()), 3); 
       const Vector2<double>& intersectionPoint = getLinePercept().intersections[i].getPos();
-      CIRCLE_PX(color, (int)(intersectionPoint.x+0.5), (int)(intersectionPoint.y+0.5), 5);
-
-
-      PEN(ColorClasses::colorClassToHex(color), 1); 
-      CIRCLE(intersectionPoint.x, intersectionPoint.y, 5);
+      CIRCLE(intersectionPoint.x, intersectionPoint.y, 50);
 
       string type = "N";
       switch(getLinePercept().intersections[i].getType())
@@ -213,19 +223,41 @@ void PerceptionsVisualization::execute()
         case Math::Intersection::X: type="X"; break;
         default: break;
       }
-
-      PEN(ColorClasses::colorClassToHex(color), 0.1); 
-      TEXT_DRAWING(intersectionPoint.x + 10, intersectionPoint.y + 10, type);
+      TEXT_DRAWING(intersectionPoint.x + 100, intersectionPoint.y + 100, type);
     }//end for
+    
   ); // end line_percept in image
 
+
+
+  DEBUG_REQUEST("PerceptionsVisualization:image_px:line_percept",
+    // mark lines
+    for (unsigned int i = 0; i < getLinePercept().lines.size(); i++)
+    {
+      const LinePercept::FieldLineSegment& linePercept = getLinePercept().lines[i];
+
+      Vector2<double> d(0.0, ceil(linePercept.lineInImage.thickness / 2.0));
+      //d.rotate(Math::pi_2 - line.angle);
+
+      Vector2<int> lowerLeft(linePercept.lineInImage.segment.begin() - d);
+      Vector2<int> upperLeft(linePercept.lineInImage.segment.begin() + d);
+      Vector2<int> lowerRight(linePercept.lineInImage.segment.end() - d);
+      Vector2<int> upperRight(linePercept.lineInImage.segment.end() + d);
+      LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, lowerRight.x, lowerRight.y);
+      LINE_PX(ColorClasses::green, lowerLeft.x, lowerLeft.y, upperLeft.x, upperLeft.y);
+      LINE_PX(ColorClasses::green, upperLeft.x, upperLeft.y, upperRight.x, upperRight.y);
+      LINE_PX(ColorClasses::green, lowerRight.x, lowerRight.y, upperRight.x, upperRight.y);
+
+      LINE_PX(ColorClasses::green,(2*i)+1,7,(2*i)+1,12);
+    }//end for
+  ); // end line_percept in image_px
 
 
   DEBUG_REQUEST("PerceptionsVisualization:field:players_percept",
     getPlayersPercept().draw();
   );
 
-  DEBUG_REQUEST("PerceptionsVisualization:image:players_percept",
+  DEBUG_REQUEST("PerceptionsVisualization:image_px:players_percept",
   );
 
 }//end execute
