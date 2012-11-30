@@ -219,30 +219,7 @@ public:
     
   }//end reset
 
-  virtual void print(ostream& stream) const
-  {
-    for(unsigned int i = 0; i < lines.size(); i++)
-    {
-      const FieldLineSegment& line = lines[i];
-      stream 
-        << "== Line " << i << " == " << endl
-        << "lineInImage = (" << line.lineInImage.segment.begin() << ") -- (" << line.lineInImage.segment.end() << ")" << endl
-        << "lineOnField = (" << line.lineOnField.begin() << ") -- (" << line.lineOnField.end() << ")" << endl
-        << "thickness = (" << line.lineInImage.thickness << ")" << endl
-        << "angle = (" << line.lineInImage.angle << ")" << endl
-      ;
-    }//end for
-
-    cout<<"\n";
-    for(unsigned int i=0; i<flags.size(); i++)
-    {
-      stream 
-        << "== Flag " << i << "==" << endl
-        << "seenPosOnField = " << flags[i].seenPosOnField << endl
-        << "absolutePosOnField = " << flags[i].absolutePosOnField << endl
-        ;
-    }//end for
-  }//end print
+  virtual void print(std::ostream& stream) const;
 
 };
 
@@ -257,6 +234,6 @@ namespace naoth
   };
 }
 
-#endif //__LinePercept_h_
+#endif // _LinePercept_h_
 
 

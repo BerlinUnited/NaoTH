@@ -65,7 +65,7 @@ public:
   PlannedMotion plannedMotion;
   StepControlStatus stepControl;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << "time = " << time << '\n';
     stream << "lastMotion = " << motion::getName(lastMotion) << '\n';

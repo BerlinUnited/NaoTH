@@ -29,12 +29,12 @@ SoundPlayData::~SoundPlayData()
 
 void SoundPlayData::print(std::ostream& stream) const
 {
-  stream << "file to play: " << soundFile << endl
-          << "period size: " << period_size << endl
-          << "period count: " << periods << endl
-          << "channels: " << channels << endl
-          << "sample rate: " << rate << endl
-          << "ALSA state" << endl << snd_ctl_dump << endl;
+  stream << "file to play: " << soundFile << std::endl
+          << "period size: " << period_size << std::endl
+          << "period count: " << periods << std::endl
+          << "channels: " << channels << std::endl
+          << "sample rate: " << rate << std::endl
+          << "ALSA state" << std::endl << snd_ctl_dump << std::endl;
 }
 
 SoundCaptureData::SoundCaptureData()
@@ -50,12 +50,12 @@ SoundCaptureData::SoundCaptureData()
 SoundCaptureData::~SoundCaptureData()
 {}
 
-void SoundCaptureData::print(ostream& stream) const
+void SoundCaptureData::print(std::ostream& stream) const
 {
-  stream << "file to play: " << soundFile << endl
-          << "period size: " << period_size << endl
-          << "period count: " << periods << endl
-          << "channels: " << channels << endl
-          << "sample rate: " << rate << endl
-          << "ALSA state" << endl << snd_ctl_dump << endl;
+  stream << "file to play: " << soundFile << std::endl
+          << "period size: " << period_size << std::endl
+          << "period count: " << periods << std::endl
+          << "channels: " << channels << std::endl
+          << "sample rate: " << rate << std::endl
+          << "ALSA state" << std::endl << snd_ctl_dump << std::endl;
 }

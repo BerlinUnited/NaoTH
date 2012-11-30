@@ -79,7 +79,7 @@ GError* BroadCastListener::bindAndListen(unsigned int port)
   return err;
 }
 
-void BroadCastListener::receive(vector<string>& data)
+void BroadCastListener::receive(std::vector<std::string>& data)
 {
   data.clear();
   if ( g_mutex_trylock(messageInMutex) )
@@ -105,7 +105,7 @@ void BroadCastListener::loop()
     if(result > 0)
     {
       g_mutex_lock(messageInMutex);
-      messageIn.push_back(string(buffer, result));
+      messageIn.push_back(std::string(buffer, result));
       g_mutex_unlock(messageInMutex);
     }
   }

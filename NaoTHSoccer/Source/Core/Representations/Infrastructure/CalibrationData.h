@@ -27,11 +27,11 @@ public:
   // is true, when valid offsets are avaliable
   bool calibrated;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "inertialSensorOffset = " << inertialSensorOffset << endl;
-    stream << "gyroSensorOffset = " << gyroSensorOffset << endl;
-    stream << "accSensorOffset = " << accSensorOffset << endl;
+    stream << "inertialSensorOffset = " << inertialSensorOffset << std::endl;
+    stream << "gyroSensorOffset = " << gyroSensorOffset << std::endl;
+    stream << "accSensorOffset = " << accSensorOffset << std::endl;
   }
 };
 

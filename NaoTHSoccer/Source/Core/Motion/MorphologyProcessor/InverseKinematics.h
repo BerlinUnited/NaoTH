@@ -6,8 +6,8 @@
 * Implementation of Inverse Kinematics
 */
 
-#ifndef _INVERSEKINEMATICS_H
-#define  _INVERSEKINEMATICS_H
+#ifndef _InverseKinematics_H_
+#define _InverseKinematics_H_
 
 #include <Tools/Math/Matrix_nxn.h>
 #include <Tools/Math/Pose3D.h>
@@ -68,10 +68,10 @@ private:
 
 
   /** (needed by gotoTargetJacobianInversion and gotoTargetJacobianTranspose) */
-  void calcJacobi(const list<Link*>& linkList, const Vector3<double>& affector, Matrix_nxn<double, 6>& J) const;
+  void calcJacobi(const std::list<Link*>& linkList, const Vector3<double>& affector, Matrix_nxn<double, 6>& J) const;
 
   /** (needed by gotoTargetJacobianInversion and gotoTargetJacobianTranspose) */
-  bool updateJoints(const list<Link*>& linkList,const Vector_n<double,6>& dq) const;
+  bool updateJoints(const std::list<Link*>& linkList,const Vector_n<double,6>& dq) const;
 
 
   /** solve IK by Jacobian inversion algorithm
@@ -81,7 +81,7 @@ private:
    * @param mask which dimensions should be controlled
    * @return error
    */
-  double gotoTargetJacobianInversion(const list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const;
+  double gotoTargetJacobianInversion(const std::list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const;
 
   /** solve IK by Jacobian transpose algorithm
    * @param linkList the link list of leg
@@ -90,7 +90,7 @@ private:
    * @param mask which dimensions should be controlled
    * @return error
    */
-  double gotoTargetJacobianTranspose(const list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const;
+  double gotoTargetJacobianTranspose(const std::list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const;
 
   /** solve IK by cyclic-coordinate descent algorithm
    * @note only hip joinsts is calculated, other joints should be calculated by function analyzeLeg
@@ -100,7 +100,7 @@ private:
    * @param mask which dimensions should be controlled
    * @return error
    */
-  double gotoTargetCCD(const list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const;
+  double gotoTargetCCD(const std::list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask) const;
 
 
   /** solve IK numricaly: choose between different algorithms
@@ -110,7 +110,7 @@ private:
    * @param mask which dimensions should be controlled
    * @return error
    */
-  double gotoTarget(const list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask, Calculus method = CCD) const
+  double gotoTarget(const std::list<Link*>& linkList, const Pose3D& target, const Vector3<double>& offset, Mask mask, Calculus method = CCD) const
   {
     switch(method)
     {
@@ -181,7 +181,7 @@ public:
     (uses theKinematicChain)
   */
   // private?
-  void getRoute(KinematicChain::LinkID actuatorID, list<Link*>& linkList);
+  void getRoute(KinematicChain::LinkID actuatorID, std::list<Link*>& linkList);
 
 
   /**
@@ -202,24 +202,24 @@ public:
 
 // Kinematic-Link Tools
   /** normalizes the angles of a route */
-  static void normalizeLinkAngles(const list<Link*>& linkList);
+  static void normalizeLinkAngles(const std::list<Link*>& linkList);
 
   /** get the route from the given link to the root node */
-  static void getRoute(Link *actuatorLink, list<Link*>& linkList);
+  static void getRoute(Link *actuatorLink, std::list<Link*>& linkList);
 
   /**  */
-  static void linkListForwardKinematics(const list<Link*>& linkList);
+  static void linkListForwardKinematics(const std::list<Link*>& linkList);
 
   /**  */
-  static void linkListForwardKinematics(const list<Link*>& linkList, Link* beginLink);
+  static void linkListForwardKinematics(const std::list<Link*>& linkList, Link* beginLink);
 
   /**  */
-  static void calculateAffector(const list<Link*>& linkList, const Vector3<double>& offset, Pose3D& affector);
+  static void calculateAffector(const std::list<Link*>& linkList, const Vector3<double>& offset, Pose3D& affector);
 
   /**  */
-  static void calculateAffector(const list<Link*>& linkList, Link* beginLink, const Vector3<double>& offset, Pose3D& affector);
+  static void calculateAffector(const std::list<Link*>& linkList, Link* beginLink, const Vector3<double>& offset, Pose3D& affector);
 
 };
 
 } // namespace Kinematics
-#endif  /* _INVERSEKINEMATICS_H */
+#endif  /* _InverseKinematics_H_ */

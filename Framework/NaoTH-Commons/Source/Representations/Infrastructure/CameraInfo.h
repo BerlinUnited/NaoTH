@@ -94,7 +94,7 @@ namespace naoth
 
     void setParameter(unsigned int resolutionWidth, unsigned int resolutionHeight, double openingAngleDiagonal);
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
 
 

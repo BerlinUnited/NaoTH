@@ -64,7 +64,7 @@ private:
   std::list<double> refZMPy;
   std::list<double> refZMPz;
 
-  map<int, Parameters> loadedParameters;
+  std::map<int, Parameters> loadedParameters;
   unsigned int theHeight;
 };
 

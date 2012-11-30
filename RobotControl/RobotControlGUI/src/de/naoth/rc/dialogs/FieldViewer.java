@@ -9,13 +9,16 @@ import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.Dialog;
 import de.naoth.rc.DialogPlugin;
 import de.naoth.rc.RobotControl;
-import de.naoth.rc.dialogs.drawings.FieldDrawing;
 import de.naoth.rc.dataformats.JanusImage;
 import de.naoth.rc.dialogs.Tools.PNGExportFileType;
+import de.naoth.rc.dialogs.Tools.PlainPDFExportFileType;
 import de.naoth.rc.dialogs.drawings.Drawable;
 import de.naoth.rc.dialogs.drawings.DrawingCollection;
 import de.naoth.rc.dialogs.drawings.DrawingOnField;
 import de.naoth.rc.dialogs.drawings.DrawingsContainer;
+import de.naoth.rc.dialogs.drawings.FieldDrawingS3D2011;
+import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2012;
+import de.naoth.rc.dialogs.drawings.FieldDrawingSPL2013;
 import de.naoth.rc.dialogs.drawings.LocalFieldDrawing;
 import de.naoth.rc.dialogs.drawings.RadarDrawing;
 import de.naoth.rc.dialogs.drawings.StrokePlot;
@@ -37,7 +40,6 @@ import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 import org.freehep.graphicsio.emf.EMFExportFileType;
 import org.freehep.graphicsio.java.JAVAExportFileType;
-import org.freehep.graphicsio.pdf.PDFExportFileType;
 import org.freehep.graphicsio.ps.EPSExportFileType;
 import org.freehep.graphicsio.svg.SVGExportFileType;
 import org.freehep.util.export.ExportDialog;
@@ -66,8 +68,6 @@ public class FieldViewer extends AbstractDialog
       public static TeamCommDrawingManager teamCommDrawingManager;
   }//end Plugin
   
-
-  private FieldDrawing fieldDrawing;
   private Drawable backgroundDrawing;
 
   private ImageListener imageListener;
@@ -81,17 +81,30 @@ public class FieldViewer extends AbstractDialog
   public FieldViewer()
   {
     initComponents();
-    imageListener = new ImageListener();
-    plotDataListener = new PlotDataListener();
+    
+    // 
+    this.cbBackground.setModel(
+            new javax.swing.DefaultComboBoxModel(
+            new Drawable[] 
+            { 
+                new FieldDrawingSPL2012(),
+                new FieldDrawingSPL2013(),
+                new FieldDrawingS3D2011(),
+                new LocalFieldDrawing(),
+                new RadarDrawing()
+            }
+    ));
+    
+    this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
+
+    this.imageListener = new ImageListener();
+    this.plotDataListener = new PlotDataListener();
   }
 
   @Init
   @Override
   public void init()
   {
-    fieldDrawing = new FieldDrawing();
-    backgroundDrawing = fieldDrawing;
-
     this.fieldCanvas.getDrawingList().add(0, this.backgroundDrawing);
     this.fieldCanvas.setAntializing(btAntializing.isSelected());
     this.fieldCanvas.repaint();
@@ -119,11 +132,9 @@ public class FieldViewer extends AbstractDialog
         btReceiveDrawings = new javax.swing.JToggleButton();
         btReceiveTeamCommDrawings = new javax.swing.JToggleButton();
         btClean = new javax.swing.JButton();
-        btSwitchGoals = new javax.swing.JButton();
+        cbBackground = new javax.swing.JComboBox();
         btImageProjection = new javax.swing.JToggleButton();
-        btLocalView = new javax.swing.JToggleButton();
-        btRadarView = new javax.swing.JToggleButton();
-        btToggleSimspark = new javax.swing.JToggleButton();
+        btRotate = new javax.swing.JToggleButton();
         btAntializing = new javax.swing.JCheckBox();
         btCollectDrawings = new javax.swing.JCheckBox();
         btTrace = new javax.swing.JCheckBox();
@@ -174,17 +185,13 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btClean);
 
-        btSwitchGoals.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/reload.png"))); // NOI18N
-        btSwitchGoals.setToolTipText("Switch Goals");
-        btSwitchGoals.setFocusable(false);
-        btSwitchGoals.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btSwitchGoals.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btSwitchGoals.addActionListener(new java.awt.event.ActionListener() {
+        cbBackground.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SPL2012", "SPL2013", "S3D2011", "RADAR", "LOCAL" }));
+        cbBackground.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btSwitchGoalsActionPerformed(evt);
+                cbBackgroundActionPerformed(evt);
             }
         });
-        jToolBar1.add(btSwitchGoals);
+        jToolBar1.add(cbBackground);
 
         btImageProjection.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_icon.png"))); // NOI18N
         btImageProjection.setToolTipText("Image Projection");
@@ -198,41 +205,17 @@ public class FieldViewer extends AbstractDialog
         });
         jToolBar1.add(btImageProjection);
 
-        btLocalView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/border_inside.png"))); // NOI18N
-        btLocalView.setToolTipText("Local View");
-        btLocalView.setFocusable(false);
-        btLocalView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btLocalView.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btLocalView.addActionListener(new java.awt.event.ActionListener() {
+        btRotate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_ccw.png"))); // NOI18N
+        btRotate.setFocusable(false);
+        btRotate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btRotate.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/rotate_cw.png"))); // NOI18N
+        btRotate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btRotate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btLocalViewActionPerformed(evt);
+                btRotateActionPerformed(evt);
             }
         });
-        jToolBar1.add(btLocalView);
-
-        btRadarView.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/quick_restart.png"))); // NOI18N
-        btRadarView.setToolTipText("Local View");
-        btRadarView.setFocusable(false);
-        btRadarView.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btRadarView.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btRadarView.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRadarViewActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btRadarView);
-
-        btToggleSimspark.setIcon(new javax.swing.ImageIcon(getClass().getResource("/de/naoth/rc/res/view_right_p.png"))); // NOI18N
-        btToggleSimspark.setToolTipText("Simspark Field Size");
-        btToggleSimspark.setFocusable(false);
-        btToggleSimspark.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btToggleSimspark.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btToggleSimspark.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btToggleSimsparkActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(btToggleSimspark);
+        jToolBar1.add(btRotate);
 
         btAntializing.setText("Antialiazing");
         btAntializing.setFocusable(false);
@@ -330,27 +313,23 @@ public class FieldViewer extends AbstractDialog
       }
     }//GEN-LAST:event_btReceiveDrawingsActionPerformed
 
-    private void btSwitchGoalsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSwitchGoalsActionPerformed
-
-      fieldDrawing.switchGoals();
-      this.drawingPanel.repaint();
-    }//GEN-LAST:event_btSwitchGoalsActionPerformed
-
 private void jMenuItemExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemExportActionPerformed
   
   ExportDialog export = new ExportDialog("FieldViewer", false);
   
+  
   // add the image types for export
   export.addExportFileType(new SVGExportFileType());
-  export.addExportFileType(new PDFExportFileType());
+  export.addExportFileType(new PlainPDFExportFileType());
   export.addExportFileType(new EPSExportFileType());
   export.addExportFileType(new EMFExportFileType());
   export.addExportFileType(new JAVAExportFileType());
   export.addExportFileType(new PNGExportFileType());
   
-  
   export.showExportDialog(this, "Export view as ...", this.fieldCanvas, "export");
 }//GEN-LAST:event_jMenuItemExportActionPerformed
+
+
 
 private void btImageProjectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btImageProjectionActionPerformed
     if(btImageProjection.isSelected())
@@ -379,33 +358,6 @@ private void btCollectDrawingsActionPerformed(java.awt.event.ActionEvent evt) {/
   // TODO add your handling code here:
 }//GEN-LAST:event_btCollectDrawingsActionPerformed
 
-private void btLocalViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLocalViewActionPerformed
-  if(this.btLocalView.isSelected())
-  {
-    // rotate left by 90deg
-    this.fieldCanvas.setRotation(-Math.PI*0.5);
-    this.backgroundDrawing = new LocalFieldDrawing();
-  }
-  else
-  {
-    this.fieldCanvas.setRotation(0.0);
-    this.backgroundDrawing = this.fieldDrawing;
-  }
-  
-  this.fieldCanvas.repaint();
-  
-  // replace the background
-  this.fieldCanvas.getDrawingList().set(0, this.backgroundDrawing);
-}//GEN-LAST:event_btLocalViewActionPerformed
-
-private void btToggleSimsparkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btToggleSimsparkActionPerformed
-{//GEN-HEADEREND:event_btToggleSimsparkActionPerformed
-  
-  fieldDrawing.setSimsparkFieldSize(btToggleSimspark.isSelected());
-  fieldCanvas.repaint();
-
-}//GEN-LAST:event_btToggleSimsparkActionPerformed
-
 private void btReceiveTeamCommDrawingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReceiveTeamCommDrawingsActionPerformed
   if(btReceiveTeamCommDrawings.isSelected())
   {
@@ -416,25 +368,6 @@ private void btReceiveTeamCommDrawingsActionPerformed(java.awt.event.ActionEvent
     Plugin.teamCommDrawingManager.removeListener(this);
   }
 }//GEN-LAST:event_btReceiveTeamCommDrawingsActionPerformed
-
-private void btRadarViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRadarViewActionPerformed
-  if(this.btRadarView.isSelected())
-  {
-    // rotate left by 90deg
-    this.fieldCanvas.setRotation(-Math.PI*0.5);
-    this.backgroundDrawing = new RadarDrawing();
-  }
-  else
-  {
-    this.fieldCanvas.setRotation(0.0);
-    this.backgroundDrawing = this.fieldDrawing;
-  }
-
-  this.fieldCanvas.repaint();
-
-  // replace the background
-  this.fieldCanvas.getDrawingList().set(0, this.backgroundDrawing);
-}//GEN-LAST:event_btRadarViewActionPerformed
 
 private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
   int v = this.jSlider1.getValue();
@@ -447,6 +380,26 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
         resetView();
         this.fieldCanvas.repaint();
     }//GEN-LAST:event_btCleanActionPerformed
+
+    private void cbBackgroundActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbBackgroundActionPerformed
+    {//GEN-HEADEREND:event_cbBackgroundActionPerformed
+        this.backgroundDrawing = (Drawable)this.cbBackground.getSelectedItem();
+        this.fieldCanvas.getDrawingList().set(0, this.backgroundDrawing);
+        this.fieldCanvas.repaint();
+    }//GEN-LAST:event_cbBackgroundActionPerformed
+
+    private void btRotateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btRotateActionPerformed
+    {//GEN-HEADEREND:event_btRotateActionPerformed
+        if(this.btRotate.isSelected())
+        {
+            this.fieldCanvas.setRotation(-Math.PI*0.5);
+        }
+        else
+        {
+            this.fieldCanvas.setRotation(0);
+        }
+        this.fieldCanvas.repaint();
+    }//GEN-LAST:event_btRotateActionPerformed
 
   @Override
   public void errorOccured(String cause)
@@ -581,13 +534,11 @@ private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRS
     private javax.swing.JButton btClean;
     private javax.swing.JCheckBox btCollectDrawings;
     private javax.swing.JToggleButton btImageProjection;
-    private javax.swing.JToggleButton btLocalView;
-    private javax.swing.JToggleButton btRadarView;
     private javax.swing.JToggleButton btReceiveDrawings;
     private javax.swing.JToggleButton btReceiveTeamCommDrawings;
-    private javax.swing.JButton btSwitchGoals;
-    private javax.swing.JToggleButton btToggleSimspark;
+    private javax.swing.JToggleButton btRotate;
     private javax.swing.JCheckBox btTrace;
+    private javax.swing.JComboBox cbBackground;
     private javax.swing.JPanel drawingPanel;
     private de.naoth.rc.dialogs.panels.DynamicCanvasPanel fieldCanvas;
     private javax.swing.JMenuItem jMenuItemExport;

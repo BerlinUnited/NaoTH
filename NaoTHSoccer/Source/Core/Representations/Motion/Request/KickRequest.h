@@ -48,10 +48,10 @@ public:
   // execute the actual kicking motion
   bool finishKick;
 
-  void print(ostream& stream) const
+  void print(std::ostream& stream) const
   {
-    stream << "kickPoint = " << kickPoint << endl;
-    stream << "direction = " << Math::toDegrees(kickDirection) << endl;
+    stream << "kickPoint = " << kickPoint << std::endl;
+    stream << "direction = " << Math::toDegrees(kickDirection) << std::endl;
   }//end print
 };
 

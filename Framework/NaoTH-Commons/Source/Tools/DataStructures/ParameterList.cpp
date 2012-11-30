@@ -158,7 +158,7 @@ void ParameterList::saveToConfig()
 
 std::string ParameterList::covertName(std::string name)
 {
-  for( string::iterator i=name.begin(); i!= name.end();  )
+  for( std::string::iterator i=name.begin(); i!= name.end();  )
   {
     if ( *i == '[' || *i == ']' )
     {

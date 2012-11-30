@@ -11,6 +11,7 @@
 #include <string>
 
 using namespace naoth;
+using namespace std;
 
 VirtualVision::VirtualVision()
 {

@@ -181,12 +181,12 @@ public:
     valid = false;
   }//end reset
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << " valid: " << (valid ? "true" : "false") << endl;
-    stream << " Rect Area: " << fieldRect.getArea() << endl;
-    stream << " Poly Area: " << fieldPoly.getArea() << endl;
-    stream << " Poly Vertex Count: " << fieldPoly.length << endl;
+    stream << " valid: " << (valid ? "true" : "false") << std::endl;
+    stream << " Rect Area: " << fieldRect.getArea() << std::endl;
+    stream << " Poly Area: " << fieldPoly.getArea() << std::endl;
+    stream << " Poly Vertex Count: " << fieldPoly.length << std::endl;
   }//end print
 
 };
