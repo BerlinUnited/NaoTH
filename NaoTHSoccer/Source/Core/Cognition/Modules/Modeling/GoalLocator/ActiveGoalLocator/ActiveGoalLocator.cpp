@@ -70,7 +70,7 @@ void ActiveGoalLocator::execute() {
 
         if (ccSamples[x].sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold) {
           ccSamples[x].sampleSet.setUnValid();
-          std::cout << "delete filter " << x << "because " << ccSamples[x].sampleSet.lastTotalWeighting << " is smaler " << parameters.deletePFbyTotalWeightingThreshold << std::endl;
+          std::cout << "delete filter '" << x << "' because " << ccSamples[x].sampleSet.lastTotalWeighting << " < " << parameters.deletePFbyTotalWeightingThreshold << std::endl;
         }
      }
   }
@@ -248,7 +248,7 @@ void ActiveGoalLocator::execute() {
     getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
   }
 
-  DEBUG_REQUEST("DummyActiveGoalLocator:draw_goal_model",
+  DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
     FIELD_DRAWING_CONTEXT;
     if(getLocalGoalModel().opponentGoalIsValid)
       PEN("000000", 50);
@@ -261,13 +261,6 @@ void ActiveGoalLocator::execute() {
   );
   //
   /////////////////////////////////
-
-
-
-
-
-
-
 
   debugDrawings();
   debugPlots();
@@ -373,7 +366,7 @@ void ActiveGoalLocator::debugStdOut() {
     DEBUG_REQUEST("ActiveGoalLocator:which_filter_are_valid_to_StdOut",
       for(unsigned int i = 0; i < 10; i++) {
         if (ccSamples[i].sampleSet.getIsValid())
-        std::cout << "Filter " << i << "is Valid" << std::endl;
+        std::cout << "Filter '" << i << "' is Valid      " << std::endl;
       }
     );
 
