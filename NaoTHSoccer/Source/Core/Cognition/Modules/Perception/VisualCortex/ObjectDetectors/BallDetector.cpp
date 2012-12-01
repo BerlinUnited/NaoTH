@@ -18,7 +18,7 @@
 
 #include "Tools/Debug/Stopwatch.h"
 
-#include <Representations/Modeling/KinematicChain.h>
+#include <Motion/CameraMatrixCalculator/CameraMatrixCalculator.h>
 
 BallDetector::BallDetector()
   : theBlobFinder(getColoredGrid())
@@ -34,6 +34,7 @@ BallDetector::BallDetector()
   DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:mark_ball_blob", " ", false);
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_projected", " ", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_old_projected", " ", false);
 
   // initialize the colors for the blob finder
   for(int n = 0; n < ColorClasses::numOfColors; n++)
@@ -177,7 +178,25 @@ void BallDetector::execute()
   }
 
   // TEST: REMOVE
-  KinematicChain chain;
+  CameraMatrix oldCamMatrix;
+  CameraMatrixCalculator::calculateCameraMatrix(
+    oldCamMatrix,
+    getCameraInfo(),
+    getKinematicChain());
+
+  Vector2<int> oldCamProjected = CameraGeometry::relativePointToImage(oldCamMatrix, getImage().cameraInfo,
+      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+                      getBallPercept().bearingBasedOffsetOnField.y,
+                      getFieldInfo().ballRadius));
+
+  if(getBallPercept().ballWasSeen)
+  {
+    PLOT("BallDetecor:old-projected-x-diff", getBallPercept().centerInImage.x - oldCamProjected.x);
+    PLOT("BallDetecor:old-projected-y-diff", getBallPercept().centerInImage.y - oldCamProjected.y);
+    DEBUG_REQUEST("ImageProcessor:BallDetector:draw_old_projected",
+      CIRCLE_PX(ColorClasses::blue, (int)oldCamProjected.x, (int)oldCamProjected.y, (int)getBallPercept().radiusInImage);
+    );
+  }
 
 
   /* this is highly experimental test
