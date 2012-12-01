@@ -1,4 +1,4 @@
-#include "KinematicChainCalculator.h"
+#include "KinematicChainProvider.h"
 
 KinematicChainCalculator::KinematicChainCalculator()
 {
