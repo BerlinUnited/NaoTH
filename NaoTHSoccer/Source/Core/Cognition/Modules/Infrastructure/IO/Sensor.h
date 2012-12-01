@@ -59,6 +59,8 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(SoundCaptureData)
 
   PROVIDE(TeamMessageDataIn)
+  PROVIDE(RCTCTeamMessageDataIn)
+
   PROVIDE(GameData)
   PROVIDE(RobotInfo)
   PROVIDE(VirtualVision)
@@ -68,6 +70,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
+
   //PROVIDE(CalibrationData)
   
 END_DECLARE_MODULE(Sensor)

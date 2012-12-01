@@ -37,6 +37,7 @@ BEGIN_DECLARE_MODULE(Actuator)
   REQUIRE(TeamMessageDataOut)
   REQUIRE(DebugMessageOut)
   REQUIRE(FrameInfo)
+  REQUIRE(RCTCTeamMessageDataOut)
 
   // HACK: needed to transform the HeadMotionRequest
   REQUIRE(KinematicChain)

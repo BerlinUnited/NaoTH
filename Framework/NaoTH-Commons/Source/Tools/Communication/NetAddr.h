@@ -86,7 +86,7 @@ public:
   static std::string getBroadcastAddr(const std::string& name)
   {
     //HACK!!!! only valid in RoboCup 2012 Mexico!!!!
-    std::string ip("192.168.4.255");
+    std::string ip("192.168.13.255");
     /* Mac & Windows dont have that define */
 #ifdef SIOCGIFHWADDR
     struct ifaddrs * ifAddrStruct=NULL;
