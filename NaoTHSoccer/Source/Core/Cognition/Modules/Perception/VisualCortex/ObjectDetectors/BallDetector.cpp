@@ -167,25 +167,25 @@ void BallDetector::execute()
   }
 
   // TEST: REMOVE
-  CameraMatrix oldCamMatrix;
-  CameraMatrixCalculator::calculateCameraMatrix(
-    oldCamMatrix,
-    getCameraInfo(),
-    getKinematicChain());
+//  CameraMatrix oldCamMatrix;
+//  CameraMatrixCalculator::calculateCameraMatrix(
+//    oldCamMatrix,
+//    getCameraInfo(),
+//    getKinematicChain());
 
-  Vector2<int> oldCamProjected = CameraGeometry::relativePointToImage(oldCamMatrix, getImage().cameraInfo,
-      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
-                      getBallPercept().bearingBasedOffsetOnField.y,
-                      getFieldInfo().ballRadius));
+//  Vector2<int> oldCamProjected = CameraGeometry::relativePointToImage(oldCamMatrix, getImage().cameraInfo,
+//      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+//                      getBallPercept().bearingBasedOffsetOnField.y,
+//                      getFieldInfo().ballRadius));
 
-  if(getBallPercept().ballWasSeen)
-  {
-    PLOT("BallDetecor:old-projected-x-diff", getBallPercept().centerInImage.x - oldCamProjected.x);
-    PLOT("BallDetecor:old-projected-y-diff", getBallPercept().centerInImage.y - oldCamProjected.y);
-    DEBUG_REQUEST("ImageProcessor:BallDetector:draw_old_projected",
-      CIRCLE_PX(ColorClasses::pink, (int)oldCamProjected.x, (int)oldCamProjected.y, (int)getBallPercept().radiusInImage);
-    );
-  }
+//  if(getBallPercept().ballWasSeen)
+//  {
+//    PLOT("BallDetecor:old-projected-x-diff", getBallPercept().centerInImage.x - oldCamProjected.x);
+//    PLOT("BallDetecor:old-projected-y-diff", getBallPercept().centerInImage.y - oldCamProjected.y);
+//    DEBUG_REQUEST("ImageProcessor:BallDetector:draw_old_projected",
+//      CIRCLE_PX(ColorClasses::pink, (int)oldCamProjected.x, (int)oldCamProjected.y, (int)getBallPercept().radiusInImage);
+//    );
+//  }
 
 
   /* this is highly experimental test
