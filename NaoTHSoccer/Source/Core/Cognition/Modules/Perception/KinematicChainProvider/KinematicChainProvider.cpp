@@ -1,10 +1,11 @@
 #include "KinematicChainProvider.h"
+#include <Motion/MorphologyProcessor/ForwardKinematics.h>
 
-KinematicChainCalculator::KinematicChainCalculator()
+KinematicChainProvider::KinematicChainProvider()
 {
 }
 
-void KinematicChainCalculator::execute()
+void KinematicChainProvider::execute()
 {
   double deltaTime = ( getFrameInfo().getTime() - udpateTime ) * 0.001;
   udpateTime = getFrameInfo().getTime();
@@ -20,7 +21,7 @@ void KinematicChainCalculator::execute()
   getKinematicChain().updateCoM();
 }
 
-KinematicChainCalculator::~KinematicChainCalculator()
+KinematicChainProvider::~KinematicChainProvider()
 {
 
 }
