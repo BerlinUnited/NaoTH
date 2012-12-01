@@ -8,6 +8,8 @@
 #include "FootTouchDetector.h"
 #include <sstream>
 
+using namespace std;
+
 FootTouchDetector::FootTouchDetector()
   : fsrData(NULL)
 {

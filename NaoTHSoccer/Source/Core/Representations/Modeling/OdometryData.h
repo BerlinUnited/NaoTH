@@ -6,8 +6,8 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 */
 
-#ifndef __OdometryData_h_
-#define __OdometryData_h_
+#ifndef _OdometryData_h_
+#define _OdometryData_h_
 
 #include <Tools/DataStructures/Printable.h>
 #include <Tools/Math/Pose2D.h>
@@ -25,11 +25,11 @@ public:
   OdometryData() {}
   ~OdometryData(){}
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "x = " << translation.x << endl;
-    stream << "y = " << translation.y << endl;
-    stream << "rotation = " << rotation << endl;
+    stream << "x = " << translation.x << std::endl;
+    stream << "y = " << translation.y << std::endl;
+    stream << "rotation = " << rotation << std::endl;
   }//end print
 };
 
@@ -44,4 +44,4 @@ namespace naoth
   };
 }
 
-#endif //__OdometryData_h_
+#endif //_OdometryData_h_

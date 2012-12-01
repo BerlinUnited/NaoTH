@@ -35,7 +35,7 @@ namespace naoth
 
     void clear();
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
 }
 

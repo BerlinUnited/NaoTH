@@ -21,10 +21,12 @@
 #include "Representations/Modeling/BallModel.h"
 #include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/GoalModel.h"
-#include "Representations/Modeling/RobotPose.h"
 #include "Representations/Modeling/SoccerStrategy.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Motion/MotionStatus.h"
+#include "Representations/Infrastructure/FieldInfo.h"
+#include "Representations/Modeling/PlayerInfo.h"
+
 #include "XabslEngine/XabslSymbols.h"
 // Percepts
 #include "Representations/Perception/ScanLineEdgelPercept.h"
@@ -47,6 +49,7 @@ BEGIN_DECLARE_MODULE(PathPlanner)
   REQUIRE(PlayersModel)
   REQUIRE(RobotPose)
   REQUIRE(MotionStatus)
+
   // percepts
   REQUIRE(ScanLineEdgelPercept)
   // provide path
@@ -79,6 +82,9 @@ private:
 
   // obstacle positions
   std::vector<Vector2d> obstaclesPositions;
+
+  // functions
+  void collectObstacles();
 };
 
 #endif // PathFinder_h_

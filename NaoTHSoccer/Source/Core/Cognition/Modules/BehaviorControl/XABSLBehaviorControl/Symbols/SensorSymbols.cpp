@@ -37,6 +37,11 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerEnumeratedInputSymbol("fall_down_state", "fall_down_state", &getFallDownState);
 
+
+  engine.registerDecimalInputSymbol("body.temperature.leg.left", &getBodyState().temperatureLeftLeg);
+  engine.registerDecimalInputSymbol("body.temperature.leg.right", &getBodyState().temperatureRightLeg);
+
+
   engine.registerDecimalInputSymbol("platform.frameNumber", &getFrameNumber);
 
   engine.registerDecimalInputSymbol("obstacle.ultrasound.distance", &getObstacleDistance);
@@ -46,9 +51,12 @@ void SensorSymbols::registerSymbols(xabsl::Engine& engine)
 
   engine.registerBooleanInputSymbol("collision.colliding", &collisionModel.isColliding);
 
+  // integrated obstacle model
   engine.registerDecimalInputSymbol("path.next_point_to_go_x", &path.nextPointToGo.x);
   engine.registerDecimalInputSymbol("path.next_point_to_go_y", &path.nextPointToGo.y);
+  engine.registerDecimalInputSymbol("path.time_since_not_valid", &getTimeNoNodeExpandable);
 
+  // target to control the path
   engine.registerDecimalOutputSymbol("path.target_x", &setTargetpointX, &getTargetPointX);
   engine.registerDecimalOutputSymbol("path.target_y", &setTargetpointY, &getTargetPointY);
 
@@ -190,6 +198,11 @@ double SensorSymbols::getTargetPointY()
 {
   return theInstance->path.targetPoint.y;
 }
+
+double SensorSymbols::getTimeNoNodeExpandable()
+{
+  return theInstance->path.getTimeNoNodeExpandable();
+}//end getBallTimeSeen
 
 void SensorSymbols::setTargetpointX(double targetX)
 {

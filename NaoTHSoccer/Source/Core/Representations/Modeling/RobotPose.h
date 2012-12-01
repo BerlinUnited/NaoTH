@@ -5,8 +5,8 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 */
 
-#ifndef __RobotPose_h_
-#define __RobotPose_h_
+#ifndef _RobotPose_h_
+#define _RobotPose_h_
 
 #include "Tools/Math/Pose2D.h"
 #include "Tools/DataStructures/Printable.h"
@@ -14,14 +14,22 @@
 class RobotPose: public Pose2D, public naoth::Printable
 {
 public:
-
-  bool isValid;
- 
   RobotPose() 
     : 
     isValid(false)
     {}
-  ~RobotPose(){}
+
+  virtual ~RobotPose(){}
+
+
+  // indicates whether the pose is valid :)
+  bool isValid;
+
+  // estimated principal axes of the position belief (not for angle)
+  // can be used as a measure for how 'precise' the position estimation is
+  Vector2<double> principleAxisMajor;
+  Vector2<double> principleAxisMinor;
+
 
   void setPose(const Pose2D& other, bool isValid)
   {
@@ -29,6 +37,7 @@ public:
     this->isValid=isValid;
   }
 
+  // TODO: is this operator neded?
   const RobotPose& operator=(const RobotPose& other)
   {
     (Pose2D&) *this = (const Pose2D&) other;
@@ -42,24 +51,26 @@ public:
   RobotPose (const Pose2D& otherPose) 
   {
     (Pose2D&) *this = otherPose;
-    isValid = false;
+    // why is the pose invalidated?
+    //isValid = false;
   }
 
   const RobotPose& operator=(const Pose2D& other)
   {
     (Pose2D&) *this = other;
-    this->isValid=false;
+    // why is the pose invalidated?
+    //this->isValid=false;
     return *this;
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "x = " << translation.x << endl;
-    stream << "y = " << translation.y << endl;
-    stream << "rotation = " << rotation << endl;
-    stream << "valid = " << isValid << endl;
+    stream << "x = " << translation.x << std::endl;
+    stream << "y = " << translation.y << std::endl;
+    stream << "rotation = " << rotation << std::endl;
+    stream << "valid = " << isValid << std::endl;
   }//end print
 
 };
 
-#endif// __RobotPose_h_
+#endif// _RobotPose_h_

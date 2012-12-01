@@ -94,7 +94,13 @@ private:
   static double getOwnClosestToBallNumber();
   static double getOwnClosestToBallTimeSinceLastSeen();
   static double getOwnClosestToBallDistanceToBall();
-  
+
+  //defender position SPL
+  Pose2D calculateSimpleDefensePose();
+  static double simpleDefensePoseX();
+  static double simpleDefensePoseY();
+  static double simpleDefensePoseA();
+
   //find out if the robot is in a certain field half
   static bool getSituationStatusOwnHalf();
   static bool getSituationStatusOppHalf();
@@ -126,7 +132,14 @@ private:
   Vector2<double> setpiecePosition;
   double goalKickPlayer;
   bool goalKickPositionLeft;
+
+
+  /** attack direction and its previews */
   double attackDirection;
+  double attackDirectionPreviewHip;
+  double attackDirectionPreviewLFoot;
+  double attackDirectionPreviewRFoot;
+  Pose2D simpleDefenderPose;
 
   static Vector2<double> calculatePlayerPotentialField( const Vector2<double>& player, const Vector2<double>& ball);
 
@@ -143,6 +156,9 @@ private:
   static double penaltyGoalieGuardPositionX();
   static double penaltyGoalieGuardPositionY();
 
+  static double PosBehindBall2ADX;
+  static double PosBehindBall2ADY;
+
   struct CycleParameter
   {
     /** The parameter "circlex.directiony" and "circley.directiony" of the functions "circlex" and "circley" */
@@ -154,10 +170,6 @@ private:
     /** The parameter "circlex.robot.x" and "circley.robot.x" of the functions "circlex" and "circley" */
     Vector2<double> robot_pose;
   } cycle;
-
-public:
-  /** @return the suggested attack direction in local coordinates */
-  static double calculateAttackDirection();
 
 };//end class StrategySymbols
 

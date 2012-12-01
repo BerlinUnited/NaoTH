@@ -5,8 +5,8 @@
  * Created on 2. Januar 2009, 16:15
  */
 
-#ifndef _JOINTDATA_H
-#define _JOINTDATA_H
+#ifndef _JointData_H_
+#define _JointData_H_
 
 #include <string>
 
@@ -14,7 +14,6 @@
 #include "Tools/DataStructures/Serializer.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 
-using namespace std;
 
 namespace naoth
 {
@@ -64,7 +63,7 @@ class JointData
 
     void init();
 
-    static string getJointName(JointID);
+    static std::string getJointName(JointID);
     static JointID jointIDFromName(std::string name);
 
     void mirror();
@@ -98,7 +97,7 @@ class JointData
     double electricCurrent[numOfJoint];
     unsigned int timestamp;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
 
   };
 
@@ -108,7 +107,7 @@ class JointData
     MotorJointData();
     ~MotorJointData();
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
   
   template<>
@@ -128,5 +127,5 @@ class JointData
   };
 }
 
-#endif  /* _JOINTDATA_H */
+#endif  /* _JointData_H_ */
 

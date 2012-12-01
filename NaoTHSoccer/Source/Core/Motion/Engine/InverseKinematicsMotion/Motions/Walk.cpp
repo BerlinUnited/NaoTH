@@ -14,8 +14,6 @@
 #include "Tools/Math/MatrixBH.h"
 #include "Tools/Math/MatrixBH.cpp"
 
-#include "../InverseKinematicBH.h"
-
 using namespace InverseKinematic;
 using namespace naoth;
 
@@ -43,7 +41,7 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
       theCoMFeetPose = executeStep();
     }
 
-    // remember the pose
+    // buffer the pose
     commandPoseBuffer.add(theCoMFeetPose);
 
     bool solved = false;
@@ -76,11 +74,6 @@ void Walk::execute(const MotionRequest& motionRequest, MotionStatus& motionStatu
     }
 
     theEngine.solveHipFeetIK(c);
-    /*
-    c.localInHip();
-    static RobotDimensions theRobotDimensions;
-    InverseKinematicBH::calcLegJoints(c.feet.left, c.feet.right, theMotorJointData, theRobotDimensions, 0.5f);
-    */
 
     theEngine.copyLegJoints(theMotorJointData.position);
     
@@ -440,7 +433,7 @@ void Walk::planStep()
   
   PLOT("Walk:planStep:zmp.x", zmp.x);
   PLOT("Walk:planStep:zmp.y", zmp.y);
-  
+
 
   // TODO: change the height?
   theEngine.controlZMPpush(Vector3d(zmp_simple.x, zmp_simple.y, theWalkParameters.comHeight));

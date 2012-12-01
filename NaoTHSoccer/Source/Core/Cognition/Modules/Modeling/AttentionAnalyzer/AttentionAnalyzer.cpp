@@ -31,6 +31,9 @@ AttentionAnalyzer::AttentionAnalyzer()
 
 void AttentionAnalyzer::execute()
 {
+  // remember the time
+  static unsigned int currentPointOfInterestTimeStamp = getFrameInfo().getTime();
+
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
   odometryDelta.translation = Vector2<double>(0.0,0.0); // only rotattion is intersting
 
@@ -43,7 +46,8 @@ void AttentionAnalyzer::execute()
     // opdate by odometry
     iter->position = odometryDelta*iter->position;
 
-    if(isSeen(iter->position))
+    //HACK: if the point was seen or is too old
+    if(isSeen(iter->position) || getFrameInfo().getTimeSince(currentPointOfInterestTimeStamp) > 1000)
     {
       iter->weight = 1.0;
     }
@@ -65,6 +69,12 @@ void AttentionAnalyzer::execute()
       nextPoint = *iter;
     }
   }//end for
+
+
+  if(getAttentionModel().mostInterestingPoint != nextPoint.position)
+  {
+    currentPointOfInterestTimeStamp = getFrameInfo().getTime();
+  }
 
   getAttentionModel().mostInterestingPoint = nextPoint.position;
   

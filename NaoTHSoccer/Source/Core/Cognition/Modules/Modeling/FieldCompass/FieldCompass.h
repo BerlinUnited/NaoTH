@@ -2,11 +2,12 @@
  * @file ActiveGoalLocator.h
  *
  * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
- * Declaration of class ActiveGoalLocatorSimpleParticle
+ * A fake field compass, just providing the rotation calculated by the 
+ * self locator
  */
 
-#ifndef __FieldCompass_h_
-#define __FieldCompass_h_
+#ifndef _FieldCompass_h_
+#define _FieldCompass_h_
 
 #include <ModuleFramework/Module.h>
 
@@ -29,12 +30,10 @@ class FieldCompass : private FieldCompassBase
 
 public:
   FieldCompass();
-  ~FieldCompass(){};
+  virtual ~FieldCompass(){};
 
   virtual void execute();
 
-private:
-
 };
 
-#endif //__FieldCompass_h_
+#endif //_FieldCompass_h_

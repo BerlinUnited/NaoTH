@@ -11,7 +11,7 @@ option decide_ready_position
     {
       /* relocalize in initial kickoff */
       else if( (game.msecsRemaining >= 600000 || executed_motion.type == init)
-        && (state_time < 2000 || !robot_pose.is_valid))
+        && (state_time < 10000 || !robot_pose.is_valid))
         stay;
       else if(game.own_kickoff)
         goto own_kickoff;
@@ -38,7 +38,7 @@ option decide_ready_position
         goto opp_kickoff_own_half;
     }
     action {
-      situationStatusOwnHalf = true;
+      situationStatusOwnHalf = false;
       motion.type = stand;
       head.control_mode =search_for_goal;
     }
@@ -59,7 +59,7 @@ option decide_ready_position
 
   state own_kickoff_own_half {
     action{
-      situationStatusOwnHalf = true; 
+      situationStatusOwnHalf = false; 
       decide_offense_position();
     }
   }
@@ -79,7 +79,7 @@ option decide_ready_position
 
   state opp_kickoff_own_half {
     action{
-      situationStatusOwnHalf = true; 
+      situationStatusOwnHalf = false; 
       decide_defense_position();
     }
   }

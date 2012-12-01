@@ -50,7 +50,7 @@ class ScanLineEdgelDetectorDifferential : private ScanLineEdgelDetectorDifferent
 {
 public:
   ScanLineEdgelDetectorDifferential();
-  ~ScanLineEdgelDetectorDifferential();
+  virtual ~ScanLineEdgelDetectorDifferential();
 
   void execute();
 
@@ -61,7 +61,7 @@ public:
     Parameters() : ParameterList("ScanLineParameters")
     {
       PARAMETER_REGISTER(brightness_threshold) = 6;
-      PARAMETER_REGISTER(scanline_count) = 22;
+      PARAMETER_REGISTER(scanline_count) = 23;
       PARAMETER_REGISTER(pixel_border_y) = 3;
 
       syncWithConfig();

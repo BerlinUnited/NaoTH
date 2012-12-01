@@ -35,19 +35,23 @@ public:
     right = -1
   };
 
-  Vector3<double> kickPoint; // it is the position of ball in robot's local coordination
+  // it is the position of ball in robot's local coordination
+  Vector3<double> kickPoint;
+
+  // angle of the desired direction of the kick in robot cooordinates
   double kickDirection;
 
+  // foot selection
   KickFootID kickFoot;
   
   // if a kick is already prepared it will 
   // execute the actual kicking motion
   bool finishKick;
 
-  void print(ostream& stream) const
+  void print(std::ostream& stream) const
   {
-    stream << "kickPoint = " << kickPoint << endl;
-    stream << "direction = " << Math::toDegrees(kickDirection) << endl;
+    stream << "kickPoint = " << kickPoint << std::endl;
+    stream << "direction = " << Math::toDegrees(kickDirection) << std::endl;
   }//end print
 };
 

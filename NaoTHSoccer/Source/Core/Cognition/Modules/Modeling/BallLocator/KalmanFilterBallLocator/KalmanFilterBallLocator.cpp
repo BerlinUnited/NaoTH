@@ -304,6 +304,12 @@ void KalmanFilterBallLocator::execute()
     }
   );
 
+  DEBUG_REQUEST("KalmanFilterBallLocator:draw_ball_on_field",
+    FIELD_DRAWING_CONTEXT;
+    
+    PEN("FF0000", 30);
+    CIRCLE( getBallModel().positionPreview.x, getBallModel().positionPreview.y, getFieldInfo().ballRadius-10);
+  );
 
   //to check correctness of the prediction
   DEBUG_REQUEST("KalmanFilterBallLocator:draw_ball_percept",

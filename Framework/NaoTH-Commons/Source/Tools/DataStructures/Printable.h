@@ -5,13 +5,10 @@
  * Created on 12. Februar 2010, 14:51
  */
 
-#ifndef _PRINTABLE_H
-#define _PRINTABLE_H
+#ifndef _Printable_H_
+#define _Printable_H_
 
 #include <ostream>
-
-//TODO: remove it
-using namespace std;
 
 namespace naoth
 {
@@ -23,11 +20,20 @@ namespace naoth
      * This method must be overwritten bei a particular
      * Printable in order to stream out some specific (visible) data
      */
-    virtual void print(ostream& stream) const = 0;
+    virtual void print(std::ostream& stream) const = 0;
 
+<<<<<<< HEAD
     friend ostream& operator<<(ostream& stream, const Printable& printable);
+=======
+    virtual ~Printable()
+    {
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const Printable& printable);
+
+>>>>>>> master
   };
 }
 
-#endif  /* _PRINTABLE_H */
+#endif  /* _Printable_H_ */
 

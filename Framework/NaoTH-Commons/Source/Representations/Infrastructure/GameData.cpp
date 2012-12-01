@@ -9,6 +9,7 @@
 #include "GameData.h"
 
 using namespace naoth;
+using namespace std;
 
 GameData::GameData()
   :valid(false),

@@ -28,6 +28,7 @@ option penalty_kicker
     }
     action
     {
+      situationStatusOppHalf = true;
       go_to_ball_cool(distance = 170, right_foot=true,
                       errorX=30, errorY=30, errorR=15);
       head.control_mode = search_for_ball;
@@ -52,6 +53,7 @@ option penalty_kicker
     }
     action
     {
+      situationStatusOppHalf = true;
       go_to_ball_cool(distance = 170, right_foot=true,
                       errorX=30, errorY=30, errorR=15);
       motion.type = stand;
@@ -71,6 +73,7 @@ option penalty_kicker
     }
     action
     {
+      situationStatusOppHalf = true;
       kick_ball_with_foot(direction = 0, right = true);
       head.control_mode = search_for_ball;
     }
@@ -85,6 +88,7 @@ option penalty_kicker
     }
     action
     {
+      situationStatusOppHalf = false;
       spl_playing_striker();
     }
   }

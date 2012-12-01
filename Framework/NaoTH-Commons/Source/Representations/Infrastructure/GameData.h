@@ -89,7 +89,7 @@ public:
   static TeamColor teamColorFromString(const std::string& teamColor);
   static std::string teamColorToString(TeamColor teamColor);
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
   void loadFromCfg(Configuration& config);
 
   GameData();
@@ -145,9 +145,9 @@ public:
 
   Message message;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << messageToString(message) << endl;
+    stream << messageToString(message) << std::endl;
   }
 };
 

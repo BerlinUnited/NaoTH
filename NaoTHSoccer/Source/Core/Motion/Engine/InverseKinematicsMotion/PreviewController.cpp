@@ -14,6 +14,8 @@
 #include <PlatformInterface/Platform.h>
 #include <Tools/DataConversion.h>
 
+using namespace std;
+
 PreviewController::PreviewController()
 :parameters(NULL),
 theHeight(0)

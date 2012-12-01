@@ -7,9 +7,9 @@ BatteryData::BatteryData():
 {
 }
 
-void BatteryData::print(ostream& stream) const
+void BatteryData::print(std::ostream& stream) const
 {
-  stream << "charge: " << charge << endl;
+  stream << "charge: " << charge << std::endl;
 }
 
 BatteryData::~BatteryData()

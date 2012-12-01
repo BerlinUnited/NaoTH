@@ -8,7 +8,6 @@
 #ifndef __BodyState_h_
 #define __BodyState_h_
 
-#include "Representations/Infrastructure/FrameInfo.h"
 #include "Tools/DataStructures/Printable.h"
 
 class BodyState : public naoth::Printable
@@ -16,10 +15,15 @@ class BodyState : public naoth::Printable
 public:
   BodyState()
     : 
-  fall_down_state(undefined),
-  standByLeftFoot(true),
-  standByRightFoot(true)
+    fall_down_state(undefined),
+    fall_down_state_time(0),
+    standByLeftFoot(true),
+    standByRightFoot(true),
+    foot_state_time(0),
+    temperatureLeftLeg(0),
+    temperatureRightLeg(0)
   {}
+
   ~BodyState(){}
 
 
@@ -59,19 +63,31 @@ public:
     return "unknown";
   }//end getName
 
+  // indicates whether the robot is upright etc.
   State fall_down_state;
+  // timestamp when the fall down state changed last time
   unsigned int fall_down_state_time;
 
+
+  // indicates whether the particular foot is on the ground
   bool standByLeftFoot;
   bool standByRightFoot;
+  // timestamp when any of the feet states changed last time
   unsigned int foot_state_time;
+
+
+  // the maximal temperature for each leg
+  double temperatureLeftLeg;
+  double temperatureRightLeg;
 
 
   virtual void print(ostream& stream) const
   {
     stream << "fall_down_state = " << getName(fall_down_state) << endl;
+    stream << "fall_down_state_time = " << fall_down_state_time << endl;
     stream << "standByLeftFoot = " << standByLeftFoot << endl;
     stream << "standByRightFoot = " << standByRightFoot << endl;
+    stream << "foot_state_time = " << foot_state_time << endl;
   }//end print
 };
 

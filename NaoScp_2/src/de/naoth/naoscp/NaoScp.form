@@ -163,7 +163,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="jLabel16" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane2" max="32767" attributes="1"/>
+                                  <Component id="jScrollPane2" pref="94" max="32767" attributes="1"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -187,7 +187,7 @@
                                   <Component id="cbCopyLib" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="21" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -490,7 +490,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTeamNumber">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="13"/>
+                        <Property name="text" type="java.lang.String" value="4"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel4">
@@ -616,7 +616,7 @@
                               <Component id="cbRebootSystem" max="32767" attributes="0"/>
                               <Component id="jButtonSetRobotNetwork" max="32767" attributes="0"/>
                               <Component id="jButtonInitRobotSystem" alignment="1" max="32767" attributes="1"/>
-                              <Component id="jButtonSaveNetworkConfig" max="32767" attributes="0"/>
+                              <Component id="jButtonSaveNetworkConfig" pref="199" max="32767" attributes="0"/>
                               <Component id="jScrollPane3" alignment="0" pref="0" max="32767" attributes="0"/>
                               <Component id="jButtonRemoteKernelVideoReload" alignment="0" pref="199" max="32767" attributes="0"/>
                           </Group>
@@ -867,7 +867,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="subnetFieldWLAN">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="192.168.13"/>
+                        <Property name="text" type="java.lang.String" value="192.168.4"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subnetFieldWLANActionPerformed"/>
@@ -883,7 +883,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="broadcastFieldWLAN">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="192.168.13.255"/>
+                        <Property name="text" type="java.lang.String" value="192.168.4.255"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="broadcastFieldWLANActionPerformed"/>
@@ -919,7 +919,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="wlanSSID">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="NAONET"/>
+                        <Property name="text" type="java.lang.String" value="SPL_Field_B"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanSSIDActionPerformed"/>
@@ -932,8 +932,11 @@
                     </Component>
                     <Component class="javax.swing.JPasswordField" name="wlanKey">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="a1b0a1b0a1"/>
+                        <Property name="text" type="java.lang.String" value="SPLRC2012"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wlanKeyActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -961,7 +964,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jLabel26" min="-2" max="-2" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jTeamCommPort" pref="115" max="32767" attributes="3"/>
+                                      <Component id="jTeamCommPort" pref="119" max="32767" attributes="3"/>
                                   </Group>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -1031,7 +1034,7 @@
                     <Component class="javax.swing.JTextField" name="lblTeamCommWLAN">
                       <Properties>
                         <Property name="editable" type="boolean" value="false"/>
-                        <Property name="text" type="java.lang.String" value="192.168.13.255"/>
+                        <Property name="text" type="java.lang.String" value="192.168.4.255"/>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lblTeamCommWLANActionPerformed"/>
@@ -1058,7 +1061,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTeamCommPort">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="10700"/>
+                        <Property name="text" type="java.lang.String" value="10400"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel27">
@@ -1192,7 +1195,7 @@
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane5" pref="329" max="32767" attributes="0"/>
+                      <Component id="jScrollPane5" pref="326" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jCopyStatus" min="-2" pref="19" max="-2" attributes="1"/>
                       <EmptySpace max="-2" attributes="0"/>

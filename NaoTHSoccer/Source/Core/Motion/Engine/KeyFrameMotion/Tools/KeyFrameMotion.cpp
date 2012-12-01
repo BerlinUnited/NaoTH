@@ -8,6 +8,7 @@
 #include "KeyFrameMotion.h"
 
 using namespace naoth;
+using namespace std;
 
 KeyFrameMotion::KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id)
   : 
