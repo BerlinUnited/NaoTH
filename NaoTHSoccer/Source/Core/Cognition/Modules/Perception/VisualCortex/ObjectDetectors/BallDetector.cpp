@@ -152,17 +152,6 @@ void BallDetector::execute()
   if(getBallPercept().centerInImage.y < min(p1.y, p2.y))
     getBallPercept().ballWasSeen = false;
 
-
-  DEBUG_REQUEST("ImageProcessor:BallDetector:draw_projected",
-    Vector2<int> currentProjected = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
-        Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
-                        getBallPercept().bearingBasedOffsetOnField.y,
-                        getFieldInfo().ballRadius));
-    PLOT("BallDetecor:projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
-    PLOT("BallDetecor:projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
-    CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
-  );
-
   Vector2<int> currentProjected = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
       Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
                       getBallPercept().bearingBasedOffsetOnField.y,
@@ -194,7 +183,7 @@ void BallDetector::execute()
     PLOT("BallDetecor:old-projected-x-diff", getBallPercept().centerInImage.x - oldCamProjected.x);
     PLOT("BallDetecor:old-projected-y-diff", getBallPercept().centerInImage.y - oldCamProjected.y);
     DEBUG_REQUEST("ImageProcessor:BallDetector:draw_old_projected",
-      CIRCLE_PX(ColorClasses::blue, (int)oldCamProjected.x, (int)oldCamProjected.y, (int)getBallPercept().radiusInImage);
+      CIRCLE_PX(ColorClasses::pink, (int)oldCamProjected.x, (int)oldCamProjected.y, (int)getBallPercept().radiusInImage);
     );
   }
 
