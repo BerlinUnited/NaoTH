@@ -16,7 +16,7 @@ namespace rctc
 	  memcpy(&header, &data[RCTC_HEADER], 4);
 	  header = ntohl(header);
 	  if (header != RCTC_HEADER_CONTENT) {
-		  //printf("ERROR: Invalid header RCTC. Header is %c%c%c%c\n", data[0], data[1], data[2], data[3]);
+      printf("ERROR: Invalid header RCTC. Header is %c%c%c%c\n", data[0], data[1], data[2], data[3]);
 		  return false;
 	  }
 

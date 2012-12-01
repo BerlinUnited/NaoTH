@@ -38,6 +38,11 @@ public:
   virtual void print(ostream& stream) const
   {
     stream<<"size = "<<data.size()<<"\n";
+    for(unsigned int i=0; i < data.size(); i++)
+    {
+      stream << "=================" << std::endl;
+      stream << data[i] << std::endl;
+    }
   }
 };
 

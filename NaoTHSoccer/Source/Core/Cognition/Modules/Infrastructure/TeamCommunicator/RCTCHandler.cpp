@@ -49,8 +49,6 @@ void RCTCHandler::execute()
   }//end for
 
 
-
-
   // only send data in intervals of 500ms
   if((unsigned int)getFrameInfo().getTimeSince(lastSentTimestamp) > send_interval)
   {
@@ -58,7 +56,6 @@ void RCTCHandler::execute()
     createMessage(getRCTCTeamMessageDataOut().data);
     getRCTCTeamMessageDataOut().valid = true;
 
-    //getTeamMessageDataOut().data = msg.SerializeAsString();
     lastSentTimestamp = getFrameInfo().getTime();
   }
   else

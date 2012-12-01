@@ -47,6 +47,7 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(IRReceiveData);
   
   REG_INPUT(TeamMessageDataIn);
+  REG_INPUT(RCTCTeamMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageIn);
   

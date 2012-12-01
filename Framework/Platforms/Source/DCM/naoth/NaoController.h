@@ -298,7 +298,6 @@ public:
   void get(RCTCTeamMessageDataIn& data) 
   { 
     data.data.clear();
-
     std::vector<std::string> msg_vector;
     theRCTCBroadCastListener->receive(msg_vector);
     for(unsigned int i = 0; i < msg_vector.size(); i++)
@@ -318,8 +317,9 @@ public:
     {
       uint8_t bin_msg[rctc::PACKET_SIZE];
       rctc::messageToBinary(data.data, bin_msg);
-      std::string msg ((char*)bin_msg);
-      theBroadCaster->send(msg);
+      std::string msg((char*)bin_msg, rctc::PACKET_SIZE);
+//      std::cout << "sending RCTC " <<theRCTCBroadCaster->broadcastAddress << " (bcast adress) " << std::endl;
+      theRCTCBroadCaster->send(msg);
     }
   }//end set RCTCTeamMessageDataOut
 

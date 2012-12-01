@@ -22,16 +22,12 @@ namespace naoth
      */
     virtual void print(std::ostream& stream) const = 0;
 
-<<<<<<< HEAD
-    friend ostream& operator<<(ostream& stream, const Printable& printable);
-=======
     virtual ~Printable()
     {
     }
 
     friend std::ostream& operator<<(std::ostream& stream, const Printable& printable);
 
->>>>>>> master
   };
 }
 
