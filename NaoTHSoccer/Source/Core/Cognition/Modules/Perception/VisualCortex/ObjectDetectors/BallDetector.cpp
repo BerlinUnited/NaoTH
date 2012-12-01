@@ -31,6 +31,8 @@ BallDetector::BallDetector()
 
   DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:mark_ball_blob", " ", false);
 
+  DEBUG_REQUEST_REGISTER("ImageProcessor:BallDetector:draw_projected", " ", false);
+
   // initialize the colors for the blob finder
   for(int n = 0; n < ColorClasses::numOfColors; n++)
   {
@@ -148,9 +150,15 @@ void BallDetector::execute()
     getBallPercept().ballWasSeen = false;
 
 
-
-
-
+  DEBUG_REQUEST("ImageProcessor:BallDetector:draw_projected",
+    Vector2<int> currentProjected = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+        Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+                        getBallPercept().bearingBasedOffsetOnField.y,
+                        getFieldInfo().ballRadius));
+    PLOT("BallDetecor:projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
+    PLOT("BallDetecor:projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
+    CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
+  );
 
   /* this is highly experimental test
   Vector2<double> topBorderPoint = Geometry::imagePixelToFieldCoord(
