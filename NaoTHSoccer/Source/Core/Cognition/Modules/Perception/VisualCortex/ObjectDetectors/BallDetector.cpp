@@ -18,6 +18,8 @@
 
 #include "Tools/Debug/Stopwatch.h"
 
+#include <Representations/Modeling/KinematicChain.h>
+
 BallDetector::BallDetector()
   : theBlobFinder(getColoredGrid())
 {
@@ -159,6 +161,24 @@ void BallDetector::execute()
     PLOT("BallDetecor:projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
     CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
   );
+
+  Vector2<int> currentProjected = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
+      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+                      getBallPercept().bearingBasedOffsetOnField.y,
+                      getFieldInfo().ballRadius));
+
+  if(getBallPercept().ballWasSeen)
+  {
+    PLOT("BallDetecor:projected-x-diff", getBallPercept().centerInImage.x - currentProjected.x);
+    PLOT("BallDetecor:projected-y-diff", getBallPercept().centerInImage.y - currentProjected.y);
+    DEBUG_REQUEST("ImageProcessor:BallDetector:draw_projected",
+      CIRCLE_PX(ColorClasses::blue, (int)currentProjected.x, (int)currentProjected.y, (int)getBallPercept().radiusInImage);
+    );
+  }
+
+  // TEST: REMOVE
+  KinematicChain chain;
+
 
   /* this is highly experimental test
   Vector2<double> topBorderPoint = Geometry::imagePixelToFieldCoord(
