@@ -6,8 +6,8 @@
  * Created on 31. Dezember 2008, 18:20
  */
 
-#ifndef _FSRDATA_H
-#define _FSRDATA_H
+#ifndef _FSRData_H_
+#define _FSRData_H_
 
 #include <string>
 
@@ -15,8 +15,6 @@
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-
-using namespace std;
 
 namespace naoth
 {
@@ -53,9 +51,9 @@ namespace naoth
 
     FSRData();
     ~FSRData();
-    static string getFSRName(FSRID fsr);
+    static std::string getFSRName(FSRID fsr);
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   };
   
   template<>
@@ -70,5 +68,5 @@ namespace naoth
 
 }//end namespace naoth
 
-#endif  /* _FSRDATA_H */
+#endif  /* _FSRData_H_ */
 

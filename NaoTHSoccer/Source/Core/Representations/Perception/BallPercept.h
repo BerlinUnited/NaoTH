@@ -51,14 +51,14 @@ public:
     ballWasSeen = false;
   }//end reset
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "ballWasSeen = " << ballWasSeen << endl;
-    stream << "centerInImage = " << centerInImage << endl;
-    stream << "radiusInImage = " << radiusInImage << endl;
-    stream << "bearingBasedOffsetOnField = " << bearingBasedOffsetOnField << endl;
-    //stream << "frameInfoWhenBallWasSeen:" << frameInfoWhenBallWasSeen << endl;
-    stream << "ball color:\n" << ColorClasses::getColorName(ballColor) << endl;
+    stream << "ballWasSeen = " << ballWasSeen << std::endl;
+    stream << "centerInImage = " << centerInImage << std::endl;
+    stream << "radiusInImage = " << radiusInImage << std::endl;
+    stream << "bearingBasedOffsetOnField = " << bearingBasedOffsetOnField << std::endl;
+    //stream << "frameInfoWhenBallWasSeen:" << frameInfoWhenBallWasSeen << std::endl;
+    stream << "ball color:\n" << ColorClasses::getColorName(ballColor) << std::endl;
   }//end print
 };
 

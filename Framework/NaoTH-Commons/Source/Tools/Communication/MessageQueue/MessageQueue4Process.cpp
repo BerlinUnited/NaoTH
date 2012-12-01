@@ -10,6 +10,8 @@
 #include "Tools/Debug/Trace.h"
 #include <cstring>
 
+using namespace std;
+
 // only avaiable on Nao
 #ifdef NAO
 #include <gio/gunixsocketaddress.h>

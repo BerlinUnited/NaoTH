@@ -7,6 +7,7 @@
 #include "PlatformInterface/PlatformInterface.h"
 
 using namespace naoth;
+using namespace std;
 
 PlatformBase::~PlatformBase()
 {

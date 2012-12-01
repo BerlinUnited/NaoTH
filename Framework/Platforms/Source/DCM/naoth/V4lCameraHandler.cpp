@@ -21,6 +21,7 @@ extern "C"
 }
 
 using namespace naoth;
+using namespace std;
 
 V4lCameraHandler::V4lCameraHandler()
   :

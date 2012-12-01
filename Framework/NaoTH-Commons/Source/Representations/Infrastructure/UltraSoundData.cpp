@@ -31,7 +31,7 @@ void UltraSoundReceiveData::init()
   }
 }
 
-void UltraSoundReceiveData::print(ostream& stream) const
+void UltraSoundReceiveData::print(std::ostream& stream) const
 {
   stream
     << "UltraSoundReceiveData" << std::endl
@@ -123,7 +123,7 @@ void UltraSoundSendData::setMode(unsigned int _mode)
 }
 
 
-void UltraSoundSendData::print(ostream& stream) const
+void UltraSoundSendData::print(std::ostream& stream) const
 {
   stream 
     << "UltraSoundSendData" << std::endl

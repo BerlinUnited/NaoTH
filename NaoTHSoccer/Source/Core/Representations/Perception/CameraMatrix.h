@@ -25,16 +25,16 @@ public:
   int cameraNumber;
   bool valid;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "camera = " << cameraNumber << endl;
-    stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << endl;
-    stream << "y-angle [deg] = " << Math::toDegrees(rotation.getYAngle()) << endl;
-    stream << "z-angle [deg] = " << Math::toDegrees(rotation.getZAngle()) << endl;
-    stream << "x-translation [mm] = " << translation.x << endl;
-    stream << "y-translation [mm] = " << translation.y << endl;
-    stream << "z-translation [mm] = " << translation.z << endl;
-    stream << "valid = " << valid << endl;
+    stream << "camera = " << cameraNumber << std::endl;
+    stream << "x-angle [deg] = " << Math::toDegrees(rotation.getXAngle()) << std::endl;
+    stream << "y-angle [deg] = " << Math::toDegrees(rotation.getYAngle()) << std::endl;
+    stream << "z-angle [deg] = " << Math::toDegrees(rotation.getZAngle()) << std::endl;
+    stream << "x-translation [mm] = " << translation.x << std::endl;
+    stream << "y-translation [mm] = " << translation.y << std::endl;
+    stream << "z-translation [mm] = " << translation.z << std::endl;
+    stream << "valid = " << valid << std::endl;
   }//end print
 };
 

@@ -26,7 +26,7 @@ namespace naoth
 
     Vector2<double> data;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
 
   };
   

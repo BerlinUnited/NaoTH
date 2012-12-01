@@ -75,10 +75,10 @@ namespace naoth
     }//end init
 
     Configuration& theConfiguration;
-    const string& theConfigDirectory;
-    const string& theHardwareIdentity; // the string to indentify different robots
-    const string& theHeadHardwareIdentity; // the string to indentify different robot heads
-    const string& theScheme;
+    const std::string& theConfigDirectory;
+    const std::string& theHardwareIdentity; // the string to indentify different robots
+    const std::string& theHeadHardwareIdentity; // the string to indentify different robot heads
+    const std::string& theScheme;
 
     PlatformBase* const & thePlatformInterface;
 

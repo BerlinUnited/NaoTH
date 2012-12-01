@@ -5,16 +5,14 @@
  * Created on 15. März 2009, 16:56
  */
 
-#ifndef _CAMERASETTINGS_H
-#define  _CAMERASETTINGS_H
+#ifndef _CameraSettings_H_
+#define _CameraSettings_H_
 
 #include <string>
 
 #include "Tools/DataStructures/Printable.h"
 #include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/ParameterList.h"
-
-using namespace std;
 
 namespace naoth
 {
@@ -58,9 +56,9 @@ namespace naoth
 
       CameraSettings();
       virtual ~CameraSettings();
-      static string getCameraSettingsName(CameraSettingID id);
+      static std::string getCameraSettingsName(CameraSettingID id);
 
-      virtual void print(ostream& stream) const;
+      virtual void print(std::ostream& stream) const;
   };
 
   class CurrentCameraSettings : public CameraSettings, public PlatformInterchangeable

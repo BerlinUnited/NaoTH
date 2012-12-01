@@ -29,7 +29,7 @@ namespace naoth
       numOfButtons
     };
 
-    static string getButtonName(ButtonID id);
+    static std::string getButtonName(ButtonID id);
 
     /** Whether the button is pressed in this frame. */
     bool isPressed[numOfButtons];
@@ -39,7 +39,7 @@ namespace naoth
      * in the first pressed frame. */
     int numOfFramesPressed[numOfButtons];
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   private:
 
   };

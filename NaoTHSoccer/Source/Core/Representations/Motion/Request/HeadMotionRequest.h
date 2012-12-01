@@ -116,7 +116,7 @@ public:
   static HeadMotionID getId(const std::string& name);
 
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 };
 
 namespace naoth

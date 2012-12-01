@@ -22,7 +22,7 @@ class TeamMessageDataOut: public PlatformInterchangeable, public Printable
 public:
   std::string data;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream<<"size = "<<data.size()<<"\n";
   }
@@ -34,7 +34,7 @@ class TeamMessageDataIn: public PlatformInterchangeable, public Printable
 public:
   std::vector<std::string> data;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream<<"size = "<<data.size()<<"\n";
   }

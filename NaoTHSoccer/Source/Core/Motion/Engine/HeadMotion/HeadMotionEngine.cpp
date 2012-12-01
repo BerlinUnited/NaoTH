@@ -172,6 +172,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   double max_velocity_deg_in_second_slow = 120;
   double cutting_velocity = 40; // speed of the robot in mm/s
 
+
   double max_velocity_deg_in_second = 90;
   // calculate depending on the walking speed
   if(theBlackBoard.theMotionStatus.currentMotion == motion::walk)

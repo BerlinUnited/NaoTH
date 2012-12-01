@@ -36,7 +36,12 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("defense.simplePose.translation.y", &simpleDefensePoseY);
   engine.registerDecimalInputSymbol("defense.simplePose.rotation", &simpleDefensePoseA);
 
+  // attack direction and previews
   engine.registerDecimalInputSymbol("attack.direction", &attackDirection);
+  engine.registerDecimalInputSymbol("attack.direction.preview", &attackDirectionPreviewHip);
+  engine.registerDecimalInputSymbol("attack.direction.preview.left_foot", &attackDirectionPreviewLFoot);
+  engine.registerDecimalInputSymbol("attack.direction.preview.right_foot", &attackDirectionPreviewRFoot);
+
 
   engine.registerDecimalInputSymbol("defense.pose.translation.x", &defensePoseX);
   engine.registerDecimalInputSymbol("defense.pose.translation.y", &defensePoseY);
@@ -47,8 +52,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("setpiece.pose.y", &setpiecePosition.y);
   engine.registerBooleanInputSymbol("setpiece.participation", &setpieceParticipation);
 
+  
   engine.registerBooleanInputSymbol("attack.approaching_with_right_foot", &getApproachingWithRightFoot );
-
 
 
 
@@ -107,7 +112,23 @@ StrategySymbols* StrategySymbols::theInstance = NULL;
 
 void StrategySymbols::execute()
 {
-  attackDirection = calculateAttackDirection();
+  { // prepare the attack direction
+  const Vector2<double>& p = getSoccerStrategy().attackDirection;
+  
+  // ATTENTION: since it is a vector and not a point, we apply only the rotation
+  attackDirection             = Math::toDegrees(p.angle());
+
+  attackDirectionPreviewHip   = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.hip.rotation).angle());
+
+  attackDirectionPreviewLFoot = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.lFoot.rotation).angle());
+
+  attackDirectionPreviewRFoot = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.rFoot.rotation).angle());
+  }
+
+
   DEBUG_REQUEST("XABSL:StrategySymbols:draw_attack_direction",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
@@ -641,27 +662,6 @@ bool StrategySymbols::setpieceParticipation()
 {
   return theInstance->calculateSetPiecePose();
 }
-
-double StrategySymbols::calculateAttackDirection()
-{
-  const Vector2<double>& p = theInstance->soccerStrategy.attackDirection;
-  return Math::toDegrees(p.angle());
-}
-
-
-Vector2<double> StrategySymbols::calculatePlayerPotentialField(const Vector2<double>& player, const Vector2<double>& ball)
-{
-  const static double a = 1500;
-  const static double d = 2000;
-
-  Vector2<double> v = player-ball;
-  double t = v.abs();
-  if ( t >= d-100 ) return Vector2<double>(0,0);
-
-  double ang = v.angle();
-  return Vector2<double>(cos(ang), sin(ang)) * exp(a / d - a / (d - t));
-}
-
 
 //returns the x-coordinate of the edge of the circle the robot shall move to reach the inputpoint with direction to another inputpoint
 /**

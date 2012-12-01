@@ -5,6 +5,7 @@
 #include "Tools/Communication/NetAddr.h"
 
 using namespace naoth;
+using namespace std;
 
 void* socketLoopWrap(void* c)
 {

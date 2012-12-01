@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <vector>
 
-namespace ConvexHull {
+namespace ConvexHull 
+{
 
     using namespace std;
  

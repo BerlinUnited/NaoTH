@@ -93,7 +93,7 @@ namespace naoth
     unsigned long getSize() const;
     double getOpeningAngleDiagonal() const;
 
-    virtual void print(ostream& stream) const;
+    virtual void print(std::ostream& stream) const;
   protected:
 
     double openingAngleDiagonal;

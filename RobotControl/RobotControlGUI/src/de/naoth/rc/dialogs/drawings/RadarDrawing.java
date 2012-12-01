@@ -15,6 +15,10 @@ import java.awt.geom.AffineTransform;
  */
 public class RadarDrawing implements Drawable
 {
+  @Override
+  public String toString() { return "Radar"; }
+  
+  @Override
   public void draw(Graphics2D g2d)
   {
     

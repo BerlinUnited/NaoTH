@@ -30,10 +30,10 @@ std::string HeadMotionRequest::getName(HeadMotionID id)
   }///end switch
 }///end getName
 
-void HeadMotionRequest::print(ostream &stream) const
+void HeadMotionRequest::print(std::ostream &stream) const
 {
-    stream << "Current MotionRequest = " << getName(id) << endl
-           << " Selected Camera = " << cameraID << endl;
+    stream << "Current MotionRequest = " << getName(id) << std::endl
+           << " Selected Camera = " << cameraID << std::endl;
 }
 
 HeadMotionRequest::HeadMotionID HeadMotionRequest::getId(const std::string& name)

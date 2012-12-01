@@ -1,6 +1,7 @@
 #include "Representations/Infrastructure/IRData.h"
 
 using namespace naoth;
+using namespace std;
 
 IRSendData::IRSendData() : changed(false)
 {

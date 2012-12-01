@@ -10,6 +10,7 @@
 #include <string>
 
 using namespace naoth;
+using namespace std;
 
 ButtonData::ButtonData() 
 {

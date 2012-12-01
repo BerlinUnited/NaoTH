@@ -9,6 +9,7 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 using namespace naoth;
+using namespace std;
 
 double JointData::min[JointData::numOfJoint];
 double JointData::max[JointData::numOfJoint];

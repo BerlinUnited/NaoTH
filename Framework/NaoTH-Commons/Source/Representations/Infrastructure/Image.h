@@ -78,9 +78,9 @@ namespace naoth
 
     bool possibleImageStuck;
                              
-    virtual void print(ostream& stream) const;
-    virtual void toDataStream(ostream& stream) const;
-    virtual void fromDataStream(istream& stream);
+    virtual void print(std::ostream& stream) const;
+    virtual void toDataStream(std::ostream& stream) const;
+    virtual void fromDataStream(std::istream& stream);
     
     virtual void drawPoint
     (
