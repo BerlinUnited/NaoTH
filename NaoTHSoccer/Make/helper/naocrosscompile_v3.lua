@@ -1,16 +1,15 @@
 -- check if NAO_CROSSCOMPILE is set
-local envVal = os.getenv("NAO_CROSSCOMPILE")
-if(envVal ~= nil) then
-  
-  print("INFO: Using \"" ..  envVal .. "\" as cross compile root location.")   
+-- local NAO_CROSSCOMPILE = os.getenv("NAO_CROSSCOMPILE")
+if(NAO_CROSSCOMPILE ~= nil) then
+  print("INFO: Using \"" ..  NAO_CROSSCOMPILE .. "\" as cross compile root location.")   
 else
   print("WARN: Enviroment variale NAO_CROSSCOMPILE was not set. It may be that no cross compilation possible.")
   print("WARN: I will default to /opt/aldebaran/info/crosscompile")
-  envVal = "/opt/aldebaran/info/crosscompile"
+  NAO_CROSSCOMPILE = "/opt/aldebaran/info/crosscompile"
 end -- NAO_CROSSCOMPILE ~= nil
 
-local crossDir = envVal .. "/cross/"
-local stageDir = envVal .. "/staging/"
+local crossDir = NAO_CROSSCOMPILE .. "/cross/"
+local stageDir = NAO_CROSSCOMPILE .. "/staging/"
 
 -- the following steps are needed to add the nao cross compiler to the platforms
 -- extend the command line option list
