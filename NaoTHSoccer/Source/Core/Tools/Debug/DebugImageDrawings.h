@@ -6,12 +6,16 @@
 //
 
 #ifndef _DebugImageDrawings_H
-#define  _DebugImageDrawings_H
+#define _DebugImageDrawings_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/ImageProcessing/ImageDrawings.h>
 
+#include <Tools/ImageProcessing/ImagePrimitives.h>
+#include <Tools/Math/Vector2.h>
 #include "Tools/ColorClasses.h"
+
+#include <vector>
 
 class DebugImageDrawings : public naoth::Singleton<DebugImageDrawings>, public naoth::DrawingCanvas
 {
@@ -82,9 +86,8 @@ public:
   }
 
 private:
-  // HACK: make it configurable
-  unsigned char pixels[320*240][3];
-  unsigned int coordinates[320*240][2];
+  std::vector<Pixel> pixels;
+  std::vector<Vector2<unsigned int> > coordinates;
   int numberOfPoints;
 
 };

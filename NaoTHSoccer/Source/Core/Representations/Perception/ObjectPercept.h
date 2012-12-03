@@ -4,8 +4,8 @@
  * Declaration of class ObjectPercept
  */
 
-#ifndef __ObjectPercept_h_
-#define __ObjectPercept_h_
+#ifndef _ObjectPercept_h_
+#define _ObjectPercept_h_
 
 #include <vector>
 
@@ -27,15 +27,16 @@
 class ObjectPercept : public naoth::Printable
 { 
 public:
-  ObjectPercept():
-  ballWasSeen(false),
-  obstacleWasSeen(false),
-  lineWasSeen(false),
-  bestBallIndex(0),
-  numOfSeenObjects(0),
-  numOfSeenBalls(0),
-  numOfSeenObstacles(0),
-  numOfSeenLines(0)
+  ObjectPercept()
+    :
+    ballWasSeen(false),
+    obstacleWasSeen(false),
+    lineWasSeen(false),
+    bestBallIndex(0),
+    numOfSeenObjects(0),
+    numOfSeenBalls(0),
+    numOfSeenObstacles(0),
+    numOfSeenLines(0)
   {
     scanLineEdgels.reserve(SCANLINE_COUNT * (SCANLINE_RESUME_COUNT + 1));
     for(unsigned int i = 0; i < MAXNUMBEROFLINES; i++)
@@ -202,6 +203,6 @@ namespace naoth
   };
 }
 
-#endif //__ObjectPercept_h_
+#endif //_ObjectPercept_h_
 
 

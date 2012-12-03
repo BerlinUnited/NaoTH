@@ -11,16 +11,16 @@ using namespace naoth;
 
 DebugImageDrawings::DebugImageDrawings() 
   : 
+  pixels(width()*height()),
+  coordinates(width()*height()),
   numberOfPoints(0)
 {
-  for(int i = 0; i < 320*240; i++)
-  {
-      pixels[i][0] = 0;
-      pixels[i][1] = 0;
-      pixels[i][2] = 0;
 
-      coordinates[i][0] = 0;
-      coordinates[i][1] = 0;
+  for(unsigned int i = 0; i < pixels.size(); i++)
+  {
+      pixels[i].a = 0;
+      pixels[i].b = 0;
+      pixels[i].c = 0;
   }
 }
 
@@ -36,11 +36,11 @@ void DebugImageDrawings::drawPoint(
 {
   if((unsigned int)numberOfPoints < width()*height())
   {
-    coordinates[numberOfPoints][0] = x;
-    coordinates[numberOfPoints][1] = y;
-    pixels[numberOfPoints][0] = a;
-    pixels[numberOfPoints][1] = b;
-    pixels[numberOfPoints][2] = c;
+    coordinates[numberOfPoints].x = x;
+    coordinates[numberOfPoints].y = y;
+    pixels[numberOfPoints].a = a;
+    pixels[numberOfPoints].b = b;
+    pixels[numberOfPoints].c = c;
     numberOfPoints++;
   }//end if
 }//end drawPoint
@@ -65,11 +65,11 @@ void DebugImageDrawings::drawToImage(DrawingCanvas& image)
   for(int i = 0; i < numberOfPoints; i++)
   {
     image.drawPoint(
-      coordinates[i][0],
-      coordinates[i][1],
-      pixels[i][0],
-      pixels[i][1],
-      pixels[i][2]);
+      coordinates[i].x,
+      coordinates[i].y,
+      pixels[i].a,
+      pixels[i].b,
+      pixels[i].c);
   }//end for
 }//end drawToImage
 

@@ -32,11 +32,4 @@ union PixelT
 typedef PixelT<unsigned char> Pixel; // default pixel type
 typedef PixelT<double> DoublePixel;
 
-
-struct Point {
-  unsigned int x;
-  unsigned int y;
-};
-
-
 #endif
