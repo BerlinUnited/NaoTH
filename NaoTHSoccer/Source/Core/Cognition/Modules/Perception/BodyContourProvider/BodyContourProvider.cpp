@@ -121,7 +121,7 @@ void BodyContourProvider::execute()
   DEBUG_REQUEST("BodyContourProvider:draw_body_contour_lines",
     if (getBodyContour().lines.size() >= 2)
     {
-      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); iter++)
+      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
       {
         LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
       }// end for

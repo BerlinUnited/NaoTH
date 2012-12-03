@@ -11,6 +11,16 @@ using namespace InverseKinematic;
 using namespace std;
 
 FootStepPlanner::FootStepPlanner()
+:
+  theMaxTurnInner(0.0),
+  theMaxStepTurn(0.0),
+  theMaxStepLength(0.0),
+  theMaxStepLengthBack(0.0),
+  theMaxStepWidth(0.0),
+  theFootOffsetY(0.0),
+  theMaxChangeTurn(0.0),
+  theMaxChangeX(0.0),
+  theMaxChangeY(0.0)
 {
 }
 

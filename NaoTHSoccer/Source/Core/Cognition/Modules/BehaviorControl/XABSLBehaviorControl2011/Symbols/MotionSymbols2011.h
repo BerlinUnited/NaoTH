@@ -61,6 +61,7 @@ public:
     relativeToRightFootYy(0.0),
     relativeToRightFootAa(0.0),
     isAvoidObstacle(false),
+    headSpeed(0.0),
 
     walkStyle(normal),
     stepControlFoot(none),

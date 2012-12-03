@@ -191,18 +191,21 @@ void ImageCorrector::correctBrightnessSimple()
       cv::Mat matYcBlurred(getImage().height(), getImage().width(), CV_16U, blurredYc);
       cv::GaussianBlur(matYc, matYcBlurred, size, 10, 10);
       memcpy(matYc.data, matYcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
+      delete blurredYc;
 
       cv::Mat matUc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getDataPointer(1));
       unsigned short* blurredUc = new unsigned short[getImage().shadingCorrection.getSize()];
       cv::Mat matUcBlurred(getImage().height(), getImage().width(), CV_16U, blurredUc);
       cv::GaussianBlur(matUc, matUcBlurred, size, 10, 10);
       memcpy(matUc.data, matUcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
+      delete blurredUc;
 
       cv::Mat matVc(getImage().height(), getImage().width(), CV_16U, getImage().shadingCorrection.getDataPointer(2));
       unsigned short* blurredVc = new unsigned short[getImage().shadingCorrection.getSize()];
       cv::Mat matVcBlurred(getImage().height(), getImage().width(), CV_16U, blurredVc);
       cv::GaussianBlur(matVc, matVcBlurred, size, 10, 10);
       memcpy(matVc.data, matVcBlurred.data, getImage().shadingCorrection.getSize() * sizeof(unsigned short));
+      delete blurredVc;
     }
   );
 }

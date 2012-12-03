@@ -28,12 +28,38 @@ class ObjectPercept : public naoth::Printable
 { 
 public:
   ObjectPercept():
+  ballWasSeen(false),
+  obstacleWasSeen(false),
+  lineWasSeen(false),
+  bestBallIndex(0),
   numOfSeenObjects(0),
   numOfSeenBalls(0),
   numOfSeenObstacles(0),
   numOfSeenLines(0)
   {
     scanLineEdgels.reserve(SCANLINE_COUNT * (SCANLINE_RESUME_COUNT + 1));
+    for(unsigned int i = 0; i < MAXNUMBEROFLINES; i++)
+    {
+      lines[i].thickness = 0;
+      lines[i].slope = 0.0;
+      lines[i].angle = 0.0;
+      lines[i].valid = false;
+    }
+    for(unsigned int i = 0; i < MAXNUMBEROFBALLS; i++)
+    {
+      balls[i].radiusInImage = 0.0;
+      balls[i].radius = 0.0;
+      balls[i].mass = 0;
+      balls[i].distance = 0.0;
+      balls[i].gamma = 0.0;
+      balls[i].alpha = 0.0;
+      balls[i].height = 0.0;
+    }
+    for(unsigned int i = 0; i < MAXNUMBEROFOBSTACLES; i++)
+    {
+      obstacles[i].radiusInImage = 0.0;
+      obstacles[i].mass = 0;
+    }
   }
 
   const static unsigned int MAXNUMBEROFLINES = 22;

@@ -40,7 +40,7 @@ void DebugParameterList::executeDebugCommand(
     string cmd = "ParameterList:" + name;
     if (command == cmd + ":set")
     {
-      for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); iter++)
+      for (std::map<std::string, std::string>::const_iterator iter = arguments.begin(); iter != arguments.end(); ++iter)
       {
         // update global config when value changed
         if ( config.getRawValue(name, iter->first) != iter->second )
@@ -55,7 +55,7 @@ void DebugParameterList::executeDebugCommand(
     else if (command == cmd + ":get")
     {
       set<string> keys = config.getKeys(name);
-      for(set<string>::const_iterator it = keys.begin(); it != keys.end(); it++)
+      for(set<string>::const_iterator it = keys.begin(); it != keys.end(); ++it)
       {
         string val = config.getRawValue(name, *it);
         outstream << *it << "=" << val << std::endl;

@@ -18,6 +18,10 @@ public:
   ProtectFalling()
   : IKMotion(motion::protect_falling)
   {
+      for(int i=0; i<naoth::JointData::numOfJoint; i++)
+      {
+        keepStiffness[i] = 0.0;
+      }
   }
 
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)

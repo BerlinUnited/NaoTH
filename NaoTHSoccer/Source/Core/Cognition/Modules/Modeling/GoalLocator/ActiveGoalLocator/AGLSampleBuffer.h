@@ -19,7 +19,11 @@
 class AGLBSample: public Sample2D
 {
 public:
-  AGLBSample() : likelihood(0.0){}
+  AGLBSample() 
+  : 
+    likelihood(0.0),
+    frameNumber(0)
+  {}
   ~AGLBSample() {}
 
   double likelihood;
