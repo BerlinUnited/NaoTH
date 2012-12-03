@@ -62,11 +62,14 @@ public:
     obstacleModel(getObstacleModel()),
     radarGrid(getRadarGrid()),
     path(getPath()),
-    image(getImage())
+    image(getImage()),
+    enableInertialSensorCalibrate(false),
+    forceGetCameraSettings(false),
+    forceGetCameraSettingsOldValue(false),
+    resetingCamera(false),
+    isCameraReseting(false)
   {
     theInstance = this;
-    forceGetCameraSettings = false;
-    forceGetCameraSettingsOldValue = false;
     parameter_obstDistByAngle_angle = 0;
   }
 

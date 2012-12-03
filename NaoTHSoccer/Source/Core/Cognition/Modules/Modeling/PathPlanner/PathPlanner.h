@@ -64,7 +64,10 @@ public:
 
   /** functions */
   PathPlanner();
-  ~PathPlanner(){}
+  ~PathPlanner()
+  {
+    delete theAStarSearch;
+  }
 
   /** executes the module */
   void execute();

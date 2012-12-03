@@ -75,6 +75,7 @@ public:
       FieldLineSegment()
         :
         //valid(false),
+        type(LinePercept::unknown),
         seen_id(unknown_id)
       {}
 
@@ -196,6 +197,11 @@ public:
 
 
   LinePercept()
+  :
+    middleCircleWasSeen(false),
+    middleCircleOrientationWasSeen(false),
+    closestLineSeenLength(0.0),
+    lineWasSeen(false)
   {
     reset();
   }

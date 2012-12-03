@@ -21,8 +21,7 @@ InverseKinematicsMotionFactory::InverseKinematicsMotionFactory()
 
 InverseKinematicsMotionFactory::~InverseKinematicsMotionFactory()
 {
-  if ( currentMotion != NULL )
-    delete currentMotion;
+  delete currentMotion;
 }
 
 AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motionRequest)

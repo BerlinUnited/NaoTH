@@ -65,11 +65,14 @@ public:
     collisionModel(getCollisionModel()),
     radarGrid(getRadarGrid()),
     path(getPath()),
-    image(getImage())
+    image(getImage()),
+    enableInertialSensorCalibrate(false),
+    forceGetCameraSettings(false),
+    forceGetCameraSettingsOldValue(false),
+    resetingCamera(false),
+    isCameraReseting(false)
   {
     theInstance = this;
-    forceGetCameraSettings = false;
-    forceGetCameraSettingsOldValue = false;
   }
 
   /** registers the symbols at an engine */

@@ -287,7 +287,8 @@ public:
     :
   theRobotPose(rp),
   theFieldInfo(fi),
-  thePlayerInfo(pi)
+  thePlayerInfo(pi),
+  indexOfBestNode(0)
   {
     this->obstacles = obstacles;
   }// end constructor

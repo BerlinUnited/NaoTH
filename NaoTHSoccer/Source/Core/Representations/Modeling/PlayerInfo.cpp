@@ -11,7 +11,10 @@ using namespace naoth;
 using namespace std;
 
 PlayerInfo::PlayerInfo() 
-  :isPlayingStriker(false)
+:
+  timeSincePlayModeChanged(0),
+  timeSinceGameStateChanged(0),
+  isPlayingStriker(false)
 {
 }
 

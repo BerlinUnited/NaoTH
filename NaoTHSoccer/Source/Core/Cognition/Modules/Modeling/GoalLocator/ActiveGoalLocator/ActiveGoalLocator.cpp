@@ -201,11 +201,11 @@ void ActiveGoalLocator::execute() {
 
     for(unsigned int x = 0; x < 10; x++) {
 
-      double distError = 0;
-
       if (ccSamples[x].sampleSet.getIsValid()) {
 
-        for(unsigned int i = 0; i < 10; i++) {
+       double distError = 0;
+
+       for(unsigned int i = 0; i < 10; i++) {
 
             if (ccSamples[i].sampleSet.getIsValid()) {
 

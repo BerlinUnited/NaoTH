@@ -206,7 +206,7 @@ void AStarSearch::drawAllNodesField()
 {
   FIELD_DRAWING_CONTEXT;
   std::vector<AStarNode>::const_iterator it = searchTree.begin();
-  for (;it != searchTree.end(); it++)
+  for (;it != searchTree.end(); ++it)
   {
     PEN("434343", 3);
     CIRCLE(it->getPosition().x, it->getPosition().y, 5);
