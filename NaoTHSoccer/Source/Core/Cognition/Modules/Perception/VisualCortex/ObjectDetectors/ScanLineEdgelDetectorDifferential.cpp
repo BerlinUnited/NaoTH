@@ -14,7 +14,10 @@
 ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels", "mark the edgels on the image", false);
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_endpoints", "mark the endpints on the image", false);
   DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:scanlines", "mark the scan lines", false);
+
+  DEBUG_REQUEST_REGISTER("ImageProcessor:ScanLineEdgelDetectorDifferential:expected_line_width", "", false);
 }
 
 
@@ -25,6 +28,42 @@ ScanLineEdgelDetectorDifferential::~ScanLineEdgelDetectorDifferential()
 
 void ScanLineEdgelDetectorDifferential::execute()
 {
+
+  
+  double h = 500.0;
+  double d_2 = 50/2;
+  double horizon_height = min(getCameraMatrix().horizon.begin().y, getCameraMatrix().horizon.end().y);
+
+  for(int i = 0; i < 240; i++)
+  {
+    // reset
+    vertical_confidence[i] = 0.0;
+
+    // no clculation above horizon
+    if (i < horizon_height) continue;
+
+    double x = getImage().cameraInfo.focalLength;
+    double z = -i + getImage().cameraInfo.opticalCenterY;
+    double alpha = atan2(z, x);
+    double w = Math::normalize(-alpha + getCameraMatrix().rotation.getYAngle());
+    
+    double dist = h*tan(Math::pi_2 - w);
+    double g = atan2(dist + d_2, h) - atan2(dist - d_2, h);
+    double rad_per_px = getImage().cameraInfo.openingAngleWidth/getImage().cameraInfo.resolutionWidth;
+    double v = g / rad_per_px;
+    
+    vertical_confidence[i] = max(0.0,v);
+  }//end for
+
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:expected_line_width",
+    for(int i = 0; i < 240; i++)
+    {
+      int c = (int)(vertical_confidence[i]);
+      POINT_PX(c, 0, 0, c, i);
+    }
+  );
+
+
   // reset the percept
   getScanLineEdgelPercept().reset();
 
@@ -83,8 +122,8 @@ void ScanLineEdgelDetectorDifferential::execute()
   }//end for
 
 
-
-  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
+  
+  DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_endpoints",
     for(unsigned int i = 0; i < getScanLineEdgelPercept().endPoints.size(); i++)
     {
       const ScanLineEdgelPercept::EndPoint& point = getScanLineEdgelPercept().endPoints[i];
@@ -99,7 +138,6 @@ void ScanLineEdgelDetectorDifferential::execute()
       }//end if
     }//end for
   );
-
 }//end execute
 
 
@@ -123,7 +161,9 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
   int x_peak = 0;
   int f_last = getImage().getY(point.x, point.y);
 
-
+  double line_thicknes_param = 1.0;
+  MODIFY("ScanLineEdgelPercept:line_thicknes_param", line_thicknes_param);
+  
   //
   double greenCount = 0;
   double segmentLength = 0;
@@ -149,9 +189,11 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
     
     if(g > g_max)
     {
+      /*
       DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
         POINT_PX(ColorClasses::pink, start.x, x_peak);
       );
+      */
 
       if(g_min < -t_edge)// end found
       {
@@ -196,14 +238,20 @@ ScanLineEdgelPercept::EndPoint ScanLineEdgelDetectorDifferential::scanForEdgels(
           edgel.center_angle = calculateMeanAngle(edgel.begin_angle, edgel.end_angle);
           edgel.valid = true;
 
-          if(edgel.valid)
+          double edgel_c = vertical_confidence[edgel.center.y];
+          if(edgel.valid && 
+            (edgel.end - edgel.begin).abs2() > edgel_c*edgel_c*line_thicknes_param*line_thicknes_param //&&
+            //(edgel.end - edgel.begin).abs2() < 4*edgel_c*edgel_c*line_thicknes_param*line_thicknes_param
+            )
           {
             edgel.ScanLineID = scan_id;
             getScanLineEdgelPercept().add(edgel);
 
             // mark finished valid edgels
             DEBUG_REQUEST("ImageProcessor:ScanLineEdgelDetectorDifferential:mark_edgels",
-              LINE_PX(ColorClasses::black ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+              LINE_PX(ColorClasses::red ,edgel.begin.x,edgel.begin.y,edgel.begin.x + (int)(10 * cos(edgel.begin_angle)) ,edgel.begin.y + (int)(10 * sin(edgel.begin_angle)));
+              LINE_PX(ColorClasses::blue ,edgel.center.x,edgel.center.y,edgel.center.x + (int)(10 * cos(edgel.center_angle)) ,edgel.center.y + (int)(10 * sin(edgel.center_angle)));
+              LINE_PX(ColorClasses::black ,edgel.end.x,edgel.end.y,edgel.end.x + (int)(10 * cos(edgel.end_angle)) ,edgel.end.y + (int)(10 * sin(edgel.end_angle)));
             );
           }
 
@@ -339,5 +387,12 @@ double ScanLineEdgelDetectorDifferential::calculateMeanAngle(double angle1,doubl
   double y=sin(2*angle1)+sin(2*angle2);
 
   //calculate sum vectors angle
-  return(atan2(y, x)/2);
+  //return Math::normalize(atan2(y, x)/2);
+
+  Vector2<double> a (1,0);
+  a.rotate(angle1);
+  Vector2<double> b (1,0);
+  b.rotate(angle2);
+
+  return (a+b).angle();
 }//end calculateMeanAngle

@@ -21,6 +21,7 @@
 //#include "Tools/ImageProcessing/LineDetectorConstParameters.h"
 #include "Tools/ImageProcessing/Edgel.h"
 
+
 // Representations
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
@@ -85,6 +86,8 @@ public:
   } theParameters;
 
 private:
+
+  double vertical_confidence[240];
 
   /** scans at given x-coordinate to the top & cancels at field end. Starts at bottom line. */
   ScanLineEdgelPercept::EndPoint scanForEdgels(int scan_id, const Vector2<int>& start, const Vector2<int>& end) const;

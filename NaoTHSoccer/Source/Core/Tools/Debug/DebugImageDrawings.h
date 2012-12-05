@@ -85,6 +85,16 @@ public:
     naoth::ImageDrawings::drawPointToImage(*this, x, y, yy, cb, cr);
   }
 
+  inline void drawPointToImage(
+    const unsigned char& yy,
+    const unsigned char& cb,
+    const unsigned char& cr, 
+    const unsigned int& x,
+    const unsigned int& y)
+  {
+    naoth::ImageDrawings::drawPointToImage(*this, x, y, yy, cb, cr);
+  }
+
 private:
   std::vector<Pixel> pixels;
   std::vector<Vector2<unsigned int> > coordinates;
