@@ -163,9 +163,9 @@ void SimpleFieldColorClassifier::execute()
   PLOT("SimpleFieldColorClassifier:maxWeightedIndexCb", maxWeightedIndexCb);
   PLOT("SimpleFieldColorClassifier:meanFieldY", meanFieldY);
 
-  double maxY = 100;
+  double maxY = 255;
   MODIFY("SimpleFieldColorClassifier:maxY", maxY);
-  double minY = 5;
+  double minY = 0;
   MODIFY("SimpleFieldColorClassifier:minY", minY);
 
   DEBUG_REQUEST("ImageProcessor:SimpleFieldColorClassifier:mark_green",
@@ -204,6 +204,17 @@ void SimpleFieldColorClassifier::execute()
   getFieldColorPercept().maxWeightedCr = maxWeightedCr;
   getFieldColorPercept().maxWeightedIndexCr = maxWeightedIndexCr;
   */
-  getFieldColorPercept().set();
+
+  getFieldColorPercept().range.set(
+    maxWeightedIndexY - (int)fieldParams.fieldColorMin.y,
+    (int)maxWeightedIndexCb - (int)fieldParams.fieldColorMax.u,
+    (int)maxWeightedIndexCr - (int)fieldParams.fieldColorMax.v,
+
+    maxWeightedIndexY + (int)fieldParams.fieldColorMax.y,
+    (int)maxWeightedIndexCb + (int)fieldParams.fieldColorMax.u,
+    (int)maxWeightedIndexCr + (int)fieldParams.fieldColorMax.v
+    );
+
+  //getFieldColorPercept().set();
   getFieldColorPercept().lastUpdated = getFrameInfo();
 }//end execute
