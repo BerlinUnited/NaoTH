@@ -5,8 +5,8 @@
 * Definition of class ImageProcessor
 */
 
-#ifndef __ImageProcessor_H_
-#define __ImageProcessor_H_
+#ifndef _ImageProcessor_H_
+#define _ImageProcessor_H_
 
 // infrastructure
 #include <ModuleFramework/Representation.h>
@@ -25,6 +25,7 @@
 #include "ObjectDetectors/FieldDetector.h"
 #include "ObjectDetectors/BallDetector.h"
 #include "ObjectDetectors/LineDetector.h"
+#include "ObjectDetectors/LineClusterProvider.h"
 #include "ObjectDetectors/RobotDetector.h"
 #include "ObjectDetectors/GoalDetector.h"
 #include "../BodyContourProvider/BodyContourProvider.h"
@@ -79,6 +80,7 @@ private:
   ModuleCreator<RobotDetector>* theRobotDetector;
   
   ModuleCreator<LineDetector>* theLineDetector;
+  ModuleCreator<LineClusterProvider>* theLineClusterProvider;
   ModuleCreator<GoalDetector>* theGoalDetector;
 
   const ColorClassificationModel& getColorTable64() const

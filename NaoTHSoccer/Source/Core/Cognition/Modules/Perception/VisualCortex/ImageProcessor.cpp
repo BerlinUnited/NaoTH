@@ -43,10 +43,11 @@ ImageProcessor::ImageProcessor()
   theBodyContourProvider->setEnabled(true);
 
   theScanLineEdgelDetector = registerModule<ScanLineEdgelDetector>("ScanLineEdgelDetector");
-  theScanLineEdgelDetector->setEnabled(true);
+  theScanLineEdgelDetector->setEnabled(false);
 
+  // experimental
   theScanLineEdgelDetectorDifferential = registerModule<ScanLineEdgelDetectorDifferential>("ScanLineEdgelDetectorDifferential");
-  theScanLineEdgelDetectorDifferential->setEnabled(false);
+  theScanLineEdgelDetectorDifferential->setEnabled(true);
 
   theFieldDetector = registerModule<FieldDetector>("FieldDetector");
   theFieldDetector->setEnabled(true);
@@ -59,6 +60,9 @@ ImageProcessor::ImageProcessor()
 
   theLineDetector = registerModule<LineDetector>("LineDetector");
   theLineDetector->setEnabled(true);
+
+  theLineClusterProvider = registerModule<LineClusterProvider>("LineClusterProvider");
+  theLineClusterProvider->setEnabled(true);
 
   theGoalDetector = registerModule<GoalDetector>("GoalDetector");
   theGoalDetector->setEnabled(true);
