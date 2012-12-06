@@ -9,6 +9,8 @@
   if(AL_DIR == nil) then
     AL_DIR = "/opt/aldebaran/info/naoqi"
     print("Error: Enviroment variable AL_DIR not set. trying default: \"" .. AL_DIR .. "\"")
+  else
+    print("INFO: Configuring with NaoQi located in \"" .. AL_DIR .. "\"")
   end
 -- if(AL_DIR == nil) then
 --    print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. AL_DIR .. ")!")
