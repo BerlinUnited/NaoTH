@@ -51,13 +51,13 @@ public:
 
   /** constructor */
   HeadMotionRequest()
-  :
-  id(hold),
-  cameraID(naoth::CameraInfo::Bottom),
-  coordinate(Hip),
-  searchCenter(0, 0, 0),
-  searchSize(90, 45, 0),
-  searchDirection(true)
+    :
+    id(hold),
+    cameraID(naoth::CameraInfo::Bottom),
+    coordinate(Hip),
+    searchCenter(0, 0, 0),
+    searchSize(90, 45, 0),
+    searchDirection(true)
   {
   }
 
@@ -65,16 +65,31 @@ public:
   {
   }
 
+  void reset()
+  {
+    id = hold;
+    cameraID = naoth::CameraInfo::Bottom;
+    targetJointPosition = Vector2<double>();
+    targetPointInImage = Vector2<double>();
+    targetPointInTheWorld = Vector3<double>();
+    targetPointOnTheGround = Vector2<double>();
+    coordinate = Hip;
+    searchCenter = Vector3<double>();
+    searchSize = Vector3<double>(90, 45, 0),
+    searchDirection = true;
+  }
+
 
   /** id of the motion to be executed */
   HeadMotionID id;
 
+  // id of the camera to use
   naoth::CameraInfo::CameraID cameraID;
 
   // describes the target angle-position: x=yaw, y=pitch 
   Vector2<double> targetJointPosition;
 
-  /** */
+  /** target point in image which the camera should point to with the center*/
   Vector2<double> targetPointInImage;
 
   /** see coordinate */
@@ -101,10 +116,8 @@ public:
   static HeadMotionID getId(const std::string& name);
 
 
-  virtual void print(ostream& stream) const
-  {
-    stream << "Current MotionRequest = " << getName(id) << endl;
-  }//end print
+  virtual void print(std::ostream& stream) const;
+
 };
 
 namespace naoth

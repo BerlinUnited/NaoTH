@@ -23,14 +23,14 @@ option turn_around_ball_face_goal
 
   state look_for_goal {
     decision{
-      if(state_time > 3000)
+      if(state_time > 3000 || goal.opp.time_since_seen < 3000)
         goto see_the_ball;
       else
         stay;
     }
     action 
     {
-      move_around_ball(direction=attack.direction, radius = 170);
+      move_around_ball(direction=attack.direction, radius = 240);
       head.control_mode = search_for_goal;
     }
   }
@@ -45,7 +45,7 @@ option turn_around_ball_face_goal
     action 
     {
       //motion.type = stand;
-      move_around_ball(direction=attack.direction, radius = 170);
+      move_around_ball(direction=attack.direction, radius = 240);
       head.control_mode = search_for_ball_force_model;
     }
   }

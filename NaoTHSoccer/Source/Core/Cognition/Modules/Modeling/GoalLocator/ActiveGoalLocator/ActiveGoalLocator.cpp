@@ -33,7 +33,7 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
 
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", true);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", false);
 
   goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
 
@@ -185,6 +185,14 @@ void ActiveGoalLocator::execute() {
       numOfValidFilter++;
   }
 
+  if (getGoalPercept().getNumberOfSeenPosts() > 0) {
+
+    getLocalGoalModel().someGoalWasSeen = true; //by post
+    //frame Info when goal was seen not useful! New: some_goal_was seen
+    getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
+
+  }
+
   if (numOfValidFilter > 1) {
 
     unsigned int id1 = 0;
@@ -193,11 +201,11 @@ void ActiveGoalLocator::execute() {
 
     for(unsigned int x = 0; x < 10; x++) {
 
-      double distError = 0;
-
       if (ccSamples[x].sampleSet.getIsValid()) {
 
-        for(unsigned int i = 0; i < 10; i++) {
+       double distError = 0;
+
+       for(unsigned int i = 0; i < 10; i++) {
 
             if (ccSamples[i].sampleSet.getIsValid()) {
 
@@ -223,10 +231,6 @@ void ActiveGoalLocator::execute() {
         getLocalGoalModel().goal.leftPost  = ccSamples[id2].sampleSet.mean;
         getLocalGoalModel().goal.rightPost = ccSamples[id1].sampleSet.mean;
       }
-
-      getLocalGoalModel().someGoalWasSeen = true;
-      //frame Info when goal was seen not useful! New: some_goal_was seen
-      getLocalGoalModel().goal.frameInfoWhenGoalLastSeen = getFrameInfo();
 
     }
 

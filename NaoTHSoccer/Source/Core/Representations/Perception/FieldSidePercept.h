@@ -1,5 +1,5 @@
-#ifndef FIELDSIDEPERCEPT_H
-#define FIELDSIDEPERCEPT_H
+#ifndef _FieldSidePercept_H_
+#define _FieldSidePercept_H_
 
 #include <Tools/DataStructures/Printable.h>
 
@@ -18,7 +18,7 @@ public:
 
   FieldSidePercept();
   virtual ~FieldSidePercept();
-  virtual void print(ostream &stream) const;
+  virtual void print(std::ostream &stream) const;
 
   static const char* getFieldSideName(FieldSide side)
   {
@@ -36,4 +36,4 @@ public:
 
 };
 
-#endif // FIELDSIDEPERCEPT_H
+#endif // _FieldSidePercept_H_

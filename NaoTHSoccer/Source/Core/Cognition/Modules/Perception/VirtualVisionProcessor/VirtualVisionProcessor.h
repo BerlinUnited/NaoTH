@@ -29,8 +29,8 @@
 
 BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
   REQUIRE(PlayerInfo)
-  REQUIRE(CameraInfo)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraInfo)
   REQUIRE(VirtualVision)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)

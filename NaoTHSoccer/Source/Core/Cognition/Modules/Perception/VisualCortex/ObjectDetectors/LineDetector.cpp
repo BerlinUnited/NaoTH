@@ -492,7 +492,7 @@ void LineDetector::scanAlongLine(Vector2<int>& linePoint, BresenhamLineScan& sca
   {
     scanLine.getNext(linePoint);
 
-    if( !getFieldPercept().getLargestValidPoly(getCameraMatrix().horizon).isInside(linePoint) )
+    if( !getFieldPercept().getLargestValidPoly(getArtificialHorizon()).isInside(linePoint) )
     {
       scanLine.getLast(linePoint);
       break;

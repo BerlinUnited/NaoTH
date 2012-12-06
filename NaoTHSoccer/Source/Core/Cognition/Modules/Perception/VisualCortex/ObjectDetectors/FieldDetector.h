@@ -12,12 +12,14 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
 
 BEGIN_DECLARE_MODULE(FieldDetector)
   REQUIRE(Image)
   REQUIRE(CameraMatrix)
   REQUIRE(ScanLineEdgelPercept)
+  REQUIRE(ArtificialHorizon)
 
   PROVIDE(FieldPercept)
 END_DECLARE_MODULE(FieldDetector)

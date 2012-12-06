@@ -51,14 +51,18 @@ public:
   double xLength;
   double yLength;
 
-  double xPosOpponentPenaltyArea;
-  double yPosLeftPenaltyArea;
-  
+  // penalty area
+  double xPenaltyAreaLength;
+  double yPenaltyAreaLength;
+
   double centerCircleRadius;
   double fieldLinesWidth;
+  
+  // goal
   double goalWidth;
   double goalHeight;
   double goalpostRadius;
+
 
   /////////////// pre-calculated values from basic values //////////////
   double xPosHalfWayLine;
@@ -67,10 +71,12 @@ public:
   double xPosOpponentGoal;
   double xPosOwnGroundline;
   double xPosOpponentGroundline;
+  double xPosOpponentPenaltyArea;
   double xPosOwnPenaltyArea;
   
   double yPosLeftSideline;
   double yPosRightSideline;
+  double yPosLeftPenaltyArea;
   double yPosRightPenaltyArea;
 
   double yPosRightGoalpost;

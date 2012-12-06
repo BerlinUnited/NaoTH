@@ -13,6 +13,7 @@
 #include <DebugCommunication/DebugCommandManager.h>
 
 using namespace naoth;
+using namespace std;
 
 SupportPolygonGenerator::SupportPolygonGenerator()
 {

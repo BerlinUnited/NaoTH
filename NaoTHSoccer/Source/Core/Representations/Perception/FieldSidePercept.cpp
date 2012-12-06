@@ -5,7 +5,7 @@ FieldSidePercept::FieldSidePercept()
 {
 }
 
-void FieldSidePercept::print(ostream &stream) const
+void FieldSidePercept::print(std::ostream &stream) const
 {
   stream << getFieldSideName(facedFieldSide);
 }

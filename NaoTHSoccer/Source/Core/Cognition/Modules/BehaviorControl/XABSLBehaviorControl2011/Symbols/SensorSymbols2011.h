@@ -22,6 +22,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
 #include "Representations/Modeling/RadarGrid.h"
+#include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 
 #include <Representations/Infrastructure/ButtonData.h>
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols2011)
   REQUIRE(ObstacleModel)
   REQUIRE(RadarGrid)
   REQUIRE(Image)
+  REQUIRE(Path)
 
   REQUIRE(ButtonData)
 END_DECLARE_MODULE(SensorSymbols2011)
@@ -59,11 +61,15 @@ public:
     bodyState(getBodyState()),
     obstacleModel(getObstacleModel()),
     radarGrid(getRadarGrid()),
-    image(getImage())
+    path(getPath()),
+    image(getImage()),
+    enableInertialSensorCalibrate(false),
+    forceGetCameraSettings(false),
+    forceGetCameraSettingsOldValue(false),
+    resetingCamera(false),
+    isCameraReseting(false)
   {
     theInstance = this;
-    forceGetCameraSettings = false;
-    forceGetCameraSettingsOldValue = false;
     parameter_obstDistByAngle_angle = 0;
   }
 
@@ -85,6 +91,7 @@ private:
   BodyState const& bodyState;
   ObstacleModel const& obstacleModel;
   RadarGrid const& radarGrid;
+  Path const& path;
   Image const& image;
 
 

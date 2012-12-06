@@ -25,8 +25,10 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(CameraSettingsRequest);
   REG_OUTPUT(SoundPlayData);
   REG_OUTPUT(TeamMessageDataOut);
+  REG_OUTPUT(RCTCTeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
-  
+
+  platformInterface.registerCognitionOutputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
   platformInterface.registerCognitionOutputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
   platformInterface.registerCognitionOutputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
 }//end init
@@ -35,6 +37,7 @@ void Actuator::execute()
 {  
   // HACK: copy the time to indicate which motion status this request ist depending on (needed by motion)
   getMotionRequest().time = getMotionStatus().time;
+  getMotionRequest().cognitionFrameNumber = getFrameInfo().getFrameNumber();
 
 
   // HACK: transform the head motion request to the support foot coordinates

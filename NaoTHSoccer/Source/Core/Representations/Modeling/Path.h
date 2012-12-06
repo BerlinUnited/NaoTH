@@ -11,18 +11,42 @@
 #include "Tools/Math/Common.h"
 #include "Tools/Math/Vector2.h"
 #include "Tools/DataStructures/Printable.h"
+#include "Representations/Infrastructure/FrameInfo.h"
 
 class Path: public naoth::Printable
 {
+private:
+  unsigned int _timeNoNodeExpandable;
+  naoth::FrameInfo _frameInfoWhenNoNodeExpanded;
+
 public:
   // default constructor
-  Path(){};
+  Path() {}
   // default destructor
   ~Path(){};
 
-
+  // target point and next point to go
   Vector2d nextPointToGo;
   Vector2d targetPoint;
+
+  // Tells when the path was found the last time
+  //const naoth::FrameInfo& frameInfoWhenNoNodeExpanded;
+  const naoth::FrameInfo& getFrameInfoWhenNoNodeExpanded(){return _frameInfoWhenNoNodeExpanded;}
+  // time how long we can't expand any nodes
+  //const unsigned int& timeNoNodeExpandable;
+  const unsigned int getTimeNoNodeExpandable(){return _timeNoNodeExpandable;}
+
+  void setFrameInfoWhenNodeWasNotExpanded(const naoth::FrameInfo& frameInfo)
+  {
+    if(frameInfo.getFrameNumber() != _frameInfoWhenNoNodeExpanded.getFrameNumber()+1)
+      _timeNoNodeExpandable = 0;
+    else
+    {
+      ASSERT(_frameInfoWhenNoNodeExpanded.getTime() < frameInfo.getTime());
+      _timeNoNodeExpandable += frameInfo.getTimeSince(_frameInfoWhenNoNodeExpanded.getTime());
+    }
+    _frameInfoWhenNoNodeExpanded = frameInfo;
+  }//end setFrameInfoWhenBallWasSeen
 
   virtual void print(std::ostream& stream) const
   {

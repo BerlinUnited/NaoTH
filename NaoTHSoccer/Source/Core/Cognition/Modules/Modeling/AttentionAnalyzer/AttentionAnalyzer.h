@@ -44,7 +44,7 @@ class AttentionAnalyzer : public AttentionAnalyzerBase
 public:
 
   AttentionAnalyzer();
-  ~AttentionAnalyzer(){}
+  virtual ~AttentionAnalyzer(){}
 
   /** executes the module */
   void execute();
@@ -60,10 +60,17 @@ private:
     double weight;
   };
 
-  std::list<PointOfInterest> mapOfInterest;
-  std::list<PointOfInterest> closeMapOfInterest;
+  typedef std::list<PointOfInterest> ListOfInterest;
+  ListOfInterest mapOfInterest;
+  ListOfInterest closeMapOfInterest;
 
-  bool isSeen(const Vector2<double> point);
+  /**
+   * Project the point to the image and calculate its distance to the 
+   * center of the image
+   * @return distance to the center of the image in px
+   */
+  double distanceToImageCenter(const Vector2<double>& point);
+  
   void createMapOfInterest();
 
   void createRadialMapOfInterest(
@@ -72,13 +79,31 @@ private:
     double maxDistance,
     double distance_step);
 
+  /** 
+   * check wether the point is in view of the robot,
+   * i.e., can be seen by just moving the head
+   */
+  bool inView(const PointOfInterest& point);
+
+  /** 
+   * compare two points of interest based on their weight
+   */
   int compare(const PointOfInterest& one, const PointOfInterest& two);
+
 
   void drawMapOfInterest(const std::list<PointOfInterest>& moi) const;
   void drawImageProjection();
 
+  // --- internal state ---
+  // needed for motion update
   OdometryData lastRobotOdometry;
   FrameInfo lastFrameInfo;
+
+  // time when the currentPointOfInterest was changed
+  unsigned int currentPointOfInterestTimeStamp;
+  // pointing to the elemnt in the mapOfInterest which is currently selected
+  // as the most interesting point
+  ListOfInterest::iterator currentPointOfInterest;
 };
 
 #endif //_AttentionAnalyzer_h_

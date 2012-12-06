@@ -351,7 +351,8 @@ void OpenCVImageLoader::listFiles()
 
 void OpenCVImageLoader::get(Image& data)
 {
-  data.setCameraInfo(Platform::getInstance().theCameraInfo);
+  //ACHTUNG: this is set by the module CameraInfoSetter
+  //data.setCameraInfo(Platform::getInstance().theCameraInfo);
   if (data.cameraInfo.resolutionWidth == 320)
   {
     copyImage(data, loadedImage);

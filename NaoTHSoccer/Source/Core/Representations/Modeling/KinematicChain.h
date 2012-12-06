@@ -60,17 +60,17 @@ public:
 
   KinematicChain();
   virtual ~KinematicChain();
-  static string getLinkName(const Kinematics::Link& node);
-  static string getLinkName(const Kinematics::Link *node);
-  static string getLinkName(LinkID link);
+  static std::string getLinkName(const Kinematics::Link& node);
+  static std::string getLinkName(const Kinematics::Link *node);
+  static std::string getLinkName(LinkID link);
 
-  string test(const Kinematics::Link& node) const;
+  std::string test(const Kinematics::Link& node) const;
   void init(naoth::JointData& jointData);
 
   void updateCoM();
   Vector2<double> calculateZMP() const;
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
   bool is_initialized() { return initialized; }
 

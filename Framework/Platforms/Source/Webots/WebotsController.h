@@ -40,7 +40,6 @@ void gps_euler(const float *matrix, float *euler);
 #include "Representations/Infrastructure/GyrometerData.h"
 #include "Representations/Infrastructure/FSRData.h"
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "Representations/Infrastructure/BumperData.h"
 #include "Representations/Infrastructure/IRData.h"
 #include "Representations/Infrastructure/CameraSettings.h"
 #include "Representations/Infrastructure/LEDData.h"
@@ -82,7 +81,7 @@ namespace naoth
     accelerometer,
     gyrometer,
     gps,
-    bumper[BumperData::numOfBumper];
+    buttons[ButtonData::numOfButtons];
 
     int key;
 
@@ -114,7 +113,6 @@ namespace naoth
     void get(FSRData& data);
     void get(GyrometerData& data);
     void get(InertialSensorData& data);
-    void get(BumperData& data);
     void get(IRReceiveData& data);
     void get(CurrentCameraSettings& data);
     void get(ButtonData& data);

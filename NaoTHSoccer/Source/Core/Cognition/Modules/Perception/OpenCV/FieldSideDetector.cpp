@@ -42,8 +42,8 @@ void FieldSideDetector::execute()
 
   if(goalPercept.getNumberOfSeenPosts() > 1)
   {
-    Vector2<double> h1(getCameraMatrix().horizon.begin());
-    Vector2<double> h2(getCameraMatrix().horizon.end());
+    Vector2<double> h1(getArtificialHorizon().begin());
+    Vector2<double> h2(getArtificialHorizon().end());
     int heightOfHorizon = (int)((h1.y + h2.y) * 0.5 + 0.5);
 
     const GoalPercept::GoalPost& postLeft =

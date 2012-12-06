@@ -52,7 +52,8 @@ public:
     rel2fieldX_x(0.0),
     rel2fieldX_y(0.0),
     rel2fieldY_x(0.0),
-    rel2fieldY_y(0.0)
+    rel2fieldY_y(0.0),
+    angleOnFieldPlanned(Math::toDegrees(robotPose.rotation))
   {
     theInstance = this;
   };

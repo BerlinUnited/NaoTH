@@ -28,11 +28,11 @@ public:
     numOfCoordinate
   };
 
-  /** constructor */
   WalkRequest():
     character(0.5),
     coordinate(Hip)
   {};
+
   ~WalkRequest(){}
 
   static std::string getCoordinateName(Coordinate c)
@@ -48,13 +48,19 @@ public:
   
   struct StepControlRequest
   {
-    StepControlRequest():stepID(-1), time(0){}
+    StepControlRequest()
+      :
+      stepID(-1),
+      moveLeftFoot(false),
+      time(0),
+      speedDirection(0)
+    {}
 
     unsigned int stepID; // it should match the current step id in walk, otherwise it will not be accepted
     bool moveLeftFoot; // it should also match
     Pose2D target; // in coordinate
     unsigned int time; // in ms
-    double speedDirection;
+    double speedDirection; //TODO: what is that?
   };
 
   // indicates speed and stability, in range [0, 1]
@@ -62,23 +68,32 @@ public:
   // 0.5: normal
   // 1: fastest (unstable)
   double character;
-  Coordinate coordinate;
-  Pose2D target;
-  StepControlRequest stepControl;
-  Pose2D offset; // offset of relation between left foot and body
 
-  void print(ostream& stream) const
+  //
+  Coordinate coordinate;
+
+  // 
+  Pose2D target;
+
+  //
+  StepControlRequest stepControl;
+
+  // offset of relation between left foot and body
+  Pose2D offset;
+
+
+  void print(std::ostream& stream) const
   {
-    stream << "target: " << target << endl;
-    stream << "coordinate: "<< getCoordinateName(coordinate) <<endl;
-    stream << "character: " << character <<endl;
+    stream << "target: " << target << std::endl;
+    stream << "coordinate: "<< getCoordinateName(coordinate) << std::endl;
+    stream << "character: " << character << std::endl;
     stream << "offset: "<< offset << "\n";
     if ( stepControl.stepID >= 0 )
     {
       stream << "step control: "<< stepControl.stepID <<" "
              << (stepControl.moveLeftFoot?"L":"R")<<" "<<stepControl.time
              <<"\n step target: "<< stepControl.target<<"\n"
-             <<"speed direction:"<< Math::toDegrees(stepControl.speedDirection)<<"\n";
+             <<"speed direction:"<< Math::toDegrees(stepControl.speedDirection) << std::endl;
     }
   }//end print
   

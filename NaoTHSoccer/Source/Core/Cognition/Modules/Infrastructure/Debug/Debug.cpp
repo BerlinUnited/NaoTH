@@ -43,6 +43,8 @@ Debug::Debug() : cognitionLogger("CognitionLog")
   REGISTER_DEBUG_COMMAND("walk", "let the robot walk", this);
   REGISTER_DEBUG_COMMAND("kick", "let the robot kick", this);
 
+  REGISTER_DEBUG_COMMAND("kill_cognition", "kill cognition", this);
+
   registerLogableRepresentationList();
 
   // 3d drawings
@@ -211,6 +213,17 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
   else if(command == "kick")
   {
     // TODO
+  }
+  else if(command == "kill_cognition")
+  {
+    outstream << "will go into endless loop" << std::endl;
+    while(true)
+    {
+      std::cout << "cognition in endless loop due to \"kill_cognition\" debug command"
+                 << std::endl;
+      g_usleep(500000);
+
+    }
   }
 }
 

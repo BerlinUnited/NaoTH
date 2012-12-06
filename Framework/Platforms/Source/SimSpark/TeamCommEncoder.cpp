@@ -48,7 +48,8 @@ string TeamCommEncoder::encode(const string& data)
   ballOnField.y = Math::clamp(ballOnField.y, -maxSize.y, maxSize.y);
   anscii += encoder.encode(ballOnField, maxSize, 3);
 
-  anscii += encoder.encode(msg.isfallendown()?1:-1, 1);
+  unsigned int isfalldown = msg.isfallendown()? 1:0;
+  anscii += encoder.encode(isfalldown, 1);
 
   anscii += encoder.encode(static_cast<unsigned int>(msg.timetoball())/20, 2);
 

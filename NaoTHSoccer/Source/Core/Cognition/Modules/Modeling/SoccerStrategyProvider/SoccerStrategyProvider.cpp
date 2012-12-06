@@ -10,7 +10,7 @@
 #include  <Tools/DataConversion.h>
 
 SoccerStrategyProvider::FormationParameters::FormationParameters()
-:num(0), behindBall(true), penaltyAreaAllowed(true)
+  : num(0), behindBall(true), penaltyAreaAllowed(true)
 {
 
 }
@@ -47,21 +47,20 @@ void SoccerStrategyProvider::execute()
     theFormationParameters = FormationParameters(getPlayerInfo().gameData.playerNumber);
   }
   
+  //
   getSoccerStrategy().formation = calculateForamtion();
 
+  //
   getSoccerStrategy().timeToBall = estimateTimeToBall();
 
+
+  // Heinrich: this is actually a hack, if the attack direction jumps, 
+  //           then the reason is somwhere else
+  // smooth the attack direction
   attackDirectionBuffer.add(getRawAttackDirection().attackDirection);
-  double sumX = 0.0;
-  double sumY = 0.0;
-  for(int i=0; i < attackDirectionBuffer.getNumberOfEntries(); i++)
-  {
-    sumX += attackDirectionBuffer[i].x;
-    sumY += attackDirectionBuffer[i].y;
-  }
-  getSoccerStrategy().attackDirection.x = sumX / (double) attackDirectionBuffer.getNumberOfEntries();
-  getSoccerStrategy().attackDirection.y = sumY / (double) attackDirectionBuffer.getNumberOfEntries();
-}
+  getSoccerStrategy().attackDirection = attackDirectionBuffer.getAverage();
+}//end execute
+
 
 Vector2<double> SoccerStrategyProvider::calculateForamtion() const
 {
@@ -118,7 +117,7 @@ Vector2<double> SoccerStrategyProvider::calculateForamtion() const
   }
 
   return p;
-}
+}//end calculateForamtion
 
 double SoccerStrategyProvider::estimateTimeToBall() const
 {
@@ -131,7 +130,8 @@ double SoccerStrategyProvider::estimateTimeToBall() const
     }
   }
   return estimateTimeToPoint(getBallModel().futurePosition[BALLMODEL_MAX_FUTURE_SECONDS]);
-}
+}//end estimateTimeToBall
+
 
 double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
 {
@@ -151,7 +151,7 @@ double SoccerStrategyProvider::estimateTimeToPoint(const Vector2d& p) const
     t += 3000;
 
   return t;
-}
+}//end estimateTimeToPoint
 
 bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
 {
@@ -209,4 +209,4 @@ bool SoccerStrategyProvider::isSomeoneBetweenMeAndPoint(const Vector2d& p) const
 
   // todo: consider goals
   return false;
-}
+}//end isSomeoneBetweenMeAndPoint

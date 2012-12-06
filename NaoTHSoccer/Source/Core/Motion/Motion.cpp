@@ -8,6 +8,13 @@
 #include "Motion.h"
 #include <glib.h>
 
+#include <stdlib.h>
+
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
+
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 
@@ -20,10 +27,15 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include <Tools/CameraGeometry.h>
 
 #include "SensorFilter/InertiaSensorFilter.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
+
+#ifndef WIN32
+#include <unistd.h>
+#endif // ifndef WIN32
 
 #ifdef NAO_OLD
 #include "Tools/Debug/DebugBufferedOutput.h"
@@ -39,6 +51,7 @@ Motion::Motion()
   theInertiaSensorCalibrator(theBlackBoard, theBlackBoard.theCalibrationData),
   theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
   frameNumSinceLastMotionRequest(0),
+  lastCognitionFrameNumber(0),
   state(initial),
   motionLogger("MotionLog"),
   oldMotionRequestTime(0)
@@ -46,7 +59,7 @@ Motion::Motion()
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
     theBlackBoard.theKinematicChain.theLinks);
-    
+
   theMotionFactories.push_back(new InitialMotionFactory());
   theMotionFactories.push_back(new InverseKinematicsMotionFactory());
   theMotionFactories.push_back(new KeyFrameMotionEngine());
@@ -90,18 +103,18 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   theBlackBoard.theRobotInfo.bodyNickName = platformInterface.getBodyNickName();
   theBlackBoard.theRobotInfo.bodyID = platformInterface.getBodyID();
   theBlackBoard.theRobotInfo.basicTimeStep = platformInterface.getBasicTimeStep();
-  
+
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
   platformInterface.registerMotionInput(theBlackBoard.the##R)
-  
+
   REG_INPUT(SensorJointData);
   REG_INPUT(FrameInfo);
   REG_INPUT(InertialSensorData);
   REG_INPUT(FSRData);
   REG_INPUT(AccelerometerData);
   REG_INPUT(GyrometerData);
-  
+
 #define REG_OUTPUT(R)                                                   \
   platformInterface.registerMotionOutput(theBlackBoard.the##R)
 
@@ -109,14 +122,16 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   //REG_OUTPUT(LEDData);
 
   g_message("Motion register end");
-  
+
   // messages from motion to cognition
+  platformInterface.registerMotionOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(theBlackBoard.theCameraMatrix);
   platformInterface.registerMotionOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
   platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
   //platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
   platformInterface.registerMotionOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
 
   // messages from cognition to motion
+  platformInterface.registerMotionInputChanel<CameraInfo, Serializer<CameraInfo> >(theBlackBoard.theCameraInfo);
   platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
   platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
 
@@ -127,7 +142,6 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
 
 void Motion::call()
 {
-  
   STOPWATCH_START("MotionExecute");
 
   // process sensor data
@@ -135,6 +149,38 @@ void Motion::call()
   processSensorData();
   STOPWATCH_STOP("Motion:processSensorData");
 
+  // check if cognition is still alive
+
+  if(lastCognitionFrameNumber == theBlackBoard.theMotionRequest.cognitionFrameNumber)
+  {
+    frameNumSinceLastMotionRequest++;
+  }
+  else
+  {
+    lastCognitionFrameNumber = theBlackBoard.theMotionRequest.cognitionFrameNumber;
+    frameNumSinceLastMotionRequest = 0;
+  }
+
+  if(frameNumSinceLastMotionRequest > 1500)
+  {
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "dumping traces" << std::endl;
+    Trace::getInstance().dump();
+    Stopwatch::getInstance().dump("cognition");
+
+    //TODO: Maybe better put it into Platform?
+    #ifndef WIN32
+    std::cerr << "syncing file system..." ;
+    sync();
+    std::cerr << " finished." << std::endl;
+    #endif
+
+    ASSERT(frameNumSinceLastMotionRequest <= 500);
+  }
+
+  // ensure initialization
   switch (state)
   {
   case initial:
@@ -154,7 +200,6 @@ void Motion::call()
   }
   case running:
   {
-    frameNumSinceLastMotionRequest = 0;
     break;
   }
   case exiting:
@@ -177,10 +222,12 @@ void Motion::call()
   theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
   theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
 
+
+
   // calibrate the foot touch detector
   if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
-  
+
   STOPWATCH_START("Motion:postProcess");
   postProcess();
   STOPWATCH_STOP("Motion:postProcess");
@@ -208,8 +255,8 @@ void Motion::processSensorData()
   theBlackBoard.theInertialSensorData.data += theBlackBoard.theCalibrationData.inertialSensorOffset;
   theBlackBoard.theGyrometerData.data += theBlackBoard.theCalibrationData.gyroSensorOffset;
   theBlackBoard.theAccelerometerData.data += theBlackBoard.theCalibrationData.accSensorOffset;
-  
-  // 
+
+  //
   static InertiaSensorFilter theInertiaSensorFilterBH(theBlackBoard, theBlackBoard.theInertialModel);
   theInertiaSensorFilterBH.update();
 
@@ -227,20 +274,17 @@ void Motion::processSensorData()
     theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
 
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
-  
-  CameraMatrixCalculator::calculateCameraMatrix(
-    theBlackBoard.theCameraMatrix,
-    theBlackBoard.theHeadMotionRequest.cameraID,
-    theBlackBoard.theKinematicChain);
-    
+
+  updateCameraMatrix();
+
   theOdometryCalculator.calculateOdometry(
     theBlackBoard.theOdometryData,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRData);
-    
+
   Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
   theBlackBoard.theKinematicChainModel.updateCoM();
-  
+
   theBlackBoard.theLastMotorJointData = theBlackBoard.theMotorJointData;
 
 
@@ -270,7 +314,7 @@ void Motion::processSensorData()
   );
 
   DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
-    RotationMatrix calculatedRotation = 
+    RotationMatrix calculatedRotation =
       Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
 
     // calculate expected acceleration sensor reading
@@ -312,6 +356,32 @@ void Motion::processSensorData()
 
 }//end processSensorData
 
+void Motion::updateCameraMatrix()
+{
+  CameraMatrix& cameraMatrix = theBlackBoard.theCameraMatrix;
+  CameraMatrixCalculator::calculateCameraMatrix(
+    cameraMatrix,
+    theBlackBoard.theCameraInfo,
+    theBlackBoard.theKinematicChain);
+
+  cameraMatrix.valid = true;
+
+  MODIFY("CameraMatrix:translation:x", cameraMatrix.translation.x);
+  MODIFY("CameraMatrix:translation:y", cameraMatrix.translation.y);
+  MODIFY("CameraMatrix:translation:z", cameraMatrix.translation.z);
+
+  double correctionAngleX = 0.0;
+  double correctionAngleY = 0.0;
+  double correctionAngleZ = 0.0;
+  MODIFY("CameraMatrix:correctionAngle:x", correctionAngleX);
+  MODIFY("CameraMatrix:correctionAngle:y", correctionAngleY);
+  MODIFY("CameraMatrix:correctionAngle:z", correctionAngleZ);
+
+  cameraMatrix.rotation.rotateX(correctionAngleX);
+  cameraMatrix.rotation.rotateY(correctionAngleY);
+  cameraMatrix.rotation.rotateZ(correctionAngleZ);
+
+} // end updateCameraMatrix
 
 void Motion::postProcess()
 {
@@ -332,7 +402,7 @@ void Motion::postProcess()
   mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
 
-    
+
 #ifdef NAO_OLD
   theDebugMessageOut.answers.clear();
   for(std::list<DebugMessageIn::Message>::const_iterator iter = theDebugMessageIn.messages.begin();
@@ -370,7 +440,7 @@ void Motion::selectMotion()
     (theBlackBoard.currentlyExecutedMotion->isStopped() || theBlackBoard.theMotionRequest.forced))
   {
     AbstractMotion* newMotion = NULL;
-    for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin(); 
+    for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin();
           NULL==newMotion && iter!=theMotionFactories.end(); ++iter)
     {
       newMotion = (*iter)->createMotion(theBlackBoard.theMotionRequest);

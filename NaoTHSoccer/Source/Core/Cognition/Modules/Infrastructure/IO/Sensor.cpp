@@ -47,9 +47,11 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(IRReceiveData);
   
   REG_INPUT(TeamMessageDataIn);
+  REG_INPUT(RCTCTeamMessageDataIn);
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageIn);
-  
+
+  platformInterface.registerCognitionInputChanel<CameraMatrix, Serializer<CameraMatrix> >(getCameraMatrix());
   platformInterface.registerCognitionInputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
   platformInterface.registerCognitionInputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
   //platformInterface.registerCognitionInputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData());

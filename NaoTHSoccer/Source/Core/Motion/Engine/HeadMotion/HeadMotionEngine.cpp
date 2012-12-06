@@ -131,9 +131,9 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
   //TODO: handle the case if the projection is not possible
   CameraGeometry::imagePixelToFieldCoord(
     theBlackBoard.theCameraMatrix, 
-    Platform::getInstance().theCameraInfo,
-    (double)Platform::getInstance().theCameraInfo.opticalCenterX, 
-    (double)Platform::getInstance().theCameraInfo.opticalCenterY, 
+    theBlackBoard.theCameraInfo,
+        (double)theBlackBoard.theCameraInfo.getOpticalCenterX(),
+        (double)theBlackBoard.theCameraInfo.getOpticalCenterY(),
     0.0,
     centerOnField);
   
@@ -171,6 +171,7 @@ void HeadMotionEngine::moveByAngle(const Vector2<double>& target)
   double max_velocity_deg_in_second_fast = 60;
   double max_velocity_deg_in_second_slow = 120;
   double cutting_velocity = 40; // speed of the robot in mm/s
+
 
   double max_velocity_deg_in_second = 90;
   // calculate depending on the walking speed
@@ -278,17 +279,17 @@ Vector3<double> HeadMotionEngine::g(double yaw, double pitch, const Vector3<doub
 
   CameraMatrix cameraMatrix;
   CameraMatrixCalculator::calculateCameraMatrix(cameraMatrix,
-    theBlackBoard.theHeadMotionRequest.cameraID,
+    theBlackBoard.theCameraInfo,
     theKinematicChain);
 
   // the point in the image which should point to the pointInWorld
   Vector2<double> projectionPointInImage(
-    Platform::getInstance().theCameraInfo.opticalCenterX,
-    Platform::getInstance().theCameraInfo.opticalCenterY);
+        theBlackBoard.theCameraInfo.getOpticalCenterX(),
+        theBlackBoard.theCameraInfo.getOpticalCenterY());
 
   Vector3<double> direction = CameraGeometry::imagePixelToCameraCoords(
     cameraMatrix, 
-    Platform::getInstance().theCameraInfo, 
+    theBlackBoard.theCameraInfo,
     projectionPointInImage.x, 
     projectionPointInImage.y);
   
@@ -348,6 +349,11 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
     Vector2<double> DgTw(dg1*w, dg2*w);
 
     //Vector2<double> z_GN = (-((Dg.transpose()*Dg).invert()*Dg.transpose()*w));
+    if(DgTDg.det() <= 1e-13)
+    {
+      // debug output
+      std::cerr << "bad matrix" << endl;
+    }
     Vector2<double> z_GN = (-(DgTDg.invert()*DgTw));
     x += z_GN;
   }//end for
@@ -384,16 +390,16 @@ void HeadMotionEngine::lookAtPoint()
   double y = theBlackBoard.theHeadMotionRequest.targetPointInImage.y;
   //double f = RobotInfo::getInstance().theCameraInfo.focalLength;
     
-  double dev_x = Platform::getInstance().theCameraInfo.opticalCenterX - x;
-  double dev_y = y - Platform::getInstance().theCameraInfo.opticalCenterY;
+  double dev_x = theBlackBoard.theCameraInfo.getOpticalCenterX() - x;
+  double dev_y = y - theBlackBoard.theCameraInfo.getOpticalCenterY();
    
   Vector3<double> startingPointCamera(54,0,68);
 
   //double offsetX = startingPointCamera.x;
   //double offsetY = startingPointCamera.z;
  
-  double divAngleX = atan2(dev_x, Platform::getInstance().theCameraInfo.focalLength);
-  double divAngleY = atan2(dev_y, Platform::getInstance().theCameraInfo.focalLength);
+  double divAngleX = atan2(dev_x, theBlackBoard.theCameraInfo.getFocalLength());
+  double divAngleY = atan2(dev_y, theBlackBoard.theCameraInfo.getFocalLength());
 
   Vector2<double> update(divAngleX, divAngleY);
 
@@ -542,7 +548,7 @@ bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points
 
 void HeadMotionEngine::lookStraightAhead()
 {
-  const Pose3D& cameraTrans = Platform::getInstance().theCameraInfo.transformation[theBlackBoard.theHeadMotionRequest.cameraID];
+  const Pose3D& cameraTrans = theBlackBoard.theCameraInfo.transformation[theBlackBoard.theHeadMotionRequest.cameraID];
   Vector2<double> target(0.0, -cameraTrans.rotation.getYAngle());
   gotoAngle(target);
 }//end lookStraightAhead

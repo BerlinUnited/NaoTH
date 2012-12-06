@@ -66,7 +66,7 @@ public:
   size_t getNumOfTransition() const { return transitionArray.size(); }
   bool isEmpty() const { return keyFrameArray.empty(); }
 
-  friend ostream& operator<<(ostream& stream, const MotionNet& motionNet);
+  friend std::ostream& operator<<(std::ostream& stream, const MotionNet& motionNet);
 };
 
 /**
@@ -75,8 +75,8 @@ public:
  * @param image The MotionNet object.
  * @return The stream.
  */ 
-ostream& operator<<(ostream& stream, const MotionNet& motionNet);
-ostream& operator<<(ostream& stream, const MotionNet::KeyFrame& keyFrame);
-ostream& operator<<(ostream& stream, const MotionNet::Transition& transition);
+std::ostream& operator<<(std::ostream& stream, const MotionNet& motionNet);
+std::ostream& operator<<(std::ostream& stream, const MotionNet::KeyFrame& keyFrame);
+std::ostream& operator<<(std::ostream& stream, const MotionNet::Transition& transition);
 
 #endif //__MotionNet_h_

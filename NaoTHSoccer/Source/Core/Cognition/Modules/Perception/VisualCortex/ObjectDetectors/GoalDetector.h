@@ -17,6 +17,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/GoalPercept.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
@@ -35,6 +36,7 @@
 BEGIN_DECLARE_MODULE(GoalDetector)
   REQUIRE(Image)
   REQUIRE(CameraMatrix)
+  REQUIRE(ArtificialHorizon)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
   REQUIRE(ColoredGrid)

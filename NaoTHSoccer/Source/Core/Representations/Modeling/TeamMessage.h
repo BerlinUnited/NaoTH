@@ -6,7 +6,7 @@
  */
 
 #ifndef _TEAMMESSAGE_H
-#define  _TEAMMESSAGE_H
+#define _TEAMMESSAGE_H
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/Math/Vector2.h"
@@ -58,6 +58,7 @@ public:
       stream << "TimeToBall: "<< message.timetoball() <<endl;
       stream << "wasStriker: " << (message.wasstriker() ? "yes" : "no") << endl;
       stream << "isPenalized: " << (message.ispenalized() ? "yes" : "no") << endl;
+      stream << "isFallenDown: " << (message.isfallendown() ? "yes" : "no") << endl;
       if ( message.has_opponent() ) {
         stream << "opponent " << message.opponent().number() << " : "
                << message.opponent().poseonfield().translation().x() << "; "

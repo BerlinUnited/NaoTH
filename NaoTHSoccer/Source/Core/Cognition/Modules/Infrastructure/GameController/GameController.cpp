@@ -48,6 +48,9 @@ void GameController::readButtons()
       break;
     }
     default:
+      // always go back to play as default
+      getPlayerInfo().gameData.gameState = GameData::playing;
+      getPlayerInfo().gameData.timeWhenGameStateChanged = getFrameInfo().getTime();
       break;
     }
   }

@@ -10,6 +10,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include <Tools/Debug/DebugBufferedOutput.h>
 
+
 void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 {
   engine.registerDecimalInputSymbol("attention.mi_point.x", &attentionModel.mostInterestingPoint.x );
@@ -31,8 +32,16 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.time_since_last_seen", &getOwnClosestToBallTimeSinceLastSeen);
   engine.registerDecimalInputSymbol("players.own_closest_to_ball.distance_to_ball", &getOwnClosestToBallDistanceToBall);
 
+  engine.registerDecimalInputSymbol("defense.simplePose.translation.x", &simpleDefensePoseX);
+  engine.registerDecimalInputSymbol("defense.simplePose.translation.y", &simpleDefensePoseY);
+  engine.registerDecimalInputSymbol("defense.simplePose.rotation", &simpleDefensePoseA);
 
+  // attack direction and previews
   engine.registerDecimalInputSymbol("attack.direction", &attackDirection);
+  engine.registerDecimalInputSymbol("attack.direction.preview", &attackDirectionPreviewHip);
+  engine.registerDecimalInputSymbol("attack.direction.preview.left_foot", &attackDirectionPreviewLFoot);
+  engine.registerDecimalInputSymbol("attack.direction.preview.right_foot", &attackDirectionPreviewRFoot);
+
 
   engine.registerDecimalInputSymbol("defense.pose.translation.x", &defensePoseX);
   engine.registerDecimalInputSymbol("defense.pose.translation.y", &defensePoseY);
@@ -43,8 +52,8 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerDecimalInputSymbol("setpiece.pose.y", &setpiecePosition.y);
   engine.registerBooleanInputSymbol("setpiece.participation", &setpieceParticipation);
 
+  
   engine.registerBooleanInputSymbol("attack.approaching_with_right_foot", &getApproachingWithRightFoot );
-
 
 
 
@@ -86,11 +95,13 @@ void StrategySymbols::registerSymbols(xabsl::Engine& engine)
   engine.registerBooleanOutputSymbol("situationStatusOppHalf", &setSituationStatusOppHalf, &getSituationStatusOppHalf);
   engine.registerBooleanOutputSymbol("reactiveBallModelNeeded", &setSituationStatusOwnHalf, &getSituationStatusOwnHalf);
 
-
   //Ausgabe in RobotControl
   DEBUG_REQUEST_REGISTER("roundWalk:draw_circle", "Roter Kreis", false);
  
   DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_attack_direction","draw the attack direction", false);
+
+  DEBUG_REQUEST_REGISTER("XABSL:StrategySymbols:draw_simpleDefenderPose","draw the position of the defender", false);
+
 
   //testArrangeRobots();
 }//end registerSymbols
@@ -101,7 +112,23 @@ StrategySymbols* StrategySymbols::theInstance = NULL;
 
 void StrategySymbols::execute()
 {
-  attackDirection = calculateAttackDirection();
+  { // prepare the attack direction
+  const Vector2<double>& p = getSoccerStrategy().attackDirection;
+  
+  // ATTENTION: since it is a vector and not a point, we apply only the rotation
+  attackDirection             = Math::toDegrees(p.angle());
+
+  attackDirectionPreviewHip   = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.hip.rotation).angle());
+
+  attackDirectionPreviewLFoot = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.lFoot.rotation).angle());
+
+  attackDirectionPreviewRFoot = Math::toDegrees(
+    Vector2d(p).rotate(-getMotionStatus().plannedMotion.rFoot.rotation).angle());
+  }
+
+
   DEBUG_REQUEST("XABSL:StrategySymbols:draw_attack_direction",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 50);
@@ -112,6 +139,17 @@ void StrategySymbols::execute()
   );
 
   PLOT("XABSL:attackDirection", attackDirection);
+
+  simpleDefenderPose = calculateSimpleDefensePose();
+  DEBUG_REQUEST("XABSL:StrategySymbols:draw_simpleDefenderPose",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FF0000", 50);
+    CIRCLE(simpleDefenderPose.translation.x, simpleDefenderPose.translation.y, 30);
+  );
+
+
+
+
 }//end execute
 
 //int StrategySymbols::getSituationStatusId(){ 
@@ -304,6 +342,54 @@ double StrategySymbols::getOwnClosestToBallTimeSinceLastSeen()
 double StrategySymbols::getOwnClosestToBallDistanceToBall()
 {
   return (theInstance->ballModel.position - theInstance->playersModel.ownClosestToBall.pose.translation).abs();
+}
+
+Pose2D StrategySymbols::calculateSimpleDefensePose()
+{
+  Pose2D defPose;
+  Vector2<double> ownGoal = goalModel.getOwnGoal(theInstance->compassDirection, theInstance->fieldInfo).calculateCenter();
+
+  double d = ownGoal.abs();
+
+  Vector2<double> p = ballModel.position - ownGoal;
+
+  if(p.abs() > d ) {
+    p = p.normalize(1200) + ownGoal;
+
+    defPose.translation = p;
+    defPose.rotation = ballModel.position.angle();
+    
+  }
+  else
+  {
+    defPose.translation =(ballModel.position-ownGoal)*0.5 +ownGoal; 
+    defPose.rotation = defPose.translation.angle();
+  }
+
+  defPose = motionStatus.plannedMotion.hip / defPose.translation;
+  defPose.rotation = ballModel.positionPreview.angle();
+
+/*  FIELD_DRAWING_CONTEXT;
+  PEN("00FF00", 20);
+  CIRCLE(defPose.translation.x, defPose.translation.y, 30);
+ */ 
+
+  return defPose;
+}
+
+double StrategySymbols::simpleDefensePoseX()
+{
+  return theInstance->calculateSimpleDefensePose().translation.x;
+}
+
+double StrategySymbols::simpleDefensePoseY()
+{
+  return theInstance->calculateSimpleDefensePose().translation.y;
+}
+
+double StrategySymbols::simpleDefensePoseA()
+{
+  return Math::toDegrees(theInstance->calculateSimpleDefensePose().rotation);
 }
 
 Pose2D StrategySymbols::calculateDefensePose()
@@ -576,27 +662,6 @@ bool StrategySymbols::setpieceParticipation()
 {
   return theInstance->calculateSetPiecePose();
 }
-
-double StrategySymbols::calculateAttackDirection()
-{
-  const Vector2<double>& p = theInstance->soccerStrategy.attackDirection;
-  return Math::toDegrees(p.angle());
-}
-
-
-Vector2<double> StrategySymbols::calculatePlayerPotentialField(const Vector2<double>& player, const Vector2<double>& ball)
-{
-  const static double a = 1500;
-  const static double d = 2000;
-
-  Vector2<double> v = player-ball;
-  double t = v.abs();
-  if ( t >= d-100 ) return Vector2<double>(0,0);
-
-  double ang = v.angle();
-  return Vector2<double>(cos(ang), sin(ang)) * exp(a / d - a / (d - t));
-}
-
 
 //returns the x-coordinate of the edge of the circle the robot shall move to reach the inputpoint with direction to another inputpoint
 /**

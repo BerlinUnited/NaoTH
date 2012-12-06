@@ -6,7 +6,7 @@
  */
 
 #ifndef _SENSORSYMBOLS_H
-#define  _SENSORSYMBOLS_H
+#define _SENSORSYMBOLS_H
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -22,6 +22,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/ObstacleModel.h"
 #include "Representations/Modeling/RadarGrid.h"
+#include "Representations/Modeling/CollisionModel.h"
 #include "Representations/Modeling/Path.h"
 #include "Representations/Infrastructure/Image.h"
 
@@ -42,6 +43,7 @@ BEGIN_DECLARE_MODULE(SensorSymbols)
   REQUIRE(RadarGrid)
   PROVIDE(Path)
   REQUIRE(Image)
+  REQUIRE(CollisionModel)
 
   REQUIRE(ButtonData)
 END_DECLARE_MODULE(SensorSymbols)
@@ -60,13 +62,17 @@ public:
     frameInfo(getFrameInfo()),
     bodyState(getBodyState()),
     obstacleModel(getObstacleModel()),
+    collisionModel(getCollisionModel()),
     radarGrid(getRadarGrid()),
     path(getPath()),
-    image(getImage())
+    image(getImage()),
+    enableInertialSensorCalibrate(false),
+    forceGetCameraSettings(false),
+    forceGetCameraSettingsOldValue(false),
+    resetingCamera(false),
+    isCameraReseting(false)
   {
     theInstance = this;
-    forceGetCameraSettings = false;
-    forceGetCameraSettingsOldValue = false;
   }
 
   /** registers the symbols at an engine */
@@ -86,6 +92,7 @@ private:
   FrameInfo const& frameInfo;
   BodyState const& bodyState;
   ObstacleModel const& obstacleModel;
+  CollisionModel const& collisionModel;
   RadarGrid const& radarGrid;
   Path& path;
   Image const& image;
@@ -112,6 +119,8 @@ private:
 
   static double getTargetPointX();
   static double getTargetPointY();
+
+  static double getTimeNoNodeExpandable();
 
   static void setTargetpointX(double targetX);
   static void setTargetpointY(double targetY);

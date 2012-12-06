@@ -1,7 +1,18 @@
+-- load the global default settings
+dofile "projectconfig.lua"
+
+-- load local user settings if alailable
+if os.isfile("projectconfig.user.lua") then
+	print("loading local user path settings")
+	dofile "projectconfig.user.lua"
+end
+
+-- load some helpers for cross compilation etc.
 dofile "helper/naocrosscompile_v3.lua"
 dofile "helper/naocrosscompile.lua"
 dofile "helper/extract_todos.lua"
 dofile "helper/qtcreator.lua"
+
 
 newaction {
   trigger = "todo",
@@ -42,17 +53,9 @@ solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug", "Release"}
   
-  CORE_PATH = {
-    path.getabsolute("../Source/Core/Cognition/"), 
-    path.getabsolute("../Source/Core/Motion/"),
-    path.getabsolute("../Source/Core/")
-  }
-  
-  CORE = {"NaoTHSoccer"}
-
   -- for all configurations
   includedirs {
-	  "../../Framework/NaoTH-Commons/Source/"
+	FRAMEWORK_PATH.."/NaoTH-Commons/Source/"
   }
   -- debug configuration
   configuration { "Debug" }
@@ -66,12 +69,22 @@ solution "NaoTHSoccer"
          
   configuration{"Native"}
     includedirs {
-      "../../Extern/include/",
-      "../../Extern/include/glib-2.0/",
-      "../../Extern/lib/glib-2.0/include/"}
+      EXTERN_PATH .. "/include/",
+      EXTERN_PATH .. "/include/glib-2.0/",
+      EXTERN_PATH .. "/lib/glib-2.0/include/",
+      "/usr/include/"
+	  }
     libdirs {
-      "../../Extern/lib"
+      EXTERN_PATH .. "/lib"
     }
+    
+    if os.get() == "linux" then      
+      -- try to get the pkg-config include-instructions
+      local f = io.popen("pkg-config --cflags glib-2.0")
+      local l = f:read("*a")
+      buildoptions { l }
+    end
+
     targetdir "../dist/Native"
     
   configuration {"Nao"}
@@ -95,22 +108,22 @@ solution "NaoTHSoccer"
   end
       
   -- base
-  dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
+  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
   
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then
-    dofile "../../Framework/Platforms/Make/DCM.lua"
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DCM.lua")
   elseif(_OPTIONS["platform"] == "Naov3") then
-    dofile "../../Framework/Platforms/Make/DCM_v3.lua"
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DCM_v3.lua")
   else
-    dofile "../../Framework/Platforms/Make/SimSpark.lua"
-	dofile "../../Framework/Platforms/Make/SPL_SimSpark.lua"
-    dofile "../../Framework/Platforms/Make/Webots.lua"
-    dofile "../../Framework/Platforms/Make/LogSimulator.lua"
-	dofile "../../Framework/Platforms/Make/OpenCVImageLoader.lua"
-	dofile "../../Framework/Platforms/Make/OpenCVWebCam.lua"
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/SPL_SimSpark.lua")
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVImageLoader.lua")
+	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVWebCam.lua")
     dofile "Tests.lua"
-    dofile "../../Framework/NaoTH-Commons/Make/Tests.lua"
+    dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
   end
   -- the core
   dofile "NaoTHSoccer.lua"

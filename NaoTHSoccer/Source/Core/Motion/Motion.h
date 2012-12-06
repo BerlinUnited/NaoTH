@@ -50,6 +50,9 @@ protected:
   void selectMotion();
   
   void changeMotion(AbstractMotion* m);
+private:
+
+  void updateCameraMatrix();
 
 private:
   MotionBlackBoard& theBlackBoard;
@@ -65,6 +68,7 @@ private:
   std::list<MotionFactory*> theMotionFactories;
   
   unsigned int frameNumSinceLastMotionRequest;
+  unsigned int lastCognitionFrameNumber;
 
   enum State
   {

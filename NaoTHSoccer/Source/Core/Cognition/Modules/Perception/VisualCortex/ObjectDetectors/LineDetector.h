@@ -35,6 +35,7 @@
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/LinePercept.h"
 #include "Representations/Perception/ObjectPercept.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
@@ -46,6 +47,7 @@ BEGIN_DECLARE_MODULE(LineDetector)
   REQUIRE(ColorClassificationModel)
   REQUIRE(CurrentCameraSettings)
   REQUIRE(CameraMatrix)
+  REQUIRE(ArtificialHorizon)
   REQUIRE(FieldPercept)
   REQUIRE(ColoredGrid)
   REQUIRE(FieldInfo)

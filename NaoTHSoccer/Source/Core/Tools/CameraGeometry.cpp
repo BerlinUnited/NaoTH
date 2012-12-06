@@ -17,9 +17,9 @@ Vector3<double> CameraGeometry::imagePixelToCameraCoords(const CameraMatrix& cam
 {
   Vector3<double> pixelVector;
 
-  pixelVector.x = cameraInfo.focalLength;
-  pixelVector.y = -imgX + cameraInfo.opticalCenterX;
-  pixelVector.z = -imgY + cameraInfo.opticalCenterY;
+  pixelVector.x = cameraInfo.getFocalLength();
+  pixelVector.y = -imgX + cameraInfo.getOpticalCenterX();
+  pixelVector.z = -imgY + cameraInfo.getOpticalCenterY();
 
   pixelVector = cameraMatrix.rotation * pixelVector;
   return pixelVector;
@@ -30,19 +30,22 @@ Vector2<int> CameraGeometry::relativePointToImage( const CameraMatrix& cameraMat
                                              const CameraInfo& cameraInfo,
                                              const Vector3<double>& point)
 {
+  const static double epsilon = 1e-13;
+
+  // vector: O ---> point (in camera coordinates)
   Vector3<double> vectorToPoint = cameraMatrix.rotation.invert() * (point - cameraMatrix.translation);
 
-  // the point is behind me...
-  if(vectorToPoint.x <= 0)
+  // the point is behind the camera plane
+  if(vectorToPoint.x <= epsilon)
   {
     return Vector2<int>(-1,-1);
   }//end if
 
-  double factor = cameraInfo.focalLength / vectorToPoint.x;
+  double factor = cameraInfo.getFocalLength() / vectorToPoint.x;
   
   Vector2<int> pointInImage;
-  pointInImage.x = (int)floor(-(vectorToPoint.y * factor) + 0.5 + cameraInfo.opticalCenterX);
-  pointInImage.y = (int)floor(-(vectorToPoint.z * factor) + 0.5 +  cameraInfo.opticalCenterY);
+  pointInImage.x = (int)floor(-(vectorToPoint.y * factor) + 0.5 + cameraInfo.getOpticalCenterX());
+  pointInImage.y = (int)floor(-(vectorToPoint.z * factor) + 0.5 +  cameraInfo.getOpticalCenterY());
 
   return pointInImage;
 }//end relativePointToImage
@@ -78,7 +81,7 @@ bool CameraGeometry::imagePixelToFieldCoord( const CameraMatrix& cameraMatrix,
                                        const double& objectHeight,
                                        Vector2<double>& result)
 {
-  double epsilon = 1e-13;
+  const static double epsilon = 1e-13;
 
   Vector3<double> pixelVector = imagePixelToCameraCoords(cameraMatrix, cameraInfo, imgX, imgY);
   
@@ -133,9 +136,9 @@ void CameraGeometry::calculateArtificialHorizon( const Pose3D& cameraMatrix,
   double x1 = 0,
          x2 = cameraInfo.resolutionWidth - 1,
 
-         v1 = cameraInfo.focalLength,
-         v2 = cameraInfo.opticalCenterX,
-         v3 = cameraInfo.opticalCenterY,
+         v1 = cameraInfo.getFocalLength(),
+         v2 = cameraInfo.getOpticalCenterX(),
+         v3 = cameraInfo.getOpticalCenterY(),
 
          y1 = (v3 * r33 + r31 * v1 + r32 * v2) / r33,
          y2 = (v3 * r33 + r31 * v1 - r32 * v2) / r33;

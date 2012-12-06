@@ -21,9 +21,8 @@ private:
 
 public:
   /** executes the module */
-  static void calculateCameraMatrix(
-    CameraMatrix& theCameraMatrix,
-    naoth::CameraInfo::CameraID cameraId,
+  static void calculateCameraMatrix(CameraMatrix& theCameraMatrix,
+    const naoth::CameraInfo &theCameraInfo,
     const KinematicChain& theKinematicChain
   );
 };

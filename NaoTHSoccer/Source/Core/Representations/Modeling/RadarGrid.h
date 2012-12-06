@@ -72,9 +72,9 @@ public:
   
   //some functions
   //get/set model
-  void addObstaclePoint(Vector2d);
+  void addObstaclePoint(const Vector2d&);
 
-  void addNonObstaclePoint(Vector2d);
+  void addNonObstaclePoint(const Vector2d&);
 
   // set the current system time
   void setCurrentTime(unsigned int tStamp) {this->currentTime = tStamp;}
@@ -110,17 +110,20 @@ public:
   void drawFieldContext();
   void drawImageContext();
 
+  // reset the grid
+  void resetGrid();
+
   virtual void print(std::ostream& stream) const
   {
-    stream << "Obstacle was seen: " << obstacleWasSeen << endl;
+    stream << "Obstacle was seen: " << obstacleWasSeen << std::endl;
     cellsMap::const_iterator it = cells.begin();
     for (; it != cells.end(); ++it)
     {
-      stream << "ValueNr.: " << it->first << " mean: " << it->second.mean << endl;
-      stream << "SumOfBuffer.: " << it->second.sum << endl;
+      stream << "ValueNr.: " << it->first << " mean: " << it->second.mean << std::endl;
+      stream << "SumOfBuffer.: " << it->second.sum << std::endl;
       for (int i = 0; i < it->second.buffer.getNumberOfEntries(); i++)
       {
-        stream << "\t" << "bufferNr: " << i << " : " << it->second.buffer[i] << " time: " << it->second.timeStamp << endl;
+        stream << "\t" << "bufferNr: " << i << " : " << it->second.buffer[i] << " time: " << it->second.timeStamp << std::endl;
       }
     }
   }//end print
@@ -132,7 +135,7 @@ private:
     //buffer for percepts
     RingBuffer<Vector2d, bufferCapacity> buffer;
     //sum of the buffer
-     Vector2d sum;
+    Vector2d sum;
     //time the cell was set
     unsigned int timeStamp;
     Cell():
@@ -149,7 +152,7 @@ private:
 
   Vector2d applyOdometry(Vector2d& someValue, Pose2D& odometryDelta);
 
-  void setMean(int& position, Vector2d& newValue);
+  void setMean(int& position, const Vector2d& newValue);
  
   // get sector of model for a given angle
   inline int getSectorByAngle(const double angle) const;

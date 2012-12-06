@@ -1,4 +1,4 @@
-local extern_dir = "../../../Extern"
+-- local EXTERN_PATH = "../../../Extern"
 
 -- NaoTH controller for the logfile based "simulator"
 project "LogSimulator"
@@ -10,28 +10,29 @@ project "LogSimulator"
 	"../Source/",
 	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
-	extern_dir .. "/include/",
-	extern_dir .. "/include/glib-2.0/",
-	extern_dir .. "/lib/glib-2.0/include/"}
+	EXTERN_PATH .. "/include/",
+	EXTERN_PATH .. "/include/glib-2.0/",
+	EXTERN_PATH .. "/lib/glib-2.0/include/"}
   
   files{"../Source/LogSimulator/**.cpp","../Source/LogSimulator/**.h"}
   
-  links {CORE, "NaoTH-Commons",
-	  "glib-2.0",
-	  "gio-2.0",
-	  "gobject-2.0",
-	  "gmodule-2.0",
-	  "gthread-2.0",
-	  "protobuf",
-    "opencv_core",
-    "opencv_ml",
-		"opencv_highgui",
-		"opencv_imgproc"
+  links {CORE, 
+	"NaoTH-Commons",
+	"glib-2.0",
+	"gio-2.0",
+	"gobject-2.0",
+	"gmodule-2.0",
+	"gthread-2.0",
+	"protobuf",
+	"opencv_core",
+	"opencv_ml",
+	"opencv_highgui",
+	"opencv_imgproc"
 	}
 	
   targetname "logsimulator"
   
   configuration {"linux"}
-    linkoptions {"-Wl,-rpath \"" .. path.getabsolute("../../../Extern/lib/") .. "\""}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
 
   -- END LogSimulator

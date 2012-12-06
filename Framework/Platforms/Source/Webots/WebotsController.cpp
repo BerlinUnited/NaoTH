@@ -33,7 +33,6 @@ WebotsController::WebotsController()
   registerInput<FSRData>(*this);
   registerInput<GyrometerData>(*this);
   registerInput<InertialSensorData>(*this);
-  registerInput<BumperData>(*this);
   registerInput<IRReceiveData>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerInput<ButtonData>(*this);
@@ -96,15 +95,16 @@ void WebotsController::get_Devices()
   leds[ChestButton] = wb_robot_get_device("ChestBoard/Led");
   leds[FootRight] = wb_robot_get_device("RFoot/Led");
   leds[FootLeft] = wb_robot_get_device("LFoot/Led");
+ 
+  buttons[ButtonData::Chest] = 0;
+  buttons[ButtonData::LeftFootLeft] = wb_robot_get_device("LFoot/Bumper/Left");
+  buttons[ButtonData::LeftFootRight] = wb_robot_get_device("LFoot/Bumper/Right");
+  buttons[ButtonData::RightFootLeft] = wb_robot_get_device("RFoot/Bumper/Left");
+  buttons[ButtonData::RightFootRight] = wb_robot_get_device("RFoot/Bumper/Right");
 
-  bumper[BumperData::LeftBumperLeft] = wb_robot_get_device("LFoot/Bumper/Left");
-  bumper[BumperData::LeftBumperRight] = wb_robot_get_device("LFoot/Bumper/Right");
-  bumper[BumperData::RightBumperLeft] = wb_robot_get_device("RFoot/Bumper/Left");
-  bumper[BumperData::RightBumperRight] = wb_robot_get_device("RFoot/Bumper/Right");
-  
-  for(int i=0;i<BumperData::numOfBumper;i++)
+  for(int i = 1; i<ButtonData::numOfButtons;i++)
   {
-    wb_touch_sensor_enable(bumper[i], getBasicTimeStep());
+    wb_touch_sensor_enable(buttons[i], getBasicTimeStep());
   }
 
   wb_robot_keyboard_enable(getBasicTimeStep());
@@ -228,7 +228,8 @@ void WebotsController::get(AccelerometerData& data)
  */
 void WebotsController::get(Image& data)
 {
-  data.setCameraInfo(Platform::getInstance().theCameraInfo);
+  //ACHTUNG: this is set by the module CameraInfoSetter
+  //data.setCameraInfo(Platform::getInstance().theCameraInfo);
   const unsigned char *webotsImage = wb_camera_get_image(camera);
 
   //unsigned char *yuv422Image = transformRGBtoYUV422(webotsImage);
@@ -383,12 +384,12 @@ void WebotsController::get(FSRData& data)
 
 void WebotsController::get(InertialSensorData& data)
 {
-  // calculate the intertial sensor from GPS data
-  // it can be enabled for debuging
-  const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
-  data.data.x = asin(-gpsmatrix[6]);
-  data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
-  return;
+  //// calculate the intertial sensor from GPS data
+  //// it can be enabled for debuging
+  //const float *gpsmatrix = gps_get_matrix((unsigned char)gps);
+  //data.data.x = asin(-gpsmatrix[6]);
+  //data.data.y = -atan2(gpsmatrix[4], gpsmatrix[5]);
+  //return;
 
   // calculate inertial sensor data by gyrometer
   const double *webots_gyrometer = wb_gyro_get_values(gyrometer);
@@ -415,13 +416,6 @@ void WebotsController::get(InertialSensorData& data)
 //    {
 //      cerr<<" can not update InertialSensorData"<<endl;
 //    }
-  }
-}
-
-void WebotsController::get(BumperData& data)
-{
-  for (int i = 0; i < BumperData::numOfBumper; i++) {
-    data.data[i] = (wb_touch_sensor_get_value(bumper[i]) > 0);
   }
 }
 
@@ -508,9 +502,13 @@ void WebotsController::set(const CameraSettingsRequest& data)
 }
 
 
-void WebotsController::get(ButtonData& /*data*/)
+void WebotsController::get(ButtonData& data)
 {
-  // not support yet
+  data.isPressed[0] = 0;  //chest button
+
+  for (int i = 1; i < ButtonData::numOfButtons; i++) {
+    data.isPressed[i] = (wb_touch_sensor_get_value(buttons[i]) > 0);
+  }
 }
 
 void WebotsController::get(GameData& data)

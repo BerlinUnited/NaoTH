@@ -13,19 +13,21 @@ FieldInfo::FieldInfo() : ParameterList("FieldInfo")
 {
   ballColor = ColorClasses::orange;
   
+  // default values as of SPL rules from 2012
   PARAMETER_REGISTER(ballRadius) = 32.5;
 
-  PARAMETER_REGISTER(xFieldLength) = 6700;
-  PARAMETER_REGISTER(yFieldLength) = 4700;
-  PARAMETER_REGISTER(xLength) = 6050;
-  PARAMETER_REGISTER(yLength) = 4050;
+  PARAMETER_REGISTER(xLength) = 6000;
+  PARAMETER_REGISTER(yLength) = 4000;
 
-  PARAMETER_REGISTER(xPosOpponentPenaltyArea) = 2400;
-  PARAMETER_REGISTER(yPosLeftPenaltyArea) = 1100;
+  PARAMETER_REGISTER(xFieldLength) = xLength + 2*700;
+  PARAMETER_REGISTER(yFieldLength) = yLength + 2*700;
+
+  PARAMETER_REGISTER(xPenaltyAreaLength) = 600;
+  PARAMETER_REGISTER(yPenaltyAreaLength) = 2200;
 
   PARAMETER_REGISTER(centerCircleRadius) = 600;
-
   PARAMETER_REGISTER(fieldLinesWidth) = 50;
+
   PARAMETER_REGISTER(goalWidth) = 1400;
   PARAMETER_REGISTER(goalHeight) = 800;
   PARAMETER_REGISTER(goalpostRadius) = 50;
@@ -49,22 +51,23 @@ void FieldInfo::calculateCrossings()
 {
   xPosHalfWayLine = 0;
 
-  xPosOwnPenaltyArea =      -xPosOpponentPenaltyArea;
-
   xPosOpponentGroundline =   xLength / 2.0;
   xPosOwnGroundline =       -xPosOpponentGroundline;
 
   xPosOpponentGoal =         xPosOpponentGroundline;
   xPosOwnGoal =             -xPosOpponentGoal;
 
+  xPosOpponentPenaltyArea =  xPosOpponentGroundline - xPenaltyAreaLength;
+  xPosOwnPenaltyArea =      -xPosOpponentPenaltyArea;
+
   yPosLeftGoalpost =         goalWidth / 2.0;
   yPosRightGoalpost =       -yPosLeftGoalpost;
 
+  yPosLeftPenaltyArea =      yPenaltyAreaLength / 2.0;
   yPosRightPenaltyArea =    -yPosLeftPenaltyArea;
   
   yPosLeftSideline =         yLength / 2.0; 
   yPosRightSideline =       -yPosLeftSideline;
-
 
   // L crossings
   crossings[opponentCornerLeft].position          = Vector2<double>(xPosOpponentGroundline, yPosLeftSideline);

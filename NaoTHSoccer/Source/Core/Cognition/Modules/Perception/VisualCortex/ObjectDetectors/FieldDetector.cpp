@@ -54,7 +54,7 @@ void FieldDetector::execute()
       fieldPoly.add(result[i]);
     }
 
-    getFieldPercept().setPoly(fieldPoly, getCameraMatrix().horizon);
+    getFieldPercept().setPoly(fieldPoly, getArtificialHorizon());
     if(fieldPoly.getArea() >= 5600)
     {
       getFieldPercept().setValid(true);

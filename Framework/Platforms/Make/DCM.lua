@@ -2,18 +2,19 @@
 
   
   ------------------------- AL_DIR -----------------------------
-  local alDir = os.getenv("AL_DIR")
+  -- it's set in the global project config now
+  -- local AL_DIR = os.getenv("AL_DIR")
 
   -- check if the directory can be opened by lua and warn if not
-   if(alDir == nil) then
-    alDir = "/opt/aldebaran/info/naoqi"
-    print("Error: Enviroment variable AL_DIR not set. trying default: \"" .. alDir .. "\"")
+  if(AL_DIR == nil) then
+    AL_DIR = "/opt/aldebaran/info/naoqi"
+    print("Error: Enviroment variable AL_DIR not set. trying default: \"" .. AL_DIR .. "\"")
   end
--- if(alDir == nil) then
---    print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. alDir .. ")!")
+-- if(AL_DIR == nil) then
+--    print("WARN: Enviroment variale AL_DIR was not set or unable to access directory (" .. AL_DIR .. ")!")
 --	print("(PROBABLY) no compilation for DCM possible.\n")
 -- else
---    print("INFO: Configuring with NaoQi located in \"" .. alDir .. "\"")
+--    print("INFO: Configuring with NaoQi located in \"" .. AL_DIR .. "\"")
 --  end
   ----------------------------------------------------------------
 
@@ -29,31 +30,35 @@ project "libnaoth"
   
   print("Generating files for libnaoth")
 
-  libdirs { alDir .. "/lib/"}
+  libdirs { AL_DIR .. "/lib/"}
 
   includedirs {
-     "../Source/DCM", 
-     CORE_PATH,
-     "../../NaoTH-Tools/Source/",
-     alDir .. "/include/",
-     alDir .. "/include/alfactory/"
-  }
+	"../Source/DCM", 
+	CORE_PATH,
+	"../../NaoTH-Tools/Source/",
+	AL_DIR .. "/include/",
+	AL_DIR .. "/include/alfactory/"
+	}
 
   links {CORE, 
-	 "NaoTH-Commons",
-	 "almemoryfastaccess", 
-	 "alcommon",
-	 "gthread-2.0", 
-	 "glib-2.0",
-	 "gio-2.0",
-	 "gobject-2.0",
-	 "protobuf"
-      }
+	"NaoTH-Commons",
+	"almemoryfastaccess", 
+	"alcommon",
+	"gthread-2.0", 
+	"glib-2.0",
+	"gio-2.0",
+	"gobject-2.0",
+	"protobuf"
+	}
 
-  files{"../Source/DCM/libnaoth/**.cpp", "../Source/DCM/libnaoth/**.h",
-	"../Source/DCM/Tools/**.cpp", "../Source/DCM/Tools/**.h"
-     }
+  files{
+	"../Source/DCM/libnaoth/**.cpp", 
+	"../Source/DCM/libnaoth/**.h",
+	"../Source/DCM/Tools/**.cpp", 
+	"../Source/DCM/Tools/**.h"
+	}
   targetname "naoth"
+  
   
 project "naoth"
   kind "ConsoleApp"
@@ -61,44 +66,53 @@ project "naoth"
   
   print("Generating files for naoth")
 
-  f = io.popen ("bzr revno", "r");
-  defines{ "BZR_REVISION=" .. f:read("*l") } 
-  f:close ();
-
+  local f = io.popen ("bzr revno", "r");
+  local rev = f:read("*l")
+  if(rev == nil) then 
+    defines {"BZR_REVISION=-1"}
+  else 
+    defines{ "BZR_REVISION=" .. rev } 
+    f:close ();
+  end
   -- f = io.popen ("bzr info", "r");
   -- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
   -- f:close ();  
 
-  libdirs { alDir .. "/lib/"}
+  libdirs { AL_DIR .. "/lib/"}
 
   includedirs {
      "../Source/DCM", 
      CORE_PATH,
      "../../NaoTH-Tools/Source/",
-     alDir .. "/include/",
-     alDir .. "/include/alfactory/"
+     AL_DIR .. "/include/",
+     AL_DIR .. "/include/alfactory/"
   }
 
   links {CORE, 
-	 "NaoTH-Commons",
+	"NaoTH-Commons",
 	 -- "almemoryfastaccess", 
 	 -- "alcommon",
-	 "gthread-2.0", 
-	 "glib-2.0",
-	 "gio-2.0",
-	 "z",
-	 "gmodule-2.0",
-	 "gobject-2.0",
-	 "protobuf",
-   "opencv_core",
-   "opencv_imgproc",
-   "opencv_highgui",
-   "opencv_ml",
-   "asound"
+	"gthread-2.0", 
+	"glib-2.0",
+	"gio-2.0",
+	"z",
+	"gmodule-2.0",
+	"gobject-2.0",
+	"protobuf",
+	"opencv_core",
+	"opencv_imgproc",
+	"opencv_highgui",
+	"opencv_ml",
+	"asound"
 	 -- "rttools"
-      }
+	}
 
-  files{"../Source/DCM/naoth/**.cpp", "../Source/DCM/naoth/**.h",
-	"../Source/DCM/Tools/**.cpp", "../Source/DCM/Tools/**.h"}
+  files{
+	"../Source/DCM/naoth/**.cpp", 
+	"../Source/DCM/naoth/**.h",
+	"../Source/DCM/Tools/**.cpp", 
+	"../Source/DCM/Tools/**.h"
+	}
   targetname "naoth"
+  
 -- END DCM

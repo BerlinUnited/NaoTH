@@ -29,11 +29,12 @@ public:
   class EndPoint
   {
   public:
-    EndPoint():color(ColorClasses::none), ScanLineID(0){}
+    EndPoint():color(ColorClasses::none), ScanLineID(0), valid(false){}
     Vector2<int> posInImage;
     Vector2<double> posOnField;
     ColorClasses::Color color;
     unsigned int ScanLineID;
+    bool valid;
   };
 
   /** */
@@ -61,17 +62,17 @@ public:
     endPoints.clear();
   }//end reset
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "ScanLine Edgels:" << endl << "------" << endl;
+    stream << "ScanLine Edgels:" << std::endl << "------" << std::endl;
     for(unsigned int i = 0; i < numOfSeenEdgels; i++)
     {
-      stream << "Edgel " << i << endl;
-      stream << "  Begin = " << scanLineEdgels[i].begin << " angle = " << scanLineEdgels[i].begin_angle << endl;
-      stream << "  Center = " << scanLineEdgels[i].center << " angle = " << scanLineEdgels[i].center_angle << endl;
-      stream << "  End = " << scanLineEdgels[i].end << " angle = " << scanLineEdgels[i].end_angle << endl;
-      stream << "  ScanLine = " << scanLineEdgels[i].ScanLineID << " run = " << scanLineEdgels[i].runID << endl;
-      stream << "  is valid = " << (scanLineEdgels[i].valid ? "true" : "false") << endl;
+      stream << "Edgel " << i << std::endl;
+      stream << "  Begin = " << scanLineEdgels[i].begin << " angle = " << scanLineEdgels[i].begin_angle << std::endl;
+      stream << "  Center = " << scanLineEdgels[i].center << " angle = " << scanLineEdgels[i].center_angle << std::endl;
+      stream << "  End = " << scanLineEdgels[i].end << " angle = " << scanLineEdgels[i].end_angle << std::endl;
+      stream << "  ScanLine = " << scanLineEdgels[i].ScanLineID << " run = " << scanLineEdgels[i].runID << std::endl;
+      stream << "  is valid = " << (scanLineEdgels[i].valid ? "true" : "false") << std::endl;
     }
   }//end print
 };

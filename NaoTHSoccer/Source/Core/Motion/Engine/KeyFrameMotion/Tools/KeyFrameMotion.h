@@ -5,8 +5,8 @@
 * Declaration of class KeyFrameMotion
 */
 
-#ifndef __KeyFrameMotion_h_
-#define __KeyFrameMotion_h_
+#ifndef _KeyFrameMotion_h_
+#define _KeyFrameMotion_h_
 
 #include "MotionNet.h"
 #include "Tools/Math/Common.h"
@@ -16,7 +16,7 @@
 class KeyFrameMotion: public AbstractMotion, public naoth::Printable
 {
 private:
-  string name;
+  std::string name;
   MotionNet currentMotionNet;
 
   MotionNet::KeyFrame currentKeyFrame;
@@ -48,11 +48,11 @@ public:
   virtual void init();
   virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
   
-  void print(ostream& stream) const;
+  void print(std::ostream& stream) const;
 
   void set(MotionNet& motionNet){currentMotionNet = motionNet;}
   MotionNet getCurrentMotionNet(){return currentMotionNet;}
   
 };
 
-#endif //__KeyFrameMotion_h_
+#endif // _KeyFrameMotion_h_

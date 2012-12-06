@@ -5,8 +5,8 @@
 * Definition of class MotionSymbols
 */
 
-#ifndef __MotionSymbols_H_
-#define __MotionSymbols_H_
+#ifndef _MotionSymbols_H_
+#define _MotionSymbols_H_
 
 #include <ModuleFramework/Module.h>
 #include <XabslEngine/XabslEngine.h>
@@ -61,6 +61,7 @@ public:
     relativeToRightFootYy(0.0),
     relativeToRightFootAa(0.0),
     isAvoidObstacle(false),
+    headSpeed(0.0),
 
     walkStyle(normal),
     stepControlFoot(none),

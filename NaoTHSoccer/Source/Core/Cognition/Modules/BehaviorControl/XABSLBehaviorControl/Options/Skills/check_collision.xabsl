@@ -1,0 +1,127 @@
+/** This option will do an emergency stop on a collision and nothing otherwise */
+option check_collision
+{
+
+  initial state _init
+  {
+    decision
+    {
+      if(collision.colliding)
+        goto emergencystop;
+      else
+        stay;
+    }
+    action
+    {
+      //do nothing
+    }
+  }
+
+  state emergencystop 
+  {
+    decision 
+    {
+      //if(!collision.colliding)
+      if (state_time > 1000)
+        goto go_back;
+      else
+        stay;
+    }
+    action
+    {
+      motion.type = stand;
+      motion.execute_immediately = true;
+      set_left_eye=red_green;
+      set_right_eye=red_green;
+    }
+  }
+
+  state go_back
+  {
+    decision 
+    {
+      //attacker dont have collision
+      //if(ball.time_since_last_seen < 1000 && ball.angle > 0)  
+      //   goto go_back_right;
+      //else  if (ball.time_since_last_seen < 1000 && ball.angle < 0)
+      //   goto go_back_left;
+      if (random > 0.5)
+        goto go_back_right;
+      else
+        goto go_back_left;
+    }
+    action
+    {
+      motion.type = stand;
+      motion.execute_immediately = true;
+      set_left_eye=red_green;
+      set_right_eye=red_green;
+    }
+  }
+
+  state go_back_right 
+  {
+    decision {
+      if(state_time > 1500)
+        goto step_forward;
+      else 
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = -50;
+      motion.walk_speed.rot = -20;
+            set_left_eye=red_green;
+      set_right_eye=red_green;
+
+    }
+  }
+
+  
+  state go_back_left 
+  {
+    decision {
+      if(state_time > 1500)
+        goto step_forward;
+      else 
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+      motion.walk_speed.x = -100;
+      motion.walk_speed.y = 50;
+      motion.walk_speed.rot = 20;
+            set_left_eye=red_green;
+      set_right_eye=red_green;
+
+    }
+  }
+
+  state step_forward 
+  {
+    decision {
+      if(state_time > 1000)
+        goto _init;
+      else 
+        stay;
+    }
+    action {
+      motion.type = walk;
+      motion.walk.coordinate = hip;
+      motion.walk.style = fast;
+      motion.walk_speed.x = 100;
+      motion.walk_speed.y = 0;
+      motion.walk_speed.rot = 0;
+            set_left_eye=red_green;
+      set_right_eye=red_green;
+
+    }
+  }  
+
+  
+}

@@ -14,6 +14,7 @@ TeamBallLocator::TeamBallLocator()
 {
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_on_field", "draw the team ball model on the field", false);
   DEBUG_REQUEST_REGISTER("TeamBallLocator:draw_ball_locally", "draw the team ball model on the local coordination", false);
+
 }
 
 void TeamBallLocator::execute()
@@ -31,6 +32,8 @@ void TeamBallLocator::execute()
       const naothmessages::TeamCommMessage& msg = i->second.message;
       if ( msg.has_ballposition() )
       {
+
+
         Vector2<double> ballPos;
         ballPos.x = msg.ballposition().x();
         ballPos.y = msg.ballposition().y();
@@ -52,6 +55,22 @@ void TeamBallLocator::execute()
         {
           getTeamBallModel().positionOnField += ballPos;
           num++;
+        }
+
+        // goalie
+        if(i->first == 1) 
+        {
+          getTeamBallModel().goaliePositionOnField = ballPos;
+          getTeamBallModel().goaliePosition = getRobotPose() / getTeamBallModel().goaliePositionOnField;
+          getTeamBallModel().goalieTime = i->second.frameInfo.getTime();
+        }
+
+        // striker
+        if (msg.wasstriker()) 
+        {
+          getTeamBallModel().strikerPositionOnField = ballPos;
+          getTeamBallModel().strikerPosition = getRobotPose() / getTeamBallModel().strikerPositionOnField;
+          getTeamBallModel().strikerTime = i->second.frameInfo.getTime();
         }
       }
     //}

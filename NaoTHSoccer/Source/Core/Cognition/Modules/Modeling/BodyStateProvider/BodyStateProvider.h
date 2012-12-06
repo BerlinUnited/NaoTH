@@ -14,6 +14,7 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
 #include "Representations/Infrastructure/FSRData.h"
 #include "Representations/Infrastructure/FrameInfo.h"
+#include "Representations/Infrastructure/JointData.h"
 
 #include "Representations/Modeling/BodyState.h"
 
@@ -26,6 +27,7 @@ BEGIN_DECLARE_MODULE(BodyStateProvider)
   REQUIRE(InertialSensorData)
   REQUIRE(FSRData)
   REQUIRE(FrameInfo)
+  REQUIRE(SensorJointData)
 
   PROVIDE(BodyState)
 END_DECLARE_MODULE(BodyStateProvider)
@@ -47,6 +49,8 @@ private:
   void updateTheFallDownState();
 
   void updateTheFootState();
+
+  void updateTheLegTemperature();
 
   // internal data
   RingBufferWithSum<Vector2<double>, 10> inertialBuffer;

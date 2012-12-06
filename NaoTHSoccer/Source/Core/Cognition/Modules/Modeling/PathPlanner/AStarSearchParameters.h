@@ -30,7 +30,9 @@ public:
   /** The maximum expansion radius*/
   double maxExpansionRadius;
   /** The minimum distance to the goal*/
-  double distanceToGoal;
+  double distanceToTarget;
+  /** The distance to own penalty area*/
+  double distanceToOwnPenaltyArea;
   /** The radius of obstacle */
   double obstacleRadius;
   /** The radius of a robot */
@@ -43,6 +45,8 @@ public:
   double standardGradientLength;
   /** The number of consecutive calls of the A*-search */
   double numberOfCalls;
+  /** The max number of nodes, the could be expanded*/
+  double maxNumberOfNodes;
   
   virtual void print(std::ostream& stream) const {}
 

@@ -32,6 +32,7 @@
 BEGIN_DECLARE_MODULE(PerceptProjector)
   REQUIRE(Image)
   REQUIRE(CameraMatrix)
+  REQUIRE(CameraInfo)
   REQUIRE(FieldInfo)
   REQUIRE(SensingGoalModel)
   

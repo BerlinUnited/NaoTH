@@ -121,7 +121,7 @@ void BodyContourProvider::execute()
   DEBUG_REQUEST("BodyContourProvider:draw_body_contour_lines",
     if (getBodyContour().lines.size() >= 2)
     {
-      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); iter++)
+      for(vector<BodyContour::Line>::const_iterator iter=getBodyContour().lines.begin(); iter!=getBodyContour().lines.end(); ++iter)
       {
         LINE_PX(ColorClasses::skyblue,iter->p1.x, iter->p1.y, iter->p2.x, iter->p2.y);
       }// end for
@@ -226,13 +226,12 @@ void BodyContourProvider::execute()
 }// end execute
 
 // TODO: Comment
-inline bool BodyContourProvider::withinImage(const Vector2<double> point, const CameraInfo& cameraInfo)
-{
-  if (point.x >= 0 && point.x <= cameraInfo.resolutionWidth
-      && point.y >= 0 && point.y <= cameraInfo.resolutionHeight)
-  { return true; } 
-  else { return false; }
+inline bool BodyContourProvider::withinImage(const Vector2<double>& point) const
+{ 
+  return ((point.x >= 0 && point.x < (int)getImage().cameraInfo.resolutionWidth) &&
+          (point.y >= 0 && point.y < (int)getImage().cameraInfo.resolutionHeight));
 }
+
 // TODO: Comment
 inline void BodyContourProvider::initializeGrid()
 {
@@ -254,7 +253,7 @@ inline void BodyContourProvider::eraseGrid()
 }
 
 // TODO:Comment
-inline void BodyContourProvider::cellPos(BodyContour::Line line, Vector2<int>& firstCell, Vector2<int>& secondCell)
+inline void BodyContourProvider::cellPos(const BodyContour::Line& line, Vector2<int>& firstCell, Vector2<int>& secondCell) const
 {
    firstCell.x = line.p1.x / getBodyContour().stepSize;
    firstCell.y = line.p1.y / getBodyContour().stepSize;
@@ -288,7 +287,7 @@ inline void BodyContourProvider::cellPos(BodyContour::Line line, Vector2<int>& f
    }
 }
 
-inline void BodyContourProvider::cellPos(Vector2<int> point, Vector2<int>& cell)
+inline void BodyContourProvider::cellPos(const Vector2<int>& point, Vector2<int>& cell) const
 {
   cell.x = point.x / getBodyContour().stepSize;
   cell.y = point.y / getBodyContour().stepSize;
@@ -308,7 +307,7 @@ inline void BodyContourProvider::cellPos(Vector2<int> point, Vector2<int>& cell)
 }
 
 // TODO: Comment
-inline void BodyContourProvider::setCells(BodyContour::Line line, BodyContour& bodyContour)
+inline void BodyContourProvider::setCells(const BodyContour::Line& line, BodyContour& bodyContour) const
 {
   Vector2<int> firstCell, secondCell;
   cellPos(line, firstCell, secondCell);
@@ -481,7 +480,7 @@ inline void BodyContourProvider::setCells(BodyContour::Line line, BodyContour& b
 
 // TODO: Comment
 
-inline void BodyContourProvider::pushLine(BodyContour::Line line, BodyContour& bodyContour)
+inline void BodyContourProvider::pushLine(const BodyContour::Line& line, BodyContour& bodyContour)
 {
   Vector2<int> cell1, cell2;
   int cell1Line, cell2Line, point1Line, point2Line;
@@ -521,9 +520,14 @@ inline void BodyContourProvider::pushLine(BodyContour::Line line, BodyContour& b
 }
 
 // TODO: Comment
-inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vector3<double> >& c, float sign, 
-                              const CameraInfo& cameraInfo,  const CameraMatrix& cameraMatrix,
-                              BodyContour& bodyContour, BodyContour::bodyPartID id)
+inline void BodyContourProvider::add(
+  const Pose3D& origin, 
+  const std::vector<Vector3<double> >& c, 
+  float sign, 
+  const CameraInfo& cameraInfo,  
+  const CameraMatrix& cameraMatrix,
+  BodyContour& bodyContour, 
+  BodyContour::bodyPartID id)
 {
   // some variables
   const Vector2<int> frameUpperLeft(0,0);
@@ -557,8 +561,8 @@ inline void BodyContourProvider::add(const Pose3D& origin, const std::vector<Vec
     BodyContour::Line tempLine = BodyContour::Line(q1, q2, lineNumber, id);
 
     // estimate, whether the points are within the image-boundaries
-    bool p1InImage = withinImage(tempLine.p1, cameraInfo);
-    bool p2InImage = withinImage(tempLine.p2, cameraInfo);
+    bool p1InImage = withinImage(tempLine.p1);
+    bool p2InImage = withinImage(tempLine.p2);
     // if the points aren't behind the robot 
     if (q1.x != -1 && q2.x != -1)
     {

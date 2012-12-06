@@ -9,6 +9,7 @@
 #include "PlatformInterface/Platform.h"
 
 using namespace naoth;
+using namespace std;
 
 InitialMotion::InitialMotion() 
   :
