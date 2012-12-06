@@ -39,7 +39,8 @@ string CameraSettings::getCameraSettingsName(CameraSettingID id)
     case Exposure: return "Exposure"; break;
     case ExposureCorrection: return "ExposureCorrection"; break;
     case FPS: return "FPS"; break;
-    case Resolution: return "Resolution"; break;
+    case ResolutionWidth: return "ResolutionWidth"; break;
+    case ResolutionHeight: return "ResolutionHeight"; break;
     case CameraSelection: return "CameraSelection"; break;
     case BacklightCompensation: return "BacklightCompensation"; break;
     case WhiteBalance: return "WhiteBalance"; break;

@@ -38,6 +38,7 @@
 #include "Representations/Infrastructure/ColorTable64.h"
 //#include "Representations/Perception/BlobPercept.h"
 #include "Representations/Perception/FieldPercept.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/BallPercept.h"
 #include "Representations/Perception/PlayersPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
@@ -53,6 +54,7 @@ BEGIN_DECLARE_MODULE(ImageProcessor)
   REQUIRE(Image)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
+  REQUIRE(ArtificialHorizon)
 
   PROVIDE(BallPercept)
   PROVIDE(PlayersPercept)

@@ -24,7 +24,7 @@ public:
   rctc::Message data;
   bool valid;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << data;
   }
@@ -35,7 +35,7 @@ class RCTCTeamMessageDataIn: public Printable
 public:
   std::vector<rctc::Message> data;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream<<"size = "<<data.size()<<"\n";
     for(unsigned int i=0; i < data.size(); i++)

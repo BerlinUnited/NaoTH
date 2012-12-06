@@ -20,6 +20,7 @@
 #include "Representations/Infrastructure/ColorTable64.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 
 #include "Tools/ImageProcessing/ImageDrawings.h"
@@ -40,6 +41,7 @@ BEGIN_DECLARE_MODULE(HistogramFieldDetector)
 //  REQUIRE(ColorTable64)
   REQUIRE(ColorClassificationModel)
   REQUIRE(CameraMatrix)
+  REQUIRE(ArtificialHorizon)
   REQUIRE(ColoredGrid)
   REQUIRE(Histogram)
 

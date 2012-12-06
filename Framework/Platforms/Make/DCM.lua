@@ -66,10 +66,14 @@ project "naoth"
   
   print("Generating files for naoth")
 
-  f = io.popen ("bzr revno", "r");
-  defines{ "BZR_REVISION=" .. f:read("*l") } 
-  f:close ();
-
+  local f = io.popen ("bzr revno", "r");
+  local rev = f:read("*l")
+  if(rev == nil) then 
+    defines {"BZR_REVISION=-1"}
+  else 
+    defines{ "BZR_REVISION=" .. rev } 
+    f:close ();
+  end
   -- f = io.popen ("bzr info", "r");
   -- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
   -- f:close ();  

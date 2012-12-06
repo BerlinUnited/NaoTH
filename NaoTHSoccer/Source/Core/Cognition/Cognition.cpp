@@ -41,9 +41,11 @@
 #include "Modules/Infrastructure/GameController/GameController.h"
 #include "Modules/Infrastructure/OpenCV/OpenCVImageProvider.h"
 #include "Modules/Infrastructure/BatteryAlert/BatteryAlert.h"
+#include "Modules/Infrastructure/Camera/CameraInfoSetter.h"
 
 // Perception
-#include "Modules/Perception/CameraMatrixProvider/CameraMatrixProvider.h"
+#include "Modules/Perception/CameraMatrixCorrector/CameraMatrixCorrector.h"
+#include "Modules/Perception/KinematicChainProvider/KinematicChainProvider.h"
 #include "Modules/Perception/VisualCortex/ImageCorrector.h"
 #include "Modules/Perception/VisualCortex/BaseColorClassifier.h"
 #include "Modules/Perception/VisualCortex/FieldColorClassifier.h"
@@ -56,6 +58,7 @@
 #include "Modules/Perception/PerceptionsVisualization/PerceptionsVisualization.h"
 #include "Modules/Perception/OpenCV/FieldSideDetector.h"
 #include "Modules/Perception/OpenCV/OpenCVDebug.h"
+#include "Modules/Perception/ArtificialHorizonCalculator/ArtificialHorizonCalculator.h"
 
 // Modeling
 #include "Modules/Modeling/BodyStateProvider/BodyStateProvider.h"
@@ -133,9 +136,12 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   REGISTER_MODULE(GameController);
   REGISTER_MODULE(OpenCVImageProvider);
   REGISTER_MODULE(BatteryAlert);
+  REGISTER_MODULE(CameraInfoSetter);
 
   // perception
-  REGISTER_MODULE(CameraMatrixProvider);
+  REGISTER_MODULE(CameraMatrixCorrector);
+  REGISTER_MODULE(KinematicChainProvider);
+  REGISTER_MODULE(ArtificialHorizonCalculator);
   REGISTER_MODULE(ImageCorrector);
   REGISTER_MODULE(FieldColorClassifier);
   REGISTER_MODULE(SimpleFieldColorClassifier);

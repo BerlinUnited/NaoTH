@@ -69,7 +69,7 @@ void ScanLineEdgelDetectorDifferential::execute()
 
 
   // scan only inside the estimated field region
-  Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getCameraMatrix().horizon).points[0];
+  Vector2<unsigned int> beginField = getFieldPercept().getLargestValidRect(getArtificialHorizon()).points[0];
 
   // horizontal stepsize between the scanlines
   int step = (getImage().cameraInfo.resolutionWidth - 1) / (theParameters.scanline_count - 1);

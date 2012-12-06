@@ -10,6 +10,11 @@
 
 #include <stdlib.h>
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
+
 #include "MorphologyProcessor/ForwardKinematics.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 
@@ -22,10 +27,15 @@
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
+#include <Tools/CameraGeometry.h>
 
 #include "SensorFilter/InertiaSensorFilter.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
+
+#ifndef WIN32
+#include <unistd.h>
+#endif // ifndef WIN32
 
 #ifdef NAO_OLD
 #include "Tools/Debug/DebugBufferedOutput.h"
@@ -114,12 +124,14 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   g_message("Motion register end");
 
   // messages from motion to cognition
+  platformInterface.registerMotionOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(theBlackBoard.theCameraMatrix);
   platformInterface.registerMotionOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
   platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
   //platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
   platformInterface.registerMotionOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
 
   // messages from cognition to motion
+  platformInterface.registerMotionInputChanel<CameraInfo, Serializer<CameraInfo> >(theBlackBoard.theCameraInfo);
   platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
   platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
 
@@ -263,10 +275,7 @@ void Motion::processSensorData()
 
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
 
-  CameraMatrixCalculator::calculateCameraMatrix(
-    theBlackBoard.theCameraMatrix,
-    theBlackBoard.theHeadMotionRequest.cameraID,
-    theBlackBoard.theKinematicChain);
+  updateCameraMatrix();
 
   theOdometryCalculator.calculateOdometry(
     theBlackBoard.theOdometryData,
@@ -347,6 +356,32 @@ void Motion::processSensorData()
 
 }//end processSensorData
 
+void Motion::updateCameraMatrix()
+{
+  CameraMatrix& cameraMatrix = theBlackBoard.theCameraMatrix;
+  CameraMatrixCalculator::calculateCameraMatrix(
+    cameraMatrix,
+    theBlackBoard.theCameraInfo,
+    theBlackBoard.theKinematicChain);
+
+  cameraMatrix.valid = true;
+
+  MODIFY("CameraMatrix:translation:x", cameraMatrix.translation.x);
+  MODIFY("CameraMatrix:translation:y", cameraMatrix.translation.y);
+  MODIFY("CameraMatrix:translation:z", cameraMatrix.translation.z);
+
+  double correctionAngleX = 0.0;
+  double correctionAngleY = 0.0;
+  double correctionAngleZ = 0.0;
+  MODIFY("CameraMatrix:correctionAngle:x", correctionAngleX);
+  MODIFY("CameraMatrix:correctionAngle:y", correctionAngleY);
+  MODIFY("CameraMatrix:correctionAngle:z", correctionAngleZ);
+
+  cameraMatrix.rotation.rotateX(correctionAngleX);
+  cameraMatrix.rotation.rotateY(correctionAngleY);
+  cameraMatrix.rotation.rotateZ(correctionAngleZ);
+
+} // end updateCameraMatrix
 
 void Motion::postProcess()
 {

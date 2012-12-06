@@ -95,7 +95,7 @@ void VirtualVisionProcessor::updateBall()
   BallPercept& theBallPercept = getBallPercept();
   const FrameInfo& theFrameInfo = getFrameInfo();
   const FieldInfo& theFieldInfo = getFieldInfo();
-  const CameraInfo& theCameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfo& theCameraInfo = getCameraInfo();
   const CameraMatrix& theCameraMatrix = getCameraMatrix();
   map<string, Vector3<double> >::const_iterator iter = theVirtualVision.data.find("B");
   if ( iter != theVirtualVision.data.end() )
@@ -106,7 +106,7 @@ void VirtualVisionProcessor::updateBall()
     theBallPercept.bearingBasedOffsetOnField.x = p.x;
     theBallPercept.bearingBasedOffsetOnField.y = p.y;
 
-    theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.focalLength;
+    theBallPercept.radiusInImage = theFieldInfo.ballRadius / iter->second.x * theCameraInfo.getFocalLength();
     theBallPercept.centerInImage = CameraGeometry::relativePointToImage(theCameraMatrix, theCameraInfo, p);
   }
   else
@@ -119,7 +119,7 @@ void VirtualVisionProcessor::updateGoal()
 {
   GoalPercept& theGoalPercept = getGoalPercept();
   const VirtualVision& theVirtualVision = getVirtualVision();
-  const CameraInfo& theCameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfo& theCameraInfo = getCameraInfo();
   const CameraMatrix& theCameraMatrix = getCameraMatrix();
   theGoalPercept.reset();
 
@@ -276,7 +276,7 @@ void VirtualVisionProcessor::updateLine()
 void VirtualVisionProcessor::findIntersections()
 {
   LinePercept& theLinePercept = getLinePercept();
-  const CameraInfo& theCameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfo& theCameraInfo = getCameraInfo();
   const CameraMatrix& theCameraMatrix = getCameraMatrix();
   for (unsigned int i = 0; i < theLinePercept.lines.size(); i++)
   {
@@ -522,7 +522,7 @@ void VirtualVisionProcessor::classifyIntersections(vector<LinePercept::FieldLine
 void VirtualVisionProcessor::addLine(const Vector3<double>& pol0, const Vector3<double>& pol1)
 {
   const CameraMatrix& theCameraMatrix = getCameraMatrix();
-  const CameraInfo& theCameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfo& theCameraInfo = getCameraInfo();
 
   Vector3<double> bP = calculatePosition(pol0);
   Vector3<double> eP = calculatePosition(pol1);

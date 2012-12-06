@@ -24,6 +24,7 @@
 #include "Representations/Infrastructure/Image.h"
 #include "Representations/Modeling/ColorClassificationModel.h"
 #include "Representations/Infrastructure/CameraSettings.h"
+#include "Representations/Perception/ArtificialHorizon.h"
 #include "Representations/Perception/FieldPercept.h"
 #include "Representations/Perception/CameraMatrix.h"
 #include "Representations/Perception/ScanLineEdgelPercept.h"
@@ -36,6 +37,8 @@ BEGIN_DECLARE_MODULE(ScanLineEdgelDetector)
   REQUIRE(CameraMatrix)
   REQUIRE(FieldPercept)
   REQUIRE(BodyContour)
+  REQUIRE(ArtificialHorizon)
+
   PROVIDE(ScanLineEdgelPercept)
 END_DECLARE_MODULE(ScanLineEdgelDetector)
 

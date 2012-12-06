@@ -17,6 +17,7 @@
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Perception/CameraMatrix.h>
+#include <Representations/Infrastructure/CameraInfo.h>
 #include <Representations/Infrastructure/LEDData.h>
 #include <Representations/Infrastructure/RobotInfo.h>
 #include "Representations/Infrastructure/CalibrationData.h"
@@ -75,6 +76,7 @@ public:
   // SerialSensorData theSerialSensorData;
   // SerialSensorDataRequest theSerialSensorDataRequest;
   CameraMatrix theCameraMatrix;
+  naoth::CameraInfo theCameraInfo;
   MotionStatus theMotionStatus;
   OdometryData theOdometryData;
   InertialModel theInertialModel;

@@ -102,7 +102,6 @@ void PotentialFieldProvider::execute()
   //Vector2<double> attackDirectionPreviewRFoot = getMotionStatus().plannedMotion.rFoot / attackDirection;
 
 
-
   DEBUG_REQUEST("PotentialFieldProvider:attackDirection:local",
     FIELD_DRAWING_CONTEXT;
 
