@@ -33,6 +33,10 @@
 
 #include <DebugCommunication/DebugCommandManager.h>
 
+#ifndef WIN32
+#include <unistd.h>
+#endif // ifndef WIN32
+
 #ifdef NAO_OLD
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings.h"

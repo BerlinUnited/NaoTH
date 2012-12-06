@@ -71,11 +71,20 @@ solution "NaoTHSoccer"
     includedirs {
       EXTERN_PATH .. "/include/",
       EXTERN_PATH .. "/include/glib-2.0/",
-      EXTERN_PATH .. "/lib/glib-2.0/include/"
-	}
+      EXTERN_PATH .. "/lib/glib-2.0/include/",
+      "/usr/include/"
+	  }
     libdirs {
       EXTERN_PATH .. "/lib"
     }
+    
+    if os.get() == "linux" then      
+      -- try to get the pkg-config include-instructions
+      local f = io.popen("pkg-config --cflags glib-2.0")
+      local l = f:read("*a")
+      buildoptions { l }
+    end
+
     targetdir "../dist/Native"
     
   configuration {"Nao"}
