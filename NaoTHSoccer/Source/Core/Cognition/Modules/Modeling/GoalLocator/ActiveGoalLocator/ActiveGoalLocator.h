@@ -9,9 +9,6 @@
 #define _ActiveGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
-#include "AGLParameters.h"
-#include "AGLSampleSet.h"
-#include "AGLSampleBuffer.h"
 
 // Debug
 #include "Tools/Debug/DebugRequest.h"
@@ -32,6 +29,10 @@
 #include <vector>
 #include "Tools/Math/Geometry.h"
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
+
+// local stuff
+#include "AGLParameters.h"
+#include "AGLSampleSet.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -62,14 +63,15 @@ public:
 
 private:
 
-  double goalWidth;
-
   /** */
   AGLParameters parameters;
 
+
   /** */
-  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
+  typedef RingBuffer<AGLBSample, 67> AGLSampleBuffer;
   AGLSampleBuffer theSampleBuffer;
+  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
+  
 
   /** */
   OdometryData lastRobotOdometry;
@@ -80,8 +82,11 @@ private:
   public:
       Cluster(){}
 
-      CanopyClustering<AGLSampleSet> canopyClustering;
       AGLSampleSet sampleSet;
+
+      /*
+      CLUSTERING NOT USED YET
+      CanopyClustering<AGLSampleSet> canopyClustering;
 
       // wrapper for easy use
       void cluster()
@@ -93,6 +98,7 @@ private:
       {
         return canopyClustering.cluster(sampleSet, start);
       }
+      */
   };
 
   /** */

@@ -35,9 +35,6 @@ ActiveGoalLocator::ActiveGoalLocator()    :
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", false);
 
-  goalWidth = (getFieldInfo().opponentGoalPostLeft - getFieldInfo().opponentGoalPostRight).abs();
-
-
   ccSamples.resize(10);
 
   for (unsigned int x = 0; x < ccSamples.size(); x++) 
@@ -45,9 +42,11 @@ ActiveGoalLocator::ActiveGoalLocator()    :
     ccSamples[x].sampleSet.resetLikelihood();
   }
 
+  /*
+  CLUSTERING NOT USED YET
   for(unsigned int i = 0; i < ccSamples.size(); i++) 
     ccSamples[i].canopyClustering.setClusterThreshold(parameters.thresholdCanopy);
-
+  */
 } //Constructor
 
 void ActiveGoalLocator::execute()
@@ -146,7 +145,7 @@ void ActiveGoalLocator::execute()
         bufferSample.translation = getGoalPercept().getPost(i).position;
         bufferSample.color       = getGoalPercept().getPost(i).color;
         bufferSample.frameNumber = getFrameInfo().getFrameNumber();
-        theSampleBuffer.samples.add(bufferSample);
+        theSampleBuffer.add(bufferSample);
       }
 
   }//end for i < getGoalPercept().getNumberOfSeenPosts()
@@ -223,7 +222,7 @@ void ActiveGoalLocator::execute()
        {
           if (ccSamples[i].sampleSet.getIsValid()) 
           {
-              distError = abs((ccSamples[x].sampleSet.mean - ccSamples[i].sampleSet.mean).abs() - goalWidth);
+              distError = abs((ccSamples[x].sampleSet.mean - ccSamples[i].sampleSet.mean).abs() - getFieldInfo().goalWidth);
 
               //check if error becomes better
               if (distError < lastDistError) 
@@ -287,7 +286,8 @@ void ActiveGoalLocator::execute()
 
   debugDrawings();
   debugPlots();
-  debugStdOut();
+
+  DEBUG_REQUEST("ActiveGoalLocator:which_filter_are_valid_to_StdOut", debugStdOut(); );
 
   STOPWATCH_STOP("ActiveGoalLocator");
 
@@ -366,7 +366,6 @@ void ActiveGoalLocator::debugDrawings()
 
 void ActiveGoalLocator::debugPlots() 
 {
-
   for(unsigned int x = 0; x < ccSamples.size(); x++) 
   {
     string id = convertIntToString(x);
@@ -386,13 +385,11 @@ void ActiveGoalLocator::debugPlots()
 
 void ActiveGoalLocator::debugStdOut() 
 {
-  DEBUG_REQUEST("ActiveGoalLocator:which_filter_are_valid_to_StdOut",
-    for(unsigned int i = 0; i < ccSamples.size(); i++) 
-    {
-      if (ccSamples[i].sampleSet.getIsValid())
-        std::cout << "Filter '" << i << "' is Valid      " << std::endl;
-    }
-  );
+  for(unsigned int i = 0; i < ccSamples.size(); i++) 
+  {
+    if (ccSamples[i].sampleSet.getIsValid())
+      std::cout << "Filter '" << i << "' is Valid      " << std::endl;
+  }
 }//end debugStdOut
 
 void ActiveGoalLocator::updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const
@@ -456,22 +453,21 @@ void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
 
 void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet)
 {
-
   AGLSampleBuffer tmpSampleSetBuffer; //copy
-  for (int i = 0; i < sampleSetBuffer.samples.getNumberOfEntries(); i++) 
+  for (int i = 0; i < sampleSetBuffer.getNumberOfEntries(); i++) 
   {
-      tmpSampleSetBuffer.samples.add(sampleSetBuffer[i]);
+      tmpSampleSetBuffer.add(sampleSetBuffer[i]);
   }
 
-  sampleSetBuffer.samples.clear(); //just clear and re-fill with unused entries
+  sampleSetBuffer.clear(); //just clear and re-fill with unused entries
 
   //already known that sampleSet is empty!
   int n = 0;
-  for (int i = 0; i < tmpSampleSetBuffer.samples.getNumberOfEntries(); i++) 
+  for (int i = 0; i < tmpSampleSetBuffer.getNumberOfEntries(); i++) 
   {
     //search all particles with ID of largest cluster and add them
     //TODO make n to param
-    if (n < tmpSampleSetBuffer.samples.getNumberOfEntries() && n < (int)sampleSet.size()  && tmpSampleSetBuffer[i].cluster == largestClusterID && largestClusterID > -1) {
+    if (n < tmpSampleSetBuffer.getNumberOfEntries() && n < (int)sampleSet.size()  && tmpSampleSetBuffer[i].cluster == largestClusterID && largestClusterID > -1) {
 
       AGLSample tmpSample;
       tmpSample.color = tmpSampleSetBuffer[i].color;
@@ -483,7 +479,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
     } 
     else //if not used for filter, just copy
     { 
-        sampleSetBuffer.samples.add(tmpSampleSetBuffer[i]);
+        sampleSetBuffer.add(tmpSampleSetBuffer[i]);
     }
   }//end for
 
@@ -493,10 +489,10 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
 
 void ActiveGoalLocator::updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const
 {
-  if( sampleSet.samples.getNumberOfEntries() > 0 &&
-      getFrameInfo().getFrameNumber() - sampleSet.samples.first().frameNumber > frames)
+  if( sampleSet.getNumberOfEntries() > 0 &&
+      getFrameInfo().getFrameNumber() - sampleSet.first().frameNumber > frames)
   {
-    sampleSet.samples.removeFirst();
+    sampleSet.removeFirst();
   }
 }//end updateByFrameNumber
 

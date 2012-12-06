@@ -133,7 +133,13 @@ template <class V, int maxSize> class RingBuffer
       numberOfEntries = 0; 
     }
 
+    // TODO: remove, obsolete
     inline int getNumberOfEntries() const
+    {
+      return numberOfEntries;
+    }
+
+    inline unsigned int size() const
     {
       return numberOfEntries;
     }
