@@ -64,23 +64,10 @@ public:
 private:
 
   /** */
-  AGLParameters parameters;
-
-
-  /** */
-  typedef RingBuffer<AGLBSample, 67> AGLSampleBuffer;
-  AGLSampleBuffer theSampleBuffer;
-  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
-  
-
-  /** */
-  OdometryData lastRobotOdometry;
-
-  /** */
-  class Cluster
+  class PostHypothesis
   {
   public:
-      Cluster(){}
+      PostHypothesis(){}
 
       AGLSampleSet sampleSet;
 
@@ -101,24 +88,55 @@ private:
       */
   };
 
+
   /** */
-  std::vector<Cluster> ccSamples;
+  AGLParameters parameters;
+
+  /** */
+  OdometryData lastRobotOdometry;
+
+  /** percept buffer */
+  typedef RingBuffer<AGLBSample, 67> AGLSampleBuffer;
+  AGLSampleBuffer theSampleBuffer;
+  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
+  
+  /** */
+  std::vector<PostHypothesis> ccSamples;
+
+
+private:
+
+  /** update the buffer */
+  void updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const;
+
+
+
+  /** odometry update */
+  void updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const;
+  void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
+
+  /** sensor update */
+  double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
+  void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
+
+  /** resamping */
+  void resampleGT07(AGLSampleSet& sampleSet, bool noise);
+
+  
+  
+  /** check if a new hypothesis may be creted */
+  void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
+
+  /** create a new hypothsis */
+  void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
+  
+  
 
   /** debug visualization */
   void debugDrawings();
   void debugPlots();
   void debugStdOut();
 
-
-  void resampleGT07(AGLSampleSet& sampleSet, bool noise);
-
-  void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
-  void updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const;
-  void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
-  void updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const;
-  double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
-  void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
-  void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
 
   //Tools
   string convertIntToString(int number);

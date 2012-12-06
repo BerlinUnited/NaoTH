@@ -19,19 +19,16 @@
 #include "Representations/Modeling/GoalModel.h"
 #include <cmath>
 
-ActiveGoalLocator::ActiveGoalLocator()    :
-    //canopyClustering(theSampleSet[1], parameters.thresholdCanopy),
-    //canopyClustering2(theSampleSet2, parameters.thresholdCanopy),
+ActiveGoalLocator::ActiveGoalLocator()
+  :
     ccTrashBuffer(parameters.thresholdCanopy)
 {
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", true);
-  //DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goalCenter", "draw the center of goal on field", false);
+
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept", "draw the goal percept on field", false);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_percept_buffer", "draw the buffer set on field", true);
-
-  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goal_model", "", false);
-
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_samples", "draw the sample set on field", true);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goal_model", "", false);
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", false);
 
@@ -64,29 +61,37 @@ void ActiveGoalLocator::execute()
       return;
   }
 
+  // update the buffer:
+  // clear old percepts
+  updateByFrameNumber(theSampleBuffer, 200); 
+
+
+
   //decrease lastTotalWeighting of each PF
 
   //TODO filter decreasen
   for (unsigned int x = 0; x < ccSamples.size(); x++) 
   {
-    if (ccSamples[x].sampleSet.getIsValid()) 
+    PostHypothesis& hypothesis = ccSamples[x];
+    if (hypothesis.sampleSet.getIsValid()) 
     {
-        ccSamples[x].sampleSet.lastTotalWeighting *= parameters.timeFilterRange;
+        hypothesis.sampleSet.lastTotalWeighting *= parameters.timeFilterRange;
 
-        if (ccSamples[x].sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold) 
+        if (hypothesis.sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold) 
         {
-          ccSamples[x].sampleSet.setUnValid();
+          hypothesis.sampleSet.setUnValid();
           std::cout << "delete filter '" << x << "' because " << ccSamples[x].sampleSet.lastTotalWeighting << " < " << parameters.deletePFbyTotalWeightingThreshold << std::endl;
         }
      }
-  }
+  }//end for
 
   //TODO reset likelihood of valid filter
   for (unsigned int x = 0; x < ccSamples.size(); x++) 
   {
-    if (ccSamples[x].sampleSet.getIsValid()) 
+    PostHypothesis& hypothesis = ccSamples[x];
+    if (hypothesis.sampleSet.getIsValid()) 
     {
-      ccSamples[x].sampleSet.resetLikelihood();
+      hypothesis.sampleSet.resetLikelihood();
     }
   }
 
@@ -102,7 +107,6 @@ void ActiveGoalLocator::execute()
   updateByOdometry(theSampleBuffer, odometryDelta);
   lastRobotOdometry = getOdometryData();
 
-  updateByFrameNumber(theSampleBuffer, 200); //clear old percepts
 
   //////////////////////////
   //   check Percepts
@@ -121,9 +125,10 @@ void ActiveGoalLocator::execute()
       //TODO: Vorteil filter mit kleiner id!! ??
       for (unsigned int x = 0; x < ccSamples.size(); x++) 
       {
-        if(ccSamples[x].sampleSet.getIsValid()) 
+        PostHypothesis& hypothesis = ccSamples[x];
+        if(hypothesis.sampleSet.getIsValid()) 
         {
-          weightingByFilter[x] = getWeightingOfPerceptAngle(ccSamples[x].sampleSet, getGoalPercept().getPost(i));
+          weightingByFilter[x] = getWeightingOfPerceptAngle(hypothesis.sampleSet, getGoalPercept().getPost(i));
         } 
         else 
         {
@@ -131,7 +136,7 @@ void ActiveGoalLocator::execute()
         }
         if (weightingByFilter[x]) 
         {
-          updateByGoalPerceptAngle(ccSamples[x].sampleSet, getGoalPercept().getPost(i));
+          updateByGoalPerceptAngle(hypothesis.sampleSet, getGoalPercept().getPost(i));
           noneFilterUpdated = false;
         }
       }//end for
@@ -150,41 +155,48 @@ void ActiveGoalLocator::execute()
 
   }//end for i < getGoalPercept().getNumberOfSeenPosts()
 
+
   //////////////////////////
   //   check Buffer
   //////////////////////////
 
-  //just check Buffer if one PF is empty
+  //TODO check if buffer possible, then clear one filter!!!
+  for (unsigned int i = 0; i < ccSamples.size(); i++) 
+  {
+    resampleGT07(ccSamples[i].sampleSet, true);
+  }
+
+  // calculate mean for all valid PFs
+  for(unsigned int x = 0; x < ccSamples.size(); x++) 
+  {
+    PostHypothesis& hypothesis = ccSamples[x];
+    Vector2<double> sum;
+
+    if (hypothesis.sampleSet.getIsValid()) 
+    {
+      for (unsigned int i = 0; i < hypothesis.sampleSet.size(); i++) 
+      {
+        sum += hypothesis.sampleSet[i].getPos();
+      }
+
+      hypothesis.sampleSet.mean = sum/(double)hypothesis.sampleSet.size();
+    }
+  }//end for x
+
+
+
+  // only check Buffer if one PF is empty, 
+  // i.e., there is a free slot for a new hypothesis
   if (oneFilterIsEmpty)
   {
     ccTrashBuffer.cluster(theSampleBuffer);
     checkTrashBuffer(theSampleBuffer); //check if useable cluster in TrashBuffer exists and insert
   }
 
-  //TODO check if buffer possible, then clear one filter!!!
-
-  for (unsigned int i = 0; i < ccSamples.size(); i++) 
-  {
-    resampleGT07(ccSamples[i].sampleSet, true);
-  }
-
-  //calculate mean for all valid PFs
-  for(unsigned int x = 0; x < ccSamples.size(); x++) 
-  {
-    Vector2<double> mean;
-
-    if (ccSamples[x].sampleSet.getIsValid()) 
-    {
-      for (unsigned int i = 0; i < ccSamples[x].sampleSet.size(); i++) 
-      {
-        mean += ccSamples[x].sampleSet[i].getPos();
-      }
-       ccSamples[x].sampleSet.mean = mean/(double)ccSamples[x].sampleSet.size();
-    }
-  }//end for x
 
   //////////////////////////
   //   provide Goal Model
+  // (extract the goal model)
   //////////////////////////
 
   getLocalGoalModel().opponentGoalIsValid = false;
@@ -214,15 +226,19 @@ void ActiveGoalLocator::execute()
 
     for(unsigned int x = 0; x < 10; x++) 
     {
-      if (ccSamples[x].sampleSet.getIsValid()) 
-      {
-       double distError = 0;
+      PostHypothesis& hypothesisOne = ccSamples[x];
 
-       for(unsigned int i = 0; i < ccSamples.size(); i++) 
-       {
-          if (ccSamples[i].sampleSet.getIsValid()) 
+      if (hypothesisOne.sampleSet.getIsValid()) 
+      {
+        double distError = 0;
+
+        for(unsigned int i = 0; i < ccSamples.size(); i++) 
+        {
+          PostHypothesis& hypothesisTwo = ccSamples[i];
+
+          if (hypothesisTwo.sampleSet.getIsValid()) 
           {
-              distError = abs((ccSamples[x].sampleSet.mean - ccSamples[i].sampleSet.mean).abs() - getFieldInfo().goalWidth);
+              distError = abs((hypothesisOne.sampleSet.mean - hypothesisTwo.sampleSet.mean).abs() - getFieldInfo().goalWidth);
 
               //check if error becomes better
               if (distError < lastDistError) 
@@ -239,7 +255,6 @@ void ActiveGoalLocator::execute()
     //decide whether distError is feasable
     if (lastDistError < parameters.possibleGoalWidhtError) 
     {
-
       if (ccSamples[id1].sampleSet.mean.angle() < ccSamples[id2].sampleSet.mean.angle()) 
       {
         getLocalGoalModel().goal.leftPost  = ccSamples[id1].sampleSet.mean;
@@ -435,6 +450,7 @@ double ActiveGoalLocator::getWeightingOfPerceptAngle(const AGLSampleSet& sampleS
     return 0;
 }//end getWeightingOfPerceptAngle
 
+
 //TODO side effect with ccSamples los werdn
 void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
 {
@@ -442,6 +458,7 @@ void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
   {
     for (unsigned int i = 0; i < ccSamples.size(); i++) 
     {
+      // find an invalide hypothesis and initialize a new filter at its place
       if (!ccSamples[i].sampleSet.getIsValid()) 
       {
         initFilterByBuffer(ccTrashBuffer.getLargestClusterID(), sampleBuffer, ccSamples[i].sampleSet);
@@ -451,24 +468,29 @@ void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
   }//if largestCluster > 0
 }// checkTrashBuffer
 
+
 void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet)
 {
+  if(largestClusterID < 0) return;
+
   AGLSampleBuffer tmpSampleSetBuffer; //copy
   for (int i = 0; i < sampleSetBuffer.getNumberOfEntries(); i++) 
   {
-      tmpSampleSetBuffer.add(sampleSetBuffer[i]);
+    tmpSampleSetBuffer.add(sampleSetBuffer[i]);
   }
 
   sampleSetBuffer.clear(); //just clear and re-fill with unused entries
 
   //already known that sampleSet is empty!
   int n = 0;
+  Vector2<double> sum;
   for (int i = 0; i < tmpSampleSetBuffer.getNumberOfEntries(); i++) 
   {
     //search all particles with ID of largest cluster and add them
     //TODO make n to param
-    if (n < tmpSampleSetBuffer.getNumberOfEntries() && n < (int)sampleSet.size()  && tmpSampleSetBuffer[i].cluster == largestClusterID && largestClusterID > -1) {
-
+    if (n < tmpSampleSetBuffer.getNumberOfEntries() && n < (int)sampleSet.size() &&
+        tmpSampleSetBuffer[i].cluster == largestClusterID) 
+    {
       AGLSample tmpSample;
       tmpSample.color = tmpSampleSetBuffer[i].color;
       tmpSample.translation = tmpSampleSetBuffer[i].getPos();
@@ -476,16 +498,21 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
       sampleSet[n] = tmpSample;
       n++;
 
+      sum += tmpSample.translation;
     } 
     else //if not used for filter, just copy
     { 
-        sampleSetBuffer.add(tmpSampleSetBuffer[i]);
+      sampleSetBuffer.add(tmpSampleSetBuffer[i]);
     }
   }//end for
 
-  sampleSet.setValid();
+  ASSERT(sampleSet.size() == n);
 
+  // update the mean of the filter and set it valid
+  sampleSet.mean = sum / (double)sampleSet.size();
+  sampleSet.setValid();
 }//copyFromBufferToFilter
+
 
 void ActiveGoalLocator::updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const
 {
@@ -503,13 +530,14 @@ void ActiveGoalLocator::updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const 
 
   for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
+    AGLSample& sample = sampleSet[i];
     double weighting(0.0);
 
-    double diff = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
+    double diff = Math::normalize(sample.getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
     weighting = Math::gaussianProbability(diff, parameters.standardDeviationAngle);
 
-    sampleSet[i].likelihood *= weighting;
-    totalWeighting += sampleSet[i].likelihood;
+    sample.likelihood *= weighting;
+    totalWeighting += sample.likelihood;
   }//end for
 
   sampleSet.lastTotalWeighting = totalWeighting;
@@ -518,7 +546,6 @@ void ActiveGoalLocator::updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const 
 
 void ActiveGoalLocator::resampleGT07(AGLSampleSet& sampleSet, bool noise)
 {
-
   double totalWeighting = 0;
 
   for (unsigned int i = 0; i < sampleSet.size(); i++) 
