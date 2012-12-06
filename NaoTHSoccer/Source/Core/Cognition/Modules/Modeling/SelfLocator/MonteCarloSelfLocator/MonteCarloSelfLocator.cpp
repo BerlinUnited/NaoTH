@@ -21,7 +21,7 @@
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
     //gridClustering(sampleSet),
-    canopyClustering(theSampleSet, parameters.thresholdCanopy),
+    canopyClustering(parameters.thresholdCanopy),
     initialized(false),
     // ...whole field by default
     fieldMin(-getFieldInfo().xFieldLength/2.0, -getFieldInfo().yFieldLength/2.0),
@@ -1280,7 +1280,7 @@ void MonteCarloSelfLocator::execute()
   //gridClustering.cluster();
 
   // try to track the hypothesis
-  int clusterSize = canopyClustering.cluster(getRobotPose().translation);
+  int clusterSize = canopyClustering.cluster(theSampleSet, getRobotPose().translation);
   PLOT("MCSL:clusterSize", clusterSize);
   
 
@@ -1299,7 +1299,7 @@ void MonteCarloSelfLocator::execute()
   if(clusterSize < 0.3*(double)theSampleSet.numberOfParticles)
   {
     // make new cluseter
-    canopyClustering.cluster();
+    canopyClustering.cluster(theSampleSet);
 
     // find the largest cluster
     Moments2<2> tmpMoments;
@@ -1308,7 +1308,7 @@ void MonteCarloSelfLocator::execute()
     // TODO: make it more efficient
     // if it is not suficiently bigger revert the old clustering
     if(tmpMoments.getRawMoment(0,0) < 0.6*(double)theSampleSet.numberOfParticles)
-      canopyClustering.cluster(getRobotPose().translation);
+      canopyClustering.cluster(theSampleSet, getRobotPose().translation);
     else // jump...
       getRobotPose().isValid = false;
   }//end if

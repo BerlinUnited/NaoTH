@@ -5,8 +5,8 @@
  * Declaration of class ActiveGoalLocatorSimpleParticle
  */
 
-#ifndef __ActiveGoalLocator_h_
-#define __ActiveGoalLocator_h_
+#ifndef _ActiveGoalLocator_h_
+#define _ActiveGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
 #include "AGLParameters.h"
@@ -55,36 +55,54 @@ class ActiveGoalLocator : private ActiveGoalLocatorBase
 
 public:
   ActiveGoalLocator();
-  ~ActiveGoalLocator(){}
+  virtual ~ActiveGoalLocator(){}
 
+  /** */
   virtual void execute();
 
 private:
 
   double goalWidth;
 
+  /** */
   AGLParameters parameters;
 
+  /** */
   CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
   AGLSampleBuffer theSampleBuffer;
 
+  /** */
   OdometryData lastRobotOdometry;
 
+  /** */
   class Cluster
   {
   public:
-      Cluster():
-          canopyClustering(sampleSet){}
+      Cluster(){}
 
       CanopyClustering<AGLSampleSet> canopyClustering;
       AGLSampleSet sampleSet;
+
+      // wrapper for easy use
+      void cluster()
+      {
+        canopyClustering.cluster(sampleSet);
+      }
+
+      unsigned int cluster(const Vector2<double>& start)
+      {
+        return canopyClustering.cluster(sampleSet, start);
+      }
   };
 
-  Cluster ccSamples[10];
+  /** */
+  std::vector<Cluster> ccSamples;
 
+  /** debug visualization */
   void debugDrawings();
   void debugPlots();
   void debugStdOut();
+
 
   void resampleGT07(AGLSampleSet& sampleSet, bool noise);
 
@@ -101,4 +119,4 @@ private:
 
 };
 
-#endif //__ActiveGoalLocator_h_
+#endif //_ActiveGoalLocator_h_

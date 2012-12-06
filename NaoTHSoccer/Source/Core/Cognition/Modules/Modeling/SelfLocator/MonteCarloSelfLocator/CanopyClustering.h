@@ -6,8 +6,8 @@
 * Declaration of class CanopyClustering
 */
 
-#ifndef __CanopyClustering_h_
-#define __CanopyClustering_h_
+#ifndef _CanopyClustering_h_
+#define _CanopyClustering_h_
 
 #include "SampleSet.h"
 
@@ -15,15 +15,17 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
 
+#include <vector>
+
 template<class C>
 class CanopyClustering
 {
 public: 
-  CanopyClustering(C& sampleSet, double clusterThreshold = 0)
+  CanopyClustering(double clusterThreshold = 0, int maxNumberOfClusters = 100)
     :
-    sampleSet(sampleSet),
     numOfClusters(0),
     largestCluster(-1),
+    clusters(maxNumberOfClusters),
     clusterThreshold(clusterThreshold)
   {
   }
@@ -69,7 +71,7 @@ public:
 
   void setClusterThreshold(const double clusterThreshold) {this->clusterThreshold = clusterThreshold;}
 
-  void cluster()
+  void cluster(C& sampleSet)
   {
     numOfClusters = 0;
     largestCluster = -1;
@@ -101,7 +103,7 @@ public:
           largestCluster = minIdx;
       }
       // othervise create new cluster
-      else if(numOfClusters < maxNumberOfClusters)
+      else if(numOfClusters < clusters.size()) // ACHTUNG: don't resize clusters
       {
         // initialize a new cluster
         clusters[numOfClusters].set(sampleSet[j].getPos());
@@ -147,7 +149,7 @@ public:
   }//end cluster
 
 
-  unsigned int cluster(const Vector2<double>& start)
+  unsigned int cluster(C& sampleSet, const Vector2<double>& start)
   {
     numOfClusters = 1;
     largestCluster = 0;
@@ -174,7 +176,7 @@ private:
   class CanopyClusterBuilder: public CanopyCluster
   {
   public:
-    ~CanopyClusterBuilder(){}
+    virtual ~CanopyClusterBuilder(){}
     CanopyClusterBuilder(){}
     CanopyClusterBuilder(const Vector2<double>& point)
     {
@@ -229,14 +231,13 @@ private:
     return cluster.distance(sample.getPos()) < clusterThreshold;
   }
 
-
-  C& sampleSet;
-  static const unsigned int maxNumberOfClusters = 100;
-  CanopyClusterBuilder clusters[maxNumberOfClusters];  //FIXME
+  // results of the clustering
   unsigned int numOfClusters;
   int largestCluster;
+  std::vector<CanopyClusterBuilder> clusters;  //FIXME
 
+  // parameter of clustering
   double clusterThreshold;
 };
 
-#endif //__CanopyClustering_h_
+#endif //_CanopyClustering_h_
