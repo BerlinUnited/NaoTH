@@ -28,8 +28,7 @@ meanBrightness(0.0),
 possibleImageStuck(false),
 selfCreatedImage(false)
 {
-  cameraInfo = Platform::getInstance().theCameraInfo;
-  yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
+  yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
   selfCreatedImage = true;
   shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
@@ -43,9 +42,9 @@ cameraInfo(orig.cameraInfo)
   {
     delete[] yuv422;
   }
-  yuv422 = new unsigned char[cameraInfo.size * SIZE_OF_YUV422_PIXEL];
+  yuv422 = new unsigned char[cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL];
   
-  std::memcpy(yuv422, orig.yuv422, cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  std::memcpy(yuv422, orig.yuv422, cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
   selfCreatedImage = true;
   shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 }
@@ -57,8 +56,8 @@ Image& Image::operator=(const Image& orig)
   {
     delete[] yuv422;
   }
-  yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.size];
-  std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.size);
+  yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.getSize()];
+  std::memcpy(yuv422, orig.yuv422, SIZE_OF_YUV422_PIXEL * cameraInfo.getSize());
   selfCreatedImage = true;
   shadingCorrection.init(width(), height(), cameraInfo.cameraID);
 
@@ -81,7 +80,7 @@ void Image::setCameraInfo(const CameraInfo& ci)
     {
       delete[] yuv422;
     }
-    yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL*ci.size];
+    yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL*ci.getSize()];
   }
   cameraInfo = ci;
 }
@@ -89,7 +88,7 @@ void Image::setCameraInfo(const CameraInfo& ci)
 void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
 {
 //  ASSERT(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL);
-  ASSERT(size >= cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  ASSERT(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
   if(selfCreatedImage)
   {
     delete[] yuv422;
@@ -102,12 +101,12 @@ void Image::wrapImageDataYUV422(unsigned char* data, const unsigned int& size)
 void Image::copyImageDataYUV422(unsigned char* data, const unsigned int& size)
 {
 //  if(size == cameraInfo.size * SIZE_OF_YUV422_PIXEL)
-  if(size >= cameraInfo.size * SIZE_OF_YUV422_PIXEL)
+  if(size >= cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL)
   {
     if(!selfCreatedImage)
     {
       // throw the old pointer away, create a new buffer
-      yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.size];
+      yuv422 = new unsigned char[SIZE_OF_YUV422_PIXEL * cameraInfo.getSize()];
     }
 
     // just overwrite the old image data
@@ -148,7 +147,7 @@ void Image::toDataStream(ostream& stream) const
   }
 
   img.set_format(naothmessages::Image_Format_YUV422);
-  img.set_data(yuv422, cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  img.set_data(yuv422, cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
   img.set_timestamp(timestamp);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
@@ -179,11 +178,10 @@ void Image::fromDataStream(istream& stream)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
-    newCameraInfo.size = width * height;
     setCameraInfo(newCameraInfo);
     shadingCorrection.init(width, height, newCameraInfo.cameraID);
 
@@ -211,11 +209,10 @@ void Image::fromDataStream(istream& stream)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
-    newCameraInfo.size = width * height;
     setCameraInfo(newCameraInfo);
     shadingCorrection.init(width, height, newCameraInfo.cameraID);
 
@@ -252,7 +249,7 @@ void Serializer<Image>::serialize(const Image& representation, std::ostream& str
   }
 
   img.set_format(naothmessages::Image_Format_YUV422);
-  img.set_data(representation.yuv422, representation.cameraInfo.size * SIZE_OF_YUV422_PIXEL);
+  img.set_data(representation.yuv422, representation.cameraInfo.getSize() * SIZE_OF_YUV422_PIXEL);
 
   google::protobuf::io::OstreamOutputStream buf(&stream);
   img.SerializeToZeroCopyStream(&buf);
@@ -276,11 +273,10 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
-    newCameraInfo.size = width * height;
     representation.setCameraInfo(newCameraInfo);
 
     const char* data = img.data().c_str();
@@ -307,11 +303,10 @@ void Serializer<Image>::deserialize(std::istream& stream, Image& representation)
       return;
     }
 
-    CameraInfo newCameraInfo = Platform::getInstance().theCameraInfo;
+    CameraInfo newCameraInfo;
 
     newCameraInfo.resolutionHeight = height;
     newCameraInfo.resolutionWidth = width;
-    newCameraInfo.size = width * height;
     representation.setCameraInfo(newCameraInfo);
 
     memcpy(representation.yuv422, img.data().c_str(), img.data().size());

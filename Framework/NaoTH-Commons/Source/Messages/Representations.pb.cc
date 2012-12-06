@@ -119,7 +119,7 @@ void protobuf_AssignDesc_Representations_2eproto() {
       sizeof(Image));
   Image_Format_descriptor_ = Image_descriptor_->enum_type(0);
   CameraInfo_descriptor_ = file->message_type(1);
-  static const int CameraInfo_offsets_[12] = {
+  static const int CameraInfo_offsets_[16] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, resolutionwidth_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, resolutionheight_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, cameraid_),
@@ -132,6 +132,10 @@ void protobuf_AssignDesc_Representations_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, memorysize_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, camerarolloffset_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, cameratiltoffset_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, transformation_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, openinganglediagonal_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, pixelsize_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraInfo, focus_),
   };
   CameraInfo_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -198,8 +202,10 @@ void protobuf_AssignDesc_Representations_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(UltraSoundReceiveData));
   CameraMatrix_descriptor_ = file->message_type(5);
-  static const int CameraMatrix_offsets_[1] = {
+  static const int CameraMatrix_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrix, pose_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrix, cameraid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CameraMatrix, valid_),
   };
   CameraMatrix_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -647,96 +653,101 @@ void protobuf_AddDesc_Representations_2eproto() {
     "40\022-\n\ncameraInfo\030\004 \001(\0132\031.naothmessages.C"
     "ameraInfo\0220\n\006format\030\005 \001(\0162\033.naothmessage"
     "s.Image.Format:\003YUV\022\021\n\ttimestamp\030\006 \001(\r\"\035"
-    "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\304\002\n\nCamera"
+    "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\317\003\n\nCamera"
     "Info\022\027\n\017resolutionWidth\030\001 \002(\005\022\030\n\020resolut"
     "ionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 \001(\0162\027.naot"
-    "hmessages.CameraID:\006bottom\022\023\n\013focalLengt"
-    "h\030\005 \001(\001\022\031\n\021openingAngleWidth\030\006 \001(\001\022\032\n\022op"
-    "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX"
-    "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n"
-    " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf"
-    "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"I\n\t"
-    "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness"
-    "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso"
-    "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes"
-    "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017"
-    "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei"
-    "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra"
-    "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig"
-    "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025"
-    ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr"
-    "ameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPe"
-    "rcept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInIm"
-    "age\030\002 \001(\0132\034.naothmessages.DoubleVector2\022"
-    "\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001("
-    "\0162\024.naothmessages.Color\022\?\n\031bearingBasedO"
-    "ffsetOnField\030\005 \001(\0132\034.naothmessages.Doubl"
-    "eVector2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001"
-    "(\0132\030.naothmessages.FrameInfo\"\234\001\n\013GoalPer"
-    "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen"
-    "troid\030\002 \001(\0132\034.naothmessages.DoubleVector"
-    "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003"
-    "(\0132\027.naothmessages.GoalPost\"\264\003\n\021HeadMoti"
-    "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022"
-    "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess"
-    "ages.DoubleVector2\0228\n\022targetPointInImage"
-    "\030\004 \001(\0132\034.naothmessages.DoubleVector2\022;\n\025"
-    "targetPointInTheWorld\030\005 \001(\0132\034.naothmessa"
-    "ges.DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132"
-    "\034.naothmessages.DoubleVector3\0220\n\nsearchS"
-    "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022"
-    "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO"
-    "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV"
-    "ector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022StepContr"
-    "olRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoo"
-    "t\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmessages."
-    "Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005"
-    " \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r"
-    "\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.na"
-    "othmessages.Pose2D\0226\n\013stepControl\030\004 \001(\0132"
-    "!.naothmessages.StepControlRequest\022%\n\006of"
-    "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic"
-    "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa"
-    "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001"
-    "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212"
-    "\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002"
-    "(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132"
-    "\032.naothmessages.WalkRequest\022\026\n\016starndard"
-    "Stand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naoth"
-    "messages.KickRequest\022\023\n\013standHeight\030\007 \001("
-    "\001\022\"\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n"
-    "\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013LinePerc"
-    "ept\022.\n\005lines\030\001 \003(\0132\037.naothmessages.Field"
-    "LineSegment\0222\n\rintersections\030\002 \003(\0132\033.nao"
-    "thmessages.Intersection\0228\n\022middleCircleC"
-    "enter\030\003 \001(\0132\034.naothmessages.DoubleVector"
-    "2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImage\030\001 \002"
-    "(\0132\031.naothmessages.IntVector2\0220\n\nposOnFi"
-    "eld\030\002 \002(\0132\034.naothmessages.DoubleVector2\022"
-    "#\n\005color\030\003 \002(\0162\024.naothmessages.Color\022\022\n\n"
-    "ScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept"
-    "\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages.Scan"
-    "LineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014"
-    "\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepContr"
-    "olStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot"
-    "\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n"
-    "\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r"
-    "\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSta"
-    "te\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132"
-    "\025.naothmessages.Pose2D\0225\n\026plannedMotionR"
-    "ightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n"
-    "\020plannedMotionHip\030\010 \002(\0132\025.naothmessages."
-    "Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 .naot"
-    "hmessages.StepControlStatus\"3\n\014OdometryD"
-    "ata\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D"
-    "\"\274\001\n\017CalibrationData\022:\n\024inertialSensorOf"
-    "fset\030\001 \001(\0132\034.naothmessages.DoubleVector2"
-    "\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessag"
-    "es.DoubleVector2\0225\n\017accSensorOffset\030\003 \001("
-    "\0132\034.naothmessages.DoubleVector3\"B\n\rInert"
-    "ialModel\0221\n\013orientation\030\001 \001(\0132\034.naothmes"
-    "sages.DoubleVector2B\026\n\024de.naoth.rc.messa"
-    "ges", 3803);
+    "hmessages.CameraID:\006bottom\022\027\n\013focalLengt"
+    "h\030\005 \001(\001B\002\030\001\022\035\n\021openingAngleWidth\030\006 \001(\001B\002"
+    "\030\001\022\036\n\022openingAngleHeight\030\007 \001(\001B\002\030\001\022\032\n\016op"
+    "ticalCenterX\030\010 \001(\001B\002\030\001\022\032\n\016opticalCenterY"
+    "\030\t \001(\001B\002\030\001\022\020\n\004size\030\n \001(\003B\002\030\001\022\026\n\nmemorysi"
+    "ze\030\013 \001(\003B\002\030\001\022\030\n\020cameraRollOffset\030\014 \001(\001\022\030"
+    "\n\020cameraTiltOffset\030\r \001(\001\022-\n\016transformati"
+    "on\030\016 \003(\0132\025.naothmessages.Pose3D\022\034\n\024openi"
+    "ngAngleDiagonal\030\017 \001(\001\022\021\n\tpixelSize\030\020 \001(\001"
+    "\022\r\n\005focus\030\021 \001(\001\"I\n\tJointData\022\020\n\010position"
+    "\030\001 \003(\001\022\021\n\tstiffness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n"
+    "\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+\n\tjointDa"
+    "ta\030\001 \002(\0132\030.naothmessages.JointData\022\023\n\013te"
+    "mperature\030\002 \003(\001\022\027\n\017electricCurrent\030\003 \003(\001"
+    "\"i\n\025UltraSoundReceiveData\022\032\n\022ultraSoundT"
+    "imeStep\030\001 \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLe"
+    "ft\030\003 \003(\001\022\021\n\tdataRight\030\004 \003(\001\"u\n\014CameraMat"
+    "rix\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose3D"
+    "\0221\n\010cameraID\030\002 \001(\0162\027.naothmessages.Camer"
+    "aID:\006bottom\022\r\n\005valid\030\003 \001(\010\".\n\tFrameInfo\022"
+    "\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013B"
+    "allPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcente"
+    "rInImage\030\002 \001(\0132\034.naothmessages.DoubleVec"
+    "tor2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor"
+    "\030\004 \001(\0162\024.naothmessages.Color\022\?\n\031bearingB"
+    "asedOffsetOnField\030\005 \001(\0132\034.naothmessages."
+    "DoubleVector2\022:\n\030frameInfoWhenBallWasSee"
+    "n\030\006 \001(\0132\030.naothmessages.FrameInfo\"\234\001\n\013Go"
+    "alPercept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014go"
+    "alCentroid\030\002 \001(\0132\034.naothmessages.DoubleV"
+    "ector3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004pos"
+    "t\030\004 \003(\0132\027.naothmessages.GoalPost\"\264\003\n\021Hea"
+    "dMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002"
+    " \002(\r\0229\n\023targetJointPosition\030\003 \001(\0132\034.naot"
+    "hmessages.DoubleVector2\0228\n\022targetPointIn"
+    "Image\030\004 \001(\0132\034.naothmessages.DoubleVector"
+    "2\022;\n\025targetPointInTheWorld\030\005 \001(\0132\034.naoth"
+    "messages.DoubleVector3\0222\n\014searchCenter\030\006"
+    " \001(\0132\034.naothmessages.DoubleVector3\0220\n\nse"
+    "archSize\030\007 \001(\0132\034.naothmessages.DoubleVec"
+    "tor3\022\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetP"
+    "ointOnTheGround\030\t \001(\0132\034.naothmessages.Do"
+    "ubleVector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022Step"
+    "ControlRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLe"
+    "ftFoot\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmess"
+    "ages.Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirect"
+    "ion\030\005 \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030"
+    "\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\013"
+    "2\025.naothmessages.Pose2D\0226\n\013stepControl\030\004"
+    " \001(\0132!.naothmessages.StepControlRequest\022"
+    "%\n\006offset\030\005 \002(\0132\025.naothmessages.Pose2D\"{"
+    "\n\013KickRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naoth"
+    "messages.DoubleVector3\022\025\n\rkickDirection\030"
+    "\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 "
+    "\002(\010\"\212\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004tim"
+    "e\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004"
+    " \001(\0132\032.naothmessages.WalkRequest\022\026\n\016star"
+    "ndardStand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032."
+    "naothmessages.KickRequest\022\023\n\013standHeight"
+    "\030\007 \001(\001\022\"\n\032calibrateFootTouchDetector\030\010 \001"
+    "(\010\022\034\n\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013Lin"
+    "ePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessages."
+    "FieldLineSegment\0222\n\rintersections\030\002 \003(\0132"
+    "\033.naothmessages.Intersection\0228\n\022middleCi"
+    "rcleCenter\030\003 \001(\0132\034.naothmessages.DoubleV"
+    "ector2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImag"
+    "e\030\001 \002(\0132\031.naothmessages.IntVector2\0220\n\npo"
+    "sOnField\030\002 \002(\0132\034.naothmessages.DoubleVec"
+    "tor2\022#\n\005color\030\003 \002(\0162\024.naothmessages.Colo"
+    "r\022\022\n\nScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPe"
+    "rcept\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages"
+    ".ScanLineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 "
+    "\003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021Step"
+    "ControlStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveabl"
+    "eFoot\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002"
+    "(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030"
+    "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMoti"
+    "onState\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006"
+    " \002(\0132\025.naothmessages.Pose2D\0225\n\026plannedMo"
+    "tionRightFoot\030\007 \002(\0132\025.naothmessages.Pose"
+    "2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.naothmess"
+    "ages.Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 "
+    ".naothmessages.StepControlStatus\"3\n\014Odom"
+    "etryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.P"
+    "ose2D\"\274\001\n\017CalibrationData\022:\n\024inertialSen"
+    "sorOffset\030\001 \001(\0132\034.naothmessages.DoubleVe"
+    "ctor2\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothm"
+    "essages.DoubleVector2\0225\n\017accSensorOffset"
+    "\030\003 \001(\0132\034.naothmessages.DoubleVector3\"B\n\r"
+    "InertialModel\0221\n\013orientation\030\001 \001(\0132\034.nao"
+    "thmessages.DoubleVector2B\026\n\024de.naoth.rc."
+    "messages", 4008);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Representations.proto", &protobuf_RegisterTypes);
   Image::default_instance_ = new Image();
@@ -1262,6 +1273,10 @@ const int CameraInfo::kSizeFieldNumber;
 const int CameraInfo::kMemorysizeFieldNumber;
 const int CameraInfo::kCameraRollOffsetFieldNumber;
 const int CameraInfo::kCameraTiltOffsetFieldNumber;
+const int CameraInfo::kTransformationFieldNumber;
+const int CameraInfo::kOpeningAngleDiagonalFieldNumber;
+const int CameraInfo::kPixelSizeFieldNumber;
+const int CameraInfo::kFocusFieldNumber;
 #endif  // !_MSC_VER
 
 CameraInfo::CameraInfo()
@@ -1292,6 +1307,9 @@ void CameraInfo::SharedCtor() {
   memorysize_ = GOOGLE_LONGLONG(0);
   camerarolloffset_ = 0;
   cameratiltoffset_ = 0;
+  openinganglediagonal_ = 0;
+  pixelsize_ = 0;
+  focus_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1340,7 +1358,11 @@ void CameraInfo::Clear() {
     memorysize_ = GOOGLE_LONGLONG(0);
     camerarolloffset_ = 0;
     cameratiltoffset_ = 0;
+    openinganglediagonal_ = 0;
+    pixelsize_ = 0;
+    focus_ = 0;
   }
+  transformation_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -1403,7 +1425,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional double focalLength = 5;
+      // optional double focalLength = 5 [deprecated = true];
       case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
@@ -1419,7 +1441,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional double openingAngleWidth = 6;
+      // optional double openingAngleWidth = 6 [deprecated = true];
       case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
@@ -1435,7 +1457,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional double openingAngleHeight = 7;
+      // optional double openingAngleHeight = 7 [deprecated = true];
       case 7: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
@@ -1451,7 +1473,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional double opticalCenterX = 8;
+      // optional double opticalCenterX = 8 [deprecated = true];
       case 8: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
@@ -1467,7 +1489,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional double opticalCenterY = 9;
+      // optional double opticalCenterY = 9 [deprecated = true];
       case 9: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
@@ -1483,7 +1505,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int64 size = 10;
+      // optional int64 size = 10 [deprecated = true];
       case 10: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -1499,7 +1521,7 @@ bool CameraInfo::MergePartialFromCodedStream(
         break;
       }
       
-      // optional int64 memorysize = 11;
+      // optional int64 memorysize = 11 [deprecated = true];
       case 11: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
@@ -1543,6 +1565,69 @@ bool CameraInfo::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(114)) goto parse_transformation;
+        break;
+      }
+      
+      // repeated .naothmessages.Pose3D transformation = 14;
+      case 14: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_transformation:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_transformation()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(114)) goto parse_transformation;
+        if (input->ExpectTag(121)) goto parse_openingAngleDiagonal;
+        break;
+      }
+      
+      // optional double openingAngleDiagonal = 15;
+      case 15: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_openingAngleDiagonal:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &openinganglediagonal_)));
+          set_has_openinganglediagonal();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(129)) goto parse_pixelSize;
+        break;
+      }
+      
+      // optional double pixelSize = 16;
+      case 16: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_pixelSize:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &pixelsize_)));
+          set_has_pixelsize();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(137)) goto parse_focus;
+        break;
+      }
+      
+      // optional double focus = 17;
+      case 17: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_focus:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &focus_)));
+          set_has_focus();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1581,37 +1666,37 @@ void CameraInfo::SerializeWithCachedSizes(
       4, this->cameraid(), output);
   }
   
-  // optional double focalLength = 5;
+  // optional double focalLength = 5 [deprecated = true];
   if (has_focallength()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(5, this->focallength(), output);
   }
   
-  // optional double openingAngleWidth = 6;
+  // optional double openingAngleWidth = 6 [deprecated = true];
   if (has_openinganglewidth()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(6, this->openinganglewidth(), output);
   }
   
-  // optional double openingAngleHeight = 7;
+  // optional double openingAngleHeight = 7 [deprecated = true];
   if (has_openingangleheight()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(7, this->openingangleheight(), output);
   }
   
-  // optional double opticalCenterX = 8;
+  // optional double opticalCenterX = 8 [deprecated = true];
   if (has_opticalcenterx()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(8, this->opticalcenterx(), output);
   }
   
-  // optional double opticalCenterY = 9;
+  // optional double opticalCenterY = 9 [deprecated = true];
   if (has_opticalcentery()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(9, this->opticalcentery(), output);
   }
   
-  // optional int64 size = 10;
+  // optional int64 size = 10 [deprecated = true];
   if (has_size()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(10, this->size(), output);
   }
   
-  // optional int64 memorysize = 11;
+  // optional int64 memorysize = 11 [deprecated = true];
   if (has_memorysize()) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(11, this->memorysize(), output);
   }
@@ -1624,6 +1709,27 @@ void CameraInfo::SerializeWithCachedSizes(
   // optional double cameraTiltOffset = 13;
   if (has_cameratiltoffset()) {
     ::google::protobuf::internal::WireFormatLite::WriteDouble(13, this->cameratiltoffset(), output);
+  }
+  
+  // repeated .naothmessages.Pose3D transformation = 14;
+  for (int i = 0; i < this->transformation_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      14, this->transformation(i), output);
+  }
+  
+  // optional double openingAngleDiagonal = 15;
+  if (has_openinganglediagonal()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(15, this->openinganglediagonal(), output);
+  }
+  
+  // optional double pixelSize = 16;
+  if (has_pixelsize()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(16, this->pixelsize(), output);
+  }
+  
+  // optional double focus = 17;
+  if (has_focus()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(17, this->focus(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -1650,37 +1756,37 @@ void CameraInfo::SerializeWithCachedSizes(
       4, this->cameraid(), target);
   }
   
-  // optional double focalLength = 5;
+  // optional double focalLength = 5 [deprecated = true];
   if (has_focallength()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(5, this->focallength(), target);
   }
   
-  // optional double openingAngleWidth = 6;
+  // optional double openingAngleWidth = 6 [deprecated = true];
   if (has_openinganglewidth()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(6, this->openinganglewidth(), target);
   }
   
-  // optional double openingAngleHeight = 7;
+  // optional double openingAngleHeight = 7 [deprecated = true];
   if (has_openingangleheight()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(7, this->openingangleheight(), target);
   }
   
-  // optional double opticalCenterX = 8;
+  // optional double opticalCenterX = 8 [deprecated = true];
   if (has_opticalcenterx()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(8, this->opticalcenterx(), target);
   }
   
-  // optional double opticalCenterY = 9;
+  // optional double opticalCenterY = 9 [deprecated = true];
   if (has_opticalcentery()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(9, this->opticalcentery(), target);
   }
   
-  // optional int64 size = 10;
+  // optional int64 size = 10 [deprecated = true];
   if (has_size()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(10, this->size(), target);
   }
   
-  // optional int64 memorysize = 11;
+  // optional int64 memorysize = 11 [deprecated = true];
   if (has_memorysize()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(11, this->memorysize(), target);
   }
@@ -1693,6 +1799,28 @@ void CameraInfo::SerializeWithCachedSizes(
   // optional double cameraTiltOffset = 13;
   if (has_cameratiltoffset()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(13, this->cameratiltoffset(), target);
+  }
+  
+  // repeated .naothmessages.Pose3D transformation = 14;
+  for (int i = 0; i < this->transformation_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        14, this->transformation(i), target);
+  }
+  
+  // optional double openingAngleDiagonal = 15;
+  if (has_openinganglediagonal()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(15, this->openinganglediagonal(), target);
+  }
+  
+  // optional double pixelSize = 16;
+  if (has_pixelsize()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(16, this->pixelsize(), target);
+  }
+  
+  // optional double focus = 17;
+  if (has_focus()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(17, this->focus(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -1726,41 +1854,41 @@ int CameraInfo::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->cameraid());
     }
     
-    // optional double focalLength = 5;
+    // optional double focalLength = 5 [deprecated = true];
     if (has_focallength()) {
       total_size += 1 + 8;
     }
     
-    // optional double openingAngleWidth = 6;
+    // optional double openingAngleWidth = 6 [deprecated = true];
     if (has_openinganglewidth()) {
       total_size += 1 + 8;
     }
     
-    // optional double openingAngleHeight = 7;
+    // optional double openingAngleHeight = 7 [deprecated = true];
     if (has_openingangleheight()) {
       total_size += 1 + 8;
     }
     
-    // optional double opticalCenterX = 8;
+    // optional double opticalCenterX = 8 [deprecated = true];
     if (has_opticalcenterx()) {
       total_size += 1 + 8;
     }
     
-    // optional double opticalCenterY = 9;
+    // optional double opticalCenterY = 9 [deprecated = true];
     if (has_opticalcentery()) {
       total_size += 1 + 8;
     }
     
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
-    // optional int64 size = 10;
+    // optional int64 size = 10 [deprecated = true];
     if (has_size()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int64Size(
           this->size());
     }
     
-    // optional int64 memorysize = 11;
+    // optional int64 memorysize = 11 [deprecated = true];
     if (has_memorysize()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int64Size(
@@ -1777,7 +1905,30 @@ int CameraInfo::ByteSize() const {
       total_size += 1 + 8;
     }
     
+    // optional double openingAngleDiagonal = 15;
+    if (has_openinganglediagonal()) {
+      total_size += 1 + 8;
+    }
+    
+    // optional double pixelSize = 16;
+    if (has_pixelsize()) {
+      total_size += 2 + 8;
+    }
+    
+    // optional double focus = 17;
+    if (has_focus()) {
+      total_size += 2 + 8;
+    }
+    
   }
+  // repeated .naothmessages.Pose3D transformation = 14;
+  total_size += 1 * this->transformation_size();
+  for (int i = 0; i < this->transformation_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->transformation(i));
+  }
+  
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -1803,6 +1954,7 @@ void CameraInfo::MergeFrom(const ::google::protobuf::Message& from) {
 
 void CameraInfo::MergeFrom(const CameraInfo& from) {
   GOOGLE_CHECK_NE(&from, this);
+  transformation_.MergeFrom(from.transformation_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_resolutionwidth()) {
       set_resolutionwidth(from.resolutionwidth());
@@ -1842,6 +1994,15 @@ void CameraInfo::MergeFrom(const CameraInfo& from) {
     if (from.has_cameratiltoffset()) {
       set_cameratiltoffset(from.cameratiltoffset());
     }
+    if (from.has_openinganglediagonal()) {
+      set_openinganglediagonal(from.openinganglediagonal());
+    }
+    if (from.has_pixelsize()) {
+      set_pixelsize(from.pixelsize());
+    }
+    if (from.has_focus()) {
+      set_focus(from.focus());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -1861,6 +2022,9 @@ void CameraInfo::CopyFrom(const CameraInfo& from) {
 bool CameraInfo::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
+  for (int i = 0; i < transformation_size(); i++) {
+    if (!this->transformation(i).IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -1878,6 +2042,10 @@ void CameraInfo::Swap(CameraInfo* other) {
     std::swap(memorysize_, other->memorysize_);
     std::swap(camerarolloffset_, other->camerarolloffset_);
     std::swap(cameratiltoffset_, other->cameratiltoffset_);
+    transformation_.Swap(&other->transformation_);
+    std::swap(openinganglediagonal_, other->openinganglediagonal_);
+    std::swap(pixelsize_, other->pixelsize_);
+    std::swap(focus_, other->focus_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -2878,6 +3046,8 @@ void UltraSoundReceiveData::Swap(UltraSoundReceiveData* other) {
 
 #ifndef _MSC_VER
 const int CameraMatrix::kPoseFieldNumber;
+const int CameraMatrix::kCameraIDFieldNumber;
+const int CameraMatrix::kValidFieldNumber;
 #endif  // !_MSC_VER
 
 CameraMatrix::CameraMatrix()
@@ -2898,6 +3068,8 @@ CameraMatrix::CameraMatrix(const CameraMatrix& from)
 void CameraMatrix::SharedCtor() {
   _cached_size_ = 0;
   pose_ = NULL;
+  cameraid_ = 1;
+  valid_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2936,6 +3108,8 @@ void CameraMatrix::Clear() {
     if (has_pose()) {
       if (pose_ != NULL) pose_->::naothmessages::Pose3D::Clear();
     }
+    cameraid_ = 1;
+    valid_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -2953,6 +3127,43 @@ bool CameraMatrix::MergePartialFromCodedStream(
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_pose()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_cameraID;
+        break;
+      }
+      
+      // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_cameraID:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (naothmessages::CameraID_IsValid(value)) {
+            set_cameraid(static_cast< naothmessages::CameraID >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(2, value);
+          }
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_valid;
+        break;
+      }
+      
+      // optional bool valid = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_valid:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &valid_)));
+          set_has_valid();
         } else {
           goto handle_uninterpreted;
         }
@@ -2984,6 +3195,17 @@ void CameraMatrix::SerializeWithCachedSizes(
       1, this->pose(), output);
   }
   
+  // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+  if (has_cameraid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      2, this->cameraid(), output);
+  }
+  
+  // optional bool valid = 3;
+  if (has_valid()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->valid(), output);
+  }
+  
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -2997,6 +3219,17 @@ void CameraMatrix::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->pose(), target);
+  }
+  
+  // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+  if (has_cameraid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      2, this->cameraid(), target);
+  }
+  
+  // optional bool valid = 3;
+  if (has_valid()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->valid(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3015,6 +3248,17 @@ int CameraMatrix::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->pose());
+    }
+    
+    // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+    if (has_cameraid()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->cameraid());
+    }
+    
+    // optional bool valid = 3;
+    if (has_valid()) {
+      total_size += 1 + 1;
     }
     
   }
@@ -3047,6 +3291,12 @@ void CameraMatrix::MergeFrom(const CameraMatrix& from) {
     if (from.has_pose()) {
       mutable_pose()->::naothmessages::Pose3D::MergeFrom(from.pose());
     }
+    if (from.has_cameraid()) {
+      set_cameraid(from.cameraid());
+    }
+    if (from.has_valid()) {
+      set_valid(from.valid());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -3075,6 +3325,8 @@ bool CameraMatrix::IsInitialized() const {
 void CameraMatrix::Swap(CameraMatrix* other) {
   if (other != this) {
     std::swap(pose_, other->pose_);
+    std::swap(cameraid_, other->cameraid_);
+    std::swap(valid_, other->valid_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

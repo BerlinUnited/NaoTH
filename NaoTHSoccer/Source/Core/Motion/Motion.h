@@ -50,6 +50,9 @@ protected:
   void selectMotion();
   
   void changeMotion(AbstractMotion* m);
+private:
+
+  void updateCameraMatrix();
 
 private:
   MotionBlackBoard& theBlackBoard;

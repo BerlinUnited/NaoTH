@@ -833,33 +833,33 @@ public final class Representations {
     boolean hasCameraID();
     de.naoth.rc.messages.CommonTypes.CameraID getCameraID();
     
-    // optional double focalLength = 5;
-    boolean hasFocalLength();
-    double getFocalLength();
+    // optional double focalLength = 5 [deprecated = true];
+    @java.lang.Deprecated boolean hasFocalLength();
+    @java.lang.Deprecated double getFocalLength();
     
-    // optional double openingAngleWidth = 6;
-    boolean hasOpeningAngleWidth();
-    double getOpeningAngleWidth();
+    // optional double openingAngleWidth = 6 [deprecated = true];
+    @java.lang.Deprecated boolean hasOpeningAngleWidth();
+    @java.lang.Deprecated double getOpeningAngleWidth();
     
-    // optional double openingAngleHeight = 7;
-    boolean hasOpeningAngleHeight();
-    double getOpeningAngleHeight();
+    // optional double openingAngleHeight = 7 [deprecated = true];
+    @java.lang.Deprecated boolean hasOpeningAngleHeight();
+    @java.lang.Deprecated double getOpeningAngleHeight();
     
-    // optional double opticalCenterX = 8;
-    boolean hasOpticalCenterX();
-    double getOpticalCenterX();
+    // optional double opticalCenterX = 8 [deprecated = true];
+    @java.lang.Deprecated boolean hasOpticalCenterX();
+    @java.lang.Deprecated double getOpticalCenterX();
     
-    // optional double opticalCenterY = 9;
-    boolean hasOpticalCenterY();
-    double getOpticalCenterY();
+    // optional double opticalCenterY = 9 [deprecated = true];
+    @java.lang.Deprecated boolean hasOpticalCenterY();
+    @java.lang.Deprecated double getOpticalCenterY();
     
-    // optional int64 size = 10;
-    boolean hasSize();
-    long getSize();
+    // optional int64 size = 10 [deprecated = true];
+    @java.lang.Deprecated boolean hasSize();
+    @java.lang.Deprecated long getSize();
     
-    // optional int64 memorysize = 11;
-    boolean hasMemorysize();
-    long getMemorysize();
+    // optional int64 memorysize = 11 [deprecated = true];
+    @java.lang.Deprecated boolean hasMemorysize();
+    @java.lang.Deprecated long getMemorysize();
     
     // optional double cameraRollOffset = 12;
     boolean hasCameraRollOffset();
@@ -868,6 +868,28 @@ public final class Representations {
     // optional double cameraTiltOffset = 13;
     boolean hasCameraTiltOffset();
     double getCameraTiltOffset();
+    
+    // repeated .naothmessages.Pose3D transformation = 14;
+    java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> 
+        getTransformationList();
+    de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index);
+    int getTransformationCount();
+    java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+        getTransformationOrBuilderList();
+    de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+        int index);
+    
+    // optional double openingAngleDiagonal = 15;
+    boolean hasOpeningAngleDiagonal();
+    double getOpeningAngleDiagonal();
+    
+    // optional double pixelSize = 16;
+    boolean hasPixelSize();
+    double getPixelSize();
+    
+    // optional double focus = 17;
+    boolean hasFocus();
+    double getFocus();
   }
   public static final class CameraInfo extends
       com.google.protobuf.GeneratedMessage
@@ -928,73 +950,73 @@ public final class Representations {
       return cameraID_;
     }
     
-    // optional double focalLength = 5;
+    // optional double focalLength = 5 [deprecated = true];
     public static final int FOCALLENGTH_FIELD_NUMBER = 5;
     private double focalLength_;
-    public boolean hasFocalLength() {
+    @java.lang.Deprecated public boolean hasFocalLength() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    public double getFocalLength() {
+    @java.lang.Deprecated public double getFocalLength() {
       return focalLength_;
     }
     
-    // optional double openingAngleWidth = 6;
+    // optional double openingAngleWidth = 6 [deprecated = true];
     public static final int OPENINGANGLEWIDTH_FIELD_NUMBER = 6;
     private double openingAngleWidth_;
-    public boolean hasOpeningAngleWidth() {
+    @java.lang.Deprecated public boolean hasOpeningAngleWidth() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    public double getOpeningAngleWidth() {
+    @java.lang.Deprecated public double getOpeningAngleWidth() {
       return openingAngleWidth_;
     }
     
-    // optional double openingAngleHeight = 7;
+    // optional double openingAngleHeight = 7 [deprecated = true];
     public static final int OPENINGANGLEHEIGHT_FIELD_NUMBER = 7;
     private double openingAngleHeight_;
-    public boolean hasOpeningAngleHeight() {
+    @java.lang.Deprecated public boolean hasOpeningAngleHeight() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    public double getOpeningAngleHeight() {
+    @java.lang.Deprecated public double getOpeningAngleHeight() {
       return openingAngleHeight_;
     }
     
-    // optional double opticalCenterX = 8;
+    // optional double opticalCenterX = 8 [deprecated = true];
     public static final int OPTICALCENTERX_FIELD_NUMBER = 8;
     private double opticalCenterX_;
-    public boolean hasOpticalCenterX() {
+    @java.lang.Deprecated public boolean hasOpticalCenterX() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public double getOpticalCenterX() {
+    @java.lang.Deprecated public double getOpticalCenterX() {
       return opticalCenterX_;
     }
     
-    // optional double opticalCenterY = 9;
+    // optional double opticalCenterY = 9 [deprecated = true];
     public static final int OPTICALCENTERY_FIELD_NUMBER = 9;
     private double opticalCenterY_;
-    public boolean hasOpticalCenterY() {
+    @java.lang.Deprecated public boolean hasOpticalCenterY() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
-    public double getOpticalCenterY() {
+    @java.lang.Deprecated public double getOpticalCenterY() {
       return opticalCenterY_;
     }
     
-    // optional int64 size = 10;
+    // optional int64 size = 10 [deprecated = true];
     public static final int SIZE_FIELD_NUMBER = 10;
     private long size_;
-    public boolean hasSize() {
+    @java.lang.Deprecated public boolean hasSize() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
-    public long getSize() {
+    @java.lang.Deprecated public long getSize() {
       return size_;
     }
     
-    // optional int64 memorysize = 11;
+    // optional int64 memorysize = 11 [deprecated = true];
     public static final int MEMORYSIZE_FIELD_NUMBER = 11;
     private long memorysize_;
-    public boolean hasMemorysize() {
+    @java.lang.Deprecated public boolean hasMemorysize() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
-    public long getMemorysize() {
+    @java.lang.Deprecated public long getMemorysize() {
       return memorysize_;
     }
     
@@ -1018,6 +1040,57 @@ public final class Representations {
       return cameraTiltOffset_;
     }
     
+    // repeated .naothmessages.Pose3D transformation = 14;
+    public static final int TRANSFORMATION_FIELD_NUMBER = 14;
+    private java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> transformation_;
+    public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
+      return transformation_;
+    }
+    public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+        getTransformationOrBuilderList() {
+      return transformation_;
+    }
+    public int getTransformationCount() {
+      return transformation_.size();
+    }
+    public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
+      return transformation_.get(index);
+    }
+    public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+        int index) {
+      return transformation_.get(index);
+    }
+    
+    // optional double openingAngleDiagonal = 15;
+    public static final int OPENINGANGLEDIAGONAL_FIELD_NUMBER = 15;
+    private double openingAngleDiagonal_;
+    public boolean hasOpeningAngleDiagonal() {
+      return ((bitField0_ & 0x00001000) == 0x00001000);
+    }
+    public double getOpeningAngleDiagonal() {
+      return openingAngleDiagonal_;
+    }
+    
+    // optional double pixelSize = 16;
+    public static final int PIXELSIZE_FIELD_NUMBER = 16;
+    private double pixelSize_;
+    public boolean hasPixelSize() {
+      return ((bitField0_ & 0x00002000) == 0x00002000);
+    }
+    public double getPixelSize() {
+      return pixelSize_;
+    }
+    
+    // optional double focus = 17;
+    public static final int FOCUS_FIELD_NUMBER = 17;
+    private double focus_;
+    public boolean hasFocus() {
+      return ((bitField0_ & 0x00004000) == 0x00004000);
+    }
+    public double getFocus() {
+      return focus_;
+    }
+    
     private void initFields() {
       resolutionWidth_ = 0;
       resolutionHeight_ = 0;
@@ -1031,6 +1104,10 @@ public final class Representations {
       memorysize_ = 0L;
       cameraRollOffset_ = 0D;
       cameraTiltOffset_ = 0D;
+      transformation_ = java.util.Collections.emptyList();
+      openingAngleDiagonal_ = 0D;
+      pixelSize_ = 0D;
+      focus_ = 0D;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1044,6 +1121,12 @@ public final class Representations {
       if (!hasResolutionHeight()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getTransformationCount(); i++) {
+        if (!getTransformation(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -1087,6 +1170,18 @@ public final class Representations {
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeDouble(13, cameraTiltOffset_);
+      }
+      for (int i = 0; i < transformation_.size(); i++) {
+        output.writeMessage(14, transformation_.get(i));
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        output.writeDouble(15, openingAngleDiagonal_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        output.writeDouble(16, pixelSize_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        output.writeDouble(17, focus_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1144,6 +1239,22 @@ public final class Representations {
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(13, cameraTiltOffset_);
+      }
+      for (int i = 0; i < transformation_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(14, transformation_.get(i));
+      }
+      if (((bitField0_ & 0x00001000) == 0x00001000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(15, openingAngleDiagonal_);
+      }
+      if (((bitField0_ & 0x00002000) == 0x00002000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(16, pixelSize_);
+      }
+      if (((bitField0_ & 0x00004000) == 0x00004000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(17, focus_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1261,6 +1372,7 @@ public final class Representations {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getTransformationFieldBuilder();
         }
       }
       private static Builder create() {
@@ -1293,6 +1405,18 @@ public final class Representations {
         bitField0_ = (bitField0_ & ~0x00000400);
         cameraTiltOffset_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000800);
+        if (transformationBuilder_ == null) {
+          transformation_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00001000);
+        } else {
+          transformationBuilder_.clear();
+        }
+        openingAngleDiagonal_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00002000);
+        pixelSize_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00004000);
+        focus_ = 0D;
+        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
       
@@ -1379,6 +1503,27 @@ public final class Representations {
           to_bitField0_ |= 0x00000800;
         }
         result.cameraTiltOffset_ = cameraTiltOffset_;
+        if (transformationBuilder_ == null) {
+          if (((bitField0_ & 0x00001000) == 0x00001000)) {
+            transformation_ = java.util.Collections.unmodifiableList(transformation_);
+            bitField0_ = (bitField0_ & ~0x00001000);
+          }
+          result.transformation_ = transformation_;
+        } else {
+          result.transformation_ = transformationBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00001000;
+        }
+        result.openingAngleDiagonal_ = openingAngleDiagonal_;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00002000;
+        }
+        result.pixelSize_ = pixelSize_;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00004000;
+        }
+        result.focus_ = focus_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1431,6 +1576,41 @@ public final class Representations {
         if (other.hasCameraTiltOffset()) {
           setCameraTiltOffset(other.getCameraTiltOffset());
         }
+        if (transformationBuilder_ == null) {
+          if (!other.transformation_.isEmpty()) {
+            if (transformation_.isEmpty()) {
+              transformation_ = other.transformation_;
+              bitField0_ = (bitField0_ & ~0x00001000);
+            } else {
+              ensureTransformationIsMutable();
+              transformation_.addAll(other.transformation_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.transformation_.isEmpty()) {
+            if (transformationBuilder_.isEmpty()) {
+              transformationBuilder_.dispose();
+              transformationBuilder_ = null;
+              transformation_ = other.transformation_;
+              bitField0_ = (bitField0_ & ~0x00001000);
+              transformationBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getTransformationFieldBuilder() : null;
+            } else {
+              transformationBuilder_.addAllMessages(other.transformation_);
+            }
+          }
+        }
+        if (other.hasOpeningAngleDiagonal()) {
+          setOpeningAngleDiagonal(other.getOpeningAngleDiagonal());
+        }
+        if (other.hasPixelSize()) {
+          setPixelSize(other.getPixelSize());
+        }
+        if (other.hasFocus()) {
+          setFocus(other.getFocus());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1443,6 +1623,12 @@ public final class Representations {
         if (!hasResolutionHeight()) {
           
           return false;
+        }
+        for (int i = 0; i < getTransformationCount(); i++) {
+          if (!getTransformation(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -1536,6 +1722,27 @@ public final class Representations {
               cameraTiltOffset_ = input.readDouble();
               break;
             }
+            case 114: {
+              de.naoth.rc.messages.CommonTypes.Pose3D.Builder subBuilder = de.naoth.rc.messages.CommonTypes.Pose3D.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addTransformation(subBuilder.buildPartial());
+              break;
+            }
+            case 121: {
+              bitField0_ |= 0x00002000;
+              openingAngleDiagonal_ = input.readDouble();
+              break;
+            }
+            case 129: {
+              bitField0_ |= 0x00004000;
+              pixelSize_ = input.readDouble();
+              break;
+            }
+            case 137: {
+              bitField0_ |= 0x00008000;
+              focus_ = input.readDouble();
+              break;
+            }
           }
         }
       }
@@ -1608,147 +1815,147 @@ public final class Representations {
         return this;
       }
       
-      // optional double focalLength = 5;
+      // optional double focalLength = 5 [deprecated = true];
       private double focalLength_ ;
-      public boolean hasFocalLength() {
+      @java.lang.Deprecated public boolean hasFocalLength() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-      public double getFocalLength() {
+      @java.lang.Deprecated public double getFocalLength() {
         return focalLength_;
       }
-      public Builder setFocalLength(double value) {
+      @java.lang.Deprecated public Builder setFocalLength(double value) {
         bitField0_ |= 0x00000008;
         focalLength_ = value;
         onChanged();
         return this;
       }
-      public Builder clearFocalLength() {
+      @java.lang.Deprecated public Builder clearFocalLength() {
         bitField0_ = (bitField0_ & ~0x00000008);
         focalLength_ = 0D;
         onChanged();
         return this;
       }
       
-      // optional double openingAngleWidth = 6;
+      // optional double openingAngleWidth = 6 [deprecated = true];
       private double openingAngleWidth_ ;
-      public boolean hasOpeningAngleWidth() {
+      @java.lang.Deprecated public boolean hasOpeningAngleWidth() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-      public double getOpeningAngleWidth() {
+      @java.lang.Deprecated public double getOpeningAngleWidth() {
         return openingAngleWidth_;
       }
-      public Builder setOpeningAngleWidth(double value) {
+      @java.lang.Deprecated public Builder setOpeningAngleWidth(double value) {
         bitField0_ |= 0x00000010;
         openingAngleWidth_ = value;
         onChanged();
         return this;
       }
-      public Builder clearOpeningAngleWidth() {
+      @java.lang.Deprecated public Builder clearOpeningAngleWidth() {
         bitField0_ = (bitField0_ & ~0x00000010);
         openingAngleWidth_ = 0D;
         onChanged();
         return this;
       }
       
-      // optional double openingAngleHeight = 7;
+      // optional double openingAngleHeight = 7 [deprecated = true];
       private double openingAngleHeight_ ;
-      public boolean hasOpeningAngleHeight() {
+      @java.lang.Deprecated public boolean hasOpeningAngleHeight() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-      public double getOpeningAngleHeight() {
+      @java.lang.Deprecated public double getOpeningAngleHeight() {
         return openingAngleHeight_;
       }
-      public Builder setOpeningAngleHeight(double value) {
+      @java.lang.Deprecated public Builder setOpeningAngleHeight(double value) {
         bitField0_ |= 0x00000020;
         openingAngleHeight_ = value;
         onChanged();
         return this;
       }
-      public Builder clearOpeningAngleHeight() {
+      @java.lang.Deprecated public Builder clearOpeningAngleHeight() {
         bitField0_ = (bitField0_ & ~0x00000020);
         openingAngleHeight_ = 0D;
         onChanged();
         return this;
       }
       
-      // optional double opticalCenterX = 8;
+      // optional double opticalCenterX = 8 [deprecated = true];
       private double opticalCenterX_ ;
-      public boolean hasOpticalCenterX() {
+      @java.lang.Deprecated public boolean hasOpticalCenterX() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public double getOpticalCenterX() {
+      @java.lang.Deprecated public double getOpticalCenterX() {
         return opticalCenterX_;
       }
-      public Builder setOpticalCenterX(double value) {
+      @java.lang.Deprecated public Builder setOpticalCenterX(double value) {
         bitField0_ |= 0x00000040;
         opticalCenterX_ = value;
         onChanged();
         return this;
       }
-      public Builder clearOpticalCenterX() {
+      @java.lang.Deprecated public Builder clearOpticalCenterX() {
         bitField0_ = (bitField0_ & ~0x00000040);
         opticalCenterX_ = 0D;
         onChanged();
         return this;
       }
       
-      // optional double opticalCenterY = 9;
+      // optional double opticalCenterY = 9 [deprecated = true];
       private double opticalCenterY_ ;
-      public boolean hasOpticalCenterY() {
+      @java.lang.Deprecated public boolean hasOpticalCenterY() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
-      public double getOpticalCenterY() {
+      @java.lang.Deprecated public double getOpticalCenterY() {
         return opticalCenterY_;
       }
-      public Builder setOpticalCenterY(double value) {
+      @java.lang.Deprecated public Builder setOpticalCenterY(double value) {
         bitField0_ |= 0x00000080;
         opticalCenterY_ = value;
         onChanged();
         return this;
       }
-      public Builder clearOpticalCenterY() {
+      @java.lang.Deprecated public Builder clearOpticalCenterY() {
         bitField0_ = (bitField0_ & ~0x00000080);
         opticalCenterY_ = 0D;
         onChanged();
         return this;
       }
       
-      // optional int64 size = 10;
+      // optional int64 size = 10 [deprecated = true];
       private long size_ ;
-      public boolean hasSize() {
+      @java.lang.Deprecated public boolean hasSize() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
-      public long getSize() {
+      @java.lang.Deprecated public long getSize() {
         return size_;
       }
-      public Builder setSize(long value) {
+      @java.lang.Deprecated public Builder setSize(long value) {
         bitField0_ |= 0x00000100;
         size_ = value;
         onChanged();
         return this;
       }
-      public Builder clearSize() {
+      @java.lang.Deprecated public Builder clearSize() {
         bitField0_ = (bitField0_ & ~0x00000100);
         size_ = 0L;
         onChanged();
         return this;
       }
       
-      // optional int64 memorysize = 11;
+      // optional int64 memorysize = 11 [deprecated = true];
       private long memorysize_ ;
-      public boolean hasMemorysize() {
+      @java.lang.Deprecated public boolean hasMemorysize() {
         return ((bitField0_ & 0x00000200) == 0x00000200);
       }
-      public long getMemorysize() {
+      @java.lang.Deprecated public long getMemorysize() {
         return memorysize_;
       }
-      public Builder setMemorysize(long value) {
+      @java.lang.Deprecated public Builder setMemorysize(long value) {
         bitField0_ |= 0x00000200;
         memorysize_ = value;
         onChanged();
         return this;
       }
-      public Builder clearMemorysize() {
+      @java.lang.Deprecated public Builder clearMemorysize() {
         bitField0_ = (bitField0_ & ~0x00000200);
         memorysize_ = 0L;
         onChanged();
@@ -1793,6 +2000,255 @@ public final class Representations {
       public Builder clearCameraTiltOffset() {
         bitField0_ = (bitField0_ & ~0x00000800);
         cameraTiltOffset_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // repeated .naothmessages.Pose3D transformation = 14;
+      private java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> transformation_ =
+        java.util.Collections.emptyList();
+      private void ensureTransformationIsMutable() {
+        if (!((bitField0_ & 0x00001000) == 0x00001000)) {
+          transformation_ = new java.util.ArrayList<de.naoth.rc.messages.CommonTypes.Pose3D>(transformation_);
+          bitField0_ |= 0x00001000;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> transformationBuilder_;
+      
+      public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D> getTransformationList() {
+        if (transformationBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(transformation_);
+        } else {
+          return transformationBuilder_.getMessageList();
+        }
+      }
+      public int getTransformationCount() {
+        if (transformationBuilder_ == null) {
+          return transformation_.size();
+        } else {
+          return transformationBuilder_.getCount();
+        }
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D getTransformation(int index) {
+        if (transformationBuilder_ == null) {
+          return transformation_.get(index);
+        } else {
+          return transformationBuilder_.getMessage(index);
+        }
+      }
+      public Builder setTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D value) {
+        if (transformationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransformationIsMutable();
+          transformation_.set(index, value);
+          onChanged();
+        } else {
+          transformationBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          transformationBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addTransformation(de.naoth.rc.messages.CommonTypes.Pose3D value) {
+        if (transformationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransformationIsMutable();
+          transformation_.add(value);
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D value) {
+        if (transformationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransformationIsMutable();
+          transformation_.add(index, value);
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addTransformation(
+          de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.add(builderForValue.build());
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addTransformation(
+          int index, de.naoth.rc.messages.CommonTypes.Pose3D.Builder builderForValue) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          transformationBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllTransformation(
+          java.lang.Iterable<? extends de.naoth.rc.messages.CommonTypes.Pose3D> values) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          super.addAll(values, transformation_);
+          onChanged();
+        } else {
+          transformationBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearTransformation() {
+        if (transformationBuilder_ == null) {
+          transformation_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00001000);
+          onChanged();
+        } else {
+          transformationBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeTransformation(int index) {
+        if (transformationBuilder_ == null) {
+          ensureTransformationIsMutable();
+          transformation_.remove(index);
+          onChanged();
+        } else {
+          transformationBuilder_.remove(index);
+        }
+        return this;
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder getTransformationBuilder(
+          int index) {
+        return getTransformationFieldBuilder().getBuilder(index);
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getTransformationOrBuilder(
+          int index) {
+        if (transformationBuilder_ == null) {
+          return transformation_.get(index);  } else {
+          return transformationBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+           getTransformationOrBuilderList() {
+        if (transformationBuilder_ != null) {
+          return transformationBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(transformation_);
+        }
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder() {
+        return getTransformationFieldBuilder().addBuilder(
+            de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance());
+      }
+      public de.naoth.rc.messages.CommonTypes.Pose3D.Builder addTransformationBuilder(
+          int index) {
+        return getTransformationFieldBuilder().addBuilder(
+            index, de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance());
+      }
+      public java.util.List<de.naoth.rc.messages.CommonTypes.Pose3D.Builder> 
+           getTransformationBuilderList() {
+        return getTransformationFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder> 
+          getTransformationFieldBuilder() {
+        if (transformationBuilder_ == null) {
+          transformationBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              de.naoth.rc.messages.CommonTypes.Pose3D, de.naoth.rc.messages.CommonTypes.Pose3D.Builder, de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder>(
+                  transformation_,
+                  ((bitField0_ & 0x00001000) == 0x00001000),
+                  getParentForChildren(),
+                  isClean());
+          transformation_ = null;
+        }
+        return transformationBuilder_;
+      }
+      
+      // optional double openingAngleDiagonal = 15;
+      private double openingAngleDiagonal_ ;
+      public boolean hasOpeningAngleDiagonal() {
+        return ((bitField0_ & 0x00002000) == 0x00002000);
+      }
+      public double getOpeningAngleDiagonal() {
+        return openingAngleDiagonal_;
+      }
+      public Builder setOpeningAngleDiagonal(double value) {
+        bitField0_ |= 0x00002000;
+        openingAngleDiagonal_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearOpeningAngleDiagonal() {
+        bitField0_ = (bitField0_ & ~0x00002000);
+        openingAngleDiagonal_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // optional double pixelSize = 16;
+      private double pixelSize_ ;
+      public boolean hasPixelSize() {
+        return ((bitField0_ & 0x00004000) == 0x00004000);
+      }
+      public double getPixelSize() {
+        return pixelSize_;
+      }
+      public Builder setPixelSize(double value) {
+        bitField0_ |= 0x00004000;
+        pixelSize_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearPixelSize() {
+        bitField0_ = (bitField0_ & ~0x00004000);
+        pixelSize_ = 0D;
+        onChanged();
+        return this;
+      }
+      
+      // optional double focus = 17;
+      private double focus_ ;
+      public boolean hasFocus() {
+        return ((bitField0_ & 0x00008000) == 0x00008000);
+      }
+      public double getFocus() {
+        return focus_;
+      }
+      public Builder setFocus(double value) {
+        bitField0_ |= 0x00008000;
+        focus_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearFocus() {
+        bitField0_ = (bitField0_ & ~0x00008000);
+        focus_ = 0D;
         onChanged();
         return this;
       }
@@ -3768,6 +4224,14 @@ public final class Representations {
     boolean hasPose();
     de.naoth.rc.messages.CommonTypes.Pose3D getPose();
     de.naoth.rc.messages.CommonTypes.Pose3DOrBuilder getPoseOrBuilder();
+    
+    // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+    boolean hasCameraID();
+    de.naoth.rc.messages.CommonTypes.CameraID getCameraID();
+    
+    // optional bool valid = 3;
+    boolean hasValid();
+    boolean getValid();
   }
   public static final class CameraMatrix extends
       com.google.protobuf.GeneratedMessage
@@ -3811,8 +4275,30 @@ public final class Representations {
       return pose_;
     }
     
+    // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+    public static final int CAMERAID_FIELD_NUMBER = 2;
+    private de.naoth.rc.messages.CommonTypes.CameraID cameraID_;
+    public boolean hasCameraID() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public de.naoth.rc.messages.CommonTypes.CameraID getCameraID() {
+      return cameraID_;
+    }
+    
+    // optional bool valid = 3;
+    public static final int VALID_FIELD_NUMBER = 3;
+    private boolean valid_;
+    public boolean hasValid() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public boolean getValid() {
+      return valid_;
+    }
+    
     private void initFields() {
       pose_ = de.naoth.rc.messages.CommonTypes.Pose3D.getDefaultInstance();
+      cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+      valid_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3837,6 +4323,12 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeMessage(1, pose_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, cameraID_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(3, valid_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -3849,6 +4341,14 @@ public final class Representations {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, pose_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, cameraID_.getNumber());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, valid_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3981,6 +4481,10 @@ public final class Representations {
           poseBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
+        cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        valid_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
       
@@ -4027,6 +4531,14 @@ public final class Representations {
         } else {
           result.pose_ = poseBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.cameraID_ = cameraID_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.valid_ = valid_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4045,6 +4557,12 @@ public final class Representations {
         if (other == de.naoth.rc.messages.Representations.CameraMatrix.getDefaultInstance()) return this;
         if (other.hasPose()) {
           mergePose(other.getPose());
+        }
+        if (other.hasCameraID()) {
+          setCameraID(other.getCameraID());
+        }
+        if (other.hasValid()) {
+          setValid(other.getValid());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4092,6 +4610,22 @@ public final class Representations {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setPose(subBuilder.buildPartial());
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+              de.naoth.rc.messages.CommonTypes.CameraID value = de.naoth.rc.messages.CommonTypes.CameraID.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(2, rawValue);
+              } else {
+                bitField0_ |= 0x00000002;
+                cameraID_ = value;
+              }
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              valid_ = input.readBool();
               break;
             }
           }
@@ -4188,6 +4722,51 @@ public final class Representations {
           pose_ = null;
         }
         return poseBuilder_;
+      }
+      
+      // optional .naothmessages.CameraID cameraID = 2 [default = bottom];
+      private de.naoth.rc.messages.CommonTypes.CameraID cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+      public boolean hasCameraID() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public de.naoth.rc.messages.CommonTypes.CameraID getCameraID() {
+        return cameraID_;
+      }
+      public Builder setCameraID(de.naoth.rc.messages.CommonTypes.CameraID value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
+        cameraID_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCameraID() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        cameraID_ = de.naoth.rc.messages.CommonTypes.CameraID.bottom;
+        onChanged();
+        return this;
+      }
+      
+      // optional bool valid = 3;
+      private boolean valid_ ;
+      public boolean hasValid() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public boolean getValid() {
+        return valid_;
+      }
+      public Builder setValid(boolean value) {
+        bitField0_ |= 0x00000004;
+        valid_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearValid() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        valid_ = false;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:naothmessages.CameraMatrix)
@@ -17362,96 +17941,101 @@ public final class Representations {
       "40\022-\n\ncameraInfo\030\004 \001(\0132\031.naothmessages.C" +
       "ameraInfo\0220\n\006format\030\005 \001(\0162\033.naothmessage" +
       "s.Image.Format:\003YUV\022\021\n\ttimestamp\030\006 \001(\r\"\035" +
-      "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\304\002\n\nCamera" +
+      "\n\006Format\022\007\n\003YUV\020\000\022\n\n\006YUV422\020\001\"\317\003\n\nCamera" +
       "Info\022\027\n\017resolutionWidth\030\001 \002(\005\022\030\n\020resolut" +
       "ionHeight\030\002 \002(\005\0221\n\010cameraID\030\004 \001(\0162\027.naot" +
-      "hmessages.CameraID:\006bottom\022\023\n\013focalLengt",
-      "h\030\005 \001(\001\022\031\n\021openingAngleWidth\030\006 \001(\001\022\032\n\022op" +
-      "eningAngleHeight\030\007 \001(\001\022\026\n\016opticalCenterX" +
-      "\030\010 \001(\001\022\026\n\016opticalCenterY\030\t \001(\001\022\014\n\004size\030\n" +
-      " \001(\003\022\022\n\nmemorysize\030\013 \001(\003\022\030\n\020cameraRollOf" +
-      "fset\030\014 \001(\001\022\030\n\020cameraTiltOffset\030\r \001(\001\"I\n\t" +
-      "JointData\022\020\n\010position\030\001 \003(\001\022\021\n\tstiffness" +
-      "\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n\003ddp\030\004 \003(\001\"l\n\017Senso" +
-      "rJointData\022+\n\tjointData\030\001 \002(\0132\030.naothmes" +
-      "sages.JointData\022\023\n\013temperature\030\002 \003(\001\022\027\n\017" +
-      "electricCurrent\030\003 \003(\001\"i\n\025UltraSoundRecei",
-      "veData\022\032\n\022ultraSoundTimeStep\030\001 \001(\r\022\017\n\007ra" +
-      "wdata\030\002 \002(\001\022\020\n\010dataLeft\030\003 \003(\001\022\021\n\tdataRig" +
-      "ht\030\004 \003(\001\"3\n\014CameraMatrix\022#\n\004pose\030\001 \002(\0132\025" +
-      ".naothmessages.Pose3D\".\n\tFrameInfo\022\023\n\013fr" +
-      "ameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013BallPe" +
-      "rcept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcenterInIm" +
-      "age\030\002 \001(\0132\034.naothmessages.DoubleVector2\022" +
-      "\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor\030\004 \001(" +
-      "\0162\024.naothmessages.Color\022?\n\031bearingBasedO" +
-      "ffsetOnField\030\005 \001(\0132\034.naothmessages.Doubl",
-      "eVector2\022:\n\030frameInfoWhenBallWasSeen\030\006 \001" +
-      "(\0132\030.naothmessages.FrameInfo\"\234\001\n\013GoalPer" +
-      "cept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014goalCen" +
-      "troid\030\002 \001(\0132\034.naothmessages.DoubleVector" +
-      "3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004post\030\004 \003" +
-      "(\0132\027.naothmessages.GoalPost\"\264\003\n\021HeadMoti" +
-      "onRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002 \002(\r\022" +
-      "9\n\023targetJointPosition\030\003 \001(\0132\034.naothmess" +
-      "ages.DoubleVector2\0228\n\022targetPointInImage" +
-      "\030\004 \001(\0132\034.naothmessages.DoubleVector2\022;\n\025",
-      "targetPointInTheWorld\030\005 \001(\0132\034.naothmessa" +
-      "ges.DoubleVector3\0222\n\014searchCenter\030\006 \001(\0132" +
-      "\034.naothmessages.DoubleVector3\0220\n\nsearchS" +
-      "ize\030\007 \001(\0132\034.naothmessages.DoubleVector3\022" +
-      "\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetPointO" +
-      "nTheGround\030\t \001(\0132\034.naothmessages.DoubleV" +
-      "ector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022StepContr" +
-      "olRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLeftFoo" +
-      "t\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmessages." +
-      "Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirection\030\005",
-      " \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030\001 \002(\r" +
-      "\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\0132\025.na" +
-      "othmessages.Pose2D\0226\n\013stepControl\030\004 \001(\0132" +
-      "!.naothmessages.StepControlRequest\022%\n\006of" +
-      "fset\030\005 \002(\0132\025.naothmessages.Pose2D\"{\n\013Kic" +
-      "kRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naothmessa" +
-      "ges.DoubleVector3\022\025\n\rkickDirection\030\002 \002(\001" +
-      "\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 \002(\010\"\212" +
-      "\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004time\030\002 \002" +
-      "(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004 \001(\0132",
-      "\032.naothmessages.WalkRequest\022\026\n\016starndard" +
-      "Stand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032.naoth" +
-      "messages.KickRequest\022\023\n\013standHeight\030\007 \001(" +
-      "\001\022\"\n\032calibrateFootTouchDetector\030\010 \001(\010\022\034\n" +
-      "\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013LinePerc" +
-      "ept\022.\n\005lines\030\001 \003(\0132\037.naothmessages.Field" +
-      "LineSegment\0222\n\rintersections\030\002 \003(\0132\033.nao" +
-      "thmessages.Intersection\0228\n\022middleCircleC" +
-      "enter\030\003 \001(\0132\034.naothmessages.DoubleVector" +
-      "2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImage\030\001 \002",
-      "(\0132\031.naothmessages.IntVector2\0220\n\nposOnFi" +
-      "eld\030\002 \002(\0132\034.naothmessages.DoubleVector2\022" +
-      "#\n\005color\030\003 \002(\0162\024.naothmessages.Color\022\022\n\n" +
-      "ScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPercept" +
-      "\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages.Scan" +
-      "LineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 \003(\001\022\014" +
-      "\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021StepContr" +
-      "olStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveableFoot" +
-      "\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002(\r\022\022\n" +
-      "\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030\003 \002(\r",
-      "\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMotionSta" +
-      "te\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006 \002(\0132" +
-      "\025.naothmessages.Pose2D\0225\n\026plannedMotionR" +
-      "ightFoot\030\007 \002(\0132\025.naothmessages.Pose2D\022/\n" +
-      "\020plannedMotionHip\030\010 \002(\0132\025.naothmessages." +
-      "Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 .naot" +
-      "hmessages.StepControlStatus\"3\n\014OdometryD" +
-      "ata\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose2D" +
-      "\"\274\001\n\017CalibrationData\022:\n\024inertialSensorOf" +
-      "fset\030\001 \001(\0132\034.naothmessages.DoubleVector2",
-      "\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothmessag" +
-      "es.DoubleVector2\0225\n\017accSensorOffset\030\003 \001(" +
-      "\0132\034.naothmessages.DoubleVector3\"B\n\rInert" +
-      "ialModel\0221\n\013orientation\030\001 \001(\0132\034.naothmes" +
-      "sages.DoubleVector2B\026\n\024de.naoth.rc.messa" +
-      "ges"
+      "hmessages.CameraID:\006bottom\022\027\n\013focalLengt",
+      "h\030\005 \001(\001B\002\030\001\022\035\n\021openingAngleWidth\030\006 \001(\001B\002" +
+      "\030\001\022\036\n\022openingAngleHeight\030\007 \001(\001B\002\030\001\022\032\n\016op" +
+      "ticalCenterX\030\010 \001(\001B\002\030\001\022\032\n\016opticalCenterY" +
+      "\030\t \001(\001B\002\030\001\022\020\n\004size\030\n \001(\003B\002\030\001\022\026\n\nmemorysi" +
+      "ze\030\013 \001(\003B\002\030\001\022\030\n\020cameraRollOffset\030\014 \001(\001\022\030" +
+      "\n\020cameraTiltOffset\030\r \001(\001\022-\n\016transformati" +
+      "on\030\016 \003(\0132\025.naothmessages.Pose3D\022\034\n\024openi" +
+      "ngAngleDiagonal\030\017 \001(\001\022\021\n\tpixelSize\030\020 \001(\001" +
+      "\022\r\n\005focus\030\021 \001(\001\"I\n\tJointData\022\020\n\010position" +
+      "\030\001 \003(\001\022\021\n\tstiffness\030\002 \003(\001\022\n\n\002dp\030\003 \003(\001\022\013\n",
+      "\003ddp\030\004 \003(\001\"l\n\017SensorJointData\022+\n\tjointDa" +
+      "ta\030\001 \002(\0132\030.naothmessages.JointData\022\023\n\013te" +
+      "mperature\030\002 \003(\001\022\027\n\017electricCurrent\030\003 \003(\001" +
+      "\"i\n\025UltraSoundReceiveData\022\032\n\022ultraSoundT" +
+      "imeStep\030\001 \001(\r\022\017\n\007rawdata\030\002 \002(\001\022\020\n\010dataLe" +
+      "ft\030\003 \003(\001\022\021\n\tdataRight\030\004 \003(\001\"u\n\014CameraMat" +
+      "rix\022#\n\004pose\030\001 \002(\0132\025.naothmessages.Pose3D" +
+      "\0221\n\010cameraID\030\002 \001(\0162\027.naothmessages.Camer" +
+      "aID:\006bottom\022\r\n\005valid\030\003 \001(\010\".\n\tFrameInfo\022" +
+      "\023\n\013frameNumber\030\001 \002(\r\022\014\n\004time\030\002 \002(\r\"\224\002\n\013B",
+      "allPercept\022\023\n\013ballWasSeen\030\001 \001(\010\0223\n\rcente" +
+      "rInImage\030\002 \001(\0132\034.naothmessages.DoubleVec" +
+      "tor2\022\025\n\rradiusInImage\030\003 \001(\001\022\'\n\tballColor" +
+      "\030\004 \001(\0162\024.naothmessages.Color\022?\n\031bearingB" +
+      "asedOffsetOnField\030\005 \001(\0132\034.naothmessages." +
+      "DoubleVector2\022:\n\030frameInfoWhenBallWasSee" +
+      "n\030\006 \001(\0132\030.naothmessages.FrameInfo\"\234\001\n\013Go" +
+      "alPercept\022\027\n\017angleToSeenGoal\030\001 \001(\001\0222\n\014go" +
+      "alCentroid\030\002 \001(\0132\034.naothmessages.DoubleV" +
+      "ector3\022\031\n\021numberOfSeenPosts\030\003 \001(\005\022%\n\004pos",
+      "t\030\004 \003(\0132\027.naothmessages.GoalPost\"\264\003\n\021Hea" +
+      "dMotionRequest\022\n\n\002id\030\001 \002(\r\022\020\n\010cameraID\030\002" +
+      " \002(\r\0229\n\023targetJointPosition\030\003 \001(\0132\034.naot" +
+      "hmessages.DoubleVector2\0228\n\022targetPointIn" +
+      "Image\030\004 \001(\0132\034.naothmessages.DoubleVector" +
+      "2\022;\n\025targetPointInTheWorld\030\005 \001(\0132\034.naoth" +
+      "messages.DoubleVector3\0222\n\014searchCenter\030\006" +
+      " \001(\0132\034.naothmessages.DoubleVector3\0220\n\nse" +
+      "archSize\030\007 \001(\0132\034.naothmessages.DoubleVec" +
+      "tor3\022\027\n\017searchDirection\030\010 \001(\010\022<\n\026targetP",
+      "ointOnTheGround\030\t \001(\0132\034.naothmessages.Do" +
+      "ubleVector2\022\022\n\ncoordinate\030\n \001(\r\"\207\001\n\022Step" +
+      "ControlRequest\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveLe" +
+      "ftFoot\030\002 \002(\010\022%\n\006target\030\003 \002(\0132\025.naothmess" +
+      "ages.Pose2D\022\014\n\004time\030\004 \002(\r\022\026\n\016speedDirect" +
+      "ion\030\005 \002(\001\"\272\001\n\013WalkRequest\022\022\n\ncoordinate\030" +
+      "\001 \002(\r\022\021\n\tcharacter\030\002 \002(\001\022%\n\006target\030\003 \002(\013" +
+      "2\025.naothmessages.Pose2D\0226\n\013stepControl\030\004" +
+      " \001(\0132!.naothmessages.StepControlRequest\022" +
+      "%\n\006offset\030\005 \002(\0132\025.naothmessages.Pose2D\"{",
+      "\n\013KickRequest\022/\n\tkickPoint\030\001 \002(\0132\034.naoth" +
+      "messages.DoubleVector3\022\025\n\rkickDirection\030" +
+      "\002 \002(\001\022\020\n\010kickFoot\030\003 \002(\005\022\022\n\nfinishKick\030\004 " +
+      "\002(\010\"\212\002\n\rMotionRequest\022\n\n\002id\030\001 \002(\r\022\014\n\004tim" +
+      "e\030\002 \002(\r\022\016\n\006forced\030\003 \002(\010\022/\n\013walkRequest\030\004" +
+      " \001(\0132\032.naothmessages.WalkRequest\022\026\n\016star" +
+      "ndardStand\030\005 \001(\010\022/\n\013kickRequest\030\006 \001(\0132\032." +
+      "naothmessages.KickRequest\022\023\n\013standHeight" +
+      "\030\007 \001(\001\022\"\n\032calibrateFootTouchDetector\030\010 \001" +
+      "(\010\022\034\n\024cognitionFrameNumber\030\t \001(\r\"\253\001\n\013Lin",
+      "ePercept\022.\n\005lines\030\001 \003(\0132\037.naothmessages." +
+      "FieldLineSegment\0222\n\rintersections\030\002 \003(\0132" +
+      "\033.naothmessages.Intersection\0228\n\022middleCi" +
+      "rcleCenter\030\003 \001(\0132\034.naothmessages.DoubleV" +
+      "ector2\"\254\001\n\020ScanLineEndPoint\022-\n\nposInImag" +
+      "e\030\001 \002(\0132\031.naothmessages.IntVector2\0220\n\npo" +
+      "sOnField\030\002 \002(\0132\034.naothmessages.DoubleVec" +
+      "tor2\022#\n\005color\030\003 \002(\0162\024.naothmessages.Colo" +
+      "r\022\022\n\nScanLineID\030\004 \002(\r\"J\n\024ScanLineEdgelPe" +
+      "rcept\0222\n\tendPoints\030\002 \003(\0132\037.naothmessages",
+      ".ScanLineEndPoint\"5\n\007FSRData\022\r\n\005force\030\001 " +
+      "\003(\001\022\014\n\004data\030\002 \003(\001\022\r\n\005valid\030\003 \003(\010\"9\n\021Step" +
+      "ControlStatus\022\016\n\006stepID\030\001 \002(\r\022\024\n\014moveabl" +
+      "eFoot\030\002 \002(\r\"\322\002\n\014MotionStatus\022\014\n\004time\030\001 \002" +
+      "(\r\022\022\n\nlastMotion\030\002 \002(\r\022\025\n\rcurrentMotion\030" +
+      "\003 \002(\r\022\022\n\nheadMotion\030\004 \002(\r\022\032\n\022currentMoti" +
+      "onState\030\005 \002(\r\0224\n\025plannedMotionLeftFoot\030\006" +
+      " \002(\0132\025.naothmessages.Pose2D\0225\n\026plannedMo" +
+      "tionRightFoot\030\007 \002(\0132\025.naothmessages.Pose" +
+      "2D\022/\n\020plannedMotionHip\030\010 \002(\0132\025.naothmess",
+      "ages.Pose2D\022;\n\021stepControlStatus\030\t \001(\0132 " +
+      ".naothmessages.StepControlStatus\"3\n\014Odom" +
+      "etryData\022#\n\004pose\030\001 \002(\0132\025.naothmessages.P" +
+      "ose2D\"\274\001\n\017CalibrationData\022:\n\024inertialSen" +
+      "sorOffset\030\001 \001(\0132\034.naothmessages.DoubleVe" +
+      "ctor2\0226\n\020gyroSensorOffset\030\002 \001(\0132\034.naothm" +
+      "essages.DoubleVector2\0225\n\017accSensorOffset" +
+      "\030\003 \001(\0132\034.naothmessages.DoubleVector3\"B\n\r" +
+      "InertialModel\0221\n\013orientation\030\001 \001(\0132\034.nao" +
+      "thmessages.DoubleVector2B\026\n\024de.naoth.rc.",
+      "messages"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -17471,7 +18055,7 @@ public final class Representations {
           internal_static_naothmessages_CameraInfo_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CameraInfo_descriptor,
-              new java.lang.String[] { "ResolutionWidth", "ResolutionHeight", "CameraID", "FocalLength", "OpeningAngleWidth", "OpeningAngleHeight", "OpticalCenterX", "OpticalCenterY", "Size", "Memorysize", "CameraRollOffset", "CameraTiltOffset", },
+              new java.lang.String[] { "ResolutionWidth", "ResolutionHeight", "CameraID", "FocalLength", "OpeningAngleWidth", "OpeningAngleHeight", "OpticalCenterX", "OpticalCenterY", "Size", "Memorysize", "CameraRollOffset", "CameraTiltOffset", "Transformation", "OpeningAngleDiagonal", "PixelSize", "Focus", },
               de.naoth.rc.messages.Representations.CameraInfo.class,
               de.naoth.rc.messages.Representations.CameraInfo.Builder.class);
           internal_static_naothmessages_JointData_descriptor =
@@ -17503,7 +18087,7 @@ public final class Representations {
           internal_static_naothmessages_CameraMatrix_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_naothmessages_CameraMatrix_descriptor,
-              new java.lang.String[] { "Pose", },
+              new java.lang.String[] { "Pose", "CameraID", "Valid", },
               de.naoth.rc.messages.Representations.CameraMatrix.class,
               de.naoth.rc.messages.Representations.CameraMatrix.Builder.class);
           internal_static_naothmessages_FrameInfo_descriptor =

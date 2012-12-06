@@ -228,7 +228,8 @@ void WebotsController::get(AccelerometerData& data)
  */
 void WebotsController::get(Image& data)
 {
-  data.setCameraInfo(Platform::getInstance().theCameraInfo);
+  //ACHTUNG: this is set by the module CameraInfoSetter
+  //data.setCameraInfo(Platform::getInstance().theCameraInfo);
   const unsigned char *webotsImage = wb_camera_get_image(camera);
 
   //unsigned char *yuv422Image = transformRGBtoYUV422(webotsImage);

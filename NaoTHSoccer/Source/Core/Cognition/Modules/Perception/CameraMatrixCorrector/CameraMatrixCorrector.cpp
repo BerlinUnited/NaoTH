@@ -5,7 +5,7 @@
 * Implementation of class CameraMatrixProvider
 */
 
-#include "CameraMatrixProvider.h"
+#include "CameraMatrixCorrector.h"
 
 // debug
 #include "Tools/Debug/DebugModify.h"
@@ -19,7 +19,7 @@
 
 #include "PlatformInterface/Platform.h"
 
-CameraMatrixProvider::CameraMatrixProvider()
+CameraMatrixCorrector::CameraMatrixCorrector()
 {
   udpateTime = getFrameInfo().getTime();
 
@@ -38,20 +38,20 @@ CameraMatrixProvider::CameraMatrixProvider()
   DEBUG_REQUEST_REGISTER("3DViewer:Robot:Camera", "Show the robot body in the 3D viewer.", false);
 }
 
-CameraMatrixProvider::~CameraMatrixProvider()
+CameraMatrixCorrector::~CameraMatrixCorrector()
 {
 }
 
-void CameraMatrixProvider::execute()
+void CameraMatrixCorrector::execute()
 {
   double deltaTime = ( getFrameInfo().getTime() - udpateTime ) * 0.001;
   udpateTime = getFrameInfo().getTime();
   
   DEBUG_REQUEST("CameraMatrix:calibrate_camera_matrix", calibrate(); );
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", Platform::getInstance().theCameraInfo.saveToConfig(); );
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:calibrate_camera_matrix", getCameraInfoParameter().saveToConfig(); );
 
   DEBUG_REQUEST("CameraMatrix:reset_calibration", reset_calibration(); );
-  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", Platform::getInstance().theCameraInfo.saveToConfig(); );
+  DEBUG_REQUEST_ON_DEACTIVE("CameraMatrix:reset_calibration", getCameraInfoParameter().saveToConfig(); );
 
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
@@ -63,57 +63,29 @@ void CameraMatrixProvider::execute()
 
   getKinematicChain().updateCoM();
 
-  // calculate the camera matrix
-  CameraMatrixCalculator::calculateCameraMatrix(
-            getCameraMatrix(),
-            getImage().cameraInfo.cameraID,
-            getKinematicChain());
-
-
   /* TODO: this doesn't work properly
   getCameraMatrix()
        .rotateY(getCameraMatrixOffset().offset.y)
        .rotateX(getCameraMatrixOffset().offset.x);
   */
 
-  // 
-  getCameraMatrix().valid = true;
-
-  MODIFY("CameraMatrix:translation:x", getCameraMatrix().translation.x);
-  MODIFY("CameraMatrix:translation:y", getCameraMatrix().translation.y);
-  MODIFY("CameraMatrix:translation:z", getCameraMatrix().translation.z);
-  double correctionAngleX = 0.0;
-  double correctionAngleY = 0.0;
-  double correctionAngleZ = 0.0;
-  MODIFY("CameraMatrix:correctionAngle:x", correctionAngleX);
-  MODIFY("CameraMatrix:correctionAngle:y", correctionAngleY);
-  MODIFY("CameraMatrix:correctionAngle:z", correctionAngleZ);
-
-  getCameraMatrix().rotation.rotateX(correctionAngleX);
-  getCameraMatrix().rotation.rotateY(correctionAngleY);
-  getCameraMatrix().rotation.rotateZ(correctionAngleZ);
-
-  // estimate the horizon
-  Vector2<double> p1, p2;
-  CameraGeometry::calculateArtificialHorizon(getCameraMatrix(), getImage().cameraInfo, p1, p2);
-  getCameraMatrix().horizon = Math::LineSegment(p1, p2);
-
 
   DEBUG_REQUEST("3DViewer:Robot:Camera",
-    const CameraInfo& ci = Platform::getInstance().theCameraInfo;
-    DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.focalLength, ci.resolutionWidth, ci.resolutionHeight););
+    const CameraInfo& ci = getCameraInfoParameter();
+      DebugDrawings3D::getInstance().addCamera(getCameraMatrix(),ci.getFocalLength(), ci.resolutionWidth, ci.resolutionHeight););
+
 
 }//end execute
 
 
-void CameraMatrixProvider::reset_calibration()
+void CameraMatrixCorrector::reset_calibration()
 {
-  CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
   cameraInfo.cameraRollOffset = 0.0;
   cameraInfo.cameraTiltOffset = 0.0;
 }
 
-void CameraMatrixProvider::calibrate()
+void CameraMatrixCorrector::calibrate()
 {
   // calibrate the camera matrix
   // currently it is in test-mode, the correction parameter
@@ -154,23 +126,26 @@ void CameraMatrixProvider::calibrate()
 
 
   // apply changes
-  CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  CameraInfoParameter& cameraInfo = getCameraInfoParameter();
 
   double lambda = 0.01;
   if (offset.abs() > lambda)
     offset.normalize(lambda);
 
+
+  double maxValue = Math::fromDegrees(10.0); // maximal correction offset
+  offset.x = Math::clamp(offset.x, -maxValue, maxValue);
+  offset.y = Math::clamp(offset.y, -maxValue, maxValue);
+
   cameraInfo.cameraRollOffset += offset.x;
   cameraInfo.cameraTiltOffset += offset.y;
 
-
-  double maxValue = Math::fromDegrees(10.0); // maximal correction
-  cameraInfo.cameraRollOffset = Math::clamp(cameraInfo.cameraRollOffset, -maxValue, maxValue);
-  cameraInfo.cameraTiltOffset = Math::clamp(cameraInfo.cameraTiltOffset, -maxValue, maxValue);
+  // until now we only changed the parameters, change the pure CameraInfo as well
+  getCameraInfo() = cameraInfo;
 }//end calibrate
 
 
-double CameraMatrixProvider::projectionError(double offsetX, double offsetY)
+double CameraMatrixCorrector::projectionError(double offsetX, double offsetY)
 {
   CameraMatrix tmpCM(getCameraMatrix());
 
@@ -178,7 +153,7 @@ double CameraMatrixProvider::projectionError(double offsetX, double offsetY)
        .rotateX(offsetX);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
+  const CameraInfoParameter& cameraInfo = getCameraInfoParameter();
 
   Vector2<double> leftPosition;
   CameraGeometry::imagePixelToFieldCoord(

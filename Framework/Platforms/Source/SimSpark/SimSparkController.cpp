@@ -1117,7 +1117,8 @@ void SimSparkController::get(Image& data)
 {
   if ( isNewImage )
   {
-    data.setCameraInfo(Platform::getInstance().theCameraInfo);
+    //ACHTUNG: this is set by the module CameraInfoSetter
+    //data.setCameraInfo(Platform::getInstance().theCameraInfo);
 
     unsigned int width = data.cameraInfo.resolutionWidth;
     unsigned int height = data.cameraInfo.resolutionHeight;
@@ -1258,6 +1259,8 @@ void SimSparkController::set(const CameraSettingsRequest& data)
   // switch between two cameras is supported currently
 
   // switch camera
+  /*
+  TODO: check if it's necessary
   if (theCameraId != data.data[CameraSettings::CameraSelection])
   {
     theCameraId = data.data[CameraSettings::CameraSelection];
@@ -1272,7 +1275,8 @@ void SimSparkController::set(const CameraSettingsRequest& data)
 
     theSocket << "(CameraPoseEffector " << p << ")";
   }
-}
+  */
+}//end set
 
 void SimSparkController::get(CurrentCameraSettings& data)
 {

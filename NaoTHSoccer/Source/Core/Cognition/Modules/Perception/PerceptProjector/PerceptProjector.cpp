@@ -84,9 +84,7 @@ void PerceptProjector::execute()
        .rotateX(offset.x);
 
   // project the goal posts
-  const CameraInfoParameter& cameraInfo = Platform::getInstance().theCameraInfo;
-
- 
+  const CameraInfo& cameraInfo = getCameraInfo();
 
   // apply correction to goal post percept
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)

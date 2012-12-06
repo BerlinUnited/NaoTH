@@ -4,7 +4,7 @@
  */
 
 #ifndef _PLATFORM_H
-#define  _PLATFORM_H
+#define _PLATFORM_H
 
 #include <string>
 #include <iostream>
@@ -72,8 +72,6 @@ namespace naoth
       }
       
       _configuration.loadFromDir(_configDir, _scheme, _hardwareIdentity, _headHardwareIdentity);
-      theCameraInfo.init(); // TODO: the camera info should not be memeber of platform
-
     }//end init
 
     Configuration& theConfiguration;
@@ -81,7 +79,6 @@ namespace naoth
     const std::string& theHardwareIdentity; // the string to indentify different robots
     const std::string& theHeadHardwareIdentity; // the string to indentify different robot heads
     const std::string& theScheme;
-    CameraInfoParameter theCameraInfo;
 
     PlatformBase* const & thePlatformInterface;
 

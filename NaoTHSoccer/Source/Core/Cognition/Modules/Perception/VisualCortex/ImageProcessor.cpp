@@ -155,8 +155,8 @@ void ImageProcessor::execute()
 
     // estimate the position of the relative to the camera based on the 
     // size of the ball
-    double y = getBallPercept().centerInImage.y - getImage().cameraInfo.opticalCenterY;
-    double f = getImage().cameraInfo.focalLength;
+    double y = getBallPercept().centerInImage.y - getImage().cameraInfo.getOpticalCenterY();
+    double f = getImage().cameraInfo.getFocalLength();
     // HACK: +2 pixel because the ball is always recognized to small
     double ballRadiusOffset = 2.0;
     MODIFY("ImageProcessor:ballRadiusOffset", ballRadiusOffset);
@@ -172,9 +172,9 @@ void ImageProcessor::execute()
     }
 
     Vector3<double> ballCenter;
-    ballCenter.x = getImage().cameraInfo.focalLength;
-    ballCenter.y = -getBallPercept().centerInImage.x + getImage().cameraInfo.opticalCenterX;
-    ballCenter.z = -getBallPercept().centerInImage.y + getImage().cameraInfo.opticalCenterY;
+    ballCenter.x = getImage().cameraInfo.getFocalLength();
+    ballCenter.y = -getBallPercept().centerInImage.x + getImage().cameraInfo.getOpticalCenterX();
+    ballCenter.z = -getBallPercept().centerInImage.y + getImage().cameraInfo.getOpticalCenterY();
     ballCenter.normalize(q);
 
     Vector3<double> ballCenterGlobal = getCameraMatrix()*ballCenter;
@@ -210,8 +210,8 @@ void ImageProcessor::execute()
 
   //draw horizon to image
   DEBUG_REQUEST("ImageProcessor:draw_horizon",
-    Vector2<double> a(getCameraMatrix().horizon.begin());
-    Vector2<double> b(getCameraMatrix().horizon.end());
+    Vector2<double> a(getArtificialHorizon().begin());
+    Vector2<double> b(getArtificialHorizon().end());
     LINE_PX( ColorClasses::red, (int)a.x, (int)a.y, (int)b.x, (int)b.y );
   );
 

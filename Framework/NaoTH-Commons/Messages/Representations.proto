@@ -30,17 +30,25 @@ message CameraInfo {
   
   optional CameraID cameraID = 4 [default=bottom];
   
-  optional double focalLength = 5;
-  optional double openingAngleWidth = 6;
-  optional double openingAngleHeight = 7;
-  optional double opticalCenterX = 8;
-  optional double opticalCenterY = 9;
+  // these are calulated in the new version of CameraInfo, do not use
+  optional double focalLength = 5 [deprecated=true];
+  optional double openingAngleWidth = 6 [deprecated=true];
+  optional double openingAngleHeight = 7 [deprecated=true];
+  optional double opticalCenterX = 8 [deprecated=true];
+  optional double opticalCenterY = 9 [deprecated=true];
 
-  optional int64 size = 10;
-  optional int64 memorysize = 11;
+  optional int64 size = 10 [deprecated=true];
+  optional int64 memorysize = 11 [deprecated=true];
 
   optional double cameraRollOffset = 12;
   optional double cameraTiltOffset = 13;
+
+  // the array index is the camera id
+  repeated Pose3D transformation = 14;
+
+  optional double openingAngleDiagonal = 15;
+  optional double pixelSize = 16;
+  optional double focus = 17;
 }
 
 message JointData {    
@@ -65,6 +73,8 @@ message UltraSoundReceiveData {
 
 message CameraMatrix {
   required Pose3D pose = 1;
+  optional CameraID cameraID = 2 [default=bottom];
+  optional bool valid = 3;
 }
 
 message FrameInfo {

@@ -3,7 +3,7 @@
  */
 
 #ifndef _SENSOR_H
-#define  _SENSOR_H
+#define _SENSOR_H
 
 #include <ModuleFramework/Representation.h>
 #include <ModuleFramework/Module.h>
@@ -34,6 +34,7 @@
 #include "Representations/Motion/MotionStatus.h"
 #include "Representations/Modeling/OdometryData.h"
 #include <Representations/Modeling/InertialModel.h>
+#include <Representations/Perception/CameraMatrix.h>
 
 // others
 #include <Representations/Infrastructure/FrameInfo.h>
@@ -70,6 +71,7 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(MotionStatus)
   PROVIDE(OdometryData)
   PROVIDE(InertialModel)
+  PROVIDE(CameraMatrix)
 
   //PROVIDE(CalibrationData)
   
@@ -79,7 +81,7 @@ class Sensor : public SensorBase
 {
 public:
   Sensor();
-  ~Sensor();
+  virtual ~Sensor();
 
   virtual void execute();
 

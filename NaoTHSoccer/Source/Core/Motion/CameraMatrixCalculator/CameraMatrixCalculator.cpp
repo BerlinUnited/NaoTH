@@ -10,12 +10,10 @@
 
 void CameraMatrixCalculator::calculateCameraMatrix(
     CameraMatrix& theCameraMatrix,
-    naoth::CameraInfo::CameraID cameraId,
+    const naoth::CameraInfo& theCameraInfo,
     const KinematicChain& theKinematicChain
   )
 {
-  const naoth::CameraInfoParameter& theCameraInfo = naoth::Platform::getInstance().theCameraInfo;
-
   // get the pose of the head
   Pose3D pose(theKinematicChain.theLinks[KinematicChain::Head].M);
 
@@ -24,11 +22,11 @@ void CameraMatrixCalculator::calculateCameraMatrix(
       .rotateX(theCameraInfo.cameraRollOffset);
 
   // transformation from the head to the camera
-  pose.conc(theCameraInfo.transformation[cameraId]);
+  pose.conc(theCameraInfo.transformation[theCameraInfo.cameraID]);
   
   // copy the result
   theCameraMatrix = pose;
 
-  theCameraMatrix.cameraNumber = (int)cameraId;
+  theCameraMatrix.cameraNumber = (int)theCameraInfo.cameraID;
 }//end execute
 
