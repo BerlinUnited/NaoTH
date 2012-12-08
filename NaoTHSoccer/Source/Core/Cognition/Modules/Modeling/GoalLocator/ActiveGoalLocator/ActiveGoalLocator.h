@@ -2,6 +2,7 @@
  * @file ActiveGoalLocator.h
  *
  * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  * Declaration of class ActiveGoalLocatorSimpleParticle
  */
 
@@ -9,10 +10,6 @@
 #define _ActiveGoalLocator_h_
 
 #include <ModuleFramework/Module.h>
-
-// Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 
 // Representations
 #include "Representations/Infrastructure/FrameInfo.h"
@@ -27,7 +24,6 @@
 
 // Tools
 #include <vector>
-#include "Tools/Math/Geometry.h"
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
 
 // local stuff

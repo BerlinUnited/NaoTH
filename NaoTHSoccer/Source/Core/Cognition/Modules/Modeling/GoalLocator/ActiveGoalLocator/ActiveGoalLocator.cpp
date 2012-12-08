@@ -2,20 +2,25 @@
  * @file ActiveGoalLocator.h
  *
  * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
  * Implementation of class ActiveGoalLocator
  */
 
 #include "ActiveGoalLocator.h"
 
 
-//for MODIFY
+// Debug
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Math/Moments2.h"
+#include "Tools/Debug/DebugRequest.h"
+#include "Tools/Debug/DebugDrawings.h"
+
 
 //MATH
+#include "Tools/Math/Moments2.h"
 #include "Tools/Math/Probabilistics.h"
+#include "Tools/Math/Geometry.h"
 #include "Representations/Modeling/GoalModel.h"
 #include <cmath>
 
