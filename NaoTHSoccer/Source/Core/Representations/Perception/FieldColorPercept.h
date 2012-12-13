@@ -65,12 +65,12 @@ public:
     return isFieldColor(pixel.y, pixel.u, pixel.v);
   }
 
-  inline void print(ostream& stream) const
+  inline void print(std::ostream& stream) const
   {
-    stream << "max value in Y channel = " << maxY << endl;
-    stream << "max value in Cb (U) channel = " << maxU << endl;
-    stream << "distance in Cr (V) channel = " << distV << endl;
-    stream << "index in Cr (V) channel = " << indexV << endl;
+    stream << "max value in Y channel = " << maxY << std::endl;
+    stream << "max value in Cb (U) channel = " << maxU << std::endl;
+    stream << "distance in Cr (V) channel = " << distV << std::endl;
+    stream << "index in Cr (V) channel = " << indexV << std::endl;
   }//end print
 
 };

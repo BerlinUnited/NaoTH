@@ -51,7 +51,7 @@ void ModuleManagerWithDebug::printRepresentation(std::ostream &outstream, const 
     }
   }else
   {
-    outstream << "unknown representation" << endl;
+    outstream << "unknown representation" << std::endl;
   }
 }//end printRepresentation
 
@@ -62,7 +62,7 @@ void ModuleManagerWithDebug::printRepresentationList(std::ostream &outstream)
 
   for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
   {
-    outstream << iter->first << endl;
+    outstream << iter->first << std::endl;
   }
 }//end printRepresentationList
 
@@ -75,7 +75,7 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
   {
     naothmessages::ModuleList msg;
     
-    list<string>::const_iterator iterModule;
+    std::list<std::string>::const_iterator iterModule;
     for (iterModule = getExecutionList().begin(); iterModule != getExecutionList().end(); ++iterModule)
     {
       naothmessages::Module* m = msg.add_modules();
@@ -114,8 +114,8 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
   }
   else if( command == "modules:store" )
   {
-    naoth::Configuration& config = Platform::getInstance().theConfiguration;
-    for(list<string>::const_iterator name=getExecutionList().begin();
+    naoth::Configuration& config = naoth::Platform::getInstance().theConfiguration;
+    for(std::list<std::string>::const_iterator name=getExecutionList().begin();
       name != getExecutionList().end(); name++)
     {
       config.setBool("modules", *name, getModule(*name)->isEnabled());
@@ -123,7 +123,7 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
 
     // write the config to file
     config.save();
-    outstream << "modules saved to private/modules.cfg" << endl;
+    outstream << "modules saved to private/modules.cfg" << std::endl;
   }
   else if (command == "modules:set")
   {
@@ -136,21 +136,21 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
         if ((iter->second).compare("on") == 0)
         {
           moduleCreator->setEnabled(true);
-          outstream << "set " << (iter->first) << " on" << endl;
+          outstream << "set " << (iter->first) << " on" << std::endl;
         }
         else if ((iter->second).compare("off") == 0)
         {
           moduleCreator->setEnabled(false);
-          outstream << "set " << (iter->first) << " off" << endl;
+          outstream << "set " << (iter->first) << " off" << std::endl;
         }
         else
         {
-          outstream << "unknown value " << (iter->second) << endl;
+          outstream << "unknown value " << (iter->second) << std::endl;
         }
       }
       else
       {
-        outstream << "unknown module " << (iter->first) << endl;
+        outstream << "unknown module " << (iter->first) << std::endl;
       }
     }//end for
   }

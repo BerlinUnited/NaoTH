@@ -37,8 +37,8 @@
 */
 
 
-#ifndef __BlackBoard_h_
-#define __BlackBoard_h_
+#ifndef _BlackBoard_h_
+#define _BlackBoard_h_
 
 #include <iostream>
 #include <map>
@@ -229,7 +229,6 @@ public:
     return getRepresentation<T>(name);
   }
 
-
 };
 
-#endif //__BlackBoard_h_
+#endif //_BlackBoard_h_

@@ -6,7 +6,7 @@
  */
 
 #ifndef _LEDREQUEST_H
-#define  _LEDREQUEST_H
+#define _LEDREQUEST_H
 
 #include "Representations/Infrastructure/LEDData.h"
 #include "Tools/DataStructures/Printable.h"
@@ -21,7 +21,7 @@ public:
 
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     request.print(stream);
   }

@@ -5,8 +5,8 @@
 * Declaration of class Representation
 */
 
-#ifndef __Representation_h_
-#define __Representation_h_
+#ifndef _Representation_h_
+#define _Representation_h_
 
 // standart
 #include <string>
@@ -16,12 +16,10 @@
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/DataStructures/Printable.h"
 
-using namespace std;
-using namespace naoth;
 
 class Module;
 
-class Representation : public Printable
+class Representation : public naoth::Printable
 {
 
 private:
@@ -29,9 +27,9 @@ private:
 
 protected:
   // pointers to the providing and requiring modules
-  list<const Module*> provided;
-  list<const Module*> used;
-  list<const Module*> required;
+  std::list<const Module*> provided;
+  std::list<const Module*> used;
+  std::list<const Module*> required;
 
   Representation(const std::string name)
     : name(name)
@@ -69,7 +67,7 @@ public:
    * This method can be overwritten bei a particular
    * representation in order to stream out some specific (visible) data
    */
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     // use representation name as fallback
     stream << name;
@@ -89,4 +87,4 @@ public:
  */ 
 //ostream& operator<<(ostream& stream, const Representation& representation);
 
-#endif //__Representation_h_
+#endif //_Representation_h_

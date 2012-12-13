@@ -17,7 +17,7 @@ public:
   {
   }
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream<<"formation = "<<formation<<"\n";
     stream<<"attackDirection = "<<attackDirection<<"\n";

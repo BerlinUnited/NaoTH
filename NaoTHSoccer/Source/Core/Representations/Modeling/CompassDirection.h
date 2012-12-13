@@ -8,8 +8,8 @@
 * Definition of class GoalModel
 */
 
-#ifndef __CompassDirection_h_
-#define __CompassDirection_h_
+#ifndef _CompassDirection_h_
+#define _CompassDirection_h_
 
 #include <Tools/DataStructures/Printable.h>
 
@@ -18,13 +18,13 @@ class CompassDirection : public naoth::Printable
 
 public:
     CompassDirection(){}
-    ~CompassDirection(){}
+    virtual ~CompassDirection(){}
 
     double angle;
 
-    virtual void print(ostream& stream) const
+    virtual void print(std::ostream& stream) const
     {
-      stream << "angle = " << angle << endl;
+      stream << "angle = " << angle << std::endl;
     }//end print
 
 };//end class CompassDirection

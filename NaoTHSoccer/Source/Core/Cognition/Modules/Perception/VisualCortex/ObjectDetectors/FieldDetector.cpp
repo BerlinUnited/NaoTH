@@ -13,6 +13,8 @@
 #include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
 
+using namespace std;
+
 FieldDetector::FieldDetector()
 {
   DEBUG_REQUEST_REGISTER("ImageProcessor:FieldDetector:mark_field_polygon", "mark polygonal boundary of the detected field on the image", false);

@@ -5,14 +5,13 @@
  * Created on 8. Oktober 2010, 12:12
  */
 
-#ifndef __DataHolder_h_
-#define __DataHolder_h_
+#ifndef _DataHolder_h_
+#define _DataHolder_h_
 
 #include "Representation.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
-using namespace naoth;
 
 namespace naoth
 {
@@ -53,7 +52,7 @@ public:
   /** 
    * wrap the print, fromDataStream and toDataStream of the data member 
    */
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     const T* asPointer =&data;
     const Printable* asPrintable = dynamic_cast<const Printable*>(asPointer);
@@ -80,5 +79,5 @@ public:
 };
 
 
-#endif  /* __DataHolder_h_ */
+#endif  /* _DataHolder_h_ */
 

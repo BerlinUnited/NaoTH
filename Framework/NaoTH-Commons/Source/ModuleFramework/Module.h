@@ -16,8 +16,8 @@
 #include <map>
 #include <list>
 
-
-using namespace std;
+// TODO: remove it (it's not easy)
+using namespace naoth;
 
 class Representation;
 
@@ -156,12 +156,12 @@ protected:
 
 public:
 
-  const list<Representation*>& getRequiredRepresentations()
+  const std::list<Representation*>& getRequiredRepresentations()
   {
     return required;
   }
 
-  const list<Representation*>& getProvidedRepresentations()
+  const std::list<Representation*>& getProvidedRepresentations()
   {
     return provided;
   }
@@ -355,4 +355,4 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
     static std::string const className() { return #moduleName; } \
   };
 
-#endif //__Module_h_
+#endif //_Module_h_

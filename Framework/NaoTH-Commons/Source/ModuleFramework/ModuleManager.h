@@ -5,8 +5,8 @@
 * Declaration of class ModuleManager (base class for ModuleManagers)
 */
 
-#ifndef __ModuleManager_h_
-#define __ModuleManager_h_
+#ifndef _ModuleManager_h_
+#define _ModuleManager_h_
 
 #include <map>
 #include <set>
@@ -24,14 +24,13 @@
 #include "BlackBoard.h"
 #include "ModuleCreator.h"
 
-using namespace std;
 
 class ModuleManager: virtual public BlackBoardInterface
 {
 public:
   virtual ~ModuleManager()
   {
-    map<string, AbstractModuleCreator* >::iterator iter;
+    std::map<std::string, AbstractModuleCreator* >::iterator iter;
     for(iter = moduleExecutionMap.begin(); iter != moduleExecutionMap.end(); iter++)
     {
       delete (iter->second);
@@ -73,7 +72,7 @@ public:
     return typedModule;
   }//end registerModule
 
-  const list<string>& getExecutionList() const
+  const std::list<std::string>& getExecutionList() const
   {
     return moduleExecutionList;
   }//end getExecutionList
@@ -85,7 +84,7 @@ public:
    * if the module 'moduleName' doesn't exist
    * no action is done
    */
-  void setModuleEnabled(string moduleName, bool value, bool recalculateExecutionList=false)
+  void setModuleEnabled(std::string moduleName, bool value, bool recalculateExecutionList=false)
   {
     if(moduleExecutionMap.find(moduleName) != moduleExecutionMap.end())
     {
@@ -100,9 +99,9 @@ public:
   /**
    *
    */
-  AbstractModuleCreator* getModule(const string& name)
+  AbstractModuleCreator* getModule(const std::string& name)
   {
-    map<string, AbstractModuleCreator* >::iterator iter = moduleExecutionMap.find(name);
+    std::map<std::string, AbstractModuleCreator* >::iterator iter = moduleExecutionMap.find(name);
     if(iter != moduleExecutionMap.end())
     {
       return iter->second;
@@ -114,9 +113,9 @@ public:
   /**
    *
    */
-  const AbstractModuleCreator* getModule(const string& name) const
+  const AbstractModuleCreator* getModule(const std::string& name) const
   {
-    map<string, AbstractModuleCreator* >::const_iterator iter = moduleExecutionMap.find(name);
+    std::map<std::string, AbstractModuleCreator* >::const_iterator iter = moduleExecutionMap.find(name);
     if(iter != moduleExecutionMap.end())
     {
       return iter->second;
@@ -125,7 +124,7 @@ public:
     return NULL;
   }//end getModule
 
-  const list<string>& getExecutionList()
+  const std::list<std::string>& getExecutionList()
   {
     return moduleExecutionList;
   }//end getExecutionList
@@ -136,7 +135,7 @@ protected:
   {
     
     bool changed = true;
-    list<string>::iterator start=moduleExecutionList.begin();
+    std::list<std::string>::iterator start=moduleExecutionList.begin();
     const int maxAttempts = moduleExecutionList.size()*10;
     int iterations = 0;
 
@@ -146,13 +145,13 @@ protected:
       iterations++;
 
 
-      for(list<string>::iterator it1=start; it1 != moduleExecutionList.end(); it1++)
+      for(std::list<std::string>::iterator it1=start; it1 != moduleExecutionList.end(); it1++)
       {
         start = it1;
         if(!moduleExecutionMap[*it1]->isEnabled()) continue;
         Module* m1 = moduleExecutionMap[*it1]->getModule();
 
-        for(list<string>::iterator it2=it1; it2 != moduleExecutionList.end(); it2++)
+        for(std::list<std::string>::iterator it2=it1; it2 != moduleExecutionList.end(); it2++)
         {
           if(!moduleExecutionMap[*it2]->isEnabled()) continue;
           Module* m2 = moduleExecutionMap[*it2]->getModule();
@@ -187,16 +186,16 @@ protected:
 
 
     // print execution list
-    cout << "automatic module execution list" << endl;
-    cout << "-------------------------------" << endl;
-    for(list<string>::const_iterator itExec = moduleExecutionList.begin(); 
+    std::cout << "automatic module execution list" << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+    for(std::list<std::string>::const_iterator itExec = moduleExecutionList.begin(); 
       itExec != moduleExecutionList.end(); itExec++
     )
     {
-      cout << *itExec << endl;
+      std::cout << *itExec << std::endl;
     }
-    cout << "-------------------------------" << endl;
-    cout << endl;
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << std::endl;
   }//end calculateExecutionListNew
 
 
@@ -205,12 +204,12 @@ protected:
    */
   void calculateExecutionListOld()
   {
-    map<string,string> providerForRepresentation;
-    map<string, list<string> > required;
-    map<string, list<string> > provided;
+    std::map<std::string,std::string> providerForRepresentation;
+    std::map<std::string, std::list<std::string> > required;
+    std::map<std::string, std::list<std::string> > provided;
     
     // first fill the map with providers and the module graph
-    for(map<string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
+    for(std::map<std::string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
       it != moduleExecutionMap.end(); it++)
     {
       // only include enabled modules
@@ -246,7 +245,7 @@ protected:
     }//end for
     
     // solve this constraint problem
-    vector<string> oldExecutionList(moduleExecutionList.begin(), moduleExecutionList.end());
+    std::vector<std::string> oldExecutionList(moduleExecutionList.begin(), moduleExecutionList.end());
     unsigned int oldErrors = countExecutionListErrors(oldExecutionList, required, provided, false);
     unsigned int unsuccessfulAttempts = 0;
     
@@ -257,7 +256,7 @@ protected:
     
     while(oldErrors != 0 && unsuccessfulAttempts < maxAttempts)
     {
-      vector<string> newExecutionList = oldExecutionList;
+      std::vector<std::string> newExecutionList = oldExecutionList;
       // switch randomly
       int left = 0;
       int right = 0;
@@ -268,7 +267,7 @@ protected:
         right = rand() % newExecutionList.size();
       }
       
-      string buffer = newExecutionList[right];
+      std::string buffer = newExecutionList[right];
       newExecutionList[right] = newExecutionList[left];
       newExecutionList[left] = buffer;
       
@@ -293,16 +292,16 @@ protected:
     copy(oldExecutionList.begin(), oldExecutionList.end(), back_inserter(moduleExecutionList));
     
     // print execution list
-    cout << "automatic module execution list" << endl;
-    cout << "-------------------------------" << endl;
-    for(list<string>::const_iterator itExec = moduleExecutionList.begin(); 
+    std::cout << "automatic module execution list" << std::endl;
+    std::cout << "-------------------------------" << std::endl;
+    for(std::list<std::string>::const_iterator itExec = moduleExecutionList.begin(); 
       itExec != moduleExecutionList.end(); itExec++
     )
     {
-      cout << *itExec << endl;
+      std::cout << *itExec << std::endl;
     }
-    cout << "-------------------------------" << endl;
-    cout << endl;
+    std::cout << "-------------------------------" << std::endl;
+    std::cout << std::endl;
     
     // output missing dependencies
     countExecutionListErrors(oldExecutionList, required, provided, true);
@@ -325,12 +324,12 @@ private:
   //BlackBoard theBlackBoard;
 
   /** store the mapping name->module */
-  map<string, AbstractModuleCreator* > moduleExecutionMap;
+  std::map<std::string, AbstractModuleCreator* > moduleExecutionMap;
 
   /** list of names of modules in the order of registration */
-  list<string> moduleExecutionList;
+  std::list<std::string> moduleExecutionList;
   
-  void internalAddModuleToExecutionList(string name, set<string>& availableRepresentations, map<string,string>& providerForRepresentation)
+  void internalAddModuleToExecutionList(std::string name, std::set<std::string>& availableRepresentations, std::map<std::string,std::string>& providerForRepresentation)
   {
     AbstractModuleCreator* am = getModule(name);
     if(am != NULL && am->isEnabled() && am->getModule() != NULL)
@@ -339,10 +338,10 @@ private:
       Module* m = am->getModule();
       
       // add all provided representations of this module to our known set
-      const list<Representation*> provided = m->getProvidedRepresentations(); 
-      for(list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+      const std::list<Representation*> provided = m->getProvidedRepresentations(); 
+      for(std::list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
       {
-        string repName = (*itProv)->getName();
+        std::string repName = (*itProv)->getName();
         if(availableRepresentations.find(repName) == availableRepresentations.end())
         { 
           availableRepresentations.insert(repName);
@@ -350,8 +349,8 @@ private:
         }
         else
         {
-          cerr << "ERROR when calculating execution order: " << repName << " provided more than once "
-            << "(" << name << " and " << providerForRepresentation[repName] << ")" << endl;
+          std::cerr << "ERROR when calculating execution order: " << repName << " provided more than once "
+            << "(" << name << " and " << providerForRepresentation[repName] << ")" << std::endl;
             addModuleToList = false;
         }
       } // end for all provided representations
@@ -362,32 +361,33 @@ private:
     }
   } // end internalAddModuleToExecutionList
   
-  unsigned int countExecutionListErrors(const vector<string>& order, 
-    map<string, list<string> >& required, map<string, list<string> >& provided, bool outputError)
+  unsigned int countExecutionListErrors(const std::vector<std::string>& order, 
+    std::map<std::string, std::list<std::string> >& required, 
+    std::map<std::string, std::list<std::string> >& provided, bool outputError)
   {
     unsigned int errors = 0;
     
-    set<string> availableRepresentations;
+    std::set<std::string> availableRepresentations;
     
-    for(vector<string>::const_iterator it = order.begin(); it != order.end(); it++)
+    for(std::vector<std::string>::const_iterator it = order.begin(); it != order.end(); it++)
     {
-      string module = *it;
-      const list<string>& req = required[module];
-      const list<string>& prov = provided[module];
+      std::string module = *it;
+      const std::list<std::string>& req = required[module];
+      const std::list<std::string>& prov = provided[module];
       
-      for(list<string>::const_iterator itReq = req.begin(); itReq != req.end(); itReq++)
+      for(std::list<std::string>::const_iterator itReq = req.begin(); itReq != req.end(); itReq++)
       {
         if(availableRepresentations.find(*itReq) == availableRepresentations.end())
         {
           errors++;
           if(outputError)
           {
-            cerr << "ERROR: no provider for " << *itReq << " in " << module << endl;
+            std::cerr << "ERROR: no provider for " << *itReq << " in " << module << std::endl;
           }
         }
       }
       
-      for(list<string>::const_iterator itProv = prov.begin(); itProv != prov.end(); itProv++)
+      for(std::list<std::string>::const_iterator itProv = prov.begin(); itProv != prov.end(); itProv++)
       {
         availableRepresentations.insert(*itProv);
       }
@@ -398,4 +398,4 @@ private:
   
 };
 
-#endif //__ModuleManager_h_
+#endif //_ModuleManager_h_

@@ -115,13 +115,13 @@ class Simulator : public PlatformInterface<Simulator>
 {
 public:
   Simulator(const char* filePath, bool compatibleMode, bool backendMode);
-  ~Simulator();
+  virtual ~Simulator();
 
-  virtual string getBodyID() const { return "naoth-logsimulator"; }
+  virtual std::string getBodyID() const { return "naoth-logsimulator"; }
 
-  virtual string getBodyNickName() const {return "naoth"; }
+  virtual std::string getBodyNickName() const {return "naoth"; }
 
-  virtual string getHeadNickName() const {return "naoth"; }
+  virtual std::string getHeadNickName() const {return "naoth"; }
 
   void main();
   void printHelp();
@@ -205,11 +205,11 @@ private:
   //
   std::map<std::string, std::string> representations;
 
-  list<unsigned int>::iterator currentFrame;
+  std::list<unsigned int>::iterator currentFrame;
   unsigned int lastFrameTime;
 
-  std::map<unsigned int, streampos> frameNumber2PosStart;
-  std::map<unsigned int, streampos> frameNumber2PosEnd;
+  std::map<unsigned int, std::streampos> frameNumber2PosStart;
+  std::map<unsigned int, std::streampos> frameNumber2PosEnd;
   
   char getInput();
 
@@ -225,7 +225,7 @@ private:
    */
   void adjust_frame_time();
 
-  bool compatibleExecute(const string& name, size_t dataSize);
+  bool compatibleExecute(const std::string& name, size_t dataSize);
 
   /** Initially parses the file */
   void parseFile();
