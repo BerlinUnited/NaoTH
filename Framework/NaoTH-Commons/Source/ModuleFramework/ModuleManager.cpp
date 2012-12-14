@@ -4,6 +4,53 @@
 
 #include <ctime>
 
+ModuleManager::~ModuleManager()
+{
+  std::map<std::string, AbstractModuleCreator* >::iterator iter;
+  for(iter = moduleExecutionMap.begin(); iter != moduleExecutionMap.end(); iter++)
+  {
+    delete (iter->second);
+  }//end for
+}//end destructor
+
+
+void ModuleManager::setModuleEnabled(std::string moduleName, bool value, bool recalculateExecutionList)
+{
+  if(moduleExecutionMap.find(moduleName) != moduleExecutionMap.end())
+  {
+    moduleExecutionMap[moduleName]->setEnabled(value);
+    if(recalculateExecutionList)
+    {
+      calculateExecutionList();
+    }
+  }
+}//end setModuleEnabled
+
+
+AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
+{
+  std::map<std::string, AbstractModuleCreator* >::iterator iter = moduleExecutionMap.find(name);
+  if(iter != moduleExecutionMap.end())
+  {
+    return iter->second;
+  }
+
+  return NULL;
+}//end getModule
+
+
+const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) const
+{
+  std::map<std::string, AbstractModuleCreator* >::const_iterator iter = moduleExecutionMap.find(name);
+  if(iter != moduleExecutionMap.end())
+  {
+    return iter->second;
+  }
+
+  return NULL;
+}//end getModule
+
+
 
 void ModuleManager::calculateExecutionList()
 {

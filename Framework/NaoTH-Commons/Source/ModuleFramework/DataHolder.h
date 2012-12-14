@@ -1,9 +1,10 @@
-/* 
- * File:   DataHolder.h
- * Author: thomas
- *
- * Created on 8. Oktober 2010, 12:12
- */
+/**
+* @file DataHolder.h
+*
+* @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
+* @author <a href="mailto:krause@informatik.hu-berlin.de">Thomas Krause</a>
+* 
+*/
 
 #ifndef _DataHolder_h_
 #define _DataHolder_h_

@@ -33,7 +33,7 @@ public:
  * BlackBoardInterface of the class V (if it has one)
  * with a blackboard.
  * We assume, that the class V already inherites from BlackBoardInterface.
- * Thereby 'virtual' inheritence is esential.
+ * Thereby 'virtual' inheritence is esential (!).
  * 
  * (in fact, what we are doing is to extend the default constructor of the class V
  *  by providing a pointer to a blackboard instance, i.e., we call another 
@@ -68,14 +68,14 @@ public:
 
   ModuleCreator(BlackBoard& theBlackBoard)
     : 
-      theBlackBoard(theBlackBoard),
-      theInstance(NULL)
+    theBlackBoard(theBlackBoard),
+    theInstance(NULL)
   {
   }
 
   virtual ~ModuleCreator()
   {
-      delete theInstance;
+    delete theInstance;
   }
 
 
@@ -83,6 +83,7 @@ public:
   {
     return theInstance != NULL;
   }//end isEnabled
+
 
   void setEnabled(bool value)
   {
@@ -102,6 +103,7 @@ public:
     }
   }//end setEnabled
 
+
   void execute()
   {
     if( theInstance != NULL )
@@ -110,6 +112,7 @@ public:
     }//end if
   }//end execute
 
+
   Module* getModule() const
   {
     ASSERT(isEnabled());
@@ -117,11 +120,13 @@ public:
     return (Module*)(theInstance);
   }//end getModule
 
+
   V* getModuleT()
   {
     ASSERT(isEnabled());
     return static_cast<V*>(theInstance);
   }//end getModule
+
 
   std::string const moduleClassName()
   {
