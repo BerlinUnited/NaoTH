@@ -14,7 +14,7 @@ class ModuleManagerWithDebug: public ModuleManager, public DebugCommandExecutor
 {
 public:
   ModuleManagerWithDebug();
-  ~ModuleManagerWithDebug();
+  virtual ~ModuleManagerWithDebug();
 
   virtual void executeDebugCommand(const std::string& command, 
                            const std::map<std::string,std::string>& arguments, 

@@ -75,7 +75,7 @@ namespace naoth
   class PlatformDataInterface
   {
   public:
-    virtual ~PlatformDataInterface();
+    ~PlatformDataInterface();
 
   protected:
     PlatformDataInterface();
