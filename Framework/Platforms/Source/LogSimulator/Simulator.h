@@ -44,7 +44,7 @@
 using namespace naoth;
 
 
-class LogProvider: public Module
+class LogProvider: public Module, virtual private BlackBoardInterface
 {
 private:
   std::map<std::string, std::string>* representations;
@@ -89,7 +89,7 @@ public:
 
   void execute()
   {
-    BlackBoard& blackBoard = getBlackBoard();
+    BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
     BlackBoard::Registry::iterator iter;
 
     for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)

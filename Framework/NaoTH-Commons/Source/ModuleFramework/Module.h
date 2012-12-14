@@ -9,8 +9,8 @@
 #define _Module_h_
 
 #include "BlackBoardInterface.h"
-
-#include "DataHolder.h"
+#include "RegistrationInterface.h"
+//#include "DataHolder.h"
 
 #include <string.h>
 #include <map>
@@ -19,16 +19,8 @@
 // TODO: remove it (it's not easy)
 using namespace naoth;
 
-class Representation;
+//class Representation;
 
-/**
- *
- */
-class RegistrationInterface
-{
-public:
-  virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard) = 0;
-};
 
 /** type for a named map of representations */
 typedef std::map<std::string, RegistrationInterface*> RepresentationMap;
@@ -37,56 +29,14 @@ typedef std::map<std::string, RegistrationInterface*> RepresentationMap;
 /**
  *
  */
-template<class T>
-class TypedRegistrationInterface: public RegistrationInterface
-{
-private:
-  const std::string getName() const { return name; }
-  std::string name;
-
-// HACK: should not be public, but inline access from StaticProvidingRegistrator
-// needs
-public:
-  //HACK: remove it, here schouldn't be any object data
-  T* data;
-
-public:
-
-  TypedRegistrationInterface(const std::string& name)
-    : name(name),
-      data(NULL)
-  {
-  }
-
-  inline T& getData() const { assert(data != NULL); return *data; }
-//  inline const T& getData() const { assert(data != NULL); return *data; }
-
-  virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
-  {
-    DataHolder<T>& rep = get(blackBoard);
-    data = &(*rep);
-    return rep;
-  }
-
-  virtual DataHolder<T>& get(BlackBoard& blackBoard)
-  {
-    return blackBoard.template getRepresentation<DataHolder<T> >(getName());
-  }
-
-  virtual const DataHolder<T>& get(const BlackBoard& blackBoard) const
-  {
-    return blackBoard.template getRepresentation<DataHolder<T> >(getName());
-  }
-};
-
-
-/**
- *
- */
-class Module: virtual public BlackBoardInterface
+class Module: virtual protected BlackBoardInterface
 {
 private:
   std::string moduleName;
+
+// close access to the getBlackBoard for all derived classes
+private:
+    using BlackBoardInterface::getBlackBoard;
 
 protected:
 
@@ -184,8 +134,8 @@ template<class T>
 class StaticRegistry
 {
 protected:
-  static RepresentationMap* static_providing_registry;
-  static RepresentationMap* static_requiring_registry;
+  static RepresentationMap* static_provide_registry;
+  static RepresentationMap* static_require_registry;
   
   template<class TYPE_WHAT>
   class StaticRequiringRegistrator
@@ -200,19 +150,26 @@ protected:
       : data(NULL)
     {
       // TODO: check the type
-      if(static_requiring_registry->find(name) == static_requiring_registry->end())
+      if(static_require_registry->find(name) == static_require_registry->end())
       {
-        (*static_requiring_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
+        (*static_require_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
       }
       // HACK
-      data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_requiring_registry)[name];
+      data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_require_registry)[name];
     }
 
     const TYPE_WHAT& get(const BlackBoard& blackBoard) const
     {
       return *(data->get(blackBoard));
     }
+
+    inline const TYPE_WHAT& getData() const
+    {
+      assert(data->data != NULL);
+      return *(data->data);
+    }
   };
+
 
   template<class TYPE_WHAT>
   class StaticProvidingRegistrator
@@ -227,12 +184,12 @@ protected:
       : data(NULL)
     {
       // TODO: check the type
-      if(static_providing_registry->find(name) == static_providing_registry->end())
+      if(static_provide_registry->find(name) == static_provide_registry->end())
       {
-        (*static_providing_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
+        (*static_provide_registry)[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
       }
       // HACK
-      data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_providing_registry)[name];
+      data = (TypedRegistrationInterface<TYPE_WHAT>*)(*static_provide_registry)[name];
     }
 
     inline TYPE_WHAT& get(BlackBoard& blackBoard) const
@@ -249,9 +206,9 @@ protected:
 };
 
 template<class T>
-RepresentationMap* StaticRegistry<T>::static_providing_registry = new RepresentationMap();
+RepresentationMap* StaticRegistry<T>::static_provide_registry = new RepresentationMap();
 template<class T>
-RepresentationMap* StaticRegistry<T>::static_requiring_registry = new RepresentationMap();
+RepresentationMap* StaticRegistry<T>::static_require_registry = new RepresentationMap();
 
 /***************************************************************
  macros for creating a module
@@ -294,8 +251,7 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
 #define BEGIN_DECLARE_MODULE(moduleName) \
   class moduleName##Base: \
     protected Module, private StaticRegistry<moduleName##Base> \
-  {
-
+  { 
 
 // static invoker (registers the static dependency to RepresentationB)
   
@@ -304,12 +260,11 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
   class representationName##StaticRequiringRegistrator : public StaticRequiringRegistrator<representationName>\
   { \
   public: representationName##StaticRequiringRegistrator() : StaticRequiringRegistrator<representationName>(#representationName){} \
-  }the##representationName; \
+  } the##representationName; \
   protected: \
   inline const representationName& get##representationName() const \
   { \
-    static const representationName& representation = the##representationName.get(getBlackBoard()); \
-    return representation; \
+    return the##representationName.getData(); \
   }
   /*
     static const DataHolder<representationName>& representation = getBlackBoard().getConstRepresentation<DataHolder<representationName> >(typeid(representationName).name()); \
@@ -345,12 +300,12 @@ RepresentationMap* StaticRegistry<T>::static_requiring_registry = new Representa
 #define END_DECLARE_MODULE(moduleName) \
   public: \
     moduleName##Base(): Module(#moduleName){ \
-      registerRequiring(*static_requiring_registry); \
-      registerProviding(*static_providing_registry); \
+      registerRequiring(*static_require_registry); \
+      registerProviding(*static_provide_registry); \
     } \
     virtual ~moduleName##Base(){ \
-      unregisterRequiring(*static_requiring_registry); \
-      unregisterProviding(*static_providing_registry); \
+      unregisterRequiring(*static_require_registry); \
+      unregisterProviding(*static_provide_registry); \
     } \
     static std::string const className() { return #moduleName; } \
   };
