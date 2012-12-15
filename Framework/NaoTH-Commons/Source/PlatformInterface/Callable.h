@@ -6,20 +6,18 @@
  */
 
 #ifndef CALLABLE_H
-#define  CALLABLE_H
+#define CALLABLE_H
 
 namespace naoth
 {
-  //class PlatformInterface;
+  class PlatformInterfaceBase;
 
   class Callable
   {
   public:
-/*
-    virtual void init(PlatformInterface& platform)
-    {
-    }
-*/
+
+    virtual void init(PlatformInterfaceBase& platformInterface) = 0;
+
     virtual void call() = 0;
 
   };

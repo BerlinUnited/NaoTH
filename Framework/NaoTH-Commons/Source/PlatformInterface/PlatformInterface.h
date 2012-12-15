@@ -11,6 +11,8 @@
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
 #include "Tools/DataStructures/Serializer.h"
 
+#include "PlatformDataInterface.h"
+
 #include <map>
 #include <list>
 #include <string>
@@ -20,23 +22,6 @@
 
 namespace naoth
 {
-
-  /*
-  * AbstractAction defines an interface for an action.
-  * It is used to wrap the call of a get/set method to read/write 
-  * a representation.
-  */
-  class AbstractAction
-  {
-  public:
-    AbstractAction(){}
-    virtual ~AbstractAction(){}
-
-    virtual void execute() = 0;
-  };
-
-  typedef std::list<AbstractAction*> ActionList;
-
 
   /* 
    * the PlatformBase holds (and provides access to) 
@@ -67,160 +52,17 @@ namespace naoth
   };//end class PlatformBase
 
 
-
-  /*
-   * Holds the lists of references to representations 
-   * which have to be exchanged between platform and motion/cognition
+  /**
+   *
    */
-  class PlatformDataInterface
-  {
-  public:
-    ~PlatformDataInterface();
-
-  protected:
-    PlatformDataInterface();
-
-  protected:
-    Callable* motionCallback;
-    Callable* cognitionCallback;
-
-    ActionList motionInput;
-    ActionList motionOutput;
-
-    ActionList cognitionInput;
-    ActionList cognitionOutput;
-
-  public:
-    virtual void callCognition();
-    virtual void getCognitionInput();
-    virtual void setCognitionOutput();
-
-    virtual void callMotion();
-    virtual void getMotionInput();
-    virtual void setMotionOutput();
-  
-    inline void execute(ActionList& actionList) const;
-
-  private:
-    inline void delete_action_list(ActionList& actionList);
-    
-
-    template<class T>
-    class ActionCreator
-    {
-    public:
-      ActionCreator(){}
-      virtual ~ActionCreator(){}
-      virtual AbstractAction* createAction(T& data) = 0;
-    };//end ActionCreator
-
-
-    template<class T>
-    ActionCreator<T>* getActionCreator(const std::map<std::string,void*>& registeredActions)
-    {
-      std::map<std::string,void*>::const_iterator iter = registeredActions.find(typeid(T).name());
-      if(iter == registeredActions.end())
-      {
-        return NULL;
-      }//end if
-
-      return static_cast<ActionCreator<T>*>(iter->second);
-    }//end getActionCreator
-
-
-  protected:
-    //
-    std::map<std::string,void*> registeredInputActions;
-    std::map<std::string,void*> registeredOutputActions;
-
-
-  public:
-
-    template<class T>
-    void registerCognitionInput(T& data)
-    {
-      ActionCreator<T>* creator = getActionCreator<T>(registeredInputActions);
-      if(creator != NULL)
-      {
-        cognitionInput.push_back(creator->createAction(data));
-        std::cout << /*getName() <<*/ " register Cognition input: " << typeid(T).name() << std::endl;
-      }else
-      {
-        std::cerr << /*getName() <<*/ " doesn't provide Cognition input: " << typeid(T).name() << std::endl;
-      }
-    }//end registerCognitionInput
-
-
-    template<class T>
-    void registerCognitionOutput(const T& data)
-    {
-      ActionCreator<const T>* creator = getActionCreator<const T>(registeredOutputActions);
-      if(creator != NULL)
-      {
-        cognitionOutput.push_back(creator->createAction(data));
-        std::cout << /*getName() <<*/ " register Cognition output: " << typeid(T).name() << std::endl;
-      }else
-      {
-        std::cerr << /*getName() <<*/ " doesn't provide Cognition output: " << typeid(T).name() << std::endl;
-      }
-    }//end registerCognitionOutput
-
-
-    template<class T>
-    void registerMotionInput(T& data)
-    {
-      ActionCreator<T>* creator = getActionCreator<T>(registeredInputActions);
-      if(creator != NULL)
-      {
-        motionInput.push_back(creator->createAction(data));
-        std::cout << /*getName() <<*/ " register Motion input: " << typeid(T).name() << std::endl;
-      }else
-      {
-        std::cerr << /*getName() <<*/ " doesn't provide Motion input: " << typeid(T).name() << std::endl;
-      }
-    }//end registerMotionInput
-
-
-    template<class T>
-    void registerMotionOutput(const T& data)
-    {
-      ActionCreator<const T>* creator = getActionCreator<const T>(registeredOutputActions);
-      if(creator != NULL)
-      {
-        motionOutput.push_back(creator->createAction(data));
-        std::cout << /*getName() <<*/ " register Motion output: " << typeid(T).name() << std::endl;
-      }else
-      {
-        std::cerr << /*getName() <<*/ " doesn't provide Motion output: " << typeid(T).name() << std::endl;
-      }
-    }//end registerMotionOutput
-
-
-
-  protected:
-    virtual MessageQueue* createMessageQueue(const std::string& name) = 0;
-
-
-  protected:
-      std::map<std::string, MessageQueue*> theMessageQueue;
-
-      MessageQueue* getMessageQueue(const std::string& name);
-    
-  };//end class PlatformDataInterface
-
-
-
-
-
-  class PlatformInterfaceBase: public PlatformBase, public PlatformDataInterface
+  class PlatformChannelInterface: public PlatformDataInterface
   {
   protected:
-    PlatformInterfaceBase(const std::string& name, unsigned int basicTimeStep)
-      : PlatformBase(name, basicTimeStep)
+    PlatformChannelInterface()
     {
     }
 
-    virtual ~PlatformInterfaceBase()
+    virtual ~PlatformChannelInterface()
     {
 
     }
@@ -301,6 +143,14 @@ namespace naoth
     }//end createInputChanelAction
   };
 
+
+  class PlatformInterfaceBase: public PlatformBase, public PlatformChannelInterface
+  {
+  public:
+    PlatformInterfaceBase(const std::string& name, unsigned int basicTimeStep)
+      : PlatformBase(name, basicTimeStep)
+    {}
+  };
 
   /*  the platform interface responses for 4 kinds of functionalities:
    * - get sensor data
@@ -400,14 +250,14 @@ namespace naoth
     void registerInput(PT& platform)
     {
       std::cout << getName() << " register input: " << typeid(T).name() << std::endl;
-      registeredInputActions[typeid(T).name()] = new ActionCreatorImp<T,PT,_NAOTH_INPUT_ACTION_>(platform);
+      registeredInputActions.set(typeid(T).name(), new ActionCreatorImp<T,PT,_NAOTH_INPUT_ACTION_>(platform));
     }//end registerInput
 
     template<class T, typename PT>
     void registerOutput(PT& platform)
     {
       std::cout << getName() << " register output: " << typeid(T).name() << std::endl;
-      registeredOutputActions[typeid(T).name()] = new ActionCreatorImp<T,PT,_NAOTH_OUTPUT_ACTION_>(platform);
+      registeredOutputActions.set(typeid(T).name(), new ActionCreatorImp<T,PT,_NAOTH_OUTPUT_ACTION_>(platform));
     }//end registerOutput
 
 
@@ -421,8 +271,8 @@ namespace naoth
      * @param motionCallback The callback object for the motion cycle or NULL if not active.
      * @param cognitionCallback The callback object for the cognition cycle or NULL if not active.
      */
-    template<class T1, class T2>
-    void registerCallbacks(T1* motionCallback, T2* cognitionCallback)
+    //template<class T1, class T2>
+    void registerCallbacks(Callable* motionCallback, Callable* cognitionCallback)
     {
       if(motionCallback != NULL)
       {

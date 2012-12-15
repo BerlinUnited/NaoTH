@@ -16,6 +16,17 @@
 #include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Infrastructure/Configuration.h"
 
+
+// those are defined externally and linked later
+class Cognition;
+class Motion;
+
+//extern Cognition theCognition;
+//extern Motion theMotion;
+
+extern Cognition* createCognition();
+extern Motion* createMotion();
+
 namespace naoth
 {
 
