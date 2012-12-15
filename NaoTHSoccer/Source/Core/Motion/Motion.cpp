@@ -93,20 +93,20 @@ Motion::~Motion()
   theMotionFactories.clear();
 }
 
-void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
+void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   theBlackBoard.init();
   theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
 
   // init robot info
-  theBlackBoard.theRobotInfo.platform = platformInterface.getName();
-  theBlackBoard.theRobotInfo.bodyNickName = platformInterface.getBodyNickName();
-  theBlackBoard.theRobotInfo.bodyID = platformInterface.getBodyID();
-  theBlackBoard.theRobotInfo.basicTimeStep = platformInterface.getBasicTimeStep();
+  theBlackBoard.theRobotInfo.platform = platform.getName();
+  theBlackBoard.theRobotInfo.bodyNickName = platform.getBodyNickName();
+  theBlackBoard.theRobotInfo.bodyID = platform.getBodyID();
+  theBlackBoard.theRobotInfo.basicTimeStep = platform.getBasicTimeStep();
 
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
-  platformInterface.registerMotionInput(theBlackBoard.the##R)
+  platformInterface.registerInput(theBlackBoard.the##R)
 
   REG_INPUT(SensorJointData);
   REG_INPUT(FrameInfo);
@@ -116,7 +116,7 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(GyrometerData);
 
 #define REG_OUTPUT(R)                                                   \
-  platformInterface.registerMotionOutput(theBlackBoard.the##R)
+  platformInterface.registerOutput(theBlackBoard.the##R)
 
   REG_OUTPUT(MotorJointData);
   //REG_OUTPUT(LEDData);
@@ -124,16 +124,16 @@ void Motion::init(naoth::PlatformInterfaceBase& platformInterface)
   g_message("Motion register end");
 
   // messages from motion to cognition
-  platformInterface.registerMotionOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(theBlackBoard.theCameraMatrix);
-  platformInterface.registerMotionOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
-  platformInterface.registerMotionOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
-  //platformInterface.registerMotionOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
-  platformInterface.registerMotionOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
+  platformInterface.registerOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(theBlackBoard.theCameraMatrix);
+  platformInterface.registerOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
+  platformInterface.registerOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
+  //platformInterface.registerOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
+  platformInterface.registerOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
 
   // messages from cognition to motion
-  platformInterface.registerMotionInputChanel<CameraInfo, Serializer<CameraInfo> >(theBlackBoard.theCameraInfo);
-  platformInterface.registerMotionInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
-  platformInterface.registerMotionInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
+  platformInterface.registerInputChanel<CameraInfo, Serializer<CameraInfo> >(theBlackBoard.theCameraInfo);
+  platformInterface.registerInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
+  platformInterface.registerInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
 
   selectMotion();// create init motion
   state = initial;

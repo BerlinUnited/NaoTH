@@ -111,7 +111,7 @@ public:
 };
 
 
-class Simulator : public PlatformInterface<Simulator>
+class Simulator : public PlatformInterface
 {
 public:
   Simulator(const char* filePath, bool compatibleMode, bool backendMode);

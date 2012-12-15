@@ -14,9 +14,9 @@ Actuator::~Actuator()
 
 
 #define REG_OUTPUT(R) \
-  platformInterface.registerCognitionOutput(get##R())
+  platformInterface.registerOutput(get##R())
 
-void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
+void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   REG_OUTPUT(LEDData);
   REG_OUTPUT(IRSendData);
@@ -28,9 +28,9 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(RCTCTeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
 
-  platformInterface.registerCognitionOutputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
-  platformInterface.registerCognitionOutputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
-  platformInterface.registerCognitionOutputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
+  platformInterface.registerOutputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
+  platformInterface.registerOutputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
+  platformInterface.registerOutputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
 }//end init
 
 void Actuator::execute()

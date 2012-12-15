@@ -17,16 +17,6 @@
 #include "Representations/Infrastructure/Configuration.h"
 
 
-// those are defined externally and linked later
-class Cognition;
-class Motion;
-
-//extern Cognition theCognition;
-//extern Motion theMotion;
-
-extern Cognition* createCognition();
-extern Motion* createMotion();
-
 namespace naoth
 {
 
@@ -40,13 +30,13 @@ namespace naoth
     Platform()
     : _hardwareIdentity("Uninitialized"),
       _headHardwareIdentity("Uninitialized"),
-      _platformInterface(NULL),
+      //_platformInterface(NULL),
       theConfiguration(_configuration),
       theConfigDirectory(_configDir),
       theHardwareIdentity(_hardwareIdentity),
       theHeadHardwareIdentity(_headHardwareIdentity),
-      theScheme(_scheme),
-      thePlatformInterface(_platformInterface)
+      theScheme(_scheme)
+      //thePlatformInterface(_platformInterface)
     {
       _configDir = "Config/";
     }
@@ -59,7 +49,7 @@ namespace naoth
     Configuration _configuration;
     std::string _configDir;
     std::string _scheme;
-    PlatformBase* _platformInterface;
+    //PlatformBase* _platformInterface;
 
   public:
     virtual ~Platform()
@@ -68,14 +58,16 @@ namespace naoth
 
     void init(PlatformBase* _interface)
     {
-      ASSERT(_interface!=NULL);
+      ASSERT(_interface != NULL);
 
-      _platformInterface = _interface;
+      //_platformInterface = _interface;
 
       // set the the hardware identity according to platform
       _hardwareIdentity = _interface->getBodyNickName();
       _headHardwareIdentity = _interface->getHeadNickName();
       _scheme = _interface->getName(); // set to platform by default
+      
+      // load config
       std::ifstream schemefile((_configDir + "scheme.cfg").c_str());
       if(schemefile.is_open() && schemefile.good())
       {
@@ -91,7 +83,7 @@ namespace naoth
     const std::string& theHeadHardwareIdentity; // the string to indentify different robot heads
     const std::string& theScheme;
 
-    PlatformBase* const & thePlatformInterface;
+    //PlatformBase* const & thePlatformInterface;
 
   };
 }

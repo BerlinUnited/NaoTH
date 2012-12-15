@@ -10,13 +10,14 @@
 
 namespace naoth
 {
-  class PlatformInterfaceBase;
+  class PlatformBase;
+  class ProcessInterface;
 
   class Callable
   {
   public:
 
-    virtual void init(PlatformInterfaceBase& platformInterface) = 0;
+    virtual void init(ProcessInterface& platformInterface, const PlatformBase& platform) = 0;
 
     virtual void call() = 0;
 

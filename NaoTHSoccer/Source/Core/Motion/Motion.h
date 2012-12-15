@@ -37,7 +37,7 @@ public:
 
   virtual void call();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
   bool exit();
   

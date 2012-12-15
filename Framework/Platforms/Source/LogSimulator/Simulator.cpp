@@ -24,7 +24,7 @@ using namespace std;
 using namespace naoth;
 
 Simulator::Simulator(const char* filePath, bool compatibleMode, bool backendMode)
-: PlatformInterface<Simulator>("LogSimulator", CYCLE_TIME),
+: PlatformInterface("LogSimulator", CYCLE_TIME),
   compatibleMode(compatibleMode),
   backendMode(backendMode)
 {
