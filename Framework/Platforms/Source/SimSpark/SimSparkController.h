@@ -37,7 +37,6 @@
 #include <Tools/Communication/SocketStream/SocketStream.h>
 #include "TeamCommEncoder.h"
 
-#include "PlatformInterface/Platform.h"
 #include "PlatformInterface/PlatformInterface.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include "DebugCommunication/DebugServer.h"

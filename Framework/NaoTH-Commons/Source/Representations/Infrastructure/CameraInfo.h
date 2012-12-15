@@ -50,7 +50,7 @@ namespace naoth
     {
       Top,
       Bottom,
-      numOfCamera
+      numOfCamera //FIXME: this doesn't correspond to the type naothmessages::CameraID
     };
 
     unsigned int resolutionWidth;

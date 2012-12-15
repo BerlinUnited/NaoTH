@@ -1,5 +1,5 @@
 #include "Representations/Infrastructure/InertialSensorData.h"
-#include "PlatformInterface/Platform.h"
+
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
