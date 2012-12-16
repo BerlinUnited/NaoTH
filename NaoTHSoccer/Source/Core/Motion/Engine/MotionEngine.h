@@ -34,6 +34,7 @@ protected:
 private:
   MotionBlackBoard& theBlackBoard;
 
+  AbstractMotion* currentlyExecutedMotion;
   EmptyMotion theEmptyMotion;
   
   HeadMotionEngine theHeadMotionEngine;

@@ -2,6 +2,7 @@
  * @file Motion.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  *
  */
 
@@ -41,8 +42,9 @@ Motion::Motion()
   lastCognitionFrameNumber(0),
   motionLogger("MotionLog")
 {
-  theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
-    theBlackBoard.theFSRPos,
+  theSupportPolygonGenerator.init(
+    theBlackBoard.theFSRData.force,
+    theBlackBoard.theFSRPos.pos, // requires theFSRPos 
     theBlackBoard.theKinematicChain.theLinks);
 
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
@@ -69,7 +71,11 @@ Motion::~Motion()
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  theBlackBoard.init();
+  //theBlackBoard.init();
+  // TODO: need a better solution for this
+  theBlackBoard.theSensorJointData.init();
+  theBlackBoard.theKinematicChain.init(theBlackBoard.theSensorJointData);
+  theBlackBoard.theKinematicChainModel.init(theBlackBoard.theMotorJointData);
 
   // init robot info
   theBlackBoard.theRobotInfo.platform = platform.getName();
@@ -199,7 +205,7 @@ void Motion::processSensorData()
     //theBlackBoard.theInertialSensorData.data,
     theBlackBoard.theInertialModel.orientation,
     theBlackBoard.theKinematicChain,
-    theBlackBoard.theFSRPos,
+    theBlackBoard.theFSRPos.pos, // provides theFSRPos
     theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
 
   theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);

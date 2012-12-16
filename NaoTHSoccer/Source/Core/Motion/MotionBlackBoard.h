@@ -35,6 +35,12 @@
 
 class AbstractMotion;
 
+class FSRPositions
+{
+public:
+  Vector3<double> pos[naoth::FSRData::numOfFSR];
+};
+
 class MotionBlackBoard : public naoth::Singleton<MotionBlackBoard>
 {
 private:
@@ -57,7 +63,8 @@ public:
   GroundContactModel theGroundContactModel;
   
 
-  Vector3<double> theFSRPos[naoth::FSRData::numOfFSR];
+  //Vector3<double> theFSRPos[naoth::FSRData::numOfFSR];
+  FSRPositions theFSRPos;
 
   // sensory data
   naoth::FrameInfo theFrameInfo;
@@ -84,8 +91,7 @@ public:
   // data copied from cognition
   HeadMotionRequest theHeadMotionRequest;
   MotionRequest theMotionRequest;
-  
-  AbstractMotion* currentlyExecutedMotion;
+
 };
 
 #endif  /* _MOTIONBLACKBOARD_H */

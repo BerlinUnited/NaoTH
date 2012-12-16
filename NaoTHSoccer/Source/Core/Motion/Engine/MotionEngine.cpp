@@ -21,8 +21,8 @@ MotionEngine::MotionEngine()
   selectMotion();// create init motion
   state = initial;
 
-  //TODO: it should be internal state
-  theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
+  //
+  currentlyExecutedMotion = &theEmptyMotion;
 }
 
 MotionEngine::~MotionEngine()
@@ -47,8 +47,8 @@ void MotionEngine::execute()
     theBlackBoard.theMotionRequest.id = motion::init;
 
     if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
-        && !theBlackBoard.currentlyExecutedMotion->isStopped()
-        && theBlackBoard.currentlyExecutedMotion->isFinish() )
+        && !currentlyExecutedMotion->isStopped()
+        &&  currentlyExecutedMotion->isFinish() )
     {
       state = running;
     }
@@ -75,29 +75,29 @@ void MotionEngine::execute()
 
   // motion engine execute
   selectMotion();
-  ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
-  theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
-  theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
+  ASSERT(NULL!=currentlyExecutedMotion);
+  currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
+  theBlackBoard.theMotionStatus.currentMotionState = currentlyExecutedMotion->state();
 }//end execute
 
 
 void MotionEngine::selectMotion()
 {
-  ASSERT(theBlackBoard.currentlyExecutedMotion != NULL);
+  ASSERT(currentlyExecutedMotion != NULL);
 
   // test if the current MotionStatus allready arrived in cognition
   if ( theBlackBoard.theMotionStatus.time != theBlackBoard.theMotionRequest.time )
     return;
 
   if (theBlackBoard.theMotionStatus.currentMotion == theBlackBoard.theMotionRequest.id
-    && theBlackBoard.currentlyExecutedMotion->isStopped())
+    && currentlyExecutedMotion->isStopped())
   {
     changeMotion(&theEmptyMotion);
   }
 
   if (theBlackBoard.theMotionStatus.currentMotion != theBlackBoard.theMotionRequest.id
     &&
-    (theBlackBoard.currentlyExecutedMotion->isStopped() || theBlackBoard.theMotionRequest.forced))
+    (currentlyExecutedMotion->isStopped() || theBlackBoard.theMotionRequest.forced))
   {
     AbstractMotion* newMotion = NULL;
     for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin();
@@ -121,8 +121,8 @@ void MotionEngine::selectMotion()
 
 void MotionEngine::changeMotion(AbstractMotion* m)
 {
-  theBlackBoard.currentlyExecutedMotion = m;
+  currentlyExecutedMotion = m;
   theBlackBoard.theMotionStatus.lastMotion = theBlackBoard.theMotionStatus.currentMotion;
-  theBlackBoard.theMotionStatus.currentMotion = theBlackBoard.currentlyExecutedMotion->getId();
+  theBlackBoard.theMotionStatus.currentMotion = currentlyExecutedMotion->getId();
   theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.getTime();
 }//end changeMotion

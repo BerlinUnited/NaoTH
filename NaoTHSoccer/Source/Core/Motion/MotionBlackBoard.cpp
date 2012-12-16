@@ -9,8 +9,6 @@
 
 
 MotionBlackBoard::MotionBlackBoard()
-  :
-  currentlyExecutedMotion(NULL)
 {
 }
 
