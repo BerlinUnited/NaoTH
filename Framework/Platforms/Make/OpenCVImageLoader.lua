@@ -1,5 +1,3 @@
--- local EXTERN_PATH = "../../../Extern"
-
 -- NaoTH controller for the webcam based "simulator"
 project "OpenCVImageLoader"
   kind "ConsoleApp"
@@ -8,7 +6,6 @@ project "OpenCVImageLoader"
   print("Generating files for OpenCVImageLoader")
   includedirs {
 	"../Source/",
-	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
 	EXTERN_PATH .. "/include/",
 	EXTERN_PATH .. "/include/glib-2.0/",

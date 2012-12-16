@@ -1,5 +1,3 @@
--- local EXTERN_PATH = "../../../Extern"
-
 -- NaoTH controller for the logfile based "simulator"
 project "LogSimulator"
   kind "ConsoleApp"
@@ -8,7 +6,6 @@ project "LogSimulator"
   print("Generating files for logsimulator")
   includedirs {
 	"../Source/",
-	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
 	EXTERN_PATH .. "/include/",
 	EXTERN_PATH .. "/include/glib-2.0/",

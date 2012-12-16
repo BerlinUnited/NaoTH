@@ -1,4 +1,5 @@
 /**
+ * @file ChannelActionCreator.h
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  */
 
@@ -14,7 +15,9 @@ namespace naoth
 {
 
 /**
- *
+ * @class OutputChanelAction
+ * Writes the object data of type T to the given message queue
+ * using the serializer ST
  */
 template<class T, class ST>
 class OutputChanelAction: public AbstractAction
@@ -39,7 +42,9 @@ public:
 
 
 /**
- *
+ * @class InputChanelAction
+ * Reads the object data of type T from the given message queue
+ * using the serializer ST
  */
 template<class T, class ST>
 class InputChanelAction: public AbstractAction
@@ -72,7 +77,7 @@ public:
 
 
 /**
- *
+ * @class ChannelActionCreator
  */
 class ChannelActionCreator
 {

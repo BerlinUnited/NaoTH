@@ -66,7 +66,10 @@ public:
 
 
 /**
-  * 
+  * @class TypedActionCreator
+  * Abstract interface for a class which creates an action
+  * based on given data and its type.
+  * @see TypedActionCreatorMap
   */
 template<class T>
 class TypedActionCreator
@@ -77,15 +80,18 @@ public:
 
 
 /**
-  * 
+  * @class TypedActionCreatorMap
+  * Inplements a creator for AbstractAction. An action is created using a TypedActionCreatorMap 
+  * if avaliable. All avaliable creators are stored in a map.
   */
 class TypedActionCreatorMap
 {
 private:
   typedef std::map<std::string,void*> TypedActionCreatorMapT;
+
+  // avaliable creators
   TypedActionCreatorMapT registeredActions;
 
-protected:
   /**
     * try to find an action in the given list and returns the according typed ActionCreator
     */
@@ -100,7 +106,6 @@ protected:
 
     return static_cast<TypedActionCreator<T>*>(iter->second);
   }//end getActionCreator
-
 
 public:
   /**
@@ -121,11 +126,11 @@ public:
     * adds a new creator or overwrites an existing one
     */
   template<class T>
-  void set(std::string name, TypedActionCreator<T>* actionCreator)
+  void add(TypedActionCreator<T>* actionCreator)
   {
-    registeredActions[name] = actionCreator;
+    registeredActions[typeid(T).name()] = actionCreator;
   }
-};
+};//end class TypedActionCreatorMap
 
 
 }// end namespace naoth

@@ -1,5 +1,3 @@
---local EXTERN_PATH = path.getabsolute("../../../Extern")
-
 local hasWebots = true
 
  ---------------------- WEBOTS_HOME -----------------------------
@@ -34,10 +32,9 @@ project "Webots"
   
   
     -- include core
-    if(CORE_PATH == nil or CORE == nil) then
-      print("WARNING: no path for the core is set")
-	  CORE_PATH = "."
-	  CORE = ""
+    if(CORE == nil) then
+      print("WARNING: no lib for the core is set")
+      CORE = ""
     end
     
     
@@ -45,7 +42,6 @@ project "Webots"
 
     includedirs {
       "../Source/", 
-	  CORE_PATH,
 	  "../../NaoTH-Tools/Source/",
       webotsHome .. "/include/controller/c/",
       "../Lib/win32/include/", 

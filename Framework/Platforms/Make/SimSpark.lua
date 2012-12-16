@@ -1,5 +1,3 @@
---local EXTERN_PATH = "../../../Extern"
-
 -- NaoTH controller for SimSpark
 project "SimSpark"
   kind "ConsoleApp"
@@ -8,15 +6,13 @@ project "SimSpark"
   files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
   
   -- include core
-  if(CORE_PATH == nil or CORE == nil) then
-    print("WARNING: no path for the core is set")
-	CORE_PATH = "."
-	CORE = ""
+  if(CORE == nil) then
+    print("WARNING: no lib for the core is set")
+    CORE = ""
   end
 
   includedirs {
 	"../Source/",
-	CORE_PATH,
 	"../../NaoTH-Tools/Source/",
 	EXTERN_PATH .. "/include/",
 	EXTERN_PATH .. "/include/glib-2.0/",

@@ -4,6 +4,21 @@
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Implementation of class BlackBoard
 *
+*/
+
+#ifndef _BlackBoard_h_
+#define _BlackBoard_h_
+
+#include <iostream>
+#include <map>
+#include <string>
+#include <typeinfo>
+
+#include "Tools/Debug/NaoTHAssert.h"
+#include "Representation.h"
+
+/**
+* @class BlackBoard 
 * BlackBoard (BB) is a kind of a very simple database providing a possibility 
 * to store and to access instances of arbitrary classes. I.e., it allows to store 
 * and to share heterogeneous information. The data units stored at 
@@ -19,6 +34,7 @@
 *
 *
 * Usage:
+@code
 
   class A
   {
@@ -34,30 +50,16 @@
 
   ...
 
+@endcode
 */
-
-
-#ifndef _BlackBoard_h_
-#define _BlackBoard_h_
-
-#include <iostream>
-#include <map>
-#include <string>
-#include <typeinfo>
-
-#include "Tools/Debug/NaoTHAssert.h"
-#include "Representation.h"
-
-/**
- *
- */
 class BlackBoard
 {
 public:
 
   /**
-   * abstract class to be stored at the BlackBoard
-   */
+  * @class BlackBoardData
+  * abstract class to be stored at the BlackBoard
+  */
   class BlackBoardData
   {
   public:
@@ -76,10 +78,10 @@ public:
 
 private:
   /**
-   * class BlackBoardDataHolder holds a data of type T as a member.
-   * It requires the class T to be NOT abstract and to have a 
-   * public default constrictor
-   */
+  * @class BlackBoardDataHolder holds a data of type T as a member.
+  * It requires the class T to be NOT abstract and to have a 
+  * public default constrictor
+  */
   template<class T>
   class BlackBoardDataHolder: public BlackBoardData
   {

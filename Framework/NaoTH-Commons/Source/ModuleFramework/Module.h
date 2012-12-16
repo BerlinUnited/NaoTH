@@ -34,8 +34,44 @@ typedef std::map<std::string, RegistrationInterface*> RepresentationMap;
 
 
 /**
- *
- */
+* @class Module
+* macros for creating a module
+* usage:
+@code
+
+ #include "RepresentationA.h"
+ #include "RepresentationB.h"
+
+  BEGIN_DECLARE_MODULE(ModuleA)
+    REQUIRE(RepresentationA)
+    PROVIDE(RepresentationB)
+  END_DECLARE_MODULE(ModuleA)
+
+
+  class ModuleA: private ModuleABase
+  {
+
+  public:
+
+    // a default constructor is required,
+    // it is used to create an instance of the module
+    ModuleA()
+    {
+    }
+
+    // the execute method is called to run the module
+    // put your functionality here
+    virtual void execute()
+    {
+      // do something with RepresentationA and RepresentationB:
+      // int x = getRepresentationA().x;
+      // getRepresentationB().y = x + 1;
+    }
+
+  };//end class ModuleA
+
+@endcode
+*/
 class Module: virtual protected BlackBoardInterface
 {
 private:
@@ -126,11 +162,11 @@ public:
   // what is it used for?
   Module* operator->(){ return this; }
   //friend ostream& operator<<(ostream& stream, Module& module);
-};
+};//end class module
 
 
 /**
- *
+ * @class
  */
 template<class T>
 class StaticRegistry
@@ -220,43 +256,6 @@ RepresentationMap* StaticRegistry<T>::static_provide_registry = new Representati
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_require_registry = new RepresentationMap();
 
-
-/***************************************************************
- macros for creating a module
- usage:
-
- #include "RepresentationA.h"
- #include "RepresentationB.h"
-
-  BEGIN_DECLARE_MODULE(ModuleA)
-    REQUIRE(RepresentationA)
-    PROVIDE(RepresentationB)
-  END_DECLARE_MODULE(ModuleA)
-
-
-  class ModuleA: private ModuleABase
-  {
-
-  public:
-
-    // a default constructor is required,
-    // it is used to create an instance of the module
-    ModuleA()
-    {
-    }
-
-    // the execute method is called to run the module
-    // put your functionality here
-    virtual void execute()
-    {
-      // do something with RepresentationA and RepresentationB:
-      // int x = getRepresentationA().x;
-      // getRepresentationB().y = x + 1;
-    }
-
-  };//end class ModuleA
-
-****************************************************************/
 
 // helper, should not be used outside
 // static invoker (registers the static dependency to RepresentationB)
