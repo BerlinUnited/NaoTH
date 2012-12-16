@@ -70,12 +70,12 @@ public:
 
   void serialize(std::ostream& stream) const
   {
-    Serializer<T>::serialize(data, stream);
+    naoth::Serializer<T>::serialize(data, stream);
   }
 
   void deserialize(std::istream& stream)
   {
-    Serializer<T>::deserialize(stream, data);
+    naoth::Serializer<T>::deserialize(stream, data);
   }
 };
 

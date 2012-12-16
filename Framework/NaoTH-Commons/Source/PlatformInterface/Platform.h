@@ -6,15 +6,14 @@
 #ifndef _PLATFORM_H
 #define _PLATFORM_H
 
-#include <string>
+#include "PlatformBase.h"
+#include "Tools/DataStructures/Singleton.h"
+#include "Tools/Debug/NaoTHAssert.h"
+#include "Representations/Infrastructure/Configuration.h"
+
 #include <iostream>
 #include <fstream>
-
-#include <string.h>
-#include "PlatformInterface.h"
-#include "Tools/DataStructures/Singleton.h"
-#include "Representations/Infrastructure/CameraInfo.h"
-#include "Representations/Infrastructure/Configuration.h"
+#include <string>
 
 
 namespace naoth

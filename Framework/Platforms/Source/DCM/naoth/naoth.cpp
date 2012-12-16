@@ -7,10 +7,8 @@
 
 #include "NaoController.h"
 
-#include "Tools/Debug/DebugBufferedOutput.h"
+//#include "Tools/Debug/DebugBufferedOutput.h"
 
-#include "Cognition.h"
-#include "Motion.h"
 #include "Tools/DummpyCallable.h"
 
 #include <glib.h>
@@ -92,7 +90,7 @@ void* cognitionThreadCallback(void* ref)
 
   while(true)
   {
-    theController->callCognition();
+    theController->runCognition();
     g_thread_yield();
   }
 
@@ -107,7 +105,7 @@ void* motionThreadCallback(void* ref)
   StopwatchItem stopwatch;
   while(true)
   {
-    theController->callMotion();
+    theController->runMotion();
     
 
     if(sem_wait(dcm_sem) == -1)
@@ -117,7 +115,10 @@ void* motionThreadCallback(void* ref)
 
     Stopwatch::getInstance().notifyStop(stopwatch);
     Stopwatch::getInstance().notifyStart(stopwatch);
-    PLOT("_MotionCycle", stopwatch.lastValue);
+    
+    // TODO: if we want to have this here, we have to move the 
+    // "Tools/Debug/DebugBufferedOutput.h" to NaoTH-Commons
+    //PLOT("_MotionCycle", stopwatch.lastValue);
   }//end while
 
   return NULL;
@@ -173,9 +174,8 @@ int main(int argc, char *argv[])
 
   // create the controller
   NaoController theController;
-  Cognition theCognition;
-  Motion theMotion;
-  theController.registerCallbacks(&theMotion, &theCognition);
+  
+  naoth::init_agent(theController);
 
 
   // waiting for the first rise of the semaphore

@@ -176,6 +176,9 @@ protected:
   template<class TYPE_WHAT>
   class StaticRequireRegistrator: public StaticRegistrator<TYPE_WHAT>
   {
+    // seems to be necessary for gcc to resolve the member data
+    typedef StaticRegistrator<TYPE_WHAT> ParentT;
+
   public:
     StaticRequireRegistrator(const std::string& name)
       : 
@@ -185,14 +188,17 @@ protected:
 
     inline const TYPE_WHAT& getData() const
     {
-      assert(data != NULL);
-      return *data;
+      assert(ParentT::data != NULL);
+      return *ParentT::data;
     }
   };
 
   template<class TYPE_WHAT>
   class StaticProvideRegistrator: public StaticRegistrator<TYPE_WHAT>
   {
+    // seems to be necessary for gcc to resolve the member data
+    typedef StaticRegistrator<TYPE_WHAT> ParentT;
+
   public:
     StaticProvideRegistrator(const std::string& name)
       : 
@@ -202,8 +208,8 @@ protected:
 
     inline TYPE_WHAT& getData() const
     {
-      assert(data != NULL);
-      return *data;
+      assert(ParentT::data != NULL);
+      return *ParentT::data;
     }
   };
 };

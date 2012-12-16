@@ -58,7 +58,7 @@ namespace Math
         content = NULL;
         if(M > 0 && N > 0 && v != NULL)
         {
-          content = new vector<T>[m];
+          content = new std::vector<T>[m];
           std::vector<T>* init = content;
           for (unsigned int i = 0; i < m; ++i, ++init, v += n)
           {
@@ -471,18 +471,18 @@ namespace Math
 
       void print()
       {
-        cout << "Matrix (" << m << "x" << n << ")" << endl;
+        std::cout << "Matrix (" << m << "x" << n << ")" << std::endl;
         for (unsigned int i = 0; i < m; i++)
         {
           for (unsigned int j = 0; j < n; j++)
           {
-            cout << "\t" << content[i][j];
+            std::cout << "\t" << content[i][j];
           }
-          cout << "\n";
+          std::cout << "\n";
         }
-        cout << "\n";
-        cout << " Det = " << det();
-        cout << "\n";
+        std::cout << "\n";
+        std::cout << " Det = " << det();
+        std::cout << "\n";
       }
 
     //----------------------------------------------------------------------------

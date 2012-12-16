@@ -10,6 +10,7 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <typeinfo>
 
 namespace naoth
 {

@@ -35,7 +35,7 @@ using namespace cv;
 using namespace naoth;
 
 OpenCVImageLoader::OpenCVImageLoader(const char* dirPath)
-:PlatformInterface<OpenCVImageLoader>("OpenCVImageLoader", CYCLE_TIME)
+  : PlatformInterface("OpenCVImageLoader", CYCLE_TIME)
 {
   // register input
   directoryName = dirPath;
@@ -137,8 +137,8 @@ void OpenCVImageLoader::makeStep()
     if (loadImage(loadedImage))
     {
       time += getBasicTimeStep();
-      callCognition();
-      callMotion();
+      runCognition();
+      runMotion();
       imageLoaded = true;
     }//end if
     else
@@ -242,8 +242,8 @@ void OpenCVImageLoader::executeCognition()
   {
     cout << "cognition: just executing new cycle" << endl;
     time += getBasicTimeStep();
-    callCognition();
-    callMotion();
+    runCognition();
+    runMotion();
   }
   else
   {

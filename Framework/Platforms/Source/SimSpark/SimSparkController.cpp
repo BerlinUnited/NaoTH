@@ -9,6 +9,7 @@
 #include "SimSparkController.h"
 #include <iostream>
 #include <fstream>
+#include "PlatformInterface/Platform.h"
 #include "Tools/Communication/MessageQueue/MessageQueue4Threads.h"
 #include <Tools/ImageProcessing/ColorModelConversions.h>
 #include <Tools/DataConversion.h>
@@ -19,7 +20,7 @@
 using namespace std;
 
 SimSparkController::SimSparkController(const std::string& name)
-: PlatformInterface<SimSparkController>(name, 20),
+: PlatformInterface(name, 20),
   theImageData(NULL),
   theImageSize(0),
   isNewImage(false),
@@ -288,7 +289,7 @@ void SimSparkController::singleThreadMain()
     {
       callCognition();
     }
-    callMotion();
+    PlatformInterface::runMotion();
     act();
   }//end while
 }//end main
@@ -332,7 +333,7 @@ void SimSparkController::motionLoop()
     g_mutex_unlock(theSensorDataMutex);
 
     updateSensors(data);
-    callMotion();
+    PlatformInterface::runMotion();
   }
 }//end motionLoop
 
@@ -346,12 +347,12 @@ void SimSparkController::cognitionLoop()
 
 void SimSparkController::callCognition()
 {
-  if(cognitionCallback != NULL)
+  if(cognitionRegistered())
   {
     getCognitionInput();
     if ( !exiting )
     {
-      cognitionCallback->call();
+      PlatformInterface::callCognition_();
       setCognitionOutput();
     }
   }
@@ -463,7 +464,7 @@ void SimSparkController::multiThreadsMain()
 
 void SimSparkController::getMotionInput()
 {
-  PlatformInterface<SimSparkController>::getMotionInput();
+  PlatformInterface::getMotionInput();
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
@@ -474,7 +475,7 @@ void SimSparkController::getMotionInput()
 
 void SimSparkController::setMotionOutput()
 {
-  PlatformInterface<SimSparkController>::setMotionOutput();
+  PlatformInterface::setMotionOutput();
 
   g_mutex_lock(theActDataMutex);
   say();
@@ -492,7 +493,7 @@ void SimSparkController::getCognitionInput()
     g_cond_wait(theCognitionInputCond, theCognitionInputMutex);
   }
 
-  PlatformInterface<SimSparkController>::getCognitionInput();
+  PlatformInterface::getCognitionInput();
   isNewVirtualVision = false;
   isNewImage = false;
   g_mutex_unlock(theCognitionInputMutex);
@@ -501,7 +502,7 @@ void SimSparkController::getCognitionInput()
 void SimSparkController::setCognitionOutput()
 {
   g_mutex_lock(theCognitionOutputMutex);
-  PlatformInterface<SimSparkController>::setCognitionOutput();
+  PlatformInterface::setCognitionOutput();
   g_mutex_unlock(theCognitionOutputMutex);
 }
 

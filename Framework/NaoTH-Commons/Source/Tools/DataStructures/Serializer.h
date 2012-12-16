@@ -1,5 +1,5 @@
-#ifndef SERIALIZER_H
-#define SERIALIZER_H
+#ifndef _SERIALIZER_H
+#define _SERIALIZER_H
 
 #include <typeinfo>
 
@@ -39,4 +39,4 @@ namespace naoth
 
 }
 
-#endif // SERIALIZER_H
+#endif // _SERIALIZER_H

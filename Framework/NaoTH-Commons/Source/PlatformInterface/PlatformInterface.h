@@ -8,7 +8,7 @@
 
 #include "Callable.h"
 
-
+#include "PlatformBase.h"
 #include "Process.h"
 #include "ProcessInterface.h"
 #include "ActionList.h"
@@ -34,35 +34,6 @@ extern void init_agent(PlatformInterface& platform);
 
 namespace naoth
 {
-
-/* 
-  * the PlatformBase holds (and provides access to) 
-  * some basic information about the platform
-  */
-class PlatformBase
-{
-public:
-  PlatformBase(const std::string& platformName, unsigned int basicTimeStep)
-    :
-    platformName(platformName),
-    theBasicTimeStep(basicTimeStep)
-  {}
-
-  virtual ~PlatformBase();
-
-  /////////////////////// get ///////////////////////
-  virtual std::string getBodyID() const = 0;
-  virtual std::string getBodyNickName() const = 0;
-  virtual std::string getHeadNickName() const = 0;
-
-  inline const std::string& getName() const { return platformName; }
-  inline unsigned int getBasicTimeStep() const { return theBasicTimeStep; }
-
-private:
-  std::string platformName;
-  unsigned int theBasicTimeStep;
-};//end class PlatformBase
-
 
 /*
  * the platform interface responses for 4 kinds of functionalities:
@@ -136,17 +107,28 @@ public:
     }
   }//end registerMotion
 
+  bool cognitionRegistered()
+  {
+    return cognitionProsess.callback != NULL;
+  }
 
-  virtual void callCognition()
-  {  
-    // TODO: assert?
-    if(cognitionProsess.callback != NULL)
+  virtual void runCognition()
+  {
+    if(cognitionRegistered())
     {
       getCognitionInput();
       cognitionProsess.callback->call();
       setCognitionOutput();
     }
   }//end callCognition
+
+  virtual void callCognition()
+  {
+    if(cognitionProsess.callback != NULL)
+    {
+      cognitionProsess.preActions.execute();
+    }
+  }
 
   virtual void getCognitionInput()
   {
@@ -158,16 +140,28 @@ public:
     cognitionProsess.postActions.execute();
   }
 
-  virtual void callMotion()
+  bool motionRegistered()
   {
-    // TODO: assert?
-    if(motionProsess.callback != NULL)
+    return motionProsess.callback != NULL;
+  }
+
+  virtual void runMotion()
+  {
+    if(motionRegistered())
     {
       getMotionInput();
       motionProsess.callback->call();
       setMotionOutput();
     }
-  }//callMotion 
+  }//runMotion
+
+  virtual void callMotion()
+  {
+    if(motionRegistered())
+    {
+      cognitionProsess.preActions.execute();
+    }
+  }
 
   virtual void getMotionInput()
   {

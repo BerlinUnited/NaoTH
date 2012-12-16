@@ -8,13 +8,14 @@
 #ifndef _DUMMPY_CALLABLE_H_
 #define	_DUMMPY_CALLABLE_H_
 
-#include "PlatformInterface/PlatformInterface.h"
+#include "PlatformInterface/ProcessInterface.h"
+#include "PlatformInterface/PlatformBase.h"
 
 class DummyCallable : public naoth::Callable
 {
 public:
-  virtual void call() {}
-  void init(naoth::PlatformInterfaceBase& platformInterface) {};
+  void call() {}
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform) {};
 };
 
 #endif	/* _DUMMPY_CALLABLE_H_ */

@@ -413,8 +413,8 @@ void Simulator::executeCurrentFrame()
   adjust_frame_time();
     
   // execute
-  callCognition();
-  callMotion();
+  runCognition();
+  runMotion();
   
   //std::cout << "end executeCurrentFrame" << std::endl;
 

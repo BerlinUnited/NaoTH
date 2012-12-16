@@ -12,7 +12,10 @@
 #include "RotationMatrix.h"
 #include "Pose2D.h"
 
-/** representation for 3D Transformation (Location + Orientation)*/
+/**
+ * @class Pose3T
+ * Represents a 3D Transformation (Location + Orientation)
+ */
 template<typename DATATYPE>
 class Pose3T
 {
@@ -96,7 +99,7 @@ protected:
   /**Concatenation of this pose with another pose
   *\param other The other pose that will be concatenated to this one.
   *\return A reference to this pose after concatenation
-  *\deprecated the name is not goo,d use *= instead
+  *\deprecated the name is not good use *= instead
   */
   Pose3T& conc(const Pose3T& other)
   {

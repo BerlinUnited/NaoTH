@@ -46,7 +46,7 @@
 
 using namespace naoth;
 
-class SimSparkController : public PlatformInterface<SimSparkController>, DebugCommandExecutor
+class SimSparkController : public PlatformInterface, DebugCommandExecutor
 {
 private:
   GSocket* socket;

@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef _NAO_CONTROLLER_BASE_H_
-#define _NAO_CONTROLLER_BASE_H_
+#ifndef _NaoController_H_
+#define _NaoController_H_
 
 #include <glib.h>
 #include <string>
@@ -45,12 +45,12 @@
 
 namespace naoth
 {
-class NaoController : public PlatformInterface<NaoController>
+class NaoController : public PlatformInterface
 {
 public:
   NaoController()
     :
-    PlatformInterface<NaoController>("Nao", 10),
+    PlatformInterface("Nao", 10),
     sensorDataReading(NULL),
     m_naoSensorData(NULL),
     m_naoCommandMotorJointData(NULL),
@@ -397,7 +397,7 @@ public:
       sensorDataReading = NULL;
     }
 
-    PlatformInterface<NaoController>::getMotionInput();
+    PlatformInterface::getMotionInput();
     STOPWATCH_STOP("getMotionInput");
   }//end getMotionInput
 
@@ -405,7 +405,7 @@ public:
   virtual void setMotionOutput()
   {
     STOPWATCH_START("setMotionOutput");
-    PlatformInterface<NaoController>::setMotionOutput();
+    PlatformInterface::setMotionOutput();
     STOPWATCH_STOP("setMotionOutput");
     
     // send the data to DCM
@@ -416,7 +416,7 @@ public:
   virtual void getCognitionInput()
   {
     STOPWATCH_START("getCognitionInput");
-    PlatformInterface<NaoController>::getCognitionInput();
+    PlatformInterface::getCognitionInput();
     STOPWATCH_STOP("getCognitionInput");
   }//end getCognitionInput
   
@@ -424,7 +424,7 @@ public:
   void setCognitionOutput()
   {
     STOPWATCH_START("setCognitionOutput");
-    PlatformInterface<NaoController>::setCognitionOutput();
+    PlatformInterface::setCognitionOutput();
     STOPWATCH_STOP("setCognitionOutput");
   }//end setCognitionOutput
 
