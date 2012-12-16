@@ -1,4 +1,4 @@
-INPUT=Framework/NaoTH-Commons/Source/ Framework/Platforms/Source/ NaoTHSoccer/Source/ doc/doxygen/
+INPUT=Framework/NaoTH-Commons/Source/ Framework/Platforms/Source/ doc/doxygen/
 FILE_PATTERNS=*.cpp *.h *.dox *.lua
 RECURSIVE=YES
 EXTRACT_ALL = YES
@@ -10,6 +10,7 @@ OUTPUT_DIRECTORY = doc
 GENERATE_LATEX = NO
 GENERATE_HTML = YES
 
+DOTFILE_DIRS = doc/doxygen/
 
 GENERATE_QHP = YES
 QCH_FILE = naoth.qch
