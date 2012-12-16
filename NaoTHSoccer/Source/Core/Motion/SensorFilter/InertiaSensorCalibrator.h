@@ -48,6 +48,7 @@ BEGIN_DECLARE_MODULE(InertiaSensorCalibrator)
 END_DECLARE_MODULE(InertiaSensorCalibrator)
 
 
+
 class InertiaSensorCalibrator: private InertiaSensorCalibratorBase
 {
 public:

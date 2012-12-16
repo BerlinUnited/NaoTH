@@ -30,7 +30,39 @@
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
-class Motion : public naoth::Callable, public ModuleManager
+
+BEGIN_DECLARE_MODULE(Motion)
+  REQUIRE(MotionStatus)
+  REQUIRE(OdometryData)
+  REQUIRE(InertialModel)
+  REQUIRE(CalibrationData)
+
+  PROVIDE(FSRPositions)// TODO:strange...
+  PROVIDE(CameraMatrix)// TODO:strange...
+
+  PROVIDE(MotorJointData) // TODO: check
+  
+  PROVIDE(RobotInfo)
+  PROVIDE(KinematicChainSensor)
+  PROVIDE(KinematicChainMotor)
+
+  // platform input
+  PROVIDE(SensorJointData)
+  PROVIDE(FrameInfo)
+  PROVIDE(InertialSensorData)
+  PROVIDE(FSRData)
+  PROVIDE(AccelerometerData)
+  PROVIDE(GyrometerData)
+  
+
+  // from cognition
+  PROVIDE(CameraInfo)
+  PROVIDE(HeadMotionRequest)
+  PROVIDE(MotionRequest)
+END_DECLARE_MODULE(Motion)
+
+
+class Motion : public naoth::Callable, private MotionBase, public ModuleManager
 {
 public:
   Motion();
@@ -41,6 +73,9 @@ public:
   *
   */
   virtual void call();
+
+  // TODO: unify with Callable
+  void execute() {}
 
   /**
   *
@@ -58,10 +93,11 @@ protected:
 private:
 
   void updateCameraMatrix();
+  void guard_cognition();
 
 private:
 
-  MotionBlackBoard& theBlackBoard;
+  //MotionBlackBoard& theBlackBoard;
 
 
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
@@ -76,8 +112,6 @@ private:
 
 
   naoth::MotorJointData theLastMotorJointData;
-  unsigned int frameNumSinceLastMotionRequest;
-  unsigned int lastCognitionFrameNumber;
 
   Logger motionLogger;
 };

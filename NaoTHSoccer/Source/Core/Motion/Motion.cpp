@@ -32,19 +32,14 @@
 using namespace naoth;
 
 Motion::Motion()
-  :
-  theBlackBoard(MotionBlackBoard::getInstance()),
-  
-  //theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
-  
-  frameNumSinceLastMotionRequest(0),
-  lastCognitionFrameNumber(0),
-  motionLogger("MotionLog")
+  //theFootTouchCalibrator(getFSRData, getMotionStatus, getSupportPolygon, getKinematicChainModel),
+
+  : motionLogger("MotionLog")
 {
 
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
 
-  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(theBlackBoard.the##R), #R);
+  #define ADD_LOGGER(R) motionLogger.addRepresentation(&(get##R()), #R);
 
   ADD_LOGGER(FrameInfo);
   ADD_LOGGER(SensorJointData);
@@ -77,19 +72,19 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
 {
   //theBlackBoard.init();
   // TODO: need a better solution for this
-  theBlackBoard.theSensorJointData.init();
-  theBlackBoard.theKinematicChain.init(theBlackBoard.theSensorJointData);
-  theBlackBoard.theKinematicChainModel.init(theBlackBoard.theMotorJointData);
+  getSensorJointData().init();
+  getKinematicChainSensor().init(getSensorJointData());
+  getKinematicChainMotor().init(getMotorJointData()); // TODO: make it const
 
   // init robot info
-  theBlackBoard.theRobotInfo.platform = platform.getName();
-  theBlackBoard.theRobotInfo.bodyNickName = platform.getBodyNickName();
-  theBlackBoard.theRobotInfo.bodyID = platform.getBodyID();
-  theBlackBoard.theRobotInfo.basicTimeStep = platform.getBasicTimeStep();
+  getRobotInfo().platform = platform.getName();
+  getRobotInfo().bodyNickName = platform.getBodyNickName();
+  getRobotInfo().bodyID = platform.getBodyID();
+  getRobotInfo().basicTimeStep = platform.getBasicTimeStep();
 
   g_message("Motion register begin");
 #define REG_INPUT(R)                                                    \
-  platformInterface.registerInput(theBlackBoard.the##R)
+  platformInterface.registerInput(get##R())
 
   REG_INPUT(SensorJointData);
   REG_INPUT(FrameInfo);
@@ -99,7 +94,7 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GyrometerData);
 
 #define REG_OUTPUT(R)                                                   \
-  platformInterface.registerOutput(theBlackBoard.the##R)
+  platformInterface.registerOutput(get##R())
 
   REG_OUTPUT(MotorJointData);
   //REG_OUTPUT(LEDData);
@@ -107,59 +102,32 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   g_message("Motion register end");
 
   // messages from motion to cognition
-  platformInterface.registerOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(theBlackBoard.theCameraMatrix);
-  platformInterface.registerOutputChanel<MotionStatus, Serializer<MotionStatus> >(theBlackBoard.theMotionStatus);
-  platformInterface.registerOutputChanel<OdometryData, Serializer<OdometryData> >(theBlackBoard.theOdometryData);
-  //platformInterface.registerOutputChanel<CalibrationData, Serializer<CalibrationData> >(theBlackBoard.theCalibrationData);
-  platformInterface.registerOutputChanel<InertialModel, Serializer<InertialModel> >(theBlackBoard.theInertialModel);
+  platformInterface.registerOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(getCameraMatrix());
+  platformInterface.registerOutputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
+  platformInterface.registerOutputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
+  //platformInterface.registerOutputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData);
+  platformInterface.registerOutputChanel<InertialModel, Serializer<InertialModel> >(getInertialModel());
 
   // messages from cognition to motion
-  platformInterface.registerInputChanel<CameraInfo, Serializer<CameraInfo> >(theBlackBoard.theCameraInfo);
-  platformInterface.registerInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
-  platformInterface.registerInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
+  platformInterface.registerInputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
+  platformInterface.registerInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
+  platformInterface.registerInputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
 
 }//end init
+
 
 
 void Motion::call()
 {
   STOPWATCH_START("MotionExecute");
 
+  //TODO: move it to platform
+  guard_cognition();
+
   // process sensor data
   STOPWATCH_START("Motion:processSensorData");
   processSensorData();
   STOPWATCH_STOP("Motion:processSensorData");
-
-  // check if cognition is still alive
-
-  if(lastCognitionFrameNumber == theBlackBoard.theMotionRequest.cognitionFrameNumber)
-  {
-    frameNumSinceLastMotionRequest++;
-  }
-  else
-  {
-    lastCognitionFrameNumber = theBlackBoard.theMotionRequest.cognitionFrameNumber;
-    frameNumSinceLastMotionRequest = 0;
-  }
-
-  if(frameNumSinceLastMotionRequest > 1500)
-  {
-    std::cerr << "+==================================+" << std::endl;
-    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
-    std::cerr << "+==================================+" << std::endl;
-    std::cerr << "dumping traces" << std::endl;
-    Trace::getInstance().dump();
-    Stopwatch::getInstance().dump("cognition");
-
-    //TODO: Maybe better put it into Platform?
-    #ifndef WIN32
-    std::cerr << "syncing file system..." ;
-    sync();
-    std::cerr << " finished." << std::endl;
-    #endif
-
-    ASSERT(frameNumSinceLastMotionRequest <= 500);
-  }
 
   /**
   * run the motion engine
@@ -169,7 +137,7 @@ void Motion::call()
   // TODO: do we need it, is was never used so far
   // calibrate the foot touch detector
   /*
-  if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
+  if(getMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
     */
 
@@ -181,22 +149,24 @@ void Motion::call()
 
 }//end call
 
+
 void Motion::processSensorData()
 {
   // check all joint stiffness
-  int i = theBlackBoard.theSensorJointData.checkStiffness();
+  int i = getSensorJointData().checkStiffness();
   if(i != -1)
   {
-    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<theBlackBoard.theSensorJointData.stiffness[i]);
+    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<getSensorJointData().stiffness[i]);
   }
 
-  // calibrate inrtia sensors
+  // calibrate inertia sensors
   theInertiaSensorCalibrator->execute();
 
+  //TODO: introduce calibrated versions of the data
   // correct the sensors
-  theBlackBoard.theInertialSensorData.data += theBlackBoard.theCalibrationData.inertialSensorOffset;
-  theBlackBoard.theGyrometerData.data += theBlackBoard.theCalibrationData.gyroSensorOffset;
-  theBlackBoard.theAccelerometerData.data += theBlackBoard.theCalibrationData.accSensorOffset;
+  getInertialSensorData().data += getCalibrationData().inertialSensorOffset;
+  getGyrometerData().data += getCalibrationData().gyroSensorOffset;
+  getAccelerometerData().data += getCalibrationData().accSensorOffset;
 
   //
   theInertiaSensorFilterBH->execute();
@@ -206,12 +176,12 @@ void Motion::processSensorData()
 
   //
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    theBlackBoard.theAccelerometerData,
-    //theBlackBoard.theInertialSensorData.data,
-    theBlackBoard.theInertialModel.orientation,
-    theBlackBoard.theKinematicChain,
-    theBlackBoard.theFSRPos.pos, // provides theFSRPos
-    theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
+    getAccelerometerData(),
+    //getInertialSensorData.data,
+    getInertialModel().orientation,
+    getKinematicChainSensor(),
+    getFSRPositions().pos, // provides theFSRPos
+    getRobotInfo().getBasicTimeStepInSecond());
 
   //
   theSupportPolygonGenerator->execute();
@@ -223,45 +193,49 @@ void Motion::processSensorData()
   theOdometryCalculator->execute();
   /*
   theOdometryCalculator.calculateOdometry(
-    theBlackBoard.theOdometryData,
-    theBlackBoard.theKinematicChain,
-    theBlackBoard.theFSRData);
+    getOdometryData,
+    getKinematicChain,
+    getFSRData);
     */
 
-  Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
-  theBlackBoard.theKinematicChainModel.updateCoM();
+  //
+  Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);
+  getKinematicChainMotor().updateCoM();
 
-  theLastMotorJointData = theBlackBoard.theMotorJointData;
+  // store the MotorJointData
+  theLastMotorJointData = getMotorJointData();
+
+
 
 
   // some basic plots
   // plotting sensor data
-  PLOT("Motion:GyrometerData:data:x", theBlackBoard.theGyrometerData.data.x);
-  PLOT("Motion:GyrometerData:data:y", theBlackBoard.theGyrometerData.data.y);
+  PLOT("Motion:GyrometerData:data:x", getGyrometerData().data.x);
+  PLOT("Motion:GyrometerData:data:y", getGyrometerData().data.y);
 
-  PLOT("Motion:GyrometerData:rawData:x", theBlackBoard.theGyrometerData.rawData.x);
-  PLOT("Motion:GyrometerData:rawData:y", theBlackBoard.theGyrometerData.rawData.y);
-  PLOT("Motion:GyrometerData:rawZero:x", theBlackBoard.theGyrometerData.rawZero.x);
-  PLOT("Motion:GyrometerData:rawZero:y", theBlackBoard.theGyrometerData.rawZero.y);
-  PLOT("Motion:GyrometerData:ref", theBlackBoard.theGyrometerData.ref);
+  PLOT("Motion:GyrometerData:rawData:x", getGyrometerData().rawData.x);
+  PLOT("Motion:GyrometerData:rawData:y", getGyrometerData().rawData.y);
+  PLOT("Motion:GyrometerData:rawZero:x", getGyrometerData().rawZero.x);
+  PLOT("Motion:GyrometerData:rawZero:y", getGyrometerData().rawZero.y);
+  PLOT("Motion:GyrometerData:ref", getGyrometerData().ref);
 
-  PLOT("Motion:AccelerometerData:x", theBlackBoard.theAccelerometerData.data.x);
-  PLOT("Motion:AccelerometerData:y", theBlackBoard.theAccelerometerData.data.y);
-  PLOT("Motion:AccelerometerData:z", theBlackBoard.theAccelerometerData.data.z);
+  PLOT("Motion:AccelerometerData:x", getAccelerometerData().data.x);
+  PLOT("Motion:AccelerometerData:y", getAccelerometerData().data.y);
+  PLOT("Motion:AccelerometerData:z", getAccelerometerData().data.z);
 
-  PLOT("Motion:InertialSensorData:x", sin(theBlackBoard.theInertialSensorData.data.x));
-  PLOT("Motion:InertialSensorData:y", (theBlackBoard.theInertialSensorData.data.y));
+  PLOT("Motion:InertialSensorData:x", sin(getInertialSensorData().data.x));
+  PLOT("Motion:InertialSensorData:y", (getInertialSensorData().data.y));
 
   PLOT("Motion:KinematicChain:oriantation:model:x",
-    theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::Hip].R.getXAngle()
+    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getXAngle()
   );
   PLOT("Motion:KinematicChain:oriantation:model:y",
-    theBlackBoard.theKinematicChainModel.theLinks[KinematicChain::Hip].R.getYAngle()
+    getKinematicChainMotor().theLinks[KinematicChain::Hip].R.getYAngle()
   );
 
   DEBUG_REQUEST("Motion:KinematicChain:orientation_test",
     RotationMatrix calculatedRotation =
-      Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
+      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
 
     // calculate expected acceleration sensor reading
     Vector2d inertialExpected(calculatedRotation.getXAngle(), calculatedRotation.getYAngle());
@@ -273,7 +247,7 @@ void Motion::processSensorData()
 
   // plot the requested joint positions
 #define PLOT_JOINT(name) \
-  PLOT("Motion:MotorJointData:"#name, Math::toDegrees(theBlackBoard.theMotorJointData.position[JointData::name]))
+  PLOT("Motion:MotorJointData:"#name, Math::toDegrees(getMotorJointData().position[JointData::name]))
 
   PLOT_JOINT(HeadPitch);
   PLOT_JOINT(HeadYaw);
@@ -302,13 +276,14 @@ void Motion::processSensorData()
 
 }//end processSensorData
 
+
 void Motion::updateCameraMatrix()
 {
-  CameraMatrix& cameraMatrix = theBlackBoard.theCameraMatrix;
+  CameraMatrix& cameraMatrix = getCameraMatrix();
   CameraMatrixCalculator::calculateCameraMatrix(
     cameraMatrix,
-    theBlackBoard.theCameraInfo,
-    theBlackBoard.theKinematicChain);
+    getCameraInfo(),
+    getKinematicChainSensor());
 
   cameraMatrix.valid = true;
 
@@ -327,14 +302,15 @@ void Motion::updateCameraMatrix()
   cameraMatrix.rotation.rotateY(correctionAngleY);
   cameraMatrix.rotation.rotateZ(correctionAngleZ);
 
-} // end updateCameraMatrix
+}// end updateCameraMatrix
+
 
 void Motion::postProcess()
 {
-  motionLogger.log(theBlackBoard.theFrameInfo.getFrameNumber());
+  motionLogger.log(getFrameInfo().getFrameNumber());
 
-  MotorJointData& mjd = theBlackBoard.theMotorJointData;
-  double basicStepInS = theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  MotorJointData& mjd = getMotorJointData();
+  double basicStepInS = getRobotInfo().getBasicTimeStepInSecond();
 
 #ifdef DEBUG
   int i = mjd.checkStiffness();
@@ -348,6 +324,45 @@ void Motion::postProcess()
   mjd.updateSpeed(theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
 }//end postProcess
+
+
+void Motion::guard_cognition()
+{
+  static unsigned int frameNumSinceLastMotionRequest(0);
+  static unsigned int lastCognitionFrameNumber(0);
+
+  // TODO: put this in the platform
+  // check if cognition is still alive
+  if(lastCognitionFrameNumber == getMotionRequest().cognitionFrameNumber)
+  {
+    frameNumSinceLastMotionRequest++;
+  }
+  else
+  {
+    lastCognitionFrameNumber = getMotionRequest().cognitionFrameNumber;
+    frameNumSinceLastMotionRequest = 0;
+  }
+
+  if(frameNumSinceLastMotionRequest > 1500)
+  {
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "| NO MORE MESSAGES FROM COGNITION! |" << std::endl;
+    std::cerr << "+==================================+" << std::endl;
+    std::cerr << "dumping traces" << std::endl;
+    Trace::getInstance().dump();
+    Stopwatch::getInstance().dump("cognition");
+
+    //TODO: Maybe better put it into Platform?
+    #ifndef WIN32
+    std::cerr << "syncing file system..." ;
+    sync();
+    std::cerr << " finished." << std::endl;
+    #endif
+
+    ASSERT(frameNumSinceLastMotionRequest <= 500);
+  }//end if
+}//end guard_cognition
+
 
 /*
 // todo is it needed?
