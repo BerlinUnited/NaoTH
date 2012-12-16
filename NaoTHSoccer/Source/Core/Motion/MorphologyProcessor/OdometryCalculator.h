@@ -8,21 +8,32 @@
 #ifndef _ODOMETRY_CALCULATOR_H_
 #define _ODOMETRY_CALCULATOR_H_
 
-#include <Tools/Math/Pose3D.h>
-#include <Representations/Infrastructure/FSRData.h>
+#include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/FSRData.h>
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
 
+#include "Motion/MotionBlackBoard.h"
 
-class OdometryCalculator
+// tools
+#include <Tools/Math/Pose3D.h>
+
+BEGIN_DECLARE_MODULE(OdometryCalculator)
+  REQUIRE(FSRData)
+  REQUIRE(KinematicChainSensor)
+
+  PROVIDE(OdometryData)
+END_DECLARE_MODULE(OdometryCalculator)
+
+class OdometryCalculator : private OdometryCalculatorBase
 {
 public:
-
   OdometryCalculator();
   ~OdometryCalculator();
 
-  void calculateOdometry(OdometryData& od, const KinematicChain& kc, const naoth::FSRData& fsr);
+  void execute();
 
 private:
     bool supportFoot; // TRUE: left foot; FALSE: right foot;

@@ -41,6 +41,10 @@ public:
   Vector3<double> pos[naoth::FSRData::numOfFSR];
 };
 
+class KinematicChainSensor: public KinematicChain {}; // former KinematicChain
+class KinematicChainMotor: public KinematicChain {}; // former KinematicChainModel
+
+
 class MotionBlackBoard : public naoth::Singleton<MotionBlackBoard>
 {
 private:
@@ -57,8 +61,8 @@ public:
   naoth::RobotInfo theRobotInfo;
 
   // data used internally
-  KinematicChain theKinematicChain; // data based on sensors
-  KinematicChain theKinematicChainModel; // data based on joint command (motor joint data)
+  KinematicChainSensor theKinematicChain; // data based on sensors
+  KinematicChainMotor theKinematicChainModel; // data based on joint command (motor joint data)
   SupportPolygon theSupportPolygon;
   GroundContactModel theGroundContactModel;
   
@@ -73,7 +77,7 @@ public:
   naoth::InertialSensorData theInertialSensorData;
   naoth::FSRData theFSRData;
   naoth::MotorJointData theMotorJointData;
-  naoth::MotorJointData theLastMotorJointData;
+  //naoth::MotorJointData theLastMotorJointData;
   naoth::SensorJointData theSensorJointData;
 
   //naoth::LEDData theLEDData;

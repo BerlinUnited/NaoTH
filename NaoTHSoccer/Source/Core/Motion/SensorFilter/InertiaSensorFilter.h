@@ -9,10 +9,9 @@
 #ifndef _InertiaSensorFilter_H_
 #define _InertiaSensorFilter_H_
 
-#include "Representations/Infrastructure/FrameInfo.h"
+
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/RotationMatrix.h"
-#include "Motion/MotionBlackBoard.h"
 
 
 template <class V = double> class Matrix2x3;
@@ -159,27 +158,49 @@ public:
 };
 
 
+#include <ModuleFramework/Module.h>
+
+#include "Representations/Infrastructure/FrameInfo.h"
+#include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Modeling/InertialModel.h"
+#include "Motion/MotionBlackBoard.h"
+
+BEGIN_DECLARE_MODULE(InertiaSensorFilter)
+  REQUIRE(FrameInfo)
+  REQUIRE(RobotInfo)
+  REQUIRE(InertialSensorData)
+  REQUIRE(GyrometerData)
+  REQUIRE(AccelerometerData)
+  REQUIRE(CalibrationData)
+  REQUIRE(GroundContactModel)
+  REQUIRE(MotionStatus)
+  REQUIRE(KinematicChainSensor)
+
+  PROVIDE(InertialModel)
+END_DECLARE_MODULE(InertiaSensorFilter)
+
 
 /**
 * @class InertiaSensorFilter
 * A module for estimating velocity and orientation of the torso.
 */
-class InertiaSensorFilter
+class InertiaSensorFilter: private InertiaSensorFilterBase
 {
 public:
   /** Default constructor. */
-  InertiaSensorFilter(const MotionBlackBoard& theBlackBoard, InertialModel& theInertialModel);
+  InertiaSensorFilter();
 
   /**
   * Updates the OrientationData representation.
   * @param orientationData The orientation data representation which is updated by this module.
   */
-  Vector2<double> update();
-
-  /** */
-  InertialModel& theInertialModel;
-
-  const MotionBlackBoard& theBlackBoard;
+  void execute();
 
 private:
   /**

@@ -6,33 +6,45 @@
  *
  */
 
-#ifndef _MOTION_H
-#define _MOTION_H
+#ifndef _Motion_h_
+#define _Motion_h_
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
+#include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/Module.h>
+
 
 #include "MotionBlackBoard.h"
-#include "AbstractMotion.h"
-#include "Engine/HeadMotion/HeadMotionEngine.h"
-#include "Engine/MotionFactory.h"
+//#include "AbstractMotion.h"
+//#include "Engine/HeadMotion/HeadMotionEngine.h"
+//#include "Engine/MotionFactory.h"
 
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 #include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
+#include "SensorFilter/InertiaSensorFilter.h"
+#include "MorphologyProcessor/FootGroundContactDetector.h"
 
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
 
-class Motion : public naoth::Callable
+class Motion : public naoth::Callable, public ModuleManager
 {
 public:
   Motion();
   virtual ~Motion();
 
+
+  /**
+  *
+  */
   virtual void call();
 
+  /**
+  *
+  */
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
   //bool exit();
@@ -48,20 +60,27 @@ private:
   void updateCameraMatrix();
 
 private:
+
   MotionBlackBoard& theBlackBoard;
 
-  InertiaSensorCalibrator theInertiaSensorCalibrator;
-  SupportPolygonGenerator theSupportPolygonGenerator;
-  OdometryCalculator theOdometryCalculator;
-  FootTouchCalibrator theFootTouchCalibrator;
-  
+
+  ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
+  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
+  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
+  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
+  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
+
+
+  //FootTouchCalibrator theFootTouchCalibrator;
   MotionEngine theMotionEngine;
-  
+
+
+  naoth::MotorJointData theLastMotorJointData;
   unsigned int frameNumSinceLastMotionRequest;
   unsigned int lastCognitionFrameNumber;
 
   Logger motionLogger;
 };
 
-#endif  /* MOTION_H */
+#endif  // _Motion_h_ 
 

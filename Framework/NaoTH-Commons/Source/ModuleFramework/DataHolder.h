@@ -40,12 +40,15 @@ class DataHolder: public Representation
 private:
   // creates an object of the data
   // (this requires the class T to have a default constructor)
-  T data;
+  //T data;
+  // HACK: make it polymorphic, this is necessary to use dynamic_cast in print()
+  // (just in case type T is not already polymorphic)
+  class PT: public T { public: virtual ~PT(){} } data;
 
 public:
-  DataHolder(const std::string& name) : Representation(name){}
-  DataHolder() : Representation(typeid(T).name()){}
-  virtual ~DataHolder(){}
+  DataHolder(const std::string& name): Representation(name){}
+  DataHolder(): Representation(typeid(T).name()){}
+  //virtual ~DataHolder(){} // it's not needed, when it's doing anything :)
 
   T& operator*(){ return data; }
   const T& operator*() const{ return data; }
@@ -55,17 +58,12 @@ public:
    */
   virtual void print(std::ostream& stream) const
   {
-    const T* asPointer =&data;
-    const Printable* asPrintable = dynamic_cast<const Printable*>(asPointer);
+    static const Printable* asPrintable = dynamic_cast<const Printable*>(&data);
+    
     if(asPrintable != NULL)
-    {
       stream << *asPrintable;
-    }
-    else
-    {
-      // use representation by default
-      stream << getName();
-    }
+    else // use representation by default
+      Representation::print(stream);
   }//end print
 
   void serialize(std::ostream& stream) const

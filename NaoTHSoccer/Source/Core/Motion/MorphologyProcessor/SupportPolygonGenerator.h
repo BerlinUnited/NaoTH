@@ -5,27 +5,42 @@
 * Declaration of the class SupportPolygonGenerator
 */
 
-#ifndef _SUPPORTPOLYGONGENERATOR_H
-#define  _SUPPORTPOLYGONGENERATOR_H
+#ifndef _SupportPolygonGenerator_h_
+#define _SupportPolygonGenerator_h_
 
+#include <ModuleFramework/Module.h>
+
+// representations
 #include <Representations/Infrastructure/FSRData.h>
 #include "Representations/Modeling/SupportPolygon.h"
 #include "Representations/Modeling/KinematicChain.h"
+
+#include "Motion/MotionBlackBoard.h"
+
+// tools
 #include "FootTouchDetector.h"
 
+// debug
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-class SupportPolygonGenerator: public DebugCommandExecutor
+
+BEGIN_DECLARE_MODULE(SupportPolygonGenerator)
+  REQUIRE(FSRData)
+  REQUIRE(FSRPositions)
+  REQUIRE(KinematicChainSensor)
+
+  PROVIDE(SupportPolygon)
+END_DECLARE_MODULE(SupportPolygonGenerator)
+
+
+class SupportPolygonGenerator: public SupportPolygonGeneratorBase, public DebugCommandExecutor
 {
 public:
 
   SupportPolygonGenerator();
-
-  void init(const double* fsr, const Vector3<double>* fsrPos, const Kinematics::Link* link);
-
   ~SupportPolygonGenerator();
 
-  void calcSupportPolygon(SupportPolygon& sp);
+  void execute();
 
   Vector3<double> calcSupportForceCenter();
 
@@ -41,14 +56,15 @@ public:
   
 private:
 
-    const double* theFSRData;
-    const Vector3<double>* theFSRPos;
-    const Kinematics::Link* theLink;
+  //TODO: remove it
+  const double* theFSRData;
+  const Vector3<double>* theFSRPos;
+  const Kinematics::Link* theLink;
 
-    FootTouchDetector theLeftFootTouchDetector;
-    FootTouchDetector theRightFootTouchDetector;
+  FootTouchDetector theLeftFootTouchDetector;
+  FootTouchDetector theRightFootTouchDetector;
 };
 
 
-#endif  /* _SUPPORTPOLYGONGENERATOR_H */
+#endif  /* _SupportPolygonGenerator_h_ */
 

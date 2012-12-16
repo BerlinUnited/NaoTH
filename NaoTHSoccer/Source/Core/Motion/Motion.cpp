@@ -17,7 +17,7 @@
 
 
 #include "MorphologyProcessor/ForwardKinematics.h"
-#include "MorphologyProcessor/FootGroundContactDetector.h"
+
 
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 
@@ -25,8 +25,6 @@
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/CameraGeometry.h>
-
-#include "SensorFilter/InertiaSensorFilter.h"
 
 #include <DebugCommunication/DebugCommandManager.h>
 
@@ -36,16 +34,13 @@ using namespace naoth;
 Motion::Motion()
   :
   theBlackBoard(MotionBlackBoard::getInstance()),
-  theInertiaSensorCalibrator(theBlackBoard, theBlackBoard.theCalibrationData),
-  theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
+  
+  //theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
+  
   frameNumSinceLastMotionRequest(0),
   lastCognitionFrameNumber(0),
   motionLogger("MotionLog")
 {
-  theSupportPolygonGenerator.init(
-    theBlackBoard.theFSRData.force,
-    theBlackBoard.theFSRPos.pos, // requires theFSRPos 
-    theBlackBoard.theKinematicChain.theLinks);
 
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
 
@@ -60,8 +55,17 @@ Motion::Motion()
   ADD_LOGGER(FSRData);
   ADD_LOGGER(MotionRequest);
 
-
   DEBUG_REQUEST_REGISTER("Motion:KinematicChain:orientation_test", "", false);
+
+
+  // register the modeules
+  theInertiaSensorCalibrator = registerModule<InertiaSensorCalibrator>("InertiaSensorCalibrator", true);
+  theInertiaSensorFilterBH = registerModule<InertiaSensorFilter>("InertiaSensorFilter", true);
+  theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
+  theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
+  theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
+
+  //theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 }
 
 Motion::~Motion()
@@ -162,9 +166,12 @@ void Motion::call()
   */
   theMotionEngine.execute();
 
+  // TODO: do we need it, is was never used so far
   // calibrate the foot touch detector
+  /*
   if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
     theFootTouchCalibrator.execute();
+    */
 
   STOPWATCH_START("Motion:postProcess");
   postProcess();
@@ -184,7 +191,7 @@ void Motion::processSensorData()
   }
 
   // calibrate inrtia sensors
-  theInertiaSensorCalibrator.update();
+  theInertiaSensorCalibrator->execute();
 
   // correct the sensors
   theBlackBoard.theInertialSensorData.data += theBlackBoard.theCalibrationData.inertialSensorOffset;
@@ -192,12 +199,10 @@ void Motion::processSensorData()
   theBlackBoard.theAccelerometerData.data += theBlackBoard.theCalibrationData.accSensorOffset;
 
   //
-  static InertiaSensorFilter theInertiaSensorFilterBH(theBlackBoard, theBlackBoard.theInertialModel);
-  theInertiaSensorFilterBH.update();
+  theInertiaSensorFilterBH->execute();
 
-
-  static FootGroundContactDetector theFootGroundContactDetector(theBlackBoard, theBlackBoard.theFSRData, theBlackBoard.theGroundContactModel);
-  theFootGroundContactDetector.update();
+  //
+  theFootGroundContactDetector->execute();
 
   //
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
@@ -208,19 +213,25 @@ void Motion::processSensorData()
     theBlackBoard.theFSRPos.pos, // provides theFSRPos
     theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
 
-  theSupportPolygonGenerator.calcSupportPolygon(theBlackBoard.theSupportPolygon);
+  //
+  theSupportPolygonGenerator->execute();
 
+  //
   updateCameraMatrix();
 
+  //
+  theOdometryCalculator->execute();
+  /*
   theOdometryCalculator.calculateOdometry(
     theBlackBoard.theOdometryData,
     theBlackBoard.theKinematicChain,
     theBlackBoard.theFSRData);
+    */
 
   Kinematics::ForwardKinematics::updateKinematicChainFrom(theBlackBoard.theKinematicChainModel.theLinks);
   theBlackBoard.theKinematicChainModel.updateCoM();
 
-  theBlackBoard.theLastMotorJointData = theBlackBoard.theMotorJointData;
+  theLastMotorJointData = theBlackBoard.theMotorJointData;
 
 
   // some basic plots
@@ -334,8 +345,8 @@ void Motion::postProcess()
 #endif
 
   mjd.clamp();
-  mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
-  mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
+  mjd.updateSpeed(theLastMotorJointData, basicStepInS);
+  mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
 }//end postProcess
 
 /*

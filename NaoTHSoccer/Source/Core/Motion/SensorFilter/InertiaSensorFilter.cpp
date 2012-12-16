@@ -17,10 +17,8 @@
 //#include "Representations/MotionControl/WalkingEngineOutput.h"
 
 
-InertiaSensorFilter::InertiaSensorFilter(const MotionBlackBoard& theBlackBoard, InertialModel& theInertialModel) 
-  : 
-  theInertialModel(theInertialModel),
-  theBlackBoard(theBlackBoard),
+InertiaSensorFilter::InertiaSensorFilter() 
+  :
   lastTime(0)
 {
   p.processNoise = Vector2<double>(0.004f, 0.004f);
@@ -45,30 +43,30 @@ void InertiaSensorFilter::reset()
   x = State<>();
   cov = p.processCov;
 
-  lastTime = theBlackBoard.theFrameInfo.getTime() - (unsigned int)(theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
+  lastTime = getFrameInfo().getTime() - (unsigned int)(getRobotInfo().getBasicTimeStepInSecond());
 }
 
-Vector2<double> InertiaSensorFilter::update()
+void InertiaSensorFilter::execute()
 {
   //MODIFY("module:InertiaSensorFilter:parameters", p);
 
   // check whether the filter shall be reset
-  if(lastTime == 0 || theBlackBoard.theFrameInfo.getTime() == lastTime)
+  if(lastTime == 0 || getFrameInfo().getTime() == lastTime)
   {
     reset();
-    return theInertialModel.orientation;
+    return;
   }
 
 
   // update the filter
-  if(theBlackBoard.theCalibrationData.calibrated) // use only calibrated data
+  if(getCalibrationData().calibrated) // use only calibrated data
   {
-    double timeScale = theBlackBoard.theFrameInfo.getTimeSince(lastTime) * 0.001;
-    predict(RotationMatrix(Vector3<double>(theBlackBoard.theGyrometerData.data.x * timeScale, theBlackBoard.theGyrometerData.data.y * timeScale, 0)));
+    double timeScale = getFrameInfo().getTimeSince(lastTime) * 0.001;
+    predict(RotationMatrix(Vector3<double>(getGyrometerData().data.x * timeScale, getGyrometerData().data.y * timeScale, 0)));
   }
 
   // insert calculated rotation
-  safeRawAngle = theBlackBoard.theInertialSensorData.data;
+  safeRawAngle = getInertialSensorData().data;
 
   /*
   if((theMotionInfo.motion == MotionRequest::walk || theMotionInfo.motion == MotionRequest::stand ||
@@ -80,16 +78,16 @@ Vector2<double> InertiaSensorFilter::update()
 
   double modePlot = 0;
   if(
-    (theBlackBoard.theMotionStatus.currentMotion == motion::stand || theBlackBoard.theMotionStatus.currentMotion == motion::walk)
-    //&& ( theBlackBoard.theSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) )
-    && (theBlackBoard.theGroundContactModel.leftGroundContact || theBlackBoard.theGroundContactModel.rightGroundContact)
+    (getMotionStatus().currentMotion == motion::stand || getMotionStatus().currentMotion == motion::walk)
+    //&& ( getSupportPolygon.mode & (SupportPolygon::DOUBLE | SupportPolygon::DOUBLE_LEFT | SupportPolygon::DOUBLE_RIGHT) )
+    && (getGroundContactModel().leftGroundContact || getGroundContactModel().rightGroundContact)
     && abs(safeRawAngle.x) < p.calculatedAccLimit.x && abs(safeRawAngle.y) < p.calculatedAccLimit.y
     )
   {
     // use a modeled acceleration, if the feet are on the ground
 
     RotationMatrix calculatedRotation = 
-      Kinematics::ForwardKinematics::calcChestFeetRotation(theBlackBoard.theKinematicChain);
+      Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
 
     Vector3<double> accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
     accGravOnly *= -Math::g;
@@ -104,10 +102,10 @@ Vector2<double> InertiaSensorFilter::update()
   }
   else // insert acceleration sensor values
   {
-    PLOT("theCalibrationData.calibrated", theBlackBoard.theCalibrationData.calibrated);
+    PLOT("theCalibrationData.calibrated", getCalibrationData().calibrated);
 
-    if(theBlackBoard.theCalibrationData.calibrated) // use only calibrated data
-      readingUpdate(theBlackBoard.theAccelerometerData.data);
+    if(getCalibrationData().calibrated) // use only calibrated data
+      readingUpdate(getAccelerometerData().data);
     else // use the aldebaran sensor as a fallback
       x.rotation = RotationMatrix(Vector3<double>(safeRawAngle.x, safeRawAngle.y, 0.0));
 
@@ -117,23 +115,22 @@ Vector2<double> InertiaSensorFilter::update()
   PLOT("InertiaSensorFilter:mode", modePlot);
 
   // fill the representation
-  theInertialModel.orientation = Vector2<double>(
+  getInertialModel().orientation = Vector2<double>(
                                   atan2(x.rotation[1].z, x.rotation[2].z),
                                   atan2(-x.rotation[0].z, x.rotation[2].z));
   
   // this removes any kind of z-rotation from internal rotation
-  if(theInertialModel.orientation.abs2() < 0.04 * 0.04)
-    x.rotation = RotationMatrix(Vector3<double>(theInertialModel.orientation.x, theInertialModel.orientation.y, 0.0));
+  if(getInertialModel().orientation.abs2() < 0.04 * 0.04)
+    x.rotation = RotationMatrix(Vector3<double>(getInertialModel().orientation.x, getInertialModel().orientation.y, 0.0));
 
 
   // store some data for the next iteration
-  lastTime = theBlackBoard.theFrameInfo.getTime();
+  lastTime = getFrameInfo().getTime();
 
   // plots
-  PLOT("InertiaSensorFilter:orientationX", theInertialModel.orientation.x);
-  PLOT("InertiaSensorFilter:orientationY", theInertialModel.orientation.y);
+  PLOT("InertiaSensorFilter:orientationX", getInertialModel().orientation.x);
+  PLOT("InertiaSensorFilter:orientationY", getInertialModel().orientation.y);
 
-  return theInertialModel.orientation;
 }//end update
 
 

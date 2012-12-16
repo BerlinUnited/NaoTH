@@ -9,6 +9,8 @@
 #ifndef _MotionEngine_h_
 #define _MotionEngine_h_
 
+//#include <ModuleFramework/Module.h>
+
 #include "../MotionBlackBoard.h"
 
 #include "../AbstractMotion.h"
@@ -16,6 +18,19 @@
 #include "HeadMotion/HeadMotionEngine.h"
 
 #include <list>
+
+
+// representations
+
+/*
+BEGIN_DECLARE_MODULE(SupportPolygonGenerator)
+  REQUIRE(FSRData)
+  REQUIRE(FSRPositions)
+  REQUIRE(KinematicChainSensor)
+
+  PROVIDE(SupportPolygon)
+END_DECLARE_MODULE(SupportPolygonGenerator)
+*/
 
 class MotionEngine
 {
