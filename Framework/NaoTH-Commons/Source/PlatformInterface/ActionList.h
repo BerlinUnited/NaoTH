@@ -39,7 +39,7 @@ protected:
 
 public:
 
-  ~ActionList()
+  virtual ~ActionList()
   {
     // delete all actions
     for(ActionListT::iterator iter = actions.begin(); iter != actions.end(); ++iter)
@@ -93,8 +93,8 @@ private:
   TypedActionCreatorMapT registeredActions;
 
   /**
-    * try to find an action in the given list and returns the according typed ActionCreator
-    */
+  * try to find an action in the given list and returns the according typed ActionCreator
+  */
   template<class T>
   TypedActionCreator<T>* getActionCreator() const
   {
@@ -108,9 +108,22 @@ private:
   }//end getActionCreator
 
 public:
+
   /**
-    * creates an action for the type T if an apropriate creator is avaliable
-    */
+  * 
+  */
+  virtual ~TypedActionCreatorMap()
+  {
+    for(TypedActionCreatorMapT::iterator iter = registeredActions.begin(); iter != registeredActions.end(); ++iter)
+    {
+      delete iter->second;
+    }//end for
+  }
+
+
+  /**
+  * creates an action for the type T if an apropriate creator is avaliable
+  */
   template<class T>
   AbstractAction* createAction(T& data) const
   {
@@ -123,8 +136,8 @@ public:
   }//end createAction
 
   /**
-    * adds a new creator or overwrites an existing one
-    */
+  * adds a new creator or overwrites an existing one
+  */
   template<class T>
   void add(TypedActionCreator<T>* actionCreator)
   {

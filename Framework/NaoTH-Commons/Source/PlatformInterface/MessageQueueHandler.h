@@ -22,7 +22,7 @@ class MessageQueueHandler
 public:
   typedef std::map<std::string, MessageQueue*> MessageQueueMapT;
 
-  ~MessageQueueHandler()
+  virtual ~MessageQueueHandler()
   {
     for(MessageQueueMapT::iterator iter = theMessageQueueMap.begin(); iter!=theMessageQueueMap.end(); ++iter)
     {
@@ -31,8 +31,8 @@ public:
   }
 
   /**
-    *
-    */
+  *
+  */
   MessageQueue* getMessageQueue(const std::string& name)
   {
     // create a new one if necessary

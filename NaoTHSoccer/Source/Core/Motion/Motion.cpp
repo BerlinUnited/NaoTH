@@ -19,10 +19,6 @@
 #include "MorphologyProcessor/FootGroundContactDetector.h"
 
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
-#include "Engine/InitialMotion/InitialMotionFactory.h"
-#include "Engine/InverseKinematicsMotion/InverseKinematicsMotionFactory.h"
-#include "Engine/ParallelKinematicMotionEngine/ParallelKinematicMotionFactory.h"
-#include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
 #include "Tools/Debug/Stopwatch.h"
 #include "Tools/Debug/DebugRequest.h"
@@ -33,15 +29,6 @@
 
 #include <DebugCommunication/DebugCommandManager.h>
 
-#ifndef WIN32
-#include <unistd.h>
-#endif // ifndef WIN32
-
-#ifdef NAO_OLD
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#endif
 
 using namespace naoth;
 
@@ -52,19 +39,11 @@ Motion::Motion()
   theFootTouchCalibrator(theBlackBoard.theFSRData, theBlackBoard.theMotionStatus, theBlackBoard.theSupportPolygon, theBlackBoard.theKinematicChainModel),
   frameNumSinceLastMotionRequest(0),
   lastCognitionFrameNumber(0),
-  state(initial),
-  motionLogger("MotionLog"),
-  oldMotionRequestTime(0)
+  motionLogger("MotionLog")
 {
   theSupportPolygonGenerator.init(theBlackBoard.theFSRData.force,
     theBlackBoard.theFSRPos,
     theBlackBoard.theKinematicChain.theLinks);
-
-  theMotionFactories.push_back(new InitialMotionFactory());
-  theMotionFactories.push_back(new InverseKinematicsMotionFactory());
-  theMotionFactories.push_back(new KeyFrameMotionEngine());
-  theMotionFactories.push_back(new ParallelKinematicMotionFactory());
-
 
   REGISTER_DEBUG_COMMAND(motionLogger.getCommand(), motionLogger.getDescription(), &motionLogger);
 
@@ -85,18 +64,12 @@ Motion::Motion()
 
 Motion::~Motion()
 {
-  for (std::list<MotionFactory*>::iterator iter = theMotionFactories.begin();
-    iter != theMotionFactories.end(); ++iter)
-  {
-    delete *iter;
-  }
-  theMotionFactories.clear();
+
 }
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   theBlackBoard.init();
-  theBlackBoard.currentlyExecutedMotion = &theEmptyMotion;
 
   // init robot info
   theBlackBoard.theRobotInfo.platform = platform.getName();
@@ -135,8 +108,6 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(theBlackBoard.theHeadMotionRequest);
   platformInterface.registerInputChanel<MotionRequest, Serializer<MotionRequest> >(theBlackBoard.theMotionRequest);
 
-  selectMotion();// create init motion
-  state = initial;
 }//end init
 
 
@@ -180,49 +151,10 @@ void Motion::call()
     ASSERT(frameNumSinceLastMotionRequest <= 500);
   }
 
-  // ensure initialization
-  switch (state)
-  {
-  case initial:
-  {
-    theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
-    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-    theBlackBoard.theMotionRequest.id = motion::init;
-
-    if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
-        && !theBlackBoard.currentlyExecutedMotion->isStopped()
-        && theBlackBoard.currentlyExecutedMotion->isFinish() )
-    {
-      state = running;
-    }
-
-    break;
-  }
-  case running:
-  {
-    break;
-  }
-  case exiting:
-  {
-    theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
-    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-    theBlackBoard.theMotionRequest.id = motion::init;
-    break;
-  }
-  }//end switch
-
-  // IMPORTANT: execute head motion firstly
-  // stabilization of the walk depends on the head position
-  // cf. InverseKinematicsMotionEngine::controlCenterOfMass(...)
-  theHeadMotionEngine.execute();
-
-  // motion engine execute
-  selectMotion();
-  ASSERT(NULL!=theBlackBoard.currentlyExecutedMotion);
-  theBlackBoard.currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
-  theBlackBoard.theMotionStatus.currentMotionState = theBlackBoard.currentlyExecutedMotion->state();
-
-
+  /**
+  * run the motion engine
+  */
+  theMotionEngine.execute();
 
   // calibrate the foot touch detector
   if(theBlackBoard.theMotionRequest.calibrateFootTouchDetector)
@@ -234,9 +166,6 @@ void Motion::call()
 
   STOPWATCH_STOP("MotionExecute");
 
-#ifdef NAO_OLD
-  theStopwatchSender.execute();
-#endif
 }//end call
 
 void Motion::processSensorData()
@@ -401,72 +330,10 @@ void Motion::postProcess()
   mjd.clamp();
   mjd.updateSpeed(theBlackBoard.theLastMotorJointData, basicStepInS);
   mjd.updateAcceleration(theBlackBoard.theLastMotorJointData, basicStepInS);
-
-
-#ifdef NAO_OLD
-  theDebugMessageOut.answers.clear();
-  for(std::list<DebugMessageIn::Message>::const_iterator iter = theDebugMessageIn.messages.begin();
-      iter != theDebugMessageIn.messages.end(); ++iter)
-  {
-    std::stringstream answer;
-    DebugCommandManager::getInstance().handleCommand(iter->command, iter->arguments, answer);
-    theDebugMessageOut.answers.push_back(answer.str());
-  }
-
-  STOPWATCH_START("Debug ~ Init");
-  DebugBufferedOutput::getInstance().update();
-  DebugDrawings::getInstance().update();
-  DebugDrawings3D::getInstance().update();
-  STOPWATCH_STOP("Debug ~ Init");
-#endif
 }//end postProcess
 
-void Motion::selectMotion()
-{
-  ASSERT(theBlackBoard.currentlyExecutedMotion != NULL);
-
-  // test if the current MotionStatus allready arrived in cognition
-  if ( theBlackBoard.theMotionStatus.time != theBlackBoard.theMotionRequest.time )
-    return;
-
-  if (theBlackBoard.theMotionStatus.currentMotion == theBlackBoard.theMotionRequest.id
-    && theBlackBoard.currentlyExecutedMotion->isStopped())
-  {
-    changeMotion(&theEmptyMotion);
-  }
-
-  if (theBlackBoard.theMotionStatus.currentMotion != theBlackBoard.theMotionRequest.id
-    &&
-    (theBlackBoard.currentlyExecutedMotion->isStopped() || theBlackBoard.theMotionRequest.forced))
-  {
-    AbstractMotion* newMotion = NULL;
-    for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin();
-          NULL==newMotion && iter!=theMotionFactories.end(); ++iter)
-    {
-      newMotion = (*iter)->createMotion(theBlackBoard.theMotionRequest);
-    }
-
-    if (NULL != newMotion)
-    {
-      ASSERT(newMotion->getId() == theBlackBoard.theMotionRequest.id);
-      changeMotion(newMotion);
-    } else
-    {
-      changeMotion(&theEmptyMotion);
-      cerr << "Warning: Request " << motion::getName(theBlackBoard.theMotionRequest.id)
-        << " cannot be executed!" << endl;
-    }
-  }
-}//end selectMotion
-
-void Motion::changeMotion(AbstractMotion* m)
-{
-  theBlackBoard.currentlyExecutedMotion = m;
-  theBlackBoard.theMotionStatus.lastMotion = theBlackBoard.theMotionStatus.currentMotion;
-  theBlackBoard.theMotionStatus.currentMotion = theBlackBoard.currentlyExecutedMotion->getId();
-  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.getTime();
-}//end changeMotion
-
+/*
+// todo is it needed?
 bool Motion::exit()
 {
   state = exiting;
@@ -477,4 +344,5 @@ bool Motion::exit()
   }
   return false;
 }//end exit
+*/
 

@@ -23,11 +23,7 @@
 #include "SensorFilter/InertiaSensorCalibrator.h"
 
 #include "Tools/Debug/Logger.h"
-
-#ifdef NAO_OLD
-#include <Representations/Infrastructure/DebugMessage.h>
-#include <Cognition/Modules/Infrastructure/Debug/StopwatchSender.h>
-#endif
+#include "Engine/MotionEngine.h"
 
 class Motion : public naoth::Callable
 {
@@ -39,7 +35,7 @@ public:
 
   void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
-  bool exit();
+  //bool exit();
   
 protected:
   
@@ -47,9 +43,6 @@ protected:
   
   void postProcess();
   
-  void selectMotion();
-  
-  void changeMotion(AbstractMotion* m);
 private:
 
   void updateCameraMatrix();
@@ -57,34 +50,17 @@ private:
 private:
   MotionBlackBoard& theBlackBoard;
 
-  EmptyMotion theEmptyMotion;
-  
   InertiaSensorCalibrator theInertiaSensorCalibrator;
   SupportPolygonGenerator theSupportPolygonGenerator;
   OdometryCalculator theOdometryCalculator;
   FootTouchCalibrator theFootTouchCalibrator;
   
-  HeadMotionEngine theHeadMotionEngine;
-  std::list<MotionFactory*> theMotionFactories;
+  MotionEngine theMotionEngine;
   
   unsigned int frameNumSinceLastMotionRequest;
   unsigned int lastCognitionFrameNumber;
 
-  enum State
-  {
-    initial,
-    running,
-    exiting
-  } state;
-
   Logger motionLogger;
-#ifdef NAO_OLD
-  naoth::DebugMessageIn theDebugMessageIn;
-  naoth::DebugMessageOut theDebugMessageOut;
-  StopwatchSender theStopwatchSender;
-#endif
-
-  unsigned int oldMotionRequestTime;
 };
 
 #endif  /* MOTION_H */
