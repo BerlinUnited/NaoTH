@@ -217,8 +217,10 @@ void KinematicChain::initJointsInfo(JointData& jointData)
 
   for (int i = 0; i < numOfLinks; i++)
   {
-    // link the joint data
-    JointData::JointID id = (JointData::JointID)theLinks[i].jointID;
+    // link the joint data 
+    // ACHTUNG: the invalid jointID of a link is set to -1
+    //          so, don't use a simple cast to JointData::JointID (!)
+    JointData::JointID id = JointData::getJointID(theLinks[i].jointID);
     if (id != JointData::numOfJoint)
     {
       theLinks[i].q = &(jointData.position[id]);

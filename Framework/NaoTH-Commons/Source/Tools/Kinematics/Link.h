@@ -6,7 +6,7 @@
 */
 
 #ifndef _LINK_H
-#define  _LINK_H
+#define _LINK_H
 
 #include "Tools/Math/Pose3D.h"
 
@@ -31,7 +31,7 @@ private:
   double _mass; // mass of Link (grams)
   Vector3<double> d; // vector from joint to CoM
 
-public:
+public: // public access references
   int const & id;
   int const & jointID;
   Vector3<double>const & a;

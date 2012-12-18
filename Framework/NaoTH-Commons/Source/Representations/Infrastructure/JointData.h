@@ -49,6 +49,14 @@ class JointData
       LAnkleRoll,
       numOfJoint //error value
     };
+
+    // 'save' cast operator for int
+    // it maps any int value outside the range to numOfJoint
+    static inline JointData::JointID getJointID (int n)
+    {
+      return (n >= 0 && n <= numOfJoint)?(JointID)n:numOfJoint;
+    }
+
     double position[numOfJoint];
     double stiffness[numOfJoint];
     double dp[numOfJoint];

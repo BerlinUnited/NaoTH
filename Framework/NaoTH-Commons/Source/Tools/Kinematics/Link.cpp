@@ -10,26 +10,33 @@
 
 namespace Kinematics {
 
-Link::Link() :
-_id(-1),
-_sister(NULL),
-_child(NULL),
-_mother(NULL),
-_jointID(-1),
-_mass(0.0),
-id(_id),
-jointID(_jointID),
-a(_a),
-sister(_sister),
-child(_child),
-mother(_mother),
-mass(_mass),
-b(_b),
-p(M.translation),
-R(M.rotation),
-q(NULL),
-dq(NULL),
-ddq(NULL)
+Link::Link() 
+  :
+  _id(-1),
+  _sister(NULL),
+  _child(NULL),
+  _mother(NULL),
+  _jointID(-1),
+
+  _mass(0.0),
+
+  // public access references
+  id(_id),
+  jointID(_jointID),
+  a(_a),
+  sister(_sister),
+  child(_child),
+  mother(_mother),
+  mass(_mass),
+  b(_b),
+
+
+  p(M.translation),
+  R(M.rotation),
+  
+  q(NULL),
+  dq(NULL),
+  ddq(NULL)
 {
 }
 
@@ -102,6 +109,9 @@ void Link::updateAllFromMother()
 //      Vector3<double> dsw = w ^ sw;
 
       R *= Rodrigues(A, A2, *q);
+
+      // senity check if R is still a kind of a rotation matrix...
+      assert(fabs(1.0-fabs(R.det())) < 0.001);
 
       // velocity
 //      w += (sw * (*dq));
