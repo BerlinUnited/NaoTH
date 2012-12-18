@@ -10,6 +10,7 @@
 
 #include "DataHolder.h"
 #include "BlackBoardInterface.h"
+#include "RegistrationInterface.h"
 
 #include <string.h>
 #include <map>
@@ -17,16 +18,6 @@
 
 // TODO: remove it (it's not easy)
 using namespace naoth;
-
-
-/**
- * 
- */
-class RegistrationInterface
-{
-public:
-  virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard) = 0;
-};
 
 
 /** type for a named map of representations */
@@ -87,6 +78,9 @@ protected:
   std::list<Representation*> provided;
   std::list<Representation*> required;
 
+  std::map<std::string, Representation*> providedMap;
+  std::map<std::string, Representation*> requiredMap;
+
   Module(std::string name): name(name)
   {
     // std::cout << "Load " << getModuleName() << endl;
@@ -101,6 +95,8 @@ protected:
       // init the actual dependency to te black board
       Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
       provided.push_back(&representation);
+      providedMap[iter->first] = &representation;
+
       representation.registerProvidingModule(*this);
     }
   }
@@ -113,6 +109,8 @@ protected:
       // init the actual dependency to te black board
       Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
       required.push_back(&representation);
+      requiredMap[iter->first] = &representation;
+
       representation.registerRequiringModule(*this);
     }
   }
@@ -124,7 +122,7 @@ protected:
     {
       // init the actual dependency to te black board
       Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
-      provided.remove(&representation);
+      //provided.remove(&representation);
       representation.unregisterProvidingModule(*this);
     }
   } 
@@ -136,7 +134,7 @@ protected:
     {
       // init the actual dependency to te black board
       Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
-      required.remove(&representation);
+      //required.remove(&representation);
       representation.unregisterRequiringModule(*this);
     }
   }
@@ -171,13 +169,18 @@ public:
 template<class T>
 class StaticRegistry
 {
+private:
+  RepresentationMap provide_registry_map;
+  RepresentationMap require_registry_map;
+
 protected:
-  static RepresentationMap* static_provide_registry;
-  static RepresentationMap* static_require_registry;
-  
+  static StaticRegistry<T>* instance;
+  static RepresentationMap& provide_registry(){ return instance->provide_registry_map; }
+  static RepresentationMap& require_registry(){ return instance->require_registry_map; }
+
 
   template<class TYPE_WHAT>
-  class StaticRegistrator: public RegistrationInterface
+  class StaticRegistrator//: public RegistrationInterface
   {
   protected:
     // pointer to the actual data on the blackboard
@@ -196,16 +199,23 @@ protected:
       // TODO: check the type
       if(static_registry.find(name) == static_registry.end())
       {
-        static_registry[name] = this;
+        static_registry[name] = new TypedRegistrationInterface<TYPE_WHAT>(name);
       }
     }
 
-    virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
+    DataHolder<TYPE_WHAT>& get(BlackBoard& blackBoard)
     {
-      DataHolder<TYPE_WHAT>& rep = blackBoard.template getRepresentation<DataHolder<TYPE_WHAT> >(name);
-      data = &(*rep);
-      return rep;
+      return blackBoard.template getRepresentation<DataHolder<TYPE_WHAT> >(name);
     }
+
+    TYPE_WHAT& get(const std::map<std::string, Representation*>& list, std::string name) const
+    {
+      std::map<std::string, Representation*>::const_iterator iter = list.find(name);
+      assert(iter != list.end());
+      return **(dynamic_cast<DataHolder<TYPE_WHAT>* >(iter->second));
+    }
+
+    
   };
 
 
@@ -218,7 +228,7 @@ protected:
   public:
     StaticRequireRegistrator(const std::string& name)
       : 
-      StaticRegistrator<TYPE_WHAT>(*static_require_registry, name)
+      StaticRegistrator<TYPE_WHAT>(require_registry(), name)
     {
     }
 
@@ -238,7 +248,7 @@ protected:
   public:
     StaticProvideRegistrator(const std::string& name)
       : 
-      StaticRegistrator<TYPE_WHAT>(*static_provide_registry, name)
+      StaticRegistrator<TYPE_WHAT>( provide_registry(), name)
     {
     }
 
@@ -248,64 +258,82 @@ protected:
       return *ParentT::data;
     }
   };
+}; // end class StaticRegistry
+
+template<class T> 
+StaticRegistry<T>* StaticRegistry<T>::instance = new StaticRegistry<T>();
+
+
+class U : public StaticRegistry<U>
+{
+public:
+
+  class R 
+  {
+  } theR;
+
 };
 
 
+/*
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_provide_registry = new RepresentationMap();
 template<class T>
 RepresentationMap* StaticRegistry<T>::static_require_registry = new RepresentationMap();
-
+*/
 
 // helper, should not be used outside
 // static invoker (registers the static dependency to RepresentationB)
-#define _CREATE_REGISTRATOR(R, T) \
-  class R##T : public T<R> \
-  { \
-  public: \
-    R##T() : T<R>(#R){} \
+#define _CREATE_REGISTRATOR(R, T)                       \
+  class R##T : public T<R>                              \
+  {                                                     \
+  public:                                               \
+    R##T() : T<R>(#R){}                                 \
+    template<class S> T<R> S::* getMember(){ return &S::the##R; } \
   } the##R;
 
 
 //
-#define BEGIN_DECLARE_MODULE(M) \
-  class M##Base: \
+#define BEGIN_DECLARE_MODULE(M)                         \
+  class M##Base:                             \
     protected Module, \
-private StaticRegistry<M##Base> \
+    protected StaticRegistry<M##Base>        \
   { 
 
-
-// 
-#define REQUIRE(R) \
-  private: \
-    _CREATE_REGISTRATOR(R, StaticRequireRegistrator); \
-  protected: \
-    inline const R& get##R() const \
-    { \
-      return the##R.getData(); \
+//
+#define REQUIRE(R)                                      \
+  private:                                              \
+    _CREATE_REGISTRATOR(R, StaticRequireRegistrator);   \
+  protected:                                            \
+    inline const R& get##R() const                      \
+    {                                                   \
+      static R& data = the##R.get(requiredMap,#R);          \
+      return data; \
     }
 
 //
-#define PROVIDE(R) \
-  private: \
-    _CREATE_REGISTRATOR(R, StaticProvideRegistrator); \
-  protected: \
-    inline R& get##R() const \
-    { \
-      return the##R.getData(); \
+#define PROVIDE(R)                                      \
+  private:                                              \
+    _CREATE_REGISTRATOR(R, StaticProvideRegistrator);   \
+  protected:                                            \
+    inline R& get##R() const                            \
+    {                                                   \
+      static R& data = the##R.get(providedMap,#R);   \
+      return data;                           \
     }
 
+
 //
-#define END_DECLARE_MODULE(M) \
-  public: \
-    M##Base(): Module(#M){ \
-      registerRequiring(*static_require_registry); \
-      registerProviding(*static_provide_registry); \
-    } \
-    virtual ~M##Base(){ \
-      unregisterRequiring(*static_require_registry); \
-      unregisterProviding(*static_provide_registry); \
-    } \
+#define END_DECLARE_MODULE(M)                           \
+  public:                                               \
+    M##Base(): Module(#M){                              \
+      registerRequiring(require_registry());      \
+      registerProviding(provide_registry());      \
+    }                                                   \
+    virtual ~M##Base(){                                 \
+      unregisterRequiring(require_registry());    \
+      unregisterProviding(provide_registry());    \
+    }                                                   \
     static std::string const className() { return #M; } \
   };
 
