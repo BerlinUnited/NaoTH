@@ -13,33 +13,35 @@
 
 ParallelKinematicMotionFactory::ParallelKinematicMotionFactory()
   :
-  currentMotion(NULL)
+  currentMotionCreator(NULL)
 {
 }
 
 ParallelKinematicMotionFactory::~ParallelKinematicMotionFactory()
 {
-  if (currentMotion != NULL)
-  {
-    delete currentMotion;
-    currentMotion = NULL;
-  }
 }
 
-AbstractMotion* ParallelKinematicMotionFactory::createMotion(const MotionRequest& motionRequest)
+Module* ParallelKinematicMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-  if(currentMotion != NULL)
-  {
-    delete currentMotion;
-    currentMotion = NULL;
-  }//end if
+  if(currentMotionCreator != NULL)
+    currentMotionCreator->setEnabled(false);
+  currentMotionCreator = NULL;
+
+  static ModuleCreator<ParallelDance>* parallelDanceCreator = registerModule<ParallelDance>("ParallelDance");
+  static ModuleCreator<ParallelStepper>* parallelStepperCreator = registerModule<ParallelStepper>("ParallelStepper");
 
   switch(motionRequest.id)
   {
-    case motion::parallel_dance: currentMotion = new ParallelDance(); break;
-    case motion::parallel_stepper: currentMotion = new ParallelStepper(); break;
-    default: currentMotion = NULL;
+    case motion::parallel_dance: currentMotionCreator = parallelDanceCreator; break;
+    case motion::parallel_stepper: currentMotionCreator = parallelStepperCreator; break;
+    default: currentMotionCreator = NULL;
   }//end switch
 
-  return currentMotion;
+  if(currentMotionCreator != NULL)
+  {
+    currentMotionCreator->setEnabled(true);
+    return currentMotionCreator->getModule();
+  }
+
+  return NULL;
 }//end createMotion

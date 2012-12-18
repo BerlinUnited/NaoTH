@@ -15,36 +15,40 @@
 #include "Motions/IKDynamicKickMotion.h"
 
 InverseKinematicsMotionFactory::InverseKinematicsMotionFactory()
-  :currentMotion(NULL)
+  : currentMotionCreator(NULL)
 {
+  getInverseKinematicsMotionEngineService().theEngine = registerModule<InverseKinematicsMotionEngine>("InverseKinematicsMotionEngine", true)->getModuleT();
 }
 
 InverseKinematicsMotionFactory::~InverseKinematicsMotionFactory()
 {
-  delete currentMotion;
 }
 
-AbstractMotion* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motionRequest)
+#define REGISTER_MOTION(typeID, name) \
+  static ModuleCreator<name>* name##Creator = registerModule<name>(#name); \
+  if(motionRequest.id == typeID) \
+  { \
+    assert(currentMotionCreator==NULL); currentMotionCreator = name##Creator; \
+  }
+
+
+Module* InverseKinematicsMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-  // FIXME: the old motion shouldn't be deleted!!! 
-  if(currentMotion != NULL)
-  {
-    delete currentMotion;
-    currentMotion = NULL;
-  }//end if
+  if(currentMotionCreator != NULL)
+    currentMotionCreator->setEnabled(false);
+  currentMotionCreator = NULL;
 
-  switch(motionRequest.id)
-  {
-    case motion::stand: currentMotion = new StandMotion(); break;
-    case motion::dance: currentMotion = new DanceMotion(); break;
-    case motion::walk: currentMotion = new Walk(); break;
-    case motion::protect_falling: currentMotion = new ProtectFalling(); break;
-    case motion::kick: currentMotion = new IKDynamicKickMotion(); break;
-      /*
-    case MotionRequestID::grasp: currentMotion = new IKGrasping(engine); break;
-        case MotionRequestID::check_reactivity: currentMotion = new CheckMotion(engine); break;*/
-    default: currentMotion = NULL;
-  }//end switch
+  REGISTER_MOTION(motion::stand, StandMotion);
+  REGISTER_MOTION(motion::dance, DanceMotion);
+  REGISTER_MOTION(motion::walk, Walk);
+  REGISTER_MOTION(motion::protect_falling, ProtectFalling);
+  REGISTER_MOTION(motion::kick, IKDynamicKickMotion);
 
-  return currentMotion;
+  if(currentMotionCreator != NULL)
+  {
+    currentMotionCreator->setEnabled(true);
+    return currentMotionCreator->getModule();
+  }
+
+  return NULL;
 }//end createMotion

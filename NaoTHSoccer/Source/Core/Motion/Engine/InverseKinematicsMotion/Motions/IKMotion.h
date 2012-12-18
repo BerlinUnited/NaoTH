@@ -20,15 +20,27 @@ protected:
 
   InverseKinematic::CoMFeetPose getStandPose(double comHeight, bool standard=true) const;
 
+private:
+  const InverseKinematicsMotionEngineService& theEngineService;
+
 protected:
 
-  InverseKinematicsMotionEngine& theEngine;
+  //const IKParameters& theParameters;
   
-  const IKParameters& theParameters;
-  
+  //virtual InverseKinematicsMotionEngineService& getInverseKinematicsMotionEngineService() const = 0;
+
+  inline InverseKinematicsMotionEngine& getEngine() const
+  {
+    assert(theEngineService.theEngine != NULL);
+    return *(theEngineService.theEngine);
+  }
+
 public:
 
-  IKMotion(motion::MotionID id);
+  IKMotion(
+    const InverseKinematicsMotionEngineService& theEngineService, 
+    motion::MotionID id,
+    MotionLock& lock);
   
   virtual ~IKMotion();
 

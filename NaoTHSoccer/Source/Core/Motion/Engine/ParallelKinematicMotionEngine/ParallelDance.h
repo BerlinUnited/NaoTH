@@ -10,14 +10,26 @@
 #include "Motion/AbstractMotion.h"
 #include "Motion/MorphologyProcessor/ParallelKinematic.h"
 
-class ParallelDance : public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(ParallelDance)
+  REQUIRE(RobotInfo)
+  //REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(ParallelDance)
+
+class ParallelDance : private ParallelDanceBase, public AbstractMotion
 {
 public:
   ParallelDance();
   
   virtual ~ParallelDance(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+  void execute();
   
 private:
   double radius; // current radius of the circle in mm

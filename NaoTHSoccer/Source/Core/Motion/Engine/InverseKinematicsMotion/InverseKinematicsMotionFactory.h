@@ -11,20 +11,27 @@
 
 
 #include "Motion/Engine/MotionFactory.h"
-#include "Representations/Motion/Request/MotionRequest.h"
+#include "InverseKinematicsMotionEngine.h"
 
-class InverseKinematicsMotionFactory : public MotionFactory
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(InverseKinematicsMotionFactory)
+  PROVIDE(InverseKinematicsMotionEngineService)
+END_DECLARE_MODULE(InverseKinematicsMotionFactory)
+
+class InverseKinematicsMotionFactory : private InverseKinematicsMotionFactoryBase, public MotionFactory
 {
 
 public:
   InverseKinematicsMotionFactory();
   virtual ~InverseKinematicsMotionFactory();
 
-  AbstractMotion* createMotion(const MotionRequest& motionRequest);
+  Module* createMotion(const MotionRequest& motionRequest);
+  void execute(){} // dummy
 
 private:
+  AbstractModuleCreator* currentMotionCreator;
 
-  AbstractMotion* currentMotion;
 };
 
 #endif // _InverseKinematicsMotionFactory_h_

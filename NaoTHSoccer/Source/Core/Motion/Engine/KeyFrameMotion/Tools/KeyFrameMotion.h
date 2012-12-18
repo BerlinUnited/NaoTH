@@ -13,7 +13,18 @@
 #include "Motion/AbstractMotion.h"
 #include "Tools/DataStructures/Printable.h"
 
-class KeyFrameMotion: public AbstractMotion, public naoth::Printable
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(KeyFrameMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(KeyFrameMotion)
+
+class KeyFrameMotion: private KeyFrameMotionBase, public AbstractMotion, public naoth::Printable
 {
 private:
   std::string name;
@@ -37,6 +48,14 @@ public:
 
   KeyFrameMotion(const MotionNet& currentMotionNet, motion::MotionID id);
   KeyFrameMotion();
+
+  void set(const MotionNet& currentMotionNet, motion::MotionID id)
+  {
+    this->setId(id);
+    this->name = motion::getName(id);
+    this->currentMotionNet = currentMotionNet;
+  }
+
 //  KeyFrameMotion(const KeyFrameMotion& other);
 
   // Zuweisungsoperator
@@ -46,7 +65,8 @@ public:
 
   // override
   virtual void init();
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+  void execute();
   
   void print(std::ostream& stream) const;
 

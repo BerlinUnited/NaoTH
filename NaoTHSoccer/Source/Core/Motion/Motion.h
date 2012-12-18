@@ -13,7 +13,7 @@
 #include <PlatformInterface/PlatformInterface.h>
 #include <ModuleFramework/ModuleManager.h>
 #include <ModuleFramework/Module.h>
-
+#include <Tools/Debug/ModuleManagerWithDebug.h>
 
 #include "MotionBlackBoard.h"
 //#include "AbstractMotion.h"
@@ -62,7 +62,7 @@ BEGIN_DECLARE_MODULE(Motion)
 END_DECLARE_MODULE(Motion)
 
 
-class Motion : public naoth::Callable, private MotionBase, public ModuleManager
+class Motion : public naoth::Callable, private MotionBase, public ModuleManager//WithDebug
 {
 public:
   Motion();
@@ -106,15 +106,16 @@ private:
   ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
 
+  ModuleCreator<MotionEngine>* theMotionEngine;
 
   //FootTouchCalibrator theFootTouchCalibrator;
-  MotionEngine theMotionEngine;
 
 
   naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
 };
+
 
 #endif  // _Motion_h_ 
 

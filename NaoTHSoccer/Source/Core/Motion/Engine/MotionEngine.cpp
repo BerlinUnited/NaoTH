@@ -9,29 +9,28 @@
 #include "KeyFrameMotion/KeyFrameMotionEngine.h"
 
 MotionEngine::MotionEngine()
-  :
-  theBlackBoard(MotionBlackBoard::getInstance())
 {
-  theMotionFactories.push_back(new InitialMotionFactory());
-  theMotionFactories.push_back(new InverseKinematicsMotionFactory());
-  theMotionFactories.push_back(new KeyFrameMotionEngine());
-  theMotionFactories.push_back(new ParallelKinematicMotionFactory());
+  theEmptyMotion = registerModule<EmptyMotion>("EmptyMotion");
 
-  // init internal state
-  selectMotion();// create init motion
-  state = initial;
+  theHeadMotionEngine = registerModule<HeadMotionEngine>("HeadMotionEngine", true);
+
+  theMotionFactories.push_back(registerModule<InitialMotionFactory>("InitialMotionFactory", true)->getModuleT());
+  theMotionFactories.push_back(registerModule<InverseKinematicsMotionFactory>("InverseKinematicsMotionFactory", true)->getModuleT());
+  theMotionFactories.push_back(registerModule<KeyFrameMotionFactory>("KeyFrameMotionFactory", true)->getModuleT());
+  theMotionFactories.push_back(registerModule<ParallelKinematicMotionFactory>("ParallelKinematicMotionFactory", true)->getModuleT());
+
 
   //
-  currentlyExecutedMotion = &theEmptyMotion;
+  currentlyExecutedMotion = createEmptyMotion();
+
+  // init internal state
+  //selectMotion();// create init motion
+  state = initial;
 }
 
 MotionEngine::~MotionEngine()
 {
-  for (std::list<MotionFactory*>::iterator iter = theMotionFactories.begin();
-    iter != theMotionFactories.end(); ++iter)
-  {
-    delete *iter;
-  }
+
 }
 
 
@@ -40,15 +39,15 @@ void MotionEngine::execute()
   // ensure initialization
   switch (state)
   {
-  case initial:
+  case initial: // wait for the init motion to start
   {
-    theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
-    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-    theBlackBoard.theMotionRequest.id = motion::init;
+    getHeadMotionRequest().id = HeadMotionRequest::numOfHeadMotion;
+    getMotionRequest().time = getMotionStatus().time;
+    getMotionRequest().id = motion::init;
 
-    if ( theBlackBoard.theMotionStatus.currentMotion == motion::init
-        && !currentlyExecutedMotion->isStopped()
-        &&  currentlyExecutedMotion->isFinish() )
+    if ( getMotionStatus().currentMotion == motion::init
+      && getMotionLock().id == motion::init
+      && !getMotionLock().isStopped())
     {
       state = running;
     }
@@ -61,9 +60,9 @@ void MotionEngine::execute()
   }
   case exiting:
   {
-    theBlackBoard.theHeadMotionRequest.id = HeadMotionRequest::numOfHeadMotion;
-    theBlackBoard.theMotionRequest.time = theBlackBoard.theMotionStatus.time;
-    theBlackBoard.theMotionRequest.id = motion::init;
+    getHeadMotionRequest().id = HeadMotionRequest::numOfHeadMotion;
+    getMotionRequest().time = getMotionStatus().time;
+    getMotionRequest().id = motion::init;
     break;
   }
   }//end switch
@@ -71,13 +70,15 @@ void MotionEngine::execute()
   // IMPORTANT: execute head motion firstly
   // stabilization of the walk depends on the head position
   // cf. InverseKinematicsMotionEngine::controlCenterOfMass(...)
-  theHeadMotionEngine.execute();
+  theHeadMotionEngine->execute();
 
   // motion engine execute
   selectMotion();
   ASSERT(NULL!=currentlyExecutedMotion);
-  currentlyExecutedMotion->execute(theBlackBoard.theMotionRequest, theBlackBoard.theMotionStatus);
-  theBlackBoard.theMotionStatus.currentMotionState = currentlyExecutedMotion->state();
+  
+  currentlyExecutedMotion->execute();
+
+  getMotionStatus().currentMotionState = getMotionLock().state;
 }//end execute
 
 
@@ -86,43 +87,44 @@ void MotionEngine::selectMotion()
   ASSERT(currentlyExecutedMotion != NULL);
 
   // test if the current MotionStatus allready arrived in cognition
-  if ( theBlackBoard.theMotionStatus.time != theBlackBoard.theMotionRequest.time )
+  if ( getMotionStatus().time != getMotionRequest().time )
     return;
 
-  if (theBlackBoard.theMotionStatus.currentMotion == theBlackBoard.theMotionRequest.id
-    && currentlyExecutedMotion->isStopped())
+  if (getMotionStatus().currentMotion == getMotionRequest().id
+    && getMotionLock().isStopped())
   {
-    changeMotion(&theEmptyMotion);
+    changeMotion(createEmptyMotion());
   }
 
-  if (theBlackBoard.theMotionStatus.currentMotion != theBlackBoard.theMotionRequest.id
+  if (getMotionStatus().currentMotion != getMotionRequest().id
     &&
-    (currentlyExecutedMotion->isStopped() || theBlackBoard.theMotionRequest.forced))
+    (getMotionLock().isStopped() || getMotionRequest().forced))
   {
-    AbstractMotion* newMotion = NULL;
-    for ( std::list<MotionFactory*>::iterator iter=theMotionFactories.begin();
+    Module* newMotion = NULL;
+    for ( MotionFactorieRegistry::iterator iter=theMotionFactories.begin();
           NULL==newMotion && iter!=theMotionFactories.end(); ++iter)
     {
-      newMotion = (*iter)->createMotion(theBlackBoard.theMotionRequest);
+      newMotion = (*iter)->createMotion(getMotionRequest());
     }
 
     if (NULL != newMotion)
     {
-      ASSERT(newMotion->getId() == theBlackBoard.theMotionRequest.id);
+      // assure the right motion acquired the lock
+      ASSERT(getMotionLock().id == getMotionRequest().id);
       changeMotion(newMotion);
     } else
     {
-      changeMotion(&theEmptyMotion);
-      cerr << "Warning: Request " << motion::getName(theBlackBoard.theMotionRequest.id)
-        << " cannot be executed!" << endl;
+      changeMotion(createEmptyMotion());
+      std::cerr << "Warning: Request " << motion::getName(getMotionRequest().id)
+        << " cannot be executed!" << std::endl;
     }
   }
 }//end selectMotion
 
-void MotionEngine::changeMotion(AbstractMotion* m)
+void MotionEngine::changeMotion(Module* m)
 {
   currentlyExecutedMotion = m;
-  theBlackBoard.theMotionStatus.lastMotion = theBlackBoard.theMotionStatus.currentMotion;
-  theBlackBoard.theMotionStatus.currentMotion = currentlyExecutedMotion->getId();
-  theBlackBoard.theMotionStatus.time = theBlackBoard.theFrameInfo.getTime();
+  getMotionStatus().lastMotion = getMotionStatus().currentMotion;
+  getMotionStatus().currentMotion = getMotionLock().id;
+  getMotionStatus().time = getFrameInfo().getTime();
 }//end changeMotion

@@ -5,8 +5,8 @@
 * Declaration of class IKDynamicKickMotion
 */
 
-#ifndef __IKDynamicKickMotion_h__
-#define __IKDynamicKickMotion_h__
+#ifndef _IKDynamicKickMotion_h_
+#define _IKDynamicKickMotion_h_
 
 // kinematic tools
 #include "IKMotion.h"
@@ -112,7 +112,26 @@ public:
 };
 
 
-class IKDynamicKickMotion: public IKMotion
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(IKDynamicKickMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(FrameInfo)
+  REQUIRE(MotionRequest)
+  //REQUIRE(SensorJointData)
+  REQUIRE(GroundContactModel)
+  REQUIRE(InertialSensorData)
+
+  REQUIRE(InverseKinematicsMotionEngineService)
+
+  REQUIRE(KinematicChainSensor)
+  REQUIRE(SupportPolygon)
+
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(IKDynamicKickMotion)
+
+class IKDynamicKickMotion: private IKDynamicKickMotionBase, public IKMotion
 {
 private:
   // local transformated reachability grid
@@ -192,7 +211,8 @@ public:
   IKDynamicKickMotion();
   ~IKDynamicKickMotion();
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+  void execute();
   virtual void calculateTrajectory(const MotionRequest& motionRequest);
 
 };

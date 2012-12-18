@@ -6,17 +6,29 @@
  *
  */
 
-#ifndef DANCE_H
-#define  DANCE_H
+#ifndef _DANCE_H
+#define _DANCE_H
 
 #include "IKMotion.h"
 
-class DanceMotion: public IKMotion
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(DanceMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(MotionRequest)
+
+  REQUIRE(InverseKinematicsMotionEngineService)
+
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(DanceMotion)
+
+class DanceMotion: private DanceMotionBase, public IKMotion
 {
 public:
 
   DanceMotion()
-  : IKMotion(motion::dance),
+  : IKMotion(getInverseKinematicsMotionEngineService(), motion::dance, getMotionLock()),
     radius(0),
     speed(0),
     t(0)
@@ -25,7 +37,7 @@ public:
 
   void calculateTrajectory(const MotionRequest& motionRequest)
   {
-    currentState = motion::running; // set the motion to running by default
+    setCurrentState(motion::running); // set the motion to running by default
 
     //-- BEGIN -- generate the trajectory --//
 
@@ -55,11 +67,11 @@ public:
       && abs(speed) < 1.0 && radius < 0.1 ) {
       speed = 0;
       radius = 0;
-      currentState = motion::stopped;
+      setCurrentState(motion::stopped);
     }
 
     // increase the current time
-    t += Math::fromDegrees(speed * theBlackBoard.theRobotInfo.getBasicTimeStepInSecond());
+    t += Math::fromDegrees(speed * getRobotInfo().getBasicTimeStepInSecond());
     
     // calculate the xy-coordinates for the chest
     p.com.translation.x = cos(t) * radius;
@@ -73,19 +85,22 @@ public:
 
   }//end calculateTrajectory
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){}
+
+  void execute()
   {
-    if ( currentState != motion::running ) {
+    if ( isStopped() ) 
+    {
       // create the initial pose of the robot
-      p = theEngine.getCurrentCoMFeetPose();
+      p = getEngine().getCurrentCoMFeetPose();
       p.localInCoM();
     }
 
-    calculateTrajectory(motionRequest);
+    calculateTrajectory(getMotionRequest());
     bool solved = false;
-    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(p, solved, false);
-    theEngine.solveHipFeetIK(c);
-    theEngine.copyLegJoints(theMotorJointData.position);
+    InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), p, solved, false);
+    getEngine().solveHipFeetIK(c);
+    getEngine().copyLegJoints(getMotorJointData().position);
   }
   
 private:
@@ -95,5 +110,5 @@ private:
   InverseKinematic::CoMFeetPose p; // the basic pose
 };
 
-#endif  /* DANCE_H */
+#endif  /* _DANCE_H */
 

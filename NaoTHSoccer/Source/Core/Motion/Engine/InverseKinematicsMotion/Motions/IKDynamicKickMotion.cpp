@@ -27,9 +27,9 @@ ReachibilityGrid IKDynamicKickMotion::basicReachibilityGrid;
 
 IKDynamicKickMotion::IKDynamicKickMotion()
   :
-  IKMotion(motion::kick),
+  IKMotion(getInverseKinematicsMotionEngineService(), motion::kick, getMotionLock()),
   reachibilityGrid(basicReachibilityGrid),
-  theParameters(theEngine.getParameters().kick),
+  theParameters(getEngine().getParameters().kick),
   numberOfPreKickSteps(0),
   theKickingFoot(KickRequest::right), // right foot by default
   kickState(kick_prepare),
@@ -43,7 +43,7 @@ IKDynamicKickMotion::IKDynamicKickMotion()
 
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theMotorJointData.stiffness[i] = 1.0;
+    getMotorJointData().stiffness[i] = 1.0;
   }
 
   DEBUG_REQUEST_REGISTER("IKDynamicKickMotion:reachability_grid_2d","draw the reachable points in the field viewer",false);
@@ -72,24 +72,24 @@ IKDynamicKickMotion::~IKDynamicKickMotion()
 {
 }
 
-void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void IKDynamicKickMotion::execute()
 {
 
   //
-  theKickingFoot = motionRequest.kickRequest.kickFoot;
+  theKickingFoot = getMotionRequest().kickRequest.kickFoot;
 
 
   // first time
-  if (currentState != motion::running)
+  if (isStopped())
   {
-    currentPose.pose = theEngine.getCurrentCoMFeetPose();
+    currentPose.pose = getEngine().getCurrentCoMFeetPose();
     lastCoMPose = currentPose.pose;
     localInStandFoot(currentPose);
   }
 
 
   //
-  calculateTrajectory(motionRequest);
+  calculateTrajectory(getMotionRequest());
 
 
   if(!trajectory.empty())
@@ -102,9 +102,9 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     localInStandFoot(targetPose);
 
     double totalTime = targetPose.time;
-    double k = min( ((double)theBlackBoard.theRobotInfo.basicTimeStep) / totalTime, 1.0);
+    double k = min( ((double)getRobotInfo().basicTimeStep) / totalTime, 1.0);
 
-    currentPose.pose = theEngine.interpolate(currentPose.pose, targetPose.pose, k);
+    currentPose.pose = getEngine().interpolate(currentPose.pose, targetPose.pose, k);
     
     // interpolate angles
     double errKnee = targetPose.knee_pitch_offset - currentPose.knee_pitch_offset;
@@ -114,16 +114,16 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     currentPose.ankle_roll_offset += k*errAnkle;
 
 
-    if(targetPose.time <= theBlackBoard.theRobotInfo.basicTimeStep)
+    if(targetPose.time <= getRobotInfo().basicTimeStep)
     {
       trajectory.pop_front();
     }
     else
-      targetPose.time -= theBlackBoard.theRobotInfo.basicTimeStep;
+      targetPose.time -= getRobotInfo().basicTimeStep;
     
     // calculate the chest
     bool solved = false;
-    InverseKinematic::HipFeetPose c = theEngine.controlCenterOfMass(currentPose.pose, solved, false);
+    InverseKinematic::HipFeetPose c = getEngine().controlCenterOfMass(getMotorJointData(), currentPose.pose, solved, false);
 
     KinematicChain::LinkID supFoot = KinematicChain::numOfLinks;
     Vector3d lastReqCoM;
@@ -148,7 +148,7 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
       break;
     }
     }
-    Vector3d adjust = theEngine.balanceCoM(lastReqCoM, supFoot);
+    Vector3d adjust = getEngine().balanceCoM(getFrameInfo(), getKinematicChainSensor(), lastReqCoM, supFoot);
 
     //c.hip.translation.y += adjust.y;
     double maxRotate = Math::fromDegrees(20);
@@ -156,30 +156,34 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
 
     lastCoMPose = currentPose.pose;
 
-    if(theParameters.enableStaticStabilizer && theBlackBoard.theSupportPolygon.mode != SupportPolygon::NONE)
+    if(theParameters.enableStaticStabilizer && getSupportPolygon().mode != SupportPolygon::NONE)
     {
-      theEngine.rotationStabilize(c.hip, c.feet.left, c.feet.right); // stabilize
+      getEngine().rotationStabilize(
+        getRobotInfo(),
+        getGroundContactModel(),
+        getInertialSensorData(),
+        c.hip, c.feet.left, c.feet.right); // stabilize
     }
 
-    theEngine.solveHipFeetIK(c);
-    theEngine.copyLegJoints(theMotorJointData.position);
-    theEngine.autoArms(c, theMotorJointData.position);
-    //theEngine.feetStabilize(theMotorJointData.position);
+    getEngine().solveHipFeetIK(c);
+    getEngine().copyLegJoints(getMotorJointData().position);
+    getEngine().autoArms(getRobotInfo(), c, getMotorJointData().position);
+    //getEngine().feetStabilize(getMotorJointData().position);
     // some direct offsets
-    theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LKneePitch:JointData::RKneePitch] += currentPose.knee_pitch_offset;
-    theMotorJointData.position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;
+    getMotorJointData().position[(theKickingFoot == KickRequest::left)?JointData::LKneePitch:JointData::RKneePitch] += currentPose.knee_pitch_offset;
+    getMotorJointData().position[(theKickingFoot == KickRequest::left)?JointData::LAnkleRoll:JointData::RAnkleRoll] += currentPose.ankle_roll_offset;
   }//end if
   
   for (int i = 0; i < JointData::numOfJoint; i++)
   {
-    theMotorJointData.stiffness[i] = 1.0;
+    getMotorJointData().stiffness[i] = 1.0;
   }
 }//end execute
 
 
 void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest)
 {
-  const unsigned int state_time = theBlackBoard.theFrameInfo.getTimeSince(state_start_time);
+  const unsigned int state_time = getFrameInfo().getTimeSince(state_start_time);
 
   // HACK:
   bool retract_done = false;
@@ -188,11 +192,11 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   switch(kickState)
   {
     case kick_prepare: 
-      if(currentState != motion::running) // first time
+      if(isStopped()) // first time
       {
         kickState = kick_prepare; // stay
       }
-      else if(!isRequested(motionRequest))
+      else if(!isRequested(getMotionRequest()))
       {
         kickState = kick_wrap_up;
       }
@@ -204,13 +208,13 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
 
     case kick_retract:
       retract_done = true;
-      if(!isRequested(motionRequest) && !motionRequest.kickRequest.finishKick
+      if(!isRequested(getMotionRequest()) && !getMotionRequest().kickRequest.finishKick
          //&& numberOfPreKickSteps >= theParameters.minNumberOfPreKickSteps
          )
       {
         kickState = kick_wrap_up;
       }
-      else if(motionRequest.kickRequest.finishKick 
+      else if(getMotionRequest().kickRequest.finishKick 
               //&& currentTrajectoryState() == preKickState() 
               //&& numberOfPreKickSteps >= theParameters.minNumberOfPreKickSteps
               )
@@ -228,7 +232,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
       // stop the motion
       if(state_time > 0 && trajectory.empty())
       {
-        currentState = motion::stopped;
+        setCurrentState(motion::stopped);
         numberOfPreKickSteps = 0;
         wrap_up_made = false;
         return;
@@ -244,13 +248,13 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   if(oldKickState != kickState)
   {
     action_done = false;
-    state_start_time = theBlackBoard.theFrameInfo.getTime();
+    state_start_time = getFrameInfo().getTime();
     state_frame_count = 0;
     oldKickState = kickState;
   }//end if
 
   // by default the motion is always running
-  currentState = motion::running;
+  setCurrentState(motion::running);
 
 
 
@@ -259,7 +263,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
    */
 
   // TODO: use the real chast tranformation
-  //const Pose3D& chest =  theBlackBoard.theKinematicChain.theLinks[KinematicChain::Torso].M;
+  //const Pose3D& chest =  getKinematicChainSensor().theLinks[KinematicChain::Torso].M;
 
   /*
   const double foot_front_offset = 60;
@@ -272,7 +276,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
   */
 
   KickPose cP;
-  cP.pose = theEngine.getCurrentCoMFeetPose();
+  cP.pose = getEngine().getCurrentCoMFeetPose();
   localInStandFoot(cP);
 
   reachibilityGrid.setTransformation(cP.pose.body());
@@ -283,14 +287,14 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
    */
 
   // coordinates of the support foot
-  const Pose3D& supportFootPose = theBlackBoard.theKinematicChain.theLinks[(theKickingFoot == KickRequest::left)?KinematicChain::RFoot:KinematicChain::LFoot].M;
+  const Pose3D& supportFootPose = getKinematicChainSensor().theLinks[(theKickingFoot == KickRequest::left)?KinematicChain::RFoot:KinematicChain::LFoot].M;
   // calculate the ball offset vector
   double ballRadius = 32.5;// TODO: a parameter of NaoInfo?
   double footRadius = 45.0;// TODO: a parameter of NaoInfo?
 
 
   // the requested kick pose in the robot coordinates
-  Pose3D kickPoseRequest(RotationMatrix::getRotationZ(motionRequest.kickRequest.kickDirection), motionRequest.kickRequest.kickPoint);
+  Pose3D kickPoseRequest(RotationMatrix::getRotationZ(getMotionRequest().kickRequest.kickDirection), getMotionRequest().kickRequest.kickPoint);
 
   // transform the kick request in the coordinate system of the current support foot
   kickPoseRequest = supportFootPose.invert()*kickPoseRequest;
@@ -393,7 +397,7 @@ void IKDynamicKickMotion::calculateTrajectory(const MotionRequest& motionRequest
         if(trajectory.size() < 2)
         {
           KickPose p = trajectory.back();
-          p.time = theBlackBoard.theRobotInfo.basicTimeStep;
+          p.time = getRobotInfo().basicTimeStep;
           trajectory.push_back(p);
         }
       break;
@@ -562,11 +566,11 @@ void IKDynamicKickMotion::action_execute(const Pose3D& kickPose)
   double ankle_roll_offset_start = kp.ankle_roll_offset;
   double knee_pitch_offset_start = kp.knee_pitch_offset;
 
-  for(double t = theBlackBoard.theRobotInfo.basicTimeStep; t <= t_end; t += theBlackBoard.theRobotInfo.basicTimeStep)
+  for(double t = getRobotInfo().basicTimeStep; t <= t_end; t += getRobotInfo().basicTimeStep)
   {
-    v += a*theBlackBoard.theRobotInfo.basicTimeStep;
-    kickFoot.translation += direction*v*theBlackBoard.theRobotInfo.basicTimeStep;
-    p.time = theBlackBoard.theRobotInfo.basicTimeStep;
+    v += a*getRobotInfo().basicTimeStep;
+    kickFoot.translation += direction*v*getRobotInfo().basicTimeStep;
+    p.time = getRobotInfo().basicTimeStep;
     if(t_end == 0.0)
     {
       p.ankle_roll_offset = 0;
@@ -608,11 +612,11 @@ void IKDynamicKickMotion::action_wrap_up()
 Pose3D IKDynamicKickMotion::calculateKickPoseInSupportFootCoordinates(const Vector3<double>& kickPoint, double direction) const
 {
   // the footOffsetY should be the same in stand, kick, and walk.
-  double footOffsetY = theEngine.getParameters().footOffsetY + NaoInfo::HipOffsetY;
+  double footOffsetY = getEngine().getParameters().footOffsetY + NaoInfo::HipOffsetY;
 
   // assume the original request is in the hip coordinates
   // get the current pose of the hip
-  const Pose3D& hip =  theBlackBoard.theKinematicChain.theLinks[KinematicChain::Hip].M;
+  const Pose3D& hip =  getKinematicChainSensor().theLinks[KinematicChain::Hip].M;
 
   Pose3D footCoord;
 
@@ -620,14 +624,14 @@ Pose3D IKDynamicKickMotion::calculateKickPoseInSupportFootCoordinates(const Vect
   {
     case KickRequest::right:
     {
-      const Pose3D& lFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::LFoot].M;
+      const Pose3D& lFoot = getKinematicChainSensor().theLinks[KinematicChain::LFoot].M;
       footCoord = hip.local(lFoot);
       footCoord.translate(0, -footOffsetY, 0);
       break;
     }
     case KickRequest::left:
     {
-      const Pose3D& rFoot = theBlackBoard.theKinematicChain.theLinks[KinematicChain::RFoot].M;
+      const Pose3D& rFoot = getKinematicChainSensor().theLinks[KinematicChain::RFoot].M;
       footCoord = hip.local(rFoot);
       footCoord.translate(0, footOffsetY, 0);
       break;
@@ -707,7 +711,7 @@ inline const Pose3D& IKDynamicKickMotion::getStandFoot( const KickPose& kickPose
 
 inline double IKDynamicKickMotion::getStandHeight() const
 {
-  return theEngine.getParameters().walk.comHeight + theParameters.hipHeightOffset;
+  return getEngine().getParameters().walk.comHeight + theParameters.hipHeightOffset;
 }//end getStandHeight
 
 inline const KickPose& IKDynamicKickMotion::getCurrentPose() const
@@ -744,8 +748,8 @@ void IKDynamicKickMotion::stopKick()
 
   // put the foot smoothly to the ground (smooth landing)
   // p.interpolationType = InverseKinematic::None;
-  p.time = theBlackBoard.theRobotInfo.basicTimeStep;
-  double numberOfSteps = theParameters.timeToLand/theBlackBoard.theRobotInfo.basicTimeStep;
+  p.time = getRobotInfo().basicTimeStep;
+  double numberOfSteps = theParameters.timeToLand/getRobotInfo().basicTimeStep;
   for(double i = 0; i < numberOfSteps; i++)
   {
     double t = i/numberOfSteps;
@@ -1038,7 +1042,7 @@ if(draw2D){ FIELD_DRAWING_CONTEXT; PEN("000000",0.1);}
   double range = maxValue - minValue;
 
   
-  const Pose3D& supportFootPose = theBlackBoard.theKinematicChain.theLinks[(theKickingFoot == KickRequest::left)?KinematicChain::RFoot:KinematicChain::LFoot].M;
+  const Pose3D& supportFootPose = getKinematicChainSensor().theLinks[(theKickingFoot == KickRequest::left)?KinematicChain::RFoot:KinematicChain::LFoot].M;
 
   for(unsigned int i = 0; i < reachablePoints.size(); i++)
   {

@@ -8,21 +8,30 @@
 
 using namespace naoth;
 
-AbstractMotion::AbstractMotion(motion::MotionID id)
+AbstractMotion::AbstractMotion(motion::MotionID id, MotionLock& lock)
 : theId(id),
-  currentState(motion::stopped),
-  theMotorJointData(MotionBlackBoard::getInstance().theMotorJointData),
-  theBlackBoard(MotionBlackBoard::getInstance())
+  lock(lock),
+  currentState(motion::stopped)
 {
+  assert(lock.state == motion::stopped);
+  // occupy lock
+  lock.id = id;
+  lock.state = currentState;
+
   init();
 }
 
-bool AbstractMotion::setStiffness(double* stiffness, double delta, JointData::JointID begin, JointData::JointID end)
+bool AbstractMotion::setStiffness(
+  naoth::MotorJointData& theMotorJointData,
+  const naoth::SensorJointData& theSensorJointData,
+  double* stiffness,
+  double delta, 
+  JointData::JointID begin, JointData::JointID end)
 {
   int readyJointNum = 0;
   for (int i = begin; i < end; i++)
   {
-    double d = stiffness[i] - theBlackBoard.theSensorJointData.stiffness[i];
+    double d = stiffness[i] - theSensorJointData.stiffness[i];
     if (fabs(d) < delta || i == JointData::HeadPitch || i==JointData::HeadYaw )
     {
       readyJointNum++;
@@ -30,7 +39,7 @@ bool AbstractMotion::setStiffness(double* stiffness, double delta, JointData::Jo
     } else
     {
       d = Math::clamp(d, -delta, delta);
-      theMotorJointData.stiffness[i] = theBlackBoard.theSensorJointData.stiffness[i] + d;
+      theMotorJointData.stiffness[i] = theMotorJointData.stiffness[i] + d;
 
       if (theMotorJointData.stiffness[i] < 0) // -1 is the special case
       {

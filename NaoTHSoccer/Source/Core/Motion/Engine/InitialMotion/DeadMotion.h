@@ -6,18 +6,30 @@
 */
 
 #ifndef _DEADMOTION_H
-#define  _DEADMOTION_H
+#define _DEADMOTION_H
 
 #include "Motion/AbstractMotion.h"
 
-class DeadMotion : public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(DeadMotion)
+  REQUIRE(RobotInfo)
+  REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(DeadMotion)
+
+class DeadMotion : private DeadMotionBase, public AbstractMotion
 {
 public:
   DeadMotion();
 
   virtual ~DeadMotion(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+  void execute();
 
 private:
 

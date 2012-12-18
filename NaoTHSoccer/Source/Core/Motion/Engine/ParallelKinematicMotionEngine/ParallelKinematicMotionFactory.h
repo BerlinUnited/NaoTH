@@ -16,10 +16,11 @@ public:
   ParallelKinematicMotionFactory();
   virtual ~ParallelKinematicMotionFactory();
 
-  virtual AbstractMotion* createMotion(const MotionRequest& motionRequest);
+  virtual Module* createMotion(const MotionRequest& motionRequest);
+  void execute(){} // dummy
 
 private:
-  AbstractMotion* currentMotion;
+  AbstractModuleCreator* currentMotionCreator;
 };
 
 #endif	/* _ParallelKinematicMotionFactory_H */

@@ -14,7 +14,7 @@ using namespace naoth;
 
 ParallelDance::ParallelDance() 
   :
-  AbstractMotion(motion::parallel_dance),
+  AbstractMotion(motion::parallel_dance, getMotionLock()),
   radius(0),
   speed(0),
   t(0)
@@ -22,11 +22,11 @@ ParallelDance::ParallelDance()
   
 }
 
-void ParallelDance::execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/)
+void ParallelDance::execute()
 {
-  if(motionRequest.id != getId())
+  if(getMotionRequest().id != getId())
   {
-    currentState = motion::stopped;
+    setCurrentState(motion::stopped);
     return;
   }//end if
 
@@ -47,7 +47,7 @@ void ParallelDance::execute(const MotionRequest& motionRequest, MotionStatus& /*
   if (speed > max_dance_speed + speed_step) speed -= speed_step;
 
   // increase the current time
-  double s = speed*theBlackBoard.theRobotInfo.getBasicTimeStepInSecond();
+  double s = speed*getRobotInfo().getBasicTimeStepInSecond();
   t += Math::fromDegrees(s);
 
   double alpha_z = 0.8;
@@ -71,14 +71,14 @@ void ParallelDance::execute(const MotionRequest& motionRequest, MotionStatus& /*
   pose.alpha.z = alpha_z;
 
   // apply parallel kinematics to calculate the leg joints
-  theParallelKinematic.calculateLegs(pose, theMotorJointData);
+  theParallelKinematic.calculateLegs(pose, getMotorJointData());
 
   for(int i = JointData::RHipPitch; i < JointData::numOfJoint; i++)
   {
-    PLOT(JointData::getJointName((JointData::JointID)i), (theMotorJointData.position[i]));
+    PLOT(JointData::getJointName((JointData::JointID)i), (getMotorJointData().position[i]));
   }
 
-  currentState = motion::running;
+  setCurrentState(motion::running);
 }//end execute
 
 double ParallelDance::factorial(int num){

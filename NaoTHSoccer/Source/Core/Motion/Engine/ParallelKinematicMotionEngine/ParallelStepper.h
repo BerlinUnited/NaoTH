@@ -10,14 +10,26 @@
 #include "Motion/AbstractMotion.h"
 #include "Motion/MorphologyProcessor/ParallelKinematic.h"
 
-class ParallelStepper : public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(ParallelStepper)
+  REQUIRE(RobotInfo)
+  //REQUIRE(SensorJointData)
+  REQUIRE(MotionRequest)
+  
+  PROVIDE(MotionLock)
+  PROVIDE(MotorJointData)
+END_DECLARE_MODULE(ParallelStepper)
+
+class ParallelStepper : private ParallelStepperBase, public AbstractMotion
 {
 public:
   ParallelStepper();
   
   virtual ~ParallelStepper(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/);
+  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+  void execute();
   
 private:
   double shift; // current shift in mm

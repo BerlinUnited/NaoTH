@@ -13,13 +13,21 @@
 #include "PreviewController.h"
 #include "Motions/IKParameters.h"
 
-class InverseKinematicsMotionEngine: public naoth::Singleton<InverseKinematicsMotionEngine>
+#include <ModuleFramework/Module.h>
+
+
+BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
+  REQUIRE(KinematicChainSensor)
+  REQUIRE(KinematicChainMotor)
+  REQUIRE(SensorJointData)
+END_DECLARE_MODULE(InverseKinematicsMotionEngine)
+
+class InverseKinematicsMotionEngine: private InverseKinematicsMotionEngineBase//: public naoth::Singleton<InverseKinematicsMotionEngine>
 {
 private:
-  friend class naoth::Singleton<InverseKinematicsMotionEngine>;
+  //friend class naoth::Singleton<InverseKinematicsMotionEngine>;
   
-  InverseKinematicsMotionEngine();
-  
+
   InverseKinematic::HipFeetPose getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const;
   
   InverseKinematic::CoMFeetPose getCoMFeetPoseFromKinematicChain(const KinematicChain& kc) const;
@@ -31,9 +39,14 @@ private:
   Pose3D interpolate(const Pose3D& sp, const Pose3D& tp, double t) const;
 public:
 
+  InverseKinematicsMotionEngine();
+
   virtual ~InverseKinematicsMotionEngine()
   {
   }
+
+  void execute(){} // dummy
+
   
   InverseKinematic::HipFeetPose getHipFeetPoseBasedOnSensor() const;
   
@@ -59,7 +72,14 @@ public:
     return p;
   }
 
-  InverseKinematic::HipFeetPose controlCenterOfMass(const InverseKinematic::CoMFeetPose& p, bool& solved, bool fix_height/*=false*/);
+
+
+  InverseKinematic::HipFeetPose controlCenterOfMass(
+    const naoth::MotorJointData& theMotorJointData,
+    const InverseKinematic::CoMFeetPose& p, 
+    bool& solved, 
+    bool fix_height/*=false*/);
+
 
   unsigned int contorlZMPlength() const { return thePreviewController.previewSteps(); }
 
@@ -86,29 +106,51 @@ public:
   /**
    * PID stabilizer controlling the feet of the robot directly
    */
-  void feetStabilize(double (&position)[naoth::JointData::numOfJoint]);
+  void feetStabilize(
+    const InertialModel& theInertialModel,
+    const naoth::GyrometerData& theGyrometerData,
+    double (&position)[naoth::JointData::numOfJoint]);
 
   /**
    * @return if stabilizer is working
    */
-  bool rotationStabilize(Pose3D& hip, const Pose3D& leftFoot, const Pose3D& rightFoot);
+  bool rotationStabilize(
+    const naoth::RobotInfo& theRobotInfo,
+    const GroundContactModel& theGroundContactModel,
+    const naoth::InertialSensorData& theInertialSensorData,
+    Pose3D& hip, 
+    const Pose3D& leftFoot, 
+    const Pose3D& rightFoot);
 
 
   void copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const;
   
   const IKParameters& getParameters() const { return theParameters; }
   
-  void autoArms(const InverseKinematic::HipFeetPose& pose, double (&position)[naoth::JointData::numOfJoint]);
+  void autoArms(
+    const naoth::RobotInfo& theRobotInfo,
+    const InverseKinematic::HipFeetPose& pose, 
+    double (&position)[naoth::JointData::numOfJoint]);
 
-  Vector3<double> sensorCoMIn(KinematicChain::LinkID link) const;
+  Vector3<double> sensorCoMIn(
+    const KinematicChainSensor& theKinematicChain,
+    KinematicChain::LinkID link) const;
 
-  Vector3<double> balanceCoM(const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
+  Vector3<double> balanceCoM(
+    const naoth::FrameInfo& theFrameInfo,
+    const KinematicChainSensor& theKinematicChain,
+    const Vector3d& lastReqCoM, KinematicChain::LinkID link) const;
 
-  void gotoArms(const InverseKinematic::HipFeetPose& currentPose, double (&position)[naoth::JointData::numOfJoint]);
+  void gotoArms(
+    const MotionStatus& theMotionStatus,
+    const InertialModel& theInertialModel,
+    const naoth::RobotInfo& theRobotInfo,
+    const InverseKinematic::HipFeetPose& currentPose, 
+    double (&position)[naoth::JointData::numOfJoint]);
 
 private:
 
-  const MotionBlackBoard& theBlackBoard;
+  //const MotionBlackBoard& theBlackBoard;
   
   IKParameters theParameters;
 
@@ -123,5 +165,23 @@ private:
 
   double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
+
+
+class InverseKinematicsMotionEngineService
+{
+public:
+  InverseKinematicsMotionEngineService() 
+    : 
+  theEngine(NULL) 
+  {
+  }
+
+  virtual ~InverseKinematicsMotionEngineService()
+  {
+    delete theEngine;
+  }
+
+  InverseKinematicsMotionEngine* theEngine;
+};//end InverseKinematicsMotionEngineService
 
 #endif // _INVERSE_KINEMATCS_MOTION_ENGINE_

@@ -6,7 +6,7 @@
  */
 
 #ifndef _INITIALMOTIONFACTORY_H
-#define  _INITIALMOTIONFACTORY_H
+#define _INITIALMOTIONFACTORY_H
 
 #include "Motion/Engine/MotionFactory.h"
 
@@ -16,10 +16,11 @@ public:
   InitialMotionFactory();
   virtual ~InitialMotionFactory();
 
-  virtual AbstractMotion* createMotion(const MotionRequest& motionRequest);
+  virtual Module* createMotion(const MotionRequest& motionRequest);
+  void execute(){} // dummy
 
 private:
-  AbstractMotion* currentMotion;
+  AbstractModuleCreator* currentCreator;
 };
 
 #endif  /* _INITIALMOTIONFACTORY_H */

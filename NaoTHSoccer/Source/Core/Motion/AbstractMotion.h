@@ -11,20 +11,46 @@
 
 #include "MotionBlackBoard.h"
 
+
+class MotionLock
+{
+public:
+  MotionLock() 
+    : 
+    id(motion::num_of_motions), 
+    state(motion::stopped)
+  {}
+  motion::MotionID id;
+  motion::State state;
+
+  bool isStopped() const {return state == motion::stopped; }
+};
+
+
 class AbstractMotion
 {
 private:
   motion::MotionID theId;
-  
-protected:
-
+  MotionLock& lock;
   motion::State currentState;
-  naoth::MotorJointData& theMotorJointData;
-  const MotionBlackBoard& theBlackBoard;
+
+protected:
+  void setCurrentState(motion::State state)
+  {
+    // assure the lock is 'mine'
+    assert(lock.id == theId);
+    currentState = state;
+    lock.state = currentState;
+  }
+
+  //naoth::MotorJointData& theMotorJointData;
+  //const MotionBlackBoard& theBlackBoard;
+
+  void setId(motion::MotionID id){ theId = id; lock.id = theId; };
 
 public:
 
-  AbstractMotion(motion::MotionID id);
+  AbstractMotion(motion::MotionID id, MotionLock& lock);
 
   virtual ~AbstractMotion(){}
 
@@ -43,25 +69,37 @@ public:
 
 protected:
   /** set the stiffness with max changes */
-  bool setStiffness(double* hardness, double delta,
-                    naoth::JointData::JointID begin=naoth::JointData::HeadPitch,
-                    naoth::JointData::JointID end=naoth::JointData::numOfJoint);
+  bool setStiffness(
+    naoth::MotorJointData& theMotorJointData,
+    const naoth::SensorJointData& theSensorJointData,
+    double* hardness, double delta,
+    naoth::JointData::JointID begin=naoth::JointData::HeadPitch,
+    naoth::JointData::JointID end=naoth::JointData::numOfJoint);
 };
 
-class EmptyMotion: public AbstractMotion
+#include <ModuleFramework/Module.h>
+
+BEGIN_DECLARE_MODULE(EmptyMotion)
+  PROVIDE(MotionLock)
+END_DECLARE_MODULE(EmptyMotion)
+
+class EmptyMotion: private EmptyMotionBase, public AbstractMotion
 {
 public:
-  EmptyMotion():AbstractMotion(motion::empty)
+  EmptyMotion()
+    :
+    AbstractMotion(motion::empty, getMotionLock())
   {
-    currentState = motion::stopped;
+    setCurrentState(motion::stopped);
   }
 
   virtual ~EmptyMotion(){}
 
+  void execute(){}
   virtual void execute(const MotionRequest& /*motionRequest*/, MotionStatus& /*moitonStatus*/)
   {
     /** do nothing */
   }//end execute
 };
 
-#endif //__AbstractMotion_h_
+#endif //_AbstractMotion_h_

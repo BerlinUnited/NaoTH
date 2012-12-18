@@ -19,20 +19,23 @@
 
 #include <list>
 
+#include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/Module.h>
 
 // representations
 
-/*
-BEGIN_DECLARE_MODULE(SupportPolygonGenerator)
-  REQUIRE(FSRData)
-  REQUIRE(FSRPositions)
-  REQUIRE(KinematicChainSensor)
 
-  PROVIDE(SupportPolygon)
-END_DECLARE_MODULE(SupportPolygonGenerator)
-*/
+BEGIN_DECLARE_MODULE(MotionEngine)
+  REQUIRE(FrameInfo)
+  REQUIRE(MotionLock)
 
-class MotionEngine
+  PROVIDE(HeadMotionRequest)
+  PROVIDE(MotionRequest)
+  PROVIDE(MotionStatus)
+END_DECLARE_MODULE(MotionEngine)
+
+
+class MotionEngine: private ModuleManager, private MotionEngineBase
 {
 public:
   MotionEngine();
@@ -44,16 +47,27 @@ protected:
   
   void selectMotion();
   
-  void changeMotion(AbstractMotion* m);
+  void changeMotion(Module* m);
 
 private:
-  MotionBlackBoard& theBlackBoard;
+  //MotionBlackBoard& theBlackBoard;
 
-  AbstractMotion* currentlyExecutedMotion;
-  EmptyMotion theEmptyMotion;
+  Module* currentlyExecutedMotion;
+  ModuleCreator<EmptyMotion>* theEmptyMotion;
   
-  HeadMotionEngine theHeadMotionEngine;
-  std::list<MotionFactory*> theMotionFactories;
+  // submodules
+  ModuleCreator<HeadMotionEngine>* theHeadMotionEngine;
+  
+  typedef std::list<MotionFactory*> MotionFactorieRegistry;
+  MotionFactorieRegistry theMotionFactories;
+
+
+  Module* createEmptyMotion()
+  {
+    theEmptyMotion->setEnabled(false);
+    theEmptyMotion->setEnabled(true);
+    return theEmptyMotion->getModule();
+  }
 
   enum State
   {

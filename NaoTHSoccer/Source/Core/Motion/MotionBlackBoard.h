@@ -51,12 +51,12 @@ private:
   friend class naoth::Singleton<MotionBlackBoard>;
 
   MotionBlackBoard();
-
-public:
+  ~MotionBlackBoard();
+private:
 
   void init();
 
-  ~MotionBlackBoard();
+  
 
   naoth::RobotInfo theRobotInfo;
 
