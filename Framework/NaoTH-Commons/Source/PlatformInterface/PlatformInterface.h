@@ -44,8 +44,8 @@ namespace naoth
  */
 class PlatformInterface:
   public PlatformBase,          // basic information about the platform
-  public PlatformDataInterface, // 
-  public MessageQueueHandler    //
+  public MessageQueueHandler,   //
+  public PlatformDataInterface  // 
 {
 private:
   ProsessEnvironment environment;
@@ -117,16 +117,16 @@ public:
     if(cognitionRegistered())
     {
       getCognitionInput();
-      cognitionProsess.callback->call();
+      callCognition();
       setCognitionOutput();
     }
   }//end callCognition
 
   virtual void callCognition()
   {
-    if(cognitionProsess.callback != NULL)
+    if(cognitionRegistered())
     {
-      cognitionProsess.preActions.execute();
+      cognitionProsess.callback->call();
     }
   }
 
@@ -150,7 +150,7 @@ public:
     if(motionRegistered())
     {
       getMotionInput();
-      motionProsess.callback->call();
+      callMotion();
       setMotionOutput();
     }
   }//runMotion
@@ -159,7 +159,7 @@ public:
   {
     if(motionRegistered())
     {
-      cognitionProsess.preActions.execute();
+      motionProsess.callback->call();
     }
   }
 

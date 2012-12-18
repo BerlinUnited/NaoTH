@@ -352,7 +352,7 @@ void SimSparkController::callCognition()
     getCognitionInput();
     if ( !exiting )
     {
-      PlatformInterface::callCognition_();
+      PlatformInterface::callCognition();
       setCognitionOutput();
     }
   }
