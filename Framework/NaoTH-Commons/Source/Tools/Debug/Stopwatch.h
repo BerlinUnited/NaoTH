@@ -58,7 +58,15 @@ public:
   
   /** The last valid value */
   unsigned int lastValue;
-};
+
+public:
+  /** */
+  void _start();
+  
+  /** */
+  void _stop();
+};//end class StopwatchItem
+
 
 class Stopwatch : public naoth::Singleton<Stopwatch>
 {
