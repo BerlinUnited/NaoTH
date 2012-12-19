@@ -169,7 +169,7 @@ public:
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Modeling/InertialModel.h"
-#include "Motion/MotionBlackBoard.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(InertiaSensorFilter)
   REQUIRE(FrameInfo)

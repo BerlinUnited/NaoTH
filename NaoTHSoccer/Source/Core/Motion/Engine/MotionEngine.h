@@ -9,11 +9,7 @@
 #ifndef _MotionEngine_h_
 #define _MotionEngine_h_
 
-//#include <ModuleFramework/Module.h>
-
-#include "../MotionBlackBoard.h"
-
-#include "../AbstractMotion.h"
+#include "AbstractMotion.h"
 #include "MotionFactory.h"
 #include "HeadMotion/HeadMotionEngine.h"
 
@@ -23,6 +19,10 @@
 #include <ModuleFramework/Module.h>
 
 // representations
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
 
 
 BEGIN_DECLARE_MODULE(MotionEngine)
@@ -35,7 +35,7 @@ BEGIN_DECLARE_MODULE(MotionEngine)
 END_DECLARE_MODULE(MotionEngine)
 
 
-class MotionEngine: private ModuleManager, private MotionEngineBase
+class MotionEngine: private MotionEngineBase, private ModuleManager
 {
 public:
   MotionEngine();

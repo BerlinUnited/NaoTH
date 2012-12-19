@@ -7,10 +7,15 @@
 #ifndef _ParallelDance_H
 #define	_ParallelDance_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 #include "Motion/MorphologyProcessor/ParallelKinematic.h"
 
 #include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
 
 BEGIN_DECLARE_MODULE(ParallelDance)
   REQUIRE(RobotInfo)
@@ -28,7 +33,6 @@ public:
   
   virtual ~ParallelDance(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
   void execute();
   
 private:

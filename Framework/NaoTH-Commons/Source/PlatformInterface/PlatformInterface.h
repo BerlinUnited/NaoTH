@@ -66,6 +66,11 @@ public:
     environment.channelActionCreator.setMessageQueueHandler(this);
   }
 
+  virtual ~PlatformInterface()
+  {
+    std::cout << "destruct PlatformInterface" << std::endl;
+  }
+
   /**
     * Register callback objects for this platform interface.
     * @param cognition The callback object for the cognition cycle or NULL if not active.

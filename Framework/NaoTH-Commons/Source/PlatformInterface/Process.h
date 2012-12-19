@@ -23,6 +23,11 @@ public:
   {
   }
 
+  ~Prosess()
+  {
+    std::cout << "destruct Prosess" << std::endl;
+  }
+
   Callable* callback;
 
   ActionList preActions;
@@ -38,6 +43,11 @@ class ProsessEnvironment
 public:
   ProsessEnvironment()
   {
+  }
+
+  ~ProsessEnvironment()
+  {
+    std::cout << "destruct ProsessEnvironment" << std::endl;
   }
   
   // registered (available) actions

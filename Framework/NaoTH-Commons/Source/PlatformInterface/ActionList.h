@@ -23,6 +23,7 @@ namespace naoth
 class AbstractAction
 {
 public:
+  virtual ~AbstractAction(){} //ACHTUNG: needed, for the desructor of the derived classes to be called
   virtual void execute() = 0;
 };
 
@@ -41,6 +42,7 @@ public:
 
   virtual ~ActionList()
   {
+    std::cout << "destruct ActionList" << std::endl;
     // delete all actions
     for(ActionListT::iterator iter = actions.begin(); iter != actions.end(); ++iter)
     {
@@ -75,6 +77,7 @@ template<class T>
 class TypedActionCreator
 {
 public:
+  virtual ~TypedActionCreator(){} //ACHTUNG: needed, for the desructor of the derived classes to be called
   virtual AbstractAction* createAction(T& data) = 0;
 };//end TypedActionCreator
 
@@ -114,6 +117,8 @@ public:
   */
   virtual ~TypedActionCreatorMap()
   {
+    std::cout << "destruct TypedActionCreatorMap " << std::endl;
+
     for(TypedActionCreatorMapT::iterator iter = registeredActions.begin(); iter != registeredActions.end(); ++iter)
     {
       delete iter->second;

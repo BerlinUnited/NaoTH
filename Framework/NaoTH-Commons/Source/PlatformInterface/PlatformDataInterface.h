@@ -38,6 +38,11 @@ public:
   {
   }
 
+  ~DataAction()
+  {
+    std::cout << "destruct DataAction<" << A << "> " << typeid(T).name() << std::endl;
+  }
+
   void execute(){ std::cerr << "no action " << A << " for " << typeid(data).name() << std::endl; }
 };//end DataAction
 
@@ -59,6 +64,11 @@ public:
   {
   }
 
+  ~DataAction()
+  {
+    std::cout << "destruct DataAction<DATA_INPUT_ACTION> " << typeid(T).name() << std::endl;
+  }
+
   virtual void execute(){ platform.get(data); }
 };//end DataAction
 
@@ -78,6 +88,11 @@ public:
     : platform(platform),
       data(data)
   {
+  }
+
+  ~DataAction()
+  {
+    std::cout << "destruct DataAction<DATA_OUTPUT_ACTION> " << typeid(T).name() << std::endl;
   }
 
   virtual void execute(){ platform.set(data); }
@@ -102,6 +117,11 @@ public:
     : platform(platform)
   {}
 
+  ~DataActionCreator()
+  {
+    std::cout << "destruct DataActionCreator " << typeid(T).name() << std::endl;
+  }
+
   virtual AbstractAction* createAction(T& data)
   {
     return new DataAction<ACTION,T,PT>(platform, data);
@@ -123,6 +143,11 @@ protected:
   PlatformDataInterface(ProsessEnvironment& environment)
     : environment(environment)
   {
+  }
+
+  ~PlatformDataInterface()
+  {
+    std::cout << "destruct PlatformDataInterface" << std::endl;
   }
 
   /**

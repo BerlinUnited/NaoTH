@@ -9,9 +9,8 @@
 #ifndef _IKMotion_h_
 #define _IKMotion_h_
 
-#include "Motion/AbstractMotion.h"
-#include "IKPose.h"
-#include "IKParameters.h"
+#include "Motion/Engine/AbstractMotion.h"
+
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 
 class IKMotion: public AbstractMotion 
@@ -25,10 +24,9 @@ private:
 
 protected:
 
-  //const IKParameters& theParameters;
-  
-  //virtual InverseKinematicsMotionEngineService& getInverseKinematicsMotionEngineService() const = 0;
-
+  /**
+  *
+  */
   inline InverseKinematicsMotionEngine& getEngine() const
   {
     assert(theEngineService.theEngine != NULL);
@@ -43,9 +41,6 @@ public:
     MotionLock& lock);
   
   virtual ~IKMotion();
-
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& motionStatus) = 0;
-
 };
 
 #endif // _IKMotion_h_

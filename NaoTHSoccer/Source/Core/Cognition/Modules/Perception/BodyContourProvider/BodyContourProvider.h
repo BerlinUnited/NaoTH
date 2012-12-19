@@ -22,9 +22,8 @@
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Infrastructure/CameraInfo.h"
+//#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Motion/MotionBlackBoard.h"
 #include "Representations/Infrastructure/Image.h"
 #include <vector>
 

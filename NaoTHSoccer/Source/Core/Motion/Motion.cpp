@@ -33,8 +33,6 @@
 using namespace naoth;
 
 Motion::Motion()
-  //theFootTouchCalibrator(getFSRData, getMotionStatus, getSupportPolygon, getKinematicChainModel),
-
   : motionLogger("MotionLog")
 {
 
@@ -205,9 +203,32 @@ void Motion::processSensorData()
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();
+}//end processSensorData
 
 
+void Motion::postProcess()
+{
+  motionLogger.log(getFrameInfo().getFrameNumber());
 
+  MotorJointData& mjd = getMotorJointData();
+  double basicStepInS = getRobotInfo().getBasicTimeStepInSecond();
+
+#ifdef DEBUG
+  int i = mjd.checkStiffness();
+  if(i != -1)
+  {
+    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<mjd.stiffness[i]);
+  }
+#endif
+
+  mjd.clamp();
+  mjd.updateSpeed(theLastMotorJointData, basicStepInS);
+  mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
+}//end postProcess
+
+
+void Motion::debugPlots()
+{
 
   // some basic plots
   // plotting sensor data
@@ -275,7 +296,7 @@ void Motion::processSensorData()
   PLOT_JOINT(RAnkleRoll);
   PLOT_JOINT(LAnkleRoll);
 
-}//end processSensorData
+}//end debugPlots
 
 
 void Motion::updateCameraMatrix()
@@ -305,26 +326,6 @@ void Motion::updateCameraMatrix()
 
 }// end updateCameraMatrix
 
-
-void Motion::postProcess()
-{
-  motionLogger.log(getFrameInfo().getFrameNumber());
-
-  MotorJointData& mjd = getMotorJointData();
-  double basicStepInS = getRobotInfo().getBasicTimeStepInSecond();
-
-#ifdef DEBUG
-  int i = mjd.checkStiffness();
-  if(i != -1)
-  {
-    THROW("Get ILLEGAL Stiffness: "<<JointData::getJointName(JointData::JointID(i))<<" = "<<mjd.stiffness[i]);
-  }
-#endif
-
-  mjd.clamp();
-  mjd.updateSpeed(theLastMotorJointData, basicStepInS);
-  mjd.updateAcceleration(theLastMotorJointData, basicStepInS);
-}//end postProcess
 
 
 void Motion::guard_cognition()

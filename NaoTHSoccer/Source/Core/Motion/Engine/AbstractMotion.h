@@ -9,9 +9,12 @@
 #ifndef _AbstractMotion_h_
 #define _AbstractMotion_h_
 
-#include "MotionBlackBoard.h"
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
 
-
+/**
+*
+*/
 class MotionLock
 {
 public:
@@ -27,6 +30,9 @@ public:
 };
 
 
+/**
+*
+*/
 class AbstractMotion
 {
 private:
@@ -43,9 +49,6 @@ protected:
     lock.state = currentState;
   }
 
-  //naoth::MotorJointData& theMotorJointData;
-  //const MotionBlackBoard& theBlackBoard;
-
   void setId(motion::MotionID id){ theId = id; lock.id = theId; };
 
 public:
@@ -55,7 +58,6 @@ public:
   virtual ~AbstractMotion(){}
 
   virtual void init(){}
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& moitonStatus) = 0;
 
   bool isStopped() const {return currentState == motion::stopped; }
 
@@ -77,7 +79,9 @@ protected:
     naoth::JointData::JointID end=naoth::JointData::numOfJoint);
 };
 
+
 #include <ModuleFramework/Module.h>
+
 
 BEGIN_DECLARE_MODULE(EmptyMotion)
   PROVIDE(MotionLock)
@@ -95,8 +99,7 @@ public:
 
   virtual ~EmptyMotion(){}
 
-  void execute(){}
-  virtual void execute(const MotionRequest& /*motionRequest*/, MotionStatus& /*moitonStatus*/)
+  void execute()
   {
     /** do nothing */
   }//end execute

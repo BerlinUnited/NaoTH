@@ -19,6 +19,13 @@
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+
 BEGIN_DECLARE_MODULE(StandMotion)
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
@@ -77,8 +84,7 @@ public:
     }
   }//end calculateTrajectory
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){}
-  
+
   void execute()
   {
     if ( time > totalTime && getMotionRequest().id != getId() )

@@ -114,6 +114,17 @@ public:
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Modeling/SupportPolygon.h"
+
+
 BEGIN_DECLARE_MODULE(IKDynamicKickMotion)
   REQUIRE(RobotInfo)
   REQUIRE(FrameInfo)
@@ -211,7 +222,6 @@ public:
   IKDynamicKickMotion();
   ~IKDynamicKickMotion();
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
   void execute();
   virtual void calculateTrajectory(const MotionRequest& motionRequest);
 

@@ -14,8 +14,7 @@
 #include <Representations/Infrastructure/FSRData.h>
 #include "Representations/Modeling/SupportPolygon.h"
 #include "Representations/Modeling/KinematicChain.h"
-
-#include "Motion/MotionBlackBoard.h"
+#include "Representations/Modeling/FSRPositions.h"
 
 // tools
 #include "FootTouchDetector.h"

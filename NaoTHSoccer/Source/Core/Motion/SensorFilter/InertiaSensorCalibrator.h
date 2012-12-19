@@ -30,9 +30,7 @@
 #include "Representations/Infrastructure/CalibrationData.h"
 #include "Representations/Modeling/GroundContactModel.h"
 #include "Representations/Motion/MotionStatus.h"
-//#include "Representations/Modeling/KinematicChain.h"
-
-#include "Motion/MotionBlackBoard.h"
+#include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(InertiaSensorCalibrator)
   REQUIRE(AccelerometerData)

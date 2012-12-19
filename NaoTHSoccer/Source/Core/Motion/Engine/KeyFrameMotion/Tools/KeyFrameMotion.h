@@ -8,12 +8,19 @@
 #ifndef _KeyFrameMotion_h_
 #define _KeyFrameMotion_h_
 
-#include "MotionNet.h"
-#include "Tools/Math/Common.h"
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 #include "Tools/DataStructures/Printable.h"
 
+#include "MotionNet.h"
+#include "Tools/Math/Common.h"
+
+
 #include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
 
 BEGIN_DECLARE_MODULE(KeyFrameMotion)
   REQUIRE(RobotInfo)
@@ -65,7 +72,7 @@ public:
 
   // override
   virtual void init();
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+
   void execute();
   
   void print(std::ostream& stream) const;

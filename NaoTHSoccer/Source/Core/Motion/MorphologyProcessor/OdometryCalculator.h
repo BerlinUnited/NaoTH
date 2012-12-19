@@ -15,8 +15,6 @@
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/KinematicChain.h"
 
-#include "Motion/MotionBlackBoard.h"
-
 // tools
 #include <Tools/Math/Pose3D.h>
 

@@ -9,6 +9,7 @@
 #define _PREVIEWCONTROLLER_H
 
 #include <list>
+#include <map>
 
 #include "Tools/Math/Matrix3x3.h"
 

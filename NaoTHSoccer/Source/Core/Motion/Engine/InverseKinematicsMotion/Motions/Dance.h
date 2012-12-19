@@ -13,6 +13,11 @@
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+
 BEGIN_DECLARE_MODULE(DanceMotion)
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
@@ -84,8 +89,6 @@ public:
     //-- END -- generate the trajectory --//
 
   }//end calculateTrajectory
-
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){}
 
   void execute()
   {

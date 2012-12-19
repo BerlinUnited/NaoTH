@@ -8,13 +8,24 @@
 #ifndef _INVERSE_KINEMATCS_MOTION_ENGINE_
 #define _INVERSE_KINEMATCS_MOTION_ENGINE_
 
-#include "Motion/MotionBlackBoard.h"
 #include "Motions/IKPose.h"
 #include "PreviewController.h"
 #include "Motions/IKParameters.h"
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/JointData.h>
+#include "Representations/Modeling/KinematicChain.h"
+
+
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include "Representations/Modeling/GroundContactModel.h"
+#include "Representations/Modeling/InertialModel.h"
+#include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/FrameInfo.h>
+#include "Representations/Motion/MotionStatus.h"
 
 BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
   REQUIRE(KinematicChainSensor)
@@ -22,11 +33,9 @@ BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
   REQUIRE(SensorJointData)
 END_DECLARE_MODULE(InverseKinematicsMotionEngine)
 
-class InverseKinematicsMotionEngine: private InverseKinematicsMotionEngineBase//: public naoth::Singleton<InverseKinematicsMotionEngine>
+class InverseKinematicsMotionEngine: private InverseKinematicsMotionEngineBase
 {
 private:
-  //friend class naoth::Singleton<InverseKinematicsMotionEngine>;
-  
 
   InverseKinematic::HipFeetPose getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const;
   

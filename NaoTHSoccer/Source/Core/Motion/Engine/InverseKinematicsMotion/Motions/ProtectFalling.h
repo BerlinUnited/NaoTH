@@ -13,6 +13,14 @@
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+
+
 BEGIN_DECLARE_MODULE(ProtectFalling)
   REQUIRE(RobotInfo)
   REQUIRE(MotionRequest)
@@ -38,8 +46,6 @@ public:
         keepStiffness[i] = 0.0;
       }
   }
-
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){}
 
   void execute()
   {

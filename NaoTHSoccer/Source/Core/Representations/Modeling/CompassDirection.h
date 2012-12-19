@@ -1,11 +1,9 @@
 /**
-* @file GoalModel.h
+* @file CompassDirection.h
 *
-* @author <a href="mailto:borisov@informatik.hu-berlin.de">Alexander Borisov</a>
-* @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Definition of class GoalModel
+* Definition of class CompassDirection
 */
 
 #ifndef _CompassDirection_h_

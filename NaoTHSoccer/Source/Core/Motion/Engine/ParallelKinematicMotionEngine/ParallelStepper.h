@@ -7,10 +7,15 @@
 #ifndef _ParallelStepper_H
 #define	_ParallelStepper_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 #include "Motion/MorphologyProcessor/ParallelKinematic.h"
 
 #include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
 
 BEGIN_DECLARE_MODULE(ParallelStepper)
   REQUIRE(RobotInfo)
@@ -28,7 +33,6 @@ public:
   
   virtual ~ParallelStepper(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
   void execute();
   
 private:
