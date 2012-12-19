@@ -9,8 +9,10 @@
 #ifndef _MotionFactory_h_
 #define _MotionFactory_h_
 
-#include "Motion/AbstractMotion.h"
 #include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/Module.h>
+
+#include "Representations/Motion/Request/MotionRequest.h"
 
 class MotionFactory: protected ModuleManager
 {

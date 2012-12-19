@@ -7,7 +7,7 @@
 #ifndef _SIT_H
 #define _SIT_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 
 #include <ModuleFramework/Module.h>
 

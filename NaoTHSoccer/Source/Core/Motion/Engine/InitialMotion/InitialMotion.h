@@ -8,7 +8,7 @@
 #ifndef _INITIALMOTION_H
 #define _INITIALMOTION_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 
 #include <ModuleFramework/Module.h>
 

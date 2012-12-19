@@ -7,7 +7,7 @@
 #ifndef _ParallelStepper_H
 #define	_ParallelStepper_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 #include "Motion/MorphologyProcessor/ParallelKinematic.h"
 
 #include <ModuleFramework/Module.h>

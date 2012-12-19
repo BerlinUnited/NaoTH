@@ -8,7 +8,7 @@
 #ifndef _DEADMOTION_H
 #define _DEADMOTION_H
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 
 #include <ModuleFramework/Module.h>
 

@@ -9,7 +9,7 @@
 #ifndef _IKMotion_h_
 #define _IKMotion_h_
 
-#include "Motion/AbstractMotion.h"
+#include "Motion/Engine/AbstractMotion.h"
 
 #include "Motion/Engine/InverseKinematicsMotion/InverseKinematicsMotionEngine.h"
 

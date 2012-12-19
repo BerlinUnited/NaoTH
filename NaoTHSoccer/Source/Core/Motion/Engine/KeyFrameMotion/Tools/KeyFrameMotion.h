@@ -8,10 +8,12 @@
 #ifndef _KeyFrameMotion_h_
 #define _KeyFrameMotion_h_
 
+#include "Motion/Engine/AbstractMotion.h"
+#include "Tools/DataStructures/Printable.h"
+
 #include "MotionNet.h"
 #include "Tools/Math/Common.h"
-#include "Motion/AbstractMotion.h"
-#include "Tools/DataStructures/Printable.h"
+
 
 #include <ModuleFramework/Module.h>
 

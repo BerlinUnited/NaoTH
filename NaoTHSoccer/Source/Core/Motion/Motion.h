@@ -15,17 +15,14 @@
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
-#include "MotionBlackBoard.h"
-//#include "AbstractMotion.h"
-//#include "Engine/HeadMotion/HeadMotionEngine.h"
-//#include "Engine/MotionFactory.h"
-
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 #include "MorphologyProcessor/FootTouchCalibrator.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
 #include "MorphologyProcessor/FootGroundContactDetector.h"
+
+#include "Representations/Modeling/FSRPositions.h"
 
 #include "Tools/Debug/Logger.h"
 #include "Engine/MotionEngine.h"
@@ -84,21 +81,19 @@ public:
   
   //bool exit();
   
-protected:
+private:
   
   void processSensorData();
   
   void postProcess();
   
-private:
 
+private:
+  void debugPlots();
   void updateCameraMatrix();
   void guard_cognition();
 
 private:
-
-  //MotionBlackBoard& theBlackBoard;
-
 
   ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
   ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;

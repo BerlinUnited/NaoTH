@@ -9,7 +9,7 @@
 #ifndef _MotionEngine_h_
 #define _MotionEngine_h_
 
-#include "../AbstractMotion.h"
+#include "AbstractMotion.h"
 #include "MotionFactory.h"
 #include "HeadMotion/HeadMotionEngine.h"
 
