@@ -24,6 +24,8 @@ public:
 
   virtual ~MessageQueueHandler()
   {
+    std::cout << "destruct MessageQueueHandler" << std::endl;
+
     for(MessageQueueMapT::iterator iter = theMessageQueueMap.begin(); iter!=theMessageQueueMap.end(); ++iter)
     {
       delete iter->second;

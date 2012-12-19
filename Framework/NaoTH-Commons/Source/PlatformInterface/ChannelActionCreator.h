@@ -31,6 +31,11 @@ public:
     : writer(messageQueue),
       data(data)
   {}
+
+  ~OutputChanelAction()
+  {
+    std::cout << "destruct OutputChanelAction " << typeid(T).name() << std::endl;
+  }
       
   void execute()
   {
@@ -58,6 +63,11 @@ public:
     : reader(messageQueue),
       data(data)
   {}
+
+  ~InputChanelAction()
+  {
+    std::cout << "destruct OutputChanelAction " << typeid(T).name() << std::endl;
+  }
       
   void execute()
   {

@@ -11,5 +11,6 @@ using namespace std;
 
 PlatformBase::~PlatformBase()
 {
+  std::cout << "destruct PlatformBase" << std::endl;
 }
 
