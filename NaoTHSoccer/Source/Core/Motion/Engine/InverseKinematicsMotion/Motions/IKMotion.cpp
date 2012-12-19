@@ -7,6 +7,7 @@
 */
 
 #include "IKMotion.h"
+#include "IKPose.h"
 
 using namespace InverseKinematic;
 
@@ -16,8 +17,6 @@ IKMotion::IKMotion(
   MotionLock& lock)
 : AbstractMotion(id, lock),
   theEngineService(theEngineService)
-  //theEngine(InverseKinematicsMotionEngine::getInstance()),
-  //theParameters(theEngine.getParameters())
 {
 }
 

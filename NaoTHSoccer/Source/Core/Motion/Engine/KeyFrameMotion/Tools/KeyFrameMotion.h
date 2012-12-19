@@ -15,6 +15,11 @@
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+
 BEGIN_DECLARE_MODULE(KeyFrameMotion)
   REQUIRE(RobotInfo)
   REQUIRE(SensorJointData)
@@ -65,7 +70,7 @@ public:
 
   // override
   virtual void init();
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
+
   void execute();
   
   void print(std::ostream& stream) const;

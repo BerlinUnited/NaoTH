@@ -13,11 +13,17 @@
 #include <Tools/Math/Vector2.h>
 #include <Tools/Math/Vector3.h>
 
-#include <Representations/Infrastructure/CameraInfo.h>
-#include "Representations/Motion/Request/HeadMotionRequest.h"
-#include "Motion/MotionBlackBoard.h"
-
 #include <ModuleFramework/Module.h>
+
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include <Representations/Infrastructure/CameraInfo.h>
+#include "Representations/Modeling/InertialModel.h"
+#include "Representations/Modeling/KinematicChain.h"
+#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+#include <Representations/Perception/CameraMatrix.h>
+#include "Representations/Motion/MotionStatus.h"
 
 BEGIN_DECLARE_MODULE(HeadMotionEngine)
   REQUIRE(RobotInfo)
@@ -31,6 +37,7 @@ BEGIN_DECLARE_MODULE(HeadMotionEngine)
   PROVIDE(MotionStatus)
   PROVIDE(MotorJointData)
 END_DECLARE_MODULE(HeadMotionEngine)
+
 
 class HeadMotionEngine: private HeadMotionEngineBase
 {

@@ -15,7 +15,9 @@
 
 #include <string>
 
-
+/**
+* representation holding the loaded motion nets
+*/
 class MotionNets
 {
 private:

@@ -12,6 +12,11 @@
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/RobotInfo.h>
+#include "Representations/Motion/Request/MotionRequest.h"
+#include <Representations/Infrastructure/JointData.h>
+
 BEGIN_DECLARE_MODULE(ParallelDance)
   REQUIRE(RobotInfo)
   //REQUIRE(SensorJointData)
@@ -28,7 +33,6 @@ public:
   
   virtual ~ParallelDance(){}
 
-  virtual void execute(const MotionRequest& motionRequest, MotionStatus& /*motionStatus*/){};
   void execute();
   
 private:

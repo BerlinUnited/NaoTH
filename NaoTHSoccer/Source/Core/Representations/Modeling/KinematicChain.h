@@ -81,4 +81,8 @@ private:
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node);
 
+// TODO: two different representations in motion. is there a better place for them?
+class KinematicChainSensor: public KinematicChain {};
+class KinematicChainMotor: public KinematicChain {};
+
 #endif  /* _KINEMATICCHAIN_H */

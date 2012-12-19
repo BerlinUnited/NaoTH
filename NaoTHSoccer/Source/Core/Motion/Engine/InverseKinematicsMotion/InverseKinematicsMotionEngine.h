@@ -15,6 +15,9 @@
 
 #include <ModuleFramework/Module.h>
 
+// representations
+#include <Representations/Infrastructure/JointData.h>
+#include "Representations/Modeling/KinematicChain.h"
 
 BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
   REQUIRE(KinematicChainSensor)
@@ -22,11 +25,9 @@ BEGIN_DECLARE_MODULE(InverseKinematicsMotionEngine)
   REQUIRE(SensorJointData)
 END_DECLARE_MODULE(InverseKinematicsMotionEngine)
 
-class InverseKinematicsMotionEngine: private InverseKinematicsMotionEngineBase//: public naoth::Singleton<InverseKinematicsMotionEngine>
+class InverseKinematicsMotionEngine: private InverseKinematicsMotionEngineBase
 {
 private:
-  //friend class naoth::Singleton<InverseKinematicsMotionEngine>;
-  
 
   InverseKinematic::HipFeetPose getHipFeetPoseFromKinematicChain(const KinematicChain& kc) const;
   
