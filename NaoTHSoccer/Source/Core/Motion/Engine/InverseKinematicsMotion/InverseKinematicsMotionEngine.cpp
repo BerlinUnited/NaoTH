@@ -114,22 +114,6 @@ ZMPFeetPose InverseKinematicsMotionEngine::getPlannedZMPFeetPose() const
   return result;
 }
 
-Pose3D InverseKinematicsMotionEngine::interpolate(const Pose3D& sp, const Pose3D& tp, double t) const
-{
-  ASSERT(0 <= t);
-  ASSERT(t <= 1);
-
-  Vector3<double> perr = tp.translation - sp.translation;
-  
-  Pose3D p;
-  p.translation = sp.translation + perr * t;
-  p.rotation = RotationMatrix::interpolate(sp.rotation, tp.rotation, t);
-
-  return p;
-}//end interpolate
-
-
-
 HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   const MotorJointData& theMotorJointData,
   const CoMFeetPose& p,
@@ -149,7 +133,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
   bool leftFootSupport = (result.feet.left.translation.z < result.feet.right.translation.z);
 
   // requested com in the coordinates of the support foot
-  Vector3<double> refCoM;
+  Vector3d refCoM;
   // support foot
   Kinematics::Link* obsFoot;
 
@@ -167,7 +151,7 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(
 
   // 
   obsFoot->R = RotationMatrix();
-  obsFoot->p = Vector3<double>(0, 0, NaoInfo::FootHeight);
+  obsFoot->p = Vector3d(0, 0, NaoInfo::FootHeight);
   
   // reuse results from last calculation for the starting value
   result.hip.translation = theCoMControlResult;
@@ -365,13 +349,11 @@ bool InverseKinematicsMotionEngine::rotationStabilize(
   return isWorking;
 }//end rotationStabilize
 
-
-
 void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFeetPose& p)
 {
   Pose3D chest = p.hip;
   chest.translate(0, 0, NaoInfo::HipOffsetZ);
-  const Vector3<double> footOffset(0,0,-NaoInfo::FootHeight);
+  static const Vector3<double> footOffset(0,0,-NaoInfo::FootHeight);
   
   double err = theInverseKinematics.gotoLegs(chest, p.feet.left, p.feet.right, footOffset, footOffset);
 
@@ -379,7 +361,7 @@ void InverseKinematicsMotionEngine::solveHipFeetIK(const InverseKinematic::HipFe
   {
     THROW("IK failed!");
   }
-}
+}//end solveHipFeetIK
   
 void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::JointData::numOfJoint]) const
 {
@@ -393,7 +375,7 @@ void InverseKinematicsMotionEngine::copyLegJoints(double (&position)[naoth::Join
   double hipYawPitch = (position[JointData::LHipYawPitch] + position[JointData::RHipYawPitch]) * 0.5;
   position[JointData::LHipYawPitch] = hipYawPitch;
   position[JointData::RHipYawPitch] = hipYawPitch;
-}
+}//end copyLegJoints
 
 
 int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
@@ -426,11 +408,12 @@ int InverseKinematicsMotionEngine::controlZMPstart(const ZMPFeetPose& start)
   for (unsigned int i = 0; i < previewSteps; i++)
   {
     double t = static_cast<double>(i) / previewSteps;
-    Pose3D p = interpolate(currentCoMPose.com, start.zmp, t);
+    Pose3D p = Pose3D::interpolate(currentCoMPose.com, start.zmp, t);
     thePreviewController.push(p.translation);
   }
   return previewSteps;
-}
+}//end controlZMPstart
+
 
 void InverseKinematicsMotionEngine::controlZMPpush(const Vector3d& zmp)
 {
@@ -543,6 +526,7 @@ void InverseKinematicsMotionEngine::autoArms(
   //----------------------------------------------
 }//end autoArms
 
+// calculates the com of theKinematicChain in the coordinates of the link 
 Vector3<double> InverseKinematicsMotionEngine::sensorCoMIn(
   const KinematicChainSensor& theKinematicChain,
   KinematicChain::LinkID link) const
@@ -566,9 +550,9 @@ Vector3<double> InverseKinematicsMotionEngine::balanceCoM(
   if ( theFrameInfo.getFrameNumber() > frameNumber + 1)
   {
     // reset
-    uP = Vector3<double>();
-    uI = Vector3<double>();
-    uD = Vector3<double>();
+    uP = Vector3d::zero;
+    uI = Vector3d::zero;
+    uD = Vector3d::zero;
   }
 
   ASSERT(link==KinematicChain::LFoot || link==KinematicChain::RFoot );
@@ -594,7 +578,7 @@ Vector3<double> InverseKinematicsMotionEngine::balanceCoM(
     u[i] = Math::clamp(u[i], -30.0, 30.0);
   }
   return u;
-}
+}//end balanceCoM
 
 
 void InverseKinematicsMotionEngine::gotoArms(

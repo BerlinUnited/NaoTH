@@ -8,7 +8,8 @@
 #include "Link.h"
 #include "Tools/Debug/NaoTHAssert.h"
 
-namespace Kinematics {
+namespace Kinematics 
+{
 
 Link::Link() 
   :
@@ -57,7 +58,8 @@ Link& Link::connect(Link& c)
   if (_child == NULL)
   {
     _child = &c;
-  } else
+  } 
+  else
   {
     Link* s = _child;
     while (s->_sister != NULL)
@@ -68,14 +70,14 @@ Link& Link::connect(Link& c)
   }
 
   return c;
-}
+}//end connect
 
 void Link::updateFromMother()
 {
   if (NULL != mother)
   {
     p = mother->R * b + mother->p;
-    if (NULL != q)
+    if (NULL != q)// joint rotation
     {
       R = mother->R * Rodrigues(A, A2, *q);
     } else
@@ -83,35 +85,29 @@ void Link::updateFromMother()
       R = mother->R;
     }
   }
+  // TODO: remove this?
   //        else{
   //            p = Vector3<double>(0,0,0);
   //            R = RotationMatrix(Vector3<double>(1,0,0),Vector3<double>(0,1,0),Vector3<double>(0,0,1));
   //        }
-}
+}//end updateFromMother
+
 
 void Link::updateAllFromMother()
 {
   if (NULL != mother)
   {
     p = mother->R * b + mother->p;
-    R = mother->R;
-//    w = mother->w;
-//    v = mother->v;
-//    dw = mother->dw;
-//    dv = mother->dv;
-
-    // rotation
-    if (NULL != q)
+    if (NULL != q)// joint rotation
     {
+      R *= Rodrigues(A, A2, *q);
+      // senity check if R is still a kind of a rotation matrix...
+      assert(fabs(1.0-fabs(R.det())) < 0.001);
+
 //      Vector3<double> sw = R * a;
 //      Vector3<double> sv = p ^ sw;
 //      Vector3<double> dsv = (w ^ sv) + (v ^ sw);
 //      Vector3<double> dsw = w ^ sw;
-
-      R *= Rodrigues(A, A2, *q);
-
-      // senity check if R is still a kind of a rotation matrix...
-      assert(fabs(1.0-fabs(R.det())) < 0.001);
 
       // velocity
 //      w += (sw * (*dq));
@@ -121,8 +117,17 @@ void Link::updateAllFromMother()
 //      dw += dsw * (*dq) + sw * (*ddq);
 //      dv += dsv * (*dq) + sv * (*ddq);
     }
+    else
+    {
+      R = mother->R;
+//    w = mother->w;
+//    v = mother->v;
+//    dw = mother->dw;
+//    dv = mother->dv;
+    }
   }
-}
+}//end updateAllFromMother
+
 
 void Link::updateMother()
 {
@@ -130,7 +135,7 @@ void Link::updateMother()
 
   mother->R = R * Rodrigues(A, A2, -(*(q)));
   mother->p = p - mother->R * b;
-}
+}//end updateMother
 
 void Link::updateCoM()
 {

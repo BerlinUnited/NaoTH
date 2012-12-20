@@ -73,23 +73,36 @@ string KinematicChain::getLinkName(const Kinematics::Link *link)
 void KinematicChain::buildLinkChains()
 {
   // Torso -- Neck -- Head
-  theLinks[Torso].connect(theLinks[Neck]).connect(theLinks[Head]);
+  theLinks[Torso].connect(theLinks[Neck])
+                 .connect(theLinks[Head]);
 
   // Torso -- Shoulder -- Bicep -- Elbow -- ForeArm
   // Left
-  theLinks[Torso].connect(theLinks[LShoulder]).connect(theLinks[LBicep])
-    .connect(theLinks[LElbow]).connect(theLinks[LForeArm]);
+  theLinks[Torso].connect(theLinks[LShoulder])
+                 .connect(theLinks[LBicep])
+                 .connect(theLinks[LElbow])
+                 .connect(theLinks[LForeArm]);
   // Right
-  theLinks[Torso].connect(theLinks[RShoulder]).connect(theLinks[RBicep])
-    .connect(theLinks[RElbow]).connect(theLinks[RForeArm]);
+  theLinks[Torso].connect(theLinks[RShoulder])
+                 .connect(theLinks[RBicep])
+                 .connect(theLinks[RElbow])
+                 .connect(theLinks[RForeArm]);
 
   // Torso -- Pelvis -- Hip -- Thigh -- Tibia -- Ankle -- Foot
   // Left
-  theLinks[Torso].connect(theLinks[LPelvis]).connect(theLinks[LHip]).connect(theLinks[LThigh])
-    .connect(theLinks[LTibia]).connect(theLinks[LAnkle]).connect(theLinks[LFoot]);
+  theLinks[Torso].connect(theLinks[LPelvis])
+                 .connect(theLinks[LHip])
+                 .connect(theLinks[LThigh])
+                 .connect(theLinks[LTibia])
+                 .connect(theLinks[LAnkle])
+                 .connect(theLinks[LFoot]);
   // Right
-  theLinks[Torso].connect(theLinks[RPelvis]).connect(theLinks[RHip]).connect(theLinks[RThigh])
-    .connect(theLinks[RTibia]).connect(theLinks[RAnkle]).connect(theLinks[RFoot]);
+  theLinks[Torso].connect(theLinks[RPelvis])
+                 .connect(theLinks[RHip])
+                 .connect(theLinks[RThigh])
+                 .connect(theLinks[RTibia])
+                 .connect(theLinks[RAnkle])
+                 .connect(theLinks[RFoot]);
 
   // Toros -- Hip
   theLinks[Torso].connect(theLinks[Hip]);
@@ -98,7 +111,7 @@ void KinematicChain::buildLinkChains()
 //  {
 //    cout << "Test[" << getLinkName(theLinks[i]) << "] " << test(theLinks[i]) << '\n';
 //  }
-}
+}//end buildLinkChains
 
 void KinematicChain::initMassesInfo()
 {
@@ -161,60 +174,51 @@ void KinematicChain::initMassesInfo()
 
   // the value of total mass in SDK is NOT correct
 //  ASSERT(sumMass == NaoInfo::TotalMass);
-}
+}//end initMassesInfo
+
+
+void KinematicChain::initJointsAxes()
+{
+  // precalculate the axes for the joints
+  const Vector3d x(1,0,0);
+  const Vector3d y(0,1,0);
+  const Vector3d z(0,0,1);
+  // those are 45° axes for the LHipYawPitch/RHipYawPitch
+  const Vector3d lyz(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
+  const Vector3d ryz(0, sqrt(2.0)/2.0,  sqrt(2.0)/2.0);
+
+  // set the axes for the joints
+  // head
+  theLinks[Neck     ].setJoint(z,   JointData::HeadYaw);
+  theLinks[Head     ].setJoint(y,   JointData::HeadPitch);
+  // left arm
+  theLinks[LShoulder].setJoint(y,   JointData::LShoulderPitch);
+  theLinks[LBicep   ].setJoint(z,   JointData::LShoulderRoll);
+  theLinks[LElbow   ].setJoint(x,   JointData::LElbowYaw);
+  theLinks[LForeArm ].setJoint(z,   JointData::LElbowRoll);
+  // left leg
+  theLinks[LPelvis  ].setJoint(lyz, JointData::LHipYawPitch);
+  theLinks[LHip     ].setJoint(x,   JointData::LHipRoll);
+  theLinks[LThigh   ].setJoint(y,   JointData::LHipPitch);
+  theLinks[LTibia   ].setJoint(y,   JointData::LKneePitch);
+  theLinks[LAnkle   ].setJoint(y,   JointData::LAnklePitch);
+  theLinks[LFoot    ].setJoint(x,   JointData::LAnkleRoll);
+  // right arm
+  theLinks[RShoulder].setJoint(y,   JointData::RShoulderPitch);
+  theLinks[RBicep   ].setJoint(z,   JointData::RShoulderRoll);
+  theLinks[RElbow   ].setJoint(x,   JointData::RElbowYaw);
+  theLinks[RForeArm ].setJoint(z,   JointData::RElbowRoll);
+  // right leg
+  theLinks[RPelvis  ].setJoint(ryz, JointData::RHipYawPitch);
+  theLinks[RHip     ].setJoint(x,   JointData::RHipRoll);
+  theLinks[RThigh   ].setJoint(y,   JointData::RHipPitch);
+  theLinks[RTibia   ].setJoint(y,   JointData::RKneePitch);
+  theLinks[RAnkle   ].setJoint(y,   JointData::RAnklePitch);
+  theLinks[RFoot    ].setJoint(x,   JointData::RAnkleRoll);
+}//end initJointsAxes
 
 void KinematicChain::initJointsInfo(JointData& jointData)
-{    
-  const Vector3<double> x(1,0,0);
-  const Vector3<double> y(0,1,0);
-  const Vector3<double> z(0,0,1);
-  const Vector3<double> lyz(0, sqrt(2.0)/2.0, -sqrt(2.0)/2.0);
-  const Vector3<double> ryz(0, sqrt(2.0)/2.0,   sqrt(2.0)/2.0);
-
-  theLinks[Neck].setJoint(z, JointData::HeadYaw);
-
-  theLinks[Head].setJoint(y, JointData::HeadPitch);
-
-  theLinks[LShoulder].setJoint(y, JointData::LShoulderPitch);
-
-  theLinks[LBicep].setJoint(z, JointData::LShoulderRoll);
-
-  theLinks[LElbow].setJoint(x, JointData::LElbowYaw);
-
-  theLinks[LForeArm].setJoint(z, JointData::LElbowRoll);
-
-  theLinks[LPelvis].setJoint(lyz, JointData::LHipYawPitch);
-
-  theLinks[LHip].setJoint(x, JointData::LHipRoll);
-
-  theLinks[LThigh].setJoint(y, JointData::LHipPitch);
-
-  theLinks[LTibia].setJoint(y, JointData::LKneePitch);
-
-  theLinks[LAnkle].setJoint(y, JointData::LAnklePitch);
-
-  theLinks[LFoot].setJoint(x, JointData::LAnkleRoll);
-
-  theLinks[RShoulder].setJoint(y, JointData::RShoulderPitch);
-
-  theLinks[RBicep].setJoint(z, JointData::RShoulderRoll);
-
-  theLinks[RElbow].setJoint(x, JointData::RElbowYaw);
-
-  theLinks[RForeArm].setJoint(z, JointData::RElbowRoll);
-
-  theLinks[RPelvis].setJoint(ryz, JointData::RHipYawPitch);
-
-  theLinks[RHip].setJoint(x, JointData::RHipRoll);
-
-  theLinks[RThigh].setJoint(y, JointData::RHipPitch);
-
-  theLinks[RTibia].setJoint(y, JointData::RKneePitch);
-
-  theLinks[RAnkle].setJoint(y, JointData::RAnklePitch);
-
-  theLinks[RFoot].setJoint(x, JointData::RAnkleRoll);
-
+{
   for (int i = 0; i < numOfLinks; i++)
   {
     // link the joint data 
@@ -228,7 +232,7 @@ void KinematicChain::initJointsInfo(JointData& jointData)
       theLinks[i].ddq = &(jointData.ddp[id]);
     }
   }
-}
+}//end initJointsInfo
 
 void KinematicChain::initLinksInfo()
 {  
@@ -264,10 +268,11 @@ void KinematicChain::initLinksInfo()
   theLinks[RFoot].setLink(0, 0, 0);
 
   theLinks[Hip].setLink(0, 0, -NaoInfo::HipOffsetZ);
-}
+}//end initLinksInfo
 
 void KinematicChain::init(JointData& jointData)
 {
+  initJointsAxes();
   initJointsInfo(jointData);
   initMassesInfo();
   initLinksInfo();
@@ -330,38 +335,37 @@ string KinematicChain::test(const Kinematics::Link& node) const
     }
   }
   return "ok";
-}
+}//end test
 
 void KinematicChain::updateCoM()
 {
-    CoM.x = 0;
-    CoM.y = 0;
-    CoM.z = 0;
-    for(int i=0; i<numOfLinks; i++){
-        CoM += (theLinks[i].c * theLinks[i].mass);
-    }
-    CoM/=sumMass;
-}
+  CoM = Vector3d::zero;
+  for(int i=0; i<numOfLinks; i++)
+  {
+    CoM += (theLinks[i].c * theLinks[i].mass);
+  }
+  CoM/=sumMass;
+}//end updateCoM
 
 Vector2<double> KinematicChain::calculateZMP() const
 {
-    // Px = S((z''+g)x-(z-Pz)x'') / S(z''+g)
-    const static double g = -9810;
-    const static double pz = 0;
-    Vector2<double> zmp(0,0);
-    double as = 0;
-    for(int i=0; i<numOfLinks; i++)
-    {
-        double zg = theLinks[i].dv.z + g;
-        double m = theLinks[i].mass;
-        as += (zg*m);
-        double zp = theLinks[i].c.z-pz;
-        zmp.x += (( zg*theLinks[i].c.x - zp*theLinks[i].dv.x )*m);
-        zmp.y += (( zg*theLinks[i].c.y - zp*theLinks[i].dv.y )*m);
-    }
-    zmp/=as;
-    return zmp;
-}
+  // Px = S((z''+g)x-(z-Pz)x'') / S(z''+g)
+  const static double g = -9810;
+  const static double pz = 0;
+  Vector2<double> zmp;
+  double as = 0;
+  for(int i=0; i<numOfLinks; i++)
+  {
+    double zg = theLinks[i].dv.z + g;
+    double m = theLinks[i].mass;
+    as += (zg*m);
+    double zp = theLinks[i].c.z-pz;
+    zmp.x += (( zg*theLinks[i].c.x - zp*theLinks[i].dv.x )*m);
+    zmp.y += (( zg*theLinks[i].c.y - zp*theLinks[i].dv.y )*m);
+  }
+  zmp/=as;
+  return zmp;
+}//end calculateZMP
 
 void KinematicChain::print(ostream& stream) const
 {
@@ -370,7 +374,7 @@ void KinematicChain::print(ostream& stream) const
     stream << getLinkName((LinkID)i) << ": "<< theLinks[i].p <<"\n";
   }
   stream << "CoM: " << CoM << "\n";
-}
+}//end print
 
 std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node)
 {
@@ -412,4 +416,4 @@ std::ostream & operator<<(std::ostream& os, const Kinematics::Link& node)
     }
   }
   return os;
-}
+}//end operator<<

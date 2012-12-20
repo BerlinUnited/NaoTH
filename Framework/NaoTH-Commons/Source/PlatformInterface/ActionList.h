@@ -66,6 +66,14 @@ public:
 };//end class ActionList
 
 
+/**
+* HACK
+*/
+class Void
+{
+public:
+  virtual ~Void(){}
+};
 
 /**
   * @class TypedActionCreator
@@ -74,7 +82,7 @@ public:
   * @see TypedActionCreatorMap
   */
 template<class T>
-class TypedActionCreator
+class TypedActionCreator : public Void
 {
 public:
   virtual ~TypedActionCreator(){} //ACHTUNG: needed, for the desructor of the derived classes to be called
@@ -90,7 +98,7 @@ public:
 class TypedActionCreatorMap
 {
 private:
-  typedef std::map<std::string,void*> TypedActionCreatorMapT;
+  typedef std::map<std::string, Void*> TypedActionCreatorMapT;
 
   // avaliable creators
   TypedActionCreatorMapT registeredActions;

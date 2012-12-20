@@ -44,8 +44,7 @@ private:
   Pose3D getLeftFootFromKinematicChain(const KinematicChain& kc) const;
   
   Pose3D getRightFootFromKinematicChain(const KinematicChain& kc) const;
-  
-  Pose3D interpolate(const Pose3D& sp, const Pose3D& tp, double t) const;
+
 public:
 
   InverseKinematicsMotionEngine();
@@ -75,9 +74,9 @@ public:
   T interpolate(const T& sp, const T& tp, double t) const 
   {
     T p;
-    p.body() = interpolate(sp.body(), tp.body(), t);
-    p.feet.left = interpolate(sp.feet.left, tp.feet.left, t);
-    p.feet.right = interpolate(sp.feet.right, tp.feet.right, t);
+    p.body() = Pose3D::interpolate(sp.body(), tp.body(), t);
+    p.feet.left = Pose3D::interpolate(sp.feet.left, tp.feet.left, t);
+    p.feet.right = Pose3D::interpolate(sp.feet.right, tp.feet.right, t);
     return p;
   }
 
@@ -175,7 +174,9 @@ private:
   double rotationStabilizeFactor; // [0, 1] disable ~ enable
 };
 
-
+/**
+* a representation providing access to a instance of InverseKinematicsMotionEngine
+*/
 class InverseKinematicsMotionEngineService
 {
 public:
@@ -190,6 +191,18 @@ public:
     delete theEngine;
   }
 
+  InverseKinematicsMotionEngine& getEngine() const
+  {
+    assert(theEngine != NULL);
+    return *theEngine;
+  }
+
+  void setEngine(InverseKinematicsMotionEngine* ref)
+  {
+    theEngine = ref;
+  }
+
+private:
   InverseKinematicsMotionEngine* theEngine;
 };//end InverseKinematicsMotionEngineService
 

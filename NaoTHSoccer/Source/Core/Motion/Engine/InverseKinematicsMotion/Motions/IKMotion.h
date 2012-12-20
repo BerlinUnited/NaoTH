@@ -29,8 +29,7 @@ protected:
   */
   inline InverseKinematicsMotionEngine& getEngine() const
   {
-    assert(theEngineService.theEngine != NULL);
-    return *(theEngineService.theEngine);
+    return theEngineService.getEngine();
   }
 
 public:

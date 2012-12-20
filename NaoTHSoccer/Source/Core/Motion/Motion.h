@@ -15,13 +15,17 @@
 #include <ModuleFramework/Module.h>
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
+
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 #include "MorphologyProcessor/FootTouchCalibrator.h"
+#include "MorphologyProcessor/FootGroundContactDetector.h"
+#include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
 #include "SensorFilter/InertiaSensorFilter.h"
-#include "MorphologyProcessor/FootGroundContactDetector.h"
 
+
+// representations
 #include "Representations/Modeling/FSRPositions.h"
 
 #include "Tools/Debug/Logger.h"
@@ -34,9 +38,10 @@ BEGIN_DECLARE_MODULE(Motion)
   REQUIRE(InertialModel)
   REQUIRE(CalibrationData)
 
-  PROVIDE(FSRPositions)// TODO:strange...
+  //PROVIDE(FSRPositions)// TODO:strange...
   PROVIDE(CameraMatrix)// TODO:strange...
 
+  // PROVIDE is needed to update the speed and acceleration
   PROVIDE(MotorJointData) // TODO: check
   
   PROVIDE(RobotInfo)
@@ -44,7 +49,7 @@ BEGIN_DECLARE_MODULE(Motion)
   PROVIDE(KinematicChainMotor)
 
   // platform input
-  PROVIDE(SensorJointData)
+  REQUIRE(SensorJointData)
   PROVIDE(FrameInfo)
   PROVIDE(InertialSensorData)
   PROVIDE(FSRData)
@@ -100,6 +105,7 @@ private:
   ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
   ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
   ModuleCreator<OdometryCalculator>* theOdometryCalculator;
+  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
   ModuleCreator<MotionEngine>* theMotionEngine;
 

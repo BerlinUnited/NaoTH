@@ -69,7 +69,8 @@ class JointData
 
     virtual ~JointData(){}
 
-    void init();
+    //
+    static void loadJointLimitsFromConfig();
 
     static std::string getJointName(JointID);
     static JointID jointIDFromName(std::string name);

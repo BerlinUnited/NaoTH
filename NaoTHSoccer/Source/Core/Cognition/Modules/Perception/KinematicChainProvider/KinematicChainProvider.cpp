@@ -12,13 +12,13 @@ void KinematicChainProvider::execute()
 
   // calculate the kinematic chain
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
-    getAccelerometerData(),
     getInertialModel().orientation,
+    getAccelerometerData().getAcceleration(),
     getKinematicChain(),
     theFSRPos,
     deltaTime);
 
-  getKinematicChain().updateCoM();
+  //getKinematicChain().updateCoM();
 }
 
 KinematicChainProvider::~KinematicChainProvider()

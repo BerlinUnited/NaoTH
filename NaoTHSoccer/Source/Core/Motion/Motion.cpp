@@ -58,6 +58,7 @@ Motion::Motion()
   theFootGroundContactDetector = registerModule<FootGroundContactDetector>("FootGroundContactDetector", true);
   theSupportPolygonGenerator = registerModule<SupportPolygonGenerator>("SupportPolygonGenerator", true);
   theOdometryCalculator = registerModule<OdometryCalculator>("OdometryCalculator", true);
+  theKinematicChainProvider = registerModule<KinematicChainProviderMotion>("KinematicChainProvider", true);
 
   theMotionEngine = registerModule<MotionEngine>("MotionEngine", true);
 }
@@ -69,11 +70,11 @@ Motion::~Motion()
 
 void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
-  //theBlackBoard.init();
   // TODO: need a better solution for this
-  getSensorJointData().init();
-  getKinematicChainSensor().init(getSensorJointData());
-  getKinematicChainMotor().init(getMotorJointData()); // TODO: make it const
+
+  // load the joint limits from the config 
+  JointData::loadJointLimitsFromConfig();
+
 
   // init robot info
   getRobotInfo().platform = platform.getName();
@@ -173,7 +174,11 @@ void Motion::processSensorData()
   //
   theFootGroundContactDetector->execute();
 
+
+
+  theKinematicChainProvider->execute();
   //
+  /*
   Kinematics::ForwardKinematics::calculateKinematicChainAll(
     getAccelerometerData(),
     //getInertialSensorData.data,
@@ -181,6 +186,11 @@ void Motion::processSensorData()
     getKinematicChainSensor(),
     getFSRPositions().pos, // provides theFSRPos
     getRobotInfo().getBasicTimeStepInSecond());
+  */
+  //
+  //Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);
+  //getKinematicChainMotor().updateCoM();
+
 
   //
   theSupportPolygonGenerator->execute();
@@ -197,9 +207,6 @@ void Motion::processSensorData()
     getFSRData);
     */
 
-  //
-  Kinematics::ForwardKinematics::updateKinematicChainFrom(getKinematicChainMotor().theLinks);
-  getKinematicChainMotor().updateCoM();
 
   // store the MotorJointData
   theLastMotorJointData = getMotorJointData();

@@ -318,7 +318,9 @@ public:
   }
 };
 
-
+/**
+*
+*/
 template<typename T>
 RotationMatrixT<T> Rodrigues(const RotationMatrixT<T>& A, const RotationMatrixT<T>& A2, T q)
 {

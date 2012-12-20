@@ -12,6 +12,16 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Configuration.h"
 
+
+class KinematicChainGeberic : public naoth::Printable
+{
+public:
+
+
+
+};//end class KinematicChainGeberic
+
+
 class KinematicChain : public naoth::Printable
 {
 public:
@@ -47,7 +57,11 @@ public:
 private:
   void initMassesInfo();
 
+  //
   void initJointsInfo(naoth::JointData& jointData);
+
+  //
+  void initJointsAxes();
 
   void initLinksInfo();
 
@@ -57,6 +71,11 @@ public:
 
   Kinematics::Link theLinks[numOfLinks];
   Vector3<double> CoM; // center of mass
+
+  inline Kinematics::Link& getLink(LinkID id)
+  {
+    return theLinks[id];
+  }
 
   KinematicChain();
   virtual ~KinematicChain();

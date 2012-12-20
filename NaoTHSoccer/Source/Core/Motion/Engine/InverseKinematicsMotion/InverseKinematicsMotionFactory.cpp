@@ -17,7 +17,7 @@
 InverseKinematicsMotionFactory::InverseKinematicsMotionFactory()
   : currentMotionCreator(NULL)
 {
-  getInverseKinematicsMotionEngineService().theEngine = registerModule<InverseKinematicsMotionEngine>("InverseKinematicsMotionEngine", true)->getModuleT();
+  getInverseKinematicsMotionEngineService().setEngine(registerModule<InverseKinematicsMotionEngine>("InverseKinematicsMotionEngine", true)->getModuleT());
 }
 
 InverseKinematicsMotionFactory::~InverseKinematicsMotionFactory()
