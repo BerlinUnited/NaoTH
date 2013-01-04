@@ -8,16 +8,11 @@
 #include "ParticleFilterBallLocator.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/DebugImageDrawings.h"
 
 // Tools
 #include "Tools/Math/Probabilistics.h"
-#include "Tools/Math/Geometry.h"
 
 
 ParticleFilterBallLocator::ParticleFilterBallLocator()

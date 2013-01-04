@@ -17,13 +17,10 @@
 #include "Tools/Math/Common.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
 
-using namespace std;
-using namespace naoth;
-
-class DebugDrawings : public Singleton<DebugDrawings>, public DebugCommandExecutor
+class DebugDrawings : public naoth::Singleton<DebugDrawings>, public DebugCommandExecutor
 {
 protected:
-  friend class Singleton<DebugDrawings>;
+  friend class naoth::Singleton<DebugDrawings>;
   DebugDrawings();
   ~DebugDrawings();
 
@@ -224,33 +221,33 @@ private:
  * @param image The Color object.
  * @return The stream.
  */ 
-ostream& operator<<(ostream& stream, const DebugDrawings::Color& color);
+std::ostream& operator<<(std::ostream& stream, const DebugDrawings::Color& color);
 
 
 #ifdef DEBUG
-#define IMAGE_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnImage" << endl
-#define FIELD_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnField" << endl
-#define PEN(color, width) DebugDrawings::getInstance().out() << "Pen:" << color << ":" << width << endl
-#define ROTATION(angle) DebugDrawings::getInstance().out() << "Rotation:" << angle << endl
-#define TRANSLATION(x,y) DebugDrawings::getInstance().out() << "Translation:" << x << ":" << y << endl
+#define IMAGE_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnImage" << std::endl
+#define FIELD_DRAWING_CONTEXT DebugDrawings::getInstance().out() << "DrawingOnField" << std::endl
+#define PEN(color, width) DebugDrawings::getInstance().out() << "Pen:" << color << ":" << width << std::endl
+#define ROTATION(angle) DebugDrawings::getInstance().out() << "Rotation:" << angle << std::endl
+#define TRANSLATION(x,y) DebugDrawings::getInstance().out() << "Translation:" << x << ":" << y << std::endl
 
-#define CIRCLE(x,y,radius) DebugDrawings::getInstance().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  endl
-#define OVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  endl
-#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  endl
-#define ARROW(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  endl
-#define LINE(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  endl
-#define BOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  endl
-#define FILLBOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << endl
-#define FILLOVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  endl
-#define TEXT_DRAWING(x,y,text) DebugDrawings::getInstance().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  endl
-#define SIMPLE_PARTICLE(x,y,r) DebugDrawings::getInstance().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  endl
+#define CIRCLE(x,y,radius) DebugDrawings::getInstance().out() << "Circle:" << x << ":" << y << ":" << radius << ":" <<  std::endl
+#define OVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
+#define OVAL_ROTATED(x,y,radiusX,radiusY,rotation) DebugDrawings::getInstance().out() << "Oval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" << rotation << ":" <<  std::endl
+#define ARROW(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Arrow:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define LINE(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Line:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define BOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "Box:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" <<  std::endl
+#define FILLBOX(x0,y0,x1,y1) DebugDrawings::getInstance().out() << "FillBox:" << x0 << ":" << y0 << ":" << x1 << ":" << y1 << ":" << std::endl
+#define FILLOVAL(x,y,radiusX,radiusY) DebugDrawings::getInstance().out() << "FillOval:" << x << ":" << y << ":" << radiusX << ":" << radiusY << ":" <<  std::endl
+#define TEXT_DRAWING(x,y,text) DebugDrawings::getInstance().out() << "Text:" << x << ":" << y << ":" << text << ":" <<  std::endl
+#define SIMPLE_PARTICLE(x,y,r) DebugDrawings::getInstance().out() << "Particle:" << x << ":" << y << ":" << r << ":" <<  std::endl
 
 #define PARTICLE(x,y,r,l) \
   LINE(x,y,x + l*cos(r),y + l*sin(r)); \
   CIRCLE(x,y,0.1*l)
 
-#define BINARY_PLOT(name,value) DebugDrawings::getInstance().out() << "BinaryPlotData:" << name << ":" << value << endl
-#define ROBOT(x,y,rotation) DebugDrawings::getInstance().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  endl
+#define BINARY_PLOT(name,value) DebugDrawings::getInstance().out() << "BinaryPlotData:" << name << ":" << value << std::endl
+#define ROBOT(x,y,rotation) DebugDrawings::getInstance().out() << "Robot:" << x << ":" << y << ":" << rotation << ":" <<  std::endl
 
 
 #else

@@ -6,7 +6,6 @@
 */
 
 #include "CameraMatrixCalculator.h"
-#include "PlatformInterface/Platform.h"
 
 void CameraMatrixCalculator::calculateCameraMatrix(
     CameraMatrix& theCameraMatrix,

@@ -1,13 +1,6 @@
 #include "StrategySymbols.h"
-#include "Tools/Math/Pose2D.h"
-#include "Tools/Math/Geometry.h"
-#include "Representations/Modeling/BallModel.h"
-#include "Representations/Modeling/GoalModel.h"
-#include "Representations/Modeling/PlayerInfo.h"
 
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-#include "Representations/Motion/MotionStatus.h"
 #include <Tools/Debug/DebugBufferedOutput.h>
 
 

@@ -9,12 +9,10 @@
 
 //debugDrawings
 #include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Math/Line.h"
+#include "Tools/ColorClasses.h"
 
 //debug
-#include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugModify.h"
 
 //class constructor

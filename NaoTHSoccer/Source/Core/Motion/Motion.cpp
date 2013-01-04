@@ -6,7 +6,6 @@
  */
 
 #include "Motion.h"
-#include <glib.h>
 
 #include <stdlib.h>
 
@@ -25,9 +24,7 @@
 #include "Engine/KeyFrameMotion/KeyFrameMotionEngine.h"
 
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-#include <Tools/CameraGeometry.h>
 
 #include "SensorFilter/InertiaSensorFilter.h"
 

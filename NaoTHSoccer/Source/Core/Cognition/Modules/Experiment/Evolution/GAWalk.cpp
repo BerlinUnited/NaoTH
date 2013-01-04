@@ -8,12 +8,11 @@
 #include "GAWalk.h"
 #include "Tools/NaoInfo.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/DataConversion.h"
 #include <DebugCommunication/DebugCommandManager.h>
 
 using namespace std;
 
-GAWalk::GAWalk(const VirtualVision& vv, const RobotPose& rp, const CameraMatrix& cm, const FrameInfo& fi , const FieldInfo& field,
+GAWalk::GAWalk(const naoth::VirtualVision& vv, const RobotPose& rp, const CameraMatrix& cm, const naoth::FrameInfo& fi , const FieldInfo& field,
   MotionRequest& mq)
 :theVirtualVision(vv),
   theRobotPose(rp),
@@ -170,9 +169,9 @@ void GAWalk::updateFitness(double fitness)
   {
     j.gene[g->first] = Math::clamp(j.gene[g->first], g->second.x, g->second.y);
     if (g->first == "walk.useArm" || g->first== "walk.enableDynamicStabilizer")
-      args[g->first] = DataConversion::toStr(j.gene[g->first]  > 0);
+      args[g->first] = naoth::DataConversion::toStr(j.gene[g->first]  > 0);
     else
-      args[g->first] = DataConversion::toStr(j.gene[g->first]);
+      args[g->first] = naoth::DataConversion::toStr(j.gene[g->first]);
   }
   stringstream answer;
   DebugCommandManager::getInstance().handleCommand("ParameterList:IKParameters:set", args, answer);

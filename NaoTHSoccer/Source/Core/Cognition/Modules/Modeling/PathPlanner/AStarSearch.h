@@ -448,7 +448,7 @@ private:
   */
   int testNewNodesAgainstGoal(unsigned int firstNode, unsigned int lastNode)
   {
-    double maxDistance(numeric_limits<double>::infinity());
+    double maxDistance(std::numeric_limits<double>::infinity());
     double temp(0.0);
     int result(-1);
     for(unsigned int i = firstNode; i < lastNode; i++)

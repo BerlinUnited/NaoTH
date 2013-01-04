@@ -3,7 +3,6 @@
  */
 
 #include "Sensor.h"
-#include <PlatformInterface/Platform.h>
 
 Sensor::Sensor()
 {

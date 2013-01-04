@@ -7,9 +7,6 @@
 
 #include "SpiderScan.h"
 
-#include <Tools/Debug/DebugImageDrawings.h>
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugRequest.h"
 
 SpiderScan::SpiderScan(const Image& theImage, const ColorClassificationModel& theColorClassifier)
 :

@@ -8,20 +8,15 @@
 #include "IKDynamicKickMotion.h"
 
 // Tools
-#include "Tools/Math/Common.h"
-#include "Tools/NaoInfo.h"
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/NaoTHAssert.h"
 #include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/Stopwatch.h"
 
 //#include "Motion/Motion.h"
 
-#include "Representations/Motion/Request/KickRequest.h"
 
 ReachibilityGrid IKDynamicKickMotion::basicReachibilityGrid;
 
@@ -102,7 +97,7 @@ void IKDynamicKickMotion::execute(const MotionRequest& motionRequest, MotionStat
     localInStandFoot(targetPose);
 
     double totalTime = targetPose.time;
-    double k = min( ((double)theBlackBoard.theRobotInfo.basicTimeStep) / totalTime, 1.0);
+    double k = std::min( ((double)theBlackBoard.theRobotInfo.basicTimeStep) / totalTime, 1.0);
 
     currentPose.pose = theEngine.interpolate(currentPose.pose, targetPose.pose, k);
     
@@ -827,7 +822,7 @@ Vector3<double> IKDynamicKickMotion::calculateTheLoadPoint(const Pose3D& kickPos
   MODIFY("IKDynamicKickMotion::kick_height", retractionPointWorld.z);
   
   // trajectory to be plotted in 3D viewer
-  static vector<Vector3<double> > trace;
+  static std::vector<Vector3<double> > trace;
   static Vector3<double> lastPoint(currentPose.translation);
   if(trace.empty())
   {
@@ -999,8 +994,8 @@ void IKDynamicKickMotion::drawReachabilityGrid(const Pose3D& kickPose, bool draw
   Vector3<int> point(0,0,kickPointGrid.z);
 
 
-  vector<Vector3<double> > reachablePoints;
-  vector<double > reachableValues;
+  std::vector<Vector3<double> > reachablePoints;
+  std::vector<double > reachableValues;
 
   double minValue = -1;
   double maxValue = -1;
@@ -1021,8 +1016,8 @@ if(draw2D){ FIELD_DRAWING_CONTEXT; PEN("000000",0.1);}
           maxValue = d;
         }
 
-        minValue = min(d,minValue);
-        maxValue = max(d,maxValue);
+        minValue = std::min(d,minValue);
+        maxValue = std::max(d,maxValue);
 
         reachablePoints.push_back(pointInGlobalCoords);
         reachableValues.push_back(d);

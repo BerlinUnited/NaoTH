@@ -10,12 +10,8 @@
 
 
 //debugDrawings
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Math/Line.h"
 
 //debug
-#include "Tools/Debug/NaoTHAssert.h"
 
 
 void AStarNode::successor(std::vector<AStarNode>& searchTree,

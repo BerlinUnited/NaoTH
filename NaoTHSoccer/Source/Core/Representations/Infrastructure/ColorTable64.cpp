@@ -7,7 +7,6 @@
 
 #include "ColorTable64.h"
 
-#include <iostream>
 
 using namespace std;
 

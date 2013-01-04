@@ -6,9 +6,6 @@
 */
 
 #include "SelflocSymbols.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Representations/Infrastructure/GPSData.h"
 
 SelflocSymbols* SelflocSymbols::theInstance = NULL;
 

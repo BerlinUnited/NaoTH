@@ -1,12 +1,8 @@
 #include "FieldSideDetector.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/ImageProcessing/BresenhamLineScan.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 #include <DebugCommunication/DebugCommandManager.h>
-#include <PlatformInterface/Platform.h>
 
 FieldSideDetector::FieldSideDetector()
   : dtreeTrained(false), modelFileName("fieldsidedtree.yml")

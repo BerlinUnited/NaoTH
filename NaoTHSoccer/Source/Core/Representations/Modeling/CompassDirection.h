@@ -22,9 +22,9 @@ public:
 
     double angle;
 
-    virtual void print(ostream& stream) const
+    virtual void print(std::ostream& stream) const
     {
-      stream << "angle = " << angle << endl;
+      stream << "angle = " << angle << std::endl;
     }//end print
 
 };//end class CompassDirection

@@ -74,7 +74,7 @@ public:
     calculateTrajectory(motionRequest);
 
     time += theBlackBoard.theRobotInfo.basicTimeStep;
-    double k = min(time / totalTime, 1.0);
+    double k = std::min(time / totalTime, 1.0);
 
     InverseKinematic::CoMFeetPose p = theEngine.interpolate(startPose, targetPose, k);
     bool solved = false;

@@ -1,9 +1,6 @@
 #include "PackageLoader.h"
 
-#include <list>
 
-#include <PlatformInterface/Platform.h>
-#include <Representations/Infrastructure/Configuration.h>
 
 PackageLoader::PackageLoader()
 {
