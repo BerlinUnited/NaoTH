@@ -1,4 +1,5 @@
 PROJECT_NAME = "NaoTeam Humboldt"
+PROJECT_LOGO = Utils/naoth-bu-2012-blue-mini.png
 
 OUTPUT_DIRECTORY  = doc
 INPUT = doxygen/

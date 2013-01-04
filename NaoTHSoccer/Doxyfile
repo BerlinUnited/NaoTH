@@ -1,4 +1,6 @@
 PROJECT_NAME="NaoTH Soccer Agent"
+PROJECT_LOGO = ../Utils/naoth-bu-2012-blue-mini.png
+
 INPUT=Source/ doxygen/
 FILE_PATTERNS=*.h *.md
 RECURSIVE=YES

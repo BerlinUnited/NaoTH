@@ -15,5 +15,5 @@ NaoTH Soccer Agent
 
 The agent we use to play soccer at RoboCup competitions.
 
-[Documentation for the NaoTH specific soccer agent] (../../Framework/doc/html/index.html)
+[Documentation for the NaoTH specific soccer agent] (../../NaoTHSoccer/doc/html/index.html)
 
