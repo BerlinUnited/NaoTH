@@ -67,6 +67,8 @@ RobotControl/RobotControlGUI/plugins/
 build-impl.xml
 genfiles.properties
 doc/html/
+*/doc/html/
+*.tag
 Deploy
 NaoTHSoccer/Config/behavior-ic.dat
 Utils/Video2Log/video2log
