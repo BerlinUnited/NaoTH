@@ -8,8 +8,6 @@
 #include "GridProvider.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
 #include <Tools/Debug/Stopwatch.h>
 
 

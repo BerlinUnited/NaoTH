@@ -5,7 +5,6 @@
  */
 
 #include "Sit.h"
-#include "PlatformInterface/Platform.h"
 
 using namespace naoth;
 

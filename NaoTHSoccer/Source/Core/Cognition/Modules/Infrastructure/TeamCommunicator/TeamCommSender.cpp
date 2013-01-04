@@ -1,6 +1,5 @@
 #include "TeamCommSender.h"
 #include "PlatformInterface/Platform.h"
-#include "Tools/DataConversion.h"
 
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),

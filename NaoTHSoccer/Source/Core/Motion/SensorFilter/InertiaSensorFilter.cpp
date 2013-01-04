@@ -7,10 +7,8 @@
 */
 
 #include "InertiaSensorFilter.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Math/RotationMatrix.h"
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
 
 //#include "Representations/MotionControl/MotionInfo.h"

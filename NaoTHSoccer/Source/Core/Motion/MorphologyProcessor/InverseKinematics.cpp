@@ -6,13 +6,10 @@
 * Implementation of Inverse Kinematics
 */
 
-#include "PlatformInterface/Platform.h"
 
 #include "Tools/Debug/Stopwatch.h"
 
 // Tools
-#include "Tools/Math/Common.h"
-#include "Tools/Math/RotationMatrix.h"
 //#include "Tools/TemplateUtility.h"
 #include "Tools/NaoInfo.h"
 

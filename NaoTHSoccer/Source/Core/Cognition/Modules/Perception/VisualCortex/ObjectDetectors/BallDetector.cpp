@@ -8,17 +8,12 @@
 
 #include "BallDetector.h"
 
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/DataStructures/ArrayQueue.h"
 #include "Tools/ImageProcessing/BlobList.h"
 #include "Tools/CameraGeometry.h"
 
 #include "Tools/Debug/Stopwatch.h"
 
-#include <Motion/CameraMatrixCalculator/CameraMatrixCalculator.h>
 
 BallDetector::BallDetector()
   : theBlobFinder(getColoredGrid())

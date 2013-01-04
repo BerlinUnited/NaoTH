@@ -43,7 +43,7 @@ public:
     Pose2D pose;
     bool poseValid;
     bool poseRotationValid;
-    GameData::TeamColor teamColor;
+    naoth::GameData::TeamColor teamColor;
     bool teamColorIsValid;
     unsigned int number;
     bool numberIsValid;
@@ -58,7 +58,7 @@ public:
   /** list of seen players */
   std::list<Player> playersList;
  
-  FrameInfo theFrameInfo;
+  naoth::FrameInfo theFrameInfo;
 
   void addPlayer(const Player& player)
   {
@@ -71,11 +71,11 @@ public:
     playersList.clear();
   }//end reset
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     for(std::list<Player>::const_iterator iter=playersList.begin(); iter!=playersList.end(); ++iter)
     {
-      stream << GameData::teamColorToString(iter->teamColor)<<" : "<<iter->poseValid<<" : "<< iter->pose<<" : "<<iter->angleTo<<'\n';
+      stream << naoth::GameData::teamColorToString(iter->teamColor)<<" : "<<iter->poseValid<<" : "<< iter->pose<<" : "<<iter->angleTo<<'\n';
     }
   }//end print
 
@@ -86,7 +86,7 @@ public:
     {
       if(iter->teamColorIsValid)
       {
-        if(iter->teamColor == GameData::red)
+        if(iter->teamColor == naoth::GameData::red)
         {
           PEN("FF0000", 20);
         }

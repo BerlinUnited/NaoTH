@@ -5,7 +5,6 @@
 * Implentation of the class SupportPolygonGenerator
 */
 #include <Tools/Math/ConvexHull.h>
-#include <Tools/Math/Pose3D.h>
 #include <Tools/NaoInfo.h>
 #include "SupportPolygonGenerator.h"
 #include "PlatformInterface/Platform.h"

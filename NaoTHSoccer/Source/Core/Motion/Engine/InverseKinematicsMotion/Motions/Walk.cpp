@@ -10,9 +10,8 @@
 #include "Walk/FootTrajectoryGenerator.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
+#include <Tools/Math/MatrixBH.h>
 
-#include "Tools/Math/MatrixBH.h"
-#include "Tools/Math/MatrixBH.cpp"
 
 using namespace InverseKinematic;
 using namespace naoth;
@@ -318,7 +317,7 @@ void Walk::manageSteps(const WalkRequest& req)
 {
   if ( stepBuffer.empty() )
   {
-    cout<<"walk start"<<endl;
+    std::cout<<"walk start"<<std::endl;
     theCoMFeetPose = theEngine.getCurrentCoMFeetPose();
     ZMPFeetPose currentZMP = theEngine.getPlannedZMPFeetPose();
     
@@ -372,7 +371,7 @@ void Walk::manageSteps(const WalkRequest& req)
       // step control
       step.footStep = theFootStepPlanner.controlStep(planningStep.footStep, req);
       updateParameters(step, req.character);
-      step.samplesSingleSupport = max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
+      step.samplesSingleSupport = std::max(1, (int) (req.stepControl.time / theBlackBoard.theRobotInfo.basicTimeStep));
       step.numberOfCyclePerFootStep = step.samplesDoubleSupport + step.samplesSingleSupport;
       step.stepControlling = true;
       step.speedDirection = req.stepControl.speedDirection;
@@ -645,7 +644,7 @@ void Walk::stopWalking()
     {
       currentState = motion::stopped;
       stepBuffer.clear();
-      cout<<"walk stopped (standard)"<<endl;
+      std::cout<<"walk stopped (standard)"<<std::endl;
     }
     else
     {
@@ -705,7 +704,7 @@ void Walk::stopWalkingWithoutStand()
     {
       currentState = motion::stopped;
       stepBuffer.clear();
-      cout<<"walk stopped"<<endl;
+      std::cout<<"walk stopped"<<std::endl;
     }
     else
     {
@@ -727,9 +726,9 @@ void Walk::updateParameters(Step& step, double character) const
   const unsigned int basicTimeStep = theBlackBoard.theRobotInfo.basicTimeStep;
   
   step.bodyPitchOffset = Math::fromDegrees(theParameters.bodyPitchOffset);
-  step.samplesDoubleSupport = max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
-  step.samplesSingleSupport = max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
-  int extendDoubleSupportByCharacter = max(0, (int)((theWalkParameters.extendDoubleSupportTimeByCharacter / basicTimeStep)
+  step.samplesDoubleSupport = std::max(0, (int) (theWalkParameters.doubleSupportTime / basicTimeStep));
+  step.samplesSingleSupport = std::max(1, (int) (theWalkParameters.singleSupportTime / basicTimeStep));
+  int extendDoubleSupportByCharacter = std::max(0, (int)((theWalkParameters.extendDoubleSupportTimeByCharacter / basicTimeStep)
                                                     *(1-character)));
 
   ASSERT(extendDoubleSupportByCharacter < step.samplesSingleSupport);

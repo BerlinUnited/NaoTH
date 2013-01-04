@@ -5,11 +5,9 @@
  * Implementation of class WholeGoalLocator
  */
 
-#include "Tools/Math/Pose2D.h"
 
 
 #include "WholeGoalLocator.h"
-#include "Cognition/Modules/Perception/VisualCortex/ObjectDetectors/FieldDetector.h"
 
 WholeGoalLocator::WholeGoalLocator()
 {

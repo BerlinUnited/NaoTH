@@ -40,10 +40,10 @@ public:
     theSupportPolygon(theSupportPolygon),
     theKinematicChain(theKinematicChain)
   {
-    string leftFootTouchDetectorCfg("1 1 1 1 -5");
-    string rightFootTouchDetectorCfg("1 1 1 1 -5");
+    std::string leftFootTouchDetectorCfg("1 1 1 1 -5");
+    std::string rightFootTouchDetectorCfg("1 1 1 1 -5");
     const naoth::Configuration& cfg = naoth::Platform::getInstance().theConfiguration;
-    string cfgname = "TouchDetector";
+    std::string cfgname = "TouchDetector";
     if ( cfg.hasGroup(cfgname) )
     {
       leftFootTouchDetectorCfg = cfg.getString(cfgname, "leftFoot");

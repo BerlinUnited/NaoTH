@@ -9,10 +9,7 @@
 
 // debug
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 
 // tools
 #include "Tools/Math/Probabilistics.h"

@@ -6,7 +6,6 @@
 */
 
 #include "GridClustering.h"
-#include "Representations/Infrastructure/FieldInfo.h"
 
   GridClustering::GridClustering(SampleSet& sampleSet)
   :

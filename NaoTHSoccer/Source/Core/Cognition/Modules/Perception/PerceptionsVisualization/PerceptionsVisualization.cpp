@@ -8,9 +8,8 @@
 #include "PerceptionsVisualization.h"
 
 //include debugs
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 
 PerceptionsVisualization::PerceptionsVisualization()
 {

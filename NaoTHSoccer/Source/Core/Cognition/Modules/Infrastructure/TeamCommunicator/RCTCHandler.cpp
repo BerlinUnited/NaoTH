@@ -1,6 +1,5 @@
 #include "RCTCHandler.h"
 #include "PlatformInterface/Platform.h"
-#include "Tools/DataConversion.h"
 
 RCTCHandler::RCTCHandler()
   : lastSentTimestamp(0),
