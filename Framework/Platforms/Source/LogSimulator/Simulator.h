@@ -41,9 +41,6 @@
 
 #define CYCLE_TIME 20
 
-using namespace naoth;
-
-
 class LogProvider: public Module, virtual private BlackBoardInterface
 {
 private:
