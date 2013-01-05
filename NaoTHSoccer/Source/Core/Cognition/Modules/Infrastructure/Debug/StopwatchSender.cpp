@@ -21,7 +21,7 @@ StopwatchSender::StopwatchSender()
 
 void StopwatchSender::execute()
 {
-  std::map<std::string, StopwatchItem>& stopwatches = Stopwatch::getInstance().stopwatches;
+  std::map<std::string, StopwatchItem>& stopwatches = StopwatchManager::getInstance().stopwatches;
   std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
   while (it != stopwatches.end())
   {
@@ -29,7 +29,7 @@ void StopwatchSender::execute()
     
     DEBUG_REQUEST("Plot:Stopwatch",
       std::stringstream s;
-      s << "SW:" << item.name;
+      s << "SW:" << it->first;
       PLOT_GENERIC(s.str(), getFrameInfo().getTime(), item.lastValue)
       );
     it++;
@@ -41,7 +41,7 @@ void StopwatchSender::executeDebugCommand(const std::string& command, const std:
   if ("stopwatch" == command)
   {
     //g_debug("sending stopwatches");
-    std::map<std::string, StopwatchItem>& stopwatches = Stopwatch::getInstance().stopwatches;
+    std::map<std::string, StopwatchItem>& stopwatches = StopwatchManager::getInstance().stopwatches;
     naothmessages::Stopwatches all;
     // collect all values
     std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
