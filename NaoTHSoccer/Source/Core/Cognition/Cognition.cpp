@@ -236,15 +236,15 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   g_message("Cognition register end");
 
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.start();
 }//end init
 
 
 void Cognition::call()
 {
   // BEGIN cognition frame rate measuring
-  Stopwatch::getInstance().notifyStop(stopwatch);
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.stop();
+  stopwatch.start();
   PLOT("_CognitionCycle", stopwatch.lastValue);
   // END cognition frame rate measuring
 

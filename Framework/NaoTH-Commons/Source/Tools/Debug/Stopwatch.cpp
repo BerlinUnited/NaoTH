@@ -15,81 +15,73 @@
 
 using namespace std;
 
-Stopwatch::Stopwatch() : stopwatches()
-{
-}
 
-Stopwatch::~Stopwatch()
-{ 
-  // TODO: there is for sure a better  place for it
-  //Stopwatch::getInstance().dump(); 
-}
-
-
-void Stopwatch::notifyStart(const std::string& stopWatchName)
-{
-  stopwatches[stopWatchName].name = stopWatchName;
-  notifyStart(stopwatches.find(stopWatchName)->second);
-}//end notifyStart
-
-
-void Stopwatch::notifyStop(const std::string& stopWatchName)
-{
-  notifyStop(stopwatches[stopWatchName]);
-}//end notifyStop
-
-void StopwatchItem::_start()
+void StopwatchItem::start()
 {
   isValid = false;
  
   unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
-  start = timeInMicro;
-  stop = timeInMicro;
-}//end _start
+  begin = timeInMicro;
+  end = timeInMicro;
+}//end start
 
-void Stopwatch::notifyStart(StopwatchItem& stopwatchItem) 
-{
-  //g_debug("stopwatch START %s", stopwatchItem.name.c_str());
-  stopwatchItem._start();
-}//end notifyStart
 
-void StopwatchItem::_stop()
+void StopwatchItem::stop()
 {
   unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
-  this->stop = timeInMicro;
+  this->end = timeInMicro;
   this->isValid = true;
 
   // update the statistics of the item
   this->n++;
-  float value = static_cast<float>(this->stop - this->start) * 0.001f; // in ms
+  float value = static_cast<float>(this->end - this->begin) * 0.001f; // in ms
   this->min = std::min(this->min, value);
   this->max = std::max(this->max, value);
   // update the mean iteratively
   // c(n) = c(n-1) + (x_n - c(n-1))/n
   this->mean += (value - this->mean)/this->n;
   //g_debug("stopwatch STOP %s", stopwatchItem.name.c_str());
-  this->lastValue = (unsigned int)(this->stop - this->start);
-}//end stop_
+  this->lastValue = (unsigned int)(this->end - this->begin);
+}//end stop
 
 
-void Stopwatch::notifyStop(StopwatchItem& stopwatchItem)
+
+StopwatchManager::StopwatchManager()
 {
-  stopwatchItem._stop();
+}
+
+StopwatchManager::~StopwatchManager()
+{ 
+  // TODO: there is for sure a better  place for it
+  //Stopwatch::getInstance().dump(); 
+}
+
+
+void StopwatchManager::notifyStart(const std::string& stopWatchName)
+{
+  //stopwatches[stopWatchName].name = stopWatchName;
+  stopwatches[stopWatchName].start();
+}//end notifyStart
+
+
+void StopwatchManager::notifyStop(const std::string& stopWatchName)
+{
+  stopwatches[stopWatchName].stop();
 }//end notifyStop
 
 
 
-StopwatchItem& Stopwatch::getStopwatchReference(const std::string& stopWatchName)
+StopwatchItem& StopwatchManager::getStopwatchReference(const std::string& stopWatchName)
 {
   // add value if not existing
   StopwatchItem& stopwatchItem = stopwatches[stopWatchName];
-  stopwatchItem.name = stopWatchName;
+  //stopwatchItem.name = stopWatchName;
     
   return stopwatchItem;
 }//end getStopwatchReference
 
 
-void Stopwatch::dump(std::string name)
+void StopwatchManager::dump(std::string name)
 {
   stringstream outputStream;
   
@@ -101,7 +93,7 @@ void Stopwatch::dump(std::string name)
 
     if (item.isValid) 
     {
-      outputStream << item.name <<
+      outputStream << it->first <<
         ';' << item.min << ';' << item.mean << ';' << item.max << ';' << endl;
     }
 

@@ -21,6 +21,7 @@ using namespace naoth;
 
 // kind of a HACK, needed by the logsimulator
 extern ModuleManager* getModuleManager(Cognition* c);
+//extern int main(int argc, char** argv);
 
 /*
  * 
@@ -104,7 +105,7 @@ int main(int argc, char** argv)
   sim.main();
   
   // dump some debug information
-  Stopwatch::getInstance().dump();
+  StopwatchManager::getInstance().dump();
 
   return (EXIT_SUCCESS);
 }//end main
