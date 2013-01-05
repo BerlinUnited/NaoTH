@@ -6,8 +6,7 @@ project "NaoTH-Commons"
   targetname "naothtools"
   
   includedirs {
-    "../Source/",
-    "../Source/Interface/"
+    "../Source/"
   }
   
   files {

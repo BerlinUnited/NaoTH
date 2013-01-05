@@ -7,56 +7,57 @@ if os.isfile("projectconfig.user.lua") then
 	dofile "projectconfig.user.lua"
 end
 
+print("EXTERN_PATH = " .. EXTERN_PATH)
+
+--
+include (NAO_CTC)
+
 -- load some helpers for cross compilation etc.
-dofile "helper/naocrosscompile_v3.lua"
-dofile "helper/naocrosscompile.lua"
+--dofile "helper/naocrosscompile.lua"
 dofile "helper/extract_todos.lua"
 dofile "helper/qtcreator.lua"
-
-
-newaction {
-  trigger = "todo",
-  description = "extracts all todos",
-  execute = function()
-    
-    local result = {};
-    
-    extract_todos_files(os.matchfiles("../Source/**.cpp"), result);
-    extract_todos_files(os.matchfiles("../Source/**.h"), result);
-    extract_todos_files(os.matchfiles("../../Framework/NaoTH-Commmons/Source/**.cpp"), result);
-    extract_todos_files(os.matchfiles("../../Framework/NaoTH-Commmons/Source/**.h"), result);
-    extract_todos_files(os.matchfiles("../../Framework/Platforms/Source/**.cpp"), result);
-    extract_todos_files(os.matchfiles("../../Framework/Platforms/Source/**.h"), result);
-    
-    io.output("../TODO")
-    io.write("= TODO list =\n\n")
-    io.write("(automatically generated from source, please do not edit)\n\n")
-    io.write("|| '''Nr.''' || '''Status''' || '''Message''' || '''File''' ||\n")
-    
-    local i = 1
-    
-    for k,v in pairs(result) do
-      local message = string.gsub(v.message, "\n", "")
-      message = string.gsub(message, "\r", "")
-      
-      io.write("|| " .. i .. " || " .. v.kind .. " || " .. message .. " || [source:NaoTHSoccer/Make/" ..  
-        v.file .. "#L" .. v.line .. " " .. path.getname(v.file) .. ":" .. v.line .. "] ||\n")
-      i = i +1
-    end
-    print("found " .. # result .. " issues")
-    
-  end
-}
 
 -- definition of the solution
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug", "Release"}
   
-  -- for all configurations
+  
+  local f = io.popen ("bzr revno", "r");
+  local rev = f:read("*l")
+  if(rev == nil) then 
+    defines {"BZR_REVISION=-1"}
+  else 
+    defines{ "BZR_REVISION=" .. rev } 
+    f:close ();
+  end
+-- f = io.popen ("bzr info", "r");
+-- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
+-- f:close ();
+
+  -- general lib path for all configurations
+  libdirs {
+    EXTERN_PATH .. "/lib"
+  }
+  -- todo remove
   includedirs {
 	FRAMEWORK_PATH.."/NaoTH-Commons/Source/"
   }
+  
+  -- general include path for all projects and configurations
+  includedirs {
+	EXTERN_PATH .. "/include/",
+	EXTERN_PATH .. "/include/glib-2.0/",
+	EXTERN_PATH .. "/lib/glib-2.0/include/"
+  }
+  
+  links {
+    "opencv_core",
+	"opencv_ml",
+	"opencv_highgui",
+	"opencv_imgproc"
+	}
+  
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
@@ -68,15 +69,8 @@ solution "NaoTHSoccer"
     flags { "Optimize" }
          
   configuration{"Native"}
-    includedirs {
-      EXTERN_PATH .. "/include/",
-      EXTERN_PATH .. "/include/glib-2.0/",
-      EXTERN_PATH .. "/lib/glib-2.0/include/",
-      "/usr/include/"
-	  }
-    libdirs {
-      EXTERN_PATH .. "/lib"
-    }
+    includedirs { "/usr/include/" }
+    libdirs { EXTERN_PATH .. "/lib" }
     
     if os.get() == "linux" then      
       -- try to get the pkg-config include-instructions
@@ -99,6 +93,7 @@ solution "NaoTHSoccer"
 				  "/wd4996", -- disable warning: "...deprecated..."
 				  "/wd4290"} -- exception specification ignored (typed stecifications are ignored)
 	links {"ws2_32"}
+	--debugdir ".."
   end
   
   -- configuration {"linux"}
@@ -106,24 +101,50 @@ solution "NaoTHSoccer"
     buildoptions {"-fPIC"}
     flags { "ExtraWarnings" }
   end
+  
+  -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
+  configuration {"linux"}
+    linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
       
+	  
   -- base
   dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
+  -- core
+  dofile "NaoTHSoccer.lua"
   
   -- platforms
   if(_OPTIONS["platform"] == "Nao") then
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DCM.lua")
-  elseif(_OPTIONS["platform"] == "Naov3") then
-    dofile (FRAMEWORK_PATH .. "/Platforms/Make/DCM_v3.lua")
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
+    dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
   else
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/SimSpark.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
 	dofile (FRAMEWORK_PATH .. "/Platforms/Make/SPL_SimSpark.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
+	  --debugargs { "--sync" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/Webots.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/LogSimulator.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
 	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVImageLoader.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
 	dofile (FRAMEWORK_PATH .. "/Platforms/Make/OpenCVWebCam.lua")
-    dofile "Tests.lua"
-    dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
+	  kind "ConsoleApp"
+	  links { "NaoTHSoccer", "NaoTH-Commons" }
   end
-  -- the core
-  dofile "NaoTHSoccer.lua"
+  
+  
+  -- tests
+  if(_OPTIONS["platform"] ~= "Nao") then
+	dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/Tests.lua")
+	dofile "Tests.lua"
+  end
+  
+  

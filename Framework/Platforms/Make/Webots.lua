@@ -26,56 +26,37 @@ if hasWebots then
 
 -- NaoTH controller running in the Cyberbotics Webots simulator
 project "Webots"
-  kind "ConsoleApp"
+  kind "StaticLib"
   language "C++"
   
-  
-  
-    -- include core
-    if(CORE == nil) then
-      print("WARNING: no lib for the core is set")
-      CORE = ""
-    end
-    
-    
-    print("Generating files for webots")
+print("Generating files for webots")
 
-    includedirs {
-      "../Source/", 
-	  "../../NaoTH-Tools/Source/",
-      webotsHome .. "/include/controller/c/",
-      "../Lib/win32/include/", 
-      EXTERN_PATH .. "/include/",
-      EXTERN_PATH .. "/include/glib-2.0/",
-	  EXTERN_PATH .. "/lib/glib-2.0/include/"}
+  includedirs {
+    "../Source/", 
+    "../../NaoTH-Tools/Source/",
+    webotsHome .. "/include/controller/c/"
+	}
+
+  libdirs {webotsHome .. "/lib/"}
+
+  files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
+
+  links {
+	"Controller",
+	"glib-2.0",
+	"gio-2.0",
+	"gobject-2.0",
+	"gmodule-2.0",
+	"gthread-2.0",
+	"protobuf"
+  }
+
+  targetname "nao_team_0"
+  targetdir "../nao_robocup/controllers/nao_team_0/"
+
+  postbuildcommands {
+    "premake4 webots_copy"
+  }
     
-    libdirs {webotsHome .. "/lib/"}
-    
-    files{"../Source/Webots/**.cpp", "../Source/Webots/**.h"}
-    
-    links {CORE, 
-	    "NaoTH-Commons", 
-	    "Controller",
-	    "glib-2.0",
-	    "gio-2.0",
-	    "gobject-2.0",
-	    "gmodule-2.0",
-	    "gthread-2.0",
-	    "protobuf",
-	    "opencv_core",
-	    "opencv_imgproc",
-	    "opencv_ml"
-    }
-    
-    targetname "nao_team_0"
-    targetdir "../nao_robocup/controllers/nao_team_0/"
-    
-    postbuildcommands {
-      "premake4 webots_copy"
-    }
-    
-    configuration {"linux"}
-      linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
-  
 end -- hasWebots 
 -- END Webots
