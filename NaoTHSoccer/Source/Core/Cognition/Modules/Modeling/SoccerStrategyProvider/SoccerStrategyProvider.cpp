@@ -9,6 +9,8 @@
 #include <PlatformInterface/Platform.h>
 #include  <Tools/DataConversion.h>
 
+using namespace std;
+
 SoccerStrategyProvider::FormationParameters::FormationParameters()
   : num(0), behindBall(true), penaltyAreaAllowed(true)
 {

@@ -12,12 +12,11 @@
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Math/Moments2.h"
 
 //MATH
 #include "Tools/Math/Probabilistics.h"
-#include "Representations/Modeling/GoalModel.h"
-#include <cmath>
+
+using namespace std;
 
 ActiveGoalLocator::ActiveGoalLocator()    :
     //canopyClustering(theSampleSet[1], parameters.thresholdCanopy),

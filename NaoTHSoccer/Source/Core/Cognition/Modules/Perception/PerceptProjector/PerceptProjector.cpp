@@ -8,12 +8,9 @@
 #include "PerceptProjector.h"
 
 // debug
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/CameraGeometry.h"
-#include "Tools/Math/Line.h"
+
+using namespace std;
 
 PerceptProjector::PerceptProjector()
 {

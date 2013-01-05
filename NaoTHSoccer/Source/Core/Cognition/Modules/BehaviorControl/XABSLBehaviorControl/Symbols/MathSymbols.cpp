@@ -7,7 +7,6 @@
 */
 
 #include "MathSymbols.h"
-#include "Tools/Math/Common.h"
 
 MathSymbols* MathSymbols::theInstance = 0;
 

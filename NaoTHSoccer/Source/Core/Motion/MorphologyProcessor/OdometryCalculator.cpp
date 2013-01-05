@@ -5,8 +5,6 @@
 * OdometryCalculator: calculate the odometry according to morphology and support foot
 */
 
-#include <Tools/Math/Pose3D.h>
-#include <Tools/Math/Pose2D.h>
 
 #include "OdometryCalculator.h"
 

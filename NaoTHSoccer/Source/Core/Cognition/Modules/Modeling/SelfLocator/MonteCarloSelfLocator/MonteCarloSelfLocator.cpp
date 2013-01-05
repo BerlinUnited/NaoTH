@@ -9,14 +9,12 @@
 
 // debug
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
 
 // tools
 #include "Tools/Math/Probabilistics.h"
 
+using namespace std;
 
 MonteCarloSelfLocator::MonteCarloSelfLocator() 
   :
@@ -324,7 +322,7 @@ void MonteCarloSelfLocator::updateByLinesTable(SampleSet& sampleSet) const
       Sample& sample = sampleSet[s];
 
       // statistics
-      shortestLine = min(shortestLine, relPercept.getLength());
+      shortestLine = std::min(shortestLine, relPercept.getLength());
 
 
       // translocation of the line percept to the global coords

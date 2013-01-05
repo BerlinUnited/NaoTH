@@ -5,7 +5,6 @@
  * Implementation of class GoalSymbols
  */
 
-#include "Tools/Math/Common.h"
 
 
 #include "GoalSymbols.h"

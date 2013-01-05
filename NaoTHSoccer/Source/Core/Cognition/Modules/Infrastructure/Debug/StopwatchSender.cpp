@@ -8,7 +8,6 @@
 #include <Tools/Debug/DebugBufferedOutput.h>
 #include <DebugCommunication/DebugCommandManager.h>
 #include <Tools/Debug/Stopwatch.h>
-#include "Messages/Messages.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 StopwatchSender::StopwatchSender()

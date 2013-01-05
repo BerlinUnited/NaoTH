@@ -5,21 +5,16 @@
  * Created on 11. November 2010, 18:32
  */
 
-#include "Tools/ImageProcessing/jpeg/jpge.h"
 
 #include "Debug.h"
 
-#include "Tools/Debug/DebugRequest.h"
 #include <DebugCommunication/DebugCommandManager.h>
 
-#include <Tools/Debug/DebugImageDrawings.h>
 #include <Tools/Debug/DebugDrawings3D.h>
 #include <Tools/Debug/Stopwatch.h>
-#include "Tools/Debug/DebugParameterList.h"
-#include <Tools/Debug/Trace.h>
-#include <PlatformInterface/Platform.h>
 
 #include <Tools/SynchronizedFileWriter.h>
+#include <PlatformInterface/Platform.h>
 
 Debug::Debug() : cognitionLogger("CognitionLog")
 {   

@@ -20,14 +20,14 @@
 #include "Representations/Modeling/PlayerInfo.h"
 #include "RobotPose.h"
 
-class ObstacleModel : public Printable
+class ObstacleModel : public naoth::Printable
 {
 public:
   struct Obstacle
   {
     Obstacle():distance(0){}
 
-    FrameInfo frameInfoObstacleWasSeen;
+    naoth::FrameInfo frameInfoObstacleWasSeen;
     double distance;
   };
   ObstacleModel();
@@ -38,7 +38,7 @@ public:
 
   int blockedTime;
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 };//end class ObstacleModel
 
 

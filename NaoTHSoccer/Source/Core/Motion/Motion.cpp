@@ -7,7 +7,6 @@
  */
 
 #include "Motion.h"
-#include <glib.h>
 
 #include <stdlib.h>
 
@@ -22,9 +21,7 @@
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-#include <Tools/CameraGeometry.h>
 
 #include <DebugCommunication/DebugCommandManager.h>
 

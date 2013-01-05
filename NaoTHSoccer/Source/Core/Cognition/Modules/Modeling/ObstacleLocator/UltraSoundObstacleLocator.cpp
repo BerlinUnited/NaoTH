@@ -8,7 +8,6 @@
  */
 
 //#include "Tools/Math/Pose2D.h"
-#include <limits>
 
 #include "UltraSoundObstacleLocator.h"
 

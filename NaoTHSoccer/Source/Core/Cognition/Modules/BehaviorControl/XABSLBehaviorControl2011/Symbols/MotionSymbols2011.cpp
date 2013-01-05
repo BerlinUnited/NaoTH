@@ -6,19 +6,15 @@
 */
 
 //DEBUG
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 
-#include "Tools/Math/RotationMatrix.h"
 
 
 #include "MotionSymbols2011.h"
 
-#include "Representations/Modeling/PlayerInfo.h"
-#include "Representations/Modeling/PlayersModel.h"
-#include "Representations/Motion/Request/MotionID.h"
 
 using namespace naoth;
+using namespace std;
 
 void MotionSymbols2011::registerSymbols(xabsl::Engine& engine)
 {

@@ -3,7 +3,6 @@
  */
 
 #include "Logger.h"
-#include <Tools/DataStructures/Serializer.h>
 
 Logger::Logger(const std::string& cmd) : logfileManager(true),command(cmd)
 {

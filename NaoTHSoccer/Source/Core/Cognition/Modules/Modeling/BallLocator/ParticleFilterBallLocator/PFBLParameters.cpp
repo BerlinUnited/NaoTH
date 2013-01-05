@@ -6,7 +6,6 @@
  */
 
 #include "PFBLParameters.h"
-#include "PlatformInterface/Platform.h"
 #include "Tools/Debug/DebugParameterList.h"
 
 PFBLParameters::PFBLParameters()

@@ -10,7 +10,7 @@
 
 #include "Tools/Math/Vector2.h"
 
-class SoccerStrategy: public Printable
+class SoccerStrategy: public naoth::Printable
 {
 public:
   SoccerStrategy():timeToBall(std::numeric_limits<double>::max())

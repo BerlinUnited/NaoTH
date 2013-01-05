@@ -61,7 +61,7 @@ std::stringstream& DebugDrawings::out()
   return *debugDrawingsOut;
 }
 
-ostream& operator<<(ostream& stream, const DebugDrawings::Color& color)
+std::ostream& operator<<(std::ostream& stream, const DebugDrawings::Color& color)
 {
   stream << color.toString();
   return stream;

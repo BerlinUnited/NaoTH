@@ -87,7 +87,7 @@ public:
     num_of_styles
   };
 
-  static string getWalkStyleName(WalkStyle i);
+  static std::string getWalkStyleName(WalkStyle i);
 
 private:
 
@@ -189,7 +189,7 @@ private:
     none
   };
 
-  static string getStepControlFootName(StepControlFoot i);
+  static std::string getStepControlFootName(StepControlFoot i);
 
   StepControlFoot stepControlFoot;
   double stepControlRequestTime;
