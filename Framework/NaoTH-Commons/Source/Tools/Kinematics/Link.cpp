@@ -98,7 +98,14 @@ void Link::updateAllFromMother()
   if (NULL != mother)
   {
     p = mother->R * b + mother->p;
-    if (NULL != q)// joint rotation
+    R = mother->R;
+//    w = mother->w;
+//    v = mother->v;
+//    dw = mother->dw;
+//    dv = mother->dv;
+
+    // update by joint if there is one
+    if (NULL != q)
     {
       R *= Rodrigues(A, A2, *q);
       // senity check if R is still a kind of a rotation matrix...
@@ -117,15 +124,7 @@ void Link::updateAllFromMother()
 //      dw += dsw * (*dq) + sw * (*ddq);
 //      dv += dsv * (*dq) + sv * (*ddq);
     }
-    else
-    {
-      R = mother->R;
-//    w = mother->w;
-//    v = mother->v;
-//    dw = mother->dw;
-//    dv = mother->dv;
-    }
-  }
+  }//end if NULL != mother
 }//end updateAllFromMother
 
 
