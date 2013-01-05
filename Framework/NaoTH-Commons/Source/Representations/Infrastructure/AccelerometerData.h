@@ -10,14 +10,13 @@
 
 #include <string>
 #include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/Math/Vector3.h"
 #include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
 
-  class AccelerometerData : public Printable, public PlatformInterchangeable, public Streamable
+  class AccelerometerData : public Printable
   {
   public:
     // normalized to m/s^2

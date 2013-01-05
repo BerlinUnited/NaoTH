@@ -11,7 +11,6 @@
 #include <string>
 
 #include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 #include "Tools/Math/Common.h"
@@ -20,7 +19,7 @@
 namespace naoth
 {
 
-  class InertialSensorData : public Streamable, public Printable, public PlatformInterchangeable
+  class InertialSensorData : public Printable
   {
   public:
 

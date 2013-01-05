@@ -6,16 +6,15 @@
  */
 
 #ifndef _ULTRASOUNDDATA_H
-#define  _ULTRASOUNDDATA_H
+#define _ULTRASOUNDDATA_H
 
 #include <ostream>
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
 
 namespace naoth
 {
-  class UltraSoundData : public PlatformInterchangeable, public Printable
+  class UltraSoundData : public Printable
   {
   public:
     enum UltraSoundEchoID

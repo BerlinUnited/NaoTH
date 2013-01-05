@@ -8,12 +8,11 @@
 #ifndef _BUTTONDATA_H
 #define _BUTTONDATA_H
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
-  class ButtonData : public PlatformInterchangeable, public Printable
+  class ButtonData : public Printable
   {
   public:
     ButtonData();

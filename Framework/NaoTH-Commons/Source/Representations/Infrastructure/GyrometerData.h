@@ -9,9 +9,7 @@
 #define _GyrometerData_H_
 
 #include <string>
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Serializer.h"
 #include "Tools/Math/Vector2.h"
 
@@ -19,7 +17,7 @@
 namespace naoth
 {
 
-  class GyrometerData : public PlatformInterchangeable, public Printable, public Streamable
+  class GyrometerData : public Printable
   {
   public:
     double ref;

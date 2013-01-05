@@ -9,13 +9,12 @@
 #ifndef ROBOTINFO_H
 #define ROBOTINFO_H
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
 
-class RobotInfo: public PlatformInterchangeable, public Printable
+class RobotInfo: public Printable
 {
 public:
   RobotInfo(){}

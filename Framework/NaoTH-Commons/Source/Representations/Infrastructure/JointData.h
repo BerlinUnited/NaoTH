@@ -12,8 +12,6 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-
 
 namespace naoth
 {
@@ -97,7 +95,7 @@ class JointData
     void mirrorFrom(const JointData& jointData);
   };
 
-  class SensorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
+  class SensorJointData : public JointData, public Printable
   {
   public:
     SensorJointData();
@@ -110,7 +108,7 @@ class JointData
 
   };
 
-  class MotorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
+  class MotorJointData : public JointData, public Printable
   {
   public:
     MotorJointData();

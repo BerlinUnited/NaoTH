@@ -15,7 +15,6 @@
 #include <vector>
 
 //Tools
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
 
 //Representations
