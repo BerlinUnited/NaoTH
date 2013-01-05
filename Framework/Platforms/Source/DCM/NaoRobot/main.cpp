@@ -7,10 +7,6 @@
 
 #include "NaoController.h"
 
-//#include "Tools/Debug/DebugBufferedOutput.h"
-
-#include "Tools/DummpyCallable.h"
-
 #include <glib.h>
 #include <glib-object.h>
 #include <signal.h>
@@ -37,7 +33,7 @@ void got_signal(int t)
 
   std::cout << "dumping traces" << std::endl;
   Trace::getInstance().dump();
-  Stopwatch::getInstance().dump("cognition");
+  StopwatchManager::getInstance().dump("cognition");
 
   std::cout << "syncing file system..." ;
   sync();
@@ -72,8 +68,8 @@ class TestThread : public RtThread
           cerr << "lock errno: " << errno << endl;
         }
 
-        Stopwatch::getInstance().notifyStop(stopwatch);
-        Stopwatch::getInstance().notifyStart(stopwatch);
+        StopwatchManager::getInstance().notifyStop(stopwatch);
+        StopwatchManager::getInstance().notifyStart(stopwatch);
         PLOT("_MotionCycle", stopwatch.lastValue);
       }//end while
 
@@ -113,8 +109,8 @@ void* motionThreadCallback(void* ref)
       cerr << "lock errno: " << errno << endl;
     }
 
-    Stopwatch::getInstance().notifyStop(stopwatch);
-    Stopwatch::getInstance().notifyStart(stopwatch);
+    stopwatch.stop();
+    stopwatch.start();
     
     // TODO: if we want to have this here, we have to move the 
     // "Tools/Debug/DebugBufferedOutput.h" to NaoTH-Commons

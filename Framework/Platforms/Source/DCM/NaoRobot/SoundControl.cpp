@@ -158,7 +158,7 @@ void SoundControl::setSoundData(const SoundPlayData& theSoundData)
   }
 
   theSoundDataCopy = SoundPlayData(theSoundData);
-}
+}//end setSoundData
 
 /* Don't use directly, it will be called by play_thread_handler
  * use setSoundData!
