@@ -18,8 +18,10 @@ double CameraInfo::getFocalLength() const
 {
   double d2 = resolutionWidth * resolutionWidth + resolutionHeight * resolutionHeight;
   double halfDiagLength = 0.5 * sqrt(d2);
-  ASSERT(halfDiagLength > 0.0);
-
+  double openingAngleDiagonal = getOpeningAngleDiagonal();
+  
+  // senity check
+  ASSERT(halfDiagLength > 0.0 && openingAngleDiagonal > 0.0);
   return halfDiagLength / tan(0.5 * getOpeningAngleDiagonal());
 }
 
