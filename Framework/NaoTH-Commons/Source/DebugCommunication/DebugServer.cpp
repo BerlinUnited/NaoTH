@@ -58,6 +58,7 @@ void DebugServer::mainConnection()
 
   while(true)
   {
+    // check if the stop is requested
     g_mutex_lock(m_abort);
     if(abort)
     {
@@ -104,12 +105,12 @@ void DebugServer::mainConnection()
     // the loop again
     g_usleep(1000);
     g_thread_yield();
-
   } // end while true
 
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
-}
+}//end mainConnection
+
 
 void DebugServer::receiveAll()
 {
@@ -163,24 +164,26 @@ void DebugServer::getDebugMessageIn(naoth::DebugMessageIn& buffer)
 
   g_mutex_lock(m_executing);
 
-  // needed only in single threaded mode
-  if(connectionThread == NULL && !comm.isConnected())
+  // if running in the single threaded mode
+  // try to receive messages
+  if(connectionThread == NULL)
   {
-    comm.connect(-1);
-  }
-
-  if(connectionThread == NULL && comm.isConnected())
-  {
-    try
+    // try to connect
+    if(!comm.isConnected())
+      comm.connect(-1);
+  
+    if(comm.isConnected())
     {
-      receiveAll();
+      try
+      {
+        receiveAll();
+      }
+      catch(...)
+      {
+        disconnect();
+      }
     }
-    catch(...)
-    {
-      disconnect();
-    }
-  }
-  // end -- needed only in single threaded mode
+  }// end if single threaded
 
   // copy messages
   while (g_async_queue_length(commands) > 0)
@@ -209,30 +212,35 @@ void DebugServer::setDebugMessageOut(const naoth::DebugMessageOut& buffer)
     g_async_queue_push(answers, answer);
   }//end while
 
-  // needed only in single threaded mode
-  if(connectionThread == NULL && !comm.isConnected())
+  // if running in the single threaded mode
+  // try to send messages
+  if(connectionThread == NULL)
   {
-    comm.connect(-1);
-  }
+    // try to connect
+    if(!comm.isConnected())
+      comm.connect(-1);
 
-  if(connectionThread == NULL && comm.isConnected())
-  {
-    try
+    if(comm.isConnected())
     {
-      sendAll();
+      try
+      {
+        sendAll();
+      }
+      catch(...)
+      {
+        disconnect();
+      }
     }
-    catch(...)
-    {
-      disconnect();
-    }
-  }
-  // end -- needed only in single threaded mode
+  }//end if single threaded
 
   g_mutex_unlock(m_executing);
 }//end getDebugMessageOut
 
 
-void DebugServer::parseCommand(GString* cmdRaw, std::string& commandName, std::map<std::string, std::string>& arguments)
+void DebugServer::parseCommand(
+  GString* cmdRaw, 
+  std::string& commandName, 
+  std::map<std::string, std::string>& arguments)
 {
   naothmessages::CMD cmd;
   commandName = "invalidcommand";
@@ -278,13 +286,14 @@ void* DebugServer::connection_thread_static(void* ref)
   return NULL;
 }
 
-
 DebugServer::~DebugServer()
 {
+  // notify the connectionThread to stop
   g_mutex_lock(m_abort);
   abort = true;
   g_mutex_unlock(m_abort);
 
+  // wait for connectionThread to stop
   if(connectionThread != NULL)
   {
     g_thread_join(connectionThread);
@@ -298,6 +307,5 @@ DebugServer::~DebugServer()
 
   g_async_queue_unref(commands);
   g_async_queue_unref(answers);
-
 }
 

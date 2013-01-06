@@ -6,7 +6,7 @@
 //
 
 #ifndef _DEBUGREQUEST_H
-#define  _DEBUGREQUEST_H
+#define _DEBUGREQUEST_H
 
 #include <cstring>
 #include <map>

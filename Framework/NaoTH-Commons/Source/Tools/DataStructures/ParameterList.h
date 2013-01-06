@@ -7,8 +7,8 @@
  * via the debug-console
  */
 
-#ifndef __ParameterList_h
-#define __ParameterList_h
+#ifndef _ParameterList_h
+#define _ParameterList_h
 
 #include <map>
 #include <sstream>
@@ -44,4 +44,4 @@ private:
 
 #define PARAMETER_REGISTER(parameter) registerParameter(covertName(#parameter), parameter)
 
-#endif // __ParameterList_h
+#endif // _ParameterList_h

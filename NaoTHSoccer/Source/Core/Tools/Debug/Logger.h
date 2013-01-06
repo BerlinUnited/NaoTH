@@ -3,7 +3,7 @@
  */
 
 #ifndef _LOGFILE_H
-#define  _LOGFILE_H
+#define _LOGFILE_H
 
 #include <set>
 #include <map>

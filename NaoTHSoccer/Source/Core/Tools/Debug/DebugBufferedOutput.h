@@ -6,7 +6,7 @@
 //
 
 #ifndef _DebugBufferedOutput_H
-#define  _DebugBufferedOutput_H
+#define _DebugBufferedOutput_H
 
 #include <cstring>
 #include <sstream>
