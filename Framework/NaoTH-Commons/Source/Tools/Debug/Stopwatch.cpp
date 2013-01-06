@@ -7,41 +7,49 @@
 
 #include "Stopwatch.h"
 
-#include <glib.h>
 #include <sstream>
 
 #include "Tools/SynchronizedFileWriter.h"
 #include "Tools/NaoTime.h"
 
-using namespace std;
+Stopwatch::Stopwatch() 
+  : 
+  begin(0), 
+  end(0),
+  isValid(false),
+  lastValue(0),
+  mean(0.0f),
+  n(0.0f),
+  min(0),
+  max(0.0f)
+{
+}
 
-
-void StopwatchItem::start()
+void Stopwatch::start()
 {
   isValid = false;
  
-  unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
-  begin = timeInMicro;
-  end = timeInMicro;
+  begin = naoth::NaoTime::getSystemTimeInMicroSeconds();
 }//end start
 
 
-void StopwatchItem::stop()
+void Stopwatch::stop()
 {
-  unsigned long long timeInMicro = naoth::NaoTime::getSystemTimeInMicroSeconds();
-  this->end = timeInMicro;
-  this->isValid = true;
+  end = naoth::NaoTime::getSystemTimeInMicroSeconds();
+  
+  // we assume, that difference doesn't exeed the size of int
+  lastValue = static_cast<unsigned int>(end - begin);
 
   // update the statistics of the item
-  this->n++;
-  float value = static_cast<float>(this->end - this->begin) * 0.001f; // in ms
-  this->min = std::min(this->min, value);
-  this->max = std::max(this->max, value);
+  n++;
+  double value = static_cast<double>(lastValue) * 0.001; // in ms
+  min = std::min(min, value);
+  max = std::max(max, value);
   // update the mean iteratively
   // c(n) = c(n-1) + (x_n - c(n-1))/n
-  this->mean += (value - this->mean)/this->n;
-  //g_debug("stopwatch STOP %s", stopwatchItem.name.c_str());
-  this->lastValue = (unsigned int)(this->end - this->begin);
+  mean += (value - mean)/n;
+
+  isValid = true;
 }//end stop
 
 
@@ -57,48 +65,45 @@ StopwatchManager::~StopwatchManager()
 }
 
 
-void StopwatchManager::notifyStart(const std::string& stopWatchName)
+void StopwatchManager::notifyStart(const std::string& name)
 {
-  //stopwatches[stopWatchName].name = stopWatchName;
-  stopwatches[stopWatchName].start();
+  stopwatches[name].start();
 }//end notifyStart
 
 
-void StopwatchManager::notifyStop(const std::string& stopWatchName)
+void StopwatchManager::notifyStop(const std::string& name)
 {
-  stopwatches[stopWatchName].stop();
+  stopwatches[name].stop();
 }//end notifyStop
 
 
 
-StopwatchItem& StopwatchManager::getStopwatchReference(const std::string& stopWatchName)
+Stopwatch& StopwatchManager::getStopwatchReference(const std::string& name)
 {
   // add value if not existing
-  StopwatchItem& stopwatchItem = stopwatches[stopWatchName];
-  //stopwatchItem.name = stopWatchName;
-    
-  return stopwatchItem;
+  return stopwatches[name];
 }//end getStopwatchReference
 
 
-void StopwatchManager::dump(std::string name)
+void StopwatchManager::dump(std::string name) const
 {
-  stringstream outputStream;
+  std::stringstream outputStream;
   
-  std::map<std::string, StopwatchItem>::const_iterator it = stopwatches.begin();
-  while (it != stopwatches.end())
+  StopwatchMap::const_iterator it = stopwatches.begin();
+  for (; it != stopwatches.end(); it++)
   {
-//    const std::string& name = it->first;
-    const StopwatchItem& item = it->second;
+    const std::string& name = it->first;
+    const Stopwatch& item = it->second;
 
     if (item.isValid) 
     {
-      outputStream << it->first <<
-        ';' << item.min << ';' << item.mean << ';' << item.max << ';' << endl;
+      outputStream  << name << ';' 
+                    << item.min << ';' 
+                    << item.mean << ';' 
+                    << item.max << ';' 
+                    << std::endl;
     }
-
-    it++;
-  }//end while
+  }//end for
 
   // write to file
   std::stringstream s;
@@ -107,5 +112,6 @@ void StopwatchManager::dump(std::string name)
     s << name << ".";
   }
   s << "stopwatch.dump";
+
   SynchronizedFileWriter::saveStreamToFile(outputStream, s.str());
 }//end dump
