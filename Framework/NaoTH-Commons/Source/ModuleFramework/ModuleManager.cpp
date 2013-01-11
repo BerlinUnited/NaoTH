@@ -6,8 +6,8 @@
 
 ModuleManager::~ModuleManager()
 {
-  std::map<std::string, AbstractModuleCreator* >::iterator iter;
-  for(iter = moduleExecutionMap.begin(); iter != moduleExecutionMap.end(); iter++)
+  ModuleCreatorMap::iterator iter;
+  for(iter = registeredModules.begin(); iter != registeredModules.end(); iter++)
   {
     delete (iter->second);
   }//end for
@@ -16,9 +16,11 @@ ModuleManager::~ModuleManager()
 
 void ModuleManager::setModuleEnabled(std::string moduleName, bool value, bool recalculateExecutionList)
 {
-  if(moduleExecutionMap.find(moduleName) != moduleExecutionMap.end())
+  ModuleCreatorMap::iterator iter = registeredModules.find(moduleName);
+  if(iter != registeredModules.end())
   {
-    moduleExecutionMap[moduleName]->setEnabled(value);
+    iter->second->setEnabled(value);
+    
     if(recalculateExecutionList)
     {
       calculateExecutionList();
@@ -29,8 +31,8 @@ void ModuleManager::setModuleEnabled(std::string moduleName, bool value, bool re
 
 AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
 {
-  std::map<std::string, AbstractModuleCreator* >::iterator iter = moduleExecutionMap.find(name);
-  if(iter != moduleExecutionMap.end())
+  ModuleCreatorMap::const_iterator iter = registeredModules.find(name);
+  if(iter != registeredModules.end())
   {
     return iter->second;
   }
@@ -41,8 +43,8 @@ AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
 
 const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) const
 {
-  std::map<std::string, AbstractModuleCreator* >::const_iterator iter = moduleExecutionMap.find(name);
-  if(iter != moduleExecutionMap.end())
+  std::map<std::string, AbstractModuleCreator* >::const_iterator iter = registeredModules.find(name);
+  if(iter != registeredModules.end())
   {
     return iter->second;
   }
@@ -69,13 +71,13 @@ void ModuleManager::calculateExecutionList()
     for(std::list<std::string>::iterator it1=start; it1 != moduleExecutionList.end(); it1++)
     {
       start = it1;
-      if(!moduleExecutionMap[*it1]->isEnabled()) continue;
-      Module* m1 = moduleExecutionMap[*it1]->getModule();
+      if(!registeredModules[*it1]->isEnabled()) continue;
+      Module* m1 = registeredModules[*it1]->getModule();
 
       for(std::list<std::string>::iterator it2=it1; it2 != moduleExecutionList.end(); it2++)
       {
-        if(!moduleExecutionMap[*it2]->isEnabled()) continue;
-        Module* m2 = moduleExecutionMap[*it2]->getModule();
+        if(!registeredModules[*it2]->isEnabled()) continue;
+        Module* m2 = registeredModules[*it2]->getModule();
 
         for(std::list<Representation*>::const_iterator itReq = m1->getRequiredRepresentations().begin();
           itReq != m1->getRequiredRepresentations().end(); itReq++)
@@ -130,8 +132,7 @@ void ModuleManager::calculateExecutionListOld()
   std::map<std::string, std::list<std::string> > provided;
     
   // first fill the map with providers and the module graph
-  for(std::map<std::string, AbstractModuleCreator* >::const_iterator it=moduleExecutionMap.begin(); 
-    it != moduleExecutionMap.end(); it++)
+  for(ModuleCreatorMap::const_iterator it = registeredModules.begin(); it != registeredModules.end(); ++it)
   {
     // only include enabled modules
     if(it->second->isEnabled())
