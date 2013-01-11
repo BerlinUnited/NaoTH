@@ -2,7 +2,7 @@
  * File:   IRData.h
  * Author: Oliver Welter
  *
- * Created on 11. März 2009, 11:03
+ * Created on 11. march 2009, 11:03
  */
 
 #ifndef _IRData_H_

@@ -3,7 +3,7 @@
  * Author: claas
  * Author: Heinrich Mellmann
  * 
- * Created on 14. März 2011, 14:22
+ * Created on 14. march 2011, 14:22
  */
 
 #include "ScanLineEdgelDetectorDifferential.h"

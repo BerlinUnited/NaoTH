@@ -2,7 +2,7 @@
  * File:   SituationStatus.h
  * Author: Paul & Michael
  *
- * Created on 01. März 2012
+ * Created on 01. march 2012
  */
 
 

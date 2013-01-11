@@ -241,8 +241,6 @@ void Motion::debugPlots()
 
   PLOT("Motion:GyrometerData:rawData:x", getGyrometerData().rawData.x);
   PLOT("Motion:GyrometerData:rawData:y", getGyrometerData().rawData.y);
-  PLOT("Motion:GyrometerData:rawZero:x", getGyrometerData().rawZero.x);
-  PLOT("Motion:GyrometerData:rawZero:y", getGyrometerData().rawZero.y);
   PLOT("Motion:GyrometerData:ref", getGyrometerData().ref);
 
   PLOT("Motion:AccelerometerData:x", getAccelerometerData().data.x);

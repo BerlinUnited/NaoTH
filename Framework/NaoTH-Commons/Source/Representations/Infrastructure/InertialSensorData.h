@@ -2,7 +2,6 @@
  * File:   InertialSensorData.h
  * Author: Oliver Welter
  *
- * Created on 2. März 2009, 00:31
  */
 
 #ifndef _INERTIALSENSORDATA_H

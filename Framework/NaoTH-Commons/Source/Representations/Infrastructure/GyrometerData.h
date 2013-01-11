@@ -2,7 +2,6 @@
  * File:   GyrometerData.h
  * Author: Oliver Welter
  *
- * Created on 2. März 2009, 00:46
  */
 
 #ifndef _GyrometerData_H_
@@ -20,15 +19,15 @@ namespace naoth
   class GyrometerData : public Printable
   {
   public:
-    double ref;
-    Vector2<double> data;
-    Vector2<double> rawData;
-    Vector2<double> rawZero;
-
     GyrometerData();
     ~GyrometerData();
 
-    void calibrate();
+    // the GyrRef provided by the robot (what is it for?)
+    double ref;
+    // raw data as provided by the sensors
+    Vector2<double> rawData;
+    // rawData scaled to radian/s
+    Vector2<double> data;
 
     virtual void print(std::ostream& stream) const;
   };

@@ -2,7 +2,7 @@
 // File:   DebugImageDrawings.cpp
 // Author: Heinrich Mellmann
 //
-// Created on 19. März 2008, 21:52
+// Created on 19. march 2008, 21:52
 //
 
 #include "DebugImageDrawings.h"

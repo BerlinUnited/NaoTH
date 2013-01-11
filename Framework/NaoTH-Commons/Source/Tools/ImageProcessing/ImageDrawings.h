@@ -7,8 +7,8 @@
 * TODO: how to use
 * ...
 */
-#ifndef __ImageDrawings_H_
-#define __ImageDrawings_H_
+#ifndef _ImageDrawings_H_
+#define _ImageDrawings_H_
 
 #include <stdlib.h>
 

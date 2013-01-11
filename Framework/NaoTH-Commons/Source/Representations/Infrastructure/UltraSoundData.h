@@ -60,7 +60,7 @@ namespace naoth
 
     /*
     Simple modes:
-    ALDEARAN documentation:
+    ALDEBARAN documentation:
     - The first bit of this value lets you choose which receiver you want to use. 0 for left and 1 for right.
     - The second bit lets you choose the transmitter. Again, 0 meaning left and 1 meaning right.
     */
@@ -71,7 +71,7 @@ namespace naoth
 
     /*
     Extended modes:
-    ALDEARAN documentation:
+    ALDEBARAN documentation:
     - The third bit (value 4) means that two captures will be made with only one command, left and right. 
         The results will be available in two new subDevices: US/Left/Sensor and US/Right/Sensor. 
         Now, 10 values are available for each sensor, corresponding to the distance of 

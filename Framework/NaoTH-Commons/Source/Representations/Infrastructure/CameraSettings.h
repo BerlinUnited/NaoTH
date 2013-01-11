@@ -2,7 +2,7 @@
  * File:   CameraSettings.h
  * Author: Oliver Welter
  *
- * Created on 15. März 2009, 16:56
+ * Created on 15. march 2009, 16:56
  */
 
 #ifndef _CameraSettings_H_

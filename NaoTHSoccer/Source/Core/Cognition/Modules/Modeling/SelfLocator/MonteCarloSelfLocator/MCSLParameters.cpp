@@ -2,7 +2,7 @@
  * File:   ALMotionParameters.cpp
  * Author: Heinrich Mellmann
  *
- * Created on 25. März 2009, 15:42
+ * Created on 25. march 2009, 15:42
  */
 
 #include "MCSLParameters.h"

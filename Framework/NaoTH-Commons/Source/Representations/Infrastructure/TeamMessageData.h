@@ -53,7 +53,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream<<"size = "<<data.size()<<"\n";
+    stream << "size = " << data.size() << std::endl;
   }
 };
 
@@ -65,7 +65,7 @@ public:
 
   virtual void print(std::ostream& stream) const
   {
-    stream<<"size = "<<data.size()<<"\n";
+    stream << "size = " << data.size() << std::endl;
   }
 };
 

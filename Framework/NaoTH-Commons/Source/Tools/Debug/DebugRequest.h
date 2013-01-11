@@ -2,7 +2,7 @@
 // File:   DebugRequest.h
 // Author: thomas
 //
-// Created on 19. März 2008, 21:51
+// Created on 19. march 2008, 21:51
 //
 
 #ifndef _DEBUGREQUEST_H

@@ -2,7 +2,7 @@
  * File:   AccelerometerData.h
  * Author: Oliver Welter
  *
- * Created on 2. März 2009, 00:47
+ * Created on 2. march 2009, 00:47
  */
 
 #ifndef _AccelerometerData_H_
