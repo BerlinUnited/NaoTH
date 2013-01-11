@@ -1,13 +1,13 @@
 /**
-* @file NaothModule.cpp
+* @file SMALModule.h
 *
 * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Deklaration of NaothModule
+* Declaration of SMALModule
 */
 
-#ifndef _NAOTHMODULE_H_
-#define _NAOTHMODULE_H_
+#ifndef _SMALModule_H_
+#define _SMALModule_H_
 
 #include <alcommon/almodule.h>
 
@@ -109,4 +109,4 @@ private:
 
 }//end namespace naoth
 
-#endif	/* _NAOTHMODULE_H_ */
+#endif	/* _SMALModule_H_ */

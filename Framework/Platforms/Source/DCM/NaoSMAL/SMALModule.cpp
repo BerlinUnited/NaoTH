@@ -4,7 +4,7 @@
 * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
-* Implementation of NaothModule
+* Implementation of SMALModule
 */
 #include "SMALModule.h"
 
@@ -15,7 +15,7 @@
 
 
 //
-// this is to suppress the following gcc warning 
+// This is to suppress the following gcc warning 
 // thrown because by the old version of boost used by naoqi
 // albroker.h and alproxy.h 
 // produce those:
