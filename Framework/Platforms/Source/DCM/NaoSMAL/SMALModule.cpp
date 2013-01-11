@@ -1,44 +1,64 @@
 /**
-* @file NaothModule.cpp
+* @file SMALModule.cpp
 *
 * @author <a href="mailto:welter@informatik.hu-berlin.de">Oliver Welter</a>
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
 * Implementation of NaothModule
 */
-#include "NaothModule.h"
-#include "libnaoth.h"
+#include "SMALModule.h"
+
 #include "Tools/NaoTime.h"
 #include <glib.h>
 #include <glib-object.h>
+#include <fstream>
+
+
+//
+// this is to suppress the following gcc warning 
+// thrown because by the old version of boost used by naoqi
+// albroker.h and alproxy.h 
+// produce those:
+//   boost/function/function_base.hpp:325: 
+//   warning: dereferencing type-punned pointer will break strict-aliasing rules
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#include <alcommon/alproxy.h>
 
 using namespace naoth;
+using namespace std;
+using namespace AL;
 
 
-static NaothModule* theModule = NULL;
+// this stuff is necessary to register at the DCM
+static SMALModule* theModule = NULL;
 
-inline static void motion_wrapper_pre()
+static void motion_wrapper_pre()
 {
-  if (theModule != NULL)
-    theModule->motionCallbackPre();
+  assert(theModule != NULL);
+  theModule->motionCallbackPre();
 }
 
-inline static void motion_wrapper_post()
+static void motion_wrapper_post()
 {
-  if (theModule != NULL)
-    theModule->motionCallbackPost();
+  assert(theModule != NULL);
+  theModule->motionCallbackPost();
 }
+//
+
 
 
 // some low level debugging stuff
-int current_line = 0;
+//#define DEBUG_SMAL
+
 int time_motionCallbackPre = 0;
 int time_motionCallbackPost = 0;
 
-//#define LNT current_line=__LINE__
-#define LNT (void)0
+#ifdef DEBUG_SMAL
+#define LNT current_line=__LINE__
 
-void* debug_wrepper(void* ref)
+int current_line = 0;
+
+void* debug_wrapper(void* ref)
 {
   while(true)
   {
@@ -53,14 +73,16 @@ void* debug_wrepper(void* ref)
     usleep(1000000);
   }
   return NULL;
-}//end debug_wrepper
+}//end debug_wrapper
+#else
+#define LNT (void)0
+#endif
 
-
-NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
+SMALModule::SMALModule(boost::shared_ptr<ALBroker> pBroker, const std::string& pName )
   :
-  ALModule(pB, pName),
+  ALModule(pBroker, pName),
+  pBroker(pBroker),
   state(DISCONNECTED),
-  pBroker(pB),
   dcmTime(0),
   timeOffset(0),
   sem(SEM_FAILED),
@@ -68,42 +90,37 @@ NaothModule::NaothModule(ALPtr<ALBroker> pB, const std::string& pName )
   sensor_data_available(false),
   initialMotion(NULL)
 {
+
+  // there should be only one instance of SMALModule
+  assert(theModule == NULL);
   theModule = this;
 
-  // Describe the module here
-  setModuleDescription( "Naoth-controlunit of the robot" );
+  // 
+  setModuleDescription( 
+	"Nao Shared Memory Abstraction Layer (NaoSMAL)" 
+	"provides access to the HAL functionality of naoqi through shared memory" 
+  );
   
-  // Define callable methods with there description
-  functionName( "init", "NaothModule",  "Initialize Controller" );
-  BIND_METHOD( NaothModule::init );
-
+#ifdef DEBUG_SMAL
   GError* err = NULL;
-  g_thread_create(debug_wrepper, 0, true, &err);
+  g_thread_create(debug_wrapper, 0, true, &err);
   if(err)
   {
     g_warning("Could not create cognition thread: %s", err->message);
   }
+#endif
 }
 
-NaothModule::~NaothModule()
+SMALModule::~SMALModule()
 {
 }
 
-bool NaothModule::innerTest() 
+std::string SMALModule::version()
 {
-  bool result = true;
-  // put here codes dedicaced to autotest this module.
-  // return false if fail, success otherwise
-  return result;
+  return std::string(SMAL_VERSION);
 }
 
-std::string NaothModule::version()
-{
-  //return ALTOOLS_VERSION( NAOTH );
-  return std::string(NAOTH_VERSION);
-}
-
-void NaothModule::init()
+void SMALModule::init()
 {
   std::cout << "Init DCMHandler" << endl;
 
@@ -175,11 +192,11 @@ void NaothModule::init()
   fDCMPreProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPreProcess(motion_wrapper_pre);
   fDCMPostProcessConnection = getParentBroker()->getProxy("DCM")->getModule()->atPostProcess(motion_wrapper_post);
   
-  cout << "NaothModule:init finished!" << endl;
+  cout << "SMALModule:init finished!" << endl;
 }//end init
 
 
-void NaothModule::motionCallbackPre()
+void SMALModule::motionCallbackPre()
 {
   long long start = NaoTime::getSystemTimeInMicroSeconds();
 
@@ -252,7 +269,7 @@ void NaothModule::motionCallbackPre()
 }//end motionCallbackPre
 
 
-void NaothModule::motionCallbackPost()
+void SMALModule::motionCallbackPost()
 {
   long long start = NaoTime::getSystemTimeInMicroSeconds();
   static int drop_count = 10;
@@ -321,7 +338,7 @@ void NaothModule::motionCallbackPost()
 }//end motionCallbackPost
 
 
-void NaothModule::exit()
+void SMALModule::exit()
 {
   cout << "NaoTH is exiting ..."<<endl;
 
@@ -350,7 +367,7 @@ void NaothModule::exit()
 }//end exit
 
 
-void NaothModule::setWarningLED()
+void SMALModule::setWarningLED()
 {
   static naoth::LEDData theLEDData;
   static int count = 0;
@@ -373,7 +390,7 @@ void NaothModule::setWarningLED()
 }//end checkWarningState
 
 
-bool NaothModule::runningEmergencyMotion()
+bool SMALModule::runningEmergencyMotion()
 {
   if(state == DISCONNECTED)
   {

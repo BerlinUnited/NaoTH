@@ -58,7 +58,7 @@ class TestThread : public RtThread
 
     virtual void *execute()
     {
-      StopwatchItem stopwatch;
+      Stopwatch stopwatch;
       while(true)
       {
         theController->callMotion();
@@ -98,7 +98,7 @@ void* motionThreadCallback(void* ref)
 {
   NaoController* theController = static_cast<NaoController*> (ref);
 
-  StopwatchItem stopwatch;
+  Stopwatch stopwatch;
   while(true)
   {
     theController->runMotion();

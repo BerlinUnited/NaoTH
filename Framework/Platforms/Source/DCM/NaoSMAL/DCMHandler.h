@@ -12,95 +12,102 @@
 #include <sstream>
 #include <iostream>
 
-#include <alcore/alptr.h>
-#include <alcommon/albroker.h>
+#include <boost/shared_ptr.hpp>
 #include <alvalue/alvalue.h>
-#include <alcommon/alproxy.h>
+
 #include <almemoryfastaccess/almemoryfastaccess.h>
 #include <alproxies/almemoryproxy.h>
-#include <alproxies/alledsproxy.h>
 #include <alproxies/dcmproxy.h>
 
 #include "Tools/SharedMemory.h"
 #include "Tools/IPCData.h"
 
-using namespace AL;
-using namespace std;
 
-namespace naoth 
+//
+// this is to suppress the following gcc warning 
+// thrown because by the old version of boost used by naoqi
+// albroker.h and alproxy.h 
+// produce those:
+//   boost/function/function_base.hpp:325: 
+//   warning: dereferencing type-punned pointer will break strict-aliasing rules
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#include <alcommon/albroker.h>
+
+
+namespace naoth
 {
- 
+
 class DCMHandler
 {
 private:
-  ALPtr<ALBroker> pBroker;
-  ALPtr<ALMemoryProxy> al_memory;
-  ALMemoryFastAccess al_memoryfast;
-  DCMProxy * al_dcmproxy;
+  boost::shared_ptr<AL::ALBroker> pBroker;
+  boost::shared_ptr<AL::ALMemoryProxy> al_memory;
+  AL::ALMemoryFastAccess al_memoryfast;
+  AL::DCMProxy * al_dcmproxy;
     
   //Joints
-  string DCMPath_MotorJointHardness[JointData::numOfJoint];
-  string DCMPath_MotorJointPosition[JointData::numOfJoint];
-  string DCMPath_SensorJointPosition[JointData::numOfJoint];
-  string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
-  string DCMPath_SensorJointTemperature[JointData::numOfJoint];
+  std::string DCMPath_MotorJointHardness[JointData::numOfJoint];
+  std::string DCMPath_MotorJointPosition[JointData::numOfJoint];
+  std::string DCMPath_SensorJointPosition[JointData::numOfJoint];
+  std::string DCMPath_SensorJointElectricCurrent[JointData::numOfJoint];
+  std::string DCMPath_SensorJointTemperature[JointData::numOfJoint];
     
 
   //LED
-  string DCMPath_MonoLED[LEDData::numOfMonoLED];
-  string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
+  std::string DCMPath_MonoLED[LEDData::numOfMonoLED];
+  std::string DCMPath_MultiLED[LEDData::numOfMultiLED][LEDData::numOfLEDColor];
 
   //FSR
-  string DCMPath_FSR[FSRData::numOfFSR];
+  std::string DCMPath_FSR[FSRData::numOfFSR];
 
   //Accelerometer
-  string DCMPath_Accelerometer[3];
+  std::string DCMPath_Accelerometer[3];
 
   //Gyrometer
-  string DCMPath_Gyrometer[2+1];
+  std::string DCMPath_Gyrometer[2+1];
 
   //Inertial Sensors
-  string DCMPath_InertialSensor[2];
+  std::string DCMPath_InertialSensor[2];
 
   //Buttons
-  string DCMPath_Button[ButtonData::numOfButtons];
+  std::string DCMPath_Button[ButtonData::numOfButtons];
 
   //IR
-  string DCMPath_IRSend[IRSendData::numOfIRSend];
-  string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
+  std::string DCMPath_IRSend[IRSendData::numOfIRSend];
+  std::string DCMPath_IRReceive[IRReceiveData::numOfIRReceive];
     
   //UltraSound
-  string DCMPath_UltraSoundReceive;
-  string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
-  string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
-  string DCMPath_UltraSoundSend;
+  std::string DCMPath_UltraSoundReceive;
+  std::string DCMPath_UltraSoundReceiveLeft[UltraSoundData::numOfUSEcho];
+  std::string DCMPath_UltraSoundReceiveRight[UltraSoundData::numOfUSEcho];
+  std::string DCMPath_UltraSoundSend;
 
   //Body-ID
-  string DCMPath_BodyId;
-  string DCMPath_BodyNickName;
+  std::string DCMPath_BodyId;
+  std::string DCMPath_BodyNickName;
 
   //Battery
-  string DCMPath_BatteryCharge;
+  std::string DCMPath_BatteryCharge;
 
   //State of the devices
-  string DCMPath_DeviceState;
+  std::string DCMPath_DeviceState;
 
   // 
-  string allSensorsList[numOfSensors];
+  std::string allSensorsList[numOfSensors];
 
 
   //DCMCommand-Structures
-  ALValue allMotorPositionCommands;
-  ALValue allMotorHardnessCommands;
-  ALValue ledCommands;
-  ALValue singleLedCommand;
-  ALValue irCommands;
-  ALValue usSendCommands;
+  AL::ALValue allMotorPositionCommands;
+  AL::ALValue allMotorHardnessCommands;
+  AL::ALValue ledCommands;
+  AL::ALValue singleLedCommand;
+  AL::ALValue irCommands;
+  AL::ALValue usSendCommands;
 
     
-  ALValue getFromALMemory(const string& path);
+  AL::ALValue getFromALMemory(const std::string& path);
   
-  void sendToDCM(const string path,const double value,const int timestamp);
+  void sendToDCM(const std::string& path, const double value, const int timestamp);
 
   void initFSR();
   void initSensorJoint();
@@ -130,10 +137,10 @@ public:
 
   DCMHandler();
   ~DCMHandler();
-  void init(ALPtr<ALBroker> pB);
+  void init(boost::shared_ptr<AL::ALBroker> pB);
 
-  string getBodyID();
-  string getBodyNickName();
+  std::string getBodyID();
+  std::string getBodyNickName();
   int getTime(unsigned int time_delay);
 
   // read sensor data from AL memory
@@ -159,7 +166,6 @@ public:
   bool setLEDSmart(const LEDData& data, int dcmTime);
 };//end class DCMHandler
 
-} // end namespace naoth
-
+}//end namespace naoth
 #endif	/* _DCMHANDLER_H */
 

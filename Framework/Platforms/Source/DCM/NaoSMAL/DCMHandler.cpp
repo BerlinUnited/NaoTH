@@ -1,8 +1,15 @@
+
+
+
 #include "DCMHandler.h"
+
 #include <Tools/NaoInfo.h>
 #include <Tools/NaoTime.h>
 
 using namespace naoth;
+using namespace std;
+using namespace AL;
+
 
 DCMHandler::DCMHandler()
 {}
@@ -10,7 +17,7 @@ DCMHandler::DCMHandler()
 DCMHandler::~DCMHandler()
 {}
 
-void DCMHandler::init(ALPtr<ALBroker> pB)
+void DCMHandler::init(boost::shared_ptr<ALBroker> pB)
 {  
   pBroker = pB;
 
@@ -88,7 +95,7 @@ ALValue DCMHandler::getFromALMemory(const string& path)
  * function for sending a single value to DCM
  * For multiple data use Alias together with DCM directly
  */
-inline void DCMHandler::sendToDCM(const string path,const double value,const int timestamp)
+inline void DCMHandler::sendToDCM(const string& path, const double value, const int timestamp)
 {
   ALValue commands;
   try
