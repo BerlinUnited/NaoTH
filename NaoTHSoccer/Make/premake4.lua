@@ -1,16 +1,21 @@
--- load the global default settings
-dofile "projectconfig.lua"
+-- those contain additional pathes for includes and libs
+EXTERN_INCLUDES = { ["Nao"] = {}, ["Native"] = {} }
+EXTERN_LIBDIRS = { ["Nao"] = {}, ["Native"] = {}}
 
--- load local user settings if alailable
+-- load local user settings if available
 if os.isfile("projectconfig.user.lua") then
 	print("loading local user path settings")
 	dofile "projectconfig.user.lua"
 end
 
-print("EXTERN_PATH = " .. EXTERN_PATH)
+-- load the global default settings
+dofile "projectconfig.lua"
 
---
-include (NAO_CTC)
+
+
+-- include the Nao platform
+include (COMPILER_PATH_NAO)
+
 
 -- load some helpers for cross compilation etc.
 --dofile "helper/naocrosscompile.lua"
@@ -35,22 +40,31 @@ solution "NaoTHSoccer"
 -- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
 -- f:close ();
 
-  -- general lib path for all configurations
+  
+  -- global lib path for all configurations
+  -- additional includes
   libdirs {
     EXTERN_PATH .. "/lib"
   }
-  -- todo remove
-  includedirs {
-	FRAMEWORK_PATH.."/NaoTH-Commons/Source/"
+  libdirs {
+    EXTERN_LIBDIRS[_OPTIONS["platform"]]
   }
+
   
-  -- general include path for all projects and configurations
+  -- global include path for all projects and configurations
   includedirs {
+	FRAMEWORK_PATH .. "/NaoTH-Commons/Source/",
 	EXTERN_PATH .. "/include/",
 	EXTERN_PATH .. "/include/glib-2.0/",
 	EXTERN_PATH .. "/lib/glib-2.0/include/"
   }
+  -- additional includes
+  includedirs { 
+	EXTERN_INCLUDES[_OPTIONS["platform"]] 
+  }
   
+  
+  -- global links ( needed by NaoTHSoccer )
   links {
     "opencv_core",
 	"opencv_ml",
@@ -68,17 +82,8 @@ solution "NaoTHSoccer"
     -- flags { "Optimize", "FatalWarnings" }
     flags { "Optimize" }
          
+  
   configuration{"Native"}
-    includedirs { "/usr/include/" }
-    libdirs { EXTERN_PATH .. "/lib" }
-    
-    if os.get() == "linux" then      
-      -- try to get the pkg-config include-instructions
-      local f = io.popen("pkg-config --cflags glib-2.0")
-      local l = f:read("*a")
-      buildoptions { l }
-    end
-
     targetdir "../dist/Native"
     
   configuration {"Nao"}
@@ -113,7 +118,7 @@ solution "NaoTHSoccer"
   dofile "NaoTHSoccer.lua"
   
   -- platforms
-  if(_OPTIONS["platform"] == "Nao") then
+  if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")
 	  kind "ConsoleApp"

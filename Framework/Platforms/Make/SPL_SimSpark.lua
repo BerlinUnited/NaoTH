@@ -6,11 +6,12 @@ project "SPL_SimSpark"
   -- this is the only difference to SimSpark
   defines{ "PLATFORM_NAME=SPL_SimSpark" }  
   
-  files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
+  files{
+	"../Source/SimSpark/**.cpp", 
+	"../Source/SimSpark/**.h"}
   
   includedirs {
-	"../Source/",
-	"../../NaoTH-Tools/Source/"
+	"../Source/"
 	}
   
   links {

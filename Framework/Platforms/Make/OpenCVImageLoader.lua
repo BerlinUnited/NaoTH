@@ -10,7 +10,9 @@ project "OpenCVImageLoader"
 	"../../NaoTH-Tools/Source/"
 	}
   
-  files{"../Source/OpenCVImageLoader/**.cpp","../Source/OpenCVImageLoader/**.h"}
+  files{
+	"../Source/OpenCVImageLoader/**.cpp",
+	"../Source/OpenCVImageLoader/**.h"}
   
   links {
 	"glib-2.0",

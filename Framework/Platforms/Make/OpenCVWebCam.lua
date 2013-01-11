@@ -5,11 +5,12 @@ project "OpenCVWebCam"
    
   print("Generating files for OpenCVWebCam")
   includedirs {
-	"../Source/",
-	"../../NaoTH-Tools/Source/"
+	"../Source/"
 	}
   
-  files{"../Source/OpenCVWebCam/**.cpp","../Source/OpenCVWebCam/**.h"}
+  files{
+	"../Source/OpenCVWebCam/**.cpp",
+	"../Source/OpenCVWebCam/**.h"}
   
   links {
 	"glib-2.0",

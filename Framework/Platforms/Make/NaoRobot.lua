@@ -5,8 +5,7 @@ project "NaoRobot"
   language "C++"
   
   includedirs {
-    "../Source/DCM",
-    "../../NaoTH-Tools/Source/"
+    "../Source/DCM"
   }
   
   files {

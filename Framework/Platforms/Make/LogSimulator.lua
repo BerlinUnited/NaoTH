@@ -4,8 +4,7 @@ project "LogSimulator"
   language "C++"
   
   includedirs {
-	"../Source/",
-	"../../NaoTH-Tools/Source/"
+	"../Source/"
 	}
   
   files {

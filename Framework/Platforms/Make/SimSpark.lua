@@ -3,12 +3,13 @@ project "SimSpark"
   kind "StaticLib"
   language "C++"
         
-  files{ "../Source/SimSpark/**.cpp", "../Source/SimSpark/**.h"}
-  
   includedirs {
-	"../Source/",
-	"../../NaoTH-Tools/Source/"
+	"../Source/"
 	}
+	
+  files{
+	"../Source/SimSpark/**.cpp", 
+	"../Source/SimSpark/**.h"}
   
   links {
 	"sfsexp",
