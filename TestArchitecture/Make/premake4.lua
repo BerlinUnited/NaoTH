@@ -1,7 +1,16 @@
---dofile "../../LuaScripts/netbeans.lua"
+-- load the global default settings
+dofile "projectconfig.lua"
+
+-- load local user settings if alailable
+if os.isfile("projectconfig.user.lua") then
+	print("loading local user path settings")
+	dofile "projectconfig.user.lua"
+end
+
+print("EXTERN_PATH = " .. EXTERN_PATH)
+
 
 -- description of the solution
-
 solution "TestArchitecture"	  
   platforms {"Native"}
   configurations {"Debug","Release"}
@@ -15,10 +24,14 @@ solution "TestArchitecture"
   end
 
   includedirs {
-     "../../Extern/include/",
-     "../../Extern/include/glib-2.0/",
-     "../../Extern/lib/glib-2.0/include/"
+     EXTERN_PATH .. "/include/",
+     EXTERN_PATH .. "/include/glib-2.0/",
+     EXTERN_PATH .. "/lib/glib-2.0/include/"
   }
+  
+  libdirs {
+      EXTERN_PATH .. "/lib"
+    }
   
    -- debug configuration
   configuration { "Debug" }
@@ -31,4 +44,4 @@ solution "TestArchitecture"
   
   -- add projects
   dofile "TestArchitecture.lua"
-  dofile "../../Framework/NaoTH-Commons/Make/NaoTH-Commons.lua"
+  dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
