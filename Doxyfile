@@ -1,6 +1,6 @@
 PROJECT_NAME = "NaoTeam Humboldt"
 PROJECT_LOGO = Utils/logo_doxygen.png
-IMAGE_PATH = doc/images
+IMAGE_PATH = doxygen/images
 
 DISABLE_INDEX = true
 GENERATE_TREEVIEW = true
