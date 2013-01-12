@@ -77,14 +77,14 @@ void ModuleManager::calculateExecutionList()
         if(!moduleExecutionMap[*it2]->isEnabled()) continue;
         Module* m2 = moduleExecutionMap[*it2]->getModule();
 
-        for(std::list<Representation*>::const_iterator itReq = m1->getRequiredRepresentations().begin();
-          itReq != m1->getRequiredRepresentations().end(); itReq++)
+        for(RepresentationMap::const_iterator itReq = m1->getRequire().begin();
+          itReq != m1->getRequire().end(); itReq++)
         {
-          std::string repName = (*itReq)->getName();
-          for(std::list<Representation*>::const_iterator r = m2->getProvidedRepresentations().begin();
-            r != m2->getProvidedRepresentations().end(); ++r)
+          std::string repName = itReq->second->getName();
+          for(RepresentationMap::const_iterator r = m2->getProvide().begin();
+            r != m2->getProvide().end(); ++r)
           {
-            if((*r)->getName() == repName)
+            if(r->second->getName() == repName)
             {
               std::swap(*it1, *it2);
               changed = true;
@@ -138,10 +138,10 @@ void ModuleManager::calculateExecutionListOld()
     {
       Module* m = it->second->getModule();
         
-      for(std::list<Representation*>::const_iterator itProv = m->getProvidedRepresentations().begin();
-        itProv != m->getProvidedRepresentations().end(); itProv++)
+      for(RepresentationMap::const_iterator itProv = m->getProvide().begin();
+        itProv != m->getProvide().end(); itProv++)
       {
-        std::string repName = (*itProv)->getName();
+        std::string repName = itProv->second->getName();
           
         if(providerForRepresentation.find(repName) == providerForRepresentation.end())
         {
@@ -155,10 +155,10 @@ void ModuleManager::calculateExecutionListOld()
         }
       }//end for
         
-      for(std::list<Representation*>::const_iterator itReq = m->getRequiredRepresentations().begin();
-        itReq != m->getRequiredRepresentations().end(); itReq++)
+      for(RepresentationMap::const_iterator itReq = m->getRequire().begin();
+        itReq != m->getRequire().end(); itReq++)
       {
-        std::string repName = (*itReq)->getName();
+        std::string repName = itReq->second->getName();
         required[it->first].push_back(repName);
       }//end for
         
@@ -241,10 +241,10 @@ void ModuleManager::internalAddModuleToExecutionList(
     Module* m = am->getModule();
       
     // add all provided representations of this module to our known set
-    const std::list<Representation*> provided = m->getProvidedRepresentations(); 
-    for(std::list<Representation*>::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
+    const RepresentationMap& provided = m->getProvide(); 
+    for(RepresentationMap::const_iterator itProv=provided.begin(); itProv != provided.end(); itProv++)
     {
-      std::string repName = (*itProv)->getName();
+      std::string repName = itProv->second->getName();
       if(availableRepresentations.find(repName) == availableRepresentations.end())
       { 
         availableRepresentations.insert(repName);

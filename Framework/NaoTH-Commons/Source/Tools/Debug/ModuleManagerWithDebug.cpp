@@ -94,17 +94,17 @@ void ModuleManagerWithDebug::executeDebugCommand(const std::string& command,
         ASSERT(module != NULL); // shold never happen
 
 
-        std::list<Representation*>::const_iterator iterRep;
-        for (iterRep = module->getRequiredRepresentations().begin();
-          iterRep != module->getRequiredRepresentations().end(); iterRep++)
+        RepresentationMap::const_iterator iterRep;
+        for (iterRep = module->getRequire().begin();
+          iterRep != module->getRequire().end(); iterRep++)
         {
-          m->add_usedrepresentations((**iterRep).getName());
+          m->add_usedrepresentations(iterRep->second->getName());
         }
 
-        for (iterRep = module->getProvidedRepresentations().begin();
-          iterRep != module->getProvidedRepresentations().end(); iterRep++)
+        for (iterRep = module->getProvide().begin();
+          iterRep != module->getProvide().end(); iterRep++)
         {
-          m->add_providedrepresentations((**iterRep).getName());
+          m->add_providedrepresentations(iterRep->second->getName());
         }
       }//end if
     }//end for iterModule

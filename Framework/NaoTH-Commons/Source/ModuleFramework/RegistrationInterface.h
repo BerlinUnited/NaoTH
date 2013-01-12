@@ -5,57 +5,52 @@
 #include "DataHolder.h"
 
 /**
- * 
- */
+* 
+*/
 class RegistrationInterface
 {
+private:
+  std::string name;
+
 public:
+  RegistrationInterface(const std::string& name) : name(name){}
+  const std::string getName() const { return name; }
+
   virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard) = 0;
 };
 
-
+/** type for a named map of representation interfaces */
+typedef std::map<std::string, RegistrationInterface*> RegistrationInterfaceMap;
 
 /**
- *
- */
+*
+*/
 template<class T>
 class TypedRegistrationInterface: public RegistrationInterface
 {
-private:
-  const std::string getName() const { return name; }
-  std::string name;
-
-// HACK: should not be public, but inline access from StaticProvidingRegistrator
-// needs
-public:
-  //HACK: remove it, here schouldn't be any object data
-  T* data;
-
 public:
 
   TypedRegistrationInterface(const std::string& name)
-    : name(name),
-      data(NULL)
+    : RegistrationInterface(name)
   {
   }
 
-//  inline T& getData() const { assert(data != NULL); return *data; }
-//  inline const T& getData() const { assert(data != NULL); return *data; }
-
-  virtual Representation& registerAtBlackBoard(BlackBoard& blackBoard)
-  {
-    DataHolder<T>& rep = get(blackBoard);
-    data = &(*rep);
-    return rep;
-  }
-
-  virtual DataHolder<T>& get(BlackBoard& blackBoard)
+  Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
     return blackBoard.template getRepresentation<DataHolder<T> >(getName());
   }
+};//end class TypedRegistrationInterface
 
-  virtual const DataHolder<T>& get(const BlackBoard& blackBoard) const
-  {
-    return blackBoard.template getRepresentation<DataHolder<T> >(getName());
-  }
-};
+
+/**
+* 
+*/
+class RegistrationInterfaceRegistry
+{
+private:
+  RegistrationInterfaceMap provide_registry_map;
+  RegistrationInterfaceMap require_registry_map;
+public:
+  RegistrationInterfaceMap& getProvide() { return provide_registry_map; }
+  RegistrationInterfaceMap& getRequire() { return require_registry_map; }
+};//end class RegistrationInterfaceRegistry

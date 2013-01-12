@@ -8,9 +8,8 @@
 #ifndef _ModuleCreator_h_
 #define _ModuleCreator_h_
 
-#include "BlackBoardInterface.h"
+#include "Module.h"
 
-class Module;
 
 /**
  * AbstractModuleCreator is an interface.
@@ -20,12 +19,15 @@ class Module;
 class AbstractModuleCreator
 {
 public:
-  virtual std::string const moduleClassName() = 0;
+  virtual std::string moduleClassName() const = 0;
   virtual void setEnabled(bool value) = 0;
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
   virtual Module* getModule() const = 0;
   virtual ~AbstractModuleCreator() {}
+
+  virtual const RegistrationInterfaceMap& staticProvided() const = 0;
+  virtual const RegistrationInterfaceMap& staticRequired() const = 0;
 };
 
 /**
@@ -121,16 +123,27 @@ public:
   }//end getModule
 
 
-  V* getModuleT()
+  V* getModuleT() const
   {
     ASSERT(isEnabled());
     return static_cast<V*>(theInstance);
   }//end getModule
 
 
-  std::string const moduleClassName()
+  std::string moduleClassName() const
   {
     return typeid(V).name();
+  }
+
+
+  const RegistrationInterfaceMap& staticProvided() const
+  {
+    return StaticRegistry<V>::getProvide();
+  }
+
+  const RegistrationInterfaceMap& staticRequired() const
+  {
+    return StaticRegistry<V>::getRequire();
   }
 };
 #endif //_ModuleCreator_h_

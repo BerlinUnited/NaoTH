@@ -2,9 +2,11 @@
 #include "ModuleA.h"
 #include "ModuleB.h"
 
+using namespace std;
+
 void ModuleA::execute()
 {
-  cout << "start" << this->getModuleName() << endl;
+  cout << "[" << getName() << "] " << "start" << endl;
   getRepresentationB().value = 3;
 
   ModuleCreator<ModuleB>* m = registerModule<ModuleB>("ModuleB");
@@ -12,7 +14,7 @@ void ModuleA::execute()
   m->execute();
 
   getRepresentationB().value = 4;
-  cout << "end" << this->getModuleName() << endl;
+  cout << "[" << getName() << "] " <<  "end" << endl;
 }//end execute
 
 

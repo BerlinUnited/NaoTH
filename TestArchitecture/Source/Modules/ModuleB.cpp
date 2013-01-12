@@ -1,14 +1,13 @@
 
 #include "ModuleB.h"
 
+using namespace std;
 
 void ModuleB::execute()
 {
-  cout << "start" << this->getModuleName() << endl;
-  //cout << (theRepresentationB).value << endl;
-  //cout << (theMyRep).c << endl;
-
-  cout << getRepresentationB().value << endl;
-
-  cout << "end" << this->getModuleName() << endl;
+  cout << "[" << getName() << "] " << "start" << endl;
+//cout << "[" << getName() << "] " << (theRepresentationB).value << endl;
+//cout << "[" << getName() << "] " << (theMyRep).c << endl;
+  cout << "[" << getName() << "] " << getRepresentationB().value << endl;
+  cout << "[" << getName() << "] " << "end" << endl;
 }//end execute

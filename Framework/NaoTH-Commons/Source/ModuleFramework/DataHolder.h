@@ -16,19 +16,19 @@
 
 namespace naoth
 {
-  template<>
-  class Serializer<Representation>
+template<>
+class Serializer<Representation>
+{
+public:
+  static void serialize(const Representation& representation, std::ostream& stream)
   {
-  public:
-    static void serialize(const Representation& representation, std::ostream& stream)
-    {
-      representation.serialize(stream);
-    }
-    static void deserialize(std::istream& stream, Representation& representation)
-    {
-      representation.deserialize(stream);
-    }
-  };
+    representation.serialize(stream);
+  }
+  static void deserialize(std::istream& stream, Representation& representation)
+  {
+    representation.deserialize(stream);
+  }
+};
 }
 
 /**
@@ -48,10 +48,10 @@ private:
 public:
   DataHolder(const std::string& name): Representation(name){}
   DataHolder(): Representation(typeid(T).name()){}
-  //virtual ~DataHolder(){} // it's not needed, when it's doing anything :)
+  virtual ~DataHolder(){}
 
-  T& operator*(){ return data; }
-  const T& operator*() const{ return data; }
+  T& operator*() { return data; }
+  const T& operator*() const { return data; }
 
   /** 
    * wrap the print, fromDataStream and toDataStream of the data member 
