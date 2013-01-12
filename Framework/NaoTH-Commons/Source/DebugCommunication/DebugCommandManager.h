@@ -6,7 +6,7 @@
  */
 
 #ifndef DebugCommandManager_H
-#define  DebugCommandManager_H
+#define DebugCommandManager_H
 
 #include <Tools/DataStructures/Singleton.h>
 #include <Tools/DataStructures/DestructureSentinel.h>

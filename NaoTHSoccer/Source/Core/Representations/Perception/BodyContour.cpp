@@ -7,8 +7,6 @@
 */
 
 #include "BodyContour.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugDrawings3D.h"
 
 void BodyContour::clipBottom(int x, int& y) const
 {

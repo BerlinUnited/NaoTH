@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 #include "Representations/Infrastructure/Configuration.h"
 
@@ -18,7 +17,7 @@
 namespace naoth
 {
 
-class GameData : public PlatformInterchangeable, public Printable
+class GameData : public Printable
 {
 public:
   enum GameState
@@ -129,7 +128,7 @@ public:
   unsigned int numOfPlayers;
 };
 
-class GameReturnData: public PlatformInterchangeable, public Printable
+class GameReturnData: public Printable
 {
 public:
   GameReturnData():message(alive){}

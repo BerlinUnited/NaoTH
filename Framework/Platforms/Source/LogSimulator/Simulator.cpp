@@ -410,6 +410,7 @@ void Simulator::executeCurrentFrame()
     }
   }
   
+  //
   adjust_frame_time();
     
   // execute
@@ -420,7 +421,7 @@ void Simulator::executeCurrentFrame()
 
   printCurrentLineInfo();
 
-}
+}//end executeCurrentFrame
 
 
 void Simulator::adjust_frame_time()
@@ -433,6 +434,8 @@ void Simulator::adjust_frame_time()
   static unsigned int current_frame_number = 0;
 
   naothmessages::FrameInfo f;
+
+  // default time since the last frame
   unsigned int time_delta = CYCLE_TIME;
   
   // if no FrameInfo was logged set it manually
@@ -448,13 +451,13 @@ void Simulator::adjust_frame_time()
     f.ParseFromString(representations["FrameInfo"]);
     unsigned int frameTime = f.time();
 
-    // adjust the frame time
+    // logged time since the last frame
     if(lastFrameTime != 0)
     {
       time_delta = abs((int)frameTime - (int)lastFrameTime);
     }//end if
 
-    // remember the last time
+    // remember the current time for next cycle
     lastFrameTime = frameTime;
   }
 

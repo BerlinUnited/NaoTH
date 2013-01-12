@@ -50,7 +50,7 @@ int main(int argc, char** argv)
   loader.main();
 
   // dump some debug information
-  Stopwatch::getInstance().dump();
+  StopwatchManager::getInstance().dump();
 
   return (EXIT_SUCCESS);
 }//end main

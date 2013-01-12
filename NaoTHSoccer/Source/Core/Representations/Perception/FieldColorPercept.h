@@ -2,7 +2,7 @@
  * File:   FieldColorPercept.h
  * Author: claas
  *
- * Created on 17. März 2011, 22:53
+ * Created on 17. march 2011, 22:53
  */
 
 #ifndef FIELDCOLORPERCEPT_H

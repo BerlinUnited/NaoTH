@@ -27,29 +27,32 @@ public:
   virtual ~ModuleManager();
 
   /**
-   * register a module
-   * registration of different instances of the same class 
-   * with different names is alowed
-   */
+  * register a module
+  * Add a module creator with type T and the given name to the registeredModules if there was none.
+  * If a module with the given name and the same type exists in the map no new object is created.
+  * In this case only the setEnabled is applied.
+  * Multiple rigistration of modules with the same name but different types causes assertion.
+  * @return a pointer to the typed module creator in the registeredModules
+  */
   template<class T>
-  ModuleCreator<T>* registerModule(std::string name, bool enable = false);
+  ModuleCreator<T>* registerModule(std::string name, bool enabled = false);
 
 
   /**
-   * enables or disables the module 'moduleName'
-   * if the module 'moduleName' doesn't exist
-   * no action is done
-   */
+  * enables or disables the module 'moduleName'
+  * if the module 'moduleName' doesn't exist
+  * no action is done
+  */
   void setModuleEnabled(std::string moduleName, bool value, bool recalculateExecutionList=false);
 
   /**
-   * 
-   */
+  * 
+  */
   AbstractModuleCreator* getModule(const std::string& name);
 
   /**
-   *
-   */
+  *
+  */
   const AbstractModuleCreator* getModule(const std::string& name) const;
 
 
@@ -58,19 +61,18 @@ public:
     return moduleExecutionList;
   }//end getExecutionList  
 
-private:
-  template<class T>
-  ModuleCreator<T>* createModule()
-  {
-    return new ModuleCreator<T>(getBlackBoard());
-  }//end createModule
 
-  /** store the mapping name->module */
-  std::map<std::string, AbstractModuleCreator* > moduleExecutionMap;
+private:
+  /** creates a module creator based on the given type (for internal use only)*/
+  template<class T>
+  ModuleCreator<T>* createModule(bool enabled = false);
+
+  /** store the mapping name->module of the registered modules */
+  typedef std::map<std::string, AbstractModuleCreator* > ModuleCreatorMap;
+  ModuleCreatorMap registeredModules;
 
   /** list of names of modules in the order of registration */
   std::list<std::string> moduleExecutionList;
-  
 
 protected:
 
@@ -98,36 +100,7 @@ private:
   
 };
 
-
-// TODO: move to ModuleManager.ipp
-template<class T>
-ModuleCreator<T>* ModuleManager::registerModule(std::string name, bool enable)
-{
-  // module does not exist, so create a new one
-  if(moduleExecutionMap.find(name) == moduleExecutionMap.end())
-  {
-    moduleExecutionList.push_back(name);
-    moduleExecutionMap[name] = createModule<T>();
-  }
-    
-  // find the existing module
-  AbstractModuleCreator* module = moduleExecutionMap.find(name)->second;
-  ModuleCreator<T>* typedModule = dynamic_cast<ModuleCreator<T>*>(module);
-
-  // ...and check its type
-  if(typedModule == NULL)
-  {
-    std::cerr << "Module type mismatch: " << name << " is already registered as "
-              // HACK: getModuleName doesn't necessary return the type of the module
-              << module->moduleClassName() << ", but "
-              << typeid(T).name() << " requested." << std::endl;
-    assert(false);
-  }//end if
-    
-
-  typedModule->setEnabled(enable);
-
-  return typedModule;
-}//end registerModule
+// implementations for the template methods
+#include "ModuleManager.hpp"
 
 #endif //_ModuleManager_h_

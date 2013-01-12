@@ -88,7 +88,7 @@ public:
   {
     position = node.position;
     fValue = node.fValue;
-	  gValue = node.gValue;
+    gValue = node.gValue;
     hValue = node.hValue;
     parentNode = node.parentNode;  
     expanded = node.expanded;
@@ -99,13 +99,13 @@ public:
   /** Sets the index of the parent node of this node
   * @param parentNode The index of the parent node
   */
-	void setParentNode(unsigned int parentNode)
+  void setParentNode(unsigned int parentNode)
   { this->parentNode = parentNode;}
 
   /** Returns the index of the parent node
   * @return The parent node
   */
-	unsigned int getParentNode() const 
+  unsigned int getParentNode() const 
   { return parentNode;}
 
   /** Sets the function values
@@ -118,7 +118,7 @@ public:
   /** Returns the value of this node
   * @return The value f
   */
-	double f() const
+  double f() const
   { return fValue;}
 
   /** Returns the costs of the path to this node
@@ -154,7 +154,7 @@ public:
   * @param parameterSet The parameter set for the search
   * @param ownNodeNum The index of this node (in the seachTree)
   */
-	void successor(std::vector<AStarNode>& searchTree,
+  void successor(std::vector<AStarNode>& searchTree,
               const std::vector<unsigned int>& expandedNodes,
               const AStarNode& start,
               const AStarNode& goal,
@@ -186,11 +186,11 @@ public:
 
 protected:
   /** The position of the node*/
-	Vector2d position;
+  Vector2d position;
   /** The value of the node*/
   double fValue;
   /** The path costs to the node*/
-	double gValue;
+  double gValue;
   /** The heuristic of the node */
   double hValue;
   /** The index of the parent node*/
@@ -300,8 +300,8 @@ public:
   * @param pathLength Returns the length of the path to the goal
   * @return The next node to go to
   */
-	AStarNode search(const AStarNode& start, const AStarNode& goal, double& pathLength, std::vector<Vector2d>& obstacles, bool& pathFound, bool& noNodeExpandable)
-	{
+  AStarNode search(const AStarNode& start, const AStarNode& goal, double& pathLength, std::vector<Vector2d>& obstacles, bool& pathFound, bool& noNodeExpandable)
+  {
     // set obstacles, goal, start
     this->obstacles = obstacles;
     this->myStart.setPosition(start.getPosition());
@@ -374,7 +374,7 @@ public:
 
 private:
   /** A container for all nodes*/
-	std::vector<AStarNode> searchTree;
+  std::vector<AStarNode> searchTree;
   /** Indices of all expanded nodes*/
   std::vector<unsigned int> expandedNodes;
   /** The parameter set*/
@@ -448,7 +448,7 @@ private:
   */
   int testNewNodesAgainstGoal(unsigned int firstNode, unsigned int lastNode)
   {
-    double maxDistance(numeric_limits<double>::infinity());
+    double maxDistance(std::numeric_limits<double>::infinity());
     double temp(0.0);
     int result(-1);
     for(unsigned int i = firstNode; i < lastNode; i++)

@@ -5,19 +5,17 @@
  *
  */
 
-#ifndef __DebugMessage_h__
-#define __DebugMessage_h__
+#ifndef _DebugMessage_h_
+#define _DebugMessage_h_
 
 #include <sstream>
 #include <map>
 #include <list>
 
-#include "PlatformInterface/PlatformInterchangeable.h"
-
 namespace naoth
 {
 
-class DebugMessageIn: public PlatformInterchangeable
+class DebugMessageIn
 {
 public:
   class Message
@@ -30,7 +28,7 @@ public:
   std::list<Message> messages;
 };
 
-class DebugMessageOut: public PlatformInterchangeable
+class DebugMessageOut
 {
 public:
   std::list<std::string> answers;
@@ -38,4 +36,4 @@ public:
 
 } // namespace naoth
 
-#endif // __DebugMessage_h__
+#endif // _DebugMessage_h_

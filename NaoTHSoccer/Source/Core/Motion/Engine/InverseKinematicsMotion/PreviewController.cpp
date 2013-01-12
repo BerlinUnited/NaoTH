@@ -5,10 +5,7 @@
  * Preview controller for the Inverted pendulum
  */
 
-#include <fstream>
 #include <map>
-#include <sstream>
-#include <iostream>
 
 #include "PreviewController.h"
 #include <PlatformInterface/Platform.h>

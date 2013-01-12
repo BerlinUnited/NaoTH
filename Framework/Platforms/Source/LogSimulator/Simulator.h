@@ -35,14 +35,11 @@
 
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
-#include "Tools/DataStructures/Streamable.h"
+
 #include <Tools/Debug/DebugRequest.h>
 #include <ModuleFramework/Module.h>
 
 #define CYCLE_TIME 20
-
-using namespace naoth;
-
 
 class LogProvider: public Module, virtual private BlackBoardInterface
 {

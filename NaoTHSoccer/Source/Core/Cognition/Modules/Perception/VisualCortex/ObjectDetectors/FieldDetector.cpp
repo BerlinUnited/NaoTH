@@ -7,11 +7,9 @@
 #include "FieldDetector.h"
 
 #include <Tools/Math/ConvexHull.h>
-#include <Tools/Math/Polygon.h>
-#include <vector>
 
-#include "Tools/Debug/DebugImageDrawings.h"
 #include "Tools/Debug/DebugRequest.h"
+#include <Tools/Debug/DebugImageDrawings.h>
 
 using namespace std;
 

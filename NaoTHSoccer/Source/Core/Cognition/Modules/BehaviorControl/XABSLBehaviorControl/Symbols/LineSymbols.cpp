@@ -6,10 +6,9 @@
  */
 
 #include "LineSymbols.h"
-#include "Tools/Math/Common.h"
 
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
+#include <Tools/Debug/DebugDrawings.h>
 
 void LineSymbols::registerSymbols(xabsl::Engine& engine)
 {

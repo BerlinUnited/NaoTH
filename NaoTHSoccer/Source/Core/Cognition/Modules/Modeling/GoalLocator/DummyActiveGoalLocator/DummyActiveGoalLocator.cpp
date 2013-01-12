@@ -9,8 +9,6 @@
 
 //for MODIFY
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugDrawings.h"
 
 
 DummyActiveGoalLocator::DummyActiveGoalLocator() 

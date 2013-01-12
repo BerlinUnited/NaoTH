@@ -1,5 +1,5 @@
 /**
-* @file ModuleClassWraper.h
+* @file ModuleCreator.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
 * Declaration of class ModuleCreator
@@ -23,7 +23,7 @@ public:
   virtual void setEnabled(bool value) = 0;
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
-  virtual Module* getModule() const = 0;
+  virtual Module* getModule() = 0;
   virtual ~AbstractModuleCreator() {}
 
   virtual const RegistrationInterfaceMap& staticProvided() const = 0;
@@ -61,18 +61,19 @@ class ModuleCreator : public AbstractModuleCreator
 {
 private:
   BlackBoard& theBlackBoard;
-  ModuleInstance<V>* theInstance;
+  V* theInstance;
 
   // cannot be copied
   ModuleCreator& operator=( const ModuleCreator& ) {}
 
 public:
 
-  ModuleCreator(BlackBoard& theBlackBoard)
+  ModuleCreator(BlackBoard& theBlackBoard, bool enabled = false)
     : 
     theBlackBoard(theBlackBoard),
     theInstance(NULL)
   {
+    setEnabled(enabled);
   }
 
   virtual ~ModuleCreator()
@@ -97,11 +98,9 @@ public:
       }
     }else
     {
-      if( theInstance != NULL )
-      {
-        delete theInstance;
-        theInstance = NULL;
-      }
+      //NOTE: it is safe to delete NULL
+      delete theInstance;
+      theInstance = NULL;
     }
   }//end setEnabled
 
@@ -115,10 +114,12 @@ public:
   }//end execute
 
 
-  Module* getModule() const
+  Module* getModule()
   {
     ASSERT(isEnabled());
-    // todo: check, the class V is not necessary a module
+    // ACHTUNG: 
+    // we have to use the unsafe cast because some modules may privatly 
+    // derive from Module and make a type cast inaccesible
     return (Module*)(theInstance);
   }//end getModule
 
@@ -126,7 +127,7 @@ public:
   V* getModuleT() const
   {
     ASSERT(isEnabled());
-    return static_cast<V*>(theInstance);
+    return theInstance;
   }//end getModule
 
 

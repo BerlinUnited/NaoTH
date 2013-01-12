@@ -5,13 +5,14 @@
 * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
 * Implementation of class PlayersLocator
 */
+
 #include <limits>
+
 #include "PlayersLocator.h"
 // Debug
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Math/Geometry.h"
-#include "Tools/Debug/DebugModify.h"
+
+using namespace std;
 
 PlayersLocator::PlayersLocator()
 {

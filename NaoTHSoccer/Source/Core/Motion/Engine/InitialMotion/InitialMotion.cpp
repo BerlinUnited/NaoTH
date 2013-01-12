@@ -6,7 +6,6 @@
  */
 
 #include "InitialMotion.h"
-#include "PlatformInterface/Platform.h"
 
 using namespace naoth;
 using namespace std;

@@ -4,8 +4,8 @@
  * Declaration and implementation of class ColorModelConversions
  */ 
 
-#ifndef __ColorModelConversions_h_
-#define __ColorModelConversions_h_
+#ifndef _ColorModelConversions_h_
+#define _ColorModelConversions_h_
 
 #include "Tools/Math/Common.h"
 

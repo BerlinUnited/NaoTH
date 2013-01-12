@@ -8,13 +8,11 @@
 #include "PotentialFieldProvider.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugModify.h"
-#include "Tools/Math/Line.h"
+#include <Tools/Debug/DebugRequest.h>
 
 using namespace naoth;
+using namespace std;
 
 PotentialFieldProvider::PotentialFieldProvider()
 {

@@ -1,13 +1,11 @@
 #ifndef _SERIALIZER_H
 #define _SERIALIZER_H
 
-#include <typeinfo>
 
 #include "Tools/Debug/NaoTHAssert.h"
-#include "Tools/DataStructures/Singleton.h"
-#include "Tools/DataStructures/Streamable.h"
 
 #include <iostream>
+#include <typeinfo>
 
 //#define DEBUG_INFRASTRUCTURE
 

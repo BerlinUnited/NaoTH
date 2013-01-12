@@ -28,7 +28,7 @@ void Evolution::execute()
   }
   else
   {
-    cout<<"Evolution finished!"<<endl;
+    std::cout<<"Evolution finished!"<<std::endl;
     exit(0);
   }
 }

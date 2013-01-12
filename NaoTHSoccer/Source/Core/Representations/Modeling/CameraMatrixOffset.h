@@ -20,10 +20,10 @@ public:
   Vector2<double> offsetByGoalModel;
   Vector2<double> offset;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
-    stream << "x = " << offset.x << endl;
-    stream << "y = " << offset.y << endl;
+    stream << "x = " << offset.x << std::endl;
+    stream << "y = " << offset.y << std::endl;
   }//end print
 
 };

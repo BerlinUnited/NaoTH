@@ -48,7 +48,7 @@ private:
 
   void updateByPlayersPercept();
   void updateByTeamMessage();
-  PlayersModel::Player calculateClosestPlayerToBall(const vector<PlayersModel::Player>& team) const;
+  PlayersModel::Player calculateClosestPlayerToBall(const std::vector<PlayersModel::Player>& team) const;
 
   // some simple interval arithmetics
   class Interval
@@ -56,7 +56,7 @@ private:
   public:
     double a; // min value
     double b; // max value
-    Interval(double a, double b): a(min(a,b)), b(max(a,b)){}
+    Interval(double a, double b): a(std::min(a,b)), b(std::max(a,b)){}
 
     bool in(double d){ return d > a && d < b;}
 

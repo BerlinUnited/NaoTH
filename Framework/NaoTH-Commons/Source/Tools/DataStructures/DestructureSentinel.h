@@ -36,8 +36,8 @@
   };
 *
 */
-#ifndef __DestructionSentinel_h_
-#define __DestructionSentinel_h_
+#ifndef _DestructionSentinel_h_
+#define _DestructionSentinel_h_
 
 #include <list>
 
@@ -65,7 +65,7 @@ class DestructionListener
   void sentinelDestructed(DestructionSentinel<T>* object)
   {
     listOfDestructionSentinel.remove(object);
-    objectDestructed((T*)object); // execute custom destruction action
+    objectDestructed(static_cast<T*>(object)); // execute custom destruction action
   }//end sentinelDestructed
 
 protected:
@@ -121,4 +121,4 @@ public:
   }//end registerDestructionListener
 };//end class DestructionSentinel
 
-#endif /* __DestructionSentinel_h_ */
+#endif /* _DestructionSentinel_h_ */

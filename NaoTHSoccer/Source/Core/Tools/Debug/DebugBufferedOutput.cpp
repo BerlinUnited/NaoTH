@@ -2,7 +2,7 @@
 // File:   DebugBufferedOutput.cpp
 // Author: heinrich
 //
-// Created on 19. März 2008, 21:52
+// Created on 19. march 2008, 21:52
 //
 
 #include "DebugBufferedOutput.h"

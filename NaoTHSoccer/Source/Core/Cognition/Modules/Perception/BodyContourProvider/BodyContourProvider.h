@@ -15,7 +15,6 @@
 #include <vector>
 
 //Tools
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
 
 //Representations
@@ -68,7 +67,7 @@ protected:
 
                               
   protected:
-    void print(ostream& stream) const
+    void print(std::ostream& stream) const
     {
       stream << "nothing" << '\n';
     }

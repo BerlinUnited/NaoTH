@@ -5,8 +5,8 @@
  * Created on 18. April 2008, 18:00
  */
 
-#ifndef _STOPWATCH_H
-#define  _STOPWATCH_H
+#ifndef _Stopwatch_H_
+#define _Stopwatch_H_
 
 #include <map>
 #include <cstring>
@@ -14,110 +14,111 @@
 
 #include "Tools/DataStructures/Singleton.h"
 
-#ifdef WIN32
-  #include <windows.h>
-#else
-  #include <sys/time.h>
-  #include <time.h>
-#endif //WIN32
-
-class StopwatchItem
+class Stopwatch
 {
 public:
   
-  StopwatchItem() 
-    : 
-    start(0), 
-    stop(0), 
-    isValid(false), 
-    mean(0.0f),
-    n(0.0f),
-    min(10000.0f), // start with 10 s :)
-    max(0.0f),
-    lastValue(0)
-  {}
+  Stopwatch();
   
-  /** name of the stopwatch (the same as used as key in te map)*/
-  std::string name;
-  /** starting time in micro-seconds */
-  unsigned long long start;
-  /** stopping time in micro-seconds */
-  unsigned long long stop;
-  /** true if the data (stop - start) is valid */
+  /** starting time in microseconds */
+  unsigned long long begin;
+  /** stopping time in microseconds */
+  unsigned long long end;
+  
+  /** 
+  * Indicates that the stopwatch is in a consistent state.
+  * true if the stopwatch was running at least once 
+  * and is currently stopped, i.e., there is a valid 
+  * measurement.
+  */
   bool isValid;
-
-  // some statistics
-  /** the mean time */
-  float mean;
-  /** count */
-  float n;
-  /** the mean time */
-  float min;
-  /** the mean time */
-  float max;
   
-  /** The last valid value */
+  /** the last valid value (end - begin) */
   unsigned int lastValue;
 
+  /** some statistics in milliseconds
+  * those values are only usefull if the same Stopwatch 
+  * object is used several times. The statistics are calculated 
+  * based on the lastValue. 
+  */
+  /** the mean time */
+  double mean;
+  /** number of measurements */
+  double n;
+  /** minimal measured time */
+  double min;
+  /** maximal measured time */
+  double max;
+  
 public:
   /** */
-  void _start();
+  void start();
   
   /** */
-  void _stop();
-};//end class StopwatchItem
+  void stop();
+};//end class Stopwatch
 
 
-class Stopwatch : public naoth::Singleton<Stopwatch>
+class StopwatchManager : public naoth::Singleton<StopwatchManager>
 {
 protected:
-  friend class naoth::Singleton<Stopwatch>;
-  Stopwatch();
+  friend class naoth::Singleton<StopwatchManager>;
+  StopwatchManager();
 
-public:  
-  virtual ~Stopwatch();
+public:
+  virtual ~StopwatchManager();
   
+  typedef std::map<std::string, Stopwatch> StopwatchMap;
+
   //@Depricated and shouldn't be used
   //since access using this method is very slow
-  void notifyStart(const std::string& stopWatchName);
+  void notifyStart(const std::string& name);
 
   //@Depricated and shouldn't be used
   //since access using this method is very slow
-  void notifyStop(const std::string& stopWatchName);
+  void notifyStop(const std::string& name);
 
   /** */
-  void notifyStart(StopwatchItem& stopwatchItem);
-  
-  /** */
-  void notifyStop(StopwatchItem& stopwatchItem);
-
+  Stopwatch& getStopwatchReference(const std::string& stopWatchName);
 
   /** */
-  StopwatchItem& getStopwatchReference(const std::string& stopWatchName);
+  void dump(std::string name = "") const;
 
   /** */
-  void dump(std::string name = "");
+  const StopwatchMap getStopwatches() const { return stopwatches; }
 
-  std::map<std::string, StopwatchItem> stopwatches;
-};
+private:
+  StopwatchMap stopwatches;
+};//end class StopwatchManager
 
 // MACROS //
 
+#define USE_DEBUG_STOPWATCH
 
-//#ifdef DEBUG
-#define STOPWATCH_START(name) { static StopwatchItem& _debug_stopwatch_item_ = Stopwatch::getInstance().getStopwatchReference(name); Stopwatch::getInstance().notifyStart(_debug_stopwatch_item_); }
-#define STOPWATCH_STOP(name) { static StopwatchItem& _debug_stopwatch_item_ = Stopwatch::getInstance().getStopwatchReference(name); Stopwatch::getInstance().notifyStop(_debug_stopwatch_item_); }
+#ifdef USE_DEBUG_STOPWATCH
+
+#define STOPWATCH_START(name) \
+{ \
+  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatchReference(name); \
+  _debug_stopwatch_item_.start(); \
+} ((void)0)
+
+#define STOPWATCH_STOP(name) \
+{ \
+  static Stopwatch& _debug_stopwatch_item_ = StopwatchManager::getInstance().getStopwatchReference(name); \
+  _debug_stopwatch_item_.stop(); \
+} ((void)0)
 
 // this is slow and should be used for loops (only if necessary)
-#define STOPWATCH_START_GENERIC(name) Stopwatch::getInstance().notifyStart(name);
-#define STOPWATCH_STOP_GENERIC(name) Stopwatch::getInstance().notifyStop(name);
+#define STOPWATCH_START_GENERIC(name) StopwatchManager::getInstance().notifyStart(name);
+#define STOPWATCH_STOP_GENERIC(name) StopwatchManager::getInstance().notifyStop(name);
 
-//#else
-//#define STOPWATCH_START(name) /* */
-//#define STOPWATCH_STOP(name) /* */
-//#define STOPWATCH_START_GENERIC(name) /* */
-//#define STOPWATCH_STOP_GENERIC(name) /* */
-//#endif // DEBUG
+#else
+#define STOPWATCH_START(name) ((void)0)
+#define STOPWATCH_STOP(name) ((void)0)
+#define STOPWATCH_START_GENERIC(name) ((void)0)
+#define STOPWATCH_STOP_GENERIC(name) ((void)0)
+#endif // USE_DEBUG_STOPWATCH
 
-#endif  /* _STOPWATCH_H */
+#endif  /* _Stopwatch_H_ */
 

@@ -7,7 +7,6 @@
 
 
 #include "LedSymbols2011.h"
-#include "Tools/Debug/DebugModify.h"
 
 using namespace naoth;
 

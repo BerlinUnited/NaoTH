@@ -32,7 +32,7 @@ public:
 
 private:
   PackageLoader packageLoader;
-  StopwatchItem stopwatch;
+  Stopwatch stopwatch;
   
 };
 

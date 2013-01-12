@@ -13,14 +13,6 @@ GyrometerData::~GyrometerData()
 {
 }
 
-void GyrometerData::calibrate()
-{
-  rawZero = rawData;
-  data.x = 0.0;
-  data.y = 0.0;
-}
-
-
 void GyrometerData::print(ostream& stream) const
 {
   stream << "X : " << data.x << " radian/s (" << rawData.x << ")" << endl;

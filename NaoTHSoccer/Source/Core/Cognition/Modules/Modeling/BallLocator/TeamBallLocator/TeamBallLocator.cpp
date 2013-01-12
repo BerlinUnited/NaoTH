@@ -6,9 +6,6 @@
  */
 
 #include "TeamBallLocator.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Math/Pose2D.h"
 
 TeamBallLocator::TeamBallLocator()
 {

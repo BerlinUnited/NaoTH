@@ -211,7 +211,7 @@ void FieldInfo::createLinesTable()
   fieldLinesTable.findIntersections();
 }//end createLinesTable
 
-void FieldInfo::print(ostream& stream) const
+void FieldInfo::print(std::ostream& stream) const
 {
   stream << "ballColor = "<< ColorClasses::getColorName( ballColor )<<"\n";
 

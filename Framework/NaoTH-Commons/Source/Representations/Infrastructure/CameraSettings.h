@@ -2,7 +2,7 @@
  * File:   CameraSettings.h
  * Author: Oliver Welter
  *
- * Created on 15. März 2009, 16:56
+ * Created on 15. march 2009, 16:56
  */
 
 #ifndef _CameraSettings_H_
@@ -11,7 +11,6 @@
 #include <string>
 
 #include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/ParameterList.h"
 
 namespace naoth
@@ -61,15 +60,14 @@ namespace naoth
       virtual void print(std::ostream& stream) const;
   };
 
-  class CurrentCameraSettings : public CameraSettings, public PlatformInterchangeable
+  class CurrentCameraSettings : public CameraSettings
   {
   public:
     CurrentCameraSettings();
     virtual ~CurrentCameraSettings() {}
   };
 
-  class CameraSettingsRequest : public ParameterList,
-    public CameraSettings, public PlatformInterchangeable
+  class CameraSettingsRequest : public ParameterList, public CameraSettings
   {
   public:
     CameraSettingsRequest();

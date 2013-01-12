@@ -10,8 +10,6 @@
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/NaoInfo.h"
 
 SensorBehaviorControl::SensorBehaviorControl() 
 {

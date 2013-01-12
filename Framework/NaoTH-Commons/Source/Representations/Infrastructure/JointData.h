@@ -12,8 +12,6 @@
 
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/Serializer.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
-
 
 namespace naoth
 {
@@ -50,7 +48,7 @@ class JointData
       numOfJoint //error value
     };
 
-    // 'save' cast operator for int
+    // 'safe' cast operator for int
     // it maps any int value outside the range to numOfJoint
     static inline JointData::JointID getJointID (int n)
     {
@@ -59,9 +57,10 @@ class JointData
 
     double position[numOfJoint];
     double stiffness[numOfJoint];
-    double dp[numOfJoint];
-    double ddp[numOfJoint];
+    double dp[numOfJoint]; // speed
+    double ddp[numOfJoint]; // acceleration
 
+    // joint limits
     static double min[numOfJoint];
     static double max[numOfJoint];
 
@@ -97,7 +96,7 @@ class JointData
     void mirrorFrom(const JointData& jointData);
   };
 
-  class SensorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
+  class SensorJointData : public JointData, public Printable
   {
   public:
     SensorJointData();
@@ -110,7 +109,7 @@ class JointData
 
   };
 
-  class MotorJointData : public JointData, public Streamable, public Printable, public PlatformInterchangeable
+  class MotorJointData : public JointData, public Printable
   {
   public:
     MotorJointData();

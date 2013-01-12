@@ -7,7 +7,6 @@
  */
 
 #include "Motion.h"
-#include <glib.h>
 
 #include <stdlib.h>
 
@@ -22,9 +21,7 @@
 #include "CameraMatrixCalculator/CameraMatrixCalculator.h"
 
 #include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-#include <Tools/CameraGeometry.h>
 
 #include <DebugCommunication/DebugCommandManager.h>
 
@@ -99,8 +96,6 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_OUTPUT(MotorJointData);
   //REG_OUTPUT(LEDData);
 
-  g_message("Motion register end");
-
   // messages from motion to cognition
   platformInterface.registerOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(getCameraMatrix());
   platformInterface.registerOutputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
@@ -113,14 +108,16 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   platformInterface.registerInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
   platformInterface.registerInputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
 
+  g_message("Motion register end");
 }//end init
 
 
 
 void Motion::call()
 {
-  STOPWATCH_START("MotionExecute");
 
+  STOPWATCH_START("MotionExecute");
+  
   //TODO: move it to platform
   guard_cognition();
 
@@ -244,8 +241,6 @@ void Motion::debugPlots()
 
   PLOT("Motion:GyrometerData:rawData:x", getGyrometerData().rawData.x);
   PLOT("Motion:GyrometerData:rawData:y", getGyrometerData().rawData.y);
-  PLOT("Motion:GyrometerData:rawZero:x", getGyrometerData().rawZero.x);
-  PLOT("Motion:GyrometerData:rawZero:y", getGyrometerData().rawZero.y);
   PLOT("Motion:GyrometerData:ref", getGyrometerData().ref);
 
   PLOT("Motion:AccelerometerData:x", getAccelerometerData().data.x);
@@ -359,7 +354,7 @@ void Motion::guard_cognition()
     std::cerr << "+==================================+" << std::endl;
     std::cerr << "dumping traces" << std::endl;
     Trace::getInstance().dump();
-    Stopwatch::getInstance().dump("cognition");
+    StopwatchManager::getInstance().dump("cognition");
 
     //TODO: Maybe better put it into Platform?
     #ifndef WIN32

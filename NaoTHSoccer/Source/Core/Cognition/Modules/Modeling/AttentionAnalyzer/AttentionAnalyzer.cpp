@@ -8,9 +8,9 @@
 #include "AttentionAnalyzer.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
+#include <Tools/Debug/DebugRequest.h>
+#include <Tools/Debug/DebugBufferedOutput.h>
 
 // Tools
 #include "Tools/CameraGeometry.h"

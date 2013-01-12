@@ -10,7 +10,6 @@
 
 #include <string>
 #include <queue>
-#include <glib.h>
 
 class MessageReader;
 class MessageWriter;

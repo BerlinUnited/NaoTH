@@ -6,9 +6,8 @@
 */
 
 #include "OdometrySymbols.h"
-#include "Tools/Math/Common.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
+#include <Tools/Debug/DebugDrawings.h>
 
 OdometrySymbols* OdometrySymbols::theInstance = NULL;
 

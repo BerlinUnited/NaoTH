@@ -42,6 +42,8 @@ BEGIN_DECLARE_MODULE(VirtualVisionProcessor)
   //PROVIDE(GPSData)
 END_DECLARE_MODULE(VirtualVisionProcessor)
 
+using namespace std;
+
 class VirtualVisionProcessor: public VirtualVisionProcessorBase
 {
 public:
@@ -125,7 +127,7 @@ private:
 
 private:
 
-  void tokenize(const string& str, vector<string>& tokens,const string& delimiters = " ");
+  void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ");
 
   void addLine(const Vector3<double>& pol0, const Vector3<double>& pol1);
 
@@ -133,7 +135,7 @@ private:
   void findIntersections();
 
   /** copied from the LineDetector */
-  void classifyIntersections(vector<LinePercept::FieldLineSegment>& lineSegments);
+  void classifyIntersections(std::vector<LinePercept::FieldLineSegment>& lineSegments);
 };
 
 #endif // _VIRTUAL_VISION_PROCESSOR_H

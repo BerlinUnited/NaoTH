@@ -7,19 +7,10 @@
 
 #include "Cognition.h"
 
-#include <PlatformInterface/Platform.h>
 
-#include <Tools/Debug/DebugImageDrawings.h>
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 #include "Tools/Debug/DebugDrawings3D.h"
-#include <Tools/Debug/Stopwatch.h>
-#include <Tools/Debug/Trace.h>
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/NaoTime.h"
 
 
-#include <glib.h>
 
 /////////////////////////////////////
 // Modules
@@ -92,7 +83,6 @@
 //#include "Modules/Experiment/VisualAttention/SaliencyMap/SaliencyMapProvider.h"
 
 // tools
-#include "Tools/NaoTime.h"
 
 using namespace std;
 
@@ -236,15 +226,15 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   g_message("Cognition register end");
 
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.start();
 }//end init
 
 
 void Cognition::call()
 {
   // BEGIN cognition frame rate measuring
-  Stopwatch::getInstance().notifyStop(stopwatch);
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.stop();
+  stopwatch.start();
   PLOT("_CognitionCycle", stopwatch.lastValue);
   // END cognition frame rate measuring
 

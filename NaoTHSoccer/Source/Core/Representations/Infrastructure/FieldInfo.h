@@ -18,7 +18,7 @@
 
 
 
-class FieldInfo : public ParameterList, public Printable
+class FieldInfo : public ParameterList, public naoth::Printable
 {
 private:
   void calculateValues();
@@ -32,7 +32,7 @@ private:
 public:
   FieldInfo();
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
 
   //colors

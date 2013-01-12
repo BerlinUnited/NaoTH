@@ -70,7 +70,7 @@ GoalModel::Goal& GoalModel::getTeamGoal(naoth::GameData::TeamColor teamColor)
 }//end getTeamGoal
 */
 
-void GoalModel::print(ostream& stream) const
+void GoalModel::print(std::ostream& stream) const
 {
   stream<<"== Seen Goal ==\n";
   stream<< goal.frameInfoWhenGoalLastSeen;
@@ -144,11 +144,11 @@ Pose2D GoalModel::calculatePose(const CompassDirection& compassDirection, const 
 }//end calculatePosition
 
 
-void LocalGoalModel::print(ostream& stream) const
+void LocalGoalModel::print(std::ostream& stream) const
 {
-  stream<<"someGoalWasSeen = "<<(someGoalWasSeen?"true":"false")<< endl;
-  stream<<"estimatedCenterOfGoal = " << seen_center << endl;
-  stream<<"estimatedAngleToGoal = " << seen_angle << endl;
+  stream<<"someGoalWasSeen = "<<(someGoalWasSeen?"true":"false")<< std::endl;
+  stream<<"estimatedCenterOfGoal = " << seen_center << std::endl;
+  stream<<"estimatedAngleToGoal = " << seen_angle << std::endl;
 
   GoalModel::print(stream);
 }//end print

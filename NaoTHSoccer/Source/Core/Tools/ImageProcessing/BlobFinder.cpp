@@ -10,11 +10,11 @@
 #include "BlobFinder.h"
 
 // common tools
-#include <Tools/Debug/DebugImageDrawings.h>
 
 #include "Tools/Debug/DebugRequest.h"
 #include "Tools/DataStructures/ArrayQueue.h"
 
+#include "Tools/Debug/DebugImageDrawings.h"
 
 
 BlobFinder::BlobFinder(const ColoredGrid& coloredGrid)
