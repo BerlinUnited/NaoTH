@@ -1,0 +1,8 @@
+NaoTHCommonsLua {#NaoTHCommonsLua}
+==================================
+  
+NaoTHCommons.lua
+-----------------
+
+This should say something about the NaoTHCommons.lua premake script.
+
