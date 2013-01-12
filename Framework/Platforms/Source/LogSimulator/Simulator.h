@@ -48,7 +48,7 @@ private:
   std::map<std::string, std::string> exludeMap;
 
 public:
-  LogProvider() : Module("LogProvider"), representations(NULL) 
+  LogProvider() : representations(NULL) 
   {
     //HACK: do not provide basic percepts (they are provided by get(...)
     exludeMap["AccelerometerData"] = "";
@@ -65,6 +65,7 @@ public:
     exludeMap["FrameInfo"] = "";
   }
 
+  std::string getName() const { return "LogProvider"; }
   
 
   void init(std::map<std::string, std::string>& rep, std::set<std::string>& includedRepresentations)

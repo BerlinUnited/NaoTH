@@ -2,6 +2,11 @@
 EXTERN_INCLUDES = { ["Nao"] = {}, ["Native"] = {} }
 EXTERN_LIBDIRS = { ["Nao"] = {}, ["Native"] = {}}
 
+PLATFORM = _OPTIONS["platform"]
+if PLATFORM == nil then
+  PLATFORM = "Native"
+end
+
 -- load local user settings if available
 if os.isfile("projectconfig.user.lua") then
 	print("loading local user path settings")
@@ -27,6 +32,7 @@ solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug", "Release"}
   
+  print("generating solution NaoTHSoccer for platform " .. PLATFORM)
   
   local f = io.popen ("bzr revno", "r");
   local rev = f:read("*l")
@@ -47,9 +53,8 @@ solution "NaoTHSoccer"
     EXTERN_PATH .. "/lib"
   }
   libdirs {
-    EXTERN_LIBDIRS[_OPTIONS["platform"]]
+    EXTERN_LIBDIRS[PLATFORM]
   }
-
   
   -- global include path for all projects and configurations
   includedirs {
@@ -60,7 +65,7 @@ solution "NaoTHSoccer"
   }
   -- additional includes
   includedirs { 
-	EXTERN_INCLUDES[_OPTIONS["platform"]] 
+	EXTERN_INCLUDES[PLATFORM] 
   }
   
   
