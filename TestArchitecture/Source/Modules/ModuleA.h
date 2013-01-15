@@ -19,7 +19,6 @@ class ModuleA: protected ModuleABase, private ModuleManager
 public:
   ModuleA()
   {
-
   }
 
   virtual void execute();

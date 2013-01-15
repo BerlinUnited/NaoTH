@@ -3,11 +3,11 @@
 
 using namespace std;
 
+#define M_PRINT(x) std::cout << "[" << getName() << "] " << x << std::endl
+
 void ModuleB::execute()
 {
-  cout << "[" << getName() << "] " << "start" << endl;
-//cout << "[" << getName() << "] " << (theRepresentationB).value << endl;
-//cout << "[" << getName() << "] " << (theMyRep).c << endl;
-  cout << "[" << getName() << "] " << getRepresentationB().value << endl;
-  cout << "[" << getName() << "] " << "end" << endl;
+  M_PRINT("start");
+  M_PRINT("RepresentationB = " << getRepresentationB().value);
+  M_PRINT("end");
 }//end execute
