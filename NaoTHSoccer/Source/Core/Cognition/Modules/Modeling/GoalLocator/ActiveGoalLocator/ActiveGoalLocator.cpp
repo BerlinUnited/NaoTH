@@ -511,7 +511,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
     }
   }//end for
 
-  ASSERT(sampleSet.size() == n);
+  ASSERT((int)sampleSet.size() == n);
 
   // update the mean of the filter and set it valid
   sampleSet.mean = sum / (double)sampleSet.size();
