@@ -9,8 +9,12 @@
 #define _INITIALMOTIONFACTORY_H
 
 #include "Motion/Engine/MotionFactory.h"
+#include <ModuleFramework/Module.h>
 
-class InitialMotionFactory: public MotionFactory
+BEGIN_DECLARE_MODULE(InitialMotionFactory)
+END_DECLARE_MODULE(InitialMotionFactory)
+
+class InitialMotionFactory: public InitialMotionFactoryBase, public MotionFactory
 {
 public:
   InitialMotionFactory();
