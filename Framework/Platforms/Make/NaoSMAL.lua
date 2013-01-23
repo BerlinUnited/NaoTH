@@ -4,12 +4,19 @@
 
 print("Generating files for NaoSMAL")
 
+-- ld throws the following warning when linking NaoSMAL:
+-- 'warning: creating a DT_TEXTREL in object.'
+--
+-- I believe it is because some of AL stuff is compiled without the option -fpic/-fPIC.
+-- The flag -fpic/-fPIC - "position-independent code" is needed to compile shared libraries.
+-- premake4 automatically includes -fPIC if a project is declared as a SharedLib (we don't need to do it extra). 
+-- Actually, we would only need -fpic (instead of -fPIC) which may make our code faster.
+-- http://www.akkadia.org/drepper/dsohowto.pdf
+
 project "NaoSMAL"
   kind "SharedLib"
   language "C++"
   
-  libdirs { AL_DIR .. "/lib/" }
-
   includedirs {
 	"../Source/DCM"
 	}
