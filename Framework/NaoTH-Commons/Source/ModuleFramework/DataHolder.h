@@ -31,6 +31,7 @@ public:
 };
 }
 
+
 /**
  * Connects a arbitrary class with Representation
  */
@@ -66,14 +67,14 @@ public:
       Representation::print(stream);
   }//end print
 
-  void serialize(std::ostream& stream) const
+  void serialize(MsgOut<Representation>::type& msg) const
   {
-    naoth::Serializer<T>::serialize(data, stream);
+    naoth::Serializer<T>::serialize(data, msg);
   }
 
-  void deserialize(std::istream& stream)
+  void deserialize(MsgIn<Representation>::type& msg)
   {
-    naoth::Serializer<T>::deserialize(stream, data);
+    naoth::Serializer<T>::deserialize(msg, data);
   }
 };
 

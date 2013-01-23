@@ -17,6 +17,19 @@
 #include "Tools/DataStructures/Printable.h"
 
 
+template<class T>
+class MsgIn
+{
+public: typedef std::istream type;
+};
+
+template<class T>
+class MsgOut
+{
+public: typedef std::ostream type;
+};
+
+
 class Module;
 
 class Representation : public naoth::Printable
@@ -27,14 +40,12 @@ private:
 
 protected:
   // pointers to the providing and requiring modules
-  std::list<const Module*> provided;
-  std::list<const Module*> used;
-  std::list<const Module*> required;
+  std::list<const Module*> provide;
+  std::list<const Module*> require;
 
   Representation(const std::string name)
     : name(name)
   {
-    //std::cout << "Load " << getModuleName() << endl;
   }
 
 
@@ -42,26 +53,25 @@ public:
   virtual ~Representation() {}
   const std::string& getName() const { return name; }
 
-  void registerProvidingModule(const Module& module)
+  void registerProvide(const Module& module)
   {
-    provided.push_back(&module);
-  }//end registerProvidingModule
+    provide.push_back(&module);
+  }
   
-  void unregisterProvidingModule(const Module& module)
+  void unregisterProvide(const Module& module)
   {
-    provided.remove(&module);
-  }//end unregisterProvidingModule
+    provide.remove(&module);
+  }
 
-
-  void registerRequiringModule(const Module& module)
+  void registerRequire(const Module& module)
   {
-    required.push_back(&module);
-  }//end registerRequiringModule
+    require.push_back(&module);
+  }
 
-  void unregisterRequiringModule(const Module& module)
+  void unregisterRequire(const Module& module)
   {
-    required.remove(&module);
-  }//end unregisterRequiringModule
+    require.remove(&module);
+  }
 
   /**
    * This method can be overwritten bei a particular
@@ -75,8 +85,8 @@ public:
 
 
 
-  virtual void serialize(std::ostream& stream) const = 0;
-  virtual void deserialize(std::istream& stream) = 0;
+  virtual void serialize(MsgOut<Representation>::type& stream) const = 0;
+  virtual void deserialize(MsgIn<Representation>::type& stream) = 0;
 };
 
 /**
