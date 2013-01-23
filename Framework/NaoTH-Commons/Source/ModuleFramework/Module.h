@@ -63,170 +63,185 @@ typedef std::map<std::string, Representation*> RepresentationMap;
 
 @endcode
 */
+#ifndef DEBUG_INFRASTRUCTURE
+#define DEBUG_INFRASTRUCTURE
+#endif
 
-template<class M> class StaticInterface;
+
+template<class M> class StaticModuleInterface;
 
 class Module
 {
-// close access to the getBlackBoard for all derived classes
-protected:
+private:
   // pointers to the provided and required representations
   RepresentationMap providedMap;
   RepresentationMap requiredMap;
 
 public:
-  Module()
-  {
-    #ifdef DEBUG_INFRASTRUCTURE
-      std::cout << "Load " << getModuleName() << endl;
-    #endif // DEBUG_INFRASTRUCTURE
-  }
 
+  Module(){}
   virtual ~Module(){}
 
-  /** executes the module */
+  // those have to be overriden
   virtual void execute() = 0;
-
-  /** */
   virtual std::string getName() const = 0;
 
-  /** */
-  const RepresentationMap& getRequire() const
-  {
-    return requiredMap;
+
+  const RepresentationMap& getRequire() const { return requiredMap; }
+  const RepresentationMap& getProvide() const { return providedMap; }
+
+public:
+
+  template<class T>
+  const T& getRequire(std::string name) const {
+    return getRepresentation<T>(requiredMap, name);
   }
 
-  /** */
-  const RepresentationMap& getProvide() const
-  {
-    return providedMap;
+  template<class T>
+  T& getProvide(const std::string& name) const {
+    return getRepresentation<T>(providedMap, name);
   }
 
-protected:
-  /**
-  */
   template<class T>
-  const T& getRequire(std::string name) const
+  T& getRepresentation(const RepresentationMap& r_map, const std::string& name) const 
   {
-    RepresentationMap::const_iterator iter = requiredMap.find(name);
-    assert(iter != requiredMap.end());
-    return **(dynamic_cast<DataHolder<T>* >(iter->second));
-  }//end getRequire
+    RepresentationMap::const_iterator iter = r_map.find(name);
+    assert(iter != r_map.end());
+    DataHolder<T>* rep = dynamic_cast<DataHolder<T>*>(iter->second);
+    assert(rep != NULL);
+    return **rep;
+  }
 
-  /**
-  */
-  template<class T>
-  T& getProvide(std::string name) const
-  {
-    RepresentationMap::const_iterator iter = providedMap.find(name);
-    assert(iter != providedMap.end());
-    return **(dynamic_cast<DataHolder<T>* >(iter->second));
-  }//end getProvide
-
-  template<class M> friend class StaticInterface;
+  template<class M> friend class StaticModuleInterface;
 };//end class Module
+
+/** */
+std::ostream& operator <<(std::ostream &stream, const Module& module);
 
 
 /**
 * A prototype template for an interface
 */
-template<class T> class IF{};
+template<class T> class IF {};
+
+
+
+template<class T>
+class ST
+{
+public:
+  static T instance;
+public:
+  static T& getInstance() { return instance; }
+};
+
+template<class T>
+T ST<T>::instance;
 
 
 /**
 * 
 */
 template<class T>
-class StaticRegistry: 
-  public RegistrationInterfaceRegistry,
-  public Singleton<StaticRegistry<T> >,
-  public IF<T>
+class StaticRegistry
 {
-private:
+protected:
   StaticRegistry(){}
-  friend class Singleton<StaticRegistry<T> >;
+  
+private:
+  static RegistrationInterfaceRegistry registry;
+
 public:
-  static RegistrationInterfaceMap& getProvide() { return getInstance().RegistrationInterfaceRegistry::getProvide(); }
-  static RegistrationInterfaceMap& getRequire() { return getInstance().RegistrationInterfaceRegistry::getRequire(); }
+  static RegistrationInterfaceMap& getProvide() { return ST<IF<T> >::getInstance().registry.getProvide(); }
+  static RegistrationInterfaceMap& getRequire() { return ST<IF<T> >::getInstance().registry.getRequire(); }
+
+public:
+  template<class R>
+  static RegistrationInterface* registerProvide(const std::string& name)
+  {
+    return registerTypedInterface<R>(registry.getProvide(), name);
+  }
+
+  template<class R>
+  static RegistrationInterface* registerRequire(const std::string& name)
+  {
+    return registerTypedInterface<R>(registry.getRequire(), name);
+  }
+
+  template<class R>
+  static RegistrationInterface* registerTypedInterface(RegistrationInterfaceMap& rr_map, const std::string& name)
+  {
+    RegistrationInterfaceMap::iterator i = rr_map.find(name);
+    if(i == rr_map.end())
+      i = rr_map.insert(rr_map.begin(), std::make_pair(name, new TypedRegistrationInterface<R>(name)));
+
+    return i->second;
+  }
+
+
+  template<class R>
+  class StaticRequireRegistrator
+  {
+  public:
+    StaticRequireRegistrator(const std::string& name)
+    {
+      // this needs to be called only once
+      static RegistrationInterface* ri = registerRequire<R>(name);
+    }
+
+    const R& get(Module* m, const std::string& name) const
+	  {
+      assert(m != NULL);
+		  return m->getRequire<R>(name);
+	  }
+  };//end StaticRequireRegistrator
+
+
+  template<class R>
+  class StaticProvideRegistrator
+  {
+  public:
+    StaticProvideRegistrator(const std::string& name)
+    {
+      // this needs to be called only once
+      static RegistrationInterface* ri = registerProvide<R>(name);
+    }
+
+    R& get(Module* m, const std::string& name) const
+	  {
+      assert(m != NULL);
+		  return m->getProvide<R>(name);
+	  }
+  };//end StaticProvideRegistrator
 };//end class StaticRegistry
+
+
+template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registry;
 
 
 /**
  * @class
  */
-template<class M>
-class StaticInterface
+class ModuleHolder
 {
 public:
-  template<class R>
-  class StaticRegistrator
-  {
-  public:
-    StaticRegistrator(RegistrationInterfaceMap& static_registry, const std::string& name)
-    {
-      RegistrationInterface* ri = NULL;
-      RegistrationInterfaceMap::iterator i = 
-        static_registry.insert(static_registry.begin(), std::make_pair(name, ri));
-
-      if(i->second == NULL)
-        i->second = new TypedRegistrationInterface<R>(name);
-    }
-  };
-
-
-  template<class R>
-  class StaticRequireRegistrator: public StaticRegistrator<R>
-  {
-  public:
-    StaticRequireRegistrator(const std::string& name)
-      : StaticRegistrator<R>(getRegistry().getRequire(), name)
-    {}
-
-    const R& get(Module* m, const std::string& name) const
-		{
-      assert(m != NULL);
-			return m->getRequire<R>(name);
-		}
-  };
-
-  template<class R>
-  class StaticProvideRegistrator: public StaticRegistrator<R>
-  {
-  public:
-    StaticProvideRegistrator(const std::string& name)
-      : StaticRegistrator<R>(getRegistry().getProvide(), name)
-    {}
-
-    R& get(Module* m, const std::string& name) const
-		{
-      assert(m != NULL);
-			return m->getProvide<R>(name);
-		}
-  };
-
-public:
-  static StaticRegistry<M>& getRegistry(){ return StaticRegistry<M>::getInstance(); }
-  
   void bind(Module* m)
   {
     assert(module == NULL);
     module = m;
   }
 
-  StaticInterface() : module(NULL)
-  {
-  }
+  ModuleHolder() : module(NULL){}
 
 protected:
   Module* module;
-};// end class StaticInterface
-
+};
 
 
 // static module interface
 template<class M>
 class StaticModuleInterface: 
-  public IF<M>, 
+  public IF<M>,
   protected Module,
   virtual protected BlackBoardInterface
 {
@@ -236,6 +251,10 @@ private: using BlackBoardInterface::getBlackBoard;
 public:
   StaticModuleInterface()
   {
+#ifdef DEBUG_INFRASTRUCTURE
+    std::cout << "Load StaticModuleInterface" << std::endl;
+#endif
+
     registerRequire(StaticRegistry<M>::getRequire());
     registerProvide(StaticRegistry<M>::getProvide());
     
@@ -244,11 +263,12 @@ public:
   
   virtual ~StaticModuleInterface()
   {
-    unregisterRequire();
-    unregisterProvide();
+    unregister(providedMap);
+    unregister(requiredMap);
   }
 
 private:
+
   void registerProvide(const RegistrationInterfaceMap& rr_map)
   {
     RegistrationInterfaceMap::const_iterator iter = rr_map.begin();
@@ -260,10 +280,11 @@ private:
       providedMap[iter->first] = &representation;
 
       // register this module at the representation
-      representation.registerProvidingModule(*this);
+      representation.registerProvide(*this);
     }//end for
   }//end registerProvide
   
+
   void registerRequire(const RegistrationInterfaceMap& rr_map)
   {
     RegistrationInterfaceMap::const_iterator iter = rr_map.begin();
@@ -275,34 +296,26 @@ private:
       requiredMap[iter->first] = &representation;
 
       // register this module at the representation
-      representation.registerRequiringModule(*this);
+      representation.registerRequire(*this);
     }//end for
   }//end registerRequire
-  
-  void unregisterProvide()
-  {
-    RepresentationMap::iterator iter = providedMap.begin();
-    for(;iter != providedMap.end(); ++iter)
-    {
-      iter->second->unregisterProvidingModule(*this);
-    }
-    providedMap.clear();
-  }//end unregisterProvide
- 
 
-  void unregisterRequire()
+
+  void unregister(RepresentationMap& r_map)
   {
-    RepresentationMap::iterator iter = requiredMap.begin();
-    for(;iter != requiredMap.end(); ++iter)
+    RepresentationMap::iterator iter = r_map.begin();
+    for(;iter != r_map.end(); ++iter)
     {
-      iter->second->unregisterProvidingModule(*this);
+      iter->second->unregisterRequire(*this);
     }
-    requiredMap.clear();
-  }//end unregisterRequire
+    r_map.clear();
+  }//end unregister
 };//end class StaticModuleInterface
 
 
 
+
+// internal: don't use directly
 #define STATIC_REGISTRATOR(N,R)                         \
   class Register##R: public Static##N##Registrator<R>   \
   {                                                     \
@@ -310,14 +323,19 @@ private:
     Register##R(): Static##N##Registrator<R>(#R){}      \
   }
 
+
 //
 #define BEGIN_DECLARE_MODULE(M)                         \
   class M;                                              \
   template<>                                            \
-  class IF<M>: public StaticInterface<M>                \
-  {
+  class IF<M>:                                          \
+    public StaticRegistry<M>,                        \
+    public ModuleHolder \
+  {                                                     \
+    typedef M ModuleType;
 
-//
+
+
 #define REQUIRE(R)                                      \
   private:                                              \
     STATIC_REGISTRATOR(Require,R) the##R;               \
@@ -331,14 +349,13 @@ private:
 //
 #define PROVIDE(R)                                      \
   private:                                              \
-  STATIC_REGISTRATOR(Provide,R) the##R;                 \
+    STATIC_REGISTRATOR(Provide,R) the##R;               \
   protected:                                            \
     inline R& get##R() const                            \
     {                                                   \
       static R& data = the##R.get(module, #R);          \
       return data;                                      \
     }
-
 
 //
 #define END_DECLARE_MODULE(M)                           \
