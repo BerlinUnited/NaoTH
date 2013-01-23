@@ -185,8 +185,7 @@ public:
   public:
     StaticRequireRegistrator(const std::string& name)
     {
-      // this needs to be called only once
-      static RegistrationInterface* ri = registerRequire<R>(name);
+      registerRequire<R>(name);
     }
 
     const R& get(Module* m, const std::string& name) const
@@ -203,8 +202,7 @@ public:
   public:
     StaticProvideRegistrator(const std::string& name)
     {
-      // this needs to be called only once
-      static RegistrationInterface* ri = registerProvide<R>(name);
+      registerProvide<R>(name);
     }
 
     R& get(Module* m, const std::string& name) const
