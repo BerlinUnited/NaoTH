@@ -1,13 +1,12 @@
 /**
 * @file ModuleCreator.h
-*
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Declaration of class ModuleCreator
 */
 
 #ifndef _ModuleCreator_h_
 #define _ModuleCreator_h_
 
+#include "Tools/DataStructures/Printable.h"
 #include "Module.h"
 
 
@@ -16,14 +15,14 @@
  * It is used to create lists of modules.
  * Additionally it provides functionality to enable/disable the module
  */
-class AbstractModuleCreator
+class AbstractModuleCreator: public Printable
 {
 public:
   virtual std::string moduleClassName() const = 0;
   virtual void setEnabled(bool value) = 0;
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
-  virtual Module* getModule() = 0;
+  virtual Module* getModule() const = 0;
   virtual ~AbstractModuleCreator() {}
 
   virtual const RegistrationInterfaceMap& staticProvided() const = 0;
@@ -46,22 +45,20 @@ class ModuleInstance: virtual public BlackBoardInterface, virtual public V
 {
 public:
   ModuleInstance(BlackBoard& theBlackBoard)
-    :
-    BlackBoardInterface(&theBlackBoard)
-  {
-  }
+    : BlackBoardInterface(&theBlackBoard)
+  {}
 };
 
 /**
  * ModuleCreator implements the AbstractModuleCreator.
  * A module is deleted if it is disabled and created new if it is enabled.
  */
-template<class V>
+template<class M>
 class ModuleCreator : public AbstractModuleCreator
 {
 private:
   BlackBoard& theBlackBoard;
-  V* theInstance;
+  M* theInstance;
 
   // cannot be copied
   ModuleCreator& operator=( const ModuleCreator& ) {}
@@ -69,35 +66,29 @@ private:
 public:
 
   ModuleCreator(BlackBoard& theBlackBoard, bool enabled = false)
-    : 
-    theBlackBoard(theBlackBoard),
-    theInstance(NULL)
+    : theBlackBoard(theBlackBoard),
+      theInstance(NULL)
   {
     setEnabled(enabled);
   }
 
-  virtual ~ModuleCreator()
-  {
+  virtual ~ModuleCreator() {
     delete theInstance;
   }
 
 
-  bool isEnabled() const
-  {
+  bool isEnabled() const {
     return theInstance != NULL;
   }//end isEnabled
 
 
   void setEnabled(bool value)
   {
-    if(value)
-    {
-      if( theInstance == NULL )
-      {
-        theInstance = new ModuleInstance<V>(theBlackBoard);
+    if(value) {
+      if( theInstance == NULL ) {
+        theInstance = new ModuleInstance<M>(theBlackBoard);
       }
-    }else
-    {
+    } else {
       //NOTE: it is safe to delete NULL
       delete theInstance;
       theInstance = NULL;
@@ -107,14 +98,13 @@ public:
 
   void execute()
   {
-    if( theInstance != NULL )
-    {
+    if( theInstance != NULL ) {
       theInstance->execute();
     }//end if
   }//end execute
 
 
-  Module* getModule()
+  Module* getModule() const
   {
     ASSERT(isEnabled());
     // ACHTUNG: 
@@ -124,27 +114,43 @@ public:
   }//end getModule
 
 
-  V* getModuleT() const
-  {
+  M* getModuleT() const {
     ASSERT(isEnabled());
     return theInstance;
   }//end getModule
 
 
-  std::string moduleClassName() const
-  {
-    return typeid(V).name();
+  std::string moduleClassName() const {
+    return typeid(M).name();
   }
 
 
-  const RegistrationInterfaceMap& staticProvided() const
-  {
-    return StaticRegistry<V>::getProvide();
+  const RegistrationInterfaceMap& staticProvided() const {
+    return IF<M>::getProvide();
   }
 
-  const RegistrationInterfaceMap& staticRequired() const
-  {
-    return StaticRegistry<V>::getRequire();
+  const RegistrationInterfaceMap& staticRequired() const {
+    return IF<M>::getRequire();
   }
+
+  void print(std::ostream& stream) const
+  {
+    if(isEnabled()) {
+      stream << *getModule();
+      return;
+    }
+
+    stream << "[ " << moduleClassName() << " ]" << std::endl;
+    RegistrationInterfaceMap::const_iterator i = staticRequired().begin();
+    for(;i != staticRequired().end(); ++i) {
+      stream << " > " << i->first << std::endl;
+    }//end for
+
+    i = staticProvided().begin();
+    for(;i != staticProvided().end(); i++) {
+      stream << " < " << i->first << std::endl;
+    }//end for
+  }//end print
 };
+
 #endif //_ModuleCreator_h_
