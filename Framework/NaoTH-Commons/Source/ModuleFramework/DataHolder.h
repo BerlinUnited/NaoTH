@@ -20,12 +20,10 @@ template<>
 class Serializer<Representation>
 {
 public:
-  static void serialize(const Representation& representation, std::ostream& stream)
-  {
+  static void serialize(const Representation& representation, std::ostream& stream) {
     representation.serialize(stream);
   }
-  static void deserialize(std::istream& stream, Representation& representation)
-  {
+  static void deserialize(std::istream& stream, Representation& representation) {
     representation.deserialize(stream);
   }
 };
@@ -61,19 +59,18 @@ public:
   {
     static const Printable* asPrintable = dynamic_cast<const Printable*>(&data);
     
-    if(asPrintable != NULL)
+    if(asPrintable != NULL) {
       stream << *asPrintable;
-    else // use representation by default
+    } else { // use representation by default
       Representation::print(stream);
+    }
   }//end print
 
-  void serialize(MsgOut<Representation>::type& msg) const
-  {
+  void serialize(MsgOut<Representation>::type& msg) const {
     naoth::Serializer<T>::serialize(data, msg);
   }
 
-  void deserialize(MsgIn<Representation>::type& msg)
-  {
+  void deserialize(MsgIn<Representation>::type& msg) {
     naoth::Serializer<T>::deserialize(msg, data);
   }
 };

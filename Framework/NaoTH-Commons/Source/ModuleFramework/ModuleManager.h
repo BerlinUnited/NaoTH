@@ -19,9 +19,9 @@
 #include "Module.h"
 #include "BlackBoard.h"
 #include "ModuleCreator.h"
+#include "Tools/DataStructures/Printable.h"
 
-
-class ModuleManager: virtual public BlackBoardInterface
+class ModuleManager: virtual public BlackBoardInterface, public Printable
 {
 public:
   virtual ~ModuleManager();
@@ -62,6 +62,16 @@ public:
   }//end getExecutionList  
 
 
+  virtual void print(std::ostream& stream) const
+  {
+    std::list<std::string>::const_iterator iter;
+    for(iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
+    {
+      getModule(*iter)->print(stream);
+    }
+  }//end print
+
+
 private:
   /** creates a module creator based on the given type (for internal use only)*/
   template<class T>
@@ -71,7 +81,7 @@ private:
   typedef std::map<std::string, AbstractModuleCreator* > ModuleCreatorMap;
   ModuleCreatorMap registeredModules;
 
-  /** list of names of modules in the order of registration */
+  /** list of names of modules in the order of their registration */
   std::list<std::string> moduleExecutionList;
 
 protected:
