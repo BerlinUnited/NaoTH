@@ -27,38 +27,43 @@ public:
   }
 
   template<class T>
-  void registerInput(T& data)
+  bool registerInput(T& data)
   {
-    if(registerAction(data, environment.inputActions, process.preActions))
+    bool result = registerAction(data, environment.inputActions, process.preActions);
+    if(result)
       std::cout << "register input: " << typeid(T).name() << std::endl;
     else
       std::cerr << "invalid input: " << typeid(T).name() << std::endl;
+    return result;
   }//end registerInput
 
 
   template<class T>
-  void registerOutput(const T& data)
+  bool registerOutput(const T& data)
   {
-    if(registerAction(data, environment.outputActions, process.postActions))
+    bool result = registerAction(data, environment.outputActions, process.postActions);
+    if(result)
       std::cout << "register output: " << typeid(T).name() << std::endl;
     else
       std::cerr << "invalid output: " << typeid(T).name() << std::endl;
+    return result;
   }//end registerOutput
 
 
-
-  template<class T, class ST>
-  void registerInputChanel(T& data) 
+  template<class T>
+  bool registerInputChanel(T& data) 
   {
-    AbstractAction* action = environment.channelActionCreator.createInputChanelAction<T,ST>(data);
+    AbstractAction* action = environment.channelActionCreator.createInputChanelAction<T>(data);
     if(action != NULL) process.preActions.push_back(action);
+    return (action != NULL);
   }
 
-  template<class T, class ST>
-  void registerOutputChanel(const T& data)
+  template<class T>
+  bool registerOutputChanel(const T& data)
   { 
-    AbstractAction* action = environment.channelActionCreator.createOutputChanelAction<T,ST>(data);
+    AbstractAction* action = environment.channelActionCreator.createOutputChanelAction<T>(data);
     if(action != NULL) process.postActions.push_back(action); 
+    return (action != NULL);
   }
 
 private:

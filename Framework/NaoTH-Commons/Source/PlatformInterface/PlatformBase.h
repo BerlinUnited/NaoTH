@@ -24,7 +24,7 @@ public:
     theBasicTimeStep(basicTimeStep)
   {}
 
-  virtual ~PlatformBase();
+  virtual ~PlatformBase(){}
 
   /////////////////////// get ///////////////////////
   virtual std::string getBodyID() const = 0;

@@ -7,6 +7,7 @@
 #define _ChannelActionCreator_H
 
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
+#include "Tools/DataStructures/Serializer.h"
 #include "MessageQueueHandler.h"
 
 #include <sstream>
@@ -19,7 +20,7 @@ namespace naoth
  * Writes the object data of type T to the given message queue
  * using the serializer ST
  */
-template<class T, class ST>
+template<class T, class ST = Serializer<T> >
 class OutputChanelAction: public AbstractAction
 {
 private:
@@ -51,7 +52,7 @@ public:
  * Reads the object data of type T from the given message queue
  * using the serializer ST
  */
-template<class T, class ST>
+template<class T, class ST = Serializer<T> >
 class InputChanelAction: public AbstractAction
 {
 private:
@@ -105,23 +106,23 @@ public:
     messageQueueHandler = handler;
   }
 
-  template<class T, class ST>
+  template<class T>
   AbstractAction* createOutputChanelAction(const T& data)
   {
     if(messageQueueHandler == NULL) return NULL;
     
     MessageQueue* messageQueue = messageQueueHandler->getMessageQueue(typeid(T).name());
-    return new OutputChanelAction<T, ST>(messageQueue, data);
+    return new OutputChanelAction<T>(messageQueue, data);
   }//end createOutputChanelAction
 
 
-  template<class T, class ST>
+  template<class T>
   AbstractAction* createInputChanelAction(T& data)
   {
     if(messageQueueHandler == NULL) return NULL;
 
     MessageQueue* messageQueue = messageQueueHandler->getMessageQueue(typeid(T).name());
-    return new InputChanelAction<T,ST>(messageQueue, data);
+    return new InputChanelAction<T>(messageQueue, data);
   }//end createInputChanelAction
 
 };//end ChannelActionCreator

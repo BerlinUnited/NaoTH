@@ -6,7 +6,6 @@
 #define _MessageQueueHandler_H
 
 #include "Tools/Communication/MessageQueue/MessageQueue.h"
-#include "Tools/DataStructures/Serializer.h"
 
 #include <map>
 #include <string>
