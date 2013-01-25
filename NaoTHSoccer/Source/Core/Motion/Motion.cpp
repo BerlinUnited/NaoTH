@@ -97,16 +97,16 @@ void Motion::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   //REG_OUTPUT(LEDData);
 
   // messages from motion to cognition
-  platformInterface.registerOutputChanel<CameraMatrix, Serializer<CameraMatrix> >(getCameraMatrix());
-  platformInterface.registerOutputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
-  platformInterface.registerOutputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
-  //platformInterface.registerOutputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData);
-  platformInterface.registerOutputChanel<InertialModel, Serializer<InertialModel> >(getInertialModel());
+  platformInterface.registerOutputChanel(getCameraMatrix());
+  platformInterface.registerOutputChanel(getMotionStatus());
+  platformInterface.registerOutputChanel(getOdometryData());
+  //platformInterface.registerOutputChanel(getCalibrationData);
+  platformInterface.registerOutputChanel(getInertialModel());
 
   // messages from cognition to motion
-  platformInterface.registerInputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
-  platformInterface.registerInputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
-  platformInterface.registerInputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
+  platformInterface.registerInputChanel(getCameraInfo());
+  platformInterface.registerInputChanel(getHeadMotionRequest());
+  platformInterface.registerInputChanel(getMotionRequest());
 
   g_message("Motion register end");
 }//end init

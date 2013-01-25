@@ -7,6 +7,7 @@
 
 Sensor::Sensor()
 {
+  std::cout << "Create Sensor" << std::endl;
 }
 
 Sensor::~Sensor()
@@ -20,6 +21,7 @@ Sensor::~Sensor()
 
 void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
+  std::cout << "Init Sensor" << std::endl;
   // read RobotInfo
   RobotInfo& robot = getRobotInfo();
   robot.platform = platform.getName();
@@ -51,11 +53,11 @@ void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::Platf
   REG_INPUT(GameData);
   REG_INPUT(DebugMessageIn);
 
-  platformInterface.registerInputChanel<CameraMatrix, Serializer<CameraMatrix> >(getCameraMatrix());
-  platformInterface.registerInputChanel<MotionStatus, Serializer<MotionStatus> >(getMotionStatus());
-  platformInterface.registerInputChanel<OdometryData, Serializer<OdometryData> >(getOdometryData());
-  //platformInterface.registerInputChanel<CalibrationData, Serializer<CalibrationData> >(getCalibrationData());
-  platformInterface.registerInputChanel<InertialModel, Serializer<InertialModel> >(getInertialModel());
+  platformInterface.registerInputChanel(getCameraMatrix());
+  platformInterface.registerInputChanel(getMotionStatus());
+  platformInterface.registerInputChanel(getOdometryData());
+  //platformInterface.registerInputChanel(getCalibrationData());
+  platformInterface.registerInputChanel(getInertialModel());
 }//end init
 
 

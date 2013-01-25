@@ -96,6 +96,7 @@ Cognition::~Cognition()
 
 
 #define REGISTER_MODULE(module) \
+  g_message("Register "#module);\
   registerModule<module>(std::string(#module));
 
 
@@ -106,8 +107,10 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // register of the modules
 
   // input
-  ModuleCreator<Sensor>* sensor = REGISTER_MODULE(Sensor);
+  ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"));
+  g_message("Cognition register start");
   sensor->setEnabled(true);
+  g_message("Cognition register start");
   sensor->getModuleT()->init(platformInterface, platform);
 
   /* 
@@ -195,7 +198,7 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // -- END MODULES --
 
   // output
-  ModuleCreator<Actuator>* actuator = REGISTER_MODULE(Actuator);
+  ModuleCreator<Actuator>* actuator = registerModule<Actuator>(std::string("Actuator"));
   actuator->setEnabled(true);
   actuator->getModuleT()->init(platformInterface, platform);
 

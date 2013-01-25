@@ -28,9 +28,9 @@ void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::Pla
   REG_OUTPUT(RCTCTeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
 
-  platformInterface.registerOutputChanel<CameraInfo, Serializer<CameraInfo> >(getCameraInfo());
-  platformInterface.registerOutputChanel<HeadMotionRequest, Serializer<HeadMotionRequest> >(getHeadMotionRequest());
-  platformInterface.registerOutputChanel<MotionRequest, Serializer<MotionRequest> >(getMotionRequest());
+  platformInterface.registerOutputChanel(getCameraInfo());
+  platformInterface.registerOutputChanel(getHeadMotionRequest());
+  platformInterface.registerOutputChanel(getMotionRequest());
 }//end init
 
 void Actuator::execute()
