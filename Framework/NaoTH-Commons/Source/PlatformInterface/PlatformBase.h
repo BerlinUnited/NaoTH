@@ -24,7 +24,9 @@ public:
     theBasicTimeStep(basicTimeStep)
   {}
 
-  virtual ~PlatformBase(){}
+  virtual ~PlatformBase() {
+    std::cout << "destruct PlatformBase" << std::endl;
+  }
 
   /////////////////////// get ///////////////////////
   virtual std::string getBodyID() const = 0;

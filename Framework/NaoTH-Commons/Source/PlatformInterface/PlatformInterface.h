@@ -66,8 +66,7 @@ public:
     environment.channelActionCreator.setMessageQueueHandler(this);
   }
 
-  virtual ~PlatformInterface()
-  {
+  virtual ~PlatformInterface() {
     std::cout << "destruct PlatformInterface" << std::endl;
   }
 
@@ -80,13 +79,10 @@ public:
     ProcessInterface processInterface(cognitionProsess, environment);
     cognitionProsess.callback = cognition;
 
-    if(cognition != NULL)
-    {
+    if(cognition != NULL) {
       std::cout << "register COGNITION callback" << std::endl;
       cognition->init(processInterface, *this);
-    }
-    else
-    {
+    } else {
       std::cerr << "COGNITION callback is NULL" << std::endl;
     }
   }//end registerCognition
@@ -101,19 +97,15 @@ public:
     ProcessInterface processInterface(motionProsess, environment);
     motionProsess.callback = motion;
 
-    if(motion != NULL)
-    {
+    if(motion != NULL) {
       std::cerr << "register MOTION callback" << std::endl;
       motion->init(processInterface, *this);
-    }
-    else
-    {
+    } else {
       std::cerr << "MOTION callback is NULL" << std::endl;
     }
   }//end registerMotion
 
-  bool cognitionRegistered()
-  {
+  bool cognitionRegistered() {
     return cognitionProsess.callback != NULL;
   }
 
@@ -127,26 +119,21 @@ public:
     }
   }//end callCognition
 
-  virtual void callCognition()
-  {
-    if(cognitionRegistered())
-    {
+  virtual void callCognition() {
+    if(cognitionRegistered()) {
       cognitionProsess.callback->call();
     }
   }
 
-  virtual void getCognitionInput()
-  {
+  virtual void getCognitionInput() {
     cognitionProsess.preActions.execute();
   }
 
-  virtual void setCognitionOutput()
-  {
+  virtual void setCognitionOutput() {
     cognitionProsess.postActions.execute();
   }
 
-  bool motionRegistered()
-  {
+  bool motionRegistered() {
     return motionProsess.callback != NULL;
   }
 
@@ -160,21 +147,17 @@ public:
     }
   }//runMotion
 
-  virtual void callMotion()
-  {
-    if(motionRegistered())
-    {
+  virtual void callMotion() {
+    if(motionRegistered()) {
       motionProsess.callback->call();
     }
   }
 
-  virtual void getMotionInput()
-  {
+  virtual void getMotionInput() {
     motionProsess.preActions.execute();
   }
 
-  virtual void setMotionOutput()
-  {
+  virtual void setMotionOutput() {
     motionProsess.postActions.execute();
   }
 };//end class PlatformInterface
