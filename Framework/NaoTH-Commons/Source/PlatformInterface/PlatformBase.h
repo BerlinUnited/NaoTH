@@ -7,6 +7,7 @@
 #define _PlatformBase_h_
 
 #include <string>
+#include <iostream>
 
 namespace naoth
 {
