@@ -32,8 +32,7 @@ public:
 
   TypedRegistrationInterface(const std::string& name)
     : RegistrationInterface(name)
-  {
-  }
+  {}
 
   Representation& registerAtBlackBoard(BlackBoard& blackBoard)
   {
@@ -43,14 +42,19 @@ public:
 
 
 /**
-* 
 */
 class RegistrationInterfaceRegistry
 {
-private:
-  RegistrationInterfaceMap provide_registry_map;
-  RegistrationInterfaceMap require_registry_map;
 public:
-  RegistrationInterfaceMap& getProvide() { return provide_registry_map; }
-  RegistrationInterfaceMap& getRequire() { return require_registry_map; }
-};//end class RegistrationInterfaceRegistry
+  RegistrationInterfaceMap registry;
+
+  template<class R>
+  RegistrationInterface* registerInterface(const std::string& name)
+  {
+    RegistrationInterfaceMap::iterator i = registry.find(name);
+    if(i == registry.end())
+      i = registry.insert(registry.begin(), std::make_pair(name, new TypedRegistrationInterface<R>(name)));
+
+    return i->second;
+  }
+};
