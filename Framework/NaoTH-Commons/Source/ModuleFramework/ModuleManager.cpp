@@ -7,7 +7,7 @@
 ModuleManager::~ModuleManager()
 {
   ModuleCreatorMap::iterator iter;
-  for(iter = registeredModules.begin(); iter != registeredModules.end(); iter++)
+  for(iter = registeredModules.begin(); iter != registeredModules.end(); ++iter)
   {
     delete (iter->second);
   }//end for
@@ -43,7 +43,7 @@ AbstractModuleCreator* ModuleManager::getModule(const std::string& name)
 
 const AbstractModuleCreator* ModuleManager::getModule(const std::string& name) const
 {
-  std::map<std::string, AbstractModuleCreator* >::const_iterator iter = registeredModules.find(name);
+  ModuleCreatorMap::const_iterator iter = registeredModules.find(name);
   if(iter != registeredModules.end())
   {
     return iter->second;

@@ -109,60 +109,26 @@ protected:
   }
 
   template<class T>
-  T& getRepresentation(const RepresentationMap& r_map, const std::string& name) const 
-  {
-    RepresentationMap::const_iterator iter = r_map.find(name);
-    assert(iter != r_map.end());
-    DataHolder<T>* rep = dynamic_cast<DataHolder<T>*>(iter->second);
-    assert(rep != NULL);
-    return **rep;
-  }
+  T& getRepresentation(const RepresentationMap& r_map, const std::string& name) const;
 
 protected:
-
-  void registerProvide(const RegistrationInterfaceMap& rr_map)
-  {
-    RegistrationInterfaceMap::const_iterator iter = rr_map.begin();
-
-    for(;iter != rr_map.end(); ++iter) 
-    {
-      // init the actual dependency to te black board
-      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
-      providedMap[iter->first] = &representation;
-
-      // register this module at the representation
-      representation.registerProvide(*this);
-    }//end for
-  }//end registerProvide
-  
-
-  void registerRequire(const RegistrationInterfaceMap& rr_map)
-  {
-    RegistrationInterfaceMap::const_iterator iter = rr_map.begin();
-
-    for(;iter != rr_map.end(); ++iter)
-    {
-      // init the actual dependency to te black board
-      Representation& representation = (*iter).second->registerAtBlackBoard(getBlackBoard());
-      requiredMap[iter->first] = &representation;
-
-      // register this module at the representation
-      representation.registerRequire(*this);
-    }//end for
-  }//end registerRequire
-
-
-  void unregister(RepresentationMap& r_map)
-  {
-    RepresentationMap::iterator iter = r_map.begin();
-    for(;iter != r_map.end(); ++iter) {
-      iter->second->unregisterRequire(*this);
-    }
-    r_map.clear();
-  }//end unregister
+  void registerProvide(const RegistrationInterfaceMap& rr_map);
+  void registerRequire(const RegistrationInterfaceMap& rr_map);
+  void unregister(RepresentationMap& r_map);
 
   template<class T> friend class IF;
 };//end class Module
+
+
+template<class T>
+T& Module::getRepresentation(const RepresentationMap& r_map, const std::string& name) const 
+{
+  RepresentationMap::const_iterator iter = r_map.find(name);
+  assert(iter != r_map.end());
+  DataHolder<T>* rep = dynamic_cast<DataHolder<T>*>(iter->second);
+  assert(rep != NULL);
+  return **rep;
+}
 
 /** */
 std::ostream& operator <<(std::ostream &stream, const Module& module);
