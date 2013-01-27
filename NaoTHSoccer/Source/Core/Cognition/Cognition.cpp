@@ -106,11 +106,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   g_message("Cognition register start");
   // register of the modules
 
-  // input
-  ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"));
-  g_message("Cognition register start");
-  sensor->setEnabled(true);
-  g_message("Cognition register start");
+  // input module
+  ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"), true);
   sensor->getModuleT()->init(platformInterface, platform);
 
   /* 
@@ -197,9 +194,8 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
 
   // -- END MODULES --
 
-  // output
-  ModuleCreator<Actuator>* actuator = registerModule<Actuator>(std::string("Actuator"));
-  actuator->setEnabled(true);
+  // output module
+  ModuleCreator<Actuator>* actuator = registerModule<Actuator>(std::string("Actuator"), true);
   actuator->getModuleT()->init(platformInterface, platform);
 
   // loat external modules
@@ -209,17 +205,15 @@ void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::Pl
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
-  for(list<string>::const_iterator name=getExecutionList().begin();
-    name != getExecutionList().end(); ++name)
+  list<string>::const_iterator name = getExecutionList().begin();
+  for(;name != getExecutionList().end(); ++name)
   {
     bool active = false;
-    if(config.hasKey("modules", *name))
-    {    
+    if(config.hasKey("modules", *name)) {    
       active = config.getBool("modules", *name);      
     }
     setModuleEnabled(*name, active);
-    if(active)
-    {
+    if(active) {
       g_message("activating module %s", (*name).c_str());
     }
   }//end for
@@ -243,9 +237,8 @@ void Cognition::call()
 
 
   STOPWATCH_START("CognitionExecute");
-
-
   GT_TRACE("beginning to iterate over all modules");
+
   // execute all modules
   list<string>::const_iterator iter;
   for (iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
@@ -256,9 +249,8 @@ void Cognition::call()
     {
       std::string name(*iter);
 
-      stringstream s;
-      s << "executing " << name;
-      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
+      GT_TRACE("executing " << name);
+
       STOPWATCH_START_GENERIC(name);
       module->execute();
       STOPWATCH_STOP_GENERIC(name);

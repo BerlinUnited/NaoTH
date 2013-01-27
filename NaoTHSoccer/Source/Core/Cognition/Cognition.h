@@ -16,8 +16,6 @@
 #include "Tools/Packages/PackageLoader.h"
 #include <Tools/Debug/Stopwatch.h>
 
-#include "Tools/Debug/Logger.h"
-
 #include <Tools/Debug/ModuleManagerWithDebug.h>
 
 class Cognition : public naoth::Callable, public ModuleManagerWithDebug

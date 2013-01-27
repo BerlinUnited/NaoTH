@@ -91,6 +91,7 @@ private:
   StopwatchMap stopwatches;
 };//end class StopwatchManager
 
+
 // MACROS //
 
 #define USE_DEBUG_STOPWATCH
