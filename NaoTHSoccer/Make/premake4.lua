@@ -1,7 +1,15 @@
--- those contain additional pathes for includes and libs
-EXTERN_INCLUDES = { ["Nao"] = {}, ["Native"] = {} }
-EXTERN_LIBDIRS = { ["Nao"] = {}, ["Native"] = {}}
+require "helper/ansicolors"
 
+-- load some helpers
+dofile "helper/info.lua"
+dofile "helper/ilpath.lua"
+dofile "helper/qtcreator.lua"
+dofile "helper/extract_todos.lua"
+
+-- those contain additional pathes for includes and libs for both platforms
+PlatformPath = {["Nao"] = create_path(), ["Native"] = create_path()}
+
+-- set the default global platform
 PLATFORM = _OPTIONS["platform"]
 if PLATFORM == nil then
   PLATFORM = "Native"
@@ -9,23 +17,17 @@ end
 
 -- load local user settings if available
 if os.isfile("projectconfig.user.lua") then
-	print("loading local user path settings")
+	print("INFO: loading local user path settings")
 	dofile "projectconfig.user.lua"
 end
 
 -- load the global default settings
 dofile "projectconfig.lua"
 
-
-
 -- include the Nao platform
 include (COMPILER_PATH_NAO)
 
 
--- load some helpers for cross compilation etc.
---dofile "helper/naocrosscompile.lua"
-dofile "helper/extract_todos.lua"
-dofile "helper/qtcreator.lua"
 
 -- definition of the solution
 solution "NaoTHSoccer"
@@ -34,40 +36,16 @@ solution "NaoTHSoccer"
   
   print("generating solution NaoTHSoccer for platform " .. PLATFORM)
   
-  local f = io.popen ("bzr revno", "r");
-  local rev = f:read("*l")
-  if(rev == nil) then 
-    defines {"BZR_REVISION=-1"}
-  else 
-    defines{ "BZR_REVISION=" .. rev } 
-    f:close ();
-  end
--- f = io.popen ("bzr info", "r");
--- defines{ "BZR_BRANCHINFO=" .. f:read("*l") } 
--- f:close ();
-
-  
   -- global lib path for all configurations
   -- additional includes
   libdirs {
-    EXTERN_PATH .. "/lib"
-  }
-  libdirs {
-    EXTERN_LIBDIRS[PLATFORM]
+    PATH["libdirs"]
   }
   
   -- global include path for all projects and configurations
-  includedirs {
-	FRAMEWORK_PATH .. "/NaoTH-Commons/Source/",
-	EXTERN_PATH .. "/include/",
-	EXTERN_PATH .. "/include/glib-2.0/",
-	EXTERN_PATH .. "/lib/glib-2.0/include/"
-  }
-  -- additional includes
   includedirs { 
-	EXTERN_INCLUDES[PLATFORM] 
+	PATH["includedirs"]
   }
-  
   
   -- global links ( needed by NaoTHSoccer )
   links {
@@ -76,6 +54,15 @@ solution "NaoTHSoccer"
 	"opencv_highgui",
 	"opencv_imgproc"
 	}
+  
+  
+  -- set the remository information
+  defines {
+	"REVISION=\"" .. REVISION .. "\"",
+	"USER_NAME=\"" .. USER_NAME .. "\"",
+	"BRANCH_PATH=\"" .. BRANCH_PATH .. "\""
+	}
+  
   
   -- debug configuration
   configuration { "Debug" }
@@ -106,17 +93,20 @@ solution "NaoTHSoccer"
 	--debugdir ".."
   end
   
-  -- configuration {"linux"}
-  if(_ACTION == "gmake") then
+  configuration {"linux"}
+   if(_ACTION == "gmake") then
+     -- "position-independent code" needed to compile shared libraries.
+	 -- In our case it's only the NaoSMAL. So, we probably don't need this one.
+	 -- Premake4 automatically includes -fPIC if a project is declared as a SharedLib.
+	 -- http://www.akkadia.org/drepper/dsohowto.pdf
     buildoptions {"-fPIC"}
     flags { "ExtraWarnings" }
-  end
+   end
   
   -- Why? OpenCV is always dynamically linked and we can only garantuee that there is one version in Extern (Thomas)
   configuration {"linux"}
     linkoptions {"-Wl,-rpath \"" .. path.getabsolute(EXTERN_PATH .. "/lib/") .. "\""}
       
-	  
   -- base
   dofile (FRAMEWORK_PATH .. "/NaoTH-Commons/Make/NaoTH-Commons.lua")
   -- core

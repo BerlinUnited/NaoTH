@@ -1,12 +1,3 @@
---
-function make_string (var)
-  if var == nil then
-	return "";
-  end
-  return var;
-end
-
-
 -------------- Set default paths if not set by the user ------------
 -- path to the framework
 if FRAMEWORK_PATH == nil then
@@ -28,10 +19,10 @@ if NAO_CTC == nil then
   NAO_CTC = os.getenv("NAO_CTC")
 end
 -- external libraries for the Nao robot
-if EXTERN_PATH_NAO == nil then
+if EXTERN_PATH_NAO == nil and NAO_CTC ~= nil then
   EXTERN_PATH_NAO = NAO_CTC .. "/extern"
 end
-if COMPILER_PATH_NAO == nil then
+if COMPILER_PATH_NAO == nil and NAO_CTC ~= nil then
   COMPILER_PATH_NAO = NAO_CTC .. "/compiler"
 end
 
@@ -47,33 +38,48 @@ if WEBOTS_HOME == nil then
 end
 --------------------------------------------------------------
 
-
--- define extern depending on the platform
-if _OPTIONS["platform"] == "Nao" then
-  EXTERN_PATH = EXTERN_PATH_NAO
-else
-  EXTERN_PATH = EXTERN_PATH_NATIVE
-end
-
 -- add optional paths
 if WEBOTS_HOME ~= nil then
-  table.insert(EXTERN_INCLUDES.Native, WEBOTS_HOME .. "/include/controller/c/")
-  table.insert(EXTERN_LIBDIRS.Native, WEBOTS_HOME .. "/lib")
+  PlatformPath.Native:add_includedir(WEBOTS_HOME .. "/include/controller/c/")
+  PlatformPath.Native:add_libdir(WEBOTS_HOME .. "/lib")
 end
 
 if AL_DIR ~= nil then
-  table.insert(EXTERN_INCLUDES.Nao, AL_DIR .. "/include")
-  table.insert(EXTERN_LIBDIRS.Nao, AL_DIR .. "/lib")
+  PlatformPath.Nao:add_includedir(AL_DIR .. "/include")
+  PlatformPath.Nao:add_libdir(AL_DIR .. "/lib")
+end
+--PlatformPath.Native:print()
+--PlatformPath.Nao:print()
+
+
+
+-- define pathes depending on the platform
+if _OPTIONS["platform"] == "Nao" then
+  EXTERN_PATH = EXTERN_PATH_NAO
+  PATH = PlatformPath.Nao
+else
+  EXTERN_PATH = EXTERN_PATH_NATIVE
+  PATH = PlatformPath.Native
 end
 
+-- add general pathes
+-- this mainly reflects the internal structure of the extern directory
+PATH:add_includedir(FRAMEWORK_PATH .. "/NaoTH-Commons/Source/")
+PATH:add_includedir(EXTERN_PATH .. "/include/")
+PATH:add_includedir(EXTERN_PATH .. "/include/glib-2.0/")
+PATH:add_includedir(EXTERN_PATH .. "/lib/glib-2.0/include/")
+PATH:add_libdir(EXTERN_PATH .. "/lib")
 
-print("-------- path configuration --------")
-print("FRAMEWORK_PATH = " .. make_string(FRAMEWORK_PATH))
-print("EXTERN_PATH = " .. make_string(EXTERN_PATH))
-print("NAO_CTC = " .. make_string(NAO_CTC))
-print("COMPILER_PATH_NAO = " .. make_string(COMPILER_PATH_NAO))
-print("AL_DIR = " .. make_string(AL_DIR))
-print("WEBOTS_HOME = " .. make_string(WEBOTS_HOME))
-print("--------")
+
+
+print("INFO: list path configuration")
+print("  FRAMEWORK_PATH = " .. tostring(FRAMEWORK_PATH))
+print("  EXTERN_PATH = " .. tostring(EXTERN_PATH))
+print("  NAO_CTC = " .. tostring(NAO_CTC))
+print("  COMPILER_PATH_NAO = " .. tostring(COMPILER_PATH_NAO))
+print("  AL_DIR = " .. tostring(AL_DIR))
+print("  WEBOTS_HOME = " .. tostring(WEBOTS_HOME))
+PATH:print()
+print()
 
 

@@ -1,8 +1,8 @@
 /**
- * @file naoth.cpp
+ * @file main.cpp
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
- *
+ * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Mellmann, Heinrich</a>
  */
 
 #include "NaoController.h"
@@ -15,19 +15,15 @@
 
 using namespace naoth;
 
+
 void got_signal(int t)
 {
 
-  if(t == SIGTERM)
-  {
+  if(t == SIGTERM) {
     std::cout << "shutdown requested by kill signal" << t << std::endl;
-  }
-  else if(t == SIGSEGV)
-  {
+  } else if(t == SIGSEGV) {
     std::cerr << "SEGMENTATION FAULT" << std::endl;
-  }
-  else
-  {
+  } else {
     std::cerr << "catched unknown signal " << t << std::endl;
   }
 
@@ -43,12 +39,13 @@ void got_signal(int t)
 }//end got_signal
 
 
-
 // a semaphore for sychronization with the DCM
 sem_t* dcm_sem = SEM_FAILED;
 
 
-/* Just some experiments with the RT-Threads
+/* 
+// Just some experiments with the RT-Threads
+// not used yet
 class TestThread : public RtThread
 {
 	public:
@@ -84,8 +81,7 @@ void* cognitionThreadCallback(void* ref)
 {
   NaoController* theController = static_cast<NaoController*> (ref);
 
-  while(true)
-  {
+  while(true) {
     theController->runCognition();
     g_thread_yield();
   }
@@ -103,38 +99,35 @@ void* motionThreadCallback(void* ref)
   {
     theController->runMotion();
     
-
-    if(sem_wait(dcm_sem) == -1)
-    {
+    if(sem_wait(dcm_sem) == -1) {
       cerr << "lock errno: " << errno << endl;
     }
 
     stopwatch.stop();
     stopwatch.start();
-    
-    // TODO: if we want to have this here, we have to move the 
-    // "Tools/Debug/DebugBufferedOutput.h" to NaoTH-Commons
-    //PLOT("_MotionCycle", stopwatch.lastValue);
   }//end while
 
   return NULL;
 }//end motionThreadCallback
 
-
+#define TO_STRING(x) #x
 
 int main(int argc, char *argv[])
 {
 
-    std::cout << "=========================================="  << std::endl;
-    std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
+  std::cout << "=========================================="  << std::endl;
+  std::cout << "NaoTH compiled on: " << __DATE__ << " at " << __TIME__ << std::endl;
 
-    #ifdef BZR_REVISION
-    std::cout << "Revision number: " << BZR_REVISION << std::endl;
-    #endif
-    #ifdef BZR_BRANCHINFO
-    std::cout << "Branch info: " << BZR_BRANCHINFO << std::endl;
-    #endif
-    std::cout << "==========================================\n"  << std::endl;
+  #ifdef REVISION
+  std::cout << "Revision number: " << TO_STRING(REVISION) << std::endl;
+  #endif
+  #ifdef USER_NAME
+  std::cout << "Owner: " << TO_STRING(USER_NAME) << std::endl;
+  #endif
+  #ifdef BRANCH_PATH
+  std::cout << "Branch path: " << TO_STRING(BRANCH_PATH) << std::endl;
+  #endif
+  std::cout << "==========================================\n"  << std::endl;
 
   // init glib
   g_type_init();
@@ -167,7 +160,6 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-
   // create the controller
   NaoController theController;
   
@@ -180,7 +172,7 @@ int main(int argc, char *argv[])
 
 
   // create the motion thread
-  // !!we use here a pthread directly, because glib doustn't support priorities
+  // !!we use here a pthread directly, because glib doesn't support priorities
   pthread_t motionThread;
   pthread_create(&motionThread, 0, motionThreadCallback, (void*)&theController);
 
@@ -198,7 +190,6 @@ int main(int argc, char *argv[])
   g_thread_set_priority(motionThread, G_THREAD_PRIORITY_HIGH);
   */
   
-
   GError* err = NULL;
   GThread* cognitionThread = g_thread_create(cognitionThreadCallback, (void*)&theController, true, &err);
   if(err)
