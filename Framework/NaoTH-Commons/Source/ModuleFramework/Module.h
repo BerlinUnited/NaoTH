@@ -2,37 +2,8 @@
 * @file Module.h
 *
 * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
-* Declaration of class Module (base class for modules)
-*/
-
-#ifndef _Module_h_
-#define _Module_h_
-
-#include "DataHolder.h"
-#include "BlackBoardInterface.h"
-#include "RegistrationInterface.h"
-
-#include <string.h>
-#include <map>
-#include <list>
-
-// TODO: remove it (it's not easy)
-// ACHTUNG: modules should not be included by anyone else, so that's kind of ok
-//          This is ugly, but for now it's the most elegant and simple way i can think of
-using namespace naoth;
-
-/** type for a named map of representations */
-typedef std::map<std::string, Representation*> RepresentationMap;
-
-/**
-* A prototype template for a static interface of a module
-*/
-template<class T> class IF { typedef Module ModuleType; };
-
-
-/**
-* @class Module
-* macros for creating a module
+*
+* 
 * usage:
 @code
 
@@ -70,28 +41,48 @@ template<class T> class IF { typedef Module ModuleType; };
 @endcode
 */
 
+#ifndef _Module_h_
+#define _Module_h_
+
+#include "DataHolder.h"
+#include "BlackBoardInterface.h"
+#include "RegistrationInterface.h"
+
+#include <string.h>
+#include <map>
+#include <list>
+
+// TODO: remove it (it's not easy)
+// ACHTUNG: modules should not be included by anyone else, so that's kind of ok
+//          This is ugly, but for now it's the most elegant and simple way i can think of
+using namespace naoth;
+
+/** type for a named map of representations */
+typedef std::map<std::string, Representation*> RepresentationMap;
+
+/**
+* A prototype for a static interface of a module
+*/
+template<class T> class IF;
+
+
+/**
+* @class Module
+*/
 class Module: protected virtual BlackBoardInterface
 {
 // close access to the getBlackBoard for all derived classes
 private: using BlackBoardInterface::getBlackBoard;
 
-private:
-  // pointers to the provided and required representations
-  RepresentationMap providedMap;
-  RepresentationMap requiredMap;
-
 public:
-
   Module(){}
   virtual ~Module() {
     unregister(providedMap);
     unregister(requiredMap);
   }
 
-  // those have to be overriden
   virtual void execute() = 0;
   virtual std::string getName() const = 0;
-
 
   const RepresentationMap& getRequire() const { return requiredMap; }
   const RepresentationMap& getProvide() const { return providedMap; }
@@ -111,12 +102,21 @@ protected:
   template<class T>
   T& getRepresentation(const RepresentationMap& r_map, const std::string& name) const;
 
+  // the interface IF<T> uses the methods getProvide and getRequire
+  template<class T> friend class IF;
+
 protected:
   void registerProvide(const RegistrationInterfaceMap& rr_map);
   void registerRequire(const RegistrationInterfaceMap& rr_map);
   void unregister(RepresentationMap& r_map);
 
-  template<class T> friend class IF;
+private:
+  // pointers to the provided and required representations
+  // they are filled at the construction time of the module by the methods
+  // registerProvide and registerRequire
+  RepresentationMap providedMap;
+  RepresentationMap requiredMap;
+
 };//end class Module
 
 
@@ -135,7 +135,9 @@ std::ostream& operator <<(std::ostream &stream, const Module& module);
 
 
 /**
-* 
+* Holds static maps with registrators for required/provided representations
+* The fields registryRequire and registryProvide are filled by IF<T> during it's
+* construction time. 
 */
 template<class T>
 class StaticRegistry
@@ -147,19 +149,27 @@ protected:
   static RegistrationInterfaceRegistry registryProvide;
 public:
   static const RegistrationInterfaceMap& getRequire() { 
+    // call the constructor of IF<T> once to initialize registryRequire and registryProvide
+    // this construction compiles faster than a static variable of type IF<T>
     if(!init) { IF<T>(); init = true; } 
     return registryRequire.registry; 
   }
   static const RegistrationInterfaceMap& getProvide() { 
+    // @see getRequire()
     if(!init) { IF<T>(); init = true; } 
     return registryProvide.registry; 
   }
-};//end class StaticRegistry
-
+};
 
 template<class T> bool StaticRegistry<T>::init = false;
 template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryRequire;
 template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvide;
+
+
+/**
+* A default definition of a static interface of a module
+*/
+template<class T> class IF : public StaticRegistry<T> {};
 
 
 /**
@@ -180,7 +190,9 @@ template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvi
     }                                                         \
   }
 
-// specialize the interface IF<M> for the module M
+/** 
+* specialize the interface IF<M> for the module M
+*/
 #define BEGIN_DECLARE_MODULE(M)                               \
   class M;                                                    \
   template<> class IF<M>: public StaticRegistry<M>            \
@@ -191,8 +203,10 @@ template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvi
       assert(false); return NULL; \
     }
 
-
-
+/**
+* - autoregistration at construction time
+* - getter method for internal use, eg getImage()
+*/
 #define REQUIRE(R)                                            \
   private: STATIC_REGISTRATOR(Require,R) the##R;              \
   protected: inline const R& get##R() const {                 \
@@ -200,7 +214,9 @@ template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvi
       return data;                                            \
     }
 
-
+/**
+* same as @see REQUIRE but not const
+*/
 #define PROVIDE(R)                                            \
   private: STATIC_REGISTRATOR(Provide,R) the##R;              \
   protected: inline R& get##R() const {                       \
@@ -208,7 +224,11 @@ template<class T> RegistrationInterfaceRegistry StaticRegistry<T>::registryProvi
       return data;                                            \
     }
 
-
+/**
+* closse the class IF<T>
+* create a base class for the module, eg SelfLocatorBase, 
+* which combines the static (IF<M>) and dynamic (Module) parts
+*/
 #define END_DECLARE_MODULE(M)                                 \
   };                                                          \
   class M##Base: public IF<M>, public Module                  \

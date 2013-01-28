@@ -16,6 +16,7 @@
 
 #include "Tools/Debug/NaoTHAssert.h"
 #include "Representation.h"
+#include "DataHolder.h"
 
 /**
 * @class BlackBoard 
@@ -64,7 +65,6 @@ public:
   {
   public:
     virtual const std::string getTypeName() const = 0;
-    virtual const std::string getName() const = 0;
     virtual const Representation& getRepresentation() const = 0;
     virtual Representation& getRepresentation() = 0;
 
@@ -86,60 +86,51 @@ private:
   class BlackBoardDataHolder: public BlackBoardData
   {
   private:
-    std::string name;
     T instance;
 
-  protected:
-    //virtual void* getDataPtr() const { return static_cast<void*>(&instance); }
-
   public:
-    BlackBoardDataHolder(const std::string& name)
-      : name(name), 
-        instance(name)
-    {
-    }
+    BlackBoardDataHolder(const std::string name) : instance(name) {}
 
     T& operator*(){ return instance; }
+    const T& operator*() const { return instance; }
 
     virtual const std::string getTypeName() const { return typeid(T).name(); }
-    virtual const std::string getName() const { return name; }
-    virtual const Representation& getRepresentation() const { return instance; }
-    virtual Representation& getRepresentation() { return instance; }
+    virtual const Representation& getRepresentation() const { return **this; }
+    virtual Representation& getRepresentation() { return **this; }
   };
-
 
 
   /** holds the pointers to  */
   Registry registry;
+  
+  /*
+  // exterimental:
+  class BlackBoardPtr
+  {
+  public:
+    BlackBoard* prt;
+  };
+  */
 
 public:
-  BlackBoard(){}
+  BlackBoard()
+  {
+    // exterimental: first trial to put the blackboard as a representation
+    //DataHolder<BlackBoardPtr>& bb_pointer = getRepresentation<DataHolder<BlackBoardPtr> >("BlackBoard");
+    //(*bb_pointer).prt = this;
+  }
+
   BlackBoard(BlackBoard& /*blackBoard*/){}
 
   virtual ~BlackBoard()
   {
     // delete the registry
-    for(Registry::iterator iter = registry.begin(); iter != registry.end(); iter++)
+    for(Registry::iterator iter = registry.begin(); iter != registry.end(); ++iter)
     {
       delete iter->second;
     }
   }
 
-  /**
-   *
-   */
-  const Registry& getRegistry() const
-  {
-    return registry;
-  }
-
-  /**
-   *
-   */
-  Registry& getRegistry()
-  {
-    return registry;
-  }
 
   /**
    *  returns a reference to a representation stored 
@@ -152,7 +143,7 @@ public:
     // search for the representation
     Registry::const_iterator iter = registry.find(name);
 
-    // create Representation, if necessary
+    // the const method cannot create new representations
     if(iter == registry.end())
     {
       // TODO: throw
@@ -163,16 +154,15 @@ public:
     }//end if
 
 
-    // retrive the representation and try to cast
-    BlackBoardData* data = iter->second;
-    BlackBoardDataHolder<T>* typedData = dynamic_cast<BlackBoardDataHolder<T>*>(data);
+    // try to cast the representation to the given type
+    BlackBoardDataHolder<T>* typedData = dynamic_cast<BlackBoardDataHolder<T>*>(iter->second);
   
     // couldn't cast the type
     if(typedData == NULL)
     {
       // TODO: throw
       std::cerr << "Representation type mismatch: " 
-                << name << " is registered as " << data->getTypeName() 
+                << name << " is registered as " << iter->second->getTypeName() 
                 << ", but " << typeid(T).name() << " is requested." << std::endl;
       assert(false);
     }//end if
@@ -189,28 +179,24 @@ public:
   template<class T>
   T& getRepresentation(const std::string& name)
   {
-    // search for the representation
-    Registry::iterator iter = registry.find(name);
+    // try to find the data with the given name;
+    // in case it doesn't exist we get an iterator to the closest existing data
+    Registry::iterator iter = registry.lower_bound(name);
 
-    // create Representation, if necessary
-    if(iter == registry.end())
-    {
-      BlackBoardDataHolder<T>* typedData = new BlackBoardDataHolder<T>(name);
-      registry[name] = typedData;
-      return **typedData;
-    }//end if
+    // the data with the given name doesn't exist; insert a new one
+    if( !(iter->first == name) ) {
+      iter = registry.insert(iter, std::make_pair(name, new BlackBoardDataHolder<T>(name)));
+    }
 
-
-    // retrive the representation and try to cast
-    BlackBoardData* data = iter->second;
-    BlackBoardDataHolder<T>* typedData = dynamic_cast<BlackBoardDataHolder<T>*>(data);
+    // try to cast the representation to the given type
+    BlackBoardDataHolder<T>* typedData = dynamic_cast<BlackBoardDataHolder<T>*>(iter->second);
   
     // couldn't cast the type
     if(typedData == NULL)
     {
       // TODO: throw
       std::cerr << "Representation type mismatch: " 
-                << name << " is registered as " << data->getTypeName() 
+                << name << " is registered as " << iter->second->getTypeName() 
                 << ", but " << typeid(T).name() << " is requested." << std::endl;
       assert(false);
     }//end if
@@ -219,15 +205,21 @@ public:
   }//end getRepresentation
 
 
+  const Registry& getRegistry() const {
+    return registry;
+  }
+
+  Registry& getRegistry() {
+    return registry;
+  }
+
   template<class T>
-  T& operator[] (const std::string& name)
-  {
+  T& operator[] (const std::string& name) {
     return getRepresentation<T>(name);
   }
 
   template<class T>
-  const T& operator[] (const std::string& name) const
-  {
+  const T& operator[] (const std::string& name) const {
     return getRepresentation<T>(name);
   }
 
