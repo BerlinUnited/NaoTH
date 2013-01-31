@@ -9,8 +9,8 @@ function get_info(cmd, default)
 end
 
 REVISION = get_info("bzr revno --tree", -1)
-USER_NAME = get_info("bzr whoami", "")
-BRANCH_PATH = get_info("bzr info", "")
+USER_NAME = get_info("bzr whoami", "-")
+BRANCH_PATH = get_info("bzr info", "-")
 
 REVISION = string.gsub(REVISION,"\n", "")
 USER_NAME = string.gsub(USER_NAME,"\n", "")
