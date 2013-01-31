@@ -1,8 +1,8 @@
-NaoTHCommonsLua {#NaoTHCommonsLua}
+Project Structure {#project_structure}
 ==================================
-  
-NaoTHCommons.lua
+
+
+
+Build System
 -----------------
-
-This should say something about the NaoTHCommons.lua premake script.
-
+Our build infrustructure is based on premake4 (link)
