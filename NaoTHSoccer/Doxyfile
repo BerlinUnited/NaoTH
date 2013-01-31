@@ -1,5 +1,5 @@
 PROJECT_NAME="NaoTH Soccer Agent"
-PROJECT_LOGO = ../Utils/logo_doxygen.png
+PROJECT_LOGO = doc/doxygen/logo_doxygen.png
 
 DISABLE_INDEX = true
 GENERATE_TREEVIEW = true
@@ -11,7 +11,7 @@ GENERATE_TREEVIEW = true
 GENERATE_LATEX = NO
 GENERATE_HTML = YES
 
-INPUT=Source/ doxygen/
+INPUT=Source/ doc/doxygen/
 FILE_PATTERNS=*.h *.md
 RECURSIVE=YES
 EXTRACT_ALL = NO

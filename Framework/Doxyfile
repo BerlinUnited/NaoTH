@@ -1,5 +1,5 @@
 PROJECT_NAME = "BerlinUnited Nao Framework"
-PROJECT_LOGO = doxygen/logo_doxygen.png
+PROJECT_LOGO = doc/doxygen/logo_doxygen.png
 
 DISABLE_INDEX = true
 GENERATE_TREEVIEW = true
@@ -10,9 +10,8 @@ GENERATE_TREEVIEW = true
 
 GENERATE_LATEX = NO
 GENERATE_HTML = YES
-DOTFILE_DIRS = doxygen/
 
-INPUT=NaoTH-Commons/Source/ Platforms/Source/ doxygen/
+INPUT=NaoTH-Commons/Source/ Platforms/Source/ doc/doxygen/
 FILE_PATTERNS = *.h *.md
 RECURSIVE=YES
 EXTRACT_ALL = NO
