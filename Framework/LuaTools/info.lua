@@ -14,7 +14,7 @@ BRANCH_PATH = get_info("bzr info", "-")
 
 REVISION = string.gsub(REVISION,"\n", "")
 USER_NAME = string.gsub(USER_NAME,"\n", "")
-BRANCH_PATH = string.match(BRANCH_PATH,"checkout root: (.-)\n")
+BRANCH_PATH = "todo"--string.match(BRANCH_PATH,"checkout root: (.-)\n")
 
 print("INFO: repository info")
 print("  REVISION = " .. REVISION)
