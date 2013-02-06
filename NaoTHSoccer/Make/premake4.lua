@@ -1,32 +1,23 @@
-require "helper/ansicolors"
-
--- load some helpers
-dofile "helper/info.lua"
-dofile "helper/ilpath.lua"
-dofile "helper/qtcreator.lua"
-dofile "helper/extract_todos.lua"
-
--- those contain additional pathes for includes and libs for both platforms
-PlatformPath = {["Nao"] = create_path(), ["Native"] = create_path()}
-
 -- set the default global platform
 PLATFORM = _OPTIONS["platform"]
 if PLATFORM == nil then
   PLATFORM = "Native"
 end
 
--- load local user settings if available
-if os.isfile("projectconfig.user.lua") then
-	print("INFO: loading local user path settings")
-	dofile "projectconfig.user.lua"
-end
-
 -- load the global default settings
 dofile "projectconfig.lua"
 
+print(os.findlib("Controller.dll") or "nothing")
+
+-- load some helpers
+dofile (FRAMEWORK_PATH .. "/LuaTools/info.lua")
+--dofile (FRAMEWORK_PATH .. "/LuaTools/ilpath.lua")
+dofile (FRAMEWORK_PATH .. "/LuaTools/qtcreator.lua")
+dofile (FRAMEWORK_PATH .. "/LuaTools/extract_todos.lua")
+
+
 -- include the Nao platform
 include (COMPILER_PATH_NAO)
-
 
 
 -- definition of the solution
@@ -38,14 +29,10 @@ solution "NaoTHSoccer"
   
   -- global lib path for all configurations
   -- additional includes
-  libdirs {
-    PATH["libdirs"]
-  }
+  libdirs (PATH["libs"])
   
   -- global include path for all projects and configurations
-  includedirs { 
-	PATH["includedirs"]
-  }
+  includedirs (PATH["includes"])
   
   -- global links ( needed by NaoTHSoccer )
   links {
@@ -55,14 +42,12 @@ solution "NaoTHSoccer"
 	"opencv_imgproc"
 	}
   
-  
   -- set the remository information
   defines {
 	"REVISION=\"" .. REVISION .. "\"",
 	"USER_NAME=\"" .. USER_NAME .. "\"",
 	"BRANCH_PATH=\"" .. BRANCH_PATH .. "\""
 	}
-  
   
   -- debug configuration
   configuration { "Debug" }
@@ -112,7 +97,7 @@ solution "NaoTHSoccer"
   -- core
   dofile "NaoTHSoccer.lua"
   
-  -- platforms
+  -- set up platforms
   if _OPTIONS["platform"] == "Nao" then
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoSMAL.lua")
     dofile (FRAMEWORK_PATH .. "/Platforms/Make/NaoRobot.lua")

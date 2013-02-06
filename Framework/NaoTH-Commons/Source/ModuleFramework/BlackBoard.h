@@ -184,7 +184,7 @@ public:
     Registry::iterator iter = registry.lower_bound(name);
 
     // the data with the given name doesn't exist; insert a new one
-    if( !(iter->first == name) ) {
+    if( iter == registry.end() || !(iter->first == name) ) {
       iter = registry.insert(iter, std::make_pair(name, new BlackBoardDataHolder<T>(name)));
     }
 

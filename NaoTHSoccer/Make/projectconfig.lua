@@ -1,3 +1,59 @@
+--------------------
+function printPath(prefix, path)
+	local msg = tostring(prefix) .. tostring(path)
+	if path == nil then
+		print ( "WARNING: path not set:", msg )
+	elseif os.isdir(path) then
+		print ( msg )
+	else
+		print ( "ERROR: path doesn't exist:", msg )
+	end
+end
+
+function create_path()
+	local PathTable = {}
+	PathTable.libs = {}
+	PathTable.includes = {}
+	
+	function PathTable:includedirs(s)
+		for _,v in pairs(s) do
+			table.insert(self.includes, v)
+		end
+	end
+
+	function PathTable:libdirs(s)
+		for _,v in pairs(s) do
+			table.insert(self.libs, v)
+		end
+	end
+
+	-- for debug
+	function PathTable:print()
+		print("INFO: list includedirs")
+		for _,v in pairs(self.includes) do
+			printPath("> ",v)
+		end
+		print("INFO: list libdirs")
+		for _,v in pairs(self.libs) do
+			printPath("> ",v)
+		end
+	end
+
+	return PathTable
+end
+
+-- those contain additional pathes for includes and libs for both platforms
+PathConfig = {}
+PathConfig.Nao = create_path()
+PathConfig.Native = create_path()
+
+
+-- load local user settings if available
+if os.isfile("projectconfig.user.lua") then
+	print("INFO: loading local user path settings")
+	dofile "projectconfig.user.lua"
+end
+
 -------------- Set default paths if not set by the user ------------
 -- path to the framework
 if FRAMEWORK_PATH == nil then
@@ -40,21 +96,20 @@ end
 
 -- add optional paths
 if WEBOTS_HOME ~= nil then
-  PlatformPath.Native:add_includedir(WEBOTS_HOME .. "/include/controller/c/")
-  PlatformPath.Native:add_libdir(WEBOTS_HOME .. "/lib")
+  PlatformPath.Native:includedirs {WEBOTS_HOME .. "/include/controller/c/"}
+  PlatformPath.Native:libdirs {WEBOTS_HOME .. "/lib"}
 end
 
 if AL_DIR ~= nil then
-  PlatformPath.Nao:add_includedir(AL_DIR .. "/include")
-  PlatformPath.Nao:add_libdir(AL_DIR .. "/lib")
+  PlatformPath.Nao:includedirs {AL_DIR .. "/include"}
+  PlatformPath.Nao:libdirs {AL_DIR .. "/lib"}
 end
 --PlatformPath.Native:print()
 --PlatformPath.Nao:print()
 
 
-
 -- define pathes depending on the platform
-if _OPTIONS["platform"] == "Nao" then
+if PLATFORM == "Nao" then
   EXTERN_PATH = EXTERN_PATH_NAO
   PATH = PlatformPath.Nao
 else
@@ -64,22 +119,25 @@ end
 
 -- add general pathes
 -- this mainly reflects the internal structure of the extern directory
-PATH:add_includedir(FRAMEWORK_PATH .. "/NaoTH-Commons/Source/")
-PATH:add_includedir(EXTERN_PATH .. "/include/")
-PATH:add_includedir(EXTERN_PATH .. "/include/glib-2.0/")
-PATH:add_includedir(EXTERN_PATH .. "/lib/glib-2.0/include/")
-PATH:add_libdir(EXTERN_PATH .. "/lib")
+PATH:includedirs {
+	FRAMEWORK_PATH .. "/NaoTH-Commons/Source",
+	EXTERN_PATH .. "/include",
+	EXTERN_PATH .. "/include/glib-2.0",
+	EXTERN_PATH .. "/lib/glib-2.0/include"
+	}
+PATH:libdirs { EXTERN_PATH .. "/lib"}
 
 
+-----------------------
+dofile (FRAMEWORK_PATH .. "/LuaTools/ansicolors.lua")
 
 print("INFO: list path configuration")
-print("  FRAMEWORK_PATH = " .. tostring(FRAMEWORK_PATH))
-print("  EXTERN_PATH = " .. tostring(EXTERN_PATH))
-print("  NAO_CTC = " .. tostring(NAO_CTC))
-print("  COMPILER_PATH_NAO = " .. tostring(COMPILER_PATH_NAO))
-print("  AL_DIR = " .. tostring(AL_DIR))
-print("  WEBOTS_HOME = " .. tostring(WEBOTS_HOME))
+printPath("  FRAMEWORK_PATH = ", tostring(FRAMEWORK_PATH))
+printPath("  EXTERN_PATH = ", tostring(EXTERN_PATH))
+printPath("  NAO_CTC = ", tostring(NAO_CTC))
+printPath("  COMPILER_PATH_NAO = ", tostring(COMPILER_PATH_NAO))
+printPath("  AL_DIR = ", tostring(AL_DIR))
+printPath("  WEBOTS_HOME = ", tostring(WEBOTS_HOME))
 PATH:print()
 print()
-
 
