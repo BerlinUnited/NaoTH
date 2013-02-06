@@ -7,7 +7,9 @@ if [ "$EXTERN_DIR" == "" ]; then
 fi
 
 if [ "$1" = "check" ]; then
-  if [ -d "/usr/include/google/protobuf/" -o -d "$EXTERN_DIR/include/google/protobuf/" ]; then
+  # don't check global install since we have to be sure to have the same version of protobuf on
+  # our computer as the one on the Nao
+  if [ -d "$EXTERN_DIR/include/google/protobuf/" ]; then
     echo "n"
     exit 0
   else
