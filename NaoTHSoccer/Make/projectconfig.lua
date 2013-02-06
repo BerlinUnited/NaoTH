@@ -43,9 +43,9 @@ function create_path()
 end
 
 -- those contain additional pathes for includes and libs for both platforms
-PathConfig = {}
-PathConfig.Nao = create_path()
-PathConfig.Native = create_path()
+PlatformPath = {}
+PlatformPath.Nao = create_path()
+PlatformPath.Native = create_path()
 
 
 -- load local user settings if available
