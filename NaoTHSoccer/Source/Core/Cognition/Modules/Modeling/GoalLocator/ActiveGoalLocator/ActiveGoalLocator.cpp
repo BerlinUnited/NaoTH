@@ -70,8 +70,6 @@ void ActiveGoalLocator::execute()
   // clear old percepts
   updateByFrameNumber(theSampleBuffer, 200); 
 
-
-
   //decrease lastTotalWeighting of each PF
 
   //TODO filter decreasen
@@ -139,14 +137,16 @@ void ActiveGoalLocator::execute()
         {
             oneFilterIsEmpty = true;
         }
+
         if (weightingByFilter[x]) 
         {
           updateByGoalPerceptAngle(hypothesis.sampleSet, getGoalPercept().getPost(i));
           noneFilterUpdated = false;
         }
+
       }//end for
 
-      //both filters wasn't updated
+      //no filter were updated
       //buffer just store reliable posts, because they are later clustered by position
       if (noneFilterUpdated && getGoalPercept().getPost(i).positionReliable) 
       { 
