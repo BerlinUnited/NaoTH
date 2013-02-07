@@ -49,6 +49,22 @@ solution "NaoTHSoccer"
 	"BRANCH_PATH=\"" .. BRANCH_PATH .. "\""
 	}
   
+
+ -- TODO: howto compile the framework representations properly *inside* the project?
+  invokeprotoc(
+    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/CommonTypes.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Framework-Representations.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Messages.proto"}, 
+    FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
+    "../../RobotControl/RobotConnector/src/", 
+    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/"}
+  )
+
+  invokeprotoc(
+    {"../Messages/Representations.proto"}, 
+    "../Source/Core/Messages/", 
+    "../../RobotControl/RobotConnector/src/", 
+    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/", "../Messages/"}
+  )
+
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }

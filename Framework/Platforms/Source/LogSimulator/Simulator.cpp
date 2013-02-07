@@ -15,7 +15,7 @@
 #include "Simulator.h"
 #include "LegacyConverter.h"
 #include "Tools/NaoTime.h"
-#include <Messages/Representations.pb.h>
+#include <Messages/Framework-Representations.pb.h>
 
 #include "Tools/Math/Common.h"
 #include "PlatformInterface/Platform.h"

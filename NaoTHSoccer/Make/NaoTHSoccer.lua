@@ -4,7 +4,7 @@ project "NaoTHSoccer"
 
   flags {"FatalWarnings"}
   
-  files {"../Source/**.h","../Source/**.cpp"}
+  files {"../Source/**.h","../Source/**.cpp", "../Source/**.cc"}
   
   includedirs { "../Source/Core/" }
 

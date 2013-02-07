@@ -13,7 +13,7 @@
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Infrastructure/Image.h"
 #include "Messages/CommonTypes.pb.h"
-#include "Messages/Representations.pb.h"
+#include "Messages/Framework-Representations.pb.h"
 
 using namespace naoth;
 
@@ -94,35 +94,38 @@ public:
 
   }
 
-  static naothmessages::CameraMatrix cameraMatrixfromStream(std::istream& stream,  bool isFloat)
-  {
-    naothmessages::CameraMatrix result;
+// TODO: since the CameraMatrix message no longer belongs to NaoTH-Commons
+// we can't have this LegacyConverter function any longer
 
-    for (int i = 0; i < 3; i++)
-    {
-      naothmessages::DoubleVector3* currentVec = result.mutable_pose()->add_rotation();
-      if(isFloat)
-      {
-        floatVectorFromStream(currentVec, stream);
-      }
-      else
-      {
-        doubleVectorFromStream(currentVec, stream);
-      }
-    }//end for
+//  static naothmessages::CameraMatrix cameraMatrixfromStream(std::istream& stream,  bool isFloat)
+//  {
+//    naothmessages::CameraMatrix result;
 
-    if(isFloat)
-    {
-      floatVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
-    }
-    else
-    {
-      doubleVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
-    }
+//    for (int i = 0; i < 3; i++)
+//    {
+//      naothmessages::DoubleVector3* currentVec = result.mutable_pose()->add_rotation();
+//      if(isFloat)
+//      {
+//        floatVectorFromStream(currentVec, stream);
+//      }
+//      else
+//      {
+//        doubleVectorFromStream(currentVec, stream);
+//      }
+//    }//end for
 
-    return result;
+//    if(isFloat)
+//    {
+//      floatVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
+//    }
+//    else
+//    {
+//      doubleVectorFromStream(result.mutable_pose()->mutable_translation(), stream);
+//    }
 
-  }//end fromDataStream
+//    return result;
+
+//  }//end fromDataStream
 
 
   static void oldRawImage(Image* image, std::istream& stream)

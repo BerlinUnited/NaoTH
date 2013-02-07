@@ -2,84 +2,14 @@ package naothmessages;
 option java_package= "de.naoth.rc.messages";
 
 import "CommonTypes.proto";
+import "Framework-Representations.proto";
 
 // Representations //
-message Image {
-  
-  enum Format {
-    YUV = 0;
-    YUV422 = 1;
-  }
-  
-  required bytes data = 1;
-  optional int32 width = 2 [default=320];
-  optional int32 height = 3 [default=240];
-  
-  optional CameraInfo cameraInfo = 4;
-  
-  optional Format format = 5 [default=YUV];
-  
-  optional uint32 timestamp = 6;
-}
-
-
-message CameraInfo {
-  
-  required int32 resolutionWidth = 1;
-  required int32 resolutionHeight = 2;
-  
-  optional CameraID cameraID = 4 [default=bottom];
-  
-  // these are calulated in the new version of CameraInfo, do not use
-  optional double focalLength = 5 [deprecated=true];
-  optional double openingAngleWidth = 6 [deprecated=true];
-  optional double openingAngleHeight = 7 [deprecated=true];
-  optional double opticalCenterX = 8 [deprecated=true];
-  optional double opticalCenterY = 9 [deprecated=true];
-
-  optional int64 size = 10 [deprecated=true];
-  optional int64 memorysize = 11 [deprecated=true];
-
-  optional double cameraRollOffset = 12;
-  optional double cameraTiltOffset = 13;
-
-  // the array index is the camera id
-  repeated Pose3D transformation = 14;
-
-  optional double openingAngleDiagonal = 15;
-  optional double pixelSize = 16;
-  optional double focus = 17;
-}
-
-message JointData {    
-  repeated double position = 1;
-  repeated double stiffness = 2;
-  repeated double dp = 3;
-  repeated double ddp = 4;
-}
-
-message SensorJointData {
-  required JointData jointData = 1;
-  repeated double temperature = 2;
-  repeated double electricCurrent = 3;
-}
-
-message UltraSoundReceiveData {
-  optional uint32 ultraSoundTimeStep = 1;
-  required double rawdata = 2;
-  repeated double dataLeft = 3;
-  repeated double dataRight = 4;
-}
 
 message CameraMatrix {
   required Pose3D pose = 1;
   optional CameraID cameraID = 2 [default=bottom];
   optional bool valid = 3;
-}
-
-message FrameInfo {
-  required uint32 frameNumber = 1; 
-  required uint32 time = 2;
 }
 
 message BallPercept {
@@ -164,12 +94,6 @@ message ScanLineEdgelPercept {
 // TODO
 //  repeated Edgel scanLineEdgels = 1;
   repeated ScanLineEndPoint endPoints = 2;
-}
-
-message FSRData {
-  repeated double force = 1;
-  repeated double data = 2;
-  repeated bool valid = 3;
 }
 
 // TODO: this representation should not be in naoth-comm */

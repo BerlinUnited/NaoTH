@@ -110,10 +110,10 @@ end
 
 -- define pathes depending on the platform
 if PLATFORM == "Nao" then
-  EXTERN_PATH = EXTERN_PATH_NAO
+  EXTERN_PATH = path.getabsolute(EXTERN_PATH_NAO)
   PATH = PlatformPath.Nao
 else
-  EXTERN_PATH = EXTERN_PATH_NATIVE
+  EXTERN_PATH = path.getabsolute(EXTERN_PATH_NATIVE)
   PATH = PlatformPath.Native
 end
 
@@ -121,6 +121,7 @@ end
 -- this mainly reflects the internal structure of the extern directory
 PATH:includedirs {
 	FRAMEWORK_PATH .. "/NaoTH-Commons/Source",
+  FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages",
 	EXTERN_PATH .. "/include",
 	EXTERN_PATH .. "/include/glib-2.0",
 	EXTERN_PATH .. "/lib/glib-2.0/include"
