@@ -91,19 +91,18 @@ private:
   /** */
   OdometryData lastRobotOdometry;
 
-  /** percept buffer */
+  /** short term percept buffer */
   typedef RingBuffer<AGLBSample, 67> AGLSampleBuffer;
   AGLSampleBuffer theSampleBuffer;
-  CanopyClustering<AGLSampleBuffer> ccTrashBuffer;
+  CanopyClustering<AGLSampleBuffer> ccSampleBuffer;
   
   /** */
-  std::vector<PostHypothesis> ccSamples;
+  std::vector<PostHypothesis> postHypotheses;
 
 
 private:
 
-  /** update the buffer */
-  void updateByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int frames) const;
+  void removeSamplesByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int maxFrames) const;
 
 
 
