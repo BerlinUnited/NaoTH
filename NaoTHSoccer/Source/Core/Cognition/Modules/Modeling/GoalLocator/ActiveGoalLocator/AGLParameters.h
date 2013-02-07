@@ -5,11 +5,13 @@
 * Declaration of class AGLParameters
 */
 
-#ifndef __AGLLParameters_h_
-#define __AGLLParameters_h_
+#ifndef _AGLLParameters_h_
+#define _AGLLParameters_h_
 
 #include <Tools/DataStructures/ParameterList.h>
 #include <Tools/DataStructures/Printable.h>
+
+#include "PostParticleFilter.h"
 
 class AGLParameters: public ParameterList, public naoth::Printable
 {
@@ -18,17 +20,18 @@ public:
   ~AGLParameters();
 
   //double standardDeviationDist;
-  double standardDeviationAngle;
+  //double standardDeviationAngle;
+  //double weightingTreshholdForUpdateWithAngle;
+  //double processNoiseDistance;
+  //double motionNoiseDistance;
+  //double resamplingThreshhold;
+  PostParticleFilter::Parameters particleFilter;
+
 
   double timeFilterRange;
 
   //double sigmaWeightingThreshhold;
   double thresholdCanopy;
-  double motionNoiseDistance;
-
-  double weightingTreshholdForUpdateWithAngle;
-  double processNoiseDistance;
-  double resamplingThreshhold;
 
   double possibleGoalWidhtError;
 
@@ -38,4 +41,4 @@ public:
 
 };
 
-#endif //__AGLParameters_h_
+#endif //_AGLParameters_h_

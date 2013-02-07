@@ -14,21 +14,18 @@ AGLParameters::AGLParameters()
   //Deviation of the second post (seenpost.position + goalwidth), if just one post is seen
   //PARAMETER_REGISTER(standardDeviationDist) = 500;
   //in RAD
-  PARAMETER_REGISTER(standardDeviationAngle) = 0.15;
+  PARAMETER_REGISTER(particleFilter.standardDeviationAngle) = 0.15;
+  PARAMETER_REGISTER(particleFilter.motionNoiseDistance) = 0;
+  PARAMETER_REGISTER(particleFilter.processNoiseDistance) = 5;
+  PARAMETER_REGISTER(particleFilter.weightingTreshholdForUpdateWithAngle) = 0.5;
+  PARAMETER_REGISTER(particleFilter.resamplingThreshhold) = 0.99;
+
 
   PARAMETER_REGISTER(timeFilterRange) = 0.90;
 
   //PARAMETER_REGISTER(sigmaWeightingThreshhold) = 0.4;
 
   PARAMETER_REGISTER(thresholdCanopy) = 900;
-
-  PARAMETER_REGISTER(motionNoiseDistance) = 0;
-
-  PARAMETER_REGISTER(processNoiseDistance) = 5;
-
-  PARAMETER_REGISTER(weightingTreshholdForUpdateWithAngle) = 0.5;
-
-  PARAMETER_REGISTER(resamplingThreshhold) = 0.99;
 
   PARAMETER_REGISTER(possibleGoalWidhtError) = 200;
 

@@ -21,8 +21,9 @@
 #include "Tools/Math/Moments2.h"
 #include "Tools/Math/Probabilistics.h"
 #include "Tools/Math/Geometry.h"
-#include "Representations/Modeling/GoalModel.h"
 #include <cmath>
+
+#include "Representations/Modeling/GoalModel.h"
 
 ActiveGoalLocator::ActiveGoalLocator()
   :
@@ -102,7 +103,7 @@ void ActiveGoalLocator::execute()
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
   //TODO introduce size of ccSamples
   for(unsigned int i = 0; i < postHypotheses.size(); i++) {
-    updateByOdometry(postHypotheses[i].sampleSet, odometryDelta);
+    postHypotheses[i].updateByOdometry(odometryDelta);
   }
 
   updateByOdometry(theSampleBuffer, odometryDelta);
@@ -128,13 +129,13 @@ void ActiveGoalLocator::execute()
     {
       PostHypothesis& hypothesis = postHypotheses[x];
       if(hypothesis.sampleSet.getIsValid()) {
-        weightingByFilter[x] = getWeightingOfPerceptAngle(hypothesis.sampleSet, getGoalPercept().getPost(i));
+        weightingByFilter[x] = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i));
       } else {
         oneFilterIsEmpty = true;
       }
 
       if (weightingByFilter[x]) {
-        updateByGoalPerceptAngle(hypothesis.sampleSet, getGoalPercept().getPost(i));
+        hypothesis.updateByGoalPostPercept(getGoalPercept().getPost(i));
         noneFilterUpdated = false;
       }
     }//end for
@@ -161,7 +162,7 @@ void ActiveGoalLocator::execute()
 
   // resample all PF
   for (unsigned int i = 0; i < postHypotheses.size(); i++) {
-    resampleGT07(postHypotheses[i].sampleSet, true);
+    postHypotheses[i].resampleGT07(true);
   }
 
   // calculate mean for all valid PFs
@@ -402,48 +403,14 @@ void ActiveGoalLocator::debugStdOut()
   }
 }//end debugStdOut
 
-void ActiveGoalLocator::updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const
-{
-  for (unsigned int i = 0; i < sampleSet.size(); i++) 
-  {
-    //update each particle with odometry
-    sampleSet[i].translation = odometryDelta * sampleSet[i].translation;
-
-    //making noise
-    sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
-    sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
-  }
-}//end updateByOdometry
-
 void ActiveGoalLocator::updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const
 {
   for (unsigned int i = 0; i < sampleSet.size(); i++) 
   {
-    //update each particle with odometry
+    // move each particle with odometry
     sampleSet[i].translation = odometryDelta * sampleSet[i].translation;
-
-    //making noise
-    sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
-    sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
   }
 }//end updateByOdometry
-
-double ActiveGoalLocator::getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post) 
-{
-  //TODO check Color -> not similar, return 0
-  double weighting(0.0);
-  for (unsigned int i = 0; i < sampleSet.size(); i++) 
-  {
-    //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
-    double value = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); 
-    weighting = Math::gaussianProbability(value, parameters.standardDeviationAngle);
-  }
-
-  if (weighting > parameters.weightingTreshholdForUpdateWithAngle)//TODO: check value
-    return weighting;
-  else
-    return 0;
-}//end getWeightingOfPerceptAngle
 
 
 //TODO side effect with ccSamples los werdn
@@ -457,6 +424,7 @@ void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
       if (!postHypotheses[i].sampleSet.getIsValid()) 
       {
         initFilterByBuffer(ccSampleBuffer.getLargestClusterID(), sampleBuffer, postHypotheses[i].sampleSet);
+        postHypotheses[i].setParams(this->parameters.particleFilter);
         break; //xxx
       }  //end if ccSamples[i] is empty
     }
@@ -518,81 +486,6 @@ void ActiveGoalLocator::removeSamplesByFrameNumber(AGLSampleBuffer& sampleSet, c
   }
 }//end removeSamplesByFrameNumber
 
-
-void ActiveGoalLocator::updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post) 
-{
-  double totalWeighting = 0;
-
-  for (unsigned int i = 0; i < sampleSet.size(); i++)
-  {
-    AGLSample& sample = sampleSet[i];
-    double weighting(0.0);
-
-    double diff = Math::normalize(sample.getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
-    weighting = Math::gaussianProbability(diff, parameters.standardDeviationAngle);
-
-    sample.likelihood *= weighting;
-    totalWeighting += sample.likelihood;
-  }//end for
-
-  sampleSet.lastTotalWeighting = totalWeighting;
-}//end updateByBallPercept
-
-
-void ActiveGoalLocator::resampleGT07(AGLSampleSet& sampleSet, bool noise)
-{
-  double totalWeighting = 0;
-
-  for (unsigned int i = 0; i < sampleSet.size(); i++) 
-  {
-    totalWeighting += sampleSet[i].likelihood;
-  }//end for
-
-  // copy the samples
-  // TODO: use memcopy?
-  AGLSampleSet oldSampleSet = sampleSet;
-
-  totalWeighting += parameters.resamplingThreshhold * oldSampleSet.size();
-  for (unsigned int i = 0; i < oldSampleSet.size(); i++) 
-  {
-    oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
-    oldSampleSet[i].likelihood /= totalWeighting; // normalize
-  }//end for
-
-
-  // resample 10% of particles
-  //int numberOfPartiklesToResample = (int) (((double) sampleSet.size())*0.1 + 0.5);
-
-  double sum = -Math::random();
-  unsigned int count = 0;
-
-  //unsigned int m = 0; // Zaehler durchs Ausgangs-Set
-  unsigned int n = 0; // Zaehler durchs Ziel-Set
-
-  for (unsigned m = 0; m < sampleSet.size(); m++) 
-  {
-    sum += oldSampleSet[m].likelihood * oldSampleSet.size();
-
-    // select the particle to copy
-    while (count < sum && count < oldSampleSet.size()) 
-    {
-      if (n >= oldSampleSet.size()) break;
-
-      // copy the selected particle
-      sampleSet[n] = oldSampleSet[m];
-      if (noise) 
-      {
-        sampleSet[n].translation.x += (Math::random() - 0.5) * parameters.processNoiseDistance;
-        sampleSet[n].translation.y += (Math::random() - 0.5) * parameters.processNoiseDistance;
-      }
-
-      n++;
-      count++;
-
-    }//end while
-  }//end for
-
-}//end resampleGT07
 
 //TOOLS
 

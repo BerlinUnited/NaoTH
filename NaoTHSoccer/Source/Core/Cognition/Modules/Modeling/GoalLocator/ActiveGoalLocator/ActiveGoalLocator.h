@@ -29,6 +29,7 @@
 // local stuff
 #include "AGLParameters.h"
 #include "AGLSampleSet.h"
+#include "PostParticleFilter.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
@@ -60,29 +61,7 @@ public:
 private:
 
   /** */
-  class PostHypothesis
-  {
-  public:
-      PostHypothesis(){}
-
-      AGLSampleSet sampleSet;
-
-      /*
-      CLUSTERING NOT USED YET
-      CanopyClustering<AGLSampleSet> canopyClustering;
-
-      // wrapper for easy use
-      void cluster()
-      {
-        canopyClustering.cluster(sampleSet);
-      }
-
-      unsigned int cluster(const Vector2<double>& start)
-      {
-        return canopyClustering.cluster(sampleSet, start);
-      }
-      */
-  };
+  typedef PostParticleFilter PostHypothesis;
 
 
   /** */
@@ -104,20 +83,8 @@ private:
 
   void removeSamplesByFrameNumber(AGLSampleBuffer& sampleSet, const unsigned int maxFrames) const;
 
-
-
   /** odometry update */
-  void updateByOdometry(AGLSampleSet& sampleSet, const Pose2D& odometryDelta) const;
   void updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2D& odometryDelta) const;
-
-  /** sensor update */
-  double getWeightingOfPerceptAngle(const AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
-  void updateByGoalPerceptAngle(AGLSampleSet& sampleSet, const GoalPercept::GoalPost& post);
-
-  /** resamping */
-  void resampleGT07(AGLSampleSet& sampleSet, bool noise);
-
-  
   
   /** check if a new hypothesis may be creted */
   void checkTrashBuffer(AGLSampleBuffer& sampleBuffer);
@@ -125,13 +92,11 @@ private:
   /** create a new hypothsis */
   void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
   
-  
 
   /** debug visualization */
   void debugDrawings();
   void debugPlots();
   void debugStdOut();
-
 
   //Tools
   string convertIntToString(int number);
