@@ -58,11 +58,11 @@ void ActiveGoalLocator::execute()
   if (getBodyState().fall_down_state != BodyState::upright || // robot is not upright
       !(getBodyState().standByLeftFoot || getBodyState().standByRightFoot)) // no foot is on the ground
   {
-      for (unsigned int i = 0; i < postHypotheses.size(); i++) {
-        postHypotheses[i].sampleSet.setUnValid();
-      }
+    for (unsigned int i = 0; i < postHypotheses.size(); i++) {
+      postHypotheses[i].sampleSet.setUnValid();
+    }
 
-      return;
+    return;
   }
 
 
@@ -77,13 +77,13 @@ void ActiveGoalLocator::execute()
     PostHypothesis& hypothesis = postHypotheses[x];
     if (hypothesis.sampleSet.getIsValid()) 
     {
-        hypothesis.sampleSet.lastTotalWeighting *= parameters.timeFilterRange;
+      hypothesis.sampleSet.lastTotalWeighting *= parameters.timeFilterRange;
 
-        if (hypothesis.sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold) 
-        {
-          //hypothesis.sampleSet.setUnValid();
-          std::cout << "delete filter '" << x << "' because " << postHypotheses[x].sampleSet.lastTotalWeighting << " < " << parameters.deletePFbyTotalWeightingThreshold << std::endl;
-        }
+      if (hypothesis.sampleSet.lastTotalWeighting < parameters.deletePFbyTotalWeightingThreshold) 
+      {
+        //hypothesis.sampleSet.setUnValid();
+        std::cout << "delete filter '" << x << "' because " << postHypotheses[x].sampleSet.lastTotalWeighting << " < " << parameters.deletePFbyTotalWeightingThreshold << std::endl;
+      }
      }
   }//end for
 
@@ -114,37 +114,39 @@ void ActiveGoalLocator::execute()
   // update by percepts
   //////////////////////////
 
-  // TODO: make vector depending on postHypotheses.size()
-  double weightingByFilter[10] = {0};
-
-  bool noneFilterUpdated = true;
-  bool oneFilterIsEmpty = false;
-
   // if post-percepts available
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) 
   {
     //check if particle matches any filter
     //TODO: Vorteil filter mit kleiner id!! ??
+    int hypothesisWithMaxConfidence = -1;
+    double maxConfidence = 0;
     for (unsigned int x = 0; x < postHypotheses.size(); x++) 
     {
       PostHypothesis& hypothesis = postHypotheses[x];
-      if(hypothesis.sampleSet.getIsValid()) {
-        weightingByFilter[x] = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i));
-      } else {
-        oneFilterIsEmpty = true;
-      }
-
-      if (weightingByFilter[x]) {
-        hypothesis.updateByGoalPostPercept(getGoalPercept().getPost(i));
-        noneFilterUpdated = false;
+      if(hypothesis.sampleSet.getIsValid()) 
+      {
+        double confidence = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i));
+        if(hypothesisWithMaxConfidence == -1 || confidence > maxConfidence)
+        {
+          maxConfidence = confidence;
+          hypothesisWithMaxConfidence = x;
+        }
       }
     }//end for
 
-    //no filter were updated
-    //buffer just store reliable posts, because they are later clustered by position
-    if (noneFilterUpdated && getGoalPercept().getPost(i).positionReliable) 
+
+    // todo: compare maxConfidence with a parameter?
+    if (maxConfidence > 0 && hypothesisWithMaxConfidence != -1) {
+      PostHypothesis& hypothesis = postHypotheses[hypothesisWithMaxConfidence];
+      hypothesis.updateByGoalPostPercept(getGoalPercept().getPost(i));
+    }
+    else if (getGoalPercept().getPost(i).positionReliable) 
     {
-      //else insert the percept into the trashBuffer
+      //no filter was updated
+      //buffer just store reliable posts, because they are later clustered by position
+      //insert the percept into the trashBuffer
+
       AGLBSample bufferSample;
       bufferSample.translation = getGoalPercept().getPost(i).position;
       bufferSample.color       = getGoalPercept().getPost(i).color;
@@ -182,21 +184,41 @@ void ActiveGoalLocator::execute()
   }//end for x
 
 
-  // HACK:
-  // only check Buffer if one PF is empty, 
-  // i.e., there is a free slot for a new hypothesis
-  if (oneFilterIsEmpty)
-  {
-    ccSampleBuffer.cluster(theSampleBuffer);
-    checkTrashBuffer(theSampleBuffer); //check if useable cluster in TrashBuffer exists and insert
-  }
+  // check if useable cluster in TrashBuffer exists and insert if a free slot is avaliable
+  checkTrashBuffer(theSampleBuffer);
 
 
   //////////////////////////
   //   provide Goal Model
   // (extract the goal model)
   //////////////////////////
+  estimateGoalModel();
+  
 
+  DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
+    FIELD_DRAWING_CONTEXT;
+    if(getLocalGoalModel().opponentGoalIsValid) {
+      PEN("000000", 50);
+    } else {
+      PEN("FFFFFF", 50);
+    }
+
+    CIRCLE(getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y, 50);
+    CIRCLE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, 50);
+    LINE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y);
+  );
+  //
+  /////////////////////////////////
+
+  debugDrawings();
+  debugPlots();
+
+  DEBUG_REQUEST("ActiveGoalLocator:which_filter_are_valid_to_StdOut", debugStdOut(); );
+}//end execute
+
+
+void ActiveGoalLocator::estimateGoalModel()
+{
   getLocalGoalModel().opponentGoalIsValid = false;
   getLocalGoalModel().ownGoalIsValid = false;
   getLocalGoalModel().someGoalWasSeen = false;
@@ -223,7 +245,7 @@ void ActiveGoalLocator::execute()
     unsigned int id2 = 0;
     double lastDistError = 1000000;
 
-    for(unsigned int x = 0; x < 10; x++) 
+    for(unsigned int x = 0; x < postHypotheses.size(); x++) 
     {
       PostHypothesis& hypothesisOne = postHypotheses[x];
 
@@ -231,21 +253,21 @@ void ActiveGoalLocator::execute()
       {
         double distError = 0;
 
-        for(unsigned int i = 0; i < postHypotheses.size(); i++) 
+        for(unsigned int i = x+1; i < postHypotheses.size(); i++) 
         {
           PostHypothesis& hypothesisTwo = postHypotheses[i];
 
           if (hypothesisTwo.sampleSet.getIsValid()) 
           {
-              distError = abs((hypothesisOne.sampleSet.mean - hypothesisTwo.sampleSet.mean).abs() - getFieldInfo().goalWidth);
+            distError = abs((hypothesisOne.sampleSet.mean - hypothesisTwo.sampleSet.mean).abs() - getFieldInfo().goalWidth);
 
-              //check if error becomes better
-              if (distError < lastDistError) 
-              { 
-                  lastDistError = distError;
-                  id1 = x;
-                  id2 = i;
-              }
+            //check if error becomes better
+            if (distError < lastDistError) 
+            { 
+              lastDistError = distError;
+              id1 = x;
+              id2 = i;
+            }
           }//end if
         }//end for i
       }//end if
@@ -281,27 +303,8 @@ void ActiveGoalLocator::execute()
   } else {
     getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
   }
+}//end estimateGoalModel
 
-  DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
-    FIELD_DRAWING_CONTEXT;
-    if(getLocalGoalModel().opponentGoalIsValid) {
-      PEN("000000", 50);
-    } else {
-      PEN("FFFFFF", 50);
-    }
-
-    CIRCLE(getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y, 50);
-    CIRCLE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, 50);
-    LINE(getLocalGoalModel().goal.rightPost.x, getLocalGoalModel().goal.rightPost.y, getLocalGoalModel().goal.leftPost.x, getLocalGoalModel().goal.leftPost.y);
-  );
-  //
-  /////////////////////////////////
-
-  debugDrawings();
-  debugPlots();
-
-  DEBUG_REQUEST("ActiveGoalLocator:which_filter_are_valid_to_StdOut", debugStdOut(); );
-}//end execute
 
 void ActiveGoalLocator::debugDrawings() 
 {
@@ -318,22 +321,8 @@ void ActiveGoalLocator::debugDrawings()
     FIELD_DRAWING_CONTEXT;
     for (unsigned int x = 0; x < postHypotheses.size(); x++ ) 
     {
-      if (!postHypotheses[x].sampleSet.getIsValid()) { //alls PFs are filled initilized
-        continue;
-      }
-
       string color = ColorClasses::colorClassToHex((ColorClasses::Color)((x+3)%ColorClasses::numOfColors));
-      PEN(color, 30);
-
-      //std::cout << "Filter " << x << " is valid" <<  std::endl;
-
-      for (unsigned int i = 0; i < postHypotheses[x].sampleSet.size(); i++) 
-      {
-        const AGLSample& sample = postHypotheses[x].sampleSet[i];
-
-        CIRCLE(sample.translation.x, sample.translation.y, 20);
-        TEXT_DRAWING(sample.translation.x+10,sample.translation.y+10, x);
-      }//end for
+      postHypotheses[x].drawParticles(color, x);
     }//end for
   );
 
@@ -416,6 +405,7 @@ void ActiveGoalLocator::updateByOdometry(AGLSampleBuffer& sampleSet, const Pose2
 //TODO side effect with ccSamples los werdn
 void ActiveGoalLocator::checkTrashBuffer(AGLSampleBuffer& sampleBuffer)
 {
+  ccSampleBuffer.cluster(theSampleBuffer);
   if (ccSampleBuffer.size() > 0 && ccSampleBuffer.getLargestCluster().size() > 9) //FIXME: make param
   {
     for (unsigned int i = 0; i < postHypotheses.size(); i++) 

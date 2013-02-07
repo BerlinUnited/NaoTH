@@ -92,6 +92,8 @@ private:
   /** create a new hypothsis */
   void initFilterByBuffer(const int& largestClusterID, AGLSampleBuffer& sampleSetBuffer, AGLSampleSet& sampleSet);
   
+  void estimateGoalModel();
+
 
   /** debug visualization */
   void debugDrawings();

@@ -3,6 +3,9 @@
 
 #include "Tools/Math/Probabilistics.h"
 
+// Debug
+#include "Tools/Debug/DebugDrawings.h"
+
 void PostParticleFilter::updateByOdometry(const Pose2D& odometryDelta)
 {
   for (unsigned int i = 0; i < sampleSet.size(); i++) 
@@ -109,3 +112,67 @@ void PostParticleFilter::resampleGT07(bool noise)
   }//end for
 
 }//end resampleGT07
+
+
+void PostParticleFilter::drawParticles(const std::string& color, int idx) const
+{
+  if (!sampleSet.getIsValid()) {
+    return;
+  }
+
+  // normalize the colors (black: less importent, red more importent)
+  double minValue = 1;
+  double maxValue = 0;
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {
+    maxValue = max(sampleSet[i].likelihood, maxValue);
+    minValue = min(sampleSet[i].likelihood, minValue);
+  }
+  double colorDiff = maxValue-minValue;
+
+  for (unsigned int i = 0; i < sampleSet.size(); i++) 
+  {
+    const AGLSample& sample = sampleSet[i];
+
+    PEN(color, 10);
+    CIRCLE(sample.translation.x, sample.translation.y, 20);
+    TEXT_DRAWING(sample.translation.x+10, sample.translation.y+10, idx);
+
+
+    DebugDrawings::Color inner_color;
+    if(colorDiff > 0) {
+      inner_color[0] = Math::clamp((sample.likelihood - minValue)/colorDiff,0.0,1.0);
+    }
+
+    PEN(inner_color, 10);
+    FILLOVAL(sample.translation.x, sample.translation.y, 10, 10);
+  }//end for
+}//end drawParticles
+
+
+void PostParticleFilter::drawSamplesImportance() const
+{
+  // normalize the colors (black: less importent, red more importent)
+  double minValue = 1;
+  double maxValue = 0;
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {
+    maxValue = max(sampleSet[i].likelihood, maxValue);
+    minValue = min(sampleSet[i].likelihood, minValue);
+  }
+  double colorDiff = maxValue-minValue;
+
+  // plot samples
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {
+    const AGLSample& sample = sampleSet[i];
+
+    DebugDrawings::Color color;
+    if(colorDiff > 0) {
+      color[0] = Math::clamp((sample.likelihood - minValue)/colorDiff,0.0,1.0);
+    }
+
+    PEN(color, 20);
+    CIRCLE(sample.translation.x, sample.translation.y, 20);
+  }//end for
+}//end drawSamplesImportance

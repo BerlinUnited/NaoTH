@@ -81,7 +81,7 @@ void AGLSampleSet::setUnValid()
   isValid = false;
 }//end setUnvalid
 
-bool AGLSampleSet::getIsValid()
+bool AGLSampleSet::getIsValid() const
 {
   return isValid;
 }//end getIsValid;

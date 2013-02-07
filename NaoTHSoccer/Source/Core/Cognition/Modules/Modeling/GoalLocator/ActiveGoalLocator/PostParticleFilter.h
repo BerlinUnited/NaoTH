@@ -31,6 +31,9 @@ public:
 
   double getConfidenceForObservation(const GoalPercept::GoalPost& post) const;
 
+  // debug stuff
+  void drawParticles(const std::string& color, int idx) const;
+  void drawSamplesImportance() const;
 
   AGLSampleSet sampleSet;
 

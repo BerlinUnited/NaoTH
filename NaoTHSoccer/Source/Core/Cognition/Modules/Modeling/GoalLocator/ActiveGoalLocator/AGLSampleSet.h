@@ -50,7 +50,7 @@ public:
 
   void setUnValid();
 
-  bool getIsValid();
+  bool getIsValid() const;
 
   /** 
    * reset the likelihoods of patricle to 1/numberOfParticles
