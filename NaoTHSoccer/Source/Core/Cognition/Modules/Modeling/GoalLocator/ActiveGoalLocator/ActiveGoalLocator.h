@@ -30,6 +30,7 @@
 #include "AGLParameters.h"
 #include "AGLSampleSet.h"
 #include "PostParticleFilter.h"
+#include "Assoziation.h"
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 

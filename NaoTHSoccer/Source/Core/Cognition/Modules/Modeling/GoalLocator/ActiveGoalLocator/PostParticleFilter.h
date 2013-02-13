@@ -18,7 +18,6 @@ public:
   public:
     double motionNoiseDistance;
     double standardDeviationAngle;
-    double weightingTreshholdForUpdateWithAngle;
     double processNoiseDistance;
     double resamplingThreshhold;
   };

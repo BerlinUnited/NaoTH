@@ -51,10 +51,7 @@ double PostParticleFilter::getConfidenceForObservation(const GoalPercept::GoalPo
     weighting = Math::gaussianProbability(value, parameters.standardDeviationAngle);
   }
 
-  if (weighting > parameters.weightingTreshholdForUpdateWithAngle)//TODO: check value
-    return weighting;
-  else
-    return 0;
+  return weighting;
 }//end getWeightingOfPerceptAngle
 
 

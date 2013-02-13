@@ -17,10 +17,10 @@ AGLParameters::AGLParameters()
   PARAMETER_REGISTER(particleFilter.standardDeviationAngle) = 0.15;
   PARAMETER_REGISTER(particleFilter.motionNoiseDistance) = 0;
   PARAMETER_REGISTER(particleFilter.processNoiseDistance) = 5;
-  PARAMETER_REGISTER(particleFilter.weightingTreshholdForUpdateWithAngle) = 0.5;
   PARAMETER_REGISTER(particleFilter.resamplingThreshhold) = 0.99;
 
 
+  PARAMETER_REGISTER(weightingTreshholdForUpdateWithAngle) = 0.5;
   PARAMETER_REGISTER(timeFilterRange) = 0.90;
 
   //PARAMETER_REGISTER(sigmaWeightingThreshhold) = 0.4;

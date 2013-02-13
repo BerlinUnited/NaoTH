@@ -36,6 +36,8 @@ ActiveGoalLocator::ActiveGoalLocator()
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goal_model", "", false);
 
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_sensor_association", "", false);
+
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:which_filter_are_valid_to_StdOut", "Print the valid PFs in each time frame to check which is valid", false);
 
   postHypotheses.resize(10);
@@ -63,6 +65,12 @@ void ActiveGoalLocator::execute()
     }
 
     return;
+  }
+
+  // update the parameters of the hypotheses
+  // (just in case they have been changed)
+  for (unsigned int x = 0; x < postHypotheses.size(); x++) {
+    postHypotheses[x].setParams(this->parameters.particleFilter);
   }
 
 
@@ -110,36 +118,56 @@ void ActiveGoalLocator::execute()
   lastRobotOdometry = getOdometryData();
 
 
+
   //////////////////////////
   // update by percepts
   //////////////////////////
 
-  // if post-percepts available
+  // A ~ goal posts
+  // B ~ hypotheses
+  Assoziation sensorAssoziation(getGoalPercept().getNumberOfSeenPosts(), postHypotheses.size());
+
+  // find the best association of the measurenets with the filters
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) 
   {
-    //check if particle matches any filter
-    //TODO: Vorteil filter mit kleiner id!! ??
-    int hypothesisWithMaxConfidence = -1;
-    double maxConfidence = 0;
     for (unsigned int x = 0; x < postHypotheses.size(); x++) 
     {
       PostHypothesis& hypothesis = postHypotheses[x];
       if(hypothesis.sampleSet.getIsValid()) 
       {
         double confidence = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i));
-        if(hypothesisWithMaxConfidence == -1 || confidence > maxConfidence)
-        {
-          maxConfidence = confidence;
-          hypothesisWithMaxConfidence = x;
+        
+        // store the best association for the measurement
+        if(confidence > sensorAssoziation.getW4A(i)) {
+          sensorAssoziation.addAssociation(i, x, confidence);
         }
       }
     }//end for
+  }//end for
 
 
-    // todo: compare maxConfidence with a parameter?
-    if (maxConfidence > 0 && hypothesisWithMaxConfidence != -1) {
-      PostHypothesis& hypothesis = postHypotheses[hypothesisWithMaxConfidence];
-      hypothesis.updateByGoalPostPercept(getGoalPercept().getPost(i));
+  DEBUG_REQUEST("ActiveGoalLocator:draw_sensor_association",
+    FIELD_DRAWING_CONTEXT;
+    PEN("FFFF00",10);
+    for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) {
+      const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
+      int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
+      if (x != -1) {
+        LINE(post.position.x, post.position.y,
+          postHypotheses[x].sampleSet.mean.x, postHypotheses[x].sampleSet.mean.y);
+      }
+    }
+  );//DEBUG_REQUEST
+
+
+  // update the hypotheses with the associated measurements
+  for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) 
+  {
+    const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
+    int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
+    if (x != -1)
+    {
+      postHypotheses[x].updateByGoalPostPercept(post);
     }
     else if (getGoalPercept().getPost(i).positionReliable) 
     {
@@ -148,19 +176,13 @@ void ActiveGoalLocator::execute()
       //insert the percept into the trashBuffer
 
       AGLBSample bufferSample;
-      bufferSample.translation = getGoalPercept().getPost(i).position;
-      bufferSample.color       = getGoalPercept().getPost(i).color;
+      bufferSample.translation = post.position;
+      bufferSample.color       = post.color;
       bufferSample.frameNumber = getFrameInfo().getFrameNumber();
       theSampleBuffer.add(bufferSample);
     }
   }//end for i < getGoalPercept().getNumberOfSeenPosts()
 
-
-  //////////////////////////
-  // check Buffer
-  //////////////////////////
-
-  //TODO check if buffer possible, then clear one filter!!!
 
   // resample all PF
   for (unsigned int i = 0; i < postHypotheses.size(); i++) {
@@ -184,7 +206,8 @@ void ActiveGoalLocator::execute()
   }//end for x
 
 
-  // check if useable cluster in TrashBuffer exists and insert if a free slot is avaliable
+  // check if there is a useable cluster in the SampleBuffer exists 
+  // and create a new hypothesis if possible
   checkTrashBuffer(theSampleBuffer);
 
 
@@ -375,20 +398,20 @@ void ActiveGoalLocator::debugPlots()
     }
 
     PLOT("ActiveGoalLocator:lastAverageWeighting:"+id, averageWeighting);
-    MODIFY("ActiveGoalLocator:lastAverageWeighting:"+id, averageWeighting);
+    //MODIFY("ActiveGoalLocator:lastAverageWeighting:"+id, averageWeighting);
 
     PLOT("ActiveGoalLocator:lastTotalWeighting:"+id, totalWeighting);
-    MODIFY("ActiveGoalLocator:lastTotalWeighting:"+id, totalWeighting);
+    //MODIFY("ActiveGoalLocator:lastTotalWeighting:"+id, totalWeighting);
   }//end for
 
 } //end debugPlot
 
 void ActiveGoalLocator::debugStdOut() 
 {
-  for(unsigned int i = 0; i < postHypotheses.size(); i++) 
-  {
-    if (postHypotheses[i].sampleSet.getIsValid())
-      std::cout << "Filter '" << i << "' is Valid      " << std::endl;
+  for(unsigned int i = 0; i < postHypotheses.size(); i++) {
+    if (postHypotheses[i].sampleSet.getIsValid()) {
+      DOUT( "Filter '" << i << "' is Valid      " << std::endl );
+    }
   }
 }//end debugStdOut
 
@@ -427,8 +450,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
   if(largestClusterID < 0) return;
 
   AGLSampleBuffer tmpSampleSetBuffer; //copy
-  for (int i = 0; i < sampleSetBuffer.getNumberOfEntries(); i++) 
-  {
+  for (int i = 0; i < sampleSetBuffer.getNumberOfEntries(); i++) {
     tmpSampleSetBuffer.add(sampleSetBuffer[i]);
   }
 

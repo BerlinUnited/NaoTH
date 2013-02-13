@@ -21,13 +21,13 @@ public:
 
   //double standardDeviationDist;
   //double standardDeviationAngle;
-  //double weightingTreshholdForUpdateWithAngle;
   //double processNoiseDistance;
   //double motionNoiseDistance;
   //double resamplingThreshhold;
   PostParticleFilter::Parameters particleFilter;
 
 
+  double weightingTreshholdForUpdateWithAngle;
   double timeFilterRange;
 
   //double sigmaWeightingThreshhold;
