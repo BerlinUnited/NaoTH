@@ -16,14 +16,23 @@ TestPostParticleFilter::TestPostParticleFilter()
     :
       position(1000.0, 0.0)
 {
-    DEBUG_REQUEST_REGISTER("TestPostParticleFilter:draw_percept", "draw the current goal percept on field", false);
+    DEBUG_REQUEST_REGISTER("TestPostParticleFilter:draw_percept", "draw the current goal percept on field", true);
+    DEBUG_REQUEST_REGISTER("TestPostParticleFilter:draw_particles", "draw the partciles of the filter", true);
+
+    postParticleFilter.sampleSet.resetLikelihood();
+    postParticleFilter.sampleSet.setValid();
+
+    //Filter initialisieren
+    for (unsigned int i = 0; i < 10; i++)  {
+        postParticleFilter.sampleSet[i].translation = position;
+    }
 
 } //Constructor
 
 void TestPostParticleFilter::execute()
 {
-
-  getGoalPercept().reset();
+  // copy the parameters
+  postParticleFilter.setParams(theParameters.particleFilter);
 
   GoalPercept::GoalPost newPost;
 
@@ -38,18 +47,28 @@ void TestPostParticleFilter::execute()
 
   newPost.position = position;
 
-  getGoalPercept().add(newPost);
+  postParticleFilter.sampleSet.resetLikelihood();
 
-  DEBUG_REQUEST("TestPostParticleFilter:draw_percept",
-    FIELD_DRAWING_CONTEXT;
-    PEN("FF0000", 30);
-    for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++)
-    {
-      const Vector2<double>& percept = getGoalPercept().getPost(i).position;
-      CIRCLE(percept.x, percept.y, 20);
-    }//end for
-  );
+  postParticleFilter.updateByGoalPostPercept(newPost);
+
+  postParticleFilter.resampleGT07(true);
 
 
 
+  debugRequests(newPost);
+
+}
+
+void TestPostParticleFilter::debugRequests(const GoalPercept::GoalPost& newPost)
+{
+    DEBUG_REQUEST("TestPostParticleFilter:draw_percept",
+      FIELD_DRAWING_CONTEXT;
+      PEN("FF0000", 30);
+      CIRCLE(newPost.position.x, newPost.position.y, 20);
+    );
+
+    DEBUG_REQUEST("TestPostParticleFilter:draw_particles",
+      FIELD_DRAWING_CONTEXT;
+      postParticleFilter.drawParticles("0000FF",88);
+    );
 }
