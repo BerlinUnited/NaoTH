@@ -32,6 +32,10 @@ void TestModuleManager::main()
   setModuleEnabled("ModuleB", true);
   setModuleEnabled("ModuleA", true);
   
+  cout << "-- begin static test 2 --" << endl;
+  ModuleManager::print(cout);
+  cout << "-- end static test 2 --" << endl;
+  
   cout << "-- begin dynamic test --" << endl;
   ModuleManager::print(cout);
   cout << "-- end dynamic test --" << endl;

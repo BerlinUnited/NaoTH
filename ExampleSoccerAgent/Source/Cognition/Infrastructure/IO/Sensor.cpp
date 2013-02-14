@@ -5,29 +5,26 @@
 #include "Sensor.h"
 #include <PlatformInterface/Platform.h>
 
-Sensor::Sensor():
-theOdometryDataReader(NULL)
+Sensor::Sensor()
 {
 }
 
 Sensor::~Sensor()
 {
-  if (theOdometryDataReader != NULL)
-    delete theOdometryDataReader;
 }
 
 
 #define REG_INPUT(R) \
-  platformInterface.registerCognitionInput(get##R())
+  platformInterface.registerInput(get##R())
 
-void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
+void Sensor::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   // read RobotInfo (could be provided by the platform)
   RobotInfo& robot = getRobotInfo();
-  robot.platform = platformInterface.getName();
-  robot.bodyNickName = platformInterface.getBodyNickName();
-  robot.bodyID = platformInterface.getBodyID();
-  robot.basicTimeStep = platformInterface.getBasicTimeStep();
+  robot.platform = platform.getName();
+  robot.bodyNickName = platform.getBodyNickName();
+  robot.bodyID = platform.getBodyID();
+  robot.basicTimeStep = platform.getBasicTimeStep();
 
   // init player number, team number and etc.
   getGameData().loadFromCfg( naoth::Platform::getInstance().theConfiguration );
@@ -50,28 +47,12 @@ void Sensor::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_INPUT(DebugMessageIn);
   
   // communication channels with motion
-  theOdometryDataReader = new MessageReader(platformInterface.getMessageQueue("OdometryData"));
+  platformInterface.registerInputChanel(getOdometryData());
 }//end init
 
 
 // read the incoming data from the motion
 void Sensor::execute()
 {
-  
-  GT_TRACE(" !theOdometryDataReader->empty()");
-  if ( !theOdometryDataReader->empty() )
-  {
-    string msg = theOdometryDataReader->read();
-    // drop old message, TODO: use them!
-    while ( !theOdometryDataReader->empty() )
-    {
-      msg = theOdometryDataReader->read();
-    }
-    stringstream ss(msg);
-    Serializer<OdometryData>::deserialize(ss, getOdometryData());
-  }
-
-  GT_TRACE("Sensor:execute() end");
-
 }//end execute
 

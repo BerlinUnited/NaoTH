@@ -13,7 +13,6 @@
 // sensors
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/BatteryData.h>
-#include <Representations/Infrastructure/BumperData.h>
 #include <Representations/Infrastructure/ButtonData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
 #include <Representations/Infrastructure/IRData.h>
@@ -46,7 +45,6 @@ BEGIN_DECLARE_MODULE(Sensor)
   PROVIDE(GyrometerData)
   PROVIDE(InertialSensorData)
   PROVIDE(SensorJointData)
-  PROVIDE(BumperData)
   PROVIDE(IRReceiveData)
   PROVIDE(OdometryData)
   PROVIDE(CurrentCameraSettings)
@@ -69,10 +67,8 @@ public:
 
   virtual void execute();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
-private:
-  MessageReader* theOdometryDataReader;
 };
 
 #endif	/* _SENSOR_H */
