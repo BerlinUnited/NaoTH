@@ -24,6 +24,7 @@ include (COMPILER_PATH_NAO)
 solution "NaoTHSoccer"
   platforms {"Native", "Nao"}
   configurations {"OptDebug", "Debug", "Release"}
+  location "../build"
   
   print("generating solution NaoTHSoccer for platform " .. PLATFORM)
   
