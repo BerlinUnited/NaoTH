@@ -62,7 +62,7 @@ end
 
 -- external directory for the local system
 if EXTERN_PATH_NATIVE == nil then
-  EXTERN_PATH_NATIVE = "../../Extern"
+  EXTERN_PATH_NATIVE = os.getenv("EXTERN_PATH_NATIVE")
 end
 
 -- path to the directory containing the nao cross compile tool chain
