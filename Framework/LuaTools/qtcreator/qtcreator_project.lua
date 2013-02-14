@@ -49,16 +49,16 @@
   
   function premake.qtcreator.build_configuration(prj, cfg, cfgCounter, platform)
     _p(2, "<valuemap key=\"ProjectExplorer.Target.BuildConfiguration.%d\" type=\"QVariantMap\">", cfgCounter)
-    _p(3, "<value key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\" type=\"QString\">%s</value>", path.getrelative(cfg.basedir, prj.solution.location))
+    _p(3, "<value key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\" type=\"QString\">%s</value>", prj.solution.location)
     _p(3, "<value key=\"ProjectExplorer.BuildCOnfiguration.ToolChain\" type=\"QString\">INVALID</value>")
     
     -- the build steps for "Make"
     _p(3, "<valuemap key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\" type=\"QVariantMap\">")
     _p(4, "<valuemap key=\"ProjectExplorer.BuildStepList.Step.0\" type=\"QVariantMap\">")
     if(platform ~= "") then
-      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">--platform=\"".. platform .."\" gmake</value>")
+      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">--platform=\"".. platform .."\" --file=../Make/premake4.lua gmake</value>")
     else
-      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">gmake</value>")
+      _p(5, "<value key=\"ProjectExplorer.ProcessStep.Arguments\" type=\"QString\">--file=../Make/premake4.lua gmake</value>")
     end
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.Command\" type=\"QString\">premake4</value>")
     _p(5, "<value key=\"ProjectExplorer.ProcessStep.Enabled\" type=\"bool\">true</value>")
