@@ -50,7 +50,7 @@
   function premake.qtcreator.build_configuration(prj, cfg, cfgCounter, platform)
     _p(2, "<valuemap key=\"ProjectExplorer.Target.BuildConfiguration.%d\" type=\"QVariantMap\">", cfgCounter)
     _p(3, "<value key=\"GenericProjectManager.GenericBuildConfiguration.BuildDirectory\" type=\"QString\">%s</value>", prj.solution.location)
-    _p(3, "<value key=\"ProjectExplorer.BuildCOnfiguration.ToolChain\" type=\"QString\">INVALID</value>")
+    _p(3, "<value key=\"ProjectExplorer.BuildConfiguration.ToolChain\" type=\"QString\">INVALID</value>")
     
     -- the build steps for "Make"
     _p(3, "<valuemap key=\"ProjectExplorer.BuildConfiguration.BuildStepList.0\" type=\"QVariantMap\">")
@@ -104,12 +104,18 @@
     _p(4, "<value key=\"ProjectExplorer.ProjectConfiguration.DisplayName\" type=\"QString\"></value>")
     _p(4, "<value key=\"ProjectExplorer.ProjectConfiguration.Id\" type=\"QString\">ProjectExplorer.BuildSteps.Clean</value>")
     _p(3, "</valuemap>")
+
+     -- general stuff
     _p(3, "<value key=\"ProjectExplorer.BuildConfiguration.BuildStepListCount\" type=\"int\">2</value>")
+    -- set PROMPT environment variable in order to tell the ansicolors.lua script not to use colors
+    _p(3, "<valuelist type=\"QVariantList\" key=\"ProjectExplorer.BuildConfiguration.UserEnvironmentChanges\">")
+    _p(4, "<value type=\"QString\">PROMPT=TRUE</value>")
+    _p(3, "</valuelist>")   
     
     _p(3, "<value key=\"ProjectExplorer.ProjectConfiguration.DefaultDisplayName\" type=\"QString\"></value>")
     _p(3, "<value key=\"ProjectExplorer.ProjectConfiguration.DisplayName\" type=\"QString\">%s</value>", cfg.longname)
-    _p(3, "<value key=\"ProjectExplorer.ProjectConfiguration.Id\" type=\"QString\">GenericProjectManager.GenericBuildConfiguration</value>")
-    
+    _p(3, "<value key=\"ProjectExplorer.ProjectConfiguration.Id\" type=\"QString\">GenericProjectManager.GenericBuildConfiguration</value>") 
+
     _p(2, "</valuemap>") -- end configuration valuemap
   end
   
