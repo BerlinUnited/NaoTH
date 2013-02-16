@@ -6,11 +6,12 @@
 FRAMEWORK_PATH = nil
 
 -- for native platform
--- default: "../../Extern"
+-- default: os.getenv("EXTERN_PATH_NATIVE")
 EXTERN_PATH_NATIVE = nil
 -- webots instalation if available
 -- default: os.getenv("WEBOTS_HOME")
 WEBOTS_HOME = nil
+
 
 -- path to the crosscompiler and libs
 -- default: os.getenv("NAO_CTC")
@@ -21,13 +22,15 @@ COMPILER_PATH_NAO = nil
 -- default: NAO_CTC .. "/extern"
 EXTERN_PATH_NAO = nil
 
-
 -- naoqi toolchain needed to compile the NaoSMAL
 -- default: os.getenv("AL_DIR")
 AL_DIR = nil
 
 -- example: add additional dirs for both platforms
---PlatformPath.Nao:add_includedir("/NaoTH-Commons/Source/");
---PlatformPath.Nao:add_libdir("/NaoTH-Commons/Source/");
---PlatformPath.Native:add_includedir("/NaoTH-Commons/Source/");
---PlatformPath.Native:add_libdir("/NaoTH-Commons/Source/");
+--if PLATFORM == "Nao" then
+--	PATH:includedirs {"my/nao/includes/path"}
+--	PATH:libdirs {"my/nao/libs/path"}
+--else
+--	PATH:includedirs {"my/native/includes/path"}
+--	PATH:libdirs {"my/native/libs/path"}
+--end

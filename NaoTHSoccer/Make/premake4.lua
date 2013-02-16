@@ -7,8 +7,6 @@ end
 -- load the global default settings
 dofile "projectconfig.lua"
 
-print(os.findlib("Controller.dll") or "nothing")
-
 -- load some helpers
 dofile (FRAMEWORK_PATH .. "/LuaTools/info.lua")
 --dofile (FRAMEWORK_PATH .. "/LuaTools/ilpath.lua")
@@ -18,6 +16,8 @@ dofile (FRAMEWORK_PATH .. "/LuaTools/protoc.lua")
 
 -- include the Nao platform
 include (COMPILER_PATH_NAO)
+
+print("INFO:" .. (os.findlib("Controller") or "couldn't fined the lib Controller"))
 
 
 -- definition of the solution
@@ -53,7 +53,8 @@ solution "NaoTHSoccer"
 
  -- TODO: howto compile the framework representations properly *inside* the project?
   invokeprotoc(
-    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/CommonTypes.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Framework-Representations.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Messages.proto"}, 
+    {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/CommonTypes.proto", 
+	 FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Framework-Representations.proto", FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/Messages.proto"}, 
     FRAMEWORK_PATH .. "/NaoTH-Commons/Source/Messages/", 
     "../../RobotControl/RobotConnector/src/", 
     {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/"}
@@ -66,6 +67,7 @@ solution "NaoTHSoccer"
     {FRAMEWORK_PATH .. "/NaoTH-Commons/Messages/", "../Messages/"}
   )
 
+  
   -- debug configuration
   configuration { "Debug" }
     defines { "DEBUG" }
