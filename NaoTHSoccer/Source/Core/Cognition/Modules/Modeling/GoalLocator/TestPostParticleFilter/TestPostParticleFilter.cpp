@@ -51,9 +51,13 @@ void TestPostParticleFilter::execute()
 
   postParticleFilter.updateByGoalPostPercept(newPost);
 
-  postParticleFilter.resampleGT07(true);
 
+  //wie groß maximal??
+  std::vector<GoalPercept::GoalPost> postArr (1);
 
+  postArr[0] = newPost;
+
+  postParticleFilter.resampleGT07(postArr, true);
 
   debugRequests(newPost);
 

@@ -160,9 +160,17 @@ void ActiveGoalLocator::execute()
   );//DEBUG_REQUEST
 
 
+  //Wie viele Pfosten moeglich???
+  std::vector<GoalPercept::GoalPost> postArr (10);
+
   // update the hypotheses with the associated measurements
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) 
   {
+
+    if (i < 10) { //Todo: param
+      postArr[i]  = getGoalPercept().getPost(i);
+    }
+
     const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
     int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
     if (x != -1)
@@ -186,7 +194,7 @@ void ActiveGoalLocator::execute()
 
   // resample all PF
   for (unsigned int i = 0; i < postHypotheses.size(); i++) {
-    postHypotheses[i].resampleGT07(true);
+    postHypotheses[i].resampleGT07(postArr, true);
   }
 
   // calculate mean for all valid PFs

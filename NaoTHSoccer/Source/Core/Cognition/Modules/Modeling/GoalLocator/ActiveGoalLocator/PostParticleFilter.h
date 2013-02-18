@@ -10,6 +10,9 @@
 #include "AGLSampleSet.h"
 #include "Representations/Perception/GoalPercept.h"
 
+//Tools
+#include <vector>
+
 class PostParticleFilter
 {
 public:
@@ -26,7 +29,7 @@ public:
 
   void updateByOdometry(const Pose2D& odometryDelta);
   void updateByGoalPostPercept(const GoalPercept::GoalPost& post);
-  void resampleGT07(bool noise);
+  void resampleGT07(std::vector<GoalPercept::GoalPost> postArr, bool noise);
 
   double getConfidenceForObservation(const GoalPercept::GoalPost& post) const;
 
