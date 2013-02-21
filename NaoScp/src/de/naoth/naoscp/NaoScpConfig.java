@@ -131,7 +131,7 @@ public class NaoScpConfig
     return homePath() + "/bin";
   }
 
-  public String localLibnaothPath()
+  public String localLibnaosmalPath()
   {
     return jDirPathLabel + "/dist/Nao";
   }

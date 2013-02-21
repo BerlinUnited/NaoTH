@@ -830,12 +830,12 @@ public class NaoScp extends NaoScpMainFrame
           if(cfg.copyLib)
           {
             File localLib = new File(
-            cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath() + "/libnaoth.so");
+            cfg.localDeployOutPath(sNaoNo) + cfg.libnaoPath() + "/libnaosmal.so");
             if(localLib.exists())
             {
               localLib.delete();
             }
-            copyFiles(new File(cfg.localLibnaothPath() + "/libnaoth.so"), localLib);
+            copyFiles(new File(cfg.localLibnaosmalPath() + "/libnaosmal.so"), localLib);
           }
 
           if(cfg.copyExe)
@@ -858,7 +858,7 @@ public class NaoScp extends NaoScpMainFrame
               actionInfo("I/O Error in prepareDeploy- " + ioe.toString());
             }
 
-            copyFiles(new File(cfg.localLibnaothPath() + "/naoth"), localExe);
+            copyFiles(new File(cfg.localLibnaosmalPath() + "/naoth"), localExe);
           }
 
           String myConfigPathIn = cfg.localDeployInPath(sNaoNo, sNaoByte) + "/Config";
@@ -1255,7 +1255,7 @@ public class NaoScp extends NaoScpMainFrame
           entryTag += "C";
         }
 
-        File libFile = new File(config.localDeployRootPath() + "/in/" + entry + "/libnaoth.so");
+        File libFile = new File(config.localDeployRootPath() + "/in/" + entry + "/libnaosmal.so");
         if(libFile.exists() && libFile.isFile())
         {
           entryAvaliable = true;
@@ -2108,975 +2108,1073 @@ public class NaoScp extends NaoScpMainFrame
     private void naoByte3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naoByte3ActionPerformed
     }//GEN-LAST:event_naoByte3ActionPerformed
 
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+  // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+  private void initComponents()
+  {
 
-        jDialog1 = new javax.swing.JDialog();
-        wlanBtnGroup = new javax.swing.ButtonGroup();
-        jLabel12 = new javax.swing.JLabel();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jActionsPanel = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        naoByte1 = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        naoByte2 = new javax.swing.JTextField();
-        naoByte3 = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        copyButton = new javax.swing.JButton();
-        jDirChooser = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jDirPathLabel = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jBackupBox = new javax.swing.JComboBox();
-        naoByte4 = new javax.swing.JTextField();
-        jLabel17 = new javax.swing.JLabel();
-        cbCopyLib = new javax.swing.JCheckBox();
-        cbRestartNaoth = new javax.swing.JCheckBox();
-        cbCopyConfig = new javax.swing.JCheckBox();
-        jSettingsPanel = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jColorBox = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
-        jTeamNumber = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jSchemeBox = new javax.swing.JComboBox();
-        jButtonRefreshData = new javax.swing.JButton();
-        cbNoBackup = new javax.swing.JCheckBox();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jCommentTextArea = new javax.swing.JTextArea();
-        cbCopyLogs = new javax.swing.JCheckBox();
-        jLabel16 = new javax.swing.JLabel();
-        cbCopyExe = new javax.swing.JCheckBox();
-        cbRestartNaoqi = new javax.swing.JCheckBox();
-        cbForceBackup = new javax.swing.JCheckBox();
-        jPanel2 = new javax.swing.JPanel();
-        jSettingsPanel1 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        subnetFieldLAN = new javax.swing.JTextField();
-        netmaskFieldLAN = new javax.swing.JTextField();
-        broadcastFieldLAN = new javax.swing.JTextField();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        subnetFieldWLAN = new javax.swing.JTextField();
-        netmaskFieldWLAN = new javax.swing.JTextField();
-        broadcastFieldWLAN = new javax.swing.JTextField();
-        radioWPA = new javax.swing.JRadioButton();
-        radioWEP = new javax.swing.JRadioButton();
-        jLabel5 = new javax.swing.JLabel();
-        wlanSSID = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
-        wlanKey = new javax.swing.JPasswordField();
-        jSettingsPanel2 = new javax.swing.JPanel();
-        jLabel24 = new javax.swing.JLabel();
-        lblTeamCommWLAN = new javax.swing.JTextField();
-        jLabel25 = new javax.swing.JLabel();
-        lblTeamCommLAN = new javax.swing.JTextField();
-        jLabel26 = new javax.swing.JLabel();
-        jTeamCommPort = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
-        sshUser = new javax.swing.JTextField();
-        jLabel28 = new javax.swing.JLabel();
-        sshPassword = new javax.swing.JPasswordField();
-        jLabel29 = new javax.swing.JLabel();
-        sshRootUser = new javax.swing.JTextField();
-        jLabel30 = new javax.swing.JLabel();
-        sshRootPassword = new javax.swing.JPasswordField();
-        jButtonSetRobotNetwork = new javax.swing.JButton();
-        jButtonInitRobotSystem = new javax.swing.JButton();
-        jButtonSaveNetworkConfig = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        lstNaos = new javax.swing.JList();
-        cbRebootSystem = new javax.swing.JCheckBox();
-        jButtonRemoteKernelVideoReload = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        logTextPane = new javax.swing.JTextPane();
-        jCopyStatus = new javax.swing.JLabel();
-        progressBar = new javax.swing.JProgressBar();
+    jDialog1 = new javax.swing.JDialog();
+    wlanBtnGroup = new javax.swing.ButtonGroup();
+    jLabel12 = new javax.swing.JLabel();
+    jSplitPane1 = new javax.swing.JSplitPane();
+    jTabbedPane1 = new javax.swing.JTabbedPane();
+    jPanel1 = new javax.swing.JPanel();
+    jActionsPanel = new javax.swing.JPanel();
+    jLabel6 = new javax.swing.JLabel();
+    naoByte1 = new javax.swing.JTextField();
+    jLabel7 = new javax.swing.JLabel();
+    naoByte2 = new javax.swing.JTextField();
+    naoByte3 = new javax.swing.JTextField();
+    jLabel8 = new javax.swing.JLabel();
+    copyButton = new javax.swing.JButton();
+    jDirChooser = new javax.swing.JButton();
+    jSeparator1 = new javax.swing.JSeparator();
+    jDirPathLabel = new javax.swing.JLabel();
+    jLabel15 = new javax.swing.JLabel();
+    jBackupBox = new javax.swing.JComboBox();
+    naoByte4 = new javax.swing.JTextField();
+    jLabel17 = new javax.swing.JLabel();
+    cbCopyLib = new javax.swing.JCheckBox();
+    cbRestartNaoth = new javax.swing.JCheckBox();
+    cbCopyConfig = new javax.swing.JCheckBox();
+    jSettingsPanel = new javax.swing.JPanel();
+    jLabel3 = new javax.swing.JLabel();
+    jColorBox = new javax.swing.JComboBox();
+    jLabel2 = new javax.swing.JLabel();
+    jTeamNumber = new javax.swing.JTextField();
+    jLabel4 = new javax.swing.JLabel();
+    jSchemeBox = new javax.swing.JComboBox();
+    jButtonRefreshData = new javax.swing.JButton();
+    cbNoBackup = new javax.swing.JCheckBox();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    jCommentTextArea = new javax.swing.JTextArea();
+    cbCopyLogs = new javax.swing.JCheckBox();
+    jLabel16 = new javax.swing.JLabel();
+    cbCopyExe = new javax.swing.JCheckBox();
+    cbRestartNaoqi = new javax.swing.JCheckBox();
+    cbForceBackup = new javax.swing.JCheckBox();
+    jPanel2 = new javax.swing.JPanel();
+    jSettingsPanel1 = new javax.swing.JPanel();
+    jLabel13 = new javax.swing.JLabel();
+    jLabel1 = new javax.swing.JLabel();
+    jLabel20 = new javax.swing.JLabel();
+    jLabel22 = new javax.swing.JLabel();
+    subnetFieldLAN = new javax.swing.JTextField();
+    netmaskFieldLAN = new javax.swing.JTextField();
+    broadcastFieldLAN = new javax.swing.JTextField();
+    jLabel14 = new javax.swing.JLabel();
+    jLabel19 = new javax.swing.JLabel();
+    jLabel21 = new javax.swing.JLabel();
+    jLabel23 = new javax.swing.JLabel();
+    subnetFieldWLAN = new javax.swing.JTextField();
+    netmaskFieldWLAN = new javax.swing.JTextField();
+    broadcastFieldWLAN = new javax.swing.JTextField();
+    radioWPA = new javax.swing.JRadioButton();
+    radioWEP = new javax.swing.JRadioButton();
+    jLabel5 = new javax.swing.JLabel();
+    wlanSSID = new javax.swing.JTextField();
+    jLabel9 = new javax.swing.JLabel();
+    wlanKey = new javax.swing.JPasswordField();
+    jSettingsPanel2 = new javax.swing.JPanel();
+    jLabel24 = new javax.swing.JLabel();
+    lblTeamCommWLAN = new javax.swing.JTextField();
+    jLabel25 = new javax.swing.JLabel();
+    lblTeamCommLAN = new javax.swing.JTextField();
+    jLabel26 = new javax.swing.JLabel();
+    jTeamCommPort = new javax.swing.JTextField();
+    jLabel27 = new javax.swing.JLabel();
+    sshUser = new javax.swing.JTextField();
+    jLabel28 = new javax.swing.JLabel();
+    sshPassword = new javax.swing.JPasswordField();
+    jLabel29 = new javax.swing.JLabel();
+    sshRootUser = new javax.swing.JTextField();
+    jLabel30 = new javax.swing.JLabel();
+    sshRootPassword = new javax.swing.JPasswordField();
+    jButtonSetRobotNetwork = new javax.swing.JButton();
+    jButtonInitRobotSystem = new javax.swing.JButton();
+    jButtonSaveNetworkConfig = new javax.swing.JButton();
+    jScrollPane3 = new javax.swing.JScrollPane();
+    lstNaos = new javax.swing.JList();
+    cbRebootSystem = new javax.swing.JCheckBox();
+    jButtonRemoteKernelVideoReload = new javax.swing.JButton();
+    jPanel3 = new javax.swing.JPanel();
+    jScrollPane5 = new javax.swing.JScrollPane();
+    logTextPane = new javax.swing.JTextPane();
+    jCopyStatus = new javax.swing.JLabel();
+    progressBar = new javax.swing.JProgressBar();
 
-        org.jdesktop.layout.GroupLayout jDialog1Layout = new org.jdesktop.layout.GroupLayout(jDialog1.getContentPane());
-        jDialog1.getContentPane().setLayout(jDialog1Layout);
-        jDialog1Layout.setHorizontalGroup(
-            jDialog1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 400, Short.MAX_VALUE)
-        );
-        jDialog1Layout.setVerticalGroup(
-            jDialog1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 300, Short.MAX_VALUE)
-        );
+    org.jdesktop.layout.GroupLayout jDialog1Layout = new org.jdesktop.layout.GroupLayout(jDialog1.getContentPane());
+    jDialog1.getContentPane().setLayout(jDialog1Layout);
+    jDialog1Layout.setHorizontalGroup(
+      jDialog1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(0, 400, Short.MAX_VALUE)
+    );
+    jDialog1Layout.setVerticalGroup(
+      jDialog1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(0, 300, Short.MAX_VALUE)
+    );
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("NaoSCP");
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
+    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setTitle("NaoSCP");
+    addWindowListener(new java.awt.event.WindowAdapter()
+    {
+      public void windowClosing(java.awt.event.WindowEvent evt)
+      {
+        formWindowClosing(evt);
+      }
+    });
 
-        jLabel12.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
-        jLabel12.setText("v0.4");
+    jLabel12.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
+    jLabel12.setText("v0.4");
 
-        jLabel6.setText("Nao 1:");
+    jLabel6.setText("Nao 1:");
 
-        naoByte1.setText("-1");
-        naoByte1.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte1.setName("naoByte1"); // NOI18N
-        naoByte1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                naoByte1ActionPerformed(evt);
-            }
-        });
+    naoByte1.setText("-1");
+    naoByte1.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte1.setName("naoByte1"); // NOI18N
+    naoByte1.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte1ActionPerformed(evt);
+      }
+    });
 
-        jLabel7.setText("Nao 2:");
+    jLabel7.setText("Nao 2:");
 
-        naoByte2.setText("-1");
-        naoByte2.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte2.setName("naoByte2"); // NOI18N
-        naoByte2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                naoByte2ActionPerformed(evt);
-            }
-        });
+    naoByte2.setText("-1");
+    naoByte2.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte2.setName("naoByte2"); // NOI18N
+    naoByte2.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte2ActionPerformed(evt);
+      }
+    });
 
-        naoByte3.setText("-1");
-        naoByte3.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte3.setName("naoByte3"); // NOI18N
-        naoByte3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                naoByte3ActionPerformed(evt);
-            }
-        });
+    naoByte3.setText("-1");
+    naoByte3.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte3.setName("naoByte3"); // NOI18N
+    naoByte3.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte3ActionPerformed(evt);
+      }
+    });
 
-        jLabel8.setText("Nao 3:");
+    jLabel8.setText("Nao 3:");
 
-        copyButton.setEnabled(false);
-        copyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                copyButtonActionPerformed(evt);
-            }
-        });
+    copyButton.setEnabled(false);
+    copyButton.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        copyButtonActionPerformed(evt);
+      }
+    });
 
-        jDirChooser.setText("...");
-        jDirChooser.setActionCommand("jDirChoose");
-        jDirChooser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jDirChooserPerformed(evt);
-            }
-        });
+    jDirChooser.setText("...");
+    jDirChooser.setActionCommand("jDirChoose");
+    jDirChooser.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jDirChooserPerformed(evt);
+      }
+    });
 
-        jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jDirPathLabel.setText("Set directory to {RepDir}/NaoTHSoccer");
-        jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\u005cu005cNaoTH-2009\\u005cu005cProjects\\u005cu005cNaoController\")");
+    jDirPathLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    jDirPathLabel.setText("Set directory to {RepDir}/NaoTHSoccer");
+    jDirPathLabel.setToolTipText("NaoController project directory (e.g., \"D:\\u005cu005cNaoTH-2009\\u005cu005cProjects\\u005cu005cNaoController\")");
 
-        jLabel15.setText("Version to Upload:");
+    jLabel15.setText("Version to Upload:");
 
-        jBackupBox.setEnabled(false);
-        jBackupBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jBackupBoxItemStateChanged(evt);
-            }
-        });
+    jBackupBox.setEnabled(false);
+    jBackupBox.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        jBackupBoxItemStateChanged(evt);
+      }
+    });
 
-        naoByte4.setText("-1");
-        naoByte4.setMaximumSize(new java.awt.Dimension(10, 31));
-        naoByte4.setName("naoByte4"); // NOI18N
-        naoByte4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                naoByte4ActionPerformed(evt);
-            }
-        });
+    naoByte4.setText("-1");
+    naoByte4.setMaximumSize(new java.awt.Dimension(10, 31));
+    naoByte4.setName("naoByte4"); // NOI18N
+    naoByte4.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        naoByte4ActionPerformed(evt);
+      }
+    });
 
-        jLabel17.setText("Nao 4:");
+    jLabel17.setText("Nao 4:");
 
-        org.jdesktop.layout.GroupLayout jActionsPanelLayout = new org.jdesktop.layout.GroupLayout(jActionsPanel);
-        jActionsPanel.setLayout(jActionsPanelLayout);
-        jActionsPanelLayout.setHorizontalGroup(
-            jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jActionsPanelLayout.createSequentialGroup()
-                .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jActionsPanelLayout.createSequentialGroup()
-                        .add(jDirChooser)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(jActionsPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jSeparator1)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
-                                .add(jLabel15)
-                                .add(18, 18, 18)
-                                .add(jBackupBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
-                                .add(jLabel6)
-                                .add(18, 18, 18)
-                                .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(6, 6, 6)
-                                .add(jLabel7)
-                                .add(18, 18, 18)
-                                .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(6, 6, 6)
-                                .add(jLabel8)
-                                .add(18, 18, 18)
-                                .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(6, 6, 6)
-                                .add(jLabel17)
-                                .add(18, 18, 18)
-                                .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .add(18, 18, 18)
-                                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addContainerGap())
-        );
-        jActionsPanelLayout.setVerticalGroup(
-            jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jActionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel7)
-                    .add(jLabel8)
-                    .add(jLabel6)
-                    .add(jLabel17)
-                    .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    org.jdesktop.layout.GroupLayout jActionsPanelLayout = new org.jdesktop.layout.GroupLayout(jActionsPanel);
+    jActionsPanel.setLayout(jActionsPanelLayout);
+    jActionsPanelLayout.setHorizontalGroup(
+      jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jActionsPanelLayout.createSequentialGroup()
+        .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jActionsPanelLayout.createSequentialGroup()
+            .add(jDirChooser)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .add(jActionsPanelLayout.createSequentialGroup()
+            .addContainerGap()
+            .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jSeparator1)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
+                .add(jLabel15)
                 .add(18, 18, 18)
-                .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel15)
-                    .add(jBackupBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(jBackupBox, 0, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jActionsPanelLayout.createSequentialGroup()
+                .add(jLabel6)
+                .add(18, 18, 18)
+                .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(6, 6, 6)
+                .add(jLabel7)
+                .add(18, 18, 18)
+                .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(6, 6, 6)
+                .add(jLabel8)
+                .add(18, 18, 18)
+                .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 38, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(6, 6, 6)
+                .add(jLabel17)
+                .add(18, 18, 18)
+                .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 35, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(18, 18, 18)
+                .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+        .addContainerGap())
+    );
+    jActionsPanelLayout.setVerticalGroup(
+      jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jActionsPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel7)
+          .add(jLabel8)
+          .add(jLabel6)
+          .add(jLabel17)
+          .add(naoByte2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(naoByte1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(naoByte3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(naoByte4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(copyButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .add(18, 18, 18)
+        .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel15)
+          .add(jBackupBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+        .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jDirChooser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 18, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 18, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap())
+    );
+
+    cbCopyLib.setText("copyLibNaoSMAL");
+    cbCopyLib.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyLibItemStateChanged(evt);
+      }
+    });
+
+    cbRestartNaoth.setSelected(true);
+    cbRestartNaoth.setText("restartNaoTH");
+    cbRestartNaoth.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbRestartNaothItemStateChanged(evt);
+      }
+    });
+    cbRestartNaoth.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbRestartNaothActionPerformed(evt);
+      }
+    });
+
+    cbCopyConfig.setText("copyConfig");
+    cbCopyConfig.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyConfigItemStateChanged(evt);
+      }
+    });
+
+    jSettingsPanel.setBackground(new java.awt.Color(204, 204, 255));
+
+    jLabel3.setText("Color:");
+
+    jColorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "blue" }));
+    jColorBox.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jColorBoxActionPerformed(evt);
+      }
+    });
+
+    jLabel2.setText("TeamNr:");
+
+    jTeamNumber.setText("4");
+
+    jLabel4.setText("Scheme:");
+
+    jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
+    jSchemeBox.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        jSchemeBoxItemStateChanged(evt);
+      }
+    });
+
+    jButtonRefreshData.setText("Refresh");
+    jButtonRefreshData.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jButtonRefreshDataActionPerformed(evt);
+      }
+    });
+
+    org.jdesktop.layout.GroupLayout jSettingsPanelLayout = new org.jdesktop.layout.GroupLayout(jSettingsPanel);
+    jSettingsPanel.setLayout(jSettingsPanelLayout);
+    jSettingsPanelLayout.setHorizontalGroup(
+      jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jSettingsPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jLabel4)
+          .add(jLabel3))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jSettingsPanelLayout.createSequentialGroup()
+            .add(jColorBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 89, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jLabel2)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jTeamNumber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 36, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(18, 18, 18)
+            .add(jButtonRefreshData, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
+          .add(jSchemeBox, 0, 423, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    jSettingsPanelLayout.setVerticalGroup(
+      jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jSettingsPanelLayout.createSequentialGroup()
+        .addContainerGap()
+        .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jSchemeBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jColorBox)
+          .add(jTeamNumber)
+          .add(jLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jButtonRefreshData)
+          .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)))
+    );
+
+    cbNoBackup.setText("ONLY MINIMAL BACKUP");
+    cbNoBackup.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbNoBackupItemStateChanged(evt);
+      }
+    });
+    cbNoBackup.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbNoBackupActionPerformed(evt);
+      }
+    });
+
+    jCommentTextArea.setColumns(15);
+    jCommentTextArea.setRows(4);
+    jScrollPane2.setViewportView(jCommentTextArea);
+
+    cbCopyLogs.setText("copyLogs");
+    cbCopyLogs.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyLogsItemStateChanged(evt);
+      }
+    });
+    cbCopyLogs.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbCopyLogsActionPerformed(evt);
+      }
+    });
+
+    jLabel16.setText("Comment:");
+
+    cbCopyExe.setSelected(true);
+    cbCopyExe.setText("copyNaoTH(exe)");
+    cbCopyExe.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbCopyExeItemStateChanged(evt);
+      }
+    });
+
+    cbRestartNaoqi.setText("restartNaoqi");
+    cbRestartNaoqi.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbRestartNaoqiItemStateChanged(evt);
+      }
+    });
+    cbRestartNaoqi.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbRestartNaoqiActionPerformed(evt);
+      }
+    });
+
+    cbForceBackup.setText("force full Backup");
+    cbForceBackup.addItemListener(new java.awt.event.ItemListener()
+    {
+      public void itemStateChanged(java.awt.event.ItemEvent evt)
+      {
+        cbForceBackupItemStateChanged(evt);
+      }
+    });
+    cbForceBackup.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        cbForceBackupActionPerformed(evt);
+      }
+    });
+
+    org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jPanel1Layout.createSequentialGroup()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                  .add(cbCopyExe)
+                  .add(cbCopyLib))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jSeparator1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 21, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jActionsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jDirChooser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 18, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jDirPathLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 18, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        cbCopyLib.setText("copyLibNaoTH");
-        cbCopyLib.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbCopyLibItemStateChanged(evt);
-            }
-        });
-
-        cbRestartNaoth.setSelected(true);
-        cbRestartNaoth.setText("restartNaoTH");
-        cbRestartNaoth.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbRestartNaothItemStateChanged(evt);
-            }
-        });
-        cbRestartNaoth.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbRestartNaothActionPerformed(evt);
-            }
-        });
-
-        cbCopyConfig.setText("copyConfig");
-        cbCopyConfig.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbCopyConfigItemStateChanged(evt);
-            }
-        });
-
-        jSettingsPanel.setBackground(new java.awt.Color(204, 204, 255));
-
-        jLabel3.setText("Color:");
-
-        jColorBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "red", "blue" }));
-        jColorBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jColorBoxActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("TeamNr:");
-
-        jTeamNumber.setText("4");
-
-        jLabel4.setText("Scheme:");
-
-        jSchemeBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "n/a" }));
-        jSchemeBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jSchemeBoxItemStateChanged(evt);
-            }
-        });
-
-        jButtonRefreshData.setText("Refresh");
-        jButtonRefreshData.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRefreshDataActionPerformed(evt);
-            }
-        });
-
-        org.jdesktop.layout.GroupLayout jSettingsPanelLayout = new org.jdesktop.layout.GroupLayout(jSettingsPanel);
-        jSettingsPanel.setLayout(jSettingsPanelLayout);
-        jSettingsPanelLayout.setHorizontalGroup(
-            jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel4)
-                    .add(jLabel3))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jSettingsPanelLayout.createSequentialGroup()
-                        .add(jColorBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 89, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jLabel2)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jTeamNumber, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 36, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(jButtonRefreshData, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
-                    .add(jSchemeBox, 0, 423, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jSettingsPanelLayout.setVerticalGroup(
-            jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jSchemeBox, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSettingsPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jColorBox)
-                    .add(jTeamNumber)
-                    .add(jLabel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 17, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jButtonRefreshData)
-                    .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)))
-        );
-
-        cbNoBackup.setText("ONLY MINIMAL BACKUP");
-        cbNoBackup.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbNoBackupItemStateChanged(evt);
-            }
-        });
-        cbNoBackup.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbNoBackupActionPerformed(evt);
-            }
-        });
-
-        jCommentTextArea.setColumns(15);
-        jCommentTextArea.setRows(4);
-        jScrollPane2.setViewportView(jCommentTextArea);
-
-        cbCopyLogs.setText("copyLogs");
-        cbCopyLogs.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbCopyLogsItemStateChanged(evt);
-            }
-        });
-        cbCopyLogs.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbCopyLogsActionPerformed(evt);
-            }
-        });
-
-        jLabel16.setText("Comment:");
-
-        cbCopyExe.setSelected(true);
-        cbCopyExe.setText("copyNaoTH(exe)");
-        cbCopyExe.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbCopyExeItemStateChanged(evt);
-            }
-        });
-
-        cbRestartNaoqi.setText("restartNaoqi");
-        cbRestartNaoqi.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbRestartNaoqiItemStateChanged(evt);
-            }
-        });
-        cbRestartNaoqi.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbRestartNaoqiActionPerformed(evt);
-            }
-        });
-
-        cbForceBackup.setText("force full Backup");
-        cbForceBackup.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbForceBackupItemStateChanged(evt);
-            }
-        });
-        cbForceBackup.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbForceBackupActionPerformed(evt);
-            }
-        });
-
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jPanel1Layout.createSequentialGroup()
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(cbCopyExe)
-                                    .add(cbCopyLib))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(cbCopyConfig)
-                                    .add(cbCopyLogs))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(jPanel1Layout.createSequentialGroup()
-                                        .add(cbRestartNaoth)
-                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                        .add(cbForceBackup))
-                                    .add(jPanel1Layout.createSequentialGroup()
-                                        .add(cbRestartNaoqi)
-                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                                        .add(cbNoBackup)))))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jPanel1Layout.createSequentialGroup()
-                                .add(jLabel16)
-                                .add(0, 138, Short.MAX_VALUE))
-                            .add(jScrollPane2))
-                        .addContainerGap())
-                    .add(jActionsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jActionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                  .add(cbCopyConfig)
+                  .add(cbCopyLogs))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(11, 11, 11))
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jLabel16)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(cbCopyConfig)
-                            .add(cbRestartNaoth)
-                            .add(cbForceBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .add(8, 8, 8)
-                        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(cbCopyLogs)
-                            .add(cbRestartNaoqi)
-                            .add(cbNoBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(cbCopyExe)
-                        .add(8, 8, 8)
-                        .add(cbCopyLib)))
-                .addContainerGap(21, Short.MAX_VALUE))
-        );
+                  .add(jPanel1Layout.createSequentialGroup()
+                    .add(cbRestartNaoth)
+                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                    .add(cbForceBackup))
+                  .add(jPanel1Layout.createSequentialGroup()
+                    .add(cbRestartNaoqi)
+                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                    .add(cbNoBackup)))))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(jPanel1Layout.createSequentialGroup()
+                .add(jLabel16)
+                .add(0, 132, Short.MAX_VALUE))
+              .add(jScrollPane2))
+            .addContainerGap())
+          .add(jActionsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .add(jActionsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jSettingsPanel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .add(11, 11, 11))
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jLabel16)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)))
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(cbCopyConfig)
+              .add(cbRestartNaoth)
+              .add(cbForceBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .add(8, 8, 8)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(cbCopyLogs)
+              .add(cbRestartNaoqi)
+              .add(cbNoBackup, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 23, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(cbCopyExe)
+            .add(8, 8, 8)
+            .add(cbCopyLib)))
+        .addContainerGap(19, Short.MAX_VALUE))
+    );
 
-        jTabbedPane1.addTab("Copy & Run", jPanel1);
+    jTabbedPane1.addTab("Copy & Run", jPanel1);
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(456, 462));
-        jPanel2.setVerifyInputWhenFocusTarget(false);
+    jPanel2.setPreferredSize(new java.awt.Dimension(456, 462));
+    jPanel2.setVerifyInputWhenFocusTarget(false);
 
-        jSettingsPanel1.setBackground(new java.awt.Color(204, 204, 255));
+    jSettingsPanel1.setBackground(new java.awt.Color(204, 204, 255));
 
-        jLabel13.setText("LAN:");
+    jLabel13.setText("LAN:");
 
-        jLabel1.setText("SubNet");
+    jLabel1.setText("SubNet");
 
-        jLabel20.setText("Netmask");
+    jLabel20.setText("Netmask");
 
-        jLabel22.setText("Broadcast");
+    jLabel22.setText("Broadcast");
 
-        subnetFieldLAN.setText("10.0.0");
-        subnetFieldLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                subnetFieldLANActionPerformed(evt);
-            }
-        });
+    subnetFieldLAN.setText("10.0.0");
+    subnetFieldLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        subnetFieldLANActionPerformed(evt);
+      }
+    });
 
-        netmaskFieldLAN.setText("255.255.255.0");
-        netmaskFieldLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                netmaskFieldLANActionPerformed(evt);
-            }
-        });
+    netmaskFieldLAN.setText("255.255.255.0");
+    netmaskFieldLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        netmaskFieldLANActionPerformed(evt);
+      }
+    });
 
-        broadcastFieldLAN.setText("10.0.0.255");
-        broadcastFieldLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                broadcastFieldLANActionPerformed(evt);
-            }
-        });
-        broadcastFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                broadcastFieldLANInputMethodTextChanged(evt);
-            }
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
-        broadcastFieldLAN.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                broadcastFieldLANKeyPressed(evt);
-            }
-        });
+    broadcastFieldLAN.setText("10.0.0.255");
+    broadcastFieldLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        broadcastFieldLANActionPerformed(evt);
+      }
+    });
+    broadcastFieldLAN.addInputMethodListener(new java.awt.event.InputMethodListener()
+    {
+      public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt)
+      {
+        broadcastFieldLANInputMethodTextChanged(evt);
+      }
+      public void caretPositionChanged(java.awt.event.InputMethodEvent evt)
+      {
+      }
+    });
+    broadcastFieldLAN.addKeyListener(new java.awt.event.KeyAdapter()
+    {
+      public void keyPressed(java.awt.event.KeyEvent evt)
+      {
+        broadcastFieldLANKeyPressed(evt);
+      }
+    });
 
-        jLabel14.setText("WLAN:");
+    jLabel14.setText("WLAN:");
 
-        jLabel19.setText("SubNet");
+    jLabel19.setText("SubNet");
 
-        jLabel21.setText("Netmask");
+    jLabel21.setText("Netmask");
 
-        jLabel23.setText("Broadcast");
+    jLabel23.setText("Broadcast");
 
-        subnetFieldWLAN.setText("192.168.4");
-        subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                subnetFieldWLANActionPerformed(evt);
-            }
-        });
+    subnetFieldWLAN.setText("192.168.4");
+    subnetFieldWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        subnetFieldWLANActionPerformed(evt);
+      }
+    });
 
-        netmaskFieldWLAN.setText("255.255.255.0");
-        netmaskFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                netmaskFieldWLANActionPerformed(evt);
-            }
-        });
+    netmaskFieldWLAN.setText("255.255.255.0");
+    netmaskFieldWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        netmaskFieldWLANActionPerformed(evt);
+      }
+    });
 
-        broadcastFieldWLAN.setText("192.168.4.255");
-        broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                broadcastFieldWLANActionPerformed(evt);
-            }
-        });
-        broadcastFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                broadcastFieldWLANInputMethodTextChanged(evt);
-            }
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                broadcastFieldWLANCaretPositionChanged(evt);
-            }
-        });
-        broadcastFieldWLAN.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                broadcastFieldWLANPropertyChange(evt);
-            }
-        });
-        broadcastFieldWLAN.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                broadcastFieldWLANKeyTyped(evt);
-            }
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                broadcastFieldWLANKeyPressed(evt);
-            }
-        });
-        broadcastFieldWLAN.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
-            public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
-                broadcastFieldWLANVetoableChange(evt);
-            }
-        });
+    broadcastFieldWLAN.setText("192.168.4.255");
+    broadcastFieldWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        broadcastFieldWLANActionPerformed(evt);
+      }
+    });
+    broadcastFieldWLAN.addInputMethodListener(new java.awt.event.InputMethodListener()
+    {
+      public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt)
+      {
+        broadcastFieldWLANInputMethodTextChanged(evt);
+      }
+      public void caretPositionChanged(java.awt.event.InputMethodEvent evt)
+      {
+        broadcastFieldWLANCaretPositionChanged(evt);
+      }
+    });
+    broadcastFieldWLAN.addPropertyChangeListener(new java.beans.PropertyChangeListener()
+    {
+      public void propertyChange(java.beans.PropertyChangeEvent evt)
+      {
+        broadcastFieldWLANPropertyChange(evt);
+      }
+    });
+    broadcastFieldWLAN.addKeyListener(new java.awt.event.KeyAdapter()
+    {
+      public void keyTyped(java.awt.event.KeyEvent evt)
+      {
+        broadcastFieldWLANKeyTyped(evt);
+      }
+      public void keyPressed(java.awt.event.KeyEvent evt)
+      {
+        broadcastFieldWLANKeyPressed(evt);
+      }
+    });
+    broadcastFieldWLAN.addVetoableChangeListener(new java.beans.VetoableChangeListener()
+    {
+      public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException
+      {
+        broadcastFieldWLANVetoableChange(evt);
+      }
+    });
 
-        radioWPA.setBackground(new java.awt.Color(204, 204, 255));
-        radioWPA.setSelected(true);
-        radioWPA.setText("WPA PSK");
+    radioWPA.setBackground(new java.awt.Color(204, 204, 255));
+    radioWPA.setSelected(true);
+    radioWPA.setText("WPA PSK");
 
-        radioWEP.setBackground(new java.awt.Color(204, 204, 255));
-        radioWEP.setText("WEP");
+    radioWEP.setBackground(new java.awt.Color(204, 204, 255));
+    radioWEP.setText("WEP");
 
-        jLabel5.setText("SSID");
+    jLabel5.setText("SSID");
 
-        wlanSSID.setText("SPL_Field_B");
-        wlanSSID.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                wlanSSIDActionPerformed(evt);
-            }
-        });
+    wlanSSID.setText("SPL_Field_B");
+    wlanSSID.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        wlanSSIDActionPerformed(evt);
+      }
+    });
 
-        jLabel9.setText("WLAN Key");
+    jLabel9.setText("WLAN Key");
 
-        wlanKey.setText("SPLRC2012");
-        wlanKey.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                wlanKeyActionPerformed(evt);
-            }
-        });
+    wlanKey.setText("SPLRC2012");
+    wlanKey.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        wlanKeyActionPerformed(evt);
+      }
+    });
 
-        org.jdesktop.layout.GroupLayout jSettingsPanel1Layout = new org.jdesktop.layout.GroupLayout(jSettingsPanel1);
-        jSettingsPanel1.setLayout(jSettingsPanel1Layout);
-        jSettingsPanel1Layout.setHorizontalGroup(
-            jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jSettingsPanel1Layout.createSequentialGroup()
+    org.jdesktop.layout.GroupLayout jSettingsPanel1Layout = new org.jdesktop.layout.GroupLayout(jSettingsPanel1);
+    jSettingsPanel1.setLayout(jSettingsPanel1Layout);
+    jSettingsPanel1Layout.setHorizontalGroup(
+      jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jSettingsPanel1Layout.createSequentialGroup()
+        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
+            .add(12, 12, 12)
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(jSettingsPanel1Layout.createSequentialGroup()
+                .add(jLabel13)
+                .add(217, 217, 217))
+              .add(jSettingsPanel1Layout.createSequentialGroup()
                 .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                        .add(12, 12, 12)
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(jSettingsPanel1Layout.createSequentialGroup()
-                                .add(jLabel13)
-                                .add(217, 217, 217))
-                            .add(jSettingsPanel1Layout.createSequentialGroup()
-                                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(jLabel20, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                    .add(jLabel1)
-                                    .add(jLabel22))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, subnetFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, netmaskFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.LEADING, broadcastFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(jLabel14)
-                                    .add(jSettingsPanel1Layout.createSequentialGroup()
-                                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                                            .add(jSettingsPanel1Layout.createSequentialGroup()
-                                                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                    .add(jLabel21)
-                                                    .add(jLabel19))
-                                                .add(28, 28, 28))
-                                            .add(jSettingsPanel1Layout.createSequentialGroup()
-                                                .add(jLabel23)
-                                                .add(18, 18, 18)))
-                                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                            .add(broadcastFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                                            .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                                            .add(netmaskFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                                            .add(radioWPA, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))))))
-                    .add(jSettingsPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                                .add(84, 84, 84)
-                                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                    .add(wlanKey, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
-                                        .add(wlanSSID, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
-                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                                        .add(radioWEP)
-                                        .add(168, 168, 168))))
-                            .add(jLabel5)
-                            .add(jLabel9))))
-                .add(13, 13, 13))
-        );
-        jSettingsPanel1Layout.setVerticalGroup(
-            jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jSettingsPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                  .add(jLabel20, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                  .add(jLabel1)
+                  .add(jLabel22))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jSettingsPanel1Layout.createSequentialGroup()
-                        .add(jLabel14)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel19)
-                            .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel21)
-                            .add(netmaskFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(broadcastFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                    .add(jSettingsPanel1Layout.createSequentialGroup()
-                        .add(jLabel13)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(subnetFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jLabel1))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel20)
-                            .add(netmaskFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(jLabel22)
-                            .add(broadcastFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jLabel23))))
-                .add(18, 18, 18)
-                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel5)
-                    .add(wlanSSID, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                  .add(org.jdesktop.layout.GroupLayout.LEADING, subnetFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                  .add(org.jdesktop.layout.GroupLayout.LEADING, netmaskFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                  .add(org.jdesktop.layout.GroupLayout.LEADING, broadcastFieldLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                  .add(jLabel14)
+                  .add(jSettingsPanel1Layout.createSequentialGroup()
+                    .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                      .add(jSettingsPanel1Layout.createSequentialGroup()
+                        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                          .add(jLabel21)
+                          .add(jLabel19))
+                        .add(28, 28, 28))
+                      .add(jSettingsPanel1Layout.createSequentialGroup()
+                        .add(jLabel23)
+                        .add(18, 18, 18)))
+                    .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                      .add(broadcastFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                      .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                      .add(netmaskFieldWLAN, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                      .add(radioWPA, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 100, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))))))
+          .add(jSettingsPanel1Layout.createSequentialGroup()
+            .addContainerGap()
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
+                .add(84, 84, 84)
+                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                  .add(wlanKey, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                  .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel1Layout.createSequentialGroup()
+                    .add(wlanSSID, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                    .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                     .add(radioWEP)
-                    .add(radioWPA))
+                    .add(168, 168, 168))))
+              .add(jLabel5)
+              .add(jLabel9))))
+        .add(13, 13, 13))
+    );
+    jSettingsPanel1Layout.setVerticalGroup(
+      jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jSettingsPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+          .add(jSettingsPanel1Layout.createSequentialGroup()
+            .add(jLabel14)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(jLabel19)
+              .add(subnetFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(jLabel21)
+              .add(netmaskFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(broadcastFieldWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+          .add(jSettingsPanel1Layout.createSequentialGroup()
+            .add(jLabel13)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(subnetFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel1))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(jLabel20)
+              .add(netmaskFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(jLabel22)
+              .add(broadcastFieldLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel23))))
+        .add(18, 18, 18)
+        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel5)
+          .add(wlanSSID, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(radioWEP)
+          .add(radioWPA))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel9)
+          .add(wlanKey, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(15, Short.MAX_VALUE))
+    );
+
+    jSettingsPanel2.setBackground(new java.awt.Color(204, 204, 255));
+
+    jLabel24.setText("TeamComm:");
+
+    lblTeamCommWLAN.setEditable(false);
+    lblTeamCommWLAN.setText("192.168.4.255");
+    lblTeamCommWLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        lblTeamCommWLANActionPerformed(evt);
+      }
+    });
+
+    jLabel25.setText("/");
+
+    lblTeamCommLAN.setEditable(false);
+    lblTeamCommLAN.setText("10.0.0.255");
+    lblTeamCommLAN.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        lblTeamCommLANActionPerformed(evt);
+      }
+    });
+
+    jLabel26.setText(":");
+
+    jTeamCommPort.setText("10400");
+
+    jLabel27.setText("ssh:");
+
+    sshUser.setText("nao");
+    sshUser.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        sshUserActionPerformed(evt);
+      }
+    });
+
+    jLabel28.setText(":");
+
+    sshPassword.setText("nao");
+
+    jLabel29.setText("ssh:");
+
+    sshRootUser.setEditable(false);
+    sshRootUser.setText("root");
+    sshRootUser.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        sshRootUserActionPerformed(evt);
+      }
+    });
+
+    jLabel30.setText(":");
+
+    sshRootPassword.setText("root");
+
+    org.jdesktop.layout.GroupLayout jSettingsPanel2Layout = new org.jdesktop.layout.GroupLayout(jSettingsPanel2);
+    jSettingsPanel2.setLayout(jSettingsPanel2Layout);
+    jSettingsPanel2Layout.setHorizontalGroup(
+      jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jSettingsPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jSettingsPanel2Layout.createSequentialGroup()
+            .add(jLabel24)
+            .add(18, 18, 18)
+            .add(lblTeamCommWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 131, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jLabel25)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(lblTeamCommLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 111, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jLabel26)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
+            .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+              .add(org.jdesktop.layout.GroupLayout.LEADING, jSettingsPanel2Layout.createSequentialGroup()
+                .add(jLabel29)
+                .add(18, 18, 18)
+                .add(sshRootUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 74, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSettingsPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel9)
-                    .add(wlanKey, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jSettingsPanel2.setBackground(new java.awt.Color(204, 204, 255));
-
-        jLabel24.setText("TeamComm:");
-
-        lblTeamCommWLAN.setEditable(false);
-        lblTeamCommWLAN.setText("192.168.4.255");
-        lblTeamCommWLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lblTeamCommWLANActionPerformed(evt);
-            }
-        });
-
-        jLabel25.setText("/");
-
-        lblTeamCommLAN.setEditable(false);
-        lblTeamCommLAN.setText("10.0.0.255");
-        lblTeamCommLAN.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lblTeamCommLANActionPerformed(evt);
-            }
-        });
-
-        jLabel26.setText(":");
-
-        jTeamCommPort.setText("10400");
-
-        jLabel27.setText("ssh:");
-
-        sshUser.setText("nao");
-        sshUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sshUserActionPerformed(evt);
-            }
-        });
-
-        jLabel28.setText(":");
-
-        sshPassword.setText("nao");
-
-        jLabel29.setText("ssh:");
-
-        sshRootUser.setEditable(false);
-        sshRootUser.setText("root");
-        sshRootUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sshRootUserActionPerformed(evt);
-            }
-        });
-
-        jLabel30.setText(":");
-
-        sshRootPassword.setText("root");
-
-        org.jdesktop.layout.GroupLayout jSettingsPanel2Layout = new org.jdesktop.layout.GroupLayout(jSettingsPanel2);
-        jSettingsPanel2.setLayout(jSettingsPanel2Layout);
-        jSettingsPanel2Layout.setHorizontalGroup(
-            jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jSettingsPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jSettingsPanel2Layout.createSequentialGroup()
-                        .add(jLabel24)
-                        .add(18, 18, 18)
-                        .add(lblTeamCommWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 131, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jLabel25)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(lblTeamCommLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 111, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jLabel26)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel2Layout.createSequentialGroup()
-                        .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jSettingsPanel2Layout.createSequentialGroup()
-                                .add(jLabel29)
-                                .add(18, 18, 18)
-                                .add(sshRootUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 74, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel30, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .add(jSettingsPanel2Layout.createSequentialGroup()
-                                .add(jLabel27)
-                                .add(18, 18, 18)
-                                .add(sshUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 74, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(jLabel28)))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(sshPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
-                            .add(sshRootPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))))
-                .addContainerGap())
-        );
-        jSettingsPanel2Layout.setVerticalGroup(
-            jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jSettingsPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 20, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblTeamCommWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(lblTeamCommLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel27)
-                    .add(sshUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(sshPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel30, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(sshRootUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel29)
-                    .add(sshRootPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jButtonSetRobotNetwork.setText("Set Network to Robot");
-        jButtonSetRobotNetwork.setEnabled(false);
-        jButtonSetRobotNetwork.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSetRobotNetworkActionPerformed(evt);
-            }
-        });
-
-        jButtonInitRobotSystem.setText("Initialize Robot System");
-        jButtonInitRobotSystem.setEnabled(false);
-        jButtonInitRobotSystem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInitRobotSystemActionPerformed(evt);
-            }
-        });
-
-        jButtonSaveNetworkConfig.setText("Save As Default Config");
-        jButtonSaveNetworkConfig.setEnabled(false);
-        jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSaveNetworkConfigActionPerformed(evt);
-            }
-        });
-
-        lstNaos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        lstNaos.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lstNaosMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(lstNaos);
-
-        cbRebootSystem.setText("reboot OS");
-
-        jButtonRemoteKernelVideoReload.setText("Reload kernel video module");
-        jButtonRemoteKernelVideoReload.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonRemoteKernelVideoReloadActionPerformed(evt);
-            }
-        });
-
-        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jSettingsPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(cbRebootSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
-                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .add(jButtonRemoteKernelVideoReload, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 199, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .add(cbRebootSystem)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jScrollPane3))
-                    .add(jPanel2Layout.createSequentialGroup()
-                        .add(14, 14, 14)
-                        .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .add(jButtonRemoteKernelVideoReload)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                        .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-
-        jTabbedPane1.addTab("Network Configuration / Utilities", jPanel2);
-
-        jSplitPane1.setLeftComponent(jTabbedPane1);
-
-        logTextPane.setEditable(false);
-        jScrollPane5.setViewportView(logTextPane);
-
-        jCopyStatus.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
-        jCopyStatus.setText("idle...");
-
-        progressBar.setEnabled(false);
-
-        org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
-            .add(jScrollPane5)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel3Layout.createSequentialGroup()
-                .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+                .add(jLabel30, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .add(jSettingsPanel2Layout.createSequentialGroup()
+                .add(jLabel27)
+                .add(18, 18, 18)
+                .add(sshUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 74, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jCopyStatus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 19, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        );
+                .add(jLabel28)))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+              .add(sshPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+              .add(sshRootPassword, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))))
+        .addContainerGap())
+    );
+    jSettingsPanel2Layout.setVerticalGroup(
+      jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jSettingsPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel24, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 20, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(lblTeamCommWLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jLabel25, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(lblTeamCommLAN, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jLabel26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jTeamCommPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+        .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel27)
+          .add(sshUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jLabel28, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(sshPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+        .add(jSettingsPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+          .add(jLabel30, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(sshRootUser, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(jLabel29)
+          .add(sshRootPassword, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
 
-        jSplitPane1.setRightComponent(jPanel3);
+    jButtonSetRobotNetwork.setText("Set Network to Robot");
+    jButtonSetRobotNetwork.setEnabled(false);
+    jButtonSetRobotNetwork.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jButtonSetRobotNetworkActionPerformed(evt);
+      }
+    });
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(layout.createSequentialGroup()
-                        .add(jLabel12)
-                        .add(0, 0, Short.MAX_VALUE))
-                    .add(jSplitPane1))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .add(jLabel12)
-                .add(2, 2, 2)
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 378, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+    jButtonInitRobotSystem.setText("Initialize Robot System");
+    jButtonInitRobotSystem.setEnabled(false);
+    jButtonInitRobotSystem.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jButtonInitRobotSystemActionPerformed(evt);
+      }
+    });
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+    jButtonSaveNetworkConfig.setText("Save As Default Config");
+    jButtonSaveNetworkConfig.setEnabled(false);
+    jButtonSaveNetworkConfig.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jButtonSaveNetworkConfigActionPerformed(evt);
+      }
+    });
+
+    lstNaos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+    lstNaos.addMouseListener(new java.awt.event.MouseAdapter()
+    {
+      public void mouseClicked(java.awt.event.MouseEvent evt)
+      {
+        lstNaosMouseClicked(evt);
+      }
+    });
+    jScrollPane3.setViewportView(lstNaos);
+
+    cbRebootSystem.setText("reboot OS");
+
+    jButtonRemoteKernelVideoReload.setText("Reload kernel video module");
+    jButtonRemoteKernelVideoReload.addActionListener(new java.awt.event.ActionListener()
+    {
+      public void actionPerformed(java.awt.event.ActionEvent evt)
+      {
+        jButtonRemoteKernelVideoReloadActionPerformed(evt);
+      }
+    });
+
+    org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+    jPanel2.setLayout(jPanel2Layout);
+    jPanel2Layout.setHorizontalGroup(
+      jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .add(jSettingsPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(cbRebootSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+          .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+          .add(jScrollPane3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+          .add(jButtonRemoteKernelVideoReload, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 199, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    jPanel2Layout.setVerticalGroup(
+      jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
+        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+          .add(jPanel2Layout.createSequentialGroup()
+            .addContainerGap()
+            .add(cbRebootSystem)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jScrollPane3))
+          .add(jPanel2Layout.createSequentialGroup()
+            .add(14, 14, 14)
+            .add(jSettingsPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jSettingsPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel2Layout.createSequentialGroup()
+            .add(jButtonRemoteKernelVideoReload)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+            .add(jButtonSaveNetworkConfig, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jButtonSetRobotNetwork, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jButtonInitRobotSystem, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 27, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap())
+    );
+
+    jTabbedPane1.addTab("Network Configuration / Utilities", jPanel2);
+
+    jSplitPane1.setLeftComponent(jTabbedPane1);
+
+    logTextPane.setEditable(false);
+    jScrollPane5.setViewportView(logTextPane);
+
+    jCopyStatus.setFont(new java.awt.Font("Lucida Grande", 0, 10)); // NOI18N
+    jCopyStatus.setText("idle...");
+
+    progressBar.setEnabled(false);
+
+    org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
+    jPanel3.setLayout(jPanel3Layout);
+    jPanel3Layout.setHorizontalGroup(
+      jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jCopyStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+      .add(jScrollPane5)
+    );
+    jPanel3Layout.setVerticalGroup(
+      jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(jPanel3Layout.createSequentialGroup()
+        .add(jScrollPane5, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jCopyStatus, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 19, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+    );
+
+    jSplitPane1.setRightComponent(jPanel3);
+
+    org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+      layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(layout.createSequentialGroup()
+        .addContainerGap()
+        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(layout.createSequentialGroup()
+            .add(jLabel12)
+            .add(0, 0, Short.MAX_VALUE))
+          .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    layout.setVerticalGroup(
+      layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+      .add(layout.createSequentialGroup()
+        .add(jLabel12)
+        .add(2, 2, 2)
+        .add(jSplitPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 378, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
+    pack();
+  }// </editor-fold>//GEN-END:initComponents
 
     private void subnetFieldLANActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subnetFieldLANActionPerformed
       // TODO add your handling code here:
@@ -3304,97 +3402,97 @@ public class NaoScp extends NaoScpMainFrame
     // TODO add your handling code here:
   }//GEN-LAST:event_wlanKeyActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField broadcastFieldLAN;
-    private javax.swing.JTextField broadcastFieldWLAN;
-    private javax.swing.JCheckBox cbCopyConfig;
-    private javax.swing.JCheckBox cbCopyExe;
-    private javax.swing.JCheckBox cbCopyLib;
-    private javax.swing.JCheckBox cbCopyLogs;
-    private javax.swing.JCheckBox cbForceBackup;
-    private javax.swing.JCheckBox cbNoBackup;
-    private javax.swing.JCheckBox cbRebootSystem;
-    private javax.swing.JCheckBox cbRestartNaoqi;
-    private javax.swing.JCheckBox cbRestartNaoth;
-    private javax.swing.JButton copyButton;
-    private javax.swing.JPanel jActionsPanel;
-    private javax.swing.JComboBox jBackupBox;
-    private javax.swing.JButton jButtonInitRobotSystem;
-    private javax.swing.JButton jButtonRefreshData;
-    private javax.swing.JButton jButtonRemoteKernelVideoReload;
-    private javax.swing.JButton jButtonSaveNetworkConfig;
-    private javax.swing.JButton jButtonSetRobotNetwork;
-    private javax.swing.JComboBox jColorBox;
-    private javax.swing.JTextArea jCommentTextArea;
-    private javax.swing.JLabel jCopyStatus;
-    private javax.swing.JDialog jDialog1;
-    private javax.swing.JButton jDirChooser;
-    private javax.swing.JLabel jDirPathLabel;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JComboBox jSchemeBox;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JPanel jSettingsPanel;
-    private javax.swing.JPanel jSettingsPanel1;
-    private javax.swing.JPanel jSettingsPanel2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTeamCommPort;
-    private javax.swing.JTextField jTeamNumber;
-    private javax.swing.JTextField lblTeamCommLAN;
-    private javax.swing.JTextField lblTeamCommWLAN;
-    private javax.swing.JTextPane logTextPane;
-    private javax.swing.JList lstNaos;
-    private javax.swing.JTextField naoByte1;
-    private javax.swing.JTextField naoByte2;
-    private javax.swing.JTextField naoByte3;
-    private javax.swing.JTextField naoByte4;
-    private javax.swing.JTextField netmaskFieldLAN;
-    private javax.swing.JTextField netmaskFieldWLAN;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JRadioButton radioWEP;
-    private javax.swing.JRadioButton radioWPA;
-    private javax.swing.JPasswordField sshPassword;
-    private javax.swing.JPasswordField sshRootPassword;
-    private javax.swing.JTextField sshRootUser;
-    private javax.swing.JTextField sshUser;
-    private javax.swing.JTextField subnetFieldLAN;
-    private javax.swing.JTextField subnetFieldWLAN;
-    private javax.swing.ButtonGroup wlanBtnGroup;
-    private javax.swing.JPasswordField wlanKey;
-    private javax.swing.JTextField wlanSSID;
-    // End of variables declaration//GEN-END:variables
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JTextField broadcastFieldLAN;
+  private javax.swing.JTextField broadcastFieldWLAN;
+  private javax.swing.JCheckBox cbCopyConfig;
+  private javax.swing.JCheckBox cbCopyExe;
+  private javax.swing.JCheckBox cbCopyLib;
+  private javax.swing.JCheckBox cbCopyLogs;
+  private javax.swing.JCheckBox cbForceBackup;
+  private javax.swing.JCheckBox cbNoBackup;
+  private javax.swing.JCheckBox cbRebootSystem;
+  private javax.swing.JCheckBox cbRestartNaoqi;
+  private javax.swing.JCheckBox cbRestartNaoth;
+  private javax.swing.JButton copyButton;
+  private javax.swing.JPanel jActionsPanel;
+  private javax.swing.JComboBox jBackupBox;
+  private javax.swing.JButton jButtonInitRobotSystem;
+  private javax.swing.JButton jButtonRefreshData;
+  private javax.swing.JButton jButtonRemoteKernelVideoReload;
+  private javax.swing.JButton jButtonSaveNetworkConfig;
+  private javax.swing.JButton jButtonSetRobotNetwork;
+  private javax.swing.JComboBox jColorBox;
+  private javax.swing.JTextArea jCommentTextArea;
+  private javax.swing.JLabel jCopyStatus;
+  private javax.swing.JDialog jDialog1;
+  private javax.swing.JButton jDirChooser;
+  private javax.swing.JLabel jDirPathLabel;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel12;
+  private javax.swing.JLabel jLabel13;
+  private javax.swing.JLabel jLabel14;
+  private javax.swing.JLabel jLabel15;
+  private javax.swing.JLabel jLabel16;
+  private javax.swing.JLabel jLabel17;
+  private javax.swing.JLabel jLabel19;
+  private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel20;
+  private javax.swing.JLabel jLabel21;
+  private javax.swing.JLabel jLabel22;
+  private javax.swing.JLabel jLabel23;
+  private javax.swing.JLabel jLabel24;
+  private javax.swing.JLabel jLabel25;
+  private javax.swing.JLabel jLabel26;
+  private javax.swing.JLabel jLabel27;
+  private javax.swing.JLabel jLabel28;
+  private javax.swing.JLabel jLabel29;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel30;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
+  private javax.swing.JLabel jLabel8;
+  private javax.swing.JLabel jLabel9;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel2;
+  private javax.swing.JPanel jPanel3;
+  private javax.swing.JComboBox jSchemeBox;
+  private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JScrollPane jScrollPane3;
+  private javax.swing.JScrollPane jScrollPane5;
+  private javax.swing.JSeparator jSeparator1;
+  private javax.swing.JPanel jSettingsPanel;
+  private javax.swing.JPanel jSettingsPanel1;
+  private javax.swing.JPanel jSettingsPanel2;
+  private javax.swing.JSplitPane jSplitPane1;
+  private javax.swing.JTabbedPane jTabbedPane1;
+  private javax.swing.JTextField jTeamCommPort;
+  private javax.swing.JTextField jTeamNumber;
+  private javax.swing.JTextField lblTeamCommLAN;
+  private javax.swing.JTextField lblTeamCommWLAN;
+  private javax.swing.JTextPane logTextPane;
+  private javax.swing.JList lstNaos;
+  private javax.swing.JTextField naoByte1;
+  private javax.swing.JTextField naoByte2;
+  private javax.swing.JTextField naoByte3;
+  private javax.swing.JTextField naoByte4;
+  private javax.swing.JTextField netmaskFieldLAN;
+  private javax.swing.JTextField netmaskFieldWLAN;
+  private javax.swing.JProgressBar progressBar;
+  private javax.swing.JRadioButton radioWEP;
+  private javax.swing.JRadioButton radioWPA;
+  private javax.swing.JPasswordField sshPassword;
+  private javax.swing.JPasswordField sshRootPassword;
+  private javax.swing.JTextField sshRootUser;
+  private javax.swing.JTextField sshUser;
+  private javax.swing.JTextField subnetFieldLAN;
+  private javax.swing.JTextField subnetFieldWLAN;
+  private javax.swing.ButtonGroup wlanBtnGroup;
+  private javax.swing.JPasswordField wlanKey;
+  private javax.swing.JTextField wlanSSID;
+  // End of variables declaration//GEN-END:variables
 };
 
 

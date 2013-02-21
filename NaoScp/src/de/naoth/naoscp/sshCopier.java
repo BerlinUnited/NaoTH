@@ -101,10 +101,10 @@ abstract class sshCopier extends sshWorker
     {
       if(copyLib)
       {
-        File libFile = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/libnaoth.so");
+        File libFile = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/libnaosmal.so");
         if(!libFile.exists() || !libFile.isFile())
         {
-          setInfo("[43mselected backup contains no libnaoth.so file\n[0m");
+          setInfo("[43mselected backup contains no libnaosmal.so file\n[0m");
           config.copyLib = false;
           copyLib = false;
         }
@@ -115,7 +115,7 @@ abstract class sshCopier extends sshWorker
         File exeDir = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/naoth");
         if(!exeDir.exists() || !exeDir.isFile())
         {
-          setInfo("[43mselected backup contains no libnaoth.so file\n[0m");
+          setInfo("[43mselected backup contains no naoth  file\n[0m");
           config.copyExe = false;
           copyExe = false;
         }
@@ -153,13 +153,13 @@ abstract class sshCopier extends sshWorker
 
           if(copyLib)
           {
-            setInfo("get libnaoth.so");
+            setInfo("get libnaosmal.so");
 
-            exceptionHelper = "get from robot " + config.remoteLibPath() + "libnaoth.so to "  + config.localDeployInPath() + "/libnaoth.so";
+            exceptionHelper = "get from robot " + config.remoteLibPath() + "libnaosmal.so to "  + config.localDeployInPath() + "/libnaosmal.so";
             c.get
             (
-              config.remoteLibPath() + "libnaoth.so",
-              new FileOutputStream(config.localDeployInPath() + "/libnaoth.so")
+              config.remoteLibPath() + "libnaosmal.so",
+              new FileOutputStream(config.localDeployInPath() + "/libnaosmal.so")
                     ,
               new progressMonitor(config.progressBar)
             );
@@ -294,15 +294,15 @@ abstract class sshCopier extends sshWorker
         {
           if(config.copyLib)
           {
-            File libFile = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/libnaoth.so");
+            File libFile = new File(config.localDeployRootPath() + "/in/" + config.selectedBackup + "/libnaosmal.so");
             if(libFile.exists() && libFile.isFile())
             {
               localLibPath = config.localDeployRootPath() + "/in/" + config.selectedBackup + "/";
-              setInfo("writing libnaoth.so file from Backup " + config.boxSelected.toString() + " to Nao " + config.sNaoNo);
+              setInfo("writing libnaosmal.so file from Backup " + config.boxSelected.toString() + " to Nao " + config.sNaoNo);
             }
             else
             {
-              setInfo("[43mselected backup contains no libnaoth.so file " + config.localLibPath() + "\n[0m");
+              setInfo("[43mselected backup contains no libnaosmal.so file " + config.localLibPath() + "\n[0m");
               config.copyLib = false;
             }
           }
@@ -317,7 +317,7 @@ abstract class sshCopier extends sshWorker
             }
             else
             {
-              setInfo("[43mselected backup contains no libnaoth.so file " + config.localLibPath()+ "\n[0m");
+              setInfo("[43mselected backup contains no naoth file " + config.localLibPath()+ "\n[0m");
               config.copyExe = false;
             }
           }
@@ -342,7 +342,7 @@ abstract class sshCopier extends sshWorker
         {
           try
           {
-            c.rm(config.remoteLibPath() + "libnaoth.so");
+            c.rm(config.remoteLibPath() + "libnaosmal.so");
           }
           catch(SftpException ex)
           {
@@ -352,7 +352,7 @@ abstract class sshCopier extends sshWorker
               throw ex;
             }
           }//end try
-          recursiveSftpPut(new File(localLibPath + "libnaoth.so"), config.remoteLibPath() + "libnaoth.so");
+          recursiveSftpPut(new File(localLibPath + "libnaosmal.so"), config.remoteLibPath() + "libnaosmal.so");
         }
 
         if(config.copyExe)

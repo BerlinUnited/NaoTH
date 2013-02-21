@@ -39,4 +39,4 @@ project "NaoSMAL"
 	"../Source/DCM/Tools/**.h"
 	}
 	
-  targetname "naoth"
+  targetname "naosmal"
