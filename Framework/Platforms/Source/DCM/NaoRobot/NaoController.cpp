@@ -69,6 +69,7 @@ NaoController::NaoController()
   /*  REGISTER IO  */
   // camera
   registerInput<Image>(*this);
+  registerInput<SecondaryImage>(*this);
   registerInput<CurrentCameraSettings>(*this);
   registerOutput<const CameraSettingsRequest>(*this);
     
@@ -167,10 +168,10 @@ NaoController::~NaoController()
 void NaoController::set(const CameraSettingsRequest& data)
 {
   bool somethingChanged = false;
-  if(theCameraHandler.isRunning())
+  if(theBottomCameraHandler.isRunning())
   {
     CurrentCameraSettings current;
-    theCameraHandler.getCameraSettings(current, data.queryCameraSettings);
+    theBottomCameraHandler.getCameraSettings(current, data.queryCameraSettings);
 
     if(data.queryCameraSettings)
     {
@@ -200,7 +201,7 @@ void NaoController::set(const CameraSettingsRequest& data)
   if(somethingChanged)
   {
     std::cout << "Init CameraHandler and settting camera settings" << endl;
-    theCameraHandler.init(data, "/dev/video1", CameraInfo::Bottom);
+    theBottomCameraHandler.init(data, "/dev/video1", CameraInfo::Bottom);
   }
 }//end set CameraSettingsRequest
 

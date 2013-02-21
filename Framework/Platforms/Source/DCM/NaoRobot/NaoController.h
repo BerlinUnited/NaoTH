@@ -140,8 +140,9 @@ public:
   
 
   // camera stuff
-  void get(Image& data){ theCameraHandler.get(data); }
-  void get(CurrentCameraSettings& data) { theCameraHandler.getCameraSettings(data); }
+  void get(Image& data){ theBottomCameraHandler.get(data); }
+  void get(SecondaryImage& data){ theBottomCameraHandler.get(data); }
+  void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void set(const CameraSettingsRequest& data);
 
 
@@ -267,7 +268,7 @@ protected:
   // -- end -- shared memory access --
   
   //
-  V4lCameraHandler theCameraHandler;
+  V4lCameraHandler theBottomCameraHandler;
   //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
   BroadCaster* theBroadCaster;
