@@ -141,7 +141,7 @@ public:
 
   // camera stuff
   void get(Image& data){ theBottomCameraHandler.get(data); }
-  void get(SecondaryImage& data){ theBottomCameraHandler.get(data); }
+  void get(SecondaryImage& data){ theTopCameraHandler.get(data); }
   void get(CurrentCameraSettings& data) { theBottomCameraHandler.getCameraSettings(data); }
   void set(const CameraSettingsRequest& data);
 
@@ -269,6 +269,7 @@ protected:
   
   //
   V4lCameraHandler theBottomCameraHandler;
+  V4lCameraHandler theTopCameraHandler;
   //SoundPlayer theSoundPlayer;
   SoundControl *theSoundHandler;
   BroadCaster* theBroadCaster;

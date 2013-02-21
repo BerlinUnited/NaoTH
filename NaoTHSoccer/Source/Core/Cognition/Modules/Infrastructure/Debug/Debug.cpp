@@ -77,16 +77,23 @@ void Debug::executeDebugCommand(const std::string& command, const std::map<std::
     GT_TRACE("Debug::executeDebugCommand() before drawToImage(...)");
     DebugImageDrawings::getInstance().drawToImage(getImage());
     
-    if(arguments.find("jpeg") != arguments.end())
+    if(arguments.find("secondary") != arguments.end())
     {
-      // TODO: do jpeg compression
+      GT_TRACE("Debug::executeDebugCommand() before serialize");
+      STOPWATCH_START("sendSecondaryImage");
+      Serializer<Image>::serialize(getSecondaryImage(), outstream);
+      STOPWATCH_STOP("sendSecondaryImage");
+      GT_TRACE("Debug::executeDebugCommand() after serialize");
+    }
+    else
+    {
+      GT_TRACE("Debug::executeDebugCommand() before serialize");
+      STOPWATCH_START("sendImage");
+      Serializer<Image>::serialize(getImage(), outstream);
+      STOPWATCH_STOP("sendImage");
+      GT_TRACE("Debug::executeDebugCommand() after serialize");
     }
 
-    GT_TRACE("Debug::executeDebugCommand() before serialize");
-    STOPWATCH_START("sendImage");
-    Serializer<Image>::serialize(getImage(), outstream);
-    STOPWATCH_STOP("sendImage");
-    GT_TRACE("Debug::executeDebugCommand() after serialize");
   }
   else if(command == "ping")
   {
