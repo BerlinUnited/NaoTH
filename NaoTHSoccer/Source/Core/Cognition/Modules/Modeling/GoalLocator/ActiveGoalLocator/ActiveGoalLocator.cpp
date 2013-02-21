@@ -135,7 +135,7 @@ void ActiveGoalLocator::execute()
       PostHypothesis& hypothesis = postHypotheses[x];
       if(hypothesis.sampleSet.getIsValid()) 
       {
-        double confidence = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i));
+        double confidence = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i), getCameraMatrix().translation.z);
         
         // store the best association for the measurement
         if(confidence > sensorAssoziation.getW4A(i)) {
@@ -175,7 +175,8 @@ void ActiveGoalLocator::execute()
     int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
     if (x != -1)
     {
-      postHypotheses[x].updateByGoalPostPercept(post);
+
+      postHypotheses[x].updateByGoalPostPercept(post, getCameraMatrix().translation.z);
     }
     else if (getGoalPercept().getPost(i).positionReliable) 
     {

@@ -20,35 +20,53 @@ void PostParticleFilter::updateByOdometry(const Pose2D& odometryDelta)
 }//end updateByOdometry
 
 
-void PostParticleFilter::updateByGoalPostPercept(const GoalPercept::GoalPost& post) 
+double PostParticleFilter::getWeightingByPercept(const AGLSample& sample, const GoalPercept::GoalPost& post ,const double cameraHeight) const
 {
+    double weightingByAngle(0.0);
+    double weightingByDistance(0.0);
+
+    double angleDiff = Math::normalize(sample.getPos().angle() - post.position.angle()); //expected - measuered ,normalisieren, sonst pi--pi zu groﬂ! value kann auch neg sein, da nur als norm in normalverteilung
+    weightingByAngle = Math::gaussianProbability(angleDiff, parameters.standardDeviationAngle);
+
+    if(post.positionReliable)
+    {
+      const double measuredDistanceAsAngle = atan2(post.position.abs(), cameraHeight);
+      const double expectedDistanceAsAngle = atan2(sample.getPos().abs(), cameraHeight);
+
+      double distDif = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
+      weightingByDistance = Math::gaussianProbability(distDif, parameters.standardDeviationAngle);
+    }
+
+    return (weightingByAngle + weightingByDistance);
+
+}//end getWeightingByPercept
+
+void PostParticleFilter::updateByGoalPostPercept(const GoalPercept::GoalPost& post, const double cameraHeight)
+{
+
   double totalWeighting = 0;
 
   for (unsigned int i = 0; i < sampleSet.size(); i++)
   {
-    AGLSample& sample = sampleSet[i];
-    double weighting(0.0);
-
-    double diff = Math::normalize(sample.getPos().angle() - post.position.angle()); //normalisieren, sonst pi--pi zu groﬂ! value kann auch neg sein, da nur als norm in normalverteilung
-    weighting = Math::gaussianProbability(diff, parameters.standardDeviationAngle);
-
-    sample.likelihood *= weighting;
-    totalWeighting += sample.likelihood;
+    sampleSet[i].likelihood *= getWeightingByPercept(sampleSet[i], post, cameraHeight);
+    totalWeighting += sampleSet[i].likelihood;
   }//end for
 
   sampleSet.lastTotalWeighting = totalWeighting;
+
+  //merkt sich beobachtungen um im resampling sensor updates zu machen
+  PerceptBuffer.add(post.position);
+
 }//end updateByGoalPostPercept
 
 
-double PostParticleFilter::getConfidenceForObservation(const GoalPercept::GoalPost& post) const
+double PostParticleFilter::getConfidenceForObservation(const GoalPercept::GoalPost& post, const double cameraHeight) const
 {
   //TODO check Color -> not similar, return 0
   double weighting(0.0);
   for (unsigned int i = 0; i < sampleSet.size(); i++) 
   {
-    //normalisieren, sonst pi--pi zu groﬂ! value kann auch neg sein, da nur als norm in normalverteilung
-    double value = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); 
-    weighting = Math::gaussianProbability(value, parameters.standardDeviationAngle);
+    weighting += getWeightingByPercept(sampleSet[i], post, cameraHeight);
   }
 
   return weighting;
@@ -60,7 +78,7 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
   // calculate the weighting (BH paper)
   // not used yet
 
-  double totalWeighting = 0;
+  /*double totalWeighting = 0;
   for(unsigned int i = 0; i < sampleSet.size(); i++)
   {
     totalWeighting += sampleSet[i].likelihood;
@@ -72,7 +90,7 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
   double alpha_fast = 0.006;
 
   w_slow += alpha_slow*(averageWeighting - w_slow);
-  w_fast += alpha_fast*(averageWeighting - w_fast);
+  w_fast += alpha_fast*(averageWeighting - w_fast);*/
 
 
   //TODO: to test particle filter module
@@ -88,6 +106,7 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
   oldSampleSet.normalize();
 
   // add a uniform offset for stabilization
+  // "verringerung der relativen unterschiede ... "
   for(unsigned int i = 0; i < sampleSet.size(); i++)
   {
     oldSampleSet[i].likelihood += parameters.resamplingThreshhold;
@@ -96,7 +115,7 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
 
 
   // resample 10% of particles
-  int numberOfParticlesToResample = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
+  int countOfSensorReset = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
 
   //numberOfPartiklesToResample = (int)pp;
 
@@ -114,19 +133,19 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
     */
 
   double sum = -Math::random();
-  unsigned int count = 0;
+  //eigentlich zweite summe, hier aber wird der indize verwendet
 
   unsigned int m = 0;  // Zaehler durchs Ausgangs-Set
   unsigned int n = 0;  // Zaehler durchs Ziel-Set
 
-  for(m = 0; m < sampleSet.size(); m++)
+  //low variance sampling
+  for(m = 0; m < oldSampleSet.size(); m++)
   {
     sum += oldSampleSet[m].likelihood * oldSampleSet.size();
 
     // select the particle to copy
-    while(count < sum && count < oldSampleSet.size())
+    while(n < sum && n < oldSampleSet.size())
     {
-      if (n >= oldSampleSet.size() - numberOfParticlesToResample) break;
 
       // copy the selected particle
       sampleSet[n] = oldSampleSet[m];
@@ -138,38 +157,32 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
       }
 
       n++;
-      count++;
     }//end while
 
-    if (n >= oldSampleSet.size()-numberOfParticlesToResample) break;
   }//end for
 
 
+  //entscheidung zum sensor reset.
+  //TODO: wenn filter auseinander laeuft (sensor reset noetig), und keine percepte im buffer (weil zu alt) -> filter loeschen???
+  if (PerceptBuffer.size() > 0) {
 
-  // sensor resetting by whole goal
-  //if(n < oldSampleSet.size())
-  //{
-  //  n = sensorResetBySensingGoalModel(sampleSet, n);
-  //}
+    //later w_low/w_fast instead numberOf...
+    for (unsigned int i = 0; i < countOfSensorReset; i++)
+    {
+      unsigned int iToResetSample = Math::random(sampleSet.size());
 
-  //sensor resetting by the goal posts
-  if(postArr.size() > 0)
-  {
-    //TODO: does not work properly yet
-    //n = sensorResetByGoalPosts(sampleSet, n);
-  }
+      unsigned int iToResetObserv = Math::random(PerceptBuffer.size());
 
+      sampleSet[iToResetSample].translation.x = PerceptBuffer.getEntry(iToResetObserv).x;
+      sampleSet[iToResetSample].translation.y = PerceptBuffer.getEntry(iToResetObserv).y;
+      sampleSet[iToResetSample].likelihood = 0.1;
 
-  // fill up by copying random samples
-  // (shouldn't happen)
-  while (n < sampleSet.size())
-  {
-    int i = Math::random(sampleSet.size());//(int)(Math::random()*(sampleSet.numberOfParticles-1) + 0.5);
-    sampleSet[n] = sampleSet[i];
-    n++;
+      sampleSet[iToResetSample].translation.x += (Math::random()-0.5)*parameters.processNoiseDistance;
+      sampleSet[iToResetSample].translation.y += (Math::random()-0.5)*parameters.processNoiseDistance;
 
-    std::cout << "fill one more sample " << n << " ready" << std::endl;
-  }//end while
+    }//for
+
+  }//if PerceptBuffer.size() > 0
 
 }//end resampleGT07
 

@@ -28,16 +28,20 @@ public:
   void setParams(const Parameters& parameters) { this->parameters = parameters; }
 
   void updateByOdometry(const Pose2D& odometryDelta);
-  void updateByGoalPostPercept(const GoalPercept::GoalPost& post);
+  void updateByGoalPostPercept(const GoalPercept::GoalPost& post, const double cameraHeight);
   void resampleGT07(std::vector<GoalPercept::GoalPost> postArr, bool noise);
 
-  double getConfidenceForObservation(const GoalPercept::GoalPost& post) const;
+  double getConfidenceForObservation(const GoalPercept::GoalPost& post, const double cameraHeight) const;
+
+  double getWeightingByPercept(const AGLSample& sample, const GoalPercept::GoalPost& post, const double cameraHeight) const;
 
   // debug stuff
   void drawParticles(const std::string& color, int idx) const;
   void drawSamplesImportance() const;
 
   AGLSampleSet sampleSet;
+
+  RingBuffer<Vector2<double>, 10> PerceptBuffer;
 
 private:
   Parameters parameters;

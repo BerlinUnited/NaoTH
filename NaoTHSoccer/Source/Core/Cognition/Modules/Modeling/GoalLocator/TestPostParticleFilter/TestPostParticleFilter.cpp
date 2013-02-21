@@ -49,7 +49,7 @@ void TestPostParticleFilter::execute()
 
   postParticleFilter.sampleSet.resetLikelihood();
 
-  postParticleFilter.updateByGoalPostPercept(newPost);
+  postParticleFilter.updateByGoalPostPercept(newPost, getCameraMatrix().translation.z);
 
 
   //wie groß maximal??

@@ -15,10 +15,15 @@
 #include <Tools/Debug/DebugParameterList.h>
 
 #include "Representations/Perception/GoalPercept.h"
+#include "Representations/Perception/CameraMatrix.h" //for particlefilter
+
+// Tools
+#include "Tools/CameraGeometry.h" //???
 
 //////////////////// BEGIN MODULE INTERFACE DECLARATION ////////////////////
 
 BEGIN_DECLARE_MODULE(TestPostParticleFilter)
+    REQUIRE(CameraMatrix)
 END_DECLARE_MODULE(TestPostParticleFilter)
 
 //////////////////// END MODULE INTERFACE DECLARATION //////////////////////

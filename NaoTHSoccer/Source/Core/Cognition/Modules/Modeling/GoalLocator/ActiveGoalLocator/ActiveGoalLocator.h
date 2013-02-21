@@ -15,7 +15,7 @@
 #include "Representations/Infrastructure/FrameInfo.h"
 #include "Representations/Infrastructure/FieldInfo.h"
 #include "Representations/Perception/GoalPercept.h"
-#include "Representations/Perception/CameraMatrix.h"
+#include "Representations/Perception/CameraMatrix.h" //for particlefilter
 #include "Representations/Modeling/OdometryData.h"
 #include "Representations/Modeling/PlayerInfo.h"
 #include "Representations/Modeling/BodyState.h"
@@ -25,6 +25,8 @@
 // Tools
 #include <vector>
 #include "Cognition/Modules/Modeling/SelfLocator/MonteCarloSelfLocator/CanopyClustering.h"
+#include "Tools/CameraGeometry.h" //???
+
 
 // local stuff
 #include "AGLParameters.h"
@@ -36,9 +38,9 @@
 
 BEGIN_DECLARE_MODULE(ActiveGoalLocator)
   REQUIRE(GoalPercept)
+  REQUIRE(CameraMatrix)
   REQUIRE(PlayerInfo)
   REQUIRE(BodyState)
-  REQUIRE(CameraMatrix)
   REQUIRE(FrameInfo)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
