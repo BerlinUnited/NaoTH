@@ -74,4 +74,4 @@ NaoTHSoccer/Config/behavior-ic.dat
 Utils/Video2Log/video2log
 NaoTHSoccer/Source/Core/Messages/*
 Framework/NaoTH-Commons/Source/Messages/*
-RobotControl/RobotConnector/src/de/naoth/rc/messages
+RobotControl/RobotConnector/src/de/naoth/rc/messages/*
