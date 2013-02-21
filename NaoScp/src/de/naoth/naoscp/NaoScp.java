@@ -194,9 +194,9 @@ public class NaoScp extends NaoScpMainFrame
         String programPath = URLDecoder.decode(this.getClass().getClassLoader().getResource(ResourceName).getPath(), "UTF-8");
         programPath = programPath.replace("file:", "");
         //path replacement if NaoScp is being started from console directly
-        programPath = programPath.replace("/NaoScp_2/dist/NaoScp_2.jar!/de/naoth/naoscp/NaoScp.class", "");
+        programPath = programPath.replace("/NaoScp/dist/NaoScp_2.jar!/de/naoth/naoscp/NaoScp.class", "");
         //path replacement if NaoScp is started from IDE (Netbeans)
-        programPath = programPath.replace("/NaoScp_2/build/classes/de/naoth/naoscp/NaoScp.class", "") + "/NaoTHSoccer";
+        programPath = programPath.replace("/NaoScp/build/classes/de/naoth/naoscp/NaoScp.class", "") + "/NaoTHSoccer";
         File ProgramDir = new File(programPath);
         if(ProgramDir.exists())
         {
