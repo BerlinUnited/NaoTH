@@ -19,9 +19,9 @@ InertiaSensorFilter::InertiaSensorFilter()
   :
   lastTime(0)
 {
-  p.processNoise = Vector2<double>(0.004f, 0.004f);
-  p.accNoise = Vector3<double>(1.0, 1.0, 1.0);
-  p.calculatedAccLimit = Vector2<double>(Math::fromDegrees(20.0), Math::fromDegrees(30.0));
+  p.processNoise = Vector2d(0.004, 0.004);
+  p.accNoise = Vector3d(1.0, 1.0, 1.0);
+  p.calculatedAccLimit = Vector2d(Math::fromDegrees(20.0), Math::fromDegrees(30.0));
 
   p.calculateConstants();
 }
@@ -60,7 +60,7 @@ void InertiaSensorFilter::execute()
   if(getCalibrationData().calibrated) // use only calibrated data
   {
     double timeScale = getFrameInfo().getTimeSince(lastTime) * 0.001;
-    predict(RotationMatrix(Vector3<double>(getGyrometerData().data.x * timeScale, getGyrometerData().data.y * timeScale, 0)));
+    predict(RotationMatrix(Vector3d(getGyrometerData().data.x * timeScale, getGyrometerData().data.y * timeScale, 0)));
   }
 
   // insert calculated rotation
@@ -87,7 +87,7 @@ void InertiaSensorFilter::execute()
     RotationMatrix calculatedRotation = 
       Kinematics::ForwardKinematics::calcChestFeetRotation(getKinematicChainSensor());
 
-    Vector3<double> accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
+    Vector3d accGravOnly(calculatedRotation[0].z, calculatedRotation[1].z, calculatedRotation[2].z);
     accGravOnly *= -Math::g;
 
 
@@ -102,10 +102,11 @@ void InertiaSensorFilter::execute()
   {
     PLOT("theCalibrationData.calibrated", getCalibrationData().calibrated);
 
-    if(getCalibrationData().calibrated) // use only calibrated data
+    if(getCalibrationData().calibrated) { // use only calibrated data
       readingUpdate(getAccelerometerData().data);
-    else // use the aldebaran sensor as a fallback
-      x.rotation = RotationMatrix(Vector3<double>(safeRawAngle.x, safeRawAngle.y, 0.0));
+    } else { // use the aldebaran sensor as a fallback
+      x.rotation = RotationMatrix(Vector3d(safeRawAngle.x, safeRawAngle.y, 0.0));
+    }
 
     modePlot = 1;
   }
@@ -118,9 +119,9 @@ void InertiaSensorFilter::execute()
                                   atan2(-x.rotation[0].z, x.rotation[2].z));
   
   // this removes any kind of z-rotation from internal rotation
-  if(getInertialModel().orientation.abs2() < 0.04 * 0.04)
-    x.rotation = RotationMatrix(Vector3<double>(getInertialModel().orientation.x, getInertialModel().orientation.y, 0.0));
-
+  if(getInertialModel().orientation.abs2() < 0.04 * 0.04) {
+    x.rotation = RotationMatrix(Vector3d(getInertialModel().orientation.x, getInertialModel().orientation.y, 0.0));
+  }
 
   // store some data for the next iteration
   lastTime = getFrameInfo().getTime();
@@ -129,7 +130,7 @@ void InertiaSensorFilter::execute()
   PLOT("InertiaSensorFilter:orientationX", getInertialModel().orientation.x);
   PLOT("InertiaSensorFilter:orientationY", getInertialModel().orientation.y);
 
-}//end update
+}//end execute
 
 
 void InertiaSensorFilter::predict(const RotationMatrix& rotationOffset)
@@ -137,8 +138,9 @@ void InertiaSensorFilter::predict(const RotationMatrix& rotationOffset)
   generateSigmaPoints();
 
   // update sigma points
-  for(int i = 0; i < 5; ++i)
+  for(int i = 0; i < 5; ++i) {
     sigmaPoints[i].rotation *= rotationOffset;
+  }
 
   // get new mean and cov
   meanOfSigmaPoints();
@@ -149,18 +151,19 @@ void InertiaSensorFilter::predict(const RotationMatrix& rotationOffset)
   cov.c[1].y += p.processCov.c[1].y;
 }
 
-void InertiaSensorFilter::readingModel(const State<double>& sigmaPoint, Vector3<double>& reading)
+void InertiaSensorFilter::readingModel(const State<double>& sigmaPoint, Vector3d& reading)
 {
-  reading = Vector3<double>(sigmaPoint.rotation[0].z, sigmaPoint.rotation[1].z, sigmaPoint.rotation[2].z);
+  reading = Vector3d(sigmaPoint.rotation[0].z, sigmaPoint.rotation[1].z, sigmaPoint.rotation[2].z);
   reading *= -Math::g;
 }
 
-void InertiaSensorFilter::readingUpdate(const Vector3<double>& reading)
+void InertiaSensorFilter::readingUpdate(const Vector3d& reading)
 {
   generateSigmaPoints();
 
-  for(int i = 0; i < 5; ++i)
+  for(int i = 0; i < 5; ++i) {
     readingModel(sigmaPoints[i], sigmaReadings[i]);
+  }
 
   meanOfSigmaReadings();
 
@@ -174,8 +177,8 @@ void InertiaSensorFilter::readingUpdate(const Vector3<double>& reading)
   covOfSigmaReadingsAndSigmaPoints();
   covOfSigmaReadings();
 
-  const Matrix2x3<double>& kalmanGain = readingsSigmaPointsCov.transpose() * (readingsCov + p.sensorCov).invert();
-  const Vector2<double>& innovation = kalmanGain * (reading - readingMean);
+  const Matrix2x3d& kalmanGain = readingsSigmaPointsCov.transpose() * (readingsCov + p.sensorCov).invert();
+  const Vector2d& innovation = kalmanGain * (reading - readingMean);
   x += innovation;
   cov -= kalmanGain * readingsSigmaPointsCov;
 }
@@ -196,7 +199,7 @@ void InertiaSensorFilter::meanOfSigmaPoints()
   //for(int i = 0; i < 5; ++i) // ~= 0 .. inf
   for(int i = 0; i < 1; ++i)
   {
-    Vector2<double> chunk((sigmaPoints[0] - x) +
+    Vector2d chunk(  (sigmaPoints[0] - x) +
                     ((sigmaPoints[1] - x) + (sigmaPoints[2] - x)) +
                     ((sigmaPoints[3] - x) + (sigmaPoints[4] - x)));
     chunk /= 5.f;
@@ -206,7 +209,7 @@ void InertiaSensorFilter::meanOfSigmaPoints()
 
 void InertiaSensorFilter::covOfSigmaPoints()
 {
-  cov = tensor(sigmaPoints[0] - x) +
+  cov =  tensor(sigmaPoints[0] - x) +
         (tensor(sigmaPoints[1] - x) + tensor(sigmaPoints[2] - x)) +
         (tensor(sigmaPoints[3] - x) + tensor(sigmaPoints[4] - x));
   cov *= 0.5f;
@@ -259,7 +262,7 @@ void InertiaSensorFilter::meanOfSigmaReadings()
   //for(int i = 0; i < 5; ++i) // ~= 0 .. inf
   for(int i = 0; i < 1; ++i)
   {
-    Vector3<double> chunk((sigmaReadings[0] - readingMean) +
+    Vector3d chunk  ((sigmaReadings[0] - readingMean) +
                     ((sigmaReadings[1] - readingMean) + (sigmaReadings[2] - readingMean)) +
                     ((sigmaReadings[3] - readingMean) + (sigmaReadings[4] - readingMean)));
     chunk /= 5.f;

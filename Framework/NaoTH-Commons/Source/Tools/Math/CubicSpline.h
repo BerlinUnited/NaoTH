@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "Vector2.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
 class CubicSpline
 {

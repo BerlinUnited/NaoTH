@@ -12,6 +12,7 @@
 #include <map>
 
 #include "Tools/Math/Matrix3x3.h"
+#include "Tools/Math/Vector2.h"
 
 class PreviewController
 {

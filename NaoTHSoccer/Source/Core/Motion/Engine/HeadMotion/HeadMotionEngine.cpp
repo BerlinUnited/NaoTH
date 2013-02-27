@@ -15,12 +15,14 @@
 
 // Tools
 #include <Tools/CameraGeometry.h>
+#include <Tools/Math/Matrix2x2.h>
 
 // Debug
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugRequest.h>
 #include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
 #include <Tools/Debug/DebugDrawings.h>
+
 
 using namespace naoth;
 using namespace std;
