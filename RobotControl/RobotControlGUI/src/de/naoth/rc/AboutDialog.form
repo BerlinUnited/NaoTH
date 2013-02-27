@@ -82,7 +82,7 @@
             </Property>
             <Property name="contentType" type="java.lang.String" value="text/html"/>
             <Property name="editable" type="boolean" value="false"/>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt; &#xa;&lt;center&gt;&#xa;  &lt;h3&gt;RobotControl&lt;/h3&gt; &#xa;  &lt;p&gt; a remote debugging and monitoring tool for mobile robots&lt;/p&gt;&#xa;  &lt;p&gt;created by the Berlin United - NaoTH&lt;/p&gt;&#xa;  &lt;br&gt;&lt;a href=&quot;http://naoth.de/&quot;&gt;http://naoth.de&lt;/a&gt; &#xa;  &lt;br&gt;&amp;copy; 2008-2012&#xa;&lt;/center&gt;&#xa;&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt; &#xa;&lt;center&gt;&#xa;  &lt;h3&gt;RobotControl&lt;/h3&gt; &#xa;  &lt;p&gt; a remote debugging and monitoring tool for mobile robots&lt;/p&gt;&#xa;  &lt;p&gt;created by the Berlin United - NaoTH&lt;/p&gt;&#xa;  &lt;br&gt;&lt;a href=&quot;http://naoth.de/&quot;&gt;http://naoth.de&lt;/a&gt; &#xa;  &lt;br&gt;&amp;copy; 2008-2013&#xa;&lt;/center&gt;&#xa;&lt;/html&gt;"/>
           </Properties>
         </Component>
       </SubComponents>
