@@ -49,6 +49,17 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButtonRefreshActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JToggleButton" name="jToggleButtonBinary">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Binary"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButtonBinaryActionPerformed"/>
+          </Events>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JSplitPane" name="jSplitPane1">
