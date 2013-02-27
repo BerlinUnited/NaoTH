@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -54,13 +55,17 @@ public class ModuleConfigurationViewer extends AbstractDialog
   
   //private VisualizationViewer<Node, Edge> vv;
 
-  private final String storeModules = "modules:store";
-  private final Command storeModulesCommand = new Command(storeModules);
+  private final String commandStringStoreModules = "Cognition:modules:store";
+  private final Command storeModulesCommand = new Command(commandStringStoreModules);
 
+  private final String commandStringSetModules = "Cognition:modules:set";
+  
+  
   SimpleModuleView simpleModuleView = new SimpleModuleView();
   ArrayList<String> activeModulesList = new ArrayList<String>(); 
   Set<String> representationsSet = new TreeSet<String>(); 
   ArrayList<JButton> activeButtonList = new ArrayList<JButton>();
+  
   
   /** Creates new form ModuleConfigurationViewer */
   public ModuleConfigurationViewer()
@@ -70,6 +75,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
     this.simpleModuleView.setLayout(null);
     this.jScrollPaneModulePane.setViewportView(simpleModuleView);
     //this.jScrollPaneModulePane.setAutoscrolls(true);
+    this.jScrollPaneModuleList.getVerticalScrollBar().setUnitIncrement(16);
+  }
+  
+  @Init
+  @Override
+  public void init()
+  {
+      moduleConfigurationManager.setModuleOwner("Cognition");
   }
 
   /** This method is called from within the constructor to
@@ -90,7 +103,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jSplitPane1 = new javax.swing.JSplitPane();
         moduleTree = new javax.swing.JPanel();
         jScrollPaneModulePane = new javax.swing.JScrollPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPaneModuleList = new javax.swing.JScrollPane();
         moduleConfigPanel = new javax.swing.JPanel();
 
         jToolBar1.setRollover(true);
@@ -150,14 +163,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         jSplitPane1.setLeftComponent(moduleTree);
 
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(150, 23));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(150, 100));
+        jScrollPaneModuleList.setMinimumSize(new java.awt.Dimension(150, 23));
+        jScrollPaneModuleList.setPreferredSize(new java.awt.Dimension(150, 100));
 
         moduleConfigPanel.setBackground(new java.awt.Color(255, 255, 255));
         moduleConfigPanel.setLayout(new javax.swing.BoxLayout(moduleConfigPanel, javax.swing.BoxLayout.PAGE_AXIS));
-        jScrollPane1.setViewportView(moduleConfigPanel);
+        jScrollPaneModuleList.setViewportView(moduleConfigPanel);
 
-        jSplitPane1.setRightComponent(jScrollPane1);
+        jSplitPane1.setRightComponent(jScrollPaneModuleList);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -176,19 +189,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButtonRefreshActionPerformed
-      if(parent.checkConnected())
-      {
-        if(jToggleButtonRefresh.isSelected())
-        {
+      if(parent.checkConnected()) {
+        if(jToggleButtonRefresh.isSelected()) {
           moduleConfigurationManager.addListener(this);
-        }
-        else
-        {
+        } else {
           moduleConfigurationManager.removeListener(this);
         }
-      }
-      else
-      {
+      } else {
         jToggleButtonRefresh.setSelected(false);
       }
 }//GEN-LAST:event_jToggleButtonRefreshActionPerformed
@@ -202,11 +209,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
       fileChooser.showSaveDialog(this);
       File selectedFile = fileChooser.getSelectedFile();
 
-
-      if(selectedFile == null)
-      {
+      if(selectedFile == null) {
         return;
       }
+      
       try
       {
         FileWriter fileWriter = new FileWriter(selectedFile, false);
@@ -457,7 +463,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
       @Override
       public void handleResponse(byte[] result, Command originalCommand)
       {
-        if(originalCommand.getName().equals(storeModules))
+        if(originalCommand.getName().equals(commandStringStoreModules))
         {
           String response = new String(result);
           if(response.startsWith("ERROR"))
@@ -502,12 +508,11 @@ public class ModuleConfigurationViewer extends AbstractDialog
     @Override
     public void actionPerformed(java.awt.event.ActionEvent evt)
     {
-      if(currentCommand != null)
-      {
+      if(currentCommand != null) {
         genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
 
-      currentCommand = new Command("modules:set");
+      currentCommand = new Command(commandStringSetModules);
       currentCommand.addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off");
 
       genericManagerFactory.getManager(currentCommand).addListener(this);
@@ -516,8 +521,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
     @Override
     public void errorOccured(String cause)
     {
-      if(currentCommand != null)
+      if(currentCommand != null) {
         genericManagerFactory.getManager(currentCommand).removeListener(this);
+      }
       currentCommand = null;
       System.err.println(cause);
     }//end errorOccured
@@ -528,8 +534,9 @@ public class ModuleConfigurationViewer extends AbstractDialog
       String str = new String(object);
       String[] res = str.split("( |\n|\r|\t)+");
       this.checkBox.setSelected(res.length > 2 && res[2].equals("on"));
-      if(currentCommand != null)
+      if(currentCommand != null) {
         genericManagerFactory.getManager(currentCommand).removeListener(this);
+      }
       currentCommand = null;
     }//end newObjectReceived
   }//end ModuleCheckBoxListener
@@ -546,7 +553,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private javax.swing.JButton btSave;
     private javax.swing.JButton btSend;
     private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPaneModuleList;
     private javax.swing.JScrollPane jScrollPaneModulePane;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToggleButton jToggleButtonRefresh;

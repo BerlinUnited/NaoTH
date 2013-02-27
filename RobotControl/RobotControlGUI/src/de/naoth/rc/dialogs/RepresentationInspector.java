@@ -44,8 +44,9 @@ public class RepresentationInspector extends AbstractDialog
 
     private Command commandToExecute;
 
-    private final String getRepresentationList = "representation:list";
-    private final String getRepresentationBase = "representation:get";
+    private String representationOwner = "Cognition";
+    private final String getRepresentationList = representationOwner+":representation:list";
+    private final String getRepresentationBase = representationOwner+":representation:get";
 
     private GenericManager currentManager = null;
     private RepresentationInspector _this;

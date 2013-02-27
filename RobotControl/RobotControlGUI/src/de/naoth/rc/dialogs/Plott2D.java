@@ -16,7 +16,6 @@ import de.naoth.rc.RobotControl;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.manager.PlotDataManager;
 import de.naoth.rc.messages.CommonTypes.DoubleVector2;
-import de.naoth.rc.messages.Messages.PlotItem;
 import de.naoth.rc.messages.Messages.PlotStroke2D;
 import de.naoth.rc.messages.Messages.Plots;
 import info.monitorenter.gui.chart.IAxis;
@@ -50,7 +49,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 /**
@@ -67,11 +65,7 @@ public class Plott2D  extends AbstractDialog
   @InjectPlugin
   public PlotDataManager plotDataManager;
 
-  @Init
-  public void init()
-  {
-  }//end init
-
+  
   private int maxNumberOfValues = 5000;
   private int numberOfValues = maxNumberOfValues;
   

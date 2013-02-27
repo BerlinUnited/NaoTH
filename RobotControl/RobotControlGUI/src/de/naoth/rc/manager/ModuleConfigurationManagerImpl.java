@@ -22,9 +22,11 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
         implements ModuleConfigurationManager
 {
 
-  public ModuleConfigurationManagerImpl()
-  {
-  }
+    private final String commandString = "modules:list";
+    private Command command = new Command(commandString);
+    
+    
+  public ModuleConfigurationManagerImpl(){}
 
   @Override
   public ModuleConfiguration convertByteArrayToType(byte[] result) throws IllegalArgumentException
@@ -64,8 +66,16 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
   }//end convertByteArrayToType
 
   @Override
+  public void setModuleOwner(String name)
+  {
+      if(name != null && name.length() > 0){
+          command = new Command(name + ":" + commandString);
+      }
+  }
+  
+  @Override
   public Command getCurrentCommand()
   {
-    return new Command("modules:list");
+    return command;
   }//end getCurrentCommand
 }//end class ModuleConfigurationManager

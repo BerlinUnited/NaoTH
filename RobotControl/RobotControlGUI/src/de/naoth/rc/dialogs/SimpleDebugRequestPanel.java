@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * 
  */
 
 /*
@@ -18,12 +17,11 @@ import de.naoth.rc.manager.DebugRequestManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
-import java.awt.BorderLayout;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -85,18 +83,12 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     
     if (btRefresh.isSelected())
     {
-      if (parent.checkConnected())
-      {
+      if (parent.checkConnected()) {
         dbgRequestManager.addListener(this);
-        debugRequestTree.clear();
-      }
-      else
-      {
+      } else {
         btRefresh.setSelected(false);
       }
-    }
-    else
-    {
+    } else {
       dbgRequestManager.removeListener(this);
     }
 
@@ -107,6 +99,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   // End of variables declaration//GEN-END:variables
 
   @Init
+  @Override
   public void init()
   {
     debugRequestTree = new CheckboxTree();
@@ -114,67 +107,33 @@ public class SimpleDebugRequestPanel extends AbstractDialog
     jScrollPaneCheckBoxTree = new JScrollPane(debugRequestTree);
     jScrollPaneCheckBoxTree.setAutoscrolls(true);
     add(jScrollPaneCheckBoxTree, java.awt.BorderLayout.CENTER);
-
-    debugRequestTree.addMouseListener(new MouseAdapter()
-    {
-
-      @Override
-      public void mouseClicked(MouseEvent e)
-      {
-        TreePath path = debugRequestTree.getPathForLocation(e.getX(), e.getY());
-        if(path != null)
-        {
-          SelectableTreeNode node = (SelectableTreeNode) path.getLastPathComponent();
-          if(node.isLeaf())
-          {
-            sendCommand(path, node.isSelected());
-          }
-        }
-      }
-
-    });
   }
 
-  private void sendCommand(TreePath treePath, boolean enable)
+  private void sendCommand(String path, boolean enable)
   {
-    Object[] path = treePath.getPath();
-    if (path.length < 2)
-    {
-      return;
-    }
-    String debugRequestName = path[1].toString();
-
-    for (int i = 2; i < path.length; i++)
-    {
-      debugRequestName += ":" + path[i];
-    }//end for
-
     Command command = new Command();
-    command.setName(debugRequestName);
+    command.setName(path);
     String arg = enable ? "on" : "off";
     command.addArg(arg);
 
-    System.err.println(debugRequestName + " " + arg);
+    System.err.println(path + " " + arg);
     send(command);
   }
 
   private void send(Command command)
   {
-    if (parent.checkConnected())
-    {
+    if (parent.checkConnected()) {
       parent.getMessageServer().executeSingleCommand(this, command);
     }
   }
 
   @Override
-  public JPanel getPanel()
-  {
+  public JPanel getPanel() {
     return this;
   }
 
   @Override
-  public void dispose()
-  {
+  public void dispose() {
     remove(debugRequestTree);
   }
 
@@ -206,17 +165,28 @@ public class SimpleDebugRequestPanel extends AbstractDialog
       String[] tokens = str.split("\\|");
 
       String tooltip = "NO COMMENT";
-      if (tokens.length >= 3)
-      {
+      if (tokens.length >= 3) {
         tooltip = tokens[2];
-
       }
+      
       if (tokens.length >= 2)
       {
         boolean selected = tokens[1].equals("1");
-        debugRequestTree.insertPath(tokens[0], ':');
-        SelectableTreeNode n = debugRequestTree.getNode(tokens[0], ':');
-        n.setSelected(selected);
+        final String path = tokens[0];
+        
+        debugRequestTree.insertPath(path, ':');
+        
+        final SelectableTreeNode node = debugRequestTree.getNode(path, ':');
+        node.setSelected(selected);
+        node.setTooltip(tooltip);
+
+        node.getComponent().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                sendCommand(path, node.isSelected());
+            }
+        });
         //extendedCheckboxTree.addPath(tokens[0], tooltip, selected);
       }
     }//end for
@@ -229,7 +199,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   @Override
   public void errorOccured(String cause)
   {
-    // TODO: handle error
+    JOptionPane.showMessageDialog(this, cause, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
   @Override
@@ -237,7 +207,5 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   {
     return "Debug Requests (simple)";
   }
-
-
-
+  
 }
