@@ -87,6 +87,7 @@
 using namespace std;
 
 Cognition::Cognition()
+  : ModuleManagerWithDebug("Cognition")
 {
 }
 
@@ -100,7 +101,6 @@ Cognition::~Cognition()
   registerModule<module>(std::string(#module));
 
 
-//void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   g_message("Cognition register start");
