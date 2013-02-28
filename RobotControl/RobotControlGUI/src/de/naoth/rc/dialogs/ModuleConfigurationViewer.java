@@ -11,6 +11,7 @@ package de.naoth.rc.dialogs;
 
 import de.naoth.rc.AbstractDialog;
 import de.naoth.rc.RobotControl;
+import de.naoth.rc.checkboxtree.SelectableTreeNode;
 import de.naoth.rc.dataformats.ModuleConfiguration;
 import de.naoth.rc.dataformats.ModuleConfiguration.Node;
 import de.naoth.rc.manager.GenericManagerFactory;
@@ -18,14 +19,11 @@ import de.naoth.rc.manager.ModuleConfigurationManager;
 import de.naoth.rc.manager.ObjectListener;
 import de.naoth.rc.server.Command;
 import de.naoth.rc.server.CommandSender;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -55,10 +53,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
   
   //private VisualizationViewer<Node, Edge> vv;
 
-  private final String commandStringStoreModules = "Cognition:modules:store";
-  private final Command storeModulesCommand = new Command(commandStringStoreModules);
-
-  private final String commandStringSetModules = "Cognition:modules:set";
+  private final String commandStringStoreModules = "modules:store";
+  private final String commandStringSetModules = "modules:set";
   
   
   SimpleModuleView simpleModuleView = new SimpleModuleView();
@@ -74,15 +70,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
     
     this.simpleModuleView.setLayout(null);
     this.jScrollPaneModulePane.setViewportView(simpleModuleView);
-    //this.jScrollPaneModulePane.setAutoscrolls(true);
-    this.jScrollPaneModuleList.getVerticalScrollBar().setUnitIncrement(16);
   }
   
   @Init
   @Override
   public void init()
   {
-      moduleConfigurationManager.setModuleOwner("Cognition");
+      moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
   }
 
   /** This method is called from within the constructor to
@@ -100,11 +94,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
         btExport = new javax.swing.JButton();
         btSave = new javax.swing.JButton();
         btSend = new javax.swing.JButton();
+        cbProcess = new javax.swing.JComboBox();
         jSplitPane1 = new javax.swing.JSplitPane();
         moduleTree = new javax.swing.JPanel();
         jScrollPaneModulePane = new javax.swing.JScrollPane();
-        jScrollPaneModuleList = new javax.swing.JScrollPane();
-        moduleConfigPanel = new javax.swing.JPanel();
+        jScrollPane = new javax.swing.JScrollPane();
+        moduleConfigTree = new de.naoth.rc.checkboxtree.CheckboxTree();
 
         jToolBar1.setRollover(true);
 
@@ -155,6 +150,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
         });
         jToolBar1.add(btSend);
 
+        cbProcess.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Cognition", "Motion" }));
+        cbProcess.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbProcessActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(cbProcess);
+
         jSplitPane1.setResizeWeight(1.0);
 
         moduleTree.setOpaque(false);
@@ -163,14 +166,10 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         jSplitPane1.setLeftComponent(moduleTree);
 
-        jScrollPaneModuleList.setMinimumSize(new java.awt.Dimension(150, 23));
-        jScrollPaneModuleList.setPreferredSize(new java.awt.Dimension(150, 100));
+        jScrollPane.setPreferredSize(new java.awt.Dimension(200, 322));
+        jScrollPane.setViewportView(moduleConfigTree);
 
-        moduleConfigPanel.setBackground(new java.awt.Color(255, 255, 255));
-        moduleConfigPanel.setLayout(new javax.swing.BoxLayout(moduleConfigPanel, javax.swing.BoxLayout.PAGE_AXIS));
-        jScrollPaneModuleList.setViewportView(moduleConfigPanel);
-
-        jSplitPane1.setRightComponent(jScrollPaneModuleList);
+        jSplitPane1.setRightComponent(jScrollPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -183,8 +182,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
+                .addGap(0, 0, 0)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -213,10 +212,12 @@ public class ModuleConfigurationViewer extends AbstractDialog
         return;
       }
       
+      /*
       try
       {
         FileWriter fileWriter = new FileWriter(selectedFile, false);
         fileWriter.write("[modules]\n");
+        
         for(Component comp: moduleConfigPanel.getComponents())
         {
           JCheckBox box = (JCheckBox)comp;
@@ -233,11 +234,19 @@ public class ModuleConfigurationViewer extends AbstractDialog
         JOptionPane.showMessageDialog(this,
           e.toString(), "The file could not be written.", JOptionPane.ERROR_MESSAGE);
       }//end catch
+       * 
+       */
     }//GEN-LAST:event_btSaveActionPerformed
 
     private void btSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSendActionPerformed
-      sendCommand(storeModulesCommand);
+      sendCommand(new Command((String)cbProcess.getSelectedItem()+":"+commandStringStoreModules));
     }//GEN-LAST:event_btSendActionPerformed
+
+    private void cbProcessActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_cbProcessActionPerformed
+    {//GEN-HEADEREND:event_cbProcessActionPerformed
+        moduleConfigurationManager.setModuleOwner((String)cbProcess.getSelectedItem());
+        moduleConfigTree.clear();
+    }//GEN-LAST:event_cbProcessActionPerformed
 
   @Override
   public JPanel getPanel()
@@ -257,8 +266,6 @@ public class ModuleConfigurationViewer extends AbstractDialog
     moduleConfigurationManager.removeListener(this);
     this.jToggleButtonRefresh.setSelected(false);
 
-    moduleConfigPanel.removeAll();
-    
     activeModulesList.clear();
     this.simpleModuleView.removeAll();
     representationsSet.clear();
@@ -275,14 +282,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
     {
       if(n.getType() == ModuleConfiguration.NodeType.Module)
       {
-        JCheckBox checkBox = new JCheckBox(n.getName());
-        checkBox.setSelected(n.isEnabled());
-        checkBox.setOpaque(false);
-        checkBox.setActionCommand("");
-        checkBox.addActionListener(new ModuleCheckBoxListener(checkBox));
+        String processName = (String)cbProcess.getSelectedItem();
+        SelectableTreeNode node = moduleConfigTree.insertPath(processName+":"+n.getName(), ':');
+        node.setSelected(n.isEnabled());
+        node.setTooltip(n.getName());
+        node.getComponent().addActionListener(
+                new ModuleCheckBoxListener(node.getComponent(), 
+                    processName + ":" + commandStringSetModules));
         
-        moduleConfigPanel.add(checkBox);
-
         if(n.isEnabled())
         {
             activeModulesList.add(n.getName());
@@ -312,8 +319,8 @@ public class ModuleConfigurationViewer extends AbstractDialog
       }
     }//end for
 
+    moduleConfigTree.repaint();
     simpleModuleView.setPreferredSize(new Dimension(600, 1000));
-    moduleConfigPanel.revalidate();
     simpleModuleView.revalidate();
     /*
     // update and configure graph
@@ -499,10 +506,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
   {
     JCheckBox checkBox;
     Command currentCommand;
-    public ModuleCheckBoxListener(JCheckBox checkBox)
+    String commandString;
+            
+    public ModuleCheckBoxListener(JCheckBox checkBox, String commandString)
     {
       this.checkBox = checkBox;
       this.currentCommand = null;
+      this.commandString = commandString;
     }
 
     @Override
@@ -512,7 +522,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
 
-      currentCommand = new Command(commandStringSetModules);
+      currentCommand = new Command(commandString);
       currentCommand.addArg(checkBox.getText(), checkBox.isSelected() ? "on" : "off");
 
       genericManagerFactory.getManager(currentCommand).addListener(this);
@@ -533,7 +543,16 @@ public class ModuleConfigurationViewer extends AbstractDialog
     {
       String str = new String(object);
       String[] res = str.split("( |\n|\r|\t)+");
-      this.checkBox.setSelected(res.length > 2 && res[2].equals("on"));
+      
+      if(res.length == 3 && 
+         res[0].equals("set") &&
+         res[1].equals(checkBox.getText())) 
+      {
+        this.checkBox.setSelected(res[2].equals("on"));
+      } else {
+          errorOccured(str);
+      }
+      
       if(currentCommand != null) {
         genericManagerFactory.getManager(currentCommand).removeListener(this);
       }
@@ -552,13 +571,14 @@ public class ModuleConfigurationViewer extends AbstractDialog
     private javax.swing.JButton btExport;
     private javax.swing.JButton btSave;
     private javax.swing.JButton btSend;
+    private javax.swing.JComboBox cbProcess;
     private de.naoth.rc.dialogs.panels.ExtendedFileChooser fileChooser;
-    private javax.swing.JScrollPane jScrollPaneModuleList;
+    private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JScrollPane jScrollPaneModulePane;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JToggleButton jToggleButtonRefresh;
     private javax.swing.JToolBar jToolBar1;
-    private javax.swing.JPanel moduleConfigPanel;
+    private de.naoth.rc.checkboxtree.CheckboxTree moduleConfigTree;
     private javax.swing.JPanel moduleTree;
     // End of variables declaration//GEN-END:variables
 }//end class ModuleConfigurationViewer

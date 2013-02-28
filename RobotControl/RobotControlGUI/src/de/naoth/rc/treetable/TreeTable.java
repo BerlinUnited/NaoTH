@@ -10,19 +10,25 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.JCheckBox;
  
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.tree.TreePath;
  
 public class TreeTable extends JTable {
  
     private TreeTableCellRenderer tree;
-     
-     
+    
+    public JTree getTree() {
+        return this.tree;
+    }
+    
     public TreeTable(AbstractTreeTableModel treeTableModel) {
         super();
  
         // JTree erstellen.
         tree = new TreeTableCellRenderer(this, treeTableModel);
+        tree.setShowsRootHandles(true);
         
         // Modell setzen.
         super.setModel(new TreeTableModelAdapter(treeTableModel, tree));

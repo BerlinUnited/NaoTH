@@ -63,7 +63,7 @@ public class CheckboxTree extends JTree
     insertPath(path, '/');
   }
 
-  public void insertPath(String path, char seperator)
+  public SelectableTreeNode insertPath(String path, char seperator)
   {
     String[] nodes = path.split("" + seperator);
     SelectableTreeNode current = rootNode;
@@ -93,6 +93,8 @@ public class CheckboxTree extends JTree
     }
     
     this.expandPath(new TreePath(rootNode));
+    
+    return current;
   }//end insertPath
   
   public SelectableTreeNode getNode(String path)

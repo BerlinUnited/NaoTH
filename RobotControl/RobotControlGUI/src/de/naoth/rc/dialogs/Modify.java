@@ -27,6 +27,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.tree.TreePath;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
@@ -60,6 +62,9 @@ public class Modify extends AbstractDialog
       initComponents();
       
       jScrollPane2.setViewportView(myTreeTable);
+
+      TableColumn modifyColumn = myTreeTable.getColumn("Modify");
+      modifyColumn.setMaxWidth(50);
     }
 
     /** This method is called from within the constructor to
@@ -184,9 +189,10 @@ public class Modify extends AbstractDialog
         ModifyDataNode node = treeTableModel.insertPath(s[1], ':');
         node.enabled = Integer.parseInt(s[0]) > 0;
         node.value = Double.parseDouble(s[2]);
-        
-        if(node.enabledListener == null)
+
+        if(node.enabledListener == null) {
             node.enabledListener = new FlagModifiedListener(s[1]);
+        }
         
       }//end for
     }catch(Exception e)
@@ -195,8 +201,9 @@ public class Modify extends AbstractDialog
       dispose();
     }
 
+    myTreeTable.getTree().expandPath(new TreePath(myTreeTable.getTree().getModel().getRoot()));
+    myTreeTable.getTree().setRootVisible(false);
     myTreeTable.repaint();
-    //((AbstractTableModel)myTreeTable.getModel()).fireTableDataChanged();
   }//end newObjectReceived
 
   private void sendCommand(Command command)

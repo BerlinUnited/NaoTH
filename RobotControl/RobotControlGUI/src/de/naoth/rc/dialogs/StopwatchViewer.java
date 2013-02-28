@@ -159,12 +159,9 @@ public class StopwatchViewer extends AbstractDialog
 
 private void btShowStopwatchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btShowStopwatchActionPerformed
 
-  if(btShowStopwatch.isSelected())
-  {
+  if(btShowStopwatch.isSelected()) {
     stopwatchManager.addListener(this);
-  }
-  else
-  {
+  } else {
     stopwatchManager.removeListener(this);
   }
 }//GEN-LAST:event_btShowStopwatchActionPerformed

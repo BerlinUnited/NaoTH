@@ -20,9 +20,6 @@ public class TreeTableModelAdapter extends AbstractTableModel {
         this.tree = tree;
         this.treeTableModel = treeTableModel;
  
-        //this.tree.setRootVisible(false);
-        this.tree.setShowsRootHandles(true);
-        
         tree.addTreeExpansionListener(new TreeExpansionListener() {
             public void treeExpanded(TreeExpansionEvent event) {
                 fireTableDataChanged();
