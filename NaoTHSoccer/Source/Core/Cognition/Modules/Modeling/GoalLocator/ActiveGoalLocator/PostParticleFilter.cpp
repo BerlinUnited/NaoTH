@@ -5,17 +5,23 @@
 
 // Debug
 #include "Tools/Debug/DebugDrawings.h"
+#include "Tools/Debug/DebugBufferedOutput.h"
 
 void PostParticleFilter::updateByOdometry(const Pose2D& odometryDelta)
 {
   for (unsigned int i = 0; i < sampleSet.size(); i++) 
   {
+    Pose2D noisyOdometryDelta(
+      odometryDelta.rotation + (Math::random()-0.5)*parameters.motionNoiseRotation,
+      odometryDelta.translation.x + (Math::random()-0.5)*parameters.motionNoiseDistance,
+      odometryDelta.translation.x + (Math::random()-0.5)*parameters.motionNoiseDistance);
+
     // move each particle with odometry
-    sampleSet[i].translation = odometryDelta * sampleSet[i].translation;
+    sampleSet[i].translation = noisyOdometryDelta * sampleSet[i].translation;
 
     // apply some noise
-    sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
-    sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
+    //sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
+    //sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
   }
 }//end updateByOdometry
 
@@ -34,10 +40,10 @@ double PostParticleFilter::getWeightingByPercept(const AGLSample& sample, const 
       const double expectedDistanceAsAngle = atan2(sample.getPos().abs(), cameraHeight);
 
       double distDif = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
-      weightingByDistance = Math::gaussianProbability(distDif, parameters.standardDeviationAngle);
+      weightingByDistance = Math::gaussianProbability(distDif, parameters.standardDeviationDistance);
     }
 
-    return (weightingByAngle + weightingByDistance);
+    return (weightingByAngle * weightingByDistance);
 
 }//end getWeightingByPercept
 
@@ -78,7 +84,8 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
   // calculate the weighting (BH paper)
   // not used yet
 
-  /*double totalWeighting = 0;
+  /*
+  double totalWeighting = 0;
   for(unsigned int i = 0; i < sampleSet.size(); i++)
   {
     totalWeighting += sampleSet[i].likelihood;
@@ -86,22 +93,17 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
   const double averageWeighting = totalWeighting / sampleSet.size();
   static double w_slow = averageWeighting;
   static double w_fast = averageWeighting;
-  double alpha_slow = 0.0059;
-  double alpha_fast = 0.006;
+  const double alpha_slow = 0.0059;
+  const double alpha_fast = 0.006;
 
   w_slow += alpha_slow*(averageWeighting - w_slow);
-  w_fast += alpha_fast*(averageWeighting - w_fast);*/
+  w_fast += alpha_fast*(averageWeighting - w_fast);
 
-
-  //TODO: to test particle filter module
-  //double pp = max(0.0, 1.0 - w_fast/w_slow);
-  //DEBUG_REQUEST("AGL:plots",
-  //  PLOT("ActiveGoalLocator:pp", pp);
-  //  PLOT("ActiveGoalLocator:averageWeighting", averageWeighting);
-  //);
+  double sensorResetCount = max(0.0, 1.0 - w_fast/w_slow);
+  PLOT("ActiveGoalLocator:sensorResetCount", sensorResetCount);
+  */
 
   // copy the samples
-  // TODO: use memcopy?
   AGLSampleSet oldSampleSet = sampleSet;
   oldSampleSet.normalize();
 
@@ -115,7 +117,11 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
 
 
   // resample 10% of particles
-  int countOfSensorReset = 1; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
+  int countOfSensorReset = 0; //(int)(((double)sampleSet.numberOfParticles)*0.05+0.5);
+
+  if(parameters.particlesToReset > 0) {
+    countOfSensorReset = (int)parameters.particlesToReset;
+  }
 
   //numberOfPartiklesToResample = (int)pp;
 
@@ -167,7 +173,7 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
   if (PerceptBuffer.size() > 0) {
 
     //later w_low/w_fast instead numberOf...
-    for (unsigned int i = 0; i < countOfSensorReset; i++)
+    for (unsigned int i = 0; i < (unsigned int)countOfSensorReset; i++)
     {
       unsigned int iToResetSample = Math::random(sampleSet.size());
 

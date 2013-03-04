@@ -19,10 +19,16 @@ public:
   class Parameters
   {
   public:
+    // parameters for the motion model
     double motionNoiseDistance;
+    double motionNoiseRotation;
+    // parameters for the observation model
     double standardDeviationAngle;
+    double standardDeviationDistance;
+    // parameters for the filter resampling
     double processNoiseDistance;
     double resamplingThreshhold;
+    double particlesToReset;
   };
 
   void setParams(const Parameters& parameters) { this->parameters = parameters; }
