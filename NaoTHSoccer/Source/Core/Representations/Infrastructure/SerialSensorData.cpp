@@ -5,7 +5,6 @@
  * Created on 18. August 2010, 16:58
  */
 
-#include <vector>
 
 #include "SerialSensorData.h"
 

@@ -23,8 +23,6 @@
 
 #include "Tools/Debug/DebugRequest.h"
 
-using namespace std;
-
 class DebugBufferedOutput : public naoth::Singleton<DebugBufferedOutput>, public DebugCommandExecutor
 {
 protected:
@@ -86,7 +84,7 @@ public:
     }
   }
 
-  stringstream doutOut;
+  std::stringstream doutOut;
 
 private:
 
@@ -105,7 +103,7 @@ private:
 /** Debug output stream, usage like "DOUT("ball_pos:" << x << ", " << y */
 #define DOUT(arg) DebugBufferedOutput::getInstance().doutOut << arg
 #define PLOT_GENERIC(id,x,y) { ASSERT(!Math::isInf(x)&&!Math::isNan(x)); ASSERT(!Math::isInf(y)&&!Math::isNan(y)); DebugBufferedOutput::getInstance().addPlot(id,x,y); }
-#define PLOT(id,value) DEBUG_REQUEST_SLOPPY(string("Plot:")+string(id), PLOT_GENERIC(id,naoth::NaoTime::getNaoTimeInMilliSeconds(),value); )
+#define PLOT(id,value) DEBUG_REQUEST_SLOPPY(std::string("Plot:")+std::string(id), PLOT_GENERIC(id,naoth::NaoTime::getNaoTimeInMilliSeconds(),value); )
 #define PLOT2D(id,x,y) ASSERT(!Math::isInf(x)&&!Math::isNan(x)); ASSERT(!Math::isInf(y)&&!Math::isNan(y)); DebugBufferedOutput::getInstance().addPlot2D(id, x, y)
 /** set the origin of the 2D plot. It used for visualization of traces on the field etc. */
 #define ORIGIN2D(id,x,y,rotation) DebugBufferedOutput::getInstance().addPlotOrigin2D(id, x, y, rotation)

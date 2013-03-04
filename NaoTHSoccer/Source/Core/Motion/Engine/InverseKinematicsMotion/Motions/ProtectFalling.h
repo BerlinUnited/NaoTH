@@ -58,7 +58,7 @@ private:
   void decreaseStiffness()
   {
     const Vector2d& is = theBlackBoard.theInertialSensorData.data;
-    double angle = max( abs(is.x), abs(is.y) );
+    double angle = std::max( abs(is.x), abs(is.y) );
 
     // limit the range
     angle = Math::clamp(angle, 0.0, Math::pi_2);

@@ -242,12 +242,12 @@ HipFeetPose InverseKinematicsMotionEngine::controlCenterOfMass(const CoMFeetPose
   
   if ( bestError > 1 )
   {
-    cerr<<"Warning: can not control CoM @ "<<bestError<<endl;
+    std::cerr<<"Warning: can not control CoM @ "<<bestError<<std::endl;
   }
 
   if( i == max_iter )
   {
-    cerr<<"Warning: maximum iterations reached @ "<<bestError<<endl;
+    std::cerr<<"Warning: maximum iterations reached @ "<<bestError<<std::endl;
   }
   
   return result;
@@ -504,8 +504,8 @@ void InverseKinematicsMotionEngine::autoArms(const HipFeetPose& pose, double (&p
   //----------------------------------------------
 
   // make sure the arms do not collide legs --------------
-  target[JointData::RShoulderRoll] = min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
-  target[JointData::LShoulderRoll] = max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
+  target[JointData::RShoulderRoll] = std::min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
+  target[JointData::LShoulderRoll] = std::max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
   //---------------------------------------------
 
   // limit the joint range to avoid collision --------------
@@ -632,8 +632,8 @@ void InverseKinematicsMotionEngine::gotoArms(const InverseKinematic::HipFeetPose
   //----------------------------------------------
 
   // make sure the arms do not collide legs --------------
-  target[JointData::RShoulderRoll] = min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
-  target[JointData::LShoulderRoll] = max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
+  target[JointData::RShoulderRoll] = std::min(target[JointData::RShoulderRoll], position[JointData::RHipRoll]);
+  target[JointData::LShoulderRoll] = std::max(target[JointData::LShoulderRoll], position[JointData::LHipRoll]);
   //---------------------------------------------
 
   // limit the joint range to avoid collision --------------

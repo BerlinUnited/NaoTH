@@ -9,7 +9,6 @@
 #include "ScanLineEdgelDetectorDifferential.h"
 
 #include "Tools/CameraGeometry.h"
-#include "Tools/Debug/NaoTHAssert.h"
 
 ScanLineEdgelDetectorDifferential::ScanLineEdgelDetectorDifferential()
 {

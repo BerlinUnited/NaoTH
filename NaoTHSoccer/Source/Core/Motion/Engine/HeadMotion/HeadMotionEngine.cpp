@@ -11,25 +11,18 @@
 
 
 #include <algorithm>
-#include <cmath>
-#include <iostream>
+#include <fstream>
 
 // Tools
-#include <Tools/Math/Common.h>
-#include <Tools/Math/Matrix2x2.h>
-#include <Tools/NaoInfo.h>
 #include <Tools/CameraGeometry.h>
 
 #include <PlatformInterface/Platform.h>
 
 // Debug
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugRequest.h"
 #include "Tools/Debug/DebugModify.h"
-
-#include "Representations/Motion/Request/HeadMotionRequest.h"
+#include <Tools/Debug/DebugRequest.h>
 #include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
+#include <Tools/Debug/DebugDrawings.h>
 
 using namespace naoth;
 
@@ -81,7 +74,7 @@ void HeadMotionEngine::execute()
 
   if(!testCalc)
   {
-    ofstream os("test.txt",ofstream::out);
+    std::ofstream os("test.txt",std::ofstream::out);
     Vector3<double> target(2500.0, 0.0, 0.0);
     double y = -Math::pi_2;
     double p = -Math::pi_2;
@@ -101,7 +94,7 @@ void HeadMotionEngine::execute()
 
         os << f;
       }
-      os << endl;
+      os << std::endl;
     }
     os.close();
   }//end if
@@ -137,7 +130,7 @@ void HeadMotionEngine::gotoPointOnTheGround(const Vector2<double>& target)
     0.0,
     centerOnField);
   
-  vector<Vector3<double> > points;
+  std::vector<Vector3<double> > points;
   
 
   points.push_back(Vector3<double>(centerOnField.x,centerOnField.y,0.0));
@@ -352,7 +345,7 @@ void HeadMotionEngine::lookAtWorldPoint(const Vector3<double>& origTarget)
     if(DgTDg.det() <= 1e-13)
     {
       // debug output
-      std::cerr << "bad matrix" << endl;
+      std::cerr << "bad matrix" << std::endl;
     }
     Vector2<double> z_GN = (-(DgTDg.invert()*DgTw));
     x += z_GN;
@@ -412,7 +405,7 @@ void HeadMotionEngine::lookAtPoint()
  */
 void HeadMotionEngine::search() 
 {
-  vector<Vector3<double> > points;
+  std::vector<Vector3<double> > points;
 
   const Vector3<double>& center = theBlackBoard.theHeadMotionRequest.searchCenter;
   const Vector3<double>& size = theBlackBoard.theHeadMotionRequest.searchSize;
@@ -441,7 +434,7 @@ void HeadMotionEngine::search()
 void HeadMotionEngine::randomSearch()
 {
     static Vector3<double> randomPoint(0, 0, 0);
-    vector<Vector3<double> > points;
+    std::vector<Vector3<double> > points;
     points.push_back(randomPoint);
     if ( trajectoryHeadMove(points) ){
         static double lastDir = 0;
@@ -458,7 +451,7 @@ void HeadMotionEngine::randomSearch()
 /*
  * move the head in the specified trajectory
  */
-bool HeadMotionEngine::trajectoryHeadMove(const vector<Vector3<double> >& points)
+bool HeadMotionEngine::trajectoryHeadMove(const std::vector<Vector3<double> >& points)
 {
   // current state of the head motion
   // indicates the last visited point in the points list

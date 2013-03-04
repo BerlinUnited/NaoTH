@@ -31,7 +31,7 @@ public:
 
     Vector2<double> leftPost;
     Vector2<double> rightPost;
-    FrameInfo frameInfoWhenGoalLastSeen;
+    naoth::FrameInfo frameInfoWhenGoalLastSeen;
     
     /* color of the goal */
     ColorClasses::Color color;
@@ -53,7 +53,7 @@ public:
   //const Goal& getTeamGoal(naoth::GameData::TeamColor teamColor) const;
   //Goal& getTeamGoal(naoth::GameData::TeamColor teamColor);
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
   void draw() const;
 
@@ -76,13 +76,13 @@ public:
   bool opponentGoalIsValid;
   bool ownGoalIsValid;
 
-  virtual void print(ostream& stream) const;
+  virtual void print(std::ostream& stream) const;
 
   Vector2<double> seen_center;
   double seen_angle;
 
-  FrameInfo frameWhenOpponentGoalWasSeen;
-  FrameInfo frameWhenOwnGoalWasSeen;
+  naoth::FrameInfo frameWhenOpponentGoalWasSeen;
+  naoth::FrameInfo frameWhenOwnGoalWasSeen;
 };
 
 /** goal model in robot's local coordinates, it is updated by robot's pose */

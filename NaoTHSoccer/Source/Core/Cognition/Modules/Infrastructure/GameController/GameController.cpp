@@ -1,7 +1,6 @@
 #include "GameController.h"
 
 #include "Tools/Debug/DebugRequest.h"
-#include <PlatformInterface/Platform.h>
 
 GameController::GameController()
   : lastChestButtonEventCounter(0)

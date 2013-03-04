@@ -1,19 +1,24 @@
-INPUT=Framework/NaoTH-Commons/Source/ Framework/Platforms/Source/ NaoTHSoccer/Source/ doc/doxygen/
-FILE_PATTERNS=*.cpp *.h *.dox *.lua
-RECURSIVE=YES
-EXTRACT_ALL = YES
-EXTRACT_PRIVATE        = YES
-INLINE_SOURCES = YES
+PROJECT_NAME = "NaoTeam Humboldt"
+PROJECT_LOGO = Utils/logo_doxygen.png
 
-OUTPUT_DIRECTORY = doc
+DISABLE_INDEX = true
+GENERATE_TREEVIEW = true
+
+#HTML_COLORSTYLE_HUE    = 217
+#HTML_COLORSTYLE_SAT    = 77
+#HTML_COLORSTYLE_GAMMA  = 197
 
 GENERATE_LATEX = NO
 GENERATE_HTML = YES
 
+OUTPUT_DIRECTORY  = doc
 
-GENERATE_QHP = YES
-QCH_FILE = naoth.qch
-QHP_NAMESPACE = de.naoth
-QHP_VIRTUAL_FOLDER = NaoTHSoccer-2011
-QHG_LOCATION = /usr/bin/qhelpgenerator
+INPUT = doxygen/
+FILE_PATTERNS = *.md
+
+TAGFILES          = Framework/naoth-framework.tag=../../Framework/doc/html \
+                    NaoTHSoccer/naoth-soccer.tag=../../NaoTHSoccer/doc/html 
+
+
+
 

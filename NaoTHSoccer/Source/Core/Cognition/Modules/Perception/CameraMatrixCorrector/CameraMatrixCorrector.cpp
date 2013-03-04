@@ -8,16 +8,13 @@
 #include "CameraMatrixCorrector.h"
 
 // debug
-#include "Tools/Debug/DebugModify.h"
 #include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings3D.h"
+#include <Tools/Debug/DebugDrawings3D.h>
+
 #include "Tools/CameraGeometry.h"
-#include "Tools/Math/Line.h"
 
 #include "Motion/MorphologyProcessor/ForwardKinematics.h"
-#include "Motion/CameraMatrixCalculator/CameraMatrixCalculator.h"
 
-#include "PlatformInterface/Platform.h"
 
 CameraMatrixCorrector::CameraMatrixCorrector()
 {

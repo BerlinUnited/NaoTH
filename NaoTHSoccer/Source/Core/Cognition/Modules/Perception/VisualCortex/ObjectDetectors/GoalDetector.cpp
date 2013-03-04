@@ -6,16 +6,11 @@
 */
 
 #include "GoalDetector.h"
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
-#include "Tools/Debug/Stopwatch.h"
 
 #include "Tools/CameraGeometry.h"
+#include <Tools/Debug/DebugBufferedOutput.h>
 
 #include <algorithm>
-#include <vector>
 
 
 GoalDetector::GoalDetector()

@@ -7,7 +7,6 @@
 
 #include "SensorSymbols2011.h"
 //#include "Representations/Infrastructure/CameraSettings.h"
-#include "Tools/Debug/DebugRequest.h"
 
 void SensorSymbols2011::registerSymbols(xabsl::Engine& engine)
 {

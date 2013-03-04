@@ -4,14 +4,13 @@
  * Definition of class CameraMatrix
  */ 
 
-#include "CameraMatrix.h"
 
 #include "Messages/Representations.pb.h"
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
+#include "CameraMatrix.h"
+
 // HACK: needed for logplayer to calculate horizon
-#include <PlatformInterface/Platform.h>
-#include <Tools/CameraGeometry.h>
 
 using namespace naoth;
 

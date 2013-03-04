@@ -7,16 +7,9 @@
 
 #include "FieldColorClassifier.h"
 
-#include <vector>
 
-#include "Tools/Math/Vector3.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugBufferedOutput.h"
 
 
 FieldColorClassifier::FieldColorClassifier()

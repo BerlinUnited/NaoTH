@@ -8,19 +8,10 @@
 #include "ImageProcessor.h"
 
 // Debug
-#include "Tools/Debug/DebugRequest.h"
-#include "Tools/Debug/DebugModify.h"
-#include "Tools/Debug/DebugDrawings.h"
-#include "Tools/Debug/DebugImageDrawings.h"
-#include "Tools/Debug/DebugDrawings3D.h"
-#include "Tools/Debug/Stopwatch.h"
-#include "Tools/Debug/Trace.h"
 
-//#include "Tools/Debug/DebugBufferedOutput.h"
+#include "Tools/Debug/DebugDrawings3D.h"
 
 // Tools
-#include "Tools/Math/Line.h"
-#include "Tools/CameraGeometry.h"
 
 ImageProcessor::ImageProcessor()
 {

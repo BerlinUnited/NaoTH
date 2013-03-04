@@ -40,7 +40,7 @@ class GAWalk : public GeneticAlgorithms
   };
 
 public:
-  GAWalk(const VirtualVision& vv, const RobotPose& rp, const CameraMatrix& cm, const FrameInfo& fi, const FieldInfo& field,
+  GAWalk(const naoth::VirtualVision& vv, const RobotPose& rp, const CameraMatrix& cm, const naoth::FrameInfo& fi, const FieldInfo& field,
     MotionRequest& mq);
 
   virtual ~GAWalk(){}
@@ -48,10 +48,10 @@ public:
   virtual void run();
 
 private:
-  const VirtualVision& theVirtualVision;
+  const naoth::VirtualVision& theVirtualVision;
   const RobotPose& theRobotPose;
   const CameraMatrix& theCameraMatrix;
-  const FrameInfo& theFrameInfo;
+  const naoth::FrameInfo& theFrameInfo;
   const FieldInfo& theFieldInfo;
   MotionRequest& theMotionRequest;
 
