@@ -41,6 +41,16 @@
 
 #define CYCLE_TIME 20
 
+class LogProvider;
+
+template<> class IF<LogProvider>: public StaticRegistry<LogProvider>
+{
+public:
+  static std::string getName() { return "LogProvider"; }
+  static std::string getModulePath() { return get_sub_core_module_path(__FILE__); }
+};
+
+
 class LogProvider: public Module, virtual private BlackBoardInterface
 {
 private:
@@ -65,8 +75,9 @@ public:
     exludeMap["FrameInfo"] = "";
   }
 
-  std::string getName() const { return "LogProvider"; }
-  
+  virtual std::string getName() const { return "LogProvider"; }
+  virtual std::string getModulePath() const { return IF<LogProvider>::getModulePath(); } \
+  virtual std::string getDescription() const { return IF<LogProvider>::description; }
 
   void init(std::map<std::string, std::string>& rep, std::set<std::string>& includedRepresentations)
   {
@@ -107,6 +118,7 @@ public:
     }//end for
   }//end execute
 };
+
 
 
 class Simulator : public PlatformInterface

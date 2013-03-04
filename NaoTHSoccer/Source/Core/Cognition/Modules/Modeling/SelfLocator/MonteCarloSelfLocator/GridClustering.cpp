@@ -20,7 +20,7 @@ void GridClustering::cluster(double xPosOpponentGroundline, double yPosLeftSidel
   fieldGrid.reset();
   shiftedFieldGrid.reset();
 
-  for (unsigned int j = 0; j < sampleSet.numberOfParticles; j++)
+  for (unsigned int j = 0; j < sampleSet.size(); j++)
   {
     addPointToGrid(fieldGrid, sampleSet[j].translation, xPosOpponentGroundline, yPosLeftSideline);
     addPointToGrid(shiftedFieldGrid, sampleSet[j].translation, xPosOpponentGroundline, yPosLeftSideline);
@@ -107,19 +107,19 @@ void GridClustering::draw_grid(const FieldInfo& fieldInfo)
     {  
       for (int i = 0; i < CountGrid2D::GRID_Y_PRECISION; i++)
       { 
-        if (fieldGrid.table[j][i] > (int)(sampleSet.numberOfParticles*0.03))
+        if (fieldGrid.table[j][i] > (int)(sampleSet.size()*0.03))
         {
           FIELD_DRAWING_CONTEXT;
           //Draw best grid cells
-          if (fieldGrid.table[j][i] >= (int)(sampleSet.numberOfParticles*0.09))
+          if (fieldGrid.table[j][i] >= (int)(sampleSet.size()*0.09))
           {
             PEN("FF0000", 20);
           }
-          else if (fieldGrid.table[j][i] > (int)(sampleSet.numberOfParticles*0.06))
+          else if (fieldGrid.table[j][i] > (int)(sampleSet.size()*0.06))
           {
             PEN("FF5555", 20);
           }
-          else if (fieldGrid.table[j][i] > (int)(sampleSet.numberOfParticles*0.03))
+          else if (fieldGrid.table[j][i] > (int)(sampleSet.size()*0.03))
           {
             PEN("FFAAAA", 20);
           }

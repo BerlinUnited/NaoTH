@@ -22,11 +22,10 @@ void DebugCommandManager::handleCommand(
   const std::map<std::string, std::string>& arguments, 
   std::ostream& answer)
 {
-  if (executorMap.find(command) != executorMap.end())
-  {
-    executorMap[command]->executeDebugCommand(command, arguments, answer);
-  } else
-  {
+  ExecutorMap::iterator iter = executorMap.find(command);
+  if (iter != executorMap.end()) {
+    iter->second.executor->executeDebugCommand(command, arguments, answer);
+  } else {
     answer << "Unknown command \"" << command
       << "\", use \"help\" for a list of available commands" << std::endl;
   }
@@ -37,11 +36,11 @@ bool DebugCommandManager::registerCommand(
   const std::string& description,
   DebugCommandExecutor* executor)
 {
-  if (executorMap.find(command) == executorMap.end())
+  ExecutorMap::iterator iter = executorMap.lower_bound(command);
+  if (iter == executorMap.end() || iter->first != command)
   {
     // new command
-    executorMap[command] = executor;
-    descriptionMap[command] = description;
+    executorMap.insert(iter,std::make_pair(command, DebugCommand(executor, description)));
     executor->registerDestructionListener(*this);
     return true;
   }
@@ -51,25 +50,16 @@ bool DebugCommandManager::registerCommand(
 
 void DebugCommandManager::objectDestructed(DebugCommandExecutor* object)
 {
-  std::list<std::string> registeredKeys;
-
   // search all registered keys of the object
-  std::map<std::string, DebugCommandExecutor*>::const_iterator iter;
-  for (iter = executorMap.begin(); iter != executorMap.end(); iter++)
+  ExecutorMap::const_iterator iter = executorMap.begin();
+  while(iter != executorMap.end())
   {
-    if ((*iter).second == object)
-    {
-      registeredKeys.push_back((*iter).first);
-    }//end if
-  }//end for
-
-  // unregister all found commands
-  std::list<std::string>::const_iterator iter_key;
-  for (iter_key = registeredKeys.begin(); iter_key != registeredKeys.end(); iter_key++)
-  {
-    executorMap.erase(*iter_key);
-//    std::cout << "unregistering command " << (*iter_key) << std::endl;
-  }//end for
+    if ((*iter).second.executor == object) {
+      executorMap.erase(iter++);
+    } else {
+      ++iter;
+    }
+  }
 }//end objectDestructed
 
 
@@ -84,32 +74,30 @@ void DebugCommandManager::executeDebugCommand(
     {
       // list all available commands
       out << "Available commands, use \"help <command>\" for a description:\n";
-      std::map<std::string, std::string>::const_iterator iter = descriptionMap.begin();
-      while (iter != descriptionMap.end())
+      ExecutorMap::const_iterator iter = executorMap.begin();
+      while (iter != executorMap.end())
       {
         out << iter->first;
-        iter++;
-        if (iter != descriptionMap.end())
-        {
-          out << ": " << iter->second << "\n";
+        ++iter;
+        if (iter != executorMap.end()) {
+          out << ": " << iter->second.desctiption << "\n";
         }
       }
     }
     else
     {
       std::string firstArg = arguments.begin()->first;
-      if (descriptionMap.find(firstArg) != descriptionMap.end())
-      {
+      ExecutorMap::iterator iter = executorMap.find(firstArg);
+
+      if (iter != executorMap.end()) {
         out << firstArg << "\n";
         out << "------------------\n";
-        out << descriptionMap[firstArg];
+        out << iter->second.desctiption;
         out << "\n";
-      } else
-      {
+      } else {
         out << "Unknown command \"" << firstArg
           << "\", use \"help\" for a list of available commands";
       }
-
     }
     out << "\n";
   }

@@ -101,10 +101,11 @@ void Simulator::printHelp()
 
 char Simulator::getInput()
 {
-  if (backendMode)
+  if (backendMode) {
     return getchar();
-  else
+  } else {
     return getch();
+  }
 }
 
 void Simulator::main()
@@ -118,48 +119,32 @@ void Simulator::main()
   char c;
   while((c = getInput()) && c != 'q' && c != 'x')
   {
-    if(c == 'd')
-    {
+    if(c == 'd') {
       stepForward();
-    }
-    else if(c == 'a')
-    {
+    } else if(c == 'a') {
       stepBack();
-    }
-    else if(c == 'w')
-    {
+    } else if(c == 'w') {
       jumpToBegin();
-    }
-    else if(c == 's')
-    {
+    } else if(c == 's') {
       jumpToEnd();
-    }
-    else if(c == 'g')
-    {
+    } else if(c == 'g') {
       // read jump position
       unsigned int jpos;
       cout << " goto position: ";
       cin >> jpos;
       jumpTo(jpos);
-    }
-    else if(c == 'p')
-    {
+    } else if(c == 'p') {
       play();
-    }
-    else if(c == 'l')
-    {
+    } else if(c == 'l') {
       loop();
-    }
-    else if(c == 'r')
-    {
+    } else if(c == 'r') {
       executeCurrentFrame();
-    }
-    else if(c == 'h')
-    {
+    } else if(c == 'h') {
       printHelp();
       printCurrentLineInfo();
     }
   }// while
+
   cout << endl << "bye bye!" << endl;
 }//end main
 
@@ -305,13 +290,10 @@ void Simulator::jumpTo(unsigned int position)
   currentFrame = frames.begin();
   while(!wasFound && currentFrame != frames.end())
   {
-    if(*currentFrame == position)
-    {
+    if(*currentFrame == position) {
       wasFound = true;
       break;
-    }
-    else
-    {
+    } else {
       currentFrame++;
     }
   }//end while
@@ -548,10 +530,11 @@ bool Simulator::compatibleExecute(const string& name, size_t dataSize)
 void Simulator::printCurrentLineInfo()
 {
   // output some informations about the current frame
-  if(!backendMode)
+  if(!backendMode) {
     cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]\t\r";
-  else
+  } else {
     cout << "[" << *currentFrame << "|" << minFrame << "-" << maxFrame << "]" << endl;
+  }
 }//end printCurrentLineInfo
 
 void Simulator::parseFile()

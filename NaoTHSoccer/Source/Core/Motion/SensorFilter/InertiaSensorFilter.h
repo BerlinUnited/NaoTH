@@ -14,8 +14,6 @@
 #include "Tools/Math/Pose3D.h"
 #include "Tools/Math/RotationMatrix.h"
 
-#include "Eigen/Core"
-
 template <class V = double> class Matrix2x3;
 template <class V = double> class Matrix3x2;
 

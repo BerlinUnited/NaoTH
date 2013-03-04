@@ -6,9 +6,10 @@
 #ifndef _ModuleCreator_h_
 #define _ModuleCreator_h_
 
-#include "Tools/DataStructures/Printable.h"
 #include "Module.h"
 
+#include <Tools/DataStructures/Printable.h>
+#include <Tools/Debug/Stopwatch.h>
 
 /**
  * AbstractModuleCreator is an interface.
@@ -19,6 +20,7 @@ class AbstractModuleCreator: public Printable
 {
 public:
   virtual std::string moduleClassName() const = 0;
+  virtual std::string modulePath() const = 0;
   virtual void setEnabled(bool value) = 0;
   virtual bool isEnabled() const = 0;
   virtual void execute() = 0;
@@ -63,11 +65,15 @@ private:
   // cannot be copied
   ModuleCreator& operator=( const ModuleCreator& ) {}
 
+  //
+  Stopwatch& stopwatch;
+
 public:
 
   ModuleCreator(BlackBoard& theBlackBoard, bool enabled = false)
     : theBlackBoard(theBlackBoard),
-      theInstance(NULL)
+      theInstance(NULL),
+      stopwatch(StopwatchManager::getInstance().getStopwatchReference(IF<M>::getName()))
   {
     setEnabled(enabled);
   }
@@ -79,7 +85,7 @@ public:
 
   bool isEnabled() const {
     return theInstance != NULL;
-  }//end isEnabled
+  }
 
 
   void setEnabled(bool value)
@@ -99,16 +105,18 @@ public:
   void execute()
   {
     if( theInstance != NULL ) {
+      stopwatch.start();
       theInstance->execute();
-    }//end if
-  }//end execute
+      stopwatch.stop();
+    }
+  }
 
 
   Module* getModule() const
   {
     ASSERT(isEnabled());
-    // ACHTUNG: 
-    // we have to use the unsafe cast because some modules may privatly 
+    // ACHTUNG:
+    // we have to use the unsafe cast because some modules may be privatly 
     // derive from Module and make a type cast inaccesible
     return (Module*)(theInstance);
   }//end getModule
@@ -117,13 +125,16 @@ public:
   M* getModuleT() const {
     ASSERT(isEnabled());
     return theInstance;
-  }//end getModule
+  }
 
 
   std::string moduleClassName() const {
     return typeid(M).name();
   }
 
+  virtual std::string modulePath() const {
+    return IF<M>::getModulePath();
+  }
 
   const RegistrationInterfaceMap& staticProvided() const {
     return IF<M>::getProvide();

@@ -93,7 +93,7 @@ void ModuleManagerWithDebug::modulesList(std::ostream& outstream)
     ASSERT(moduleCreator != NULL); // shold never happen
 
     // module name
-    m->set_name(*iterModule);
+    m->set_name(*iterModule + "|" + moduleCreator->modulePath());
     m->set_active(moduleCreator->isEnabled());
       
     if(moduleCreator->isEnabled())

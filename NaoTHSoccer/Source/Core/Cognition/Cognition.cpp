@@ -237,27 +237,24 @@ void Cognition::call()
 
 
   STOPWATCH_START("CognitionExecute");
-  GT_TRACE("beginning to iterate over all modules");
+  //GT_TRACE("beginning to iterate over all modules");
 
   // execute all modules
-  list<string>::const_iterator iter;
-  for (iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
+  list<AbstractModuleCreator*>::const_iterator iter;
+  for (iter = getModuleExecutionList().begin(); iter != getModuleExecutionList().end(); ++iter)
   {
     // get entry
-    AbstractModuleCreator* module = getModule(*iter);
+    AbstractModuleCreator* module = *iter;//getModule(*iter);
     if (module != NULL && module->isEnabled())
     {
-      std::string name(*iter);
+      //std::string name(module->getModule()->getName());
 
-      GT_TRACE("executing " << name);
-
-      STOPWATCH_START_GENERIC(name);
+      //GT_TRACE("executing " << name);
       module->execute();
-      STOPWATCH_STOP_GENERIC(name);
     }//end if
   }//end for all modules
   
-  GT_TRACE("end module iteration");
+  //GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 
