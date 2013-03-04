@@ -52,7 +52,7 @@ BEGIN_DECLARE_MODULE(Debug)
   PROVIDE(CameraSettingsRequest)
 END_DECLARE_MODULE(Debug)
 
-class Debug : public DebugBase, public DebugCommandExecutor
+class Debug : public DebugBase, public DebugCommandExecutor, virtual public BlackBoardInterface
 {
 public:
   Debug();

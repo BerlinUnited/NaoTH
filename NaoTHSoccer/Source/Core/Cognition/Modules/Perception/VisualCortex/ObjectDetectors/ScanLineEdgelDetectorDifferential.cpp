@@ -32,7 +32,7 @@ void ScanLineEdgelDetectorDifferential::execute()
   
   double h = 500.0;
   double d_2 = 50/2;
-  double horizon_height = min(getCameraMatrix().horizon.begin().y, getCameraMatrix().horizon.end().y);
+  double horizon_height = std::min(getArtificialHorizon().begin().y, getArtificialHorizon().end().y);
 
   for(int i = 0; i < 240; i++)
   {
@@ -42,14 +42,14 @@ void ScanLineEdgelDetectorDifferential::execute()
     // no clculation above horizon
     if (i < horizon_height) continue;
 
-    double x = getImage().cameraInfo.focalLength;
-    double z = -i + getImage().cameraInfo.opticalCenterY;
+    double x = getImage().cameraInfo.getFocalLength();
+    double z = -i + getImage().cameraInfo.getOpticalCenterY();
     double alpha = atan2(z, x);
     double w = Math::normalize(-alpha + getCameraMatrix().rotation.getYAngle());
     
     double dist = h*tan(Math::pi_2 - w);
     double g = atan2(dist + d_2, h) - atan2(dist - d_2, h);
-    double rad_per_px = getImage().cameraInfo.openingAngleWidth/getImage().cameraInfo.resolutionWidth;
+    double rad_per_px = getImage().cameraInfo.getOpeningAngleWidth()/getImage().cameraInfo.resolutionWidth;
     double v = g / rad_per_px;
     
     vertical_confidence[i] = max(0.0,v);
@@ -383,8 +383,8 @@ double ScanLineEdgelDetectorDifferential::getPointsAngle(const Vector2<int>& poi
 double ScanLineEdgelDetectorDifferential::calculateMeanAngle(double angle1,double angle2) const
 {
   //calculate unit vectors for both angles and add them
-  double x=cos(2*angle1)+cos(2*angle2);
-  double y=sin(2*angle1)+sin(2*angle2);
+  //double x=cos(2*angle1)+cos(2*angle2);
+  //double y=sin(2*angle1)+sin(2*angle2);
 
   //calculate sum vectors angle
   //return Math::normalize(atan2(y, x)/2);
