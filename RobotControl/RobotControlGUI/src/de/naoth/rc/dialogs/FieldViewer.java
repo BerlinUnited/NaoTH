@@ -150,6 +150,7 @@ public class FieldViewer extends AbstractDialog
         });
         jPopupMenu.add(jMenuItemExport);
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         btReceiveDrawings.setText("Receive");

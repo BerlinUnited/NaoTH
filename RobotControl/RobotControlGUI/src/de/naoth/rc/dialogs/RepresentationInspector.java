@@ -123,6 +123,7 @@ public class RepresentationInspector extends AbstractDialog
         jScrollPane2 = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         jToggleButtonRefresh.setText("Refresh");
@@ -155,13 +156,20 @@ public class RepresentationInspector extends AbstractDialog
         });
         jToolBar1.add(cbProcess);
 
+        jSplitPane1.setBorder(null);
+
+        jScrollPane1.setBorder(null);
+
         representationList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(representationList);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
 
+        jScrollPane2.setBorder(null);
+
         textArea.setColumns(20);
         textArea.setRows(5);
+        textArea.setBorder(null);
         jScrollPane2.setViewportView(textArea);
 
         jSplitPane1.setRightComponent(jScrollPane2);

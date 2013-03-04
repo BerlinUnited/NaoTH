@@ -46,7 +46,7 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
     
     this.cb.setText(text);
     this.cb.setToolTipText(tooltip);
-    this.cb.setIcon(new TristateCheckBoxIcon(Color.gray));
+    //this.cb.setIcon(new TristateCheckBoxIcon(Color.gray));
     this.cb.setSelected(selected);
     this.cb.addItemListener(this);
   }
@@ -115,12 +115,15 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
     if(selectedChildren == childNodes.size()) {
         setSelected(true);
         setSemiselected(false);
+        this.cb.setIcon(null);
     } else if(selectedChildren > 0 || semiSelectedChildren > 0) {
         setSelected(false);
         setSemiselected(true);
+        this.cb.setIcon(new TristateCheckBoxIcon(new Color(32,32,128)));
     } else {
         setSelected(false);
         setSemiselected(false);
+        this.cb.setIcon(null);
     }
     
     this.cb.addItemListener(this);
@@ -298,10 +301,11 @@ public class SelectableTreeNode implements MutableTreeNode, ItemListener
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             icon.paintIcon(c, g, x, y);
-            if(isSemiselected()) {
-                g.setColor(color);
-                g.fillRect(x+width/2, y+height/2, width, height);
-            }
+            g.setColor(new Color(32,32,64,200));
+            g.fillRect(x + width - 4, y+height-4, 8, 8);
+            g.setColor(new Color(32,32,64,128));
+            g.fillRect(x + width - 3, y+height-3, 6, 6);
+            
         }
 
         @Override

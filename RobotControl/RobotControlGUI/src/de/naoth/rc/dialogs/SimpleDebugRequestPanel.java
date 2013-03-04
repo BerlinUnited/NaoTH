@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.ToolTipManager;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Init;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -42,6 +43,8 @@ public class SimpleDebugRequestPanel extends AbstractDialog
   public SimpleDebugRequestPanel()
   {
     initComponents();
+    
+    ToolTipManager.sharedInstance().setDismissDelay(60000);
   }
 
   /** This method is called from within the constructor to
@@ -60,6 +63,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
 
         setLayout(new java.awt.BorderLayout());
 
+        toolbarMain.setFloatable(false);
         toolbarMain.setRollover(true);
 
         btRefresh.setText("Refresh");
@@ -75,6 +79,7 @@ public class SimpleDebugRequestPanel extends AbstractDialog
 
         add(toolbarMain, java.awt.BorderLayout.PAGE_START);
 
+        jScrollPane.setBorder(null);
         jScrollPane.setViewportView(debugRequestTree);
 
         add(jScrollPane, java.awt.BorderLayout.CENTER);
@@ -163,8 +168,10 @@ public class SimpleDebugRequestPanel extends AbstractDialog
       String[] tokens = str.split("\\|");
 
       String tooltip = "NO COMMENT";
-      if (tokens.length >= 3) {
-        tooltip = tokens[2];
+      if (tokens.length >= 4) {
+        tooltip = "<html>" + tokens[2] + "<br>" + tokens[3] + "</html>";
+      } else if(tokens.length >= 3) {
+          tooltip = tokens[2];
       }
       
       if (tokens.length >= 2)

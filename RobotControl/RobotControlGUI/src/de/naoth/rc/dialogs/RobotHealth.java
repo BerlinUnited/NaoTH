@@ -418,6 +418,7 @@ public class RobotHealth extends AbstractDialog
             }
         };
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         btReceiveDrawings.setText("Receive");

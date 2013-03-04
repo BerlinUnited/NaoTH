@@ -38,7 +38,16 @@ public class ModuleConfigurationManagerImpl extends AbstractManagerPlugin<Module
 
       for(Module m : list.getModulesList())
       {
-        Node moduleNode = new Node(m.getName(), ModuleConfiguration.NodeType.Module, m.getActive());
+        String str[] = m.getName().split("\\|"); // hack
+        String name = str[0];
+        
+        if(str.length > 1) {
+            String lower_name = name.toLowerCase();
+            String hname = str[1].replaceAll("\\\\", ":").replaceFirst(":" + lower_name + ".*", "");
+            name = hname + ":" + name;
+        }
+        
+        Node moduleNode = new Node(name, ModuleConfiguration.NodeType.Module, m.getActive());
         moduleConfiguration.addVertex(moduleNode);
 
         for(String s : m.getProvidedRepresentationsList())

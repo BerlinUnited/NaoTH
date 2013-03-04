@@ -97,6 +97,12 @@ public class CheckboxTree extends JTree
     return current;
   }//end insertPath
   
+  public void expandPath(String path, char seperator)
+  {
+      SelectableTreeNode node = getNode(path,seperator);
+      this.expandPath(new TreePath(new Object[]{rootNode,node}));
+  }
+  
   public SelectableTreeNode getNode(String path)
   {
     return getNode(path, '/');

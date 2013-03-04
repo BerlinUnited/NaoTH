@@ -101,6 +101,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
         jScrollPane = new javax.swing.JScrollPane();
         moduleConfigTree = new de.naoth.rc.checkboxtree.CheckboxTree();
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         jToggleButtonRefresh.setText("Refresh");
@@ -162,10 +163,13 @@ public class ModuleConfigurationViewer extends AbstractDialog
 
         moduleTree.setOpaque(false);
         moduleTree.setLayout(new java.awt.BorderLayout());
+
+        jScrollPaneModulePane.setBorder(null);
         moduleTree.add(jScrollPaneModulePane, java.awt.BorderLayout.CENTER);
 
         jSplitPane1.setLeftComponent(moduleTree);
 
+        jScrollPane.setBorder(null);
         jScrollPane.setPreferredSize(new java.awt.Dimension(200, 322));
         jScrollPane.setViewportView(moduleConfigTree);
 
@@ -265,6 +269,7 @@ public class ModuleConfigurationViewer extends AbstractDialog
   {
     moduleConfigurationManager.removeListener(this);
     this.jToggleButtonRefresh.setSelected(false);
+    String processName = (String)cbProcess.getSelectedItem();
 
     activeModulesList.clear();
     this.simpleModuleView.removeAll();
@@ -282,8 +287,15 @@ public class ModuleConfigurationViewer extends AbstractDialog
     {
       if(n.getType() == ModuleConfiguration.NodeType.Module)
       {
-        String processName = (String)cbProcess.getSelectedItem();
-        SelectableTreeNode node = moduleConfigTree.insertPath(processName+":"+n.getName(), ':');
+        String name = n.getName();
+        
+        // treatement for the modules which are located outside of the process
+        if(!name.startsWith(processName.toLowerCase())) {
+            int i = name.lastIndexOf(':');
+            name = processName.toLowerCase() + name.substring(i);
+        }
+        
+        SelectableTreeNode node = moduleConfigTree.insertPath(name, ':');
         node.setSelected(n.isEnabled());
         node.setTooltip(n.getName());
         node.getComponent().addActionListener(
@@ -319,9 +331,11 @@ public class ModuleConfigurationViewer extends AbstractDialog
       }
     }//end for
 
+    moduleConfigTree.expandPath(processName.toLowerCase(), ':');
     moduleConfigTree.repaint();
+    
     simpleModuleView.setPreferredSize(new Dimension(600, 1000));
-    simpleModuleView.revalidate();
+    simpleModuleView.repaint();
     /*
     // update and configure graph
     if(vv != null)

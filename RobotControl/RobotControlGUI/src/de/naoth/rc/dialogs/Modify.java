@@ -80,6 +80,7 @@ public class Modify extends AbstractDialog
         btRefresh = new javax.swing.JToggleButton();
         jScrollPane2 = new javax.swing.JScrollPane();
 
+        jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
         btRefresh.setText("Refresh");
