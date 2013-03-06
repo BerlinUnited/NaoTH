@@ -41,10 +41,14 @@ public:
     public:
         Parameters(): ParameterList("TPPFParameters")
         {
-          PARAMETER_REGISTER(particleFilter.standardDeviationAngle) = 0.15;
-          PARAMETER_REGISTER(particleFilter.motionNoiseDistance) = 0;
+          PARAMETER_REGISTER(particleFilter.standardDeviationAngle) = 0.1;
+          PARAMETER_REGISTER(particleFilter.standardDeviationDistance) = 0.3;
+          PARAMETER_REGISTER(particleFilter.motionNoiseDistance) = 100;
+          PARAMETER_REGISTER(particleFilter.motionNoiseRotation) = 0.03;
+
           PARAMETER_REGISTER(particleFilter.processNoiseDistance) = 5;
-          PARAMETER_REGISTER(particleFilter.resamplingThreshhold) = 0.99;
+          PARAMETER_REGISTER(particleFilter.resamplingThreshhold) = 0;
+          PARAMETER_REGISTER(particleFilter.particlesToReset) = 0;
 
           syncWithConfig();
           DebugParameterList::getInstance().add(this);

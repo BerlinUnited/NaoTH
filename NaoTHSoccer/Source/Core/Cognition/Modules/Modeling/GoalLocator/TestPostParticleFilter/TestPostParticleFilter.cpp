@@ -36,7 +36,7 @@ void TestPostParticleFilter::execute()
 
   GoalPercept::GoalPost newPost;
 
-  //newPost.positionReliable = true;
+  newPost.positionReliable = true;
   //newPost.color = ColorClasses::none;
   //newPost.type = unknownPost;
 
@@ -57,7 +57,7 @@ void TestPostParticleFilter::execute()
 
   postArr[0] = newPost;
 
-  postParticleFilter.resampleGT07(postArr, true);
+  postParticleFilter.resampleGT07(true);
 
   debugRequests(newPost);
 
@@ -73,6 +73,6 @@ void TestPostParticleFilter::debugRequests(const GoalPercept::GoalPost& newPost)
 
     DEBUG_REQUEST("TestPostParticleFilter:draw_particles",
       FIELD_DRAWING_CONTEXT;
-      postParticleFilter.drawParticles("0000FF",88);
+      postParticleFilter.drawParticles("0000FF",1);
     );
 }

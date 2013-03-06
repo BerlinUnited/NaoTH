@@ -7,6 +7,11 @@
 #include "Tools/Debug/DebugDrawings.h"
 #include "Tools/Debug/DebugBufferedOutput.h"
 
+PostParticleFilter::PostParticleFilter()
+  : sampleSet(10)
+{
+}
+
 void PostParticleFilter::updateByOdometry(const Pose2D& odometryDelta)
 {
   for (unsigned int i = 0; i < sampleSet.size(); i++) 
@@ -18,22 +23,20 @@ void PostParticleFilter::updateByOdometry(const Pose2D& odometryDelta)
 
     // move each particle with odometry
     sampleSet[i].translation = noisyOdometryDelta * sampleSet[i].translation;
-
-    // apply some noise
-    //sampleSet[i].translation.x += (Math::random()-0.5)*parameters.motionNoiseDistance;
-    //sampleSet[i].translation.y += (Math::random()-0.5)*parameters.motionNoiseDistance;
   }
 }//end updateByOdometry
 
 
 double PostParticleFilter::getWeightingByPercept(const AGLSample& sample, const GoalPercept::GoalPost& post ,const double cameraHeight) const
 {
-    double weightingByAngle(0.0);
-    double weightingByDistance(0.0);
+    double weightingByAngle(1.0);
+    double weightingByDistance(1.0);
 
+    // angle
     double angleDiff = Math::normalize(sample.getPos().angle() - post.position.angle()); //expected - measuered ,normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
     weightingByAngle = Math::gaussianProbability(angleDiff, parameters.standardDeviationAngle);
 
+    // distenace
     if(post.positionReliable)
     {
       const double measuredDistanceAsAngle = atan2(post.position.abs(), cameraHeight);
@@ -49,7 +52,6 @@ double PostParticleFilter::getWeightingByPercept(const AGLSample& sample, const 
 
 void PostParticleFilter::updateByGoalPostPercept(const GoalPercept::GoalPost& post, const double cameraHeight)
 {
-
   double totalWeighting = 0;
 
   for (unsigned int i = 0; i < sampleSet.size(); i++)
@@ -62,24 +64,55 @@ void PostParticleFilter::updateByGoalPostPercept(const GoalPercept::GoalPost& po
 
   //merkt sich beobachtungen um im resampling sensor updates zu machen
   PerceptBuffer.add(post.position);
-
 }//end updateByGoalPostPercept
+
+
+// experimental
+double PostParticleFilter::getMeanVerticalDeviation(const GoalPercept::GoalPost& post, const double cameraHeight) const
+{
+  double meanVerticalError = 0;
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {
+    // experimental
+    if(post.positionReliable)
+    {
+      const double measuredDistanceAsAngle = atan2(post.position.abs(), cameraHeight);
+      const double expectedDistanceAsAngle = atan2(sampleSet[i].getPos().abs(), cameraHeight);
+
+      double distDif = Math::normalize(expectedDistanceAsAngle - measuredDistanceAsAngle);
+      meanVerticalError += distDif;
+    }
+  }//end for
+
+  return meanVerticalError /= sampleSet.size();
+}//end getMeanVerticalDeviation
+
+double PostParticleFilter::getMeanHorizontalDeviation(const GoalPercept::GoalPost& post) const
+{
+  double meanHorizontalError = 0;
+  for (unsigned int i = 0; i < sampleSet.size(); i++)
+  {
+    double angleDiff = Math::normalize(sampleSet[i].getPos().angle() - post.position.angle()); //expected - measuered ,normalisieren, sonst pi--pi zu groß! value kann auch neg sein, da nur als norm in normalverteilung
+    meanHorizontalError += angleDiff;
+  }//end for
+
+  return meanHorizontalError /= sampleSet.size();
+}//end getMeanHorizontalDeviation
 
 
 double PostParticleFilter::getConfidenceForObservation(const GoalPercept::GoalPost& post, const double cameraHeight) const
 {
   //TODO check Color -> not similar, return 0
   double weighting(0.0);
-  for (unsigned int i = 0; i < sampleSet.size(); i++) 
-  {
+  for (unsigned int i = 0; i < sampleSet.size(); i++) {
     weighting += getWeightingByPercept(sampleSet[i], post, cameraHeight);
   }
 
-  return weighting;
+  return weighting / sampleSet.size();
 }//end getWeightingOfPerceptAngle
 
 
-void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr, bool noise)
+void PostParticleFilter::resampleGT07(bool noise)
 {
   // calculate the weighting (BH paper)
   // not used yet
@@ -138,6 +171,7 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
     numberOfPartiklesToResample = 0;
     */
 
+  const double cameraHeight = 450;
   double sum = -Math::random();
   //eigentlich zweite summe, hier aber wird der indize verwendet
 
@@ -157,9 +191,13 @@ void PostParticleFilter::resampleGT07(std::vector<GoalPercept::GoalPost> postArr
       sampleSet[n] = oldSampleSet[m];
       if(noise)
       {
-        sampleSet[n].translation.x += (Math::random()-0.5)*parameters.processNoiseDistance;
-        sampleSet[n].translation.y += (Math::random()-0.5)*parameters.processNoiseDistance;
-        //sampleSet[n].rotation = Math::normalize(sampleSet[n].rotation + (Math::random()-0.5)*parameters.processNoiseAngle);
+        const double rotationNoise = (Math::random()-0.5)*parameters.processNoiseRotation;
+        const double distanceNoise = (Math::random()-0.5)*parameters.processNoiseDistance;
+        const double expectedDistanceAsAngle = atan2(sampleSet[n].getPos().abs(), cameraHeight);
+        const double distance = cameraHeight*tan(expectedDistanceAsAngle + distanceNoise);
+
+        sampleSet[n].translation.rotate(rotationNoise);
+        sampleSet[n].translation.normalize(distance);
       }
 
       n++;
@@ -215,9 +253,7 @@ void PostParticleFilter::drawParticles(const std::string& color, int idx) const
 
     PEN(color, 10);
     CIRCLE(sample.translation.x, sample.translation.y, 20);
-    TEXT_DRAWING(sample.translation.x+10, sample.translation.y+10, idx);
-
-
+    
     DebugDrawings::Color inner_color;
     if(colorDiff > 0) {
       inner_color[0] = Math::clamp((sample.likelihood - minValue)/colorDiff,0.0,1.0);
@@ -226,6 +262,9 @@ void PostParticleFilter::drawParticles(const std::string& color, int idx) const
     PEN(inner_color, 10);
     FILLOVAL(sample.translation.x, sample.translation.y, 10, 10);
   }//end for
+
+  PEN(color, 50);
+  TEXT_DRAWING(sampleSet.mean.x+10, sampleSet.mean.y+10, idx);
 }//end drawParticles
 
 

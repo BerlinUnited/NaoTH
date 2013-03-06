@@ -25,6 +25,10 @@
 
 #include "Representations/Modeling/GoalModel.h"
 
+// todo: move to tools?
+#include "Cognition/Modules/Modeling/GoalLocator/WholeGoalLocator/GoalModelCorrector.h" 
+
+
 ActiveGoalLocator::ActiveGoalLocator()
   :
     ccSampleBuffer(parameters.thresholdCanopy)
@@ -35,6 +39,8 @@ ActiveGoalLocator::ActiveGoalLocator()
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_hypotheses", "draw all hypotheses on field", true);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_mean_of_each_valid_PF", "", true);
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_goal_model", "", false);
+  DEBUG_REQUEST_REGISTER("ActiveGoalLocator:goal_model_assosiations", 
+    "estimated associations between the hypotheses to calculate the goal model", false);
 
   DEBUG_REQUEST_REGISTER("ActiveGoalLocator:draw_sensor_association", "", false);
 
@@ -107,8 +113,8 @@ void ActiveGoalLocator::execute()
   //////////////////////////
   // update by odometry
   //////////////////////////
-
   Pose2D odometryDelta = lastRobotOdometry - getOdometryData();
+
   //TODO introduce size of ccSamples
   for(unsigned int i = 0; i < postHypotheses.size(); i++) {
     postHypotheses[i].updateByOdometry(odometryDelta);
@@ -116,8 +122,6 @@ void ActiveGoalLocator::execute()
 
   updateByOdometry(theSampleBuffer, odometryDelta);
   lastRobotOdometry = getOdometryData();
-
-
 
   //////////////////////////
   // update by percepts
@@ -138,7 +142,11 @@ void ActiveGoalLocator::execute()
         double confidence = hypothesis.getConfidenceForObservation(getGoalPercept().getPost(i), getCameraMatrix().translation.z);
         
         // store the best association for the measurement
-        if(confidence > sensorAssoziation.getW4A(i)) {
+        if(
+          2.0*confidence > hypothesis.sampleSet.lastTotalWeighting &&
+          confidence > sensorAssoziation.getW4A(i) && 
+          confidence > sensorAssoziation.getW4B(x)) 
+        {
           sensorAssoziation.addAssociation(i, x, confidence);
         }
       }
@@ -160,23 +168,15 @@ void ActiveGoalLocator::execute()
   );//DEBUG_REQUEST
 
 
-  //Wie viele Pfosten moeglich???
-  std::vector<GoalPercept::GoalPost> postArr (10);
-
   // update the hypotheses with the associated measurements
   for (int i = 0; i < getGoalPercept().getNumberOfSeenPosts(); i++) 
   {
-
-    if (i < 10) { //Todo: param
-      postArr[i]  = getGoalPercept().getPost(i);
-    }
-
     const GoalPercept::GoalPost& post = getGoalPercept().getPost(i);
     int x = sensorAssoziation.getB4A(i); // get hypothesis for measurement
     if (x != -1)
     {
-
       postHypotheses[x].updateByGoalPostPercept(post, getCameraMatrix().translation.z);
+      postHypotheses[x].resampleGT07(true);
     }
     else if (getGoalPercept().getPost(i).positionReliable) 
     {
@@ -194,9 +194,9 @@ void ActiveGoalLocator::execute()
 
 
   // resample all PF
-  for (unsigned int i = 0; i < postHypotheses.size(); i++) {
-    postHypotheses[i].resampleGT07(postArr, true);
-  }
+  //for (unsigned int i = 0; i < postHypotheses.size(); i++) {
+  //  postHypotheses[i].resampleGT07(true);
+  //}
 
   // calculate mean for all valid PFs
   for(unsigned int x = 0; x < postHypotheses.size(); x++) 
@@ -226,6 +226,10 @@ void ActiveGoalLocator::execute()
   //////////////////////////
   estimateGoalModel();
   
+  // experimental
+  DEBUG_REQUEST("ActiveGoalLocator:goal_model_assosiations",
+    calculateGoalModelAssosiations();
+  );
 
   DEBUG_REQUEST("ActiveGoalLocator:draw_goal_model",
     FIELD_DRAWING_CONTEXT;
@@ -308,16 +312,25 @@ void ActiveGoalLocator::estimateGoalModel()
     //decide whether distError is feasable
     if (lastDistError < parameters.possibleGoalWidhtError) 
     {
-      if (postHypotheses[id1].sampleSet.mean.angle() < postHypotheses[id2].sampleSet.mean.angle()) 
-      {
+      if (postHypotheses[id1].sampleSet.mean.angle() < postHypotheses[id2].sampleSet.mean.angle()) {
         getLocalGoalModel().goal.leftPost  = postHypotheses[id1].sampleSet.mean;
         getLocalGoalModel().goal.rightPost = postHypotheses[id2].sampleSet.mean;
-      } 
-      else 
-      {
+      } else {
         getLocalGoalModel().goal.leftPost  = postHypotheses[id2].sampleSet.mean;
         getLocalGoalModel().goal.rightPost = postHypotheses[id1].sampleSet.mean;
       }
+
+      // correct the goal model
+      Vector2d offset;
+      GoalModelCorrector gmc;
+      gmc.correct_the_goal_percept_on_field(
+        getCameraMatrix(),
+        getCameraInfo(),
+        getFieldInfo().goalWidth,
+        getLocalGoalModel().goal.leftPost,
+        getLocalGoalModel().goal.rightPost,
+        offset);
+
     }//end if
 
   }//end if numOfValidFilter
@@ -336,6 +349,54 @@ void ActiveGoalLocator::estimateGoalModel()
     getLocalGoalModel().frameWhenOwnGoalWasSeen = getFrameInfo();
   }
 }//end estimateGoalModel
+
+
+
+void ActiveGoalLocator::calculateGoalModelAssosiations()
+{
+  // A ~ hypotheses
+  // B ~ hypotheses
+  Assoziation goalModelAssociation(postHypotheses.size(), postHypotheses.size());
+
+  for (unsigned int x = 0; x < postHypotheses.size(); x++ ) {
+    PostHypothesis& hypothesisOne = postHypotheses[x];
+    if(!hypothesisOne.sampleSet.getIsValid()){
+      continue;
+    }
+
+    for (unsigned int y = x+1; y < postHypotheses.size(); y++ ) {
+      PostHypothesis& hypothesisTwo = postHypotheses[y];
+      if(!hypothesisTwo.sampleSet.getIsValid()){
+      continue;
+    }
+
+      double distError = abs((hypothesisOne.sampleSet.mean - hypothesisTwo.sampleSet.mean).abs() - getFieldInfo().goalWidth);
+      double confidence = 1.0/(1.0+distError);
+
+      if(confidence > goalModelAssociation.getW4A(x) && 
+         confidence > goalModelAssociation.getW4B(y)) 
+      {
+        goalModelAssociation.addAssociation(x, y, confidence);
+        goalModelAssociation.addAssociation(y, x, confidence);
+      }
+    }
+  }
+
+
+  FIELD_DRAWING_CONTEXT;
+  PEN("FFFF00",20);
+  for (unsigned int x = 0; x < postHypotheses.size(); x++ ) 
+  {
+    int y = goalModelAssociation.getB4A(x); // get assosiation
+    if (y != -1)
+    {
+      LINE(postHypotheses[x].sampleSet.mean.x, postHypotheses[x].sampleSet.mean.y,
+           postHypotheses[y].sampleSet.mean.x, postHypotheses[y].sampleSet.mean.y);
+    }
+  }
+
+}//end calculateGoalModelAssosiations
+
 
 
 void ActiveGoalLocator::debugDrawings() 
@@ -366,10 +427,11 @@ void ActiveGoalLocator::debugDrawings()
     {
       if (postHypotheses[x].sampleSet.getIsValid()) {
         CIRCLE(postHypotheses[x].sampleSet.mean.x, postHypotheses[x].sampleSet.mean.y, 20);
+        CIRCLE(postHypotheses[x].sampleSet.mean.x, postHypotheses[x].sampleSet.mean.y, postHypotheses[x].sampleSet.lastTotalWeighting*20);
       }
     }
   );
-
+  
   DEBUG_REQUEST("ActiveGoalLocator:draw_percept",
     FIELD_DRAWING_CONTEXT;
     PEN("FF0000", 30);
@@ -490,7 +552,7 @@ void ActiveGoalLocator::initFilterByBuffer(const int& largestClusterID, AGLSampl
     }
   }//end for
 
-  ASSERT((int)sampleSet.size() == n);
+  //ASSERT((int)sampleSet.size() == n);
 
   // update the mean of the filter and set it valid
   sampleSet.mean = sum / (double)sampleSet.size();

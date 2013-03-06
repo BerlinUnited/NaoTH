@@ -27,15 +27,35 @@ public:
     double standardDeviationDistance;
     // parameters for the filter resampling
     double processNoiseDistance;
+    double processNoiseRotation;
+
     double resamplingThreshhold;
     double particlesToReset;
+
+    int numberOfParticles;
   };
 
-  void setParams(const Parameters& parameters) { this->parameters = parameters; }
+  void setParams(const Parameters& parameters) { 
+    this->parameters = parameters;
+    if(parameters.numberOfParticles > 0) {
+      setNumberOfParticles((unsigned)parameters.numberOfParticles); 
+    }
+  }
+
+  void setNumberOfParticles(unsigned n) {
+    if(n != sampleSet.size()) {
+      sampleSet.samples.resize(n);
+    }
+  }
+
+  PostParticleFilter();
 
   void updateByOdometry(const Pose2D& odometryDelta);
   void updateByGoalPostPercept(const GoalPercept::GoalPost& post, const double cameraHeight);
-  void resampleGT07(std::vector<GoalPercept::GoalPost> postArr, bool noise);
+  void resampleGT07(bool noise);
+
+  double getMeanVerticalDeviation(const GoalPercept::GoalPost& post, const double cameraHeight) const;
+  double getMeanHorizontalDeviation(const GoalPercept::GoalPost& post) const;
 
   double getConfidenceForObservation(const GoalPercept::GoalPost& post, const double cameraHeight) const;
 

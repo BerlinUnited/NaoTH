@@ -21,6 +21,7 @@
 #include "Representations/Modeling/BodyState.h"
 #include "Representations/Modeling/GoalModel.h"
 #include "Representations/Modeling/CompassDirection.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 
 // Tools
 #include <vector>
@@ -45,6 +46,7 @@ BEGIN_DECLARE_MODULE(ActiveGoalLocator)
   REQUIRE(FieldInfo)
   REQUIRE(OdometryData)
   REQUIRE(CompassDirection)
+  REQUIRE(CameraInfo)
 
   PROVIDE(LocalGoalModel)
 END_DECLARE_MODULE(ActiveGoalLocator)
@@ -97,6 +99,8 @@ private:
   
   void estimateGoalModel();
 
+  // experimental
+  void calculateGoalModelAssosiations();
 
   /** debug visualization */
   void debugDrawings();

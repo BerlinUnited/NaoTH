@@ -21,7 +21,6 @@ private:
 public: 
   AGLSampleSet(unsigned int n = 10)
     : 
-    numberOfParticles(n),
     isValid(false),
     samples(n),
     lastTotalWeighting(1.2) //choosen by observation for usual initial values
@@ -69,7 +68,7 @@ public:
    */
   const AGLSample& operator[](int index) const {return samples[index];}
 
-  unsigned int size() const { return numberOfParticles; }
+  unsigned int size() const { return samples.size(); }
 
   AGLSample meanOfLargestCluster(Moments2<2>& moments);
 
