@@ -3,7 +3,7 @@
  *
  * @author <a href="mailto:scheunem@informatik.hu-berlin.de">Marcus Scheunemann</a>
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
- * Declaration of class ActiveGoalLocatorSimpleParticle
+ * Declaration of class ActiveGoalLocator
  */
 
 #ifndef _ActiveGoalLocator_h_
