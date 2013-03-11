@@ -41,7 +41,7 @@ using namespace naoth;
 using namespace std;
 using namespace cv;
 
-class OpenCVImageLoader : public PlatformInterface<OpenCVImageLoader>
+class OpenCVImageLoader : public PlatformInterface
 {
 public:
   OpenCVImageLoader(const char* dirPath);

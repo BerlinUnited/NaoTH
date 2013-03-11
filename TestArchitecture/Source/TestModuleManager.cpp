@@ -4,15 +4,17 @@
 #include "Modules/ModuleA.h"
 #include "Modules/ModuleB.h"
 
+using namespace std;
+
 void TestModuleManager::init()
 {
   ModuleCreator<ModuleA>* m = registerModule<ModuleA>("ModuleA");
-  setModuleEnabled(std::string("ModuleA"), true);
   setModuleEnabled(std::string("ModuleA"), false);
-  setModuleEnabled(std::string("ModuleA"), true);
+  setModuleEnabled(std::string("ModuleA"), false);
+  setModuleEnabled(std::string("ModuleA"), false);
 
   registerModule<ModuleB>("ModuleB");
-  setModuleEnabled(std::string("ModuleB"), true);
+  setModuleEnabled(std::string("ModuleB"), false);
   
   // FAIL test
   //registerModule<ModuleB>("ModuleA");
@@ -21,7 +23,28 @@ void TestModuleManager::init()
 
 void TestModuleManager::main()
 {
+  cout << "-- begin static test --" << endl;
+  ModuleManager::print(cout);
+  cout << "-- end static test --" << endl;
+
+  cout << endl;
+
+  setModuleEnabled("ModuleB", true);
+  setModuleEnabled("ModuleA", true);
+  
+  cout << "-- begin static test 2 --" << endl;
+  ModuleManager::print(cout);
+  cout << "-- end static test 2 --" << endl;
+  
+  cout << "-- begin dynamic test --" << endl;
+  ModuleManager::print(cout);
+  cout << "-- end dynamic test --" << endl;
+
+  cout << endl;
+
   // execute all modules
+  {
+  cout << "-- begin execution test --" << endl;
   list<string>::const_iterator iter;
   for(iter = getExecutionList().begin(); iter != getExecutionList().end(); iter++)
   {
@@ -29,23 +52,9 @@ void TestModuleManager::main()
     AbstractModuleCreator* module = getModule(*iter);
     if(module != NULL && module->isEnabled())
     {
-      cout << "-- begin --" << endl;
-
-      list<Representation*>::const_iterator repr_iter = module->getModule()->getRequiredRepresentations().begin();
-      for(;repr_iter != module->getModule()->getRequiredRepresentations().end(); repr_iter++)
-      {
-        cout << "use " << (*repr_iter)->getName() << endl;
-      }//end for
-
-      //cout << "executing module " << *iter << endl;
       module->execute();
-
-      repr_iter = module->getModule()->getProvidedRepresentations().begin();
-      for(;repr_iter != module->getModule()->getProvidedRepresentations().end(); repr_iter++)
-      {
-        cout << "provide " << (*repr_iter)->getName() << endl;;
-      }//end for
-      cout << "-- end --" << endl;
     }//end if
   }//end for
+  cout << "-- end execution test --" << endl;
+  }
 }//end main

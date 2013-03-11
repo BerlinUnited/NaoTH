@@ -108,8 +108,8 @@ void BodyStateProvider::updateTheLegTemperature()
 
   for(int i = 0; i < 5; i++)
   {
-    tempL = max(tempL, getSensorJointData().temperature[leftLegId[i]]);
-    tempR = max(tempR, getSensorJointData().temperature[rightLegId[i]]);
+    tempL = std::max(tempL, getSensorJointData().temperature[leftLegId[i]]);
+    tempR = std::max(tempR, getSensorJointData().temperature[rightLegId[i]]);
   }
 
   getBodyState().temperatureLeftLeg = tempL;

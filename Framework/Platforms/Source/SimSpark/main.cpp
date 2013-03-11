@@ -10,9 +10,6 @@
 
 #include <SimSpark/SimSparkController.h>
 
-#include "Cognition.h"
-#include "Motion.h"
-
 using namespace std;
 
 
@@ -75,9 +72,7 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  Cognition theCognition;
-  Motion theMotion;
-  theController.registerCallbacks(&theMotion, &theCognition);
+  naoth::init_agent(theController);
 
   theController.main();
 

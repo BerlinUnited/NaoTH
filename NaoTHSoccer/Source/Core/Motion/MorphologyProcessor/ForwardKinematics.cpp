@@ -8,9 +8,10 @@
 
 #include <Representations/Infrastructure/FSRData.h>
 
-namespace Kinematics {
+namespace Kinematics 
+{
 
-  using namespace naoth;
+using namespace naoth;
   
 void ForwardKinematics::forwardAllKinematics(Link* theLink)
 {
@@ -22,7 +23,8 @@ void ForwardKinematics::forwardAllKinematics(Link* theLink)
   
   forwardAllKinematics(theLink->sister);
   forwardAllKinematics(theLink->child);
-}
+}//end forwardAllKinematics
+
 
 void ForwardKinematics::forwardAllKinematicsExcept(Link* theLink, Link* ept)
 {
@@ -38,8 +40,10 @@ void ForwardKinematics::forwardAllKinematicsExcept(Link* theLink, Link* ept)
   }
 
   forwardAllKinematicsExcept(theLink->sister, ept);
-}
+}//end forwardAllKinematicsExcept
 
+
+// TODO: move it to KinematicChainNao
 void ForwardKinematics::calcChestRotation(Link* theLinks, const Vector2d& rotation)
 {
   Link* chest = (theLinks + KinematicChain::Torso);
@@ -49,48 +53,60 @@ void ForwardKinematics::calcChestRotation(Link* theLinks, const Vector2d& rotati
 }//end calcChestRotation
 
 
-
-
-void ForwardKinematics::calcChestAll(Link* theLinks,
-        const AccelerometerData& theAccelerometerData,
+void ForwardKinematics::calcChestAll(
+        Link* theLinks,
+        //const AccelerometerData& theAccelerometerData,
         //const InertialPercept& theInertialPercept,
         const Vector2<double>& theBodyRotation,
+        const Vector3<double>& theBodyAcceleration,
         const double deltaTime)
 {
-  calcChestRotation(theLinks, theBodyRotation);
   Link* chest = (theLinks + KinematicChain::Torso);
 
-  // position is original
-  Vector3<double> O(0, 0, 0);
+  // position of the chest is the origin of the whole kinematic chain
+  Vector3d O(0, 0, 0);
   chest->p = O;
 
-  chest->dv = chest->R * ( theAccelerometerData.getAcceleration() * 1000 );
+  // rotation from Inertial sensor data
+  chest->R = RotationMatrix::getRotationX(theBodyRotation.x);
+  chest->R.rotateY(theBodyRotation.y);
+
+  // acceleration and velocity
+  chest->dv = chest->R * ( theBodyAcceleration * 1000 );
   chest->v += chest->dv * deltaTime;
   chest->w = O;
   chest->dw = O;
 }//end calcChestAll
 
+
 double ForwardKinematics::calcChestHeight(const Vector3<double>* fsrPos)
 {
   // assume the lowest FSR's z = 0
   double offsetZ = 0;
-  for( int i=0; i<FSRData::numOfFSR; i++ ){
+  for( int i=0; i<FSRData::numOfFSR; i++ )
+  {
     if ( offsetZ > fsrPos[i].z )
       offsetZ = fsrPos[i].z;
   }
   return -offsetZ;
 }//end calcChestHeight
 
+
 void ForwardKinematics::calculateKinematicChainAll(
-    const AccelerometerData& theAccelerometerData,
+    //const AccelerometerData& theAccelerometerData,
     //const InertialPercept& theInertialPercept,
     const Vector2<double>& theBodyRotation,
+    const Vector3<double>& theBodyAcceleration,
     KinematicChain& theKinematicChain,
     Vector3<double>* theFSRPos,
     const double deltaTime)
 {
   Link* theLinks = theKinematicChain.theLinks;
-  calcChestAll(theLinks, theAccelerometerData, theBodyRotation, deltaTime);
+  
+  // set the values for the chest link
+  calcChestAll(theLinks, theBodyRotation, theBodyAcceleration, deltaTime);
+
+  // propagate though the entire kinematic chain beginning from the chest
   forwardAllKinematics(theLinks + KinematicChain::Torso);
   
   // TODO: move the estimation of the chest height to somwhere else
@@ -108,12 +124,16 @@ void ForwardKinematics::adjustKinematicChain(Link* l, Vector3<double> *fsrPos, d
 {
   double hipX = l[KinematicChain::Hip].p.x;
   double hipY = l[KinematicChain::Hip].p.y;
-  for(int i=0; i<KinematicChain::numOfLinks; i++ ){
+
+  for(int i=0; i<KinematicChain::numOfLinks; i++ )
+  {
     l[i].p.x -= hipX;
     l[i].p.y -= hipY;
     l[i].p.z += chestHeight;
   }
-  for(int i=0; i<FSRData::numOfFSR; i++){
+
+  for(int i=0; i<FSRData::numOfFSR; i++)
+  {
     fsrPos[i].x -= hipX;
     fsrPos[i].y -= hipY;
     fsrPos[i].z += chestHeight;
@@ -157,6 +177,8 @@ void ForwardKinematics::calcFSRPos(const Link* theLink, Vector3<double>* theFSRP
   }//end for
 }//end calcFSRPos
 
+
+// TODO: does this referencing make sense (Link* &l)?
 Link* ForwardKinematics::updateToRoot(Link* &l)
 {
   if ( l->mother == NULL )
@@ -174,7 +196,7 @@ Link* ForwardKinematics::updateToRoot(Link* &l)
 
   ASSERT(false);
   return l;
-}
+}//end updateToRoot
 
 void ForwardKinematics::updateKinematicChainFrom(Link* l)
 {

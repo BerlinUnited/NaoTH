@@ -6,86 +6,117 @@
  *
  */
 
-#ifndef _MOTION_H
-#define _MOTION_H
+#ifndef _Motion_h_
+#define _Motion_h_
 
 #include <PlatformInterface/Callable.h>
 #include <PlatformInterface/PlatformInterface.h>
+#include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/Module.h>
+#include <Tools/Debug/ModuleManagerWithDebug.h>
 
-#include "MotionBlackBoard.h"
-#include "AbstractMotion.h"
-#include "Engine/HeadMotion/HeadMotionEngine.h"
-#include "Engine/MotionFactory.h"
 
 #include "MorphologyProcessor/SupportPolygonGenerator.h"
 #include "MorphologyProcessor/OdometryCalculator.h"
 #include "MorphologyProcessor/FootTouchCalibrator.h"
+#include "MorphologyProcessor/FootGroundContactDetector.h"
+#include "MorphologyProcessor/KinematicChainProviderMotion.h"
 #include "SensorFilter/InertiaSensorCalibrator.h"
+#include "SensorFilter/InertiaSensorFilter.h"
+
+
+// representations
+#include "Representations/Modeling/FSRPositions.h"
 
 #include "Tools/Debug/Logger.h"
+#include "Engine/MotionEngine.h"
 
-#ifdef NAO_OLD
-#include <Representations/Infrastructure/DebugMessage.h>
-#include <Cognition/Modules/Infrastructure/Debug/StopwatchSender.h>
-#endif
 
-class Motion : public naoth::Callable
+BEGIN_DECLARE_MODULE(Motion)
+  REQUIRE(MotionStatus)
+  REQUIRE(OdometryData)
+  REQUIRE(InertialModel)
+  REQUIRE(CalibrationData)
+
+  //PROVIDE(FSRPositions)// TODO:strange...
+  PROVIDE(CameraMatrix)// TODO:strange...
+
+  // PROVIDE is needed to update the speed and acceleration
+  PROVIDE(MotorJointData) // TODO: check
+  
+  PROVIDE(RobotInfo)
+  PROVIDE(KinematicChainSensor)
+  PROVIDE(KinematicChainMotor)
+
+  // platform input
+  REQUIRE(SensorJointData)
+  PROVIDE(FrameInfo)
+  PROVIDE(InertialSensorData)
+  PROVIDE(FSRData)
+  PROVIDE(AccelerometerData)
+  PROVIDE(GyrometerData)
+  
+
+  // from cognition
+  PROVIDE(CameraInfo)
+  PROVIDE(HeadMotionRequest)
+  PROVIDE(MotionRequest)
+END_DECLARE_MODULE(Motion)
+
+
+class Motion : public naoth::Callable, private MotionBase, public ModuleManagerWithDebug
 {
 public:
   Motion();
   virtual ~Motion();
 
+
+  /**
+  *
+  */
   virtual void call();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  // TODO: unify with Callable
+  void execute() {}
+
+  /**
+  *
+  */
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
   
-  bool exit();
+  //bool exit();
   
-protected:
+private:
   
   void processSensorData();
   
   void postProcess();
   
-  void selectMotion();
-  
-  void changeMotion(AbstractMotion* m);
-private:
 
+private:
+  void debugPlots();
   void updateCameraMatrix();
+  void guard_cognition();
 
 private:
-  MotionBlackBoard& theBlackBoard;
 
-  EmptyMotion theEmptyMotion;
-  
-  InertiaSensorCalibrator theInertiaSensorCalibrator;
-  SupportPolygonGenerator theSupportPolygonGenerator;
-  OdometryCalculator theOdometryCalculator;
-  FootTouchCalibrator theFootTouchCalibrator;
-  
-  HeadMotionEngine theHeadMotionEngine;
-  std::list<MotionFactory*> theMotionFactories;
-  
-  unsigned int frameNumSinceLastMotionRequest;
-  unsigned int lastCognitionFrameNumber;
+  ModuleCreator<InertiaSensorCalibrator>* theInertiaSensorCalibrator;
+  ModuleCreator<InertiaSensorFilter>* theInertiaSensorFilterBH;
+  ModuleCreator<FootGroundContactDetector>* theFootGroundContactDetector;
+  ModuleCreator<SupportPolygonGenerator>* theSupportPolygonGenerator;
+  ModuleCreator<OdometryCalculator>* theOdometryCalculator;
+  ModuleCreator<KinematicChainProviderMotion>* theKinematicChainProvider;
 
-  enum State
-  {
-    initial,
-    running,
-    exiting
-  } state;
+  ModuleCreator<MotionEngine>* theMotionEngine;
+
+  //FootTouchCalibrator theFootTouchCalibrator;
+
+
+  naoth::MotorJointData theLastMotorJointData;
 
   Logger motionLogger;
-#ifdef NAO_OLD
-  naoth::DebugMessageIn theDebugMessageIn;
-  naoth::DebugMessageOut theDebugMessageOut;
-  StopwatchSender theStopwatchSender;
-#endif
-
-  unsigned int oldMotionRequestTime;
 };
 
-#endif  /* MOTION_H */
+
+#endif  // _Motion_h_ 
 

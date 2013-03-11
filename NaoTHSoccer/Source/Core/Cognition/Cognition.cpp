@@ -88,6 +88,7 @@
 using namespace std;
 
 Cognition::Cognition()
+  : ModuleManagerWithDebug("Cognition")
 {
 }
 
@@ -97,18 +98,18 @@ Cognition::~Cognition()
 
 
 #define REGISTER_MODULE(module) \
+  g_message("Register "#module);\
   registerModule<module>(std::string(#module));
 
 
-void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
+void Cognition::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   g_message("Cognition register start");
   // register of the modules
 
-  // input
-  ModuleCreator<Sensor>* sensor = REGISTER_MODULE(Sensor);
-  sensor->setEnabled(true);
-  sensor->getModuleT()->init(platformInterface);
+  // input module
+  ModuleCreator<Sensor>* sensor = registerModule<Sensor>(std::string("Sensor"), true);
+  sensor->getModuleT()->init(platformInterface, platform);
 
   /* 
    * to register a module use
@@ -195,10 +196,9 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   // -- END MODULES --
 
-  // output
-  ModuleCreator<Actuator>* actuator = REGISTER_MODULE(Actuator);
-  actuator->setEnabled(true);
-  actuator->getModuleT()->init(platformInterface);
+  // output module
+  ModuleCreator<Actuator>* actuator = registerModule<Actuator>(std::string("Actuator"), true);
+  actuator->getModuleT()->init(platformInterface, platform);
 
   // loat external modules
   //packageLoader.loadPackages("Packages/", *this);
@@ -207,17 +207,15 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
   // use the configuration in order to set whether a module is activated or not
   const naoth::Configuration& config = Platform::getInstance().theConfiguration;
   
-  for(list<string>::const_iterator name=getExecutionList().begin();
-    name != getExecutionList().end(); ++name)
+  list<string>::const_iterator name = getExecutionList().begin();
+  for(;name != getExecutionList().end(); ++name)
   {
     bool active = false;
-    if(config.hasKey("modules", *name))
-    {    
+    if(config.hasKey("modules", *name)) {    
       active = config.getBool("modules", *name);      
     }
     setModuleEnabled(*name, active);
-    if(active)
-    {
+    if(active) {
       g_message("activating module %s", (*name).c_str());
     }
   }//end for
@@ -227,43 +225,38 @@ void Cognition::init(naoth::PlatformInterfaceBase& platformInterface)
 
   g_message("Cognition register end");
 
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.start();
 }//end init
 
 
 void Cognition::call()
 {
   // BEGIN cognition frame rate measuring
-  Stopwatch::getInstance().notifyStop(stopwatch);
-  Stopwatch::getInstance().notifyStart(stopwatch);
+  stopwatch.stop();
+  stopwatch.start();
   PLOT("_CognitionCycle", stopwatch.lastValue);
   // END cognition frame rate measuring
 
 
   STOPWATCH_START("CognitionExecute");
+  //GT_TRACE("beginning to iterate over all modules");
 
-
-  GT_TRACE("beginning to iterate over all modules");
   // execute all modules
-  list<string>::const_iterator iter;
-  for (iter = getExecutionList().begin(); iter != getExecutionList().end(); ++iter)
+  list<AbstractModuleCreator*>::const_iterator iter;
+  for (iter = getModuleExecutionList().begin(); iter != getModuleExecutionList().end(); ++iter)
   {
     // get entry
-    AbstractModuleCreator* module = getModule(*iter);
+    AbstractModuleCreator* module = *iter;//getModule(*iter);
     if (module != NULL && module->isEnabled())
     {
-      std::string name(*iter);
+      //std::string name(module->getModule()->getName());
 
-      stringstream s;
-      s << "executing " << name;
-      Trace::getInstance().setCurrentLine(__FILE__, __LINE__, s.str());
-      STOPWATCH_START_GENERIC(name);
+      //GT_TRACE("executing " << name);
       module->execute();
-      STOPWATCH_STOP_GENERIC(name);
     }//end if
   }//end for all modules
   
-  GT_TRACE("end module iteration");
+  //GT_TRACE("end module iteration");
   STOPWATCH_STOP("CognitionExecute");
 
 

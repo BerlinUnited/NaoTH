@@ -3,17 +3,16 @@
  *
  * @author <a href="mailto:xu@informatik.hu-berlin.de">Xu, Yuan</a>
  * @author <a href="mailto:mellmann@informatik.hu-berlin.de">Heinrich Mellmann</a>
- * 
+ * @author Inspired by the BH-2011 
+ *
  * Calibrating the sensors: Inertial, Accelerometer, Gyrometer.
- * Inspired by the BH-2011
  */
 
-#ifndef _INERTIAL_FILTER_H_
-#define _INERTIAL_FILTER_H_
+#ifndef _InertiaSensorCalibrator_h_
+#define _InertiaSensorCalibrator_h_
 
-#include "Motion/MotionBlackBoard.h"
+#include <ModuleFramework/Module.h>
 
-#include "Representations/Infrastructure/CalibrationData.h"
 
 #include "Tools/Math/Kalman.h"
 #include "Tools/DataStructures/RingBuffer.h"
@@ -21,19 +20,45 @@
 
 #include "Tools/Debug/NaoTHAssert.h"
 
-class InertiaSensorCalibrator
+
+// representations
+#include <Representations/Infrastructure/FrameInfo.h>
+#include <Representations/Infrastructure/AccelerometerData.h>
+#include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/JointData.h>
+#include "Representations/Infrastructure/CalibrationData.h"
+#include "Representations/Modeling/GroundContactModel.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/KinematicChain.h"
+
+BEGIN_DECLARE_MODULE(InertiaSensorCalibrator)
+  REQUIRE(AccelerometerData)
+  REQUIRE(GyrometerData)
+  REQUIRE(InertialSensorData)
+  REQUIRE(FrameInfo)
+  REQUIRE(MotorJointData)
+  REQUIRE(KinematicChainSensor)
+  REQUIRE(GroundContactModel)
+  REQUIRE(MotionStatus)
+
+  PROVIDE(CalibrationData)
+END_DECLARE_MODULE(InertiaSensorCalibrator)
+
+
+
+class InertiaSensorCalibrator: private InertiaSensorCalibratorBase
 {
 public:
-  InertiaSensorCalibrator(const MotionBlackBoard& bb, CalibrationData& theCalibrationData);
-  void update();
+  InertiaSensorCalibrator();
+
+  void execute();
 
 private:
   bool intentionallyMoving();
   void reset();
 
 private:
-  const MotionBlackBoard& theBlackBoard;
-  CalibrationData& theCalibrationData;
 
   // inertial
   Kalman<double> inertialXBias; /**< The calibration bias of inertialX. */
@@ -91,9 +116,7 @@ private:
     Collection() {}
   };
 
-
-  
   RingBuffer<Collection, 50> collections; /**< Buffered averaged gyro and accleration sensor readings. */
 };
 
-#endif // _INERTIAL_FILTER_H_
+#endif // _InertiaSensorCalibrator_h_

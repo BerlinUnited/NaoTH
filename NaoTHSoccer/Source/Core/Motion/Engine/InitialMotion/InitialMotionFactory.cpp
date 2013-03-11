@@ -14,29 +14,39 @@
 
 InitialMotionFactory::InitialMotionFactory()
   :
-  currentMotion(NULL)
+  currentCreator(NULL)
 {
 }
 
 InitialMotionFactory::~InitialMotionFactory()
 {
-  delete currentMotion;
-  currentMotion = NULL;
+  currentCreator = NULL;
 }
 
-AbstractMotion* InitialMotionFactory::createMotion(const MotionRequest& motionRequest)
+
+Module* InitialMotionFactory::createMotion(const MotionRequest& motionRequest)
 {
-  delete currentMotion;
-  currentMotion = NULL;
+  if(currentCreator != NULL)
+    currentCreator->setEnabled(false);
+  currentCreator = NULL;
 
-
+  static ModuleCreator<DeadMotion>* creatorDeadMotion = registerModule<DeadMotion>("DeadMotion");
+  static ModuleCreator<InitialMotion>* creatorInitialMotion = registerModule<InitialMotion>("InitialMotion");
+  static ModuleCreator<Sit>* creatorSit = registerModule<Sit>("Sit");
+  
   switch(motionRequest.id)
   {
-    case motion::dead: currentMotion = new DeadMotion(); break;
-    case motion::init: currentMotion = new InitialMotion(); break;
-    case motion::sit: currentMotion = new Sit(); break;
-    default: currentMotion = NULL;
+  case motion::dead: currentCreator = creatorDeadMotion; break;
+  case motion::init: currentCreator = creatorInitialMotion; break;
+  case motion::sit: currentCreator = creatorSit; break;
+  default: currentCreator = NULL;
   }//end switch
 
-  return currentMotion;
+  if(currentCreator != NULL)
+  {
+    currentCreator->setEnabled(true);
+    return currentCreator->getModule();
+  }
+
+  return NULL;
 }//end createMotion

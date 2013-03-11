@@ -6,8 +6,8 @@
 * an geometrical 2D area.
 * 
 */
-#ifndef __Area_h_
-#define __Area_h_
+#ifndef _Area_h_
+#define _Area_h_
 
 template<class T>
 class Area

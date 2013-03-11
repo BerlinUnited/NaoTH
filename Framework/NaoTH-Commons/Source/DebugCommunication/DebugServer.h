@@ -6,7 +6,7 @@
  */
 
 #ifndef DEBUGSERVER_H
-#define  DEBUGSERVER_H
+#define DEBUGSERVER_H
 
 #include <glib.h>
 #include <libb64/decode.h>

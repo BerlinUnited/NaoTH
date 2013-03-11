@@ -6,7 +6,7 @@
  */
 
 #ifndef _WEBOTSCONTROLLER_H
-#define  _WEBOTSCONTROLLER_H
+#define _WEBOTSCONTROLLER_H
 
 #include <webots/robot.h>
 #include <webots/camera.h>
@@ -54,7 +54,7 @@ using namespace std;
 namespace naoth
 {
 
-  class WebotsController : public PlatformInterface<WebotsController>
+  class WebotsController : public PlatformInterface
   {
   public:
 

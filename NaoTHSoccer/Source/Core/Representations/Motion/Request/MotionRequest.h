@@ -6,8 +6,8 @@
  * Definition of the class MotionRequest
  */
 
-#ifndef __MotionRequest_h_
-#define __MotionRequest_h_
+#ifndef _MotionRequest_h_
+#define _MotionRequest_h_
 
 #include <string>
 

@@ -1,10 +1,6 @@
 
 #include "OpenCVWebCamController.h"
 #include "PlatformInterface/Platform.h"
-#include "Cognition.h"
-#include "Motion.h"
-
-// representations
 
 using namespace naoth;
 
@@ -118,8 +114,8 @@ void OpenCVWebCamController::copyImage(Image& image, Mat& capturedImage)
 void OpenCVWebCamController::makeStep()
 {
   time += getBasicTimeStep();
-  callCognition();
-  callMotion();
+  runCognition();
+  runMotion();
 }
 
 

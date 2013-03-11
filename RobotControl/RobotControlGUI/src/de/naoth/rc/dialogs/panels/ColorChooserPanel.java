@@ -17,6 +17,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import javax.swing.Icon;
 import javax.swing.JToggleButton;
+import javax.swing.UIDefaults;
 
 /**
  *
@@ -28,12 +29,20 @@ public class ColorChooserPanel extends javax.swing.JPanel {
     public ColorChooserPanel() {
         initComponents();
 
+        // diable the background in the nimbus theme
+        UIDefaults buttonTheme = new UIDefaults();
+        buttonTheme.put("ToggleButton[MouseOver].backgroundPainter", null);
+        
         try{
           for(Colors.ColorClass c: Colors.ColorClass.values())
           {
             if(c != Colors.ColorClass.numOfColors)
             {
               ColorButton button = new ColorButton(Colors.GetColor(c), c.name());
+              // just for the nimbus theme
+              button.putClientProperty("Nimbus.Overrides.InheritDefaults", Boolean.FALSE);
+              button.putClientProperty("Nimbus.Overrides", buttonTheme);
+                
               this.colorClassButtonGroup.add(button);
               this.colorToolBar.add(button);
             }
@@ -58,16 +67,15 @@ public class ColorChooserPanel extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        colorToolBar.setBorder(null);
+        colorToolBar.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         colorToolBar.setFloatable(false);
-        colorToolBar.setRollover(true);
         add(colorToolBar, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
 
 
-    class ColorButton extends JToggleButton
+  class ColorButton extends JToggleButton
   {
     private Color buttonBackgroundOn = new Color(0.7f,0.7f,0.9f);
     private Color buttonBackgroundOff = new Color(0.9f,0.9f,1.0f,0.0f);
@@ -85,6 +93,8 @@ public class ColorChooserPanel extends javax.swing.JPanel {
         setIcon(new ColorIcon(color, buttonBackgroundOff, buttonBackgroundOff));
         setRolloverIcon(new ColorIcon(color, buttonBackgroundOff, borderColor));
         setSelectedIcon(new ColorIcon(color, buttonBackgroundOn, borderColor));
+        
+        setRolloverSelectedIcon(null);
     }//end ColorButton
   }//end ColorButton
 
@@ -115,6 +125,7 @@ public class ColorChooserPanel extends javax.swing.JPanel {
         this.borderColor = borderColor;
     }
 
+    @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         // draw outer frame
         Color old = g.getColor();
@@ -134,10 +145,12 @@ public class ColorChooserPanel extends javax.swing.JPanel {
         g.setColor(old);
     }//end paintIcon
 
+    @Override
     public int getIconWidth() {
         return outerWidth+1;
     }
 
+    @Override
     public int getIconHeight() {
         return outerWidth+1;
     }

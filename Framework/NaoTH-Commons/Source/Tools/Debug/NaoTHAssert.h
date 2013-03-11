@@ -8,14 +8,14 @@
  * @author Heinrich Mellmann
  */
 
-#ifndef __NaoTHAssert_h_
-#define __NaoTHAssert_h_
+#ifndef _NaoTHAssert_h_
+#define _NaoTHAssert_h_
 
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 
 #include "Trace.h"
 
@@ -66,4 +66,4 @@
 #define THROW(msg) { std::cerr<<msg<<std::endl; }
 #endif //DEBUG
 
-#endif //__NaoTHAssert_h_
+#endif //_NaoTHAssert_h_

@@ -12,21 +12,43 @@
 #include <list>
 
 //
-#include <PlatformInterface/PlatformInterface.h>
 #include <PlatformInterface/Callable.h>
+#include <PlatformInterface/PlatformInterface.h>
+#include <ModuleFramework/ModuleManager.h>
+#include <ModuleFramework/Module.h>
 
-//
-#include <Representations/Infrastructure/JointData.h>
+
+// representations
 #include <Representations/Infrastructure/FrameInfo.h>
-#include <Representations/Infrastructure/InertialSensorData.h>
 #include <Representations/Infrastructure/FSRData.h>
+#include <Representations/Infrastructure/JointData.h>
 #include <Representations/Infrastructure/AccelerometerData.h>
 #include <Representations/Infrastructure/GyrometerData.h>
+#include <Representations/Infrastructure/InertialSensorData.h>
+#include <Representations/Infrastructure/LEDData.h>
+#include <Representations/Infrastructure/RobotInfo.h>
+
 #include "Representations/Motion/MotionRequest.h"
+#include "Representations/Motion/MotionStatus.h"
+#include "Representations/Modeling/OdometryData.h"
 
-#include "MotionBlackBoard.h"
+BEGIN_DECLARE_MODULE(Motion)
+  PROVIDE(MotionRequest)
+  REQUIRE(LEDData)
+  
+  PROVIDE(RobotInfo)
+  PROVIDE(MotionStatus)
+  PROVIDE(MotorJointData)
 
-class Motion : public naoth::Callable
+  PROVIDE(SensorJointData)
+  PROVIDE(FrameInfo)
+  PROVIDE(InertialSensorData)
+  PROVIDE(FSRData)
+  PROVIDE(AccelerometerData)
+  PROVIDE(GyrometerData)
+END_DECLARE_MODULE(Motion)
+
+class Motion : public naoth::Callable, public MotionBase, public ModuleManager
 {
 public:
 
@@ -34,9 +56,10 @@ public:
   virtual ~Motion();
 
   /** */
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 
   virtual void call();
+  void execute(){}
 
   class KeyFrame
   {
@@ -50,15 +73,11 @@ public:
   std::list<KeyFrame> loadKeyFrames(const std::string& filename);
 
 private:
-  MotionBlackBoard& theBlackBoard;
-
   int theTimeStep;
 
   std::list<KeyFrame> theKeyFrame[MotionRequest::numOfMotionID];
 
   std::list<KeyFrame> activeKeyFrame;
-
-  MessageReader* theMotionRequestReader;
 };
 
 std::istream& operator>>(std::istream& in, Motion::KeyFrame& kf);

@@ -12,12 +12,11 @@
 #include <iostream>
 #include "Tools/DataStructures/Printable.h"
 #include "Tools/DataStructures/RingBuffer.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 
 namespace naoth
 {
 
-  class SoundData : public PlatformInterchangeable, public Printable
+  class SoundData : public Printable
   {
   public:
     bool mute;

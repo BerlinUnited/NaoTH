@@ -4,22 +4,19 @@
 
 #include "Actuator.h"
 
-Actuator::Actuator() :
-  theMotionRequestWriter(NULL)
+Actuator::Actuator()
 {
 }
 
 Actuator::~Actuator()
 {
-  if (theMotionRequestWriter != NULL)
-      delete theMotionRequestWriter;
 }
 
 
 #define REG_OUTPUT(R) \
-  platformInterface.registerCognitionOutput(get##R())
+  platformInterface.registerOutput(get##R())
 
-void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
+void Actuator::init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform)
 {
   REG_OUTPUT(CameraSettingsRequest);
   REG_OUTPUT(LEDData);
@@ -29,14 +26,10 @@ void Actuator::init(naoth::PlatformInterfaceBase& platformInterface)
   REG_OUTPUT(TeamMessageDataOut);
   REG_OUTPUT(DebugMessageOut);
 
-  theMotionRequestWriter = new MessageWriter(platformInterface.getMessageQueue("MotionRequest"));
-
+  platformInterface.registerOutputChanel(getMotionRequest());
 }//end init
 
 void Actuator::execute()
 {
-  // send the motion request to motion
-  stringstream mrmsg;
-  Serializer<MotionRequest>::serialize(getMotionRequest(), mrmsg);
-  theMotionRequestWriter->write(mrmsg.str());
+
 }//end execute

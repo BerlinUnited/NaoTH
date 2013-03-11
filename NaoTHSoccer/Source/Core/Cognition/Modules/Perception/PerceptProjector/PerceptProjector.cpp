@@ -10,6 +10,8 @@
 // debug
 #include "Tools/Debug/DebugBufferedOutput.h"
 
+using namespace std;
+
 PerceptProjector::PerceptProjector()
 {
   DEBUG_REQUEST_REGISTER("PerceptProjector:DrawCorrectedLinePercept", " ", false);

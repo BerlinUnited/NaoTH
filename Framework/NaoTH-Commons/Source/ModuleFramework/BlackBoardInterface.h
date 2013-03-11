@@ -7,12 +7,12 @@
 *
 */
 
-#ifndef __BlackBoardInterface_h_
-#define __BlackBoardInterface_h_
+#ifndef _BlackBoardInterface_h_
+#define _BlackBoardInterface_h_
 
 #include "BlackBoard.h"
-#include "Tools/Debug/NaoTHAssert.h"
-#include <iostream>
+//#include "Tools/Debug/NaoTHAssert.h"
+//#include <iostream>
 
 class BlackBoardInterface
 {
@@ -46,12 +46,18 @@ protected:
     }
   }
 
+  /**
+  *
+  */
   BlackBoard& getBlackBoard()
   {
     assert(theBlackBoard != NULL);
     return *theBlackBoard;
   }
 
+  /**
+  *
+  */
   const BlackBoard& getBlackBoard() const
   {
     assert(theBlackBoard != NULL);
@@ -59,4 +65,4 @@ protected:
   }
 };
 
-#endif //__BlackBoardInterface_h_
+#endif //_BlackBoardInterface_h_

@@ -13,7 +13,7 @@ namespace Math
   template <class T> class Matrix_mxn
   {
     private:
-      vector<T>* content;
+      std::vector<T>* content;
 
     public:
       unsigned int m;
@@ -35,11 +35,11 @@ namespace Math
         content = NULL;
         if(M > 0 && N > 0)
         {
-          content = new vector<T>[m];
-          vector<T>* init = content;
+          content = new std::vector<T>[m];
+          std::vector<T>* init = content;
           for (unsigned int i = 0; i < m; ++i, ++init)
           {
-            *init = vector<T>(n,0);
+            *init = std::vector<T>(n,0);
           }
         }
       }
@@ -58,11 +58,11 @@ namespace Math
         content = NULL;
         if(M > 0 && N > 0 && v != NULL)
         {
-          content = new vector<T>[m];
-          vector<T>* init = content;
+          content = new std::vector<T>[m];
+          std::vector<T>* init = content;
           for (unsigned int i = 0; i < m; ++i, ++init, v += n)
           {
-            vector<T> vec = vector<T>(n, 0);
+            std::vector<T> vec = std::vector<T>(n, 0);
             for(unsigned int j = 0; j < n; j++)
             {
               vec[j] = v[j];
@@ -86,11 +86,11 @@ namespace Math
         content = NULL;
         if(m > 0 && n > 0)
         {
-          content = new vector<T>[m];
-          vector<T>* init = content;
+          content = new std::vector<T>[m];
+          std::vector<T>* init = content;
           for (unsigned int i = 0; i < m; ++i, ++init)
           {
-            vector<T> vec = vector<T>(n, 0);
+            std::vector<T> vec = std::vector<T>(n, 0);
             for(unsigned int j = 0; j < n; j++)
             {
               vec[j] = matrix.content[i][j];
@@ -142,7 +142,7 @@ namespace Math
       *
       * Complexity: 1
       */
-      vector<T>& operator[](unsigned int i)
+      std::vector<T>& operator[](unsigned int i)
       {
         assert(m > 0 && n> 0);
         return content[i];
@@ -471,18 +471,18 @@ namespace Math
 
       void print()
       {
-        cout << "Matrix (" << m << "x" << n << ")" << endl;
+        std::cout << "Matrix (" << m << "x" << n << ")" << std::endl;
         for (unsigned int i = 0; i < m; i++)
         {
           for (unsigned int j = 0; j < n; j++)
           {
-            cout << "\t" << content[i][j];
+            std::cout << "\t" << content[i][j];
           }
-          cout << "\n";
+          std::cout << "\n";
         }
-        cout << "\n";
-        cout << " Det = " << det();
-        cout << "\n";
+        std::cout << "\n";
+        std::cout << " Det = " << det();
+        std::cout << "\n";
       }
 
     //----------------------------------------------------------------------------

@@ -35,23 +35,30 @@
 
 #include "DebugCommunication/DebugServer.h"
 #include "PlatformInterface/PlatformInterface.h"
-#include "Tools/DataStructures/Streamable.h"
+
 #include <Tools/Debug/DebugRequest.h>
 #include <ModuleFramework/Module.h>
 
 #define CYCLE_TIME 20
 
-using namespace naoth;
+class LogProvider;
+
+template<> class IF<LogProvider>: public StaticRegistry<LogProvider>
+{
+public:
+  static std::string getName() { return "LogProvider"; }
+  static std::string getModulePath() { return get_sub_core_module_path(__FILE__); }
+};
 
 
-class LogProvider: public Module
+class LogProvider: public Module, virtual private BlackBoardInterface
 {
 private:
   std::map<std::string, std::string>* representations;
   std::map<std::string, std::string> exludeMap;
 
 public:
-  LogProvider() : Module("LogProvider"), representations(NULL) 
+  LogProvider() : representations(NULL) 
   {
     //HACK: do not provide basic percepts (they are provided by get(...)
     exludeMap["AccelerometerData"] = "";
@@ -68,7 +75,9 @@ public:
     exludeMap["FrameInfo"] = "";
   }
 
-  
+  virtual std::string getName() const { return "LogProvider"; }
+  virtual std::string getModulePath() const { return IF<LogProvider>::getModulePath(); } \
+  virtual std::string getDescription() const { return IF<LogProvider>::description; }
 
   void init(std::map<std::string, std::string>& rep, std::set<std::string>& includedRepresentations)
   {
@@ -89,7 +98,7 @@ public:
 
   void execute()
   {
-    BlackBoard& blackBoard = getBlackBoard();
+    BlackBoard& blackBoard = BlackBoardInterface::getBlackBoard();
     BlackBoard::Registry::iterator iter;
 
     for(iter = blackBoard.getRegistry().begin(); iter != blackBoard.getRegistry().end(); ++iter)
@@ -111,17 +120,18 @@ public:
 };
 
 
-class Simulator : public PlatformInterface<Simulator>
+
+class Simulator : public PlatformInterface
 {
 public:
   Simulator(const char* filePath, bool compatibleMode, bool backendMode);
-  ~Simulator();
+  virtual ~Simulator();
 
-  virtual string getBodyID() const { return "naoth-logsimulator"; }
+  virtual std::string getBodyID() const { return "naoth-logsimulator"; }
 
-  virtual string getBodyNickName() const {return "naoth"; }
+  virtual std::string getBodyNickName() const {return "naoth"; }
 
-  virtual string getHeadNickName() const {return "naoth"; }
+  virtual std::string getHeadNickName() const {return "naoth"; }
 
   void main();
   void printHelp();
@@ -205,11 +215,11 @@ private:
   //
   std::map<std::string, std::string> representations;
 
-  list<unsigned int>::iterator currentFrame;
+  std::list<unsigned int>::iterator currentFrame;
   unsigned int lastFrameTime;
 
-  std::map<unsigned int, streampos> frameNumber2PosStart;
-  std::map<unsigned int, streampos> frameNumber2PosEnd;
+  std::map<unsigned int, std::streampos> frameNumber2PosStart;
+  std::map<unsigned int, std::streampos> frameNumber2PosEnd;
   
   char getInput();
 
@@ -225,7 +235,7 @@ private:
    */
   void adjust_frame_time();
 
-  bool compatibleExecute(const string& name, size_t dataSize);
+  bool compatibleExecute(const std::string& name, size_t dataSize);
 
   /** Initially parses the file */
   void parseFile();

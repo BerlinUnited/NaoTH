@@ -11,6 +11,9 @@
 #include <DebugCommunication/DebugCommandManager.h>
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <PlatformInterface/Platform.h>
+
+using namespace std;
 
 #define REGISTER_MODULE(module, enable) \
   the##module = registerModule<module>(std::string(#module), enable)

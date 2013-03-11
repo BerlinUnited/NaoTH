@@ -1,3 +1,4 @@
+#include "PlatformInterface/Platform.h"
 #include "ShadingCorrection.h"
 #include <sstream>
 #include <iostream>

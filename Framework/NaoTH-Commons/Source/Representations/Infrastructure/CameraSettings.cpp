@@ -1,5 +1,6 @@
+
 #include "Representations/Infrastructure/CameraSettings.h"
-#include "PlatformInterface/Platform.h"
+#include "Representations/Infrastructure/CameraInfo.h"
 
 using namespace naoth;
 using namespace std;

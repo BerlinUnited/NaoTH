@@ -11,8 +11,12 @@
 
 #include "RotationMatrix.h"
 #include "Pose2D.h"
+#include "Tools/Debug/NaoTHAssert.h"
 
-/** representation for 3D Transformation (Location + Orientation)*/
+/**
+ * @class Pose3T
+ * Represents a 3D Transformation (Location + Orientation)
+ */
 template<typename DATATYPE>
 class Pose3T
 {
@@ -96,7 +100,7 @@ protected:
   /**Concatenation of this pose with another pose
   *\param other The other pose that will be concatenated to this one.
   *\return A reference to this pose after concatenation
-  *\deprecated the name is not goo,d use *= instead
+  *\deprecated the name is not good use *= instead
   */
   Pose3T& conc(const Pose3T& other)
   {
@@ -225,7 +229,28 @@ protected:
     Pose3T v(*this);
     return v *= other;
   }
-};
+
+  /**
+  * Interpolate between two poses
+  * \param sp start pose
+  * \param tp target pose
+  * \param t interpolation parameter from [0,1]
+  */
+  static Pose3T<DATATYPE> interpolate(const Pose3T<DATATYPE>& sp, const Pose3T<DATATYPE>& tp, double t)
+  {
+    ASSERT(0 <= t);
+    ASSERT(t <= 1);
+
+    Vector3<DATATYPE> perr = tp.translation - sp.translation;
+  
+    Pose3T<DATATYPE> p;
+    p.translation = sp.translation + perr * t;
+    p.rotation = RotationMatrixT<DATATYPE>::interpolate(sp.rotation, tp.rotation, t);
+
+    return p;
+  }//end interpolate
+
+};//end Pose3T
 
 template <typename DATATYPE>
 std::ostream& operator <<(std::ostream& ost, const Pose3T<DATATYPE>& v)

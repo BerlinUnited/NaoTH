@@ -108,31 +108,36 @@ void BallDetector::execute()
       }
     }
   }
-  else // no orange blobs found in the image 
+  else // no orange blobs found in the image but previous percept is good
   {
-    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(getCameraMatrix(), getImage().cameraInfo,
-        Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
-                        getBallPercept().bearingBasedOffsetOnField.y, 
-                        getFieldInfo().ballRadius));
+    Vector2<int> projectedBall = CameraGeometry::relativePointToImage(
+      getCameraMatrix(), 
+      getImage().cameraInfo,
+      Vector3<double>(getBallPercept().bearingBasedOffsetOnField.x,
+                      getBallPercept().bearingBasedOffsetOnField.y, 
+                      getFieldInfo().ballRadius));
 
-    int scanRange = (int)(2.0*getBallPercept().radiusInImage + 0.5);
-    Vector2<int> candidate;
-
-    Vector2<int> min(projectedBall.x - scanRange, projectedBall.y - scanRange);
-    Vector2<int> max(projectedBall.x + scanRange, projectedBall.y + scanRange);
-
-    if(randomScan( ColorClasses::orange, candidate, min, max))
+    if(projectedBall.x > 0 && projectedBall.y > 0)
     {
-      if(!getBodyContour().isOccupied(candidate))
-      {
-        execute(candidate);
-      }
-    }
+      int scanRange = (int)(2.0*getBallPercept().radiusInImage + 0.5);
+      Vector2<int> candidate;
 
-    //project the old percept in the image
-    DEBUG_REQUEST("ImageProcessor:BallDetector:mark_previous_ball",
-      CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
-    );
+      Vector2<int> min(projectedBall.x - scanRange, projectedBall.y - scanRange);
+      Vector2<int> max(projectedBall.x + scanRange, projectedBall.y + scanRange);
+
+      if(randomScan( ColorClasses::orange, candidate, min, max))
+      {
+        if(!getBodyContour().isOccupied(candidate))
+        {
+          execute(candidate);
+        }
+      }
+
+      //project the old percept in the image
+      DEBUG_REQUEST("ImageProcessor:BallDetector:mark_previous_ball",
+        CIRCLE_PX(ColorClasses::gray, (int)projectedBall.x, (int)projectedBall.y, (int)getBallPercept().radiusInImage);
+      );
+    }//end if projectedBall is good
   } // end if-else
 
 

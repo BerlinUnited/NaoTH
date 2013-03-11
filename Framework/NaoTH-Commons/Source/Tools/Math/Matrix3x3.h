@@ -12,7 +12,6 @@
 
 #include <limits>
 #include "Vector3.h"
-#include "Matrix2x2.h"
 #include "Common.h"
 
 /**
@@ -349,5 +348,7 @@ std::istream& operator >>(std::istream& ist, Matrix3x3<DATATYPE>& v)
     return ist;
 }
 
+typedef Matrix3x3<double> Matrix3d;
+typedef Matrix3x3<float> Matrix3f;
 
 #endif // _Matrix3x3_h_

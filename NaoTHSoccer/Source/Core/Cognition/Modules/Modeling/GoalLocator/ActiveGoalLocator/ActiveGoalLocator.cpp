@@ -16,6 +16,8 @@
 //MATH
 #include "Tools/Math/Probabilistics.h"
 
+using namespace std;
+
 ActiveGoalLocator::ActiveGoalLocator()    :
     //canopyClustering(theSampleSet[1], parameters.thresholdCanopy),
     //canopyClustering2(theSampleSet2, parameters.thresholdCanopy),

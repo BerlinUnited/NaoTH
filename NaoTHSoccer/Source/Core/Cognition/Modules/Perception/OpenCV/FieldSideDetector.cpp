@@ -3,6 +3,9 @@
 #include "Tools/Debug/DebugBufferedOutput.h"
 #include <Tools/Debug/DebugImageDrawings.h>
 #include <DebugCommunication/DebugCommandManager.h>
+#include <PlatformInterface/Platform.h>
+
+using namespace std;
 
 FieldSideDetector::FieldSideDetector()
   : dtreeTrained(false), modelFileName("fieldsidedtree.yml")

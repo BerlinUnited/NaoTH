@@ -156,7 +156,7 @@ void ParameterList::saveToConfig()
   config.save();
 }
 
-std::string ParameterList::covertName(std::string name)
+std::string ParameterList::convertName(std::string name)
 {
   for( std::string::iterator i=name.begin(); i!= name.end();  )
   {
@@ -170,5 +170,5 @@ std::string ParameterList::covertName(std::string name)
     }
   }
   return name;
-}
+}//end convertName
 

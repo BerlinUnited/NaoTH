@@ -9,13 +9,12 @@
 #ifndef ROBOTINFO_H
 #define ROBOTINFO_H
 
-#include "PlatformInterface/PlatformInterchangeable.h"
 #include "Tools/DataStructures/Printable.h"
 
 namespace naoth
 {
 
-class RobotInfo: public PlatformInterchangeable, public Printable
+class RobotInfo: public Printable
 {
 public:
   RobotInfo(){}
@@ -25,10 +24,12 @@ public:
   std::string headNickName;
   std::string bodyID;
 
-  unsigned int basicTimeStep; /**< The time of each step which depends on platforms */
+  /** The time of each step which depends on platforms */
+  unsigned int basicTimeStep; 
+  
   /**
-   * The method returns the basic time step in seconds
-   */
+  * The method returns the basic time step in seconds
+  */
   inline double getBasicTimeStepInSecond() const { return static_cast<double>(basicTimeStep)/1000.0; }
 
 

@@ -6,7 +6,7 @@ package de.naoth.rc.manager;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import de.naoth.rc.dataformats.JanusImage;
-import de.naoth.rc.messages.Representations.Image;
+import de.naoth.rc.messages.FrameworkRepresentations.Image;
 import de.naoth.rc.server.Command;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;

@@ -1,6 +1,8 @@
 #include "TeamCommSender.h"
 #include "PlatformInterface/Platform.h"
 
+using namespace std;
+
 TeamCommSender::TeamCommSender()
   :lastSentTimestamp(0),
     send_interval(500)

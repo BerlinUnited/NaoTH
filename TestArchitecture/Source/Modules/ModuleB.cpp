@@ -1,14 +1,13 @@
 
 #include "ModuleB.h"
 
+using namespace std;
+
+#define M_PRINT(x) std::cout << "[" << getName() << "] " << x << std::endl
 
 void ModuleB::execute()
 {
-  cout << "start" << this->getModuleName() << endl;
-  //cout << (theRepresentationB).value << endl;
-  //cout << (theMyRep).c << endl;
-
-  cout << getRepresentationB().value << endl;
-
-  cout << "end" << this->getModuleName() << endl;
+  M_PRINT("start");
+  M_PRINT("RepresentationB = " << getRepresentationB().value);
+  M_PRINT("end");
 }//end execute

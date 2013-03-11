@@ -1,0 +1,55 @@
+digraph 
+{ 
+	compound=true;
+	graph [rankdir=LR];
+	
+	subgraph cluster_reason2
+	{
+		label="ModuleManager"; 
+		fontsize=14; 
+		style="filled, rounded"; 
+		fillcolor="#fafaff";
+		color=black;
+		
+		subgraph cluster_reason0
+		{ 
+			label="BlackBoard"; 
+			fontsize=14; 
+			style="filled, rounded"; 
+			fillcolor="#ddddee"; 
+			color=black;
+			node [style="filled, rounded", shape=box, color="#6666aa", width=2]; 
+			r0 [label="Image"]; 
+			r1 [label="ColorTable"]; 
+			r2 [label="BallPercept"]; 
+			r3 [label="BallModel"]; 
+			r4 [label="MotionRequest"]; 
+		}; 
+
+		subgraph cluster_reason1 
+		{ 
+			label=""; 
+			fontsize=14; 
+			style="filled, rounded"; 
+			color=none; 
+			node [style="filled, rounded", shape=ellipse, color="#aa6666", width=2]; 
+			m0 [label="ImageProcessor"];
+			m1 [label="BallLocator"];
+			m2 [label="BehaviorExecutor"];
+		};
+	};
+
+
+	r0 -> m0 [color=forestgreen];
+	r1 -> m0 [color=forestgreen];
+	m0 -> r2 [color=crimson];
+
+	r2 -> m1 [color=forestgreen];
+	m1 -> r3 [color=crimson];
+
+	r2 -> m2 [color=forestgreen];
+	r3 -> m2 [color=forestgreen];
+	m2 -> r4 [color=crimson];
+	
+	
+}

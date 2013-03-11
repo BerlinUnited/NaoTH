@@ -10,6 +10,8 @@
 #include "Tools/Math/Pose3D.h"
 #include <DebugCommunication/DebugCommandExecutor.h>
 
+#include <sstream>
+
 //#include "pthread.h"
 
 //#include <pthread.h>

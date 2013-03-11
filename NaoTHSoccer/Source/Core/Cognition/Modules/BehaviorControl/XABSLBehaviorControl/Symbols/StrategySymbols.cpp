@@ -3,6 +3,7 @@
 #include "Tools/Debug/DebugModify.h"
 #include <Tools/Debug/DebugBufferedOutput.h>
 
+using namespace std;
 
 void StrategySymbols::registerSymbols(xabsl::Engine& engine)
 {

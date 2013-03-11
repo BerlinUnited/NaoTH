@@ -85,7 +85,7 @@ public:
 
   virtual void execute();
 
-  void init(naoth::PlatformInterfaceBase& platformInterface);
+  void init(naoth::ProcessInterface& platformInterface, const naoth::PlatformBase& platform);
 };
 
 #endif  /* _SENSOR_H */

@@ -5,8 +5,8 @@
  * Definition of the class MotionRequest
  */
 
-#ifndef __MotionRequest_h_
-#define __MotionRequest_h_
+#ifndef _MotionRequest_h_
+#define _MotionRequest_h_
 
 #include <string>
 #include <Tools/DataStructures/Serializer.h>
@@ -21,6 +21,7 @@ public:
 
   /** constructor */
   MotionRequest()
+    : id(numOfMotionID)
   {
   }
 
@@ -28,19 +29,19 @@ public:
   }
 
   enum MotionID
-    {
-      stand,
-      walk_forward,
-      turn_left,
-      stand_up_from_front,
-      stand_up_from_back,
-      numOfMotionID
-    };
+  {
+    stand,
+    walk_forward,
+    turn_left,
+    stand_up_from_front,
+    stand_up_from_back,
+    numOfMotionID
+  };
 
   /** id of the motion to be executed */
   MotionID id;
 
-  virtual void print(ostream& stream) const
+  virtual void print(std::ostream& stream) const
   {
     stream << "motionID: " << (int) id;
   }

@@ -3,14 +3,13 @@
  */
 
 #ifndef _LOGFILE_H
-#define  _LOGFILE_H
+#define _LOGFILE_H
 
 #include <set>
 #include <map>
 
 #include <Tools/DataStructures/Serializer.h>
 #include <Tools/DataStructures/SerializerWrapper.h>
-#include <Tools/DataStructures/Streamable.h>
 
 #include <DebugCommunication/DebugCommandExecutor.h>
 #include "Tools/Logfile/LogfileManager.h"

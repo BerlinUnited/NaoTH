@@ -15,16 +15,14 @@
 #include <vector>
 
 //Tools
-#include "Tools/DataStructures/Streamable.h"
 #include "Tools/DataStructures/Printable.h"
 
 //Representations
 #include "Representations/Perception/BodyContour.h"
 #include "Representations/Infrastructure/JointData.h"
 #include "Representations/Perception/CameraMatrix.h"
-#include "Representations/Infrastructure/CameraInfo.h"
+//#include "Representations/Infrastructure/CameraInfo.h"
 #include "Representations/Modeling/KinematicChain.h"
-#include "Motion/MotionBlackBoard.h"
 #include "Representations/Infrastructure/Image.h"
 #include <vector>
 
@@ -69,7 +67,7 @@ protected:
 
                               
   protected:
-    void print(ostream& stream) const
+    void print(std::ostream& stream) const
     {
       stream << "nothing" << '\n';
     }

@@ -6,15 +6,14 @@
  */
 
 #ifndef _LEDDATA_H
-#define  _LEDDATA_H
+#define _LEDDATA_H
 
 #include "Tools/DataStructures/Printable.h"
-#include "PlatformInterface/PlatformInterchangeable.h"
 
 namespace naoth
 {
 
-  class LEDData : public PlatformInterchangeable, public Printable
+  class LEDData : public Printable
   {
   private:
   public:

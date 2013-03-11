@@ -2,7 +2,7 @@
  * File:   DebugCommunicator.cpp
  * Author: thomas
  * 
- * Created on 8. März 2009, 19:31
+ * Created on 8. march 2009, 19:31
  */
 
 #include <stdlib.h>

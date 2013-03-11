@@ -2,7 +2,7 @@
  * File:   FieldColorClassifier.cpp
  * Author: claas
  *
- * Created on 15. März 2011, 15:56
+ * Created on 15. march 2011, 15:56
  */
 
 #include "FieldColorClassifier.h"

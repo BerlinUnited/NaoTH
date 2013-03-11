@@ -12,6 +12,7 @@
 #include <Tools/Debug/DebugRequest.h>
 
 using namespace naoth;
+using namespace std;
 
 PotentialFieldProvider::PotentialFieldProvider()
 {
@@ -278,7 +279,7 @@ void PotentialFieldProvider::execute()
           simulatedLocalBall_noise.x += (Math::random()-0.5)*2.0*noise;
           simulatedLocalBall_noise.y += (Math::random()-0.5)*2.0*noise;
 
-          Vector2<double> target_noice = getGoalTarget(simulatedLocalBall_noise, oppGoalModel);
+          //Vector2<double> target_noice = getGoalTarget(simulatedLocalBall_noise, oppGoalModel);
           Vector2<double> f_noice = calculatePotentialField(simulatedLocalBall_noise, target, obstacles);
 
           // transform it to global coordinates

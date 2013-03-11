@@ -8,6 +8,7 @@
 #include "GameSymbols2011.h"
 
 using namespace naoth;
+using namespace std;
 
 void GameSymbols2011::registerSymbols(xabsl::Engine& engine)
 {

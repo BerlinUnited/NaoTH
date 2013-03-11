@@ -167,6 +167,7 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
 
         saveFileChooser.setFileFilter(new FileNameExtensionFilter("Log files (*.log)", "log"));
 
+        tbLog.setFloatable(false);
         tbLog.setRollover(true);
 
         cbLogName.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "CognitionLog", "MotionLog" }));
@@ -257,7 +258,6 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tbLog, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
@@ -282,12 +282,13 @@ public class LogfileRecorder extends AbstractDialog implements CommandSender
                 .addContainerGap()
                 .addComponent(stringSelectionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 507, Short.MAX_VALUE)
                 .addContainerGap())
+            .addComponent(tbLog, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(tbLog, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tbLog, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtTempFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

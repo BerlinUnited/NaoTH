@@ -245,7 +245,7 @@ void ColorCalibrator::calculateRegions
   }
 
   double max = 0.0;
-  int maxIdx = 0;
+  //int maxIdx = 0;
 
   for(int i = 0; i < 512; i++)
   {
@@ -262,7 +262,7 @@ void ColorCalibrator::calculateRegions
      if (max < histDiff[0][i])
      {
         max = histDiff[0][i];
-        maxIdx = i;
+        //maxIdx = i;
      }
   }
   z2.x = m2.x - (m1.x * m1.x);
@@ -346,7 +346,7 @@ void ColorCalibrator::calculateRegions
   }
 
   max = 0.0;
-  maxIdx = 0;
+  //maxIdx = 0;
 
   for(int i = 0; i < 256; i++)
   {
@@ -363,7 +363,7 @@ void ColorCalibrator::calculateRegions
      if (max < histDiff[0][i])
      {
         max = histDiff[0][i];
-        maxIdx = i;
+        //maxIdx = i;
      }
   }
   z2.x = m2.x - (m1.x * m1.x);
